@@ -10408,6 +10408,196 @@ their \file{.dat} files (the loader rejects the EoS otherwise --- see
 \code{requiredComponentProperties}).
 \end{tutoriallink}
 
+\subsection{Volume translation: Peneloux's correction of the liquid volume}\label{sec:peneloux}
+% Written 2026-11-16 against src/thermo/equationOfState/CubicEoS.{H,cpp}
+% (readVolumeTranslation, volumeShift, molarVolume, molarVolumeLiquid,
+% H_residual) and DEV.md 4c C408 (a).  Source: Peneloux, Rauzy and Freze,
+% Fluid Phase Equilib. 8, 7--23 (1982); every equation number below is that
+% paper's, read from the PDF in the project's literature folder.
+
+A cubic fitted to critical constants and vapour pressures over-predicts the
+volume of a liquid: for the SRK equation the mean error on the saturated
+liquid density of the first ten $n$-alkanes at $T_r = 0.7$ is
+$9.30\,\%$ \cite{Peneloux1982} (Table~1, p.~10).  Peneloux, Rauzy and
+Fr\'eze observed that the equilibrium conditions of an equation of state do
+not change if the volume axis is \emph{translated}, and used it to fix the
+volumes alone.
+
+\paragraph{Why equilibrium is untouched.}  Define a pseudo-volume
+$\tilde V = V + \sum_i c_i n_i$ with constant $c_i$ (their Eq.~3, p.~8).
+Substituting it in the equation of state gives a pseudo-equation of state
+whose fugacity coefficients are
+\begin{equation}
+   \ln\tilde\varphi_i \;=\; \ln\varphi_i + \frac{c_i P}{\Rgas T}
+   \label{eq:pen-phi}
+\end{equation}
+(p.~8).  At equal $T$ and $P$ the factor $\exp(c_iP/\Rgas T)$ is the same in
+both phases, so it cancels from $x_i'\varphi_i' = x_i''\varphi_i''$ and the
+predicted $(T, P, x_i)$ are exactly those of the untranslated equation
+(Eq.~2 and the result of p.~9).  The Soave volume is such a pseudo-volume, and
+the true volume is
+\begin{equation}
+   v \;=\; \tilde v - c\,,\qquad c \;=\; \sum_i x_i\,c_i
+   \label{eq:pen-v}
+\end{equation}
+(Eq.~6, p.~9).  Notation: Peneloux's tilde marks the \emph{pseudo}-volume,
+the cubic's own; Jhaveri and Youngren's tilde (and bar) marks the
+\emph{translated} volume $V - c$ --- the same translation with the labels
+swapped.  Here $v$ is the true, translated volume, $\tilde v$ the cubic's, and
+$\varphi^{\mathrm{transl}}$ the translated fluid's fugacity coefficient.  The
+corrected equation is
+$P = \Rgas T/(v - b) - a/\bigl((v+c)(v+b+2c)\bigr)$ with $b = \tilde b - c$
+(p.~9).  Dividing the volume by a factor, as Lin and Daubert do, does
+\emph{not} preserve this property; only a translation does.
+
+\paragraph{The shift.}  The paper correlates $c$ with the Rackett
+compressibility factor $z_{RA}$ of Spencer and Danner's form of the Rackett
+equation, by requiring the exact saturated-liquid density of the first ten
+$n$-alkanes at $T_r=0.7$:
+\begin{equation}
+   c_i \;=\; 0.40768\,\frac{\Rgas T_{c,i}}{P_{c,i}}\,
+             \bigl(0.29441 - z_{RA,i}\bigr)
+   \label{eq:pen-c}
+\end{equation}
+(Eq.~8, p.~10).  The constants are fitted \emph{for the Redlich--Kwong--Soave
+equation}.  Table~1 (p.~10) prints $z_{RA}$ for the ten alkanes in five
+columns ($z_{RA}$ adjusted, ``RKSc1''; $z_c$, ``RKSc2''; $z_\omega$, ``RKSc3'';
+$z_{RA}$ of Spencer and Adler; $z_{COS}$); the variant the paper recommends (``RKSc1'', adjusted $z_{RA}$)
+gives the lowest mean deviation, $1.47\,\%$ over 49 alkanes (Table~2, p.~12);
+alcohols and other associated liquids do worse ($3.8\,\%$).  The correction
+is useless near the critical point (Fig.~1, p.~11).  A Yamada--Gunn
+estimate $z_{RA} = 0.29056 - 0.08775\,\omega$ (printed on p.~11 as the
+``RKSc3'' route) is valid for normal alkanes only.
+
+\paragraph{What Choupo implements.}  \code{CubicEoS} carries one shift per
+component, and the translated fluid is \emph{one} fluid.  Its fugacity
+coefficients, in both roots, are those of the cubic times
+$\exp(-c_iP/\Rgas T)$ (Eq.~\eqref{eq:pen-phi} read the other way;
+Jhaveri--Youngren Eq.~13),
+\begin{equation}
+   \ln\varphi_i^{\mathrm{transl}} \;=\; \ln\varphi_i^{\mathrm{cubic}}
+        - \frac{c_i P}{\Rgas T}\,.
+   \label{eq:pen-lnphi}
+\end{equation}
+Because the term is component-wise and the same in both phases at equal
+$T$ and $P$, every $K$-value, bubble point, flash and envelope is the plain
+cubic's (the bubble-temperature scans of the tutorial are byte-identical);
+but a \emph{reaction} sees $\exp(-\sum_i\nu_i c_iP/\Rgas T)$, which does
+not cancel, so the Gibbs and equilibrium reactors price the translated
+fluid, and $G^{\mathrm R} = H^{\mathrm R} - TS^{\mathrm R}$ closes with the
+shifted $H^{\mathrm R}$ below (held by a gate to $10^{-9}$).  The volumes of
+\emph{both} roots are lowered by
+Eq.~\eqref{eq:pen-v}; $Z$ follows the volume, $Z = Pv/\Rgas T$.  The
+paper prints no enthalpy equation; it follows from
+Eq.~\eqref{eq:pen-lnphi}: with $\ln\varphi_i = \ln\varphi_i^{\mathrm{cubic}} - c_iP/\Rgas T$,
+$H^{\mathrm R} = -\Rgas T^2\,\partial(\ln\varphi)/\partial T$ at constant $c$
+moves by
+\begin{equation}
+   H^{\mathrm R}_{\mathrm{transl}} \;=\; H^{\mathrm R}_{\mathrm{cubic}} - P\,c\,,
+   \qquad
+   S^{\mathrm R}_{\mathrm{transl}} \;=\; S^{\mathrm R}_{\mathrm{cubic}}
+   \label{eq:pen-H}
+\end{equation}
+(equivalently $h = u + Pv$ with $u$ unchanged and $v$ lowered by $c$).
+What moves is the equation of state's own departure, i.e.\ the
+\emph{vapour-root} $H^{\mathrm R}$ (by $-P\,c(\mathbf y)$).  Under
+\code{phiPhi} the enthalpy of the \emph{liquid} phase of a package is not the
+cubic's departure (it is the liquid formation enthalpy; DEV.md 4c C410), so
+a flash's liquid enthalpy does \emph{not} move and its total changes by
+$-\beta_V\,P\,c(\mathbf y)$ only, until that is closed.
+
+\paragraph{Declaring it.}  Off unless asked, so no existing case moves.  The
+catalogue's component records carry no $z_{RA}$, so the case declares it,
+with where it was read; a component with neither a declared $z_{RA}$ nor a
+declared shift is refused by name, and the Yamada--Gunn estimate is taken
+only on \code{missingZRA YamadaGunn;} and announced.  For Peng--Robinson the
+constants of Eq.~\eqref{eq:pen-c} were fitted for Soave's equation, so a
+$z_{RA}$ is refused and the shift of Jhaveri and Youngren is used instead
+(next paragraph).  The choice is printed in the run and in the resolved view of the
+package.
+
+\paragraph{Peng--Robinson: the shift of Jhaveri and Youngren.}  The same
+translation applied to PR was worked out by Jhaveri and Youngren
+\cite{JhaveriYoungren1988}: the phase equilibrium is again that of the
+unmodified two-parameter equation (their Eq.~13,
+$\tilde\varphi_i = \varphi_i\exp(-c_iP/\Rgas T)$, with $\tilde V = V - c$,
+Eq.~10), and $c = \sum c_i z_i$ (Eq.~11).  The shift is expressed as a
+dimensionless multiple of the PR co-volume,
+\begin{equation}
+   c_i \;=\; s_i\,b_i\,,\qquad b_i = 0.07780\,\frac{\Rgas T_{c,i}}{P_{c,i}}
+   \label{eq:jy-c}
+\end{equation}
+(Eq.~17, p.~1034), with $s_i$ negative for the light hydrocarbons --- the
+untranslated PR volume is too small and the translation \emph{increases} it ---
+given by their Table~1 (p.~1035: methane $-0.1540$, ethane $-0.1002$,
+propane $-0.08501$, isobutane $-0.07935$, $n$-butane $-0.06413$,
+isopentane $-0.04350$, $n$-pentane $-0.04183$, $n$-hexane $-0.01478$) and,
+for the $n$-alkanes, $n$-alkylcyclohexanes and $n$-alkylbenzenes heavier than
+$n$-hexane, by
+\begin{equation}
+   s \;=\; 1 - \frac{d}{M^{e}}
+   \label{eq:jy-s}
+\end{equation}
+(Eq.~18; $M$ in kg/kmol; Table~2: $d, e = 2.258, 0.1823$ for the $n$-alkanes,
+$3.004, 0.2324$ for the alkylcyclohexanes, $2.516, 0.2008$ for the
+alkylbenzenes, mean deviation $0.19$--$0.28\,\%$).  The paper fits
+Eq.~\eqref{eq:jy-s} to the molar volume at $60\,^\circ$F and 1 atm.
+Choupo applies it where the case declares it, under
+\code{model JhaveriYoungren;} (SRK takes \code{model Peneloux;}; each is refused
+under the other cubic): \code{shiftTable1 <row>;} for a
+Table~1 row, \code{family <nAlkane|nAlkylcyclohexane|nAlkylbenzene>;} for
+Eq.~\eqref{eq:jy-s} (a component record carries no hydrocarbon family, so the
+case says which; a molar mass not heavier than $n$-hexane is refused by name),
+\code{s <value>;} or \code{cShift <m$^3$/mol>;} with a source.  A component
+the tables do not cover is refused by name.  $H^{\mathrm R}$ and $S^{\mathrm R}$
+move as in Eq.~\eqref{eq:pen-H}.
+
+\begin{tutoriallink}
+\begin{lstlisting}
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState
+    {
+        model SRK;
+        volumeTranslation
+        {
+            model Peneloux;
+            components
+            {
+                nHexane { ZRA 0.2636;
+                          source "Peneloux et al. 1982, Table 1, p. 10"; }
+                nDecane { cShift 3.65e-5;          // m3/mol
+                          source "..."; }
+            }
+            // missingZRA YamadaGunn;   // OPT-IN estimate, announced
+        }
+    }
+    ...
+}
+\end{lstlisting}
+\emph{Tutorial:} \file{tutorials/props/molecular/volumeTranslation01\_nhexane\_peneloux}
+evaluates $n$-hexane, $n$-decane and their equimolar mixture at $298.15$~K
+and $1.01325$~bar with plain SRK and with the shift, beside the liquid density
+of Perry's Handbook (Table~2-32).  Plain SRK over-predicts the molar volume
+of hexane by $+11.8\,\%$ and of decane by $+21.9\,\%$; with the shift the
+errors are $-1.5\,\%$ (hexane) and, with the Spencer--Adler $z_{RA}$ of
+Table~1, $-0.4\,\%$ (decane).  The paper's adjusted decane value
+($0.2578$) leaves $+3.2\,\%$: the choice of $z_{RA}$ matters.  The two
+bubble-temperature curves of the case are byte-identical files.  On
+Peng--Robinson the same state gives hexane $-0.8\,\%$ plain and $+0.4\,\%$
+with Table~1's shift, decane $+8.5\,\%$ plain and $+0.2\,\%$ with
+Eq.~\eqref{eq:jy-s} (family $n$-alkane).
+\end{tutoriallink}
+
+\paragraph{Validity.}  Pure and mixed liquids away from the critical point
+($T_r \lesssim 0.85$), at pressures up to a few hundred bar for the heavier
+$n$-alkanes (Table~3, p.~14: bias $+1.6$ to $+4.0\,\%$ at 300--1200 kg
+cm$^{-2}$); the vapour-phase volume changes by $c$ only, a small fraction of
+a vapour volume.  The liquid density that other units read through
+\code{ThermoPackage::density} remains the Rackett route; the translated
+volume is the equation of state's.
+
 \subsection{The \texorpdfstring{$P$--$T$}{P-T} envelope of a mixture}\label{sec:mixture-envelope}
 % Written 2026-11-15 against src/propertyOps/PhaseEnvelope.{H,cpp} (the
 % pressure march, BubblePoint::compute and DewPoint::compute, the
@@ -31898,6 +32088,19 @@ The Poynting correction of the Henry fugacity
 Wiley, 2017. The textbook the simulator's thermodynamic notation
 follows most closely; source of the cubic-EoS departure functions
 $H^{\mathrm R}, S^{\mathrm R}$ (eqs.~\ref{eq:srk-HR}--\ref{eq:srk-SR}).
+
+\bibitem{Peneloux1982} P\'eneloux, A., Rauzy, E., \& Fr\'eze, R., ``A Consistent
+Correction for Redlich--Kwong--Soave Volumes'', \emph{Fluid Phase Equilib.},
+\textbf{8}, 7--23 (1982), DOI \texttt{10.1016/0378-3812(82)80002-2}.  The
+volume translation of Section~\ref{sec:peneloux} (Eqs.~3, 6, 8 of the paper)
+implemented in \code{CubicEoS}.
+
+\bibitem{JhaveriYoungren1988} Jhaveri, B. S., \& Youngren, G. K.,
+``Three-Parameter Modification of the Peng--Robinson Equation of State To
+Improve Volumetric Predictions'', \emph{SPE Reservoir Eng.}, \textbf{3}(3),
+1033--1040 (1988), DOI \texttt{10.2118/13118-PA}.  The Peng--Robinson volume
+shift $c_i = s_i b_i$ (Eqs.~10--17) and its correlation $s = 1 - d/M^e$
+(Eq.~18, Tables~1--2) of Section~\ref{sec:peneloux}.
 
 \bibitem{LinSandler2002} Lin, S.-T. \& Sandler, S. I., \emph{Ind. Eng.
 Chem. Res.}\ \textbf{41}, 899, 2002.  The COSMO-SAC variant Choupo

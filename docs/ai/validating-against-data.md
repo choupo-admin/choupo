@@ -274,8 +274,13 @@ conditions of an ammonia synthesis loop, and then tries both knobs.  Neither
 works — the effective-hydrogen substitution makes it *worse* and moves all
 compositions together; the best `kij` fixes the equimolar mixture and cannot
 touch the nitrogen-rich one.  What is left is the cubic's own volumetric
-behaviour, and the remedy (volume translation, or a reference Helmholtz
-equation) **does not exist in this tree**, which the case says plainly.
+behaviour.  A volume translation (Péneloux 1982, `volumeTranslation Peneloux;`
+on the cubic, `thermo.md` under `phiPhi`) now exists in this tree and cures the LIQUID
+volume of an alkane; it has NOT been tried on this dense N₂+H₂ gas (the paper
+fits it to saturated liquids at T_r = 0.7 and says it is useless near the
+critical point, and no Z_RA for N₂ or H₂ is in the held literature), so for
+this case the claim stays open.  A reference Helmholtz equation (GERG-2008)
+does not exist in this tree yet.
 
 ### 3.1 Do this in the right order
 
