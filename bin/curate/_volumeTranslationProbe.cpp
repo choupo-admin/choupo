@@ -108,6 +108,9 @@ int main()
             }
             emit("HR", off->H_residual(s.T, s.P, y), on->H_residual(s.T, s.P, y));
             emit("SR", off->S_residual(s.T, s.P, y), on->S_residual(s.T, s.P, y));
+            //  The LIQUID root's departures (C410): G = H - T S must close here too.
+            emit("HRL", off->H_residualLiquid(s.T, s.P, y), on->H_residualLiquid(s.T, s.P, y));
+            emit("SRL", off->S_residualLiquid(s.T, s.P, y), on->S_residualLiquid(s.T, s.P, y));
             emit("vV", off->molarVolume(s.T, s.P, y), on->molarVolume(s.T, s.P, y));
             emit("vL", off->molarVolumeLiquid(s.T, s.P, y), on->molarVolumeLiquid(s.T, s.P, y));
         }
