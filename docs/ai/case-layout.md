@@ -31,7 +31,9 @@ are the source of truth.
 │   │                          model slots (see thermo.md)
 │   ├── propertyManifest     record-ownership registry (bin/choupo-import);
 │   │                          `sealed true;` = self-contained, no catalogue
-│   │                          fallback at runtime
+│   │                          fallback at runtime; OR `pins { "<standards
+│   │                          path>" "<computational hash>"; }` = the case
+│   │                          REFERENCES the catalogue (see below)
 │   ├── reactions            OPTIONAL  named-reaction library
 │   ├── crystallisation      OPTIONAL  per-kinetic-pair library
 │   ├── dryingKinetics       OPTIONAL  drying-curve library
@@ -319,6 +321,49 @@ multiplicative factor fits the formatter; temperatures print in `K`.
 
 These do NOT change what the solver computes; they change what the
 text output reads.
+
+## A case that REFERENCES the catalogue: `pins` (DEV.md 4c C413)
+
+A sealed case carries a copy of every record it reads; a referencing case
+carries one line per record.  `constant/propertyManifest` holds `pins`, never
+`records`, and the two together are refused by name:
+
+```
+propertyManifest
+{
+    pins
+    {
+        "components/benzene.dat"   "<64-hex computational hash>";
+        "components/toluene.dat"   "<64-hex computational hash>";
+        "parameters/Henry/"        "<64-hex hash of the directory>";   // a scan that reads a directory WHOLE
+    }
+    held { "components/water.dat"  "<hash of the case's own copy>"; }  // TRANSITIONAL, see below
+}
+```
+
+* The key is the `data/standards/` path; the value the COMPUTATIONAL hash
+  (comments and unit spellings are cosmetic).  A key ending in `/` pins a
+  directory by the hash of its sorted `name, hash` lines.
+* `bin/choupo-import --pin <case>` OBSERVES a run (the consumption ledger notes
+  every file the run parsed) and writes the pins, printing each record it adds.
+  `--pin <case> --from-sealed [--repoint <rel>]...` flips a sealed case: identical
+  copies deleted, `--repoint` deletes a stale copy on purpose, any other copy that
+  has a catalogue homonym stays in force under `held {}` (read alone, announced
+  `[held]`, verified against its own hash).  `--repin <record>` rewrites that
+  record's line in every manifest that pins it.  `--seal <case> --to <dir>` EXPORTS
+  a sealed copy (copies + `sealed true`), validated with the catalogue hidden.
+* A run hashes every pin at start (`changed`, `vanished`) and compares the files
+  it parsed with the pins at the end (`unpinned`); the result's `seal.verdict` is
+  `pinned` or `drifted` with each record tagged.  Announced by default; REFUSED
+  under `CHOUPO_PINS=refuse`, `runCase --strict` or `onDivergence refuse;`
+  (`bin/runTests` sets it in every mode).
+* A local record that has a catalogue homonym declares what it is in the record:
+  `overlayOf <name>;` (a delta), `variationOf <name>;` (a full record read alone),
+  `distinctFrom <name>;` (another species under the same name), each with a
+  `variationReason "...";`.  The engine checks the claim against the formula
+  (with charge), `charge` and `CAS`; see `components.md`.
+* A path the case's own run WRITES (`record "constant/..."`) may have no
+  catalogue homonym.
 
 ## One case, two modes — `flowsheetDict` AND `propsDict` (DEV.md 4c C152)
 

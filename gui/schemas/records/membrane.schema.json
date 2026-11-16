@@ -10,6 +10,10 @@
   "type": "object",
   "properties": {
     "name": { "type": "string", "title": "Record name", "description": "The word a case names the membrane by (`membrane <name>;`); the file is <name>.dat." },
+    "overlayOf": { "type": "string", "title": "Overlay of (C413)", "description": "A case-local record that is a DELTA over the catalogue record of this name: only the declared leaves are added or changed.  Requires `variationReason`." },
+    "variationOf": { "type": "string", "title": "Variation of (C413)", "description": "A case-local FULL record, read alone, that differs from the catalogue record of this name on purpose.  Requires `variationReason`." },
+    "distinctFrom": { "type": "string", "title": "Distinct from (C413)", "description": "A case-local record that is a DIFFERENT species/entity under the catalogue's name (read alone).  Requires `variationReason`." },
+    "variationReason": { "type": "string", "title": "Why this record is not the catalogue's (C413)", "description": "One sentence, parsed: required by overlayOf, variationOf and distinctFrom." },
     "kind": { "type": "string", "title": "Membrane kind", "description": "NF, RO, ... -- the family of the membrane, what a module or bench checks it against." },
     "manufacturer": { "type": "string", "title": "Manufacturer", "description": "Who makes it, or what it is when nobody does (a program's worked example)." },
     "A_w": { "type": "number", "title": "Pure-water permeance A_w", "unit": "m/s/bar",

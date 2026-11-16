@@ -82,7 +82,12 @@ The rules, all enforced by `bin/curate/check_registry_scan.py`:
 * **Two files, one directory, one key → REFUSED**, naming both paths.
 * **A case-local record replacing a catalogue one → ANNOUNCED** (`[override]`),
   never silent.  That is the deliberate tier overlay of §3, and a sealed case
-  never sees it at all: it reads its own closure alone.
+  never sees it at all: it reads its own closure alone.  Since C413 the record
+  that replaces a catalogue one DECLARES what it is (`overlayOf`, `variationOf`,
+  `distinctFrom`, each with a `variationReason`) and the engine checks the claim
+  against formula (with charge), `charge` and `CAS` -- see `case-layout.md` and
+  `components.md`.  A case may also REFERENCE the catalogue (`pins` in its
+  manifest) instead of carrying copies.
 * **The symmetric-pair models spell the file ONE way** — `NRTL`, `UNIQUAC` and
   `Wilson` build the name sorted (`min-max.dat`), so `water-ethanol.dat` is a
   file the engine never opens — the pair is then UNCOVERED and **REFUSED**

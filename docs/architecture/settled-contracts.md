@@ -3150,6 +3150,28 @@ diverges and `onDivergence refuse` fires exactly as before.  Gate
 `check_seal_schema`; record:
 [`docs/design/computational-seal-migration.md`](docs/design/computational-seal-migration.md).
 
+**REVISION NOTE (2026-11-16, DEV.md 4c C413; mechanism built in slices 0-1,
+the corpus flips in slice 2).**  "Cases are SELF-CONTAINED" (the 2026-06-11 credo)
+is revised, not repealed: a case now MAY reference the catalogue instead of
+carrying a copy of every record.  Its `constant/propertyManifest` holds `pins` --
+one line per catalogue record the run reads, valued by the COMPUTATIONAL hash
+(a directory a scan reads whole is one line, key ending in `/`) -- and a run
+hashes every pin at start and compares what it parsed with the pins at the end:
+`pinned` | `drifted` (`changed`, `vanished`, `unpinned`), announced by default,
+REFUSED under `CHOUPO_PINS=refuse` / `runCase --strict` / `onDivergence refuse;`
+(set by `bin/runTests` in every mode).  The reason is measured: of 6115 copies in
+the shipped tutorials 2080 were older than the record they copied, and one
+catalogue correction had to be made 362 times.  A local record with a catalogue
+homonym declares `overlayOf` / `variationOf` / `distinctFrom` with a parsed
+`variationReason`, checked against formula (with charge), `charge` and `CAS`
+(`records::checkLocalShadow`).  What does NOT move: the sealed path of the engine
+(`sealed true` still forbids the catalogue and verifies its records), the
+precedence order, and "THE SEAL MUST NOT CHANGE THE PHYSICS" -- that contract now
+binds the EXPORT (`bin/choupo-import --seal <case> --to <dir>`), an exported case
+being a sealed case in today's grammar.  Record:
+[`docs/design/c413-cases-reference-the-catalogue.md`](docs/design/c413-cases-reference-the-catalogue.md);
+user view: User Guide \S`sec:case-pins`; AI view: `docs/ai/case-layout.md`.
+
 ### Sequential-plan contract (tears + order) — SETTLED 2026-07-25, do NOT relitigate
 
 **Sequential-plan contract (tears + order) — SETTLED 2026-07-25, do NOT
