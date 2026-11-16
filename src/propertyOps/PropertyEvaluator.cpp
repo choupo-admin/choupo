@@ -474,12 +474,21 @@ scalar evaluateProperty(const std::string& propKey,
         try
         {
             const FlashSolution sol = IsothermalFlash::solveCore(in, thermo, opts);
+            if (!sol.converged)
+                throw std::runtime_error("the LL flash did not converge");
             const bool split = sol.liquidLiquid   // the KIND, never parsed from `regime`
                 && sol.x.size() == 2 && sol.y.size() == 2
                 && std::abs(sol.x[0] - sol.y[0]) > 1.0e-3;
             return split ? 0.0 : 1.0;
         }
-        catch (const std::exception&) { rethrowHardRefusal(); return 1.0; }   // no split found -> stable
+        catch (const std::exception& e)
+        {
+            // A flash that REFUSED is not a flash that found no split: a
+            // check that cannot run must not pass (CL-04).
+            rethrowHardRefusal();
+            throw std::runtime_error(
+                std::string("liquid_stable: the LL flash refused: ") + e.what());
+        }
     }
 
     throw std::runtime_error(
