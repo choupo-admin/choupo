@@ -868,8 +868,8 @@
     },
     "check_seal_drift": {
       "exit": 0,
-      "claim": "check_seal_drift: OK -- 1463 sealed manifest(s) and 9706 embedded record(s) inspected; every sealed case still reproduces its own records under its declared sealSchema (9 cosmetic difference(s), which the parsed-content claim tolerates by design); the 4 copies debt_registry.SEALED_COPIES_ADOPTED lists are still adopted.  NOT CHECKED: whether any sealed value is RIGHT.  And divergence from the LIVE catalogue (3622 record(s), 1300 case(s) worth a curator's eye) is HISTORY, not a verdict -- this gate reports it, never fails on it, and never re-seals to make the number smaller.",
-      "seconds": 41.2
+      "claim": "check_seal_drift: OK -- 1468 sealed manifest(s) and 6475 embedded record(s) inspected; every sealed case still reproduces its own records under its declared sealSchema (0 cosmetic difference(s), which the parsed-content claim tolerates by design); the 0 copies debt_registry.SEALED_COPIES_ADOPTED lists are still adopted.  NOT CHECKED: whether any sealed value is RIGHT.  And divergence from the LIVE catalogue (1790 record(s), 859 case(s) worth a curator's eye) is HISTORY, not a verdict -- this gate reports it, never fails on it, and never re-seals to make the number smaller.",
+      "seconds": 24.0
     },
     "check_seal_growth": {
       "exit": 0,
@@ -879,17 +879,17 @@
     "check_seal_schema": {
       "exit": 0,
       "claim": "check_seal_schema: OK -- canonicalization equivalences hold (unit spellings yes, dropped dims no), cosmetic drift stays verified + announced, moved values diverge/refuse by name, migration idempotent + fail-closed",
-      "seconds": 0.2
+      "seconds": 0.3
     },
     "check_seal_verdict": {
       "exit": 0,
       "claim": "check_seal_verdict: OK -- the verdict reaches the RESULT (verified / diverged+named / unsealed, and unsealed is never verified); announce is the default and the case declares `onDivergence refuse;` for the archival posture (fires on a moved byte, silent when intact); a junk word refuses named; and for a case that REFERENCES the catalogue (`pins`): verdict pinned, drifted (changed / unpinned, named IN THE RESULT), refused by the environment (CHOUPO_PINS=refuse) or by the case, a junk CHOUPO_PINS word refused, pins beside sealed refused",
-      "seconds": 0.4
+      "seconds": 0.5
     },
     "check_sealed_corpus": {
       "exit": 0,
-      "claim": "check_sealed_corpus: OK -- every top-level case under tutorials/ carries its .cho marker (so none is invisible to this search) and is either SEALED with a constant/propertyManifest (610), PINNED to the catalogue by its manifest (1, C413) or a live-overlay demo exempt by design (4), 0 unsealed; and the 5784 records those manifests name are each on disk under the case's constant/ AND not ignored by git, so a case runs from what git holds (C378 pilot review, PA-01).  NOT CHECKED: that a named record's content matches the hash its manifest claims (the runtime's seal check and check_seal_drift hold that), that a case reads no record its manifest does not name (a sealed case reading the installation catalogue, review PC-10), or that any sealed value is right.",
-      "seconds": 0.8
+      "claim": "check_sealed_corpus: OK -- every top-level case under tutorials/ carries its .cho marker (so none is invisible to this search) and is either SEALED with a constant/propertyManifest (72), PINNED to the catalogue by its manifest (539, C413) or a live-overlay demo exempt by design (4), 0 unsealed; and the 2282 records those manifests name are each on disk under the case's constant/ AND not ignored by git, so a case runs from what git holds (C378 pilot review, PA-01).  NOT CHECKED: that a named record's content matches the hash its manifest claims (the runtime's seal check and check_seal_drift hold that), that a case reads no record its manifest does not name (a sealed case reading the installation catalogue, review PC-10), or that any sealed value is right.",
+      "seconds": 0.4
     },
     "check_sector_hierarchy": {
       "exit": 0,
@@ -1703,8 +1703,8 @@
     },
     "check_property_route_bench": {
       "exit": 0,
-      "claim": "check_property_route_bench: OK -- 19100 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded, and the door describes each as recorded (records 696, binaries 8, blocks 19099, values 163843, refusals 177432, packages not assembled 1776; non-finite values: NaN 1, inf 6; data-root paths replaced in messages: 969; door against the old call: 179223 compared, 0 disagreements).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
-      "seconds": 11.6
+      "claim": "check_property_route_bench: OK -- 18140 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded, and the door describes each as recorded (records 696, binaries 8, blocks 18139, values 158943, refusals 172300, packages not assembled 1728; non-finite values: NaN 1, inf 6; data-root paths replaced in messages: 969; door against the old call: 179223 compared, 0 disagreements).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
+      "seconds": 9.6
     },
     "check_liquid_property_ratchet": {
       "exit": 0,
@@ -1808,7 +1808,7 @@
     },
     "check_scan_roots": {
       "exit": 0,
-      "claim": "check_scan_roots: OK -- 69 of 364 gates carry a walk the plan cannot see, each pinned by name in debt_registry.SCAN_ROOTS_UNRESOLVED, and none was added.  NOT checked: whether a declared SCAN_ROOTS is complete, or walks inside an imported helper.",
+      "claim": "check_scan_roots: OK -- 69 of 371 gates carry a walk the plan cannot see, each pinned by name in debt_registry.SCAN_ROOTS_UNRESOLVED, and none was added.  NOT checked: whether a declared SCAN_ROOTS is complete, or walks inside an imported helper.",
       "seconds": 2.6
     },
     "check_table_laws": {
@@ -1853,13 +1853,13 @@
     },
     "check_pins_fresh": {
       "exit": 0,
-      "claim": "check_pins_fresh: OK -- 5 pin(s) in 1 referencing case(s) each equal the computational hash of their data/standards/ record, and 0 held cop(ies) equal their own claims; no manifest holds pins together with a sealed `records`.  NOT CHECKED: the `relevant:` set lines (a relevant pair that arrived needs the case's components: the run's end check holds that, and flash01 is in FASTSET), that a case reads nothing it does not pin (the run's end check and check_shadow_identity hold that), the sealed cases (check_seal_drift), or that any pinned value is right.",
-      "seconds": 1.3
+      "claim": "check_pins_fresh: OK -- 3017 pin(s) in 539 referencing case(s) each equal the computational hash of their data/standards/ record, and 1982 held cop(ies) equal their own claims; no manifest holds pins together with a sealed `records`.  NOT CHECKED: the `relevant:` set lines (a relevant pair that arrived needs the case's components: the run's end check holds that, and flash01 is in FASTSET), that a case reads nothing it does not pin (the run's end check and check_shadow_identity hold that), the sealed cases (check_seal_drift), or that any pinned value is right.",
+      "seconds": 6.4
     },
     "check_case_records": {
       "exit": 0,
-      "claim": "check_case_records: OK -- 1 referencing case(s): no local record equals the catalogue's, every homonym is declared with its reason (or held), 0 held cop(ies) against a ceiling of 0, no pin names a record read alone, and no path a case writes has a catalogue homonym (1878 cases read for it).  NOT CHECKED: that every case has a manifest (check_sealed_corpus), that a declared variation's numbers are right, or the sealed cases' copies (check_seal_drift).",
-      "seconds": 1.6
+      "claim": "check_case_records: OK -- 539 referencing case(s): no local record equals the catalogue's, every homonym is declared with its reason (or held), 1982 held cop(ies) against a ceiling of 1982, no pin names a record read alone, and no path a case writes has a catalogue homonym (1878 cases read for it).  NOT CHECKED: that every case has a manifest (check_sealed_corpus), that a declared variation's numbers are right, or the sealed cases' copies (check_seal_drift).",
+      "seconds": 1.8
     },
     "check_shadow_identity": {
       "exit": 0,
