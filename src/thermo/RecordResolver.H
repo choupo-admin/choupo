@@ -71,7 +71,9 @@ License
 #pragma once
 
 #include "thermo/Database.H"
+#include "thermo/PinCheck.H"
 #include "core/Dictionary.H"
+#include "core/ReadLog.H"
 
 #include <algorithm>
 #include <cstdlib>
@@ -311,6 +313,23 @@ struct Ledger
         if (!target()) return;
         std::ofstream o(target());
         for (const auto& s : asked) o << s << "\n";
+        //  C413: EVERY record file the run parsed, with its home -- the
+        //  observation `bin/choupo-import --pin` writes the pins from.  The
+        //  `+`/`-` lines above are what the resolver SEAM was asked; these are
+        //  what was READ (core/ReadLog.H): component asks of an unsealed case,
+        //  every file of a directory scan, and the registries that scan the
+        //  catalogue directly.  The importer's reader ignores any line that
+        //  does not start with `- `.
+        std::set<std::string> lines;
+        for (const auto& p : readlog::state().paths)
+        {
+            const std::string sub = catalogueSubOf(p);
+            if (!sub.empty()) { lines.insert("@ catalogue " + sub); continue; }
+            const std::size_t k = p.rfind("constant/");
+            if (k != std::string::npos)
+                lines.insert("@ case " + p.substr(k + 9));
+        }
+        for (const auto& l : lines) o << l << "\n";
     }
 };
 
@@ -348,7 +367,7 @@ inline void note(const std::string& sub, bool found)
 inline fs::path resolveRecord(const std::string& sub)
 {
     fs::path p = localRecord(sub);
-    if (!p.empty()) { ledger::note(sub, true); return p; }
+    if (!p.empty()) { ledger::note(sub, true); checkLocalShadow(sub, p); return p; }
     if (sealedStrict()) { ledger::note(sub, false); return {}; }
     p = standardsRecord(sub);
     ledger::note(sub, fs::exists(p));
@@ -361,7 +380,7 @@ inline fs::path resolveRecord(const std::string& sub)
 inline fs::path resolveRequired(const std::string& sub, const std::string& what)
 {
     fs::path p = localRecord(sub);
-    if (!p.empty()) { ledger::note(sub, true); return p; }
+    if (!p.empty()) { ledger::note(sub, true); checkLocalShadow(sub, p); return p; }
     if (sealed()) { ledger::note(sub, false); refuseSealed(sub, what); }
     p = standardsRecord(sub);
     ledger::note(sub, fs::exists(p));
@@ -382,6 +401,15 @@ inline fs::path componentBase(const std::string& name)
         fs::path p = localRecord(sub);        // one home; empty when absent
         ledger::note(sub, !p.empty());
         return p;
+    }
+    //  C413: a local component that is a VARIATION (or held) is the record, read
+    //  alone -- never the catalogue's base with the local keys on top.
+    const fs::path loc = localRecord(sub);
+    if (!loc.empty() && readsAlone(sub, loc))
+    {
+        ledger::note(sub, true);
+        checkLocalShadow(sub, loc);
+        return loc;
     }
     fs::path p = standardsRecord(sub);
     ledger::note(sub, fs::exists(p));
@@ -513,7 +541,12 @@ inline std::vector<fs::path> scanRecordDir(const std::string& sub)
         return false;
     };
     for (const auto& f : listDatFiles(standardsRecord(sub)))
-        if (!shadowed(f)) out.push_back(f);
+    {
+        if (!shadowed(f)) { out.push_back(f); continue; }
+        for (const auto& lf : localFiles)           // C413: the shadow rule
+            if (lf.filename() == f.filename())
+                checkLocalShadow(sub + "/" + f.filename().string(), lf);
+    }
     out.insert(out.end(), localFiles.begin(), localFiles.end());
     return out;
 }

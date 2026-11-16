@@ -70,6 +70,7 @@ Description
 #include "PropertyRouteBench.H"
 #include "RecordLawChecks.H"
 #include "thermo/SealCheck.H"
+#include "thermo/PinCheck.H"
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/PropertyContext.H"
@@ -360,7 +361,7 @@ try
             if (a == "--canonical-dump")
                 std::cout << canonical::dump(*Dictionary::fromFile(f)) << "\n";
             else
-                std::cout << canonical::sha256OfFile(f) << "  " << f << "\n";
+                std::cout << records::pinHash(f) << "  " << f << "\n";   // a file, or a pinned directory (C413)
             return 0;
         }
         if (a == "--aqueous-graph" || a == "--family")
@@ -1433,6 +1434,9 @@ try
     if (!postProcessingBlock.empty())
         std::cout << ",\n  \"postProcessing\": " << postProcessingBlock;
 
+    //  C413: the end check of a case that pins the catalogue (a no-op for every
+    //  other case); throws under strict, which exits 1 below.
+    records::finalizePins();
     std::cout << "\n}\n<<<Choupo:result-end>>>\n";
 
     //  THE CURATION DOSSIER -- written last, so it records the run that

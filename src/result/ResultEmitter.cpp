@@ -34,6 +34,7 @@ License
 #include "result/PanelJson.H"
 #include "result/EquipmentList.H"
 #include "thermo/SealCheck.H"
+#include "thermo/PinCheck.H"
 #include "core/Citation.H"
 
 #include <cmath>
@@ -116,6 +117,11 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     //  each unit declared at assembly, what each consumer used -- in the
     //  log, just before the result they describe.
     PropertySourceLog::instance().printUsed(os);
+    //  C413: the END check of a case that pins the catalogue -- what the run
+    //  actually read against what the manifest pins -- BEFORE the verdict is
+    //  read below.  Throws under strict (CHOUPO_PINS=refuse), so a drifted
+    //  run produces no result at all.
+    records::finalizePins();
     os << "<<<Choupo:result-begin>>>\n";
     os << "{ \"version\": 1,\n";
     os << "  \"converged\": " << (r.converged ? "true" : "false") << ",\n";
