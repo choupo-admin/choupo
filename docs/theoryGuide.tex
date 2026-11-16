@@ -11374,6 +11374,19 @@ package with a cubic vapour evaluated the vapour fugacity at
 $\mathbf{y} = \mathbf{x}$, and the round trip missed by
 $+1.3\times10^{-4}$ at $1$~atm and $+7.8\times10^{-4}$ at $20$~bar.)
 
+The bubble \emph{temperature} publishes a converged value only when its
+incipient vapour is a settled one.  On a $\gamma$--$\varphi$ package with a
+cubic vapour the iteration of $\mathbf{y}$ reports whether it settled inside
+its pass budget; a vapour that did not settle, or one for which the iteration
+returned no $K$ at all, is refused with a note rather than answered, and the
+$y = x$ form is never used in its place.  In the P--T envelope's bubble march
+the same cubic is asked, at each point, whether the incipient vapour still has a
+vapour root of its own (the flagged pseudo-root of the cubic is the answer
+when it has none): the branch \emph{ends} at the first pressure where it does
+not, and the point is discarded, so no point of the drawn branch rests on a
+pseudo-root.  For \file{envelope03} that is $37$~bar, with the last kept
+point $389.554$~K at $36$~bar.
+
 \emph{Validity and what is not done.}  One liquid is assumed.  The fixed-$P$
 lenses replace the homogeneous bubble curve across an immiscibility gap by
 the heteroazeotrope's flat three-phase line; the fixed-$T$ evaluator has no
