@@ -960,7 +960,7 @@ layout  substation             dz               4                1e-4
 layout  summary                placed           33               1e-4
 layout  summary                unplaced         0                1e-4
 layout  summary                internal         0                1e-4
-layout  summary                findings         1                1e-4
+layout  summary                findings         0                1e-4
 layout  pipeRack               y                -2               1e-4
 layout  junction:MakeupMix     x                8                1e-4
 layout  junction:MakeupMix     y                -2               1e-4
@@ -1512,12 +1512,12 @@ layout  H2Buffer/vessel10      dz               16.0727487777    1e-4
 kpi     economics              C_OL             1100150.6713     1e-4
 kpi     economics              operatingPositions 13.3643181644    1e-4
 kpi     economics              operatorsPerShift 2.96984848098    1e-4
-layout  bund:tankFarm          verdict          inadequate         exact
+layout  bund:tankFarm          verdict          adequate           exact
 layout  bund:tankFarm          containment      bund             exact
 layout  bund:tankFarm          area             7480             1e-4
-layout  bund:tankFarm          wallHeight       4                1e-4
-layout  bund:tankFarm          displacedVolume  9248             1e-4
-layout  bund:tankFarm          netVolume        20672            1e-4
+layout  bund:tankFarm          wallHeight       4.5                1e-4
+layout  bund:tankFarm          displacedVolume  10404             1e-4
+layout  bund:tankFarm          netVolume        23256            1e-4
 layout  bund:tankFarm          requiredVolume   23055.3257369    1e-4
 layout  bund:loopKerb          verdict          adequate         exact
 layout  bund:loopKerb          containment      impounding       exact

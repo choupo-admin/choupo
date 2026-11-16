@@ -806,7 +806,7 @@ bunds
         kind        bund;
         items       ( "NH3Storage/tank1" "NH3Storage/tank2" );
         region      { xMin 103 m; xMax 213 m; yMin -69 m; yMax -1 m; }
-        wall        { height 4 m; }
+        wall        { height 4.5 m; }   // 4 m until 2026-11-17: the NH3 liquid volume at 298 K (C413 slice 3) made each tank 13 % larger and the bund needed 23055 m3 against 20672
         drain       closedValve;
         capacityRule
         {
