@@ -95,8 +95,9 @@ public:
     //  sum_i K_i(T, P, x, y) x_i = 1, the incipient vapour y ITERATED to its
     //  own composition at every trial pressure (y = K x / sum K x, started
     //  from the package's ideal K -- Psat/P, or H/P for a Henry solute --
-    //  so the vapour's fugacity is never evaluated at y = x, the liquid-like
-    //  root `compute` warns about).  Bisection on ln P between 0.01 bar and
+    //  so the vapour's fugacity is never evaluated at y = x, where the EoS
+    //  can hand the "vapour" a liquid-like root; `compute` iterates the same
+    //  vapour from the same seed, so the two round-trip, EX-04).  Bisection on ln P between 0.01 bar and
     //  a pressure at which the sum falls below one, to 1e-10 relative.
     //  `belowFloor` when the liquid does not boil even at 0.01 bar (P then
     //  carries that floor); `converged` false when no pressure up to

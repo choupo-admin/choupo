@@ -454,9 +454,12 @@ std::vector<EquipmentSizing> ReliefValveSize::size(const std::string& unitName,
                       " divide the fire's heat by; a supercritical fire case is"
                       " a transient calculation this sizer does not do.");
             //  THE SEED OF THE BUBBLE-POINT SEARCH IS A SOLVER AID, AND IS SAID.
-            //  `BubblePoint::compute` evaluates the vapour fugacity at y = x,
-            //  and below the liquid's own boiling range the EoS then returns a
-            //  LIQUID-like root for that "vapour": measured on LetdownHP's
+            //  `BubblePoint::compute` evaluated the vapour fugacity at y = x
+            //  when this seed was written (it iterates the incipient vapour
+            //  from the Raoult K since 2026-11-15, EX-04, and the seed is kept
+            //  as the search's start), and below the liquid's own boiling
+            //  range the EoS then returned a LIQUID-like root for that
+            //  "vapour": measured on LetdownHP's
             //  ammonia at 27.6 bar, sum K x falls through 1 a second, spurious
             //  time near 250 K and the default seed (the mole-weighted normal
             //  boiling point, 240 K) never reaches the real root at ~328 K.  So

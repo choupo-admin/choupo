@@ -496,6 +496,56 @@ def main() -> int:
     if not fails:
         notes.append("the saturation residuals have one home")
 
+    # ---- (n) T_bubble and P_bubble are one equilibrium on a cubic vapour --
+    #  (EX-04, 2026-11-15.)  On a gamma-phi package with a PR vapour,
+    #  T_bubble used to price the vapour at y = x while P_bubble iterated y,
+    #  and the round trip P_bubble(T_bubble(P)) missed P by 1.3e-4 at 1 atm
+    #  and 7.8e-4 at 20 bar on pxy01's liquid.  Both now iterate the
+    #  incipient vapour from the same Raoult seed; held here to 1e-9 on P
+    #  and 1e-8 on the vapour mole fraction.
+    import tempfile
+    pxy = ROOT / "tutorials" / "props" / "scan" / "pxy01_ethanol_water_70C"
+    eqb = (pxy / "constant" / "thermoPhysPropDict").read_text()
+    eqb = re.sub(r"fugacityModel\s+idealGas;", "fugacityModel PengRobinson;",
+                 eqb[re.search(r"^equilibrium\b", eqb, re.M).start():])
+
+    def point(td, tag, T, P, props):
+        d = Path(td) / tag
+        _write_case(d, ["ethanol", "water"], eqb)
+        (d / "system" / "propsDict").write_text(
+            "operations\n(\n    { name p; type propertyPoint; state { T %r K;"
+            " P %r Pa; composition { ethanol 0.4; water 0.6; } } properties"
+            " ( %s ); }\n);\n" % (T, P, props))
+        rc, out = run(d)
+        vals = dict(re.findall(r'"(T_bubble|P_bubble|y_eq_ethanol|'
+                               r'y_eqT_ethanol)":\s*([-0-9.eE+]+)', out))
+        return rc, {k: float(v) for k, v in vals.items()}
+
+    with tempfile.TemporaryDirectory() as td:
+        for P in (101325.0, 2.0e6):
+            rc1, a = point(td, "tb%d" % P, 350.0, P, "T_bubble y_eq_ethanol")
+            if rc1 != 0 or "T_bubble" not in a:
+                fails.append("(n) T_bubble of pxy01's liquid on a PR vapour at"
+                             " %.5g bar did not run (exit %d)" % (P / 1e5, rc1))
+                continue
+            rc2, b = point(td, "pb%d" % P, a["T_bubble"], 0.5 * P,
+                           "P_bubble y_eqT_ethanol")
+            if rc2 != 0 or "P_bubble" not in b:
+                fails.append("(n) P_bubble at T_bubble = %.6f K did not run"
+                             " (exit %d)" % (a["T_bubble"], rc2))
+                continue
+            dP = b["P_bubble"] / P - 1.0
+            dy = b["y_eqT_ethanol"] - a["y_eq_ethanol"]
+            if abs(dP) > 1.0e-9 or abs(dy) > 1.0e-8:
+                fails.append("(n) the bubble round trip on a PR vapour misses at"
+                             " %.5g bar: P_bubble(T_bubble(P))/P - 1 = %+.3e,"
+                             " y differs by %+.3e -- T_bubble and P_bubble are"
+                             " not reading the same incipient vapour (EX-04)"
+                             % (P / 1e5, dP, dy))
+    if not any(f.startswith("(n)") for f in fails):
+        notes.append("T_bubble and P_bubble round-trip to 1e-9 on pxy01's"
+                     " liquid with a PR vapour at 1 atm and 20 bar")
+
     for case, label in ((GAS, "envelope01"), (JUMP, "envelope02")):
         rc, out = run(case)
         if rc != 0:

@@ -11361,17 +11361,18 @@ that gives a \emph{minimum}-boiling azeotrope on the $T$--$x$--$y$ gives a
 \emph{maximum}-pressure azeotrope here: ethanol/water at $70\,^\circ$C on
 the curated NRTL pair peaks near $x_{\mathrm{EtOH}} \approx 0.9$.  The
 evaluator keywords are \code{P\_bubble} [Pa] and \code{y\_eqT\_<comp>} [--],
-beside \code{T\_bubble} and \code{y\_eq\_<comp>}.  On an \emph{ideal-gas}
-vapour, at a temperature $T_{\mathrm{bubble}}(\mathbf{x}, P)$ the bubble
-pressure returns $P$, and \file{tutorials/props/scan/pxy01\_ethanol\_water\_70C}
-holds that round trip to $10^{-6}$ relative.  With a cubic vapour (PR or SRK)
-the two are \emph{not} the same equilibrium: \code{T\_bubble} evaluates the
-vapour fugacity at $\mathbf{y} = \mathbf{x}$ while \code{P\_bubble} iterates
-the incipient vapour to its own composition, so on pxy01's liquid with a PR
-vapour the bubble pressure at $T_{\mathrm{bubble}}$ differs from $P$ by
-$+1.3\times10^{-4}$ at $1$~atm and $+7.8\times10^{-4}$ at $20$~bar (the
-iterated vapour is the more correct of the two; the $T_{\mathrm{bubble}}$
-frame is recorded as a defect of its own).
+beside \code{T\_bubble} and \code{y\_eq\_<comp>}.  At a temperature
+$T_{\mathrm{bubble}}(\mathbf{x}, P)$ the bubble pressure returns $P$: both
+solve \eqref{eq:bubble-pressure} with the incipient vapour iterated to its own
+composition from the same ideal-$K$ seed, so they are the same equilibrium
+read for the other variable.
+\file{tutorials/props/scan/pxy01\_ethanol\_water\_70C} holds that round trip to
+$10^{-6}$ relative on its ideal-gas vapour, and the gate
+\code{check\_phase\_envelope} holds it to $10^{-9}$ on the same liquid with a
+PR vapour.  (Until 2026-11-15 \code{T\_bubble} on a $\gamma$--$\varphi$
+package with a cubic vapour evaluated the vapour fugacity at
+$\mathbf{y} = \mathbf{x}$, and the round trip missed by
+$+1.3\times10^{-4}$ at $1$~atm and $+7.8\times10^{-4}$ at $20$~bar.)
 
 \emph{Validity and what is not done.}  One liquid is assumed.  The fixed-$P$
 lenses replace the homogeneous bubble curve across an immiscibility gap by
