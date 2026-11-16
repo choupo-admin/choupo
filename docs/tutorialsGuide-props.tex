@@ -2027,7 +2027,7 @@ ion mol/kg w ion mol/kg w Ca 0.010 Cl 0.050 Na 0.030 SO4 0.012 HCO3 0.005 pH 7.6
 
 THE LESSON -- the SIGN of dK/dT:
 
-calcite dissolution is EXOTHERMIC (dH = -28.1 kJ/mol), so log K FALLS as T rises. SI\_calcite = log(IAP) - log K(T) therefore RISES with temperature -- RETROGRADE SOLUBILITY. Calcite is LESS soluble hot, which is exactly why heat-exchanger tubes and warm RO concentrate scale with CaCO3 although the cold feed looks safe. K(T) here is the PHREEQC ANALYTIC expression (-analytical\_ expression A1..A5), anchored on logK25 so logK(25 C) = logK25 EXACTLY.
+calcite dissolution is EXOTHERMIC (CaCO3 = Ca+2 + CO3-2: dH = -9.6 kJ/mol, Plummer \& Busenberg 1982; the record's acid form CaCO3 + H+ = Ca+2 + HCO3-: -24.5 kJ/mol), so log K FALLS as T rises. SI\_calcite = log(IAP) - log K(T) therefore RISES with temperature -- RETROGRADE SOLUBILITY. Calcite is LESS soluble hot, which is exactly why heat-exchanger tubes and warm RO concentrate scale with CaCO3 although the cold feed looks safe. K(T) here is the PHREEQC ANALYTIC expression (-analytical\_ expression A1..A5), anchored on logK25 so logK(25 C) = logK25 EXACTLY.
 
 gypsum analytic too, but only mildly retrograde (its solubility peaks near 40 C) -- a gentler curve for contrast.
 
@@ -2040,19 +2040,19 @@ Speciation/mineral data: case-local constant/electrolyte/ -- a self- contained S
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{diag}{T10}{I}{0.0795197}
-\goldrow{diag}{T10}{SI\_calcite}{0.56588}
+\goldrow{diag}{T10}{SI\_calcite}{0.625403959734}
 \goldrow{diag}{T10}{SI\_gypsum}{-0.335309}
 \goldrow{diag}{T10}{SI\_halite}{-4.56674}
 \goldrow{diag}{T10}{aw}{0.998115}
 \goldrow{diag}{T10}{pH}{7.6}
 \goldrow{diag}{T25}{I}{0.0772864}
-\goldrow{diag}{T25}{SI\_calcite}{0.789002}
+\goldrow{diag}{T25}{SI\_calcite}{0.819002408221}
 \goldrow{diag}{T25}{SI\_gypsum}{-0.365046}
 \goldrow{diag}{T25}{SI\_halite}{-4.60657}
 \goldrow{diag}{T25}{aw}{0.998126}
 \goldrow{diag}{T25}{pH}{7.6}
 \goldrow{diag}{T40}{I}{0.074682}
-\goldrow{diag}{T40}{SI\_calcite}{0.981885}
+\goldrow{diag}{T40}{SI\_calcite}{0.979528450423}
 \goldmore{91}
 \end{tutgolden}
 
@@ -2134,21 +2134,21 @@ PRIMARY: L. N. Plummer \& E. Busenberg, Geochim. Cosmochim. Acta 46 (1982) 1011-
 
 THE ANCHOR, and what it independently tests: their MEASURED pH at calcite equilibrium under exactly these conditions, corrected for liquid-junction potential, is 6.004 +/- 0.005 (4 M KCl filling, p. 1022; uncorrected Orion runs read near 5.984); their own aqueous model puts the thermodynamic pH at 6.011. The engine's number below comes out of Henry + K1/K2 + the ion pairs + Davies + electroneutrality + the SI = 0 ceiling END TO END -- none of which was fitted to this pH.
 
-LINEAGE, stated honestly: the calcite log K(T), K\_H, K1, K2 and ion-pair constants in our curated records descend from the USGS PHREEQC database, whose carbonate block IS this paper's Table 3 and Eqs -- so agreement in the CONSTANTS is lineage consistency, not validation. What the measured pH tests independently is the ASSEMBLY: that the engine composes those constants (gas pin, chained carbonate master, ion pairs, activity model, charge balance, mineral ceiling) into the same physical answer the electrode saw.
+LINEAGE, stated honestly: the calcite log K(T), K\_H, K1, K2 and ion-pair constants in our curated records descend from the USGS PHREEQC database, whose carbonate block IS this paper's Table 3 and Eqs -- so agreement in the CONSTANTS is lineage consistency, not validation. (Calcite was the exception until 2026-11-16: the record carried -8.45, a different fit, under this paper's citation; it now carries the paper's -8.480, and the pH below moved from 6.02946 to 6.01859 with it -- docs/reviews/ 2026-11-16-speciation-audit, SP-01/GS-01.) What the measured pH tests independently is the ASSEMBLY: that the engine composes those constants (gas pin, chained carbonate master, ion pairs, activity model, charge balance, mineral ceiling) into the same physical answer the electrode saw.
 
-WHAT IT ACTUALLY LANDS AT, and where that is written. The engine gives pH 6.02946 -- 0.025 ABOVE the measurement, 0.018 above their own model's 6.011 -- and the case attributes that offset to an activity-model difference (Davies here against their Truesdell-Jones, at I = 0.027). SINCE 2026-08-12 THAT COMPARISON IS DATA, NOT PROSE: `expected` carries an `anchor` row on the measured 6.004 with a band set to the explained offset, beside the self-recorded row on 6.02946 -- so a drift AWAY from the electrode fails as an anchor disagreement, and an unexplained drift TOWARD it fails as a moved golden. Both ends, on purpose. This header used to end with "a wrong composition would not land within 0.01 pH", which reads as though the engine does; it does not, and the number is above.
+WHAT IT ACTUALLY LANDS AT, and where that is written. The engine gives pH 6.01859 -- 0.015 ABOVE the measurement, 0.008 above their own model's 6.011 -- and the case attributes that remaining offset to an activity- model difference (Davies here against their Truesdell-Jones, at I = 0.026). Until 2026-11-16 it gave 6.02946 and attributed the whole 0.025 to the activity model; about 0.011 of it was the calcite constant. SINCE 2026-08-12 THAT COMPARISON IS DATA, NOT PROSE: `expected` carries an `anchor` row on the measured 6.004 with a band set to the explained offset, beside the self-recorded row on 6.01859 -- so a drift AWAY from the electrode fails as an anchor disagreement, and an unexplained drift TOWARD it fails as a moved golden. Both ends, on purpose. This header used to end with "a wrong composition would not land within 0.01 pH", which reads as though the engine does; it does not, and the number is above.
 
 APPROACH FROM ABOVE: the engine's equilibrate is a precipitation CEILING (SI $\to$ 0 from supersaturation; it does not dissolve a solid it was never given). The seed is therefore a SUPERSATURATED Ca(HCO3)2 solution under the pin; the ceiling relaxes it down to the same calcite saturation P\&B's dissolution runs approached from below -- one fixed point at (T, pCO2), whichever side you arrive from. The HCO3 seed is an initial guess only: the CO2 pin REPLACES the carbonate mole balance, so dissolved carbonate is a solved outcome (announced by the run).
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{diag}{calciteEq\_25C}{I}{0.0265778}
-\goldrow{diag}{calciteEq\_25C}{SI\_aragonite}{-0.114}
+\goldrow{diag}{calciteEq\_25C}{I}{0.0258891128996}
+\goldrow{diag}{calciteEq\_25C}{SI\_aragonite}{-0.143999999968}
 \goldrow{diag}{calciteEq\_25C}{SI\_calcite}{3.22147e-11}
-\goldrow{diag}{calciteEq\_25C}{SI\_portlandite}{-13.0919}
+\goldrow{diag}{calciteEq\_25C}{SI\_portlandite}{-13.1219229657}
 \goldrow{diag}{calciteEq\_25C}{aw}{0.998916}
-\goldrow{diag}{calciteEq\_25C}{n\_calcite}{0.00543277}
-\goldrow{diag}{calciteEq\_25C}{pH}{6.02946}
+\goldrow{diag}{calciteEq\_25C}{n\_calcite}{0.00569408636156}
+\goldrow{diag}{calciteEq\_25C}{pH}{6.01859430205}
 \goldrow{diag}{calciteEq\_25C}{pH}{6.004}
 \goldrow{diag}{calciteEq\_25C}{chargeImposed}{1}
 \goldrow{diag}{calciteEq\_25C}{chargeResidual}{2.22179e-18}
@@ -2253,7 +2253,7 @@ DATA SCOPE: self-DESCRIBING (inline manifest); the ions, pairs, mixing WITH carb
 \goldrow{diag}{seawater\_pitzer}{I}{0.682714}
 \goldrow{diag}{seawater\_pitzer}{SI\_anhydrite}{-1.24804}
 \goldrow{diag}{seawater\_pitzer}{SI\_aragonite}{0.540696}
-\goldrow{diag}{seawater\_pitzer}{SI\_calcite}{0.654696}
+\goldrow{diag}{seawater\_pitzer}{SI\_calcite}{0.684695958829}
 \goldrow{diag}{seawater\_pitzer}{SI\_gypsum}{-0.964342}
 \goldrow{diag}{seawater\_pitzer}{SI\_halite}{-2.48855}
 \goldrow{diag}{seawater\_pitzer}{SI\_sylvite}{-3.51959}
@@ -2477,8 +2477,8 @@ DATA SCOPE: self-DESCRIBING (inline manifest); the ions, pairs, mixing with the 
 \goldrow{diag}{scan\_davies}{SI\_anhydrite\_rmax}{0.269649}
 \goldrow{diag}{scan\_davies}{SI\_aragonite\_r0}{1.26146}
 \goldrow{diag}{scan\_davies}{SI\_aragonite\_rmax}{2.0927}
-\goldrow{diag}{scan\_davies}{SI\_calcite\_r0}{1.37546}
-\goldrow{diag}{scan\_davies}{SI\_calcite\_rmax}{2.2067}
+\goldrow{diag}{scan\_davies}{SI\_calcite\_r0}{1.40546447275}
+\goldrow{diag}{scan\_davies}{SI\_calcite\_rmax}{2.23670229659}
 \goldrow{diag}{scan\_davies}{SI\_gypsum\_r0}{-0.607638}
 \goldrow{diag}{scan\_davies}{SI\_gypsum\_rmax}{0.481394}
 \goldrow{diag}{scan\_davies}{SI\_halite\_r0}{-2.3956}
@@ -2523,7 +2523,7 @@ GOLDEN PINS (locked by the golden master): pin\_gypsum\_amount Ca = SO4 = 0.0305
 \goldrow{diag}{feed}{I}{0.0266002}
 \goldrow{diag}{feed}{SI\_anhydrite}{-1.68532}
 \goldrow{diag}{feed}{SI\_aragonite}{0.111093}
-\goldrow{diag}{feed}{SI\_calcite}{0.225093}
+\goldrow{diag}{feed}{SI\_calcite}{0.255093263385}
 \goldrow{diag}{feed}{SI\_gypsum}{-1.38593}
 \goldrow{diag}{feed}{SI\_halite}{-5.35323}
 \goldrow{diag}{feed}{SI\_sylvite}{-6.39779}
@@ -2664,8 +2664,8 @@ Data: curated USGS PHREEQC records (public domain) resolved from data/standards/
 \goldrow{diag}{raw}{SI\_anhydrite\_rmax}{-0.646016}
 \goldrow{diag}{raw}{SI\_aragonite\_r0}{0.111093}
 \goldrow{diag}{raw}{SI\_aragonite\_rmax}{1.26704}
-\goldrow{diag}{raw}{SI\_calcite\_r0}{0.225093}
-\goldrow{diag}{raw}{SI\_calcite\_rmax}{1.38104}
+\goldrow{diag}{raw}{SI\_calcite\_r0}{0.255093263385}
+\goldrow{diag}{raw}{SI\_calcite\_rmax}{1.41104143214}
 \goldrow{diag}{raw}{SI\_gypsum\_r0}{-1.38593}
 \goldrow{diag}{raw}{SI\_gypsum\_rmax}{-0.349983}
 \goldrow{diag}{raw}{SI\_halite\_r0}{-5.35323}

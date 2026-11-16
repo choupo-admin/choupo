@@ -1,6 +1,6 @@
 /*----------------------------------------------------------*\
   constant/components/CaCO3.dat -- MERGED sealed record: the standards base with
-  this case's partial overlay applied top-level (Choupo-2607 release).
+  this case's partial overlay applied top-level (Choupo-2608 release).
   Materialised by bin/choupo-import so the sealed case reads ONE
   complete record with the catalogue hidden; provenance (base +
   overlay hashes) is recorded in constant/propertyManifest.
@@ -52,7 +52,16 @@ solidPhases
     calcite
     {
         dissolutionReaction { masters ( { ion Ca; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } ); }
-        equilibrium { logK25 1.879; dH -28078.8; analytic ( 40.0171 -0.01928451 -5151.79 -8.66815 563713.9 ); validC ( 0 300 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: 0 - 300 C, Ellis, 1959, Plummer and Busenberg, 1982"; }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        equilibrium { logK25 1.849; dH -24509.8; analytic ( -64.0194 -0.04546451 -2312.471 32.66939 563713.9 ); validC ( 0 90 ); source "Plummer and Busenberg, Geochim. Cosmochim. Acta 46 (1982) 1011 (log Ksp -8.480 at 25 C, 0 - 90 C), rebased to HCO3; the same equation is in USGS PHREEQC phreeqc.dat (public domain)"; }
     }
 }
 

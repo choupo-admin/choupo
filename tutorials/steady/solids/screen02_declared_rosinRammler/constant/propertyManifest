@@ -21,17 +21,17 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-12";
+    importedAt         "2026-11-16";
     importerVersion    "3";
     records
     {
         "components/CaCO3.dat"
         {
             type          imported;
-            sha256        "5010b1945bc35c9b685a6152ef374b66aad3bfd83db01e4c213f3b29ba9e54f6";
-            computationalSha256 "2a3bf8a6982457f1988f5cdb50194d384b77a9af50f74f2346b69902496c7e90";
+            sha256        "fcc6103e5bfebede72a6afdeb925e1a7e9adaa8a00788e76c1bd4dc846c1bd24";
+            computationalSha256 "7a5ce73e10a7d4490cf2f262dceb64f725ef54bc6e163a2797cae1699442cc05";
             origin        "data/standards/components/CaCO3.dat";
-            originSha256  "711508fdee41cdcdbde9b8cd9817d55f2c5c49c0b2c96372079ca56bef2257ac";
+            originSha256  "a798fb034146552a50c076e80219e49edfba1fd15c8237c22d79ad4b0aa0ad58";
             release       Choupo-2608;
         }
     }

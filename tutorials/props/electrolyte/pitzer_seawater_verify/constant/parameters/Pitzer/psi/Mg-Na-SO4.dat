@@ -1,4 +1,4 @@
-// [imported] origin "data/standards/parameters/Pitzer/psi/Mg-Na-SO4.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+// [imported] origin "data/standards/parameters/Pitzer/psi/Mg-Na-SO4.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*--------------------------------*\
   Pitzer ternary mixing parameter psi(Mg,Na|SO4) --- the two cations Mg(2+)
   and Na(+) with the common anion SO4(2-).

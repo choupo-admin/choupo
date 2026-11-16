@@ -1,4 +1,4 @@
-// [imported] origin "data/standards/parameters/Pitzer/psi/Ca-H-Cl.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+// [imported] origin "data/standards/parameters/Pitzer/psi/Ca-H-Cl.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*--------------------------------*\
   Pitzer ternary mixing parameter psi(Ca,H|Cl) --- the two cations Ca(2+) and
   H(+) with the common anion Cl(-).

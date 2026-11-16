@@ -1582,7 +1582,7 @@ std::optional<scalar> ThermoPackage::dHsolnForSolute(std::size_t i) const
     //
     // WHICH PHASE is the CASE's declaration, never the record's order.  CaCO3
     // carries TWO polymorphs and they do not share the heat -- aragonite
-    // -25731.6 J/mol, calcite -28078.8 -- so "the component's dH" would let
+    // -25731.6 J/mol, calcite -24509.8 -- so "the component's dH" would let
     // the order of the file decide the energy.  The case says
     // `chemistryDict: solidPhases ( calcite )`; a system admitting none, or
     // several that disagree, keeps its honest gap.

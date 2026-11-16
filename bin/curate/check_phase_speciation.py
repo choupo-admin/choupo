@@ -373,12 +373,12 @@ elif '"Q_kW"' not in out:
 else:
     q = float(re.search(r'"Q_kW":\s*([-\d.eE+]+)', out).group(1))
     #  And the number must come from the ADMITTED phase.  CaCO3 declares two
-    #  polymorphs whose heats differ by 2.3 kJ/mol; reading the record's first
+    #  polymorphs whose heats differ by 1.2 kJ/mol; reading the record's first
     #  entry instead of the case's declaration would let the ORDER OF THE FILE
     #  decide the energy.
-    if "-28.0788" not in out:
+    if "-24.5098" not in out:
         fail("flash19's duty is not sourced from the admitted phase's dH "
-             "(-28.0788 kJ/mol, calcite).  Reading aragonite (-25.7316) or the "
+             "(-24.5098 kJ/mol, calcite).  Reading aragonite (-25.7316) or the "
              "record's first entry lets the file's order decide the energy")
     else:
         ok("flash19: first law published, Q = %.2f kW, dHsoln from the "
