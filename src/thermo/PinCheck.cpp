@@ -494,12 +494,21 @@ void checkLocalShadow(const std::string& sub, const fs::path& local)
     else if (!held)
     {
         if (!diff.empty())
-            refuse("is a DIFFERENT species under the catalogue's name (they"
-                   " disagree on " + diffText + "): " + both,
-                   "declare `distinctFrom " + name + "; variationReason \"...\";`"
-                   " in the record, or rename it.  Left undeclared, deleting"
-                   " this record would make the name fall through to the"
-                   " catalogue's species with exit 0.");
+        {
+            const std::string why = "is a DIFFERENT species under the catalogue's name (they"
+                " disagree on " + diffText + "): " + both;
+            const std::string how = "declare `distinctFrom " + name + "; variationReason \"...\";`"
+                " in the record, or rename it.  Left undeclared, deleting"
+                " this record would make the name fall through to the"
+                " catalogue's species with exit 0.";
+            //  A case that REFERENCES the catalogue refuses.  A legacy UNSEALED case
+            //  (a sealed ion case copied out without its manifest, a demo written
+            //  before the declaration existed) is ANNOUNCED, never refused: the
+            //  refusal for those arrives with slice 4, which declares them.
+            if (pinsActive()) refuse(why, how);
+            if (thermoAnnounceLevel() >= 1 && announceOnceKey("shadow:" + sub))
+                std::cerr << "[shadow] " << where << " " << why << "  " << how << "\n";
+        }
         if (strictRule)
             refuse("shadows the catalogue record of the same name without"
                    " declaring it (CHOUPO_PINS=refuse).",

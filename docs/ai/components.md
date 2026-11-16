@@ -1416,8 +1416,9 @@ ONE place (`records::checkLocalShadow`): the `formula` WITH its charge
 (`Cl-` is not `Cl`), `charge`, and `CAS`.  `overlayOf` / `variationOf` refuse when a
 shared field disagrees (it is another species: say `distinctFrom`); `distinctFrom`
 refuses when they all agree (it is the same species: say `variationOf`); a shadow
-with no declaration refuses when they disagree and is announced `[shadow]` when they
-agree (refused under strict, `CHOUPO_PINS=refuse`, for a case that holds `pins`).  A
+with no declaration is announced `[shadow]` in a case that does not hold `pins`, and
+REFUSED in one that does when the identity fields disagree (or, under strict,
+`CHOUPO_PINS=refuse`, when they agree).  A
 declared variation or a `held` copy is read alone; the undeclared top-level
 insertion over the catalogue base stays only for the undeclared shadow.  The catalogue
 spells chlorine `Cl` (`components/Cl.dat`, `components/HOCl.dat`), because the formula

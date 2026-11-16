@@ -545,3 +545,68 @@ per case it reaches.
 - **Q7. Undeclared shadows in users' cases** are announced, and refused only
   under strict.  Whether a later release refuses them outright is a
   backwards-compatibility decision to take with a release, not here.
+
+## 9. As built -- slices 0 and 1 (2026-11-16, branch c413/pins)
+
+What was built is the section 6 mechanism, with the deviations the build
+forced.  Each is a measurement, not a preference.
+
+1. **A directory scan is pinned as a WHOLE, one line.**  Measured on flash01:
+   with the ledger noting every read, the run parsed 562 catalogue files
+   (486 Henry pairs, 35 assets, 13 solution pairs, 10 utilities, 15
+   adsorption equilibria, 2 components, 1 chemistry record) -- the registries
+   load their whole directory whether or not the case uses a record.  Pinning
+   each file would be 562 lines per case, against the record's two.  A
+   directory the run read whole (every `*.dat`, at least two) is pinned by
+   one line whose key ends in `/` and whose value is the hash of the sorted
+   `<file> <computational hash>` lines (`choupoProps --canonical-hash <dir>`,
+   `records::pinHash`).  A new file in the directory moves exactly that pin.
+   flash01's manifest: 10 lines.
+2. **The ledger notes at `Dictionary::fromFile`, not at the resolver seam.**
+   Fifteen registries scan `data/standards/` directly; a read log at the seam
+   would still be a subset.  `core/ReadLog.H` is the one note; a hash or an
+   identity comparison pauses it (`readlog::Pause`).  The ledger file gains
+   `@ catalogue <sub>` / `@ case <sub>` lines; the importer's reader ignores
+   every line that does not start with `- `.
+3. **Pin values are quoted** (`"<hash>"`): a hash of digits only parses as a
+   number.  Q6 is answered: the quoted-key scalar entry parses.
+4. **flash01's copies were stale**, not identical (the catalogue's benzene and
+   toluene gained blocks since the seal), so the record's rule would have put
+   them under `held`.  The witness was flipped with `--repoint` (delete the
+   stale copy, follow the catalogue) as the brief asked: every number and
+   every written file is byte-identical, and eight stdout lines differ
+   because they name the record's HOME (`sealed case copy ...` becomes
+   `catalogue data/standards/...`) and the package identity.  The held form
+   (`--pin --from-sealed` without `--repoint`) is byte-identical to the
+   sealed run apart from the seal block and two `[held]` lines, which is the
+   proof slice 2 will use: a held copy is labelled as the sealed copy it was.
+5. **`check_seal_drift` and `check_sealed_corpus` are kept, not renamed.**
+   610 cases are still sealed and those gates still judge them; the pin-form
+   gates are new beside them (`check_pins_fresh`, `check_case_records`,
+   `check_shadow_identity`).  Slice 2 retires the old ones when the last copy
+   goes.  `check_seal_verdict` gained the pin probes.
+6. **Announcements, and where the refusal binds.**  D3 says an undeclared
+   shadow that disagrees on identity "refuses always".  Built: it refuses for a
+   case that holds `pins`; for a legacy UNSEALED case it is ANNOUNCED
+   (`[shadow] ... DIFFERENT species ... declare distinctFrom`), because the
+   gates that copy a sealed ion case out without its manifest
+   (`check_unit_acceptance` ran four such probes) and the unsealed demos
+   (overlay02, solvent02, solvent03) are exactly the cases that carry the
+   undeclared record, and refusing them before slice 4 declares the 29 ion
+   records would move numbers' availability, not numbers.  A declaration the
+   identity CONTRADICTS (`variationOf` with another formula, `distinctFrom` on
+   the same species) refuses always: it is new grammar with no legacy.  A
+   missing `variationReason` is announced only for a case that holds `pins`.
+   Strict (`CHOUPO_PINS=refuse`) binds only a case that holds `pins`.  The
+   switch to "refuses always" is a one-line change when slice 4 lands.
+7. **`held` is a ceiling in `check_case_records` (`HELD_CEILING`, 0 today)**,
+   lowered by whoever re-points a held copy.
+8. **The gates that copy a witness for a probe** (`check_record_law_pins`
+   copied flash01 and rewrote its benzene record) drop a manifest that holds
+   `pins`: the probe is the unsealed case it behaves as without it.
+9. **The GUI lesson `caseAssembly`** (which walks flash01's files) was rewritten
+   for the pin form in the same slice, as D5 required.
+10. **Not built here, by the brief:** slice 2 (the 613 flips), the GUI export
+    (`buildCaseZip`), the WASM rebuild.  The browser build is stale: an old
+    engine meets a `pins` manifest as an unclaimed manifest and runs from the
+    embedded catalogue (verdict `unsealed`).

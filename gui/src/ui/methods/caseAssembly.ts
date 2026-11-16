@@ -72,7 +72,7 @@ const BUILDER = "src/thermo/ThermoPackageBuilder.cpp";
 export const CITES = {
   runCaseApplication: { file: "bin/runCase", line: 263,
     contains: "application[[:space:]]+" },
-  runCaseLog: { file: "bin/runCase", line: 302,
+  runCaseLog: { file: "bin/runCase", line: 308,
     contains: 'LOG="$CASE_ABS/log.$APP"' },
   registerUnits: { file: MAIN, line: 534,
     contains: "UnitOperation   ::registerBuiltins();" },
@@ -87,7 +87,7 @@ export const CITES = {
   verbosityRead: { file: MAIN, line: 668,
     contains: 'lookupScalarOrDefault("verbosity", 3)' },
   sealVerify: { file: MAIN, line: 688, contains: "records::verifySeal(verbosity);" },
-  sealFunction: { file: "src/thermo/SealCheck.cpp", line: 51,
+  sealFunction: { file: "src/thermo/SealCheck.cpp", line: 60,
     contains: "int verifySeal(int verbosity)" },
   thermoWhere: { file: MAIN, line: 705,
     contains: 'resolveUp("constant/thermoPhysPropDict")' },
@@ -149,16 +149,16 @@ export const CITES = {
     contains: 'if (d->found("vaporFraction"))' },
   overSpecified: { file: STATE_IO, line: 3263,
     contains: "OVER-SPECIFIED -- declares T = " },
-  dictComment: { file: DICT, line: 207,
+  dictComment: { file: DICT, line: 208,
     contains: "src_[pos_+1] == '/'" },
-  dictSubDict: { file: DICT, line: 345,
+  dictSubDict: { file: DICT, line: 346,
     contains: "parseEntries(*sub, /*topLevel=*/false);" },
-  unitLookup: { file: DICT, line: 459,
+  unitLookup: { file: DICT, line: 460,
     contains: "units::lookupUnit(suffix)" },
-  unitUnknown: { file: DICT, line: 462,
+  unitUnknown: { file: DICT, line: 463,
     contains: ": unknown unit suffix '" },
-  unitToSI: { file: DICT, line: 468, contains: "v *= spec->factor;" },
-  dimsCheck: { file: DICT, line: 948,
+  unitToSI: { file: DICT, line: 469, contains: "v *= spec->factor;" },
+  dimsCheck: { file: DICT, line: 949,
     contains: "it->second != expectedDims" },
   unitBar: { file: "src/core/Units.cpp", line: 54,
     contains: '{ "bar",     UnitSpec{ bar_to_Pa,   Dims::pressure } }' },
@@ -372,49 +372,26 @@ export const FILE_ROLES: readonly FileRole[] = [
   },
   {
     path: "constant/propertyManifest", folder: "constant",
-    says: "The SEAL. `sealed true;` forbids the engine every record outside "
-      + "this case: the two component files below are the only ones it may "
-      + "read, and each is listed with the sha256 of the copy that was "
-      + "imported and the catalogue record it came from. A sealed case runs "
-      + "the same on any machine.",
-    declares: ["propertyManifest", "sealed", "records"],
+    says: "The PINS. This case does not carry copies of the records it reads: "
+      + "benzene and toluene come from the installation catalogue, and this "
+      + "file names, one line each, the catalogue record the run was made "
+      + "against, by the hash of its parsed content (a key ending in `/` pins "
+      + "a whole directory a registry scan reads). A run hashes every pin at "
+      + "start, compares what it actually read with the pins at the end, and "
+      + "says `pinned` or `drifted` in its result. A sealed case, the other "
+      + "form, carries the copies and runs the same on any machine; "
+      + "`bin/choupo-import --seal` exports one from this case.",
+    declares: ["propertyManifest", "pins"],
     readers: [
       { who: "engine", cite: "sealVerify",
-        when: "at start-up, before any thermodynamics: each claimed record "
-          + "is re-hashed and a changed one is announced" },
-      { who: "engine", cite: "componentSealed",
-        when: "each time a component is loaded: in a sealed case the "
-          + "installation catalogue is forbidden" },
-    ],
-  },
-  {
-    path: "constant/components/benzene.dat", folder: "constant",
-    says: "Everything Choupo knows about benzene, with sources: molar mass, "
-      + "critical constants and acentric factor, normal boiling point and "
-      + "latent heat, formation enthalpy and entropy, the Antoine vapour "
-      + "pressure (with the temperature range it was fitted over), heat "
-      + "capacities, transport properties.",
-    declares: ["name", "formula", "MW", "Tc", "Pc", "vaporPressure"],
-    readers: [
+        when: "at start-up, before any thermodynamics: each pin is re-hashed "
+          + "against the catalogue record and a changed one is announced "
+          + "(refused under `CHOUPO_PINS=refuse` or `runCase --strict`)" },
       { who: "engine", cite: "componentFile",
-        when: "while the package is built, once for each name in "
-          + "thermoPhysPropDict's `components ( ... )`" },
-      { who: "engine", cite: "componentSealed",
-        when: "the case is sealed, so this copy IS the record" },
-    ],
-  },
-  {
-    path: "constant/components/toluene.dat", folder: "constant",
-    says: "The same record for toluene. Each record states the temperature "
-      + "range its Antoine fit covers (`Trange`): toluene's runs to 380 K, "
-      + "benzene's stops at 354 K, below this flash's 370 K. The run says so "
-      + "out loud (the [psat] lines in the log): extrapolation is allowed, "
-      + "never silent.",
-    declares: ["name", "formula", "MW", "Tc", "Pc", "vaporPressure", "Trange"],
-    readers: [
-      { who: "engine", cite: "componentFile",
-        when: "while the package is built, once for each name in "
-          + "thermoPhysPropDict's `components ( ... )`" },
+        when: "each time a component is loaded: a record of the case's own "
+          + "constant/components/ would be looked for first -- there is none "
+          + "here, so the catalogue's benzene.dat and toluene.dat are read, "
+          + "and both are pinned above" },
     ],
   },
   {
@@ -502,7 +479,7 @@ export const ASSEMBLY: readonly AssemblyMove[] = [
     cite: "flowsheetRead" },
   { what: "it parses the meta-control and reads the verbosity",
     reads: "system/controlDict", cite: "controlDictRead" },
-  { what: "it checks the seal before trusting any record",
+  { what: "it checks the pins before trusting any record",
     reads: "constant/propertyManifest", cite: "sealVerify" },
   { what: "it finds the thermophysical system and checks it says what it is",
     reads: "constant/thermoPhysPropDict", cite: "thermoWhere" },
@@ -511,8 +488,9 @@ export const ASSEMBLY: readonly AssemblyMove[] = [
   { what: "it looks for an outer driver and a post-processing chain "
       + "(flash01 has neither)", cite: "postDictRead" },
   { what: "a pass begins: the thermodynamic package is built from "
-      + "constant/, each component from its record",
-    reads: "constant/components/benzene.dat", cite: "thermoBuild" },
+      + "constant/, each component from its record (the catalogue's, pinned "
+      + "by the manifest)",
+    reads: "constant/thermoPhysPropDict", cite: "thermoBuild" },
   { what: "the solve reads every stream's state from 0/",
     reads: "0/feed", cite: "stateRead" },
   { what: "every stream the topology names must have its file, and no "

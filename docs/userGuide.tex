@@ -1430,9 +1430,10 @@ variationReason "Why this record is not the catalogue's, in one sentence.";
 \end{lstlisting}
 The engine checks the claim against the identity fields both records carry
 --- the formula with its charge, \code{charge}, \code{CAS}.  A declared
-variation whose formula disagrees, a \code{distinctFrom} on the same species,
-and an undeclared homonym of another species all refuse, naming both records;
-an undeclared copy that agrees is announced, and refused under strict.  A path
+variation whose formula disagrees and a \code{distinctFrom} on the same species
+refuse, naming both records; so does an undeclared homonym of another species in a
+case that holds \code{pins} (in an older unsealed case it is announced); an
+undeclared copy that agrees is announced, and refused under strict.  A path
 the case's own run \emph{writes} may have no catalogue homonym.
 
 \begin{pitfall}
