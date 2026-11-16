@@ -1,23 +1,27 @@
 // [imported] origin "data/standards/components/water.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Water  (H2O, CAS 7732-18-5)
-  Warning: the Antoine fit below is NOT accurate over its whole declared
-           Trange.  Measured 2026-09-27 against the IAPWS saturation
-           equation (IAPWS SR1-86(1992), Eq. 1, which reproduces its own
-           Table 1 check values to 2e-7): -0.07 % at 273.16 K, -0.10 % at
-           298.15 K, +0.03 % at 313.15 K, +0.49 % at 333.15 K, +1.32 % at
-           353.15 K and +2.47 % at 373.15 K -- so this fit puts water's own
-           normal boiling point at 372.45 K, not at the Tb 373.15 declared
-           below.  Above 373 K it extrapolates (+6.4 % at 423 K, +18 % at
-           573 K).  Use the Antoine block only below ~313 K; above that, a
-           case that needs water's saturation curve should opt in to the
-           IAPWS equation (vapour-pressure model `Wagner`, see
-           docs/design/what-water-dat-does-not-say.md) or to the IAPWS-IF97
-           pure-fluid route (`pureFluids { water { method IF97; } }`).
-           Replacing this block in the catalogue is RESERVED for Vitor: it
-           moves goldens once the sealed cases are re-imported.
-  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), the Antoine
-           fit, the Cp polynomials and the ideal-gas formation datum
+  Vapour pressure: the IAPWS saturation equation (IAPWS SR1-86(1992),
+           Eq. 1; printed with the same six coefficients as Eq. (2.5) of
+           Wagner & Pruss, J. Phys. Chem. Ref. Data 31 (2002) 387, p. 399),
+           vapour-pressure model `Wagner`, reduced by Tc = 647.096 K and
+           pc = 22.064 MPa -- NOT by this record's own Tc 647.14 K below,
+           which the equation must not use.  Valid 273.16-647.096 K.  It
+           reproduces SR1-86's Table 1 (611.657 Pa at 273.16 K, 101325.015 Pa
+           at 373.1243 K, 22.064 MPa at 647.096 K) to 1.5e-7 and the IF97
+           region-4 equation to 1.8e-4.  Until 2026-11-16 this block was an
+           Antoine fit that was +2.47 % high at 373.15 K (so it put water's
+           normal boiling point at 372.45 K), +6.4 % at 423 K and +18 % at
+           573 K; the architect replaced it (CLAUDE.md rule 00: the
+           reservation to Vitor was lifted) because every case that prices
+           water's vapour pressure inherited the error.  Water has ONE home
+           for its saturation curve: this block.  (The PHREEQC-convention
+           gas-liquid record chemistry/water-vapour-equilibrium.dat states
+           the same curve as a dissolution constant and is derived from it;
+           see that record.)  A case that wants the IAPWS-IF97 pure-fluid
+           route instead still declares `pureFluids { water { method IF97; } }`.
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), the Cp
+           polynomials and the ideal-gas formation datum
            (dHf_298/s_298, JANAF convention) are individual literature
            values -- primary re-citation pending (IST review).  K_b/K_f
            and the Andrade/Vogel viscosity fits repeat the same pending
@@ -86,9 +90,15 @@ standardThermochemistry
 }
 vaporPressure
 {
-    model         Antoine;
-    coefficients  (5.40221   1838.675   -31.737);
-    Trange        (273  373);
+    //  IAPWS SR1-86(1992) Eq. 1:  ln(p/pc) = (Tc/T) sum a_i u^e_i ,  u = 1 - T/Tc ,
+    //  with the reducing constants of the release, Tc = 647.096 K and
+    //  pc = 22.064 MPa (its Sec. 2), NOT this record's Tc.  Coefficients as
+    //  printed in Wagner & Pruss 2002, Eq. (2.5), p. 399.
+    model         Wagner;
+    reducing      { T 647.096 K;  P 22.064 MPa; }
+    exponents     (1 1.5 3 3.5 4 7.5);
+    coefficients  (-7.85951783  1.84408259  -11.7866497  22.6807411  -15.9618719  1.80122502);
+    Trange        (273.16  647.096);
 }
 
 idealGasHeatCapacity
@@ -258,8 +268,40 @@ surfaceTension
     Tmax  353.15;
 }
 
+//  The cubic's alpha function, fitted BY CURATION to this record's own vapour-pressure
+//  law (C408 slice 0): bin/curate/fit_alpha_function.py writes it, never a table.  Read only when a case
+//  selects `alphaFunction MathiasCopeman;` on that cubic.
+cubicAlpha
+{
+    SRK
+    {
+        form    MathiasCopeman;
+        c1      1.093148;
+        c2      -0.67094674;
+        c3      0.69182682;
+        Trange  (273.16 634.1972);   // K, the fitted window: the law's own, cut at 0.98 Tc where the law reaches higher
+    }
+    PengRobinson
+    {
+        form    MathiasCopeman;
+        c1      0.91825576;
+        c2      -0.32975741;
+        c3      0.31981107;
+        Trange  (273.16 634.1972);   // K, the fitted window: the law's own, cut at 0.98 Tc where the law reaches higher
+    }
+}
+
 provenance
 {
+    vaporPressure
+    {
+        origin       literature;
+        method       "Wagner equation transcribed from IAPWS SR1-86(1992) Eq. 1, coefficients and reducing constants as printed in Wagner & Pruss 2002 Eq. (2.5), p. 399";
+        citation     "IAPWS SR1-86(1992), Revised Supplementary Release on Saturation Properties of Ordinary Water Substance, Eq. 1 and Sec. 2; Wagner & Pruss, J. Phys. Chem. Ref. Data 31, 387 (2002), Eq. (2.5)";
+        validity     (273.16 647.096);
+        uncertainty  "reproduces the release's Table 1 to 1.5e-7 relative and agrees with the tree's IF97 region-4 equation to 1.8e-4 over 273.16-623.15 K";
+        replaces     "Antoine (5.40221 1838.675 -31.737), Trange (273 373): +2.47 % at 373.15 K, +6.4 % at 423 K against this equation";
+    }
     liquidThermalConductivity
     {
         origin        regressed;
@@ -348,6 +390,39 @@ provenance
             dropped     "none";
             aad_pct     0.542756;
             max_pct     2.710171;
+        }
+    }
+    cubicAlpha
+    {
+        SRK
+        {
+            origin        derived;
+            method        "least squares in ln Psat of the SRK cubic's pure-component saturation pressure against this record's own vapour-pressure law (Wagner (reducing 647.096 K, 22.064 MPa; the record's own equation), 273.16-647.096 K; the cubic's fit window is cut at 0.98 Tc = 634.20 K), 41 points over the law's window; Mathias-Copeman form as printed in Poling et al., 5th ed., Table 4-7; sqrt(alpha) kept positive to Tc";
+            methodVersion "bin/curate/fit_alpha_function.py";
+            fittedTo      "vaporPressure";
+            window        (273.16 634.1972);
+            maxDeviation_pct  0.6546;   // |Psat_cubic/Psat_law - 1| over the window, 201 points
+            defaultDeviation_pct  34.127;   // the same, with the default alpha function
+            valueSha256   "40631c76fdda650378ada6a60e8f7768ebde7fd76999a2d257396d265e555b8e";   // sha256 of "SRK MathiasCopeman 1.093148 -0.67094674 0.69182682 273.16 634.1972"
+            uncertainty   "in-sample: the constants reproduce THIS record's law over its window; outside it they extrapolate and above Tc only c1 acts";
+            reviewStatus  autoPromoted;
+            review        { by none; }
+            reviewReason  "computed by a machine from the record's own law; not yet read back by a human";
+        }
+        PengRobinson
+        {
+            origin        derived;
+            method        "least squares in ln Psat of the PengRobinson cubic's pure-component saturation pressure against this record's own vapour-pressure law (Wagner (reducing 647.096 K, 22.064 MPa; the record's own equation), 273.16-647.096 K; the cubic's fit window is cut at 0.98 Tc = 634.20 K), 41 points over the law's window; Mathias-Copeman form as printed in Poling et al., 5th ed., Table 4-7; sqrt(alpha) kept positive to Tc";
+            methodVersion "bin/curate/fit_alpha_function.py";
+            fittedTo      "vaporPressure";
+            window        (273.16 634.1972);
+            maxDeviation_pct  0.5064;   // |Psat_cubic/Psat_law - 1| over the window, 201 points
+            defaultDeviation_pct  21.296;   // the same, with the default alpha function
+            valueSha256   "a45fd4d84a293221a820b2a4d88b364069d4112a041505dfa5ef248aded59d47";   // sha256 of "PengRobinson MathiasCopeman 0.91825576 -0.32975741 0.31981107 273.16 634.1972"
+            uncertainty   "in-sample: the constants reproduce THIS record's law over its window; outside it they extrapolate and above Tc only c1 acts";
+            reviewStatus  autoPromoted;
+            review        { by none; }
+            reviewReason  "computed by a machine from the record's own law; not yet read back by a human";
         }
     }
 }

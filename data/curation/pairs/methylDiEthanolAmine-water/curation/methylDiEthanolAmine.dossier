@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylDiEthanolAmine-water.b_ij  338.247193844;
-        equilibrium.liquid.activityModel.binaryParameters.methylDiEthanolAmine-water.b_ji  -363.330422282;
+        equilibrium.liquid.activityModel.binaryParameters.methylDiEthanolAmine-water.b_ij  280.45062698;
+        equilibrium.liquid.activityModel.binaryParameters.methylDiEthanolAmine-water.b_ji  -313.470893057;
     }
 
     evidence
@@ -85,8 +85,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylDiEthanolAmine-water.b_ij  338.247194244;
-        equilibrium.liquid.activityModel.binaryParameters.methylDiEthanolAmine-water.b_ji  -363.330422469;
+        equilibrium.liquid.activityModel.binaryParameters.methylDiEthanolAmine-water.b_ij  280.450691826;
+        equilibrium.liquid.activityModel.binaryParameters.methylDiEthanolAmine-water.b_ji  -313.470934285;
     }
 
     evidence

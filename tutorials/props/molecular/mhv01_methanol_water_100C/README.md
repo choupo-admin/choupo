@@ -26,6 +26,7 @@ Table 8-46 "Experimental", p. 8.146; 760.0 to 2650.9 mmHg).  Each reports
 | `mhv1_*` | SRK, `mixingRule MHV1` (q1 = -0.593), fed the same pair |
 | `mhv2_*` | SRK, `mixingRule MHV2` (q1 = -0.478, q2 = -0.0047), fed the same pair |
 | `oneFluid_*` | SRK, `vanDerWaalsOneFluid`, kij = 0 (announced): no G^E reaches the cubic |
+| `mhv1Soave_*`, `mhv2Soave_*` | the same two rules on the PLAIN Soave alpha; the three rows above them carry `alphaFunction MathiasCopeman;` |
 
 and three `pin_*` operations (x1 = 0.522) that pin the engine's own value where
 the `anchor` rows replace it.
@@ -44,53 +45,55 @@ roots, both rules).
 
 ## The result (bubble pressure, kPa; deviation from the measurement)
 
-| x1 | y1 (meas.) | P meas. | gammaPhi | MHV1 | MHV2 | one-fluid kij = 0 |
-|---|---|---|---|---|---|---|
-| 0.000 | 0.000 | 101.3 | 103.9 (+2.6 %) | 92.5 (-8.8 %) | 92.5 (-8.8 %) | 92.5 (-8.8 %) |
-| 0.011 | 0.086 | 110.3 | 109.1 (-1.1 %) | 98.2 (-11.0 %) | 97.7 (-11.4 %) | 141.0 (+27.7 %) |
-| 0.035 | 0.191 | 124.1 | 120.1 (-3.2 %) | 110.3 (-11.2 %) | 109.0 (-12.2 %) | 212.0 (+70.8 %) |
-| 0.053 | 0.245 | 133.7 | 128.0 (-4.3 %) | 118.9 (-11.1 %) | 117.0 (-12.5 %) | 244.3 (+82.7 %) |
-| 0.121 | 0.434 | 164.8 | 155.4 (-5.7 %) | 148.5 (-9.9 %) | 145.4 (-11.8 %) | 291.3 (+76.8 %) |
-| 0.281 | 0.619 | 204.8 | 207.9 (+1.5 %) | 203.9 (-0.4 %) | 200.4 (-2.2 %) | 297.8 (+45.4 %) |
-| 0.352 | 0.662 | 216.5 | 227.1 (+4.9 %) | 223.8 (+3.4 %) | 220.6 (+1.9 %) | 299.5 (+38.3 %) |
-| 0.522 | 0.750 | 251.0 | 266.2 (+6.0 %) | 264.3 (+5.3 %) | 262.3 (+4.5 %) | 312.2 (+24.4 %) |
-| 0.667 | 0.824 | 282.0 | 294.5 (+4.4 %) | 294.2 (+4.3 %) | 292.9 (+3.9 %) | 327.8 (+16.3 %) |
-| 0.826 | 0.911 | 311.7 | 323.1 (+3.7 %) | 325.2 (+4.3 %) | 324.5 (+4.1 %) | 344.8 (+10.6 %) |
-| 0.932 | 0.969 | 334.4 | 341.6 (+2.2 %) | 345.7 (+3.4 %) | 345.4 (+3.3 %) | 354.2 (+5.9 %) |
-| 1.000 | 1.000 | 353.4 | 353.4 (-0.0 %) | 359.1 (+1.6 %) | 359.1 (+1.6 %) | 359.1 (+1.6 %) |
+| x1 | y1 (meas.) | P meas. | gammaPhi | MHV1 | MHV2 | one-fluid kij = 0 | MHV1 Soave | MHV2 Soave |
+|---|---|---|---|---|---|---|---|---|
+| 0.000 | 0.000 | 101.3 | 101.4 (+0.1 %) | 101.5 (+0.1 %) | 101.5 (+0.1 %) | 101.5 (+0.1 %) | 92.5 (-8.8 %) | 92.5 (-8.8 %) |
+| 0.011 | 0.086 | 110.3 | 106.7 (-3.3 %) | 107.1 (-3.0 %) | 106.7 (-3.3 %) | 144.4 (+30.9 %) | 98.3 (-10.9 %) | 97.8 (-11.3 %) |
+| 0.035 | 0.191 | 124.1 | 117.9 (-5.0 %) | 118.8 (-4.3 %) | 117.6 (-5.2 %) | 208.2 (+67.7 %) | 110.5 (-11.0 %) | 109.2 (-12.0 %) |
+| 0.053 | 0.245 | 133.7 | 125.9 (-5.8 %) | 127.1 (-5.0 %) | 125.5 (-6.2 %) | 237.9 (+77.8 %) | 119.2 (-10.8 %) | 117.4 (-12.2 %) |
+| 0.121 | 0.434 | 164.8 | 153.7 (-6.7 %) | 155.7 (-5.5 %) | 153.0 (-7.2 %) | 283.7 (+72.2 %) | 149.1 (-9.5 %) | 145.9 (-11.4 %) |
+| 0.281 | 0.619 | 204.8 | 206.6 (+0.9 %) | 208.5 (+1.8 %) | 205.5 (+0.4 %) | 295.5 (+44.3 %) | 204.4 (-0.2 %) | 200.9 (-1.9 %) |
+| 0.352 | 0.662 | 216.5 | 225.8 (+4.3 %) | 227.4 (+5.0 %) | 224.7 (+3.8 %) | 298.5 (+37.9 %) | 224.2 (+3.5 %) | 221.1 (+2.1 %) |
+| 0.522 | 0.750 | 251.0 | 264.9 (+5.5 %) | 265.6 (+5.8 %) | 263.8 (+5.1 %) | 312.1 (+24.4 %) | 264.4 (+5.4 %) | 262.4 (+4.5 %) |
+| 0.667 | 0.824 | 282.0 | 293.5 (+4.1 %) | 293.6 (+4.1 %) | 292.5 (+3.7 %) | 326.9 (+15.9 %) | 294.2 (+4.3 %) | 292.9 (+3.9 %) |
+| 0.826 | 0.911 | 311.7 | 322.5 (+3.5 %) | 322.2 (+3.4 %) | 321.6 (+3.2 %) | 341.7 (+9.6 %) | 325.1 (+4.3 %) | 324.4 (+4.1 %) |
+| 0.932 | 0.969 | 334.4 | 341.3 (+2.1 %) | 340.9 (+1.9 %) | 340.6 (+1.9 %) | 349.3 (+4.5 %) | 345.7 (+3.4 %) | 345.4 (+3.3 %) |
+| 1.000 | 1.000 | 353.4 | 353.4 (-0.0 %) | 352.8 (-0.2 %) | 352.8 (-0.2 %) | 352.8 (-0.2 %) | 359.1 (+1.6 %) | 359.1 (+1.6 %) |
 
 Over the ten interior points (mean / maximum |dP/P|, mean |dy|):
 
 | | mean | max | mean abs dy |
 |---|---|---|---|
-| gammaPhi | 3.7 % | 6.0 % | 0.020 |
-| mhv1 | 6.4 % | 11.2 % | 0.023 |
-| mhv2 | 6.8 % | 12.5 % | 0.022 |
-| oneFluid | 39.9 % | 82.7 % | 0.153 |
+| gammaPhi | 4.1 % | 6.7 % | 0.020 |
+| mhv1 | 4.0 % | 5.8 % | 0.016 |
+| mhv2 | 4.0 % | 7.2 % | 0.019 |
+| oneFluid | 38.5 % | 77.8 % | 0.134 |
+| mhv1Soave | 6.3 % | 11.0 % | 0.023 |
+| mhv2Soave | 6.7 % | 12.2 % | 0.022 |
 
 ## How to read it
 
-1. **The one-fluid rule with kij = 0 is not a model of this system**: 83 % wrong
+1. **The one-fluid rule with kij = 0 is not a model of this system**: 78 % wrong
    in the water-rich range.  The cubic alone has no way to know that methanol and
    water attract each other.
 2. **MHV1 and MHV2 recover a diagram from a G^E model**, with no new parameter.
    Fed the *same pair*, the activity coefficients recovered from the cubic
    (`gamma_i = phi_i^L(x)/phi_i^L(pure i)` at the same T and P) differ from the NRTL fed in by
-   at most 0.009 (MHV2) and 0.029 (MHV1) in ln gamma at 373.15 K and 2.5 bar (the gate
+   at most 0.009 (MHV2) and 0.029 (MHV1) (plain Soave alpha) in ln gamma at 373.15 K and 2.5 bar (the gate
    `check_cubic_mixing_rule`, arm f); the one-fluid rule is 0.42 away.
-3. **The 4-12 % that remains is not the rule's.**  (a) The catalogue pair was
-   fitted to isobaric bubble temperatures at 297-361 K and 15-95 kPa; this diagram
-   is at 373 K and reaches 3.5 bar -- the rule *returns the pair, including where
-   the pair is wrong*.  (b) The cubic's own **pure-component vapour pressure** is
-   the first error an equation of state brings: with the plain Soave alpha function
-   the engine carries, SRK puts water at 100 C at 92.5 kPa against 101.3 kPa (-8.8 %) --
-   read the first row.  A pair fitted in the frame of the records' own vapour-pressure
-   laws inherits that error at the water end whatever the rule.  Dahl & Michelsen fit a
-   Mathias-Copeman alpha to each pure vapour pressure (their Eq. 5 and Table 1, p. 1830);
-   the engine's fitted alpha is a separate object (DEV.md 4c C408, slice 0) and **joins this
-   case when it lands** -- the MHV rows are then expected to fall toward the gamma-phi
-   column.  (c) The y bands are loose in the dilute range because y itself is small
-   (0.086 at x1 = 0.011).
+3. **The alpha function matters as much as the rule.**  The cubic's own
+   **pure-component vapour pressure** is the first error an equation of state brings:
+   with the plain Soave alpha SRK puts water at 100 C at 92.5 kPa against 101.3 kPa
+   (-8.8 %) -- read the first row of the Soave columns -- and the MHV rows carry that error
+   (6.3 % and 6.7 % mean, 11.0 % and 12.2 % max).  With the per-component Mathias-Copeman
+   alpha fitted by curation to each record's own vapour-pressure law (DEV.md 4c C408
+   slice 0; `alphaFunction MathiasCopeman;`, and its a_i feeds the mixing rule) the pure ends are
+   within 0.2 % and the MHV rows fall to 4.0 % mean (5.8 % and 7.2 % max), level with the
+   gamma-phi column.  What remains is the PAIR's: it was fitted to isobaric bubble
+   temperatures at 297-361 K and 15-95 kPa and this diagram is at 373 K up to 3.5 bar --
+   the rule *returns the pair, including where the pair is wrong*.  Dahl & Michelsen fit a
+   Mathias-Copeman alpha too (their Eq. 5 and Table 1, p. 1830).  The y bands are loose in
+   the dilute range because y itself is small (0.086 at x1 = 0.011).
 4. **gammaPhi is the better answer at 1-3.5 bar, and MHV is the only answer where
    it does not exist.**  The point of the rule is the supercritical and the
    high-pressure region the gamma-phi frame cannot enter; this diagram is the

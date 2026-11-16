@@ -1735,6 +1735,40 @@ vaporPressure
 the bug-watch.  But the data are there and the reader of a
 \file{.dat} is expected to honour them.
 
+\subsection{Water: the IAPWS saturation equation}\label{sec:water-iapws-psat}
+
+Water is the one component whose vapour pressure the catalogue takes from a
+reference formulation rather than from a regression: the IAPWS saturation
+equation (SR1-86(1992), Eq.~1; the same six coefficients are printed as
+Eq.~(2.5) of Wagner and Pruss, \emph{J.\ Phys.\ Chem.\ Ref.\ Data} \textbf{31}
+(2002) 387, p.~399).  It is a Wagner equation, the \code{Wagner} model of
+the engine (\file{src/thermo/vaporPressure/Wagner.cpp}):
+\begin{equation}
+   \ln\frac{P^{\mathrm{sat}}}{P_r}
+   = \frac{T_r}{T}\sum_{i=1}^{6} a_i\,\tau^{e_i},
+   \qquad \tau = 1 - \frac{T}{T_r},
+   \label{eq:water-iapws-psat}
+\end{equation}
+with $T_r = 647.096$~K, $P_r = 22.064$~MPa, exponents
+$e = (1,\,1.5,\,3,\,3.5,\,4,\,7.5)$ and
+$a = (-7.85951783,\ 1.84408259,\ -11.7866497,\ 22.6807411,\ -15.9618719,\
+1.80122502)$.  The reducing constants belong to the equation: the
+$T_c$ stored in water's record differs from it by 0.044~K (an older value) and must
+not be substituted --- the engine refuses a \code{Wagner} block without its own
+\code{reducing \{ T; P; \}}.  Valid 273.16--647.096~K.  The equation reproduces
+the release's Table~1 (611.657~Pa at 273.16~K, 101\,325~Pa at 373.1243~K,
+22.064~MPa at 647.096~K) to $1.5\times10^{-7}$ and the IF97 region-4
+equation to $1.8\times10^{-4}$.  The Antoine fit it replaced was $+2.5\,\%$
+high at 373~K, $+6.4\,\%$ at 423~K and $+18\,\%$ at 573~K.
+
+\paragraph{One home.}  The saturation curve of water lives in this block
+only.  The PHREEQC-convention record of \texttt{H2O(g) = H2O}, which states
+the same curve as a dissolution constant, is derived from it:
+$\log K = -\log_{10}(P^{\mathrm{sat}}/101\,325\,\mathrm{Pa})$ fitted with the
+six-term analytic form over 273.16--473.15~K (maximum $5\times10^{-6}$ in
+$\log K$; \file{bin/curate/fit\_water\_vapour\_equilibrium.py}), and the gate
+\code{check\_water\_one\_home} recomputes both from the printed coefficients.
+
 \subsection{Watson for $\Hvap(T)$}
 
 The latent heat is already derived in
@@ -1753,9 +1787,11 @@ The simulator computes it in \code{Component::Hvap\_latent}.
 \subsection{Worked example: water from $\ln P$ vs $1/T$ to Antoine}
 
 \begin{example}[Two ways to compute $\Psat$ of water at 320~K]
-Data from
-\file{data/standards/components/water.dat} (DIPPR-style, valid
-273--373~K): $A = 5.40221$, $B = 1838.675$, $C = -31.737$, $T_b =
+Data: the Antoine fit that
+\file{data/standards/components/water.dat} carried until 2026-11-16
+(DIPPR-style, valid 273--373~K; the record now uses the IAPWS equation of
+Section~\ref{sec:water-iapws-psat}, which is 2.5\,\% lower at 373~K):
+$A = 5.40221$, $B = 1838.675$, $C = -31.737$, $T_b =
 373.15$~K, $T_c = 647.10$~K, $\Hvap(T_b) = 40\,650$~J/mol.
 
 \textbf{Antoine, direct.}
@@ -10238,6 +10274,111 @@ Eq.~\eqref{eq:srk-alpha}:
    \label{eq:srk-dadT}
 \end{equation}
 
+\subsection{A per-component alpha function: Mathias--Copeman}\label{sec:cubic-alpha-mc}
+
+\paragraph{Why.}  The generalised Soave slope of Eq.~\eqref{eq:srk-m}
+is one curve in $\omega$ for every fluid.  With the records' own
+$T_c,P_c,\omega$ it puts the SRK saturation pressure at the normal
+boiling point $-8.8\,\%$ low for water and $-2.7\,\%$ for methanol
+(acetone $-1.6\,\%$, ethanol $-1.1\,\%$; the design record
+\file{docs/design/c408-eos-ge-mixing-rules.md}, finding F2).  Any mixing
+rule built on that cubic inherits the error at both ends of the
+diagram.  The remedy is \emph{opt-in}: a case writes
+\code{alphaFunction MathiasCopeman;} in its \code{equationOfState}
+block, and the default (Soave for \code{SRK}, the 1978 PR slope for
+\code{PengRobinson}) is unchanged.
+
+\paragraph{Equations as implemented.}  With
+$x_i = 1-\sqrt{T/T_{c,i}}$ the attraction parameter keeps its form
+$a_i(T) = a_{c,i}\,\alpha_i(T)$, Eq.~\eqref{eq:srk-alpha}, and only
+$\alpha_i$ changes (Poling, Prausnitz \& O'Connell, \emph{The Properties of
+Gases and Liquids}, 5th ed., Table~4-7, pp.~4.19--4.20, the Mathias--Copeman
+row \cite{RPP}):
+\begin{equation}
+   \alpha_i(T) = \bigl[\,1 + c_{1,i}\,x_i + c_{2,i}\,x_i^{2}
+                   + c_{3,i}\,x_i^{3}\,\bigr]^{2},
+   \qquad T \le T_{c,i}.
+   \label{eq:mc-alpha}
+\end{equation}
+Above $T_c$ the engine uses the Soave branch with $c_1$ alone,
+$\alpha_i = [1 + c_{1,i}x_i]^2$.  Poling prints Eq.~\eqref{eq:mc-alpha}
+only; the supercritical branch is the engine's own continuous extension
+(the original paper, Mathias \& Copeman, \emph{Fluid Phase Equilib.}
+\textbf{13} (1983) 91, is not held), chosen because $\alpha$ and
+$\mathrm{d}\alpha/\mathrm{d}T$ are then continuous at $T_c$ ($x=0$);
+only $\mathrm{d}^2\alpha/\mathrm{d}T^2$ jumps there.  With
+$c_2=c_3=0$ Eq.~\eqref{eq:mc-alpha} \emph{is} Eq.~\eqref{eq:srk-alpha}
+with $m=c_1$, so a record without constants means today's behaviour.
+Writing $g_i=\sqrt{\alpha_i}$, $\mathrm{d}x_i/\mathrm{d}T=-1/(2\sqrt{T\,T_{c,i}})$:
+\begin{equation}
+   \frac{\mathrm{d}a_i}{\mathrm{d}T} = 2\,a_{c,i}\,g_i\,g_i',
+   \qquad
+   g_i' = \bigl(c_{1,i} + 2c_{2,i}x_i + 3c_{3,i}x_i^{2}\bigr)\,
+          \frac{\mathrm{d}x_i}{\mathrm{d}T}\quad(T\le T_{c,i}),
+   \label{eq:mc-dadT}
+\end{equation}
+and $g_i'=c_{1,i}\,\mathrm{d}x_i/\mathrm{d}T$ above $T_c$.  The code keeps
+the signed root $s_i=\sqrt{a_{c,i}}\,g_i$ of the mixing rule
+(Eq.~\eqref{eq:srk-damixdT}) so the derivative stays finite where
+$g_i=0$.  The second derivative is also closed-form in
+\code{CubicEoS::mathiasCopemanG}, for the heat-capacity departure of a
+later slice; no departure function reads it today.
+
+\paragraph{Symbols.}  $c_{1,i},c_{2,i},c_{3,i}$ are dimensionless and
+\emph{per component and per cubic}: constants fitted for \code{SRK} are
+wrong for \code{PengRobinson}, whose $a_c$ and $b$ differ.  The record
+holds them as \code{cubicAlpha \{ SRK \{ form MathiasCopeman; c1; c2; c3;
+Trange (lo hi); \} \}}.
+
+\paragraph{Where the constants come from.}  Never from a table.  The
+curation tool \file{bin/curate/fit\_alpha\_function.py} fits
+$c_1,c_2,c_3$ by least squares in $\ln P^{\mathrm{sat}}$ of the pure
+cubic's saturation pressure (forty-one points) against the component
+record's \emph{own} vapour-pressure law over the window that law declares,
+keeps $\sqrt{\alpha}$ positive up to $T_c$, writes the block and a
+provenance entry (\code{origin derived}, the law, the window, the
+largest deviation, \code{valueSha256}) into the record.  Nothing
+estimates during a run.  A component without the block, under
+\code{alphaFunction MathiasCopeman;}, is refused by name and the message
+names the tool.  The choice is printed in the run and in the resolved
+view.
+
+\paragraph{Validity window and an honest in-sample statement.}  The
+constants reproduce \emph{the record's law over its window}, in-sample
+(Table~\ref{tab:mc-fits}); outside it they extrapolate, and above $T_c$
+only $c_1$ acts.  A cubic can follow a vapour-pressure law only where
+that law is the liquid--vapour curve: CO$_2$'s Antoine record is the
+sublimation line (its window ends below the triple point) and the tool
+refuses it by name, so CO$_2$ has no Mathias--Copeman constants until a
+saturated-liquid law is curated.  Water's law is the IAPWS equation
+(Section~\ref{sec:water-iapws-psat}), fitted over 273--634\,K (the fit
+stops at $0.98\,T_c$, where a cubic's saturation line has no liquid--vapour
+pair left to follow), so the constants hold the cubic within
+$0.65\,\%$ (SRK) and $0.51\,\%$ (PR) of the primary over the whole span and
+within $0.15\,\%$ of $101325$~Pa at the normal boiling point.  (Until
+2026-11-16 the record's law was an Antoine fit $2.5\,\%$ high there, and
+the constants followed it, not the primary.)
+\begin{table}[ht]
+\centering
+\caption{Fitted constants and the saturation-pressure deviation from the
+record's own law over its window (201 points), default alpha function
+against Mathias--Copeman.  Produced by \code{fit\_alpha\_function.py};
+held by the gate \code{check\_alpha\_function}.}
+\label{tab:mc-fits}
+\small
+\begin{tabular}{llrrrrr}
+\toprule
+component & cubic & $c_1$ & $c_2$ & $c_3$ & default & fitted\\
+\midrule
+water    & SRK & 1.09315 & $-0.67095$ &  0.69183 & 34.1\,\% & 0.65\,\%\\
+water    & PR  & 0.91826 & $-0.32976$ &  0.31981 & 21.3\,\% & 0.51\,\%\\
+methanol & SRK & 1.41822 & $-0.60449$ & $-0.23147$ & 19.3\,\% & 0.05\,\%\\
+methanol & PR  & 1.22117 & $-0.20453$ & $-0.68580$ & 14.7\,\% & 0.06\,\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+Witness: \code{tutorials/props/molecular/alpha01\_water\_methanol\_psat}.
+
 \subsection{Mixing rules}
 
 A mixture needs single effective $a_{\mathrm{mix}}, b_{\mathrm{mix}}$.
@@ -10926,6 +11067,7 @@ equilibrium
     {
         model      SRK;
         mixingRule MHV2;            // vanDerWaalsOneFluid | MHV1 | MHV2
+        alphaFunction MathiasCopeman;   // optional: the fitted alpha feeds the rule
         activityModel               // the block a gammaPhi liquid takes
         {
             model NRTL;
@@ -10942,20 +11084,21 @@ equilibrium
 \emph{Tutorial:} \file{tutorials/props/molecular/mhv01\_methanol\_water\_100C}
 asks twelve \emph{measured} bubble points of methanol + water at $100\,^\circ$C
 (Griswold and Wong 1952, as printed in Poling et al.\ Table~8-46, p.~8.146)
-four ways.  The catalogue's pair was fitted at $297$--$361$~K and $15$--$95$~kPa
+six ways.  The catalogue's pair was fitted at $297$--$361$~K and $15$--$95$~kPa
 and this diagram reaches $3.5$~bar, so the numbers measure the rule's use of the pair
 \emph{and} the pair's own error.  Over the ten interior points the
-gamma--phi package the pair was fitted in misses the bubble pressure by $3.7\,\%$
-on average ($6.0\,\%$ at most); SRK with \code{MHV1} by $6.4\,\%$ ($11.2\,\%$) and
-with \code{MHV2} by $6.8\,\%$ ($12.5\,\%$); SRK with the one-fluid rule and
-$k_{ij}=0$ by $40\,\%$ ($83\,\%$).  The difference between the first two is
-largely the cubic's own pure-component vapour pressure: with the plain Soave
-$\alpha$ the engine carries, SRK puts water's vapour pressure at $100\,^\circ$C
-$8.8\,\%$ low ($92.5$ against $101.3$~kPa), and a pair fitted in the frame of
-the records' own vapour-pressure laws inherits that error at the water end whatever the
-rule.  (Dahl and Michelsen fit a Mathias--Copeman $\alpha$ to each pure vapour
-pressure, their Eq.~5 and Table~1, p.~1830; the engine's fitted $\alpha$ is a separate,
-opt-in object and joins this case when it lands.)
+gamma--phi package the pair was fitted in misses the bubble pressure by $4.1\,\%$
+on average ($6.7\,\%$ at most); SRK with \code{MHV1} on the fitted
+Mathias--Copeman $\alpha$ (Section~\ref{sec:cubic-alpha-mc}) by $4.0\,\%$ ($5.8\,\%$) and
+with \code{MHV2} by $4.0\,\%$ ($7.2\,\%$); SRK with the one-fluid rule and
+$k_{ij}=0$ by $39\,\%$ ($78\,\%$).  The same two rules on the plain Soave $\alpha$
+are worse, $6.3\,\%$ ($11.0\,\%$) and $6.7\,\%$ ($12.2\,\%$), and the reason
+is the cubic's own pure-component vapour pressure: plain-Soave SRK puts water's
+vapour pressure at $100\,^\circ$C $8.8\,\%$ low ($92.5$ against $101.3$~kPa), the
+fitted $\alpha$ puts it within $0.1\,\%$, and a pair fitted in the frame of the records'
+own vapour-pressure laws inherits the cubic's pure-component error at the water end
+whatever the rule.  Dahl and Michelsen likewise fit a Mathias--Copeman $\alpha$ to each
+pure vapour pressure (their Eq.~5 and Table~1, p.~1830).
 \end{tutoriallink}
 
 \paragraph{Validity.}  SRK only; pure $\beta_i$ inside $10 < \beta < 13$ for

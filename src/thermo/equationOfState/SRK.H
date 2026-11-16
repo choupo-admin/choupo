@@ -115,7 +115,8 @@ class SRK : public CubicEoS
 public:
     SRK(const std::vector<Component>& comps,
         std::unique_ptr<CubicMixingRule> rule,
-        const std::vector<scalar>& volumeShift = {});
+        const std::vector<scalar>& volumeShift = {},
+        const AlphaChoice& alpha = AlphaChoice());
 
     // Convenience: factory from a dict block.  Reads the optional
     // `mixingRule <word>;` (default vanDerWaalsOneFluid) and, for the

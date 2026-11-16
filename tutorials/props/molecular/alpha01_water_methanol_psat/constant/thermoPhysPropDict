@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+/*  The BASE package is the one the records' own vapour-pressure laws live
+    in (gamma-phi, ideal liquid, ideal vapour): `Psat_<component>` read from
+    it is the record's Antoine law.  Each operation of system/propsDict
+    overrides the equilibrium block with the SRK phi-phi world, with and
+    without `alphaFunction MathiasCopeman;`, so that `P_bubble` of the pure
+    liquid is the CUBIC's own saturation pressure.  Nothing else differs.   */
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( water methanol );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

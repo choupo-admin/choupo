@@ -278,6 +278,30 @@ never fake a liquid root), so it is never a legal liquid slot.  No
 near-critical splits will be off).  SRK/PR read each component's `Tc`, `Pc`,
 `omega` — no model-specific data files.
 
+**The cubic's alpha function (C408 slice 0, opt-in).**  The default is Soave
+for `SRK` and the PR78 slope for `PengRobinson`, one curve in omega for every
+fluid; with the records' own Tc, Pc, omega it misses the normal-boiling
+vapour pressure by -8.8 % for water and -2.7 % for methanol.  Writing
+`alphaFunction MathiasCopeman;` beside `model` (phiPhi cubics only; PCSAFT
+refuses it) switches to the per-component three-constant form of Poling et
+al. 5th ed. Table 4-7 (Theory Guide section `sec:cubic-alpha-mc`):
+
+```
+equationOfState { model SRK; alphaFunction MathiasCopeman; }
+```
+
+The constants `c1..c3` live in each component record's
+`cubicAlpha { SRK { form MathiasCopeman; c1; c2; c3; Trange (lo hi); } PengRobinson { ... } }`
+block, FITTED BY CURATION to that record's own vapour-pressure law over the
+law's declared window (`bin/curate/fit_alpha_function.py <component> --cubic
+SRK|PengRobinson --write`; provenance `origin derived`, with the law, the
+window, the largest deviation and a value sha).  Never type them from a table.
+A component whose record lacks the block is REFUSED by name, the message names
+the tool.  `water` and `methanol` carry both cubics; CO2 does not (its
+Antoine law is the sublimation line and the tool refuses it).  Above Tc the
+Soave branch with `c1` only.  The run prints the choice and the resolved view
+names it.  Witness case: `props/molecular/alpha01_water_methanol_psat`.
+
 #### Volume translation (Péneloux 1982) — a corrected liquid VOLUME, same equilibrium
 
 A cubic's liquid volume is several per cent too large (SRK n-hexane +11.8 %,
@@ -369,10 +393,12 @@ Huron–Vidal, Wong–Sandler and PSRK (later slices); a fitted alpha for water
 refuses a G^E rule by name.  Witness:
 `tutorials/props/molecular/mhv01_methanol_water_100C` (12 measured bubble points
 of methanol + water at 100 °C, Griswold & Wong 1952 via Poling Table 8-46: the
-gamma-phi package of the pair misses P by 3.7 % mean / 6.0 % max, SRK + `MHV1`
-6.4 / 11.2 %, `MHV2` 6.8 / 12.5 %, the one-fluid rule with kij = 0 40 / 83 %; the
-pair was fitted at 297–361 K and the diagram is at 373 K, and SRK's water vapour
-pressure at 100 °C is 8.8 % low).  Gate `check_cubic_mixing_rule`.
+gamma-phi package of the pair misses P by 4.1 % mean / 6.7 % max, SRK + `MHV1` on the
+fitted Mathias-Copeman alpha (`alphaFunction MathiasCopeman;` composes: its a_i feeds
+the rule) 4.0 / 5.8 %, `MHV2` 4.0 / 7.2 %, the one-fluid rule with kij = 0 39 / 78 %;
+on the plain Soave alpha MHV1 6.3 / 11.0 % and MHV2 6.7 / 12.2 %, because SRK's water
+vapour pressure at 100 °C is 8.8 % low; the pair was fitted at 297–361 K and the
+diagram is at 373 K).  Gate `check_cubic_mixing_rule`.
 
 In a `gammaPhi` system a cubic may still serve the VAPOUR slot alone
 (`vapour { fugacityModel SRK; }`) — that is a γ-φ world with a real-gas φ,

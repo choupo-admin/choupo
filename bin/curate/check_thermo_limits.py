@@ -240,7 +240,9 @@ for f in (satProbe("bubbleT", ("0.149515816249", "0.850484183751"),
 #  root".  The probe first proves it sits AT the azeotrope (both |K - 1| <=
 #  1e-9 read back from the run), so it cannot pass vacuously if the engine's
 #  numbers drift: then it fails asking to be re-bisected.
-X_AZ = 0.8310270237177609
+#  re-bisected 2026-11-16 (water's Psat is the IAPWS equation: the azeotrope sits at
+#  0.8402 instead of 0.8310); K = 1 to 5e-10 on the 12 digits the run publishes.
+X_AZ = 0.84022650349168
 with tempfile.TemporaryDirectory() as td:
     case = Path(td) / "az"
     shutil.copytree(uniquacBase, case)

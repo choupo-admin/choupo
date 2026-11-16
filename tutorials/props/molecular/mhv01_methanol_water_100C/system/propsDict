@@ -13,7 +13,8 @@
   Twelve bubble points of methanol (1) + water (2) at 100 C, the MEASURED
   vapour-liquid equilibrium of Griswold & Wong (1952) as printed in Poling,
   Prausnitz & O'Connell, 5th ed., Table 8-46 ("Experimental"), p. 8.146:
-  760.0 to 2650.9 mmHg, x1 = 0 to 1.  Each state is asked four ways, by name:
+  760.0 to 2650.9 mmHg, x1 = 0 to 1.  Each state is asked six ways, by name (mhv1, mhv2 and oneFluid on the fitted
+  Mathias-Copeman alpha, mhv1Soave and mhv2Soave on the plain Soave alpha):
 
     gammaPhi   (the system)  the catalogue's NRTL pair, ideal-gas vapour, the
                              records' own vapour pressures: the frame the pair
@@ -355,6 +356,174 @@ operations
         name   oneFluid_x1p000;
         type   propertyPoint;
         thermo oneFluid;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 1.000;  water 0.000; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv1Soave_x0p000;
+        type   propertyPoint;
+        thermo mhv1Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.000;  water 1.000; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv1Soave_x0p011;
+        type   propertyPoint;
+        thermo mhv1Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.011;  water 0.989; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv1Soave_x0p035;
+        type   propertyPoint;
+        thermo mhv1Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.035;  water 0.965; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv1Soave_x0p053;
+        type   propertyPoint;
+        thermo mhv1Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.053;  water 0.947; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv1Soave_x0p121;
+        type   propertyPoint;
+        thermo mhv1Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.121;  water 0.879; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv1Soave_x0p281;
+        type   propertyPoint;
+        thermo mhv1Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.281;  water 0.719; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv1Soave_x0p352;
+        type   propertyPoint;
+        thermo mhv1Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.352;  water 0.648; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv1Soave_x0p522;
+        type   propertyPoint;
+        thermo mhv1Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.522;  water 0.478; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv1Soave_x0p667;
+        type   propertyPoint;
+        thermo mhv1Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.667;  water 0.333; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv1Soave_x0p826;
+        type   propertyPoint;
+        thermo mhv1Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.826;  water 0.174; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv1Soave_x0p932;
+        type   propertyPoint;
+        thermo mhv1Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.932;  water 0.068; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv1Soave_x1p000;
+        type   propertyPoint;
+        thermo mhv1Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 1.000;  water 0.000; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv2Soave_x0p000;
+        type   propertyPoint;
+        thermo mhv2Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.000;  water 1.000; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv2Soave_x0p011;
+        type   propertyPoint;
+        thermo mhv2Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.011;  water 0.989; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv2Soave_x0p035;
+        type   propertyPoint;
+        thermo mhv2Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.035;  water 0.965; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv2Soave_x0p053;
+        type   propertyPoint;
+        thermo mhv2Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.053;  water 0.947; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv2Soave_x0p121;
+        type   propertyPoint;
+        thermo mhv2Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.121;  water 0.879; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv2Soave_x0p281;
+        type   propertyPoint;
+        thermo mhv2Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.281;  water 0.719; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv2Soave_x0p352;
+        type   propertyPoint;
+        thermo mhv2Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.352;  water 0.648; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv2Soave_x0p522;
+        type   propertyPoint;
+        thermo mhv2Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.522;  water 0.478; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv2Soave_x0p667;
+        type   propertyPoint;
+        thermo mhv2Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.667;  water 0.333; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv2Soave_x0p826;
+        type   propertyPoint;
+        thermo mhv2Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.826;  water 0.174; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv2Soave_x0p932;
+        type   propertyPoint;
+        thermo mhv2Soave;
+        state  { T 373.15 K;  P 1 atm;  composition { methanol 0.932;  water 0.068; } }
+        properties ( P_bubble  y_eqT_methanol );
+    }
+    {
+        name   mhv2Soave_x1p000;
+        type   propertyPoint;
+        thermo mhv2Soave;
         state  { T 373.15 K;  P 1 atm;  composition { methanol 1.000;  water 0.000; } }
         properties ( P_bubble  y_eqT_methanol );
     }

@@ -24,11 +24,12 @@
     oneFluid   SRK, vanDerWaalsOneFluid, kij = 0 (announced): no G^E reaches the
                cubic.  The rule is the one every phiPhi case ran until C408 (b).
 
-  The SRK alpha function is the plain Soave one the engine carries for every
-  component (Graboski-Daubert slope).  A fitted alpha for water and methanol is a
-  separate, opt-in object (DEV.md 4c C408, slice 0); it joins this case when it
-  lands, and the pure vapour pressures of the cubic then stop being the largest
-  error of the diagram (design record section 2, F2).
+  THE ALPHA FUNCTION.  mhv1, mhv2 and oneFluid declare `alphaFunction MathiasCopeman;`:
+  the per-component three-constant form of Poling et al. Table 4-7, fitted BY CURATION
+  to each record's own vapour-pressure law (C408 slice 0), so the cubic's pure
+  vapour pressures are the records' own.  mhv1Soave and mhv2Soave are the same
+  rules on the plain Soave alpha (water's SRK vapour pressure at 100 C is 8.8 % low)
+  and show what the alpha function is worth.
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;
@@ -67,6 +68,7 @@ variants
             {
                 model      SRK;
                 mixingRule MHV1;
+                alphaFunction MathiasCopeman;
                 activityModel
                 {
                     model NRTL;
@@ -90,6 +92,7 @@ variants
             {
                 model      SRK;
                 mixingRule MHV2;
+                alphaFunction MathiasCopeman;
                 activityModel
                 {
                     model NRTL;
@@ -113,6 +116,53 @@ variants
             {
                 model      SRK;
                 mixingRule vanDerWaalsOneFluid;
+                alphaFunction MathiasCopeman;
+            }
+            liquid { fugacityRoute equationOfState; root liquid; }
+            vapour { fugacityRoute equationOfState; root vapour; }
+        }
+    }
+
+    mhv1Soave
+    {
+        equilibrium
+        {
+            formulation phiPhi;
+            equationOfState
+            {
+                model      SRK;
+                mixingRule MHV1;
+                activityModel
+                {
+                    model NRTL;
+                    binaryParameters
+                    {
+                        methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+                    }
+                }
+            }
+            liquid { fugacityRoute equationOfState; root liquid; }
+            vapour { fugacityRoute equationOfState; root vapour; }
+        }
+    }
+
+    mhv2Soave
+    {
+        equilibrium
+        {
+            formulation phiPhi;
+            equationOfState
+            {
+                model      SRK;
+                mixingRule MHV2;
+                activityModel
+                {
+                    model NRTL;
+                    binaryParameters
+                    {
+                        methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+                    }
+                }
             }
             liquid { fugacityRoute equationOfState; root liquid; }
             vapour { fugacityRoute equationOfState; root vapour; }

@@ -37,10 +37,10 @@ propertyManifest
         "components/water.dat"
         {
             type          imported;
-            sha256        "cd1a2cceda1fa948b2d99d6c5a02e16e8f9b166f8a134dbfd6ebf48aef971631";
-            computationalSha256 "1ae02f590e8dc0288f0565b02cca96c154fcda126587a64d850e4d6f9e5cada3";
+            sha256        "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
+            computationalSha256 "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
             origin        "data/standards/components/water.dat";
-            originSha256  "c3fd14fe63c4f78da937a8fad7b29d6feabc65848dcd32d8d1766289fbd3f10a";
+            originSha256  "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
             release       Choupo-2607;
         }
         "parameters/NRTL/ethanol-water.dat"

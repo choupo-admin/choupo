@@ -9,31 +9,31 @@
 #   Hchart_w20_T060 / Hchart_w50_T090 -- Geankoplis 5th ed., Example 32.4-3,
 #     p. 1504: h_F = 214 and h_L = 505 kJ/kg, read by the book off Fig. 32.4-3
 #     (McCabe 1935); 2 % = a chart reading.
-diag    olsson_table           BPE_exact_w10_T025 1.80251536263      1e-4
-diag    olsson_table           BPE_exact_w10_T060 2.31236655437      1e-4
-diag    olsson_table           BPE_exact_w10_T100 2.95757816867      1e-4
-diag    olsson_table           BPE_exact_w10_T150 3.83884180122      1e-4
-diag    olsson_table           BPE_exact_w10_T200 4.76628928396      1e-4
-diag    olsson_table           BPE_exact_w20_T025 5.47798679216      1e-4
-diag    olsson_table           BPE_exact_w20_T060 6.55134596354      1e-4
-diag    olsson_table           BPE_exact_w20_T100 7.62135422178      1e-4
-diag    olsson_table           BPE_exact_w20_T150 8.73317537575      1e-4
-diag    olsson_table           BPE_exact_w20_T200 9.6003506946       1e-4
+diag    olsson_table           BPE_exact_w10_T025 1.80328427316      1e-4
+diag    olsson_table           BPE_exact_w10_T060 2.32765250363      1e-4
+diag    olsson_table           BPE_exact_w10_T100 3.00848834389      1e-4
+diag    olsson_table           BPE_exact_w10_T150 3.95460087892      1e-4
+diag    olsson_table           BPE_exact_w10_T200 4.94829026885      1e-4
+diag    olsson_table           BPE_exact_w20_T025 5.47936033439      1e-4
+diag    olsson_table           BPE_exact_w20_T060 6.59080452994      1e-4
+diag    olsson_table           BPE_exact_w20_T100 7.74563628303      1e-4
+diag    olsson_table           BPE_exact_w20_T150 8.98805178435      1e-4
+diag    olsson_table           BPE_exact_w20_T200 9.96035298372       1e-4
 diag    olsson_table           BPE_exact_w30_T025 12.8329697955      1e-4
-diag    olsson_table           BPE_exact_w30_T060 14.5490653749      1e-4
-diag    olsson_table           BPE_exact_w30_T100 16.1413199627      1e-4
-diag    olsson_table           BPE_exact_w30_T150 17.5851083915      1e-4
-diag    olsson_table           BPE_exact_w30_T200 18.4224764065      1e-4
-diag    olsson_table           BPE_exact_w40_T025 24.2500408758      1e-4
-diag    olsson_table           BPE_exact_w40_T060 26.1712934159      1e-4
-diag    olsson_table           BPE_exact_w40_T100 28.1664169639      1e-4
-diag    olsson_table           BPE_exact_w40_T150 30.3514164723      1e-4
-diag    olsson_table           BPE_exact_w40_T200 32.1857648338      1e-4
-diag    olsson_table           BPE_exact_w50_T025 37.3357639969      1e-4
-diag    olsson_table           BPE_exact_w50_T060 39.5174604383      1e-4
-diag    olsson_table           BPE_exact_w50_T100 42.182045604       1e-4
-diag    olsson_table           BPE_exact_w50_T150 45.6178439707      1e-4
-diag    olsson_table           BPE_exact_w50_T200 49.148298756       1e-4
+diag    olsson_table           BPE_exact_w30_T060 14.6216332356      1e-4
+diag    olsson_table           BPE_exact_w30_T100 16.3784696947      1e-4
+diag    olsson_table           BPE_exact_w30_T150 18.0673102339      1e-4
+diag    olsson_table           BPE_exact_w30_T200 19.0892078453      1e-4
+diag    olsson_table           BPE_exact_w40_T025 24.2458974063      1e-4
+diag    olsson_table           BPE_exact_w40_T060 26.2672930404      1e-4
+diag    olsson_table           BPE_exact_w40_T100 28.5189894199      1e-4
+diag    olsson_table           BPE_exact_w40_T150 31.106284719      1e-4
+diag    olsson_table           BPE_exact_w40_T200 33.2808718961      1e-4
+diag    olsson_table           BPE_exact_w50_T025 37.3317806375      1e-4
+diag    olsson_table           BPE_exact_w50_T060 39.6142918452      1e-4
+diag    olsson_table           BPE_exact_w50_T100 42.6109664193       1e-4
+diag    olsson_table           BPE_exact_w50_T150 46.6144323751      1e-4
+diag    olsson_table           BPE_exact_w50_T200 50.6808430267       1e-4
 diag    olsson_table           BPE_linear_w10_T025 1.79491492491      1e-4
 diag    olsson_table           BPE_linear_w10_T060 2.34021442989      1e-4
 diag    olsson_table           BPE_linear_w10_T100 3.08538287696      1e-4
@@ -164,9 +164,9 @@ diag    olsson_table           gamma_pm_1m      0.667882588628     1e-4
 diag    olsson_table           gamma_pm_3m      0.783816277339     1e-4
 diag    olsson_table           phi_1m           0.947085281204     1e-4
 diag    olsson_vs_parker       BPE_exact_m10_T025 11.5325378955      1e-4
-diag    olsson_vs_parker       BPE_exact_m15_T025 21.0504423554      1e-4
-diag    olsson_vs_parker       BPE_exact_m20_T025 30.2098151432      1e-4
-diag    olsson_vs_parker       BPE_exact_m6_T025 5.13555231144      1e-4
+diag    olsson_vs_parker       BPE_exact_m15_T025 21.04711861      1e-4
+diag    olsson_vs_parker       BPE_exact_m20_T025 30.205668968      1e-4
+diag    olsson_vs_parker       BPE_exact_m6_T025 5.13691779292      1e-4
 diag    olsson_vs_parker       BPE_linear_m10_T025 11.9223066131      1e-4
 diag    olsson_vs_parker       BPE_linear_m15_T025 22.6060601399      1e-4
 diag    olsson_vs_parker       BPE_linear_m20_T025 33.684855232       1e-4
@@ -191,7 +191,7 @@ diag    olsson_vs_parker       aw_m6_T025       0.731720659462     1e-4
 diag    olsson_vs_parker       gamma_pm_1m      0.667882588628     1e-4
 diag    olsson_vs_parker       gamma_pm_3m      0.783816277339     1e-4
 diag    olsson_vs_parker       phi_1m           0.947085281204     1e-4
-diag    olsson_vs_geankoplis   BPE_exact_w20_T060 6.55134596354      1e-4
+diag    olsson_vs_geankoplis   BPE_exact_w20_T060 6.59080452994      1e-4
 diag    olsson_vs_geankoplis   BPE_linear_w20_T060 6.72556142323      1e-4
 diag    olsson_vs_geankoplis   GHgap_w20_T060   0                  1e-4
 diag    olsson_vs_geankoplis   Hchart_w20_T060  214                2e-2    anchor
@@ -201,7 +201,7 @@ diag    olsson_vs_geankoplis   aw_w20_T060      0.731920352898     1e-4
 diag    olsson_vs_geankoplis   gamma_pm_1m      0.667882588628     1e-4
 diag    olsson_vs_geankoplis   gamma_pm_3m      0.783816277339     1e-4
 diag    olsson_vs_geankoplis   phi_1m           0.947085281204     1e-4
-diag    olsson_vs_geankoplis_hL BPE_exact_w50_T090 41.4745656468      1e-4
+diag    olsson_vs_geankoplis_hL BPE_exact_w50_T090 41.8000106461      1e-4
 diag    olsson_vs_geankoplis_hL BPE_linear_w50_T090 48.6035935216      1e-4
 diag    olsson_vs_geankoplis_hL GHgap_w50_T090   5.3550058142       1e-4
 diag    olsson_vs_geankoplis_hL Hchart_w50_T090  505                2e-2    anchor

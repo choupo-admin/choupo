@@ -28,19 +28,19 @@ propertyManifest
         "components/methanol.dat"
         {
             type          imported;
-            sha256        "7735b5f842eca1dd76eb356da9b7f47da70144ff59384dd5bdd23fc6332ee6fe";
-            computationalSha256 "1c5c8cd289ee279a1545db6bcae7860a0e4c538d14f6f63c53964f355800e02b";
+            sha256        "0c136d8790f5b9dbb1661bcdd510dae891d2908119fd15e2e4371566e94ecb3e";
+            computationalSha256 "fe171e983f8f1653cb9e6f98ebf26c04cf63f9f2e8a96ca65016247058054cd2";
             origin        "data/standards/components/methanol.dat";
-            originSha256  "931addd741e2f0744547dd2cefeec886a24dee4e8aa7e0cfd4e267f6a1fee3d3";
+            originSha256  "99579474ad52be6c4db6cf3736eb5c1949b9df27248c2622e36a721c91ba13f1";
             release       Choupo-2608;
         }
         "components/water.dat"
         {
             type          imported;
-            sha256        "72776ec591eda37f57ba3ab81d720da4503b2050ae65d6818b81cec8bb370453";
-            computationalSha256 "c8bd935dbd8f52129adc44793129625b1da4751f4aef21987c783499997d8b61";
+            sha256        "80737a2defbbf35fccba8637a365dc1ea32985d6b6698a96c612b385457d4429";
+            computationalSha256 "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
             origin        "data/standards/components/water.dat";
-            originSha256  "148c565d2f006e2977e8fb8a534fd25a482bd18b08b80934456dc0ccce1a347d";
+            originSha256  "12f2c1a12742a7dbb5dd8bf3e44af45ba1612c21bc78af8d236499e61539de7e";
             release       Choupo-2608;
         }
         "parameters/Helmholtz/IAPWS95.dat"
@@ -55,10 +55,10 @@ propertyManifest
         "parameters/NRTL/methanol-water.dat"
         {
             type          imported;
-            sha256        "74c4349e9a9b219bc4acd473030f87e395faa4d8d368caed3529905c000bc7d5";
-            computationalSha256 "ee3e8ada642cd4716503188c6a29b973cee6b5dde9072c8804f82b8292bdf6d3";
+            sha256        "39d9664e1fb879d1b52fda6436fc6805dbbf7751bf0557d4444bebdfbbb36123";
+            computationalSha256 "52d668b40a4c42c74e23111c651b1620fe14ccfe88e5bf089950954eade8ea18";
             origin        "data/standards/parameters/NRTL/methanol-water.dat";
-            originSha256  "c3fe951ba64009dc55b970ed8ec4c62560169b545765c1072b0bc3c457c10c51";
+            originSha256  "0f86cd54a911d8761e2729cdb251d9ef9074098ad338780e7ae6c359efab6c1c";
             release       Choupo-2608;
         }
     }

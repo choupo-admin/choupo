@@ -199,7 +199,8 @@ def parse_probe(text):
     body = text.split("<<<PROBE\n")[-1].split("PROBE>>>")[0]
     for ln in body.splitlines():
         f = ln.split()
-        if len(f) < 4 or f[0] not in ("none", "oneFluid", "MHV1", "MHV2"):
+        if len(f) < 4 or f[0] not in ("none", "oneFluid", "MHV1", "MHV2",
+                                      "oneFluidmc", "MHV1mc", "MHV2mc"):
             continue                       # an announcement line, not a probe row
         rows[(f[0], int(f[1]), f[2])] = [float(v) for v in f[3:]]
     return rows, body
@@ -228,7 +229,8 @@ def main() -> int:
             print("check_cubic_mixing_rule: FAILED\n  - the probe did not compile: "
                   + b.stderr[-800:])
             return 1
-        pr = subprocess.run([str(exe)], capture_output=True, text=True, timeout=300,
+        pr = subprocess.run([str(exe), repr(A12), repr(B12), repr(A21), repr(B21), repr(ALPHA)],
+                            capture_output=True, text=True, timeout=300,
                             env=dict(os.environ, CHOUPO_HOME=str(ROOT)))
         if pr.returncode != 0:
             print("check_cubic_mixing_rule: FAILED\n  - the probe died (exit %d): %s"
@@ -268,7 +270,8 @@ def main() -> int:
                                 f"sum y ln phi = {lhs:.12g}, Z - 1 - ln(Z-B) - beta I = {rhs:.12g}")
 
     # ---- (c) --------------------------------------------------------------
-    for rule, tol in (("oneFluid", 1e-7), ("MHV1", 2e-6), ("MHV2", 2e-6)):
+    for rule, tol in (("oneFluid", 1e-7), ("MHV1", 2e-6), ("MHV2", 2e-6),
+                      ("oneFluidmc", 1e-7), ("MHV1mc", 2e-6), ("MHV2mc", 2e-6)):
         for k in range(4):
             T, P, y0 = rows[(rule, k, "dT")][:3]
             fm, f0, fp = rows[(rule, k, "dT")][3:6]
@@ -294,19 +297,26 @@ def main() -> int:
                 fail.append(f"(d) dT state {k} {key}: one-fluid word differs from no word")
 
     # ---- (e) --------------------------------------------------------------
-    for rule in ("MHV1", "MHV2"):
+    #  (and on the fitted Mathias-Copeman alpha: a_i from the alpha feeds the rule)
+    for rule, ref in (("MHV1", "oneFluid"), ("MHV2", "oneFluid"),
+                      ("MHV1mc", "oneFluidmc"), ("MHV2mc", "oneFluidmc")):
         for k, (T, P, y0) in states.items():
             if y0 not in (0.0, 1.0):
                 continue
             i = 0 if y0 == 1.0 else 1
             for key, idx in (("lnphiV", i), ("lnphiL", i)):
-                if abs(rows[(rule, k, key)][idx] - rows[("oneFluid", k, key)][idx]) > 1e-12:
+                if abs(rows[(rule, k, key)][idx] - rows[(ref, k, key)][idx]) > 1e-12:
                     fail.append(f"(e) {rule} pure component {i} {key}: {rows[(rule, k, key)][idx]!r} "
-                                f"vs one-fluid {rows[('oneFluid', k, key)][idx]!r}")
+                                f"vs one-fluid {rows[(ref, k, key)][idx]!r}")
             for key in ("vol", "HRSR"):
-                for a, c in zip(rows[(rule, k, key)], rows[("oneFluid", k, key)]):
+                for a, c in zip(rows[(rule, k, key)], rows[(ref, k, key)]):
                     if abs(a - c) > 1e-12 * max(1.0, abs(c)):
                         fail.append(f"(e) {rule} pure component {i} {key}: {a!r} vs one-fluid {c!r}")
+
+    k_w = [k for k, v in states.items() if v == [373.15, 2.5e5, 0.0]][0]
+    if abs(rows[("oneFluidmc", k_w, "lnphiL")][1] - rows[("oneFluid", k_w, "lnphiL")][1]) < 1e-3:
+        fail.append("(e) the Mathias-Copeman alpha did not change water's pure liquid ln phi: "
+                    "the alpha function is not reaching the mixing rule's a_i")
 
     # ---- (f) --------------------------------------------------------------
     k0 = [k for k, v in states.items() if v == [373.15, 2.5e5, 0.3]][0]
@@ -342,7 +352,7 @@ def main() -> int:
             body = p.stdout.split("<<<Choupo:result-end>>>")[0]
             js = json.loads(body[body.rindex("\n{\n"):])
             diag = {o["name"]: o.get("diagnostics", {}) for o in js["operationResults"]}
-            for rule, tag in (("MHV1", "mhv1"), ("MHV2", "mhv2")):
+            for rule, tag in (("MHV1", "mhv1Soave"), ("MHV2", "mhv2Soave")):
                 for x in (0.053, 0.352, 0.826):
                     name = f"{tag}_" + ("x%.3f" % x).replace(".", "p")
                     eng = diag.get(name, {}).get("P_bubble")
@@ -365,7 +375,7 @@ def main() -> int:
           "to 2e-6); `vanDerWaalsOneFluid` is byte-identical to no mixingRule word; every rule returns the pure "
           "cubic at y = 1; MHV2 returns the fed NRTL gammas to %.4f and MHV1 to %.4f in ln gamma "
           "(one-fluid kij = 0: %.2f); P_bubble of three measured points equals an independent solve to 1e-5; "
-          "eleven refusals each by name, and a pure beta outside 10-13 is announced. NOT CHECKED: any measured "
+          "eleven refusals each by name, and a pure beta outside 10-13 is announced; the same departures and pure limit hold on the fitted Mathias-Copeman alpha (a_i from the alpha feeds the rule). NOT CHECKED: any measured "
           "diagram, H_R of the liquid root, Peng-Robinson." % (gap["MHV2"], gap["MHV1"], gap["oneFluid"]))
     return 0
 

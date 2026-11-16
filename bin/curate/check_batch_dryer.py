@@ -166,6 +166,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import record_psat  # noqa: E402  (Antoine or Wagner, read from the record's own text)
+
 ROOT = Path(__file__).resolve().parents[2]
 BATCH = ROOT / "build" / "linux64Gcc" / "choupoBatch"
 CASE = ROOT / "tutorials" / "batch" / "drying" / "dryer01_sucrose_tray"
@@ -237,7 +240,7 @@ def records(case: Path):
         "Mv": scalar_in(water, "MW"),
         "Mc": scalar_in(n2, "MW"),
         "Msol": scalar_in(sucrose, "MW"),
-        "antoine": [float(x) for x in ant.group(1).split()] if ant else None,
+        "antoine": water if ant else None,   # the record TEXT: record_psat reads Antoine or Wagner
         #  What the wet-bulb equation needs, all from the same records: the
         #  Watson inputs for the latent heat and both ideal-gas Cp fits for
         #  the humid heat.
@@ -254,9 +257,9 @@ def records(case: Path):
 
 
 def psat_pa(ant, T):
-    #  Antoine in the published convention log10(Psat[bar]) = A - B/(T + C).
-    A, B, C = ant
-    return 10.0 ** (A - B / (T + C)) * 1.0e5
+    #  `ant` is the water record's text; record_psat evaluates its own law
+    #  (Antoine log10(Psat[bar]) = A - B/(T + C), or the IAPWS Wagner form).
+    return record_psat.psat_pa(ant, T)
 
 
 def coeffs_in(text: str, blockName: str):

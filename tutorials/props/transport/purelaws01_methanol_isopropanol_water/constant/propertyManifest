@@ -46,10 +46,10 @@ propertyManifest
         "components/water.dat"
         {
             type          imported;
-            sha256        "33da06e7208ec21be50dd8191801bdcc44713e4184d48d3d873df0a56a268c9b";
-            computationalSha256 "cb94bc85b40e67c057e0053db52692218945dd8bcaba7ca1ae8d9bc0ae82b1e6";
+            sha256        "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
+            computationalSha256 "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
             origin        "data/standards/components/water.dat";
-            originSha256  "3f0684c4d69d27a810fea0fad4f148bc000ec80ee6a2471a6cbd38c5ffbfc13c";
+            originSha256  "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
             release       Choupo-2608;
         }
         "parameters/Helmholtz/IAPWS95.dat"

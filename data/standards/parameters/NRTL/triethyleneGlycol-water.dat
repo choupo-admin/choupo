@@ -15,18 +15,19 @@
   FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
   vapour-pressure records for both pure components.
 
-  reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by
+  reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by
   its fitting pipeline (every laboratory fitted, outliers beyond 3 K
   discarded by name, max |T_model - T| over the kept points GRADED
   clean / warning / severe at 1 / 2 / 4 K -- DEV.md 4c C283
-  amended, C285, C286; THIS fit: severe, 3.8325 K; one liquid
+  amended, C285, C286; THIS fit: severe in-sample, 2.5198 K; one liquid
   across its validity span), and NO HUMAN HAS REVIEWED IT.  The
   engine says so on every run that reads it, and voices a warning
   or a severe grade beside it.
   Nothing was held out: the `validation {}` block says so, and the
   acceptance is the `curation {}` block.  A curator who reads the series
-  back against the articles marks it `reviewStatus reviewed; humanReviewed
-  true;`.  Revert with `bin/choupo-curate revert triethyleneGlycol-water`.
+  back against the articles records it in the `review {}` block (by,
+  reviewer, date, checked, verdict; DEV.md 4c C297).  Revert with
+  `bin/choupo-curate revert triethyleneGlycol-water`.
 
   REPRODUCE: run data/curation/pairs/triethyleneGlycol-water (after `bin/choupo-curate fetch` on it); its fit
   writes triethyleneGlycol-water.proposal.dat, which bin/curate/check_regressed_pairs.py holds
@@ -46,9 +47,9 @@ parameters
     i           water;
     j           triethyleneGlycol;
     a_ij        0.00000000;
-    b_ij        -928.55114382;
+    b_ij        -890.94834003;
     a_ji        0.00000000;
-    b_ji        609.02733226;
+    b_ji        578.16862022;
     alpha       0.30000000;
 }
 
@@ -59,16 +60,16 @@ provenance
     methodVersion "choupoProps Choupo-dev";
     fittedInCase  "data/curation/pairs/triethyleneGlycol-water";
     reviewStatus  autoPromoted;
-    humanReviewed false;
+    review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
     fitGrade      severe;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
-    fitGradeMaxTemperatureError_K 3.8325;
-    fitGradeIdealMaxTemperatureError_K 58.7195;   // DEV.md 4c C334: the ideal mixture (gamma = 1) on the SAME kept points; a severe fit is promoted only if 3.8325 K < 58.7195 K
+    fitGradeMaxTemperatureError_K 2.5198;
+    fitGradeIdealMaxTemperatureError_K 54.3948;   // DEV.md 4c C334: the ideal mixture (gamma = 1) on the SAME kept points; a severe fit is promoted only if 2.5198 K < 54.3948 K
     promotedBy    "bin/choupo-curate pair --promote";
-    promotedDate  "2026-11-10";
+    promotedDate  "2026-11-16";
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
-    fitDate       "2026-11-10";
+    fitDate       "2026-11-16";
 
     evidence
     (
@@ -101,16 +102,16 @@ provenance
             pressure  "85000.000000 Pa";
         }
     );
-    fingerprint "fd80b6078779bf2e";   // of the declaration, frozen before the fit
+    fingerprint "92b50da88bc7541b";   // of the declaration, frozen before the fit
 
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          2608.16411374;
-    rms_K         1.26875380;
-    nDataPoints   96;
+    chi2          1010.71437587;
+    rms_K         0.83272434;
+    nDataPoints   89;
     identifiable  false;
-    maxAbsCorr    0.99992202;
+    maxAbsCorr    0.99993866;
 
     validity
     {
@@ -136,11 +137,11 @@ curation
     evidence        allLaboratories;   // every study fitted, none held out
     objective       twoStage;
     outlierLimit    3 K;   // |T_model - T| after the least-squares stage
-    outliersDropped 25;
-    pointsKept      96;
+    outliersDropped 32;
+    pointsKept      89;
     noBubblePoint   0;
-    maxAbsError     3.8325 K;
-    meanAbsError    1.0691 K;
+    maxAbsError     2.5198 K;
+    meanAbsError    0.5800 K;
     acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
     gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
     grade           severe;

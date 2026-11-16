@@ -212,6 +212,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import record_psat  # noqa: E402  (Antoine or Wagner, read from the record's own text)
+
 ROOT = Path(__file__).resolve().parents[2]
 CASE = ROOT / "tutorials/props/scan/hxy01_ethanol_water_1atm"
 CSV = CASE / "enthalpyConcentration.csv"
@@ -296,7 +299,7 @@ def read_component(name):
         HvapTb=_scalar(text, "HvapTb", where),
         Hf=_scalar(_block(text, "standardThermochemistry", where),
                    "dHf_298", where),
-        antoine=_coeffs(_block(text, "vaporPressure", where), where),
+        vp_text=path.read_text(),   # record_psat reads Antoine or Wagner from it
         cp_ig=_coeffs(_block(text, "idealGasHeatCapacity", where), where),
         cp_liq=_coeffs(_block(text, "liquidHeatCapacity", where), where),
     )
@@ -326,7 +329,10 @@ PAIR = {}
 #  writing, not a number that quietly moves.
 LAMBDA_PIN = {
     "ethanol": (40679.0, 40680.2),
-    "water": (41487.1, 41488.3),
+    #  2026-11-16: water's Psat is the IAPWS equation, so its boiling point at the
+    #  gate's pressure moved 372.45 -> 373.124 K and the surface's latent heat
+    #  there from 41487.7 to 41460.0 J/mol (Watson's slope over 0.67 K).
+    "water": (41459.4, 41460.6),
 }
 
 TOL_T = 1.0e-3          # K
@@ -339,8 +345,7 @@ TOL_EQ = 1.0e-6         # mole fraction, for the tie / incidence arms
 #  An independent implementation of the same equations.
 # ---------------------------------------------------------------------------
 def psat(name, T):
-    a, b, c = REC[name]["antoine"]
-    return 10.0 ** (a - b / (T + c)) * 1.0e5
+    return record_psat.psat_pa(REC[name]["vp_text"], T)
 
 
 def gamma(T, x1):

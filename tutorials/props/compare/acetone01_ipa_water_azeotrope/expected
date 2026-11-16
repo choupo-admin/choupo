@@ -23,7 +23,7 @@ diag    bp_water               S_R              0                1e-4
 diag    bp_water               S_ig             194.151778871    1e-4
 diag    bp_water               S_real           194.151778871    1e-4
 diag    bp_water               T                350              1e-4
-diag    bp_water               T_bubble         372.453622433    1e-4
+diag    bp_water               T_bubble         373.124295805    1e-4
 diag    bp_water               Z                1                1e-4
 diag    bp_water               gamma            1.32300782948    1e-4
 diag    bp_water               v_molar          0.0287200781278  1e-4
@@ -36,15 +36,15 @@ diag    azeo_luyben_x          S_R              0                1e-4
 diag    azeo_luyben_x          S_ig             290.210784798    1e-4
 diag    azeo_luyben_x          S_real           290.210784798    1e-4
 diag    azeo_luyben_x          T                350              1e-4
-diag    azeo_luyben_x          T_bubble         355.985436578    1e-4
+diag    azeo_luyben_x          T_bubble         356.121657004    1e-4
 diag    azeo_luyben_x          Z                1                1e-4
 diag    azeo_luyben_x          gamma            1.11959941871    1e-4
 diag    azeo_luyben_x          v_molar          0.0287200781278  1e-4
 diag    txy_unifac             n_emptyCurves    0                1e-4
 diag    txy_unifac             n_failures       0                1e-4
 diag    txy_unifac             n_points         51               1e-4
-aad     luyben2011_1atm        txy_unifac.T_bubble.aadAbs 2.54695253333    1e-4
-aad     luyben2011_1atm        txy_unifac.T_bubble.aadRelPct 0.715599058426   1e-4
+aad     luyben2011_1atm        txy_unifac.T_bubble.aadAbs 2.45165895333    1e-4
+aad     luyben2011_1atm        txy_unifac.T_bubble.aadRelPct 0.690726238937   1e-4
 #
 #  THE THREE BUBBLE POINTS, and why NONE of them is an `anchor` row.
 #

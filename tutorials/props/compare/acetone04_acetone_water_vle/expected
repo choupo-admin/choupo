@@ -23,7 +23,7 @@ diag    bp_water               S_R              0                1e-4
 diag    bp_water               S_ig             196.048670352    1e-4
 diag    bp_water               S_real           196.048670352    1e-4
 diag    bp_water               T                370              1e-4
-diag    bp_water               T_bubble         372.453622433    1e-4
+diag    bp_water               T_bubble         373.124295805    1e-4
 diag    bp_water               Z                1                1e-4
 diag    bp_water               gamma            1.32098146129    1e-4
 diag    bp_water               v_molar          0.0303612254494  1e-4
@@ -37,7 +37,7 @@ diag    dilute_acetone         S_R              0                1e-4
 diag    dilute_acetone         S_ig             192.455782808    1e-4
 diag    dilute_acetone         S_real           192.455782808    1e-4
 diag    dilute_acetone         T                318              1e-4
-diag    dilute_acetone         T_bubble         363.623849515    1e-4
+diag    dilute_acetone         T_bubble         364.006127027    1e-4
 diag    dilute_acetone         Z                1                1e-4
 diag    dilute_acetone         gamma            1.32070482161    1e-4
 diag    dilute_acetone         gamma_acetone    10.2700016028    1e-4

@@ -117,6 +117,14 @@ def block_span(text, key):
 
 def second_law(prop, body):
     """The second law's body: Antoine A + log10 2, or a polynomial x 1.2."""
+    #  A WAGNER law (water since 2026-11-16): ln(P/Pr) is unchanged by the
+    #  reducing pressure's scale, so doubling `reducing { P ...; }` doubles
+    #  the vapour pressure exactly -- the same "x 2" the Antoine arm applies.
+    if prop == "vaporPressure" and re.search(r"\bmodel\s+Wagner\s*;", body):
+        mp = re.search(r"(reducing\s*\{[^}]*?\bP\s+)([-+0-9.eE]+)(\s*\w+\s*;)", body)
+        if not mp:
+            raise SystemExit(f"{NAME}: a Wagner witness law without a `reducing {{ P ...; }}`:\n{body}")
+        return body[:mp.start(2)] + repr(float(mp.group(2)) * 2.0) + body[mp.end(2):]
     m = re.search(r"coefficients\s*\(([^)]*)\)", body)
     if not m or not re.search(r"\bmodel\s+(Antoine|polynomial)\s*;", body):
         raise SystemExit(f"{NAME}: the witness law is not Antoine/polynomial:\n{body}")

@@ -3,20 +3,20 @@
 # kind   name      key         expected        reltol
 stream  feedA                  F                0.0277777777778    1e-4
 stream  feedB                  F                0.0277777777778    1e-4
-stream  liqNRTL                F                0.0135537277127    1e-4
+stream  liqNRTL                F                0.0141361533423    1e-4
 stream  liqPCSAFT              F                0.00975103940319   1e-4
-stream  vapNRTL                F                0.014224050065     1e-4
+stream  vapNRTL                F                0.0136416244355     1e-4
 stream  vapPCSAFT              F                0.0180267383746    1e-4
-kpi     flashNRTL              F_alpha          0.0135537277127    1e-4
-kpi     flashNRTL              F_beta           0.014224050065     1e-4
+kpi     flashNRTL              F_alpha          0.0141361533423    1e-4
+kpi     flashNRTL              F_beta           0.0136416244355     1e-4
 kpi     flashNRTL              F_in             0.0277777777778    1e-4
-kpi     flashNRTL              K_ethanol        3.89559152547      1e-4
-kpi     flashNRTL              K_water          0.602023174315     1e-4
+kpi     flashNRTL              K_ethanol        3.81686845499      1e-4
+kpi     flashNRTL              K_water          0.594376193524     1e-4
 kpi     flashNRTL              P                101325             1e-4
 kpi     flashNRTL              Q                0                  1e-4
 kpi     flashNRTL              Q_kW             0                  1e-4
 kpi     flashNRTL              T                358.15             1e-4
-kpi     flashNRTL              V_over_F         0.512065802342     1e-4
+kpi     flashNRTL              V_over_F         0.491098479677     1e-4
 kpi     flashNRTL              phaseSet         0                  1e-4
 kpi     flashPCSAFT            F_alpha          0.00975103940319   1e-4
 kpi     flashPCSAFT            F_beta           0.0180267383746    1e-4
@@ -29,8 +29,8 @@ kpi     flashPCSAFT            Q_kW             0                  1e-4
 kpi     flashPCSAFT            T                358.15             1e-4
 kpi     flashPCSAFT            V_over_F         0.648962581485     1e-4
 kpi     flashPCSAFT            phaseSet         0                  1e-4
-closure flashNRTL              raw_kW           -42.8609974295     1e-4
-closure flashNRTL              step_kW          -42.8609974295     1e-4
+closure flashNRTL              raw_kW           -54.7525149473     1e-4
+closure flashNRTL              step_kW          -54.7525149473     1e-4
 closure flashNRTL              remaining_kW     0                  1e-4
 stream  feedA                  T                358.15           1e-4
 stream  feedB                  T                358.15           1e-4
@@ -40,5 +40,5 @@ stream  vapNRTL                T                358.15           1e-4
 stream  vapPCSAFT              T                358.15           1e-4
 boundary global                 H_feeds_kW       -14014.9475299   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
-boundary global                 H_products_kW    -14057.8085273   1e-4
-boundary global                 residual_kW      42.8567133915    abs:0.004286
+boundary global                 H_products_kW    -14069.7069277   1e-4
+boundary global                 residual_kW      54.7521690997    abs:0.004286

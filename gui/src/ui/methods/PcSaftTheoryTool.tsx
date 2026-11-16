@@ -53,7 +53,7 @@ License
   pair athermal; the combinatorial term and every other pair remain -- the
   UNIFAC page's own heading said the same and is corrected with it);
   "flash20 loses to NRTL by only a few per cent" (its golden pins
-  K_ethanol 11.47 against 3.896 and V/F 0.649 against 0.512, and the
+  K_ethanol 11.47 against 3.817 and V/F 0.649 against 0.491, and the
   reference is a fitted model, not a measurement).  Found here, not in the
   review: the page said "the engine refuses a profile whose declared scheme
   does not match its parameter set" -- it does not; it refuses an UNKNOWN
@@ -392,9 +392,9 @@ export function PcSaftTheoryTool(): JSX.Element {
           How good a prediction is a separate question, and
           {" "}<Code>flash20</Code> answers it for one state: at 358.15 K and
           1 atm its recorded run gives the predictive PC-SAFT flash at
-          {" "}<M t="V/F = 0.649" /> against 0.512 for the fitted NRTL, and
+          {" "}<M t="V/F = 0.649" /> against 0.491 for the fitted NRTL, and
           the converged <M t="K_{\mathrm{ethanol}} = 11.47" /> against
-          3.896 (<M t="K_{\mathrm{water}}" /> 0.581 against 0.602).  That is
+          3.817 (<M t="K_{\mathrm{water}}" /> 0.581 against 0.594).  That is
           not “a few per cent”, and the reference is itself a model fitted
           to ethanol/water data, not a measurement at this state — so it
           measures the distance between a prediction and a fit, which is

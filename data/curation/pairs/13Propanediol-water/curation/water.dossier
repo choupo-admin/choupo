@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.b_ij  134.127132437;
-        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.b_ji  -77.3261873419;
+        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.b_ij  549.544350005;
+        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.b_ji  -304.686363245;
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.b_ij  125.363650876;
-        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.b_ji  -69.5801784291;
+        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.b_ij  549.544350899;
+        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.b_ji  -304.68636373;
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.a_ij  -255.180715955;
-        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.a_ji  458.568063584;
+        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.a_ij  -194.352409596;
+        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.a_ji  358.658130221;
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.a_ij  -255.180718971;
-        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.a_ji  458.568074899;
+        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.a_ij  -194.352409424;
+        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.a_ji  358.658129799;
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.A_ij  5996.23851943;
-        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.A_ji  -5273.06600862;
+        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.A_ij  3478.43538011;
+        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.A_ji  -1886.4549985;
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.A_ij  5909.750865;
-        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.A_ji  -5220.36562428;
+        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.A_ij  3478.43537829;
+        equilibrium.liquid.activityModel.binaryParameters.water-13Propanediol.A_ji  -1886.45499622;
     }
 
     evidence

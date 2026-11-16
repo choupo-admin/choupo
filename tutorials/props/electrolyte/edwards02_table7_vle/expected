@@ -2,7 +2,7 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 diag    table7_row1            I                1.547              1e-4
-diag    table7_row1            P_atm            2.51337            1e-4
+diag    table7_row1            P_atm            2.48995158361            1e-4
 diag    table7_row1            aw               0.946304           1e-4
 diag    table7_row1            chargeImposed    1                  1e-4
 diag    table7_row1            chargeResidual   2.5541e-13         1e-4
@@ -21,12 +21,12 @@ diag    table7_row1            m_NH4            1.49147            1e-4
 diag    table7_row1            pH               7.78231            1e-4
 diag    table7_row1            p_CO2aq_atm      1.26515            1e-4
 diag    table7_row1            p_NH3aq_atm      0.277628           1e-4
-diag    table7_row1            p_water_atm      0.970594           1e-4
-diag    table7_row1            y_CO2aq          0.503367           1e-4
-diag    table7_row1            y_NH3aq          0.11046            1e-4
-diag    table7_row1            y_water          0.386172           1e-4
+diag    table7_row1            p_water_atm      0.947172346791           1e-4
+diag    table7_row1            y_CO2aq          0.508102707832           1e-4
+diag    table7_row1            y_NH3aq          0.111499394865            1e-4
+diag    table7_row1            y_water          0.380397897303           1e-4
 diag    table7_row2            I                1.247              1e-4
-diag    table7_row2            P_atm            1.91882            1e-4
+diag    table7_row2            P_atm            1.89570959997            1e-4
 diag    table7_row2            aw               0.933746           1e-4
 diag    table7_row2            chargeImposed    1                  1e-4
 diag    table7_row2            chargeResidual   6.37283e-17        1e-4
@@ -45,12 +45,12 @@ diag    table7_row2            m_NH4            1.19101            1e-4
 diag    table7_row2            pH               8.10186            1e-4
 diag    table7_row2            p_CO2aq_atm      0.419754           1e-4
 diag    table7_row2            p_NH3aq_atm      0.541351           1e-4
-diag    table7_row2            p_water_atm      0.957715           1e-4
-diag    table7_row2            y_CO2aq          0.218756           1e-4
-diag    table7_row2            y_NH3aq          0.282127           1e-4
-diag    table7_row2            y_water          0.499117           1e-4
+diag    table7_row2            p_water_atm      0.934603362906           1e-4
+diag    table7_row2            y_CO2aq          0.221423350044           1e-4
+diag    table7_row2            y_NH3aq          0.285566875189           1e-4
+diag    table7_row2            y_water          0.493009774767           1e-4
 diag    table7_row3            I                0.995665           1e-4
-diag    table7_row3            P_atm            1.9063             1e-4
+diag    table7_row3            P_atm            1.88343136844             1e-4
 diag    table7_row3            aw               0.923999           1e-4
 diag    table7_row3            chargeImposed    1                  1e-4
 diag    table7_row3            chargeResidual   3.29779e-17        1e-4
@@ -69,12 +69,12 @@ diag    table7_row3            m_NH4            0.950134           1e-4
 diag    table7_row3            pH               8.29999            1e-4
 diag    table7_row3            p_CO2aq_atm      0.195554           1e-4
 diag    table7_row3            p_NH3aq_atm      0.763028           1e-4
-diag    table7_row3            p_water_atm      0.947717           1e-4
-diag    table7_row3            y_CO2aq          0.102583           1e-4
-diag    table7_row3            y_NH3aq          0.400267           1e-4
-diag    table7_row3            y_water          0.49715            1e-4
+diag    table7_row3            p_water_atm      0.92484734324           1e-4
+diag    table7_row3            y_CO2aq          0.103828722623           1e-4
+diag    table7_row3            y_NH3aq          0.4051274524           1e-4
+diag    table7_row3            y_water          0.491043824977            1e-4
 diag    row1_nocarbamate       I                1.61255            1e-4
-diag    row1_nocarbamate       P_atm            2.45924            1e-4
+diag    row1_nocarbamate       P_atm            2.43585967184            1e-4
 diag    row1_nocarbamate       aw               0.944546           1e-4
 diag    row1_nocarbamate       chargeImposed    1                  1e-4
 diag    row1_nocarbamate       chargeResidual   -6.9594e-17        1e-4
@@ -92,10 +92,10 @@ diag    row1_nocarbamate       networkRestricted 1                  1e-4
 diag    row1_nocarbamate       pH               7.91102            1e-4
 diag    row1_nocarbamate       p_CO2aq_atm      1.15044            1e-4
 diag    row1_nocarbamate       p_NH3aq_atm      0.340008           1e-4
-diag    row1_nocarbamate       p_water_atm      0.968792           1e-4
-diag    row1_nocarbamate       y_CO2aq          0.467803           1e-4
-diag    row1_nocarbamate       y_NH3aq          0.138257           1e-4
-diag    row1_nocarbamate       y_water          0.39394            1e-4
+diag    row1_nocarbamate       p_water_atm      0.945412939388           1e-4
+diag    row1_nocarbamate       y_CO2aq          0.472292671809           1e-4
+diag    row1_nocarbamate       y_NH3aq          0.139584420161           1e-4
+diag    row1_nocarbamate       y_water          0.38812290803            1e-4
 # ANCHORS: Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978),
 # Table 7, prediction column I -- the paper's OWN multisolute calculation at
 # 100 degC, reproduced here from the same Eqs 5-24 and the same Tables 1-6.

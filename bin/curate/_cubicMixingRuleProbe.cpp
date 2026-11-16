@@ -66,7 +66,7 @@ static Component fromCatalogue(const std::string& name)
     return c;
 }
 
-int main()
+int main(int argc, char** argv)
 {
     VaporPressureModel::registerBuiltins();
     HeatCapacityModel::registerBuiltins();
@@ -76,16 +76,25 @@ int main()
     comps.push_back(fromCatalogue("methanol"));
     comps.push_back(fromCatalogue("water"));
 
+    //  The NRTL pair is passed by the gate, which reads it from the catalogue
+    //  record: argv = a_ij b_ij a_ji b_ji alpha.
+    if (argc < 6) { std::cerr << "usage: probe a_ij b_ij a_ji b_ji alpha\n"; return 2; }
     const std::string ge =
-        " activityModel { model NRTL; pairs ( { i methanol; j water;"
-        " a_ij 0; b_ij 165.00630266; a_ji 0; b_ji 41.76488968; alpha 0.3; } ); }";
+        std::string(" activityModel { model NRTL; pairs ( { i methanol; j water;")
+        + " a_ij " + argv[1] + "; b_ij " + argv[2] + "; a_ji " + argv[3] + "; b_ji "
+        + argv[4] + "; alpha " + argv[5] + "; } ); }";
 
     struct Cfg { std::string tag, dict; };
     const std::vector<Cfg> cfgs = {
         { "none",      "model SRK;" },
         { "oneFluid",  "model SRK; mixingRule vanDerWaalsOneFluid;" },
         { "MHV1",      "model SRK; mixingRule MHV1;" + ge },
-        { "MHV2",      "model SRK; mixingRule MHV2;" + ge } };
+        { "MHV2",      "model SRK; mixingRule MHV2;" + ge },
+        //  the same rules on the fitted Mathias-Copeman alpha (C408 slice 0): a_i
+        //  from the alpha feeds the rule
+        { "oneFluidmc", "model SRK; mixingRule vanDerWaalsOneFluid; alphaFunction MathiasCopeman;" },
+        { "MHV1mc",    "model SRK; mixingRule MHV1; alphaFunction MathiasCopeman;" + ge },
+        { "MHV2mc",    "model SRK; mixingRule MHV2; alphaFunction MathiasCopeman;" + ge } };
 
     struct St { double T, P, y0; };
     const std::vector<St> states = {

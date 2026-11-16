@@ -30,8 +30,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ij  218.347370783;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ji  616.296481691;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ij  220.9877977;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ji  621.719091305;
     }
 
     evidence
@@ -74,7 +74,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.136733099834;
+        aadHeldOutPct     0.131782214769;
         acceptanceMaxAADPct 0.72;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 1.85 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.673 K, acetonitrile +0.082 K; measured with no pair involved), as a percentage of the held-out mean T (353.83 K) = 0.7131 %, rounded UP to two significant figures";
     }
@@ -88,8 +88,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ij  218.347000127;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ji  616.296981205;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ij  220.987203548;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-water.b_ji  621.719893896;
     }
 
     evidence
@@ -132,7 +132,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.136733090737;
+        aadHeldOutPct     0.131782191217;
         acceptanceMaxAADPct 0.72;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 1.85 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.673 K, acetonitrile +0.082 K; measured with no pair involved), as a percentage of the held-out mean T (353.83 K) = 0.7131 %, rounded UP to two significant figures";
     }

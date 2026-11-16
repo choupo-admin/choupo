@@ -376,13 +376,21 @@ export const SANDER_EXAMPLES = [
   { id: "NH3", name: "ammonia", Hcp: 5.9e-1, dlnHdinvT: 4200, row: "Sander et al. (2011), type L", page: 4410, M: 17.031 },
 ] as const;
 
-/** Choupo's water record, data/standards/components/water.dat,
- *  `vaporPressure { model Antoine; coefficients (5.40221 1838.675 -31.737); }`,
- *  in the engine's form log10(Psat/bar) = A - B/(T + C) (Antoine.cpp), valid
- *  273-373 K.  Used once: the water vapour of saturated air in exercise 2. */
-export const WATER_ANTOINE = { A: 5.40221, B: 1838.675, C: -31.737 } as const;
-export const waterVapourPressure = (T: number): number =>
-  1e5 * Math.pow(10, WATER_ANTOINE.A - WATER_ANTOINE.B / (T + WATER_ANTOINE.C));
+/** Choupo's water record, data/standards/components/water.dat (since 2026-11-16),
+ *  `vaporPressure { model Wagner; ... }`: the IAPWS saturation equation (Wagner & Pruss 2002, Eq. 2.5,
+ *  p. 399), ln(Psat/Pc) = (Tc/T)(a1 t + a2 t^1.5 + a3 t^3 + a4 t^3.5 + a5 t^4 + a6 t^7.5), t = 1 - T/Tc,
+ *  Tc = 647.096 K, Pc = 22.064 MPa.  Used once: the water vapour of saturated air in exercise 2. */
+export const WATER_WAGNER = {
+  Tc: 647.096, Pc: 22.064e6,
+  a: [-7.85951783, 1.84408259, -11.7866497, 22.6807411, -15.9618719, 1.80122502],
+  e: [1, 1.5, 3, 3.5, 4, 7.5],
+} as const;
+export const waterVapourPressure = (T: number): number => {
+  const t = 1 - T / WATER_WAGNER.Tc;
+  let sum = 0;
+  for (let k = 0; k < 6; k++) sum += WATER_WAGNER.a[k]! * Math.pow(t, WATER_WAGNER.e[k]!);
+  return WATER_WAGNER.Pc * Math.exp((WATER_WAGNER.Tc / T) * sum);
+};
 
 /** Choupo's own O2 record, data/standards/parameters/Henry/O2-water.dat:
  *  `H_ref 4.40e9 Pa;`, read as a pressure (HenrysLaw.cpp) and used as p/x. */
@@ -655,7 +663,7 @@ export function exercises(): Exercise[] {
         "ρ_w = 997 kg/m³ and M_w = 18.0153 g/mol (the values behind Sander's Table 1)",
         "y_O2 = 0.21 and P = 101325 Pa: illustrative values of this exercise; M_O2 = 31.998 g/mol",
         "for the precision notes: the vapour pressure of water at 298.15 K from Choupo's water record "
-          + "(data/standards/components/water.dat, Antoine coefficients 5.40221, 1838.675, −31.737, P in bar)",
+          + "(data/standards/components/water.dat, the IAPWS saturation equation, Wagner & Pruss 2002 Eq. 2.5)",
       ],
       source: "Sander (2015), Eqs. 3, 6, 15 and Table 6 (pp. 4401-4403, 4408); the air is the exercise's own",
       solution: [
