@@ -324,6 +324,56 @@ Rackett liquid density of `ThermoPackage::density`.  Limits: fitted to
 saturated liquids at T_r = 0.7, useless near the critical point.  Witness:
 `tutorials/props/molecular/volumeTranslation01_nhexane_peneloux`.
 
+#### Cubic mixing rules: `vanDerWaalsOneFluid` (default), `MHV1`, `MHV2` — a cubic fed a low-pressure G^E model
+
+`mixingRule` is a key of `equationOfState` (phiPhi).  `vanDerWaalsOneFluid` is
+what every cubic ran before C408 (b): `a = ΣΣ y_i y_j (1−k_ij) √(a_i a_j)`,
+`b = Σ y_i b_i`, the `kij` of `binaryInteractions`.  `MHV1` and `MHV2` match the
+cubic to an excess-Gibbs model at ZERO pressure, so a pair regressed on
+low-pressure data feeds a cubic that reaches high pressure and supercritical
+components with no new parameter: Michelsen 1990, `q1 (β − Σ y_i β_i) = G^E/RT +
+Σ y_i ln(b/b_i)`, `β = a/(bRT)`, `q1 = −0.593` (Eq. 12, p. 215–216); Dahl &
+Michelsen 1990 adds `q2 (β² − Σ y_i β_i²)` with `q1 = −0.478`, `q2 = −0.0047`
+(Eq. 13, p. 1831); Poling Table 5-1 p. 5.17 prints the same SRK constants.
+Theory Guide `sec:cubic-mixing-rule`.
+
+```
+equationOfState
+{
+    model      SRK;
+    mixingRule MHV2;               // vanDerWaalsOneFluid | MHV1 | MHV2
+    activityModel                  // the block a gammaPhi liquid takes, INSIDE the cubic's block
+    {
+        model NRTL;
+        binaryParameters { methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; } }
+    }
+}
+```
+
+What is refused, by name: `MHV1`/`MHV2` on `PengRobinson` (the constants are
+fitted per cubic; only SRK's are read); a G^E rule without `activityModel`, and an
+`activityModel` under the one-fluid rule; `binaryInteractions` under `MHV1`/`MHV2`
+(they have no kij); a G^E model `ideal`; a PAIR WITH NO RECORD (under gammaPhi it
+is an announced ideal assumption; inside a cubic a zero G^E is a definite claim
+about the attraction, not the one-fluid rule, and no kij corrects it); an unknown
+word (the registry is listed); `PCSAFT` with a cubic rule; an `MHV1`/`MHV2` word in a
+gammaPhi / diluteSolution `vapour {}`.  A pure `β_i = a_i/(b_i R T)` outside
+`10 < β < 13`, the interval the polynomial `q(β)` was fitted on, is announced
+once.  The G^E model is called at the composition of the phase priced; its
+`H^E` (`−R T² d(G^E/RT)/dT`) enters `H_R` and `S_R`, the VAPOUR root's departures
+(a liquid stream of a phiPhi package is not the cubic's until DEV.md 4c C410).
+The run prints the rule, its constants with their page, the G^E model and each
+pair with its tier and span, and the resolved view lists them.  What it is NOT:
+Huron–Vidal, Wong–Sandler and PSRK (later slices); a fitted alpha for water
+(slice 0).  The mixing-rule decomposition op `mixingRules` is the ONE-FLUID rule's and
+refuses a G^E rule by name.  Witness:
+`tutorials/props/molecular/mhv01_methanol_water_100C` (12 measured bubble points
+of methanol + water at 100 °C, Griswold & Wong 1952 via Poling Table 8-46: the
+gamma-phi package of the pair misses P by 3.7 % mean / 6.0 % max, SRK + `MHV1`
+6.4 / 11.2 %, `MHV2` 6.8 / 12.5 %, the one-fluid rule with kij = 0 40 / 83 %; the
+pair was fitted at 297–361 K and the diagram is at 373 K, and SRK's water vapour
+pressure at 100 °C is 8.8 % low).  Gate `check_cubic_mixing_rule`.
+
 In a `gammaPhi` system a cubic may still serve the VAPOUR slot alone
 (`vapour { fugacityModel SRK; }`) — that is a γ-φ world with a real-gas φ,
 not φ-φ.
