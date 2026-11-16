@@ -194,6 +194,8 @@ public:
 
     scalar  H_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  S_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;
+    scalar  H_residualLiquid(scalar T_K, scalar P_Pa, const sVector& y) const override;
+    scalar  S_residualLiquid(scalar T_K, scalar P_Pa, const sVector& y) const override;
 
     // The one-fluid decomposition, filled by the same buildAi/buildMix the
     // hot path runs (see EquationOfState::MixingLedger).  Only the one-fluid
@@ -272,6 +274,9 @@ protected:
             const std::vector<Component>& comps);
 
 private:
+    // One body for both roots (C410): H^R / S^R at the root named.
+    scalar H_residualAt(scalar T_K, scalar P_Pa, const sVector& y, bool liquid) const;
+    scalar S_residualAt(scalar T_K, scalar P_Pa, const sVector& y, bool liquid) const;
     struct PureParams
     {
         scalar a_c;          // Ωa R² Tc² / Pc   [Pa·m^6/mol²]
