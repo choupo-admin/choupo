@@ -9,7 +9,7 @@
   cubic k_ij; the field is named `kij` because the case grammar reads one name.
   "isooctane" is read as 2,2,4-trimethylpentane, the usual meaning; the
   paper does not say.
-  Not temperature-, density- or composition-dependent (p. 325).
+  Not temperature-, density- or composition-dependent (p. 326).
 \*---------------------------------------------------------------------------*/
 recordType eosBinaryInteraction;
 schemaVersion 1;

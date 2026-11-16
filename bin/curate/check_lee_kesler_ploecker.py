@@ -35,7 +35,7 @@ WHAT THIS GATE CHECKS (each arm names what it does not).
       (H*-H)/(R T_c), (S*-S)/R, log10(f/P)), at 17 reduced states chosen to
       include the dilute gas, the compressed liquid, the metastable-root
       region and the extremes of T_r, and Tables 6, 8, 10, 12 (the deviation
-      function (q_r - q_0)/omega_r) at 7 states, are reproduced on the root the
+      function (q_r - q_0)/omega_r) at 6 states, are reproduced on the root the
       table prints; Z within 0.6e-4, the others within 0.6e-3 (half a unit of
       the printed place plus the rounding of the printed constants).  ONE state
       is the simple fluid's critical point, T_r = P_r = 1, where V_r responds to
@@ -202,7 +202,7 @@ NAME = {   # the paper's word -> the catalogue's component name
     "carbon dioxide": "CO2", "nitrous oxide": "N2O", "ammonia": "NH3", "R-12": "R12",
     "methanol": "methanol", "acetylene": "acetylene", "krypton": "krypton", "water": "water",
 }
-RECORDS_PIN = "a83a1fa4a9623f263908370d4a549707b53737d4f8e5c7d9396a9abdebb8779c"
+RECORDS_PIN = "c365243f7226e9b82b0cc0ad53906f46874a7b1d3533e3dbd9b83416b91c38b4"
 OCR_MISSES = {1.171, 1.152, 0.979}     # printed on the page, absent from the OCR layer (or one of two)
 
 # ---------------------------------------------------------------------------
@@ -1087,7 +1087,7 @@ def main():
           "the page and are sha-pinned (PKP Table A-I's one differing entry, d1 of the simple fluid, is held "
           "and not used); the 131 kappa records equal Ploecker et al. Table I (hydrogen rows refused, not "
           "shipped) and the typed table agrees with the PDF's OCR layer; %d entries of LK Tables 5, 7, 9, 11 and "
-          "Tables 6, 8, 10, 12 at 7 states are reproduced to the printed digits on the printed root, the "
+          "Tables 6, 8, 10, 12 at 6 states are reproduced to the printed digits on the printed root, the "
           "simple fluid's critical point to the band the printed constants' rounding allows, and the same states "
           "through the whole package to 1e-9; an independent Python transcription matches to 1e-9; "
           "G = H - TS closes to 1e-9 on %d states and on the package; ln phi_i equals the mole-number "
