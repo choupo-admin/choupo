@@ -453,6 +453,7 @@
   ],
   "Context": [
    "src/postProcessing/panel/PanelPass.H",
+   "src/thermo/equationOfState/CubicMixingRule.H",
    "src/unitOperations/reactor/wallHeatTransfer/BedWallHeatTransfer.H"
   ],
   "ContextRegistry": [
@@ -517,6 +518,9 @@
   ],
   "CubicEoS": [
    "src/thermo/equationOfState/CubicEoS.H"
+  ],
+  "CubicMixingRule": [
+   "src/thermo/equationOfState/CubicMixingRule.H"
   ],
   "CurationDossier": [
    "src/propertyOps/CurationDossier.H"
@@ -1402,6 +1406,9 @@
   "MiniZip": [
    "src/core/MiniZip.H"
   ],
+  "Mixed": [
+   "src/thermo/equationOfState/CubicMixingRule.H"
+  ],
   "Mixer": [
    "src/unitOperations/mixer/Mixer.H"
   ],
@@ -1835,6 +1842,9 @@
   "Pump": [
    "src/unitOperations/rotating/Pump.H"
   ],
+  "Pure": [
+   "src/thermo/equationOfState/CubicMixingRule.H"
+  ],
   "PureFluidLeaf": [
    "src/thermo/liquidProperty/PureFluidLeaf.H"
   ],
@@ -2189,6 +2199,9 @@
   ],
   "Solute": [
    "src/unitOperations/membrane/massTransfer/Polarisation.H"
+  ],
+  "SoluteVolumeAtTb": [
+   "src/thermo/ThermoPackage.H"
   ],
   "SolutionControl": [
    "src/io/SolutionWriter.H"
@@ -3179,6 +3192,12 @@
    {
     "key": "standardStateVolumes",
     "type": "StandardStateVolumes"
+   }
+  ],
+  "src/thermo/equationOfState/CubicMixingRule.cpp": [
+   {
+    "key": "vanDerWaalsOneFluid",
+    "type": ""
    }
   ],
   "src/thermo/liquidProperty/DensityMethod.cpp": [
@@ -9390,6 +9409,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/RegistryRefusal.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
@@ -9427,6 +9447,7 @@
    "src/thermo/electrolyte/SaltFromCatalogue.H",
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/electrolyte/SpeciationSolver.H",
+   "src/thermo/equationOfState/CubicMixingRule.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/liquidProperty/DensityMethod.H",
    "src/thermo/liquidProperty/Measured.H",
@@ -9890,7 +9911,37 @@
    "src/thermo/RecordLaws.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/equationOfState/CubicEoS.H",
+   "src/thermo/equationOfState/CubicMixingRule.H",
    "src/thermo/equationOfState/EquationOfState.H"
+  ],
+  "src/thermo/equationOfState/CubicMixingRule.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/RegistryRefusal.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
+   "src/thermo/RecordLaws.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
+   "src/thermo/ThermoAnnounce.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/thermo/activityCoefficient/UNIFAC.H",
+   "src/thermo/activityCoefficient/UNIQUAC.H",
+   "src/thermo/equationOfState/CubicMixingRule.H",
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/equationOfState/EquationOfState.cpp": [
    "src/core/Constants.H",
@@ -9903,6 +9954,7 @@
    "src/thermo/Component.H",
    "src/thermo/RecordLaws.H",
    "src/thermo/equationOfState/CubicEoS.H",
+   "src/thermo/equationOfState/CubicMixingRule.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/equationOfState/IdealGas.H",
    "src/thermo/equationOfState/LeeKeslerPloecker.H",
@@ -9962,6 +10014,7 @@
    "src/thermo/RecordLaws.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/equationOfState/CubicEoS.H",
+   "src/thermo/equationOfState/CubicMixingRule.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/equationOfState/PR.H"
   ],
@@ -9998,6 +10051,7 @@
    "src/thermo/Component.H",
    "src/thermo/RecordLaws.H",
    "src/thermo/equationOfState/CubicEoS.H",
+   "src/thermo/equationOfState/CubicMixingRule.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/equationOfState/SRK.H"
   ],
@@ -14874,6 +14928,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/equationOfState/LeeKeslerPloecker.cpp",
    "src/thermo/equationOfState/PR.cpp",
    "src/thermo/equationOfState/ReferenceFluid.cpp",
@@ -15326,6 +15381,7 @@
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/IdealGas.cpp",
    "src/thermo/equationOfState/LeeKeslerPloecker.cpp",
@@ -15698,6 +15754,7 @@
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/HelmholtzEnergy.cpp",
    "src/thermo/equationOfState/IdealGas.cpp",
@@ -16125,6 +16182,7 @@
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/HelmholtzEnergy.cpp",
    "src/thermo/equationOfState/IdealGas.cpp",
@@ -16628,6 +16686,7 @@
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/LeeKeslerPloecker.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
@@ -17057,6 +17116,7 @@
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/LeeKeslerPloecker.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
@@ -17547,9 +17607,11 @@
    "src/propertyOps/PropsPlan.cpp",
    "src/solver/ODE/ODEIntegrator.cpp",
    "src/streams/UtilityCircuit.cpp",
+   "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/ActivityModel.cpp",
    "src/thermo/electrochem/EDStack.cpp",
    "src/thermo/electrochem/EDStackRegistry.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/membrane/FeedSpacer.cpp",
@@ -17806,6 +17868,7 @@
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/Phase.cpp",
    "src/thermo/reaction/RateLaw.cpp",
@@ -18077,6 +18140,7 @@
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/HelmholtzEnergy.cpp",
    "src/thermo/equationOfState/IdealGas.cpp",
@@ -19838,6 +19902,7 @@
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
@@ -20535,6 +20600,7 @@
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/LeeKeslerPloecker.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
@@ -20861,6 +20927,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
@@ -21045,6 +21112,7 @@
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
@@ -21238,6 +21306,7 @@
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
@@ -21378,6 +21447,7 @@
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
@@ -21685,6 +21755,7 @@
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/LeeKeslerPloecker.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
@@ -22011,6 +22082,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
@@ -22172,6 +22244,7 @@
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
@@ -22338,6 +22411,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/equationOfState/LeeKeslerPloecker.cpp",
    "src/thermo/equationOfState/PR.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
@@ -22503,6 +22577,7 @@
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
@@ -22779,6 +22854,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
@@ -22922,6 +22998,7 @@
    "src/thermo/activityCoefficient/UNIFACDortmund.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/Phase.cpp",
    "src/thermo/reaction/RateLaw.cpp",
@@ -22958,6 +23035,7 @@
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/ActivityModel.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/phase/LiquidPhase.cpp"
   ],
   "src/thermo/activityCoefficient/UNIFACDortmund.H": [
@@ -22969,6 +23047,7 @@
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/ActivityModel.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/phase/LiquidPhase.cpp"
   ],
   "src/thermo/activityCoefficient/Wilson.H": [
@@ -23339,6 +23418,14 @@
   ],
   "src/thermo/equationOfState/CubicEoS.H": [
    "src/thermo/equationOfState/CubicEoS.cpp",
+   "src/thermo/equationOfState/EquationOfState.cpp",
+   "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/SRK.cpp"
+  ],
+  "src/thermo/equationOfState/CubicMixingRule.H": [
+   "src/thermo/ThermoPackageBuilder.cpp",
+   "src/thermo/equationOfState/CubicEoS.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/PR.cpp",
    "src/thermo/equationOfState/SRK.cpp"
@@ -24093,6 +24180,7 @@
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
@@ -24444,6 +24532,7 @@
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/CubicMixingRule.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",

@@ -534,6 +534,57 @@ Source: Perry's Chemical Engineers' Handbook, 9th ed., Examples 15-1 to 15-3, re
 \end{tutgolden}
 
 \clearpage
+\tutentry{lkp02\_n2\_ch4\_ar\_112K}{tutorials/props/compare/lkp02\_n2\_ch4\_ar\_112K}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{pxy\_n2\_ch4}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{pxy\_n2\_ar}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{ternary\_01}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{ternary\_02}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{ternary\_03}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{ternary\_04}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{ternary\_05}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{ternary\_06}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{ternary\_07}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{ternary\_08}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{ternary\_09}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-3.9) {\textbf{ternary\_10}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Lee-Kesler-Ploecker bubble pressure and vapour composition of N2 + CH4, N2 + Ar and the ternary at 112.00 K against Miller, Kidnay \& Hiza (1973), with the kappa of Ploecker et al. (1978) Table I used as printed}
+\begin{tutnarrative}
+THE LEE-KESLER EQUATION OF STATE WITH THE PLOECKER MIXING RULES, PREDICTING MEASURED CRYOGENIC VAPOUR-LIQUID EQUILIBRIUM.
+
+THE QUESTION. A corresponding-states correlation fitted to pure-fluid volumetric and caloric data, plus a one-fluid mixing rule with ONE binary constant per pair read from a published table (Ploecker, Knapp \& Prausnitz 1978, Table I): how close does it come to the bubble pressures and vapour compositions of the nitrogen + argon + methane system at 112.00 K? The three kappa -- N2-CH4 0.977, N2-Ar 0.988, Ar-CH4 0.984 -- are the table's own; nothing is fitted here.
+
+THE EVIDENCE. Miller, Kidnay \& Hiza, AIChE J. 19 (1973) 145-148: Table 1 (N2 + Ar, 7 runs), Table 2 (N2 + CH4, 11 runs) and Table 3 (the ternary, 28 rows, ten liquid rows of which are evaluated below), measured at 112.00 K with the nitrogen at T\_r = 0.887. Table I of 1978 lists all three pairs and does not say which measurements it was regressed on, so this comparison is NOT claimed to be out of sample for kappa; it is a check that the table's numbers, used as printed, reproduce measured behaviour.
+
+WHAT IS COMPARED. Each liquid composition the experimenter set is evaluated at 112 K: P\_bubble(x) and the incipient vapour y\_eqT(x) -- the engine asked where the experimenter put the liquid, never a value read off a curve. The residual is model - measurement, in the aad rows of `expected`. In the binary tables the y of the vapour-sample row stands beside the x of the liquid-sample row; the two samples were taken at pressures that differ by up to 1.6 \%, said in the dataset files, and the dilute end of y is sensitive to that: the bubble PRESSURE is the comparison to read, the y a second one.
+
+WHAT WAS FOUND (the aad rows, and the anchor rows for the ternary). Bubble pressure: N2 + CH4 1.6 \% mean absolute, N2 + Ar 0.75 \%, the ten ternary liquids 0.48 \% (largest 1.3 \%). Vapour N2 mole fraction: 0.005 absolute for N2 + CH4, 0.013 for N2 + Ar. Ternary row 10 (x\_Ar 0.0878) misses y\_N2 by 0.034; the paper's own activity coefficient for that row, gamma\_Ar = 0.661, is the odd one out of the table (its neighbours sit between 0.98 and 1.22).
+
+WHAT IS NOT CLAIMED. The vapour pressures of the pure components come from the catalogue's own records, so part of every residual is theirs. The correlation is for non-polar and slightly polar fluids; these are the simplest it covers. IN SAMPLE: the simple-fluid constants of the correlation were fitted to argon, krypton and methane data (Lee \& Kesler 1975, p. 512), so the pure-fluid side of two of these three components is not out of sample; the data the paper marks as used in the correlation (its Tables 3 and 4) are pure fluids. Table 3's other eighteen rows are not evaluated here.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{pxy\_n2\_ch4}{n\_emptyCurves}{0}
+\goldrow{diag}{pxy\_n2\_ch4}{n\_failures}{0}
+\goldrow{diag}{pxy\_n2\_ch4}{n\_points}{11}
+\goldrow{diag}{pxy\_n2\_ar}{n\_emptyCurves}{0}
+\goldrow{diag}{pxy\_n2\_ar}{n\_failures}{0}
+\goldrow{diag}{pxy\_n2\_ar}{n\_points}{7}
+\goldrow{diag}{ternary\_01}{Cp\_ig}{23.276564755}
+\goldrow{diag}{ternary\_01}{H\_R}{-366.133200991}
+\goldrow{diag}{ternary\_01}{H\_ig}{-40086.1662212}
+\goldrow{diag}{ternary\_01}{H\_real}{-40452.2994222}
+\goldrow{diag}{ternary\_01}{P}{508752.825}
+\goldrow{diag}{ternary\_01}{P\_bubble}{511424.078228}
+\goldrow{diag}{ternary\_01}{S\_R}{-2.22749531554}
+\goldrow{diag}{ternary\_01}{S\_ig}{139.958566772}
+\goldmore{188}
+\end{tutgolden}
+
+\clearpage
 \tutentry{lle01\_acetic\_mibk\_perry}{tutorials/props/compare/lle01\_acetic\_mibk\_perry}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -4560,6 +4611,57 @@ So this case publishes exactly one thing: the curve. It does NOT flash anything.
 \goldrow{diag}{txy}{n\_emptyCurves}{0}
 \goldrow{diag}{txy}{n\_failures}{0}
 \goldrow{diag}{txy}{n\_points}{51}
+\end{tutgolden}
+
+\clearpage
+\tutentry{lkp01\_lee\_kesler\_tables}{tutorials/props/molecular/lkp01\_lee\_kesler\_tables}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{simple\_A}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{simple\_B}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{simple\_C}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{simple\_D}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{simple\_E}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{simple\_F}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{simple\_G}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{reference\_A}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{reference\_B}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{reference\_C}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{reference\_D}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-3.9) {\textbf{reference\_E}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The Lee-Kesler equation of state against the tables Lee \& Kesler (1975) print: Z, enthalpy and entropy departures of the simple and reference fluids at seven reduced states}
+\begin{tutnarrative}
+THE LEE-KESLER EQUATION OF STATE AGAINST THE TABLES THE PAPER PRINTS.
+
+THE QUESTION. Lee \& Kesler (AIChE J. 21 (1975) 510-527) print their correlation as numbers: Tables 5-12 give Z, (H$\ast$-H)/RT\_c, (S$\ast$-S)/R and log10(f/P) of the simple fluid (the superscript (0)) and the deviation function (1) = (reference fluid - simple fluid)/0.3978, on a grid of T\_r = 0.3-4 and P\_r = 0.01-10. Does the engine's implementation of Eqs. 3, 9, 11 and 12 with the Table 1 constants give those numbers?
+
+HOW A TABLE ENTRY BECOMES A STATE. The correlation is written in reduced variables, so a fluid with T\_c = 100 K and P\_c = 10 bar IS the table's axes in other units: T = 120 K, P = 10 bar is T\_r = 1.20, P\_r = 1.0. The two pseudo-components of this case are the paper's two fluids:
+
+LKsimple omega = 0 the simple fluid $\to$ Z\textasciicircum{}(0), q\textasciicircum{}(0) LKreference omega = 0.3978 the reference fluid $\to$ Z\textasciicircum{}(r), q\textasciicircum{}(r)
+
+and the printed deviation function is (q\textasciicircum{}(r) - q\textasciicircum{}(0))/0.3978. Seven states are run on each fluid, each on its single physical root (supercritical, dilute gas, compressed liquid); the departures come out in J/mol and J/(mol K) and the gate bin/curate/check\_lee\_kesler\_ploecker.py divides by R T\_c and R to compare with the page. Which printed entries were read, and to how many digits they agree, is in that gate, not asserted here.
+
+WHAT IS NOT CLAIMED. The tables are the correlation's OWN output; agreeing with them proves the implementation, not the physics. The physics is tested against measurement in lkp02\_n2\_ch4\_ar\_112K.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{simple\_A}{Cp\_ig}{29}
+\goldrow{diag}{simple\_A}{H\_R}{-712.331919488}
+\goldrow{diag}{simple\_A}{H\_ig}{-5166.35}
+\goldrow{diag}{simple\_A}{H\_real}{-5878.68191949}
+\goldrow{diag}{simple\_A}{P}{1000000}
+\goldrow{diag}{simple\_A}{S\_R}{-4.26062338762}
+\goldrow{diag}{simple\_A}{S\_ig}{-45.5378018913}
+\goldrow{diag}{simple\_A}{S\_real}{-49.7984252789}
+\goldrow{diag}{simple\_A}{T}{120}
+\goldrow{diag}{simple\_A}{Z}{0.785758039597}
+\goldrow{diag}{simple\_A}{gamma}{1.40194569106}
+\goldrow{diag}{simple\_A}{v\_molar}{0.000783978701643}
+\goldrow{diag}{simple\_B}{Cp\_ig}{29}
+\goldrow{diag}{simple\_B}{H\_R}{-1808.33193475}
+\goldmore{179}
 \end{tutgolden}
 
 \clearpage
