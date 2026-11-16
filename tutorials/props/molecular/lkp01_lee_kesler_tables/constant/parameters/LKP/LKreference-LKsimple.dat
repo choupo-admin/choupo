@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  Lee-Kesler-Ploecker kappa for LKreference - LKsimple (synthetic pair).
+
+  kappa = 1 is the identity of Ploecker, Knapp & Prausnitz (1978) Eq. 12 (the
+  geometric-mean pseudo-critical temperature, no interaction); the two
+  pseudo-components of this case are never mixed -- every state is a pure
+  fluid -- so the value is declared only so the package announces no default.
+\*---------------------------------------------------------------------------*/
+recordType eosBinaryInteraction;
+schemaVersion 1;
+i    LKreference;
+j    LKsimple;
+kij  1.000;
+eos  LeeKeslerPloecker;

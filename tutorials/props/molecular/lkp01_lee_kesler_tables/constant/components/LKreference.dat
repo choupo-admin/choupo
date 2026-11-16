@@ -1,0 +1,54 @@
+/*---------------------------------------------------------------------------*\
+  Component: LKreference -- the REFERENCE FLUID of Lee & Kesler (1975), as a
+  synthetic pseudo-component.
+
+  T_c = 100 K, P_c = 10 bar and the reference fluid's own acentric factor
+  omega^(r) = 0.3978 (Lee & Kesler 1975, p. 514; Ploecker, Knapp & Prausnitz
+  1978, Table A-I).  At the same state as LKsimple the engine's Z is Z^(r), and
+  the printed Z^(1) of Table 6 is (Z^(r) - Z^(0))/omega^(r); likewise Tables
+  8 and 10 for H and S.
+
+  NOT A REAL SUBSTANCE (n-octane is the fluid the constants were fitted on, but
+  this record carries none of its properties).  See LKsimple for the rest.
+\*---------------------------------------------------------------------------*/
+
+name        LKreference;
+formula     LKr;
+CAS         00-00-0;
+
+MW          114.0;
+Tc          100.0;
+Pc          10.0;
+omega       0.3978;
+Tb          70.0;
+HvapTb      9000;
+Vliq        1.6e-4;
+
+//  An ARBITRARY datum: the departure functions H_R and S_R this case reads do
+//  not depend on it, and a fictitious species has no elements.  Zero is the
+//  value that makes the ideal-gas part vanish at 298.15 K.
+standardThermochemistry
+{
+    dHf_298   0.0;      // J/mol -- arbitrary datum, see above
+    s_298     0.0;      // J/(mol K) -- arbitrary datum, see above
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.5   400.0   -10.0);
+    Trange        (60  100);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (29.0   0.0   0.0   0.0);
+    Trange        (30  500);
+}
+
+provenance
+{
+    source      synthetic;
+    reason      "the reduced reference fluid of Lee & Kesler (1975): T_c 100 K, P_c 10 bar, omega 0.3978, chosen so that T_r and P_r are read off the state; no physical primary exists";
+}

@@ -1,0 +1,52 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  lkp02_n2_ch4_ar_112K -- the thermophysical system.
+
+  phi-phi: the Lee-Kesler equation of state with the Ploecker, Knapp &
+  Prausnitz (1978) mixing rules prices BOTH phases (one correlation, two
+  roots).  The three binary constants are the table's own, each read from its
+  record under data/standards/parameters/LKP/ (Table I, p. 327):
+
+      N2-CH4  0.977      N2-Ar  0.988      Ar-CH4  0.984
+
+  kappa multiplies the geometric-mean pseudo-critical temperature (Eq. 12);
+  1 means no interaction.  Nothing is fitted.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( N2  Ar  CH4 );
+
+equilibrium
+{
+    formulation phiPhi;
+
+    equationOfState
+    {
+        model LeeKeslerPloecker;
+        binaryInteractions
+        {
+            CH4-N2 { source "data/standards/parameters/LKP/CH4-N2.dat"; }
+            Ar-N2  { source "data/standards/parameters/LKP/Ar-N2.dat"; }
+            Ar-CH4 { source "data/standards/parameters/LKP/Ar-CH4.dat"; }
+        }
+    }
+
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}

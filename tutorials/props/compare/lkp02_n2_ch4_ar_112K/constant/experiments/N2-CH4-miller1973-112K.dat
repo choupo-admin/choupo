@@ -1,0 +1,52 @@
+/*--------------------------------------------------------------------------*\
+  MEASURED vapour-liquid equilibrium of nitrogen + CH4 at 112.00 K.
+
+  SOURCE (the page, not an archive): Miller, R.C.; Kidnay, A.J.; Hiza, M.J.
+  "Liquid-vapor equilibria at 112.00 K for systems containing nitrogen, argon,
+  and methane", AIChE Journal 19 (1973) 145-148, Table 2 (p. 147).
+  Read from the page image.  The paper lists a VAPOUR-sample row and a
+  LIQUID-sample row per run, at pressures that differ by up to
+  1.3 % (the samples were taken in independent
+  runs at nearly equivalent pressures, p. 145).  Each line below pairs the
+  liquid x and its pressure with the y of the vapour row beside it; the
+  pressure column is the LIQUID row's.  The residual of the model is
+  therefore model(x) - measurement for P_bubble, and for y an estimate that
+  carries that pairing (dy/dP is small except at the dilute end).
+
+  Columns are the props bench's overlay names: x[N2], P_bubble, y_eqT_N2.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.P_bubble;
+system       ( N2 CH4 );
+temperature  112.00 K;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Miller, Kidnay & Hiza, AIChE J. 19 (1973) 145-148, Table 2 (p. 147)";
+    sourceFile   "miller1973-lve-112k-nitrogen-argon-methane.pdf";
+    sha256       "81d922c9f7029a94d4a68ed5e9a37fe9c52ee2416e330d7609a2a8dd3083a64c";   // of that PDF
+}
+
+columns
+(
+    { name x[N2];  unit -;  }
+    { name P_bubble;  unit atm;  }
+    { name y_eqT_N2;  unit -;  }
+);
+
+data
+(
+    0.0338  1.814  0.4478
+    0.0545  2.152  0.5311
+    0.1336  3.961  0.7476
+    0.1505  4.229  0.7660
+    0.2170  5.413  0.8190
+    0.3082  6.894  0.8626
+    0.4701  9.001  0.9041
+    0.5172  9.366  0.9086
+    0.6103  10.705  0.9287
+    0.7068  11.804  0.9433
+    0.7811  12.788  0.9552
+);

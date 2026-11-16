@@ -1,0 +1,213 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    pxy_n2_ch4             n_emptyCurves    0                  1e-4
+diag    pxy_n2_ch4             n_failures       0                  1e-4
+diag    pxy_n2_ch4             n_points         11                 1e-4
+diag    pxy_n2_ar              n_emptyCurves    0                  1e-4
+diag    pxy_n2_ar              n_failures       0                  1e-4
+diag    pxy_n2_ar              n_points         7                  1e-4
+diag    ternary_01             Cp_ig            23.276564755       1e-4
+diag    ternary_01             H_R              -366.133200991     1e-4
+diag    ternary_01             H_ig             -40086.1662212     1e-4
+diag    ternary_01             H_real           -40452.2994222     1e-4
+diag    ternary_01             P                508752.825         1e-4
+diag    ternary_01             P_bubble         511424.078228      1e-4
+diag    ternary_01             S_R              -2.22749531554     1e-4
+diag    ternary_01             S_ig             139.958566772      1e-4
+diag    ternary_01             S_real           137.731071456      1e-4
+diag    ternary_01             T                112                1e-4
+diag    ternary_01             Z                0.866479771875     1e-4
+diag    ternary_01             Z_liquid         0.0192126945535    1e-4
+diag    ternary_01             gamma            1.55570150116      1e-4
+diag    ternary_01             v_molar          0.00158600226214   1e-4
+diag    ternary_01             v_molar_liq      3.51668648394e-05  1e-4
+diag    ternary_01             y_eqT_Ar         0.728994929609     1e-4
+diag    ternary_01             y_eqT_CH4        0.121742949561     1e-4
+diag    ternary_01             y_eqT_N2         0.14926212083      1e-4
+diag    ternary_02             Cp_ig            24.2562589537      1e-4
+diag    ternary_02             H_R              -493.998780288     1e-4
+diag    ternary_02             H_ig             -34258.2073115     1e-4
+diag    ternary_02             H_real           -34752.2060918     1e-4
+diag    ternary_02             P                706032.6           1e-4
+diag    ternary_02             P_bubble         704672.770115      1e-4
+diag    ternary_02             S_R              -3.04969232976     1e-4
+diag    ternary_02             S_ig             141.240372582      1e-4
+diag    ternary_02             S_real           138.190680252      1e-4
+diag    ternary_02             T                112                1e-4
+diag    ternary_02             Z                0.820985855231     1e-4
+diag    ternary_02             Z_liquid         0.0273583335553    1e-4
+diag    ternary_02             gamma            1.52155117547      1e-4
+diag    ternary_02             v_molar          0.00108283710237   1e-4
+diag    ternary_02             v_molar_liq      3.60842010175e-05  1e-4
+diag    ternary_02             y_eqT_Ar         0.46236602899      1e-4
+diag    ternary_02             y_eqT_CH4        0.0833167476367    1e-4
+diag    ternary_02             y_eqT_N2         0.454317223373     1e-4
+diag    ternary_03             Cp_ig            25.4230125121      1e-4
+diag    ternary_03             H_R              -608.649369145     1e-4
+diag    ternary_03             H_ig             -27520.8420438     1e-4
+diag    ternary_03             H_real           -28129.4914129     1e-4
+diag    ternary_03             P                909999.825         1e-4
+diag    ternary_03             P_bubble         906089.788378      1e-4
+diag    ternary_03             S_R              -3.81074950816     1e-4
+diag    ternary_03             S_ig             142.299722849      1e-4
+diag    ternary_03             S_real           138.488973341      1e-4
+diag    ternary_03             T                112                1e-4
+diag    ternary_03             Z                0.781270648604     1e-4
+diag    ternary_03             Z_liquid         0.0364874073392    1e-4
+diag    ternary_03             gamma            1.48598289565      1e-4
+diag    ternary_03             v_molar          0.000799488843269  1e-4
+diag    ternary_03             v_molar_liq      3.73382452542e-05  1e-4
+diag    ternary_03             y_eqT_Ar         0.299732239212     1e-4
+diag    ternary_03             y_eqT_CH4        0.0584914681992    1e-4
+diag    ternary_03             y_eqT_N2         0.641776292588     1e-4
+diag    ternary_04             Cp_ig            26.6444989969      1e-4
+diag    ternary_04             H_R              -701.917325226     1e-4
+diag    ternary_04             H_ig             -20684.3942779     1e-4
+diag    ternary_04             H_real           -21386.3116031     1e-4
+diag    ternary_04             P                1110015.375        1e-4
+diag    ternary_04             P_bubble         1100138.84319      1e-4
+diag    ternary_04             S_R              -4.44761339641     1e-4
+diag    ternary_04             S_ig             142.822633566      1e-4
+diag    ternary_04             S_real           138.375020169      1e-4
+diag    ternary_04             T                112                1e-4
+diag    ternary_04             Z                0.750203642656     1e-4
+diag    ternary_04             Z_liquid         0.0463643859432    1e-4
+diag    ternary_04             gamma            1.45359771504      1e-4
+diag    ternary_04             v_molar          0.000629364702258  1e-4
+diag    ternary_04             v_molar_liq      3.88962493586e-05  1e-4
+diag    ternary_04             y_eqT_Ar         0.194896778941     1e-4
+diag    ternary_04             y_eqT_CH4        0.0404011893732    1e-4
+diag    ternary_04             y_eqT_N2         0.764702031686     1e-4
+diag    ternary_05             Cp_ig            27.9398077147      1e-4
+diag    ternary_05             H_R              -783.37937194      1e-4
+diag    ternary_05             H_ig             -14047.4588152     1e-4
+diag    ternary_05             H_real           -14830.8381871     1e-4
+diag    ternary_05             P                1316921.025        1e-4
+diag    ternary_05             P_bubble         1300180.69313      1e-4
+diag    ternary_05             S_R              -5.01650201544     1e-4
+diag    ternary_05             S_ig             142.644188548      1e-4
+diag    ternary_05             S_real           137.627686533      1e-4
+diag    ternary_05             T                112                1e-4
+diag    ternary_05             Z                0.724411482677     1e-4
+diag    ternary_05             Z_liquid         0.0578627844517    1e-4
+diag    ternary_05             gamma            1.42365943514      1e-4
+diag    ternary_05             v_molar          0.00051224508743   1e-4
+diag    ternary_05             v_molar_liq      4.09158714201e-05  1e-4
+diag    ternary_05             y_eqT_Ar         0.112319218951     1e-4
+diag    ternary_05             y_eqT_CH4        0.0243201097867    1e-4
+diag    ternary_05             y_eqT_N2         0.863360671263     1e-4
+diag    ternary_06             Cp_ig            21.7424065622      1e-4
+diag    ternary_06             H_R              -405.538059363     1e-4
+diag    ternary_06             H_ig             -11304.2931172     1e-4
+diag    ternary_06             H_real           -11709.8311766     1e-4
+diag    ternary_06             P                745954.65          1e-4
+diag    ternary_06             P_bubble         744047.316484      1e-4
+diag    ternary_06             S_R              -2.47255850611     1e-4
+diag    ternary_06             S_ig             126.008673549      1e-4
+diag    ternary_06             S_real           123.536115043      1e-4
+diag    ternary_06             T                112                1e-4
+diag    ternary_06             Z                0.851865732838     1e-4
+diag    ternary_06             Z_liquid         0.0266136215933    1e-4
+diag    ternary_06             gamma            1.61919104314      1e-4
+diag    ternary_06             v_molar          0.00106343495361   1e-4
+diag    ternary_06             v_molar_liq      3.32233758836e-05  1e-4
+diag    ternary_06             y_eqT_Ar         0.851477289934     1e-4
+diag    ternary_06             y_eqT_CH4        0.0227113425732    1e-4
+diag    ternary_06             y_eqT_N2         0.125811367492     1e-4
+diag    ternary_07             Cp_ig            25.016799704       1e-4
+diag    ternary_07             H_R              -607.580896218     1e-4
+diag    ternary_07             H_ig             -8888.03276037     1e-4
+diag    ternary_07             H_real           -9495.61365658     1e-4
+diag    ternary_07             P                1114777.65         1e-4
+diag    ternary_07             P_bubble         1113944.35454      1e-4
+diag    ternary_07             S_R              -3.8031179643      1e-4
+diag    ternary_07             S_ig             135.20331667       1e-4
+diag    ternary_07             S_real           131.400198705      1e-4
+diag    ternary_07             T                112                1e-4
+diag    ternary_07             Z                0.782461871707     1e-4
+diag    ternary_07             Z_liquid         0.0444642411163    1e-4
+diag    ternary_07             gamma            1.49780234797      1e-4
+diag    ternary_07             v_molar          0.000653622718413  1e-4
+diag    ternary_07             v_molar_liq      3.71428170515e-05  1e-4
+diag    ternary_07             y_eqT_Ar         0.383031173507     1e-4
+diag    ternary_07             y_eqT_CH4        0.0117478387853    1e-4
+diag    ternary_07             y_eqT_N2         0.605220987708     1e-4
+diag    ternary_08             Cp_ig            24.4441331202      1e-4
+diag    ternary_08             H_R              -553.210540156     1e-4
+diag    ternary_08             H_ig             -19904.4337552     1e-4
+diag    ternary_08             H_real           -20457.6442954     1e-4
+diag    ternary_08             P                908986.575         1e-4
+diag    ternary_08             P_bubble         908311.975416      1e-4
+diag    ternary_08             S_R              -3.43839603926     1e-4
+diag    ternary_08             S_ig             137.861865816      1e-4
+diag    ternary_08             S_real           134.423469777      1e-4
+diag    ternary_08             T                112                1e-4
+diag    ternary_08             Z                0.800454241293     1e-4
+diag    ternary_08             Z_liquid         0.0353993121543    1e-4
+diag    ternary_08             gamma            1.51547628433      1e-4
+diag    ternary_08             v_molar          0.000820032847091  1e-4
+diag    ternary_08             v_molar_liq      3.62651569989e-05  1e-4
+diag    ternary_08             y_eqT_Ar         0.431353214117     1e-4
+diag    ternary_08             y_eqT_CH4        0.0412431234953    1e-4
+diag    ternary_08             y_eqT_N2         0.527403662387     1e-4
+diag    ternary_09             Cp_ig            26.3540318084      1e-4
+diag    ternary_09             H_R              -669.47897308      1e-4
+diag    ternary_09             H_ig             -34785.9956579     1e-4
+diag    ternary_09             H_real           -35455.474631      1e-4
+diag    ternary_09             P                909493.2           1e-4
+diag    ternary_09             P_bubble         907793.850422      1e-4
+diag    ternary_09             S_R              -4.22679340685     1e-4
+diag    ternary_09             S_ig             145.622350293      1e-4
+diag    ternary_09             S_real           141.395556886      1e-4
+diag    ternary_09             T                112                1e-4
+diag    ternary_09             Z                0.760391860814     1e-4
+diag    ternary_09             Z_liquid         0.0374502294248    1e-4
+diag    ternary_09             gamma            1.46090139572      1e-4
+diag    ternary_09             v_molar          0.000778556636375  1e-4
+diag    ternary_09             v_molar_liq      3.83448668444e-05  1e-4
+diag    ternary_09             y_eqT_Ar         0.170159055087     1e-4
+diag    ternary_09             y_eqT_CH4        0.0735884888539    1e-4
+diag    ternary_09             y_eqT_N2         0.756252456059     1e-4
+diag    ternary_10             Cp_ig            28.4238563279      1e-4
+diag    ternary_10             H_R              -810.190397916     1e-4
+diag    ternary_10             H_ig             -16745.6904782     1e-4
+diag    ternary_10             H_real           -17555.8808761     1e-4
+diag    ternary_10             P                1313982.6          1e-4
+diag    ternary_10             P_bubble         1302558.21829      1e-4
+diag    ternary_10             S_R              -5.20691578025     1e-4
+diag    ternary_10             S_ig             143.899541286      1e-4
+diag    ternary_10             S_real           138.692625506      1e-4
+diag    ternary_10             T                112                1e-4
+diag    ternary_10             Z                0.715586634877     1e-4
+diag    ternary_10             Z_liquid         0.0584790125013    1e-4
+diag    ternary_10             gamma            1.41346162584      1e-4
+diag    ternary_10             v_molar          0.000507136435802  1e-4
+diag    ternary_10             v_molar_liq      4.1444091496e-05   1e-4
+diag    ternary_10             y_eqT_Ar         0.0625056964009    1e-4
+diag    ternary_10             y_eqT_CH4        0.0310207654538    1e-4
+diag    ternary_10             y_eqT_N2         0.906473538145     1e-4
+aad     miller1973_n2_ch4      pxy_n2_ch4.P_bubble.aadAbs 10668.2679091      1e-4
+aad     miller1973_n2_ch4      pxy_n2_ch4.P_bubble.aadRelPct 1.61270795232      1e-4
+aad     miller1973_n2_ch4      pxy_n2_ch4.y_eqT_N2.aadAbs 0.00528508218182   1e-4
+aad     miller1973_n2_ar       pxy_n2_ar.P_bubble.aadAbs 8153.67657143      1e-4
+aad     miller1973_n2_ar       pxy_n2_ar.P_bubble.aadRelPct 0.747804602006     1e-4
+aad     miller1973_n2_ar       pxy_n2_ar.y_eqT_N2.aadAbs 0.012984723        1e-4
+
+# ANCHOR rows: AUTHORED, never re-recorded.  The published value is the MEASURED pressure at which
+# the liquid of the stated composition was in equilibrium at 112.00 K: Miller, Kidnay & Hiza, AIChE J.
+# 19 (1973) 145, Table 3 (p. 147), atm converted at 1.01325 bar/atm (the table's own footnote).  The
+# model is the Lee-Kesler equation with the Ploecker kappa of Table I, nothing fitted.  Band 2 %: the
+# paper states the pressures to +-0.1 % of full scale (20 bar); the largest observed deviation is
+# 1.3 %.  The vapour compositions are not anchored: in the binary tables the y and x samples were
+# taken at pressures that differ by up to 1.6 % and the dilute end is sensitive to that.
+diag    ternary_01            P_bubble         508752.8  2e-2  anchor
+diag    ternary_02            P_bubble         706032.6  2e-2  anchor
+diag    ternary_03            P_bubble         909999.8  2e-2  anchor
+diag    ternary_04            P_bubble         1110015.4  2e-2  anchor
+diag    ternary_05            P_bubble         1316921.0  2e-2  anchor
+diag    ternary_06            P_bubble         745954.7  2e-2  anchor
+diag    ternary_07            P_bubble         1114777.7  2e-2  anchor
+diag    ternary_08            P_bubble         908986.6  2e-2  anchor
+diag    ternary_09            P_bubble         909493.2  2e-2  anchor
+diag    ternary_10            P_bubble         1313982.6  2e-2  anchor
