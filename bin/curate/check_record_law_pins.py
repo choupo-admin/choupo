@@ -138,6 +138,15 @@ def make_case(tmp, witness, comp, prop, mode, how="system"):
     d = Path(tmp) / mode
     shutil.copytree(ROOT / witness, d, ignore=shutil.ignore_patterns(
         "converged", "postProcessing", "reports", "log.*", "*.csv"))
+    #  A witness that REFERENCES the catalogue (C413: its manifest holds `pins`) is
+    #  probed as the UNSEALED case it behaves as once the manifest is gone: the
+    #  probe edits a record the pins say is the catalogue's, which is the point
+    #  of the probe and not a drift to refuse.
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import case_records
+    man = d / "constant" / "propertyManifest"
+    if man.is_file() and case_records.read_manifest(man)["has_pins"]:
+        man.unlink()
     rec = d / "constant" / "components" / f"{comp}.dat"
     if not rec.exists():
         rec.parent.mkdir(parents=True, exist_ok=True)

@@ -144,10 +144,12 @@ def vec(t, key):
 
 def record(name, case=None):
     """The case's own sealed copy first -- the one the run reads."""
-    for p in ((case or CASE) / "constant/components" / f"{name}.dat",
-              ROOT / "data/standards/components" / f"{name}.dat"):
-        if p.exists():
-            return strip(p.read_text())
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import case_records     # C413: the case's own record, else the catalogue's
+    p = case_records.record_path(case or CASE, f"components/{name}.dat") \
+        or ROOT / "data/standards/components" / f"{name}.dat"
+    if p.exists():
+        return strip(p.read_text())
     raise FileNotFoundError(name)
 
 

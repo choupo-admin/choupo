@@ -85,6 +85,20 @@ struct ElementComposition
 // Parse `formula` under the grammar above.  Total-string or nothing.
 ElementComposition parseElementalFormula(const std::string& formula);
 
+// The formula WITH its charge (C413: the identity of a record, compared where a
+// case's record shadows the catalogue's).  `charge` is 0 when the formula
+// carries no suffix; the suffix is read by the SAME rule parseElementalFormula
+// strips it ("NH4+" +1, "SO4-2" -2).  `parsed` is false, with the reason, when
+// the atoms do not parse.
+struct FormulaIdentity
+{
+    bool                          parsed = false;
+    std::string                   reason;
+    std::map<std::string, scalar> atoms;
+    int                           charge = 0;
+};
+FormulaIdentity parseFormulaIdentity(const std::string& formula);
+
 // ---------------------------------------------------------------------------
 //  The COMPONENT-level elemental resolution: formula first, then the
 //  declared elementalComposition{} block, then unavailable -- resolved ONCE

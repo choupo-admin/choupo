@@ -28,6 +28,7 @@ refused when the component is READ, which they share, but no probe runs them);
 the equilibrium crystalliser (it does not use k_v).
 """
 import os, re, shutil, subprocess, sys, tempfile
+import case_records   # C413: a probe copy of a pinned case is materialised
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SOLVE = os.path.join(ROOT, 'choupoSolve')
@@ -57,7 +58,7 @@ def copy(tmp, base, name):
     d = os.path.join(tmp, name)
     if os.path.isdir(d):
         shutil.rmtree(d)
-    shutil.copytree(base, d)
+    case_records.copytree(base, d)
     # drop run output so the probe is solved afresh
     for sub in ('converged', 'reports'):
         shutil.rmtree(os.path.join(d, sub), ignore_errors=True)

@@ -20,3 +20,6 @@ MW             95.211;          // g/mol  (= kg/kmol)
 role           nonvolatile;
 dissociation   3;               // van't Hoff factor
 dissociatesTo  { Mg 1; Cl 2; }  // ion stoichiometry (formula-like identity)
+
+variationOf MgCl2;
+variationReason "Choupo Component: Magnesium chloride (MgCl2, CAS 7786-30-3) -- CASE-LOCAL.";

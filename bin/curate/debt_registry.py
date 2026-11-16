@@ -838,20 +838,8 @@ ASSOCIATION_FACTOR_DEFAULTED = {
 #  human has read it back against its articles.  check_seal_drift holds each
 #  entry: the copy must still be adopted -- once re-sealed (imported again),
 #  the entry is stale and must leave this table.
-SEALED_COPIES_ADOPTED = {
-    "tutorials/plant/aceticAcid02_plant/constant/components/methanol.dat":
-        "surfaceTension law from data/standards/components/methanol.dat; re-seal "
-        "(C402 lane); the law is autoPromoted, needs a human review",
-    "tutorials/plant/aceticAcid02_plant/constant/components/aceticAcid.dat":
-        "surfaceTension law from data/standards/components/aceticAcid.dat; re-seal "
-        "(C402 lane); the law is autoPromoted, needs a human review",
-    "tutorials/plant/aceticAcid02_plant/constant/components/dimethylEther.dat":
-        "surfaceTension law from data/standards/components/dimethylEther.dat; re-seal "
-        "(C402 lane); the law is autoPromoted, needs a human review",
-    "tutorials/plant/aceticAcid02_plant/constant/components/water.dat":
-        "surfaceTension law from data/standards/components/water.dat; re-seal "
-        "(C402 lane); the law is autoPromoted, needs a human review",
-}
+SEALED_COPIES_ADOPTED = {}     # C413 slice 2: aceticAcid02_plant flipped to pins; its four adopted copies are
+                                #  `held {}` now (counted by check_case_records' ceiling), so the debt moved there
 
 #  RECORDS THE ENGINE CANNOT LOAD ALONE (C398 review row CV-08), counted by
 #  check_record_law_values from `choupoProps --record-law-checks`: a record

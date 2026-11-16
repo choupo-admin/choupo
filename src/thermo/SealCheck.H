@@ -77,5 +77,18 @@ int verifySeal(int verbosity);
 const std::string&              sealVerdict();
 const std::vector<std::string>& sealDivergedRecords();
 
+//  C413: a manifest that holds `pins` (a case that REFERENCES the catalogue)
+//  adds two verdicts to the three above:
+//      "pinned"   every pin holds and the run read nothing unpinned;
+//      "drifted"  a pin changed or vanished, a held copy changed, or the run
+//                 read a catalogue record the manifest does not pin --
+//                 sealDivergedRecords() names each one with its class, e.g.
+//                 "components/water.dat (changed)", "species/Cl.dat (unpinned)".
+//  The check itself lives in thermo/PinCheck.{H,cpp}; this is its setter.
+namespace detail {
+void setSealVerdict(const std::string& verdict,
+                    const std::vector<std::string>& records);
+}
+
 } // namespace records
 } // namespace Choupo

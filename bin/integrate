@@ -749,6 +749,25 @@ def reach(root: Path, base: str, files):
                 gui.append(f"{f} (cited by file:line in gui/, and lines "
                            "moved)")
         elif f.startswith("data/standards/") and f.endswith(".dat"):
+            #  C413: the cases that REFERENCE the catalogue name what they read in
+            #  their manifests (`pins`), so the reach of an edit to this record is
+            #  EXACT for them -- a grep, not a guess from the file's name.  The
+            #  name heuristic below still serves the cases that are sealed.
+            try:
+                if "case_records" not in sys.modules:
+                    _sp = importlib.util.spec_from_file_location(
+                        "case_records", str(root / "bin" / "curate" / "case_records.py"))
+                    _m = importlib.util.module_from_spec(_sp)
+                    _sp.loader.exec_module(_m)
+                    sys.modules["case_records"] = _m
+                pinned = sys.modules["case_records"].cases_pinning(
+                    root, f[len("data/standards/"):])
+            except Exception:
+                pinned = []
+            if pinned:
+                cases |= set(pinned)
+                why.append(f"{f} -> {len(pinned)} case(s) PIN it (manifest "
+                           "`pins`: exact reach)")
             words = [w for w in p.stem.split("-") if w]
             if texts is None:
                 texts = CaseTexts(root, all_cases)

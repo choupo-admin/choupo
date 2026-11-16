@@ -275,6 +275,26 @@ ElementComposition parseElementalFormula(const std::string& formula)
     return out;
 }
 
+FormulaIdentity parseFormulaIdentity(const std::string& formula)
+{
+    FormulaIdentity out;
+    const ElementComposition ec = parseElementalFormula(formula);
+    out.parsed = ec.available;
+    out.reason = ec.reason;
+    out.atoms  = ec.atoms;
+    if (!ec.available) return out;
+    const std::size_t clen = chargeSuffixLen(formula);
+    if (clen > 0)
+    {
+        const std::string suf = formula.substr(formula.size() - clen);
+        const int sign = (suf[0] == '-') ? -1 : 1;
+        int mag = 1;
+        if (suf.size() > 1) mag = std::stoi(suf.substr(1));
+        out.charge = sign * mag;
+    }
+    return out;
+}
+
 ElementalResolution elementalCompositionOf(const Component& comp)
 {
     ElementalResolution out;

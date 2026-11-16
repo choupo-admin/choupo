@@ -1,65 +1,36 @@
 /*----------------------------------------------------------*\
-  constant/propertyManifest -- property-record OWNERSHIP registry
-  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
-  release; the manifest is the authority on which files under
-  constant/ the importer owns.  A file it does NOT claim is
-  authored and untouchable; a claimed file it verifies by sha256.
-  `sealed true;` FORBIDS the runtime every catalogue fallback --
-  the case runs exclusively from its own constant/ records.
-  claim types:  imported = installed + hash-verified copy;
-                adopted  = authored record explicitly adopted at
-                           import time (never installed, never
-                           hash-enforced, never removed);
-                merged   = standards base with a partial by-name
-                           overlay applied top-level, materialised
-                           at import time (base + overlay hashes
-                           both recorded; durable like adopted).
+  constant/propertyManifest -- the case REFERENCES the catalogue
+  (DEV.md 4c C413; context: case root).  Written by
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and, per scanned registry directory, ONE
+  `"<dir>/"  "relevant:<hash>"` line: the hash of the sorted names that
+  EXIST there and are relevant to the case (a Henry or solution pair among
+  its components), so a relevant pair that arrives or leaves is a drift
+  and an unrelated edit is not.  A registry parses a whole directory;
+  only the names the case selects are pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
+  `held` (transitional): a local copy kept IN FORCE, read alone, verified
+  against its own hash -- debt that only shrinks (check_case_records).
 \*----------------------------------------------------------*/
-
 propertyManifest
 {
-    sealed             true;
-    sealSchema         computational;
-    catalogueRelease   Choupo-2607;
-    importedAt         "2026-08-05";
-    importerVersion    "3";
-    records
+    pins
     {
-        "components/nButane.dat"
-        {
-            type          imported;
-            sha256        "eadeb9c6de933a835751a34833f78c69baf198843dba4d0ec3472d43c689146a";
-            computationalSha256 "897b35aa7da302731e5662e953ba85bcd45ff83147bea7ad51e96aa1c186aa23";
-            origin        "data/standards/components/nButane.dat";
-            originSha256  "443936a019163698684601440d0cdd64551378c60916c3ddca87882734b5735b";
-            release       Choupo-2607;
-        }
-        "components/nHexane.dat"
-        {
-            type          imported;
-            sha256        "d59eabf9e5ddde8c5c350f4d9d7f7184d62a563f53758a6cac6249ee2826d0dd";
-            computationalSha256 "afc6cb6bfdfbc919feb57753e30a06f4469712f217b641a5a5ce8ca0504e43d5";
-            origin        "data/standards/components/nHexane.dat";
-            originSha256  "634759305340e6b7ab62f0b95a82fc4ac47226383d7105c86d67f0f88650fccb";
-            release       Choupo-2607;
-        }
-        "components/nPentane.dat"
-        {
-            type          imported;
-            sha256        "c8d0a4852e5d1aff5404871ddb892368e7a7a08042dc11a95b2a9d35b2078f29";
-            computationalSha256 "7ad5b2fa22a15df4cde95afe2b2531784727072841d38e886a5b5305bfba1480";
-            origin        "data/standards/components/nPentane.dat";
-            originSha256  "19eb39992e76593ada2014a95ea20e7db26d0c8419f2e3c7ba94a2d516e5fff5";
-            release       Choupo-2607;
-        }
-        "components/propane.dat"
-        {
-            type          imported;
-            sha256        "055da1b110a0c9b19428803a0db06fc355f70af1b04a25dba82b1138452e45f9";
-            computationalSha256 "fb98a95280f54755ec48104788e700b444b7b3d4f41d6e68d6bedca040396064";
-            origin        "data/standards/components/propane.dat";
-            originSha256  "81e92fe29b86769095ff94427ed7656f73776d502a9d6b9583c9790423376e35";
-            release       Choupo-2607;
-        }
+        "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+        "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+        "utilities/coolingWater.dat"  "caa0cba6b3eb42538c0842ec4c504d553f0bc88b3b15acb3b89519dc4ac69125";
+        "utilities/steamHP.dat"  "b003944bdafd1314bea227202e26974f7c31903c94d2527c55ac41ce2222bbe6";
+    }
+    held
+    {
+        "components/nButane.dat"  "897b35aa7da302731e5662e953ba85bcd45ff83147bea7ad51e96aa1c186aa23";
+        "components/nHexane.dat"  "afc6cb6bfdfbc919feb57753e30a06f4469712f217b641a5a5ce8ca0504e43d5";
+        "components/nPentane.dat"  "7ad5b2fa22a15df4cde95afe2b2531784727072841d38e886a5b5305bfba1480";
+        "components/propane.dat"  "fb98a95280f54755ec48104788e700b444b7b3d4f41d6e68d6bedca040396064";
     }
 }

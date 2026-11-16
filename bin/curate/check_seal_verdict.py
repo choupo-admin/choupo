@@ -24,6 +24,19 @@ byte-indistinguishable from one recorded from a verified run.
              naming the record and the archival reason.
   JUNK       an unknown onDivergence word refuses by name.
 
+And, since C413 (a case that REFERENCES the catalogue holds `pins`), on the
+pinned witness flash01_benzene_toluene:
+
+  PINNED     untouched, the result's verdict is "pinned";
+  DRIFTED    a pin edited -> "drifted" naming `<record> (changed)` IN THE RESULT
+             (exit 0, announce is the default); a pin removed -> "drifted"
+             naming `<record> (unpinned)`;
+  REFUSE     the same drifts exit nonzero when the CALLER says so
+             (CHOUPO_PINS=refuse) or the CASE does (`onDivergence refuse;`),
+             naming the record and the remedy; a junk CHOUPO_PINS word refuses
+             naming the legal words;
+  BOTH       `pins` beside `sealed true;` refuses.
+
 Exit 1 listing failures."""
 import json
 import re
@@ -43,9 +56,27 @@ MAN = "constant/propertyManifest"
 failures = []
 
 
+SEALED_BASE = None     # the fixture, sealed by the EXPORT (a tree case may reference the catalogue)
+
+
+def export_sealed_base(tmp: Path) -> Path:
+    """The sealed fixture is made by `choupo-import --seal --to` (C413): the tree's own
+    case is no longer sealed once it references the catalogue."""
+    dest = tmp / "sealed_base"
+    if (BASE / MAN).exists() and "sealed" in (BASE / MAN).read_text() and "pins" not in (BASE / MAN).read_text():
+        shutil.copytree(BASE, dest, ignore=shutil.ignore_patterns(
+            "expected", "*.csv", "converged", "iterations", "log.*", "resultJson*"))
+        return dest
+    r = subprocess.run([str(ROOT / "bin" / "choupo-import"), "--seal", str(BASE), "--to", str(dest)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        raise SystemExit("check_seal_verdict: could not export the sealed fixture:\n" + r.stderr[-600:])
+    return dest
+
+
 def make_case(tmp: Path, tag: str, rec_edit=None, man_edit=None) -> Path:
     case = tmp / f"probe_{tag}"
-    shutil.copytree(BASE, case, ignore=shutil.ignore_patterns(
+    shutil.copytree(SEALED_BASE or BASE, case, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "converged", "iterations", "resultJson*"))
     if rec_edit:
         p = case / REC
@@ -54,6 +85,29 @@ def make_case(tmp: Path, tag: str, rec_edit=None, man_edit=None) -> Path:
         p = case / MAN
         p.write_text(man_edit(p.read_text()))
     return case
+
+
+FLASH = ROOT / "tutorials" / "steady" / "flash" / "flash01_benzene_toluene"
+
+
+def make_flash(tmp: Path, tag: str, man_edit=None) -> Path:
+    case = tmp / f"pin_{tag}"
+    shutil.copytree(FLASH, case, ignore=shutil.ignore_patterns(
+        "expected", "*.csv", "converged", "iterations", "log.*", "resultJson*"))
+    if man_edit:
+        p = case / MAN
+        p.write_text(man_edit(p.read_text()))
+    return case
+
+
+def run_pins(case: Path, word=None):
+    env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+    env.pop("CHOUPO_PINS", None)
+    if word is not None:
+        env["CHOUPO_PINS"] = word
+    p = subprocess.run([str(SOLVE), "."], cwd=case, env=env,
+                       capture_output=True, text=True, timeout=600)
+    return p.returncode, p.stdout + p.stderr
 
 
 def run(case: Path):
@@ -87,8 +141,10 @@ def main() -> int:
     if not (BASE / MAN).exists():
         print(f"check_seal_verdict: fixture {BASE/MAN} missing")
         return 1
+    global SEALED_BASE
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
+        SEALED_BASE = export_sealed_base(tmp)
         #  A COMPUTATIONAL edit: a new key reaches the parsed tree.  (Under
         #  `sealSchema computational;` -- the 2026-08-03 schema migration --
         #  a comment-only edit is COSMETIC and no longer diverges; that
@@ -165,6 +221,49 @@ def main() -> int:
         elif "is not one of announce / refuse" not in out:
             failures.append("JUNK: the refusal does not name the legal words")
 
+        # ---- the pin form (C413) -------------------------------------------
+        bend = lambda t: re.sub(r'("components/benzene.dat"\s+")[0-9a-f]{64}',
+                                r"\g<1>" + "0" * 64, t)
+        drop = lambda t: re.sub(r'(?m)^\s*"components/toluene.dat".*\n', "", t)
+        rc, out = run_pins(make_flash(tmp, "ok"))
+        s = seal_of(out)
+        if rc != 0 or not s or s.get("verdict") != "pinned" or s.get("divergedRecords"):
+            failures.append(f"PINNED: expected exit 0 and verdict 'pinned' with no"
+                            f" divergedRecords, got exit {rc}, seal {s!r}")
+        rc, out = run_pins(make_flash(tmp, "bent", bend))
+        s = seal_of(out)
+        if rc != 0 or not s or s.get("verdict") != "drifted" \
+                or "components/benzene.dat (changed)" not in s.get("divergedRecords", []):
+            failures.append(f"DRIFTED changed: expected exit 0 and 'drifted' naming"
+                            f" components/benzene.dat (changed) IN THE RESULT, got exit {rc}, seal {s!r}")
+        rc, out = run_pins(make_flash(tmp, "dropped", drop))
+        s = seal_of(out)
+        if rc != 0 or not s or s.get("verdict") != "drifted" \
+                or "components/toluene.dat (unpinned)" not in s.get("divergedRecords", []):
+            failures.append(f"DRIFTED unpinned: expected 'drifted' naming components/toluene.dat"
+                            f" (unpinned) IN THE RESULT, got exit {rc}, seal {s!r}")
+        rc, out = run_pins(make_flash(tmp, "bent_env", bend), "refuse")
+        if rc == 0 or "components/benzene.dat" not in out or "--repin" not in out:
+            failures.append("REFUSE by environment: CHOUPO_PINS=refuse with a changed pin must"
+                            f" stop the run naming the record and `--repin`, got exit {rc}")
+        rc, out = run_pins(make_flash(tmp, "dropped_env", drop), "refuse")
+        if rc == 0 or "components/toluene.dat" not in out or "--pin" not in out:
+            failures.append("REFUSE by environment: an unpinned read must stop the run naming"
+                            f" the record and `--pin`, got exit {rc}")
+        rc, out = run_pins(make_flash(tmp, "bent_case", lambda t: bend(t).replace(
+            "propertyManifest\n{", "propertyManifest\n{\n    onDivergence refuse;", 1)))
+        if rc == 0 or "components/benzene.dat" not in out:
+            failures.append("REFUSE by the case: `onDivergence refuse;` with a changed pin must"
+                            f" stop the run, got exit {rc}")
+        rc, out = run_pins(make_flash(tmp, "junkenv"), "maybe")
+        if rc == 0 or "announce / refuse" not in out:
+            failures.append("JUNK CHOUPO_PINS word must refuse naming announce / refuse,"
+                            f" got exit {rc}")
+        rc, out = run_pins(make_flash(tmp, "both", lambda t: t.replace(
+            "propertyManifest\n{", "propertyManifest\n{\n    sealed true;", 1)))
+        if rc == 0 or "pins" not in out:
+            failures.append(f"BOTH pins and sealed must refuse naming `pins`, got exit {rc}")
+
     if failures:
         print("check_seal_verdict: FAIL")
         for f in failures:
@@ -174,7 +273,11 @@ def main() -> int:
           " (verified / diverged+named / unsealed, and unsealed is never"
           " verified); announce is the default and the case declares"
           " `onDivergence refuse;` for the archival posture (fires on a"
-          " moved byte, silent when intact); a junk word refuses named")
+          " moved byte, silent when intact); a junk word refuses named;"
+          " and for a case that REFERENCES the catalogue (`pins`): verdict pinned, drifted"
+          " (changed / unpinned, named IN THE RESULT), refused by the environment"
+          " (CHOUPO_PINS=refuse) or by the case, a junk CHOUPO_PINS word refused, pins"
+          " beside sealed refused")
     return 0
 
 

@@ -1,94 +1,44 @@
 /*----------------------------------------------------------*\
-  constant/propertyManifest -- property-record OWNERSHIP registry
-  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
-  release; the manifest is the authority on which files under
-  constant/ the importer owns.  A file it does NOT claim is
-  authored and untouchable; a claimed file it verifies by sha256.
-  `sealed true;` FORBIDS the runtime every catalogue fallback --
-  the case runs exclusively from its own constant/ records.
-  claim types:  imported = installed + hash-verified copy;
-                adopted  = authored record explicitly adopted at
-                           import time (never installed, never
-                           hash-enforced, never removed);
-                merged   = standards base with a partial by-name
-                           overlay applied top-level, materialised
-                           at import time (base + overlay hashes
-                           both recorded; durable like adopted).
+  constant/propertyManifest -- the case REFERENCES the catalogue
+  (DEV.md 4c C413; context: case root).  Written by
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and, per scanned registry directory, ONE
+  `"<dir>/"  "relevant:<hash>"` line: the hash of the sorted names that
+  EXIST there and are relevant to the case (a Henry or solution pair among
+  its components), so a relevant pair that arrives or leaves is a drift
+  and an unrelated edit is not.  A registry parses a whole directory;
+  only the names the case selects are pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
+  `held` (transitional): a local copy kept IN FORCE, read alone, verified
+  against its own hash -- debt that only shrinks (check_case_records).
 \*----------------------------------------------------------*/
-
 propertyManifest
 {
-    sealed             true;
-    sealSchema         computational;
-    catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-12";
-    importerVersion    "3";
-    records
+    pins
     {
-        "components/H.dat"
-        {
-            type          imported;
-            sha256        "e0a14d03339db6af0e7c0abed0f1ab90f9b36aa63920de8ecd3b9fa31da7bc51";
-            computationalSha256 "6e93334697c716cb992113771bf2b1b93e0824a5e8e095af839a707d3ab3e79b";
-            origin        "data/standards/components/H.dat";
-            originSha256  "c59f6e2a3d62373ce2256150dba707da72fd355920922e9415648f91329e3c55";
-            release       Choupo-2608;
-        }
-        "components/H2.dat"
-        {
-            type          adopted;
-            adoptedAt     "2026-07-17";
-        }
-        "components/H2O2.dat"
-        {
-            type          imported;
-            sha256        "c6446b430405ce331f1b53300cbbd9cc8f136e51084c5fb4ec17f699b926dfc8";
-            computationalSha256 "f78f0fcce721bf25bf788ed9e60ae52c8cc06ea45fe6f813c4df5f3696d509e4";
-            origin        "data/standards/components/H2O2.dat";
-            originSha256  "171efe3a58d511ef516f367b17408069b9854b8214f7fc3c5a9a8b8ff16cf8ef";
-            release       Choupo-2608;
-        }
-        "components/HO2.dat"
-        {
-            type          imported;
-            sha256        "ae27ed2f7b40d329a2e6495ada4dbfc890e5301ff27ee3d666ff6c7b5b771276";
-            computationalSha256 "2980e8e9cdcc1b089da7d2ec8d3ceebd31ac5060f465a4bc394ee0c488073ae5";
-            origin        "data/standards/components/HO2.dat";
-            originSha256  "f3911ab3baaa583cd8d4983999c66f2aba29705762affd50963d7eb283406768";
-            release       Choupo-2608;
-        }
-        "components/N2.dat"
-        {
-            type          adopted;
-            adoptedAt     "2026-07-17";
-        }
-        "components/O.dat"
-        {
-            type          imported;
-            sha256        "f28e16cce29cc171dc77b8f40631a75bf5979ec07c6419c89217bf9a9190f229";
-            computationalSha256 "a97b020aa9e1d9f142335d4b1646d1c93e42422272e3c121865fee4549d992dd";
-            origin        "data/standards/components/O.dat";
-            originSha256  "02e147229b38db697a30f7cf77c6cd71fc900cfc946c089866d9aaa599b7dec0";
-            release       Choupo-2608;
-        }
-        "components/O2.dat"
-        {
-            type          adopted;
-            adoptedAt     "2026-07-17";
-        }
-        "components/OH.dat"
-        {
-            type          imported;
-            sha256        "e966aaa828ae9b9213587f7f8358f24f5dbb99be67452570fd48070d64e6fef1";
-            computationalSha256 "a14fd85fb55af40d0555525fd84f0fa2b20809d96261795efa7c09c87fdb2de3";
-            origin        "data/standards/components/OH.dat";
-            originSha256  "3d2164c2dcfb040285f68fcce30af4ae9593208bcb8164670214c57890968018";
-            release       Choupo-2608;
-        }
-        "components/water.dat"
-        {
-            type          adopted;
-            adoptedAt     "2026-07-17";
-        }
+        "components/H.dat"  "6e93334697c716cb992113771bf2b1b93e0824a5e8e095af839a707d3ab3e79b";
+        "components/H2O2.dat"  "f78f0fcce721bf25bf788ed9e60ae52c8cc06ea45fe6f813c4df5f3696d509e4";
+        "components/HO2.dat"  "2980e8e9cdcc1b089da7d2ec8d3ceebd31ac5060f465a4bc394ee0c488073ae5";
+        "components/O.dat"  "a97b020aa9e1d9f142335d4b1646d1c93e42422272e3c121865fee4549d992dd";
+        "components/OH.dat"  "a14fd85fb55af40d0555525fd84f0fa2b20809d96261795efa7c09c87fdb2de3";
+        "parameters/Henry/"  "relevant:7837adef0c7b3173ea344ea767d07bd8fbf1b01931a8155acd7c3236e4877c17";
+        "parameters/Henry/H2-water.dat"  "4a3629c5a88f40b2e55f52bf4da05cff92e0c966331cc39b95712c2744fa8c7b";
+        "parameters/Henry/H2O2-water.dat"  "b6e280b4f7e4097d98fbe5d7e5b6733a30a8be7081dbc7c2393e9054e1e98c23";
+        "parameters/Henry/HO2-water.dat"  "28a525e33af32645a8ab2859c7ddfa2fc69e275ec1b339877809e23af535f835";
+        "parameters/Henry/N2-water.dat"  "6e597edbafb3f88076dac89a14cfa53d85b9bc2df19cc088d9b8171fdc5fd765";
+        "parameters/Henry/O2-water.dat"  "7d1943cf41a94ac447b3d7774fef5b62e2e5a7698bee77a48b59dabb022458db";
+        "parameters/Henry/OH-water.dat"  "cf7c83d838a3966d67f7d420131574085908a12969f2a70a49052856d425a2d2";
+        "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+    }
+    held
+    {
+        "components/H2.dat"  "0fbb1f457bb526fec991cd87146fd5b4116796fcc10ffc9399cd2980caced861";
+        "components/N2.dat"  "ae5a3ee8fc811babc3d74cdd70cf6bc96ec887c8697f7b4d8dfc223bac99b35a";
+        "components/O2.dat"  "bb3cc4a022008167a9e206858f459bda2da40e59a2b8eda34f9485489e666859";
+        "components/water.dat"  "5fc77fc538bd575ba8a5edb52553a646b42677ca50454a027023b829fbb48d1e";
     }
 }

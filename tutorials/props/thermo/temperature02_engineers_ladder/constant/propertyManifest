@@ -1,146 +1,54 @@
 /*----------------------------------------------------------*\
-  constant/propertyManifest -- property-record OWNERSHIP registry
-  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
-  release; the manifest is the authority on which files under
-  constant/ the importer owns.  A file it does NOT claim is
-  authored and untouchable; a claimed file it verifies by sha256.
-  `sealed true;` FORBIDS the runtime every catalogue fallback --
-  the case runs exclusively from its own constant/ records.
-  claim types:  imported = installed + hash-verified copy;
-                adopted  = authored record explicitly adopted at
-                           import time (never installed, never
-                           hash-enforced, never removed);
-                merged   = standards base with a partial by-name
-                           overlay applied top-level, materialised
-                           at import time (base + overlay hashes
-                           both recorded; durable like adopted).
+  constant/propertyManifest -- the case REFERENCES the catalogue
+  (DEV.md 4c C413; context: case root).  Written by
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and, per scanned registry directory, ONE
+  `"<dir>/"  "relevant:<hash>"` line: the hash of the sorted names that
+  EXIST there and are relevant to the case (a Henry or solution pair among
+  its components), so a relevant pair that arrives or leaves is a drift
+  and an unrelated edit is not.  A registry parses a whole directory;
+  only the names the case selects are pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
+  `held` (transitional): a local copy kept IN FORCE, read alone, verified
+  against its own hash -- debt that only shrinks (check_case_records).
 \*----------------------------------------------------------*/
-
 propertyManifest
 {
-    sealed             true;
-    sealSchema         computational;
-    catalogueRelease   Choupo-2607;
-    importedAt         "2026-08-27";
-    importerVersion    "3";
-    records
+    pins
     {
-        "components/Ar.dat"
-        {
-            type          imported;
-            sha256        "10b3ff03265efdd8713380e7505f64988753918be61adffdacfb4c4a766f8763";
-            computationalSha256 "2bad699ad4c18829562d86da122315be950509cd6b792720ed84fab66bc254e4";
-            origin        "data/standards/components/Ar.dat";
-            originSha256  "5dca5c48f0892ef89aa8893dbc1ad26c2113700d74bf849bbf0dfbe9c9a0df68";
-            release       Choupo-2607;
-        }
-        "components/CH4.dat"
-        {
-            type          imported;
-            sha256        "9d1fba007091d27d9663dfa54d58247dece20d4137c64152208aa69eb45dc46a";
-            computationalSha256 "727abcc9b811c38924085816c22748c95ee9be2d702823ba930ff99a17780281";
-            origin        "data/standards/components/CH4.dat";
-            originSha256  "f4fc16afcaed95c521b06b235123b98042d5768334daa68da9ef150b8e9beb7b";
-            release       Choupo-2607;
-        }
-        "components/H2.dat"
-        {
-            type          imported;
-            sha256        "98a70609c83f989232db98c1deb81390e73de7abf5c1565e262c3355d896cd1d";
-            computationalSha256 "a1dfad6211458c5c2cf05b7abd38fa7e7ef1604f53ef8fcc94128090979e6707";
-            origin        "data/standards/components/H2.dat";
-            originSha256  "6da8e880ce158c1362acdea2dd3821ed1712f7c58a8f6751025bc59c4c62cac5";
-            release       Choupo-2607;
-        }
-        "components/N2.dat"
-        {
-            type          imported;
-            sha256        "a0bfa2c2578d763ea3e969662d2d75cfc5e23483840999db38e93c033571c7af";
-            computationalSha256 "8a10295e2eb81dece508460c79cc11bc597110e4bb447b800bb273c32411a91b";
-            origin        "data/standards/components/N2.dat";
-            originSha256  "ab6c11329dcfe0b5cf71a1600a9b17aa924a952e3b93aa42c13defb2bfb5c1dd";
-            release       Choupo-2607;
-        }
-        "components/O2.dat"
-        {
-            type          imported;
-            sha256        "40c5e936670ed3dd92d19ac57161f895662642c108155ee4277e304c49c7c411";
-            computationalSha256 "601481feda24f388e3fe70ad700b2dce1bb9b8954fa83550c2065764d2bdb4a4";
-            origin        "data/standards/components/O2.dat";
-            originSha256  "e3d123385657307e1929cf9d9f01e3b96bf2813c5914168c5bfe290d31abf282";
-            release       Choupo-2607;
-        }
-        "components/benzene.dat"
-        {
-            type          imported;
-            sha256        "3185488215c01db6ccb18e81a131068c585e0049b3396d90b57f2f1ee3d01403";
-            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
-            origin        "data/standards/components/benzene.dat";
-            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
-            release       Choupo-2607;
-        }
-        "components/biphenyl.dat"
-        {
-            type          imported;
-            sha256        "a5485b57eb0b66db0a26a9dad9815117a4ae4c004d9294ce3f54a25af25d70dd";
-            computationalSha256 "a57a1372cbc5ab32d7bd05e414743e68db1b1e2cc386f3b0250e5f7ef306b496";
-            origin        "data/standards/components/biphenyl.dat";
-            originSha256  "331328b0b0dec0652d84fe8668ed3175bdac75c3a1be344039ec4953068b2008";
-            release       Choupo-2607;
-        }
-        "components/ethylene.dat"
-        {
-            type          imported;
-            sha256        "f1a0793a2ad2b8666bb58922dafdcef3fea372613d31952dc98e12c6fda66272";
-            computationalSha256 "9ecea34b8709922d823b649c1ad223132b172ba849da1fbcf49114bac3cb7e66";
-            origin        "data/standards/components/ethylene.dat";
-            originSha256  "41f529ebdd93ffb142b20d2b015139e20a73caf2a4dcab1c68a2a4c4426a8aaa";
-            release       Choupo-2607;
-        }
-        "components/ethyleneGlycol.dat"
-        {
-            type          imported;
-            sha256        "90a08772d5d16af262d75d4d94a381badf761f596b0d48e076d49e894e382fac";
-            computationalSha256 "e0a5c54ef867640b2cd14824a4e668b95b96b548186bffed7ef80448fb90ee21";
-            origin        "data/standards/components/ethyleneGlycol.dat";
-            originSha256  "0a244b65a7d282e352b091271f518293e44e59b12fd311ef5f19eede978c06a4";
-            release       Choupo-2607;
-        }
-        "components/glycerol.dat"
-        {
-            type          imported;
-            sha256        "0d5b2e3e4a69658e5d03134c307b560edcb0c3a0fd486548fef51850e16da13b";
-            computationalSha256 "78adc43e8c550330b852aa9122c0ce5019aa6a26a507215505d7945c629aa8da";
-            origin        "data/standards/components/glycerol.dat";
-            originSha256  "79a0ba7a8be7374f1386274022f49b1f9fd55bfc3e9c9b1a29f7252d7e8dc4c6";
-            release       Choupo-2607;
-        }
-        "components/naphthalene.dat"
-        {
-            type          imported;
-            sha256        "b262e67ebdae0bfd37ab211c04a6ef9e5bf3385cb2b79933239636b214613dec";
-            computationalSha256 "d61eb4d7c04772484d7cd76e2c6624f73c3feaf134f0e3bd7b3a564a510c30ec";
-            origin        "data/standards/components/naphthalene.dat";
-            originSha256  "1a6eeb8a50806a93cbf9a69b8e5e3dc52072b13bfd51b7f2b3698fcaec5a42f5";
-            release       Choupo-2607;
-        }
-        "components/neon.dat"
-        {
-            type          imported;
-            sha256        "ab28cdc0754432ff3afd85a55448a0dc4d51d6459f04bd598d027d44d550cbf5";
-            computationalSha256 "d21db22653b7d611b517bd621b94db3ed0342570b28987bdb7200b02c48888de";
-            origin        "data/standards/components/neon.dat";
-            originSha256  "35660896732e463ac1170acc6d9d177cf8c833ca03ba9460e94fb19eab3353fc";
-            release       Choupo-2607;
-        }
-        "components/water.dat"
-        {
-            type          imported;
-            sha256        "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
-            computationalSha256 "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
-            origin        "data/standards/components/water.dat";
-            originSha256  "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
-            release       Choupo-2607;
-        }
+        "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/ALIASES"  "c341953e34718480b8215da2139b8c85cfc29e01092cc7398febddb473320ad0";
+        "components/neon.dat"  "d21db22653b7d611b517bd621b94db3ed0342570b28987bdb7200b02c48888de";
+        "parameters/Henry/"  "relevant:b68928f53e6a06a5e597eb84b2687a1d4138b38802dfbd7d329af1da69b05a4a";
+        "parameters/Henry/Ar-water.dat"  "9592cfb34c30ff2b94c3b394bbfd70a38ce25b03d36876f3577e85e17041ff50";
+        "parameters/Henry/CH4-water.dat"  "6bc2d4d3828fd1d518cd72bf204a7bd3c4eb1b544bb05dd5aa8ed83202b6ea27";
+        "parameters/Henry/H2-water.dat"  "4a3629c5a88f40b2e55f52bf4da05cff92e0c966331cc39b95712c2744fa8c7b";
+        "parameters/Henry/N2-water.dat"  "6e597edbafb3f88076dac89a14cfa53d85b9bc2df19cc088d9b8171fdc5fd765";
+        "parameters/Henry/O2-water.dat"  "7d1943cf41a94ac447b3d7774fef5b62e2e5a7698bee77a48b59dabb022458db";
+        "parameters/Henry/benzene-water.dat"  "05e43d5e3c5519eb87d76a87f911fe82c098010afdf0dfed0d70fe7283e92846";
+        "parameters/Henry/biphenyl-water.dat"  "ad6be356086c669ddedc58e3e55994c165c1ea1c5fb9a8be2372e4c9ffee6f92";
+        "parameters/Henry/ethylene-water.dat"  "39f81a7fb0ea3d570c22df3996a07f9b48677cc8b4c9b502443d5b543699d5dd";
+        "parameters/Henry/naphthalene-water.dat"  "91f2ed3b3cdd34ab7b876140c3e5c561fa3ffed87703ab0fe90fa8a44ac18362";
+        "parameters/Henry/neon-water.dat"  "cc60c8098fdd63387b13f805a1bbe5d6cb7ffdf8d420f7220928e96a42d94877";
+        "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+    }
+    held
+    {
+        "components/Ar.dat"  "2bad699ad4c18829562d86da122315be950509cd6b792720ed84fab66bc254e4";
+        "components/CH4.dat"  "727abcc9b811c38924085816c22748c95ee9be2d702823ba930ff99a17780281";
+        "components/H2.dat"  "a1dfad6211458c5c2cf05b7abd38fa7e7ef1604f53ef8fcc94128090979e6707";
+        "components/N2.dat"  "8a10295e2eb81dece508460c79cc11bc597110e4bb447b800bb273c32411a91b";
+        "components/O2.dat"  "601481feda24f388e3fe70ad700b2dce1bb9b8954fa83550c2065764d2bdb4a4";
+        "components/benzene.dat"  "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+        "components/biphenyl.dat"  "a57a1372cbc5ab32d7bd05e414743e68db1b1e2cc386f3b0250e5f7ef306b496";
+        "components/ethylene.dat"  "9ecea34b8709922d823b649c1ad223132b172ba849da1fbcf49114bac3cb7e66";
+        "components/ethyleneGlycol.dat"  "e0a5c54ef867640b2cd14824a4e668b95b96b548186bffed7ef80448fb90ee21";
+        "components/glycerol.dat"  "78adc43e8c550330b852aa9122c0ce5019aa6a26a507215505d7945c629aa8da";
+        "components/naphthalene.dat"  "d61eb4d7c04772484d7cd76e2c6624f73c3feaf134f0e3bd7b3a564a510c30ec";
+        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
     }
 }

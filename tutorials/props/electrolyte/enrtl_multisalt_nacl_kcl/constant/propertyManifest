@@ -1,83 +1,35 @@
 /*----------------------------------------------------------*\
-  constant/propertyManifest -- property-record OWNERSHIP registry
-  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
-  release; the manifest is the authority on which files under
-  constant/ the importer owns.  A file it does NOT claim is
-  authored and untouchable; a claimed file it verifies by sha256.
-  `sealed true;` FORBIDS the runtime every catalogue fallback --
-  the case runs exclusively from its own constant/ records.
-  claim types:  imported = installed + hash-verified copy;
-                adopted  = authored record explicitly adopted at
-                           import time (never installed, never
-                           hash-enforced, never removed);
-                merged   = standards base with a partial by-name
-                           overlay applied top-level, materialised
-                           at import time (base + overlay hashes
-                           both recorded; durable like adopted).
+  constant/propertyManifest -- the case REFERENCES the catalogue
+  (DEV.md 4c C413; context: case root).  Written by
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and, per scanned registry directory, ONE
+  `"<dir>/"  "relevant:<hash>"` line: the hash of the sorted names that
+  EXIST there and are relevant to the case (a Henry or solution pair among
+  its components), so a relevant pair that arrives or leaves is a drift
+  and an unrelated edit is not.  A registry parses a whole directory;
+  only the names the case selects are pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
+  `held` (transitional): a local copy kept IN FORCE, read alone, verified
+  against its own hash -- debt that only shrinks (check_case_records).
 \*----------------------------------------------------------*/
-
 propertyManifest
 {
-    sealed             true;
-    sealSchema         computational;
-    catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-26";
-    importerVersion    "2";
-    records
+    pins
     {
-        "components/water.dat"
-        {
-            type          imported;
-            sha256        "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
-            computationalSha256 "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
-            origin        "data/standards/components/water.dat";
-            originSha256  "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
-            release       Choupo-2607;
-        }
-        "parameters/eNRTL/K-Cl.dat"
-        {
-            type          imported;
-            sha256        "ca1dc77ace54c5233b9800fa6d6b4fc046c88b41a4a877734b6520ad76dee5e6";
-            computationalSha256 "27bea3329c65dac0c1899b0c3c6c917830de26628bb3abaf259f48561c64018f";
-            origin        "data/standards/parameters/eNRTL/K-Cl.dat";
-            originSha256  "05de383c6e4b3aaec7f1623872c6dd621c1887f296eafbc4ac3804a59661f8e4";
-            release       Choupo-2607;
-        }
-        "parameters/eNRTL/Na-Cl.dat"
-        {
-            type          imported;
-            sha256        "2dbd301cdb40bb9b3e21ce3af4bcd58fb1df9d91baf08012ca6c6f83a5d8e280";
-            computationalSha256 "d2f8f59e3269ad49344960e4d5adfbb2bb98c2d6bda093889324f688e7717c4a";
-            origin        "data/standards/parameters/eNRTL/Na-Cl.dat";
-            originSha256  "129a062cf834d94c00264c82361dac287d130528cd55c7daccdbbb9328180525";
-            release       Choupo-2607;
-        }
-        "species/Cl.dat"
-        {
-            type          imported;
-            sha256        "b8f643e4616c36aa4ec1f6d5320da536d7b9100373476be8aba880d9dda5fb48";
-            computationalSha256 "6e57ccd286bc6a6828d28ebc7e7311b5f56e8f4ef55772e8a0f81879932c609a";
-            origin        "data/standards/species/Cl.dat";
-            originSha256  "b8f643e4616c36aa4ec1f6d5320da536d7b9100373476be8aba880d9dda5fb48";
-            release       Choupo-2607;
-        }
-        "species/K.dat"
-        {
-            type          imported;
-            sha256        "3c2a5ee755d8644c9a30a52016a67f8349f04069a3c6bcaed18127c13a6113b5";
-            computationalSha256 "36741e1879e9eac183927d84a8fc71a2dc713459fd01e6e17f6948830e7c1c79";
-            origin        "data/standards/species/K.dat";
-            originSha256  "3c2a5ee755d8644c9a30a52016a67f8349f04069a3c6bcaed18127c13a6113b5";
-            release       Choupo-2607;
-        }
-        "species/Na.dat"
-        {
-            type          imported;
-            sha256        "93922ead854033587adbd91bfc71497fbecbfbd9ccba192f88b01f59ea4b524a";
-            computationalSha256 "94e3dcbc2956cc7dcd2977501823fb951b1b10a24da8cc8c7e5936ebfe715916";
-            origin        "data/standards/species/Na.dat";
-            originSha256  "93922ead854033587adbd91bfc71497fbecbfbd9ccba192f88b01f59ea4b524a";
-            release       Choupo-2607;
-        }
+        "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+        "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+    }
+    held
+    {
+        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
+        "parameters/eNRTL/K-Cl.dat"  "27bea3329c65dac0c1899b0c3c6c917830de26628bb3abaf259f48561c64018f";
+        "parameters/eNRTL/Na-Cl.dat"  "d2f8f59e3269ad49344960e4d5adfbb2bb98c2d6bda093889324f688e7717c4a";
+        "species/Cl.dat"  "6e57ccd286bc6a6828d28ebc7e7311b5f56e8f4ef55772e8a0f81879932c609a";
+        "species/K.dat"  "36741e1879e9eac183927d84a8fc71a2dc713459fd01e6e17f6948830e7c1c79";
+        "species/Na.dat"  "94e3dcbc2956cc7dcd2977501823fb951b1b10a24da8cc8c7e5936ebfe715916";
     }
 }

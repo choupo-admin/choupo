@@ -1,54 +1,38 @@
 /*----------------------------------------------------------*\
-  constant/propertyManifest -- property-record OWNERSHIP registry
-  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
-  release; the manifest is the authority on which files under
-  constant/ the importer owns.  A file it does NOT claim is
-  authored and untouchable; a claimed file it verifies by sha256.
-  `sealed true;` FORBIDS the runtime every catalogue fallback --
-  the case runs exclusively from its own constant/ records.
-  claim types:  imported = installed + hash-verified copy;
-                adopted  = authored record explicitly adopted at
-                           import time (never installed, never
-                           hash-enforced, never removed);
-                merged   = standards base with a partial by-name
-                           overlay applied top-level, materialised
-                           at import time (base + overlay hashes
-                           both recorded; durable like adopted).
+  constant/propertyManifest -- the case REFERENCES the catalogue
+  (DEV.md 4c C413; context: case root).  Written by
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and, per scanned registry directory, ONE
+  `"<dir>/"  "relevant:<hash>"` line: the hash of the sorted names that
+  EXIST there and are relevant to the case (a Henry or solution pair among
+  its components), so a relevant pair that arrives or leaves is a drift
+  and an unrelated edit is not.  A registry parses a whole directory;
+  only the names the case selects are pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
+  `held` (transitional): a local copy kept IN FORCE, read alone, verified
+  against its own hash -- debt that only shrinks (check_case_records).
 \*----------------------------------------------------------*/
-
 propertyManifest
 {
-    sealed             true;
-    sealSchema         computational;
-    catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-26";
-    importerVersion    "2";
-    records
+    pins
     {
-        "components/acetone.dat"
-        {
-            type          adopted;
-            adoptedAt     "2026-07-26";
-        }
-        "components/ethanol.dat"
-        {
-            type          adopted;
-            adoptedAt     "2026-07-26";
-        }
-        "components/nHexane.dat"
-        {
-            type          adopted;
-            adoptedAt     "2026-07-26";
-        }
-        "components/toluene.dat"
-        {
-            type          adopted;
-            adoptedAt     "2026-07-26";
-        }
-        "components/water.dat"
-        {
-            type          adopted;
-            adoptedAt     "2026-07-26";
-        }
+        "parameters/Henry/"  "relevant:f6298d117c2f95f9404c751a526747cc365504c3a4ba372ef80db0f355117c5b";
+        "parameters/Henry/acetone-water.dat"  "59eb9457c480a6eadb0f48caa20b3e74230c87d69806a000772e23797f7a0843";
+        "parameters/Henry/ethanol-water.dat"  "8d6c542980e2dd37de73fd7fcc8d4e3b6538ccdaf208ec21180ba6dcbc7cf8d8";
+        "parameters/Henry/nHexane-water.dat"  "4c6279037f2c5f3f30243864e504032b1ba41080ac5d711f18c9e54c4b9d585c";
+        "parameters/Henry/toluene-water.dat"  "88ca1cc08901abfb0205080b66e500647e2c5fea68e714e65cd5a7b069853433";
+        "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+    }
+    held
+    {
+        "components/acetone.dat"  "10709c233b6e3a1fad2d3432d2a91a3bc6ae1a2c5d4d0dd738f543e82c59840e";
+        "components/ethanol.dat"  "5ef03990067f73c8859eca91f13ba8066d84840e7b04fbcca3bf00a0fac4c772";
+        "components/nHexane.dat"  "ca60b0379c50251ecd191f9500e157223310c65ad32c4dee9fdbccca06d8ec10";
+        "components/toluene.dat"  "390e7835ddcdc5f6b7d394bda981b91df35f1b5b8e813fef88b44a157e507025";
+        "components/water.dat"  "b76f2d2253474728952d3f2c90ee3f68ae9133778f3d5e6e528a45aea019f794";
     }
 }

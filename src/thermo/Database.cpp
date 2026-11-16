@@ -262,6 +262,7 @@ DictPtr Database::componentDict(const std::string& name) const
             p = p.parent_path();
         }
     }
+    records::noteLoadedComponent(name);    // C413: the names a scanned registry's pairs are relevant to
     // SEALED: the property manifest FORBIDS the catalogue.
     const bool sealed = records::sealed();
     if (sealed)
@@ -291,10 +292,29 @@ DictPtr Database::componentDict(const std::string& name) const
     // catalogue base to merge: read it alone.  (Unsealed cases keep the
     // overlay doctrine below byte-identically: standards base, case-local
     // full-shadow / overlayOf on top.)
+    bool readAlone = false;     // C413: a declared variation / held copy
+    bool heldCopy  = false;     // C413: ... and it is a held copy
     if (records::sealedStrict())
     {
         standard  = caseLocal;      // the ONE home is the base...
         caseLocal = fs::path();     // ...and there is no separate overlay file
+    }
+    else if (!caseLocal.empty())
+    {
+        //  C413: a local record whose name is the catalogue's must say what it
+        //  is (ONE rule, records::checkLocalShadow), and a declared VARIATION
+        //  (`variationOf` / `distinctFrom`) or a HELD copy is the record, read
+        //  alone exactly as a sealed case reads it -- the top-level insertion
+        //  over the catalogue base below stays only for the undeclared shadow.
+        const std::string sub = "components/" + name + ".dat";
+        records::checkLocalShadow(sub, caseLocal);
+        if (records::readsAlone(sub, caseLocal))
+        {
+            standard  = caseLocal;
+            caseLocal = fs::path();
+            readAlone = true;
+            heldCopy  = records::pinsActive() && records::isHeld(sub);
+        }
     }
     // Third tier (LOWEST precedence): data/local/ (gitignored) holds UNVERIFIED, student-
     // review-pending proposals (estimates / bulk-ingested VLE skeletons).
@@ -317,7 +337,12 @@ DictPtr Database::componentDict(const std::string& name) const
         const fs::path r = fs::relative(p, fs::current_path(), ec);
         return (!ec && !r.empty() && r.string().rfind("..", 0) != 0) ? r.string() : p.string();
     };
-    lastLoad().home = records::sealedStrict() ? "sealed case copy " + rel(standard)
+    //  A HELD copy is the sealed copy it was, read the same way, so it is
+    //  labelled the same: the flip from `sealed` to `pins` then moves no byte
+    //  of a result (the migration's proof, DEV.md 4c C413 slice 2).
+    lastLoad().home = (records::sealedStrict() || heldCopy) ? "sealed case copy " + rel(standard)
+        : readAlone ? "case record " + rel(standard)
+                    + " (declared variation or held copy, read alone)"
         : hasCase ? "case copy " + rel(caseLocal)
                     + (hasBase ? " (on the catalogue record)" : std::string())
         : usingProposed ? "data/local (UNVERIFIED) " + proposed.string()
@@ -596,6 +621,10 @@ DictPtr Database::componentDict(const std::string& name) const
     {
         dict = Dictionary::fromFile((hasCase ? caseLocal : base).string());
     }
+
+    //  The declaration keys are loader metadata, never thermo data (C413).
+    for (const char* k : { "overlayOf", "variationOf", "distinctFrom", "variationReason" })
+        dict->erase(k);
 
     // Identity guard (no silent crutch): the filename stem is the canonical key
     // -- it is what `components ( ... )` resolves to.  The stored `name` must

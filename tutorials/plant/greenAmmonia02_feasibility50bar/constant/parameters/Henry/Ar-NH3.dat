@@ -75,3 +75,6 @@ enthalpy    9495 J/mol;           // dH_diss > 0: more soluble hot
 v_inf       2.3e-5;               // m^3/mol -- KK Poynting (22.7 cm3/mol fitted)
 margulesA   0.0;                  // J/mol -- gamma2* (x_Ar < 3 % in the data; ~0.1 % in the loop)
 Trange      ( 243  323 );   // data 243.15-323.15 K -- the 250 K separator is INSIDE
+
+variationOf Ar-NH3;
+variationReason "ARGON dissolved in liquid AMMONIA -- full Krichevsky-Kasarnovsky form.";

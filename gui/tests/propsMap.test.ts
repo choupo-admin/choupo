@@ -176,7 +176,8 @@ describe("isotherm02, polarisation01, estimate_acetone", () => {
     const file = data.find((b) => b.role === "measured data")!.members[0]!;
     expect(file.target).toMatchObject({ kind: "case", path: "constant/experimental/co2_13x_jaschik2020.dat" });
     const record = data.find((b) => b.role === "records")!.members[0]!;
-    expect(record.target).toMatchObject({ kind: "case", path: "constant/assets/zeolite13X.dat" });
+    //  zeolite13X is the CATALOGUE's record now (the case references it, C413): there is no case file to open
+    expect(record.target).toMatchObject({ kind: "none" });
     const model = byKind(map.blocks, "model");
     expect(model).toHaveLength(1);
     expect(model[0]!.members.map((m) => m.label)).toEqual(["langmuir", "LevenbergMarquardt"]);

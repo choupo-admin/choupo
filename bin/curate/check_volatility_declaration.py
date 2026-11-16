@@ -41,9 +41,21 @@ REC = "constant/components/dowthermA.dat"
 failures = []
 
 
+SEALED_BASE = None     # the fixture, SEALED by the export (the tree's case references the catalogue, C413)
+
+
+def export_sealed_base(tmp: Path) -> Path:
+    dest = tmp / "sealed_base"
+    r = subprocess.run([str(ROOT / "bin" / "choupo-import"), "--seal", str(BASE), "--to", str(dest)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        raise SystemExit("%s: could not export the sealed fixture:\n%s" % (Path(__file__).stem, r.stderr[-600:]))
+    return dest
+
+
 def make_case(tmp: Path, tag: str, rec_edit=None) -> Path:
     case = tmp / f"probe_{tag}"
-    shutil.copytree(BASE, case, ignore=shutil.ignore_patterns(
+    shutil.copytree(SEALED_BASE or BASE, case, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "converged", "iterations", "resultJson*"))
     if rec_edit:
         p = case / REC
@@ -78,11 +90,13 @@ def main() -> int:
     if not SOLVE.exists():
         print(f"check_volatility_declaration: {SOLVE} missing -- build first")
         return 1
-    if not (BASE / REC).exists():
-        print(f"check_volatility_declaration: fixture {BASE/REC} missing")
-        return 1
+    global SEALED_BASE
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
+        SEALED_BASE = export_sealed_base(tmp)
+        if not (SEALED_BASE / REC).exists():
+            print(f"check_volatility_declaration: fixture {SEALED_BASE/REC} missing")
+            return 1
 
         # ---- CONTRADICTION: announced, and the run continues -------------
         rc, out = run(make_case(tmp, "contradiction"))

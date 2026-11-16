@@ -359,6 +359,7 @@ def main():
                 print("  (f) %s loads: %d rated test(s) printed" % (p.name, n_lines))
         case = tmp / "invert"
         copy_case(M25, case)
+        (case / "constant" / "assets").mkdir(parents=True, exist_ok=True)   # the case references the catalogue's assets (C413)
         shutil.copy(fx, case / "constant/assets" / fx.name)
         f = case / "system/flowsheetDict"
         t = f.read_text()

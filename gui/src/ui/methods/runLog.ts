@@ -75,13 +75,13 @@ const RVIEW = "src/thermo/ResolvedView.cpp";
  *  prose and the page all reach a line through this map. */
 export const CITES = {
   // -- where the log goes ----------------------------------------------------
-  runCaseRedirect: { file: "bin/runCase", line: 362,
+  runCaseRedirect: { file: "bin/runCase", line: 368,
     contains: '"$RUN_BIN" "$CASE_ABS"  > "$LOG" 2>&1 || rc=$?' },
-  runCaseLog: { file: "bin/runCase", line: 302,
+  runCaseLog: { file: "bin/runCase", line: 308,
     contains: 'LOG="$CASE_ABS/log.$APP"' },
-  runCaseSummary: { file: "bin/runCase", line: 377,
+  runCaseSummary: { file: "bin/runCase", line: 383,
     contains: "tail -14" },
-  runCaseFailed: { file: "bin/runCase", line: 422,
+  runCaseFailed: { file: "bin/runCase", line: 428,
     contains: 'FAILED (exit $rc) -- last 20 lines of log:' },
   resultJson: { file: MAIN, line: 1643,
     contains: "emitResultJson(std::cout, result);" },
@@ -247,9 +247,9 @@ export const CITES = {
   daviesLogged: { file: "src/thermo/electrolyte/SpeciationSolver.cpp",
     line: 2439,
     contains: 'AdvisoryLog::instance().add("model", "warning", "speciation",' },
-  unmarked: { file: "src/thermo/Database.cpp", line: 782,
+  unmarked: { file: "src/thermo/Database.cpp", line: 811,
     contains: "std::cerr << \"[unmarked] component '\" << name" },
-  unmarkedOnce: { file: "src/thermo/Database.cpp", line: 780,
+  unmarkedOnce: { file: "src/thermo/Database.cpp", line: 809,
     contains: 'if (announceOnce("unmarked:" + name))' },
   // -- a refusal, and the exit codes ---------------------------------------------------
   error: { file: MAIN, line: 1656,
