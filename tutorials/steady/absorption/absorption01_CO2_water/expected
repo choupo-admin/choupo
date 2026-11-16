@@ -9,7 +9,7 @@ kpi     scrubber               F_beta           0.0275085829325  1e-4
 kpi     scrubber               F_in             1.41666666667    1e-4
 kpi     scrubber               K_CO2            327.999999991    1e-4
 kpi     scrubber               K_N2             17301.7999995    1e-4
-kpi     scrubber               K_water          0.00633349747995 1e-4
+kpi     scrubber               K_water          0.00633964897245 1e-4
 kpi     scrubber               P                500000           1e-4
 kpi     scrubber               Q                0                1e-4
 kpi     scrubber               Q_kW             0                1e-4

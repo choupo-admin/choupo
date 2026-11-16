@@ -21,35 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-12";
+    importedAt         "2026-11-16";
     importerVersion    "3";
     records
     {
         "components/methylDiEthanolAmine.dat"
         {
             type          imported;
-            sha256        "d6dfe527c3886d2549f163db803657c1f142018d015a4d6d624cdc3a6afda83a";
-            computationalSha256 "be0dfcb95ebe99d71c803539e99faef1ec0bdf0310b9f4b028b496952a035e46";
+            sha256        "81d8ccb9e312f97e1b580469562ed8504f6ff7c6aa28cac0264e4385671b394b";
+            computationalSha256 "cf92e54bcc948c3b2a2aafc6015a58dab4e778e5123d05fc847aac865e941dc6";
             origin        "data/standards/components/methylDiEthanolAmine.dat";
-            originSha256  "cfd4331ccf0a7ae72d217482b7ab109ef566a9a5422f7a14735a808126fcace3";
+            originSha256  "7dc94ee519e9e0c4dba0cb2d5f2de582482748fee9874119237084a572f0310b";
             release       Choupo-2608;
         }
         "components/water.dat"
         {
             type          imported;
-            sha256        "434214d874e17a076ce391a9d1dbca47321b4285429660688db4e64237ee0b2a";
-            computationalSha256 "ce55eca4e8c4f234b2633edec3fb54de5e630256ace48491a44357db2aaacf5c";
+            sha256        "6594e14a01809d098ebc56e04b5c8165659d00d99f037293bea95258aea02429";
+            computationalSha256 "693c5c80e12b77698b4949032ccbb84017d8e42ef6ce3bc0ae192806e7dbe998";
             origin        "data/standards/components/water.dat";
-            originSha256  "3723b03d86ab148fd084c01f9fc3cce1bb4398a3dc6b6914e0336c40d4ade16d";
+            originSha256  "63aacb038ef2d8da6bfc9166916318c23bd96b6af6fe3ce14ac5d57b7fd95bb0";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/IAPWS95.dat"
+        {
+            type          imported;
+            sha256        "0bc0d23a31da5d1451c0fdfda180cf7b1bf82d81e8c940e727d5c46d6fd3f1cb";
+            computationalSha256 "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+            origin        "data/standards/parameters/Helmholtz/IAPWS95.dat";
+            originSha256  "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
             release       Choupo-2608;
         }
         "parameters/NRTL/methylDiEthanolAmine-water.dat"
         {
             type          imported;
-            sha256        "7a33ff780b9b36c49515795203126c52f2eae81d45af04ce99de5856d90f5b3a";
-            computationalSha256 "44e42cb1afa69695a830a89d9c77c2c9768467e115df9db8292fa0772cf12ade";
+            sha256        "f80182ff1f1b8c1ec7cd76b18d5a3f785902643c23a8b1a167d9789dc7e298ae";
+            computationalSha256 "b0058ebffa2ba6e1a3d40c68993cb2170c7bc37dd733ff6e25e922d9fe030f4b";
             origin        "data/standards/parameters/NRTL/methylDiEthanolAmine-water.dat";
-            originSha256  "6bdf4c27bedd91517e9e6d41826583fc5e4e15954e6a7c09408b100f933383d6";
+            originSha256  "d275ef546333aba8e7a6f9b9fdadc8d67cc98ec0c75157516251d0af172c7033";
             release       Choupo-2608;
         }
     }

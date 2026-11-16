@@ -37,19 +37,19 @@ propertyManifest
         "components/water.dat"
         {
             type          imported;
-            sha256        "434214d874e17a076ce391a9d1dbca47321b4285429660688db4e64237ee0b2a";
-            computationalSha256 "ce55eca4e8c4f234b2633edec3fb54de5e630256ace48491a44357db2aaacf5c";
+            sha256        "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
+            computationalSha256 "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
             origin        "data/standards/components/water.dat";
-            originSha256  "3723b03d86ab148fd084c01f9fc3cce1bb4398a3dc6b6914e0336c40d4ade16d";
+            originSha256  "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Propanol-water.dat"
         {
             type          imported;
-            sha256        "d8fef57e21fb5edef6a46aab0adb52961a59d2a4e09779ab2fed6985ac21f0db";
-            computationalSha256 "f4c71a1aeb4ae387c9d51ca756c13366b303116f37949970ec23643c670975c4";
+            sha256        "ba5f5e77db452d80a9f11afa9471461ddd7b46f7fa279758b027f145ebe9e00a";
+            computationalSha256 "cbe1793efbc9112a3211e8947938005204ad8365cff033f8339b36e0a3efda81";
             origin        "data/standards/parameters/NRTL/1Propanol-water.dat";
-            originSha256  "931c0940bca5154fbdaa9b12485a0f4b3ab75b51c5cd41e455025b24bd6c393a";
+            originSha256  "ba5f5e77db452d80a9f11afa9471461ddd7b46f7fa279758b027f145ebe9e00a";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

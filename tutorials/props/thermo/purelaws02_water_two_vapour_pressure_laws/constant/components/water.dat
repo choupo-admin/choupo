@@ -106,7 +106,7 @@ standardThermochemistry
 //  its name in the provenance block below.
 vaporPressure
 {
-    preferred   antoine;
+    preferred   SR1;
 
     antoine
     {

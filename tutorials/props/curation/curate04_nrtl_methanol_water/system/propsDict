@@ -45,11 +45,16 @@
   0.1 K is not outvoted by one measured to 1 K.  The held-out AAD is plain
   kelvin, unweighted.
 
+  REFITTED 2026-11-16.  Water's catalogue vapour pressure moved from an Antoine fit to the IAPWS equation, and this
+  pair was fitted again on the new curve; the b_ij, b_ji, rms and held-out AAD below are the new run's.  Figures
+  that are not restated (the overlay's UNIFAC and ideal columns, the water record's boiling-point error) are the
+  earlier run's and are SUPERSEDED by the `expected` file, which pins the current ones.
+
   WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
-    * fit_nrtl: b_ij = 165.0 K, b_ji = 41.8 K, in-sample rms 0.50 K over
+    * fit_nrtl: b_ij = 146.4 K, b_ji = 61.4 K, in-sample rms 0.50 K over
       54 points on six isobars.  fit_nrtl_start2, from (800, -400), lands
       on the same pair to 0.01 K -- one minimum, not a start point's choice.
-    * HELD OUT (101.32 kPa, another laboratory): AAD 0.53 K (0.150 %)
+    * HELD OUT (101.32 kPa, another laboratory): AAD 0.57 K (0.160 %)
       against a band of 0.33 % declared before the fit -> `validated`, and
       the pair is the catalogue record NRTL/methanol-water.dat.
     * fit_nrtl_ab frees a_ij and a_ji too: the run says `NOT individually

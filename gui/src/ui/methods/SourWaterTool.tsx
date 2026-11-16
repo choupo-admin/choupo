@@ -156,12 +156,12 @@ export const SOURWATER_STEPS = [
       + "sulfide to eight reactive trays and strip it.  CO₂ is the more "
       + "volatile acid gas, so it leaves first.  Removing an acid should "
       + "raise the pH going down the column.",
-    after: "It falls: 8.4947876 at the top to 7.6090598 at the reboiler.  "
+    after: "It falls: 8.4947876 at the top to 7.6355899 at the reboiler.  "
       + "The reason is that CO₂ is not the only thing leaving.  Ammonia "
       + "leaves too, and it is the base; meanwhile the sulfide does not "
-      + "follow the carbonate out — m_HCO3 collapses from 0.14620364 to "
-      + "5.6325275e-06 while m_HS goes the other way, 0.27828666 to "
-      + "0.28854884.  The departing ammonia and the accumulating sulfide "
+      + "follow the carbonate out — m_HCO3 collapses from 0.14858030 to "
+      + "7.6463758e-06 while m_HS goes the other way, 0.27828666 to "
+      + "0.28899549.  The departing ammonia and the accumulating sulfide "
       + "acidify faster than the departing carbonate alkalinises.  (The "
       + "molalities are read from stage 2, the feed stage, down to the "
       + "reboiler: the top stage carries no sulfide at all.)",
@@ -212,14 +212,14 @@ export const SOURWATER_STEPS = [
  *  a cell the golden does not pin is "—" rather than borrowed from a
  *  neighbour (C22 slice 2). */
 export const SOURWATER_TABLE = [
-  { q: "pH", s1: "8.4947876", s2: "8.2089848", s8: "7.6090598" },
-  { q: "m_HCO3  [mol/kg]", s1: "—", s2: "0.14620364", s8: "5.6325275e-06" },
-  { q: "m_HS  [mol/kg]", s1: "0", s2: "0.27828666", s8: "0.28854884" },
-  { q: "m_H2Saq  [mol/kg]", s1: "0", s2: "—", s8: "0.008247863" },
+  { q: "pH", s1: "8.4947876", s2: "8.2130876", s8: "7.6355899" },
+  { q: "m_HCO3  [mol/kg]", s1: "—", s2: "0.14858030", s8: "7.6463758e-06" },
+  { q: "m_HS  [mol/kg]", s1: "0", s2: "0.27828666", s8: "0.28899549" },
+  { q: "m_H2Saq  [mol/kg]", s1: "0", s2: "—", s8: "0.007862483" },
   //  T: the golden pins the distillate and bottoms STREAMS, which leave at
-  //  the stage-1 and stage-8 temperatures (356.43087 / 372.03155 K in the
+  //  the stage-1 and stage-8 temperatures (356.19447 / 371.45114 K in the
   //  profile, equal to the profile's printed precision).
-  { q: "T  [K]", s1: "356.430868413", s2: "—", s8: "372.031545213" },
+  { q: "T  [K]", s1: "356.194469110", s2: "—", s8: "371.451137452" },
 ] as const;
 
 export function SourWaterTool(): JSX.Element {

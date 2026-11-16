@@ -84,6 +84,9 @@
   "AdvisoryLog": [
    "src/core/Advisory.H"
   ],
+  "AlphaChoice": [
+   "src/thermo/equationOfState/CubicEoS.H"
+  ],
   "AmbroseWalton": [
    "src/thermo/vaporPressure/AmbroseWalton.H"
   ],
@@ -505,6 +508,9 @@
   ],
   "CrystalliserSize": [
    "src/postProcessing/sizing/CrystalliserSize.H"
+  ],
+  "CubicAlphaFit": [
+   "src/thermo/Component.H"
   ],
   "CubicEoS": [
    "src/thermo/equationOfState/CubicEoS.H"

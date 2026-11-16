@@ -278,6 +278,30 @@ never fake a liquid root), so it is never a legal liquid slot.  No
 near-critical splits will be off).  SRK/PR read each component's `Tc`, `Pc`,
 `omega` — no model-specific data files.
 
+**The cubic's alpha function (C408 slice 0, opt-in).**  The default is Soave
+for `SRK` and the PR78 slope for `PengRobinson`, one curve in omega for every
+fluid; with the records' own Tc, Pc, omega it misses the normal-boiling
+vapour pressure by -8.8 % for water and -2.7 % for methanol.  Writing
+`alphaFunction MathiasCopeman;` beside `model` (phiPhi cubics only; PCSAFT
+refuses it) switches to the per-component three-constant form of Poling et
+al. 5th ed. Table 4-7 (Theory Guide section `sec:cubic-alpha-mc`):
+
+```
+equationOfState { model SRK; alphaFunction MathiasCopeman; }
+```
+
+The constants `c1..c3` live in each component record's
+`cubicAlpha { SRK { form MathiasCopeman; c1; c2; c3; Trange (lo hi); } PengRobinson { ... } }`
+block, FITTED BY CURATION to that record's own vapour-pressure law over the
+law's declared window (`bin/curate/fit_alpha_function.py <component> --cubic
+SRK|PengRobinson --write`; provenance `origin derived`, with the law, the
+window, the largest deviation and a value sha).  Never type them from a table.
+A component whose record lacks the block is REFUSED by name, the message names
+the tool.  `water` and `methanol` carry both cubics; CO2 does not (its
+Antoine law is the sublimation line and the tool refuses it).  Above Tc the
+Soave branch with `c1` only.  The run prints the choice and the resolved view
+names it.  Witness case: `props/molecular/alpha01_water_methanol_psat`.
+
 #### Volume translation (Péneloux 1982) — a corrected liquid VOLUME, same equilibrium
 
 A cubic's liquid volume is several per cent too large (SRK n-hexane +11.8 %,

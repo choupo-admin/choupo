@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1874,
+  "cases": 1875,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 27
+  "anchored": 28
  },
  "cases": {
   "data/curation/batches/henry_sander": {
@@ -23156,7 +23156,8 @@
     "speciate"
    ],
    "roles": [
-    "anchored"
+    "anchored",
+    "knownBroken"
    ],
    "hasGolden": true
   },
@@ -24023,6 +24024,23 @@
     ]
    },
    "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/alpha01_water_methanol_psat": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
    "hasGolden": true
   },
   "tutorials/props/molecular/componentLookup01_catalogue_ladder": {
@@ -31623,6 +31641,7 @@
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/membrane/shortlist01_class_to_modules",
+    "tutorials/props/molecular/alpha01_water_methanol_psat",
     "tutorials/props/molecular/componentLookup01_catalogue_ladder",
     "tutorials/props/molecular/cosmoSAC01_water_ethanol",
     "tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002",
@@ -35195,6 +35214,7 @@
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/membrane/shortlist01_class_to_modules",
+    "tutorials/props/molecular/alpha01_water_methanol_psat",
     "tutorials/props/molecular/componentLookup01_catalogue_ladder",
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_c3c4c5_branch_stop",
@@ -36584,6 +36604,7 @@
     "tutorials/props/compare/unifacDortmund02_butanol_water_gamma_infinity",
     "tutorials/props/heat/table02_water_liquid_cp_points",
     "tutorials/props/hydraulics/letdown02_valve_fluid_properties",
+    "tutorials/props/molecular/alpha01_water_methanol_psat",
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
@@ -37482,6 +37503,7 @@
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/heat/table02_water_liquid_cp_points",
+    "tutorials/props/molecular/alpha01_water_methanol_psat",
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
     "tutorials/props/molecular/flash01_operating_line",

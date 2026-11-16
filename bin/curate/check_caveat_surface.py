@@ -124,7 +124,12 @@ SOLVE = ROOT / "choupoSolve"
 
 #  A case that really evaluates a Cp outside its declared window, and one that
 #  does not.  Both are ordinary corpus cases -- no fixture, no sabotage.
-LOUD = "tutorials/steady/drying/solidDryer01_sugar"
+#  solidDryer01_sugar was this witness until 2026-11-16: it evaluated WATER'S
+#  Antoine at 420 K, outside its Trange (273 373).  Water's law is now the IAPWS
+#  equation (273.16-647.096 K) and the case extrapolates nothing -- losing the role
+#  for a GOOD reason.  flash01_benzene_toluene (benzene past its Antoine window) is the witness
+#  a named vapour-pressure extrapolation: the surface this arm exists to hold.
+LOUD = "tutorials/steady/flash/flash01_benzene_toluene"
 #  A case that genuinely raises NOTHING.  It was `flash01_benzene_toluene`
 #  until 2026-08-06, and losing that role is worth recording, because it is
 #  this gate's own thesis turned one level up.

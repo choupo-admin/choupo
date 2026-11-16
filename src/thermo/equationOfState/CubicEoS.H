@@ -135,6 +135,29 @@ public:
         scalar sig;
     };
 
+    // THE ALPHA FUNCTION (C408 slice 0).  Soave (SRK) / PR78 (PR) is the
+    // default and is what every case ran before this slice.  `MathiasCopeman`
+    // (Poling et al., 5th ed., Table 4-7, p. 4.19-4.20) is opt-in through
+    // `alphaFunction MathiasCopeman;` and takes each component's three
+    // constants from its record's `cubicAlpha.<cubic>` block, fitted by
+    // curation (bin/curate/fit_alpha_function.py).
+    struct AlphaChoice
+    {
+        bool mathiasCopeman;
+        std::vector<Component::CubicAlphaFit> fit;
+        AlphaChoice() : mathiasCopeman(false) {}   // per component, when on
+    };
+
+    // sqrt(alpha) and its T derivative for ONE component: g(T) with
+    //   alpha = g^2,  x = 1 - sqrt(Tr),
+    //   Tr <= 1 :  g = 1 + c1 x + c2 x^2 + c3 x^3
+    //   Tr  > 1 :  g = 1 + c1 x                (the Soave branch, c1 only)
+    // Public and static so the one formula has one home.  g and dg/dT are
+    // continuous at Tc (x = 0); d2g/dT2 jumps there (c2, c3 drop out).
+    static void mathiasCopemanG(scalar T, scalar Tc, scalar c1, scalar c2,
+                                scalar c3, scalar& g, scalar& dgdT,
+                                scalar& d2gdT2);
+
     // One chosen root.  `pseudo` = the requested phase has no root here and
     // Z is the pseudo-root described in the header.
     struct Root
@@ -167,6 +190,7 @@ public:
                       MixingLedger& out) const override;
 
     const std::string& modelName() const override { return name_; }
+    std::string alphaFunctionNote() const override;
 
     // c(y) = sum y_i c_i [m3/mol]; 0 when translation is off.
     scalar volumeShift(const sVector& y) const;
@@ -186,7 +210,15 @@ protected:
              const std::vector<Component>& comps,
              const std::vector<scalar>& slope,
              const std::vector<std::vector<scalar>>& kij,
-             const std::vector<scalar>& volumeShift = {});
+             const std::vector<scalar>& volumeShift = {},
+             const AlphaChoice& alpha = AlphaChoice());
+
+    // `alphaFunction <Soave|PR78|MathiasCopeman>;` read from the EoS dict.
+    // A component without its fitted block is REFUSED by name, the curation
+    // tool is the remedy.  Announces the non-default choice once.
+    static AlphaChoice readAlpha(const std::string& model,
+                                 const DictPtr& eosDict,
+                                 const std::vector<Component>& comps);
 
     // PENELOUX VOLUME TRANSLATION (Peneloux, Rauzy & Freze 1982, Fluid Phase
     // Equilib. 8, 7-23; DEV.md 4c C408 (a)).  Reads the optional
@@ -216,6 +248,8 @@ private:
         scalar b;            // Ωb R Tc / Pc     [m³/mol]
         scalar m;            // α slope m(ω)
         scalar Tc;           // [K]
+        bool   mc = false;   // Mathias-Copeman alpha instead of Soave/PR78
+        scalar c1 = 0.0, c2 = 0.0, c3 = 0.0;
     };
 
     // a_i(T), and the SIGNED root s_i and its derivative (header).

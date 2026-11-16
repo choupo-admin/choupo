@@ -30,20 +30,20 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  150.000020567;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  1049.99992497;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  150.000026383;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  1049.99992945;
     }
 
     evidence
     {
-        partitionFingerprint  "3f2981e1dee0612e";   // frozen before the fit
+        partitionFingerprint  "1976920e838a9d21";   // frozen before the fit
 
         datasets
         (
         {
             role      fit;
             dataset   "constant/experiments/nButanol-water-bubble-synthetic-fit.dat";
-            sha256    "21868dbc2cf571b766106d47a62ffd8a2c360115eb5ac58438f2d4793b22ab80";
+            sha256    "616ec6209400818161d04c5fa64db490b66ac64c37cdeec4b43a0661ce302c3a";
             provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
             system    "nButanol + water";
             pressure  "101325.000000 Pa";
@@ -59,7 +59,7 @@ properties
         {
             role      validation;
             dataset   "constant/experiments/nButanol-water-bubble-synthetic-validation.dat";
-            sha256    "7534ab34f87941888de2cc6f35ce187ff3699be04c34df7f1e46d6480a3b715b";
+            sha256    "c8ce8add48a9c5d9506bb9fb2e038f7c524a13f039d0f61a2632332825185680";
             provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
             system    "nButanol + water";
             pressure  "101325.000000 Pa";
@@ -86,7 +86,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     6.47477872798e-07;
+        aadHeldOutPct     7.66911457702e-07;
         acceptanceMaxAADPct 0.1;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, for a SYNTHETIC zero-noise recovery: 0.1 % of T (about 0.4 K, twice the declared 0.2 K standard uncertainty of a bubble point) and 0.01 in mole fraction (twice the declared sigma of a binodal composition).  The data are generated from the model, so the true deviation is round-off; the bands are generous on purpose and the gate (check_lle_residual) holds the recovery to 1e-5, not these.";
     }
@@ -100,20 +100,20 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  150.000020589;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  1049.99992491;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  150.000026407;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  1049.99992938;
     }
 
     evidence
     {
-        partitionFingerprint  "3f2981e1dee0612e";   // frozen before the fit
+        partitionFingerprint  "1976920e838a9d21";   // frozen before the fit
 
         datasets
         (
         {
             role      fit;
             dataset   "constant/experiments/nButanol-water-bubble-synthetic-fit.dat";
-            sha256    "21868dbc2cf571b766106d47a62ffd8a2c360115eb5ac58438f2d4793b22ab80";
+            sha256    "616ec6209400818161d04c5fa64db490b66ac64c37cdeec4b43a0661ce302c3a";
             provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
             system    "nButanol + water";
             pressure  "101325.000000 Pa";
@@ -129,7 +129,7 @@ properties
         {
             role      validation;
             dataset   "constant/experiments/nButanol-water-bubble-synthetic-validation.dat";
-            sha256    "7534ab34f87941888de2cc6f35ce187ff3699be04c34df7f1e46d6480a3b715b";
+            sha256    "c8ce8add48a9c5d9506bb9fb2e038f7c524a13f039d0f61a2632332825185680";
             provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
             system    "nButanol + water";
             pressure  "101325.000000 Pa";
@@ -156,7 +156,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     6.47435737471e-07;
+        aadHeldOutPct     7.66913443047e-07;
         acceptanceMaxAADPct 0.1;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, for a SYNTHETIC zero-noise recovery: 0.1 % of T (about 0.4 K, twice the declared 0.2 K standard uncertainty of a bubble point) and 0.01 in mole fraction (twice the declared sigma of a binodal composition).  The data are generated from the model, so the true deviation is round-off; the bands are generous on purpose and the gate (check_lle_residual) holds the recovery to 1e-5, not these.";
     }

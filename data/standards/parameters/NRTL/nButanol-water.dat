@@ -50,6 +50,7 @@
   tie-line form): a flash, decanter or cooler of this mixture splits the
   liquid.
 
+  REFITTED 2026-11-16 after water's catalogue vapour pressure moved from an Antoine fit to the IAPWS equation (the earlier fit had absorbed that curve's error); the case, its numbers and the held-out verdict are the new run's.
   REPRODUCE: run tutorials/props/curation/curate14_nrtl_butanol_water -- its
   fit_binodal operation writes nButanol-water.proposal.dat; parameters,
   evidence, validity and validation must equal this record's
@@ -68,11 +69,11 @@ parameters
 {
     i           nButanol;
     j           water;
-    a_ij        -4.71077589;
-    b_ij        1894.04289944;
-    a_ji        4.09957276;
-    b_ji        -163.83640884;
-    alpha       0.44592340;
+    a_ij        -4.11160376;
+    b_ij        1708.88106578;
+    a_ji        4.05956908;
+    b_ji        -151.85707409;
+    alpha       0.44639312;
 }
 
 provenance
@@ -84,7 +85,7 @@ provenance
     reviewStatus  interim;
     reviewReason  "regressed by Choupo from archive-transcribed measurements; not yet read back against the articles; NOT for the homogeneous butanol-rich VLE at 1 atm (2.18 K high on average, held out)";
     reuse         "Choupo's own regression, redistributed with the catalogue; the measured points belong to the cited articles and are not reproduced in this record";
-    fitDate       "2026-11-10";
+    fitDate       "2026-11-16";
 
     evidence
     (
@@ -354,11 +355,11 @@ provenance
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          186.97483204;
-    rms_K         0.27785134;
+    chi2          209.84605627;
+    rms_K         0.38029294;
     nDataPoints   30;
     identifiable  true;
-    maxAbsCorr    0.99878120;
+    maxAbsCorr    0.99879583;
 
     validity
     {
@@ -375,8 +376,8 @@ validation
     heldOut
     {
         points      2;
-        aad_pct     0.102898;
-        aad_K       0.376320;
+        aad_pct     0.132477;
+        aad_K       0.484497;
         domain_x1   ( 0.021000 0.362200 );
     }
 
@@ -399,7 +400,7 @@ validation
         T            { min 288.20 K; max 365.85 K; }
         band_dx      0.010000;   // mole fraction, mean |dx|, declared before the fit
         sigma_dx     0.025000;   // the weight of the tie-line rows
-        aad_dx       0.005625;   // HELD-OUT tie lines
+        aad_dx       0.007507;   // HELD-OUT tie lines
         heldOutTies  29;
         basis        heldOut;
     }

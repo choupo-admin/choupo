@@ -91,10 +91,10 @@ propertyManifest
         "chemistry/water-vapour-equilibrium.dat"
         {
             type          imported;
-            sha256        "23af95d5b4dc5fc5a61e6ff500f85c6b0ad5ec4e0cd336dd4c827a7eb9c43e05";
-            computationalSha256 "4b41d216ede3add0b7cd987f0e8d4f5b0938724e0bef5721aa2719dd6f9184fb";
+            sha256        "4f266c1c74767669c5589cde2b1f92f7146c1c885b7784ae9c7cfc625f7f7748";
+            computationalSha256 "5703967e70e86e30fcfb91cc8743e755ce4ffbf44df490505c521c8961178d56";
             origin        "data/standards/chemistry/water-vapour-equilibrium.dat";
-            originSha256  "1127150b975b47357c5ee8866260191042a6b6783835cc0d79aad5caaffaf91a";
+            originSha256  "4f266c1c74767669c5589cde2b1f92f7146c1c885b7784ae9c7cfc625f7f7748";
             release       Choupo-2608;
         }
         "components/CO2.dat"
@@ -146,10 +146,10 @@ propertyManifest
         "components/water.dat"
         {
             type          imported;
-            sha256        "5e99759bc84a45e4470a57b303e6418291db09824cc18882851370a084d2f380";
-            computationalSha256 "f78baa98f4745c3905a825a73e812a7c2898719e0bf8f79f88deab01c2ded195";
+            sha256        "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
+            computationalSha256 "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
             origin        "data/standards/components/water.dat";
-            originSha256  "9efa8ea2cfccc7d213defdadb8c89d922fe73b14e7f06756b2afa13f5ca15b3d";
+            originSha256  "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
             release       Choupo-2608;
         }
         "parameters/Helmholtz/IAPWS95.dat"

@@ -1,4 +1,3 @@
-// [imported] origin "data/standards/chemistry/water-vapour-equilibrium.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 recordType gasLiquidEquilibrium;
 schemaVersion 2;
 
@@ -13,4 +12,4 @@ solvent          water;
 convention       PHREEQC-gasMolal-v1;
 
 reaction "H2O(g) = H2O";
-      logK25 1.506; dH -44030; analytic ( -16.5066 -0.0020013 2710.7 3.7646 0 2.24e-06 ); source "USGS PHREEQC phreeqc.dat (public domain); primary not stated in db";
+      logK25 1.5047; dH -44065; analytic ( -63.558906 -0.0096708571 4838.676 21.258553 -87337.878 1.0974088e-06 ); source "derived from water's own vapour-pressure law (components/water.dat, IAPWS SR1-86 Eq. 1): logK = -log10(psat/atm), six-term least squares over 273.16-473.15 K by bin/curate/fit_water_vapour_equilibrium.py; replaces the USGS PHREEQC phreeqc.dat fit";

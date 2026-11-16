@@ -64,10 +64,10 @@ propertyManifest
         "components/water.dat"
         {
             type          imported;
-            sha256        "8cc87e6cd7e32e02046dde621edb6d3fc382246b580098a25d87498f6e9e7b9e";
-            computationalSha256 "991ff5537012a205dfcc49305c28302ebb1d52b0668d8094f395a1f9b907fec9";
+            sha256        "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
+            computationalSha256 "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
             origin        "data/standards/components/water.dat";
-            originSha256  "88c0f73f76a12f0c277cddd933fe464e61b08e8b7c68d40105ce738c78da7852";
+            originSha256  "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
             release       Choupo-2607;
         }
         "parameters/EdwardsPitzer/CO2aq.dat"

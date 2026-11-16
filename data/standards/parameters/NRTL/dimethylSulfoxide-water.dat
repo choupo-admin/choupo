@@ -19,7 +19,7 @@
   its fitting pipeline (every laboratory fitted, outliers beyond 3 K
   discarded by name, max |T_model - T| over the kept points GRADED
   clean / warning / severe at 1 / 2 / 4 K -- DEV.md 4c C283
-  amended, C285, C286; THIS fit: warning in-sample, 1.5938 K; one liquid
+  amended, C285, C286; THIS fit: warning in-sample, 1.8820 K; one liquid
   across its validity span), and NO HUMAN HAS REVIEWED IT.  The
   engine says so on every run that reads it, and voices a warning
   or a severe grade beside it.
@@ -47,9 +47,9 @@ parameters
     i           water;
     j           dimethylSulfoxide;
     a_ij        0.00000000;
-    b_ij        -7.65623582;
+    b_ij        -88.72926420;
     a_ji        0.00000000;
-    b_ji        -321.26965510;
+    b_ji        -209.35640117;
     alpha       0.30000000;
 }
 
@@ -63,12 +63,12 @@ provenance
     review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
     fitGrade      warning;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
-    fitGradeMaxTemperatureError_K 1.5938;
+    fitGradeMaxTemperatureError_K 1.8820;
     promotedBy    "bin/choupo-curate pair --promote";
-    promotedDate  "2026-11-11";
+    promotedDate  "2026-11-16";
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
-    fitDate       "2026-11-11";
+    fitDate       "2026-11-16";
 
     evidence
     (
@@ -88,11 +88,11 @@ provenance
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          10.91880869;
-    rms_K         0.84393184;
+    chi2          16.22305951;
+    rms_K         1.02477537;
     nDataPoints   19;
     identifiable  true;
-    maxAbsCorr    0.98852949;
+    maxAbsCorr    0.99071968;
 
     validity
     {
@@ -121,8 +121,8 @@ curation
     outliersDropped 0;
     pointsKept      19;
     noBubblePoint   0;
-    maxAbsError     1.5938 K;
-    meanAbsError    0.6880 K;
+    maxAbsError     1.8820 K;
+    meanAbsError    0.8416 K;
     acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
     gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
     grade           warning;

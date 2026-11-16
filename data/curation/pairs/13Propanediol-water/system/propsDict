@@ -84,32 +84,31 @@
 
   @@MODELS-RESULT-BEGIN@@
   WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
-  not argued). Beside fit_nrtl's max |dT| 1.008 K (warning) on the same
-  kept points. fit_uniquac: a_ij = -255.2, a_ji = 458.6 K over 16 kept
-  points: max |dT| 2.927 K, mean 0.817 K, graded severe -> accepted;
-  fit_uniquac_start2 lands on the same pair (-255.2, 458.6). NOT PROMOTED
-  (max |dT| 2.927 K over the 16 kept points, one liquid across the
-  validity span): fit grade severe, and a severe fit is promoted only if
-  it BEATS THE IDEAL MIXTURE on its own kept points (DEV.md 4c C334): fit
-  max 2.9275 K, ideal (gamma = 1) max 2.7386 K. fit_wilson: A_ij =
-  5996.2, A_ji = -5273.1 J/mol over 16 kept points: max |dT| 2.837 K,
-  mean 0.758 K, graded severe -> accepted; fit_wilson_start2 lands on A
-  DIFFERENT pair (5909.8, -5220.4). NOT PROMOTED (max |dT| 2.837 K over
-  the 16 kept points, one liquid across the validity span): fit grade
-  severe, and a severe fit is promoted only if it BEATS THE IDEAL MIXTURE
-  on its own kept points (DEV.md 4c C334): fit max 2.8374 K, ideal (gamma
-  = 1) max 2.7386 K.
+  not argued). Beside fit_nrtl's max |dT| 0.611 K (clean) on the same
+  kept points. fit_uniquac: a_ij = -194.4, a_ji = 358.7 K over 16 kept
+  points: max |dT| 1.153 K, mean 0.313 K, graded warning -> accepted;
+  fit_uniquac_start2 lands on the same pair (-194.4, 358.7). PROMOTABLE
+  by `bin/choupo-curate pairs --models --promote`: fit grade warning --
+  max |dT| 1.153 K over the 16 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = 3478.4, A_ji = -1886.5 J/mol over 16
+  kept points: max |dT| 0.362 K, mean 0.105 K, graded clean -> accepted;
+  fit_wilson_start2 lands on the same pair (3478.4, -1886.5). PROMOTABLE
+  by `bin/choupo-curate pairs --models --promote`: fit grade clean -- max
+  |dT| 0.362 K over the 16 kept points, one liquid across the validity
+  span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
   WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
-  fit_nrtl: b_ij = 134.1 K, b_ji = -77.3 K over 16 kept points of 1
-  laboratories (0 discarded): max |dT| 1.008 K, mean 0.617 K, graded
-  warning (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on A
-  DIFFERENT pair (125.4, -69.6). PROMOTED on 2026-11-11 into
+  fit_nrtl: b_ij = 549.5 K, b_ji = -304.7 K over 16 kept points (0
+  discarded): max |dT| 0.611 K, mean 0.150 K, graded clean (limits 1 / 2
+  / 4 K) -> accepted. fit_nrtl_start2 lands on the same pair (549.5,
+  -304.7). REFITTED on 2026-11-16 after water's vapour pressure moved to
+  the IAPWS equation (the earlier fit had absorbed the Antoine curve's
+  error); PROMOTED on 2026-11-16 into
   data/standards/parameters/NRTL/13Propanediol-water.dat as reviewStatus
-  autoPromoted, review by none, because: fit grade warning -- max |dT|
-  1.008 K over the 16 kept points (limits 1 / 2 / 4 K), one liquid across
+  autoPromoted, review by none, because: fit grade clean -- max |dT|
+  0.611 K over the 16 kept points (limits 1 / 2 / 4 K), one liquid across
   the validity span
   @@RESULT-END@@
 

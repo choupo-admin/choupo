@@ -20,7 +20,7 @@
   Fitted on EVERY laboratory with the NRTL fit's own kept points (C294), so
   the `validation {}` block says, truthfully, that nothing was held out;
   the acceptance is the `curation {}` block.
-  NOT PROMOTABLE: fit grade refused -- max |dT| 19.968 K over the 96 kept
+  NOT PROMOTABLE: fit grade refused -- max |dT| 15.102 K over the 89 kept
   points
 
   REPRODUCE: run data/curation/pairs/triethyleneGlycol-water (after `bin/choupo-curate fetch` on it); its fit_wilson
@@ -40,8 +40,8 @@ parameters
 {
     i           water;
     j           triethyleneGlycol;
-    A_ij        -211.16781002;   // J/mol
-    A_ji        3172.95186551;   // J/mol
+    A_ij        -52.70216553;   // J/mol
+    A_ji        6793.50700019;   // J/mol
 }
 
 provenance
@@ -53,7 +53,7 @@ provenance
     reviewStatus  interim;
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
-    fitDate       "2026-11-11";
+    fitDate       "2026-11-16";
 
     evidence
     (
@@ -86,16 +86,16 @@ provenance
             pressure  "85000.000000 Pa";
         }
     );
-    fingerprint "fd80b6078779bf2e";   // of the declaration, frozen before the fit
+    fingerprint "92b50da88bc7541b";   // of the declaration, frozen before the fit
 
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          103943.85012162;
-    rms_K         7.65636374;
-    nDataPoints   96;
+    chi2          62465.01812407;
+    rms_K         6.30187368;
+    nDataPoints   89;
     identifiable  true;
-    maxAbsCorr    0.99058777;
+    maxAbsCorr    0.96899637;
 
     validity
     {
@@ -123,16 +123,16 @@ curation
     evidence        allLaboratories;   // every study fitted, none held out
     objective       twoStage;
     outlierLimit    3 K;   // the NRTL least-squares stage's, reused
-    outliersDropped 25;
-    pointsKept      96;
+    outliersDropped 32;
+    pointsKept      89;
     noBubblePoint   0;
-    maxAbsError     19.9685 K;
-    meanAbsError    6.0194 K;
+    maxAbsError     15.1025 K;
+    meanAbsError    4.8648 K;
     acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
     gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
     grade           refused;
     oneLiquid       true;   // arm (f) on this model's own equation over the validity span
-    temperatures    95;   // distinct stated temperatures in the kept evidence
+    temperatures    88;   // distinct stated temperatures in the kept evidence
     laboratories    3;   // distinct articles in the kept evidence
     singleTemperature false;
     singleLaboratory  false;

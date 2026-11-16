@@ -1,23 +1,26 @@
-// [imported] origin "data/standards/components/water.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Water  (H2O, CAS 7732-18-5)
-  Warning: the Antoine fit below is NOT accurate over its whole declared
-           Trange.  Measured 2026-09-27 against the IAPWS saturation
-           equation (IAPWS SR1-86(1992), Eq. 1, which reproduces its own
-           Table 1 check values to 2e-7): -0.07 % at 273.16 K, -0.10 % at
-           298.15 K, +0.03 % at 313.15 K, +0.49 % at 333.15 K, +1.32 % at
-           353.15 K and +2.47 % at 373.15 K -- so this fit puts water's own
-           normal boiling point at 372.45 K, not at the Tb 373.15 declared
-           below.  Above 373 K it extrapolates (+6.4 % at 423 K, +18 % at
-           573 K).  Use the Antoine block only below ~313 K; above that, a
-           case that needs water's saturation curve should opt in to the
-           IAPWS equation (vapour-pressure model `Wagner`, see
-           docs/design/what-water-dat-does-not-say.md) or to the IAPWS-IF97
-           pure-fluid route (`pureFluids { water { method IF97; } }`).
-           Replacing this block in the catalogue is RESERVED for Vitor: it
-           moves goldens once the sealed cases are re-imported.
-  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), the Antoine
-           fit, the Cp polynomials and the ideal-gas formation datum
+  Vapour pressure: the IAPWS saturation equation (IAPWS SR1-86(1992),
+           Eq. 1; printed with the same six coefficients as Eq. (2.5) of
+           Wagner & Pruss, J. Phys. Chem. Ref. Data 31 (2002) 387, p. 399),
+           vapour-pressure model `Wagner`, reduced by Tc = 647.096 K and
+           pc = 22.064 MPa -- NOT by this record's own Tc 647.14 K below,
+           which the equation must not use.  Valid 273.16-647.096 K.  It
+           reproduces SR1-86's Table 1 (611.657 Pa at 273.16 K, 101325.015 Pa
+           at 373.1243 K, 22.064 MPa at 647.096 K) to 1.5e-7 and the IF97
+           region-4 equation to 1.8e-4.  Until 2026-11-16 this block was an
+           Antoine fit that was +2.47 % high at 373.15 K (so it put water's
+           normal boiling point at 372.45 K), +6.4 % at 423 K and +18 % at
+           573 K; the architect replaced it (CLAUDE.md rule 00: the
+           reservation to Vitor was lifted) because every case that prices
+           water's vapour pressure inherited the error.  Water has ONE home
+           for its saturation curve: this block.  (The PHREEQC-convention
+           gas-liquid record chemistry/water-vapour-equilibrium.dat states
+           the same curve as a dissolution constant and is derived from it;
+           see that record.)  A case that wants the IAPWS-IF97 pure-fluid
+           route instead still declares `pureFluids { water { method IF97; } }`.
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), the Cp
+           polynomials and the ideal-gas formation datum
            (dHf_298/s_298, JANAF convention) are individual literature
            values -- primary re-citation pending (IST review).  K_b/K_f
            and the Andrade/Vogel viscosity fits repeat the same pending
@@ -86,9 +89,15 @@ standardThermochemistry
 }
 vaporPressure
 {
-    model         Antoine;
-    coefficients  (5.40221   1838.675   -31.737);
-    Trange        (273  373);
+    //  IAPWS SR1-86(1992) Eq. 1:  ln(p/pc) = (Tc/T) sum a_i u^e_i ,  u = 1 - T/Tc ,
+    //  with the reducing constants of the release, Tc = 647.096 K and
+    //  pc = 22.064 MPa (its Sec. 2), NOT this record's Tc.  Coefficients as
+    //  printed in Wagner & Pruss 2002, Eq. (2.5), p. 399.
+    model         Wagner;
+    reducing      { T 647.096 K;  P 22.064 MPa; }
+    exponents     (1 1.5 3 3.5 4 7.5);
+    coefficients  (-7.85951783  1.84408259  -11.7866497  22.6807411  -15.9618719  1.80122502);
+    Trange        (273.16  647.096);
 }
 
 idealGasHeatCapacity
@@ -177,8 +186,16 @@ ebulioscopic
 // liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
 // fitted to literature mu(T) over ~10-100 degC.
 associationFactor  2.6;
+//  PREFERRED: vogel (DEV.md 4c C398 slice (b)).  Both laws were fitted to the
+//  same data window (~10-100 degC); vogel is the three-parameter fit, so it
+//  is the closer of the two inside it, and it is the law most cases name
+//  (water: 23 case directories write Vogel, 3 Andrade; ethanol: 2 and 1).
+//  It is the record's one value of the property when a case's block names
+//  no model; a case word (`model Andrade;`) still pins its own law, so no
+//  shipped number moves.
 liquidViscosity
 {
+    preferred vogel;
     andrade { A -13.03; B 1796.1; }
     vogel   { A -10.5366; B 541.4; C 144.0; }
 }
@@ -227,6 +244,16 @@ liquidThermalConductivity
         E     -1.5744065e-06;
         Tmin  273.16;
         Tmax  573.15;
+        //  CHECK (DEV.md 4c C398 U3, and the ruling on `check {}` of
+        //  2026-11-14): this law was fitted to a reference formulation the
+        //  tree itself evaluates -- IAPWS R15-11 on the IF97 saturated-liquid
+        //  density (src/thermo/iapws/IAPWSTransport.cpp) -- so no value is
+        //  stored here: bin/curate/check_record_law_values EVALUATES the
+        //  formulation over this law's window (273.16-573.15 K) and requires
+        //  the law within the formulation's own uncertainty there (0.7 %,
+        //  R15-11 Sec. 2.5).  A coefficient in another unit or a logarithm in
+        //  another base misses by orders of magnitude.
+        check { formulation IAPWS-R15-11; }
     }
 }
 
@@ -242,6 +269,15 @@ surfaceTension
 
 provenance
 {
+    vaporPressure
+    {
+        origin       literature;
+        method       "Wagner equation transcribed from IAPWS SR1-86(1992) Eq. 1, coefficients and reducing constants as printed in Wagner & Pruss 2002 Eq. (2.5), p. 399";
+        citation     "IAPWS SR1-86(1992), Revised Supplementary Release on Saturation Properties of Ordinary Water Substance, Eq. 1 and Sec. 2; Wagner & Pruss, J. Phys. Chem. Ref. Data 31, 387 (2002), Eq. (2.5)";
+        validity     (273.16 647.096);
+        uncertainty  "reproduces the release's Table 1 to 1.5e-7 relative and agrees with the tree's IF97 region-4 equation to 1.8e-4 over 273.16-623.15 K";
+        replaces     "Antoine (5.40221 1838.675 -31.737), Trange (273 373): +2.47 % at 373.15 K, +6.4 % at 423 K against this equation";
+    }
     liquidThermalConductivity
     {
         origin        regressed;

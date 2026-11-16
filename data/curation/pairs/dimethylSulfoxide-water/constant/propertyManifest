@@ -21,44 +21,53 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-16";
     importerVersion    "3";
     records
     {
         "components/dimethylSulfoxide.dat"
         {
             type          imported;
-            sha256        "146549d6b5fff7a0e57a607bd5f78f88f22f2fdc676aea18421963252b02137c";
-            computationalSha256 "f965b44ef5ea770b90f8e5d5263a5322ef24cd12c9fa213806688a4ccdb73e12";
+            sha256        "7c294d1ae0f78cafa39b4d0553060842089f69c3a99fa6a30d38473df7d81a2c";
+            computationalSha256 "6d455914d90acb6f96ea05b6f56f7645f3f78b2c19527668566b878785eda7fa";
             origin        "data/standards/components/dimethylSulfoxide.dat";
-            originSha256  "705eb8c5af775aa597b0b092d2e795e71a47ee20518b93b04cdd533103253f17";
+            originSha256  "95d09aaddadaa3c396e3a7c3e488aecc33efb639687e8b13f08500d2e049b69c";
             release       Choupo-2608;
         }
         "components/water.dat"
         {
             type          imported;
-            sha256        "434214d874e17a076ce391a9d1dbca47321b4285429660688db4e64237ee0b2a";
-            computationalSha256 "ce55eca4e8c4f234b2633edec3fb54de5e630256ace48491a44357db2aaacf5c";
+            sha256        "6594e14a01809d098ebc56e04b5c8165659d00d99f037293bea95258aea02429";
+            computationalSha256 "693c5c80e12b77698b4949032ccbb84017d8e42ef6ce3bc0ae192806e7dbe998";
             origin        "data/standards/components/water.dat";
-            originSha256  "3723b03d86ab148fd084c01f9fc3cce1bb4398a3dc6b6914e0336c40d4ade16d";
+            originSha256  "63aacb038ef2d8da6bfc9166916318c23bd96b6af6fe3ce14ac5d57b7fd95bb0";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/IAPWS95.dat"
+        {
+            type          imported;
+            sha256        "0bc0d23a31da5d1451c0fdfda180cf7b1bf82d81e8c940e727d5c46d6fd3f1cb";
+            computationalSha256 "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+            origin        "data/standards/parameters/Helmholtz/IAPWS95.dat";
+            originSha256  "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
             release       Choupo-2608;
         }
         "parameters/NRTL/dimethylSulfoxide-water.dat"
         {
             type          imported;
-            sha256        "fc346633645215f7255797f363b7c70352c5afa12b1428016c1490ce44312099";
-            computationalSha256 "402fae2853aee80d236176f592494554fd1d5fd9b2c8a4dd1256ef5202939139";
+            sha256        "5d2e2f6daa8da74fc9d146e9a4b6861fe7381cfe0100257323d3a2b88b5cbe37";
+            computationalSha256 "627dbfb5bdb42f05a4590546a65482d6d6c0d6880c85f1070eb9b48394e0fbf0";
             origin        "data/standards/parameters/NRTL/dimethylSulfoxide-water.dat";
-            originSha256  "e5fed05b4ab4cdb856117cd43072a617b9acd78e0dbfd4d91fa55f3977491e54";
+            originSha256  "8de11a30c617c8340381b82cb50649209ce4ae4f5c4ce61b44c509f9ca001d2a";
             release       Choupo-2608;
         }
         "parameters/Wilson/dimethylSulfoxide-water.dat"
         {
             type          imported;
-            sha256        "20b609480140255eb9961255db90dcd0112a1bc97506825419ef936d180aa612";
-            computationalSha256 "284dae47ae9d70c0a1dc75433a37a8b18492d0fe7f6c471113ebc4b42e17ebe2";
+            sha256        "0230155a81b00b5d6610d07cc7b2f88db760557e7352c5696499da9c16ed1c3c";
+            computationalSha256 "9dc41002470e2a67448792a729f2a0217974a24dbecee997a31e1a5ff9229e59";
             origin        "data/standards/parameters/Wilson/dimethylSulfoxide-water.dat";
-            originSha256  "841c7f7246234d79111164fde40985a95ef6f19831083d3683c7e5610611c05c";
+            originSha256  "4c91b1c1da9b2cb9189b857dc6074fcf27a2f35d763e08267342627e574ff5be";
             release       Choupo-2608;
         }
     }

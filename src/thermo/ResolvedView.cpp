@@ -436,7 +436,11 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
                         + (ss.empty() ? "" : "; liquid standard state " + ss));
         }
         if (pkg.hasEos() && viewBuiltFor(form))
+        {
             d.push_back("vapour (and, under phiPhi, liquid) model: " + pkg.eos().modelName());
+            if (!pkg.eos().alphaFunctionNote().empty())
+                d.push_back("  " + pkg.eos().alphaFunctionNote());
+        }
         if (pkg.hasEos() && viewBuiltFor(form)
             && !pkg.eos().volumeTranslationNote().empty())
             d.push_back(pkg.eos().volumeTranslationNote());

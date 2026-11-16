@@ -52,9 +52,15 @@ standardThermochemistry
 }
 vaporPressure
 {
-    model         Antoine;
-    coefficients  (5.40221   1838.675   -31.737);
-    Trange        (273  373);
+    //  IAPWS SR1-86(1992) Eq. 1:  ln(p/pc) = (Tc/T) sum a_i u^e_i ,  u = 1 - T/Tc ,
+    //  with the reducing constants of the release, Tc = 647.096 K and
+    //  pc = 22.064 MPa (its Sec. 2), NOT this record's Tc.  Coefficients as
+    //  printed in Wagner & Pruss 2002, Eq. (2.5), p. 399.
+    model         Wagner;
+    reducing      { T 647.096 K;  P 22.064 MPa; }
+    exponents     (1 1.5 3 3.5 4 7.5);
+    coefficients  (-7.85951783  1.84408259  -11.7866497  22.6807411  -15.9618719  1.80122502);
+    Trange        (273.16  647.096);
 }
 
 idealGasHeatCapacity

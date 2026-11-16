@@ -114,17 +114,20 @@ namespace {
 
 PR::PR(const std::vector<Component>& comps,
        const std::vector<std::vector<scalar>>& kij,
-       const std::vector<scalar>& volumeShift)
+       const std::vector<scalar>& volumeShift,
+       const AlphaChoice& alpha)
   : CubicEoS("PR", Constants{ OMEGA_A, OMEGA_B, EPS, SIG }, comps,
-             slopes(comps), kij, volumeShift)
+             slopes(comps), kij, volumeShift, alpha)
 {}
 
 std::unique_ptr<EquationOfState>
 PR::fromDict(const DictPtr& eosDict, const std::vector<Component>& comps)
 {
+    //  Order matters for the log only: kij announcements first, then the volume
+    //  translation, then the alpha choice.
     auto kij = readKij("PR", eosDict, comps);
-    return std::make_unique<PR>(comps, kij,
-        readVolumeTranslation("PR", eosDict, comps, /*pengRobinson*/ true));
+    auto vt  = readVolumeTranslation("PR", eosDict, comps, /*pengRobinson*/ true);
+    return std::make_unique<PR>(comps, kij, vt, readAlpha("PR", eosDict, comps));
 }
 
 } // namespace Choupo

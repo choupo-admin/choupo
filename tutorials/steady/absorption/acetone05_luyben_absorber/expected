@@ -8,13 +8,13 @@ stream  washWater              F                0.00555555555556 1e-4
 kpi     absorber               A_H2             9.55089138396e-06 1e-4
 kpi     absorber               A_acetone        0.0857422914441  1e-4
 kpi     absorber               A_isopropanol    4.51803004485    1e-4
-kpi     absorber               A_water          8.0125706439     1e-4
+kpi     absorber               A_water          8.021328015     1e-4
 kpi     absorber               F_cleanGas       0.0108674453767  1e-4
 kpi     absorber               F_richLiquid     0.00574366573439 1e-4
 kpi     absorber               K_H2             52614.2055869    1e-4
 kpi     absorber               K_acetone        5.86073166871    1e-4
 kpi     absorber               K_isopropanol    0.11122382052    1e-4
-kpi     absorber               K_water          0.0627155235376  1e-4
+kpi     absorber               K_water          0.0626470531905  1e-4
 kpi     absorber               L_in             0.00555555555556 1e-4
 kpi     absorber               L_over_V         0.502512562814   1e-4
 kpi     absorber               T_bottom         321.205142041    1e-4

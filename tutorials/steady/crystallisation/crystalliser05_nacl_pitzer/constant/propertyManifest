@@ -37,10 +37,10 @@ propertyManifest
         "components/water.dat"
         {
             type          imported;
-            sha256        "f75389b90fe2f634f0f8e6b6c3449d413b8321f7f8a659332e1fedecb0141e3e";
-            computationalSha256 "3e8c44ab80e0523c199c4f6771e67607ef4d2193ac8f673b1781baeb13b0bd89";
+            sha256        "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
+            computationalSha256 "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
             origin        "data/standards/components/water.dat";
-            originSha256  "b41b60d18d8ea63b1f017f2679ab8f12025866ebaa09ff07af34de682e676a04";
+            originSha256  "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
             release       Choupo-2607;
         }
         "parameters/Pitzer/pairs/Na-Cl.dat"

@@ -223,6 +223,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import record_psat  # noqa: E402  (Antoine or Wagner, from the record's own text)
+
 ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 SRC = ROOT / "src" / "unitOperations" / "reactor"
@@ -571,7 +574,8 @@ def feed_far_arms(td: str) -> None:
     import check_gibbs_solid_phase as gsp
     sp = {k: gsp.Gas(k, EQUIL03) for k in ATOMS}
     wt = gsp.record("water", EQUIL03)
-    A, B, C = gsp.vec(gsp.block(wt, "vaporPressure"), "coefficients")[:3]
+    #  water's law is the IAPWS Wagner equation since 2026-11-16: read it through record_psat
+    water_text = (Path(EQUIL03) / "constant" / "components" / "water.dat").read_text()
     R = gsp.R
     for T, P in FAR_POINTS:
         tag = f"{T:g} K / {P:g} bar"
@@ -617,7 +621,7 @@ def feed_far_arms(td: str) -> None:
         # (u) where water condensed, the gas is saturated on the record's own
         #     Antoine and the liquid is water alone.
         if k.get("twoPhase") == 1:
-            psat = 10.0 ** (A - B / (T + C))
+            psat = record_psat.psat_pa(water_text, T) / 1.0e5   # bar
             if not close(y["water"] * P, psat, 1e-6) or x["water"] != 1.0:
                 fails.append(f"(u) {tag}: y_water P = {y['water'] * P:.9e} bar"
                              f" against Psat {psat:.9e} (x_water "

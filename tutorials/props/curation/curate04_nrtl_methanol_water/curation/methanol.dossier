@@ -30,8 +30,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ij  165.006302662;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ji  41.7648896834;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ij  146.369570846;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ji  61.3968827149;
     }
 
     evidence
@@ -73,7 +73,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.150061425821;
+        aadHeldOutPct     0.160338943448;
         acceptanceMaxAADPct 0.33;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.46 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.698 K, methanol -0.142 K; measured with no pair involved), as a percentage of the held-out mean T (352.05 K) = 0.3289 %, rounded UP to two significant figures";
     }
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ij  165.00990961;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ji  41.7616624558;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ij  146.377133456;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ji  61.3898703151;
     }
 
     evidence
@@ -130,7 +130,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.150062184661;
+        aadHeldOutPct     0.160341034767;
         acceptanceMaxAADPct 0.33;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.46 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.698 K, methanol -0.142 K; measured with no pair involved), as a percentage of the held-out mean T (352.05 K) = 0.3289 %, rounded UP to two significant figures";
     }
@@ -144,10 +144,10 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-water.a_ij  5.62628833304;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ij  -1686.63416949;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-water.a_ji  -4.33114596763;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ji  1470.88016213;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.a_ij  5.04010603509;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ij  -1499.14412279;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.a_ji  -3.72520939836;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-water.b_ji  1277.02381798;
     }
 
     evidence
@@ -189,7 +189,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.181111499184;
+        aadHeldOutPct     0.192522486995;
         acceptanceMaxAADPct 0.33;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.46 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.698 K, methanol -0.142 K; measured with no pair involved), as a percentage of the held-out mean T (352.05 K) = 0.3289 %, rounded UP to two significant figures";
     }

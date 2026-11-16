@@ -95,6 +95,35 @@ def copy_case(name, tmp, tag):
     return d
 
 
+#  THE TWO-LINES ARMS (R3, S3) test the MECHANISM of ruling 3: when the package's
+#  saturation line and the reference equation's differ, a state between them is
+#  priced and both lines are announced.  Until 2026-11-16 water's own record
+#  made the lines differ (an Antoine fit, +2.5 % at 373 K); water's law is now the
+#  IAPWS equation, which agrees with IAPWS-95 to ~1e-4, so the premise needs the
+#  old Antoine PUT BACK in the probe's private copy of the record -- the arms
+#  test the mechanism, never water's catalogue law.
+OLD_ANTOINE = """vaporPressure
+{
+    model         Antoine;
+    coefficients  (5.40221   1838.675   -31.737);
+    Trange        (273  373);
+}"""
+
+
+def with_antoine_water(d):
+    rec = d / "constant" / "components" / "water.dat"
+    t = rec.read_text()
+    m = re.search(r"(?m)^vaporPressure\s*\{", t)
+    depth, i = 0, m.end() - 1
+    while True:
+        depth += (t[i] == "{") - (t[i] == "}")
+        if depth == 0:
+            break
+        i += 1
+    rec.write_text(t[:m.start()] + OLD_ANTOINE + t[i + 1:])
+    return d
+
+
 def set_feed(d, T=None, P=None, stream="feed"):
     f = d / "0" / stream
     s = f.read_text()
@@ -473,8 +502,8 @@ def main():
 
         # ---- R3: the package's line ----------------------------------------
         try:
-            d = copy_case("liquidDensity01_water", tmp, "r3")
-            pk = copy_case("liquidDensity01_water", tmp, "r3pkg")
+            d = with_antoine_water(copy_case("liquidDensity01_water", tmp, "r3"))
+            pk = with_antoine_water(copy_case("liquidDensity01_water", tmp, "r3pkg"))
             # the package's own saturation line at 0.05 bar: T by bisection on Psat
             (pk / "system" / "propsDict").write_text(
                 "operations ( { name s; type propertyScan1D; vary { variable T; points ( "
@@ -619,7 +648,7 @@ def main():
             #  S3: above about 311 K the package's line is ABOVE the reference
             #  equation's; a state between them is priced as the formulation's
             #  compressed liquid and announced, once.
-            pk = copy_case("liquidDensity01_water", tmp, "above")
+            pk = with_antoine_water(copy_case("liquidDensity01_water", tmp, "above"))
             (pk / "system" / "propsDict").write_text(
                 "operations ( { name s; type propertyScan1D; vary { variable T; points ( 360 ); } "
                 "state { P 1e5 Pa; composition { water 1; } } properties ( Psat_water ); "
