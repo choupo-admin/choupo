@@ -147,9 +147,16 @@ std::set<std::string> caseWords()
         if (ec) break;
         if (it->is_directory(ec))
         {
-            if (skipDirs.count(it->path().filename().string())) it.disable_recursion_pending();
+            const std::string dn = it->path().filename().string();
+            //  run outputs are not what the case NAMES: the reports, converged/ and every
+            //  transient instant (a numeric directory other than the authored 0/) are skipped
+            const bool instant = !dn.empty() && dn != "0"
+                && dn.find_first_not_of("0123456789.") == std::string::npos;
+            if (skipDirs.count(dn) || instant) it.disable_recursion_pending();
             continue;
         }
+        //  ... and neither is a log of an earlier run (it names whatever that run printed)
+        if (it->path().filename().string().rfind("log.", 0) == 0) continue;
         const std::string ext = it->path().extension().string();
         if (ext == ".dat" || ext == ".csv" || ext == ".log"
             || it->path().filename() == "propertyManifest") continue;

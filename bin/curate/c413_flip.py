@@ -300,10 +300,30 @@ def main():
     ap.add_argument("--base-bin", required=True, help="the main build's binaries (the sealed side of the proof)")
     ap.add_argument("--jobs", type=int, default=4)
     ap.add_argument("--only", nargs="*")
+    ap.add_argument("--reprove", action="store_true",
+                    help="re-run THE PROOF for every case already flipped (pinned in the tree, sealed in --pristine)")
     ap.add_argument("--out", default=str(ROOT / "build" / "c413_flip.jsonl"))
     a = ap.parse_args()
     os.chdir(ROOT)
     cases, skipped = top_level_sealed()
+    if a.reprove:
+        cases, skipped = [], {}
+        for m in sorted(Path("tutorials").rglob("constant/propertyManifest")):
+            c = m.parent.parent
+            pm = Path(a.pristine) / c / "constant" / "propertyManifest"
+            if case_records.read_manifest(m)["has_pins"] and pm.exists() \
+                    and case_records.read_manifest(pm)["sealed"]:
+                cases.append(str(c))
+        with open(a.out, "w") as out, cf.ThreadPoolExecutor(a.jobs) as ex:
+            futs = {ex.submit(lambda c=c: (c, prove(Path(a.pristine) / c, Path(c), Path(a.base_bin)))): c for c in cases}
+            for f in cf.as_completed(futs):
+                c, problems = f.result()
+                out.write(json.dumps({"case": c, "status": "proved" if not problems else "FAILED",
+                                      "reason": " ;; ".join(problems)[:600]}) + "\n")
+                out.flush()
+                if problems:
+                    print("FAILED", c, problems[0][:160], flush=True)
+        return
     if a.only:
         cases = [c for c in cases if any(o in c for o in a.only)]
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
