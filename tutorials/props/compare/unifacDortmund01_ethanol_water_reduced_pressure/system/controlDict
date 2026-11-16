@@ -1,0 +1,13 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "Ethanol/water bubble T and vapour y at the measured x of Voutsas et al. (2011), 13.15 / 19.71 / 32.86 kPa: original UNIFAC and modified UNIFAC (Dortmund), residual = engine minus measurement";
+
+verbosity     2;

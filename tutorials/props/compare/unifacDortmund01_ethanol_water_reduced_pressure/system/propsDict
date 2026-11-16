@@ -1,0 +1,157 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  unifacDortmund01_ethanol_water_reduced_pressure -- THE ORIGINAL UNIFAC AND
+  THE MODIFIED (DORTMUND) UNIFAC, BOTH PREDICTIVE, AGAINST MEASURED VLE.
+
+  THE QUESTION.  Ethanol + water is the textbook case where the original
+  UNIFAC (Hansen 1991) misplaces the azeotrope.  The Dortmund model
+  (Gmehling, Li & Schiller 1993) was fitted to VLE, excess enthalpies and
+  infinite-dilution activity coefficients together, with a temperature-
+  dependent interaction.  Does that show on a measured isobar the fit never
+  saw?  Neither model is fitted to anything here; both are evaluated AT THE
+  MEASURED x (the engine asked where the experimenter set the liquid, never a
+  value read off a curve between grid points), and the residual is
+  model(x_measured) - measurement.
+
+  THE EVIDENCE.  Voutsas, Pamouktsis, Argyris & Pappa, Fluid Phase Equilib.
+  308 (2011) 135-141, Table 1 (p. 137): isobaric ethanol(1) + water(2) VLE at
+  13.15, 19.71 and 32.86 kPa -- T, x1, y1 of 15 + 16 + 14 interior points.
+  Measured in 2011, so OUT OF SAMPLE for both group tables (1991 and 1993);
+  the data files carry the page and the DOI.
+
+  THE TWO MODELS.  `model UNIFAC;` is the original; `model UNIFACDortmund;` is
+  the modified, with its parameters ONLY as printed in Gmehling et al. 1993
+  Tables III-IV (data/standards/parameters/UNIFACDortmund/).  Each component's
+  Dortmund decomposition is its own `groups { unifacDortmund (...) }` record
+  (ethanol = CH3 + CH2 + OH_p, water = H2O), never the original's.
+
+  WHAT IS NOT CLAIMED.  The pressure is 13-33 kPa, low enough for an ideal-gas
+  vapour and the catalogue's own vapour-pressure records; part of every
+  residual is those records' error at 307-345 K, identical for both models.  The
+  Dortmund parameters were fitted mostly to 20-125 C data (the paper, p. 181);
+  this range is inside it.  Which model is nearer is READ FROM THE aad ROWS
+  OF `expected`, not asserted here.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        txy_unifac_13p15;
+        type        propertyScan1D;
+        //  the 15 measured interior x of Table 1 at 13.15 kPa, in the paper's own order
+        vary        { variable x[ethanol];
+                      points ( 0.117 0.241 0.383 0.492 0.590 0.656 0.771 0.840 0.864 0.897 0.908 0.911 0.934 0.947 0.971 ); }
+        state       { P 13.15 kPa;  composition { ethanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIFAC; } } }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_unifac_13p15.csv; }
+    }
+    {
+        name        txy_dortmund_13p15;
+        type        propertyScan1D;
+        //  the 15 measured interior x of Table 1 at 13.15 kPa, in the paper's own order
+        vary        { variable x[ethanol];
+                      points ( 0.117 0.241 0.383 0.492 0.590 0.656 0.771 0.840 0.864 0.897 0.908 0.911 0.934 0.947 0.971 ); }
+        state       { P 13.15 kPa;  composition { ethanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIFACDortmund; } } }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_dortmund_13p15.csv; }
+    }
+    {
+        name        txy_unifac_19p71;
+        type        propertyScan1D;
+        //  the 16 measured interior x of Table 1 at 19.71 kPa, in the paper's own order
+        vary        { variable x[ethanol];
+                      points ( 0.076 0.141 0.260 0.390 0.499 0.599 0.688 0.799 0.805 0.841 0.883 0.913 0.931 0.945 0.960 0.964 ); }
+        state       { P 19.71 kPa;  composition { ethanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIFAC; } } }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_unifac_19p71.csv; }
+    }
+    {
+        name        txy_dortmund_19p71;
+        type        propertyScan1D;
+        //  the 16 measured interior x of Table 1 at 19.71 kPa, in the paper's own order
+        vary        { variable x[ethanol];
+                      points ( 0.076 0.141 0.260 0.390 0.499 0.599 0.688 0.799 0.805 0.841 0.883 0.913 0.931 0.945 0.960 0.964 ); }
+        state       { P 19.71 kPa;  composition { ethanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIFACDortmund; } } }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_dortmund_19p71.csv; }
+    }
+    {
+        name        txy_unifac_32p86;
+        type        propertyScan1D;
+        //  the 14 measured interior x of Table 1 at 32.86 kPa, in the paper's own order
+        vary        { variable x[ethanol];
+                      points ( 0.063 0.104 0.150 0.248 0.454 0.581 0.657 0.760 0.839 0.854 0.913 0.931 0.932 0.965 ); }
+        state       { P 32.86 kPa;  composition { ethanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIFAC; } } }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_unifac_32p86.csv; }
+    }
+    {
+        name        txy_dortmund_32p86;
+        type        propertyScan1D;
+        //  the 14 measured interior x of Table 1 at 32.86 kPa, in the paper's own order
+        vary        { variable x[ethanol];
+                      points ( 0.063 0.104 0.150 0.248 0.454 0.581 0.657 0.760 0.839 0.854 0.913 0.931 0.932 0.965 ); }
+        state       { P 32.86 kPa;  composition { ethanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model UNIFACDortmund; } } }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_dortmund_32p86.csv; }
+    }
+);
+
+experimental
+(
+    {
+        name      voutsas2011_13p15;
+        component ethanol;
+        kind      txy;
+        models    ( txy_unifac_13p15  txy_dortmund_13p15 );
+        dataset   "constant/experiments/ethanol-water-voutsas2011-13p15kPa.dat";
+        source    "Voutsas et al., Fluid Phase Equilib. 308 (2011) 135, Table 1 (p. 137), 13.15 kPa -- measured, out of sample for both models";
+    }
+    {
+        name      voutsas2011_19p71;
+        component ethanol;
+        kind      txy;
+        models    ( txy_unifac_19p71  txy_dortmund_19p71 );
+        dataset   "constant/experiments/ethanol-water-voutsas2011-19p71kPa.dat";
+        source    "Voutsas et al., Fluid Phase Equilib. 308 (2011) 135, Table 1 (p. 137), 19.71 kPa -- measured, out of sample for both models";
+    }
+    {
+        name      voutsas2011_32p86;
+        component ethanol;
+        kind      txy;
+        models    ( txy_unifac_32p86  txy_dortmund_32p86 );
+        dataset   "constant/experiments/ethanol-water-voutsas2011-32p86kPa.dat";
+        source    "Voutsas et al., Fluid Phase Equilib. 308 (2011) 135, Table 1 (p. 137), 32.86 kPa -- measured, out of sample for both models";
+    }
+);
