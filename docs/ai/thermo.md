@@ -348,6 +348,18 @@ Rackett liquid density of `ThermoPackage::density`.  Limits: fitted to
 saturated liquids at T_r = 0.7, useless near the critical point.  Witness:
 `tutorials/props/molecular/volumeTranslation01_nhexane_peneloux`.
 
+#### Which root prices which phase (phiPhi, C410)
+
+Under `formulation phiPhi` one equation of state prices both phases: a vapour stream is `H_ig + H_R` at the vapour root, a
+LIQUID stream (and the liquid half of a two-phase stream) is `H_ig + H_R` at the liquid root, and `S` likewise
+(`EquationOfState::H_residualLiquid`, `S_residualLiquid`; SRK, PengRobinson, LeeKeslerPloecker and PCSAFT; routed by
+`ThermoPackage::H_stream_formation` / `S_stream_formation`).  The volume translation's `-P c` and an MHV1/MHV2 `H^E` enter at
+both roots.  A gammaPhi package keeps its formation-datum liquid (liquid Cp, latent heat, no pressure term), and so does a
+package with an electrolyte or a species without an ideal-gas leg.  Effect: latent heats of a phiPhi column or flash are
+the cubic's own (column08 reboiler +8.7 %, cavett01 flash duties +25 to +40 %); the moved rows are in
+`docs/audits/2026-11-17-c410-moved-goldens.md`.  Theory Guide `sec:cubic-liquid-root`.  Gate: `check_volume_translation`
+holds G = H - T S on both roots and the stream routing of the shipped phiPhi packages.
+
 #### Cubic mixing rules: `vanDerWaalsOneFluid` (default), `MHV1`, `MHV2` — a cubic fed a low-pressure G^E model
 
 `mixingRule` is a key of `equationOfState` (phiPhi).  `vanDerWaalsOneFluid` is
