@@ -343,7 +343,7 @@ interactions
     { n 10; m 39; a_nm 2371; b_nm 0.0; c_nm 0.0; a_mn -225.3; b_mn 0.0; c_mn 0.0; page 187; }
     { n 10; m 42; a_nm 856.5; b_nm -1.9; c_nm 0.0; a_mn 1129; b_mn -0.4978; c_mn 0.0; page 188; }
     { n 11; m 12; a_nm 342.4; b_nm 0.0; c_nm 0.0; a_mn -251.7; b_mn 0.0; c_mn 0.0; page 188; }
-    { n 11; m 13; a_nm -195.3; b_nm -9.75; c_nm 0.04051; a_mn 824.2; b_mn -6.009; c_mn 0.008271; page 188; }
+    { n 11; m 13; a_nm 195.3; b_nm -9.75; c_nm 0.04051; a_mn 824.2; b_mn -6.009; c_mn 0.008271; page 188; }
     { n 11; m 15; a_nm 3168; b_nm -24.07; c_nm 0.04303; a_mn 3329; b_mn -13.78; c_mn 0.01193; page 188; }
     { n 11; m 16; a_nm 152.8; b_nm -1.099; c_nm 0.0; a_mn 160.8; b_mn 0.8719; c_mn 0.0; page 188; }
     { n 11; m 17; a_nm -1355; b_nm 7.683; c_nm -0.01012; a_mn 3499; b_mn -22.96; c_mn 0.03543; page 188; }
