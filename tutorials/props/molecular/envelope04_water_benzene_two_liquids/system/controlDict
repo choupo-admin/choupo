@@ -12,12 +12,14 @@
 
   WHAT THE RUN SHOWS (native build, 2026-11-15):
 
-    * the single-liquid envelope: bubble 327.755 K at 1 bar, 80 bubble
-      points to 80 bar; the dew branch keeps 38 points and is ended at
+    * the single-liquid envelope: bubble 327.755 K at 1 bar, 26 bubble
+      points (the march ends at 27 bar, where the incipient vapour has no
+      vapour root of the cubic: CL-01, 2026-11-16; before it kept 80 points
+      to 80 bar, the later ones on the cubic's pseudo-root); the dew branch keeps 38 points and is ended at
       39 bar by a reported root jump;
     * the probe finds TWO LIQUIDS at the feed's bubble point at all 80
-      pressures (liquid_stable = 0 everywhere): the homogeneous bubble curve
-      above is a phantom over the whole range, and the lens draws none of it
+      pressures of the grid (liquid_stable = 0 everywhere): the homogeneous
+      bubble curve above is a phantom over the whole range it keeps, and the lens draws none of it
       as a curve (each point a hollow x);
     * the dew curve is NOT probed (the probe tests the liquid at the bubble
       point only).
