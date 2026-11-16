@@ -97,7 +97,7 @@ diag    rung_water             H_R              0                1e-4
 diag    rung_water             H_ig             -239280.110337   1e-4
 diag    rung_water             H_real           -239280.110337   1e-4
 diag    rung_water             P                101325           1e-4
-diag    rung_water             Psat_water       103925.90139     1e-4
+diag    rung_water             Psat_water       101417.993818     1e-4
 diag    rung_water             S_R              0                1e-4
 diag    rung_water             S_ig             196.338860531    1e-4
 diag    rung_water             S_real           196.338860531    1e-4

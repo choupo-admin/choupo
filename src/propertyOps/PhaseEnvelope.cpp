@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PhaseEnvelope.H"
+#include "thermo/equationOfState/EquationOfState.H"
 #include "core/Advisory.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/saturation/BubblePoint.H"
@@ -64,6 +65,7 @@ struct Branch
     scalar          stoppedAt = 0.0;    // Pa, the first pressure that failed
     bool            ranOut    = false;  // reached the requested top instead
     bool            rootJump  = false;  // it CONVERGED -- to another root
+    bool            pseudoRoot = false; // it converged on a vapour PSEUDO-root
     //  Every pressure tried BELOW the branch's first converged point and
     //  failed there (EX-01, 2026-11-15).  A branch is not ended by a failure
     //  before it has started: a light feed's bubble line lies below the
@@ -168,7 +170,17 @@ int PhaseEnvelope::run(const DictPtr& dict,
             auto r = BubblePoint::compute(thermo, z, P, Tguess_b);
             const bool ok = r.converged && r.T > 0.0;
             const bool falls = ok && !bub.pts.empty() && r.T < bub.pts.back().T;
-            if (ok && !falls)
+            //  A gamma-phi cubic vapour whose incipient phase has NO vapour
+            //  root at (T, P, y) is priced on the cubic's flagged
+            //  pseudo-root (CubicEoS.H): the iteration may converge there, but
+            //  the point is not a bubble point of a vapour.  The branch ENDS
+            //  at the first such point (CL-01).
+            const bool pseudo = ok && !falls && thermo.hasEos()
+                && thermo.vleWorld() != "phiPhi"
+                && thermo.eos().vapourRootIsPseudo(r.T, P, r.y);
+            if (pseudo)
+            { bub.stoppedAt = P; bub.pseudoRoot = true; }
+            else if (ok && !falls)
             { bub.pts.push_back({P, r.T}); Tguess_b = r.T; }
             else if (bub.pts.empty())
                 bub.failedBefore.push_back(P);      // not started yet: march on
@@ -367,6 +379,22 @@ int PhaseEnvelope::run(const DictPtr& dict,
         const scalar lastT = b.pts.back().T;
         const scalar lastP = b.pts.back().P;
         std::ostringstream m;
+        if (b.pseudoRoot)
+        {
+            m << "the " << what << " branch stopped at "
+              << fmt(b.stoppedAt / 1.0e5, 3) << " bar because the incipient"
+              << " vapour has NO vapour root of the equation of state there"
+              << " (the cubic has one root, a liquid-like one; any value it"
+              << " would return under the vapour label is a flagged"
+              << " pseudo-root, CubicEoS.H).  The point was DISCARDED rather"
+              << " than drawn.  The last kept point is " << fmt(lastT, 3)
+              << " K at " << fmt(lastP / 1.0e5, 3) << " bar.";
+            if (AdvisoryLog::instance().add("approximation", "warning",
+                                            std::string("phaseEnvelope ") + what,
+                                            m.str()))
+                std::cout << "\n      " << m.str() << "\n";
+            return;
+        }
         if (b.rootJump)
         {
             m << "the " << what << " branch stopped at "

@@ -40,15 +40,17 @@
   at the normal boiling point the saturation pressure is 101325 Pa BY
   DEFINITION.  Water is read at 373.1243 K, the temperature at which IAPWS
   SR1-86 Table 1 tabulates p = 101325 Pa (quoted in data/standards/components/
-  water.dat's header); methanol at the record's Tb = 337.85 K.  The anchor
-  tolerances (3e-2 and 1e-2) are the in-sample deviation of the SAVED records
-  plus margin: water's Antoine law is itself 0.1-2.5 % off IAPWS across its
-  window (its header says so), and the Mathias-Copeman constants reproduce
-  THAT law, not the primary -- which is the honest statement of what curating
-  to the record's own law buys.
+  water.dat's header) -- and water's record law IS that equation since
+  2026-11-16, so the constants, fitted to it over 273-634 K, put the cubic
+  within 0.2 % of the primary there (anchor band 5e-3).  Methanol is read at
+  the record's Tb = 337.85 K, where its Antoine record is the law the
+  constants were fitted to (0.6 % off the definition: band 8e-3).  Before
+  2026-11-16 water's Antoine law was 2.5 % high at its boiling point and the
+  band had to be 3e-2; the anchor tightened because the law it follows
+  became the primary.
 
   WHAT THIS DOES NOT SAY.  It does not say the constants are right outside the
-  window: above it they extrapolate, and CO2 is not curated at all -- its
+  window (water 273-634 K, methanol 288-356 K): above it they extrapolate, and CO2 is not curated at all -- its
   Antoine law is the SUBLIMATION line and the tool refuses it by name.
 \*---------------------------------------------------------------------------*/
 operations

@@ -158,7 +158,14 @@ def reduce_mineral(name, rxn, log_k, dH, an, SUB):
     masters = {}
     nuWater = 0
     logK = log_k if log_k is not None else 0.0
-    dHo = dH if dH is not None else 0.0
+    #  A SOURCE WITH NO ENTHALPY GIVES A RECORD WITH NO ENTHALPY (2026-11-16,
+    #  docs/reviews/2026-11-16-speciation-audit GS-02).  This used to start
+    #  from 0.0 and subtract the basis steps' enthalpies, so nine minerals
+    #  shipped with dH = the conversion step alone (-14899.2 / -29798.4 /
+    #  -112800 J/mol), a slope no source gave, which the engine then applied
+    #  as a real van 't Hoff dH.  None propagates: no dH is written, and the
+    #  engine holds log K at its 25 C value off 25 C, announced.
+    dHo = dH
     analytic = list(an) + [0.0] * (6 - len(an)) if an else []
     def add_analytic(coeff, arr):
         nonlocal analytic
@@ -177,7 +184,8 @@ def reduce_mineral(name, rxn, log_k, dH, an, SUB):
                 masters[ion] = masters.get(ion, 0) + coeff * nu
             nuWater += coeff * s["nuWater"]
             logK -= coeff * s["logK"]
-            dHo  -= coeff * s["dH"]
+            if dHo is not None:
+                dHo = None if s["dH"] is None else dHo - coeff * s["dH"]
             add_analytic(coeff, s["analytic"])
             continue
         return None  # unreducible (redox / unsupported species)
@@ -220,12 +228,13 @@ def main():
             glk = float(want_lk.group(1)) if want_lk else None
             gdh = float(want_dh.group(1)) if want_dh else None
             dlk = abs(r["logK"] - glk) if glk is not None else 0
-            ddh = abs(r["dH"] - gdh) if gdh is not None else 0
+            ddh = (abs(r["dH"] - gdh) if (gdh is not None and r["dH"] is not None)
+                   else (0 if (gdh is None) == (r["dH"] is None) else 1e9))
             tag = "ok " if (dlk < 0.05 and ddh < 60) else "MISS"
             if tag != "ok ": bad += 1
             else: ok += 1
             print(f"  {tag} {base:16s} logK {r['logK']:+9.4f} (want {glk})  "
-                  f"dH {r['dH']:+11.1f} (want {gdh})")
+                  f"dH {'none' if r['dH'] is None else format(r['dH'], '+11.1f')} (want {gdh})")
         print(f"\nACCEPTANCE: {ok} ok / {bad} miss of {ok+bad}")
         return
 
@@ -275,7 +284,9 @@ def format_record(nm, r, srckey):
     rxn = f'masters ( {ms} );'
     if r["nuWater"]:
         rxn += f' nuWater {numfmt(r["nuWater"])};'
-    eq = f'logK25 {r["logK"]:.6g}; dH {r["dH"]:.6g};'
+    eq = f'logK25 {r["logK"]:.6g};'
+    if r["dH"] is not None:
+        eq += f' dH {r["dH"]:.6g};'
     if r["analytic"] and any(r["analytic"]):
         eq += ' analytic ( ' + " ".join(f"{a:.7g}" for a in r["analytic"]) + ' );'
         eq += ' validC ( 0 200 );'

@@ -351,10 +351,12 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   PR:           { guide: "theory", dest: "ch:cubic-eos" },// Peng-Robinson (same chapter)
   PengRobinson: { guide: "theory", dest: "ch:cubic-eos" },
   MathiasCopeman: { guide: "theory", dest: "sec:cubic-alpha-mc" }, // per-component cubic alpha, fitted to the record's own Psat law (C408 slice 0)
+  Peneloux:     { guide: "theory", dest: "sec:peneloux" },
+  JhaveriYoungren: { guide: "theory", dest: "sec:peneloux" }, // the PR shift (C408 a)  // volume translation of SRK/PR (C408 a)
   // -- vapour pressure (VaporPressureModel.cpp) ---------------------------
   Antoine:       { guide: "theory", dest: "ch:vap" },     // log10 P = A - B/(C+T)
   AmbroseWalton: { guide: "theory", dest: "ch:vap" },     // corresponding-states, needs Tc/Pc/omega
-  Wagner:        { guide: "theory", dest: "sec:evap-dilution-window" }, // IAPWS SR1-86 Eq. 1 as implemented (water above 373 K)
+  Wagner:        { guide: "theory", dest: "sec:water-iapws-psat" }, // IAPWS SR1-86 Eq. 1 as implemented: water's catalogue vapour pressure since 2026-11-16
   // -- reference-state / pure-component correlations ----------------------
   Rackett:     { guide: "theory", dest: "ch:rackett" },        // saturated-liquid molar volume
   sublimation: { guide: "theory", dest: "ch:sublimation" },    // solid-vapour curve, triple point

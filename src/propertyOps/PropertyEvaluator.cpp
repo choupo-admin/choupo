@@ -439,6 +439,24 @@ scalar evaluateProperty(const std::string& propKey,
     // this is what lets the GUI mark the gap instead of drawing through it.
     if (propKey == "liquid_stable")
     {
+        //  A PACKAGE WITH ONE LIQUID CANNOT ANSWER, AND MUST NOT SAY "STABLE"
+        //  (2026-11-15).  The verdict below is a liquid-liquid flash, and that
+        //  flash needs two liquid phases in the package; a gammaPhi package
+        //  carries one by design.  The flash's refusal used to land in the
+        //  catch at the end and come back as 1 -- water + benzene on UNIFAC
+        //  reported as ONE stable liquid while the same model on a gammaGamma
+        //  package splits at every pressure (envelope04).  A check that cannot
+        //  run must not pass: it refuses here, by name, with the remedy.
+        const std::size_t nLiquids = thermo.phasesOfType("liquid").size();
+        if (nLiquids < 2)
+            throw std::runtime_error(
+                "liquid_stable: the package carries " + std::to_string(nLiquids)
+                + " liquid phase(s), and the probe's verdict is a"
+                " liquid-liquid flash that needs two -- so it cannot tell one"
+                " liquid from two here, and does not answer \"stable\" in its"
+                " place.  Declare `formulation gammaGamma;` with the same"
+                " activity model on both `liquidPhases` (the Explorer builds"
+                " exactly that package for this probe).");
         // A liquid-liquid verdict needs the FLASH, not the bare TPD: the TPD
         // proves a split exists, the flash says how distinct the two liquids
         // are (the 1e-3 test below).  (This comment used to call the TPD "a
@@ -456,12 +474,21 @@ scalar evaluateProperty(const std::string& propKey,
         try
         {
             const FlashSolution sol = IsothermalFlash::solveCore(in, thermo, opts);
+            if (!sol.converged)
+                throw std::runtime_error("the LL flash did not converge");
             const bool split = sol.liquidLiquid   // the KIND, never parsed from `regime`
                 && sol.x.size() == 2 && sol.y.size() == 2
                 && std::abs(sol.x[0] - sol.y[0]) > 1.0e-3;
             return split ? 0.0 : 1.0;
         }
-        catch (const std::exception&) { rethrowHardRefusal(); return 1.0; }   // no split found -> stable
+        catch (const std::exception& e)
+        {
+            // A flash that REFUSED is not a flash that found no split: a
+            // check that cannot run must not pass (CL-04).
+            rethrowHardRefusal();
+            throw std::runtime_error(
+                std::string("liquid_stable: the LL flash refused: ") + e.what());
+        }
     }
 
     throw std::runtime_error(

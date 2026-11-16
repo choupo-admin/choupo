@@ -260,9 +260,9 @@ def main() -> int:
                 failures.append("A1: the step is zero on the case the ruling"
                                 " was measured from -- nothing is being"
                                 " accounted")
-            if not near(raw, -2.9851, 1.0e-3):
+            if not near(raw, -2.9706, 1.0e-3):
                 failures.append("A1: the raw imbalance moved: %s kW, expected"
-                                " -2.9851 kW" % raw)
+                                " -2.9706 kW" % raw)
             # the same three, in the CSV, agreeing with the JSON
             try:
                 if not near(float(t["raw_imbalance_kW"]), raw, 1.0e-3) \
@@ -322,13 +322,16 @@ def main() -> int:
                                 % t["adjusted_closure_pct"])
         except (KeyError, ValueError):
             failures.append("A3: no adjusted_closure_pct on the transporter")
-        #  The RAW numbers the ruling named must still be visible.
+        #  The RAW numbers the ruling named must still be visible.  (The ruling
+        #  read 37.0149 / 40.0000 kW and -2.9851 kW; they moved to 37.0294 and
+        #  -2.9706 kW on 2026-11-16 -- the aqueous world prices water's vapour
+        #  through the H2O(g) record, now derived from the IAPWS curve.)
         try:
-            if not near(float(t["dH_kW"]), 37.0149, 1.0e-3) \
+            if not near(float(t["dH_kW"]), 37.0294, 1.0e-3) \
                or not near(float(t["energy_items_kW"]), 40.0, 1.0e-3) \
-               or not near(float(t["energy_closure_pct"]), 92.54, 0.05):
+               or not near(float(t["energy_closure_pct"]), 92.57, 0.05):
                 failures.append("A3: the RAW closure figures the ruling named"
-                                " are gone: expected dH 37.0149 and items"
+                                " are gone: expected dH 37.0294 and items"
                                 " 40.0000 on the transporter row")
         except (KeyError, ValueError):
             failures.append("A3: the RAW closure columns are unreadable")

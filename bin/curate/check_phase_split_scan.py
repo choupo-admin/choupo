@@ -320,12 +320,19 @@ def main():
         if not psat:
             fail("(e) no sub-273 K Psat extrapolation reached the block")
         else:
-            lo = float(re.search(r"Trange\s*\(\s*([\d.]+)", wat).group(1))
-            first_below = max(r["T"] for r in rows if r["T"] < lo)
+            #  EACH announcement is judged against ITS OWN component's window: the
+            #  locus names the component, its record carries its Trange.  (Until
+            #  2026-11-16 one window, water's 273 K, stood for all of them; water's
+            #  law is now the IAPWS equation from 273.16 K while ethanol's
+            #  Antoine still starts at 273 K, so the first excursions differ.)
             for T, a in psat:
+                who = re.search(r"component '([^']+)'", a.get("locus", ""))
+                rec = d / "constant/components" / ((who.group(1) if who else "water") + ".dat")
+                lo = float(re.search(r"Trange\s*\(\s*([\d.]+)", rec.read_text()).group(1))
+                first_below = max(r["T"] for r in rows if r["T"] < lo)
                 if abs(T - first_below) > 1e-9:
-                    fail(f"(e) the Psat extrapolation was first raised at T = {T},"
-                         f" not at the first point below Trange ({first_below})")
+                    fail(f"(e) the Psat extrapolation of {rec.stem} was first raised at T = {T},"
+                         f" not at the first point below its Trange ({first_below})")
         if len(dcp) != 1:
             fail(f"(e) the solid's missing-dCp announcement should be raised at"
                  f" exactly one point, got {len(dcp)}")

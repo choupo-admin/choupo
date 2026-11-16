@@ -30,11 +30,11 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1894.04289944;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -163.836408837;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -4.71077589137;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  4.09957276047;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.445923400221;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1708.88106578;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -151.857074092;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -4.11160376414;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  4.0595690821;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.446393116742;
     }
 
     evidence
@@ -317,7 +317,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.102898498545;
+        aadHeldOutPct     0.132477465634;
         acceptanceMaxAADPct 0.23;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "the rule of C16 for bubble temperatures, with its second term read as written (REVISED after the first run, and said so): the held-out bubble sets' largest stated expanded uncertainty (U95 = 0.15 K) plus the catalogue vapour-pressure model's error at the pure endpoints at the sets' pressure -- water's Antoine record puts its normal boiling point at 372.45 K against 373.15 K (measured against IAPWS, written in water.dat), 0.70 K -- so 0.85 K = 0.23 % of the held-out mean T (365.79 K). The first reading set that term to ZERO because no held-out set reports a pure endpoint; the vapour-pressure error is in every bubble point whether or not the endpoint is reported, so a perfect pair would have missed 0.042 %. For the binodal: 0.01 in mole fraction, as declared before the first run and NOT changed";
     }
@@ -331,11 +331,11 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1894.07665146;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -163.805786991;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -4.7108564488;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  4.09947517237;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.44592373762;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1708.84492038;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -151.834938313;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -4.1114914939;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  4.05949800106;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.446393243392;
     }
 
     evidence
@@ -618,7 +618,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.102894889861;
+        aadHeldOutPct     0.13247021922;
         acceptanceMaxAADPct 0.23;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "the rule of C16 for bubble temperatures, with its second term read as written (REVISED after the first run, and said so): the held-out bubble sets' largest stated expanded uncertainty (U95 = 0.15 K) plus the catalogue vapour-pressure model's error at the pure endpoints at the sets' pressure -- water's Antoine record puts its normal boiling point at 372.45 K against 373.15 K (measured against IAPWS, written in water.dat), 0.70 K -- so 0.85 K = 0.23 % of the held-out mean T (365.79 K). The first reading set that term to ZERO because no held-out set reports a pure endpoint; the vapour-pressure error is in every bubble point whether or not the endpoint is reported, so a perfect pair would have missed 0.042 %. For the binodal: 0.01 in mole fraction, as declared before the first run and NOT changed";
     }
@@ -632,11 +632,11 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1894.04289944;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -163.836408837;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -4.71077589137;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  4.09957276047;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.445923400221;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1708.88106578;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -151.857074092;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -4.11160376414;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  4.0595690821;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.446393116742;
     }
 
     evidence
@@ -729,7 +729,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.586229383445;
+        aadHeldOutPct     0.517647606931;
         acceptanceMaxAADPct 0.23;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "the SAME band as the promoted operation, not loosened: 0.23 % of the held-out mean T for the bubble rule of C16 (the held-out set's largest stated expanded uncertainty plus the catalogue vapour-pressure error at the pure endpoints).  This operation scores the HOMOGENEOUS butanol-rich series of 10.1021/je700411p (x 0.56-0.99, 366-390 K), which the promoted pair is not for, and reports the miss as it is";
     }
@@ -743,11 +743,11 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  2132.87636811;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -154.78897466;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -5.28638064191;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  4.06822983604;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.454777401439;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  1737.82985678;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  -148.480544304;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ij  -4.09853722721;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.a_ji  4.03701471263;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.alpha  0.446699011402;
     }
 
     evidence
@@ -1030,7 +1030,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.076075084308;
+        aadHeldOutPct     0.0549553769968;
         acceptanceMaxAADPct 0.23;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "the rule of C16 for bubble temperatures, with its second term read as written (REVISED after the first run, and said so): the held-out bubble sets' largest stated expanded uncertainty (U95 = 0.15 K) plus the catalogue vapour-pressure model's error at the pure endpoints at the sets' pressure -- water's Antoine record puts its normal boiling point at 372.45 K against 373.15 K (measured against IAPWS, written in water.dat), 0.70 K -- so 0.85 K = 0.23 % of the held-out mean T (365.79 K). The first reading set that term to ZERO because no held-out set reports a pure endpoint; the vapour-pressure error is in every bubble point whether or not the endpoint is reported, so a perfect pair would have missed 0.042 %. For the binodal: 0.01 in mole fraction, as declared before the first run and NOT changed";
     }

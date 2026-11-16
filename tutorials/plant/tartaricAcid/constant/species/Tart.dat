@@ -1,0 +1,38 @@
+// [imported] origin "data/standards/species/Tart.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Tart.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Tart;
+formula     "C4H4O6-2";
+charge  -2;
+MW { value 148.07; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -1291000; unit J/mol;}
+}
+
+transport
+{
+    //  D0 ONLY (DEV.md 4c C403).  No `radius` is curated for this ion: the tier's radius is the HYDRATED radius of
+    //  Nightingale, J. Phys. Chem. 63 (1959) 1381, Table I, and it was not read for this record.  A Stokes radius
+    //  computed from D0 would be a different convention under the same key, so none is written: DSPM-DE still
+    //  refuses this ion by name, while the multi-ionic polarisation film and the electrodialysis units read D0 alone.
+    D0 { value 8.054e-10; unit m2/s; }
+    provenance
+    {
+        D0
+        {
+            source        "M. Bester-Rogac, R. Neueder, J. Barthel and A. Apelblat, Conductivity Studies on Aqueous Solutions of Stereoisomers of Tartaric Acids and Tartrates. Part I. Alkali Metal and Ammonium Tartrates, J. Solution Chem. 26 (1997) 127-134, Table IV (p. 132; the first-page footer of the scan reads 132), row 1/2 Tar2-: lambda0 = 60.49 S cm2/eq at 25 C (MEASURED: the mean of the four salts Na2Tar (60.95), K2Tar (60.46), KNaTar (60.44) and (NH4)2Tar (60.14) at 298.15 K, printed as 60.49)";
+            origin        literature;
+            method        "read at the page image, 2026-11-15 (DEV.md 4c C403): lambda0 = 60.49 S cm2/eq (x 1e-4 = 0.006049 S m2/eq), converted by the Nernst relation D = R T lambda0 / (|z| F^2) with R = 8.314462618 J/mol/K, F = 96485.33212 C/mol, T = 298.15 K (RT/F^2 = 2.662848e-07), |z| = 2, to 8.054e-10 m2/s";
+            reviewStatus  interim;
+            notes         "The same row at 278.15, 283.15, 288.15, 293.15, 298.15, 303.15, 308.15 K: 35.82, 41.58, 47.67, 53.99, 60.49, 67.44, 74.53 S cm2/eq (Table IV, mean column); the Walden product is 53.85e-3 S cm2 Pa s/eq at 298.15 K.  The authors compare it at 25 C with 59.6 (Milazzo), 62.7 (Topp and Davies recalculated by them) and 63.19 (Dippy et al.), and call the others higher.  The CRC table has no tartrate row.";
+        }
+    }
+}

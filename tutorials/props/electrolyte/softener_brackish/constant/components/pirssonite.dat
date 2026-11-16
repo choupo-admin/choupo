@@ -1,4 +1,4 @@
-// [imported] origin "data/standards/components/pirssonite.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+// [imported] origin "data/standards/components/pirssonite.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Mineral: pirssonite (Na2Ca(CO3)2:2H2O) -- unified substance file.
   One canonical record per chemical identity; the solid-phase dissolution
@@ -13,6 +13,12 @@ solidPhases
     pirssonite
     {
         dissolutionReaction { masters ( { ion Na; nu 2; } { ion Ca; nu 1; } { ion HCO3; nu 2; } { ion H; nu -2; } ); nuWater 2; }
-        equilibrium { logK25 11.424; dH -29798.4; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Pirssonite"; }
+        //  No dissolution enthalpy in the source.  The dH this entry carried
+        //  until 2026-11-16 (-29798.4 J/mol) was only the enthalpy of the basis
+        //  conversion, which bin/curate/pitzer_minerals_to_choupo.py added to a
+        //  missing value as if it were 0; removed (docs/reviews/2026-11-16-
+        //  speciation-audit, GS-02).  Off 25 C the engine holds log K at its
+        //  25 C value and says so.
+        equilibrium { logK25 11.424; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Pirssonite"; }
     }
 }

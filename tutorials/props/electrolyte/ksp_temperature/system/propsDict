@@ -21,7 +21,9 @@
 
   THE LESSON -- the SIGN of dK/dT:
 
-    calcite   dissolution is EXOTHERMIC (dH = -28.1 kJ/mol), so log K FALLS as
+    calcite   dissolution is EXOTHERMIC (CaCO3 = Ca+2 + CO3-2: dH = -9.6
+              kJ/mol, Plummer & Busenberg 1982; the record's acid form
+              CaCO3 + H+ = Ca+2 + HCO3-: -24.5 kJ/mol), so log K FALLS as
               T rises.  SI_calcite = log(IAP) - log K(T) therefore RISES with
               temperature -- RETROGRADE SOLUBILITY.  Calcite is LESS soluble
               hot, which is exactly why heat-exchanger tubes and warm RO

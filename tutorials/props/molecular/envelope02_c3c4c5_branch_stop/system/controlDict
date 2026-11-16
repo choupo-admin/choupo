@@ -55,6 +55,17 @@
       explained here (a retrograde turn or a residual root swap of the
       warm-started solve; the flash slice of C245 is where it is decided).
 
+  WHAT CHANGED A FOURTH TIME (CL-01, 2026-11-16): THE PSEUDO-ROOT IS NOT
+  DRAWN.  The pseudo-root of the third change made the bubble branch run
+  to 40 bar, but a pseudo-root is an extrapolation, not a vapour: the
+  independent Peng-Robinson cubic loses the incipient vapour's vapour root
+  at about 36.7 bar (three roots at 36.6 bar, one at 36.8 bar).  The op now
+  ENDS the bubble branch at the first pressure whose incipient vapour has no
+  vapour root (`vapourRootIsPseudo`, CubicEoS.H) and discards that point:
+  36 points, last kept 389.554 K at 36 bar, stopped at 37 bar.  The dew
+  branch is unchanged (40 points).  The statements above that the bubble
+  branch reaches 40 bar describe the third change and are kept as history.
+
   The case keeps its name (it witnessed a stopped branch from C239 to
   C245); its counts are the golden rows.
 
@@ -63,5 +74,5 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoProps;
-description  "P-T envelope of a C3/C4/C5 feed marched through propane's Tc: the reference factor is held continuous above 0.99 Tc, so both branches cross Tc; with the cubic's vapour pseudo-root both reach 40 bar (C245), and no cricondentherm is claimed";
+description  "P-T envelope of a C3/C4/C5 feed marched through propane's Tc: the reference factor is held continuous above 0.99 Tc, so both branches cross Tc; the dew branch reaches 40 bar and the bubble branch ends at 37 bar where the incipient vapour loses its vapour root (CL-01), and no cricondentherm is claimed";
 verbosity     3;

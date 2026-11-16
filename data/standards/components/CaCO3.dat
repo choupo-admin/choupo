@@ -65,6 +65,15 @@ solidPhases
     calcite
     {
         dissolutionReaction { masters ( { ion Ca; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } ); }
-        equilibrium { logK25 1.879; dH -28078.8; analytic ( 40.0171 -0.01928451 -5151.79 -8.66815 563713.9 ); validC ( 0 300 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: 0 - 300 C, Ellis, 1959, Plummer and Busenberg, 1982"; }
+        //  Plummer & Busenberg (1982), Geochim. Cosmochim. Acta 46, 1011:
+        //  log Ksp(CaCO3 = Ca+2 + CO3-2) = -171.9065 - 0.077993 T + 2839.319/T
+        //  + 71.595 log10 T, 0-90 C, = -8.480 at 25 C; dH -2.297 kcal/mol.
+        //  Rebased to the HCO3 master exactly as aragonite above (the
+        //  record's HCO3 formation: +10.3291, -14899.2 J/mol).  Until
+        //  2026-11-16 this entry carried -8.45 (logK25 1.879, a different
+        //  fit from a revised database release) under this same citation;
+        //  Vitor's ruling the same day restored the cited source's value
+        //  (docs/reviews/2026-11-16-speciation-audit, SP-01/GS-01).
+        equilibrium { logK25 1.849; dH -24509.8; analytic ( -64.0194 -0.04546451 -2312.471 32.66939 563713.9 ); validC ( 0 90 ); source "Plummer and Busenberg, Geochim. Cosmochim. Acta 46 (1982) 1011 (log Ksp -8.480 at 25 C, 0 - 90 C), rebased to HCO3; the same equation is in USGS PHREEQC phreeqc.dat (public domain)"; }
     }
 }

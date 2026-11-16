@@ -29,7 +29,8 @@ USAGE
         [--records data/standards/components] [--write] [--report]
 
 Without --write it prints the fit and the before/after Psat table and touches
-nothing.  Supported law: Antoine (log10 P/bar = A - B/(T/K + C)); any other
+nothing.  Supported laws: Antoine (log10 P/bar = A - B/(T/K + C)) and Wagner (the
+IAPWS form, with its own `reducing` constants); any other
 law, or a record whose Tb is annotated as a SUBLIMATION point (the law is then
 not the liquid-vapour curve a cubic can reproduce), is REFUSED by name.
 
@@ -274,23 +275,49 @@ def main():
         refuse(f"{path} has no vaporPressure block to fit to")
     s, o, c = blocks["vaporPressure"]
     vp = text[o + 1:c]
-    model = re.search(r"model\s+(\w+)", vp)
-    if not model or model.group(1) != "Antoine":
+    vp_nc = re.sub(r"//[^\n]*", "", vp)                    # a law's own comments are not its keys
+    model = re.search(r"model\s+(\w+)", vp_nc)
+    if not model or model.group(1) not in ("Antoine", "Wagner"):
         refuse(f"the vapour-pressure law of {a.component} is '{model.group(1) if model else '?'}'; "
-               "only Antoine is supported (extend the tool, do not fit by hand)")
-    co = re.search(r"coefficients\s*\(([^)]*)\)", vp)
-    tr = re.search(r"Trange\s*\(([^)]*)\)", vp)
+               "only Antoine and Wagner are supported (extend the tool, do not fit by hand)")
+    kind = model.group(1)
+    co = re.search(r"coefficients\s*\(([^)]*)\)", vp_nc)
+    tr = re.search(r"Trange\s*\(([^)]*)\)", vp_nc)
     if not co or not tr:
-        refuse(f"{path}: the Antoine block lacks coefficients or Trange")
-    A_, B_, C_ = (float(v) for v in co.group(1).split())
+        refuse(f"{path}: the {kind} block lacks coefficients or Trange")
     Tlo, Thi = (float(v) for v in tr.group(1).split())
+    if kind == "Antoine":
+        A_, B_, C_ = (float(v) for v in co.group(1).split())
+        Pl = lambda T: 10.0 ** (A_ - B_ / (T + C_)) * 1e5
+        law_text = (f"Antoine log10(P/bar) = {A_:g} - {B_:g}/((T/K) {'+' if C_ >= 0 else '-'} {abs(C_):g}), "
+                    f"{Tlo:g}-{Thi:g} K")
+    else:
+        red = re.search(r"reducing\s*\{\s*T\s+([0-9.eE+-]+)\s*K\s*;\s*P\s+([0-9.eE+-]+)\s*(\w+)\s*;", vp_nc)
+        exps = re.search(r"exponents\s*\(([^)]*)\)", vp_nc)
+        if not red or not exps:
+            refuse(f"{path}: the Wagner block lacks `reducing {{ T; P; }}` or `exponents`")
+        Tr_w = float(red.group(1))
+        Pr_w = float(red.group(2)) * {"Pa": 1.0, "kPa": 1e3, "MPa": 1e6, "bar": 1e5, "atm": 101325.0}[red.group(3)]
+        ex_w = [float(v) for v in exps.group(1).split()]
+        co_w = [float(v) for v in co.group(1).split()]
+
+        def Pl(T):
+            u = 1.0 - T / Tr_w
+            return Pr_w * math.exp(Tr_w / T * sum(c_ * u ** e_ for c_, e_ in zip(co_w, ex_w)))
+
+        law_text = (f"Wagner (reducing {Tr_w:g} K, {red.group(2)} {red.group(3)}; "
+                    f"the record's own equation), {Tlo:g}-{Thi:g} K")
+        #  A cubic's saturation line has no liquid-vapour pair as T -> its own Tc: the
+        #  fit stops at 0.98 Tc, said here and in the provenance (the law's window is
+        #  not shortened silently).
+        if Thi > 0.98 * Tc:
+            Thi = 0.98 * Tc
+            law_text += f"; the cubic's fit window is cut at 0.98 Tc = {Thi:.2f} K"
     if re.search(r"(?i)sublimation point", text):
         refuse(f"{path} annotates its Tb as a SUBLIMATION point: its Antoine law "
                f"(window {Tlo:g}-{Thi:g} K) is the solid-vapour line, which a cubic cannot "
                "reproduce as a liquid-vapour curve.  Curate a vapour-pressure law that covers "
                "the saturated liquid first, then re-run")
-    Pl = lambda T: 10.0 ** (A_ - B_ / (T + C_)) * 1e5
-
     cub = a.cubic
     m0 = soave_slope(omega) if cub == "SRK" else pr_slope(omega)
     Ts = np.linspace(Tlo, Thi, a.npts)
@@ -334,7 +361,7 @@ def main():
         tb_line = (f"  Psat at the record's Tb = {Tb:g} K against 1.01325 bar: "
                    f"{100*(pb_b/101325-1):+.3f} % before, {100*(pb_a/101325-1):+.3f} % after; "
                    f"against the record's own law there: {100*(pb_a/Pl(Tb)-1):+.3f} %")
-    print(f"{a.component} / {cub}: window {Tlo:g}-{Thi:g} K (the Antoine law's own), "
+    print(f"{a.component} / {cub}: window {Tlo:g}-{Thi:g} K (the {kind} law's own),"
           f"{a.npts}-point least squares in ln P")
     print(f"  default alpha slope m = {m0:.6f}  (c1 = m, c2 = c3 = 0)")
     print(f"  fitted  c1 = {c_fit[0]:.8g}  c2 = {c_fit[1]:.8g}  c3 = {c_fit[2]:.8g}")
@@ -349,13 +376,13 @@ def main():
     fmt = lambda v: f"{v:.8g}"
     sha_in = " ".join(fmt(v) for v in (*c_fit, Tlo, Thi))
     sha = hashlib.sha256(f"{cub} MathiasCopeman {sha_in}".encode()).hexdigest()
-    law = f"Antoine log10(P/bar) = {A_:g} - {B_:g}/((T/K) {'+' if C_>=0 else '-'} {abs(C_):g}), {Tlo:g}-{Thi:g} K"
+    law = law_text
     val_block = (f"    {cub}\n    {{\n"
                  f"        form    MathiasCopeman;\n"
                  f"        c1      {fmt(c_fit[0])};\n"
                  f"        c2      {fmt(c_fit[1])};\n"
                  f"        c3      {fmt(c_fit[2])};\n"
-                 f"        Trange  ({fmt(Tlo)} {fmt(Thi)});   // K, the window the vapour-pressure law declares\n"
+                 f"        Trange  ({fmt(Tlo)} {fmt(Thi)});   // K, the fitted window: the law's own, cut at 0.98 Tc where the law reaches higher\n"
                  f"    }}\n")
     prov_block = (f"        {cub}\n        {{\n"
                   f"            origin        derived;\n"

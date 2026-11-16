@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoProps;
+description   "How wrong is the liquid density of SRK, and what does a Peneloux volume translation do about it?  n-Hexane, n-decane and their equimolar mixture at 298.15 K and 1.01325 bar, each evaluated twice -- plain SRK and SRK with the Peneloux shift (Peneloux, Rauzy and Freze 1982) -- beside the evaluated liquid density of Perry's Handbook.  The shift moves the volume and the enthalpy departure and leaves every fugacity, K-value and flash exactly where plain SRK puts them.";
+verbosity     2;

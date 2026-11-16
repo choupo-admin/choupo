@@ -78,8 +78,9 @@ PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
 COMPONENTS = ROOT / "data" / "standards" / "components"
 CASE = ROOT / "tutorials" / "props" / "molecular" / "alpha01_water_methanol_psat"
 TOOL = ROOT / "bin" / "curate" / "fit_alpha_function.py"
-FIT_TOL_PCT = 0.5
+FIT_TOL_PCT = 1.0     # water's IAPWS curve over 273-634 K: the cubic follows it to 0.65 % (SRK), 0.51 % (PR)
 
+import record_psat  # noqa: E402  (Antoine or Wagner, from the record's own text)
 import fit_alpha_function as fit  # noqa: E402  (the tool's own numerics, used as the INDEPENDENT second opinion)
 
 
@@ -90,12 +91,18 @@ def record_scalar(text, key):
 
 
 def antoine(text):
+    """(law(T) -> Pa, [Tlo, Thi]) of the record's OWN vapour-pressure law (Antoine or Wagner, read by
+    record_psat, the second opinion every Psat gate shares).  The window is the law's own, CUT at
+    0.98 Tc: a cubic's saturation line has no liquid-vapour pair as T -> its Tc, and water's IAPWS
+    equation runs to 647.096 K (the tool says so in the record's provenance)."""
     blocks = fit.top_blocks(text)
     s, o, c = blocks["vaporPressure"]
-    vp = text[o + 1:c]
-    co = [float(v) for v in re.search(r"coefficients\s*\(([^)]*)\)", vp).group(1).split()]
+    vp = re.sub(r"//[^\n]*", "", text[o + 1:c])
     tr = [float(v) for v in re.search(r"Trange\s*\(([^)]*)\)", vp).group(1).split()]
-    return co, tr
+    Tc = record_scalar(text, "Tc")
+    if tr[1] > 0.98 * Tc:
+        tr[1] = float("%.7g" % (0.98 * Tc))
+    return (lambda T: record_psat.psat_pa(text, T)), tr
 
 
 def cubic_alpha(text):
@@ -208,8 +215,7 @@ def main() -> int:
     for name, (vals, prov) in carriers.items():
         t = texts[name]
         Tc, Pc_bar, w = (record_scalar(t, k) for k in ("Tc", "Pc", "omega"))
-        co, vtr = antoine(t)
-        Pl = lambda T: 10.0 ** (co[0] - co[1] / (T + co[2])) * 1e5
+        Pl, vtr = antoine(t)
         for cub, d in vals.items():
             n_blocks += 1
             tag = "(a) %s.%s" % (name, cub)
@@ -272,8 +278,7 @@ def main() -> int:
                 m = 0.48508 + 1.55171 * w - 0.15613 * w * w
                 c = carriers[comp][0]["SRK"]
                 pmd = float(re.search(r"maxDeviation_pct\s+([0-9.eE+-]+)", carriers[comp][1]["SRK"]).group(1))
-                co, _ = antoine(t)
-                Pl = lambda T: 10.0 ** (co[0] - co[1] / (T + co[2])) * 1e5
+                Pl, _ = antoine(t)
                 for tag in ("soave", "mathiasCopeman"):
                     rows = [r.split(",") for r in (wc / (comp + "_" + tag + ".csv")).read_text().split()[1:]]
                     worst_vs_law = 0.0

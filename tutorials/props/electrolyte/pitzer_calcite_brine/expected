@@ -3,7 +3,7 @@
 diag    seawater_pitzer        I                0.682714         1e-4
 diag    seawater_pitzer        SI_anhydrite     -1.24804         1e-4
 diag    seawater_pitzer        SI_aragonite     0.540696         1e-4
-diag    seawater_pitzer        SI_calcite       0.654696         1e-4
+diag    seawater_pitzer        SI_calcite       0.684695958829         1e-4
 diag    seawater_pitzer        SI_gypsum        -0.964342        1e-4
 diag    seawater_pitzer        SI_halite        -2.48855         1e-4
 diag    seawater_pitzer        SI_sylvite       -3.51959         1e-4
@@ -20,7 +20,7 @@ diag    seawater_pitzer        pH               8.2              1e-4
 diag    seawater_davies        I                0.657864         1e-4
 diag    seawater_davies        SI_anhydrite     -0.886824        1e-4
 diag    seawater_davies        SI_aragonite     0.754131         1e-4
-diag    seawater_davies        SI_calcite       0.868131         1e-4
+diag    seawater_davies        SI_calcite       0.898130946213         1e-4
 diag    seawater_davies        SI_gypsum        -0.604623        1e-4
 diag    seawater_davies        SI_halite        -2.39554         1e-4
 diag    seawater_davies        SI_sylvite       -3.39453         1e-4

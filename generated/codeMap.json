@@ -84,6 +84,9 @@
   "AdvisoryLog": [
    "src/core/Advisory.H"
   ],
+  "AlphaChoice": [
+   "src/thermo/equationOfState/CubicEoS.H"
+  ],
   "AmbroseWalton": [
    "src/thermo/vaporPressure/AmbroseWalton.H"
   ],
@@ -505,6 +508,9 @@
   ],
   "CrystalliserSize": [
    "src/postProcessing/sizing/CrystalliserSize.H"
+  ],
+  "CubicAlphaFit": [
+   "src/thermo/Component.H"
   ],
   "CubicEoS": [
    "src/thermo/equationOfState/CubicEoS.H"
@@ -7260,6 +7266,7 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
@@ -23251,6 +23258,7 @@
    "src/postProcessing/sizing/ReliefValveSize.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/MixingRules.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",

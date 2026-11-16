@@ -143,7 +143,7 @@ cubicAlpha
         c1      1.4182193;
         c2      -0.6044926;
         c3      -0.23146909;
-        Trange  (288 356);   // K, the window the vapour-pressure law declares
+        Trange  (288 356);   // K, the fitted window: the law's own, cut at 0.98 Tc where the law reaches higher
     }
     PengRobinson
     {
@@ -151,7 +151,7 @@ cubicAlpha
         c1      1.221166;
         c2      -0.20453281;
         c3      -0.68580145;
-        Trange  (288 356);   // K, the window the vapour-pressure law declares
+        Trange  (288 356);   // K, the fitted window: the law's own, cut at 0.98 Tc where the law reaches higher
     }
 }
 

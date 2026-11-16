@@ -62,7 +62,10 @@ WIDTH = 1.0e-6
 #  liquids of stripper01, bracketing its dew edge.
 WITNESSES = [
     ("stripper01 tray 1", [0.047811771, 0.0089001765, 0.94328805], 368.0, 378.0, 5.07e-1),
-    ("stripper01 tray 8", [0.0087392722, 0.00042640146, 0.99083433], 372.0, 384.0, 4.15e-2),
+    #  tray 8: 4.15e-2 -> 4.70e-2 on 2026-11-16 (water's vapour curve is the IAPWS one: the
+    #  dew edge of this liquid moved 0.67 K and the KNOWN_STEP of C245 slice 3 with it --
+    #  a debt that GREW, said here and in the commit, not a quiet repin).
+    ("stripper01 tray 8", [0.0087392722, 0.00042640146, 0.99083433], 372.0, 384.0, 4.70e-2),
 ]
 
 

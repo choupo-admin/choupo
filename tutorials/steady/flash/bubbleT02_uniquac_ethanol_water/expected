@@ -2,10 +2,10 @@
 # kind   name      key         expected        reltol
 stream  feed                   F                0.0277777777778    1e-4
 kpi     bubble02               P                101325             1e-4
-kpi     bubble02               T_bubble         353.469206954      1e-4
+kpi     bubble02               T_bubble         353.60989006      1e-4
 kpi     bubble02               converged        1                  1e-4
-kpi     bubble02               y_ethanol        0.582711434226     1e-4
-kpi     bubble02               y_water          0.417288565785     1e-4
+kpi     bubble02               y_ethanol        0.585878966126     1e-4
+kpi     bubble02               y_water          0.414121033882     1e-4
 stream  feed                   T                350              1e-4
 boundary global                 H_feeds_kW       0                1e-4
 boundary global                 Q_boundary_kW    0                1e-4

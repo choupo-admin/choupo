@@ -39,8 +39,34 @@ cpAvg298
 }
 transport
 {
-radius { value 3.32e-10; unit m;}
-D0     { value 2.03e-09;     unit m2/s;}
+    //  `radius` is the HYDRATED radius r_H of Nightingale, J. Phys. Chem. 63 (1959) 1381, Table I -- the convention
+    //  of every DSPM-DE pore fitted against it -- with its own provenance below.  `D0` is the 25 C limiting
+    //  diffusivity read at the page of Li & Gregory 1974 (DEV.md 4c C403; its own provenance below); before: a value
+    //  transcribed by machine from a geochemical database.
+    radius { value 3.32e-10; unit m; }   // 3.32 A
+    D0 { value 2.03e-09; unit m2/s; }
+    provenance
+    {
+        radius
+        {
+            source        "E. R. Nightingale, Jr., Phenomenological Theory of Ion Solvation. Effective Radii of Hydrated Ions, J. Phys. Chem. 63 (1959) 1381-1387, doi:10.1021/j150579a011, Table I (p. 1383), row Cl-, column r_H at 25 C: 3.32 A";
+            origin        literature;
+            method        "read back against the primary page (Table I, the effective hydrated radius r_H) on 2026-10-25 (DEV.md 4c C161): the stored value matches it to the digit";
+            reviewStatus  interim;
+            notes         "The tier's radius convention: Nightingale's hydrated radius, the one DSPM-DE pores are fitted on -- not a Stokes radius from D0 (his r_s column is a different quantity).";
+        }
+        //  Cross-check, entering no value: the CRC Handbook of Chemistry and Physics, 82nd ed., table
+        //  'Ionic Conductivity and Diffusion at Infinite Dilution' (PDF pp. 304-306 of the folder copy), read at its page
+        //  as a second opinion on this ion at 25 C; it is a compilation and is not this value's origin.
+        D0
+        {
+            source        "Y.-H. Li and S. Gregory, Diffusion of ions in sea water and in deep-sea sediments, Geochim. Cosmochim. Acta 38 (1974) 703-714, Table 1 (p. 705: tracer and self-diffusion coefficients of ions at infinite dilution, 10^-6 cm2/s at 0, 18 and 25 C), row Cl-, column 25 C: 20.3 x 10^-6 cm2/s";
+            origin        literature;
+            method        "read at the page, 2026-11-15 (DEV.md 4c C403): the scan's text layer of this table is garbled, so the row was read from the page image; the 25 C entry converted (1 x 10^-6 cm2/s = 1 x 10^-10 m2/s) to 2.03e-09 m2/s";
+            reviewStatus  interim;
+            notes         "Li & Gregory give, for the same row, 0 C 10.1 x 1e-10 m2/s; 18 C 17.1 x 1e-10 m2/s; 25 C 20.3 x 1e-10 m2/s (kept here for the later check of the Stokes-Einstein correction to the run temperature, thermo/transport/StokesEinstein.H, which is applied by the consumer). A second compiled table (named in the comment above) gives 2.032e-09 m2/s for this ion at 25 C (+0.1 %).";
+        }
+    }
 }
 
 volumetric

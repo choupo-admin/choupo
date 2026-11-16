@@ -496,6 +496,56 @@ def main() -> int:
     if not fails:
         notes.append("the saturation residuals have one home")
 
+    # ---- (n) T_bubble and P_bubble are one equilibrium on a cubic vapour --
+    #  (EX-04, 2026-11-15.)  On a gamma-phi package with a PR vapour,
+    #  T_bubble used to price the vapour at y = x while P_bubble iterated y,
+    #  and the round trip P_bubble(T_bubble(P)) missed P by 1.3e-4 at 1 atm
+    #  and 7.8e-4 at 20 bar on pxy01's liquid.  Both now iterate the
+    #  incipient vapour from the same Raoult seed; held here to 1e-9 on P
+    #  and 1e-8 on the vapour mole fraction.
+    import tempfile
+    pxy = ROOT / "tutorials" / "props" / "scan" / "pxy01_ethanol_water_70C"
+    eqb = (pxy / "constant" / "thermoPhysPropDict").read_text()
+    eqb = re.sub(r"fugacityModel\s+idealGas;", "fugacityModel PengRobinson;",
+                 eqb[re.search(r"^equilibrium\b", eqb, re.M).start():])
+
+    def point(td, tag, T, P, props):
+        d = Path(td) / tag
+        _write_case(d, ["ethanol", "water"], eqb)
+        (d / "system" / "propsDict").write_text(
+            "operations\n(\n    { name p; type propertyPoint; state { T %r K;"
+            " P %r Pa; composition { ethanol 0.4; water 0.6; } } properties"
+            " ( %s ); }\n);\n" % (T, P, props))
+        rc, out = run(d)
+        vals = dict(re.findall(r'"(T_bubble|P_bubble|y_eq_ethanol|'
+                               r'y_eqT_ethanol)":\s*([-0-9.eE+]+)', out))
+        return rc, {k: float(v) for k, v in vals.items()}
+
+    with tempfile.TemporaryDirectory() as td:
+        for P in (101325.0, 2.0e6):
+            rc1, a = point(td, "tb%d" % P, 350.0, P, "T_bubble y_eq_ethanol")
+            if rc1 != 0 or "T_bubble" not in a:
+                fails.append("(n) T_bubble of pxy01's liquid on a PR vapour at"
+                             " %.5g bar did not run (exit %d)" % (P / 1e5, rc1))
+                continue
+            rc2, b = point(td, "pb%d" % P, a["T_bubble"], 0.5 * P,
+                           "P_bubble y_eqT_ethanol")
+            if rc2 != 0 or "P_bubble" not in b:
+                fails.append("(n) P_bubble at T_bubble = %.6f K did not run"
+                             " (exit %d)" % (a["T_bubble"], rc2))
+                continue
+            dP = b["P_bubble"] / P - 1.0
+            dy = b["y_eqT_ethanol"] - a["y_eq_ethanol"]
+            if abs(dP) > 1.0e-9 or abs(dy) > 1.0e-8:
+                fails.append("(n) the bubble round trip on a PR vapour misses at"
+                             " %.5g bar: P_bubble(T_bubble(P))/P - 1 = %+.3e,"
+                             " y differs by %+.3e -- T_bubble and P_bubble are"
+                             " not reading the same incipient vapour (EX-04)"
+                             % (P / 1e5, dP, dy))
+    if not any(f.startswith("(n)") for f in fails):
+        notes.append("T_bubble and P_bubble round-trip to 1e-9 on pxy01's"
+                     " liquid with a PR vapour at 1 atm and 20 bar")
+
     for case, label in ((GAS, "envelope01"), (JUMP, "envelope02")):
         rc, out = run(case)
         if rc != 0:
@@ -580,41 +630,48 @@ def main() -> int:
         notes.append("a late start is reported with its failed pressures, and"
                      " an empty branch as never started")
 
-    #  envelope02 (C239, 2026-11-08; C245 slice 4, 2026-11-08): with the
-    #  liquid reference CONTINUOUS in T (held above 0.99 Tc) the branches
+    #  envelope02 (C239, 2026-11-08; C245 slice 4, 2026-11-08; CL-01,
+    #  2026-11-16): with the liquid reference CONTINUOUS in T the branches
     #  cross propane's Tc instead of stopping below it.  Until C245 the bubble
     #  branch "reached the top of the requested range" on the TRIVIAL side
-    #  above 28 bar: the incipient vapour was past its spinodal, the PR vapour
-    #  root did not exist, and the cubic handed the vapour the LIQUID root,
-    #  unflagged -- the drawn line kinked from ~2 K/bar to a straight
-    #  0.42 K/bar plateau.  And the dew branch was ended at 36 bar by the
-    #  root-jump guard.  With the pseudo-root (CubicEoS.H) both branches run
-    #  on their own curvature to the top of the range (40 bar).  What this arm
-    #  holds: both branches reach 40 bar, the bubble slope never collapses by
-    #  more than 3x between consecutive steps (the trivial plateau put back
-    #  makes it 5.7x), and neither branch is reported as stopped.
+    #  above 28 bar (the cubic handed the vapour the LIQUID root, unflagged:
+    #  a straight 0.42 K/bar plateau).  C245's flagged pseudo-root let it run
+    #  to 40 bar, but a pseudo-root is an extrapolation, not a vapour: CL-01
+    #  ENDS the bubble branch at the first point whose incipient vapour has no
+    #  vapour root (36 points, stopped at 37 bar), reported as that.  What
+    #  this arm holds: the bubble branch ends at 37 bar by the pseudo-root
+    #  report (not a root jump), its slope never collapses by more than 3x
+    #  between consecutive steps (the trivial plateau put back makes it
+    #  5.7x), and the dew branch still reaches 40 bar, unstopped.
     cs2 = curves(JUMP)
     bub2, dew2 = cs2.get("bubble", []), cs2.get("dew", [])
     slopes = [(bub2[i][1] - bub2[i-1][1]) / ((bub2[i][0] - bub2[i-1][0]) / 1e5)
               for i in range(1, len(bub2))]
     collapse = max((slopes[i-1] / slopes[i] for i in range(1, len(slopes))
                     if slopes[i] > 0.0), default=0.0)
-    for name, br in (("bubble", bub2), ("dew", dew2)):
-        if not br or br[-1][0] < 40.0e5 - 1.0:
-            fails.append("envelope02's %s branch ends below the top of the"
-                         " range (last point %.1f bar); with the pseudo-root"
-                         " it reaches 40 bar" % (name, br[-1][0] / 1e5 if br else 0.0))
-        if "%s branch stopped" % name in jump:
-            fails.append("envelope02's %s branch is reported as STOPPED; it"
-                         " reaches the top of the requested range" % name)
+    if not bub2 or not (35.0e5 < bub2[-1][0] < 37.0e5 - 1.0):
+        fails.append("envelope02's bubble branch ends at %.1f bar; it must end"
+                     " at 36 bar, one step before the vapour root is lost"
+                     " (CL-01)" % (bub2[-1][0] / 1e5 if bub2 else 0.0))
+    if "bubble branch stopped at 37.000 bar because the incipient vapour has NO"\
+            " vapour root" not in jump:
+        fails.append("envelope02's bubble stop is not reported as the loss of"
+                     " the vapour root (CL-01)")
+    if not dew2 or dew2[-1][0] < 40.0e5 - 1.0:
+        fails.append("envelope02's dew branch ends below the top of the range"
+                     " (last point %.1f bar)" % (dew2[-1][0] / 1e5 if dew2 else 0.0))
+    if "dew branch stopped" in jump:
+        fails.append("envelope02's dew branch is reported as STOPPED; it"
+                     " reaches the top of the requested range")
     if collapse > 3.0:
         fails.append("envelope02's bubble slope collapses %.1fx between two"
                      " steps -- the incipient vapour has been handed the"
                      " liquid root (a trivial plateau), not a curve" % collapse)
     if not fails or all("envelope02" not in f for f in fails):
-        notes.append("envelope02's branches cross propane's Tc to the top of"
-                     " the range (40 bar), the bubble one with no trivial"
-                     " plateau (worst slope collapse %.1fx)" % collapse)
+        notes.append("envelope02's branches cross propane's Tc; the dew one"
+                     " reaches 40 bar and the bubble one ends at 37 bar on the"
+                     " lost vapour root, with no trivial plateau (worst slope"
+                     " collapse %.1fx)" % collapse)
 
     # ---- (e) both directions -------------------------------------------
     if "CRICONDENTHERM" not in gas:
@@ -803,6 +860,82 @@ def main() -> int:
                      " values, pure CH4 at 20 bar and the 82-bar bubble point"
                      " are refused naming the physics, and both brackets"
                      " reach below 200 K")
+
+
+    # ---- (m) the liquid-stability probe refuses on a one-liquid package --
+    #  `liquid_stable` decides by a liquid-liquid flash, which needs two
+    #  liquid phases in the package.  On a gammaPhi package (one liquid by
+    #  design) the flash's refusal used to be caught and returned as 1,
+    #  "one stable liquid", for water + benzene on UNIFAC -- the same model
+    #  that splits on gammaGamma (envelope04).  Both halves are held: the
+    #  gammaPhi package REFUSES by name, the gammaGamma one answers 0.
+    import tempfile
+    probe_op = ("operations\n(\n    { name probe; type propertyPoint;"
+                " state { T 300 K; P 1 bar; composition { water 0.5;"
+                " benzene 0.5; } } properties ( liquid_stable ); }\n);\n")
+    pkgs = {
+        "gammaPhi": "equilibrium\n{\n    formulation gammaPhi;\n"
+                    "    liquid { activityModel { model UNIFAC; }"
+                    " standardState pureLiquid; }\n"
+                    "    vapour { fugacityModel PengRobinson; }\n}\n",
+        "gammaGamma": "equilibrium\n{\n    formulation gammaGamma;\n"
+                      "    liquidPhases\n    (\n"
+                      "        { name liquid1; activityModel { model UNIFAC; } }\n"
+                      "        { name liquid2; activityModel { model UNIFAC; } }\n"
+                      "    );\n    vapour { fugacityModel PengRobinson; }\n}\n",
+    }
+    with tempfile.TemporaryDirectory() as td:
+        for form, block in pkgs.items():
+            d = Path(td) / form
+            _write_case(d, ["water", "benzene"], block)
+            (d / "system" / "propsDict").write_text(probe_op)
+            rc, out = run(d)
+            got = re.search(r'"liquid_stable":\s*([-0-9.eE+]+)', out)
+            if form == "gammaPhi":
+                if rc == 0 or got:
+                    fails.append("(m) liquid_stable on a gammaPhi package (one"
+                                 " liquid) answered " + (got.group(1) if got
+                                 else "nothing") + " with exit %d; it must"
+                                 " REFUSE, because its liquid-liquid flash"
+                                 " needs two liquid phases" % rc)
+                elif "liquid_stable" not in out or "gammaGamma" not in out:
+                    fails.append("(m) the gammaPhi refusal does not name the"
+                                 " probe and the remedy (formulation"
+                                 " gammaGamma)")
+            else:
+                if rc != 0 or not got or float(got.group(1)) != 0.0:
+                    fails.append("(m) liquid_stable on the gammaGamma UNIFAC"
+                                 " package must answer 0 (two liquids) for"
+                                 " equimolar water + benzene at 1 bar; got "
+                                 + (got.group(1) if got else "no value")
+                                 + " with exit %d" % rc)
+    #  (m2) CL-04: a gammaGamma package whose two liquids have DIFFERENT
+    #  activity surfaces (UNIFAC and ideal) makes the LL flash refuse; the
+    #  probe used to catch that and answer 1 at exit 0.  It must refuse.
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "mixedSurfaces"
+        _write_case(d, ["water", "benzene"],
+                    "equilibrium\n{\n    formulation gammaGamma;\n"
+                    "    liquidPhases\n    (\n"
+                    "        { name liquid1; activityModel { model UNIFAC; } }\n"
+                    "        { name liquid2; activityModel { model ideal; } }\n"
+                    "    );\n    vapour { fugacityModel idealGas; }\n}\n")
+        (d / "system" / "propsDict").write_text(probe_op)
+        rc, out = run(d)
+        got = re.search(r'"liquid_stable":\s*([-0-9.eE+]+)', out)
+        if rc == 0 or got:
+            fails.append("(m) liquid_stable on a gammaGamma package whose two"
+                         " liquids have DIFFERENT activity surfaces answered "
+                         + (got.group(1) if got else "nothing") + " with exit"
+                         " %d; the LL flash refused and the probe must refuse"
+                         " too, never answer 'stable' (CL-04)" % rc)
+        elif "the LL flash refused" not in out:
+            fails.append("(m) the mixed-surface refusal does not say that the"
+                         " LL flash refused")
+    if not any(f.startswith("(m)") for f in fails):
+        notes.append("the liquid-stability probe refuses by name on a"
+                     " one-liquid gammaPhi package and answers 0 (two"
+                     " liquids) for water + benzene on gammaGamma UNIFAC")
 
 
     if fails:

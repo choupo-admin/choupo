@@ -4,9 +4,9 @@ stream  feed                   F                0.250000000004   1e-4
 stream  permeate               F                0.0675333162948  1e-4
 stream  retentate              F                0.182466683709   1e-4
 kpi     vessel                 J_w_avg          4.67251910678e-06 1e-4
-kpi     vessel                 LSI_calcite_bulk_end 0.765554629083   1e-4
-kpi     vessel                 LSI_calcite_wall_end 0.985373688063   1e-4
-kpi     vessel                 RSI_calcite_wall_end 5.02925262387    1e-4
+kpi     vessel                 LSI_calcite_bulk_end 0.795554629083   1e-4
+kpi     vessel                 LSI_calcite_wall_end 1.01537368806   1e-4
+kpi     vessel                 RSI_calcite_wall_end 4.96925262387    1e-4
 kpi     vessel                 R_obs_Ca         0.999254953387   1e-4
 kpi     vessel                 R_obs_Cl         0.992599618056   1e-4
 kpi     vessel                 R_obs_HCO3       0.994439330533   1e-4
@@ -18,7 +18,7 @@ kpi     vessel                 SI0_module_calcite 1                1e-4
 kpi     vessel                 SI0_module_gypsum -1               1e-4
 kpi     vessel                 SI0_recovery_calcite 0.0507610740429  1e-4
 kpi     vessel                 SI0_recovery_gypsum -1               1e-4
-kpi     vessel                 StiffDavis_calcite_wall_end 0.776817745834   1e-4
+kpi     vessel                 StiffDavis_calcite_wall_end 0.806817745834   1e-4
 kpi     vessel                 c_ret_elem1      0.01082547174    1e-4
 kpi     vessel                 c_ret_elem2      0.0113786003632  1e-4
 kpi     vessel                 c_ret_elem3      0.0119299720829  1e-4
@@ -28,8 +28,8 @@ kpi     vessel                 c_ret_elem6      0.0135141537525  1e-4
 kpi     vessel                 c_ret_elem7      0.0139999026222  1e-4
 kpi     vessel                 dP_feed          270000           1e-4
 kpi     vessel                 elements         7                1e-4
-kpi     vessel                 maxLSI_calcite_wall 0.985373688063   1e-4
-kpi     vessel                 maxSI_calcite_wall 0.184387793678   1e-4
+kpi     vessel                 maxLSI_calcite_wall 1.01537368806   1e-4
+kpi     vessel                 maxSI_calcite_wall 0.214387793678   1e-4
 kpi     vessel                 maxSI_gypsum_wall -0.242460797841  1e-4
 kpi     vessel                 recovery_elem1   0.0507610740429  1e-4
 kpi     vessel                 recovery_elem2   0.096930260961   1e-4

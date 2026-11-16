@@ -441,6 +441,9 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
             if (!pkg.eos().alphaFunctionNote().empty())
                 d.push_back("  " + pkg.eos().alphaFunctionNote());
         }
+        if (pkg.hasEos() && viewBuiltFor(form)
+            && !pkg.eos().volumeTranslationNote().empty())
+            d.push_back(pkg.eos().volumeTranslationNote());
         //  The K-value world is a vapour-liquid notion of the gammaPhi and phiPhi
         //  formulations; the package's word defaults to "gammaPhi" for every
         //  other one, so it is printed only where it is the formulation's own

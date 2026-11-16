@@ -3562,6 +3562,43 @@ accepts today, and that is a policy call.
 > none of the printed errors.  Report:
 > docs/reviews/2026-11-15-geraldes2008-errata/REPORT.md.
 
+> **EX-04 + the stability probe LANDED (2026-11-16)**, the cloud session's
+> two engine fixes after an Opus review (rows CL-01..07) and a builder's
+> round on CL-01/02/04: T_bubble on a gamma-phi cubic vapour iterates the
+> incipient vapour (round trip 1e-4 -> 1e-11; greenAmmonia03's fire case
+> moved, nine rows, each recomputed by hand by the reviewer); an unsettled
+> incipient vapour is not published as converged; the liquid_stable probe
+> refuses on a one-liquid package, on a refused LL flash and on a
+> non-converged one.  RULING: a phase-envelope bubble march ENDS at the
+> first point whose incipient vapour has only a pseudo-root of the cubic --
+> a point priced on a pseudo-root is not a bubble point.  This REVERSES the
+> C245 continuation that ran envelope02 to 40 bar on the pseudo-root.  Rows
+> moved by hand: envelope03 bubble 44 -> 36 points (stop 45 -> 37 bar, where
+> an independent PR loses the vapour root at 36.7 bar); envelope02 40 -> 36
+> (stop 37, new); envelope04 80 -> 26 (stop 27, new: its single-liquid
+> metastable bubble at 428 K and 27 bar is above the vapour's own
+> saturation, so no vapour exists there).  Registered, not fixed: CL-06 (the
+> Explorer's T-x-y drops the chosen EoS vapour), CL-07 (choupoProps never
+> loads the Henry registry).  Held: --scope 45 cases 50/0 with mass and
+> energy closures, --fast 87/0, --gui 49/0 on the merge with main, 98 of the
+> plan's 101 gates (check_regressed_pairs not run: NIST unreachable).
+
+> **C411 (architect, 2026-11-16, found by an external cross-check that used
+> Choupo as an independent speciation reference).**  DEFECTS in Choupo's
+> aqueous speciation below 0 C and in K(T), to be fixed as one slice after a
+> measurement each: (1) the Debye-Huckel A_phi is clamped at 273.15 K (+1.2 %
+> at -10 C); (2) the ice phase carries no Delta Cp in its water activity
+> (0.9043 vs 0.9072 at -10 C against the vapour-pressure ratio 0.907); (3)
+> the van 't Hoff path for K(T) carries no Delta_r Cp; (4) the ionic osmotic
+> coefficient is applied to neutral species in a_w (SpeciationSolver.cpp:
+> 1995); (5) the phosphate pK2 record follows a geochemical database (Delta
+> H 4.14 kJ/mol, no Delta_r Cp) instead of Goldberg 1981 (3.6 kJ/mol, Delta_r
+> Cp -230); (6) the E-theta J(x) self-check is circular (its anchors are the
+> formula's own output) -- read Pitzer 1975 at the page and anchor to it.
+> Missing for sub-zero formulations, CANDIDATES: phosphate hydrates and
+> hydrohalite as solids, Pitzer pairs below 0 C, citrate/histidine/Tris ion
+> pairs, a sugar activity model, a liquidus march for a mixed liquid.
+
 > **C410 (architect, 2026-11-16, found by the C408 (b) design).**  A DEFECT:
 > under phiPhi the liquid enthalpy is not the cubic's -- H_liquid_formation
 > takes no pressure and calls no EoS (ThermoPackage.cpp:1657-1759, :1870) and
@@ -3614,6 +3651,19 @@ accepts today, and that is a policy call.
 > 10.1021/ie00013a024; Lee 10.1002/aic.690210313; Plocker
 > 10.1021/i260067a020; Kunz 10.1021/je300655b.  Each slice carries rule 4d
 > (guide section, Theory link, catalogue, PDFs) and a measured witness.
+> AMENDED the same day (Vitor: "depois nao te esquecas de tratar da
+> documentacao e talvez os EduTools que falam disto"): every slice ships its
+> guides (rule 4d, already in each brief), and the lessons are read too.  No
+> EduTool teaches the cubic equation of state today; nine cite one in
+> passing (approach-to-equilibrium, reaction enthalpy, declared pathways,
+> element potential, letdown, process safety, reactor ladder, standard
+> state, syngas) and each is checked for a claim a slice makes false.  When
+> Peneloux, the alpha function and MHV1/MHV2 have landed, ONE new EduTool,
+> "the cubic and its corrections": the same mixture priced by the plain
+> cubic, with the volume shift (liquid density against measurement), with
+> the fitted alpha (vapour pressure against the record), and with a G^E rule
+> (gamma against the activity model it carries) -- every number from the
+> engine, every symbol glossed and cited at file:line.
 
 > **C407 (Vitor, 2026-11-15: "Isso e tao facil de fazer!  Achas que vale a
 > pena adiar?!", on the EoS/G^E mixing rules and volume translation).**  A

@@ -10,7 +10,7 @@ diag    water_soave_Tb         H_ig             -239280.990399     1e-4
 diag    water_soave_Tb         H_real           -239353.151864     1e-4
 diag    water_soave_Tb         P                101325             1e-4
 diag    water_soave_Tb         P_bubble         92363.3324518      1e-4
-diag    water_soave_Tb         Psat_water       103828.92914       1e-4
+diag    water_soave_Tb         Psat_water       101325.01517       1e-4
 diag    water_soave_Tb         S_R              -0.123242446572    1e-4
 diag    water_soave_Tb         S_ig             196.336501981      1e-4
 diag    water_soave_Tb         S_real           196.213259534      1e-4
@@ -24,21 +24,21 @@ diag    water_mathiasCopeman_window n_emptyCurves    0                  1e-4
 diag    water_mathiasCopeman_window n_failures       0                  1e-4
 diag    water_mathiasCopeman_window n_points         9                  1e-4
 diag    water_mathiasCopeman_Tb Cp_ig            34.2435751855      1e-4
-diag    water_mathiasCopeman_Tb H_R              -69.9983300923     1e-4
+diag    water_mathiasCopeman_Tb H_R              -69.4681126519     1e-4
 diag    water_mathiasCopeman_Tb H_ig             -239280.990399     1e-4
 diag    water_mathiasCopeman_Tb H_real           -239350.988729     1e-4
 diag    water_mathiasCopeman_Tb P                101325             1e-4
-diag    water_mathiasCopeman_Tb P_bubble        101325           3e-2     anchor
-diag    water_mathiasCopeman_Tb Psat_water       103828.92914       1e-4
-diag    water_mathiasCopeman_Tb S_R              -0.118530033542    1e-4
+diag    water_mathiasCopeman_Tb P_bubble        101325           5e-3     anchor
+diag    water_mathiasCopeman_Tb Psat_water       101325.01517       1e-4
+diag    water_mathiasCopeman_Tb S_R              -0.116907119682    1e-4
 diag    water_mathiasCopeman_Tb S_ig             196.336501981      1e-4
 diag    water_mathiasCopeman_Tb S_real           196.217971948      1e-4
 diag    water_mathiasCopeman_Tb T                373.1243           1e-4
 diag    water_mathiasCopeman_Tb Z                0.991661146903     1e-4
-diag    water_mathiasCopeman_Tb Z_liquid         0.000831041513812  1e-4
+diag    water_mathiasCopeman_Tb Z_liquid         0.000830530140243  1e-4
 diag    water_mathiasCopeman_Tb gamma            1.32066128744      1e-4
 diag    water_mathiasCopeman_Tb v_molar          0.0303622816323    1e-4
-diag    water_mathiasCopeman_Tb v_molar_liq      2.54444943914e-05  1e-4
+diag    water_mathiasCopeman_Tb v_molar_liq      2.54288373614e-05  1e-4
 diag    methanol_soave_window  n_emptyCurves    0                  1e-4
 diag    methanol_soave_window  n_failures       0                  1e-4
 diag    methanol_soave_window  n_points         11                 1e-4
@@ -66,7 +66,7 @@ diag    methanol_mathiasCopeman_Tb H_R              -145.587732426     1e-4
 diag    methanol_mathiasCopeman_Tb H_ig             -199137.487713     1e-4
 diag    methanol_mathiasCopeman_Tb H_real           -199283.075445     1e-4
 diag    methanol_mathiasCopeman_Tb P                101325             1e-4
-diag    methanol_mathiasCopeman_Tb P_bubble        101325           1e-2     anchor
+diag    methanol_mathiasCopeman_Tb P_bubble        101325           8e-3     anchor
 diag    methanol_mathiasCopeman_Tb Psat_methanol    101927.740859      1e-4
 diag    methanol_mathiasCopeman_Tb S_R              -0.285002339853    1e-4
 diag    methanol_mathiasCopeman_Tb S_ig             245.442145478      1e-4

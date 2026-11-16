@@ -192,6 +192,11 @@ public:
     const std::string& modelName() const override { return name_; }
     std::string alphaFunctionNote() const override;
 
+    // c(y) = sum y_i c_i [m3/mol]; 0 when translation is off.
+    scalar volumeShift(const sVector& y) const;
+    bool   volumeTranslated() const { return !cShift_.empty(); }
+    std::string volumeTranslationNote() const override;
+
     // Cubic EoS: needs the critical constants + acentric factor per component.
     std::vector<std::string> requiredComponentProperties() const override
     {
@@ -205,6 +210,7 @@ protected:
              const std::vector<Component>& comps,
              const std::vector<scalar>& slope,
              const std::vector<std::vector<scalar>>& kij,
+             const std::vector<scalar>& volumeShift = {},
              const AlphaChoice& alpha = AlphaChoice());
 
     // `alphaFunction <Soave|PR78|MathiasCopeman>;` read from the EoS dict.
@@ -213,6 +219,20 @@ protected:
     static AlphaChoice readAlpha(const std::string& model,
                                  const DictPtr& eosDict,
                                  const std::vector<Component>& comps);
+
+    // PENELOUX VOLUME TRANSLATION (Peneloux, Rauzy & Freze 1982, Fluid Phase
+    // Equilib. 8, 7-23; DEV.md 4c C408 (a)).  Reads the optional
+    //     volumeTranslation { model Peneloux; components { <name> { ZRA v; |
+    //     cShift v; source "..."; } } missingZRA YamadaGunn; }
+    // block of the EoS dict and returns the per-component shifts c_i
+    // [m3/mol], or an EMPTY vector when the block is absent (translation OFF,
+    // the default: no existing case moves).  Missing data is a named refusal.
+    // `pengRobinson` selects the Jhaveri & Youngren 1988 shift c = s b (Eq. 17)
+    // in place of the Z_RA route of Eq. 8 (a Z_RA is refused for PR).
+    static std::vector<scalar>
+    readVolumeTranslation(const std::string& model, const DictPtr& eosDict,
+                          const std::vector<Component>& comps,
+                          bool pengRobinson);
 
     // The `binaryInteractions ( { i; j; kij; } ... )` list read into an n×n
     // matrix, with the announcements both cubics share.  `model` names the
@@ -254,6 +274,8 @@ private:
     std::size_t                      n_;
     std::vector<PureParams>          pure_;
     std::vector<std::vector<scalar>> kij_;     // [n × n], 0 default
+    std::vector<scalar>              cShift_;  // c_i [m3/mol]; empty = off
+    std::vector<std::string>         cNames_;  // component names (for the note)
 };
 
 } // namespace Choupo

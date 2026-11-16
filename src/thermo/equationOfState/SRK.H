@@ -115,6 +115,7 @@ class SRK : public CubicEoS
 public:
     SRK(const std::vector<Component>& comps,
         const std::vector<std::vector<scalar>>& kij,
+        const std::vector<scalar>& volumeShift = {},
         const AlphaChoice& alpha = AlphaChoice());
 
     // Convenience: factory from a dict block.  Reads optional

@@ -1,4 +1,4 @@
-// [imported] origin "data/standards/components/nesquehonite.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+// [imported] origin "data/standards/components/nesquehonite.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Mineral: nesquehonite (MgCO3:3H2O) -- unified substance file.
   One canonical record per chemical identity; the solid-phase dissolution
@@ -13,7 +13,13 @@ solidPhases
     nesquehonite
     {
         dissolutionReaction { masters ( { ion HCO3; nu 1; } { ion H; nu -1; } { ion Mg; nu 1; } ); nuWater 3; }
-        equilibrium { logK25 5.162; dH -14899.2; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Nesquehonite"; }
+        //  No dissolution enthalpy in the source.  The dH this entry carried
+        //  until 2026-11-16 (-14899.2 J/mol) was only the enthalpy of the basis
+        //  conversion, which bin/curate/pitzer_minerals_to_choupo.py added to a
+        //  missing value as if it were 0; removed (docs/reviews/2026-11-16-
+        //  speciation-audit, GS-02).  Off 25 C the engine holds log K at its
+        //  25 C value and says so.
+        equilibrium { logK25 5.162; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Nesquehonite"; }
         thermochemistry
         {
             Hf298 -1.97726e+06;   // J/mol   (formation enthalpy of the solid)
