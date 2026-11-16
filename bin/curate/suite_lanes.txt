@@ -219,7 +219,7 @@ PRE  | PAR    | bin/curate/check_unifac_key.py                     | traced: wri
 PRE  | ISO    | bin/curate/check_hansen_teas.py                    | ISO (private slot tree; measured: writes tutorials/props/molecular/solubility01_hildebrand_ladder/solubility.csv)
 PRE  | ISO    | bin/curate/check_hansen_mixture.py                 | ISO (private slot tree; measured: writes hansenMixture.csv (+3 more))
 PRE  | ISO    | bin/curate/check_unifac_gaps.py                    | ISO (private slot tree; measured: writes tutorials/props/compare/compare_vle_etoh_water/consistency.csv (+5 more))
-PRE  | ISO    | bin/curate/check_phase_envelope.py                 | ISO (private slot tree; measured: writes tutorials/props/molecular/envelope01_natural_gas/envelope.csv (+1 more))
+PRE  | SERIAL | bin/curate/check_phase_envelope.py                 | builds the gibbsAuditProbe into build/ through the linked build dir (found by the C167-3 leak check, 2026-11-16); ISO (private slot tree; measured: writes tutorials/props/molecular/envelope01_natural_gas/envelope.csv (+1 more))
 PRE  | PAR    | bin/curate/check_ppr78_route.py                    | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/check_component_name_hint.py            | exit 1 in the traced sweep: its writes are not known in full
 PRE  | PAR    | bin/curate/gate_manifest.py --check                | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
