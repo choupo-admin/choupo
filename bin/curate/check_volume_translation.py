@@ -197,8 +197,82 @@ def main() -> int:
                     if abs(G - (H - T * S)) > 1e-9 * max(1.0, abs(G)):
                         fail.append(f"{tag} state {k} (shift {lab}): G^R = {G:.9e} but H^R - T S^R = "
                                     f"{H - T * S:.9e}")
+                    #  C410: the same identity on the LIQUID root, the departures a
+                    #  liquid stream of a phiPhi package is priced on.
+                    GL = R * T * sum(y[i] * rows[(tag, k, f"lnphiL{i}")][idx] for i in range(2))
+                    HL = rows[(tag, k, "HRL")][idx]
+                    SL = rows[(tag, k, "SRL")][idx]
+                    if abs(GL - (HL - T * SL)) > 1e-9 * max(1.0, abs(GL)):
+                        fail.append(f"{tag} state {k} (shift {lab}), LIQUID root: G^R = {GL:.9e} but "
+                                    f"H^R - T S^R = {HL - T * SL:.9e}")
+                #  C410: the liquid-root enthalpy moves by -P c with the shift, the
+                #  entropy not at all, and it is a DIFFERENT value from the vapour
+                #  root's at a state with two distinct roots (state 0: liquid hexane
+                #  + decane at 1 atm) -- a liquid H priced on the vapour root is caught.
+                offH, onH = rows[(tag, k, "HRL")]
+                if abs((onH - offH) + P * cc) > 1e-6 * abs(P * cc):
+                    fail.append(f"{tag} state {k}: liquid-root H_R moved by {onH - offH:.9e}, "
+                                f"-P c = {-P * cc:.9e}")
+                offS, onS = rows[(tag, k, "SRL")]
+                if abs(onS - offS) > 1e-12 * max(1.0, abs(offS)):
+                    fail.append(f"{tag} state {k}: liquid-root S_R moved with the shift")
+                if k == 0:
+                    hv = rows[(tag, k, "HR")][0]
+                    if abs(offH - hv) < 1e-3 * abs(hv):
+                        fail.append(f"{tag} state 0: the liquid root's H_R equals the vapour root's "
+                                    f"({offH:.6e}): a liquid enthalpy priced on the wrong root")
     finally:
         shutil.rmtree(probe, ignore_errors=True)
+
+    #  (g) C410: G = H - T S CLOSES ON BOTH ROOTS OF THE SHIPPED phiPhi PACKAGES,
+    #  not only of the probe's translated hexane + decane.  The package of
+    #  flash09 (SRK, N2 + CH4, kij) and of flash10 (PC-SAFT, CH4 + propane),
+    #  built as the binaries build it, is asked for ln phi_i, H^R and S^R at
+    #  the vapour AND the liquid root: G^R/RT = H^R/RT - S^R/R must equal
+    #  sum x_i ln phi_i to 1e-9 on each (1e-7 for PC-SAFT, whose a_res derivative is a finite difference), the identity a liquid stream of a
+    #  phiPhi package is priced on.  A liquid enthalpy read at the vapour
+    #  root breaks it at once, and so does a liquid entropy.
+    try:
+        sys.path.insert(0, str(ROOT / "bin" / "curate"))
+        import gibbs_audit_probe as gap
+        msg = gap.build()
+        if msg:
+            fail.append("(g) " + msg)
+        else:
+            wd = tempfile.mkdtemp(prefix="vt_pkg_")
+            try:
+                for case, states in (
+                        ("tutorials/steady/flash/flash09_n2ch4_stryjek",
+                         [(149.82, 20.6e5, [0.15, 0.85]), (120.0, 5.0e5, [0.5, 0.5]),
+                          (180.0, 40.0e5, [0.3, 0.7])]),
+                        ("tutorials/steady/flash/flash10_ch4propane_pcsaft",
+                         [(250.0, 20.0e5, [0.1, 0.9]), (300.0, 30.0e5, [0.3, 0.7]),
+                          (200.0, 5.0e5, [0.05, 0.95])])):
+                    for T, P, x in states:
+                        xs = " ".join(repr(v) for v in x)
+                        for rt, op in (("V", "GRES"), ("L", "GRESL")):
+                            lnphi = gap.ask(ROOT / case, [f"LNPHI {rt} {T!r} {P!r} {xs}"], wd)[0]
+                            g = gap.ask(ROOT / case, [f"{op} {T!r} {P!r} {xs}"], wd)[0][0]
+                            s = sum(a * b for a, b in zip(x, lnphi))
+                            #  1e-9 for the cubic (closed form); PC-SAFT differentiates a_res
+                            #  numerically (a central difference at 1e-6 T), so 1e-7.
+                            tol = 1e-7 if "pcsaft" in case else 1e-9
+                            if abs(g - s) > tol * max(1.0, abs(s)):
+                                fail.append(f"(g) {case.split('/')[-1]} {rt} root, T {T}, P {P:.3g}: "
+                                            f"H^R/RT - S^R/R = {g:.12g} but sum x ln phi = {s:.12g}")
+                        #  and the ROUTING: the package's liquid stream (vapour fraction 0)
+                        #  is H_ig + H^R at the LIQUID root, the vapour stream H_ig + H^R at
+                        #  the vapour root, entropy likewise -- a liquid enthalpy read at the
+                        #  wrong root, or the old formation-datum liquid, is a nonzero here.
+                        d = gap.ask(ROOT / case, [f"STREAMROOTS {T!r} {P!r} {xs}"], wd)[0]
+                        for lab, v in zip(("liquid H", "liquid S", "vapour H", "vapour S"), d):
+                            if abs(v) > 1e-6:
+                                fail.append(f"(g) {case.split('/')[-1]} T {T}, P {P:.3g}: the stream's "
+                                            f"{lab} is off the EoS departure at its own root by {v:.6g}")
+            finally:
+                shutil.rmtree(wd, ignore_errors=True)
+    except Exception as exc:
+        fail.append(f"(g) the package arm could not run: {exc}")
 
     #  (e) the refusal, on a throwaway copy
     tmp = Path(tempfile.mkdtemp(prefix="vt_gate_"))
@@ -250,7 +324,7 @@ def main() -> int:
         for m in fail:
             print("  - " + m)
         return 1
-    print("check_volume_translation: OK -- ONE translated fluid: ln phi_i moves by -c_i P/RT per component, root and cubic (probe, 4 states, 1e-9) and G^R = H^R - T S^R closes with the shift off and on; equilibrium byte-identical under the shift (5-point "
+    print("check_volume_translation: OK -- ONE translated fluid: ln phi_i moves by -c_i P/RT per component, root and cubic (probe, 4 states, 1e-9) and G^R = H^R - T S^R closes with the shift off and on, on the vapour AND the liquid root (the departures a phiPhi liquid stream is priced on, C410); equilibrium byte-identical under the shift (5-point "
           "bubble scan); v_liq and v_vap drop by sum x_i c_i (Eq. 6, Eq. 8) on 3 states "
           "to 1e-9; H_R moves by -P c, S_R by 0; PR + Jhaveri-Youngren c = s b (Eq. 17-18) on 3 states likewise; a component without Z_RA, and a Table-2 family on hexane, are refused by name.")
     return 0
