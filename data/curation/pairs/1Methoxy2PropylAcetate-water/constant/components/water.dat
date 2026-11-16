@@ -1,3 +1,4 @@
+// [imported] origin "data/standards/components/water.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Water  (H2O, CAS 7732-18-5)
   Vapour pressure: the IAPWS saturation equation (IAPWS SR1-86(1992),
@@ -373,6 +374,7 @@ provenance
 groups
 {
     unifac ( { group H2O; count 1; } );
+    unifacDortmund ( { group H2O; count 1; } );   // C408 (c): P water, Table III p. 182-183
 }
 
 uniquac

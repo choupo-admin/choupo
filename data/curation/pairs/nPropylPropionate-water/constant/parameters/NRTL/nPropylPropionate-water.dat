@@ -18,7 +18,7 @@
   reviewStatus interim: a case-local record, regressed and not read back.  Fitted on EVERY laboratory (C283), so the
   `validation {}` block below says, truthfully, that nothing
   was held out; the acceptance is the `curation {}` block.
-  NOT PROMOTABLE: fit grade refused -- max |dT| 5.317 K over the 5 kept
+  NOT PROMOTABLE: fit grade refused -- max |dT| 5.125 K over the 5 kept
   points is above 4 K
 
   REPRODUCE: run data/curation/pairs/nPropylPropionate-water (after `bin/choupo-curate fetch` on it); its fit
@@ -39,9 +39,9 @@ parameters
     i           water;
     j           nPropylPropionate;
     a_ij        0.00000000;
-    b_ij        1639.11209137;
+    b_ij        1638.68819722;
     a_ji        0.00000000;
-    b_ji        156.01068888;
+    b_ji        185.55220793;
     alpha       0.30000000;
 }
 
@@ -54,7 +54,7 @@ provenance
     reviewStatus  interim;
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
-    fitDate       "2026-11-11";
+    fitDate       "2026-11-16";
 
     evidence
     (
@@ -74,11 +74,11 @@ provenance
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          49.32877686;
-    rms_K         2.60781444;
+    chi2          45.43288331;
+    rms_K         2.51154866;
     nDataPoints   5;
     identifiable  true;
-    maxAbsCorr    0.91856200;
+    maxAbsCorr    0.92241224;
 
     validity
     {
@@ -107,8 +107,8 @@ curation
     outliersDropped 3;
     pointsKept      5;
     noBubblePoint   0;
-    maxAbsError     5.3174 K;
-    meanAbsError    1.9592 K;
+    maxAbsError     5.1246 K;
+    meanAbsError    1.8221 K;
     acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
     gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
     grade           refused;

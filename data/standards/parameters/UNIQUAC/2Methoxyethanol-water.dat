@@ -19,7 +19,7 @@
   reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by
   its fitting pipeline (the NRTL case's own evidence and kept points, the
   max |T_model - T| over the kept points, graded 1 / 2 / 4 K -- DEV.md 4c C285, C294;
-  THIS fit: severe in-sample, 2.4807 K; one liquid across its
+  THIS fit: warning in-sample, 1.2538 K; one liquid across its
   validity span), and NO HUMAN HAS REVIEWED IT.  The engine says so on every
   run that reads it, and voices a warning or a severe grade beside it.
   Nothing was held out: the `validation {}` block says so, and the
@@ -44,10 +44,10 @@ parameters
 {
     i           water;
     j           2Methoxyethanol;
-    a_ij        -349.36459253;
+    a_ij        -195.25878676;
     b_ij        0.00000000;
     c_ij        0.00000000;
-    a_ji        753.73815448;
+    a_ji        311.58411767;
     b_ji        0.00000000;
     c_ji        0.00000000;
 }
@@ -60,15 +60,14 @@ provenance
     fittedInCase  "data/curation/pairs/2Methoxyethanol-water";
     reviewStatus  autoPromoted;
     review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
-    fitGrade      severe;   // DEV.md 4c C285 (C294): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
+    fitGrade      warning;   // DEV.md 4c C285 (C294): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
-    fitGradeMaxTemperatureError_K 2.4807;
-    fitGradeIdealMaxTemperatureError_K 5.3727;   // DEV.md 4c C334: the ideal mixture (gamma = 1) on the SAME kept points; a severe fit is promoted only if 2.4807 K < 5.3727 K
+    fitGradeMaxTemperatureError_K 1.2538;
     promotedBy    "bin/choupo-curate pairs --models --promote";
-    promotedDate  "2026-11-12";
+    promotedDate  "2026-11-16";
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
-    fitDate       "2026-11-11";
+    fitDate       "2026-11-16";
 
     evidence
     (
@@ -98,11 +97,11 @@ provenance
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          493.85211854;
-    rms_K         0.92771750;
+    chi2          108.69111508;
+    rms_K         0.42216590;
     nDataPoints   31;
     identifiable  true;
-    maxAbsCorr    0.96587100;
+    maxAbsCorr    0.99686355;
 
     validity
     {
@@ -133,11 +132,11 @@ curation
     outliersDropped 0;
     pointsKept      31;
     noBubblePoint   0;
-    maxAbsError     2.4807 K;
-    meanAbsError    0.7090 K;
+    maxAbsError     1.2538 K;
+    meanAbsError    0.3382 K;
     acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
     gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
-    grade           severe;
+    grade           warning;
     oneLiquid       true;   // arm (f) on this model's own equation over the validity span
     temperatures    31;   // distinct stated temperatures in the kept evidence
     laboratories    2;   // distinct articles in the kept evidence

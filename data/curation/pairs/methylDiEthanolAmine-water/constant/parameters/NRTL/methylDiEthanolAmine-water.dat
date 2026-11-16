@@ -20,7 +20,7 @@
   its fitting pipeline (every laboratory fitted, outliers beyond 3 K
   discarded by name, max |T_model - T| over the kept points GRADED
   clean / warning / severe at 1 / 2 / 4 K -- DEV.md 4c C283
-  amended, C285, C286; THIS fit: severe in-sample, 2.6042 K; one liquid
+  amended, C285, C286; THIS fit: severe in-sample, 2.3942 K; one liquid
   across its validity span), and NO HUMAN HAS REVIEWED IT.  The
   engine says so on every run that reads it, and voices a warning
   or a severe grade beside it.
@@ -48,9 +48,9 @@ parameters
     i           methylDiEthanolAmine;
     j           water;
     a_ij        0.00000000;
-    b_ij        338.24719384;
+    b_ij        280.45062698;
     a_ji        0.00000000;
-    b_ji        -363.33042228;
+    b_ji        -313.47089306;
     alpha       0.30000000;
 }
 
@@ -64,13 +64,13 @@ provenance
     review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
     fitGrade      severe;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
-    fitGradeMaxTemperatureError_K 2.6042;
-    fitGradeIdealMaxTemperatureError_K 8.8525;   // DEV.md 4c C334: the ideal mixture (gamma = 1) on the SAME kept points; a severe fit is promoted only if 2.6042 K < 8.8525 K
+    fitGradeMaxTemperatureError_K 2.3942;
+    fitGradeIdealMaxTemperatureError_K 8.1590;   // DEV.md 4c C334: the ideal mixture (gamma = 1) on the SAME kept points; a severe fit is promoted only if 2.3942 K < 8.1590 K
     promotedBy    "bin/choupo-curate pair --promote";
-    promotedDate  "2026-11-12";
+    promotedDate  "2026-11-16";
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
-    fitDate       "2026-11-11";
+    fitDate       "2026-11-16";
 
     evidence
     (
@@ -98,11 +98,11 @@ provenance
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          109.75250641;
-    rms_K         1.06911889;
+    chi2          217.81830538;
+    rms_K         1.31897215;
     nDataPoints   29;
     identifiable  false;
-    maxAbsCorr    0.99946478;
+    maxAbsCorr    0.99974661;
 
     validity
     {
@@ -131,8 +131,8 @@ curation
     outliersDropped 13;
     pointsKept      29;
     noBubblePoint   0;
-    maxAbsError     2.6042 K;
-    meanAbsError    0.8742 K;
+    maxAbsError     2.3942 K;
+    meanAbsError    1.0695 K;
     acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
     gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
     grade           severe;

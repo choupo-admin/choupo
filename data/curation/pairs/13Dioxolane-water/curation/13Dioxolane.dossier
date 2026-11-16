@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.b_ij  237.151897182;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.b_ji  619.29392328;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.b_ij  238.838305588;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.b_ji  622.903529208;
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.b_ij  237.151897259;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.b_ji  619.29392317;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.b_ij  238.838305541;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.b_ji  622.903529186;
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.A_ij  1870.67285147;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.A_ji  7016.37389375;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.A_ij  1936.84885731;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.A_ji  7036.31510201;
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.A_ij  1870.67285248;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.A_ji  7016.37389337;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.A_ij  1936.84885817;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-water.A_ji  7036.31510077;
     }
 
     evidence

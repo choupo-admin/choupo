@@ -89,11 +89,11 @@
 
   @@MODELS-RESULT-BEGIN@@
   WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
-  not argued). Beside fit_nrtl's max |dT| 5.317 K (refused) on the same
-  kept points. fit_uniquac: a_ij = 119.0, a_ji = 252.3 K over 5 kept
-  points: max |dT| 6.450 K, mean 2.178 K, graded refused -> notAccepted;
-  fit_uniquac_start2 lands on the same pair (119.9, 250.6). NOT
-  PROMOTABLE: fit grade refused -- max |dT| 6.450 K over the 5 kept
+  not argued). Beside fit_nrtl's max |dT| 5.125 K (refused) on the same
+  kept points. fit_uniquac: a_ij = 117.9, a_ji = 265.2 K over 5 kept
+  points: max |dT| 6.429 K, mean 2.069 K, graded refused -> notAccepted;
+  fit_uniquac_start2 lands on A DIFFERENT pair (121.9, 257.2). NOT
+  PROMOTABLE: fit grade refused -- max |dT| 6.429 K over the 5 kept
   points. Wilson: not fitted -- the NRTL fit of this very evidence SPLITS
   the liquid inside its validity span (curation oneLiquid false, arm f);
   Wilson cannot represent two liquids, so a Wilson fit here would hide
@@ -102,11 +102,13 @@
 
   @@RESULT-BEGIN@@
   WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
-  fit_nrtl: b_ij = 1639.1 K, b_ji = 156.0 K over 5 kept points of 1
-  laboratories (3 discarded): max |dT| 5.317 K, mean 1.959 K, graded
-  refused (limits 1 / 2 / 4 K) -> notAccepted. fit_nrtl_start2 lands on
-  the same pair (1639.1, 156.0). NOT PROMOTABLE: fit grade refused -- max
-  |dT| 5.317 K over the 5 kept points is above 4 K
+  fit_nrtl: b_ij = 1638.7 K, b_ji = 185.6 K over 5 kept points (3
+  discarded): max |dT| 5.125 K, mean 1.822 K, graded refused (limits 1 /
+  2 / 4 K) -> notAccepted. fit_nrtl_start2 lands on the same pair
+  (1638.7, 185.6). REFITTED on 2026-11-16 after water's vapour pressure
+  moved to the IAPWS equation (the earlier fit had absorbed the Antoine
+  curve's error); NOT PROMOTABLE: fit grade refused -- max |dT| 5.125 K
+  over the 5 kept points is above 4 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

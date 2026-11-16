@@ -87,29 +87,36 @@
 
   @@MODELS-RESULT-BEGIN@@
   WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
-  not argued). Beside fit_nrtl's max |dT| 2.310 K (severe) on the same
-  kept points. fit_uniquac: a_ij = -183.0, a_ji = 419.1 K over 55 kept
-  points: max |dT| 2.121 K, mean 0.447 K, graded severe -> accepted;
-  fit_uniquac_start2 lands on the same pair (-183.0, 419.1). PROMOTED on
-  2026-11-12 into
+  not argued). Beside fit_nrtl's max |dT| 2.363 K (severe) on the same
+  kept points. fit_uniquac: a_ij = -161.8, a_ji = 384.4 K over 55 kept
+  points: max |dT| 2.196 K, mean 0.472 K, graded severe -> accepted;
+  fit_uniquac_start2 lands on the same pair (-161.8, 384.4). PROMOTED on
+  2026-11-16 into
   data/standards/parameters/UNIQUAC/1Methoxy2Propanol-water.dat as
   reviewStatus autoPromoted, review by none, because: fit grade severe --
-  max |dT| 2.121 K over the 55 kept points, one liquid across the
-  validity span; BEATS THE IDEAL MIXTURE (C334): 2.1208 K against ideal
-  9.7879 K.
+  max |dT| 2.196 K over the 55 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = 5195.4, A_ji = -72.6 J/mol over 55
+  kept points: max |dT| 2.442 K, mean 0.792 K, graded severe -> accepted;
+  fit_wilson_start2 lands on the same pair (5195.4, -72.6). PROMOTED on
+  2026-11-16 into
+  data/standards/parameters/Wilson/1Methoxy2Propanol-water.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.442 K over the 55 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
   WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
-  fit_nrtl: b_ij = 681.9 K, b_ji = -108.9 K over 55 kept points of 2
-  laboratories (0 discarded): max |dT| 2.310 K, mean 0.513 K, graded
-  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (681.9, -108.9). PROMOTED on 2026-11-12 into
+  fit_nrtl: b_ij = 729.5 K, b_ji = -120.4 K over 55 kept points (0
+  discarded): max |dT| 2.363 K, mean 0.633 K, graded severe (limits 1 / 2
+  / 4 K) -> accepted. fit_nrtl_start2 lands on the same pair (729.5,
+  -120.4). REFITTED on 2026-11-16 after water's vapour pressure moved to
+  the IAPWS equation (the earlier fit had absorbed the Antoine curve's
+  error); PROMOTED on 2026-11-16 into
   data/standards/parameters/NRTL/1Methoxy2Propanol-water.dat as
   reviewStatus autoPromoted, review by none, because: fit grade severe --
-  max |dT| 2.310 K over the 55 kept points, one liquid across the
-  validity span; BEATS THE IDEAL MIXTURE (C334): 2.3098 K against ideal
-  9.7879 K
+  max |dT| 2.363 K over the 55 kept points (limits 1 / 2 / 4 K), one
+  liquid across the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -500,18 +507,6 @@ operations
     // @@C294-OPS-END@@
     // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
     {
-        name        txy_wilson;
-        type        propertyScan1D;
-        vary        { variable x[water];  from 0.0;  to 1.0;  n 101; }
-        state       { P 93.3 kPa;  composition { water 0.5;  1Methoxy2Propanol 0.5; } }
-        thermo
-        {
-            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
-        }
-        properties  ( T_bubble  y_eq_water );
-        output      { file txy_wilson.csv; }
-    }
-    {
         name        txy_uniquac;
         type        propertyScan1D;
         vary        { variable x[water];  from 0.0;  to 1.0;  n 101; }
@@ -522,6 +517,18 @@ operations
         }
         properties  ( T_bubble  y_eq_water );
         output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[water];  from 0.0;  to 1.0;  n 101; }
+        state       { P 93.3 kPa;  composition { water 0.5;  1Methoxy2Propanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_water );
+        output      { file txy_wilson.csv; }
     }
     // @@C294-READBACK-END@@
 );

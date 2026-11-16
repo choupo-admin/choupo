@@ -27,6 +27,7 @@
   articles; the fit has not been reviewed by a curator.  Promotion to
   `reviewed` is Vitor's.
 
+  REFITTED 2026-11-16 after water's catalogue vapour pressure moved from an Antoine fit to the IAPWS equation (the earlier fit had absorbed that curve's error); the case, its numbers and the held-out verdict are the new run's.
   REPRODUCE: run tutorials/props/curation/curate06_nrtl_isopropanol_water -- its fit writes
   isopropanol-water.proposal.dat; its parameters, evidence, validity and validation
   must equal this record's (bin/curate/check_regressed_pairs.py holds the
@@ -46,9 +47,9 @@ parameters
     i           isopropanol;
     j           water;
     a_ij        0.00000000;
-    b_ij        -69.64687747;
+    b_ij        -63.66281388;
     a_ji        0.00000000;
-    b_ji        968.22281035;
+    b_ji        970.20246321;
     alpha       0.30000000;
 }
 
@@ -61,7 +62,7 @@ provenance
     reviewStatus  interim;
     reviewReason  "regressed by Choupo from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression, redistributed with the catalogue; the measured points belong to the cited articles and are not reproduced in this record";
-    fitDate       "2026-09-28";
+    fitDate       "2026-11-16";
 
     evidence
     (
@@ -91,11 +92,11 @@ provenance
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          90.12578832;
-    rms_K         0.51694526;
+    chi2          105.03001172;
+    rms_K         0.62595237;
     nDataPoints   29;
     identifiable  true;
-    maxAbsCorr    0.89819127;
+    maxAbsCorr    0.89586711;
 
     validity
     {
@@ -112,8 +113,8 @@ validation
     heldOut
     {
         points      16;
-        aad_pct     0.234201;
-        aad_K       0.841478;
+        aad_pct     0.231345;
+        aad_K       0.830837;
         domain_x1   ( 0.017200 0.909500 );
     }
 

@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-16";
     importerVersion    "3";
     records
     {
@@ -37,28 +37,37 @@ propertyManifest
         "components/water.dat"
         {
             type          imported;
-            sha256        "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
-            computationalSha256 "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
+            sha256        "6594e14a01809d098ebc56e04b5c8165659d00d99f037293bea95258aea02429";
+            computationalSha256 "693c5c80e12b77698b4949032ccbb84017d8e42ef6ce3bc0ae192806e7dbe998";
             origin        "data/standards/components/water.dat";
-            originSha256  "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
+            originSha256  "63aacb038ef2d8da6bfc9166916318c23bd96b6af6fe3ce14ac5d57b7fd95bb0";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/IAPWS95.dat"
+        {
+            type          imported;
+            sha256        "0bc0d23a31da5d1451c0fdfda180cf7b1bf82d81e8c940e727d5c46d6fd3f1cb";
+            computationalSha256 "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+            origin        "data/standards/parameters/Helmholtz/IAPWS95.dat";
+            originSha256  "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Amino2Methyl1Propanol-water.dat"
         {
             type          imported;
-            sha256        "60d2f79ed824b075af183bb0cfb184d77c44b94a55c85bdb420aedc79384ef94";
-            computationalSha256 "8f8cfc708aec68db695097ebfa55c33ebff4356cd7d223e39ba21e2e5f637c91";
+            sha256        "8e3ba6a2ee7bd0fa0521cfddbfa4c2e117836d31f56a3c009b6be288aafb0567";
+            computationalSha256 "8d779458e43431fa19de86d4d81beec8419f950a970c72aa18891eecdbf4016c";
             origin        "data/standards/parameters/NRTL/2Amino2Methyl1Propanol-water.dat";
-            originSha256  "a22c074a3d1c4d867e1854951dbc7a7130130922586f0e06c6d38b0ad032b420";
+            originSha256  "53360d73ad12770308ea796f13d077efa68e8429d984659bf67f5400dc396f3f";
             release       Choupo-2608;
         }
         "parameters/Wilson/2Amino2Methyl1Propanol-water.dat"
         {
             type          imported;
-            sha256        "ed3ccfdc334ca5866648f7c1a482727950731d8c4ada2df28881083a69eb065f";
-            computationalSha256 "8e23489298c84bfa7f5e52e18ab7a3cf5d1e55c4ca572f6dfa9e8ca61a827c41";
+            sha256        "d7b89307725a725ef3204f1407e32b2f236f740b8dd214459b9d9695e874f7fd";
+            computationalSha256 "158f0e824cad5c16471e2029540eada0cbfb2d1281304e4facc309014c5f0d3c";
             origin        "data/standards/parameters/Wilson/2Amino2Methyl1Propanol-water.dat";
-            originSha256  "521ee49295173e4da69469709d1dc1a4bdfdb2f0b3ae8631eaacbedb433b9853";
+            originSha256  "ae5a21dd194c3863ff71040f20b208920d13b3d36253c76dc404f7cf8103a952";
             release       Choupo-2608;
         }
     }

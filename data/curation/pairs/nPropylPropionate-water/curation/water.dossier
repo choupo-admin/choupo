@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.b_ij  1639.11209137;
-        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.b_ji  156.010688881;
+        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.b_ij  1638.68819722;
+        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.b_ji  185.552207928;
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.b_ij  1639.11209077;
-        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.b_ji  156.010689587;
+        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.b_ij  1638.68818961;
+        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.b_ji  185.552217295;
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.a_ij  119.003774914;
-        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.a_ji  252.304914561;
+        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.a_ij  117.851488343;
+        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.a_ji  265.167788071;
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.a_ij  119.903733873;
-        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.a_ji  250.568768331;
+        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.a_ij  121.881209004;
+        equilibrium.liquid.activityModel.binaryParameters.water-nPropylPropionate.a_ji  257.191306581;
     }
 
     evidence

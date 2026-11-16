@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ij  -7.65623581529;
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ji  -321.269655101;
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ij  -88.7292641957;
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ji  -209.356401174;
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ij  -7.65623651798;
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ji  -321.269654615;
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ij  1327.15473652;
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ji  -824.693877898;
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ij  -834.230661962;
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ji  18334.542537;
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ij  -585.527713217;
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ji  22663.3019139;
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ij  2374.66324117;
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ji  -5032.21311158;
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ij  3048.32029006;
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ji  -5468.66141626;
     }
 
     evidence

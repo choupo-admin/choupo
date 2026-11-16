@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-12";
+    importedAt         "2026-11-16";
     importerVersion    "3";
     records
     {
@@ -37,19 +37,28 @@ propertyManifest
         "components/water.dat"
         {
             type          imported;
-            sha256        "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
-            computationalSha256 "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
+            sha256        "6594e14a01809d098ebc56e04b5c8165659d00d99f037293bea95258aea02429";
+            computationalSha256 "693c5c80e12b77698b4949032ccbb84017d8e42ef6ce3bc0ae192806e7dbe998";
             origin        "data/standards/components/water.dat";
-            originSha256  "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
+            originSha256  "63aacb038ef2d8da6bfc9166916318c23bd96b6af6fe3ce14ac5d57b7fd95bb0";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/IAPWS95.dat"
+        {
+            type          imported;
+            sha256        "0bc0d23a31da5d1451c0fdfda180cf7b1bf82d81e8c940e727d5c46d6fd3f1cb";
+            computationalSha256 "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+            origin        "data/standards/parameters/Helmholtz/IAPWS95.dat";
+            originSha256  "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
             release       Choupo-2608;
         }
         "parameters/NRTL/1Methoxy2Propanol-water.dat"
         {
             type          imported;
-            sha256        "af218796c812e7659c12a67d4d05a719dede9bb722c4f30cbe13cac6663726af";
-            computationalSha256 "66759947bdbe774801b022d7a225b0ab319c53e86e02f3790af90898de67acf1";
+            sha256        "3105189bdd4565f2927acec5a80e3a6416d35a87022a5776824f98715182f260";
+            computationalSha256 "1267f203b4b83149901e6bb1d9a018d7c97686bcf9207490e98eb151ff8d47b8";
             origin        "data/standards/parameters/NRTL/1Methoxy2Propanol-water.dat";
-            originSha256  "1ae2d7a30c6640057f0786cd24fe8928eca27066b2cd38aeafc2e2b38f9cf69d";
+            originSha256  "e1a4110a1ecfe61d89ec51e0859f002b55c9227f6ad438d0875eb7e93512409e";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"
@@ -73,19 +82,19 @@ propertyManifest
         "parameters/UNIQUAC/1Methoxy2Propanol-water.dat"
         {
             type          imported;
-            sha256        "21f39ec955bf62150ae05199e6985b64a5d5a20fe82fdadccf414471e8b0a0aa";
-            computationalSha256 "0324e5ec82014e185c845397c967dcab40fff7e498e14c2a2d4763d81e33f5e7";
+            sha256        "3917239233b89140c14c79da0012458d8dd28c7a97fba6f62a732092ff296f90";
+            computationalSha256 "5c0e45b3af57c223fbc9e39e537efa8cea73231cd3391663f9ad782231a39510";
             origin        "data/standards/parameters/UNIQUAC/1Methoxy2Propanol-water.dat";
-            originSha256  "64a06a86db6e1af94d1ae4280111253b0e795b12397cd4a9ec1d3f04889014f9";
+            originSha256  "563d527b0a3c0afe2641dd35b301860161cc46b3401f81ae7c9bebf51fd67bed";
             release       Choupo-2608;
         }
         "parameters/Wilson/1Methoxy2Propanol-water.dat"
         {
             type          imported;
-            sha256        "4c787c82d1e6e7e076bebec48f70ea9919f1797658ae4a47ad076d0d4f92cd7d";
-            computationalSha256 "d5b4c7fc21d9ff71f36e0c5adb388ed21597350c11eab936e1e327ba114287fc";
+            sha256        "f0b8c1382d7f9e3cadbe5c11605cd0498e9567412b663a6ce5ef477cca15f6a2";
+            computationalSha256 "56ea88fab7f9d8cb773954cb2450d097eb97d321ef8add602de48275cac7be55";
             origin        "data/standards/parameters/Wilson/1Methoxy2Propanol-water.dat";
-            originSha256  "5e3520b87966244e3cdc419360158d6f431b44994c6af3a6618472656901d7cf";
+            originSha256  "4759727d41ce4e742782e95a560ecc419dacff64f65ba5c7cc7e0080d5c86e25";
             release       Choupo-2608;
         }
     }

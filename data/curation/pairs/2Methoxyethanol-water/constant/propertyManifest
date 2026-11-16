@@ -21,35 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-12";
+    importedAt         "2026-11-16";
     importerVersion    "3";
     records
     {
         "components/2Methoxyethanol.dat"
         {
             type          imported;
-            sha256        "45ed71ba96d41aae2e54fadea97c736727e1d8a5eb945dddb261b86a47acf3e8";
-            computationalSha256 "627a45ea86d8b1b13284c00f93100d356dbfb646d40b8102bcaf4efc83e51015";
+            sha256        "d10e99cb4915ea7a675132993ef6868629615025950adfa025d26afdb0c825a5";
+            computationalSha256 "5922efaef5e1a1322d3de8f1fe99fb059ec755e50df76b69ee56686b705ddbd0";
             origin        "data/standards/components/2Methoxyethanol.dat";
-            originSha256  "3cb143ff0f17c455dedd66e2193480b3db5682765d7f6895073788c4bd0a3bae";
+            originSha256  "30391f69bc813b31986d809e2d8f8513f32d2bfa91768a3ef0dd281d6433de6d";
             release       Choupo-2608;
         }
         "components/water.dat"
         {
             type          imported;
-            sha256        "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
-            computationalSha256 "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
+            sha256        "6594e14a01809d098ebc56e04b5c8165659d00d99f037293bea95258aea02429";
+            computationalSha256 "693c5c80e12b77698b4949032ccbb84017d8e42ef6ce3bc0ae192806e7dbe998";
             origin        "data/standards/components/water.dat";
-            originSha256  "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
+            originSha256  "63aacb038ef2d8da6bfc9166916318c23bd96b6af6fe3ce14ac5d57b7fd95bb0";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/IAPWS95.dat"
+        {
+            type          imported;
+            sha256        "0bc0d23a31da5d1451c0fdfda180cf7b1bf82d81e8c940e727d5c46d6fd3f1cb";
+            computationalSha256 "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+            origin        "data/standards/parameters/Helmholtz/IAPWS95.dat";
+            originSha256  "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
             release       Choupo-2608;
         }
         "parameters/NRTL/2Methoxyethanol-water.dat"
         {
             type          imported;
-            sha256        "e2cc9aba5c11fa69b5b3a9d9f3b7ccef2c1e0a4d0f59fb79744f79ce1e4dba1b";
-            computationalSha256 "4e70f1892c131fc86a064b26ee831769e27da20c0331558faef3da13f1e96f6c";
+            sha256        "6fe5ed1511caf7e47ec09f4470e878ac6ded25c31c05a1a9595d8c1c83df263b";
+            computationalSha256 "72900bb372d7413557f960f0cac5d2a8325578c9c8caedf03ba6b46520088677";
             origin        "data/standards/parameters/NRTL/2Methoxyethanol-water.dat";
-            originSha256  "10e736b47707f43782988f10856e536356de0be6f94df929e7c798a638538fb0";
+            originSha256  "e4a9507da0221372a46b4a7208ce9cbad26b1e1be003e18904a2c670c97cd242";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"
@@ -73,19 +82,19 @@ propertyManifest
         "parameters/UNIQUAC/2Methoxyethanol-water.dat"
         {
             type          imported;
-            sha256        "7ff51798c343f527821d2c390f26753a5012662238e9b2f1d9bf8ae3b19f943b";
-            computationalSha256 "d4306498c9b9ccf16952fee94f386e0f51b0da4acfcbb48ee1f69a7b119dee4d";
+            sha256        "a14be3d33fa916ddd9143d9136ac21023f5eda5885e4266bde8963b8be97493c";
+            computationalSha256 "2b41123c963570adcf64c4fa0fabcee510a194d20c38c1dfd176243ef57dda21";
             origin        "data/standards/parameters/UNIQUAC/2Methoxyethanol-water.dat";
-            originSha256  "e174466631c878c8a35d2cbc259c6228873ac8370d5d03962d4028bb1d12398a";
+            originSha256  "3ec2ad2bc00725ef6c351169bdb8746729fa19471b50d9aed485afec9e2aee05";
             release       Choupo-2608;
         }
         "parameters/Wilson/2Methoxyethanol-water.dat"
         {
             type          imported;
-            sha256        "9bdca2bad1623477c74bf9324d37457376f1585fcaec9fd1f1f1948434c95d69";
-            computationalSha256 "9a6149d632b6ff5ddd25df0639bb21b894466c2e899728ec610c0f9bbb4258b8";
+            sha256        "3d25b262b3087e20e99d9de90198a8a802699f08a2a3d0be52efb4a110a1603f";
+            computationalSha256 "bb5dae8d0a4e845547fc30be4b75dd63ea95257e46270f860e41552090a162a3";
             origin        "data/standards/parameters/Wilson/2Methoxyethanol-water.dat";
-            originSha256  "924701758915e6cc6a21fd13bce6b16fc0d90e9fa1fd9e22842eb641eb4800f5";
+            originSha256  "a21fa83cde2e1150f30f8415b582d36b81c2e15308e36576e885fa0c892522dc";
             release       Choupo-2608;
         }
     }

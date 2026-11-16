@@ -31,13 +31,13 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ij  -928.551143824;
-        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ji  609.027332256;
+        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ij  -890.948340034;
+        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ji  578.16862022;
     }
 
     evidence
     {
-        partitionFingerprint  "fd80b6078779bf2e";   // frozen before the fit
+        partitionFingerprint  "92b50da88bc7541b";   // frozen before the fit
 
         datasets
         (
@@ -74,7 +74,7 @@ properties
         domain
         {
             coordinate  x1;
-            fit         { min 0.099; max 0.987; n 96; }
+            fit         { min 0.099; max 0.987; n 89; }
         }
     }
 
@@ -95,13 +95,13 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ij  2999.99999401;
-        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ji  -1057.17448129;
+        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ij  3000;
+        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.b_ji  -1016.28923167;
     }
 
     evidence
     {
-        partitionFingerprint  "fd80b6078779bf2e";   // frozen before the fit
+        partitionFingerprint  "92b50da88bc7541b";   // frozen before the fit
 
         datasets
         (
@@ -138,7 +138,7 @@ properties
         domain
         {
             coordinate  x1;
-            fit         { min 0.099; max 0.987; n 96; }
+            fit         { min 0.099; max 0.987; n 89; }
         }
     }
 
@@ -159,13 +159,13 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.A_ij  -211.167810022;
-        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.A_ji  3172.95186551;
+        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.A_ij  -52.70216553;
+        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.A_ji  6793.50700019;
     }
 
     evidence
     {
-        partitionFingerprint  "fd80b6078779bf2e";   // frozen before the fit
+        partitionFingerprint  "92b50da88bc7541b";   // frozen before the fit
 
         datasets
         (
@@ -202,7 +202,7 @@ properties
         domain
         {
             coordinate  x1;
-            fit         { min 0.099; max 0.987; n 96; }
+            fit         { min 0.099; max 0.987; n 89; }
         }
     }
 
@@ -223,13 +223,13 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.A_ij  8642.91700381;
-        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.A_ji  -13005.9212585;
+        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.A_ij  -52.6986347758;
+        equilibrium.liquid.activityModel.binaryParameters.water-triethyleneGlycol.A_ji  6793.35540652;
     }
 
     evidence
     {
-        partitionFingerprint  "fd80b6078779bf2e";   // frozen before the fit
+        partitionFingerprint  "92b50da88bc7541b";   // frozen before the fit
 
         datasets
         (
@@ -266,7 +266,7 @@ properties
         domain
         {
             coordinate  x1;
-            fit         { min 0.099; max 0.987; n 96; }
+            fit         { min 0.099; max 0.987; n 89; }
         }
     }
 
