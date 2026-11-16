@@ -817,7 +817,9 @@ THE EVIDENCE. FIT: doi 10.1016/j.jct.2009.11.020 (54 interior points, several is
 
 THE FIT. NRTL with a\_ij = a\_ji = 0 and alpha = 0.30 fixed: TWO parameters (b\_ij, b\_ji), because bubble temperatures over the ranges below do not identify more (fit\_nrtl\_ab in the methanol + water case asks that question directly). Each point is weighted by 1/U, U its OWN stated expanded uncertainty (`weighting uncertainty;`), so a point measured to 0.1 K is not outvoted by one measured to 1 K. The held-out AAD is plain kelvin, unweighted.
 
-WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). fit\_nrtl: b\_ij = 165.0 K, b\_ji = 41.8 K, in-sample rms 0.50 K over 54 points on six isobars. fit\_nrtl\_start2, from (800, -400), lands on the same pair to 0.01 K -- one minimum, not a start point's choice. HELD OUT (101.32 kPa, another laboratory): AAD 0.53 K (0.150 \%) against a band of 0.33 \% declared before the fit $\to$ `validated`, and the pair is the catalogue record NRTL/methanol-water.dat. fit\_nrtl\_ab frees a\_ij and a\_ji too: the run says `NOT individually identifiable` (a and b trade off, max|corr| 0.996) and its held-out AAD is WORSE (0.64 K). Six isobars over 15-95 kPa do not pay for a second temperature coefficient -- which is why the record carries two. THE OVERLAY SAYS SOMETHING THE VERDICT DOES NOT: on the held-out set UNIFAC (0.36 K) is closer than the fitted pair (0.53 K). The pair was regressed below atmospheric pressure and is validated, not best; `validated` means inside the declared band, never better than every alternative. Ideal mixing misses by 2.8 K. Part of every residual here is not the pair's: the catalogue water Antoine record boils 0.70 K low at 101.32 kPa (measured at this set's own pure endpoint), and no pair can remove that.
+REFITTED 2026-11-16. Water's catalogue vapour pressure moved from an Antoine fit to the IAPWS equation, and this pair was fitted again on the new curve; the b\_ij, b\_ji, rms and held-out AAD below are the new run's. Figures that are not restated (the overlay's UNIFAC and ideal columns, the water record's boiling-point error) are the earlier run's and are SUPERSEDED by the `expected` file, which pins the current ones.
+
+WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). fit\_nrtl: b\_ij = 146.4 K, b\_ji = 61.4 K, in-sample rms 0.50 K over 54 points on six isobars. fit\_nrtl\_start2, from (800, -400), lands on the same pair to 0.01 K -- one minimum, not a start point's choice. HELD OUT (101.32 kPa, another laboratory): AAD 0.57 K (0.160 \%) against a band of 0.33 \% declared before the fit $\to$ `validated`, and the pair is the catalogue record NRTL/methanol-water.dat. fit\_nrtl\_ab frees a\_ij and a\_ji too: the run says `NOT individually identifiable` (a and b trade off, max|corr| 0.996) and its held-out AAD is WORSE (0.64 K). Six isobars over 15-95 kPa do not pay for a second temperature coefficient -- which is why the record carries two. THE OVERLAY SAYS SOMETHING THE VERDICT DOES NOT: on the held-out set UNIFAC (0.36 K) is closer than the fitted pair (0.53 K). The pair was regressed below atmospheric pressure and is validated, not best; `validated` means inside the declared band, never better than every alternative. Ideal mixing misses by 2.8 K. Part of every residual here is not the pair's: the catalogue water Antoine record boils 0.70 K low at 101.32 kPa (measured at this set's own pure endpoint), and no pair can remove that.
 
 WHAT IS NOT CLAIMED. The pair is correct at these pressures and in this frame (ideal-gas vapour, the catalogue's Antoine records); nothing here tests it at high pressure, against LLE, or with another vapour model.
 
@@ -915,7 +917,9 @@ THE EVIDENCE. FIT: doi 10.1016/j.jct.2017.02.005 (29 interior points, 100 kPa). 
 
 THE FIT. NRTL with a\_ij = a\_ji = 0 and alpha = 0.30 fixed: TWO parameters (b\_ij, b\_ji), because bubble temperatures over the ranges below do not identify more (fit\_nrtl\_ab in the methanol + water case asks that question directly). Each point is weighted by 1/U, U its OWN stated expanded uncertainty (`weighting uncertainty;`), so a point measured to 0.1 K is not outvoted by one measured to 1 K. The held-out AAD is plain kelvin, unweighted.
 
-WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). fit\_nrtl: b\_ij = -69.6 K, b\_ji = 968.2 K, in-sample rms 0.52 K; fit\_nrtl\_start2 lands on the same pair. The fit set's stated uncertainty runs from 0.13 to 1.35 K along x, so the 1/U weighting changes which points the pair is held to. HELD OUT (101.058 kPa, another laboratory): AAD 0.83 K (0.232 \%) against a band of 0.63 \% $\to$ `validated`; the pair is the catalogue record NRTL/isopropanol-water.dat. Overlay on the held-out set: NRTL 0.83 K, UNIFAC 1.27 K, ideal 8.2 K. The held-out study's own stated uncertainty is 1.6-1.7 K, and the catalogue water record boils 0.52 K low at its pressure.
+REFITTED 2026-11-16. Water's catalogue vapour pressure moved from an Antoine fit to the IAPWS equation, and this pair was fitted again on the new curve; the b\_ij, b\_ji, rms and held-out AAD below are the new run's. Figures that are not restated (the overlay's UNIFAC and ideal columns, the water record's boiling-point error) are the earlier run's and are SUPERSEDED by the `expected` file, which pins the current ones.
+
+WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). fit\_nrtl: b\_ij = -63.7 K, b\_ji = 970.2 K, in-sample rms 0.63 K; fit\_nrtl\_start2 lands on the same pair. The fit set's stated uncertainty runs from 0.13 to 1.35 K along x, so the 1/U weighting changes which points the pair is held to. HELD OUT (101.058 kPa, another laboratory): AAD 0.83 K (0.231 \%) against a band of 0.63 \% $\to$ `validated`; the pair is the catalogue record NRTL/isopropanol-water.dat. Overlay on the held-out set: NRTL 0.83 K, UNIFAC 1.27 K, ideal 8.2 K. The held-out study's own stated uncertainty is 1.6-1.7 K, and the catalogue water record boils 0.52 K low at its pressure.
 
 WHAT IS NOT CLAIMED. The pair is correct at these pressures and in this frame (ideal-gas vapour, the catalogue's Antoine records); nothing here tests it at high pressure, against LLE, or with another vapour model.
 
@@ -1060,28 +1064,30 @@ THE CHAIN, EACH STEP A COMMAND (DEV.md C16; record docs/design/binary-pairs-from
 
 THE EVIDENCE. FIT: doi 10.1021/je800436u (26 interior points, 100 kPa). HELD OUT: doi 10.1016/j.jct.2017.06.014 (19 interior points, 101.3 kPa). Chosen BEFORE any fit by the slice-2 partition rule: the FIT set is the low-pressure bubble-temperature study with the most interior points; the HELD-OUT set is the next largest that shares NO author with it (the archive carries no affiliations, so a shared author is the dependence the rule can check). Each file names its article, its archive file and block, the sha256 of the archive file, the two compounds' CAS and InChIKey, and the per-point expanded uncertainty; each says `reviewStatus transcribedNotCheckedAgainstArticle` because nobody has read the numbers back against the paper yet, and the run announces it. Pure-component endpoints are set aside (they measure the vapour-pressure record, not the pair) and kept in each file under `selection`.
 
-THE FIT. NRTL with a\_ij = a\_ji = 0 and alpha = 0.30 fixed: TWO parameters (b\_ij, b\_ji), because bubble temperatures over the ranges below do not identify more (fit\_nrtl\_ab in the methanol + water case asks that question directly). Each point is weighted by 1/U, U its OWN stated expanded uncertainty (`weighting uncertainty;`), so a point measured to 0.1 K is not outvoted by one measured to 1 K. The held-out AAD is plain kelvin, unweighted.
+THE FIT. NRTL with a\_ij = a\_ji = 0 and alpha = 0.40 fixed: TWO parameters (b\_ij, b\_ji), because bubble temperatures over the ranges below do not identify more (fit\_nrtl\_ab in the methanol + water case asks that question directly). Each point is weighted by 1/U, U its OWN stated expanded uncertainty (`weighting uncertainty;`), so a point measured to 0.1 K is not outvoted by one measured to 1 K. The held-out AAD is plain kelvin, unweighted.
 
-WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). fit\_nrtl: b\_ij = -25.1 K, b\_ji = 979.8 K, in-sample rms 0.52 K; fit\_nrtl\_start2 lands on the same pair. The in-sample reduced chi2 is 8.9: two parameters cannot follow the fit set within its own stated U (0.09-0.89 K) -- recorded, not hidden by a third parameter. HELD OUT (101.3 kPa, no author in common): AAD 0.21 K (0.057 \%) against a band of 0.26 \% $\to$ `validated`; the pair is the catalogue record NRTL/1Propanol-water.dat. Overlay on the held-out set: NRTL 0.21 K, UNIFAC 0.36 K, ideal 8.9 K. PHASE STABILITY, checked beside the verdict because the verdict cannot see it: one liquid across the validity span (360.5-368.6 K), but BELOW about 355.5 K the pair splits a liquid that is miscible in all proportions. The record says so, and the validity block is the guard.
+REFITTED 2026-11-16. Water's catalogue vapour pressure moved from an Antoine fit to the IAPWS equation, and this pair was fitted again on the new curve; the b\_ij, b\_ji, rms and held-out AAD below are the new run's. Figures that are not restated (the overlay's UNIFAC and ideal columns, the water record's boiling-point error) are the earlier run's and are SUPERSEDED by the `expected` file, which pins the current ones. ALPHA MOVED, 0.30 $\to$ 0.40: on the new curve the fixed alpha = 0.30 pair split a liquid miscible in all proportions up to 363 K, inside its own validity span (360.5-368.6 K), which check\_regressed\_pairs arm (f) refuses. alpha is not identified by bubble temperatures, so it is a declared choice; of 0.30 / 0.35 / 0.40 (split up to 363.2 / 359.7 / 355.5 K) the value 0.40 is the one that clears the span, and it also fits better (chi2 214.9 $\to$ 102.1, held-out AAD 0.20 $\to$ 0.14 K). The earlier record split only below about 355.5 K, and so does this one.
+
+WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). fit\_nrtl: b\_ij = 106.0 K, b\_ji = 918.3 K, in-sample rms 0.45 K; fit\_nrtl\_start2 lands on the same pair. The in-sample reduced chi2 is 8.9: two parameters cannot follow the fit set within its own stated U (0.09-0.89 K) -- recorded, not hidden by a third parameter. HELD OUT (101.3 kPa, no author in common): AAD 0.14 K (0.040 \%) against a band of 0.26 \% $\to$ `validated`; the pair is the catalogue record NRTL/1Propanol-water.dat. Overlay on the held-out set: NRTL 0.21 K, UNIFAC 0.36 K, ideal 8.9 K. PHASE STABILITY, checked beside the verdict because the verdict cannot see it: one liquid across the validity span (360.5-368.6 K), but BELOW about 355.5 K the pair splits a liquid that is miscible in all proportions. The record says so, and the validity block is the guard.
 
 WHAT IS NOT CLAIMED. The pair is correct at these pressures and in this frame (ideal-gas vapour, the catalogue's Antoine records); nothing here tests it at high pressure, against LLE, or with another vapour model.
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{diag}{fit\_nrtl}{aad\_heldout\_K}{0.20382695687}
-\goldrow{diag}{fit\_nrtl}{aad\_heldout\_pct}{0.056142172489}
-\goldrow{diag}{fit\_nrtl}{chi2}{214.93937809}
-\goldrow{diag}{fit\_nrtl}{chi2\_in\_sample}{214.93937809}
-\goldrow{diag}{fit\_nrtl}{chi2\_reduced}{8.95580742041}
-\goldrow{diag}{fit\_nrtl}{cond\_JtJ}{43.303742578}
+\goldrow{diag}{fit\_nrtl}{aad\_heldout\_K}{0.143958221158}
+\goldrow{diag}{fit\_nrtl}{aad\_heldout\_pct}{0.0396924325216}
+\goldrow{diag}{fit\_nrtl}{chi2}{102.104885744}
+\goldrow{diag}{fit\_nrtl}{chi2\_in\_sample}{102.104885744}
+\goldrow{diag}{fit\_nrtl}{chi2\_reduced}{4.25437023934}
+\goldrow{diag}{fit\_nrtl}{cond\_JtJ}{27.3744489076}
 \goldrow{diag}{fit\_nrtl}{converged}{1}
 \goldrow{diag}{fit\_nrtl}{corr\_computed}{1}
 \goldrow{diag}{fit\_nrtl}{dof}{24}
 \goldrow{diag}{fit\_nrtl}{identifiable}{1}
 \goldrow{diag}{fit\_nrtl}{invertible}{1}
-\goldrow{diag}{fit\_nrtl}{iter}{12}
-\goldrow{diag}{fit\_nrtl}{max\_abs\_corr}{0.915578164305}
-\goldrow{diag}{fit\_nrtl}{max\_abs\_resid}{1.71308429363}
+\goldrow{diag}{fit\_nrtl}{iter}{11}
+\goldrow{diag}{fit\_nrtl}{max\_abs\_corr}{0.792493800371}
+\goldrow{diag}{fit\_nrtl}{max\_abs\_resid}{1.34214670208}
 \goldmore{70}
 \end{tutgolden}
 
@@ -1109,7 +1115,9 @@ THE EVIDENCE. FIT: doi 10.1021/je400531a (19 interior points, 101.3 kPa). HELD O
 
 THE FIT. NRTL with a\_ij = a\_ji = 0 and alpha = 0.30 fixed: TWO parameters (b\_ij, b\_ji), because bubble temperatures over the ranges below do not identify more (fit\_nrtl\_ab in the methanol + water case asks that question directly). Each point is weighted by 1/U, U its OWN stated expanded uncertainty (`weighting uncertainty;`), so a point measured to 0.1 K is not outvoted by one measured to 1 K. The held-out AAD is plain kelvin, unweighted.
 
-WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). fit\_nrtl: b\_ij = 218.3 K, b\_ji = 616.3 K, in-sample rms 0.52 K; fit\_nrtl\_start2 lands on the same pair. HELD OUT (101.3 kPa, no author in common): AAD 0.50 K (0.137 \%) against a band of 0.72 \% $\to$ `validated`; the pair is the catalogue record NRTL/acetonitrile-water.dat. The band is wide because the held-out study states U95 = 1.69-1.85 K on every point: a held-out set can only validate to the precision it was measured to. Overlay on the held-out set: NRTL 0.50 K, ideal 10.7 K (no UNIFAC: see WHY THIS SYSTEM). PHASE STABILITY, checked beside the verdict because the verdict cannot see it: one liquid across the validity span (350.0-367.6 K), but BELOW about 323.6 K the pair splits a liquid that is miscible at room temperature. The record says so, and the validity block is the guard.
+REFITTED 2026-11-16. Water's catalogue vapour pressure moved from an Antoine fit to the IAPWS equation, and this pair was fitted again on the new curve; the b\_ij, b\_ji, rms and held-out AAD below are the new run's. Figures that are not restated (the overlay's UNIFAC and ideal columns, the water record's boiling-point error) are the earlier run's and are SUPERSEDED by the `expected` file, which pins the current ones.
+
+WHAT THE RUN FOUND (pinned in `expected`; measured, not argued). fit\_nrtl: b\_ij = 221.0 K, b\_ji = 621.7 K, in-sample rms 0.65 K; fit\_nrtl\_start2 lands on the same pair. HELD OUT (101.3 kPa, no author in common): AAD 0.48 K (0.132 \%) against a band of 0.72 \% $\to$ `validated`; the pair is the catalogue record NRTL/acetonitrile-water.dat. The band is wide because the held-out study states U95 = 1.69-1.85 K on every point: a held-out set can only validate to the precision it was measured to. Overlay on the held-out set: NRTL 0.50 K, ideal 10.7 K (no UNIFAC: see WHY THIS SYSTEM). PHASE STABILITY, checked beside the verdict because the verdict cannot see it: one liquid across the validity span (350.0-367.6 K), but BELOW about 323.6 K the pair splits a liquid that is miscible at room temperature. The record says so, and the validity block is the guard.
 
 WHAT IS NOT CLAIMED. The pair is correct at these pressures and in this frame (ideal-gas vapour, the catalogue's Antoine records); nothing here tests it at high pressure, against LLE, or with another vapour model.
 
@@ -1254,18 +1262,18 @@ WHAT THE RUN SHOWS (pinned in `expected`). Both starts recover b\_ij and b\_ji o
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{diag}{fit\_mixed}{cond\_JtJ}{28.2473359909}
+\goldrow{diag}{fit\_mixed}{cond\_JtJ}{29.3128065499}
 \goldrow{diag}{fit\_mixed}{converged}{1}
 \goldrow{diag}{fit\_mixed}{corr\_computed}{1}
 \goldrow{diag}{fit\_mixed}{dof}{26}
 \goldrow{diag}{fit\_mixed}{identifiable}{1}
 \goldrow{diag}{fit\_mixed}{invertible}{1}
-\goldrow{diag}{fit\_mixed}{iter}{4}
+\goldrow{diag}{fit\_mixed}{iter}{5}
 \goldrow{diag}{fit\_mixed}{lle\_n\_ties}{8}
 \goldrow{diag}{fit\_mixed}{lle\_n\_ties\_heldout}{5}
 \goldrow{diag}{fit\_mixed}{lle\_penalised\_ties}{0}
 \goldrow{diag}{fit\_mixed}{lle\_penalised\_ties\_heldout}{0}
-\goldrow{diag}{fit\_mixed}{max\_abs\_corr}{0.702358438144}
+\goldrow{diag}{fit\_mixed}{max\_abs\_corr}{0.748933040067}
 \goldrow{diag}{fit\_mixed}{n\_data}{28}
 \goldrow{diag}{fit\_mixed}{n\_heldout}{10}
 \goldmore{32}
@@ -1289,7 +1297,9 @@ The synthetic witness curate13 proves that the machinery recovers a pair it was 
 
 WHAT THE ARCHIVE HOLDS FOR THIS PAIR (found by reading the XML, not by the indexer). No file of the archive is a pure binary water + 1-butanol study. Every datum below is a BINARY BLOCK inside a ternary or quaternary study (the authors report the binary edge of their system), so: (a) bin/choupo-thermoml vle-index finds ONE usable isobaric bubble series (doi 10.1021/je700411p, 15 interior points) and the heteroazeotrope temperatures of two more; (b) the liquid-liquid blocks are not reached by `extract-vle`, so the tie-line files were written by a small curator script (kept out of the tree) that reads the same XML, pairs the two liquids of each temperature, and converts mass fractions to mole fractions (M 74.123 and 18.015 g/mol, said in the file). Whether a given binary row was measured by its authors or taken from the literature is not recorded in the archive; the files say `reviewStatus transcribedNotCheckedAgainstArticle` and the run announces it.
 
-THE PROMOTED OPERATION (C280, 2026-11-10; the sections below it are the negative results that led here, kept short). `fit\_binodal` fits the BINODAL and the HETEROAZEOTROPE temperature, not the homogeneous butanol-rich bubble series: least squares (declared: the water-rich tie lines carry a 15 \% scatter between laboratories, measured about a quadratic in T as mean 5.5 \%, max 18.6 \%, and a minimax objective equalises the largest error of both liquids at that scatter), binodal rows relative. FIT bubble: 10.1016/j.jct.2014.07.021 (2 heteroazeotrope points); tie lines: that study and 10.1021/acs.jced.7b00302, je5007218, j.fluid.2007.12.003, acs.jced.6b00941 -- 14 tie lines, 288-366 K. HELD OUT bubble: 10.1016/j.jct.2016.04.013 (2 heteroazeotrope points); 29 tie lines of 21 other studies including 10.1021/je700411p. The homogeneous bubble series of je700411p (15 points, x 0.56-0.99, 366-390 K) is scored by `report\_homogeneous\_bubble`, the SAME fit against that series only, so its miss is its own line and does not enter the heteroazeotrope verdict. (The mixed kind needed bubble evidence in the fit: the two heteroazeotrope points. Whether a fit with none is allowed was not tried.) RESULT (the engine's ERROR REPORT; five parameters b\_ij 1894.0429, b\_ji -163.8364, a\_ij -4.7108, a\_ji 4.0996, alpha 0.4459): VERDICT validated -- held-out tie-line AAD 0.0056 against 0.01, held-out heteroazeotrope bubble 0.376 K = 0.103 \% against 0.23 \%. Relative error mean / max, fit | held out: water-rich 6.9 \% / 17.3 \% | 5.2 \% / 16.6 \%; butanol-rich 1.9 \% / 5.8 \% | 2.2 \% / 11.5 \%. Solubility of butanol in water, model: 0.0194 (288 K), 0.0175 (320 K), 0.0173 (340 K), 0.0183 (366 K) -- the shallow minimum is drawn. fit\_binodal\_start2 lands on the same pair (b\_ij 1894.08). `fit\_twoStage` (the fitter's default objective on this partition): b\_ij 2132.88; rich-liquid relative 5.6 \% mean, 15 \% max, held-out tie-line AAD 0.0143 -- notValidated: minimax follows the water-rich scatter. WHAT THE PAIR IS NOT FOR: `report\_homogeneous\_bubble` scores the homogeneous butanol-rich series held out: mean 2.18 K = 0.59 \% (max 3.2 K) against the 0.23 \% band, NOT loosened -- notValidated, as found. The pair is for the liquid-liquid split and the heteroazeotrope; at 1 atm on the butanol-rich homogeneous side it reads about 2-3 K high. The catalogue record says so. The explicit data of this section replace the "WHAT THE RUN FOUND" blocks below for the promoted record; those describe the earlier partition (je700411p in the fit, loso\_$\ast$ operations since dropped).
+THE PROMOTED OPERATION (C280, 2026-11-10; the sections below it are the negative results that led here, kept short). `fit\_binodal` fits the BINODAL and the HETEROAZEOTROPE temperature, not the homogeneous butanol-rich bubble series: least squares (declared: the water-rich tie lines carry a 15 \% scatter between laboratories, measured about a quadratic in T as mean 5.5 \%, max 18.6 \%, and a minimax objective equalises the largest error of both liquids at that scatter), binodal rows relative. FIT bubble: 10.1016/j.jct.2014.07.021 (2 heteroazeotrope points); tie lines: that study and 10.1021/acs.jced.7b00302, je5007218, j.fluid.2007.12.003, acs.jced.6b00941 -- 14 tie lines, 288-366 K. HELD OUT bubble: 10.1016/j.jct.2016.04.013 (2 heteroazeotrope points); 29 tie lines of 21 other studies including 10.1021/je700411p. The homogeneous bubble series of je700411p (15 points, x 0.56-0.99, 366-390 K) is scored by `report\_homogeneous\_bubble`, the SAME fit against that series only, so its miss is its own line and does not enter the heteroazeotrope verdict. (The mixed kind needed bubble evidence in the fit: the two heteroazeotrope points. Whether a fit with none is allowed was not tried.) REFITTED 2026-11-16. Water's catalogue vapour pressure moved from an Antoine fit to the IAPWS equation; this pair was fitted again on it: b\_ij 1894.04 $\to$ 1708.88, b\_ji -163.84 $\to$ -151.86, a\_ij -4.711 $\to$ -4.112, a\_ji 4.100 $\to$ 4.060, alpha 0.4459 $\to$ 0.4464, held-out bubble AAD 0.376 $\to$ 0.484 K, held-out tie-line AAD 0.0056 $\to$ 0.0075. The RESULT paragraph below states the earlier run; the `expected` file pins the current numbers.
+
+RESULT (the engine's ERROR REPORT; five parameters b\_ij 1894.0429, b\_ji -163.8364, a\_ij -4.7108, a\_ji 4.0996, alpha 0.4459): VERDICT validated -- held-out tie-line AAD 0.0056 against 0.01, held-out heteroazeotrope bubble 0.376 K = 0.103 \% against 0.23 \%. Relative error mean / max, fit | held out: water-rich 6.9 \% / 17.3 \% | 5.2 \% / 16.6 \%; butanol-rich 1.9 \% / 5.8 \% | 2.2 \% / 11.5 \%. Solubility of butanol in water, model: 0.0194 (288 K), 0.0175 (320 K), 0.0173 (340 K), 0.0183 (366 K) -- the shallow minimum is drawn. fit\_binodal\_start2 lands on the same pair (b\_ij 1894.08). `fit\_twoStage` (the fitter's default objective on this partition): b\_ij 2132.88; rich-liquid relative 5.6 \% mean, 15 \% max, held-out tie-line AAD 0.0143 -- notValidated: minimax follows the water-rich scatter. WHAT THE PAIR IS NOT FOR: `report\_homogeneous\_bubble` scores the homogeneous butanol-rich series held out: mean 2.18 K = 0.59 \% (max 3.2 K) against the 0.23 \% band, NOT loosened -- notValidated, as found. The pair is for the liquid-liquid split and the heteroazeotrope; at 1 atm on the butanol-rich homogeneous side it reads about 2-3 K high. The catalogue record says so. The explicit data of this section replace the "WHAT THE RUN FOUND" blocks below for the promoted record; those describe the earlier partition (je700411p in the fit, loso\_$\ast$ operations since dropped).
 
 THE FIRST PARTITION (superseded), DECLARED BEFORE THE FIRST FIT. FIT bubble temperatures: doi 10.1021/je700411p (15 points, 101.3 kPa); tie lines: the five studies that report THREE OR MORE temperatures -- 10.1021/je700411p (5), 10.1021/acs.jced.7b00302 (3), 10.1021/je5007218 (3), 10.1016/j.fluid.2007.12.003 (3), 10.1021/acs.jced.6b00941 (3): 17 tie lines, 288-362 K. HELD OUT bubble temperatures: 10.1016/j.jct.2014.07.021 and 10.1016/j.jct.2016.04.013 (two heteroazeotrope temperatures each, about 365.8 K); tie lines: the eighteen other studies, one or two temperatures each (21 tie lines, 288-366 K). No author name of a held-out study appears in a fit study (the archive carries no affiliations, so a shared author is the dependence the rule can check). BANDS written in `acceptance` below with their origin (maxAAD 0.23 \% of T, maxLLE 0.01 in mole fraction). TRIAGE `loso\_$\ast$` fit the pair with ONE tie-line study moved from fit to held-out in turn, to see whether the verdict is the property of the pair or of one study.
 
@@ -1707,7 +1717,7 @@ DATA SCOPE: sealed (bin/choupo-import); every record named and verified by const
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{diag}{table7\_row1}{I}{1.547}
-\goldrow{diag}{table7\_row1}{P\_atm}{2.51337}
+\goldrow{diag}{table7\_row1}{P\_atm}{2.48995158361}
 \goldrow{diag}{table7\_row1}{aw}{0.946304}
 \goldrow{diag}{table7\_row1}{chargeImposed}{1}
 \goldrow{diag}{table7\_row1}{chargeResidual}{2.5541e-13}
@@ -3574,9 +3584,9 @@ What the twin buys over psychro01: Y\_sat(60 C) = 0.1534 against the \textasciit
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{diag}{airWater}{Lewis\_last}{0.850543}
-\goldrow{diag}{airWater}{Y\_adiabatic\_last}{0.0146521}
-\goldrow{diag}{airWater}{Y\_sat\_first}{0.00377268}
-\goldrow{diag}{airWater}{Y\_sat\_last}{0.15342}
+\goldrow{diag}{airWater}{Y\_adiabatic\_last}{0.014672507579}
+\goldrow{diag}{airWater}{Y\_sat\_first}{0.00377519384732}
+\goldrow{diag}{airWater}{Y\_sat\_last}{0.152481323977}
 \goldrow{diag}{airWater}{nAdiabaticCurves}{3}
 \goldrow{diag}{airWater}{nRhCurves}{4}
 \goldrow{diag}{airWater}{nSaturationPoints}{61}
@@ -4204,17 +4214,17 @@ WHAT TO LOOK AT. 1. cosmo\_score -- the prediction scored against the measuremen
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{diag}{cosmo\_score}{aad}{0.982597286548}
-\goldrow{diag}{cosmo\_score}{chi2}{14.8354761504}
-\goldrow{diag}{cosmo\_score}{max\_abs\_resid}{1.77675451305}
-\goldrow{diag}{cosmo\_score}{max\_resid\_x1}{0.5}
+\goldrow{diag}{cosmo\_score}{aad}{0.960700879438}
+\goldrow{diag}{cosmo\_score}{chi2}{14.1889067834}
+\goldrow{diag}{cosmo\_score}{max\_abs\_resid}{1.83276334564}
+\goldrow{diag}{cosmo\_score}{max\_resid\_x1}{0.05}
 \goldrow{diag}{cosmo\_score}{mode\_evaluate}{1}
 \goldrow{diag}{cosmo\_score}{n\_data}{11}
 \goldrow{diag}{cosmo\_score}{n\_feasible}{11}
 \goldrow{diag}{cosmo\_score}{partial}{0}
 \goldrow{diag}{cosmo\_score}{penalised\_points}{0}
-\goldrow{diag}{cosmo\_score}{rms}{1.16132667671}
-\goldrow{diag}{cosmo\_score}{sse}{14.8354761504}
+\goldrow{diag}{cosmo\_score}{rms}{1.13573791725}
+\goldrow{diag}{cosmo\_score}{sse}{14.1889067834}
 \goldrow{diag}{cosmo\_score}{validity\_declared}{0}
 \goldrow{diag}{txy\_cosmo}{n\_emptyCurves}{0}
 \goldrow{diag}{txy\_cosmo}{n\_failures}{0}
@@ -5895,7 +5905,7 @@ The golden master locks every computed value at reltol 1e-4.
 \goldrow{diag}{psatPreferred\_350K}{H\_ig}{-240070.657473}
 \goldrow{diag}{psatPreferred\_350K}{H\_real}{-240070.657473}
 \goldrow{diag}{psatPreferred\_350K}{P}{100000}
-\goldrow{diag}{psatPreferred\_350K}{Psat\_water}{42168.7918954}
+\goldrow{diag}{psatPreferred\_350K}{Psat\_water}{41683.0678117}
 \goldrow{diag}{psatPreferred\_350K}{S\_R}{0}
 \goldrow{diag}{psatPreferred\_350K}{S\_ig}{194.26122203}
 \goldrow{diag}{psatPreferred\_350K}{S\_real}{194.26122203}

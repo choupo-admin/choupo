@@ -2503,7 +2503,7 @@ the THREE-family sour water: NH3 + CO2 + H2S, and the SELECTIVITY lesson the two
 
 stripper01 shows the mechanism: CO2 strips, pH rises, ammonia frees. Add the third volatile weak electrolyte and the story INVERTS in the most instructive way, measured on this converged profile:
 
-CO2 still strips overhead, hard: its loading falls from 0.195 to 1e-5 (per mol of ammonia species) between tray 2 and the reboiler; H2S does NOT follow -- its loading RISES down the column, 0.18 to 0.51: the H2S/CO2 selectivity of a sour-water stripper at these conditions favours CO2 removal, and the sulfide concentrates in the liquid heading for the bottoms; and the pH FALLS down the column (8.49 $\to$ 7.61), the OPPOSITE of stripper01's climb: the departing ammonia and the accumulating sulfide acidify faster than the departing CO2 alkalinises.
+CO2 still strips overhead, hard: its loading falls from 0.195 to 1e-5 (per mol of ammonia species) between tray 2 and the reboiler; H2S does NOT follow -- its loading RISES down the column, 0.18 to 0.51: the H2S/CO2 selectivity of a sour-water stripper at these conditions favours CO2 removal, and the sulfide concentrates in the liquid heading for the bottoms; and the pH FALLS down the column (8.49 $\to$ 7.64), the OPPOSITE of stripper01's climb: the departing ammonia and the accumulating sulfide acidify faster than the departing CO2 alkalinises.
 
 A student who has read stripper01 should predict a rising pH here and be wrong -- that is the point. The chemistry is the same machinery (three networks at once: ammonia, carbonate, sulfide -- the H2S bridge is `aqueousSpeciation sulfide`, HS- + H+, declared on the component), and the per-tray profile carries all three families' molalities.
 
@@ -5519,11 +5519,11 @@ On the NRTL backbone the feed's bubble pressure is \textasciitilde{}1.1 atm (gam
   \draw[->] ($(flash01.east)+(0,0.17)$) -- ($(flash01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {vapor};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{Reactive flash with TWO liquids: vapour + speciated aqueous + benzene-rich organic at 313.15 K / 0.35 atm -- V/F = 0.324, organic 1.7 \% of the liquid, pH 2.89}
+\tutwhat{Reactive flash with TWO liquids: vapour + speciated aqueous + benzene-rich organic at 313.15 K / 0.353 atm -- V/F = 0.227, organic 10.4 \% of the liquid, pH 2.89}
 \begin{tutnarrative}
 One isothermal flash, four components, THREE phases:
 
-feed (60 H2O + 20 benzene + 8 EtOH + 0.1 HAc, kmol/h) $\to$ [flash01, 313.15 K / 0.35 atm] $\to$ liquid (59.6 kmol/h: aqueous + organic) + vapor (28.5 kmol/h)
+feed (60 H2O + 20 benzene + 8 EtOH + 0.1 HAc, kmol/h) $\to$ [flash01, 313.15 K / 0.353 atm] $\to$ liquid (68.1 kmol/h: aqueous + organic) + vapor (20.0 kmol/h)
 
 The two liquids leave as ONE apparent liquid stream. That is deliberate and it is the same contract the speciation already lives under: the split is INTERNAL state -- reported in full, never persisted -- exactly as the ions are. A stream file carries apparent components; it does not carry phases, and it does not carry species.
 
@@ -5532,20 +5532,20 @@ KPIs: V/F, pH, p\_benzene\_atm, p\_ethanol\_atm, p\_eq\_sum\_atm (= P, two-phase
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.0244722222222}
-\goldrow{stream}{liquid}{F}{0.0165443840142}
-\goldrow{stream}{vapor}{F}{0.007927838208}
-\goldrow{kpi}{flash01}{F\_alpha}{0.0165443840142}
-\goldrow{kpi}{flash01}{F\_beta}{0.007927838208}
+\goldrow{stream}{liquid}{F}{0.0189167138952}
+\goldrow{stream}{vapor}{F}{0.00555550832707}
+\goldrow{kpi}{flash01}{F\_alpha}{0.0189167138952}
+\goldrow{kpi}{flash01}{F\_beta}{0.00555550832707}
 \goldrow{kpi}{flash01}{F\_in}{0.0244722222222}
-\goldrow{kpi}{flash01}{P}{35463.75}
-\goldrow{kpi}{flash01}{Q}{86.8677617756}
-\goldrow{kpi}{flash01}{Q\_kW}{0.0868677617756}
+\goldrow{kpi}{flash01}{P}{35767.725}
+\goldrow{kpi}{flash01}{Q}{-100671.048075}
+\goldrow{kpi}{flash01}{Q\_kW}{-100.671048075}
 \goldrow{kpi}{flash01}{T}{313.15}
-\goldrow{kpi}{flash01}{V\_over\_F}{0.323952526093}
-\goldrow{kpi}{flash01}{dimer\_share}{0.0232924752345}
-\goldrow{kpi}{flash01}{pH}{2.89048667096}
-\goldrow{kpi}{flash01}{p\_benzene\_atm}{0.232354234286}
-\goldmore{20}
+\goldrow{kpi}{flash01}{V\_over\_F}{0.227012826078}
+\goldrow{kpi}{flash01}{dimer\_share}{0.0230010778486}
+\goldrow{kpi}{flash01}{pH}{2.89328517351}
+\goldrow{kpi}{flash01}{p\_benzene\_atm}{0.231691265078}
+\goldmore{22}
 \end{tutgolden}
 
 \clearpage
