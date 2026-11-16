@@ -704,11 +704,16 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
                 declared.push_back("  " + line);
             if (pkg.liquidDiffusivityDeclaration().declared && !pkg.liquidDiffusivityDeclaration().defaultModel.empty())
                 for (std::size_t i = 0; i < n; ++i)
-                    declared.push_back("  " + pkg.comp(i).name() + " as a solute: V_A " + si(pkg.comp(i).Vliq() * 1.0e6)
-                        + " cm3/mol, the record's Vliq at " + si(pkg.comp(i).VliqT()) + " K"
-                        + (pkg.comp(i).hasVliqT() ? std::string() : std::string(" (25 C, no VliqT stated)"))
-                        + "; Wilke-Chang defines V_A at the normal boiling point (review row DF-03;"
-                          " the boiling-point volume is C398 slice d2)");
+                {
+                    const auto& v = pkg.soluteVolumeAtTb(i);
+                    declared.push_back("  " + pkg.comp(i).name() + " as a solute: V_A "
+                        + (v.ok ? si(v.V_m3 * 1.0e6) + " cm3/mol = M / rho at its normal boiling point "
+                                  + si(v.Tb) + " K, rho " + si(v.rho) + " kg/m3 (" + v.route
+                                  + "); Poling 5th ed., Eq. 11-9.1, p. 11.22"
+                                : "REFUSED if used as a solute -- " + v.refusal + " (an entry for the pair with a value and"
+                                  " its source is the remedy; the record's 25 C volume is never"
+                                  " substituted)"));
+                }
             if (pkg.liquidDiffusivityDeclaration().declared && !pkg.liquidDiffusivityDeclaration().defaultModel.empty())
                 for (std::size_t i = 0; i < n; ++i)
                     declared.push_back("  " + pkg.comp(i).name() + " as a solvent: associationFactor "

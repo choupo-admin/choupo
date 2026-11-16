@@ -2,12 +2,12 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 diag    topDinf                Cp_ig            52.4624121959    1e-4
-diag    topDinf                D_L_inf_isopropanol_in_methanol 3.77139664281e-09 1e-4
-diag    topDinf                D_L_inf_isopropanol_in_water 2.46796832469e-09 1e-4
-diag    topDinf                D_L_inf_methanol_in_isopropanol 2.22155048635e-09 1e-4
-diag    topDinf                D_L_inf_methanol_in_water 3.61315997514e-09 1e-4
-diag    topDinf                D_L_inf_water_in_isopropanol 3.61607926198e-09 1e-4
-diag    topDinf                D_L_inf_water_in_methanol 8.98734831092e-09 1e-4
+diag    topDinf                D_L_inf_isopropanol_in_methanol 3.55491708526e-09 1e-4
+diag    topDinf                D_L_inf_isopropanol_in_water 2.32630603309e-09 1e-4
+diag    topDinf                D_L_inf_methanol_in_isopropanol 2.13911979622e-09 1e-4
+diag    topDinf                D_L_inf_methanol_in_water 3.47909357776e-09 1e-4
+diag    topDinf                D_L_inf_water_in_isopropanol 3.45621742517e-09 1e-4
+diag    topDinf                D_L_inf_water_in_methanol 8.59003013704e-09 1e-4
 diag    topDinf                H_R              0                1e-4
 diag    topDinf                H_ig             -211037.212535   1e-4
 diag    topDinf                H_real           -211037.212535   1e-4
@@ -21,7 +21,7 @@ diag    topDinf                gamma            1.18833179564    1e-4
 diag    topDinf                v_molar          0.0284614448492  1e-4
 diag    poling288              Cp_ig            38.3140621514    1e-4
 diag    poling288              D_L_inf_methanol_in_water 1.26e-09         1e-4
-diag    poling288              D_L_inf_water_in_methanol 4.69110265597e-09 1e-4
+diag    poling288              D_L_inf_water_in_methanol 4.4837155295e-09 1e-4
 diag    poling288              H_R              0                1e-4
 diag    poling288              H_ig             -221774.099891   1e-4
 diag    poling288              H_real           -221774.099891   1e-4
@@ -34,9 +34,9 @@ diag    poling288              Z                1                1e-4
 diag    poling288              gamma            1.27715245361    1e-4
 diag    poling288              v_molar          0.0239456523398  1e-4
 diag    binaryEffective        Cp_ig            45.5711066242    1e-4
-diag    binaryEffective        D_L_effective    8.55503522944e-09 1e-4
-diag    binaryEffective        D_L_inf_methanol_in_water 3.61315997514e-09 1e-4
-diag    binaryEffective        D_L_inf_water_in_methanol 8.98734831092e-09 1e-4
+diag    binaryEffective        D_L_effective    8.18010524767e-09 1e-4
+diag    binaryEffective        D_L_inf_methanol_in_water 3.47909357776e-09 1e-4
+diag    binaryEffective        D_L_inf_water_in_methanol 8.59003013704e-09 1e-4
 diag    binaryEffective        H_R              0                1e-4
 diag    binaryEffective        H_ig             -201798.134347   1e-4
 diag    binaryEffective        H_real           -201798.134347   1e-4
@@ -50,9 +50,9 @@ diag    binaryEffective        gamma            1.22316724546    1e-4
 diag    binaryEffective        v_molar          0.0284614448492  1e-4
 diag    binaryEffective        viscosity_liquid 0.000377780022633 1e-4
 diag    cbBinary               Cp_ig            45.5711066242    1e-4
-diag    cbBinary               D_L_effective    8.69660472195e-09 1e-4
-diag    cbBinary               D_L_inf_methanol_in_water 3.61315997514e-09 1e-4
-diag    cbBinary               D_L_inf_water_in_methanol 8.98734831092e-09 1e-4
+diag    cbBinary               D_L_effective    8.31352846918e-09 1e-4
+diag    cbBinary               D_L_inf_methanol_in_water 3.47909357776e-09 1e-4
+diag    cbBinary               D_L_inf_water_in_methanol 8.59003013704e-09 1e-4
 diag    cbBinary               H_R              0                1e-4
 diag    cbBinary               H_ig             -201798.134347   1e-4
 diag    cbBinary               H_real           -201798.134347   1e-4
@@ -66,9 +66,9 @@ diag    cbBinary               gamma            1.22316724546    1e-4
 diag    cbBinary               v_molar          0.0284614448492  1e-4
 diag    cbBinary               viscosity_liquid 0.000377780022633 1e-4
 diag    lcBinary               Cp_ig            45.5711066242    1e-4
-diag    lcBinary               D_L_effective    8.55503522944e-09 1e-4
-diag    lcBinary               D_L_inf_methanol_in_water 3.61315997514e-09 1e-4
-diag    lcBinary               D_L_inf_water_in_methanol 8.98734831092e-09 1e-4
+diag    lcBinary               D_L_effective    8.18010524767e-09 1e-4
+diag    lcBinary               D_L_inf_methanol_in_water 3.47909357776e-09 1e-4
+diag    lcBinary               D_L_inf_water_in_methanol 8.59003013704e-09 1e-4
 diag    lcBinary               H_R              0                1e-4
 diag    lcBinary               H_ig             -201798.134347   1e-4
 diag    lcBinary               H_real           -201798.134347   1e-4
@@ -82,9 +82,9 @@ diag    lcBinary               gamma            1.22316724546    1e-4
 diag    lcBinary               v_molar          0.0284614448492  1e-4
 diag    lcBinary               viscosity_liquid 0.000377780022633 1e-4
 diag    abBinary               Cp_ig            45.5711066242    1e-4
-diag    abBinary               D_L_effective    8.62534839994e-09 1e-4
-diag    abBinary               D_L_inf_methanol_in_water 3.61315997514e-09 1e-4
-diag    abBinary               D_L_inf_water_in_methanol 8.98734831092e-09 1e-4
+diag    abBinary               D_L_effective    8.24586566772e-09 1e-4
+diag    abBinary               D_L_inf_methanol_in_water 3.47909357776e-09 1e-4
+diag    abBinary               D_L_inf_water_in_methanol 8.59003013704e-09 1e-4
 diag    abBinary               H_R              0                1e-4
 diag    abBinary               H_ig             -201798.134347   1e-4
 diag    abBinary               H_real           -201798.134347   1e-4
@@ -137,8 +137,8 @@ diag    muIsopropanol          gamma            1.09443553057    1e-4
 diag    muIsopropanol          v_molar          0.0284614448492  1e-4
 diag    muIsopropanol          viscosity_liquid 0.000918189073189 1e-4
 diag    wc313                  Cp_ig            39.3950426348    1e-4
-diag    wc313                  D_L_inf_methanol_in_water 2.63193995731e-09 1e-4
-diag    wc313                  D_L_inf_water_in_methanol 7.14048171346e-09 1e-4
+diag    wc313                  D_L_inf_methanol_in_water 2.53428175491e-09 1e-4
+diag    wc313                  D_L_inf_water_in_methanol 6.82481094419e-09 1e-4
 diag    wc313                  H_R              0                1e-4
 diag    wc313                  H_ig             -220797.694863   1e-4
 diag    wc313                  H_real           -220797.694863   1e-4

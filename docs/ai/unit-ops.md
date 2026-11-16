@@ -1451,6 +1451,11 @@ column uses.  A ternary liquid is refused for `returns effective` under every ru
 but `VignesKooijmanTaylor` (with `reduction Wilke`: one effective diffusivity per
 component, props keys `D_L_effective_<component>`; the column does not read it yet,
 the three-component rate-based segment is slice B2b of C329).
+Wilke-Chang's solute volume V_A is the pure liquid's molar volume AT ITS NORMAL BOILING
+POINT (Poling 5th ed. Eq. 11-9.1), M / rho(Tb) from the package's liquid density, once per
+component, printed in the resolved view (C398 slice d2).  A solute with no `Tb` in its record
+or no liquid density there is refused by name; the remedy is an `entries` row for the pair
+with a value and its source -- the 25 C `Vliq` is never substituted.
 
 **Sieve-tray hydraulics** (optional `operation { hydraulics { ... } }`, works with BOTH
 methods).  The MESH equations contain no diameter — a column of any width converges to

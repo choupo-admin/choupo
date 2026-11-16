@@ -115,7 +115,7 @@ ThermoPackage& ThermoPackage::operator=(ThermoPackage&& o) noexcept
         liquidViscosityLaws_      = std::move(o.liquidViscosityLaws_);
         liquidConductivityLaws_   = std::move(o.liquidConductivityLaws_);
         surfaceTensionLaws_       = std::move(o.surfaceTensionLaws_);
-        liquidViscosityObj_       = std::move(o.liquidViscosityObj_);
+        liquidViscosityObj_       = std::move(o.liquidViscosityObj_);   soluteVolumeTb_ = std::move(o.soluteVolumeTb_);   // C398 d2: the moved-in package's own cache
         liquidConductivityObj_    = std::move(o.liquidConductivityObj_);
         surfaceTensionObj_        = std::move(o.surfaceTensionObj_);   identity_ = std::move(o.identity_);   formulation_ = std::move(o.formulation_);   // C398 CV-20
         solventName_        = std::move(o.solventName_);
@@ -3493,6 +3493,20 @@ scalar ThermoPackage::measuredOrCheckedViscosity(scalar T, const sVector& x,
 scalar ThermoPackage::infiniteDilutionInMixture(scalar T, std::size_t i, std::size_t j,
                                                 scalar muMix) const
 {
+    //  V_A at the normal boiling point (slice d2), or the refusal by name.
+    auto soluteVolumeOrRefuse = [&](std::size_t a, std::size_t b)
+    {
+        const SoluteVolumeAtTb& v = soluteVolumeAtTb(a);
+        if (!v.ok)
+            throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+                "liquid diffusivity of " + components_[a].name() + " at infinite dilution in "
+                + components_[b].name() + ": " + v.refusal + ".  The record's 25 C volume is"
+                  " never substituted for it.",
+                "an entry for the pair with a value and its source: `infiniteDilution { entries ("
+                " { solute " + components_[a].name() + "; solvent " + components_[b].name()
+                + "; kind infiniteDilution; ... } ); }`");
+        return v.V_m3;
+    };
     //  The pure solvent's viscosity, for a correlation in its textbook form.
     auto pureSolvent = [&]()
     {
@@ -3516,7 +3530,8 @@ scalar ThermoPackage::infiniteDilutionInMixture(scalar T, std::size_t i, std::si
             md->insert("model", EntryValue(e->model));
             const auto mdl = LiquidDiffusivityModel::New(md);
             return mdl->diffusivityLiquidBinary(components_.at(i), components_.at(j), T,
-                                                muMix > 0.0 ? muMix : pureSolvent());
+                                                muMix > 0.0 ? muMix : pureSolvent(),
+                                                soluteVolumeOrRefuse(i, j));
         }
         if (T < e->boxT.first || T > e->boxT.second)
             throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
@@ -3575,7 +3590,8 @@ scalar ThermoPackage::infiniteDilutionInMixture(scalar T, std::size_t i, std::si
                 liquidDiffusivity_->modelName(), components_[j].name()),
             "an entry for the pair (a value with its source, or the correlation named with its reason)");
     return liquidDiffusivity_->diffusivityLiquidBinary(components_.at(i), components_.at(j), T,
-                                                        muMix > 0.0 ? muMix : pureSolvent());
+                                                        muMix > 0.0 ? muMix : pureSolvent(),
+                                                        soluteVolumeOrRefuse(i, j));
 }
 
 scalar ThermoPackage::diffusivityLiquidEffective(scalar T, const sVector& x) const

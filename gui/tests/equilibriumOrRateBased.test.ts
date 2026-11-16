@@ -156,8 +156,8 @@ describe("equilibrium-or-rate-based: the three engine sweeps", () => {
   });
   it("the three correlations span more than twenty points at the comparison load", () => {
     const at = sweeps.map((s) => atFs(s!, COMPARE_FS)!.overall);
-    expect(at[0]).toBeCloseTo(0.7349, 3);   // AIChE
-    expect(at[1]).toBeCloseTo(0.9012, 3);   // Chan & Fair
+    expect(at[0]).toBeCloseTo(0.7337, 3);   // AIChE (0.7349 before C398 d2: Wilke-Chang's V_A at Tb)
+    expect(at[1]).toBeCloseTo(0.8994, 3);   // Chan & Fair (0.9012 before C398 d2)
     expect(at[2]).toBeCloseTo(0.6225, 3);   // Syeda & Chuang
     const spread = Math.max(...at) - Math.min(...at);
     expect(spread).toBeGreaterThan(0.2);

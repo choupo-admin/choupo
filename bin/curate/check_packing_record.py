@@ -88,11 +88,14 @@ NAME = "check_packing_record"
 #  filled with the catalogue's MontzB1-250, as this gate first ran it
 #  (2026-11-14, branch c398/slice-e-packing-record, linux64Gcc).  A change to
 #  the record, the reader or the Delft model moves them; that is the point.
+#  Re-taken 2026-11-15 on c398/d2-wilke-chang-vb: Wilke-Chang's solute volume at
+#  the normal boiling point (Poling Eq. 11-9.1) moved the Delft film's D_L, HETP
+#  0.378252 -> 0.379253, stages 5.81622 -> 5.80088, nothing else changed.
 B1_STATED = {
-    "HETP": 0.378252247189,
-    "theoreticalStages_bed": 5.81622453363,
-    "P_bottom_bar": 0.101551985079,
-    "dP_bed_mbar_per_m": 0.705447155001,
+    "HETP": 0.379252954175,
+    "theoreticalStages_bed": 5.80087768805,
+    "P_bottom_bar": 0.10155199516,
+    "dP_bed_mbar_per_m": 0.705452281129,
 }
 
 PACKING_RE = re.compile(r"            packing\n            \{.*?\n            \}\n", re.S)

@@ -46,7 +46,7 @@ Description
     method receives it as an argument (ThermoPackage evaluates it from the
     liquid-viscosity model and passes it in) --- which is why a
     liquidViscosity model must be present alongside.  The solute molar volume
-    comes from each component's Vliq.
+    is the liquid volume at its normal boiling point, from the package's density (slice d2).
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -75,10 +75,15 @@ public:
     //   solute      : component A (diffusing species)
     //   solvent     : component B (the continuous phase)
     //   muSolvent_PaS : solvent saturated-liquid viscosity at T [Pa·s]
+    //   soluteVolumeTb_m3 : the solute's liquid molar volume at its NORMAL
+    //     BOILING POINT [m3/mol] (Poling Eq. 11-9.1's V_A), resolved by the
+    //     package from its liquid density (ThermoPackage::soluteVolumeAtTb;
+    //     C398 slice d2).
     virtual scalar diffusivityLiquidBinary(const Component& solute,
                                            const Component& solvent,
                                            scalar T_K,
-                                           scalar muSolvent_PaS) const = 0;
+                                           scalar muSolvent_PaS,
+                                           scalar soluteVolumeTb_m3) const = 0;
 
     // ---- Run-time selection (explicit registry) ------------------------
     using Factory = std::function<std::unique_ptr<LiquidDiffusivityModel>(const DictPtr&)>;
