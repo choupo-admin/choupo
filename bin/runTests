@@ -260,6 +260,22 @@ export PATH="$ROOT:$ROOT/bin:$PATH"
 #      case directories or need the machine alone, so it would only have
 #      moved the serial half, and every gate would have seen this sweep's
 #      case outputs instead of the last one's.)
+#    * THE GATES, SLICE 3 (2026-11-16): the gates run in a pool in the full
+#      sweep AND in `--gui` (bin/curate/gate_pool.py, ONE home; the lanes are
+#      the lines of bin/curate/suite_lanes.txt).  Lane PAR runs in the real
+#      tree; lane ISO -- a gate that runs a case in place -- runs in a private
+#      copy of the tree (a slot tree), so what it writes cannot race a
+#      neighbour, and a write that escapes the copy FAILS the sweep as
+#      `gate-isolation-leak`.  THE SERIAL SET is the SERIAL lines of that file
+#      (make and probe builds, gates with a pool of their own, data/local
+#      writers, nested runTests, git readers, the destructive self-test), each
+#      with its reason; SERIAL gates and every unlisted gate stay alone, in
+#      order, and cut the pooled runs.  No gate starts while `free` shows under
+#      2 GB available; a gate that runs the engine on hundreds of cases counts
+#      as 2 or 3 of the N slots (`ISO*2`).  Each gate's own wall seconds go to
+#      build/suiteTimings.csv.  `--fast` / `--scope` run their six conservation
+#      gates live: they read the pass's cache in seconds and may run a case in
+#      place on a miss.  `-j 1` or CHOUPO_GATE_ISO=0 gives the serial walk.
 #    * THE GUI'S WITNESSES: vitest's globalSetup (gui/tests/witnessSetup.ts)
 #      runs its witness cases CHOUPO_JOBS-wide too.
 #    * A CORE BUDGET, NOT N SLOTS: the engine's parallel Jacobian takes
@@ -374,6 +390,7 @@ gate_key() {
 #  Under -j 1 none of this exists: every gate runs live at its site.
 declare -A GATE_SEG=()        # gate_key -> "<section>:<segment>"   (PAR sites)
 declare -A GATE_ARGV=()       # gate_key -> the site's argv text, for the pool
+declare -A GATE_LANE=()       # gate_key -> "<PAR|ISO> <weight>"
 declare -A SEG_KEYS=()        # "<section>:<segment>" -> the keys, one per line
 declare -A SEG_DONE=()        # a segment the pool has run
 GATE_PF=""
@@ -384,14 +401,22 @@ gate_segments() {
     local lanes_file="$ROOT/bin/curate/suite_lanes.txt"
     [ -f "$lanes_file" ] || return 0
     declare -A par=()
-    local sec lane argv _r k
+    local sec lane argv _r k w
     while IFS='|' read -r sec lane argv _r; do
         sec="${sec// /}"; lane="${lane// /}"
         case "$sec" in PRE|POST) ;; *) continue ;; esac
-        [ "$lane" = PAR ] || continue
+        #  LANE is PAR, ISO or SERIAL; `ISO*2` is a gate that counts as two
+        #  of the N slots (it runs the engine on many cases).  ISO is for the
+        #  PRE section only, and CHOUPO_GATE_ISO=0 treats it as SERIAL.
+        w=1; case "$lane" in *\**) w="${lane#*\*}"; lane="${lane%%\**}" ;; esac
+        case "$lane" in
+            PAR) ;;
+            ISO) [ "$sec" = PRE ] && [ "${CHOUPO_GATE_ISO:-1}" != 0 ] || continue ;;
+            *) continue ;;
+        esac
         argv="${argv#"${argv%%[![:space:]]*}"}"; argv="${argv%"${argv##*[![:space:]]}"}"
         k=$(eval gate_key "\"\$ROOT/\"$argv")
-        par["$sec:$k"]=1
+        par["$sec:$k"]="$lane $w"
     done < "$lanes_file"
     #  The walk of this file: SITE <section> <argv text> | BARRIER <section>.
     local kind text seg=0 cur=""
@@ -401,6 +426,7 @@ gate_segments() {
             if [ -n "${par[$sec:$k]:-}" ] && [ -z "${GATE_SEG[$k]:-}" ]; then
                 [ -n "$cur" ] || { seg=$((seg+1)); cur="$sec:$seg"; }
                 GATE_SEG["$k"]="$cur"; GATE_ARGV["$k"]="$text"
+                GATE_LANE["$k"]="${par[$sec:$k]}"
                 SEG_KEYS["$cur"]+="$k"$'\n'
                 continue
             fi
@@ -419,7 +445,48 @@ gate_segments() {
     ' "$0")
 }
 
-#  gate_seg_run <key> -- one pool job: one gate of a segment.
+#  gate_lane_of <argv-relative-to-root> -- the pooled lane of a gate invoked
+#  with exactly that argv in the PRE section of suite_lanes.txt, as "<LANE> <weight>"
+#  (PAR or ISO; ISO only unless CHOUPO_GATE_ISO=0); empty for SERIAL or unlisted.
+gate_lane_of() {
+    local sec lane argv _r w
+    while IFS='|' read -r sec lane argv _r; do
+        sec="${sec// /}"; lane="${lane// /}"
+        [ "$sec" = PRE ] || continue
+        argv="${argv#"${argv%%[![:space:]]*}"}"; argv="${argv%"${argv##*[![:space:]]}"}"
+        [ "$argv" = "$1" ] || continue
+        w=1; case "$lane" in *\**) w="${lane#*\*}"; lane="${lane%%\**}" ;; esac
+        case "$lane" in
+            PAR) echo "PAR $w" ;;
+            ISO) [ "${CHOUPO_GATE_ISO:-1}" != 0 ] && echo "ISO $w" ;;
+        esac
+        return 0
+    done < "$ROOT/bin/curate/suite_lanes.txt"
+}
+
+#  gate_pool_run <key>... -- run these gates (all in GATE_ARGV / GATE_LANE)
+#  through bin/curate/gate_pool.py, the ONE home of how gates run side by side
+#  (lanes PAR and ISO, weights, the memory floor, the private slot trees, the
+#  leak check).  A lone PAR gate runs here directly.  Its files land in
+#  $GATE_PF.  A leak (exit 4) is kept in GATE_LEAKS and reported as a FAIL in
+#  the tally -- this function runs inside a gate's redirected site, so it may
+#  not print.
+GATE_LEAKS=""
+gate_pool_run() {
+    local k l
+    if [ "$#" -eq 1 ] && [ "${GATE_LANE[$1]%% *}" = PAR ]; then gate_seg_run "$1"; return 0; fi
+    for k in "$@"; do
+        l="${GATE_LANE[$k]:-PAR 1}"
+        printf '%s\t%s\t%s\t%s\n' "$k" "${l%% *}" "${l##* }" "${GATE_ARGV[$k]}"
+    done | python3 "$ROOT/bin/curate/gate_pool.py" run --root "$ROOT" --out "$GATE_PF" \
+              --jobs "$JOBS" --threads "$JOB_THREADS"
+    if [ "${PIPESTATUS[1]}" -eq 4 ] && [ -f "$GATE_PF/LEAK" ]; then
+        GATE_LEAKS+="$(cat "$GATE_PF/LEAK")"$'\n'; rm -f "$GATE_PF/LEAK"
+    fi
+    return 0
+}
+
+#  gate_seg_run <key> -- one gate of a segment, run live (a lone PAR gate).
 gate_seg_run() {
     local k="$1" t0
     t0=$EPOCHREALTIME
@@ -442,8 +509,7 @@ gate_exec() {
                 GATE_PF="$ROOT/build/suiteGates"; mkdir -p "$GATE_PF"
                 local -a ks=(); local x
                 while IFS= read -r x; do [ -n "$x" ] && ks+=("$x"); done <<< "${SEG_KEYS[$s]}"
-                if [ "${#ks[@]}" -gt 1 ]; then POOL_NOTHREADS=1; pool_run gate_seg_run "${ks[@]}"; POOL_NOTHREADS=""
-                else gate_seg_run "${ks[0]}"; fi
+                gate_pool_run "${ks[@]}"
                 SEG_DONE["$s"]=1
             fi
             if [ -f "$GATE_PF/$k.rc" ]; then
@@ -1746,18 +1812,51 @@ if [ "${1:-}" = "--gui" ]; then
     [ "$ngates" -gt 0 ] || { echo "ERROR: derived ZERO gui-reading gates -- the derivation is broken, and an empty list would pass vacuously"; exit 1; }
     echo
     echo "[gui path] $ngates gate(s) derived from the gate sources themselves"
-    for g in $gates; do
-        name=$(basename "$g" .py)
-        if "$g" > /tmp/guigate.$$ 2>&1; then
-            printf "PASS  %-40s  (%s)\n" "$name" "$(head -1 /tmp/guigate.$$ | cut -c1-150)"
+    #  THE GATES RUN IN THE POOL HERE TOO (bin/curate/gate_pool.py, lanes in
+    #  bin/curate/suite_lanes.txt): a run of consecutive gates the lanes name PAR or ISO
+    #  is run N-wide and printed in its own order; any other gate (SERIAL,
+    #  or not listed -- the safe default) runs live, alone, at its place, and
+    #  cuts the run.  `-j 1` runs every gate live, as before.
+    gui_report() {          # <name> <rc> <outfile>
+        if [ "$2" -eq 0 ]; then
+            printf "PASS  %-40s  (%s)\n" "$1" "$(head -1 "$3" | cut -c1-150)"
             gpass=$((gpass+1))
         else
-            printf "FAIL  %-40s  (run bin/curate/%s.py)\n" "$name" "$name"
-            cat /tmp/guigate.$$
+            printf "FAIL  %-40s  (run bin/curate/%s.py)\n" "$1" "$1"
+            cat "$3"
             gfail=$((gfail+1))
         fi
+    }
+    gui_batch=()
+    gui_flush() {
+        [ "${#gui_batch[@]}" -gt 0 ] || return 0
+        local n lane pf="$ROOT/build/suiteGatesGui"
+        rm -rf "$pf"; mkdir -p "$pf"
+        for n in "${gui_batch[@]}"; do
+            lane=$(gate_lane_of "bin/curate/$n.py")
+            printf '%s\t%s\t%s\t"$ROOT/bin/curate/%s.py"\n' "$n" "${lane%% *}" "${lane##* }" "$n"
+        done | python3 "$ROOT/bin/curate/gate_pool.py" run --root "$ROOT" --out "$pf" \
+                  --jobs "$JOBS" --threads "$JOB_THREADS"
+        if [ "${PIPESTATUS[1]}" -eq 4 ] && [ -f "$pf/LEAK" ]; then
+            printf "FAIL  %-40s  (an ISO gate wrote into the real tree: make it SERIAL in bin/curate/suite_lanes.txt)\n" "gate-isolation-leak"
+            head -20 "$pf/LEAK" | sed 's/^/    /'
+            gfail=$((gfail+1))
+        fi
+        for n in "${gui_batch[@]}"; do gui_report "$n" "$(cat "$pf/$n.rc")" "$pf/$n.out"; done
+        gui_batch=()
+    }
+    for g in $gates; do
+        name=$(basename "$g" .py)
+        if [ "$JOBS" -gt 1 ] && [ -n "$(gate_lane_of "bin/curate/$name.py")" ]; then
+            gui_batch+=("$name"); continue
+        fi
+        gui_flush
+        "$g" > /tmp/guigate.$$ 2>&1; grc=$?
+        gui_report "$name" "$grc" /tmp/guigate.$$
         rm -f /tmp/guigate.$$
     done
+    gui_flush
+    python3 "$ROOT/bin/curate/gate_pool.py" clean --root "$ROOT" || true
 
     echo
     echo "PASS $gpass / FAIL $gfail"
@@ -9612,6 +9711,12 @@ if [ -n "${FAST:-}" ] || [ -n "${SCOPE:-}" ]; then
     done
 fi
 
+if [ -n "$GATE_LEAKS" ]; then
+    printf "FAIL  %-40s  (an ISO gate wrote into the real tree: make it SERIAL in bin/curate/suite_lanes.txt)\n" "gate-isolation-leak"
+    printf '%s' "$GATE_LEAKS" | head -20 | sed 's/^/    /'
+    fail=$((fail+1))
+fi
+[ "${#GATE_LANE[@]}" -gt 0 ] && python3 "$ROOT/bin/curate/gate_pool.py" clean --root "$ROOT" || true   # the ISO slot trees
 echo "--------------------------------------------------------------------"
 # The known-broken and expected-fail cases are NAMED, not just counted -- the
 # breakage stays visible in the summary, never masked as green.
