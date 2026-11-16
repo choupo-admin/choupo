@@ -35,7 +35,6 @@ License
   of the inputs, and the numbers the page prints must be those.
 \*---------------------------------------------------------------------------*/
 
-import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 import { readCaseRecord } from "./caseRecordRead.js";

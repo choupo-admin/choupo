@@ -36,7 +36,6 @@
       engine citation lands on the line it names.
 \*---------------------------------------------------------------------------*/
 
-import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
