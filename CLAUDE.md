@@ -152,6 +152,23 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    check that the equations match the code, that the link opens the section,
    or that the PDFs were rebuilt -- those are held by reading the report.
 
+4e. **A SIMPLE FIX LANDS AS A SIMPLE FIX, AND A SWEEP RUNS ALONE (Vítor,
+   2026-11-16, after one changed line in water's vapour-pressure record took
+   twelve hours: "Já te tinha dito para não fazeres essas merdas!  REGISTA
+   ISSO DE UMA VEZ POR TODAS!").**  Three things, each of which he had said
+   before.  (1) A job that walks the whole suite -- a full sweep, or a
+   `--scope` of more than about 150 cases -- runs ALONE on the laptop: no
+   other general builds, validates or integrates while it runs, and none is
+   launched "to use the time" (four builders beside the sweep made every
+   pass several times slower).  (2) A fix lands on its CORE: the change, the
+   moved rows explained, the closures held.  What it uncovers (pairs to
+   refit, an anchor that moved, a case at the edge of its phase) is
+   registered by name and queued as a slice of its own; it is never added to
+   the brief in flight.  (3) A general whose branch shows no commit for an
+   hour is LOOKED AT -- branch, worktree, processes, its last actions -- not
+   waited for.  Before dispatching, the brief states the real size of the
+   change and the smallest evidence that closes it.
+
 5. **Do not change a permanent rule as a reflex to criticism.**  Change it
    when Vítor asks, or when there is a durable technical reason -- and
    state the reason in the change.
