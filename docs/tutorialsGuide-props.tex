@@ -4200,9 +4200,10 @@ Nothing here is a validation against measurement: every number is the engine's o
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{envelope}\\[-1pt]{\tiny phaseEnvelope}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{P-T envelope of a C3/C4/C5 feed marched through propane's Tc: the reference factor is held continuous above 0.99 Tc, so both branches cross Tc; with the cubic's vapour pseudo-root both reach 40 bar (C245), and no cricondentherm is claimed}
+\tutwhat{P-T envelope of a C3/C4/C5 feed marched through propane's Tc: the reference factor is held continuous above 0.99 Tc, so both branches cross Tc; the dew branch reaches 40 bar and the bubble branch ends at 37 bar where the incipient vapour loses its vapour root (CL-01), and no cricondentherm is claimed}
 \begin{tutgolden}
-\goldrow{diag}{envelope}{bubble\_points}{40}
+\goldrow{diag}{envelope}{bubble\_points}{36}
+\goldrow{diag}{envelope}{bubble\_stopped\_bar}{37}
 \goldrow{diag}{envelope}{dew\_points}{40}
 \end{tutgolden}
 
@@ -4242,7 +4243,8 @@ envelope phaseEnvelope of the equimolar feed (single-liquid bubble and dew curve
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{diag}{envelope}{bubble\_points}{80}
+\goldrow{diag}{envelope}{bubble\_points}{26}
+\goldrow{diag}{envelope}{bubble\_stopped\_bar}{27}
 \goldrow{diag}{envelope}{dew\_points}{38}
 \goldrow{diag}{envelope}{dew\_stopped\_bar}{39}
 \goldrow{diag}{liquidProbe}{n\_emptyCurves}{0}
@@ -4255,8 +4257,7 @@ envelope phaseEnvelope of the equimolar feed (single-liquid bubble and dew curve
 \goldrow{diag}{probe\_1bar}{P}{100000}
 \goldrow{diag}{probe\_1bar}{S\_R}{-0.358120633114}
 \goldrow{diag}{probe\_1bar}{S\_ig}{235.202081429}
-\goldrow{diag}{probe\_1bar}{S\_real}{234.843960796}
-\goldmore{7}
+\goldmore{8}
 \end{tutgolden}
 
 \clearpage
