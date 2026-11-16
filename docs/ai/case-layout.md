@@ -335,20 +335,22 @@ propertyManifest
     {
         "components/benzene.dat"   "<64-hex computational hash>";
         "components/toluene.dat"   "<64-hex computational hash>";
-        "parameters/Henry/benzene-toluene.dat"  "absent";    // no such pair, and its arrival would change the case
+        "parameters/Henry/"  "relevant:<64-hex>";   // the SET of relevant names that exist in the registry directory
     }
     held { "components/water.dat"  "<hash of the case's own copy>"; }  // TRANSITIONAL, see below
 }
 ```
 
 * The key is the `data/standards/` path; the value the COMPUTATIONAL hash
-  (comments and unit spellings are cosmetic), or `absent`.  A pin lists what the
+  (comments and unit spellings are cosmetic), or `relevant:<hash>` for a registry directory.  A pin lists what the
   run CONSUMED: a registry parses a whole directory (562 files for flash01), so a
   scanned one contributes only the names the case selects -- the Henry and
   solution pairs among its components, the assets and utilities it names, the
-  adsorption equilibria of a named adsorbent -- and an `absent` line for each such
-  pair that does not exist, so that adding one later is a drift (`appeared`).
-  Editing an unrelated Henry pair moves nothing.
+  adsorption equilibria of a named adsorbent -- pinned one by one, plus ONE line
+  per scanned directory (`"parameters/Henry/" "relevant:<hash of the sorted
+  relevant names that exist>"`).  A relevant pair that arrives is a drift
+  (`appeared`), one that leaves `vanished`; an unrelated edit or addition moves
+  nothing.  `--repin <record>` recomputes the set line (it re-observes the case).
 * `bin/choupo-import --pin <case>` OBSERVES a run (the consumption ledger notes
   every file the run parsed, the engine applies the relevance rule) and writes the
   pins, printing each record it adds.  It refuses a local homonym that is neither

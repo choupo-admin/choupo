@@ -55,7 +55,7 @@ def _block(txt, name):
     return txt[m.end():i - 1]
 
 
-_PAIR = re.compile(r'"([^"]+)"\s+"?([0-9a-f]{64}|absent)"?\s*;')
+_PAIR = re.compile(r'"([^"]+)"\s+"?([0-9a-f]{64}|absent|relevant:[0-9a-f]{64})"?\s*;')
 
 
 def read_manifest(path):
@@ -155,13 +155,30 @@ def pinned_case_dirs(root=None):
 
 
 def cases_pinning(root, sub):
-    """Case directories (relative to root) whose manifest pins `sub` -- as a
-    hash, or as `absent` (a name whose arrival would change the case)."""
+    """Case directories (relative to root) whose manifest pins `sub` by name, or
+    pins the registry directory `sub` lives in (a `relevant:` set line) AND names
+    both components of a pair-shaped `sub` (A-B.dat) in its dicts: an arrival of a
+    relevant pair reaches the case, an unrelated edit does not."""
     root = Path(root)
     out = []
+    parent = sub.rsplit("/", 1)[0] + "/" if "/" in sub else None
+    toks = None
+    stem = sub.rsplit("/", 1)[-1][:-4] if sub.endswith(".dat") else None
+    if stem and "-" in stem:
+        toks = [stem[:k] for k in range(len(stem)) if stem[k] == "-"]
+        toks = [(stem[:k], stem[k + 1:]) for k in range(len(stem)) if stem[k] == "-"]
     for m in manifests(root):
         mf = read_manifest(m)
-        if sub in mf["pins"]:
+        hit = sub in mf["pins"]
+        if not hit and parent and mf["pins"].get(parent, "").startswith("relevant:") and toks:
+            case = m.parent.parent
+            text = ""
+            for f in [case / "constant" / "thermoPhysPropDict", *sorted((case / "system").glob("*"))]:
+                if f.is_file():
+                    text += f.read_text(errors="replace")
+            words = set(re.findall(r"[A-Za-z0-9_]+", text))
+            hit = any(a in words and b in words for a, b in toks)
+        if hit:
             out.append(str(m.parent.parent.relative_to(root)))
     return sorted(out)
 

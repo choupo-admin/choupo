@@ -3156,8 +3156,8 @@ is revised, not repealed: a case now MAY reference the catalogue instead of
 carrying a copy of every record.  Its `constant/propertyManifest` holds `pins` --
 one line per catalogue record the run CONSUMED (a scanned registry parses a
 whole directory; only the names the case selects are pinned), valued by the
-COMPUTATIONAL hash, plus `absent` for the pairs among its components that do not
-exist -- and a run hashes every pin at start and compares what it consumed with
+COMPUTATIONAL hash, plus one `relevant:<hash>` line per scanned registry directory
+(the sorted relevant names that exist there) -- and a run hashes every pin at start and compares what it consumed with
 the pins at the end: `pinned` | `drifted` (`changed`, `vanished`, `appeared`,
 `unpinned`), announced by default,
 REFUSED under `CHOUPO_PINS=refuse` / `runCase --strict` / `onDivergence refuse;`

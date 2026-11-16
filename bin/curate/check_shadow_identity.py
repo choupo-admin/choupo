@@ -231,15 +231,13 @@ def main():
         shutil.copytree(ROOT / "data" / "standards", home / "data" / "standards")
         std = home / "data" / "standards"
         man = (BASE / "constant" / "propertyManifest").read_text()
-        pinned = set(case_records.read_manifest(BASE / "constant" / "propertyManifest")["pins"])
-        if not any(k.startswith("parameters/Henry/") and "benzene" in k for k in pinned):
-            failures.append("PIN SCOPE: the witness's manifest pins no Henry absence for"
-                            " benzene -- an ABSENT line per relevant pair is the point")
-        if any(k.endswith("/") for k in pinned):
-            failures.append("PIN SCOPE: the manifest still carries a DIRECTORY pin")
-        if any(k.startswith("parameters/Henry/") and "-" in k and k.endswith(".dat")
-               and "absent" not in man for k in pinned):
-            failures.append("PIN SCOPE: Henry pins without `absent`")
+        mpins = case_records.read_manifest(BASE / "constant" / "propertyManifest")["pins"]
+        for d in ("parameters/Henry/", "parameters/solution/"):
+            if not mpins.get(d, "").startswith("relevant:"):
+                failures.append(f"PIN SCOPE: the manifest has no `relevant:` set line for {d} --"
+                                " one line per scanned registry directory is the point")
+        if any(v == "absent" for v in mpins.values()):
+            failures.append("PIN SCOPE: the manifest carries per-pair `absent` lines (n(n-1) of them)")
 
         def probe(tag, files, strict=True):
             for rel, text in files.items():

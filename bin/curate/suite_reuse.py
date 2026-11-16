@@ -768,7 +768,15 @@ def pinned_key_parts(case_abs: Path):
     parts = []
     for sub in sorted(mf["pins"]):
         f = ROOT / "data" / "standards" / sub
-        #  a pinned file's CONTENT; for an `absent` pin its presence is the input
+        if sub.endswith("/"):
+            #  a SET line (relevant names that exist in a registry directory): the
+            #  names the directory holds are the input -- a file added to it may be
+            #  one the case selects (coarser than the engine's own check, which is
+            #  the point of a reuse key: it can only rerun a case, never skip one)
+            parts.append(("pin:" + sub, digest([(x.name, "") for x in sorted(f.glob("*.dat"))])
+                          if f.is_dir() else "ABSENT"))
+            continue
+        #  a pinned file's CONTENT
         parts.append(("pin:" + sub, H.sha(f) if f.is_file() else "ABSENT"))
     return parts
 

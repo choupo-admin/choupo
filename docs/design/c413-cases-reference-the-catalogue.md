@@ -563,13 +563,20 @@ forced.  Each is a measurement, not a preference.
    loaded components; an asset or utility when the case's text names it; an
    adsorption equilibrium when its adsorbent is named and its species loaded;
    every record outside those scanned directories when parsed (read by name).
-   For the pair directories, every ordered pair of loaded components that does
-   NOT exist is pinned `absent`, so adding it later is `appeared`.  The same
-   function computes the end check and the importer's proposal (`@ pin` lines of
-   the ledger), so they cannot drift.  flash01's manifest is 7 lines.  Cost to
-   decide before slice 2: absences grow with n(n-1) per directory in the number
-   of loaded components (ed cases with three species: 12 lines; a plant with
-   thirty species: 1740).  An unrelated Henry edit leaves flash01 `pinned`; a
+   Per scanned registry directory (Henry, solution, a named adsorbent's
+   equilibria) ONE set line, `"parameters/Henry/" "relevant:<hash>"`: the hash
+   of the sorted relevant names that EXIST there, the names themselves pinned
+   one by one.  A relevant arrival changes the set hash (`appeared`), a removal
+   is `vanished`, an unrelated edit or addition changes nothing.  (A first round-2
+   build pinned each non-existent ordered pair `absent`, n(n-1) lines per
+   directory; a manifest a student cannot read is not glass-box, and the form
+   was replaced by the set line.)  The set line needs the loaded components, so
+   it is checked at the END of the run; `check_pins_fresh` cannot check it
+   statically and flash01 is in FASTSET for that reason.  The same function
+   computes the end check and the importer's proposal (`@ pin` lines of
+   the ledger), so they cannot drift.  flash01's manifest is 5 lines (3 records and the Henry and solution set lines, each the
+   hash of an empty set).  The cost is one line per scanned directory, independent of
+   the number of components.  An unrelated Henry edit leaves flash01 `pinned`; a
    benzene-toluene pair that arrives, or a benzene edit, is a drift
    (`check_shadow_identity`).
 2. **The ledger notes at `Dictionary::fromFile`, not at the resolver seam.**

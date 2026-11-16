@@ -1386,7 +1386,7 @@ propertyManifest
     {
         "components/benzene.dat"   "d33a71...";   // the computational hash
         "components/toluene.dat"   "3d2dfe...";
-        "parameters/Henry/benzene-toluene.dat"  "absent";   // no such pair -- and its arrival would matter
+        "parameters/Henry/"  "relevant:e3b0c4...";   // the SET of relevant pairs that exist (here: none)
     }
 }
 \end{lstlisting}
@@ -1396,10 +1396,12 @@ whitespace and unit spellings are cosmetic).  A pin lists what the run
 \emph{consumed}, not what a registry happened to parse: a run parses every file
 of the Henry, solution and asset directories (562 files for flash01) but uses a
 handful, so a scanned registry contributes only the names the case selects ---
-the pairs among its components, the assets and utilities it names --- and, for
-the pairs that do \emph{not} exist, a line valued \code{absent}: adding such a
-pair later changes the case, and is detected (\code{appeared}).  Editing an
-unrelated Henry pair moves nothing.  A manifest with \code{pins} and
+the pairs among its components, the assets and utilities it names --- pinned one
+by one, plus \emph{one line per scanned directory}, valued
+\code{relevant:<hash>} of the sorted relevant names that exist there.  A relevant
+pair that arrives changes that hash (\code{appeared}); one that leaves is
+\code{vanished}; an unrelated edit or addition moves nothing; and the manifest
+stays one line per directory however many components the case has.  A manifest with \code{pins} and
 \code{sealed true;} is refused by name.
 
 \paragraph{Who writes it.}
@@ -1419,9 +1421,9 @@ and the goldens say which cases moved.
 
 \paragraph{What a run does.}
 At start every pin is hashed against the catalogue (\code{changed},
-\code{vanished}, \code{appeared} for an \code{absent} pin whose record now
-exists, \code{unparseable}); at the end what the run consumed is compared with the
-pins (\code{unpinned}).  The result's \code{seal} block carries
+\code{vanished}, \code{unparseable}); at the end what the run consumed, and the
+set of relevant names per directory, are compared with the pins
+(\code{unpinned}, \code{appeared}).  The result's \code{seal} block carries
 \code{pinned}, or \code{drifted} with each record and its class.  The default
 announces, by name; \code{CHOUPO\_PINS=refuse} in the environment,
 \code{runCase --strict}, or \code{onDivergence refuse;} in the manifest makes the

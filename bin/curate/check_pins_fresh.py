@@ -72,6 +72,8 @@ def main():
             f = STD / rel
             if ".." in Path(rel).parts or rel.startswith("/"):
                 bad.append(f"{case}: pin '{rel}' escapes data/standards/")
+            elif want.startswith("relevant:"):
+                continue      # the set of relevant names needs the case's components: the run's end check
             elif want == "absent":
                 if f.exists():
                     bad.append(f"{case}: pin '{rel}' is ABSENT in the manifest and the record"
@@ -109,7 +111,7 @@ def main():
     print(f"check_pins_fresh: OK -- {nPins} pin(s) in {nCases} referencing"
           f" case(s) each equal the computational hash of their data/standards/"
           f" record, and {nHeld} held cop(ies) equal their own claims; no"
-          f" manifest holds pins together with a sealed `records`.  NOT CHECKED:"
+          f" manifest holds pins together with a sealed `records`.  NOT CHECKED: the `relevant:` set lines (a relevant pair that arrived needs the case's components: the run's end check holds that, and flash01 is in FASTSET),"
           f" that a case reads nothing it does not pin (the run's end check and"
           f" check_shadow_identity hold that), the sealed cases (check_seal_drift),"
           f" or that any pinned value is right.")

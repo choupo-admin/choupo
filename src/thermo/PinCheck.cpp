@@ -30,6 +30,7 @@ License
 
 #include "core/DictCanonical.H"
 #include "core/ReadLog.H"
+#include "core/Sha256.H"
 #include "thermo/Database.H"
 #include "thermo/ElementComposition.H"
 #include "thermo/RecordResolver.H"
@@ -122,7 +123,7 @@ std::set<std::string>& loadedComponents_()
     return *s;
 }
 
-//  What the run would PIN: sub -> computational hash, or "absent".
+//  What the run would PIN: sub -> computational hash; `<dir>/` -> "relevant:<hash of the set>".
 std::map<std::string, std::string>& proposed_()
 {
     static std::map<std::string, std::string>* m = new std::map<std::string, std::string>();
@@ -207,8 +208,8 @@ bool consumed(const std::string& sub, const std::set<std::string>& comps,
 }
 
 //  Compute what the run consumed -- the records parsed that the case selects --
-//  plus the ABSENCES that could change a resolution: the pair files among the
-//  loaded components that do not exist, so that adding one later is a drift.
+//  plus, per scanned registry directory, the SET of relevant names that exist
+//  (so that a relevant arrival or removal is a drift).
 void computeProposed()
 {
     auto& out = proposed_();
@@ -227,25 +228,52 @@ void computeProposed()
                   " parse is refused, never pinned as empty.  Remedy: repair the record.");
         out[sub] = h;
     }
-    for (const char* dir : { "parameters/Henry", "parameters/solution" })
-        for (const auto& a : comps)
-            for (const auto& b : comps)
-            {
-                if (a == b) continue;
-                const std::string sub = std::string(dir) + "/" + a + "-" + b + ".dat";
-                if (!fs::exists(cat / sub)) out[sub] = "absent";
-            }
+    //  ONE LINE PER SCANNED REGISTRY DIRECTORY: `relevant:<hash>` of the SORTED names
+    //  that EXIST there and are relevant to the case.  An arrival changes the set hash
+    //  (`appeared`), a removal too (`vanished`), an unrelated addition changes nothing,
+    //  and the manifest stays one line per directory however many components the
+    //  case has (an n(n-1) list of absences is not a manifest a student can read).
+    //  The names that exist are pinned one by one, with their content hashes, as above.
+    auto setLine = [&](const std::string& dir, std::vector<std::string> names)
+    {
+        std::sort(names.begin(), names.end());
+        std::string lines;
+        for (const auto& n : names) lines += n + "\n";
+        out[dir + "/"] = "relevant:" + sha256::hex(lines);
+        for (const auto& n : names)
+        {
+            const std::string sub = dir + "/" + n;
+            if (out.count(sub)) continue;
+            const std::string h = computationalHash(cat / sub);
+            if (h.empty())
+                throw std::runtime_error("pins: the catalogue record data/standards/" + sub
+                    + " is relevant to this case and does not PARSE -- refused, never pinned"
+                      " as empty.  Remedy: repair the record.");
+            out[sub] = h;
+        }
+    };
     std::error_code ec;
+    for (const char* d : { "parameters/Henry", "parameters/solution" })
+    {
+        const std::string dir = d;
+        if (!fs::is_directory(cat / dir, ec)) continue;
+        std::vector<std::string> names;
+        for (const auto& e : fs::directory_iterator(cat / dir, ec))
+            if (e.path().extension() == ".dat" && pairRelevant(e.path().stem().string(), comps))
+                names.push_back(e.path().filename().string());
+        setLine(dir, names);
+    }
     const fs::path eq = cat / "parameters" / "adsorption" / "equilibria";
     if (fs::is_directory(eq, ec))
         for (const auto& e : fs::directory_iterator(eq, ec))
             if (e.is_directory() && words.count(e.path().filename().string()))
-                for (const auto& c : comps)
-                {
-                    const std::string sub = "parameters/adsorption/equilibria/"
-                        + e.path().filename().string() + "/" + c + ".dat";
-                    if (!fs::exists(cat / sub)) out[sub] = "absent";
-                }
+            {
+                std::vector<std::string> names;
+                for (const auto& f : fs::directory_iterator(e.path(), ec))
+                    if (f.path().extension() == ".dat" && comps.count(f.path().stem().string()))
+                        names.push_back(f.path().filename().string());
+                setLine("parameters/adsorption/equilibria/" + e.path().filename().string(), names);
+            }
 }
 
 //  ---- a record's identity: formula (atoms + charge), charge, CAS ----------
@@ -443,6 +471,7 @@ int verifyPinsStart(const DictPtr& m, int verbosity)
     {
         const std::string want = pins->lookupWord(key);
         const fs::path f = cat / key;
+        if (want.rfind("relevant:", 0) == 0) continue;   // checked at the END: needs the loaded components
         if (want == "absent")
         {
             //  An ABSENCE pin: the record did not exist when the case was pinned,
@@ -515,9 +544,29 @@ void finalizePins()
     if (!pins) return;                        // observation run: the ledger writes the proposal
 
     std::set<std::string> pinned(pins->keys().begin(), pins->keys().end());
-    std::vector<std::string> unpinned, notRead;
+    std::vector<std::string> unpinned, notRead, appeared, setChanged;
+    auto isSet = [](const std::string& k) { return !k.empty() && k.back() == '/'; };
     for (const auto& kv : proposed_())
-        if (!pinned.count(kv.first)) unpinned.push_back(kv.first);
+    {
+        if (pinned.count(kv.first))
+        {
+            if (isSet(kv.first) && pins->lookupWord(kv.first) != kv.second)
+                setChanged.push_back(kv.first);
+            continue;
+        }
+        const std::size_t k = kv.first.rfind('/');
+        const bool inSet = k != std::string::npos && pinned.count(kv.first.substr(0, k + 1));
+        (inSet && !isSet(kv.first) ? appeared : unpinned).push_back(kv.first);
+    }
+    //  a set line that moved with no name arriving is a name that LEFT (the pinned
+    //  file's own check reports it), or a set the manifest pins differently
+    for (const auto& sl : setChanged)
+    {
+        bool explained = false;
+        for (const auto& n : appeared) explained = explained || n.rfind(sl, 0) == 0;
+        for (const auto& d : drifted_()) explained = explained || d.rfind(sl, 0) == 0;
+        if (!explained) appeared.push_back(sl + "\x01changed");
+    }
     for (const auto& k : pinned)
         if (!proposed_().count(k)) notRead.push_back(k);
 
@@ -529,19 +578,24 @@ void finalizePins()
         for (const auto& k : notRead) std::cerr << " " << k;
         std::cerr << "\n";
     }
-    if (unpinned.empty()) return;
+    if (unpinned.empty() && appeared.empty()) return;
 
     std::vector<std::string> all = drifted_();
-    for (const auto& u : unpinned)
-        all.push_back(u + (proposed_()[u] == "absent" ? " (unpinned absence)" : " (unpinned)"));
+    for (const auto& u : unpinned) all.push_back(u + " (unpinned)");
+    for (const auto& a : appeared)
+    {
+        const std::size_t c = a.find('\x01');
+        all.push_back(c == std::string::npos ? a + " (appeared)" : a.substr(0, c) + " (changed)");
+    }
+    for (const auto& a : appeared) unpinned.push_back(a.substr(0, a.find('\x01')));
     detail::setSealVerdict("drifted", all);
     drifted_() = all;
     if (verbosity >= 1)
     {
         std::cerr << "[pins] " << unpinned.size() << " catalogue record(s) were"
-                     " CONSUMED by this run (or are absences that could change a"
-                     " resolution) and are not pinned by the case's manifest:\n";
-        for (const auto& u : unpinned) std::cerr << "[pins]   " << u << " (unpinned)\n";
+                     " CONSUMED by this run (or arrived among the names relevant to it) and"
+                     " are not pinned by the case's manifest:\n";
+        for (const auto& a : all) std::cerr << "[pins]   " << a << "\n";
         std::cerr << "[pins] pin them with `bin/choupo-import --pin <case>`"
                      " (it prints every record it adds, so a record that"
                      " should NOT have been read -- a radical for an ion -- is a"
@@ -552,8 +606,9 @@ void finalizePins()
             + " catalogue record(s) the case's manifest does not pin ("
             + joinNames(unpinned) + ") and it is STRICT (CHOUPO_PINS=refuse /"
               " `runCase --strict` / `onDivergence refuse;`).  Remedy:"
-              " `bin/choupo-import --pin <case>` observes the run and pins what"
-              " it consumed; if a record on that list should not have been read"
+              " `bin/choupo-import --repin <record>` follows a relevant record that"
+              " ARRIVED (it recomputes the case's set line); `bin/choupo-import --pin"
+              " <case>` observes the run and pins what it consumed; if a record on that list should not have been read"
               " (a local ion record deleted so its name fell through to the"
               " catalogue's radical), restore the local record.");
 }

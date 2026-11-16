@@ -1655,11 +1655,12 @@ _PIN_HEAD = """/*----------------------------------------------------------*\\
   bin/choupo-import --pin from an OBSERVED run: one line per catalogue
   record the run CONSUMED, keyed by its data/standards/ path, valued by
   the COMPUTATIONAL hash of the record (comments, whitespace and unit
-  spellings are cosmetic) -- and `absent` for a name that does not exist
-  but whose arrival could change a resolution (a Henry or solution pair
-  among the case's components), so that adding it later is a drift.  A
-  registry parses a whole directory; only the names the case selects are
-  pinned.  A run hashes every pin at start and compares what it consumed
+  spellings are cosmetic) -- and, per scanned registry directory, ONE
+  `"<dir>/"  "relevant:<hash>"` line: the hash of the sorted names that
+  EXIST there and are relevant to the case (a Henry or solution pair among
+  its components), so a relevant pair that arrives or leaves is a drift
+  and an unrelated edit is not.  A registry parses a whole directory;
+  only the names the case selects are pinned.  A run hashes every pin at start and compares what it consumed
   with the pins at the end: `pinned` | `drifted` in the result's seal
   block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
   Follow a changed record with `bin/choupo-import --repin <record>`.
@@ -1849,13 +1850,28 @@ def cmd_repin(root, rel):
     f = std / rel
     #  A record that is gone is pinned as ABSENT; one that has appeared replaces
     #  an `absent` pin; a changed one gets its new hash.
-    new = canonical_sha_file(root, f) if f.is_file() else "absent"
+    new = canonical_sha_file(root, f) if f.is_file() else None
     n = changed = 0
+    parent = rel.rsplit("/", 1)[0] + "/"
     for m in case_records.manifests(root):
         mf = case_records.read_manifest(m)
-        if rel not in mf["pins"]:
+        direct = rel in mf["pins"]
+        #  A record that ARRIVED (or LEFT) a registry directory the case pins as a
+        #  `relevant:` SET: the set line is the engine's to recompute, so the case is
+        #  re-observed (--pin), which rewrites its pins from one run.
+        covered = mf["pins"].get(parent, "").startswith("relevant:")
+        if covered and (not direct or new is None) and \
+                m.parent.parent in [Path(c) for c in [str(root / x) for x in
+                                    case_records.cases_pinning(root, rel)]]:
+            n += 1
+            cmd_pin(root, m.parent.parent, False)
+            changed += 1
+            continue
+        if not direct:
             continue
         n += 1
+        if new is None:
+            continue
         txt = m.read_text()
         span = _block_span(_mask_comments(txt), "pins")
         if span is None:
@@ -1870,8 +1886,8 @@ def cmd_repin(root, rel):
             m.write_text(txt[:a] + body2 + txt[b:])
             changed += 1
             print("  re-pinned %s in %s" % (rel, m.parent.parent.relative_to(root)))
-    print("choupo-import --repin %s: %d manifest(s) pin it, %d rewritten (now %s)"
-          % (rel, n, changed, new if new == "absent" else new[:12] + "..."))
+    print("choupo-import --repin %s: %d manifest(s) reached, %d rewritten (now %s)"
+          % (rel, n, changed, "gone" if new is None else new[:12] + "..."))
     if changed:
         print("  next: run the cases it reaches (bin/runTests --scope <cases>) and"
               " read which goldens moved.")
