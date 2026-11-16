@@ -110,8 +110,12 @@ mixture problem** — and one that a pure-component change shifts uniformly is n
 a pure-component problem either. What is left is the two-parameter cubic's own
 volumetric behaviour at liquid-like densities. The levers the literature uses
 for that are a **volume translation** (Péneloux-type shift) or a **reference
-Helmholtz equation** (GERG-2008 for exactly this mixture), and *neither exists
-in this tree*.
+Helmholtz equation** (GERG-2008 for exactly this mixture).  The first now
+exists (`volumeTranslation Peneloux;`, case
+`tutorials/props/molecular/volumeTranslation01_nhexane_peneloux`) but it was
+fitted to saturated liquids and has NOT been tried on this dense gas, where no
+Z_RA for nitrogen or hydrogen is in the held literature; the second does not
+exist in this tree yet.
 
 So the honest conclusion the case reaches is not "we need better parameters".
 It is: **the parameters are not the problem, and fixing this needs a different

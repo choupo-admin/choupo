@@ -1,0 +1,138 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  volumeTranslation01_nhexane_peneloux --- WHAT A VOLUME TRANSLATION DOES.
+
+  Thirteen `propertyPoint` operations (the last six on Peng-Robinson) and two `propertyScan1D` scans: three liquids (n-hexane, n-decane, their
+  equimolar mixture) at 298.15 K and 1.01325 bar, each with the system's
+  plain SRK and with the variant `peneloux` (`thermo peneloux;`), which
+  declares `volumeTranslation Peneloux` on the same cubic.  Read
+  `v_molar_liq` (m3/mol) of each and turn it into a density with the molar
+  mass of its record; compare with the evaluated density in the README.
+
+  THE EXERCISE.  (1) The SRK liquid volume is too large, by a percentage that
+  grows with the carbon number.  (2) The translated volume is lower by
+  c = sum x_i c_i, to the digit: v(SRK) - v(SRK+Peneloux) is c, and c of the
+  mixture is the mole-weighted mean of the two pure shifts.  (3) H_R of the
+  vapour-root block moves by exactly -P c; S_R does not move.  (4) What does
+  NOT move is every fugacity coefficient --
+  `bin/curate/check_volume_translation.py` proves it, flash by flash, on the
+  same two packages.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name   nHexane_SRK;
+        type   propertyPoint;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nHexane 1.0; } }
+    }
+    {
+        name   nHexane_SRK_Peneloux;
+        type   propertyPoint;
+        thermo peneloux;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nHexane 1.0; } }
+    }
+    {
+        name   nDecane_SRK;
+        type   propertyPoint;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nDecane 1.0; } }
+    }
+    {
+        name   nDecane_SRK_Peneloux;
+        type   propertyPoint;
+        thermo peneloux;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nDecane 1.0; } }
+    }
+    {
+        name   nDecane_SRK_PenelouxSpencer;
+        type   propertyPoint;
+        thermo penelouxSpencer;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nDecane 1.0; } }
+    }
+    {
+        name   mixture50_SRK;
+        type   propertyPoint;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nHexane 0.5;  nDecane 0.5; } }
+    }
+    {
+        name   mixture50_SRK_Peneloux;
+        type   propertyPoint;
+        thermo peneloux;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nHexane 0.5;  nDecane 0.5; } }
+    }
+    {
+        name   nHexane_PR;
+        type   propertyPoint;
+        thermo pr;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nHexane 1.0; } }
+    }
+    {
+        name   nHexane_PR_Jhaveri;
+        type   propertyPoint;
+        thermo prJhaveri;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nHexane 1.0; } }
+    }
+    {
+        name   nDecane_PR;
+        type   propertyPoint;
+        thermo pr;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nDecane 1.0; } }
+    }
+    {
+        name   nDecane_PR_Jhaveri;
+        type   propertyPoint;
+        thermo prJhaveri;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nDecane 1.0; } }
+    }
+    {
+        name   mixture50_PR;
+        type   propertyPoint;
+        thermo pr;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nHexane 0.5;  nDecane 0.5; } }
+    }
+    {
+        name   mixture50_PR_Jhaveri;
+        type   propertyPoint;
+        thermo prJhaveri;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nHexane 0.5;  nDecane 0.5; } }
+    }
+    {
+        //  THE INVARIANCE, in two curves.  Bubble temperature and vapour
+        //  composition of hexane + decane at 1 atm, the same scan under plain
+        //  SRK and under SRK + Peneloux.  The two CSV files are byte-identical
+        //  (the README shows the `cmp`): a translation of the volume axis
+        //  leaves every K-value where it was (Peneloux et al. 1982, Eq. 2-4).
+        name        txy_SRK;
+        type        propertyScan1D;
+        vary        { variable x[nHexane];  from 0.1;  to 0.9;  n 5; }
+        state
+        {
+            T            420 K;
+            P            1.01325 bar;
+            composition  { nHexane 0.5;  nDecane 0.5; }
+        }
+        properties  ( T_bubble  y_eq_nHexane );
+        output      { file txy_SRK.csv; }
+    }
+    {
+        name        txy_SRK_Peneloux;
+        type        propertyScan1D;
+        thermo      peneloux;
+        vary        { variable x[nHexane];  from 0.1;  to 0.9;  n 5; }
+        state
+        {
+            T            420 K;
+            P            1.01325 bar;
+            composition  { nHexane 0.5;  nDecane 0.5; }
+        }
+        properties  ( T_bubble  y_eq_nHexane );
+        output      { file txy_SRK_Peneloux.csv; }
+    }
+);

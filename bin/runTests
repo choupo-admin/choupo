@@ -6048,6 +6048,22 @@ PYEOF
     fi
     rm -f /tmp/srkaad.$$
 
+    # volume-translation gate (2026-11-16, DEV.md 4c C408 (a)).  The Peneloux
+    # shift must leave every K-value and flash exactly where plain SRK puts them
+    # (the two bubble scans are byte-identical), move the volume by sum x_i c_i
+    # (Eq. 6 + Eq. 8 of the 1982 paper, recomputed here from the records' Tc, Pc
+    # and the case's declared Z_RA) and H_R by -P c, leave S_R alone, and refuse a
+    # component with no Z_RA by name.
+    if gate_exec "$ROOT/bin/curate/check_volume_translation.py" > /tmp/voltr.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "volume-translation-gate" "$(head -1 /tmp/voltr.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_volume_translation.py)\n" "volume-translation-gate"
+        cat /tmp/voltr.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/voltr.$$
+
     # chemsep-transport gate (2026-08-26).  Three model families -- chemsepCp16
     # on both Cp rungs, chemsepEq101 (liquid viscosity), chemsepEq16 (liquid
     # thermal conductivity) -- shipped across three days with no gate at all.
