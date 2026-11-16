@@ -3583,6 +3583,19 @@ accepts today, and that is a policy call.
 > energy closures, --fast 87/0, --gui 49/0 on the merge with main, 98 of the
 > plan's 101 gates (check_regressed_pairs not run: NIST unreachable).
 
+> **C414 (1) LANDED: THE GATES RUN IN A POOL (2026-11-16).**  The suite
+> walked its gates one at a time while `-j` widened only the cases; 75 gates
+> that write into the tree now run in private slot trees (ISO, a leak scan
+> fails the suite by name), the rest PAR or SERIAL with a reason each in
+> `bin/curate/suite_lanes.txt`; `bin/curate/gate_pool.py` is the one home.
+> Measured: the full sweep 1 h 45 min -> 65 min (PASS 2252, the only new
+> failures a leak the scan caught -- check_phase_envelope builds into build/,
+> now SERIAL -- and a stale Tutorials Guide, regenerated); `--gui` 50/0 on
+> the merge.  Slowest now: regressed-pairs 376 s, gate-selftest 280 s,
+> swro01 209 s -- the gate audit's first targets.  Open: check_both_bases
+> needs a `converged/` another run leaves behind (fails on a fresh tree in
+> either mode).
+
 > **THE 2026-11-16 BATCH LANDED** -- seven slices, ONE full sweep alone on
 > the laptop (2245 PASS / 13 FAIL / 1 KNOWN-BROKEN / 9 EXPECTED-FAIL, 1 h 45
 > min, most of it the gates walked one at a time; the parallel gate pool is
