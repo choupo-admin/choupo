@@ -931,6 +931,9 @@
   "Formula": [
    "src/core/Formula.H"
   ],
+  "FormulaIdentity": [
+   "src/thermo/ElementComposition.H"
+  ],
   "FreezingPoint": [
    "src/propertyOps/FreezingPoint.H"
   ],
@@ -1613,6 +1616,9 @@
   ],
   "PassThroughDeclaration": [
    "src/unitOperations/UnitAcceptance.H"
+  ],
+  "Pause": [
+   "src/core/ReadLog.H"
   ],
   "PelletSolution": [
    "src/unitOperations/reactor/pellet/PelletDiffusion.H"
@@ -2304,6 +2310,7 @@
    "src/control/signal/Signals.H"
   ],
   "State": [
+   "src/core/ReadLog.H",
    "src/thermo/electrolyte/ENRTLMultiSalt.H",
    "src/thermo/equationOfState/LeeKeslerPloecker.H",
    "src/thermo/equationOfState/ReferenceFluid.H",
