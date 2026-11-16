@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1871,
+  "cases": 1873,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 25
+  "anchored": 26
  },
  "cases": {
   "data/curation/batches/henry_sander": {
@@ -22823,6 +22823,38 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/compare/unifacDortmund01_ethanol_water_reduced_pressure": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC",
+     "UNIFACDortmund"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/compare/unifacDortmund02_butanol_water_gamma_infinity": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC",
+     "UNIFACDortmund"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
   "tutorials/props/curation/curate01_water_evidence_partition": {
    "application": "choupoProps",
    "ops": [
@@ -31486,6 +31518,8 @@
     "tutorials/props/compare/evidence01_methanol_water_points",
     "tutorials/props/compare/extractionShortcut01_perry_example15_1",
     "tutorials/props/compare/lle01_acetic_mibk_perry",
+    "tutorials/props/compare/unifacDortmund01_ethanol_water_reduced_pressure",
+    "tutorials/props/compare/unifacDortmund02_butanol_water_gamma_infinity",
     "tutorials/props/curation/curate01_water_evidence_partition",
     "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/curation/curate03_thermoml_fixture_bubble",
@@ -33716,6 +33750,8 @@
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/compare/lle01_acetic_mibk_perry",
+    "tutorials/props/compare/unifacDortmund01_ethanol_water_reduced_pressure",
+    "tutorials/props/compare/unifacDortmund02_butanol_water_gamma_infinity",
     "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
     "tutorials/props/solvents/solvent02_polystyrene_hexane_blends",
@@ -33734,6 +33770,10 @@
     "tutorials/steady/flash/flash19_organic_and_precipitate",
     "tutorials/steady/flash/marcilla01_lls_tie_triangle",
     "tutorials/steady/flowsheets/acetone03_luyben_reaction_section"
+   ],
+   "UNIFACDortmund": [
+    "tutorials/props/compare/unifacDortmund01_ethanol_water_reduced_pressure",
+    "tutorials/props/compare/unifacDortmund02_butanol_water_gamma_infinity"
    ],
    "UNIQUAC": [
     "tutorials/batch/reactor/batch07_lhhw_methylAcetate",
@@ -36526,6 +36566,7 @@
     "tutorials/props/compare/aceticWater01_txy_association",
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
+    "tutorials/props/compare/unifacDortmund02_butanol_water_gamma_infinity",
     "tutorials/props/heat/table02_water_liquid_cp_points",
     "tutorials/props/hydraulics/letdown02_valve_fluid_properties",
     "tutorials/props/molecular/entropy01_air_ledger",
@@ -37414,6 +37455,7 @@
     "tutorials/props/compare/compare_visc_liquid_water",
     "tutorials/props/compare/compare_vle_etoh_water",
     "tutorials/props/compare/evidence01_methanol_water_points",
+    "tutorials/props/compare/unifacDortmund01_ethanol_water_reduced_pressure",
     "tutorials/props/curation/curate04_nrtl_methanol_water",
     "tutorials/props/curation/curate05_nrtl_acetone_methanol",
     "tutorials/props/curation/curate06_nrtl_isopropanol_water",

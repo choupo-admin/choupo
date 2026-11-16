@@ -132,6 +132,7 @@ Liquid `activityModel` choices:
 | `UNIQUAC`| Abrams & Prausnitz (1975). | Alternative to NRTL where UNIQUAC pairs exist. |
 | `Wilson` | Cheaper than NRTL but **cannot represent LLE** (structural). | Mild non-ideality, no expected liquid split. |
 | `UNIFAC` | **Predictive** — γ from molecular GROUPS, NO fitted binary parameters (original UNIFAC; Fredenslund 1975 / Hansen 1991). | A binary with no regressed data: get a first VLE from structure alone, then SEE the error vs data.  Weak for alcohol-water (predicts the azeotrope but misplaces it — original-UNIFAC's known limit). |
+| `UNIFACDortmund` | **Predictive** — modified UNIFAC (Dortmund; Weidlich & Gmehling 1987, Gmehling, Li & Schiller 1993): the r^(3/4) combinatorial part, temperature-dependent group interactions Psi = exp(−(a + bT + cT²)/T), refitted R_k/Q_k, OH split into `OH_p`/`OH_s`/`OH_t`, ring `c-CH2`/`c-CH`/`c-C`, 45 main groups.  Parameters ONLY as printed in that paper (Tables III–IV); later licensed revisions are not entered. | The same use as `UNIFAC`, where the Dortmund model is the better predictor: alcohol/alkane and alcohol/water mixtures, γ∞, excess enthalpy.  A main-group pair the paper does not print is REFUSED by name. |
 | `cosmoSAC` | **Predictive** — γ from each component's COSMO σ-profile (Lin & Sandler 2002, NIST constants).  Multi-set: `source <setName>;` picks a named profile set. | A binary with no pairs where the components carry `cosmo {}` data. |
 
 `UNIFAC` takes no pairs.  The group decomposition is COMPONENT data, resolved
@@ -151,6 +152,29 @@ decomposition goes in a case-local component overlay
 (`constant/components/<name>.dat`).  A UNIFAC system whose participating
 component lacks a decomposition is an ERROR with the remedy — never a silent
 γ = 1.
+
+`UNIFACDortmund` reads a DIFFERENT decomposition key.  The Dortmund subgroups are
+not the original's (the alcohol OH is `OH_p`, `OH_s` or `OH_t`; a ring CH2 is
+`c-CH2`), so a component carries its own block beside the original one --
+never reused -- and one that lacks it is refused by name:
+
+```
+groups
+{
+    unifac         ( { group CH3; count 1; } { group CH2; count 2; } { group OH; count 1; } );
+    unifacDortmund ( { group CH3; count 1; } { group CH2; count 2; } { group OH_p; count 1; } );
+}
+```
+
+The R_k/Q_k and the a, b, c of the 530 printed main-group pairs live in
+`data/standards/parameters/UNIFACDortmund/{groups,interactions}.dat` (Gmehling,
+Li & Schiller 1993, Table III pp. 182–183 and Table IV pp. 184–190, each value as
+printed; sealed cases carry their own copy).  The run announces the choice and
+the paper's own warning that the temperature dependence was fitted mostly to
+20–125 °C data.  Worked witnesses: `tutorials/props/compare/unifacDortmund01_ethanol_water_reduced_pressure`
+(measured VLE, original against modified) and
+`tutorials/props/compare/unifacDortmund02_butanol_water_gamma_infinity` (the 32
+predicted values of the paper's Table XI reproduced to the printed digit).
 
 **Pair coverage (no silent crutch — REVISED 2026-08-11 by the
 problem-divergence contract; this paragraph said "defaults to ideal" until
