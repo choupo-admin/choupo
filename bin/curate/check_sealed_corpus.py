@@ -40,7 +40,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 bad = []
-sealed = live = 0
+sealed = live = pinned = 0
 
 #  THE MARKER AUDIT, first -- because it decides what the rest can see.
 #  Walk for the thing that DEFINES a case (its controlDict), not for the
@@ -111,7 +111,13 @@ if paths and (ROOT / ".git").exists():
 
 for c in tops:
     if (c / "constant" / "propertyManifest").exists():
-        sealed += 1
+        #  C413: a case that REFERENCES the catalogue holds `pins`, not `records`
+        #  (judged by check_pins_fresh / check_case_records); it is not a seal.
+        if re.search(r'(?m)^\s*pins\s*\{',
+                     (c / "constant" / "propertyManifest").read_text(errors="replace")):
+            pinned += 1
+        else:
+            sealed += 1
         continue
     isLive = any(re.search(r'\boverlayOf\b', p.read_text(errors="replace"))
                  for p in (c / "constant").rglob("*.dat")) \
@@ -144,7 +150,8 @@ if missingMarker or bad or missingRecord:
 
 print(f"check_sealed_corpus: OK -- every top-level case under tutorials/ carries"
       f" its .cho marker (so none is invisible to this search) and is either"
-      f" SEALED with a constant/propertyManifest ({sealed}) or a live-overlay"
+      f" SEALED with a constant/propertyManifest ({sealed}), PINNED to the catalogue"
+      f" by its manifest ({pinned}, C413) or a live-overlay"
       f" demo exempt by design ({live}), 0 unsealed; and the {len(named)}"
       f" records those manifests name are each on disk under the case's"
       f" constant/ AND not ignored by git, so a case runs from what git holds"
