@@ -2874,6 +2874,14 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
     // the EoS constructors consume (refusals + citation announced).
     auto eosDict = std::make_shared<Dictionary>("equationOfState");
     eosDict->insert("model", model);
+    //  The cubic's alpha function (C408 slice 0): opt-in, default unchanged.
+    if (eos->found("alphaFunction"))
+    {
+        if (model == "PCSAFT")
+            throw std::runtime_error("thermophysicalPropertySystem: alphaFunction"
+                " is a cubic's alpha (SRK | PengRobinson); PCSAFT has none.");
+        eosDict->insert("alphaFunction", eos->lookupWord("alphaFunction"));
+    }
     if (eos->found("binaryInteractions"))
     {
         const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();

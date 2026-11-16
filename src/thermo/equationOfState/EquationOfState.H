@@ -167,6 +167,11 @@ public:
 
     virtual const std::string& modelName() const = 0;
 
+    // A NON-DEFAULT choice inside the model that the resolved view and the
+    // run must name (C408 slice 0: a cubic's alpha function).  Empty = the
+    // model's default, so every existing run prints exactly what it printed.
+    virtual std::string alphaFunctionNote() const { return std::string(); }
+
     // Minimum-parameter-set MANIFEST (validation boundary, NOT the hot path):
     // the per-component property keys this model needs to be trustworthy
     // (e.g. {"Tc","Pc","omega"} for a cubic EoS).  PackageAudit checks each

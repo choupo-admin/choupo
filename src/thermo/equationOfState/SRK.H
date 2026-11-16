@@ -114,7 +114,8 @@ class SRK : public CubicEoS
 {
 public:
     SRK(const std::vector<Component>& comps,
-        const std::vector<std::vector<scalar>>& kij);
+        const std::vector<std::vector<scalar>>& kij,
+        const AlphaChoice& alpha = AlphaChoice());
 
     // Convenience: factory from a dict block.  Reads optional
     // `binaryInteractions (... );` sub-list, defaulting to k_ij = 0.

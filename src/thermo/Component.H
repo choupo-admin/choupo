@@ -818,6 +818,24 @@ public:
     scalar pcsaftKappaAB() const { return pcKappaAB_; }
     bool   hasPcsaftAssociation() const { return !pcAssocScheme_.empty(); }
 
+    // THE MATHIAS-COPEMAN alpha function of a cubic EoS (C408 slice 0): three
+    // constants FITTED BY CURATION to this record's own vapour-pressure law,
+    // stored here per cubic (`cubicAlpha { SRK { ... } PengRobinson { ... } }`).
+    // Absent = the cubic runs Soave/PR78 as before; the selector
+    // `alphaFunction MathiasCopeman;` on a case refuses a component without
+    // the block, naming bin/curate/fit_alpha_function.py.
+    struct CubicAlphaFit
+    {
+        std::string form;          // "MathiasCopeman"
+        scalar c1 = 0.0, c2 = 0.0, c3 = 0.0;
+        scalar Tlow = 0.0, Thigh = 0.0;   // the window it was fitted over [K]
+    };
+    const CubicAlphaFit* cubicAlphaFit(const std::string& cubic) const
+    {
+        auto it = cubicAlpha_.find(cubic);
+        return it == cubicAlpha_.end() ? nullptr : &it->second;
+    }
+
     // COSMO-SAC surface data (intrinsic).  A component may carry SEVERAL named
     // parameter SETS (unlike Joback's single set) -- one per source/variant --
     // in its `cosmo { <setName> { variant; source; area; volume; sigmaProfile (…); } }`
@@ -1005,6 +1023,7 @@ private:
     scalar pcM_ = 0.0, pcSigma_ = 0.0, pcEpsK_ = 0.0;   // PC-SAFT segment params
     std::string pcAssocScheme_;                          // "" = non-associating
     scalar pcEpsAB_ = 0.0, pcKappaAB_ = 0.0;             // PC-SAFT association
+    std::map<std::string, CubicAlphaFit> cubicAlpha_;    // by cubic name
 
     // COSMO-SAC surface data (intrinsic): named parameter sets by set name.
     std::map<std::string, CosmoSet> cosmoSets_;

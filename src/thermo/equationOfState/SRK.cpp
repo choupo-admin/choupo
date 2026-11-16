@@ -66,15 +66,19 @@ namespace {
 }
 
 SRK::SRK(const std::vector<Component>& comps,
-         const std::vector<std::vector<scalar>>& kij)
+         const std::vector<std::vector<scalar>>& kij,
+         const AlphaChoice& alpha)
   : CubicEoS("SRK", Constants{ OMEGA_A, OMEGA_B, 0.0, 1.0 }, comps,
-             slopes(comps), kij)
+             slopes(comps), kij, alpha)
 {}
 
 std::unique_ptr<EquationOfState>
 SRK::fromDict(const DictPtr& eosDict, const std::vector<Component>& comps)
 {
-    return std::make_unique<SRK>(comps, readKij("SRK", eosDict, comps));
+    //  Order matters for the log only: kij announcements first, then the alpha choice.
+    auto kij = readKij("SRK", eosDict, comps);
+    return std::make_unique<SRK>(comps, kij,
+                                 readAlpha("SRK", eosDict, comps));
 }
 
 } // namespace Choupo
