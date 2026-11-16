@@ -1077,10 +1077,28 @@ repeals none of the invariants below it:
   browser to look like a textbook has become a second engine.
 * **Nothing invented.**  A derivation that needs a datum the tree does not
   carry states the gap; it does not supply a plausible number.
-* Every equation shown must be the one the engine RUNS, cited to
-  `file:line`.  This is not bureaucracy: requiring the citation is what
-  turns writing a page into READING the implementation, and that is where
-  the 2026-08-28/29 glossing slice found eight defects nobody was hunting.
+* Every equation shown must be the one the engine RUNS, cited to the
+  function that holds it.  This is not bureaucracy: requiring the citation
+  is what turns writing a page into READING the implementation, and that is
+  where the 2026-08-28/29 glossing slice found eight defects nobody was
+  hunting.
+* **A citation names a SYMBOL, never a line number** (DEV.md 4c C415, 2026-11-16;
+  before it ~580 `file:line` citations broke on every engine edit and the
+  engine was arranged to keep its line numbers).  The form is
+  `{ file, symbol, contains }` in the lesson's one `CITES` map: `symbol` is
+  `Function` or `Class::method`; `contains` is a short fragment the lesson
+  relies on.  Where no function fits, `anchor: "name"` with the engine
+  carrying `// [anchor: name]` ... `// [/anchor: name]`; with neither, the
+  whole file is the scope (shell scripts, headers; weaker, so quote a
+  distinctive fragment).  The page shows `file#symbol`.  The test calls
+  `resolveCite(REPO, cite)` (gui/tests/support/engineCite.ts): the symbol must
+  still be defined and the fragment must still be INSIDE its body, so a moved
+  function costs nothing and a renamed function or a deleted statement fails
+  by name.  A line number is derived (`resolveCite().line`) when one is
+  needed, never typed.  Lessons not yet converted (`runLog` and
+  `caseAssembly` are) still use `file:line` and `bin/curate/
+  repoint_lesson_citations.py`; `bin/curate/cite_convert.py` converts a
+  record-shaped `CITES` map.
 
 A SCOPE LIMIT, added the day after: **management and organisational
 material is OUT for now** (owner, 2026-09-01: *"para já vamos evitar o
