@@ -109,8 +109,9 @@ own output on every full `bin/runTests`.
   a Z_RA (refused by name): s from their Table 1 (methane to n-hexane) or from
   Eq. 18 with Table 2 for the n-alkanes, alkylcyclohexanes and alkylbenzenes heavier
   than hexane; a component the tables do not cover is refused by name.
-* Under phiPhi the liquid-phase ENTHALPY is not the equation of state's departure
-  (DEV.md 4c C410), so a flash's liquid enthalpy does not move; only the vapour's does.
+* Under phiPhi the liquid-phase ENTHALPY is the departure at the liquid root
+  (DEV.md 4c C410), so the shift lowers a flash's liquid enthalpy by P c(x) as it lowers
+  the vapour's by P c(y).
 * The liquid density other units read through `ThermoPackage::density` is the
   Rackett route and does not use this shift; the translated volume is the
   equation of state's (`v_molar`, `v_molar_liq`, `Z`).
