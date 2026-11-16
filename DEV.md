@@ -3574,6 +3574,11 @@ accepts today, and that is a policy call.
 > -audit/REPORT.md with rows SP-xx (S1..S4), each with a reproduction, and a
 > ranked list of what the engine should gain to do it better.  Fixes are
 > separate slices.
+> REDIRECTED the same hour: Vitor then sent the document he meant, the
+> speciation chapter of a freezing simulator outside Choupo; the corpus
+> audit was stopped before it reported, and that review is kept outside the
+> repository.  What it finds that Choupo should gain comes back here as a
+> candidate; the corpus audit stays a candidate.
 
 > **C408 (Vitor, 2026-11-16: "Ataca ainda hoje o que nos falta de
 > propriedades!  Se precisares de artigos, pede", after the architect's list
