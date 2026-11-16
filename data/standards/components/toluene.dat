@@ -84,6 +84,7 @@ uniquac
 groups
 {
     unifac ( { group ACH; count 5; } { group ACCH3; count 1; } );
+    unifacDortmund ( { group ACH; count 5; } { group ACCH3; count 1; } );   // C408 (c): P toluene, Table III p. 182-183
     joback ( { group arCH; count 5; } { group arC; count 1; } { group CH3; count 1; } );
 }
 

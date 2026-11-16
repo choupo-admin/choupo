@@ -73,6 +73,7 @@ liquidHeatCapacity
 groups
 {
     unifac ( { group CH3; count 1; } { group COOH; count 1; } );
+    unifacDortmund ( { group CH3; count 1; } { group COOH; count 1; } );   // C408 (c): P acetic acid, Table III p. 182-183
     joback ( { group CH3; count 1; } { group acid; count 1; } );
 }
 

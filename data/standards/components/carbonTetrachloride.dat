@@ -170,3 +170,8 @@ cosmo
         );
     }
 }
+
+groups
+{
+    unifacDortmund ( { group CCl4; count 1; } );   // C408 (c): P tetrachloromethane, Table III p. 182-183
+}

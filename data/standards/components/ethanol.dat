@@ -101,6 +101,7 @@ groups
 {
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );
     unifac ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );
+    unifacDortmund ( { group CH3; count 1; } { group CH2; count 1; } { group OH_p; count 1; } );   // C408 (c): S 1-propanol, Table III p. 182-183
 }
 
 cosmo

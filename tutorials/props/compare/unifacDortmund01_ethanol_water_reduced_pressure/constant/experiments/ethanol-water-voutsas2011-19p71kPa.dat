@@ -1,0 +1,68 @@
+/*--------------------------------------------------------------------------*\
+  MEASURED isobaric vapour-liquid equilibrium of ethanol(1) + water(2) at 19.71 kPa.
+
+  SOURCE (the page, not an archive): Voutsas, E.C.; Pamouktsis, C.; Argyris, D.;
+  Pappa, G.D. "Measurements and thermodynamic modeling of the ethanol-water
+  system with emphasis to the azeotropic region", Fluid Phase Equilibria 308
+  (2011) 135-141, doi:10.1016/j.fluid.2011.06.009, Table 1 (p. 137): T, x1, y1
+  at 13.15, 19.71 and 32.86 kPa.  Read from the page's own text layer (a
+  born-digital PDF); 16 interior points are kept, in the paper's own order.
+  The pure-component endpoints (x1 = 0 and 1) are set aside: a bubble point on a
+  pure fluid measures the vapour-pressure record, not the mixture model.
+
+  These data were measured in 2011; the Dortmund fit (Gmehling, Li & Schiller
+  1993) and the original UNIFAC (Hansen 1991) cannot have used them, so the
+  comparison is OUT OF SAMPLE for both models.
+
+  Columns are the props bench's overlay names: x[ethanol], T_bubble, y_eq_ethanol.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( ethanol water );
+pressure     19.71 kPa;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Voutsas, Pamouktsis, Argyris & Pappa, Fluid Phase Equilib. 308 (2011) 135-141, Table 1 (p. 137), doi:10.1016/j.fluid.2011.06.009";
+    doi          "10.1016/j.fluid.2011.06.009";
+    sourceFile   "voutsas2011-ethanol-water-azeotrope-vle.pdf";   // the article read, Table 1 on its page 3 (journal p. 137)
+    sha256       "184e43cd36bc45de664ec7a86ea54a064343f62f6cec26355c461cd51422eebc";   // of that PDF: the source file this transcription was read from, not of the data block
+}
+
+selection
+{
+    pureEndpoints
+    (
+        { x 0; T_bubble 333.00 K; }
+        { x 1; T_bubble 315.23 K; }
+    );
+}
+
+columns
+(
+    { name x[ethanol];  unit -;  }
+    { name T_bubble;  unit K;  }
+    { name y_eq_ethanol;  unit -;  }
+);
+
+data
+(
+    0.076  323.53  0.407
+    0.141  320.52  0.510
+    0.260  318.05  0.592
+    0.390  317.04  0.632
+    0.499  316.35  0.679
+    0.599  315.90  0.706
+    0.688  315.55  0.760
+    0.799  315.29  0.826
+    0.805  315.26  0.828
+    0.841  315.19  0.854
+    0.883  315.15  0.888
+    0.913  315.16  0.915
+    0.931  315.13  0.932
+    0.945  315.13  0.945
+    0.960  315.14  0.957
+    0.964  315.14  0.964
+);

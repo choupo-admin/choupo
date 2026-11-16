@@ -119,7 +119,8 @@ class Component;  // fwd
 // (Component::groupsFor("unifac")) into an activityModel `groups {}` block for any
 // component not already declared inline -- so the decomposition lives ONCE in the
 // component .dat (its true home, alongside joback), never re-declared per case.
-// No-op unless the dict's model is UNIFAC.  An inline `groups {}` block is RETIRED (refused with a pointer); the decomposition is resolved from each component's own data.  Must
+// No-op unless the dict's model is UNIFAC or UNIFACDortmund (the second reads the
+// component key `unifacDortmund`, never the original `unifac`; DEV.md 4c C408 (c)).  An inline `groups {}` block is RETIRED (refused with a pointer); the decomposition is resolved from each component's own data.  Must
 // be called before ActivityModel::New, at a site that has the Component objects
 // (so case-local component overlays are respected).
 DictPtr injectUnifacGroups(const DictPtr& activityDict,
