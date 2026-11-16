@@ -1823,8 +1823,8 @@
     },
     "check_volume_translation": {
       "exit": 0,
-      "claim": "check_volume_translation: OK -- equilibrium byte-identical under the shift (5-point bubble scan); v_liq and v_vap drop by sum x_i c_i (Eq. 6, Eq. 8) on 3 states to 1e-9; H_R moves by -P c, S_R by 0; PR + Jhaveri-Youngren c = s b (Eq. 17-18) on 3 states likewise; a component without Z_RA, and a Table-2 family on hexane, are refused by name.",
-      "seconds": 0.2
+      "claim": "check_volume_translation: OK -- ONE translated fluid: ln phi_i moves by -c_i P/RT per component, root and cubic (probe, 4 states, 1e-9) and G^R = H^R - T S^R closes with the shift off and on; equilibrium byte-identical under the shift (5-point bubble scan); v_liq and v_vap drop by sum x_i c_i (Eq. 6, Eq. 8) on 3 states to 1e-9; H_R moves by -P c, S_R by 0; PR + Jhaveri-Youngren c = s b (Eq. 17-18) on 3 states likewise; a component without Z_RA, and a Table-2 family on hexane, are refused by name.",
+      "seconds": 1.2
     }
   }
 }
