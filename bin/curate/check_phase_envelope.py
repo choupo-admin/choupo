@@ -902,6 +902,29 @@ def main() -> int:
                                  " equimolar water + benzene at 1 bar; got "
                                  + (got.group(1) if got else "no value")
                                  + " with exit %d" % rc)
+    #  (m2) CL-04: a gammaGamma package whose two liquids have DIFFERENT
+    #  activity surfaces (UNIFAC and ideal) makes the LL flash refuse; the
+    #  probe used to catch that and answer 1 at exit 0.  It must refuse.
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td) / "mixedSurfaces"
+        _write_case(d, ["water", "benzene"],
+                    "equilibrium\n{\n    formulation gammaGamma;\n"
+                    "    liquidPhases\n    (\n"
+                    "        { name liquid1; activityModel { model UNIFAC; } }\n"
+                    "        { name liquid2; activityModel { model ideal; } }\n"
+                    "    );\n    vapour { fugacityModel idealGas; }\n}\n")
+        (d / "system" / "propsDict").write_text(probe_op)
+        rc, out = run(d)
+        got = re.search(r'"liquid_stable":\s*([-0-9.eE+]+)', out)
+        if rc == 0 or got:
+            fails.append("(m) liquid_stable on a gammaGamma package whose two"
+                         " liquids have DIFFERENT activity surfaces answered "
+                         + (got.group(1) if got else "nothing") + " with exit"
+                         " %d; the LL flash refused and the probe must refuse"
+                         " too, never answer 'stable' (CL-04)" % rc)
+        elif "the LL flash refused" not in out:
+            fails.append("(m) the mixed-surface refusal does not say that the"
+                         " LL flash refused")
     if not any(f.startswith("(m)") for f in fails):
         notes.append("the liquid-stability probe refuses by name on a"
                      " one-liquid gammaPhi package and answers 0 (two"
