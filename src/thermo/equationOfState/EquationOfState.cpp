@@ -31,6 +31,7 @@ License
 #include "IdealGas.H"
 #include "SRK.H"
 #include "PCSAFT.H"
+#include "LeeKeslerPloecker.H"
 #include "PR.H"
 #include "thermo/Component.H"
 
@@ -87,6 +88,11 @@ void EquationOfState::registerBuiltins()
         [](const DictPtr& dict, const std::vector<Component>& comps)
             -> std::unique_ptr<EquationOfState>
         { return std::make_unique<PCSAFT>(dict, comps); });
+
+    registerModel("LeeKeslerPloecker",
+        [](const DictPtr& dict, const std::vector<Component>& comps)
+            -> std::unique_ptr<EquationOfState>
+        { return std::make_unique<LeeKeslerPloecker>(dict, comps); });
 }
 
 } // namespace Choupo

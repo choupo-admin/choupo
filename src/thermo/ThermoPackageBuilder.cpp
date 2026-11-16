@@ -2874,13 +2874,15 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
 
     auto eos = eq->subDict("equationOfState");
     const std::string model = eos->lookupWord("model");
-    if (model != "SRK" && model != "PengRobinson" && model != "PCSAFT")
+    if (model != "SRK" && model != "PengRobinson" && model != "PCSAFT"
+        && model != "LeeKeslerPloecker")
         throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
             " equationOfState '" + model + "' -- implemented: SRK |"
-            " PengRobinson | PCSAFT (the non-associating PC-SAFT core).");
+            " PengRobinson | PCSAFT (the non-associating PC-SAFT core) |"
+            " LeeKeslerPloecker (Lee-Kesler with the Ploecker mixing rules).");
     // The vdW-one-fluid mixing rule is the CUBIC combining rule; PC-SAFT
     // has its own (sigma arithmetic, epsilon geometric) -- do not impose it.
-    if (model != "PCSAFT" && eos->found("mixingRule")
+    if (model != "PCSAFT" && model != "LeeKeslerPloecker" && eos->found("mixingRule")
         && eos->lookupWord("mixingRule") != "vanDerWaalsOneFluid")
         throw std::runtime_error("thermophysicalPropertySystem: the cubic"
             " mixing rule implemented is vanDerWaalsOneFluid.");
@@ -2899,9 +2901,9 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
     //  name (CubicEoS::readVolumeTranslation).  Absent = OFF, the default.
     if (eos->found("volumeTranslation"))
     {
-        if (model == "PCSAFT")
+        if (model == "PCSAFT" || model == "LeeKeslerPloecker")
             throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
-                " equationOfState PCSAFT has no `volumeTranslation` -- the"
+                " equationOfState " + model + " has no `volumeTranslation` -- the"
                 " Peneloux shift is implemented for the cubics SRK and"
                 " PengRobinson (declared shift only) alone.");
         eosDict->insert("volumeTranslation", eos->entryValue("volumeTranslation"));
