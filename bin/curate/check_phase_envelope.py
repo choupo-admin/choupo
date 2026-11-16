@@ -855,6 +855,59 @@ def main() -> int:
                      " reach below 200 K")
 
 
+    # ---- (m) the liquid-stability probe refuses on a one-liquid package --
+    #  `liquid_stable` decides by a liquid-liquid flash, which needs two
+    #  liquid phases in the package.  On a gammaPhi package (one liquid by
+    #  design) the flash's refusal used to be caught and returned as 1,
+    #  "one stable liquid", for water + benzene on UNIFAC -- the same model
+    #  that splits on gammaGamma (envelope04).  Both halves are held: the
+    #  gammaPhi package REFUSES by name, the gammaGamma one answers 0.
+    import tempfile
+    probe_op = ("operations\n(\n    { name probe; type propertyPoint;"
+                " state { T 300 K; P 1 bar; composition { water 0.5;"
+                " benzene 0.5; } } properties ( liquid_stable ); }\n);\n")
+    pkgs = {
+        "gammaPhi": "equilibrium\n{\n    formulation gammaPhi;\n"
+                    "    liquid { activityModel { model UNIFAC; }"
+                    " standardState pureLiquid; }\n"
+                    "    vapour { fugacityModel PengRobinson; }\n}\n",
+        "gammaGamma": "equilibrium\n{\n    formulation gammaGamma;\n"
+                      "    liquidPhases\n    (\n"
+                      "        { name liquid1; activityModel { model UNIFAC; } }\n"
+                      "        { name liquid2; activityModel { model UNIFAC; } }\n"
+                      "    );\n    vapour { fugacityModel PengRobinson; }\n}\n",
+    }
+    with tempfile.TemporaryDirectory() as td:
+        for form, block in pkgs.items():
+            d = Path(td) / form
+            _write_case(d, ["water", "benzene"], block)
+            (d / "system" / "propsDict").write_text(probe_op)
+            rc, out = run(d)
+            got = re.search(r'"liquid_stable":\s*([-0-9.eE+]+)', out)
+            if form == "gammaPhi":
+                if rc == 0 or got:
+                    fails.append("(m) liquid_stable on a gammaPhi package (one"
+                                 " liquid) answered " + (got.group(1) if got
+                                 else "nothing") + " with exit %d; it must"
+                                 " REFUSE, because its liquid-liquid flash"
+                                 " needs two liquid phases" % rc)
+                elif "liquid_stable" not in out or "gammaGamma" not in out:
+                    fails.append("(m) the gammaPhi refusal does not name the"
+                                 " probe and the remedy (formulation"
+                                 " gammaGamma)")
+            else:
+                if rc != 0 or not got or float(got.group(1)) != 0.0:
+                    fails.append("(m) liquid_stable on the gammaGamma UNIFAC"
+                                 " package must answer 0 (two liquids) for"
+                                 " equimolar water + benzene at 1 bar; got "
+                                 + (got.group(1) if got else "no value")
+                                 + " with exit %d" % rc)
+    if not any(f.startswith("(m)") for f in fails):
+        notes.append("the liquid-stability probe refuses by name on a"
+                     " one-liquid gammaPhi package and answers 0 (two"
+                     " liquids) for water + benzene on gammaGamma UNIFAC")
+
+
     if fails:
         print("check_phase_envelope: FAILED")
         for f in fails:
