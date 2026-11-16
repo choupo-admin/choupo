@@ -190,10 +190,10 @@ propertyManifest
         "components/water.dat"
         {
             type          imported;
-            sha256        "1941c573d264c5f04a176bc091b1e7126440d6708ae351725c327911ecdd9afa";
-            computationalSha256 "bdecdbe94c10657ee977efa14a0d2e957ee3eae4e31a7180bf9d620abfb640f5";
+            sha256        "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
+            computationalSha256 "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
             origin        "data/standards/components/water.dat";
-            originSha256  "ced0676876d8ecf926b645d2b72492bb4ed6e1735110358438b59afcf4c84202";
+            originSha256  "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
             release       Choupo-2607;
         }
         "parameters/Pitzer/pairs/Ca-Cl.dat"
