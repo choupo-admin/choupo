@@ -1,4 +1,4 @@
-// [imported] origin "data/standards/parameters/Pitzer/psi/H-K-SO4.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+// [imported] origin "data/standards/parameters/Pitzer/psi/H-K-SO4.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*--------------------------------*\
   Pitzer ternary mixing parameter psi(H,K|SO4) --- the two cations H(+) and
   K(+) with the common anion SO4(2-).

@@ -1,4 +1,4 @@
-// [imported] origin "data/standards/components/NaHCO3.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+// [imported] origin "data/standards/components/NaHCO3.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Sodium bicarbonate (NaHCO3), BAKING SODA.  CAS 144-55-8.
 
@@ -19,6 +19,14 @@ CAS         144-55-8;
 MW          84.007;            // kg/kmol
 
 role        nonvolatile;       // never goes to the vapour (K = 0)
+
+// APPARENT COMPONENT view -- the balance/representation map (apparent -> ions),
+// added 2026-10-26 (DEV.md 4c C161/C170) so the DSPM-DE pore, the multi-ionic
+// film and the electrodialysis units can decompose this salt into its ions,
+// whose transport data live on their own species records.  The van't Hoff
+// factor DERIVES from it (Component.cpp); no `dissociation` key beside it.
+// The map is identity, not thermochemistry: it adds no formation datum.
+dissociatesTo  { Na 1; HCO3 1; }   // ion stoichiometry (formula-like identity)
 
 solid
 {

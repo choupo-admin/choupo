@@ -1,13 +1,13 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-diag    calciteEq_25C          I                0.0265778        1e-4
-diag    calciteEq_25C          SI_aragonite     -0.114           1e-4
+diag    calciteEq_25C          I                0.0258891128996        1e-4
+diag    calciteEq_25C          SI_aragonite     -0.143999999968           1e-4
 diag    calciteEq_25C          SI_calcite       3.22147e-11      1e-4
-diag    calciteEq_25C          SI_portlandite   -13.0919         1e-4
+diag    calciteEq_25C          SI_portlandite   -13.1219229657         1e-4
 diag    calciteEq_25C          aw               0.998916         1e-4
-diag    calciteEq_25C          n_calcite        0.00543277       1e-4
-diag    calciteEq_25C          pH               6.02946          1e-4
+diag    calciteEq_25C          n_calcite        0.00569408636156       1e-4
+diag    calciteEq_25C          pH               6.01859430205          1e-4
 #
 #  THE ANCHOR, and why the band is what it is (2026-08-12).
 #
@@ -19,15 +19,18 @@ diag    calciteEq_25C          pH               6.02946          1e-4
 #  header asserted a comparison against published tables that the case did not
 #  contain.  A citation the suite reads cannot rot unnoticed.
 #
-#  THE BAND IS THE EXPLAINED DEVIATION, DECLARED.  The engine sits 0.025 pH
-#  ABOVE the electrode (0.416 %), and the case attributes that to an activity-
-#  model difference -- Davies here against their Truesdell-Jones, at I = 0.027.
-#  `reltol 5e-3` (0.030 pH) admits exactly that stated offset and about 20 %
-#  more, and nothing else.  A drift further from the measurement FAILS as an
+#  THE BAND IS THE EXPLAINED DEVIATION, DECLARED.  The engine sits 0.015 pH
+#  ABOVE the electrode (0.24 %), and the case attributes that to an activity-
+#  model difference -- Davies here against their Truesdell-Jones, at I = 0.026.
+#  `reltol 5e-3` (0.030 pH) was sized on the 0.025 offset this case showed
+#  until 2026-11-16, when the calcite record still carried -8.45; with
+#  Plummer & Busenberg's -8.480 the offset is 0.015, so the band is now about
+#  twice the explained deviation.  Tightening it is left to Vitor (proposed:
+#  3e-3, the new offset and about 20 % more).  A drift further from the measurement FAILS as an
 #  ANCHOR disagreement, which is what an anchor is for.
 #
 #  BOTH ENDS ARE PINNED, deliberately.  The self-recorded row above holds the
-#  engine's own 6.02946 to 1e-4, so a drift TOWARD the measurement fails too.
+#  engine's own 6.01859 to 1e-4, so a drift TOWARD the measurement fails too.
 #  That is not pedantry: an unexplained improvement in a number this case
 #  exists to explain is news of the same size as an unexplained worsening, and
 #  a band alone would swallow it.  Neither row may be widened to make the other

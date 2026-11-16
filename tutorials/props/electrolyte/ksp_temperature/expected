@@ -1,31 +1,31 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
 diag    T10                    I                0.0795197        1e-4
-diag    T10                    SI_calcite       0.56588          1e-4
+diag    T10                    SI_calcite       0.625403959734          1e-4
 diag    T10                    SI_gypsum        -0.335309        1e-4
 diag    T10                    SI_halite        -4.56674         1e-4
 diag    T10                    aw               0.998115         1e-4
 diag    T10                    pH               7.6              1e-4
 diag    T25                    I                0.0772864        1e-4
-diag    T25                    SI_calcite       0.789002         1e-4
+diag    T25                    SI_calcite       0.819002408221         1e-4
 diag    T25                    SI_gypsum        -0.365046        1e-4
 diag    T25                    SI_halite        -4.60657         1e-4
 diag    T25                    aw               0.998126         1e-4
 diag    T25                    pH               7.6              1e-4
 diag    T40                    I                0.074682         1e-4
-diag    T40                    SI_calcite       0.981885         1e-4
+diag    T40                    SI_calcite       0.979528450423         1e-4
 diag    T40                    SI_gypsum        -0.366212        1e-4
 diag    T40                    SI_halite        -4.64313         1e-4
 diag    T40                    aw               0.998139         1e-4
 diag    T40                    pH               7.6              1e-4
 diag    T60                    I                0.0708646        1e-4
-diag    T60                    SI_calcite       1.20457          1e-4
+diag    T60                    SI_calcite       1.15866731197          1e-4
 diag    T60                    SI_gypsum        -0.334642        1e-4
 diag    T60                    SI_halite        -4.68774         1e-4
 diag    T60                    aw               0.998158         1e-4
 diag    T60                    pH               7.6              1e-4
 diag    T80                    I                0.0669847        1e-4
-diag    T80                    SI_calcite       1.39986          1e-4
+diag    T80                    SI_calcite       1.31358873399          1e-4
 diag    T80                    SI_gypsum        -0.27364         1e-4
 diag    T80                    SI_halite        -4.72869         1e-4
 diag    T80                    aw               0.998176         1e-4
