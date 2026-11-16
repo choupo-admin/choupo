@@ -18,7 +18,7 @@ kpi     separator              F_in             0.0257186111111  1e-4
 kpi     separator              K_H2             286.996962208    1e-4
 kpi     separator              K_acetone        0.331982462081   1e-4
 kpi     separator              K_isopropanol    0.0949781314528  1e-4
-kpi     separator              K_water          0.0701527919587  1e-4
+kpi     separator              K_water          0.0700747412159  1e-4
 kpi     separator              P                263445           1e-4
 kpi     separator              Q                -967978.246971   1e-4
 kpi     separator              Q_kW             -967.978246971   1e-4
@@ -36,7 +36,7 @@ stream  Rout                   T                623              1e-4
 stream  flashGas               T                318              1e-4
 stream  flashLiquid            T                318              1e-4
 boundary global                 H_feeds_kW       -3997.0386631    1e-4
-boundary global                 Q_boundary_kW    -127.71501232    1e-4
+boundary global                 Q_boundary_kW    -127.733955038    1e-4
 boundary global                 H_products_kW    -4124.38837922   1e-4
 boundary global                 residual_kW      0                abs:0.01808
 utility reactor                heating.hitecSalt.duty_kW 840.263234652    1e-4

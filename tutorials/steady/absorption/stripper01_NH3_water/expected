@@ -7,10 +7,10 @@ stream  strippingGas           F                0.0277777777778    1e-4
 kpi     stripper               F_richGas        0.029140357434     1e-4
 kpi     stripper               F_strippedLiquid 0.0264151981216    1e-4
 kpi     stripper               K_NH3            3.62862883208      1e-4
-kpi     stripper               K_water          0.170562530402     1e-4
+kpi     stripper               K_water          0.169888686608     1e-4
 kpi     stripper               L_in             0.0277777777778    1e-4
 kpi     stripper               S_NH3            3.62862883208      1e-4
-kpi     stripper               S_water          0.170562530402     1e-4
+kpi     stripper               S_water          0.169888686608     1e-4
 kpi     stripper               T_bottom         313.524974667      1e-4
 kpi     stripper               T_top            315.973930965      1e-4
 kpi     stripper               V_in             0.0277777777778    1e-4
