@@ -24,3 +24,6 @@ role           nonvolatile;
 reviewStatus   interim;       // MW and charge transcribed from the species record; not yet read back by a human
 dissociation   1;              // already an ion: 1 particle/mol
 aqueousMapping ( { species NO3; nu 1; } );
+
+distinctFrom NO3;
+variationReason "kept as a component under the catalogue's name: the case's NO3 is formula NO3-, the catalogue's is formula NO3, a different species";

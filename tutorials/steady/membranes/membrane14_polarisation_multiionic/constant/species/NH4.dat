@@ -45,3 +45,6 @@ transport
     D0 { value 1.9572e-09; unit m2/s; }
     source "lambda0 73.5 S cm2/mol: Robinson & Stokes, Electrolyte Solutions, 2nd ed. (1959), Appendix 6.1; D0 by Nernst-Einstein, this record";
 }
+
+variationOf NH4;
+variationReason "Choupo species/NH4.dat -- CASE-LOCAL COPY of data/standards/species/NH4.dat with ONE addition: the transport block the membrane14 witness needs.";
