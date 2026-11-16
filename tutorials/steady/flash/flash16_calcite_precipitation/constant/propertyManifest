@@ -119,10 +119,10 @@ propertyManifest
         "components/calciumHydroxide.dat"
         {
             type          imported;
-            sha256        "2f72e2377f2700152fd5639e5d3b6dfcb618f40f3bf50c22aaacd1a3238a45bf";
-            computationalSha256 "dc931bd3b99ae88a774714e6dba7e4d1872bfa69abe88d31a27fdd93a4fb8051";
+            sha256        "d7d1fd7ac8d9de127feba4ac58f36225360acf2591717cc5dc68ba46fed1232e";
+            computationalSha256 "908bcce3216400672556c95c3cc6cfaa4bc82498b329b71f42d5be026a3e5403";
             origin        "data/standards/components/calciumHydroxide.dat";
-            originSha256  "9d603ded0d3913c8a84a701629ebd45af12f87b45dba5bb241f733de7248c7ec";
+            originSha256  "ffeb38063cf59a8598d5046c63871bb52cd2655638aedb305c264f59108abede";
             release       Choupo-2608;
         }
         "components/water.dat"

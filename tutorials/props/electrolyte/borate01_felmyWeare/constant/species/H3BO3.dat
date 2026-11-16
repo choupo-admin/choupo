@@ -16,3 +16,25 @@ aqueousThermo
 hfAq { value -1072320; unit J/mol;}
 sAq  { value 162.3;  unit J/mol/K;}
 }
+
+transport
+{
+    //  D0 ONLY, of a NEUTRAL molecule (DEV.md 4c C403; Vitor's request: boron in a multi-ionic membrane case must
+    //  carry its own molecular diffusivity and never borrow a salt's).  Boric acid is the dominant boron species
+    //  in seawater near pH 8, and it is not an ion: the tier's `radius` (Nightingale's hydrated radius of an ION)
+    //  is not curated for it.  The value is the limit of the differential diffusion coefficient as the boric acid
+    //  concentration goes to zero in a solution WITHOUT pH control, where the borate mole fraction stays below 1e-3 (their Figure 4, p. 893)
+    //  and the solute is molecular.
+    D0 { value 1.6405e-09; unit m2/s; }
+    provenance
+    {
+        D0
+        {
+            source        "J. K. Park and K. J. Lee, Diffusion Coefficients for Aqueous Boric Acid, J. Chem. Eng. Data 39 (1994) 891-894, Table 2 (p. 893), model 6 (no pH control), parameter beta_0 = 1.640 516 in 10^5 D/(cm2/s) = beta_0 + beta_1 c^0.5, and the Conclusion (p. 894) 10^5 D/(cm2/s) = 1.640516 - 0.678597 (c/(mol/dm3))^0.5 for 0 <= c <= 0.65 mol/dm3, 25 C";
+            origin        literature;
+            method        "read at the page, 2026-11-15 (DEV.md 4c C403): the intercept of the authors' regression at zero concentration (their model 6), 1.640516 x 10^-5 cm2/s converted to 1.6405 x 10^-9 m2/s; the paper reports no direct measurement at infinite dilution";
+            reviewStatus  interim;
+            notes         "Why this value: it is the paper's infinite-dilution limit for the molecular solute (no pH control).  The lowest-concentration MEASURED integral coefficient of the same series is 1.5978 x 10^-5 cm2/s at 0.0146 mol/dm3 (Table 3, p. 893, no-pH-control rows), 2.6 % below the intercept, as the fit's concentration dependence implies.  The pH 7.0 series (model 7, intercept 1.412311 x 10^-5 cm2/s) is NOT used: at pH 7.0 the authors treat a three-component solution (borate and added sodium ion present) as pseudobinary, so its zero-concentration limit is not the molecular diffusivity.  The Stokes-Einstein scaling to the run temperature is applied by the consumer, not stored.";
+        }
+    }
+}

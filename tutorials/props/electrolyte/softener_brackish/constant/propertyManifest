@@ -307,10 +307,10 @@ propertyManifest
         "components/NaHCO3.dat"
         {
             type          imported;
-            sha256        "2eca4939ee5e1e36467b77b775f257e11f808336ac151f2c15e7c5a4b3aa9b6d";
-            computationalSha256 "f265d3a4a88fe31d10e34ca92982843f10ade45717ecf5df76b5733c40ac712b";
+            sha256        "207644cd0bc1cb628af295848b3577777afa24e3176e6677e6f64231d9c21b38";
+            computationalSha256 "c2ff0e5f08ced5ee2e47d167f6b5fbd335b3bfbdf2163f490ec83bd1bc10951a";
             origin        "data/standards/components/NaHCO3.dat";
-            originSha256  "a2140d0d855a0b720a2296f7ee11a06b0c04496da87e21e65646ab57ee778e5a";
+            originSha256  "40bfedd6fd695b87a033012b2688b7bda74fa8913224048613605417a9a85f21";
             release       Choupo-2608;
         }
         "components/artinite.dat"
@@ -343,19 +343,19 @@ propertyManifest
         "components/burkeite.dat"
         {
             type          imported;
-            sha256        "c0ebb00f3adeca48e343703c139cecc2d9d7d2ef3e2e22e503575bd7f076d890";
-            computationalSha256 "986dd85a82a9b7ec366ceba8d096cdb4f01bfcdb2885119360ad926afb3c8f30";
+            sha256        "d59cdb399d9b3e20fa58818380d258be9b7b077740c7cd46f925b51e54baf308";
+            computationalSha256 "672bf4574e450c31e7edd97a1c7a2c7a0c6ec0979a0de3ecc7559f0f523b6c5f";
             origin        "data/standards/components/burkeite.dat";
-            originSha256  "832637d581cf3af3c22de1bac82a8ddc016beed201330cacbad97a923f46dfec";
+            originSha256  "3537753f4d6075387755f0439e1317b3645457b72146470675aa28c8ef9cc2b8";
             release       Choupo-2608;
         }
         "components/calciumHydroxide.dat"
         {
             type          imported;
-            sha256        "2f72e2377f2700152fd5639e5d3b6dfcb618f40f3bf50c22aaacd1a3238a45bf";
-            computationalSha256 "dc931bd3b99ae88a774714e6dba7e4d1872bfa69abe88d31a27fdd93a4fb8051";
+            sha256        "d7d1fd7ac8d9de127feba4ac58f36225360acf2591717cc5dc68ba46fed1232e";
+            computationalSha256 "908bcce3216400672556c95c3cc6cfaa4bc82498b329b71f42d5be026a3e5403";
             origin        "data/standards/components/calciumHydroxide.dat";
-            originSha256  "9d603ded0d3913c8a84a701629ebd45af12f87b45dba5bb241f733de7248c7ec";
+            originSha256  "ffeb38063cf59a8598d5046c63871bb52cd2655638aedb305c264f59108abede";
             release       Choupo-2608;
         }
         "components/carnallite.dat"
@@ -388,10 +388,10 @@ propertyManifest
         "components/gaylussite.dat"
         {
             type          imported;
-            sha256        "252ca5f4cbcb84cab100daf6469e406e4adb3d5ef6a1f5fcf9244646809bf78d";
-            computationalSha256 "d19bf72d2e9d119ae657841f4d948d94cc0760fffd1775cfe2ca629bcf401b34";
+            sha256        "92d69de4370de4ee6e633bf22b599cc5a67f94ad7e9e0aaf95a58bc37648cbbc";
+            computationalSha256 "c671dc0076ebf4590d17477b4b2f8289d191d6b8cf1f336f6c88737d58b9a2bd";
             origin        "data/standards/components/gaylussite.dat";
-            originSha256  "2926b4a28e4dec79063a54607566e039dd23b99baf3477a314250d40aa13f878";
+            originSha256  "badf993615afffe5ab410580a52b8846ffc48383aab03706c569370a47c13e38";
             release       Choupo-2608;
         }
         "components/glaserite.dat"
@@ -460,10 +460,10 @@ propertyManifest
         "components/kalicinite.dat"
         {
             type          imported;
-            sha256        "9a7e41e680b6c18ea501454e5c1162aba6fd450dbd7a26acf8320e0dcc66008d";
-            computationalSha256 "0d5a7a85e7d54a2f6bf1ea4bc0145b9dd2de2686e4352a5d0b2b732672e243a9";
+            sha256        "c1848dc3492f6b9110c578938327b34d706f58834a3b9ebd408926af80834a03";
+            computationalSha256 "122b02069eb5473afdf51a71b11861763dc0312bbad8c4a4d38d3c2feef244a8";
             origin        "data/standards/components/kalicinite.dat";
-            originSha256  "249613392794192169b0fc77b8a3a8e4a50a49571ac0b108096bc988bca81825";
+            originSha256  "eb79e77469ddc1ec18e94b074b5f49c0e0437e8e6788a82b8187791ef9b54642";
             release       Choupo-2608;
         }
         "components/kieserite.dat"
@@ -541,19 +541,19 @@ propertyManifest
         "components/natron.dat"
         {
             type          imported;
-            sha256        "91f3d6e720e2c81a4985db4b04373c9d84474f4493b846a6dc1d75afe2856183";
-            computationalSha256 "f6f2412d09b31b7f443e930476174115420497dbf0a74b5e31632d89a24013b7";
+            sha256        "52d1fa7dad3cc1c8c895870f5ed0a425979c52e419456704f7abfc29d01be957";
+            computationalSha256 "afbcd12842154095b2f1d34e9eb94d735bd56a5ba317e2a825226ca7e2b5c6e6";
             origin        "data/standards/components/natron.dat";
-            originSha256  "0e2f81035ed8991a4877d208012ddbaa1d04f3d816014640fdf5035e8e3aa64c";
+            originSha256  "d1df4cc6c503f7de095e8867120254659cbedf3eb9ca1319578abd563383e542";
             release       Choupo-2608;
         }
         "components/nesquehonite.dat"
         {
             type          imported;
-            sha256        "a1b58f268344a7764fb25f0a84414575ee2abc71e0533eb937e22addc2bcf56c";
-            computationalSha256 "38398281b91091d031c7550b416ea74e40729b9d8e1a764187e6271d72e5bd4a";
+            sha256        "e87b2e36dfd7652c1fdc83ef3bbedc2f3602cda73ca59168cd6b53526022f162";
+            computationalSha256 "753014bab85409ea071d3a3f1099c32a385ebdd048c262b05193707880a42bed";
             origin        "data/standards/components/nesquehonite.dat";
-            originSha256  "ea219b9837f8da7d1b40d777ab9e24d9fd50cc121820282df0c48011690c0a93";
+            originSha256  "c17dba4e363bc714c2b3b0ac59273792514469b5f4bd858936d698548677a9db";
             release       Choupo-2608;
         }
         "components/pentahydrite.dat"
@@ -568,10 +568,10 @@ propertyManifest
         "components/pirssonite.dat"
         {
             type          imported;
-            sha256        "9a7776a24f4462030df1e7282ce008de541a78fcba39571ce4ee62a32d5acaa8";
-            computationalSha256 "da4606249bd3082dd83c3791804557bfdc99a7ee02976105b48c0f5d87c37f66";
+            sha256        "f183d23aeff8998117524786209b9e32e48ea7c8ae99b6f7f4e71526aad41519";
+            computationalSha256 "65900d82d56344b32279d0a43d53aa71649e9a3deeab6f34fb831c21bc3cb981";
             origin        "data/standards/components/pirssonite.dat";
-            originSha256  "87204bef8d40dbaa111298b013ff68b2d4c7d0099db99cc62caa1375d966c8bb";
+            originSha256  "057a122634aa6a95ffbe39b15fae773408b9cdac365579e84c235dc33f5dd547";
             release       Choupo-2608;
         }
         "components/polyhalite.dat"
@@ -604,10 +604,10 @@ propertyManifest
         "components/trona.dat"
         {
             type          imported;
-            sha256        "928fd5e1ea605d0ae04fe14b04d17379f9c722aa6a79de3bd1608ab7c2b261b6";
-            computationalSha256 "6fa2291bf6a5ec60978412b5af9bc3d797b9eb1666990a8935f90d383a565689";
+            sha256        "0be240454fb2f13a776b29727c6936b9c0d0eafab164017d2f78a9ff94e4e22e";
+            computationalSha256 "143606c2cf6146e170b259155010ebc30f289c277d3447e3eccefc37125c2a36";
             origin        "data/standards/components/trona.dat";
-            originSha256  "dbf0c3d3a1f4228ddd291feb1d450be607f741b3eb42d2b43f69e2812b3ed720";
+            originSha256  "53c1056fd1a22d4671edf73fa3ea952bf8b20452cf40e3abee80e2429f207f0e";
             release       Choupo-2608;
         }
         "components/water.dat"

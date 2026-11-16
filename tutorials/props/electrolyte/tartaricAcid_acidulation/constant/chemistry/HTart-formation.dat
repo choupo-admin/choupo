@@ -1,3 +1,4 @@
+// [imported] origin "data/standards/chemistry/HTart-formation.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*--------------------------------*\
   chemistry/HTart-formation.dat -- the first dissociation of tartaric acid,
   written from the neutral master:   H2Tart  <=>  HTart- + H+

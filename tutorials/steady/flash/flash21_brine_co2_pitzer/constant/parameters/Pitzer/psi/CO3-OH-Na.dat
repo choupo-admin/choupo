@@ -1,4 +1,4 @@
-// [imported] origin "data/standards/parameters/Pitzer/psi/CO3-OH-Na.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+// [imported] origin "data/standards/parameters/Pitzer/psi/CO3-OH-Na.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*--------------------------------*\
   Pitzer ternary mixing parameter psi(CO3,OH|Na) --- the two anions CO3(2-)
   and OH(-) with the common cation Na(+).
