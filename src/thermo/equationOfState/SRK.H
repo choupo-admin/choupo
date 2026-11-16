@@ -114,11 +114,13 @@ class SRK : public CubicEoS
 {
 public:
     SRK(const std::vector<Component>& comps,
-        const std::vector<std::vector<scalar>>& kij,
+        std::unique_ptr<CubicMixingRule> rule,
         const std::vector<scalar>& volumeShift = {});
 
-    // Convenience: factory from a dict block.  Reads optional
-    // `binaryInteractions (... );` sub-list, defaulting to k_ij = 0.
+    // Convenience: factory from a dict block.  Reads the optional
+    // `mixingRule <word>;` (default vanDerWaalsOneFluid) and, for the
+    // one-fluid rule, the optional `binaryInteractions (... );` sub-list,
+    // defaulting to k_ij = 0.
     static std::unique_ptr<EquationOfState>
     fromDict(const DictPtr& eosDict, const std::vector<Component>& comps);
 };

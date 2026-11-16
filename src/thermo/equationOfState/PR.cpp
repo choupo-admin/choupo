@@ -113,17 +113,17 @@ namespace {
 }
 
 PR::PR(const std::vector<Component>& comps,
-       const std::vector<std::vector<scalar>>& kij,
+       std::unique_ptr<CubicMixingRule> rule,
        const std::vector<scalar>& volumeShift)
   : CubicEoS("PR", Constants{ OMEGA_A, OMEGA_B, EPS, SIG }, comps,
-             slopes(comps), kij, volumeShift)
+             slopes(comps), std::move(rule), volumeShift)
 {}
 
 std::unique_ptr<EquationOfState>
 PR::fromDict(const DictPtr& eosDict, const std::vector<Component>& comps)
 {
-    auto kij = readKij("PR", eosDict, comps);
-    return std::make_unique<PR>(comps, kij,
+    auto rule = readMixingRule("PR", eosDict, comps);
+    return std::make_unique<PR>(comps, std::move(rule),
         readVolumeTranslation("PR", eosDict, comps, /*pengRobinson*/ true));
 }
 

@@ -100,6 +100,16 @@ Description
         out ~1 and the CMO seed converged to a trivial profile.  With the
         pseudo-root the same unseeded case converges to the real profile.
 
+    THE MIXING RULE IS AN OBJECT (DEV.md 4c C408 (b)).  How the cubic mixes
+    a and b -- the van der Waals one-fluid rule below, or an excess-Gibbs
+    rule such as MHV1/MHV2 -- is a CubicMixingRule (CubicMixingRule.{H,cpp}),
+    chosen by the equationOfState block's `mixingRule` word and OWNED by this
+    class.  The cubic asks it for (a, b, da/dT, bbar_i, X_i = betabar_i/beta)
+    and keeps the root picker, the pseudo-root and the departures; for a
+    rule other than the one-fluid one only the numbers that go into them
+    change.  The one-fluid arithmetic was MOVED, intact, into
+    CubicMixingRule.cpp (`VanDerWaalsOneFluid::mix`).
+
     THE MIXING-RULE DERIVATIVE.  a_ij = (1 − k_ij)·√(a_i a_j) and its T
     derivative used to be written ½(√(a_j/a_i)·a_i' + √(a_i/a_j)·a_j'),
     which is 0/0 at the minimum of the α function (1 + m(1 − √Tr) = 0,
@@ -112,6 +122,7 @@ Description
 
 #pragma once
 
+#include "CubicMixingRule.H"
 #include "EquationOfState.H"
 #include "core/Constants.H"
 #include "thermo/Component.H"
@@ -162,9 +173,18 @@ public:
     scalar  S_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;
 
     // The one-fluid decomposition, filled by the same buildAi/buildMix the
-    // hot path runs (see EquationOfState::MixingLedger).
+    // hot path runs (see EquationOfState::MixingLedger).  Only the one-fluid
+    // rule has one: an excess-Gibbs rule returns false (its terms are in the
+    // resolved view and the run's printed choice).
     bool mixingLedger(scalar T_K, const sVector& y,
                       MixingLedger& out) const override;
+
+    // The mixing rule in force: its grammar word and its view lines.
+    const std::string& ruleName() const { return rule_->name(); }
+    std::vector<std::string> mixingRuleLines() const override
+    {
+        return rule_->viewLines();
+    }
 
     const std::string& modelName() const override { return name_; }
 
@@ -185,8 +205,18 @@ protected:
     CubicEoS(const std::string& name, const Constants& c,
              const std::vector<Component>& comps,
              const std::vector<scalar>& slope,
-             const std::vector<std::vector<scalar>>& kij,
+             std::unique_ptr<CubicMixingRule> rule,
              const std::vector<scalar>& volumeShift = {});
+
+    // THE MIXING RULE the block declares (`mixingRule <word>;`, absent =
+    // vanDerWaalsOneFluid), built by CubicMixingRule::New with the kij of
+    // the one-fluid rule read here (readKij) and the `activityModel` block of
+    // an excess-Gibbs rule read by the rule itself.  The word is checked
+    // against the registry; the refusals that are per equation of state
+    // (an excess-Gibbs rule on PR) are the rule's own.
+    static std::unique_ptr<CubicMixingRule>
+    readMixingRule(const std::string& model, const DictPtr& eosDict,
+                   const std::vector<Component>& comps);
 
     // PENELOUX VOLUME TRANSLATION (Peneloux, Rauzy & Freze 1982, Fluid Phase
     // Equilib. 8, 7-23; DEV.md 4c C408 (a)).  Reads the optional
@@ -222,16 +252,16 @@ private:
     void buildAi(scalar T, std::vector<scalar>& a, std::vector<scalar>& dadT,
                  std::vector<scalar>* s = nullptr,
                  std::vector<scalar>* dsdT = nullptr) const;
-    void buildMix(scalar T, const sVector& y,
-                  scalar& a_mix, scalar& dadT_mix, scalar& b_mix,
-                  std::vector<std::vector<scalar>>* aij_out = nullptr) const;
+    //  The mixing rule's answer at (T, y); `partials` asks for bbar_i and X_i
+    //  (the fugacity coefficient), `temperature` for da/dT (the departures).
+    void buildMix(scalar T, const sVector& y, CubicMixingRule::Mixed& mx,
+                  bool partials, bool temperature) const;
 
     // (A, B) at (T, P, y) and the chosen root; announces a pseudo-root.
     Root root(scalar T, scalar P, const sVector& y, bool liquid,
-              scalar* A_out = nullptr, scalar* B_out = nullptr,
-              scalar* a_mix_out = nullptr, scalar* dadT_out = nullptr,
-              scalar* b_mix_out = nullptr,
-              std::vector<std::vector<scalar>>* aij_out = nullptr) const;
+              CubicMixingRule::Mixed& mx, scalar* A_out = nullptr,
+              scalar* B_out = nullptr, bool partials = false,
+              bool temperature = false) const;
     sVector phiAt(scalar T, scalar P, const sVector& y, bool liquid) const;
     void announcePseudo(bool liquid) const;
 
@@ -239,7 +269,7 @@ private:
     Constants                        c_;
     std::size_t                      n_;
     std::vector<PureParams>          pure_;
-    std::vector<std::vector<scalar>> kij_;     // [n × n], 0 default
+    std::unique_ptr<CubicMixingRule> rule_;    // never null
     std::vector<scalar>              cShift_;  // c_i [m3/mol]; empty = off
     std::vector<std::string>         cNames_;  // component names (for the note)
 };

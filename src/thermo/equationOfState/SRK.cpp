@@ -66,17 +66,17 @@ namespace {
 }
 
 SRK::SRK(const std::vector<Component>& comps,
-         const std::vector<std::vector<scalar>>& kij,
+         std::unique_ptr<CubicMixingRule> rule,
          const std::vector<scalar>& volumeShift)
   : CubicEoS("SRK", Constants{ OMEGA_A, OMEGA_B, 0.0, 1.0 }, comps,
-             slopes(comps), kij, volumeShift)
+             slopes(comps), std::move(rule), volumeShift)
 {}
 
 std::unique_ptr<EquationOfState>
 SRK::fromDict(const DictPtr& eosDict, const std::vector<Component>& comps)
 {
-    auto kij = readKij("SRK", eosDict, comps);
-    return std::make_unique<SRK>(comps, kij,
+    auto rule = readMixingRule("SRK", eosDict, comps);
+    return std::make_unique<SRK>(comps, std::move(rule),
         readVolumeTranslation("SRK", eosDict, comps, /*pengRobinson*/ false));
 }
 
