@@ -3562,6 +3562,22 @@ accepts today, and that is a policy call.
 > none of the printed errors.  Report:
 > docs/reviews/2026-11-15-geraldes2008-errata/REPORT.md.
 
+> **C411 (architect, 2026-11-16, found by an external cross-check that used
+> Choupo as an independent speciation reference).**  DEFECTS in Choupo's
+> aqueous speciation below 0 C and in K(T), to be fixed as one slice after a
+> measurement each: (1) the Debye-Huckel A_phi is clamped at 273.15 K (+1.2 %
+> at -10 C); (2) the ice phase carries no Delta Cp in its water activity
+> (0.9043 vs 0.9072 at -10 C against the vapour-pressure ratio 0.907); (3)
+> the van 't Hoff path for K(T) carries no Delta_r Cp; (4) the ionic osmotic
+> coefficient is applied to neutral species in a_w (SpeciationSolver.cpp:
+> 1995); (5) the phosphate pK2 record follows a geochemical database (Delta
+> H 4.14 kJ/mol, no Delta_r Cp) instead of Goldberg 1981 (3.6 kJ/mol, Delta_r
+> Cp -230); (6) the E-theta J(x) self-check is circular (its anchors are the
+> formula's own output) -- read Pitzer 1975 at the page and anchor to it.
+> Missing for sub-zero formulations, CANDIDATES: phosphate hydrates and
+> hydrohalite as solids, Pitzer pairs below 0 C, citrate/histidine/Tris ion
+> pairs, a sugar activity model, a liquidus march for a mixed liquid.
+
 > **C410 (architect, 2026-11-16, found by the C408 (b) design).**  A DEFECT:
 > under phiPhi the liquid enthalpy is not the cubic's -- H_liquid_formation
 > takes no pressure and calls no EoS (ThermoPackage.cpp:1657-1759, :1870) and
