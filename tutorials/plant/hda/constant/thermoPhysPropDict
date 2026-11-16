@@ -52,3 +52,20 @@ caloric
     liquid { departureRoute equilibriumEquationOfState; root liquid; }
     vapour { departureRoute equilibriumEquationOfState; root vapour; }
 }
+
+//  VARIANTS (DEV.md 4c C398 / C402): what a unit's inline `thermo { }` used to
+//  carry, now NAMED here and selected by `thermo <name>;` in the unit.  A variant
+//  states only what differs from the system above; the rest is the system's.
+variants
+{
+    //  Ideal molecular world of the shortcut column (unit Column; see the comment there).
+    idealMolecularColumn
+    {
+        equilibrium
+        {
+            formulation gammaPhi;
+            liquid { activityModel ideal;  standardState pureLiquid; }
+            vapour { fugacityModel idealGas; }
+        }
+    }
+}

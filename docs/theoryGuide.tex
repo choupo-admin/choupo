@@ -2659,8 +2659,9 @@ variants
 \end{lstlisting}
 A unit (\file{system/flowsheetDict}) or a property operation
 (\file{system/propsDict}) selects a variant by name with one line,
-\code{thermo vogelLaw;}.  An inline \code{thermo \{ ... \}} keeps reading as
-before, as an \emph{unnamed} variant.  The engine resolves a named variant
+\code{thermo vogelLaw;}.  A property operation's inline \code{thermo \{ ... \}} keeps reading as
+an \emph{unnamed} variant; a \emph{unit's} inline block is refused by name
+(C402: a unit's world is always a named variant).  The engine resolves a named variant
 by the same typed merge an inline fragment goes through
 (\file{src/thermo/ThermoOverride.H}), through one reader
 (\file{src/thermo/PropertyVariants.H}); so a pipe and a property check that
@@ -2733,7 +2734,7 @@ can be asked it prints two columns:
 \begin{description}
 \item[CHOICE] where the choice was made: the file's system, a sector file or
   the parent it inherits, \code{variants.<name>}, or the inline \code{thermo
-  \{\}} of a unit.  A choice belongs to the level that \emph{resolved} it,
+  \{\}} of a property operation.  A choice belongs to the level that \emph{resolved} it,
   never to the level that selected the variant.
 \item[DATA] what runs and where its data come from: for each transport
   property, the pure-component law per constituent (with its source and
@@ -3168,8 +3169,8 @@ missing is refused, not replaced).  The reader of a sector's (or an
 \code{inherits} parent's) dictionary stamps each table pin, and each density
 measurement, with that folder; the view prints the file's path relative to the
 case root (``\code{record: case sectors/A/constant/experiments/crcWaterMu.dat}'').
-A unit's inline \code{thermo \{\}} obeys the same rule (review row TG-19): a
-table pin written in a unit's own \file{system/flowsheetDict} reads that
+A unit's own variant obeys the same rule (review row TG-19): a
+table pin written in a variant of a unit's own \file{constant/thermoPhysPropDict} reads that
 unit's \file{constant/experiments/} (for a pipe of sector A,
 \file{sectors/A/unitOperations/P1/constant/experiments/}), never its sector's
 or the plant's, and a file it does not hold is refused naming that path.  The
@@ -3753,7 +3754,7 @@ A resolution is kept per \emph{world} and set for the run.  The world is
 every per-component fact the resolution reads from a package: the name, the
 case's pure-fluid selection, whether the formulation makes the component a
 Henry solute, and the volume route its record offers.  A unit's own
-\code{thermo \{\}} that changes one of them is a second world and a second
+variant (\code{thermo <name>;}) that changes one of them is a second world and a second
 recipe, never a contradiction of the first.  A package met for the first
 time (another pass of an outer driver builds its own) resolves its sets
 again, and a set of the SAME world that would resolve to a \emph{different}

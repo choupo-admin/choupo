@@ -139,7 +139,7 @@ inline DictPtr mergePropertyDicts(const DictPtr& base, const DictPtr& over,
         }
         if (v2Chain && v2AtomicBlock(k))
         {
-            if (out->found(k))
+            if (out->found(k) && k != "recordType" && k != "schemaVersion")   // every dictionary declares those two
                 std::cerr << "[inherits] " << ctx << "." << k
                           << " shadowed by local property context"
                              " (v2 physical block, replaced whole)\n";

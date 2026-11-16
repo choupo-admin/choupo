@@ -68,15 +68,7 @@ units
     { name Column;   type shortcutColumn;
       in hpLiquid;  outputs ( Benzene  TolueneRecycle );  // FUG: [distillate, bottoms]
       operation { lightKey benzene;  heavyKey toluene;  recoveryLK 0.99;  recoveryHK 0.01;  refluxFactor 1.3; }
-      thermo
-      {
-          equilibrium
-          {
-              formulation gammaPhi;
-              liquid { activityModel ideal;  standardState pureLiquid; }
-              vapour { fugacityModel idealGas; }
-          }
-      } }
+      thermo      idealMolecularColumn; }
 );
 
 boundary

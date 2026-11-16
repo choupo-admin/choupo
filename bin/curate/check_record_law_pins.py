@@ -41,14 +41,13 @@ written or read --
                            `transport { liquid { viscosity { } } }`, between
                            the record's two shipped laws (purelaws01)
     variant                a pin inside a named variant a unit selects
-    inline                 a pin inside a unit's inline `thermo {}`
     sector                 a pin in a sector dictionary (lithiumBrinePlant
                            HOTAIR), compared on the sector unit's numbers
     speciate               water's vapour-pressure law priced by the
                            speciation operation's solvent leg, a copy of the
                            component loaded outside any package (CN-03)
 
-The variant, inline and sector arms compare the selecting unit's KPIs only:
+The variant and sector arms compare the selecting unit's KPIs only:
 the rest of the plant runs on the system's package, which the pin does not
 reach by design.
 
@@ -82,7 +81,6 @@ ARMS7 = [
     ("solid",           "tutorials/steady/drying/sprayDryer01_sugar",            "sucrose", "solidHeatCapacity", True, "system", None),
     ("transport",       "tutorials/props/transport/purelaws01_methanol_isopropanol_water", "water", "liquidViscosity", True, "transport", None),
     ("variant",         "tutorials/steady/flash/flash01_benzene_toluene",       "benzene", "vaporPressure", True, "variant:flash01", ".kpis.flash01"),
-    ("inline unit thermo", "tutorials/steady/flash/flash01_benzene_toluene",    "benzene", "vaporPressure", True, "inline:flash01", ".kpis.flash01"),
     ("sector dictionary", "tutorials/plant/lithiumBrinePlant",                  "CH4",     "idealGasHeatCapacity", True, "sector:HOTAIR", ".kpis.HOTAIR."),
     ("speciate solvent leg", "tutorials/props/electrolyte/edwards02_table7_vle", "water", "vaporPressure", True, "system", None),
 ]
@@ -169,17 +167,14 @@ def make_case(tmp, witness, comp, prop, mode, how="system"):
             "transport" if how == "transport" else "caloric")
     block = (f"{prop} {{ {pin} }}" if how != "transport" else
              f"liquid {{ viscosity {{ {pin} }} }}")
-    if how.startswith("variant:") or how.startswith("inline:"):
+    if how.startswith("variant:"):   # C402: the unit's inline `thermo {}` form is retired (refused by name)
         unit = how.split(":", 1)[1]
         fs = d / "system" / "flowsheetDict"
         f = fs.read_text()
         m = re.search(r"name\s+" + re.escape(unit) + r"\s*;", f)
-        if how.startswith("variant:"):
-            tp = d / "constant" / "thermoPhysPropDict"
-            tp.write_text(tp.read_text() + f"\nvariants\n{{\n    pinV {{ {home} {{ {block} }} }}\n}}\n")
-            f = f[:m.end()] + "\n        thermo      pinV;" + f[m.end():]
-        else:
-            f = f[:m.end()] + f"\n        thermo      {{ {home} {{ {block} }} }}" + f[m.end():]
+        tp = d / "constant" / "thermoPhysPropDict"
+        tp.write_text(tp.read_text() + f"\nvariants\n{{\n    pinV {{ {home} {{ {block} }} }}\n}}\n")
+        f = f[:m.end()] + "\n        thermo      pinV;" + f[m.end():]
         fs.write_text(f)
         return d
     if how.startswith("sector:"):

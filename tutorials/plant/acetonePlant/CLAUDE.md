@@ -94,7 +94,7 @@ it existed. That is why the plant is informative rather than merely wrong:
   doctrine makes those the student's to see.
 - **Two thermodynamic worlds.** The absorber REFUSES the global
   gammaPhi/UNIFAC package by name — Kremser reads Henry's law — so it carries
-  its own `thermo {}` (water solvent on Raoult, acetone solute on Henry). The
+  its own world, the named variant `henryAbsorber` (water solvent on Raoult, acetone solute on Henry). The
   run announces the boundary. This is the settled heterogeneous-thermo
   architecture on a published flowsheet rather than on a demonstration.
 - **An explicit vent ahead of C1.** Luyben's C1 has a partial condenser and a
@@ -125,7 +125,7 @@ caveat surface.
 
 ## The absorber's -11.25 kW is the energy MODEL, not the model boundary (2026-08-14)
 
-The absorber carries the plant's only per-unit `thermo {}` override, so its
+The absorber carries the plant's only per-unit variant (`thermo henryAbsorber;`), so its
 enthalpy step was the obvious suspect for the -11.2496 kW the energy report
 attributes to it.  It is not.  The model-boundary auditor prices all four of
 its streams in both worlds and the step is **zero on every one**: changing the

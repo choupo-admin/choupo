@@ -246,12 +246,18 @@ def compare(calls, pairs, views):
     return bad
 
 
+def isFlash(title):
+    """The separation flash's own package: its view is titled by the variant the
+    unit selects (`thermo nrtl;`, C402), never by an inline fragment."""
+    return "variant 'nrtl'" in title
+
+
 def sabotaged(views, titles, edit):
     if edit == "SWAP_FLASH_PAIR":
-        sysline = next((l for t, v in views.items() if "SEPARATION.flash" not in titles.get(t, "")
+        sysline = next((l for t, v in views.items() if not isFlash(titles.get(t, ""))
                         for l in v if l.startswith("pair ethylAcetate-water:")), None)
         return {t: ([sysline if (l.startswith("pair ethylAcetate-water:") and sysline) else l for l in v]
-                    if "SEPARATION.flash" in titles.get(t, "") else v) for t, v in views.items()}
+                    if isFlash(titles.get(t, "")) else v) for t, v in views.items()}
     if edit == "STRIP_VARIANT_VP":
         return {t: ([l for l in v if "[vaporPressure]" not in l] if "variant '" in titles.get(t, "") else v)
                 for t, v in views.items()}

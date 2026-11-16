@@ -630,9 +630,12 @@ def main():
             hypothesis(d, "CO2", "0.06")
             fs = d / "system" / "flowsheetDict"
             fs.write_text(fs.read_text().replace("        reactions   ( absentAcid );",
-                "        reactions   ( absentAcid );\n        thermo { equilibrium { formulation gammaPhi;"
+                "        reactions   ( absentAcid );\n        thermo      gammaPhiWorld;", 1))
+            #  C402: the reactor's own world is a NAMED variant of the case's dictionary.
+            tpd = d / "constant" / "thermoPhysPropDict"
+            tpd.write_text(tpd.read_text() + "\nvariants { gammaPhiWorld { equilibrium { formulation gammaPhi;"
                 " liquid { activityModel ideal; standardState pureLiquid; } vapour { fugacityModel"
-                " idealGas; } } }", 1))
+                " idealGas; } } } }\n")
             rc, res, o = solve(d)
             arm("PA-03 a Henry world and a gammaPhi world", rc == 0 and "earlier in this run" not in o,
                 "both worlds priced, neither refused as the other's contradiction" if rc == 0

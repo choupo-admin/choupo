@@ -200,24 +200,17 @@ def make_cold_vapour_feed(case: Path) -> None:
 
 
 def strip_unit_thermo(text: str, unit: str):
-    """The flowsheetDict text with the `thermo { ... }` block of the named
-    unit removed (brace-matched), or None when it is not where expected."""
+    """The flowsheetDict text with the unit's `thermo <name>;` selector removed
+    (C402: a unit's own world is a named variant), or None when it is not where
+    expected.  The unit then computes in the case's world, which is what the
+    gate wants to see."""
     i = text.find("name        %s;" % unit)
     if i < 0:
         return None
-    j = text.find("thermo", i)
-    k = text.find("{", j)
-    if j < 0 or k < 0:
+    m = re.compile(r"[ \t]*thermo[ \t]+\w+[ \t]*;").search(text, i)
+    if not m:
         return None
-    depth, n = 0, k
-    while n < len(text):
-        depth += (text[n] == "{") - (text[n] == "}")
-        n += 1
-        if depth == 0:
-            break
-    if depth != 0:
-        return None
-    return text[:j] + text[n:]
+    return text[:m.start()] + text[m.end():]
 
 
 def main() -> int:
@@ -289,9 +282,13 @@ def main() -> int:
                 failures.append("A2: the downstream world '%s' does not name"
                                 " the models the unit's thermo{} block"
                                 " declares" % dn)
-            if "gammaPhi" not in fsd or "ideal" not in fsd:
+            #  C402: the unit's world is the variant it selects, declared in
+            #  constant/thermoPhysPropDict's `variants {}`.
+            vtext = pkg[pkg.find("variants"):] if "variants" in pkg else ""
+            if ("gammaPhi" not in vtext or "ideal" not in vtext
+                    or not re.search(r"thermo\s+\w+\s*;", fsd)):
                 failures.append("A2: the fixture drifted -- the unit no longer"
-                                " declares gammaPhi/ideal in flowsheetDict")
+                                " selects a variant declaring gammaPhi/ideal")
             if up == dn:
                 failures.append("A2: both sides of the boundary are named the"
                                 " same world")

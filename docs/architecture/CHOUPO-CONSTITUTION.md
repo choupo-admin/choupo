@@ -197,7 +197,7 @@ ThermoPackage  →  unit ops     (units know ONLY the ThermoPackage — never fi
 
 The five legal axes of heterogeneous thermo: **models per PHASE · conventions per
 GROUP · correlations per COMPONENT · parameters per PAIR · packages per UNIT** — one
-Gibbs surface per phase, never two.  A per-unit `thermo{}` override REPLACES the
+Gibbs surface per phase, never two.  A per-unit named variant (`thermo <name>;`, C402) REPLACES the
 models for that unit (components stay global).
 
 ### 4.1 Model boundaries — H is conserved, T is the readout

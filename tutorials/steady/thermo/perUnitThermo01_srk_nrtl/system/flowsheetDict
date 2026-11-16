@@ -11,8 +11,9 @@
   ========================
 
   Demonstrates PER-UNIT thermo models: the global package (Raoult) is the
-  default, but each unit can override it with a `thermo { ... }` block that
-  replaces the model it cares about.  Components stay global.
+  default, but each unit can select a NAMED VARIANT of the property
+  dictionary (`thermo <name>;`, declared under `variants {}` in
+  constant/thermoPhysPropDict) that replaces the model it cares about.  Components stay global.
 
     turbine  ->  equationOfState SRK   (real-gas expansion, high P)
     flash    ->  activityModel  NRTL   (non-ideal ethanol/water liquid)
@@ -33,7 +34,7 @@ units
         in          feed;
         outputs     ( expanded );
         operation   { W_shaft -3.0 kW;  eta 0.80; }
-        thermo      { equilibrium { vapour { fugacityModel SRK; } } }     // real gas
+        thermo      srkVapour;     // real gas
     }
 
     {
@@ -42,16 +43,6 @@ units
         in          expanded;
         outputs     ( liquid  vapor );
         operation   { T 353.0 K;  P 1.0 bar; }
-        thermo
-        {
-            equilibrium { liquid { activityModel
-            {
-                model  NRTL;
-                binaryParameters
-            {
-                ethanol-water { i ethanol; j water; a_ij -0.8009; b_ij 246.18; a_ji 3.4578; b_ji -586.0809; alpha 0.30; }
-            }
-            } } }
-        }
+        thermo      nrtlEthanolWater;
     }
 );

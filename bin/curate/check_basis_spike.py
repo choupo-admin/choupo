@@ -374,25 +374,11 @@ def main() -> int:
         idw = fresh(tmp, "identity")
         fsd = idw / "system" / "flowsheetDict"
         t = fsd.read_text()
-        #  Remove EVERY per-unit thermo override by balanced braces -- the
-        #  boundary is what the probe removes, and the chain carries more
-        #  than one unit that declares a local world.  (Cutting from the
-        #  first `thermo {` to the file's last `}` worked only while there
-        #  was exactly one, and broke when the splitter was added.)
-        while True:
-            i = t.find("        thermo\n        {")
-            if i < 0:
-                break
-            j = t.index("{", i)
-            depth = 0
-            for k2 in range(j, len(t)):
-                if t[k2] == "{":
-                    depth += 1
-                elif t[k2] == "}":
-                    depth -= 1
-                    if depth == 0:
-                        break
-            t = t[:i] + t[k2 + 2:]
+        #  Remove EVERY per-unit thermo selector (C402: a unit's own world is a
+        #  `thermo <name>;` naming a variant) -- the boundary is what the probe
+        #  removes, and the chain carries more than one unit that declares a
+        #  local world.
+        t = re.sub(r"[ \t]*thermo[ \t]+\w+[ \t]*;[ \t]*\n", "", t)
         fsd.write_text(t)
         rc6, out6 = run(idw)
         if rc6 != 0:

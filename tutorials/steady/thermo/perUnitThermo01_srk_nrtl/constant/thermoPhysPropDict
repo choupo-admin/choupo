@@ -33,3 +33,27 @@ equilibrium
         fugacityModel idealGas;
     }
 }
+
+//  VARIANTS (DEV.md 4c C398 / C402): what a unit's inline `thermo { }` used to
+//  carry, now NAMED here and selected by `thermo <name>;` in the unit.  A variant
+//  states only what differs from the system above; the rest is the system's.
+variants
+{
+    //  Real gas (SRK) for the turbine only; components stay global.
+    srkVapour
+    {
+        equilibrium { vapour { fugacityModel SRK; } }
+    }
+    //  NRTL ethanol-water pair for the flash only.
+    nrtlEthanolWater
+    {
+        equilibrium { liquid { activityModel
+        {
+            model  NRTL;
+            binaryParameters
+        {
+            ethanol-water { i ethanol; j water; a_ij -0.8009; b_ij 246.18; a_ji 3.4578; b_ji -586.0809; alpha 0.30; }
+        }
+        } } }
+    }
+}

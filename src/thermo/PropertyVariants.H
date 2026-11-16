@@ -48,9 +48,10 @@ Description
 
         thermo line;
 
-    and the variant is applied by the ONE typed merge every inline
-    `thermo { ... }` fragment already goes through (ThermoOverride.H) -- an
-    inline fragment keeps reading exactly as before, as an UNNAMED variant.
+    and the variant is applied by the ONE typed merge every fragment goes
+    through (ThermoOverride.H).  A UNIT's inline `thermo { ... }` block no
+    longer reads (C402: refused by name, with the lines to write); a property
+    operation's inline fragment keeps reading, as an UNNAMED variant.
     So a unit and an operation that name the same variant receive the same
     package, built by the same builder from the same merged text.
 
@@ -90,7 +91,11 @@ namespace propertyVariants {
 //  The engine-injected key that rides on a unit's rewritten `thermo {}`
 //  when the unit selected a NAMED variant: the variant's name.  Plumbing,
 //  never authored (an authored `variant` key in a fragment is refused).
-inline const char* selectedKey() { return "selectedVariant"; }
+//  The key begins with `@`, which the dictionary tokenizer never reads into a
+//  keyword (as the experiments folder's `@experimentsDir`, review row TG-17):
+//  an author cannot write it, so a fragment carrying it IS the engine's own copy
+//  of a variant body, and any authored `thermo { }` of a unit is refused (FR-01).
+inline const char* selectedKey() { return "@selectedVariant"; }
 
 //  True when `holder` (a unit or an operation dict) selects a variant BY
 //  NAME: `thermo <word>;`.
@@ -116,6 +121,20 @@ void validate(const DictPtr& system);
 //  builder makes through it are seen by the unread-key audit.
 DictPtr body(const DictPtr& system, const std::string& name,
              const std::string& who);
+
+//  A UNIT's authored `thermo { ... }` block is REFUSED (DEV.md 4c C402,
+//  Vitor 2026-11-15: no legacy form kept beside the new one).  The refusal
+//  names the unit, says what the block is for, and gives the lines to write:
+//  the variant in constant/thermoPhysPropDict and the selector in the unit.
+//  A unit's `thermo <name>;` and a unit with no `thermo` pass.  (A property
+//  OPERATION's inline fragment is the props bench's own grammar and is read
+//  by fragmentOf(), below.)
+void refuseInlineFragment(const DictPtr& unit, const std::string& who);
+
+//  A sector's (or the case root's) own `thermo` key in its flowsheetDict is
+//  refused by name: a sector's property world is its own
+//  constant/thermoPhysPropDict, and the key was never read there (FR-06).
+void refuseNodeThermo(const DictPtr& node, const std::string& who);
 
 //  The fragment `holder` selects against `system`: the named variant's
 //  body, the inline `thermo { ... }` block, or null when the holder

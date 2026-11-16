@@ -23,3 +23,20 @@ equilibrium
     formulation phiPhi;
     equationOfState { model PCSAFT; }
 }
+
+//  VARIANTS (DEV.md 4c C398 / C402): what a unit's inline `thermo { }` used to
+//  carry, now NAMED here and selected by `thermo <name>;` in the unit.  A variant
+//  states only what differs from the system above; the rest is the system's.
+variants
+{
+    //  gamma-phi with NRTL, for the second flash of the comparison.
+    nrtlEthanolWater
+    {
+        equilibrium
+        {
+            formulation gammaPhi;
+            liquid { activityModel NRTL;  standardState pureLiquid; }
+            vapour { fugacityModel idealGas; }
+        }
+    }
+}

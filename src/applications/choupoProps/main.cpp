@@ -796,11 +796,9 @@ try
     {
         std::map<std::string, std::string> p;
         // Which model did this op use? (per-op thermo override, else its own model word)
-        if (opDict->found("thermo") && !propertyVariants::selectsByName(opDict)
-            && opDict->subDict("thermo")->found("activityModel"))
-            p["model"] = opDict->subDict("thermo")->subDict("activityModel")
-                            ->lookupWordOrDefault("model", "");
-        else if (opDict->found("model"))
+        //  (The flat `thermo { activityModel ...; }` form is refused by name by the
+        //  override merge, ThermoOverride.H; no propsDict writes it.)
+        if (opDict->found("model"))
             p["model"] = opDict->lookupWordOrDefault("model", "");
         if (opDict->found("rationale")) p["rationale"] = opDict->lookupWordOrDefault("rationale", "");
         std::string src = opDict->lookupWordOrDefault("source", "");
