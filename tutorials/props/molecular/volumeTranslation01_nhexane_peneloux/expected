@@ -1,0 +1,118 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    nHexane_SRK            Cp_ig            143.105583613    1e-4
+diag    nHexane_SRK            H_R              -406.738383524   1e-4
+diag    nHexane_SRK            H_ig             -167200          1e-4
+diag    nHexane_SRK            H_real           -167606.738384   1e-4
+diag    nHexane_SRK            P                101325           1e-4
+diag    nHexane_SRK            S_R              -0.879365761951  1e-4
+diag    nHexane_SRK            S_ig             388.400556841    1e-4
+diag    nHexane_SRK            S_real           387.521191079    1e-4
+diag    nHexane_SRK            T                298.15           1e-4
+diag    nHexane_SRK            Z                0.939996543777   1e-4
+diag    nHexane_SRK            Z_liquid         0.00600512927795 1e-4
+diag    nHexane_SRK            gamma            1.06168405275    1e-4
+diag    nHexane_SRK            v_molar          0.0229973949169  1e-4
+diag    nHexane_SRK            v_molar_liq      0.000146917912035 1e-4
+diag    nHexane_SRK_Peneloux   Cp_ig            143.105583613    1e-4
+diag    nHexane_SRK_Peneloux   H_R              -408.514036675   1e-4
+diag    nHexane_SRK_Peneloux   H_ig             -167200          1e-4
+diag    nHexane_SRK_Peneloux   H_real           -167608.514037   1e-4
+diag    nHexane_SRK_Peneloux   P                101325           1e-4
+diag    nHexane_SRK_Peneloux   S_R              -0.879365761951  1e-4
+diag    nHexane_SRK_Peneloux   S_ig             388.400556841    1e-4
+diag    nHexane_SRK_Peneloux   S_real           387.521191079    1e-4
+diag    nHexane_SRK_Peneloux   T                298.15           1e-4
+diag    nHexane_SRK_Peneloux   Z                0.939280253365   1e-4
+diag    nHexane_SRK_Peneloux   Z_liquid         0.0052888388661  1e-4
+diag    nHexane_SRK_Peneloux   gamma            1.06168405275    1e-4
+diag    nHexane_SRK_Peneloux   v_molar          0.0229798705828  1e-4
+diag    nHexane_SRK_Peneloux   v_molar_liq      0.000129393577945 1e-4
+diag    nDecane_SRK            Cp_ig            236.904470483    1e-4
+diag    nDecane_SRK            H_R              -1290.31362003   1e-4
+diag    nDecane_SRK            H_ig             -249730          1e-4
+diag    nDecane_SRK            H_real           -251020.31362    1e-4
+diag    nDecane_SRK            P                101325           1e-4
+diag    nDecane_SRK            S_R              -2.89870920379   1e-4
+diag    nDecane_SRK            S_ig             545.416556841    1e-4
+diag    nDecane_SRK            S_real           542.517847637    1e-4
+diag    nDecane_SRK            T                298.15           1e-4
+diag    nDecane_SRK            Z                0.808098007523   1e-4
+diag    nDecane_SRK            Z_liquid         0.0097354170132  1e-4
+diag    nDecane_SRK            gamma            1.03637281741    1e-4
+diag    nDecane_SRK            v_molar          0.0197704439805  1e-4
+diag    nDecane_SRK            v_molar_liq      0.000238180907383 1e-4
+diag    nDecane_SRK_Peneloux   Cp_ig            236.904470483    1e-4
+diag    nDecane_SRK_Peneloux   H_R              -1294.00978191   1e-4
+diag    nDecane_SRK_Peneloux   H_ig             -249730          1e-4
+diag    nDecane_SRK_Peneloux   H_real           -251024.009782   1e-4
+diag    nDecane_SRK_Peneloux   P                101325           1e-4
+diag    nDecane_SRK_Peneloux   S_R              -2.89870920379   1e-4
+diag    nDecane_SRK_Peneloux   S_ig             545.416556841    1e-4
+diag    nDecane_SRK_Peneloux   S_real           542.517847637    1e-4
+diag    nDecane_SRK_Peneloux   T                298.15           1e-4
+diag    nDecane_SRK_Peneloux   Z                0.806606992621   1e-4
+diag    nDecane_SRK_Peneloux   Z_liquid         0.00824440211137 1e-4
+diag    nDecane_SRK_Peneloux   gamma            1.03637281741    1e-4
+diag    nDecane_SRK_Peneloux   v_molar          0.019733965699   1e-4
+diag    nDecane_SRK_Peneloux   v_molar_liq      0.000201702625892 1e-4
+diag    nDecane_SRK_PenelouxSpencer Cp_ig            236.904470483    1e-4
+diag    nDecane_SRK_PenelouxSpencer H_R              -1294.72660106   1e-4
+diag    nDecane_SRK_PenelouxSpencer H_ig             -249730          1e-4
+diag    nDecane_SRK_PenelouxSpencer H_real           -251024.726601   1e-4
+diag    nDecane_SRK_PenelouxSpencer P                101325           1e-4
+diag    nDecane_SRK_PenelouxSpencer S_R              -2.89870920379   1e-4
+diag    nDecane_SRK_PenelouxSpencer S_ig             545.416556841    1e-4
+diag    nDecane_SRK_PenelouxSpencer S_real           542.517847637    1e-4
+diag    nDecane_SRK_PenelouxSpencer T                298.15           1e-4
+diag    nDecane_SRK_PenelouxSpencer Z                0.806317831031   1e-4
+diag    nDecane_SRK_PenelouxSpencer Z_liquid         0.00795524052155 1e-4
+diag    nDecane_SRK_PenelouxSpencer gamma            1.03637281741    1e-4
+diag    nDecane_SRK_PenelouxSpencer v_molar          0.0197268912439  1e-4
+diag    nDecane_SRK_PenelouxSpencer v_molar_liq      0.000194628170863 1e-4
+diag    mixture50_SRK          Cp_ig            190.005027048    1e-4
+diag    mixture50_SRK          H_R              -757.350931969   1e-4
+diag    mixture50_SRK          H_ig             -208465          1e-4
+diag    mixture50_SRK          H_real           -209222.350932   1e-4
+diag    mixture50_SRK          P                101325           1e-4
+diag    mixture50_SRK          S_R              -1.65913564673   1e-4
+diag    mixture50_SRK          S_ig             472.671703162    1e-4
+diag    mixture50_SRK          S_real           471.012567515    1e-4
+diag    mixture50_SRK          T                298.15           1e-4
+diag    mixture50_SRK          Z                0.887703189698   1e-4
+diag    mixture50_SRK          Z_liquid         0.00787277471906 1e-4
+diag    mixture50_SRK          gamma            1.04576166431    1e-4
+diag    mixture50_SRK          v_molar          0.0217180168987  1e-4
+diag    mixture50_SRK          v_molar_liq      0.000192610611714 1e-4
+diag    mixture50_SRK_Peneloux Cp_ig            190.005027048    1e-4
+diag    mixture50_SRK_Peneloux H_R              -760.086839481   1e-4
+diag    mixture50_SRK_Peneloux H_ig             -208465          1e-4
+diag    mixture50_SRK_Peneloux H_real           -209225.086839   1e-4
+diag    mixture50_SRK_Peneloux P                101325           1e-4
+diag    mixture50_SRK_Peneloux S_R              -1.65913564673   1e-4
+diag    mixture50_SRK_Peneloux S_ig             472.671703162    1e-4
+diag    mixture50_SRK_Peneloux S_real           471.012567515    1e-4
+diag    mixture50_SRK_Peneloux T                298.15           1e-4
+diag    mixture50_SRK_Peneloux Z                0.886599537041   1e-4
+diag    mixture50_SRK_Peneloux Z_liquid         0.00676912206222 1e-4
+diag    mixture50_SRK_Peneloux gamma            1.04576166431    1e-4
+diag    mixture50_SRK_Peneloux v_molar          0.0216910155909  1e-4
+diag    mixture50_SRK_Peneloux v_molar_liq      0.000165609303924 1e-4
+
+# ANCHOR rows: AUTHORED, never re-recorded.  The published value is the liquid
+# molar volume at 298.15 K from Perry's Chemical Engineers' Handbook, 9th ed.,
+# Table 2-32 (DIPPR eq. 105, rho = C1 / C2^(1+(1-T/C3)^C4), mol/dm3):
+#   n-hexane (p. 2-96): C1 0.70824, C2 0.26411, C3 507.6, C4 0.27537 -> 7.61253 mol/dm3 -> 131.362 cm3/mol
+#   n-decane (p. 2-94): C1 0.41084, C2 0.25175, C3 617.7, C4 0.28571 -> 5.11583 mol/dm3 -> 195.472 cm3/mol
+# Band 2 %: the paper's own mean deviation of RKSc1 on the alkanes is 1.47 %
+# (Peneloux et al. 1982, Table 2).  The adjusted n-decane Z_RA (0.2578, Table 1)
+# misses by +3.2 %, so it is NOT anchored; the Spencer-Adler column (0.2507) is.
+diag    nHexane_SRK_Peneloux   v_molar_liq      1.31362436e-04   2e-2     anchor
+diag    nDecane_SRK_PenelouxSpencer v_molar_liq      1.95471882e-04   2e-2     anchor
+diag    txy_SRK                n_emptyCurves    0                1e-4
+diag    txy_SRK                n_failures       0                1e-4
+diag    txy_SRK                n_points         5                1e-4
+diag    txy_SRK_Peneloux       n_emptyCurves    0                1e-4
+diag    txy_SRK_Peneloux       n_failures       0                1e-4
+diag    txy_SRK_Peneloux       n_points         5                1e-4
