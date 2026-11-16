@@ -1013,8 +1013,8 @@
     },
     "check_thermo_limits": {
       "exit": 0,
-      "claim": "thermo-limits: OK -- (a) gamma_inf(ethanol/water, 350 K) = 7.7114 at x = 0, continuous to 1e-6; (b) flash02 capped at maxOuterIter 1 refuses naming the exhausted loop, uncapped converges; (c)/(d) flash09's phi-phi SRK liquid and vapour give TRIVIAL bubble/dew roots that are reported NOT converged, bubbleT01 and the UNIQUAC ethanol-water azeotrope (every K = 1, a genuine bubble point) stay converged; (e) flash09 publishes no T-x-y block and says why, flash01 keeps its.  NOT covered: the y = x pricing and the 200-700 K bracket themselves, a pure component on a liquid-only root, phi_sat in gamma-phi, the phi-phi liquid enthalpy.",
-      "seconds": 6.0
+      "claim": "thermo-limits: OK -- (a) gamma_inf(ethanol/water, 350 K) = 7.7114 at x = 0, continuous to 1e-6; (b) flash02 capped at maxOuterIter 1 refuses naming the exhausted loop, uncapped converges; (c-genuine)/(d-genuine) flash09's own saturated liquid and vapour give their GENUINE bubble/dew point (149.82 K, the flash's own); (c)/(d) the same compositions at 50 bar (above the mixture's critical pressure) give a TRIVIAL root reported NOT converged, bubbleT01 and the UNIQUAC ethanol-water azeotrope (every K = 1, a genuine bubble point) stay converged; (e) flash09 publishes no T-x-y block and says why, flash01 keeps its.  NOT covered: the flash is not an independent calculation (check_phase_envelope holds one), a pure component on a liquid-only root of a gamma-phi package, phi_sat in gamma-phi, the phi-phi liquid enthalpy.",
+      "seconds": 0.2
     },
     "check_thermoml_index": {
       "exit": 0,
