@@ -214,6 +214,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import record_psat  # noqa: E402  (Antoine or Wagner, read from the record's own text)
+import case_records  # noqa: E402  (C413: the case's record, or the catalogue's once it references it)
 
 ROOT = Path(__file__).resolve().parents[2]
 CASE = ROOT / "tutorials/props/scan/hxy01_ethanol_water_1atm"
@@ -290,7 +291,8 @@ def _coeffs(text, where):
 
 
 def read_component(name):
-    path = COMPONENT_DIR / f"{name}.dat"
+    path = case_records.record_path(CASE, f"components/{name}.dat") \
+        or (COMPONENT_DIR / f"{name}.dat")
     text = _strip_comments(path.read_text())
     where = str(path.relative_to(ROOT))
     return dict(
@@ -306,8 +308,9 @@ def read_component(name):
 
 
 def read_pair():
-    text = _strip_comments(PAIR_FILE.read_text())
-    where = str(PAIR_FILE.relative_to(ROOT))
+    pair = case_records.record_path(CASE, "parameters/NRTL/ethanol-water.dat") or PAIR_FILE
+    text = _strip_comments(pair.read_text())
+    where = str(pair.relative_to(ROOT))
     par = _block(text, "parameters", where)
     if re.search(r"\bi\s+ethanol\s*;", par) is None:
         raise LookupError(f"{where}: the pair block does not declare "

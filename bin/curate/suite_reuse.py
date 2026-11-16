@@ -110,6 +110,7 @@ ROOT = Path(__file__).resolve().parents[2]
 STORE = ROOT / "build" / "reuse"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import gate_scan_roots as gsr   # noqa: E402
+import case_records             # noqa: E402  (C413: the pins of a case)
 
 #  THE KEYED GATES.  `trees`: the data the verdict reads (repository paths;
 #  git's listing).  `local`: the ignored private tier is read too.  Every
@@ -747,6 +748,35 @@ def case_harness():
     return digest(pairs), (sorted(seen), files)
 
 
+def pinned_key_parts(case_abs: Path):
+    """THE KEY OF A CASE THAT REFERENCES THE CATALOGUE (C413).
+
+    A sealed case carries its records, so its own files ARE the key; a pinned
+    case does not, and a water edit would change its result and none of its
+    files until the re-pin.  So its key holds the CURRENT content hash of every
+    catalogue file (or, for a directory pin, of every file in that directory)
+    its manifest pins -- an edit of a pinned record moves the key (the case
+    runs, and a pin that no longer matches FAILS under CHOUPO_PINS=refuse), an
+    edit of a record the case does not pin moves nothing.  None when the
+    nearest manifest holds no pins."""
+    m = case_records.manifest_of(case_abs)
+    if m is None:
+        return None
+    mf = case_records.read_manifest(m)
+    if not mf["pins"]:
+        return None
+    parts = []
+    for sub in sorted(mf["pins"]):
+        f = ROOT / "data" / "standards" / sub.rstrip("/")
+        if sub.endswith("/"):
+            d = (digest([(x.name, H.sha(x)) for x in sorted(f.glob("*.dat"))])
+                 if f.is_dir() else "ABSENT")
+        else:
+            d = H.sha(f) if f.is_file() else "ABSENT"
+        parts.append(("pin:" + sub, d))
+    return parts
+
+
 def case_plan(root_rel):
     """One line per case under root_rel: <dir>\\t<key>\\t<labels|->\\t<date>."""
     if disabled():
@@ -760,6 +790,19 @@ def case_plan(root_rel):
     har, _ = case_harness()
     base = digest([("engine", eng), ("data", dat), ("harness", har),
                    ("platform", platform_half())])
+    #  The base of a PINNED case: the same, with data/standards reduced to the
+    #  NAMES it holds (a new file in a scanned directory is a read the pins do
+    #  not cover) -- the content of what the case pins is in its own key.
+    base_pin = []
+
+    def pinned_base():
+        if not base_pin:
+            dat2, _n = data_half(["data/groupEstimative", "data/README.md"], True)
+            names = digest([(f, "") for f in (git_files(["data/standards"]) or [])])
+            base_pin.append(digest([("engine", eng), ("data", dat2),
+                                    ("standardsNames", names), ("harness", har),
+                                    ("platform", platform_half())]))
+        return base_pin[0]
     files = git_files([root_rel]) or []
     #  the case directories: those holding system/controlDict
     cases = sorted({f[:-len("/system/controlDict")] for f in files
@@ -796,7 +839,11 @@ def case_plan(root_rel):
         #  own constant/ in full (ignored files too, the fetched extracts
         #  aside) and every parent's constant/, present or absent.
         pairs += cascade(ROOT / c)
-        key = digest([("base", base)] + sorted(pairs))
+        pp = pinned_key_parts(ROOT / c)
+        if pp is None:
+            key = digest([("base", base)] + sorted(pairs))
+        else:
+            key = digest([("base", pinned_base())] + sorted(pairs) + pp)
         stored = STORE / "cases" / (c.replace("/", "__") + ".tsv")
         labels, date = "-", "-"
         try:
