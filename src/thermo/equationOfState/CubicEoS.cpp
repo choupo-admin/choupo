@@ -33,6 +33,7 @@ License
 
 #include <algorithm>
 #include <cmath>
+#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <set>
@@ -55,9 +56,17 @@ namespace {
 CubicEoS::CubicEoS(const std::string& name, const Constants& c,
                    const std::vector<Component>& comps,
                    const std::vector<scalar>& slope,
-                   const std::vector<std::vector<scalar>>& kij)
-  : name_(name), c_(c), n_(comps.size())
+                   const std::vector<std::vector<scalar>>& kij,
+                   const std::vector<scalar>& volumeShift)
+  : name_(name), c_(c), n_(comps.size()), cShift_(volumeShift)
 {
+    if (!cShift_.empty())
+    {
+        if (cShift_.size() != n_)
+            throw std::runtime_error(
+                name_ + ": volume-translation shift list size mismatch");
+        for (const auto& comp : comps) cNames_.push_back(comp.name());
+    }
     pure_.reserve(n_);
     for (std::size_t i = 0; i < n_; ++i)
     {
@@ -337,20 +346,55 @@ void CubicEoS::announcePseudo(bool liquid) const
         std::cout << "[eos] " << msg << "\n";
 }
 
+//  VOLUME TRANSLATION, the one place it enters (Peneloux, Rauzy & Freze 1982,
+//  Fluid Phase Equilib. 8, 7-23).  The EoS volume is a "pseudo volume" v~
+//  (Eq. 3, p. 8) and the TRUE volume is
+//      v = v~ - c ,   c = sum_i x_i c_i                       (Eq. 6, p. 9)
+//  Fugacity coefficients are NOT touched: phi~_i = phi_i exp(c_i P/RT)
+//  (p. 8) multiplies both phases' phi_i by the same factor at equal (T, P),
+//  so every K-value, flash and equilibrium is exactly the untranslated EoS's
+//  (Eq. 2 and the unnumbered result p. 9) -- phi() / phiLiquid() below read
+//  no shift.  Z follows the volume (Z = P v / RT), so Z, molarVolume and
+//  H_residual stay ONE coherent state.
+scalar CubicEoS::volumeShift(const sVector& y) const
+{
+    if (cShift_.empty()) return 0.0;
+    scalar c = 0.0;
+    for (std::size_t i = 0; i < n_ && i < y.size(); ++i) c += y[i] * cShift_[i];
+    return c;
+}
+
+std::string CubicEoS::volumeTranslationNote() const
+{
+    if (cShift_.empty()) return "";
+    std::ostringstream o;
+    o << "volumeTranslation Peneloux: v = v_" << name_
+      << " - sum x_i c_i; c_i [cm3/mol] =";
+    for (std::size_t i = 0; i < n_; ++i)
+        o << (i ? ", " : " ") << cNames_[i] << " " << std::setprecision(5)
+          << cShift_[i] * 1.0e6;
+    o << "; phi, K-values and flashes unchanged; H^R lowered by P c";
+    return o.str();
+}
+
 scalar CubicEoS::Z(scalar T, scalar P, const sVector& y) const
 {
-    return root(T, P, y, /*liquid*/false).Z;
+    const scalar Zr = root(T, P, y, /*liquid*/false).Z;
+    if (cShift_.empty()) return Zr;
+    return Zr - P * volumeShift(y) / (constant::R * T);
 }
 
 scalar CubicEoS::molarVolume(scalar T, scalar P, const sVector& y) const
 {
-    return Z(T, P, y) * constant::R * T / P;
+    if (cShift_.empty()) return Z(T, P, y) * constant::R * T / P;  // unchanged path
+    return root(T, P, y, /*liquid*/false).Z * constant::R * T / P - volumeShift(y);
 }
 
 // Labelled liquid-root access (the vapour-root family above never swaps root).
 scalar CubicEoS::molarVolumeLiquid(scalar T, scalar P, const sVector& y) const
 {
-    return root(T, P, y, /*liquid*/true).Z * constant::R * T / P;
+    const scalar v = root(T, P, y, /*liquid*/true).Z * constant::R * T / P;
+    return cShift_.empty() ? v : v - volumeShift(y);
 }
 
 bool CubicEoS::vapourRootIsPseudo(scalar T, scalar P, const sVector& y) const
@@ -418,8 +462,15 @@ scalar CubicEoS::H_residual(scalar T, scalar P, const sVector& y) const
                            &b_mix).Z;
     // Sandler 4th ed eq. 6.4-30, generalised cubic.
     const scalar lnI = std::log((Zv + c_.sig * B) / (Zv + c_.eps * B));
-    return constant::R * T * (Zv - 1.0)
+    const scalar HR = constant::R * T * (Zv - 1.0)
          + (T * dadT_mix - a_mix) / ((c_.sig - c_.eps) * b_mix) * lnI;
+    //  The translated fluid's phi is phi_EoS exp(-c P/RT) (Peneloux p. 8
+    //  read the other way), so H^R = -RT^2 d(ln phi)/dT moves by -P c for a
+    //  T-independent c; equivalently h = u + P v with u unchanged and v
+    //  lowered by c.  The paper prints no enthalpy equation; this is derived
+    //  from its fugacity relation.  Entropy (and phi) are unchanged.
+    if (cShift_.empty()) return HR;
+    return HR - P * volumeShift(y);
 }
 
 scalar CubicEoS::S_residual(scalar T, scalar P, const sVector& y) const
@@ -431,6 +482,142 @@ scalar CubicEoS::S_residual(scalar T, scalar P, const sVector& y) const
     const scalar lnI = std::log((Zv + c_.sig * B) / (Zv + c_.eps * B));
     return constant::R * std::log(std::max(Zv - B, 1.0e-30))
          + (dadT_mix / ((c_.sig - c_.eps) * b_mix)) * lnI;
+}
+
+// --- Peneloux volume translation: the declaration -------------------------
+//
+//  volumeTranslation
+//  {
+//      model Peneloux;                     // the one registered shift
+//      components
+//      {
+//          nHexane { ZRA 0.2636; source "Peneloux 1982, Table 1, p. 10"; }
+//          other   { cShift 1.2e-5; source "..."; }   // m3/mol, SRK or PR
+//      }
+//      missingZRA YamadaGunn;              // OPT-IN estimate, announced
+//  }
+//
+//  The shift of Eq. 8 (p. 10):  c = 0.40768 (R Tc/Pc) (0.29441 - Z_RA),
+//  fitted by the paper to saturated n-alkane liquid densities at Tr = 0.7
+//  FOR THE RKS EQUATION.  The standard records carry no Z_RA, so a component
+//  with neither a declared Z_RA nor a declared shift is REFUSED by name
+//  (never read as 0.29056 - 0.08775 w in silence); that Yamada-Gunn form is
+//  the paper's own p. 11 (RKSc3, normal alkanes only) and is taken ONLY on
+//  `missingZRA YamadaGunn;`, announced per component as an estimate.
+std::vector<scalar>
+CubicEoS::readVolumeTranslation(const std::string& model, const DictPtr& eosDict,
+                                const std::vector<Component>& comps,
+                                bool pengRobinson)
+{
+    if (!eosDict->found("volumeTranslation")) return {};
+
+    const std::string head = model + " volumeTranslation: ";
+    const std::string remedy =
+        "declare `volumeTranslation { model Peneloux; components { <name> {"
+        " ZRA <value>; source \"<where Z_RA was read>\"; } } }` (Z_RA of"
+        " Spencer & Danner 1973, or the adjusted values of Peneloux et al."
+        " 1982 Table 1, p. 10), or a shift in m3/mol with its source"
+        " `{ cShift <value>; source \"...\"; }`, or opt in to the estimate"
+        " `missingZRA YamadaGunn;` (Z_RA = 0.29056 - 0.08775 w, announced)";
+
+    DictPtr vt;
+    try { vt = eosDict->subDict("volumeTranslation"); }
+    catch (const std::exception&)
+    {
+        throw std::runtime_error(head + "written as a bare word -- the shift"
+            " needs data the standard records do not carry (no Z_RA); " + remedy);
+    }
+    const std::string vtModel = vt->lookupWordOrDefault("model", "");
+    if (vtModel != "Peneloux")
+        throw std::runtime_error(head + "model '" + vtModel + "' is not"
+            " implemented -- registered: Peneloux (Peneloux, Rauzy & Freze 1982)");
+
+    const std::string miss = vt->lookupWordOrDefault("missingZRA", "");
+    if (!miss.empty() && miss != "YamadaGunn")
+        throw std::runtime_error(head + "missingZRA '" + miss + "' is not"
+            " implemented -- registered: YamadaGunn");
+    if (pengRobinson && !miss.empty())
+        throw std::runtime_error(head + "the Peneloux constants of Eq. 8 were"
+            " fitted for the Redlich-Kwong-Soave equation and the PR constant"
+            " (Jhaveri & Youngren 1988) is not in the held literature, so no"
+            " Z_RA or Yamada-Gunn estimate is offered for PR; declare the"
+            " shift directly: `components { <name> { cShift <m3/mol>; source"
+            " \"...\"; } }`");
+
+    DictPtr cd;
+    if (vt->found("components")) cd = vt->subDict("components");
+
+    const std::size_t n = comps.size();
+    std::vector<scalar> c(n, 0.0);
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        const Component& comp = comps[i];
+        const std::string nm = comp.name();
+        std::ostringstream msg;
+        msg << std::setprecision(5);
+        if (cd && cd->found(nm))
+        {
+            DictPtr e = cd->subDict(nm);
+            if (!e->found("source"))
+                throw std::runtime_error(head + "component '" + nm + "' is"
+                    " declared without `source` -- a value is never entered"
+                    " without where it was read");
+            const bool hasZ = e->found("ZRA"), hasC = e->found("cShift");
+            if (hasZ == hasC)
+                throw std::runtime_error(head + "component '" + nm + "' must"
+                    " declare exactly one of `ZRA` or `cShift`");
+            if (hasC)
+            {
+                c[i] = e->lookupScalar("cShift");
+                msg << nm << " c = " << c[i] * 1.0e6 << " cm3/mol (declared)";
+            }
+            else
+            {
+                if (pengRobinson)
+                    throw std::runtime_error(head + "component '" + nm
+                        + "': a Z_RA shift is the RKS correlation (Eq. 8) and"
+                          " is refused for PR; declare `cShift` with its"
+                          " source");
+                const scalar Z = e->lookupScalar("ZRA");
+                if (!(Z > 0.2 && Z < 0.35))
+                    throw std::runtime_error(head + "component '" + nm
+                        + "': ZRA = " + std::to_string(Z) + " is outside the"
+                          " physical window 0.2-0.35 of a Rackett factor");
+                c[i] = 0.40768 * constant::R * comp.Tc()
+                     / (comp.Pc() * 1.0e5) * (0.29441 - Z);
+                msg << nm << " c = " << c[i] * 1.0e6 << " cm3/mol (Z_RA = "
+                    << Z << " declared, Eq. 8)";
+            }
+            msg << "; source: " << e->lookupWord("source");
+        }
+        else if (miss == "YamadaGunn")
+        {
+            const scalar Z = 0.29056 - 0.08775 * comp.omega();
+            c[i] = 0.40768 * constant::R * comp.Tc()
+                 / (comp.Pc() * 1.0e5) * (0.29441 - Z);
+            msg << nm << " c = " << c[i] * 1.0e6 << " cm3/mol (ESTIMATE:"
+                   " Z_RA = 0.29056 - 0.08775 w = " << Z << ", Yamada-Gunn as"
+                   " printed in Peneloux 1982 p. 11, normal alkanes only)";
+        }
+        else
+            throw std::runtime_error(head + "component '" + nm + "' has no"
+                " Z_RA (the standard records carry none) and no declared"
+                " shift; " + remedy);
+        if (thermoAnnounce()
+            && AdvisoryLog::instance().add("thermo", "info",
+                   model + " volumeTranslation " + nm, msg.str()))
+            std::cout << "[eos] " << model << " volumeTranslation Peneloux: "
+                      << msg.str() << "\n";
+    }
+    const std::string gen = model + " volumeTranslation Peneloux is ON: v = v_"
+        + model + " - sum x_i c_i (Eq. 6); phi, K-values and every flash are"
+          " the untranslated " + model + "'s (Eq. 2-4, p. 8-9); H^R is lowered"
+          " by P c (derived from the paper's fugacity relation); S^R unchanged";
+    if (thermoAnnounce()
+        && AdvisoryLog::instance().add("thermo", "info",
+               model + " volumeTranslation", gen))
+        std::cout << "[eos] " << gen << "\n";
+    return c;
 }
 
 // --- the binaryInteractions list, shared by both cubics ---------------------

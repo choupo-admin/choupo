@@ -2874,6 +2874,18 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
     // the EoS constructors consume (refusals + citation announced).
     auto eosDict = std::make_shared<Dictionary>("equationOfState");
     eosDict->insert("model", model);
+    //  PENELOUX VOLUME TRANSLATION (C408 (a)): a declared choice of the cubic,
+    //  carried verbatim to the constructor, which validates it and refuses by
+    //  name (CubicEoS::readVolumeTranslation).  Absent = OFF, the default.
+    if (eos->found("volumeTranslation"))
+    {
+        if (model == "PCSAFT")
+            throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
+                " equationOfState PCSAFT has no `volumeTranslation` -- the"
+                " Peneloux shift is implemented for the cubics SRK and"
+                " PengRobinson (declared shift only) alone.");
+        eosDict->insert("volumeTranslation", eos->entryValue("volumeTranslation"));
+    }
     if (eos->found("binaryInteractions"))
     {
         const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
