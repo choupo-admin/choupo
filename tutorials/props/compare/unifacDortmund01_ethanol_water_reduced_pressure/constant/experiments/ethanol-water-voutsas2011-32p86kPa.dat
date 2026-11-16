@@ -27,6 +27,8 @@ provenance
     reviewStatus transcribedNotCheckedAgainstArticle;
     citation     "Voutsas, Pamouktsis, Argyris & Pappa, Fluid Phase Equilib. 308 (2011) 135-141, Table 1 (p. 137), doi:10.1016/j.fluid.2011.06.009";
     doi          "10.1016/j.fluid.2011.06.009";
+    sourceFile   "voutsas2011-ethanol-water-azeotrope-vle.pdf";   // the article read, Table 1 on its page 3 (journal p. 137)
+    sha256       "184e43cd36bc45de664ec7a86ea54a064343f62f6cec26355c461cd51422eebc";   // of that PDF: the source file this transcription was read from, not of the data block
 }
 
 selection

@@ -6493,9 +6493,9 @@ with $r_i=\sum_k\nu_k^{(i)}R_k$ and $q_i=\sum_k\nu_k^{(i)}Q_k$ (eqs 4a, 5a;
 Weidlich and Gmehling, eq 5, introduced the empirical $3/4$ by fitting
 infinite-dilution data for alkane/alkane, alkane/alcohol and alcohol/alcohol
 systems).  The lattice coordination number is the original's $Z=10$, written
-$Z/2=5$.  $V_i'$ replaces the volume fraction $\phi_i/x_i$ of
-\eqref{eq:unifac-comb} in the first two terms only, so a long chain is no longer
-penalised as hard as the Staverman--Guggenheim form penalises it.
+$Z/2=5$.  The form of \eqref{eq:dortmund-comb} is not the original's
+\eqref{eq:unifac-comb} with $\phi_i/x_i$ renamed: the first two terms use the
+modified $V_i'$ and the surface term keeps the unmodified $V_i$ and $F_i$.
 
 \paragraph{2.\ The group interactions depend on temperature.}
 \begin{equation}
@@ -6548,7 +6548,7 @@ $\gamma_i=\exp(\ln\gamma_i^C+\ln\gamma_i^R)$.
 
 \begin{table}[ht]\centering
 \caption{The paper's own printed prediction reproduced
-(\file{tutorials/props/compare/unifacDortmund02\_butanol\_water\_gamma\_infinity}):
+(case \code{unifacDortmund02}):
 $\gamma^\infty$ of butanols in water, modified UNIFAC (Dortmund),
 Gmehling et al.\ Table~XI (p.~192), printed value / this engine.}
 \label{tab:dortmund-tableXI}
