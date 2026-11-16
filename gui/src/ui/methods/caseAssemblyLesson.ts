@@ -23,7 +23,7 @@
 
   Every line of the engine this prose names is reached through
   `caseAssembly.at(...)`, never typed: tests/caseAssembly.test.ts holds each
-  citation to the statement on its line, and refuses a bare `file:line` in
+  citation to the statement inside its symbol, and refuses a bare `file:line` in
   this file.
 \*---------------------------------------------------------------------------*/
 
@@ -51,7 +51,7 @@ export const CASE_ASSEMBLY_STEPS: readonly LessonStep[] = [
       + "when a case uses them: system/postDict (sizing and costing after "
       + "the solve) and system/outerDict (a sweep or an optimisation wrapped "
       + "around it). flash01 has neither, and the run header says so. Click "
-      + "any file below to read it, and to see which line of the engine "
+      + "any file below to read it, and to see which function of the engine "
       + "reads it and when.",
   },
   {
@@ -119,7 +119,7 @@ export const CASE_ASSEMBLY_STEPS: readonly LessonStep[] = [
       + "reports, and the files written beside the case.",
     note: "The order is not trivia: a refusal comes from the first move "
       + "that cannot proceed, so where it stops tells you which file to "
-      + "open. The panel below lists the moves with the line that does each, "
+      + "open. The panel below lists the moves with the function that does each, "
       + "and beside them the lines the run printed about itself, taken from "
       + "the run this page just made.",
     leadsTo: {
@@ -248,11 +248,11 @@ export const CASE_ASSEMBLY_LIMITS: readonly LessonLimit[] = [
   },
   {
     id: "snapshot",
-    title: "Line numbers are a snapshot of this version",
-    body: "Each file:line on this page points at the engine as it stands in "
-      + "this version of Choupo, and a test holds every one of them to the "
-      + "statement it names. When the engine changes, the lines move and "
-      + "the page is corrected; the order of the assembly does not change "
-      + "that way.",
+    title: "The page names the function, not a line number",
+    body: "Each citation on this page names the engine file and the function "
+      + "that holds the statement (file#function), and a test holds every "
+      + "one of them to the statement it quotes. When the engine moves code "
+      + "the page still holds; if a function is renamed or the statement "
+      + "goes, the test fails by name and the page is corrected.",
   },
 ];
