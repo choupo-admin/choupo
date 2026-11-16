@@ -51,6 +51,11 @@
               enter the heteroazeotrope verdict.  (The mixed kind needed bubble
               evidence in the fit: the two heteroazeotrope points.  Whether a
               fit with none is allowed was not tried.)
+  REFITTED 2026-11-16.  Water's catalogue vapour pressure moved from an Antoine fit to the IAPWS equation; this pair was
+  fitted again on it: b_ij 1894.04 -> 1708.88, b_ji -163.84 -> -151.86, a_ij -4.711 -> -4.112, a_ji 4.100 -> 4.060,
+  alpha 0.4459 -> 0.4464, held-out bubble AAD 0.376 -> 0.484 K, held-out tie-line AAD 0.0056 -> 0.0075.  The RESULT
+  paragraph below states the earlier run; the `expected` file pins the current numbers.
+
   RESULT (the engine's ERROR REPORT; five parameters b_ij 1894.0429, b_ji
   -163.8364, a_ij -4.7108, a_ji 4.0996, alpha 0.4459): VERDICT validated --
   held-out tie-line AAD 0.0056 against 0.01, held-out heteroazeotrope bubble

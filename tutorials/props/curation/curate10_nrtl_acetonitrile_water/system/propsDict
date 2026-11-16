@@ -55,10 +55,15 @@
   0.1 K is not outvoted by one measured to 1 K.  The held-out AAD is plain
   kelvin, unweighted.
 
+  REFITTED 2026-11-16.  Water's catalogue vapour pressure moved from an Antoine fit to the IAPWS equation, and this
+  pair was fitted again on the new curve; the b_ij, b_ji, rms and held-out AAD below are the new run's.  Figures
+  that are not restated (the overlay's UNIFAC and ideal columns, the water record's boiling-point error) are the
+  earlier run's and are SUPERSEDED by the `expected` file, which pins the current ones.
+
   WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
-    * fit_nrtl: b_ij = 218.3 K, b_ji = 616.3 K, in-sample rms 0.52 K;
+    * fit_nrtl: b_ij = 221.0 K, b_ji = 621.7 K, in-sample rms 0.65 K;
       fit_nrtl_start2 lands on the same pair.
-    * HELD OUT (101.3 kPa, no author in common): AAD 0.50 K (0.137 %)
+    * HELD OUT (101.3 kPa, no author in common): AAD 0.48 K (0.132 %)
       against a band of 0.72 % -> `validated`; the pair is the catalogue
       record NRTL/acetonitrile-water.dat.  The band is wide because the
       held-out study states U95 = 1.69-1.85 K on every point: a held-out set

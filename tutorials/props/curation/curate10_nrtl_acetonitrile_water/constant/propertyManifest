@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/acetonitrile-water.dat"
         {
             type          imported;
-            sha256        "c0d9a85472ce8572fcad129acc4a54dabc764dd30767734e2a2f11cd4a1f3746";
-            computationalSha256 "c928c3d72bee61dda13c6c341b7280e1bca5c9231f2e263e728a8f8a0d2817c7";
+            sha256        "1cdc0b2f110f515981afde14288d5fc9ac1dc9f456cfef9a47b153152d7d8fd2";
+            computationalSha256 "49773e8fa6968181d5092bcb374f3a7af4dbe0211c7209e3f1c5f7e5c7e813f3";
             origin        "data/standards/parameters/NRTL/acetonitrile-water.dat";
-            originSha256  "cf459505367a093b0ded47e1d81ce4ab803542567958bd0c227558e95201dfd9";
+            originSha256  "1cdc0b2f110f515981afde14288d5fc9ac1dc9f456cfef9a47b153152d7d8fd2";
             release       Choupo-2608;
         }
     }

@@ -46,10 +46,10 @@ propertyManifest
         "parameters/NRTL/isopropanol-water.dat"
         {
             type          imported;
-            sha256        "7ea78814b0644504caed876a2967bd874db195bf9fd72c8de2e53feae289c367";
-            computationalSha256 "2a1a23d6e61c35dd68adb3a1b6198a9efc7e3c93554bf719d1fa6e18b4c56153";
+            sha256        "7ca9f8fd3d4cc6f5fe277958f9ff1ee81612d653bf5ddce4d684251e287c500a";
+            computationalSha256 "3e03a684d6b51c3a844d410058ee087542d7879787861b81fc2bb4c7ef63666e";
             origin        "data/standards/parameters/NRTL/isopropanol-water.dat";
-            originSha256  "be04d22885322cff0551e3cfabe64582e5178cfd60f01e2c72b764fbff044465";
+            originSha256  "7ca9f8fd3d4cc6f5fe277958f9ff1ee81612d653bf5ddce4d684251e287c500a";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"
