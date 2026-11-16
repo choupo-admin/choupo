@@ -41,6 +41,14 @@ Description
         GRES T P y...                 g_res/RT = H_res/RT - S_res/R on the
                                       vapour root -- the function whose
                                       mole-number derivative IS ln phi_i
+        GRESL T P x...                the same at the LIQUID root's departures
+                                      (H_residualLiquid, S_residualLiquid; C410)
+        STREAMROOTS T P z...          the package's STREAM enthalpy and entropy
+                                      (H_stream_formation / S_stream_formation)
+                                      at vapour fraction 0 and 1, minus the
+                                      ideal-gas value plus the EoS departure at
+                                      the liquid / vapour root: four numbers,
+                                      each 0 when the routing is right (C410)
         REACT T P n0... nu...         ONE reaction's equilibrium extent from
                                       the fugacity condition
                                         sum_i nu_i (g_i/RT + ln y_i
@@ -244,6 +252,34 @@ int main(int argc, char** argv)
                     const scalar g = thermo.eos().H_residual(T, P, y) / RT
                                    - thermo.eos().S_residual(T, P, y) / constant::R;
                     out << "OK " << g << "\n";
+                }
+                else if (op == "GRESL")
+                {
+                    scalar T = 0.0, P = 0.0;
+                    ls >> T >> P;
+                    sVector y(n, 0.0);
+                    for (auto& v : y) ls >> v;
+                    const scalar RT = constant::R * T;
+                    const scalar g = thermo.eos().H_residualLiquid(T, P, y) / RT
+                                   - thermo.eos().S_residualLiquid(T, P, y) / constant::R;
+                    out << "OK " << g << "\n";
+                }
+                else if (op == "STREAMROOTS")
+                {
+                    scalar T = 0.0, P = 0.0;
+                    ls >> T >> P;
+                    sVector y(n, 0.0);
+                    for (auto& v : y) ls >> v;
+                    const scalar hig = thermo.H_ig(T, y), sig = thermo.S_ig(T, P, y);
+                    out << "OK "
+                        << thermo.H_stream_formation(T, P, 0.0, y)
+                           - (hig + thermo.eos().H_residualLiquid(T, P, y)) << " "
+                        << thermo.S_stream_formation(T, P, 0.0, y)
+                           - (sig + thermo.eos().S_residualLiquid(T, P, y)) << " "
+                        << thermo.H_stream_formation(T, P, 1.0, y)
+                           - (hig + thermo.eos().H_residual(T, P, y)) << " "
+                        << thermo.S_stream_formation(T, P, 1.0, y)
+                           - (sig + thermo.eos().S_residual(T, P, y)) << "\n";
                 }
                 else if (op == "REACT" || op == "REACTIDEAL")
                 {
