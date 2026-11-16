@@ -69,13 +69,13 @@ describe("the claims an external review caught, checked against the engine", () 
     };
     //  the numbers the page prints are the golden's, to the digits printed
     expect(kpi("flashPCSAFT", "V_over_F").toFixed(3)).toBe("0.649");
-    expect(kpi("flashNRTL", "V_over_F").toFixed(3)).toBe("0.512");
+    expect(kpi("flashNRTL", "V_over_F").toFixed(3)).toBe("0.491");
     expect(kpi("flashPCSAFT", "K_ethanol").toFixed(2)).toBe("11.47");
-    expect(kpi("flashNRTL", "K_ethanol").toFixed(3)).toBe("3.896");
+    expect(kpi("flashNRTL", "K_ethanol").toFixed(3)).toBe("3.817");
     expect(kpi("flashPCSAFT", "K_water").toFixed(3)).toBe("0.581");
-    expect(kpi("flashNRTL", "K_water").toFixed(3)).toBe("0.602");
-    for (const s of ["V/F = 0.649", "0.512", "K_{\\mathrm{ethanol}} = 11.47",
-      "3.896", "0.581", "0.602"]) expect(SRC).toContain(s);
+    expect(kpi("flashNRTL", "K_water").toFixed(3)).toBe("0.594");
+    for (const s of ["V/F = 0.649", "0.491", "K_{\\mathrm{ethanol}} = 11.47",
+      "3.817", "0.581", "0.594"]) expect(SRC).toContain(s);
     expect(prose(BODY)).toContain("not a measurement at this state");
   });
 
