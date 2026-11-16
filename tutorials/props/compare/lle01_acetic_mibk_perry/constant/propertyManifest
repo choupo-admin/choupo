@@ -32,8 +32,5 @@ propertyManifest
     {
         "components/aceticAcid.dat"  "0e231feba1502b6a0c763290b63985629230091fd2dbf35f25432fcc94e61678";
         "components/methylIsobutylKetone.dat"  "3b343b8cff791a127701ce6eadd23f8a9a7b015e0678246d7007a3416d2d7c49";
-        "species/Acetate.dat"  "81f63ea80715810b03ba3eb410dc28ce155cecc8646ad1fde345051c08a9efe4";
-        "species/H.dat"  "4e92d2bb435b9e5380178d63e6ec12ca75e23d96e906623edaed07901bd1b9a5";
-        "species/OH.dat"  "b57ad1c6ff6b54320f763b6f683dce92482d33317ad38750c7804e093406fd9d";
     }
 }

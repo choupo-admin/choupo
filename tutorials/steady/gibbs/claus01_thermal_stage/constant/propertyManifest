@@ -49,10 +49,5 @@ propertyManifest
         "components/O2.dat"  "ce610d95e092cb279655854de5866cef10a3eed1479fef829a8bd848b50099ca";
         "components/SO2.dat"  "fe74515cab7d9f92d161777723107a6d34918d47633a86a580bcbab66d560b84";
         "components/carbonylSulfide.dat"  "fd52a1af443464f7c13f079631c8214c9e3cf22a4cb068e29e0ce6dc31ab6fc7";
-        "species/CO3.dat"  "9ddf777e80d94b0e7603f07ea79dc3313bc42dd589e8c285454ca608788c8a00";
-        "species/H.dat"  "4e92d2bb435b9e5380178d63e6ec12ca75e23d96e906623edaed07901bd1b9a5";
-        "species/HCO3.dat"  "40965e148b317b6af862ba63b51822d0c8b8a936e0d46cf38a659b6221f6a81f";
-        "species/HS.dat"  "8ca39c7727491bd4ed748c5741f195eaa22eed91b381ca294ad0abdfe7a51fb6";
-        "species/OH.dat"  "b57ad1c6ff6b54320f763b6f683dce92482d33317ad38750c7804e093406fd9d";
     }
 }

@@ -40,9 +40,5 @@ propertyManifest
         "components/H2.dat"  "8555cf19b12947973821a056cfa08c01ab55a40ee34b2cccd71cb59fbcf5ac47";
         "components/N2.dat"  "f4f5cfe7fc5efcff9cc8f8ee46391d0820292c1484e1f47650cc4ed20503b02e";
         "components/O2.dat"  "6850e4f03a213b1dbef53b58ee21c70a3f258e96f9d448416164702df8a60783";
-        "species/CO3.dat"  "8c3ab7bea60287e783d729e7949053a2823cae7c8e90a0aa42b6f064c71cefc5";
-        "species/H.dat"  "b54ddc7856310a583aa7985bf44f680c35b5f5a8335bfbf564eda4ae4404b05c";
-        "species/HCO3.dat"  "e26d6cf66d147c0dc581d26a1fae3eb79807a969ab2740f92242ce139f6e3cee";
-        "species/OH.dat"  "9d75c0a1eed0808e4493ebec8aa47e7620f7cc55637a7facace11b1085b3a309";
     }
 }

@@ -43,10 +43,6 @@ propertyManifest
         "components/N2.dat"  "2799daabfcc4e8674ad551b9bc904e2b6e0db95664e679544a84e14a2a650518";
         "components/ethanol.dat"  "1db414b216101a40565c68af1324a6d2fa54c479369cf8f41e612f158eb89ef8";
         "components/sucrose.dat"  "b66d2116a93f98919b9686eb4de9526b12981ef0eb8e836479d1c76ab57aac0c";
-        "species/CO3.dat"  "8c3ab7bea60287e783d729e7949053a2823cae7c8e90a0aa42b6f064c71cefc5";
-        "species/H.dat"  "b54ddc7856310a583aa7985bf44f680c35b5f5a8335bfbf564eda4ae4404b05c";
-        "species/HCO3.dat"  "e26d6cf66d147c0dc581d26a1fae3eb79807a969ab2740f92242ce139f6e3cee";
-        "species/OH.dat"  "9d75c0a1eed0808e4493ebec8aa47e7620f7cc55637a7facace11b1085b3a309";
         "utilities/coolingWater.dat"  "108f0f159a567ae8c9b51f6ddca1da1c1f6a3bb257c3019112fc7bb9325a116e";
     }
 }

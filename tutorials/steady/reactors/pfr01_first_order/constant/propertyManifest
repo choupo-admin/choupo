@@ -34,8 +34,5 @@ propertyManifest
         "components/aceticAcid.dat"  "3c92ae24536c51076072c0860a477ba59522684ab70b0b35717bfb6ce4aee8f3";
         "components/ethanol.dat"  "1db414b216101a40565c68af1324a6d2fa54c479369cf8f41e612f158eb89ef8";
         "components/ethylAcetate.dat"  "997e15ad9babc1e75d0bcaeae502daa05216777043e4f94e484500d3b3675d85";
-        "species/Acetate.dat"  "81f63ea80715810b03ba3eb410dc28ce155cecc8646ad1fde345051c08a9efe4";
-        "species/H.dat"  "90961ff87d2ad611e0cfdb04652d16d0ad0fd07c3ed80a649037f56a032ee81b";
-        "species/OH.dat"  "ff41dbce484799f20632f7b669b1c654f40291c0088a6af709eb126e6f80818e";
     }
 }

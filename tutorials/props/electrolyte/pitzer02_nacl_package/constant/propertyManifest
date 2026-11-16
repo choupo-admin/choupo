@@ -26,10 +26,7 @@ propertyManifest
         "parameters/Pitzer/pairs/Na-Cl.dat"  "ea4de8611a8302f074a0353a7737ad5306c335df6ba427f61325d7cc8267635c";
         "parameters/solution/"  "relevant:84ff6ec62eb925588a0526b35d989867e4b95a6b52cc9c7e77627f7fc67c8a16";
         "parameters/solution/NaCl-water.dat"  "e15ed02baf1dd90629885f257f5b85cff854ff009e2d5bf8fdc18e4b72e2124f";
-    }
-    held
-    {
-        "species/Cl.dat"  "6e57ccd286bc6a6828d28ebc7e7311b5f56e8f4ef55772e8a0f81879932c609a";
-        "species/Na.dat"  "94e3dcbc2956cc7dcd2977501823fb951b1b10a24da8cc8c7e5936ebfe715916";
+        "species/Cl.dat"  "77c9cffcfc3674c034800724ba22333a585a19fbc6a467df63876e68e73abae6";
+        "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
     }
 }

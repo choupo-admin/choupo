@@ -44,11 +44,6 @@ propertyManifest
         "components/nPentane.dat"  "7ad5b2fa22a15df4cde95afe2b2531784727072841d38e886a5b5305bfba1480";
         "components/nUndecane.dat"  "a4ae9d66ba7f29ac9c167e99e5ab6ac3b1526b9cc227066d7990870b22247b69";
         "components/propane.dat"  "fb98a95280f54755ec48104788e700b444b7b3d4f41d6e68d6bedca040396064";
-        "species/CO3.dat"  "8c3ab7bea60287e783d729e7949053a2823cae7c8e90a0aa42b6f064c71cefc5";
-        "species/H.dat"  "b54ddc7856310a583aa7985bf44f680c35b5f5a8335bfbf564eda4ae4404b05c";
-        "species/HCO3.dat"  "e26d6cf66d147c0dc581d26a1fae3eb79807a969ab2740f92242ce139f6e3cee";
-        "species/HS.dat"  "8ca39c7727491bd4ed748c5741f195eaa22eed91b381ca294ad0abdfe7a51fb6";
-        "species/OH.dat"  "9d75c0a1eed0808e4493ebec8aa47e7620f7cc55637a7facace11b1085b3a309";
         "utilities/coolingWater.dat"  "108f0f159a567ae8c9b51f6ddca1da1c1f6a3bb257c3019112fc7bb9325a116e";
     }
 }

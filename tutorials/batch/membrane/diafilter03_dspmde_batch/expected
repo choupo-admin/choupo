@@ -40,7 +40,7 @@ kpi     retentate              c_bInitial_MgSO4 0.0199468046667  1e-4
 kpi     retentate              c_bInitial_NaCl  0.0199468046667  1e-4
 kpi     retentate              c_bMeanPerm_MgSO4 0.0359671134166  1e-4
 kpi     retentate              c_bMeanPerm_NaCl 0.029127155294   1e-4
-kpi     retentate              c_permPooled_MgSO4 0.000819952812051 1e-4
+kpi     retentate              c_permPooled_MgSO4 0.000819437672087 1e-4
 kpi     retentate              c_permPooled_NaCl 0.010641015846   1e-4
 kpi     retentate              concentrationFactor 3.91388741469    1e-4
 kpi     retentate              diavolumes       0                1e-4
@@ -51,7 +51,7 @@ kpi     retentate              recovery_MgSO4   0.969395875234   1e-4
 kpi     retentate              recovery_NaCl    0.602832051066   1e-4
 kpi     retentate              t_end            140              1e-4
 kpi     retentate              totalMoles_final 0.140963496034   1e-4
-ledger  retentate->(external_boundary) material.external.dn.MgSO4 6.12021287062e-06 1e-4
+ledger  retentate->(external_boundary) material.external.dn.MgSO4 6.11636623939e-06 1e-4
 ledger  retentate->(external_boundary) material.external.dn.NaCl 7.94256464278e-05 1e-4
 ledger  retentate->(external_boundary) material.external.dn.water 0.414450958107   1e-4
 ledger  retentate->(external_boundary) material.external.valid invalid          exact

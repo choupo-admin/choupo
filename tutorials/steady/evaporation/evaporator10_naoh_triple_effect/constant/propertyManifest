@@ -27,10 +27,7 @@ propertyManifest
         "parameters/Pitzer/pairs/Na-OH.dat"  "57979e4c042841cda719760e43d8b17c94f9c8a64dee630d2ee30ff0de5d88e2";
         "parameters/solution/"  "relevant:c230bd52bb5226b2fc760817e521760bf18be1e1cb1f1f2348ca204186869952";
         "parameters/solution/NaOH-water.dat"  "905421c3faa84cb1f40d15f9435f75193465a3a4dede8ee55ca81e7c33b7a7c4";
-    }
-    held
-    {
-        "species/Na.dat"  "5762461aed546e6519b0702da00e3474648e4d2f0c62c5bad477e41dce103e99";
-        "species/OH.dat"  "b57ad1c6ff6b54320f763b6f683dce92482d33317ad38750c7804e093406fd9d";
+        "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
+        "species/OH.dat"  "98259ca11eab721d7ea066607140c389b6b7f946e6df0d7c435c6ea1ee5fd0c5";
     }
 }

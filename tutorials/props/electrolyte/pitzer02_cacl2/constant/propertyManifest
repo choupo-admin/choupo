@@ -24,10 +24,7 @@ propertyManifest
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/Pitzer/pairs/Ca-Cl.dat"  "1c3095c13c78eac63a9f3a6ca617f65c0fc202a3952a6976f0a86ea8b5e1cb7f";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "species/Ca.dat"  "c17c1fd0890b0124d6320a81e889cacfa8b7b02949a34a57435aa0d0aff092a9";
-        "species/Cl.dat"  "6e57ccd286bc6a6828d28ebc7e7311b5f56e8f4ef55772e8a0f81879932c609a";
+        "species/Ca.dat"  "89b69a4594eee78e2de09dce31c19515881d4012c15578bcb767a8cd5d0f5de1";
+        "species/Cl.dat"  "77c9cffcfc3674c034800724ba22333a585a19fbc6a467df63876e68e73abae6";
     }
 }

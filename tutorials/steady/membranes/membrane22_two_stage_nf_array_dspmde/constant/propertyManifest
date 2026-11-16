@@ -32,15 +32,15 @@ propertyManifest
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:84ff6ec62eb925588a0526b35d989867e4b95a6b52cc9c7e77627f7fc67c8a16";
         "parameters/solution/NaCl-water.dat"  "e15ed02baf1dd90629885f257f5b85cff854ff009e2d5bf8fdc18e4b72e2124f";
+        "species/Ca.dat"  "89b69a4594eee78e2de09dce31c19515881d4012c15578bcb767a8cd5d0f5de1";
+        "species/Cl.dat"  "77c9cffcfc3674c034800724ba22333a585a19fbc6a467df63876e68e73abae6";
+        "species/Mg.dat"  "0282a568e26f8b6cff18f134b4f56ead2833df3aa18fc7c1799db09f756fad17";
+        "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
+        "species/SO4.dat"  "352fd2de8769dede4cacfd3f2535b652f73e8028630fd08fa5541f3e778ffcf4";
         "utilities/electricity.dat"  "05317a957413165722c1f4ab1fffc523c459c9354f2afb234c2cab3768fbb392";
     }
     held
     {
         "components/MgSO4.dat"  "d6ba05f85d1fc54990ef101e04246ec753f0364560334c5861b5af4024a804e1";
-        "species/Ca.dat"  "c6f5ad61836cfab29439b5c351cb63f3fb7605fc62e1089478514143b323296a";
-        "species/Cl.dat"  "05431d588a289813130ec9921081101da89bfea7f621d9e34b1798827f035bd4";
-        "species/Mg.dat"  "f56ae3ac64f985179fc52a4ec3234dfab4da3e433aa6b86de1512c983891112d";
-        "species/Na.dat"  "091c7c5284f11e65bf118b815887b5bfd715d00a9dcebe0b19dd8f13fe048309";
-        "species/SO4.dat"  "985775d22077307ab8733346ef4b788df761ce028ee57c18cf144d99583a886f";
     }
 }

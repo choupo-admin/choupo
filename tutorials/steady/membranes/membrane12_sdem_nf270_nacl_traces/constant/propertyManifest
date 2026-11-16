@@ -29,14 +29,14 @@ propertyManifest
         "parameters/Helmholtz/SpanWagner1996.dat"  "45e5b08168038ca401f0a99ec275378fa7fec8658671fc3c954dd201e1bff76a";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+        "species/Cl.dat"  "77c9cffcfc3674c034800724ba22333a585a19fbc6a467df63876e68e73abae6";
+        "species/NH4.dat"  "d18c27ace7f2ad225d7e2582c11feab53928848692ccb1ddbba45ae9a6eb0cc3";
+        "species/NO3.dat"  "1ba0375048a72107ac1f9120e483c06e6085c1aebb7e1294e08558d17ff065b1";
+        "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
     }
     held
     {
         "components/Cl.dat"  "93d51d3ce0f26ee438a29ac8f6eff9c4177bfc42ede46e26249a89b50a318a8c";
         "components/NO3.dat"  "087fb0720495d8657c3c4cdd15c5bb56c5931de19d314ebc36d1fdb299e39d94";
-        "species/Cl.dat"  "05431d588a289813130ec9921081101da89bfea7f621d9e34b1798827f035bd4";
-        "species/NH4.dat"  "e3fb70c91adf134109cb912bb27fea8bf8f8cd23db72ca9671ab816b392ba3fe";
-        "species/NO3.dat"  "0cc58c3584127937e1d0067f4b3ad9f79e9eca406250a6df336150ac7a8bd376";
-        "species/Na.dat"  "091c7c5284f11e65bf118b815887b5bfd715d00a9dcebe0b19dd8f13fe048309";
     }
 }

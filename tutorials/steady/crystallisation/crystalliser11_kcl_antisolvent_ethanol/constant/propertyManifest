@@ -26,13 +26,13 @@ propertyManifest
         "parameters/Henry/"  "relevant:551d791c6b7f3fb7e33d7b9da3a9477d5f21867c7d48e860de04e321c7e62d02";
         "parameters/Henry/ethanol-water.dat"  "8d6c542980e2dd37de73fd7fcc8d4e3b6538ccdaf208ec21180ba6dcbc7cf8d8";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+        "species/Cl.dat"  "77c9cffcfc3674c034800724ba22333a585a19fbc6a467df63876e68e73abae6";
+        "species/K.dat"  "c4107e1618124ffbc2d59c9c81bee9e5583e39bb912f3e170d447862abfa63e2";
         "utilities/chilledWater.dat"  "dcab5f38dfc376a9bdff3dbc020d61718cd6c4a73c63a3737cfa35b580affa12";
     }
     held
     {
         "components/ethanol.dat"  "340fc0ea762c03110403518409fb6d26531eabb39fa0aaca5eff1fbdf4112ad4";
         "parameters/eNRTL/K-Cl.dat"  "27bea3329c65dac0c1899b0c3c6c917830de26628bb3abaf259f48561c64018f";
-        "species/Cl.dat"  "6e57ccd286bc6a6828d28ebc7e7311b5f56e8f4ef55772e8a0f81879932c609a";
-        "species/K.dat"  "36741e1879e9eac183927d84a8fc71a2dc713459fd01e6e17f6948830e7c1c79";
     }
 }

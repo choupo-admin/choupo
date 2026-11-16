@@ -27,9 +27,5 @@ propertyManifest
     {
         "chemistry/CO2aq-formation.dat"  "a82a2e08950cbd1dc67bba7703de8e6417a30f41860d7605924d231cd654b39b";
         "components/CO2.dat"  "c81f081004bfb226e45d33057a0d268e60e31aa02cd90d1893333897c0555986";
-        "species/CO3.dat"  "8c3ab7bea60287e783d729e7949053a2823cae7c8e90a0aa42b6f064c71cefc5";
-        "species/H.dat"  "f8bc7c69e327342f330a3541a9d33d6c985e1b10b22553472a14b3ae69fee9d5";
-        "species/HCO3.dat"  "dad707574331c50df07ba18cc9761be6f0ddf223c9bb331073975f4351468a10";
-        "species/OH.dat"  "5a06c59147ab12cb832bfa5258560ebcfd9e764cf1fb2e6d0faada7b3f349529";
     }
 }

@@ -31,10 +31,7 @@ propertyManifest
         "parameters/solution/"  "relevant:d699c98005e9d8e6d83a241a9c15b0c16e4a7020a2378dce63693fb16cfb3d61";
         "parameters/solution/NaOH-water.dat"  "905421c3faa84cb1f40d15f9435f75193465a3a4dede8ee55ca81e7c33b7a7c4";
         "parameters/solution/sucrose-water.dat"  "11e8f9216989a7844edb9dc965d153f9cb672a6dc79b5561a6089d23d293640e";
-    }
-    held
-    {
-        "species/Na.dat"  "5762461aed546e6519b0702da00e3474648e4d2f0c62c5bad477e41dce103e99";
-        "species/OH.dat"  "b57ad1c6ff6b54320f763b6f683dce92482d33317ad38750c7804e093406fd9d";
+        "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
+        "species/OH.dat"  "98259ca11eab721d7ea066607140c389b6b7f946e6df0d7c435c6ea1ee5fd0c5";
     }
 }

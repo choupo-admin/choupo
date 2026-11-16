@@ -36,20 +36,20 @@ propertyManifest
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:84ff6ec62eb925588a0526b35d989867e4b95a6b52cc9c7e77627f7fc67c8a16";
         "parameters/solution/NaCl-water.dat"  "e15ed02baf1dd90629885f257f5b85cff854ff009e2d5bf8fdc18e4b72e2124f";
+        "species/Br.dat"  "3fc23c1a28662ec589f62b204d5932cb1e0e63588e67542f62a0f6577b370f96";
+        "species/CO3.dat"  "60a1afb399f1feb78c9c9e17462cc22a5ad30e09c044713d1d7460ba883d730f";
+        "species/Ca.dat"  "89b69a4594eee78e2de09dce31c19515881d4012c15578bcb767a8cd5d0f5de1";
+        "species/Cl.dat"  "77c9cffcfc3674c034800724ba22333a585a19fbc6a467df63876e68e73abae6";
+        "species/F.dat"  "7b2951f961ea8cccca1c27ee305f7c819e1cc8563022a5256461637f56977626";
+        "species/K.dat"  "c4107e1618124ffbc2d59c9c81bee9e5583e39bb912f3e170d447862abfa63e2";
+        "species/Mg.dat"  "0282a568e26f8b6cff18f134b4f56ead2833df3aa18fc7c1799db09f756fad17";
+        "species/NH4.dat"  "d18c27ace7f2ad225d7e2582c11feab53928848692ccb1ddbba45ae9a6eb0cc3";
+        "species/NO3.dat"  "1ba0375048a72107ac1f9120e483c06e6085c1aebb7e1294e08558d17ff065b1";
+        "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
+        "species/SO4.dat"  "352fd2de8769dede4cacfd3f2535b652f73e8028630fd08fa5541f3e778ffcf4";
     }
     held
     {
         "components/NaNO3.dat"  "76d845b6755f6b863cb5c8521741d8109f9114949a128a71a4a3c84d98eae59d";
-        "species/Br.dat"  "8f0e46ec90fff0e9ae3f7e2981e482df6e173cc28b2209ab7fa38acd6dcd4dd6";
-        "species/CO3.dat"  "9ddf777e80d94b0e7603f07ea79dc3313bc42dd589e8c285454ca608788c8a00";
-        "species/Ca.dat"  "305f70a98e2305d3558291ebef45714c3515ff0bf234f3778409ace0bd9420c6";
-        "species/Cl.dat"  "12b5fca43b009fd87115f367557c79354bad82893a78504ef5d6f469bfa91ea7";
-        "species/F.dat"  "5cf45bf28c39d34905edbfed48f3ae9ee3ca045c42357cae1a0129b8d66c92f3";
-        "species/K.dat"  "f3a136737e6bded1cf90a9932fed25c2ac3b9bcb5c4322de08a367a241e94e19";
-        "species/Mg.dat"  "6fd439e81addfd69bd1e36fc8e5a8d2973db885cc2e152f04cc7e76d50a578f1";
-        "species/NH4.dat"  "346e335929acc848385ed85472f4553a9c2dc998fa4f27843f7cd754d2c06b74";
-        "species/NO3.dat"  "81bffb2f2a224b6bf80f7fcd8f9ed924c3eb0f67e955ccb8fdbe5e6b4f91a916";
-        "species/Na.dat"  "5762461aed546e6519b0702da00e3474648e4d2f0c62c5bad477e41dce103e99";
-        "species/SO4.dat"  "079fafa46d13566f7ec1808a717e2ba5f7b13c26659fd6e15f96ebcd2460cb74";
     }
 }

@@ -37,8 +37,5 @@ propertyManifest
         "components/N2.dat"  "8a10295e2eb81dece508460c79cc11bc597110e4bb447b800bb273c32411a91b";
         "components/NO.dat"  "6997b2be738249820ba5cf5068dbfb14a8c7de68baa87d90b650e1f269856c92";
         "components/O2.dat"  "601481feda24f388e3fe70ad700b2dce1bb9b8954fa83550c2065764d2bdb4a4";
-        "species/H.dat"  "4e92d2bb435b9e5380178d63e6ec12ca75e23d96e906623edaed07901bd1b9a5";
-        "species/NH4.dat"  "346e335929acc848385ed85472f4553a9c2dc998fa4f27843f7cd754d2c06b74";
-        "species/OH.dat"  "b57ad1c6ff6b54320f763b6f683dce92482d33317ad38750c7804e093406fd9d";
     }
 }

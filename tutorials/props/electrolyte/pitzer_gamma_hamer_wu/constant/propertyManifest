@@ -29,15 +29,12 @@ propertyManifest
         "parameters/Pitzer/pairs/Na-Cl.dat"  "ea4de8611a8302f074a0353a7737ad5306c335df6ba427f61325d7cc8267635c";
         "parameters/Pitzer/pairs/Na-OH.dat"  "57979e4c042841cda719760e43d8b17c94f9c8a64dee630d2ee30ff0de5d88e2";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "species/Br.dat"  "f3ce778e2bc82b365e543f599c89b2621f2bfae5fa0c38631e228f95dcfe7018";
-        "species/Cl.dat"  "6e57ccd286bc6a6828d28ebc7e7311b5f56e8f4ef55772e8a0f81879932c609a";
-        "species/H.dat"  "f8bc7c69e327342f330a3541a9d33d6c985e1b10b22553472a14b3ae69fee9d5";
-        "species/K.dat"  "36741e1879e9eac183927d84a8fc71a2dc713459fd01e6e17f6948830e7c1c79";
-        "species/Li.dat"  "5599261bd1dcee8199693bea4e0cad5984326cb7e55e1ccdfa18ba144f675f5e";
-        "species/Na.dat"  "94e3dcbc2956cc7dcd2977501823fb951b1b10a24da8cc8c7e5936ebfe715916";
-        "species/OH.dat"  "5a06c59147ab12cb832bfa5258560ebcfd9e764cf1fb2e6d0faada7b3f349529";
+        "species/Br.dat"  "3fc23c1a28662ec589f62b204d5932cb1e0e63588e67542f62a0f6577b370f96";
+        "species/Cl.dat"  "77c9cffcfc3674c034800724ba22333a585a19fbc6a467df63876e68e73abae6";
+        "species/H.dat"  "91d27f6438da14beb4022237be81f2622a3b49c053a023dbf02cc355a7dc57cb";
+        "species/K.dat"  "c4107e1618124ffbc2d59c9c81bee9e5583e39bb912f3e170d447862abfa63e2";
+        "species/Li.dat"  "2921438c1787f384cccc14a9c18ec7b6f7e62524fced29ce06f08684215cf381";
+        "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
+        "species/OH.dat"  "98259ca11eab721d7ea066607140c389b6b7f946e6df0d7c435c6ea1ee5fd0c5";
     }
 }

@@ -30,8 +30,5 @@ propertyManifest
     {
         "components/H2.dat"  "a1dfad6211458c5c2cf05b7abd38fa7e7ef1604f53ef8fcc94128090979e6707";
         "components/N2.dat"  "8a10295e2eb81dece508460c79cc11bc597110e4bb447b800bb273c32411a91b";
-        "species/H.dat"  "4e92d2bb435b9e5380178d63e6ec12ca75e23d96e906623edaed07901bd1b9a5";
-        "species/NH4.dat"  "346e335929acc848385ed85472f4553a9c2dc998fa4f27843f7cd754d2c06b74";
-        "species/OH.dat"  "b57ad1c6ff6b54320f763b6f683dce92482d33317ad38750c7804e093406fd9d";
     }
 }

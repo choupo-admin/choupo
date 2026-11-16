@@ -30,10 +30,7 @@ propertyManifest
         "parameters/Helmholtz/SpanWagner1996.dat"  "45e5b08168038ca401f0a99ec275378fa7fec8658671fc3c954dd201e1bff76a";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "species/Mg.dat"  "6fd439e81addfd69bd1e36fc8e5a8d2973db885cc2e152f04cc7e76d50a578f1";
-        "species/SO4.dat"  "079fafa46d13566f7ec1808a717e2ba5f7b13c26659fd6e15f96ebcd2460cb74";
+        "species/Mg.dat"  "0282a568e26f8b6cff18f134b4f56ead2833df3aa18fc7c1799db09f756fad17";
+        "species/SO4.dat"  "352fd2de8769dede4cacfd3f2535b652f73e8028630fd08fa5541f3e778ffcf4";
     }
 }

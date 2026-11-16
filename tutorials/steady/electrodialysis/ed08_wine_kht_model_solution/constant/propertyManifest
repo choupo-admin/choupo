@@ -25,10 +25,7 @@ propertyManifest
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "species/HTart.dat"  "b6aa59372ff2f5bfe835839fae6e740b0a67bdf98ecc03e039dbe262c804aa3b";
-        "species/K.dat"  "af2233c5a34a7a1ef8004915d86bff50da7cb66395aa634505fdf42093fe20b8";
+        "species/HTart.dat"  "78afb765aaa00d5902c7fd1a4aa280aa2779dfa362c6e48fd34cb10b86e4818b";
+        "species/K.dat"  "c4107e1618124ffbc2d59c9c81bee9e5583e39bb912f3e170d447862abfa63e2";
     }
 }

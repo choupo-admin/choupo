@@ -1,12 +1,12 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-diag    fit_NF270_FdL2021      chi2             0.0116573675401  1e-4
-diag    fit_NF270_FdL2021      chi2_reduced     0.000971447295009 1e-4
+diag    fit_NF270_FdL2021      chi2             0.0116555976459  1e-4
+diag    fit_NF270_FdL2021      chi2_reduced     0.000971299803829 1e-4
 diag    fit_NF270_FdL2021      cond_scaled      28.7504509901    1e-4
 diag    fit_NF270_FdL2021      converged        1                1e-4
 diag    fit_NF270_FdL2021      dof              12               1e-4
-diag    fit_NF270_FdL2021      heldOut_AAD_pct  0.925797692862   1e-4
+diag    fit_NF270_FdL2021      heldOut_AAD_pct  0.925331322475   1e-4
 diag    fit_NF270_FdL2021      identifiable     1                1e-4
 diag    fit_NF270_FdL2021      inSample_AAD_pct 2.66344502745    1e-4
 diag    fit_NF270_FdL2021      iter             8                1e-4
@@ -23,6 +23,6 @@ verdict fit_NF270_FdL2021      verdict          validated        exact
 # rounded to 6 significant figures, and pin that the fit has not MOVED.
 diag    fit_NF270_FdL2021      fit.0.value      6.7476e-10       1e-5
 diag    fit_NF270_FdL2021      fit.0.ci95       3.40163093415e-11 1e-3
-diag    fit_NF270_FdL2021      fit.1.value      -10.525          1e-5
+diag    fit_NF270_FdL2021      fit.1.value      -10.5241          1e-5
 diag    fit_NF270_FdL2021      fit.1.ci95       4.09740785513    1e-3
 diag    fit_NF270_FdL2021      corr.0.1         -0.962078368382  1e-4

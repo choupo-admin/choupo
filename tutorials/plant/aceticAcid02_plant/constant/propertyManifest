@@ -50,8 +50,5 @@ propertyManifest
         "components/dimethylEther.dat"  "af552ed112be4fc34e108b39142a1742cbc5f34b79048522c6674e80206cb8f7";
         "components/methanol.dat"  "c1594cf811340cfcb59fef5db506eab7d90b2f49092eb90a147b7351984b3234";
         "components/methylAcetate.dat"  "984a3255e049d782ee122f64c337e80aee21d6e71f0e494d074cd23318bb6fa4";
-        "species/Acetate.dat"  "81f63ea80715810b03ba3eb410dc28ce155cecc8646ad1fde345051c08a9efe4";
-        "species/H.dat"  "90961ff87d2ad611e0cfdb04652d16d0ad0fd07c3ed80a649037f56a032ee81b";
-        "species/OH.dat"  "ff41dbce484799f20632f7b669b1c654f40291c0088a6af709eb126e6f80818e";
     }
 }

@@ -36,9 +36,6 @@ propertyManifest
         "components/aceticAcid.dat"  "3c92ae24536c51076072c0860a477ba59522684ab70b0b35717bfb6ce4aee8f3";
         "components/methanol.dat"  "fafb7a7d5bd0f74a0765fb32cf85e9886c66973a0cf2e270913774811c08207d";
         "components/methylAcetate.dat"  "991ef47b9b6e66ff9bfeba06e8b09d4218c9e52506c4b98d6f21fe49360f6c44";
-        "species/Acetate.dat"  "81f63ea80715810b03ba3eb410dc28ce155cecc8646ad1fde345051c08a9efe4";
-        "species/H.dat"  "90961ff87d2ad611e0cfdb04652d16d0ad0fd07c3ed80a649037f56a032ee81b";
-        "species/OH.dat"  "ff41dbce484799f20632f7b669b1c654f40291c0088a6af709eb126e6f80818e";
         "utilities/coolingWater.dat"  "108f0f159a567ae8c9b51f6ddca1da1c1f6a3bb257c3019112fc7bb9325a116e";
     }
 }

@@ -29,10 +29,7 @@ propertyManifest
         "parameters/solution/"  "relevant:9b39ca1d81ecceb80b252303e4e19342c8089952c427ed725ec3f3e6a6253591";
         "parameters/solution/NaCl-water.dat"  "e15ed02baf1dd90629885f257f5b85cff854ff009e2d5bf8fdc18e4b72e2124f";
         "parameters/solution/sucrose-water.dat"  "11e8f9216989a7844edb9dc965d153f9cb672a6dc79b5561a6089d23d293640e";
-    }
-    held
-    {
-        "species/Cl.dat"  "6e57ccd286bc6a6828d28ebc7e7311b5f56e8f4ef55772e8a0f81879932c609a";
-        "species/Na.dat"  "94e3dcbc2956cc7dcd2977501823fb951b1b10a24da8cc8c7e5936ebfe715916";
+        "species/Cl.dat"  "77c9cffcfc3674c034800724ba22333a585a19fbc6a467df63876e68e73abae6";
+        "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
     }
 }
