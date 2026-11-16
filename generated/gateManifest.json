@@ -423,8 +423,8 @@
     },
     "check_fastset": {
       "exit": 0,
-      "claim": "check_fastset: OK -- 85 declared case(s) covering 73 of the 77 tutorial famil(ies) the suite walks, each an existing case the full sweep also walks, no case declared twice; the remaining 4 famil(ies) carry a DECLARED `# EXCLUDED` line with a reason (tutorials/plant/aceticAcid02_plant, tutorials/plant/acetonePlant, tutorials/plant/greenAmmonia03_basicDesign, tutorials/steady/flowsheets/twoSectorDemo).  NOT COVERED: whether the declared cases are CHEAP (a measurement, and one that moved 26 % between two runs of the same tree -- it lives dated in FASTSET's header, not in a gate), whether they PASS (that is `bin/runTests --fast`), and whether a family's representative is REPRESENTATIVE of it (an author's judgement, made in review, exactly as check_witness_tier leaves representativeness to the architect).",
-      "seconds": 0.9
+      "claim": "check_fastset: OK -- 86 declared case(s) covering 73 of the 77 tutorial famil(ies) the suite walks, each an existing case the full sweep also walks, no case declared twice; the remaining 4 famil(ies) carry a DECLARED `# EXCLUDED` line with a reason (tutorials/plant/aceticAcid02_plant, tutorials/plant/acetonePlant, tutorials/plant/greenAmmonia03_basicDesign, tutorials/steady/flowsheets/twoSectorDemo).  NOT COVERED: whether the declared cases are CHEAP (a measurement, and one that moved 26 % between two runs of the same tree -- it lives dated in FASTSET's header, not in a gate), whether they PASS (that is `bin/runTests --fast`), and whether a family's representative is REPRESENTATIVE of it (an author's judgement, made in review, exactly as check_witness_tier leaves representativeness to the architect).",
+      "seconds": 0.3
     },
     "check_feed_switch": {
       "exit": 0,
@@ -889,7 +889,7 @@
     "check_sealed_corpus": {
       "exit": 0,
       "claim": "check_sealed_corpus: OK -- every top-level case under tutorials/ carries its .cho marker (so none is invisible to this search) and is either SEALED with a constant/propertyManifest (610), PINNED to the catalogue by its manifest (1, C413) or a live-overlay demo exempt by design (4), 0 unsealed; and the 5784 records those manifests name are each on disk under the case's constant/ AND not ignored by git, so a case runs from what git holds (C378 pilot review, PA-01).  NOT CHECKED: that a named record's content matches the hash its manifest claims (the runtime's seal check and check_seal_drift hold that), that a case reads no record its manifest does not name (a sealed case reading the installation catalogue, review PC-10), or that any sealed value is right.",
-      "seconds": 0.6
+      "seconds": 0.8
     },
     "check_sector_hierarchy": {
       "exit": 0,
@@ -1853,18 +1853,18 @@
     },
     "check_pins_fresh": {
       "exit": 0,
-      "claim": "check_pins_fresh: OK -- 10 pin(s) in 1 referencing case(s) each equal the computational hash of their data/standards/ record, and 0 held cop(ies) equal their own claims; no manifest holds pins together with a sealed `records`.  NOT CHECKED: that a case reads nothing it does not pin (the run's end check and check_shadow_identity hold that), the sealed cases (check_seal_drift), or that any pinned value is right.",
+      "claim": "check_pins_fresh: OK -- 7 pin(s) in 1 referencing case(s) each equal the computational hash of their data/standards/ record, and 0 held cop(ies) equal their own claims; no manifest holds pins together with a sealed `records`.  NOT CHECKED: that a case reads nothing it does not pin (the run's end check and check_shadow_identity hold that), the sealed cases (check_seal_drift), or that any pinned value is right.",
       "seconds": 0.9
     },
     "check_case_records": {
       "exit": 0,
       "claim": "check_case_records: OK -- 1 referencing case(s): no local record equals the catalogue's, every homonym is declared with its reason (or held), 0 held cop(ies) against a ceiling of 0, no pin names a record read alone, and no path a case writes has a catalogue homonym (1878 cases read for it).  NOT CHECKED: that every case has a manifest (check_sealed_corpus), that a declared variation's numbers are right, or the sealed cases' copies (check_seal_drift).",
-      "seconds": 1.4
+      "seconds": 1.6
     },
     "check_shadow_identity": {
       "exit": 0,
-      "claim": "check_shadow_identity: OK -- on copies of the pinned witness: an undeclared homonym of another charge, a `variationOf` whose formula disagrees, a `distinctFrom` on the same species, a missing variationReason (strict), an undeclared copy (strict), an unpinned read and a changed pin each REFUSE by name with their remedy (announced as `drifted` in the result when not strict); a declared distinctFrom on another charge and a faithful variationOf run; `pins` beside `sealed` refuses; a pin for a record read alone is named; Cl and HOCl carry their chlorine spelling.  NOT CHECKED: that a declared variation's numbers are right, or any case other than the witness.",
-      "seconds": 0.6
+      "claim": "check_shadow_identity: OK -- the pin scope (an unrelated Henry pair edited leaves flash01 pinned; a relevant pair that ARRIVES is `drifted` (appeared); a consumed record edited is `changed`; an unparseable one is refused), an unsealed case run strict and a HELD copy refuse another species; and on copies of the pinned witness: an undeclared homonym of another charge, a `variationOf` whose formula disagrees, a `distinctFrom` on the same species, a missing variationReason (strict), an undeclared copy (strict), an unpinned read and a changed pin each REFUSE by name with their remedy (announced as `drifted` in the result when not strict); a declared distinctFrom on another charge and a faithful variationOf run; `pins` beside `sealed` refuses; a pin for a record read alone is named; Cl and HOCl carry their chlorine spelling.  NOT CHECKED: that a declared variation's numbers are right, or any case other than the witness.",
+      "seconds": 0.9
     }
   }
 }
