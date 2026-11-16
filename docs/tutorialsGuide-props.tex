@@ -4213,14 +4213,14 @@ Nothing here is a validation against measurement: every number is the engine's o
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{envelope}\\[-1pt]{\tiny phaseEnvelope}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{P-T envelope of a C3/C4/C5 feed marched to 80 bar on an ideal liquid and a PR vapour: the bubble branch stops at 45 bar and the dew branch at 47 bar, each reported in the engine's words, and no cricondentherm is claimed}
+\tutwhat{P-T envelope of a C3/C4/C5 feed marched to 80 bar on an ideal liquid and a PR vapour: the bubble branch stops at 37 bar, where the incipient vapour loses its vapour root, and the dew branch at 47 bar, each reported in the engine's words, and no cricondentherm is claimed}
 \begin{tutnarrative}
 One phaseEnvelope op over envelope02's feed, to 80 bar in 1-bar steps. The range is the point: it contains both branches' stopping pressures.
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{diag}{envelope}{bubble\_points}{44}
-\goldrow{diag}{envelope}{bubble\_stopped\_bar}{45}
+\goldrow{diag}{envelope}{bubble\_points}{36}
+\goldrow{diag}{envelope}{bubble\_stopped\_bar}{37}
 \goldrow{diag}{envelope}{dew\_points}{46}
 \goldrow{diag}{envelope}{dew\_stopped\_bar}{47}
 \end{tutgolden}
