@@ -630,41 +630,48 @@ def main() -> int:
         notes.append("a late start is reported with its failed pressures, and"
                      " an empty branch as never started")
 
-    #  envelope02 (C239, 2026-11-08; C245 slice 4, 2026-11-08): with the
-    #  liquid reference CONTINUOUS in T (held above 0.99 Tc) the branches
+    #  envelope02 (C239, 2026-11-08; C245 slice 4, 2026-11-08; CL-01,
+    #  2026-11-16): with the liquid reference CONTINUOUS in T the branches
     #  cross propane's Tc instead of stopping below it.  Until C245 the bubble
     #  branch "reached the top of the requested range" on the TRIVIAL side
-    #  above 28 bar: the incipient vapour was past its spinodal, the PR vapour
-    #  root did not exist, and the cubic handed the vapour the LIQUID root,
-    #  unflagged -- the drawn line kinked from ~2 K/bar to a straight
-    #  0.42 K/bar plateau.  And the dew branch was ended at 36 bar by the
-    #  root-jump guard.  With the pseudo-root (CubicEoS.H) both branches run
-    #  on their own curvature to the top of the range (40 bar).  What this arm
-    #  holds: both branches reach 40 bar, the bubble slope never collapses by
-    #  more than 3x between consecutive steps (the trivial plateau put back
-    #  makes it 5.7x), and neither branch is reported as stopped.
+    #  above 28 bar (the cubic handed the vapour the LIQUID root, unflagged:
+    #  a straight 0.42 K/bar plateau).  C245's flagged pseudo-root let it run
+    #  to 40 bar, but a pseudo-root is an extrapolation, not a vapour: CL-01
+    #  ENDS the bubble branch at the first point whose incipient vapour has no
+    #  vapour root (36 points, stopped at 37 bar), reported as that.  What
+    #  this arm holds: the bubble branch ends at 37 bar by the pseudo-root
+    #  report (not a root jump), its slope never collapses by more than 3x
+    #  between consecutive steps (the trivial plateau put back makes it
+    #  5.7x), and the dew branch still reaches 40 bar, unstopped.
     cs2 = curves(JUMP)
     bub2, dew2 = cs2.get("bubble", []), cs2.get("dew", [])
     slopes = [(bub2[i][1] - bub2[i-1][1]) / ((bub2[i][0] - bub2[i-1][0]) / 1e5)
               for i in range(1, len(bub2))]
     collapse = max((slopes[i-1] / slopes[i] for i in range(1, len(slopes))
                     if slopes[i] > 0.0), default=0.0)
-    for name, br in (("bubble", bub2), ("dew", dew2)):
-        if not br or br[-1][0] < 40.0e5 - 1.0:
-            fails.append("envelope02's %s branch ends below the top of the"
-                         " range (last point %.1f bar); with the pseudo-root"
-                         " it reaches 40 bar" % (name, br[-1][0] / 1e5 if br else 0.0))
-        if "%s branch stopped" % name in jump:
-            fails.append("envelope02's %s branch is reported as STOPPED; it"
-                         " reaches the top of the requested range" % name)
+    if not bub2 or not (35.0e5 < bub2[-1][0] < 37.0e5 - 1.0):
+        fails.append("envelope02's bubble branch ends at %.1f bar; it must end"
+                     " at 36 bar, one step before the vapour root is lost"
+                     " (CL-01)" % (bub2[-1][0] / 1e5 if bub2 else 0.0))
+    if "bubble branch stopped at 37.000 bar because the incipient vapour has NO"\
+            " vapour root" not in jump:
+        fails.append("envelope02's bubble stop is not reported as the loss of"
+                     " the vapour root (CL-01)")
+    if not dew2 or dew2[-1][0] < 40.0e5 - 1.0:
+        fails.append("envelope02's dew branch ends below the top of the range"
+                     " (last point %.1f bar)" % (dew2[-1][0] / 1e5 if dew2 else 0.0))
+    if "dew branch stopped" in jump:
+        fails.append("envelope02's dew branch is reported as STOPPED; it"
+                     " reaches the top of the requested range")
     if collapse > 3.0:
         fails.append("envelope02's bubble slope collapses %.1fx between two"
                      " steps -- the incipient vapour has been handed the"
                      " liquid root (a trivial plateau), not a curve" % collapse)
     if not fails or all("envelope02" not in f for f in fails):
-        notes.append("envelope02's branches cross propane's Tc to the top of"
-                     " the range (40 bar), the bubble one with no trivial"
-                     " plateau (worst slope collapse %.1fx)" % collapse)
+        notes.append("envelope02's branches cross propane's Tc; the dew one"
+                     " reaches 40 bar and the bubble one ends at 37 bar on the"
+                     " lost vapour root, with no trivial plateau (worst slope"
+                     " collapse %.1fx)" % collapse)
 
     # ---- (e) both directions -------------------------------------------
     if "CRICONDENTHERM" not in gas:
