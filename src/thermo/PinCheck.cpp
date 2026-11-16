@@ -150,7 +150,7 @@ std::set<std::string> caseWords()
             continue;
         }
         const std::string ext = it->path().extension().string();
-        if (ext == ".dat" || ext == ".csv" || ext == ".log" || ext == ".cho"
+        if (ext == ".dat" || ext == ".csv" || ext == ".log"
             || it->path().filename() == "propertyManifest") continue;
         if (!it->is_regular_file(ec) || fs::file_size(it->path(), ec) > (1u << 20)) continue;
         std::ifstream f(it->path());
