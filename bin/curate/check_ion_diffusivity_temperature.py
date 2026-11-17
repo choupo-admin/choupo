@@ -68,6 +68,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "bin" / "curate" / "nanofiltran"))
 import paper_case  # noqa: E402
+import case_records  # noqa: E402
 M14 = ROOT / "tutorials/steady/membranes/membrane14_polarisation_multiionic"
 #  the NanoFiltran paper's one case (DEV.md 4c C147); its part C is the former
 #  nanofiltran02, the stiff case of Table 2
@@ -96,8 +97,11 @@ def run(case, binary):
 
 
 def copy_case(src, dst):
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
-        "converged", "log.*", "expected", "reports", "design", "propertyManifest", "*.csv"))
+    #  C413: a case that references the catalogue is materialised first (every pinned record copied in),
+    #  then unsealed as before, so the copy reads exactly the records the original read.
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
+        "converged", "log.*", "expected", "reports", "design", "*.csv"))
+    (Path(dst) / "constant/propertyManifest").unlink(missing_ok=True)
 
 
 def declare_viscosity(case):
@@ -137,7 +141,7 @@ def set_feed_T(case, T):
 
 
 def vogel_of(case):
-    t = (Path(case) / "constant/components/water.dat").read_text()
+    t = case_records.record_path(case, "components/water.dat").read_text()
     m = re.search(r"vogel\s*\{\s*A\s+([-0-9.eE+]+);\s*B\s+([-0-9.eE+]+);\s*C\s+([-0-9.eE+]+);", t)
     return tuple(float(x) for x in m.groups())
 
