@@ -42,15 +42,16 @@ Rachford-Rice bracket at the FEED composition and chose LL over vlle03's
 VLLE, losing a vapour the Gibbs minimisation does find.)
 
 Exit 1 listing failures."""
+import contextlib
 import re
-import shutil
-import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import gatekit  # noqa: E402
+
+ROOT = gatekit.repo
+SOLVE = None
 
 TYPE  = re.compile(r"(type\s+\w*[Ff]lash\w*;)")
 MODEL = re.compile(r"model\s+\w+;")
@@ -90,68 +91,79 @@ VF        = re.compile(r'"V_over_F":\s*([-0-9.eE+]+)')
 REGIME    = re.compile(r"^  Regime:\s+(.*)$", re.M)
 
 
-def with_auto(tmp, case):
-    dst = Path(tmp) / (Path(case).name + "_auto")
-    shutil.copytree(ROOT / case, dst)
-    fd = dst / "system" / "flowsheetDict"
-    s = fd.read_text()
-    s2, n = PHASE_SET.subn("phaseSet   auto;", s, count=1)
-    if n == 0:
-        s2, n = OPER.subn(r"\1 phaseSet auto;", s, count=1)
-    if n != 1:
-        return None
-    fd.write_text(s2)
-    return dst
+@contextlib.contextmanager
+def with_auto(case):
+    """A private copy of `case` with `phaseSet auto;` swapped in (None when
+    there is no phaseSet/operation to swap)."""
+    with gatekit.probe_copy(case) as dst:
+        fd = dst / "system" / "flowsheetDict"
+        s = fd.read_text()
+        s2, n = PHASE_SET.subn("phaseSet   auto;", s, count=1)
+        if n == 0:
+            s2, n = OPER.subn(r"\1 phaseSet auto;", s, count=1)
+        if n != 1:
+            yield None
+            return
+        fd.write_text(s2)
+        yield dst
 
 
 def run(case_dir):
-    p = subprocess.run([str(SOLVE), str(case_dir)],
-                       capture_output=True, text=True, timeout=900)
-    return p.returncode, p.stdout + p.stderr
+    return gatekit.run(SOLVE, case_dir, timeout=900)
 
 
-def with_model(tmp, case, model):
-    dst = Path(tmp) / Path(case).name
-    shutil.copytree(ROOT / case, dst)
-    fd = dst / "system" / "flowsheetDict"
-    s = fd.read_text()
-    #  REPLACE an already-declared model, else inject after `type`.  (A case
-    #  that declares one would otherwise keep it and the injected line would
-    #  never be read -- the gate then passes on a run it never tested.)
-    s2, n = MODEL.subn("model       %s;" % model, s, count=1)
-    if n == 0:
-        s2, n = TYPE.subn(r"\1\n        model       %s;" % model, s, count=1)
-    if n != 1:
-        return None
-    fd.write_text(s2)
-    return dst
+def run_shipped(case):
+    """Run a shipped case on a private copy (the tree is never written)."""
+    with gatekit.probe_copy(case) as d:
+        return run(d)
+
+
+@contextlib.contextmanager
+def with_model(case, model):
+    """A private copy of `case` with `model` declared on its flash unit (None
+    when there is no flash `type` line to inject into)."""
+    with gatekit.probe_copy(case) as dst:
+        fd = dst / "system" / "flowsheetDict"
+        s = fd.read_text()
+        #  REPLACE an already-declared model, else inject after `type`.  (A case
+        #  that declares one would otherwise keep it and the injected line would
+        #  never be read -- the gate then passes on a run it never tested.)
+        s2, n = MODEL.subn("model       %s;" % model, s, count=1)
+        if n == 0:
+            s2, n = TYPE.subn(r"\1\n        model       %s;" % model, s, count=1)
+        if n != 1:
+            yield None
+            return
+        fd.write_text(s2)
+        yield dst
 
 
 def main():
-    if not SOLVE.exists():
-        print("choupoSolve not built -- run `make` first")
+    global SOLVE
+    try:
+        SOLVE = gatekit.binary("choupoSolve")
+    except gatekit.GateRefusal as e:
+        print(f"flash-model gate FAILED: {e}")
         return 1
     fails = []
 
-    with tempfile.TemporaryDirectory() as tmp:
-        for case, model, phrase in REFUSALS:
-            d = with_model(tmp, case, model)
+    for case, model, phrase in REFUSALS:
+        with with_model(case, model) as d:
             if d is None:
                 fails.append(f"{case}: no flash `type` line to inject a model into")
                 continue
             rc, out = run(d)
-            if rc == 0:
-                fails.append(f"{case} + `model {model};`: ACCEPTED (exit 0).  "
-                             "This declaration must be refused -- see the "
-                             "gate docstring for which of the four it is")
-            elif phrase not in out:
-                fails.append(f"{case} + `model {model};`: refused, but the "
-                             f"message never says '{phrase}' -- a refusal "
-                             "without its reason teaches nothing")
-            shutil.rmtree(d)
+        if rc == 0:
+            fails.append(f"{case} + `model {model};`: ACCEPTED (exit 0).  "
+                         "This declaration must be refused -- see the "
+                         "gate docstring for which of the four it is")
+        elif phrase not in out:
+            fails.append(f"{case} + `model {model};`: refused, but the "
+                         f"message never says '{phrase}' -- a refusal "
+                         "without its reason teaches nothing")
 
     for case, model in DECLARED:
-        rc, out = run(ROOT / case)
+        rc, out = run_shipped(case)
         if rc != 0:
             fails.append(f"{case}: declares `model {model};` and no longer runs")
         elif f"[flash] model {model}  (declared)" not in out:
@@ -159,7 +171,7 @@ def main():
                          "not announce it as DECLARED -- the corpus would then "
                          "exercise only the implied default")
 
-    rc, out = run(ROOT / REACTIVE_SILENT)
+    rc, out = run_shipped(REACTIVE_SILENT)
     if "[flash] model" in out:
         fails.append(f"{REACTIVE_SILENT}: a REACTIVE case announced a flash "
                      "model.  The machine there belongs to the package, not "
@@ -168,38 +180,36 @@ def main():
 
     #  ---- `phaseSet auto` by EQUIVALENCE -------------------------------
     autoOk = 0
-    with tempfile.TemporaryDirectory() as tmp:
-        for case, declared in AUTO_EQUIV:
-            rcD, outD = run(ROOT / case)
-            d = with_auto(tmp, case)
+    for case, declared in AUTO_EQUIV:
+        rcD, outD = run_shipped(case)
+        with with_auto(case) as d:
             if d is None:
                 fails.append(f"{case}: no phaseSet/operation to swap for auto")
                 continue
             rcA, outA = run(d)
-            if rcD != 0 or rcA != 0:
-                fails.append(f"{case}: declared exit {rcD}, auto exit {rcA} "
-                             "-- both must run")
-                continue
-            m = AUTO_LINE.search(outA)
-            if not m:
-                fails.append(f"{case}: `phaseSet auto;` printed no decision "
-                             "line -- the choice must be announced, always")
-            elif m.group(1) != declared:
-                fails.append(f"{case}: auto chose {m.group(1)}, the author "
-                             f"declared {declared}.  The engine must reach the "
-                             "same phase set the case was written for, or the "
-                             "automatic decision is not trustworthy")
-            vD, vA = VF.search(outD), VF.search(outA)
-            if vD and vA and abs(float(vD.group(1)) - float(vA.group(1))) > 1e-9:
-                fails.append(f"{case}: auto reached {declared} but a different "
-                             f"answer (V/F {vD.group(1)} vs {vA.group(1)})")
-            rD, rA = REGIME.search(outD), REGIME.search(outA)
-            if rD and rA and rD.group(1) != rA.group(1):
-                fails.append(f"{case}: auto reached a different regime "
-                             f"('{rD.group(1)}' vs '{rA.group(1)}')")
-            if not [f for f in fails if case in f]:
-                autoOk += 1
-            shutil.rmtree(d)
+        if rcD != 0 or rcA != 0:
+            fails.append(f"{case}: declared exit {rcD}, auto exit {rcA} "
+                         "-- both must run")
+            continue
+        m = AUTO_LINE.search(outA)
+        if not m:
+            fails.append(f"{case}: `phaseSet auto;` printed no decision "
+                         "line -- the choice must be announced, always")
+        elif m.group(1) != declared:
+            fails.append(f"{case}: auto chose {m.group(1)}, the author "
+                         f"declared {declared}.  The engine must reach the "
+                         "same phase set the case was written for, or the "
+                         "automatic decision is not trustworthy")
+        vD, vA = VF.search(outD), VF.search(outA)
+        if vD and vA and abs(float(vD.group(1)) - float(vA.group(1))) > 1e-9:
+            fails.append(f"{case}: auto reached {declared} but a different "
+                         f"answer (V/F {vD.group(1)} vs {vA.group(1)})")
+        rD, rA = REGIME.search(outD), REGIME.search(outA)
+        if rD and rA and rD.group(1) != rA.group(1):
+            fails.append(f"{case}: auto reached a different regime "
+                         f"('{rD.group(1)}' vs '{rA.group(1)}')")
+        if not [f for f in fails if case in f]:
+            autoOk += 1
 
     if fails:
         print("flash-model gate FAILED:")
