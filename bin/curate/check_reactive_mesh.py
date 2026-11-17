@@ -73,6 +73,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 CASE = ROOT / "tutorials" / "steady" / "distillation" / "column19_mtbe_reactive_mesh"
@@ -113,7 +117,7 @@ def copy_case(dst_root: Path, tag: str) -> Path:
     dst = dst_root / tag
     if dst.exists():
         shutil.rmtree(dst)
-    shutil.copytree(CASE, dst, ignore=shutil.ignore_patterns("reports", "converged", "iterations"))
+    case_records.copytree(CASE, dst, ignore=shutil.ignore_patterns("reports", "converged", "iterations"))
     return dst
 
 
@@ -442,7 +446,7 @@ def main():
         res = {}
         for tag, model in (("estSimul", "simultaneous"), ("estFull", "fullMESH")):
             d = tmp / tag
-            shutil.copytree(ES, d, ignore=shutil.ignore_patterns("reports", "converged", "iterations"))
+            case_records.copytree(ES, d, ignore=shutil.ignore_patterns("reports", "converged", "iterations"))
             edit(d, "system/flowsheetDict", "model       simultaneous;", "model       %s;" % model)
             rce, oute = run(d)
             je = result_json(oute) if rce == 0 else None

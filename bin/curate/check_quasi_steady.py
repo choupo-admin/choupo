@@ -44,6 +44,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 CASE = ROOT / "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup"
@@ -87,7 +91,7 @@ def golden(kind, name, key):
 
 def copy(tmp, tag, edit=None):
     d = Path(tmp) / tag
-    shutil.copytree(CASE, d)
+    case_records.copytree(CASE, d)
     if edit:
         edit(d)
     return d
@@ -215,7 +219,7 @@ def main():
                 fail(f"(d) {tag}: expected a refusal naming \"{want}\","
                      f" got exit {rc}:\n{o[-600:]}")
         rx = Path(tmp) / "reacting"
-        shutil.copytree(REACTING, rx)
+        case_records.copytree(REACTING, rx)
         sub(rx / "system/flowsheetDict", "            T_jacket     320.0 K;",
             "            T_jacket     320.0 K;\n            energy       isothermal;")
         rc, o = run(rx)
