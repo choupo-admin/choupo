@@ -243,7 +243,9 @@ def batch_refusal_arm():
         d = Path(tmp) / "batch01"
         shutil.copytree(ROOT / "tutorials/batch/reactor/batch01_first_order", d,
                         ignore=shutil.ignore_patterns("converged", "reports", "log.*", "[1-9]*"))
-        rec = d / "constant" / "components" / "ethanol.dat"
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import case_records
+        rec = case_records.ensure_local(d, "components/ethanol.dat")
         t = rec.read_text()
         a, b, c = block_span(t, "vaporPressure")
         rec.write_text(t[:c] + "    domain (250 600);\n" + t[c:])
