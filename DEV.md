@@ -3974,6 +3974,21 @@ accepts today, and that is a policy call.
 > follow in the same slice; seals and pins re-taken only where the stamp is
 > inside what they hash, each counted.  It reaches every case, so its proof
 > is the `--nightly` sweep that closes C421.
+>
+> **C423 (Vitor, 2026-11-18: explain to an outside AI reviewer the final
+> structure of the thermophysical properties, why it scales, the hierarchy
+> of standards and local dictionaries, with several example dictionaries
+> showing the breadth; "perde tempo com isto porque e importante").**
+> WRITTEN the same hour, from the tree and not from memory: twelve sections
+> (the four layers records -> case dictionary -> package -> door; the arity
+> rule; pins and declared variations; sectors and variants; the three
+> measured-data mechanisms; why adding one thing costs one file; ten real
+> dictionaries; what is NOT finished: the 82 bypasses, mixture tables,
+> sample behaviour in three homes, no rheology, the narrow validation; five
+> questions for the reviewer).  Handed to Vitor as a file, NOT tracked: it
+> is a letter to a reviewer, and what the review returns is weighed by its
+> content (an AI's agreement is not a validation).  If it proves a good
+> overview it becomes the opening of `docs/architecture/property-architecture.md`.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
