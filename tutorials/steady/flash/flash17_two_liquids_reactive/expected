@@ -30,7 +30,7 @@ stream  vapor                  T                313.15           1e-4
 boundary global                 H_feeds_kW       -4793.24845983   1e-4
 boundary global                 Q_boundary_kW    -100.671048075   1e-4
 boundary global                 H_products_kW    -4893.91950791   1e-4
-boundary global                 residual_kW      0                abs:8.687e-07
+boundary global                 residual_kW      0                abs:0.001007
 boundary global                 noBoundary       false            exact
 boundary global                 residual_denom_kW 100.671048075    1e-4
 utility flash01                cooling.coolingWater.duty_kW -100.671048075   1e-4

@@ -29,7 +29,7 @@ stream  gas                    T                350              1e-4
 boundary global                 H_feeds_kW       -64.3166143058   1e-4
 boundary global                 Q_boundary_kW    2.20288686543     1e-4
 boundary global                 H_products_kW    -62.1137274404    1e-4
-boundary global                 residual_kW      0                abs:2.245e-05
+boundary global                 residual_kW      0                abs:2.203e-05
 utility wgs                    heating.steamLP.duty_kW 2.20288686543     1e-4
 utility wgs                    heating.steamLP.T 350              1e-4
 utility wgs                    heating.steamLP.kg_s 0.00100772500706  1e-4
