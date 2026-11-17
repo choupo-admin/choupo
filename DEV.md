@@ -4193,6 +4193,26 @@ accepts today, and that is a policy call.
 > several choices, foreign-language user models inside a property route,
 > interfaces to closed programs, logic blocks, predictive control, the
 > refinery suites.
+>
+> **THE DESIGN RECORD IS WRITTEN AND RULED (2026-11-18, on Vitor's "ja estou
+> a ficar descansado ... Avanca!"):
+> `docs/design/measured-facts-materials-and-flow-curves.md`.**  One
+> experiment record (R1 the raw rows are the stored fact and a fit is a
+> derived view; R2 support, authorised domain and interpolation are three
+> things, printed as three; R3 a required kind measured / adopted /
+> estimated; R4 the sample's conditions are part of its identity; R5 a unit
+> and a basis on every column); four kinds of subject (fluid property, flow
+> curve, material, sample behaviour); R6 a sample's test data are named by
+> the unit and answered by one service, never typed in the unit; the door in
+> three forms; R7-R10 the flow curve is the fluid's, the shear rate the
+> unit's, the impeller's constant and power curve an asset record's, the
+> shaft power a work stream, and what is refused; the material M1-M7, of
+> which M7 (no attribute a unit edits; a char is another material) and the
+> first witness are PUT TO VITOR.  The two outside-review points accepted in
+> C424 (the word `measured`, the box against the support) are in it as R3
+> and R2.  Order of building in its section 7; step 1 (tables under
+> `measured`) is C421 (7) and unblocks the spray dryer's and the exchangers'
+> door slices.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
