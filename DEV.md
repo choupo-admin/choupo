@@ -3975,6 +3975,37 @@ accepts today, and that is a policy call.
 > inside what they hash, each counted.  It reaches every case, so its proof
 > is the `--nightly` sweep that closes C421.
 >
+> **C421 (8) LANDED (2026-11-18), proven by a full sweep of its own
+> (reason, written: the stamp check sits in the package builder every case
+> goes through, and 1976 data files changed; `--fast` and `--gui` alone
+> could not carry that).**  Both record types are at schemaVersion 1; the
+> engine reads 1, reads 2 with ONE announcement per run (the correction of
+> C424: release 2608 ships 396 dictionaries stamped 2), refuses any other
+> value by name; a gate arm fails on a tracked record of these types
+> stamped 2.  1976 data files rewritten, each changed in the one digit; 513
+> pins and 65 sealed copies re-taken with the repository's tools (the stamp
+> is inside the computational hash of the two catalogue records that
+> carried it); no golden moved; the route bench stayed green.  THE SWEEP,
+> alone (63 minutes of wall clock): 2237 PASS / 2 FAIL / 1 KNOWN-BROKEN
+> (edwards02) / 9 EXPECTED-FAIL / 3 DEFERRED.  Held: mass on 306 steady
+> cases, elements on 286, energy on 123 (7 pinned), the closures of 87
+> time-integrated cases.  The two failures, fixed and re-run green: the
+> generated code map (stale after the slice's two helpers), and
+> `check_liquid_diffusivity_declaration`, which crashed reading Tc from a
+> case record that is an overlay since C421 (1) -- a leftover of THAT
+> landing, the third time in two days a full sweep found what a landing
+> validated on `--fast` and a scope had left.  RULE TAKEN FROM IT (rule
+> 4c's sizing): a landing that changes case files runs, besides its cases,
+> THE GATES WHOSE SOURCE NAMES THOSE CASES OR THEIR RECORDS (`bin/integrate
+> --plan` lists them).  ALSO MEASURED, and Vitor's judgement on it is
+> right ("isto que estas a fazer e inutil"): the sweep re-ran all 1260
+> curation fits because the reuse key hashes each case's files whole, so
+> one digit of a stamp no fit reads invalidated every key.  Queued, small:
+> the key covers what a fit reads (not the identity lines), WITH a
+> migration of the stored verdicts from the old key to the new on one and
+> the same tree, so the correction does not itself force the re-run it
+> removes; proof: a following sweep prints 1260 REUSED, 0 to run.
+>
 > **C423 (Vitor, 2026-11-18: explain to an outside AI reviewer the final
 > structure of the thermophysical properties, why it scales, the hierarchy
 > of standards and local dictionaries, with several example dictionaries
