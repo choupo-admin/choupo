@@ -262,6 +262,7 @@ PROBES = [
 def refusal_arm():
     """Each invalid declaration must refuse AND name why.  Returns findings."""
     import shutil
+    import case_records  # noqa: E402
     import tempfile
     out = []
     for base in (PROBE_FLASH, PROBE_PLANT):
@@ -271,7 +272,7 @@ def refusal_arm():
     with tempfile.TemporaryDirectory(prefix="choupo-utilcirc-") as tmp:
         for label, base, (how, *args), phrase in PROBES:
             case = Path(tmp) / label
-            shutil.copytree(base, case)
+            case_records.copytree(base, case)
             fd = case / "system" / "flowsheetDict"
             txt = fd.read_text()
             if how == "append":
