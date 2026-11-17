@@ -44,6 +44,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records   # noqa: E402  (C413: a case references the catalogue records it reads)
+
 ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 
@@ -76,6 +79,22 @@ def run(case):
 
 
 
+def seal_alone(case):
+    """The copy of a case that references the catalogue is made the case it replaced: SEALED, every
+    record it reads its own (adopted: never hash-enforced), so removing a field from a record
+    REMOVES it -- an unsealed local record is read over the catalogue's and a deleted key is
+    backfilled, which would make the probe measure nothing."""
+    const = Path(case) / "constant"
+    man = const / "propertyManifest"
+    if not man.is_file():
+        return
+    subs = sorted(str(q.relative_to(const)) for d in ("components", "chemistry", "utilities", "parameters")
+                  for q in (const / d).rglob("*.dat"))
+    body = "".join('    "%s" { type adopted; }\n' % sb for sb in subs)
+    man.write_text("propertyManifest\n{\n    sealed true;\n    sealSchema computational;\n"
+                   "    records\n    {\n" + body + "    }\n}\n")
+
+
 def main() -> int:
     fail, checked = [], []
     if not SOLVE.exists():
@@ -101,7 +120,8 @@ def main() -> int:
         #  (b) DAMAGED: the column must announce, on its OWN path.
         with tempfile.TemporaryDirectory() as td:
             dst = Path(td) / src.name
-            shutil.copytree(src, dst)
+            case_records.copytree(src, dst)
+            seal_alone(dst)
             damaged = None
             for c in sorted((dst / "constant" / "components").glob("*.dat")):
                 s = c.read_text()

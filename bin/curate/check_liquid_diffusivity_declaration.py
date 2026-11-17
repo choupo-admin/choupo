@@ -69,6 +69,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from debt_registry import ASSOCIATION_FACTOR_DEFAULTED  # noqa: E402
+import case_records  # noqa: E402  (C413: a pinned case carries no record copy)
 
 ROOT = Path(__file__).resolve().parents[2]
 NAME = "check_liquid_diffusivity_declaration"
@@ -99,23 +100,25 @@ def diagnostics(out):
 
 def copy(src: Path, tmp: str, name: str) -> Path:
     d = Path(tmp) / name
-    shutil.copytree(src, d, ignore=shutil.ignore_patterns("*.csv", "log.*", "reports",
+    case_records.copytree(src, d, ignore=shutil.ignore_patterns("*.csv", "log.*", "reports",
                                                           "postProcessing", "converged"))
     return d
 
 
 def edit(path: Path, old: str, new: str):
+    if path.parent.name == "components" and path.parent.parent.name == "constant":
+        #  C413: the probe copy references the catalogue; an edit of a record puts it in the copy
+        #  and the copy then runs unpinned (it is an unsealed case, reading its own record)
+        case_records.ensure_local(path.parents[2], "components/" + path.name)   # no-op when materialised
+        case_records.unpin(path.parents[2])
     s = path.read_text()
     if s.count(old) != 1:
         raise SystemExit(f"{NAME}: FAIL -- the arm's edit does not apply to {path.name}: {old[:60]!r}")
     path.write_text(s.replace(old, new, 1))
 
 
-COMPONENT_DIR = WITNESS / "constant" / "components"
-
-
 def record_number(comp, key):
-    m = re.search(r"^\s*" + key + r"\s+([0-9.eE+-]+)\s*;", (COMPONENT_DIR / f"{comp}.dat").read_text(), re.M)
+    m = re.search(r"^\s*" + key + r"\s+([0-9.eE+-]+)\s*;", case_records.record_path(WITNESS, f"components/{comp}.dat").read_text(), re.M)
     return float(m.group(1))
 
 
@@ -710,7 +713,9 @@ def main():
                    "                      reason \"taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +156 % there (variant leeLi313 prints both)\"; }\n", "")],
              "The method should not be used when water is the solute"),
             ("a solute with no normal boiling point (slice d2): no silent 25 C volume",
-             [("constant/components/methanol.dat", "Tb          337.85;\n", "")],
+             #  C413: a case-local record is read OVER the catalogue's (its keys replace, a deleted key is
+             #  backfilled), so "no boiling point" is `Tb 0;` -- the value the loader reads for an absent one
+             [("constant/components/methanol.dat", "Tb          337.85;\n", "Tb          0;\n")],
              "has no normal boiling point"),
             ("a solute whose Tb lies above its Tc has no liquid density there (slice d2, VB-06)",
              [("constant/components/isopropanol.dat", "Tb          355.39;", "Tb          600.0;")],
@@ -919,10 +924,11 @@ def main():
         (d / "system" / "outerDict").unlink(missing_ok=True)
         #  cyclohexane's Tc moved to 360 K in this temporary copy only, so the
         #  trays (321.9-330 K) sit between 0.9 Tc and Tc: nothing is above Tc.
-        rec = d / "constant/components/cyclohexane.dat"
+        rec = case_records.ensure_local(d, "components/cyclohexane.dat")
+        case_records.unpin(d)
         rec.write_text(re.sub(r"(?m)^Tc\s+[0-9.eE+-]+;", "Tc          360.0;", rec.read_text()))
         Tc = {"cyclohexane": 360.0,
-              "nHeptane": record_number_at(d / "constant/components/nHeptane.dat", "Tc")}
+              "nHeptane": record_number_at(case_records.record_path(d, "components/nHeptane.dat"), "Tc")}
         rc, out = run(d, "choupoSolve")
         prof = profile_of(out) if rc == 0 else None
         cols = (prof or {}).get("columns", prof or {})

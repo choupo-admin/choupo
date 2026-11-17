@@ -48,6 +48,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records   # noqa: E402  (C413: a case references the catalogue records it reads)
+
 ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 STD = ROOT / "data" / "standards"
@@ -74,9 +77,15 @@ def main() -> int:
         return 1
 
     #  (a) how many records in the SEALED case declare interim?
-    comps = ROOT / POSITIVE / "constant" / "components"
-    want = sum(1 for p in comps.glob("*.dat")
-               if (m := MARK.search(p.read_text())) and m.group(1) == "interim")
+    #  C413: the case REFERENCES the catalogue, so "its records" are the ones it reads: the
+    #  component records its manifest pins (or carries), each resolved the way the engine does.
+    man = ROOT / POSITIVE / "constant" / "propertyManifest"
+    subs = sorted({k for k in case_records.read_manifest(man)["pins"] if k.startswith("components/")}
+                  | {"components/" + q.name for q in
+                     (ROOT / POSITIVE / "constant" / "components").glob("*.dat")})
+    recs = [case_records.record_path(ROOT / POSITIVE, k) for k in subs]
+    want = sum(1 for p in recs
+               if p is not None and (m := MARK.search(p.read_text())) and m.group(1) == "interim")
     if want == 0:
         fail.append(f"{Path(POSITIVE).name} mirrors no `reviewStatus interim` "
                     "record -- either the case was re-sealed away from them or "
