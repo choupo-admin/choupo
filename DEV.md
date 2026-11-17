@@ -4084,6 +4084,47 @@ accepts today, and that is a policy call.
 > ON PURPOSE in one thing: moisture is the COMPONENT water held by the
 > solid, not an attribute a unit edits -- an attribute that changes is mass
 > appearing without a stream, which rule 4b forbids.
+>
+> **C425, THE STUDY IS DONE (2026-11-18; four Sonnet readers, one manual
+> family each, every statement with its page; 1090 lines of notes and a
+> synthesis in the private Studies folder, `2026-11-18-solids-and-materials/`;
+> the books Vitor filed the same afternoon were byte-identical copies of the
+> May set).**  WHAT THE REFERENCE WORLD DOES that the first read had not
+> shown: a stream is a vector of SUBSTREAMS fixed by a stream class; a
+> heterogeneous solid is carried on a mass basis with its molar-mass slot
+> set to 1; it is described by ATTRIBUTES the stream carries and a unit
+> overwrites by typed values; for such solids no closure rule is stated
+> (its own worked coal reactors print the two masses out of balance and the
+> total closed, as expected; its yield reactor keeps no atom balance); for
+> polymers the same mechanism DOES have a law (conserved attributes are flow
+> quantities, summed on mixing, balanced in reactors).  SAMPLE BEHAVIOUR
+> (grindability, cake resistance and compressibility, the drying curve,
+> settling data, crystal kinetics) is typed IN EACH UNIT there -- so Choupo
+> is level with it today, not behind, and one home for a sample's data
+> would be an advance, not a catch-up.  With reaction its datum for such a
+> solid is the elements at 298.15 K, the formation enthalpy obtained from
+> the heat of combustion and the ultimate analysis: Choupo's own datum.
+> THE DESIGN PUT TO VITOR (nothing built): a MATERIAL -- (1) a component
+> kind with no formula, on a mass basis; (2) its analysis a dataset of the
+> case on ONE stated basis (dry), with its ash and its measured heating
+> value; (3) elements from the ultimate analysis, ash conserved as a mass
+> of its own, so the element gate closes; (4) formation enthalpy on the
+> elements datum computed at load from heating value and analysis, and
+> printed; heat capacity and density as declared or measured laws; (5) a
+> second form of the property door, (material, T, P), mass basis, enthalpy
+> and density only; (6) never offered to an equilibrium; a unit with no
+> model for it refuses by name; (7) NO MUTABLE ATTRIBUTES: moisture is the
+> component water held by the solid, and a converted solid (char) is
+> ANOTHER material with its own analysis, produced by a declared yield
+> whose atoms and ash the engine checks -- so there is no attribute-mixing
+> rule to invent; (8) sample behaviour as datasets of the case that units
+> name.  STATED LIMITS: a solid whose composition changes continuously is
+> a few lumped materials; polymers need the conserved-attribute mechanism
+> and stay out until a case asks.  FIRST WITNESS proposed: a biomass dryer
+> feeding a combustor, the first law closed across both from the measured
+> heating value.  Correlations, if any is used, are read in their original
+> papers: the manual's coal equations carry printing errors (flagged in the
+> notes).  Waits for Vitor's reading; after C421.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
