@@ -271,6 +271,11 @@ reactions ( r1 r2 ... );       // MULTI
 ```
 For a SERIES network the PFR beats the CSTR (no back-mixing keeps the intermediate):
 `pfr03_series_selectivity` gives 79 % of B where `cstr03` gives 53 %, same τ.
+**Where its liquid properties come from (C421).**  The liquid basis of a concentration law
+(`Q = F v`, `tau_s = V_R / Q`) is `v = M / rho`, `rho` the property door's liquid density of
+the feed at the feed's own T, P and composition -- no longer the sum of each component's stored
+25 C `Vliq`.  The run's liquid-properties table names the unit and the method.  The bed's gas
+side (Ergun) was never on the liquid basis.  A property typed in `operation` is not read.
 
 **Non-isothermal** (multi-reaction path).  `thermalMode isothermal` (default — T imposed,
 duty a result) · `adiabatic` · `heatExchange` (with flat `U;`, `areaPerVolume;` and
@@ -1093,12 +1098,12 @@ booster + one SW30HR-380 stage, the specific energy decomposed.  Record:
 **What `pressureExchanger` accepts** (generated from `choupoSolve --describe-units`; judged on each process inlet, before any unit runs when the inlet is authored, else at the unit's own solve):
 
 * **Models:**
-  * Every component the two streams carry, each with a liquid molar volume or an aqueous bridge (a dissolved solute, whose volume is then the solvent's).
+  * Every component the two streams carry, in a liquid whose density the property door can price at the inlet's state.
 * **May pass through:**
   * Nothing: no pass-through is offered, so every component it is handed enters its equations or is refused.
 * **Refuses:**
   * A feed that is not a liquid -- The exchanger moves pressure between two LIQUIDS by displacement in a duct: its balances are volumetric on the liquid molar volume, and a vapour has no duct volume to exchange.
-  * A feed carrying no aqueous solvent -- the device is the seawater-RO energy-recovery device: both streams are aqueous solutions, the salinity it moves between them is the solute mass fraction on the aqueous solvent, and a dissolved solute's volume is taken as the solvent's.
+  * A feed carrying no aqueous solvent -- the device is the seawater-RO energy-recovery device: both streams are aqueous solutions, the salinity it moves between them is the solute mass fraction on the aqueous solvent, and the stream's volume is its liquid density's (the property door's).
 * **Needs:**
   * No package capability beyond the components' own records.
 <!-- END GENERATED unit-acceptance pressureExchanger -->
@@ -1107,6 +1112,10 @@ booster + one SW30HR-380 stage, the specific energy decomposed.  Record:
 A stream-less sink for the shaft work a turbine produces (or any `work`
 energy port).  No material streams; it just consumes the wired W.
 ```
+**Liquid properties (C421).**  Each inlet's volume per mole is `M / rho`, `rho` the property
+door's liquid density of THAT inlet at its own T, P and composition; a dissolved salt's volume
+is in the solution's density (the old dilute-solution sum, which gave a salt no volume, is
+gone), and a state the door cannot price refuses by name.
 { name G1; type electricLoad;
   operation   { eta  0.97; }                       // generator efficiency
   energyInputs ( { from turbine01.shaft;  kind work;  target W_shaft; } ) }
@@ -2780,6 +2789,13 @@ antisolvent drowning-out supersaturation), not only a solubility curve.  The
 population balance then operates on `S = c/c_sat` regardless.  See
 `crystalliser08_nacl_antisolvent_msmpr` (a continuous antisolvent NaCl MSMPR
 that returns the PSD the equilibrium model cannot).
+
+**Liquid properties (C421).**  The residence time of `MSMPR` and `FVM` is `tau = V / Q`, `Q = F M / rho`
+with `rho` the property door's liquid density of the feed liquor at `operatingTemperature`, the
+unit's pressure and the liquor's composition (it was the sum of each component's stored 25 C
+`Vliq`, which gave a dissolved salt with none a zero volume).  The antisolvent's molar volume in
+the mixed-solvent activity term is `M / rho` of the pure antisolvent at `operatingTemperature`,
+also from the door.
 
 **Multiple feeds** — declare `inputs (brine antisolvent);` and the
 crystalliser combines them internally (no separate `mixer` node), e.g. a

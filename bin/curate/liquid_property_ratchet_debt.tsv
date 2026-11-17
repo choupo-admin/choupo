@@ -23,9 +23,6 @@ src/propertyOps/SolubilityParameter.cpp	vliq	2
 src/propertyOps/SteamTables.cpp	keyRead	2
 src/propertyOps/ThielePellet.cpp	keyRead	1
 src/unitOperations/batch/BatchElectrodialysis.cpp	direct	1
-src/unitOperations/crystallisation/CrystallisationSaturation.cpp	vliq	1
-src/unitOperations/crystallisation/Crystalliser.cpp	vliq	5
-src/unitOperations/dynamic/WilliamsOttoPlant.cpp	literal	1
 src/unitOperations/electrochem/ElectrodialysisStack.cpp	conversion	2
 src/unitOperations/electrochem/ElectrodialysisStack.cpp	direct	1
 src/unitOperations/heatTransfer/SprayDryer.cpp	keyRead	5
@@ -36,6 +33,3 @@ src/unitOperations/heatTransfer/htc/Rohsenow.H	literal	2
 src/unitOperations/hydraulics/Pipe.cpp	keyRead	10
 src/unitOperations/membrane/massTransfer/Polarisation.cpp	direct	1
 src/unitOperations/membrane/transport/DSPM_DE.cpp	direct	1
-src/unitOperations/reactor/PFR.cpp	vliq	4
-src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp	direct	1
-src/unitOperations/rotating/PressureExchanger.cpp	vliq	1
