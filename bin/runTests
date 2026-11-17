@@ -5571,15 +5571,15 @@ PYEOF
     # NanoFiltran's within 2e-6 on every row, and six refusals fire.  Needs
     # no gfortran (bin/curate/nanofiltran/regenerate.py does, and refuses
     # without it).  6 by-hand sabotages in its docstring.
-    if gate_exec "$ROOT/bin/curate/check_nanofiltran_reference.py" > /tmp/nanofiltran.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "nanofiltran-reference-gate" "$(grep -m1 '^check_nanofiltran_reference: OK' /tmp/nanofiltran.$$)"
+    if gate_exec "$ROOT/bin/curate/check_nanofiltran_as_received.py" > /tmp/nanofiltran_as_received.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "nanofiltran-as-received-gate" "$(gate_claim check_nanofiltran_as_received /tmp/nanofiltran_as_received.$$ | cut -c1-240)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_nanofiltran_reference.py)\n" "nanofiltran-reference-gate"
-        cat /tmp/nanofiltran.$$
+        printf "FAIL  %-40s  (run bin/curate/check_nanofiltran_as_received.py)\n" "nanofiltran-as-received-gate"
+        cat /tmp/nanofiltran_as_received.$$
         fail=$((fail+1))
     fi
-    rm -f /tmp/nanofiltran.$$
+    rm -f /tmp/nanofiltran_as_received.$$
 
     # NanoFiltran PAPER gate (2026-10-24, DEV.md 4c C145).  The paper's own
     # two comparisons: its Table 2 is NanoFiltran AS RECEIVED (iterations
@@ -5591,15 +5591,7 @@ PYEOF
     # the experiment inside bands sized to the disagreement (part B; one case per paper since C147).
     # Needs no gfortran (regenerate_paper.py does).  8 by-hand sabotages in
     # its docstring.
-    if gate_exec "$ROOT/bin/curate/check_nanofiltran_paper.py" > /tmp/nanofiltranpaper.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "nanofiltran-paper-gate" "$(grep -m1 '^check_nanofiltran_paper: OK' /tmp/nanofiltranpaper.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_nanofiltran_paper.py)\n" "nanofiltran-paper-gate"
-        cat /tmp/nanofiltranpaper.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/nanofiltranpaper.$$
+    #  (check_nanofiltran_paper is an ARM of check_nanofiltran_as_received, run at the first site of its cluster; DEV.md 4c C419)
 
     # PORE-PARTITION gate (2026-10-25, DEV.md 4c C165).  WHY the DSPM-DE
     # pore held each ion back, as the props bench now publishes it: every

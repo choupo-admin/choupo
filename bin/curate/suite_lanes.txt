@@ -199,8 +199,7 @@ PRE  | ISO    | bin/curate/check_spiral_array.py                   | ISO (privat
 PRE  | ISO    | bin/curate/check_constant_rejection.py             | ISO (private slot tree; measured: writes tutorials/steady/membranes/membrane23_constant_rejection_nf8040/converged (+13 more))
 PRE  | PAR    | bin/curate/check_ion_diffusivity_temperature.py    | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO    | bin/curate/check_pore_solver.py                    | ISO (private slot tree; measured: writes tutorials/steady/membranes/membrane20_dspmde_pore_finite_difference/converged (+25 more))
-PRE  | PAR    | bin/curate/check_nanofiltran_reference.py          | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
-PRE  | PAR    | bin/curate/check_nanofiltran_paper.py              | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_nanofiltran_as_received.py            | merged (DEV.md 4c C419) from nanofiltran_paper, nanofiltran_reference; lane = the strictest of the former lanes (PAR, PAR)
 PRE  | PAR    | bin/curate/check_pore_partition.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/check_postprocessing.py                 | writes data/local/adsorption/equilibria/zeolite13X/CO2.dat
 PRE  | ISO    | bin/curate/check_ed_stack.py                       | ISO (private slot tree; measured: writes tutorials/steady/electrodialysis/ed01_nacl_desalination/converged (+89 more))
