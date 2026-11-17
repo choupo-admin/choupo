@@ -68,6 +68,14 @@ import { METHOD_DISCIPLINES, METHOD_TOOLS } from "../src/ui/methods/registry.js"
 import { witnessOutput } from "./witnessRead.js";
 import { readCaseRecord } from "./caseRecordRead.js";
 
+/** A raw-files view holding a component's record as the engine resolves it for a
+ *  case (its own copy, else the catalogue's): a case that REFERENCES the
+ *  catalogue (C413) carries no `constant/components/<c>.dat` of its own. */
+const recordsOf = (caseName: string, comp: string): { [rel: string]: string } => ({
+  [`constant/components/${comp}.dat`]:
+    readCaseRecord(new URL(`../../tutorials/${caseName}/constant/components/${comp}.dat`, import.meta.url).pathname),
+});
+
 const tree = (rel: string): string =>
   readCaseRecord(new URL(`../../${rel}`, import.meta.url).pathname);   // C413: a case's record, else the catalogue's
 const prose = (s: string): string => s.replace(/\s+/g, " ").trim();
@@ -269,7 +277,7 @@ describe("overpressure: the fire witness", () => {
   });
   it("the latent heat the page divides by is the engine's, and the vapour chokes", () => {
     const lambda = golden(caseDir, FIRE_OP, `Hvap_${FIRE_COMPONENT}`);
-    const M = recordScalar(raw, FIRE_COMPONENT, "MW")!;
+    const M = recordScalar(recordsOf(RELIEF_WITNESS_FIRE, FIRE_COMPONENT), FIRE_COMPONENT, "MW")!;
     expect(M).toBe(58.08);
     const W = fireHeatInput(40, 1, true) / (lambda / (M / 1000)) * 3600;
     const s = gasArea({ W_kg_h: W, T_K: golden(caseDir, FIRE_OP, "T"),
@@ -491,7 +499,7 @@ describe("overpressure (C112 point 2): operating, design, MAWP and set are four 
 describe("overpressure (C112 point 3): a liquid chokes at the vena contracta, as the letdown page says", () => {
   const P1 = goldenRow(`tutorials/${LETDOWN_WITNESS}`, "kpi", "ValveLP", "P_in");
   const Pv = goldenRow(`tutorials/${LETDOWN_PROPS}`, "diag", "liquidLP", "Psat_NH3");
-  const Pc = recordScalar(tutorialByName(LETDOWN_PROPS)!.files.rawFiles, "NH3", "Pc")! * 1e5;
+  const Pc = recordScalar(recordsOf(LETDOWN_PROPS, "NH3"), "NH3", "Pc")! * 1e5;
   it("vapour forms at the vena contracta with the outlet above the vapour pressure", () => {
     expect(5e5).toBeGreaterThan(Pv);
     expect(liquidRegime(P1, 5e5, Pv, 0.9)).toBe("cavitation");

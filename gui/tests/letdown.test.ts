@@ -45,6 +45,7 @@
 \*---------------------------------------------------------------------------*/
 
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -73,9 +74,13 @@ import { OVERPRESSURE_STEPS } from "../src/ui/methods/overpressureLesson.js";
 import { texParses } from "../src/ui/methods/lessonTex.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
 import { witnessOutput } from "./witnessRead.js";
+import { readCaseRecord } from "./caseRecordRead.js";
 
 const tree = (rel: string): string =>
   readFileSync(new URL(`../../${rel}`, import.meta.url), "utf-8");
+/** A witness's NH3 record as the engine resolves it (the case's own, else the catalogue's). */
+const nh3Record = (caseDir: string): string =>
+  readCaseRecord(fileURLToPath(new URL(`../../tutorials/${caseDir}/constant/components/NH3.dat`, import.meta.url)));
 const rel = (a: number, b: number): number => Math.abs(a - b) / Math.abs(b);
 const FLOWSHEET = "system/flowsheetDict";
 const PROPS = "system/propsDict";
@@ -255,8 +260,7 @@ describe("letdown: the numbers the prose states, recomputed from the goldens", (
   //  about 4 % below the record's HvapTb, which is the lambda this estimate
   //  divides by -- so the engine flashes about 4 % more than the estimate.
   it("the hand estimate of the flash lands within 6 % of the engine's vf", () => {
-    const raw = tutorialByName(LETDOWN_WITNESS)!.files.rawFiles!;
-    const nh3 = raw["constant/components/NH3.dat"]!;
+    const nh3 = nh3Record(LETDOWN_WITNESS);
     const cp = Number(/liquidHeatCapacity\s*\{[^}]*coefficients\s*\(\s*([0-9.]+)\s*\)/.exec(nh3)![1]);
     const lambda = Number(/^HvapTb\s+([0-9.]+)/m.exec(nh3)![1]);
     const est = flashFractionEstimate(cp,
@@ -288,7 +292,7 @@ describe("letdown: the numbers the prose states, recomputed from the goldens", (
     const P1 = golden(LETDOWN_WITNESS, "kpi", "ValveLP", "P_in");
     const P2 = golden(LETDOWN_WITNESS, "kpi", "ValveLP", "P_out");
     const Pv = golden(LETDOWN_PROPS, "diag", "liquidLP", "Psat_NH3");
-    const Pc = recordScalar(tutorialByName(LETDOWN_PROPS)!.files.rawFiles, "NH3", "Pc")! * 1e5;
+    const Pc = recordScalar({ "constant/components/NH3.dat": nh3Record(LETDOWN_PROPS) }, "NH3", "Pc")! * 1e5;
     const FL = 0.9;
     const FF = liquidCriticalRatioFactor(Pv, Pc);
     const body = LETDOWN_STEPS.find((s) => s.n === 10)!.body;
@@ -332,7 +336,7 @@ describe("letdown: the liquid density the page states (C112 item 7)", () => {
   //  record it now runs on, and fail the day a witness goes back to an
   //  older copy.
   const nh3Of = (caseDir: string): string =>
-    tutorialByName(caseDir)!.files.rawFiles!["constant/components/NH3.dat"]!;
+    nh3Record(caseDir);
   const catalogue = tree("data/standards/components/NH3.dat");
   it("both witnesses carry the catalogue record's 25 °C Vliq", () => {
     for (const c of [LETDOWN_WITNESS, LETDOWN_PROPS])
@@ -466,7 +470,7 @@ describe("letdown: the lesson text", () => {
       "src/unitOperations/valve/Valve.H:32": "isenthalpic",
       "src/unitOperations/valve/Valve.cpp:148": "flashState::priceState(T, Pout",
       "src/unitOperations/valve/Valve.cpp:264": "HOMOGENEOUS, NO SLIP",
-      "src/thermo/ThermoPackage.cpp:2397": "ThermoPackage::density",
+      "src/thermo/ThermoPackage.cpp:2416": "ThermoPackage::density",
       "src/unitOperations/flash/StreamEquilibrium.H:1021": "inline scalar priceState(",
       "src/propertyOps/PropertyPoint.cpp:89": "Cp_ig / (Cp_ig - constant::R)",
       "src/propertyOps/PropertyEvaluator.cpp:168": "thermo.Psat(i, T)",
