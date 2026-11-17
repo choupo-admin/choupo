@@ -136,6 +136,7 @@ Exit 1 listing failures."""
 import json
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -429,7 +430,7 @@ with tempfile.TemporaryDirectory() as td:
 
     # ---- A5: the engine's three surfaces -------------------------------------------
     d = tmp / "a5"
-    shutil.copytree(SHORTCUT, d, ignore=shutil.ignore_patterns(
+    case_records.copytree(SHORTCUT, d, ignore=shutil.ignore_patterns(
         "converged", "reports", "log.*"))
     rc, out = run(SOLVE, d)
     if rc != 0:
@@ -500,7 +501,7 @@ with tempfile.TemporaryDirectory() as td:
         failures.append("A7: crystalliser09 no longer carries its"
                         " authorisation -- the case refuses without it")
     d = tmp / "a7"
-    shutil.copytree(CRYST, d, ignore=shutil.ignore_patterns(
+    case_records.copytree(CRYST, d, ignore=shutil.ignore_patterns(
         "converged", "reports", "log.*"))
     rc, out = run(SOLVE, d)
     if rc != 0:
