@@ -1,11 +1,11 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
 diag    brine                  I                3.26782          1e-4
-diag    brine                  SI_anhydrite     -0.22134         1e-4
-diag    brine                  SI_gypsum        -0.0221674       1e-4
-diag    brine                  SI_halite        -0.910511        1e-4
-diag    brine                  SI_mirabilite    -2.13799         1e-4
-diag    brine                  SI_thenardite    -2.98985         1e-4
+diag    brine                  SI_anhydrite     -0.22134         abs:2.213e-05
+diag    brine                  SI_gypsum        -0.0221674       abs:2.217e-06
+diag    brine                  SI_halite        -0.910511        abs:9.105e-05
+diag    brine                  SI_mirabilite    -2.13799         abs:0.0002138
+diag    brine                  SI_thenardite    -2.98985         abs:0.000299
 diag    brine                  aw               0.890402         1e-4
 diag    brine                  gamma_CaSO4aq    1                1e-4
 diag    brine                  m_CaSO4aq        0.00466294       1e-4
@@ -27,11 +27,11 @@ diag    concentrate            pH_rmax          7                1e-4
 diag    concentrate            recovery_at_anhydrite_onset 0.240444         1e-4
 diag    concentrate            recovery_at_gypsum_onset 0.0347075        1e-4
 diag    concentrate            recovery_at_halite_onset 0.501988         1e-4
-diag    brine                  SI_glauberite    -1.50119         1e-4
+diag    brine                  SI_glauberite    -1.50119         abs:0.0001501
 diag    brine                  SI_labile_S      -3.57986         1e-4
-diag    brine                  SI_portlandite   -10.421          1e-4
+diag    brine                  SI_portlandite   -10.421          abs:0.001042
 diag    brine                  chargeImposed    0                1e-4
-diag    brine                  chargeResidual   -2.36786e-08     1e-4
+diag    brine                  chargeResidual   -2.36786e-08     abs:2.368e-12
 diag    concentrate            SI_glauberite_r0 -1.50119         1e-4
 diag    concentrate            SI_glauberite_rmax 2.1858           1e-4
 diag    concentrate            SI_labile_S_r0   -3.57986         1e-4

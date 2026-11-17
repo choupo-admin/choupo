@@ -42,7 +42,7 @@ kpi     drum                   cycleTime_s      250              1e-4
 kpi     drum                   filtratePerCycle_m3 0.12057354369    1e-4
 kpi     drum                   filtrationFlux_m_s 7.25974316749e-05 1e-4
 kpi     drum                   filtrationTime_s 82.5             1e-4
-kpi     drum                   formationTimeClosure 3.44505568853e-16 1e-4
+kpi     drum                   formationTimeClosure 3.44505568853e-16 abs:1e-09
 kpi     drum                   liquidMassFlow_kg_s 0.629401999946   1e-4
 kpi     drum                   mediumResistance_1_m 0                1e-4
 kpi     drum                   mu_liquid_Pa_s   0.00088885596324 1e-4

@@ -27,7 +27,7 @@ kpi     complete               extent_ammoniaToN2_kmol_h 0.624565586664     1e-4
 kpi     complete               extent_ammoniaToNO_kmol_h 0.000434413335897  1e-4
 kpi     complete               nReactions       2                  1e-4
 kpi     complete               newtonIterations 20                 1e-4
-kpi     complete               newtonResidual   2.84217094304e-14  1e-4
+kpi     complete               newtonResidual   2.84217094304e-14  abs:1e-08
 kpi     declared               F_in_kmol_h      25                 1e-4
 kpi     declared               F_out_kmol_h     25.625             1e-4
 kpi     declared               Kp_ammoniaToNO   5.93390732189e+52  1e-4
@@ -37,7 +37,7 @@ kpi     declared               conversion_ammoniaToNO 1                  1e-4
 kpi     declared               extent_ammoniaToNO_kmol_h 0.625              1e-4
 kpi     declared               nReactions       1                  1e-4
 kpi     declared               newtonIterations 15                 1e-4
-kpi     declared               newtonResidual   1.42108547152e-14  1e-4
+kpi     declared               newtonResidual   1.42108547152e-14  abs:1e-08
 kpi     gibbs                  F_in_kmol_h      50                 1e-4
 kpi     gibbs                  F_out_kmol_h     51.25              1e-4
 kpi     gibbs                  N_in_mol_s       13.8888888889      1e-4

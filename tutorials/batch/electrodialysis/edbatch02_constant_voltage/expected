@@ -1,11 +1,11 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-kpi     campaign               element_Cl_closure_rel 1.30104260695e-15 1e-4
+kpi     campaign               element_Cl_closure_rel 1.30104260695e-15 abs:1e-09
 kpi     campaign               element_H_closure_rel 0                1e-4
-kpi     campaign               element_Na_closure_rel 1.30104260695e-15 1e-4
+kpi     campaign               element_Na_closure_rel 1.30104260695e-15 abs:1e-09
 kpi     campaign               element_O_closure_rel 0                1e-4
-kpi     campaign               element_worst_closure_rel 1.30104260695e-15 1e-4
+kpi     campaign               element_worst_closure_rel 1.30104260695e-15 abs:1e-09
 kpi     campaign               energy_balance_available 0                1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
 kpi     campaign               energy_records_valid 0                1e-4

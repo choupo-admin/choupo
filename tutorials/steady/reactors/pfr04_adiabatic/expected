@@ -5,7 +5,7 @@ stream  feed                   F                0.000277777777778 1e-4
 stream  reactorOut             F                0.000277777777778 1e-4
 kpi     reactor                F_in_kmol_h      1                1e-4
 kpi     reactor                F_out_kmol_h     1                1e-4
-kpi     reactor                Q_kW             -1.42108547152e-14 1e-4
+kpi     reactor                Q_kW             -1.42108547152e-14 abs:0.0001
 kpi     reactor                T                350              1e-4
 kpi     reactor                T_max            356.618955495    1e-4
 kpi     reactor                T_min            350              1e-4
@@ -20,6 +20,6 @@ kpi     reactor                tau_s            310.291329081    1e-4
 stream  feed                   T                350              1e-4
 stream  reactorOut             T                356.618955495    1e-4
 boundary global                 H_feeds_kW       -104.131976653   1e-4
-boundary global                 Q_boundary_kW    -1.42108547152e-14 1e-4
+boundary global                 Q_boundary_kW    -1.42108547152e-14 abs:0.0001
 boundary global                 H_products_kW    -104.131976653   1e-4
 source  reactor                liquidVolume     bypass.recordVliq25C exact

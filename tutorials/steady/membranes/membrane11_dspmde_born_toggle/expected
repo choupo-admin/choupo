@@ -23,9 +23,9 @@ stream  ret_noBorn             T                298.15           1e-4
 kpi     NF_born                mass_closure_rel 0                1e-4
 kpi     NF_noBorn              mass_closure_rel 0                1e-4
 kpi     NF_born                Gamma_NaCl_avg   0.724057759138   1e-4
-kpi     NF_born                solute_closure_rel 1.35525271561e-16 1e-4
+kpi     NF_born                solute_closure_rel 1.35525271561e-16 abs:1e-09
 kpi     NF_noBorn              Gamma_NaCl_avg   0.375463170098   1e-4
-kpi     NF_noBorn              solute_closure_rel 5.42101086243e-16 1e-4
+kpi     NF_noBorn              solute_closure_rel 5.42101086243e-16 abs:1e-09
 kpi     NF_born                pore_nodes       101              1e-4
 kpi     NF_noBorn              pore_nodes       101              1e-4
 source  NF_born                liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume] exact

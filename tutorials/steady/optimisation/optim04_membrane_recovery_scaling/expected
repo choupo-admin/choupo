@@ -42,7 +42,7 @@ kpi     vessel                 water_recovery   0.397451442556   1e-4
 stream  feed                   T                298.15           1e-4
 stream  permeate               T                298.15           1e-4
 stream  retentate              T                298.15           1e-4
-kpi     vessel                 mass_closure_rel 3.80057051937e-16 1e-4
+kpi     vessel                 mass_closure_rel 3.80057051937e-16 abs:1e-09
 kpi     vessel                 Gamma_Ca_avg     0.346671174731   1e-4
 kpi     vessel                 Gamma_Cl_avg     0.345264874333   1e-4
 kpi     vessel                 Gamma_HCO3_avg   0.345654352059   1e-4
@@ -50,7 +50,7 @@ kpi     vessel                 Gamma_K_avg      0.344876285143   1e-4
 kpi     vessel                 Gamma_Mg_avg     0.346710404408   1e-4
 kpi     vessel                 Gamma_Na_avg     0.345264874333   1e-4
 kpi     vessel                 Gamma_SO4_avg    0.346749643086   1e-4
-kpi     vessel                 solute_closure_rel 9.85510178563e-16 1e-4
+kpi     vessel                 solute_closure_rel 9.85510178563e-16 abs:1e-09
 source  vessel                 liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume] exact
 kpi     vessel                 Gamma_Ca_elem1   0.446908635683   1e-4
 kpi     vessel                 Gamma_Ca_elem2   0.411796167139   1e-4

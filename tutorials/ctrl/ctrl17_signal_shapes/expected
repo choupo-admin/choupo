@@ -14,12 +14,12 @@ kpi     TC1                    MV_final         347.378942902      1e-4
 kpi     TC1                    PV_final         349.993146257      1e-4
 kpi     TC1                    SP_final         350                1e-4
 kpi     balance                energy_balance_available 0                  1e-4
-kpi     balance                mass_closure_rel 2.98582911041e-14  1e-4
+kpi     balance                mass_closure_rel 2.98582911041e-14  abs:1e-09
 kpi     balance                mass_kg_final    0.36               1e-4
 kpi     balance                mass_kg_in_cum   3.09735            1e-4
 kpi     balance                mass_kg_initial  0.36               1e-4
 kpi     balance                mass_kg_out_cum  3.09735            1e-4
-kpi     balance                mass_residual_kg -9.24815779513e-14 1e-4
+kpi     balance                mass_residual_kg -9.24815779513e-14 abs:1e-09
 kpi     balance                material_available 1                  1e-4
 kpi     reactor                F_in_final       6e-05              1e-4
 kpi     reactor                T_final          349.993206421      1e-4

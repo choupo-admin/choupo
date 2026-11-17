@@ -30,7 +30,7 @@ kpi     complete               extent_methanolSynthesis_kmol_h 2.31192143292e-09
 kpi     complete               extent_waterGasShift_kmol_h 0.319824387451     1e-4
 kpi     complete               nReactions       3                  1e-4
 kpi     complete               newtonIterations 14                 1e-4
-kpi     complete               newtonResidual   3.5527136788e-15   1e-4
+kpi     complete               newtonResidual   3.5527136788e-15   abs:1e-08
 kpi     declared               F_in_kmol_h      25                 1e-4
 kpi     declared               F_out_kmol_h     17.3778284567      1e-4
 kpi     declared               Kp_methanolSynthesis 0.0019134096855    1e-4
@@ -43,7 +43,7 @@ kpi     declared               extent_methanolSynthesis_kmol_h 3.81108577165    
 kpi     declared               extent_waterGasShift_kmol_h -0.0542667289076   1e-4
 kpi     declared               nReactions       2                  1e-4
 kpi     declared               newtonIterations 7                  1e-4
-kpi     declared               newtonResidual   7.1054273576e-14   1e-4
+kpi     declared               newtonResidual   7.1054273576e-14   abs:1e-08
 kpi     gibbs                  F_in_kmol_h      50                 1e-4
 kpi     gibbs                  F_out_kmol_h     26.2796789347      1e-4
 kpi     gibbs                  N_in_mol_s       13.8888888889      1e-4

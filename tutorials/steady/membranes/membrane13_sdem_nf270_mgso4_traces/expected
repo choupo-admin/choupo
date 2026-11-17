@@ -15,7 +15,7 @@ kpi     NF                     R_obs_NO3        -0.152339109838  1e-4
 kpi     NF                     R_obs_Na         0.66555373299    1e-4
 kpi     NF                     R_obs_SO4        0.992305678044   1e-4
 kpi     NF                     dP_feed          5000             1e-4
-kpi     NF                     mass_closure_rel 7.98396141379e-16 1e-4
+kpi     NF                     mass_closure_rel 7.98396141379e-16 abs:1e-09
 kpi     NF                     membranePotential_mV_avg 24.1687148557    1e-4
 kpi     NF                     water_recovery   0.0089312308998  1e-4
 source  NF                     liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume] exact
@@ -25,5 +25,5 @@ kpi     NF                     Gamma_NH4_avg    0.00165652838215 1e-4
 kpi     NF                     Gamma_NO3_avg    -0.000381609746118 1e-4
 kpi     NF                     Gamma_Na_avg     0.00165735737818 1e-4
 kpi     NF                     Gamma_SO4_avg    0.00246762687245 1e-4
-kpi     NF                     solute_closure_rel 4.76456032831e-16 1e-4
+kpi     NF                     solute_closure_rel 4.76456032831e-16 abs:1e-09
 kpi     NF                     rho_feed         999.573263964    1e-4

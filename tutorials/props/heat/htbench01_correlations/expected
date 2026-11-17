@@ -7,12 +7,12 @@ diag    bench                  Nu_published_DittusBoelter 205                1e-
 diag    bench                  Nu_published_Gnielinski 224                1e-4
 diag    bench                  Nu_published_Kern 97.5647            1e-4
 diag    bench                  allPass          1                  1e-4
-diag    bench                  dev_DittusBoelter 0.0220718          1e-4
-diag    bench                  dev_Gnielinski   0.00118956         1e-4
+diag    bench                  dev_DittusBoelter 0.0220718          abs:2.207e-06
+diag    bench                  dev_Gnielinski   0.00118956         abs:1.19e-07
 diag    bench                  dev_Kern         0                  1e-4
-diag    bench                  dev_NusseltFilm  0.0245797        1e-4
-diag    bench                  dev_Rohsenow     0.000270621      1e-4
-diag    bench                  dev_ZuberCHF     0.000684704      1e-4
+diag    bench                  dev_NusseltFilm  0.0245797        abs:2.458e-06
+diag    bench                  dev_Rohsenow     0.000270621      abs:2.706e-08
+diag    bench                  dev_ZuberCHF     0.000684704      abs:6.847e-08
 diag    bench                  h_choupo_NusseltFilm 6680.26          1e-4
 diag    bench                  h_choupo_Rohsenow 462125           1e-4
 diag    bench                  h_choupo_ZuberCHF 1.26086e+06      1e-4

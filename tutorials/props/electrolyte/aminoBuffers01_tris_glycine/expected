@@ -5,7 +5,7 @@ diag    tris_half              I                0.025001595711     1e-4
 diag    tris_half              T_K              298.15             1e-4
 diag    tris_half              aw               0.998649758497     1e-4
 diag    tris_half              chargeImposed    1                  1e-4
-diag    tris_half              chargeResidual   -4.93242389106e-16 1e-4
+diag    tris_half              chargeResidual   -4.93242389106e-16 abs:1e-12
 diag    tris_half              gamma_HTris      0.859398368895     1e-4
 diag    tris_half              gamma_Tris       1                  1e-4
 diag    tris_half              m_HTris          0.0250015872377    1e-4
@@ -15,7 +15,7 @@ diag    triethanolamine_half   I                0.0250007815097    1e-4
 diag    triethanolamine_half   T_K              298.15             1e-4
 diag    triethanolamine_half   aw               0.998649772985     1e-4
 diag    triethanolamine_half   chargeImposed    1                  1e-4
-diag    triethanolamine_half   chargeResidual   5.94287266715e-16  1e-4
+diag    triethanolamine_half   chargeResidual   5.94287266715e-16  abs:1e-12
 diag    triethanolamine_half   gamma_HTEOA      0.859400059686     1e-4
 diag    triethanolamine_half   gamma_TEOA       1                  1e-4
 diag    triethanolamine_half   m_HTEOA          0.0250007642104    1e-4
@@ -25,7 +25,7 @@ diag    glycine_HCl0p050       I                0.0499554057058    1e-4
 diag    glycine_HCl0p050       T_K              298.15             1e-4
 diag    glycine_HCl0p050       aw               0.997232814075     1e-4
 diag    glycine_HCl0p050       chargeImposed    1                  1e-4
-diag    glycine_HCl0p050       chargeResidual   -1.90833017995e-16 1e-4
+diag    glycine_HCl0p050       chargeResidual   -1.90833017995e-16 abs:1e-12
 diag    glycine_HCl0p050       gamma_Gly        0.821254410864     1e-4
 diag    glycine_HCl0p050       gamma_H2Gly      0.821254410864     1e-4
 diag    glycine_HCl0p050       gamma_HGly       1                  1e-4
@@ -37,7 +37,7 @@ diag    glycine_zwitterion     I                1.98239967335e-05  1e-4
 diag    glycine_zwitterion     T_K              298.15             1e-4
 diag    glycine_zwitterion     aw               0.998200106298     1e-4
 diag    glycine_zwitterion     chargeImposed    1                  1e-4
-diag    glycine_zwitterion     chargeResidual   -8.26638307885e-16 1e-4
+diag    glycine_zwitterion     chargeResidual   -8.26638307885e-16 abs:1e-12
 diag    glycine_zwitterion     gamma_Gly        0.994815096151     1e-4
 diag    glycine_zwitterion     gamma_H2Gly      0.994815096151     1e-4
 diag    glycine_zwitterion     gamma_HGly       1                  1e-4
@@ -49,7 +49,7 @@ diag    glycine_Na0p050        I                0.0500000030176    1e-4
 diag    glycine_Na0p050        T_K              298.15             1e-4
 diag    glycine_Na0p050        aw               0.997300320714     1e-4
 diag    glycine_Na0p050        chargeImposed    1                  1e-4
-diag    glycine_Na0p050        chargeResidual   -4.75693674469e-16 1e-4
+diag    glycine_Na0p050        chargeResidual   -4.75693674469e-16 abs:1e-12
 diag    glycine_Na0p050        gamma_Gly        0.821203060726     1e-4
 diag    glycine_Na0p050        gamma_H2Gly      0.821203060726     1e-4
 diag    glycine_Na0p050        gamma_HGly       1                  1e-4
@@ -61,7 +61,7 @@ diag    glycine_Na0p100        I                0.10000000001      1e-4
 diag    glycine_Na0p100        T_K              298.15             1e-4
 diag    glycine_Na0p100        aw               0.996360037226     1e-4
 diag    glycine_Na0p100        chargeImposed    1                  1e-4
-diag    glycine_Na0p100        chargeResidual   2.01813392365e-14  1e-4
+diag    glycine_Na0p100        chargeResidual   2.01813392365e-14  abs:1e-12
 diag    glycine_Na0p100        gamma_Gly        0.781215645889     1e-4
 diag    glycine_Na0p100        gamma_H2Gly      0.781215645889     1e-4
 diag    glycine_Na0p100        gamma_HGly       1                  1e-4

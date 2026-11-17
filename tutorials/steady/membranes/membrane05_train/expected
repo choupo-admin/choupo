@@ -17,9 +17,9 @@ kpi     ROunit                 water_recovery   0.357082018789   1e-4
 stream  feed                   T                298.15           1e-4
 stream  permeate               T                298.15           1e-4
 stream  retentate              T                298.15           1e-4
-kpi     ROunit                 mass_closure_rel 1.50817535928e-16 1e-4
+kpi     ROunit                 mass_closure_rel 1.50817535928e-16 abs:1e-09
 kpi     ROunit                 Gamma_NaCl_avg   0.188397913117   1e-4
-kpi     ROunit                 solute_closure_rel 2.08863027208e-15 1e-4
+kpi     ROunit                 solute_closure_rel 2.08863027208e-15 abs:1e-09
 source  ROunit                 liquidDensity    solutionLaw.NaCl-water exact
 source  ROunit                 liquidDiffusivity declared.infiniteDilution exact
 source  ROunit                 liquidViscosity  perConstituent,stated.seawater35_NaCl_liquidViscosity exact

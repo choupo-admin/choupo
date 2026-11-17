@@ -2028,7 +2028,26 @@ platform: $10^{-5}$ of \code{residual\_denom\_kW} for a \code{boundary} row (or
 $\max(10^{-3}\,\mathrm{kW},10^{-4}|e|)$ when none is published),
 $10^{-8}|Q_{kW}|$ of the unit for \code{H\_closure\_gap\_kW}, $10^{-9}$ of the
 largest pinned energy term of the ledger for \code{energy\_residual\_kJ}, never
-below $10^{-9}$.  The mode is decided \emph{per golden file} by a platform
+below $10^{-9}$.  \emph{A non-zero expected value is compared relatively
+whatever its magnitude} (C429): until 2026-11-18 a value at or below $10^{-9}$
+was compared absolutely at the relative tolerance, so an ion diffusivity of
+$7.568\times10^{-10}$ could publish $8.455\times10^{-10}$ and pass (999 rows in
+181 cases were blind that way).  A quantity that is round-off by its nature
+therefore declares its absolute band through its \emph{class}, written on disk
+as \code{abs:<v>} on any platform: the closure fractions
+(\code{mass\_closure\_rel}, \code{element\_*\_closure\_rel},
+\code{solute\_}, \code{energy\_closure\_rel}), the mass residual, the charge
+residual, the pore Newton residual and closure checks, a saturation index at equilibrium, the reactors' Newton
+residual and the identity deviations take
+$\max(\mathrm{param},10^{-4}|e|)$ with the parameter of their row in the table
+($10^{-9}$, $10^{-12}$ for charge, $10^{-8}$ for a Newton residual and the
+identities), and a duty or boundary remainder recorded at round-off
+(\code{Q\_kW}, \code{Q\_boundary\_kW}, \code{remaining\_kW}), a carrier
+make-up or a pressure difference of an inert bed recorded at round-off take an
+absolute band of their own ($10^{-4}$\,kW, $10^{-9}$, $10^{-6}$\,Pa).  An expected value of exactly $0$ keeps the absolute rule it
+always had.  Every other row, a trace composition or a diffusivity included, is
+judged relatively; \file{check\_golden\_bands.py} proves that each class matches
+the rows it claims and no physical one.  The mode is decided \emph{per golden file} by a platform
 \emph{fingerprint} (CPU, architecture, C library, compiler and the SIMD features
 glibc dispatches on, read from the running system by one function in
 \file{golden\_bands.py}): the file's own \code{\# platform <fingerprint>} comment

@@ -5,7 +5,7 @@ diag    phosphate_equimolar    I                0.200001782466     1e-4
 diag    phosphate_equimolar    T_K              298.15             1e-4
 diag    phosphate_equimolar    aw               0.995506371485     1e-4
 diag    phosphate_equimolar    chargeImposed    1                  1e-4
-diag    phosphate_equimolar    chargeResidual   -6.8331331275e-15  1e-4
+diag    phosphate_equimolar    chargeResidual   -6.8331331275e-15  abs:1e-12
 diag    phosphate_equimolar    gamma_H2PO4      0.746450683976     1e-4
 diag    phosphate_equimolar    gamma_H3PO4aq    1                  1e-4
 diag    phosphate_equimolar    gamma_HPO4       0.310459162279     1e-4
@@ -19,7 +19,7 @@ diag    pyrophosphate_1p5eq    I                0.115731598093     1e-4
 diag    pyrophosphate_1p5eq    T_K              298.15             1e-4
 diag    pyrophosphate_1p5eq    aw               0.997613848559     1e-4
 diag    pyrophosphate_1p5eq    chargeImposed    1                  1e-4
-diag    pyrophosphate_1p5eq    chargeResidual   4.28292432471e-18  1e-4
+diag    pyrophosphate_1p5eq    chargeResidual   4.28292432471e-18  abs:1e-12
 diag    pyrophosphate_1p5eq    gamma_H2P2O7     0.357269567631     1e-4
 diag    pyrophosphate_1p5eq    gamma_H3P2O7     0.773123734512     1e-4
 diag    pyrophosphate_1p5eq    gamma_H4P2O7     1                  1e-4
@@ -35,7 +35,7 @@ diag    pyrophosphate_2p5eq    I                0.225086375367     1e-4
 diag    pyrophosphate_2p5eq    T_K              298.15             1e-4
 diag    pyrophosphate_2p5eq    aw               0.996852318302     1e-4
 diag    pyrophosphate_2p5eq    chargeImposed    1                  1e-4
-diag    pyrophosphate_2p5eq    chargeResidual   -1.77694758843e-15 1e-4
+diag    pyrophosphate_2p5eq    chargeResidual   -1.77694758843e-15 abs:1e-12
 diag    pyrophosphate_2p5eq    gamma_H2P2O7     0.302925518979     1e-4
 diag    pyrophosphate_2p5eq    gamma_H3P2O7     0.741880515644     1e-4
 diag    pyrophosphate_2p5eq    gamma_H4P2O7     1                  1e-4
@@ -51,7 +51,7 @@ diag    pyrophosphate_3p5eq    I                0.40007067279      1e-4
 diag    pyrophosphate_3p5eq    T_K              298.15             1e-4
 diag    pyrophosphate_3p5eq    aw               0.995954749689     1e-4
 diag    pyrophosphate_3p5eq    chargeImposed    1                  1e-4
-diag    pyrophosphate_3p5eq    chargeResidual   -4.3616564653e-13  1e-4
+diag    pyrophosphate_3p5eq    chargeResidual   -4.3616564653e-13  abs:1e-12
 diag    pyrophosphate_3p5eq    gamma_H2P2O7     0.28474209506      1e-4
 diag    pyrophosphate_3p5eq    gamma_H3P2O7     0.730487719146     1e-4
 diag    pyrophosphate_3p5eq    gamma_H4P2O7     1                  1e-4
@@ -67,7 +67,7 @@ diag    arsenate_1p5eq         I                0.100001734234     1e-4
 diag    arsenate_1p5eq         T_K              298.15             1e-4
 diag    arsenate_1p5eq         aw               0.997750653039     1e-4
 diag    arsenate_1p5eq         chargeImposed    1                  1e-4
-diag    arsenate_1p5eq         chargeResidual   -2.92635963317e-13 1e-4
+diag    arsenate_1p5eq         chargeResidual   -2.92635963317e-13 abs:1e-12
 diag    arsenate_1p5eq         gamma_AsO4       0.108376099501     1e-4
 diag    arsenate_1p5eq         gamma_H2AsO4     0.781214671179     1e-4
 diag    arsenate_1p5eq         gamma_H3AsO4     1                  1e-4
@@ -81,7 +81,7 @@ diag    sulfite_1p5eq          I                0.100000469194     1e-4
 diag    sulfite_1p5eq          T_K              298.15             1e-4
 diag    sulfite_1p5eq          aw               0.997750653694     1e-4
 diag    sulfite_1p5eq          chargeImposed    1                  1e-4
-diag    sulfite_1p5eq          chargeResidual   -5.52660753118e-14 1e-4
+diag    sulfite_1p5eq          chargeResidual   -5.52660753118e-14 abs:1e-12
 diag    sulfite_1p5eq          gamma_Bisulfite  0.781215382185     1e-4
 diag    sulfite_1p5eq          gamma_H2SO3      1                  1e-4
 diag    sulfite_1p5eq          gamma_Sulfite    0.372463005993     1e-4
@@ -93,7 +93,7 @@ diag    hydrazine_half         I                0.025001415684     1e-4
 diag    hydrazine_half         T_K              298.15             1e-4
 diag    hydrazine_half         aw               0.998649761717     1e-4
 diag    hydrazine_half         chargeImposed    1                  1e-4
-diag    hydrazine_half         chargeResidual   -8.27474686703e-16 1e-4
+diag    hydrazine_half         chargeResidual   -8.27474686703e-16 abs:1e-12
 diag    hydrazine_half         gamma_Hydrazine  1                  1e-4
 diag    hydrazine_half         gamma_N2H5       0.85939874274      1e-4
 diag    hydrazine_half         gamma_N2H6       0.545480030339     1e-4

@@ -2,9 +2,9 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 diag    calciteEq_25C          I                0.0258891128996        1e-4
-diag    calciteEq_25C          SI_aragonite     -0.143999999968           1e-4
-diag    calciteEq_25C          SI_calcite       3.22147e-11      1e-4
-diag    calciteEq_25C          SI_portlandite   -13.1219229657         1e-4
+diag    calciteEq_25C          SI_aragonite     -0.143999999968           abs:1.44e-05
+diag    calciteEq_25C          SI_calcite       3.22147e-11      abs:1e-09
+diag    calciteEq_25C          SI_portlandite   -13.1219229657         abs:0.001312
 diag    calciteEq_25C          aw               0.998916         1e-4
 diag    calciteEq_25C          n_calcite        0.00569408636156       1e-4
 diag    calciteEq_25C          pH               6.01859430205          1e-4
@@ -38,4 +38,4 @@ diag    calciteEq_25C          pH               6.01859430205          1e-4
 #
 diag    calciteEq_25C          pH               6.004            5e-3     anchor
 diag    calciteEq_25C          chargeImposed    1                1e-4
-diag    calciteEq_25C          chargeResidual   2.22179e-18      1e-4
+diag    calciteEq_25C          chargeResidual   2.22179e-18      abs:1e-12

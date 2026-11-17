@@ -22,12 +22,12 @@ kpi     NFderived              Re_max           411.811614592    1e-4
 kpi     NFderived              Re_min           236.493659521    1e-4
 kpi     NFderived              dP_feed          20162.9669112    1e-4
 kpi     NFderived              hydraulicDiameter 0.00128016       1e-4
-kpi     NFderived              mass_closure_rel 1.51457797267e-16 1e-4
+kpi     NFderived              mass_closure_rel 1.51457797267e-16 abs:1e-09
 kpi     NFderived              ratedTest_R_obs_MgSO4 0.97             1e-4
 kpi     NFderived              ratedTest_cm_over_cb_MgSO4 1.87563417902    1e-4
 kpi     NFderived              ratedTest_permeateFlow 0.000218663254373 1e-4
 kpi     NFderived              ratedTest_recovery 0.298302713334   1e-4
-kpi     NFderived              solute_closure_rel 2.78182594665e-16 1e-4
+kpi     NFderived              solute_closure_rel 2.78182594665e-16 abs:1e-09
 kpi     NFderived              u_crossflow_inlet 0.286484948658   1e-4
 kpi     NFderived              water_recovery   0.425723677669   1e-4
 kpi     NFnaive                Gamma_MgSO4_avg  1.59533298919    1e-4
@@ -38,8 +38,8 @@ kpi     NFnaive                Re_max           411.811614592    1e-4
 kpi     NFnaive                Re_min           233.2411095      1e-4
 kpi     NFnaive                dP_feed          20004.7702073    1e-4
 kpi     NFnaive                hydraulicDiameter 0.00128016       1e-4
-kpi     NFnaive                mass_closure_rel 1.51457797267e-16 1e-4
-kpi     NFnaive                solute_closure_rel 2.78182594665e-16 1e-4
+kpi     NFnaive                mass_closure_rel 1.51457797267e-16 abs:1e-09
+kpi     NFnaive                solute_closure_rel 2.78182594665e-16 abs:1e-09
 kpi     NFnaive                u_crossflow_inlet 0.286484948658   1e-4
 kpi     NFnaive                water_recovery   0.433621827954   1e-4
 source  NFderived              liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume] exact

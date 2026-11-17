@@ -115,7 +115,7 @@ kpi     millFirstHalf          product_d50_um   172.283108378    1e-4
 kpi     millFirstHalf          product_d80_um   504.259823972    1e-4
 kpi     millFirstHalf          product_d90_um   918.022090905    1e-4
 kpi     millFirstHalf          reductionRatio80 1.9641119727     1e-4
-kpi     millFirstHalf          sizeMassClosure  -2.22044604925e-16 1e-4
+kpi     millFirstHalf          sizeMassClosure  -2.22044604925e-16 abs:1e-09
 kpi     millFirstHalf          solidsMassFlow_kg_s 90.4149896959    1e-4
 kpi     millFirstHalf          topClassRemaining 0.32065963668    1e-4
 kpi     millSecondHalf         T_out            327.731851109    1e-4

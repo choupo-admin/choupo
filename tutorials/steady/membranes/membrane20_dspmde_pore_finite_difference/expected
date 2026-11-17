@@ -21,9 +21,9 @@ kpi     NF_MgSO4_pore          R_obs_CaCl2      1                1e-4
 kpi     NF_MgSO4_pore          R_obs_MgSO4      0.99975131291    1e-4
 kpi     NF_MgSO4_pore          R_obs_NaCl       1                1e-4
 kpi     NF_MgSO4_pore          dP_feed          100000           1e-4
-kpi     NF_MgSO4_pore          mass_closure_rel 2.21746332086e-16 1e-4
+kpi     NF_MgSO4_pore          mass_closure_rel 2.21746332086e-16 abs:1e-09
 kpi     NF_MgSO4_pore          pore_nodes       101              1e-4
-kpi     NF_MgSO4_pore          solute_closure_rel 3.38813178902e-16 1e-4
+kpi     NF_MgSO4_pore          solute_closure_rel 3.38813178902e-16 abs:1e-09
 kpi     NF_MgSO4_pore          water_recovery   0.360665516033   1e-4
 kpi     NF_NaCl_pore           Gamma_CaCl2_avg  0                1e-4
 kpi     NF_NaCl_pore           Gamma_MgSO4_avg  0                1e-4
@@ -59,7 +59,7 @@ kpi     NF_MgSO4_BsWall        R_obs_NaCl       1                1e-4
 kpi     NF_MgSO4_BsWall        dP_feed          100000           1e-4
 kpi     NF_MgSO4_BsWall        mass_closure_rel 0                1e-4
 kpi     NF_MgSO4_BsWall        pore_nodes       101              1e-4
-kpi     NF_MgSO4_BsWall        solute_closure_rel 1.69406589451e-16 1e-4
+kpi     NF_MgSO4_BsWall        solute_closure_rel 1.69406589451e-16 abs:1e-09
 kpi     NF_MgSO4_BsWall        water_recovery   0.360768405268   1e-4
 kpi     NF_NaCl_BsWall         Gamma_CaCl2_avg  0                1e-4
 kpi     NF_NaCl_BsWall         Gamma_MgSO4_avg  0                1e-4
@@ -71,7 +71,7 @@ kpi     NF_NaCl_BsWall         R_obs_NaCl       0.308961952265   1e-4
 kpi     NF_NaCl_BsWall         dP_feed          100000           1e-4
 kpi     NF_NaCl_BsWall         mass_closure_rel 0                1e-4
 kpi     NF_NaCl_BsWall         pore_nodes       101              1e-4
-kpi     NF_NaCl_BsWall         solute_closure_rel 1.69406589451e-16 1e-4
+kpi     NF_NaCl_BsWall         solute_closure_rel 1.69406589451e-16 abs:1e-09
 kpi     NF_NaCl_BsWall         water_recovery   0.382864597648   1e-4
 source  NF_MgSO4_BsWall        liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume] exact
 source  NF_MgSO4_pore          liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume] exact

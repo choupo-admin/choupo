@@ -4,11 +4,11 @@
 kpi     campaign               energy_balance_available 0                1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
 kpi     campaign               energy_records_valid 4                1e-4
-kpi     campaign               mass_closure_rel 1.7763568394e-15 1e-4
+kpi     campaign               mass_closure_rel 1.7763568394e-15 abs:1e-09
 kpi     campaign               mass_kg_external_out 0                1e-4
 kpi     campaign               mass_kg_final    2.25             1e-4
 kpi     campaign               mass_kg_initial  2.25             1e-4
-kpi     campaign               mass_residual_kg 3.99680288865e-15 1e-4
+kpi     campaign               mass_residual_kg 3.99680288865e-15 abs:1e-09
 kpi     campaign               moles_kmol_external_out 0                1e-4
 kpi     campaign               moles_kmol_final 0.0225           1e-4
 kpi     campaign               moles_kmol_initial 0.025            1e-4

@@ -21,14 +21,14 @@ kpi     TracerSine             MV_final         2.09509300524e-06 1e-4
 kpi     TracerSine             PV_final         0                1e-4
 kpi     TracerSine             SP_final         2.09509300524e-06 1e-4
 kpi     balance                energy_balance_available 0                1e-4
-kpi     balance                mass_closure_rel 5.85780988233e-15 1e-4
+kpi     balance                mass_closure_rel 5.85780988233e-15 abs:1e-09
 kpi     balance                mass_kg_final    0.36             1e-4
 kpi     balance                mass_kg_in_cum   41.6205          1e-4
 kpi     balance                mass_kg_initial  0.36             1e-4
 kpi     balance                mass_kg_out_cum  41.6205          1e-4
-kpi     balance                mass_residual_kg 2.43804976208e-13 1e-4
+kpi     balance                mass_residual_kg 2.43804976208e-13 abs:1e-09
 kpi     balance                material_available 1                1e-4
-kpi     frequencyResponse      fit_residual_rel 3.36479137915e-08 1e-4
+kpi     frequencyResponse      fit_residual_rel 3.36479137915e-08 abs:1e-08
 kpi     frequencyResponse      frequency_Hz     0.00132629119244 1e-4
 kpi     frequencyResponse      out_amplitude_kmol_s 8.94429778974e-07 1e-4
 kpi     frequencyResponse      out_mean_kmol_s  4.00000000963e-06 1e-4

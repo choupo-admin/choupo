@@ -39,7 +39,7 @@ kpi     vessel                 LSI_calcite_bulk_end 0.640654032032   1e-4
 kpi     vessel                 LSI_calcite_wall_end 0.931059892645   1e-4
 kpi     vessel                 RSI_calcite_wall_end 5.13788021471    1e-4
 kpi     vessel                 StiffDavis_calcite_wall_end 0.690750996273   1e-4
-kpi     vessel                 mass_closure_rel 1.26685683979e-16 1e-4
+kpi     vessel                 mass_closure_rel 1.26685683979e-16 abs:1e-09
 kpi     vessel                 maxLSI_calcite_wall 0.931059892645   1e-4
 kpi     vessel                 Gamma_Ca_avg     0.542825049507   1e-4
 kpi     vessel                 Gamma_Cl_avg     0.5410909994     1e-4
@@ -48,7 +48,7 @@ kpi     vessel                 Gamma_K_avg      0.540611293483   1e-4
 kpi     vessel                 Gamma_Mg_avg     0.542873377069   1e-4
 kpi     vessel                 Gamma_Na_avg     0.5410909994     1e-4
 kpi     vessel                 Gamma_SO4_avg    0.542921713283   1e-4
-kpi     vessel                 solute_closure_rel 1.74260805467e-15 1e-4
+kpi     vessel                 solute_closure_rel 1.74260805467e-15 abs:1e-09
 source  vessel                 liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume] exact
 kpi     vessel                 Gamma_Ca_elem1   0.660715161647   1e-4
 kpi     vessel                 Gamma_Ca_elem2   0.614488164601   1e-4

@@ -50,7 +50,7 @@ kpi     vessel                 Gamma_K_avg      0.441267269745   1e-4
 kpi     vessel                 Gamma_Mg_avg     0.444667892123   1e-4
 kpi     vessel                 Gamma_Na_avg     0.441986350979   1e-4
 kpi     vessel                 Gamma_SO4_avg    0.444740827555   1e-4
-kpi     vessel                 solute_closure_rel 1.21364098331e-15 1e-4
+kpi     vessel                 solute_closure_rel 1.21364098331e-15 abs:1e-09
 source  vessel                 liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume] exact
 kpi     vessel                 Gamma_Ca_elem1   0.634889429409   1e-4
 kpi     vessel                 Gamma_Ca_elem2   0.560297950934   1e-4

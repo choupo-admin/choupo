@@ -74,7 +74,7 @@ kpi     steamTurbine           dT_isen          -310.494251785   1e-4
 kpi     steamTurbine           eta_isen         0.85             1e-4
 kpi     steamTurbine           ratio            9.3175978043     1e-4
 boundary global                 H_feeds_kW       0                1e-4
-boundary global                 Q_boundary_kW    2.06448191875e-10 1e-4
+boundary global                 Q_boundary_kW    2.06448191875e-10 abs:0.0001
 boundary global                 H_products_kW    0                1e-4
 boundary global                 W_shaft_kW       -8.82011453789   1e-4
 source  feedPump               liquidDensity    pureFluid.IF97   exact

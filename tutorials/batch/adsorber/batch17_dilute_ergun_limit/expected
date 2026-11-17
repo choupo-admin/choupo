@@ -1,18 +1,18 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-kpi     campaign               element_C_closure_rel 5.33128627003e-13 1e-4
-kpi     campaign               element_He_closure_rel 2.669253225e-13  1e-4
-kpi     campaign               element_O_closure_rel 5.33128627003e-13 1e-4
-kpi     campaign               element_worst_closure_rel 5.33128627003e-13 1e-4
+kpi     campaign               element_C_closure_rel 5.33128627003e-13 abs:1e-09
+kpi     campaign               element_He_closure_rel 2.669253225e-13  abs:1e-09
+kpi     campaign               element_O_closure_rel 5.33128627003e-13 abs:1e-09
+kpi     campaign               element_worst_closure_rel 5.33128627003e-13 abs:1e-09
 kpi     campaign               energy_balance_available 0                1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
 kpi     campaign               energy_records_valid 3                1e-4
-kpi     campaign               mass_closure_rel 2.6805259481e-13 1e-4
+kpi     campaign               mass_closure_rel 2.6805259481e-13 abs:1e-09
 kpi     campaign               mass_kg_external_out 0.161630811285   1e-4
 kpi     campaign               mass_kg_final    0.000565140820198 1e-4
 kpi     campaign               mass_kg_initial  0.162173202362   1e-4
-kpi     campaign               mass_residual_kg 4.34770458296e-14 1e-4
+kpi     campaign               mass_residual_kg 4.34770458296e-14 abs:1e-09
 kpi     campaign               moles_kmol_external_out 0.0403338611118  1e-4
 kpi     campaign               moles_kmol_final 2.7503993825e-05 1e-4
 kpi     campaign               moles_kmol_initial 0.0403556813641  1e-4
@@ -33,10 +33,10 @@ kpi     ergun                  P_out_boundary_Pa 100000           1e-4
 kpi     ergun                  Pe               250              1e-4
 kpi     ergun                  T_final          298.15           1e-4
 kpi     ergun                  c_out_over_cin_final_CO2 0.933077951334   1e-4
-kpi     ergun                  carrier_fabricated_mol -5.95434812567e-12 1e-4
+kpi     ergun                  carrier_fabricated_mol -5.95434812567e-12 abs:1e-09
 kpi     ergun                  deltaP_first_to_out_Pa 8.51367461792    1e-4
 kpi     ergun                  integral_anchor_CO2 704.888082989    1e-4
-kpi     ergun                  mass_closure_CO2 4.41372549831e-13 1e-4
+kpi     ergun                  mass_closure_CO2 4.41372549831e-13 abs:1e-08
 kpi     ergun                  n_CO2_final      3.20207958235e-09 1e-4
 kpi     ergun                  n_He_final       8.06505747923e-06 1e-4
 kpi     ergun                  qbar_CO2_final   0.0177627611973  1e-4
@@ -54,7 +54,7 @@ kpi     legacy                 T_final          298.15           1e-4
 kpi     legacy                 c_out_over_cin_final_CO2 0.932971664396   1e-4
 kpi     legacy                 carrier_fabricated_mol 0.00568374157389 1e-4
 kpi     legacy                 integral_anchor_CO2 704.88442424     1e-4
-kpi     legacy                 mass_closure_CO2 4.40673750275e-13 1e-4
+kpi     legacy                 mass_closure_CO2 4.40673750275e-13 abs:1e-08
 kpi     legacy                 n_CO2_final      3.20189384863e-09 1e-4
 kpi     legacy                 n_He_final       8.06470721532e-06 1e-4
 kpi     legacy                 qbar_CO2_final   0.0177616924184  1e-4
@@ -75,7 +75,7 @@ ledger  ergun->(external_boundary) material.external.H_kJ -0.936822938641  1e-4
 ledger  ergun->(external_boundary) material.external.valid valid            exact
 ledger  legacy                 energy.adsorption.valid valid            exact
 ledger  ergun                  energy.adsorption.valid valid            exact
-kpi     ergun                  carrier_makeup_rel -2.95211462851e-13 1e-4
+kpi     ergun                  carrier_makeup_rel -2.95211462851e-13 abs:1e-09
 kpi     legacy                 carrier_makeup_rel 0.000281795022576 1e-4
 kpi     campaign               mass_kg_amend_in 2.27497440236e-05 1e-4
 kpi     campaign               mass_kg_amend_out 0                1e-4

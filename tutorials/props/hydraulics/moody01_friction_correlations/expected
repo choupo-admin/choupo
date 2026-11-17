@@ -3,9 +3,9 @@
 # kind   name      key         expected        reltol
 diag    moody                  allPass          1                  1e-4
 diag    moody                  dev_Blasius      0                  1e-4
-diag    moody                  dev_Churchill    1.73472e-16        1e-4
-diag    moody                  dev_Colebrook    1.61329e-05        1e-4
-diag    moody                  dev_Haaland      0.0134393          1e-4
+diag    moody                  dev_Churchill    1.73472e-16        abs:1e-08
+diag    moody                  dev_Colebrook    1.61329e-05        abs:1e-08
+diag    moody                  dev_Haaland      0.0134393          abs:1.344e-06
 diag    moody                  f_Blasius        0.01777            1e-4
 diag    moody                  f_Churchill      0.0223432          1e-4
 diag    moody                  f_Colebrook      0.0221745          1e-4

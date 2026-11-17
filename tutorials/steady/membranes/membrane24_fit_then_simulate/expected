@@ -51,13 +51,13 @@ kpi     Stage                  feedFlow_elem3   0.00234276497465 1e-4
 kpi     Stage                  hydraulicDiameter 0.000951805555556 1e-4
 kpi     Stage                  leafWidth        1.3612412178     1e-4
 kpi     Stage                  leaves           16               1e-4
-kpi     Stage                  mass_closure_rel 1.33227186617e-16 1e-4
+kpi     Stage                  mass_closure_rel 1.33227186617e-16 abs:1e-09
 kpi     Stage                  pore_nodes       101              1e-4
 kpi     Stage                  pore_stiffness_max 2.98667813036    1e-4
 kpi     Stage                  recovery_elem1   0.160807866241   1e-4
 kpi     Stage                  recovery_elem2   0.297869550097   1e-4
 kpi     Stage                  recovery_elem3   0.417046820593   1e-4
-kpi     Stage                  solute_closure_rel 3.81164826264e-16 1e-4
+kpi     Stage                  solute_closure_rel 3.81164826264e-16 abs:1e-09
 kpi     Stage                  u_crossflow_inlet 0.223550223961   1e-4
 kpi     Stage                  water_recovery   0.417046820593   1e-4
 kpi     Stage                  xi_V_per_m_avg   17.0125409237    1e-4
