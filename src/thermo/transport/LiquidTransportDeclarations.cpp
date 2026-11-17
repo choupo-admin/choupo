@@ -417,7 +417,13 @@ readMeasurements(const DictPtr& block, const std::vector<Component>& comps,
             if (varying.empty())
                 throw std::runtime_error(here + ": `interpolation` beside ONE row -- nothing to"
                     " interpolate; a one-row record stands over its box as it did.");
-            std::vector<std::string> words = dec->lookupWordList("interpolation");
+            //  one word for one axis (a scalar entry), a list `( ... )` otherwise
+            std::vector<std::string> words;
+            {
+                const auto& iv = dec->entryValue("interpolation");
+                if (std::holds_alternative<std::string>(iv)) words.push_back(dec->lookupWord("interpolation"));
+                else words = dec->lookupWordList("interpolation");
+            }
             if (words.size() != varying.size())
                 throw std::runtime_error(here + ": `interpolation` gives " + std::to_string(words.size())
                     + " word(s) for the " + std::to_string(varying.size()) + " varying axis(es) ("

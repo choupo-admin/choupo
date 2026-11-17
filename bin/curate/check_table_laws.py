@@ -70,6 +70,29 @@ ARMS
       domain only above Tc; the arm holds the source so that the next such
       refusal is rethrown, as ruled.
 
+  (l) A MEASURED MIXTURE TABLE (DEV.md 4c C421 slice (8)) -- THE REAL DEFECT IT GUARDS:
+      "a measured mixture table answered outside its points without saying so" -- before the slice a
+      mixture value was ONE point stood over a box, so a state three kelvin from the only row got the
+      row's value with no word, and a table of many rows would have extrapolated, or interpolated on
+      the wrong axis first, in the same silence.  Arms, each run on copies of the witnesses
+      (measured01 viscosity, measured02 surface tension, pipe03):
+        (1) every NODE returns its row exactly and states between nodes equal this gate's OWN
+            one-axis-at-a-time recomputation (the declared interpolation, T first, edge held) to the
+            printed digit; inside the authorised box and past the support the value is the EDGE row's;
+            the excursion is said ONCE on the console and once on the advisory channel with the
+            largest excursion restated;
+        (2) a state past the AUTHORISED box is refused by name;
+        (3) a scattered set on two axes, `box` AND `authorised` in one file, a many-row record with no
+            `kind`, many rows with no `interpolation`, one word for two axes, a log word on a
+            composition axis, an authorised box narrower than the rows, a box wider than the support
+            with no reason, and `ignores` without `ignoresUpTo` each refuse BY NAME;
+        (4) `ignores`: a liquid holding 2 % of an ignored component takes the table's value at the
+            set's composition, announced once; 10 % (bound 0.05) is refused naming `ignoresUpTo`;
+        (5) the thermal-conductivity path, on a SYNTHETIC probe built here (labelled not data: the
+            archive mirror holds no binary mass-fraction grid of liquid conductivity);
+        (6) a UNIT on the table (pipe03): its viscosity is the table's interpolation at its state and
+            its `source` row names the measured table with its kind.
+
 NOT CHECKED: whether the handbook's numbers are right (they are transcribed and
 cited); a table in a unit's search other than the (P, H) flash and the pipe; a
 solid heat-capacity table (no witness: no read solid table in the literature
@@ -79,6 +102,7 @@ archive); 2-D tables (none exist).
     reads: src/thermo/transport/TableViscosity.cpp src/thermo/RecordLaws.cpp
     reads: src/thermo/liquidProperty/ExperimentsFile.cpp src/thermo/Database.cpp
     reads: src/thermo/PricedDensity.cpp src/thermo/ThermoPackage.cpp
+    reads: src/thermo/transport/LiquidTransportDeclarations.cpp src/thermo/LiquidPropertyDoor.cpp
     reads: src/thermo/liquidProperty/PureFluidLeaf.cpp src/unitOperations/flowsheet/Flowsheet.cpp
 """
 import json
@@ -630,17 +654,273 @@ def arm_k(tmp):
                 " mark sits at the two Tc tests, apalutamide01 runs with its N2 left out")
 
 
+# ---- arm (l): a measured MIXTURE table (C421 slice (8)) ----------------------
+
+M01 = ROOT / "tutorials/props/transport/measured01_methanol_glycol_viscosity_grid"
+M02 = ROOT / "tutorials/props/transport/measured02_ethanol_water_surface_tension_grid"
+P03 = ROOT / "tutorials/steady/hydraulics/pipe03_sucrose_syrup_measured"
+
+
+def strip_comments(t):
+    return re.sub(r"//[^\n]*", "", re.sub(r"/\*.*?\*/", "", t, flags=re.S))
+
+
+def read_grid(path):
+    """(column names, rows) of a record of the mixture-table grammar, read by this gate's own
+    parser: no unit conversion (the witnesses are in K, -, Pa.s / N/m, kPa)."""
+    t = strip_comments(Path(path).read_text())
+    names = re.findall(r"\{\s*name\s+(\S+);\s*unit\s+\S+;\s*\}", t)
+    flat = [float(v) for v in re.search(r"\bdata\s*\((.*?)\);", t, re.S).group(1).split()]
+    n = len(names)
+    return names, [flat[i:i + n] for i in range(0, len(flat), n)]
+
+
+def grid_value(names, rows, valcol, how, T, w):
+    """The table's value at (T, w) by this gate's own recomputation: the support's edge held outside
+    the rows, then ONE AXIS AT A TIME in the order of the columns (the first varying axis first);
+    `how` maps the axis name to its interpolation word; `w` maps a component to its mass fraction."""
+    axes = [k for k, n in enumerate(names) if n == "T" or n.startswith("w[")]
+    vals = {k: sorted(set(r[k] for r in rows)) for k in axes}
+    var = [k for k in axes if len(vals[k]) > 1]
+    coord = {k: min(max(T if names[k] == "T" else w[names[k][2:-1]], vals[k][0]), vals[k][-1]) for k in axes}
+    vi = names.index(valcol)
+    cur = {tuple(r[k] for k in var): r[vi] for r in rows}
+    for k in var:
+        nxt = {}
+        for tail in {key[1:] for key in cur}:
+            ys = [cur[(v,) + tail] for v in vals[k]]
+            nxt[tail] = interp(vals[k], ys, how[names[k]], coord[k])
+        cur = nxt
+    return cur[()]
+
+
+def mw_of(name):
+    m = re.search(r"^MW\s+([0-9.eE+-]+)\s*;", (ROOT / f"data/standards/components/{name}.dat").read_text(), re.M)
+    return float(m.group(1))
+
+
+def mole(w2, solute, solvent):
+    """(x_solute, x_solvent) of a binary of mass fraction w2 of the solute."""
+    a = (w2 / mw_of(solute)) / (w2 / mw_of(solute) + (1 - w2) / mw_of(solvent))
+    return a, 1 - a
+
+
+def point(name, T, solute, solvent, w2, prop, thermo=None):
+    xa, xb = mole(w2, solute, solvent)
+    return (f"    {{ name {name}; type propertyPoint;"
+            + (f" thermo {thermo};" if thermo else "")
+            + f" state {{ T {T!r} K; P 1 bar; composition {{ {solute} {xa!r}; {solvent} {xb!r}; }} }}"
+              f" properties ( {prop} ); }}\n")
+
+
+def arm_l(tmp):
+    #  (1) node exactness and interpolation against this gate's own recomputation, on both witnesses
+    cases = (
+        ("m01", M01, "ethyleneGlycol", "methanol", "viscosity_liquid", "mu",
+         "constant/experiments/royMethanolEthaneDiolViscosity.dat",
+         {"T": "logReciprocal", "w[ethyleneGlycol]": "monotoneCubic"},
+         [(298.15, 0.25), (303.15, 0.5), (295.65, 0.375), (300.65, 0.625), (294.4, 0.1), (301.7, 0.7),
+          (296.2, 0.55), (299.9, 0.05)],
+         [(291.15, 0.5, 293.15, 0.5), (298.15, 0.78, 298.15, 0.75), (305.0, 0.78, 303.15, 0.75)]),
+        ("m02", M02, "ethanol", "water", "surface_tension", "sigma",
+         "constant/experiments/razaEthanolWaterSurfaceTension.dat",
+         {"T": "linear", "w[ethanol]": "monotoneCubic"},
+         [(298.0, 0.1), (313.0, 0.2), (305.5, 0.075), (310.0, 0.125), (300.3, 0.03), (311.1, 0.17),
+          (298.0, 0.05)],
+         [(295.0, 0.1, 298.0, 0.1), (298.0, 0.22, 298.0, 0.2), (317.0, 0.22, 313.0, 0.2)]))
+    worst = 0.0
+    for tag, case, solute, solvent, prop, vcol, rec, how, inside, held in cases:
+        d = copy(case, tmp, tag)
+        names, rows = read_grid(d / rec)
+        ops = ""
+        for i, (T, w2) in enumerate(inside):
+            ops += point(f"i{i}", T, solute, solvent, w2, prop)
+        for i, (T, w2, _, _) in enumerate(held):
+            ops += point(f"h{i}", T, solute, solvent, w2, prop)
+        (d / "system/propsDict").write_text("operations\n(\n" + ops + ");\n")
+        rc, out = run(PROPS, d)
+        res = result(out)
+        if rc != 0 or res is None:
+            fail("l", f"{tag}: the table copy did not run (exit {rc}): {out[-300:]}")
+            continue
+        for i, (T, w2) in enumerate(inside):
+            got = op(res, f"i{i}").get(prop)
+            want = grid_value(names, rows, vcol, how, T, {solute: w2})
+            if got is None or rel(got, want) > PRINTED:
+                fail("l", f"{tag} at T {T}, w {w2}: engine {got!r}, this gate {want!r}")
+            else:
+                worst = max(worst, rel(got, want))
+        for i, (T, w2, Tn, wn) in enumerate(held):
+            got = op(res, f"h{i}").get(prop)
+            want = grid_value(names, rows, vcol, how, Tn, {solute: wn})
+            if got is None or rel(got, want) > PRINTED:
+                fail("l", f"{tag} held at T {T}, w {w2}: engine {got!r}, the edge row ({Tn}, {wn}) is {want!r}")
+        #  the excursion is announced ONCE on the console and the largest is the end-of-run statement
+        said_once = out.count("taken past its rows' support (nearest edge held")
+        adv = [a for a in res.get("advisories", []) if a.get("category") == "table"
+               and "measured table" in a.get("locus", "")]
+        if said_once != 1 or len(adv) != 1 or "largest excursion" not in adv[0].get("message", ""):
+            fail("l", f"{tag}: the excursion past the support was announced {said_once} time(s) on the console"
+                      f" and {len(adv)} time(s) as an advisory (once and once expected): "
+                      f"{[a['message'][:100] for a in adv]}")
+    #  (2) THE LARGEST EXCURSION is the one restated (m01: T below 2 K, T above 1.85 K, w above 0.03)
+    #  (3) outside the AUTHORISED box: refused by name, in a scan (the golden pins n_failures) and as a run
+    d = copy(M01, tmp, "m01-out")
+    (d / "system/propsDict").write_text("operations\n(\n" + point("o", 310.0, "ethyleneGlycol", "methanol", 0.5,
+                                                                  "viscosity_liquid") + ");\n")
+    rc, out = run(PROPS, d)
+    if rc == 0 or "outside the authorised box" not in out:
+        fail("l", f"a state past the authorised box (310 K, box 290-306) was not refused by name (exit {rc})")
+    #  (4) REFUSALS AT LOAD, by name, on copies of the witness
+    rec = "constant/experiments/royMethanolEthaneDiolViscosity.dat"
+    tpd = "constant/thermoPhysPropDict"
+    ok = 0
+    t = (M01 / rec).read_text()
+    last = [ln for ln in t.splitlines() if re.match(r"\s+303\.15\s+101\s+0\.75\s+", ln)][0]
+    ok += bool(refuse("l", copy(M01, tmp, "l-scatter"), PROPS, [(rec, last + "\n", "")],
+                      "RECTANGULAR GRID", "a scattered set on two axes"))
+    ok += bool(refuse("l", copy(M01, tmp, "l-both"), PROPS,
+                      [(rec, "authorised\n{", "box\n{\n    T ( 290 306 );  w[ethyleneGlycol] ( 0 0.8 );\n}\nauthorised\n{")],
+                      "`box` and `authorised` in one file", "both `box` and `authorised`"))
+    ok += bool(refuse("l", copy(M01, tmp, "l-nokind"), PROPS, [(rec, "    kind         measured;\n", "")],
+                      "states no `kind`", "a many-row record without `kind`"))
+    ok += bool(refuse("l", copy(M01, tmp, "l-nointerp"), PROPS,
+                      [(tpd, "interpolation  ( logReciprocal monotoneCubic );", "")],
+                      "no `interpolation`", "many rows without `interpolation`"))
+    ok += bool(refuse("l", copy(M01, tmp, "l-onewrd"), PROPS,
+                      [(tpd, "interpolation  ( logReciprocal monotoneCubic );", "interpolation  linear;")],
+                      "gives 1 word(s) for the 2 varying axis", "one word for two axes"))
+    ok += bool(refuse("l", copy(M01, tmp, "l-comp"), PROPS,
+                      [(tpd, "( logReciprocal monotoneCubic );", "( logReciprocal logLinear );")],
+                      "a composition axis takes linear or monotoneCubic", "logLinear on a composition axis"))
+    ok += bool(refuse("l", copy(M01, tmp, "l-narrow"), PROPS,
+                      [(rec, "T                   ( 290 306 );", "T                   ( 295 306 );")],
+                      "outside its own authorised", "an authorised box narrower than the rows"))
+    ok += bool(refuse("l", copy(M01, tmp, "l-noreason"), PROPS,
+                      [(rec, "    reason      \"a few kelvin", "    // reason   \"a few kelvin")],
+                      "no `reason", "a box wider than the support without a reason"))
+    ok += bool(refuse("l", copy(M01, tmp, "l-igbound"), PROPS,
+                      [(tpd, "components ( methanol ethyleneGlycol );", "components ( methanol ethyleneGlycol water );"),
+                       (tpd, "use            method;", "use            method;\n"
+                        "                    ignores ( water );  ignoresReason \"probe\";")],
+                      "without `ignoresUpTo", "`ignores` without its bound"))
+    #  (5) `ignores`: present up to the bound -- the table's value at the renormalised set, announced once;
+    #  beyond the bound -- refused
+    d = copy(M01, tmp, "l-ignores")
+    tp = d / tpd
+    tp.write_text(tp.read_text().replace("components ( methanol ethyleneGlycol );",
+                                         "components ( methanol ethyleneGlycol water );")
+                  .replace("use            method;", "use            method;\n"
+                           "                    ignores ( water );  ignoresReason \"check_table_laws (l): trace water\";"
+                           "  ignoresUpTo 0.05;"))
+    wk = 0.02                                    # mass fraction of water in the liquid
+    Mg, Mm, Mw = mw_of("ethyleneGlycol"), mw_of("methanol"), mw_of("water")
+    wg = 0.25 * (1 - wk)                         # glycol / (glycol + methanol) = 0.25 on the set
+    mass = {"ethyleneGlycol": wg, "methanol": (1 - wk) - wg, "water": wk}
+    mol = {k: mass[k] / m for k, m in (("ethyleneGlycol", Mg), ("methanol", Mm), ("water", Mw))}
+    s = sum(mol.values())
+    comp = "; ".join(f"{k} {mol[k] / s!r}" for k in mol)
+    big = {"ethyleneGlycol": 0.25 * 0.9, "methanol": 0.75 * 0.9, "water": 0.10}
+    molb = {k: big[k] / m for k, m in (("ethyleneGlycol", Mg), ("methanol", Mm), ("water", Mw))}
+    sb = sum(molb.values())
+    compb = "; ".join(f"{k} {molb[k] / sb!r}" for k in molb)
+    (d / "system/propsDict").write_text(
+        "operations\n(\n"
+        f"    {{ name ig_ok; type propertyPoint; state {{ T 298.15 K; P 1 bar; composition {{ {comp}; }} }}"
+        " properties ( viscosity_liquid ); }\n"
+        f"    {{ name ig_big; type propertyScan1D; vary {{ variable T; from 298.15 K; to 299.15 K; n 2; }}"
+        f" state {{ P 1 bar; composition {{ {compb}; }} }} properties ( viscosity_liquid );"
+        " output { file ig.csv; } }\n);\n")
+    rc, out = run(PROPS, d)
+    res = result(out)
+    if res is None:
+        fail("l", "`ignores`: the run published no result block")
+        res = {}
+    names, rows = read_grid(M01 / rec)
+    want = grid_value(names, rows, "mu", {"T": "logReciprocal", "w[ethyleneGlycol]": "monotoneCubic"}, 298.15,
+                      {"ethyleneGlycol": 0.25})
+    got = op(res, "ig_ok").get("viscosity_liquid")
+    #  (the run's exit is 1 by design: the second operation, 10 % water, is an absent curve -- refused)
+    if got is None or rel(got, want) > PRINTED:
+        fail("l", f"`ignores`: the liquid with 2 % water took mu {got!r}, the table at the set's composition is "
+                  f"{want!r} (exit {rc})")
+    elif out.count("ignored up to a mass fraction") != 1:
+        fail("l", "`ignores`: the presence of the ignored component was not announced exactly once")
+    elif rc == 0 or "beyond the 0.05 the case declared (ignoresUpTo" not in out:
+        fail("l", f"`ignores`: 10 % water (bound 0.05) was not refused by name (exit {rc})")
+    #  (6) THE THERMAL CONDUCTIVITY, on a synthetic fixture built here (NOT data: a clearly labelled probe;
+    #      no real binary mass-fraction grid of liquid conductivity is in the archive mirror)
+    d = copy(M01, tmp, "l-cond")
+    (d / "constant/experiments").mkdir(exist_ok=True)
+    (d / rec).unlink()
+    ks = []
+    for r in rows:
+        ks.append(0.2 + 0.0007 * (r[0] - 293.15) + 0.05 * r[2])
+    flat = "\n".join(f"    {r[0]}  {r[2]}  {k!r}" for r, k in zip(rows, ks))
+    (d / "constant/experiments/fixtureConductivity.dat").write_text(
+        "provenance { origin assumed; kind adopted; basis \"a SYNTHETIC probe of check_table_laws arm (l): not data\";"
+        " citation \"none: synthetic, built by the gate\"; }\n"
+        "property liquidThermalConductivity; system ( methanol ethyleneGlycol ); solvent methanol;\n"
+        "columns ( { name T; unit K; } { name w[ethyleneGlycol]; unit -; } { name lambda; unit W/m/K; } );\n"
+        "data (\n" + flat + "\n);\n"
+        "authorised { T ( 290 306 ); w[ethyleneGlycol] ( 0 0.8 ); reason \"probe\"; }\n")
+    tpt = (d / tpd).read_text()
+    tpt = re.sub(r"transport\n\{.*\}\s*$", "transport\n{\n    liquid\n    {\n        thermalConductivity\n        {\n"
+                 "            measured { fixtureConductivity { use method; interpolation ( linear linear ); } }\n"
+                 "        }\n    }\n}\n", tpt, flags=re.S)
+    (d / tpd).write_text(tpt)
+    cs = [(298.15, 0.25), (300.65, 0.625), (295.65, 0.375)]
+    (d / "system/propsDict").write_text("operations\n(\n" + "".join(
+        point(f"c{i}", T, "ethyleneGlycol", "methanol", w2, "thermal_conductivity_liquid")
+        for i, (T, w2) in enumerate(cs)) + ");\n")
+    rc, out = run(PROPS, d)
+    res = result(out)
+    ncol = ["T", "w[ethyleneGlycol]", "lambda"]
+    grid = [[r[0], r[2], k] for r, k in zip(rows, ks)]
+    for i, (T, w2) in enumerate(cs):
+        got = op(res, f"c{i}").get("thermal_conductivity_liquid")
+        want = grid_value(ncol, grid, "lambda", {"T": "linear", "w[ethyleneGlycol]": "linear"}, T,
+                          {"ethyleneGlycol": w2})
+        if rc != 0 or got is None or rel(got, want) > PRINTED:
+            fail("l", f"thermal conductivity table at ({T}, {w2}): engine {got!r}, this gate {want!r} (exit {rc})")
+    #  (7) A UNIT on the table: pipe03's viscosity is the table's interpolation, and its source says so
+    d = copy(P03, tmp, "l-pipe")
+    rc, out = run(SOLVE, d)
+    res = result(out)
+    names, rows = read_grid(d / "constant/experiments/nainSucroseWaterViscosity.dat")
+    ns, nw = 7.5185334039, 1000.0
+    w = ns * mw_of("sucrose") / (ns * mw_of("sucrose") + nw * mw_of("water"))
+    want = grid_value(names, rows, "mu", {"T": "logReciprocal", "w[sucrose]": "monotoneCubic"}, 301.15,
+                      {"sucrose": w})
+    mu = ((res or {}).get("kpis", {}).get("L1", {})).get("viscosity")
+    src = [u for u in (res or {}).get("propertySources", {}).get("used", [])
+           if u.get("unit") == "L1" and u.get("property") == "liquidViscosity"]
+    if rc != 0 or mu is None or rel(mu, want) > PRINTED:
+        fail("l", f"pipe03: the pipe's viscosity {mu!r}, the table at its state {want!r} (exit {rc})")
+    elif not src or src[0].get("sourceId") != "stated.nainSucroseWaterViscosity" or "kind measured" not in src[0].get("label", ""):
+        fail("l", f"pipe03: the viscosity's source row does not name the measured table with its kind: {src[:1]}")
+    if not any(x.startswith("(l)") for x in fails):
+        said.append(f"(l) measured MIXTURE tables (viscosity grid, surface-tension grid, a synthetic conductivity "
+                    f"probe, a pipe on a sucrose table): nodes exact and non-node states equal this gate's own "
+                    f"one-axis-at-a-time recomputation (worst rel {worst:.1e}); the support's edge is held "
+                    f"inside the authorised box, announced once with the largest excursion restated; past the "
+                    f"box refused by name; a scattered grid, both box spellings, no kind, no interpolation, a "
+                    f"wrong word count, a log word on a composition axis, a narrow box, no reason and `ignores` "
+                    f"without its bound refuse by name; `ignores` answers at the set's composition, announced "
+                    f"once, refused beyond its bound")
+
+
 def main():
     for b in (PROPS, SOLVE):
         if not b.exists():
             print(f"check_table_laws: CANNOT RUN -- {b} is not built (make all)")
             return 1
-    for c in (T01, T02, T03, T05, PIPE, DENS, APAL):
+    for c in (T01, T02, T03, T05, PIPE, DENS, APAL, M01, M02, P03):
         if not c.is_dir():
             print(f"check_table_laws: FAIL -- the witness {c} is gone")
             return 1
     with tempfile.TemporaryDirectory(prefix="tablelaws-") as tmp:
-        for arm in (arm_a, arm_b, arm_c, arm_d, arm_e, arm_f, arm_g, arm_h, arm_i, arm_j, arm_k):
+        for arm in (arm_a, arm_b, arm_c, arm_d, arm_e, arm_f, arm_g, arm_h, arm_i, arm_j, arm_k, arm_l):
             try:
                 arm(tmp)
             except Exception as e:  # a crashed arm is a failed arm, named
