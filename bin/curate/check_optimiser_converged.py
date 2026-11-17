@@ -104,16 +104,16 @@ before the next; OBSERVED output, abridged:
               refusing afterwards -- which is why this arm requires the
               optimum NOT to be printed and not the exit code alone
 """
-import os
+import contextlib
 import re
-import shutil
-import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-BUILD = ROOT / "build" / "linux64Gcc"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import gatekit  # noqa: E402
+
+ROOT = gatekit.repo
+SOLVE = None
 SRC = ROOT / "src" / "outerDriver" / "OptimizationDriver.cpp"
 CASE = "tutorials/steady/flowsheets/cavett01_recycle_train"
 
@@ -160,12 +160,9 @@ FAILED_LINE = re.compile(r"\[evaluation \d+\] FAILED -- the simulation did "
 fails = []
 
 
-def make_case(tmp: Path, tag: str, outer: str, cap) -> Path:
-    dst = tmp / tag
-    shutil.copytree(ROOT / CASE, dst, symlinks=True,
-                    ignore=shutil.ignore_patterns("expected", "*.csv",
-                                                  "converged", "*.log",
-                                                  "reports", "latest*"))
+def make_case(tmp, tag: str, outer: str, cap) -> Path:
+    """`tmp` is a contextlib.ExitStack: the private copy lives as long as it."""
+    dst = tmp.enter_context(gatekit.probe_copy(CASE, ("expected", "converged", "reports")))
     sd = dst / "system" / "solverDict"
     txt = sd.read_text()
     if cap is not None:
@@ -180,10 +177,7 @@ def make_case(tmp: Path, tag: str, outer: str, cap) -> Path:
 
 
 def run(case: Path):
-    env = dict(os.environ, CHOUPO_HOME=str(ROOT))
-    p = subprocess.run([str(BUILD / "choupoSolve"), "."], cwd=case,
-                       capture_output=True, text=True, timeout=900, env=env)
-    return p.returncode, p.stdout + p.stderr
+    return gatekit.run(SOLVE, case, timeout=900)
 
 
 def arm_reproduction(tmp: Path):
@@ -325,12 +319,13 @@ def arm_source():
 
 
 def main() -> int:
-    if not (BUILD / "choupoSolve").exists():
-        print("check_optimiser_converged: FAILED -- no build of choupoSolve; "
-              "a check that cannot run must not pass")
+    global SOLVE
+    try:
+        SOLVE = gatekit.binary("choupoSolve")
+    except gatekit.GateRefusal as e:
+        print(f"check_optimiser_converged: FAILED -- {e}")
         return 1
-    with tempfile.TemporaryDirectory() as td:
-        tmp = Path(td)
+    with contextlib.ExitStack() as tmp:
         seen = arm_reproduction(tmp)
         nPart, nTot = arm_partial(tmp)
         clean = arm_unchanged(tmp)
