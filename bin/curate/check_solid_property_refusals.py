@@ -27,11 +27,11 @@ batch dryer and the time-integrated binaries (a missing sorption parameter is
 refused when the component is READ, which they share, but no probe runs them);
 the equilibrium crystalliser (it does not use k_v).
 """
-import os, re, shutil, subprocess, sys, tempfile
-import case_records   # C413: a probe copy of a pinned case is materialised
+import contextlib, os, re, shutil, sys
+import gatekit        # C420: the kit's probe copy (materialised, C413), binary and run
 
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SOLVE = os.path.join(ROOT, 'choupoSolve')
+ROOT = str(gatekit.repo)
+SOLVE = None
 T = os.path.join(ROOT, 'tutorials/steady')
 CYC = os.path.join(T, 'gas-solid/cyclone02_leith_licht')
 CONV = os.path.join(T, 'solids/pneumaticConveyor01_sand')
@@ -41,8 +41,13 @@ SDRY = os.path.join(T, 'drying/solidDryer01_sugar')
 
 
 def run(case):
-    p = subprocess.run([SOLVE, case], capture_output=True, text=True, timeout=300)
-    return p.returncode, p.stdout + p.stderr
+    return gatekit.run(SOLVE, case, timeout=300)
+
+
+def run_shipped(base):
+    """Run a shipped witness on a private copy (the tree is never written)."""
+    with gatekit.probe_copy(base) as d:
+        return run(d)
 
 
 def rw(path, edit):
@@ -54,15 +59,10 @@ def rw(path, edit):
     open(path, 'w').write(s2)
 
 
-def copy(tmp, base, name):
-    d = os.path.join(tmp, name)
-    if os.path.isdir(d):
-        shutil.rmtree(d)
-    case_records.copytree(base, d)
-    # drop run output so the probe is solved afresh
-    for sub in ('converged', 'reports'):
-        shutil.rmtree(os.path.join(d, sub), ignore_errors=True)
-    return d
+def copy(stack, base, name):
+    """A private copy of `base` that lives as long as `stack` (a contextlib.ExitStack),
+    run output dropped so the probe is solved afresh.  `name` labels the probe."""
+    return str(stack.enter_context(gatekit.probe_copy(base, ('converged', 'reports'))))
 
 
 def unseal(d):
@@ -112,14 +112,17 @@ def edit_record(d, comp, edit):
 
 
 def main():
-    if not os.path.exists(SOLVE):
-        sys.exit("FAIL check_solid_property_refusals: choupoSolve not built.")
+    global SOLVE
+    try:
+        SOLVE = str(gatekit.binary('choupoSolve'))
+    except gatekit.GateRefusal as e:
+        sys.exit("FAIL check_solid_property_refusals: %s" % e)
     bad = []
-    with tempfile.TemporaryDirectory() as tmp:
+    with contextlib.ExitStack() as tmp:
 
         # -- NEGATIVE: the shipped witnesses still run --------------------
         for base in (CYC, CONV, SPRAY, MSMPR, SDRY):
-            rc, out = run(base)
+            rc, out = run_shipped(base)
             if rc != 0:
                 bad.append("the shipped witness %s no longer runs (rc=%d)"
                            % (os.path.basename(base), rc))
@@ -207,7 +210,7 @@ def main():
             for want in (removed, "k_v", "sphere", "ASSUMED"):
                 if want not in out:
                     bad.append("SP-03: the announcement does not mention %r" % want)
-        rc, out = run(MSMPR)
+        rc, out = run_shipped(MSMPR)
         if 'ASSUMED' in out and 'volume shape' in out:
             bad.append("SP-03: the shipped witness DECLARES k_v yet the sphere"
                        " is announced")
