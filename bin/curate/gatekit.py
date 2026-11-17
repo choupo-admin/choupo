@@ -24,8 +24,15 @@ SINGLE PLACE a layout change is repaired.
                          that references the catalogue by pins still holds every
                          record it resolves; `strip` names files of the copy to
                          delete (e.g. its propertyManifest, its expected/).
-  run(binary, case, timeout=600)
-                         -> (exit code, stdout+stderr).  CHOUPO_HOME is this repo.
+  run(binary, case, timeout=600, env=None, inside=False)
+                         -> (exit code, stdout+stderr).  CHOUPO_HOME is this repo;
+                         `env` (a full environment) replaces that for a probe whose
+                         scenario depends on the environment being PINNED, and
+                         `inside=True` runs `binary .` with the case as the working
+                         directory instead of `binary <case>` (batch 2:
+                         check_volatility_declaration runs with CHOUPO_HOME absent,
+                         and the engine then finds its catalogue from the working
+                         directory: a probe must not stand inside the repository).
   edit(path, old, new, count=1, regex=False)
                          change one file; raises EditNotApplied when `old` is
                          absent: a probe whose edit did not apply must not pass.
@@ -92,10 +99,14 @@ def probe_copy(base, strip=()):
         yield dst
 
 
-def run(bin_path, case, timeout=600):
-    """Run `bin_path` on `case`: (exit code, stdout + stderr)."""
-    env = dict(os.environ, CHOUPO_HOME=str(repo))
-    r = subprocess.run([str(bin_path), str(case)], capture_output=True,
+def run(bin_path, case, timeout=600, env=None, inside=False):
+    """Run `bin_path` on `case`: (exit code, stdout + stderr).  `env`, when given,
+    is the WHOLE environment (default: this process's, with CHOUPO_HOME = this repo).
+    `inside`: the case is the working directory and the argument is `.`."""
+    if env is None:
+        env = dict(os.environ, CHOUPO_HOME=str(repo))
+    r = subprocess.run([str(bin_path), "." if inside else str(case)],
+                       cwd=str(case) if inside else None, capture_output=True,
                        text=True, timeout=timeout, env=env)
     return r.returncode, r.stdout + r.stderr
 
