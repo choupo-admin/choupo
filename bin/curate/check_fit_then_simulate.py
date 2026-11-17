@@ -259,7 +259,7 @@ def arm_d(tmp):
                      r"STALE FIT.*fit dataset 'constant/experimental/fdl2021_NaCl\.dat' has changed"),
         "fitblock": ("system/propsDict", r"maxAAD  10 points;", "maxAAD  12 points;",
                      r"STALE FIT.*the fit block of operation 'fit_NF270_FdL2021'"),
-        "record":   (REC, r"(chargeDensity\s+)-10\.525;", r"\g<1>-12;", r"NOT THE FIT ITS fit \{\} BLOCK DESCRIBES"),
+        "record":   (REC, r"(chargeDensity\s+)-10\.\d+;", r"\g<1>-12;", r"NOT THE FIT ITS fit \{\} BLOCK DESCRIBES"),
         "base":     ("constant/assets/NF270_dspmde.dat", r"(chargeDensity\s+)-5;", r"\g<1>-6;",
                      r"STALE FIT.*its base record NF270_dspmde"),
     }
