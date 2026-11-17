@@ -1,0 +1,25 @@
+# A pump refuses, by name, an inlet that is not a liquid (DEV.md 4c C188 defect 2).
+# Former gate: check_pump_liquid_inlet.py.  rotating/Pump.cpp is the incompressible
+# pump, W = v dP / eta on the LIQUID molar volume; it never read its inlet's phase,
+# so a vapour was "pumped" and came out liquid at exit 0.  (a) pump01 (water) fed
+# at 400 K and 1 bar resolves to vapour: the run must exit non-zero saying it is not
+# a liquid and naming the compressor.  (b) pump01 itself still runs.
+# NOT checked: a produced two-phase inlet (no corpus case feeds a pump one).
+group      pump-liquid-inlet
+row        pump-liquid-inlet
+binary     choupoSolve
+base       tutorials/steady/rotating/pump01_water
+strip      constant/propertyManifest expected
+ok_head    "check_pump_liquid_inlet: OK -- "
+fail_head  "check_pump_liquid_inlet: FAILED"
+bullet     plain
+ok_tail    .  NOT checked: a produced two-phase inlet (no corpus case feeds a pump one)
+
+probe      (a) water fed at 400 K and 1 bar
+  edit     0/feed	re:^T\s+298\.15 K;	T               400 K;
+  match    is not a liquid
+  match    compressor
+  ok       a vapour inlet (water, 400 K, 1 bar) is refused, naming the compressor
+
+control    (b) pump01 itself
+  ok       pump01 (liquid water) runs as before

@@ -1,0 +1,36 @@
+# A spiral-wound module refuses, by name, a present component it does not model
+# (DEV.md 4c C188 defect 1).  Former gate: check_membrane_feed_scope.py.
+# SpiralWoundModule carries the solvent (water) and the solutes the case declares
+# `role nonvolatile;`.  Any OTHER present component was given z = 0 in both outlets
+# and its mass re-counted as water: an ethanol feed came out with no ethanol, the
+# kg balance closing and the carbon gone, at exit 0.  Witnesses are built from
+# membrane01 (seawater RO, water + NaCl), its seal removed so the copy may change
+# its component set.  (a) ethanol in the feed is refused naming the component and
+# the remedy; (b) a feed without water is refused; (c) membrane01 still runs.
+# NOT checked: the ethanol-as-solute route (held by the membrane goldens).
+group      membrane-feed-scope
+row        membrane-feed-scope
+binary     choupoSolve
+base       tutorials/steady/membranes/membrane01_RO_NaCl_seawater
+strip      constant/propertyManifest expected
+ok_head    "check_membrane_feed_scope: OK -- "
+fail_head  "check_membrane_feed_scope: FAILED"
+bullet     plain
+ok_tail    .  NOT checked: the declared pass-through approximation (C188, not built)
+
+probe      (a) ethanol in the feed
+  edit     constant/thermoPhysPropDict	( water  NaCl )	( water  NaCl  ethanol )
+  edit     0/feed	NaCl    5.98 kmol/h;	NaCl    5.98 kmol/h;\n    ethanol  5.0 kmol/h;
+  match    'ethanol'
+  match    does not model
+  match    role nonvolatile
+  match    B_s
+  ok       an ethanol feed is refused naming the component and the remedy
+
+probe      (b) no water
+  edit     0/feed	re:water\s+569\.02 kmol/h;	water    0 kmol/h;
+  match    carries no water
+  ok       a water-free feed is refused for its missing solvent
+
+control    (c) membrane01 itself
+  ok       membrane01 (water + NaCl) runs as before

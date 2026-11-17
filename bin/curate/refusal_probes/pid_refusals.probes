@@ -1,0 +1,23 @@
+# The two PID gain refusals FIRE, with their named remedies (I5, W-R-C).
+# Former gate: check_pid_refusals.py.  Until 2026-08-22 a PID whose gains{} used
+# the textbook spelling (Kc/tauI) parsed, defaulted every gain to zero and ran the
+# loop with NO control action at exit 0.  The constructor now refuses (a) any key
+# in the closed gains{} dict that is not Kp/Ki/Kd, naming the textbook conversion,
+# and (b) a controller whose declared gains are all zero.
+group      pid-refusals
+row        pid-refusals-gate
+binary     choupoCtrl
+base       tutorials/ctrl/ctrl02_disturbance_rejection
+ok_head    "pid-refusals: OK -- "
+fail_head  "pid-refusals GATE FAILED:"
+ok         both gain refusals fire from a real corpus case with their named remedies
++          (foreign key -> the Kc/tauI conversion; all-zero -> declare a gain or remove the controller).
+
+probe      foreign-key probe (Kc)
+  edit     system/flowsheetDict	Kp       4.0;	Kc       4.0;
+  match    gains\.Kc is not a gain this controller reads.*Kp = Kc
+
+probe      all-zero probe
+  edit     system/flowsheetDict	Kp       4.0;	Kp       0.0;
+  edit     system/flowsheetDict	Ki       0.04;	Ki       0.0;
+  match    every gain in gains\{\} is zero
