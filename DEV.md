@@ -4410,6 +4410,27 @@ accepts today, and that is a policy call.
 > that granularity stays (a finer one would have to know which functions a
 > run executes).  The closing `--nightly` of tonight's plan carries the
 > combination of all of tonight's slices.
+>
+> **C421 DOOR SLICE (e) LANDED (2026-11-18): the property layer and the
+> props tools.**  15 files, judged site by site: 2 converted (the solubility
+> parameter and the Hansen mixture take the liquid volume at T from the
+> package's one volume route instead of the stored 25 C datum; their four
+> cases run at 298.15 K, no row moved); 13 DECLARED EXCEPTIONS in the
+> ratchet, each with its reason (the evaluator, the property point, the
+> reference equation and the steam tables ARE the property layer; a sigma
+> that is a residual weight or a standard deviation, a pellet's solid
+> conductivity, a pump's own published molar volume, API 520's water datum
+> are not liquid properties of the process).  THE ARCHITECT'S RULING on the
+> three membrane benches (polarisation index, pore bench, membrane fit):
+> their typed viscosity and density ARE the conditions of the dataset each
+> reproduces (NanoFiltran's cell, Geraldes & Afonso's Table 1), which the
+> design record calls CONDITIONS of an experiment record (R4), not a
+> property law; declared exceptions tonight, so the 35 NanoFiltran anchors
+> and the paper's Reynolds number do not move; queued: those conditions
+> move into each dataset's experiment record, read from there.  Ratchet: 44
+> sites left, none of this family.  Proof: build clean, the four cases PASS
+> unchanged, the ratchet, schema, guide and doctrine gates exit 0.
+
 
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
