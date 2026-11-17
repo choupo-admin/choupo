@@ -382,6 +382,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records as _case_records   # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 CASE = ROOT / "tutorials/steady/flash/flash01_benzene_toluene"
 BIN = ROOT / "choupoSolve"
@@ -707,10 +710,14 @@ def check_working_capital(fails):
         comp = {k: float(v) for k, v in re.findall(
             r'"(\w+)": *([-0-9.eE+]+)', re.search(r'"composition": *\{([^}]*)\}', sl).group(1))}
         return fm, comp
-    mw = {}
-    for f in (WCCASE / "constant" / "components").glob("*.dat"):
-        mm = re.search(r'^\s*MW\s+([0-9.eE+-]+)', _nc(f.read_text(errors="replace")), re.M)
-        mw[f.stem] = float(mm.group(1))
+    class _MW(dict):
+        #  the record the engine reads for the case: its own, else the catalogue's
+        def __missing__(self, c):
+            f = _case_records.record_path(WCCASE, "components/%s.dat" % c)
+            mm = re.search(r'^\s*MW\s+([0-9.eE+-]+)', _nc(f.read_text(errors="replace")), re.M)
+            self[c] = float(mm.group(1))
+            return self[c]
+    mw = _MW()
 
     R = sum(pr * stream(s)[0] * 3600.0 * H for s, pr in prods)
     C_RM = sum(pr * stream(s)[0] * 3600.0 * H for s, pr in raws)

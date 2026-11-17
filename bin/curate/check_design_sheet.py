@@ -468,6 +468,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 #  THE WAIVERS LIVE IN ONE PLACE -- see `debt_registry.py`.
+import case_records as _case_records   # noqa: E402
 from debt_registry import SHEET_UNIT_WORDS_UNPARSEABLE   # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -2339,7 +2340,7 @@ def _anchored_rackett_rho(case: Path, comp: dict, T: float):
     zs, mbar, vmix, excl = 0.0, 0.0, 0.0, 0.0
     sub = {}
     for name, z in comp.items():
-        rec = _record_scalars(case / "constant" / "components" / (name + ".dat"),
+        rec = _record_scalars(_case_records.record_path(case, "components/%s.dat" % name),
                               ("MW", "Tc", "Pc", "omega", "Vliq"))
         if z <= 0.0:
             continue
@@ -2556,7 +2557,7 @@ def _srk_vapour_rho(case: Path, comp: dict, T: float, P: float):
     engine's own constants (Omega_a 0.42747, Omega_b 0.08664, Soave's m)."""
     R = 8.314462618
     zs = sum(comp.values())
-    recs = {n: _record_scalars(case / "constant" / "components" / (n + ".dat"),
+    recs = {n: _record_scalars(_case_records.record_path(case, "components/%s.dat" % n),
                                ("MW", "Tc", "Pc", "omega"))
             for n in comp}
     ai, bi = {}, {}
@@ -2899,9 +2900,12 @@ def check_inventory(problems, notes):
     if rc != 0:
         problems.append("check_design_sheet(r): %s failed (rc=%d)." % (HXROUTE, rc))
         return
-    mw = {}
-    for f in (case / "constant" / "components").glob("*.dat"):
-        mw[f.stem] = _record_scalars(f, ("MW",))["MW"]
+    class _MW(dict):
+        def __missing__(self, c):
+            self[c] = _record_scalars(
+                _case_records.record_path(case, "components/%s.dat" % c), ("MW",))["MW"]
+            return self[c]
+    mw = _MW()
 
     #  A GAS STORE's vessels hold their stream's gas at the STORE's state, not
     #  the stream's: arm (v) recomputes them, so this arm leaves them alone.
