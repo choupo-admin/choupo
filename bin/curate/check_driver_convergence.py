@@ -100,6 +100,7 @@ before the next; OBSERVED output, abridged:
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -178,7 +179,7 @@ def make_loop(tmp: Path, tag: str, solver: str, valve: bool) -> Path:
 
 def make_cav(tmp: Path, tag: str, outer: str, cap) -> Path:
     dst = tmp / tag
-    shutil.copytree(ROOT / CAV, dst, symlinks=True,
+    case_records.copytree(ROOT / CAV, dst, symlinks=True,
                     ignore=shutil.ignore_patterns("expected", "*.csv",
                                                   "converged", "*.log",
                                                   "reports", "latest*"))
@@ -313,7 +314,7 @@ def arm_clean(tmp: Path):
 
 def copy_case(tmp: Path, rel: str, tag: str) -> Path:
     d = tmp / tag
-    shutil.copytree(ROOT / rel, d, ignore=shutil.ignore_patterns(
+    case_records.copytree(ROOT / rel, d, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "resultJson*", "converged", "reports"))
     return d
 

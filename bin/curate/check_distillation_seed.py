@@ -65,6 +65,7 @@ next; observed output is in the design record.
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -85,7 +86,7 @@ def strip_comments(src: str) -> str:
 
 
 def copy_case(rel, dst):
-    shutil.copytree(ROOT / rel, dst, symlinks=True, ignore=shutil.ignore_patterns(
+    case_records.copytree(ROOT / rel, dst, symlinks=True, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "latest", "latest.txt", "converged", "*.log",
         "reports"))
     return dst

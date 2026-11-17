@@ -216,6 +216,7 @@ instead of the inventory difference (n0 - n)/V_perm:
 """
 
 import csv
+import case_records  # noqa: E402  (the probe copy has one home)
 import json
 import math
 import os
@@ -581,7 +582,7 @@ def main():
     with tempfile.TemporaryDirectory() as td:
         for tag, pat, repl, want, why in probes:
             dst = Path(td) / ("probe_" + tag)
-            shutil.copytree(ROOT / FOULED, dst)
+            case_records.copytree(ROOT / FOULED, dst)
             fd = dst / "system" / "flowsheetDict"
             txt = fd.read_text()
             new_txt = pat.sub(repl, txt, count=1)

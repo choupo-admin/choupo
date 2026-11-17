@@ -45,6 +45,7 @@ warning that always fires is not read.
 """
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -67,7 +68,7 @@ def run(case):
 def copy(case):
     td = tempfile.mkdtemp()
     dst = Path(td) / Path(case).name
-    shutil.copytree(ROOT / case, dst)
+    case_records.copytree(ROOT / case, dst)
     return dst
 
 

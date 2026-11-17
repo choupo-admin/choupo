@@ -47,6 +47,7 @@ import json
 import math
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -76,7 +77,7 @@ def make_case(tmp, name, src):
                 out.append(nm)
         return out
 
-    shutil.copytree(src, case, ignore=ignore)
+    case_records.copytree(src, case, ignore=ignore)
     return case
 
 

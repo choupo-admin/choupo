@@ -38,6 +38,7 @@ import json
 import math
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -82,7 +83,7 @@ def main():
 
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp) / "case"
-        shutil.copytree(CASE, work)
+        case_records.copytree(CASE, work)
         rc, out = run(work)
         if rc != 0:
             fail(f"the witness did not run (exit {rc}):\n{out[-800:]}")
@@ -148,7 +149,7 @@ def main():
             pdir = Path(tmp) / "probe"
             if pdir.exists():
                 shutil.rmtree(pdir)
-            shutil.copytree(CASE, pdir)
+            case_records.copytree(CASE, pdir)
             (pdir / "system/flowsheetDict").write_text(text)
             rc, out = run(pdir)
             if rc == 0:

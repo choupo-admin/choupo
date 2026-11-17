@@ -93,6 +93,7 @@ sales and costOfManufacture bases.  Exit 0 = OK; 1 = a failure, listed."""
 import argparse
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -154,7 +155,7 @@ def prepare(work, name, edit=None, layout_edit=None, econ_edit=None):
     d = work / name
     if d.exists():
         shutil.rmtree(d)
-    shutil.copytree(WIT, d, ignore=shutil.ignore_patterns("reports", "converged", "design", "iterations"))
+    case_records.copytree(WIT, d, ignore=shutil.ignore_patterns("reports", "converged", "design", "iterations"))
     if edit:
         p = d / "system/postDict"
         p.write_text(edit(p.read_text()))
@@ -583,7 +584,7 @@ def main():
             d = work / name
             if d.exists():
                 shutil.rmtree(d)
-            shutil.copytree(don, d, ignore=shutil.ignore_patterns("reports", "converged", "design", "iterations"))
+            case_records.copytree(don, d, ignore=shutil.ignore_patterns("reports", "converged", "design", "iterations"))
             if edit:
                 pp = d / "system/postDict"
                 pp.write_text(edit(pp.read_text()))
