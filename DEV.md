@@ -3974,6 +3974,225 @@ accepts today, and that is a policy call.
 > follow in the same slice; seals and pins re-taken only where the stamp is
 > inside what they hash, each counted.  It reaches every case, so its proof
 > is the `--nightly` sweep that closes C421.
+>
+> **C423 (Vitor, 2026-11-18: explain to an outside AI reviewer the final
+> structure of the thermophysical properties, why it scales, the hierarchy
+> of standards and local dictionaries, with several example dictionaries
+> showing the breadth; "perde tempo com isto porque e importante").**
+> WRITTEN the same hour, from the tree and not from memory: twelve sections
+> (the four layers records -> case dictionary -> package -> door; the arity
+> rule; pins and declared variations; sectors and variants; the three
+> measured-data mechanisms; why adding one thing costs one file; ten real
+> dictionaries; what is NOT finished: the 82 bypasses, mixture tables,
+> sample behaviour in three homes, no rheology, the narrow validation; five
+> questions for the reviewer).  Handed to Vitor as a file, NOT tracked: it
+> is a letter to a reviewer, and what the review returns is weighed by its
+> content (an AI's agreement is not a validation).  If it proves a good
+> overview it becomes the opening of `docs/architecture/property-architecture.md`.
+>
+> **C424: THE OUTSIDE REVIEW OF C423, WEIGHED POINT BY POINT (2026-11-18;
+> Vitor brought it as an opinion, "tu e que decides").  It read the letter,
+> not the code; each point was measured against the tree before it was
+> accepted.**  (1) MODEL BOUNDARIES: its demand is already the contract
+> (`docs/ai/energy.md` section 7: hold (T,P,z), H jumps, the step printed as
+> a model-inconsistency quantity, never used to close the balance; the one
+> case with such a step stays pinned OPEN in the energy gate).  The letter
+> said only "reported", which undersold it.  ACCEPTED as new work: the
+> distinction it draws between a DATUM offset and a MODEL difference, and
+> its example -- IF97 lives on the triple-point datum
+> (`ThermoPackage.cpp:577`) inside a project on the elements datum; whether
+> a stream crossing from an IF97 water package to a reacting package is
+> bridged has NOT been verified.  To measure, by a two-sector probe.
+> (2) COHERENCE OF THE BLOCKS: H^E is deliberately NOT derived from a
+> VLE-fitted G^E (`ThermoPackage.cpp:1750`: added only when every pair
+> carries a calorimetric refit; otherwise an announced omission) -- the
+> reviewer's identity is right, and the choice stands because a
+> VLE-regressed temperature dependence gives poor heats of mixing.
+> ACCEPTED: the dictionary does not say WHO governs each calculation when
+> `pureFluids` sits beside an `equilibrium` block; the resolved view must
+> print it (equilibrium, enthalpy, density, each with its governor).
+> (3) IDENTITY: ACCEPTED, and it is the best point.  One pair may have
+> several legitimate parameter sets (VLE or LLE, other sources, other
+> temperature forms); the catalogue holds one file per pair and model, so a
+> second set can only live as a case variation.  The remedy mirrors what a
+> component record already does for its laws (`preferred` + named sets):
+> named sets inside the pair record, a case naming the set.  The letter's
+> question about triples was naive: Pitzer theta and psi are already in the
+> tree.  And `Cl` the ion under the atom's name, held by 33 `distinctFrom`
+> declarations, is an identity debt, not a design: the ion components are
+> renamed.  Both queued after the door slices of C421.  (4)
+> REPRODUCIBILITY: partly there (git holds every hashed content; `--seal
+> <case> --to <dir>` exports the records a run used).  NOT VERIFIED: that
+> the case a student downloads carries them.  To measure.  (5) ONE FORMAT,
+> SEVERAL INTERFACES: agreed, and already decided (rheology is not a
+> function of (T,P,x)).  ACCEPTED: the key `measured` names a value the
+> Schulz record itself calls "not a measurement"; the experiments record
+> gains a required kind (measured | adopted by the authors | estimated),
+> in the design of item (7).  (6) THE BOX IS NOT THE SUPPORT: ACCEPTED in
+> full, into the design of item (7): the domain the points support (their
+> hull), the domain the case authorises (the box, with a reason when
+> wider), and the interpolation rule are three things, printed as three.
+> (7) REFUSAL: a calculation already asks only for the slice it needs.
+> ACCEPTED as a candidate after C421: a domain refusal at a solver's TRIAL
+> state returned as a failed step the solver may shorten, never at an
+> accepted state (today `table03_trial_state_refused` is a lesson that the
+> run ends).  SCHEMA VERSION: the reviewer advises against 2 -> 1 because
+> one number would name two grammars.  MEASURED: no file of these two
+> record types was ever stamped 1, so there is no collision; Vitor's order
+> stands for the tree.  But the measurement found what the architect's own
+> decision had missed: release Choupo-2608 ships 396 dictionaries stamped
+> 2 in today's grammar, and REFUSING 2 would break every case a student
+> holds.  CORRECTED: 1 in the tree (gated); a 2 on an older file runs and
+> is announced once, with the line to write.
+>
+> **C425 (Vitor, 2026-11-18: read the process-simulation book he filed and
+> judge the architecture against it; "acho que deve haver uma falha em
+> componentes nao convencionais").**  HE IS RIGHT.  READ: the solids
+> getting-started guide of a breadth-first simulator in the literature
+> folder (`SimulatorManuals/`, 89 pages; the coal-drying and coal-combustion
+> chapters) and the index of the 623-page applications textbook beside it.
+> (No book dated 11-17 is in the folder; its simulator books are of May.
+> Asked him where yesterday's is.)  WHAT THAT WORLD HAS, in its own three
+> notions: (i) a homogeneous solid with a formula and a molar mass that
+> takes no part in phase equilibrium; (ii) a HETEROGENEOUS solid with no
+> formula and no molar mass (coal, biomass, sludge, ash), described by
+> ANALYSES (proximate, ultimate, sulfur; a general constituent analysis for
+> anything else), on a MASS basis, for which only enthalpy and density are
+> computed, each by a model that reads those analyses; (iii) a particle
+> size distribution carried by the solid part of a stream.  Its analyses
+> are attributes a unit may CHANGE (a dryer lowers the moisture entry), and
+> a heterogeneous solid enters chemistry only through a yield step that
+> decomposes it into ordinary species, the heat of that step accounted.
+> WHAT CHOUPO HAS: (i) de facto -- CaCO3, graphite, sucrose are ordinary
+> records with `role nonvolatile`, a solid heat capacity and a formation
+> datum; (iii) the size distribution as a stream attribute (C361).  (ii) IS
+> ABSENT: every component needs a formula and a molar mass, streams are
+> molar, and nothing computes an enthalpy or a density from an analysis.
+> The property architecture's own non-goals say so ("inert /
+> non-conventional solids not in phase equilibrium: only precipitating
+> salts are modelled").  So coal, biomass, sewage sludge, food solids and
+> ores cannot be stated honestly today.  THE ARCHITECT'S DIRECTION, to be
+> designed and put to Vitor before anything is built (it is pedagogy and
+> architecture at once, and it is NOT part of C421): a MATERIAL -- a
+> component kind with no formula, on a mass basis, whose ANALYSIS is a
+> dataset of the case in the experiments grammar (it is the sample's own);
+> its ultimate analysis gives the element balance, its measured heating
+> value gives a formation enthalpy on the elements datum (so the first law
+> crosses a combustor as it does for any species), its density is a
+> measured or declared law; never offered to an equilibrium; converted to
+> species only by a declared yield whose atoms the engine checks.  DIFFERENT
+> ON PURPOSE in one thing: moisture is the COMPONENT water held by the
+> solid, not an attribute a unit edits -- an attribute that changes is mass
+> appearing without a stream, which rule 4b forbids.
+>
+> **C425, THE STUDY IS DONE (2026-11-18; four Sonnet readers, one manual
+> family each, every statement with its page; 1090 lines of notes and a
+> synthesis in the private Studies folder, `2026-11-18-solids-and-materials/`;
+> the books Vitor filed the same afternoon were byte-identical copies of the
+> May set).**  WHAT THE REFERENCE WORLD DOES that the first read had not
+> shown: a stream is a vector of SUBSTREAMS fixed by a stream class; a
+> heterogeneous solid is carried on a mass basis with its molar-mass slot
+> set to 1; it is described by ATTRIBUTES the stream carries and a unit
+> overwrites by typed values; for such solids no closure rule is stated
+> (its own worked coal reactors print the two masses out of balance and the
+> total closed, as expected; its yield reactor keeps no atom balance); for
+> polymers the same mechanism DOES have a law (conserved attributes are flow
+> quantities, summed on mixing, balanced in reactors).  SAMPLE BEHAVIOUR
+> (grindability, cake resistance and compressibility, the drying curve,
+> settling data, crystal kinetics) is typed IN EACH UNIT there -- so Choupo
+> is level with it today, not behind, and one home for a sample's data
+> would be an advance, not a catch-up.  With reaction its datum for such a
+> solid is the elements at 298.15 K, the formation enthalpy obtained from
+> the heat of combustion and the ultimate analysis: Choupo's own datum.
+> THE DESIGN PUT TO VITOR (nothing built): a MATERIAL -- (1) a component
+> kind with no formula, on a mass basis; (2) its analysis a dataset of the
+> case on ONE stated basis (dry), with its ash and its measured heating
+> value; (3) elements from the ultimate analysis, ash conserved as a mass
+> of its own, so the element gate closes; (4) formation enthalpy on the
+> elements datum computed at load from heating value and analysis, and
+> printed; heat capacity and density as declared or measured laws; (5) a
+> second form of the property door, (material, T, P), mass basis, enthalpy
+> and density only; (6) never offered to an equilibrium; a unit with no
+> model for it refuses by name; (7) NO MUTABLE ATTRIBUTES: moisture is the
+> component water held by the solid, and a converted solid (char) is
+> ANOTHER material with its own analysis, produced by a declared yield
+> whose atoms and ash the engine checks -- so there is no attribute-mixing
+> rule to invent; (8) sample behaviour as datasets of the case that units
+> name.  STATED LIMITS: a solid whose composition changes continuously is
+> a few lumped materials; polymers need the conserved-attribute mechanism
+> and stay out until a case asks.  FIRST WITNESS proposed: a biomass dryer
+> feeding a combustor, the first law closed across both from the measured
+> heating value.  Correlations, if any is used, are read in their original
+> papers: the manual's coal equations carry printing errors (flagged in the
+> notes).  Waits for Vitor's reading; after C421.
+>
+> **C426 (Vitor, 2026-11-18: go through the material he filed and say what
+> is easy to implement, by Pareto, for non-conventional solids AND for the
+> other features the reference world has and Choupo has not; "isso e
+> importante para consolidarmos a arquitetura").**  A GAP STUDY, evidence
+> first: three Sonnet readers, each comparing one side of the reference
+> manuals with Choupo's own capability index, case catalogue and unit
+> catalogue -- (a) every unit model and flowsheeting feature, (b) the
+> property system, (c) the TASKS a university textbook of process
+> simulation teaches, chapter by chapter, against the case or lesson that
+> teaches the same in Choupo.  One row per capability: present / partial /
+> absent with the word and the case, what data and code it would need, a
+> size (S fits an existing factory; M a new unit or record type; L a new
+> concept reaching the stream, the door or the solver), and whether it needs
+> a new architectural concept.  The architect ranks and decides; the notes
+> are private (`Studies/2026-11-18-solids-and-materials/`, files 08-10),
+> beside the solids notes 01-07 (rheology 05 and filtration 06 still being
+> read from the two books that arrived today).  The tracked outcome is the
+> ranked list here.
+>
+> **C426, THE RANKING (2026-11-18; the three tables are in, about 210 rows;
+> the claims of absence the ranking rests on were re-checked in `src/` by
+> the architect: no polytropic path, no NPSH quantity, no pumparound or
+> interstage heater, no yield reactor or component splitter except as user
+> units, no pump or compressor curve, no dead time, no relay).**  THE
+> FINDING THAT MATTERS FOR THE ARCHITECTURE: of everything the reference
+> world offers, only FOUR things need a concept Choupo lacks, and three of
+> them are the ones this week's study already named -- (A) the MATERIAL, a
+> mass-basis solid described by analyses (C425); (B) one home for a
+> SAMPLE's measured behaviour; (C) a constitutive law that needs a variable
+> the unit supplies (rheology: the shear rate); (D) conserved attributes on
+> a stream (chain-length moments of a chain-growth polymer) -- out until a
+> case asks.  Everything else, about 200 rows, fits a factory or a record
+> type that exists.  A fifth "concept" the readers listed is REFUSED: a
+> calculator that reads a result and writes an input inside the sequence
+> is a side channel around the streams; Choupo's way stays the declared
+> design specification and the outer drivers.  ONE DESIGN RECORD FIRST
+> (the consolidation Vitor asked for): the property door's three forms --
+> (T, P, composition) for a fluid; (material, T, P) on a mass basis; (fluid
+> state + the unit's own variable) for a flow curve -- and ONE experiments
+> grammar under them all: mixture tables (C421 (7)), a sample's test data
+> (raw rows, the instrument or test named, the sample's conditions, the
+> supported and the authorised domain), a material's analyses.  Written and
+> ruled before any of it is built.  THE CHEAP LIST, after C421, in this
+> order (each S: an existing factory, existing data, its guide section and
+> a witness): 1 the yield reactor and the component splitter as built-in
+> units (they exist as user units; the material needs the first); 2 pump
+> NPSH available; 3 a polytropic compressor path; 4 heating and cooling
+> curves of a heater, a condenser, an exchanger; 5 a valve by flow
+> coefficient and opening; 6 the Margules, Van Laar and Redlich-Kister
+> activity models; 7 a shortcut column rated at given stages and reflux; 8
+> profitability index and modified rate of return; 9 properties of the
+> user's choice in the stream table; 10 a splitter that divides each phase
+> on its own; 11 the second cubic's MHV2 rule and an alpha function that is
+> right above the critical temperature (this one also serves the 32 cases
+> that price a supercritical gas through a vapour pressure); 12 a
+> corresponding-states liquid density behind the density door; 13 a
+> stand-alone solids washer.  THEN, each M: dead time, cascade and a relay
+> test in the control layer; pump and compressor performance curves; column
+> pumparounds and interstage heaters; a reactive amine absorber as a case;
+> kinetic parameters regressed from batch data; a multistage compressor; an
+> air cooler; a fired heater.  DELIBERATELY NOT COPIED: blocks that break
+> balances by design, automatic tear selection (the declared-tear contract
+> stands), default-on estimation of a missing parameter, a user-visible
+> graph of routes, alternative enthalpy datums, method names that bundle
+> several choices, foreign-language user models inside a property route,
+> interfaces to closed programs, logic blocks, predictive control, the
+> refinery suites.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
