@@ -64,15 +64,8 @@
   case it was curated in.  Reproduce the whole fit with
   tutorials/plant/greenAmmoniaPEQ_baseCase/curation/Ar-NH3/fit-Ar-NH3.py.
 
-  TWO COPIES EXIST TODAY, and the reason is stated rather than left to be
-  discovered: that case is SEALED (`sealed true;`), which FORBIDS the runtime
-  every catalogue fallback, so it must carry the record inside its own
-  constant/ tree -- and it carries this one as an AUTHORED file its
-  propertyManifest does not yet claim, because the pair did not exist in the
-  catalogue when the case was imported.  Until `bin/choupo-import` is re-run
-  on that case, the manifest neither verifies nor forbids its copy and the two
-  are kept in step BY HAND.  That re-import is the remedy, and it is named
-  here rather than assumed done.
+  The ammonia cases REFERENCE this record through their pins; none holds a
+  copy (C421, 2026-11-18).
 \*---------------------------------------------------------------------------*/
 solute      Ar;
 solvent     NH3;

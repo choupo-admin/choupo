@@ -20,7 +20,7 @@
   temperature: K_Ar = 1.7 in the separator against K_N2 = 124, and argon left
   dissolved in the product instead of accumulating in the loop.  The pair was
   fitted from the IUPAC-NIST Solubility Data Series Vol. 4 -- see the header
-  of constant/parameters/Henry/Ar-NH3.dat and the dossier in curation/Ar-NH3/.
+  of data/standards/parameters/Henry/Ar-NH3.dat and the dossier in curation/Ar-NH3/.
 
   ABOVE Tc (DEV.md 4c C256, measured 2026-11-09).  Every run announces
   `[psatContinued]` for H2, N2, Ar and NH3: a vapour pressure asked ABOVE the
@@ -71,7 +71,7 @@ equilibrium
             {
                 N2-NH3 { source "data/standards/parameters/Henry/N2-NH3.dat"; }
                 H2-NH3 { source "data/standards/parameters/Henry/H2-NH3.dat"; }
-                Ar-NH3 { source "constant/parameters/Henry/Ar-NH3.dat"; }
+                Ar-NH3 { source "data/standards/parameters/Henry/Ar-NH3.dat"; }
             }
         }
     }
