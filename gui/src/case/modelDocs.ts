@@ -395,6 +395,9 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   // -- a property given as measured points (C398 slice (c)): the law type
   //    `table` of the liquid-viscosity and heat-capacity families --------
   table:      { guide: "theory", dest: "sec:record-law-table" },
+  //  a MIXTURE property given as measured rows over T and composition (C421 slice (8)): the
+  //  `measured { <name> { interpolation (...); } }` entry of the three liquid properties
+  measured:   { guide: "theory", dest: "sec:measured-mixture-table" },
   // -- membrane transport (NF/RO) -----------------------------------------
   solutionDiffusion: { guide: "theory", dest: "ch:membrane" }, // textbook 2-param S-D
   "DSPM-DE":         { guide: "theory", dest: "ch:dspmde" },   // Donnan-steric pore + dielectric

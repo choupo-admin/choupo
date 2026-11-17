@@ -6510,6 +6510,92 @@ The golden master locks every computed value at reltol 1e-4.
 \end{tutgolden}
 
 \clearpage
+\tutentry{measured01\_methanol\_glycol\_viscosity\_grid}{tutorials/props/transport/measured01\_methanol\_glycol\_viscosity\_grid}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{muNode\_298K\_w25}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{muNode\_303K\_w50}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{muBetween\_296K\_w375}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{muBetween\_301K\_w625}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{muHeld\_T\_291K\_w50}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{muHeld\_w\_298K\_w78}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{muPastBox\_refused}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A measured mixture table: the viscosity of liquid methanol + ethylene glycol on a 3 x 4 grid of temperature and mass fraction (Roy, Pradhan \& Dewan 2009), interpolated between the rows, held at the nearest edge between the rows and the authorised box (announced), refused outside it}
+\begin{tutnarrative}
+measured01 -- the viscosity of methanol + ethylene glycol from a measured grid. (Compositions are MOLE fractions: x\_glycol = (w/62.06784) / (w/62.06784 + (1 - w)/32.042), the molar masses of the component records, so the mass fraction the table reads is the w in each name to twelve digits.)
+
+muNode\_$\ast$ ON a row of the grid (298.15 K, w 0.25; 303.15 K, w 0.50): the article's own value, exactly (1.0295 and 1.8101 mPa s). muBetween\_$\ast$ BETWEEN rows (295.65 K, w 0.375; 300.65 K, w 0.625): the declared interpolation, T then w -- the gate recomputes it independently. muHeld\_$\ast$ BETWEEN the support and the authorised box: 291.15 K lies 2 K below the first temperature (293.15 K); w 0.78 lies 0.03 above the last fraction (0.75). The nearest edge's value is held and the largest excursion is announced at the end of the run. muPastBox\_refused a scan 305-307 K at w 0.50: 305 and 306 K lie in the authorised box (held at the last temperature, 303.15 K), 307 K is past it and REFUSED by name.
+
+The golden master locks every computed value at reltol 1e-4.
+
+\end{tutnarrative}
+\tutreadme{A liquid MIXTURE property given as a TABLE of measured rows (DEV.md 4c C421 slice (8), form 1 of docs/design/measured-facts-materials-and-flow-curves.md).}
+\tutreadme{$\ast$ The record, constant/experiments/royMethanolEthaneDiolViscosity.dat: 12 rows, three temperatures (293.15, 298.15, 303.15 K) by four glycol mass fractions (0, 0.25, 0.50, 0.75), at 101 kPa. kind measured. Source: Roy, Pradhan \& Dewan, Fluid Phase Equilib. 282 (2009) 51-57, doi:10.1016/j.fluid.2009.03.002, transcribed exactly as the NIST ThermoML Archive gives it. $\ast$ The entry in constant/thermoPhysPropDict says how to read it: interpolation ( logReciprocal monotoneCubic ) (T, then w[ethyleneGlycol], one axis at a time). $\ast$ Three domains: the SUPPORT (the rows' span), the AUTHORISED box (T 290-306 K, w 0-0.80) and refusal outside it. Between support and box the nearest edge's value is held and the largest excursion announced once, at the end of the run.}
+\tutreadme{Run: runCase tutorials/props/transport/measured01\_methanol\_glycol\_viscosity\_grid. Gate: check\_table\_laws (arm (l)). Theory Guide sec:measured-mixture-table.}
+\begin{tutgolden}
+\goldrow{diag}{muNode\_298K\_w25}{Cp\_ig}{48.8033692396}
+\goldrow{diag}{muNode\_298K\_w25}{H\_R}{0}
+\goldrow{diag}{muNode\_298K\_w25}{H\_ig}{-229020.085768}
+\goldrow{diag}{muNode\_298K\_w25}{H\_real}{-229020.085768}
+\goldrow{diag}{muNode\_298K\_w25}{P}{100000}
+\goldrow{diag}{muNode\_298K\_w25}{S\_R}{0}
+\goldrow{diag}{muNode\_298K\_w25}{S\_ig}{252.893024848}
+\goldrow{diag}{muNode\_298K\_w25}{S\_real}{252.893024848}
+\goldrow{diag}{muNode\_298K\_w25}{T}{298.15}
+\goldrow{diag}{muNode\_298K\_w25}{Z}{1}
+\goldrow{diag}{muNode\_298K\_w25}{gamma}{1.20535162127}
+\goldrow{diag}{muNode\_298K\_w25}{v\_molar}{0.0247895702956}
+\goldrow{diag}{muNode\_298K\_w25}{viscosity\_liquid}{0.0010295}
+\goldrow{diag}{muNode\_303K\_w50}{Cp\_ig}{55.8984906677}
+\goldmore{67}
+\end{tutgolden}
+
+\clearpage
+\tutentry{measured02\_ethanol\_water\_surface\_tension\_grid}{tutorials/props/transport/measured02\_ethanol\_water\_surface\_tension\_grid}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{sigmaNode\_298K\_w10}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{sigmaNode\_313K\_w20}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{sigmaBetween\_305K\_w075}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{sigmaBetween\_310K\_w125}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{sigmaHeld\_T\_295K\_w10}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{sigmaHeld\_w\_298K\_w22}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{sigmaPastBox\_refused}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A measured mixture table: the surface tension of aqueous ethanol on a 2 x 5 grid of temperature and mass fraction (Raza, Hallett, Liu, He \& Afzal 2019), interpolated between the rows, held at the nearest edge between the rows and the authorised box (announced), refused outside it}
+\begin{tutnarrative}
+measured02 -- the surface tension of aqueous ethanol from a measured grid. (Compositions are MOLE fractions: x\_ethanol = (w/46.069) / (w/46.069 + (1 - w)/18.015), the molar masses of the component records, so the mass fraction the table reads is the w in each name to twelve digits.)
+
+sigmaNode\_$\ast$ ON a row of the grid (298 K, w 0.10; 313 K, w 0.20): the article's own value, exactly (47.34 and 36.71 mN/m). sigmaBetween\_$\ast$ BETWEEN rows (305.5 K, w 0.075; 310 K, w 0.125): the declared interpolation, T then w -- the gate recomputes it independently. sigmaHeld\_$\ast$ BETWEEN the support and the authorised box: 295 K lies 3 K below the first temperature (298 K); w 0.22 lies 0.02 above the last fraction (0.20). The nearest edge's value is held and the largest excursion is announced at the end of the run. sigmaPastBox\_refused a scan 317-319 K at w 0.10: 317 and 318 K lie in the authorised box (held at the last temperature, 313 K), 319 K is past it and REFUSED by name.
+
+The golden master locks every computed value at reltol 1e-4.
+
+\end{tutnarrative}
+\tutreadme{The same grammar as measured01, on the interface block (DEV.md 4c C421 slice (8)): transport \{ interface \{ surfaceTension \{ measured \{ ... \} \} \} \}.}
+\tutreadme{$\ast$ The record, constant/experiments/razaEthanolWaterSurfaceTension.dat: 10 rows, two temperatures (298, 313 K) by five ethanol mass fractions (0 to 0.20). kind measured. Source: Raza, Hallett, Liu, He \& Afzal, J. Chem. Eng. Data 64 (2019) 5049-5056, doi:10.1021/acs.jced.9b00026, transcribed exactly as the NIST ThermoML Archive gives it (ring tensiometer). $\ast$ interpolation ( linear monotoneCubic ): a chord along T (two values), the Fritsch-Carlson monotone cubic along w[ethanol], which follows the steep fall of sigma near pure water (72 to 55 mN/m in the first 5 \%). $\ast$ Support T 298-313 K, w 0-0.20; authorised box T 293-318 K, w 0-0.22.}
+\tutreadme{Run: runCase tutorials/props/transport/measured02\_ethanol\_water\_surface\_tension\_grid.}
+\begin{tutgolden}
+\goldrow{diag}{sigmaNode\_298K\_w10}{Cp\_ig}{34.9802948663}
+\goldrow{diag}{sigmaNode\_298K\_w10}{H\_R}{0}
+\goldrow{diag}{sigmaNode\_298K\_w10}{H\_ig}{-241544.929972}
+\goldrow{diag}{sigmaNode\_298K\_w10}{H\_real}{-241544.929972}
+\goldrow{diag}{sigmaNode\_298K\_w10}{P}{100000}
+\goldrow{diag}{sigmaNode\_298K\_w10}{S\_R}{0}
+\goldrow{diag}{sigmaNode\_298K\_w10}{S\_ig}{194.119428516}
+\goldrow{diag}{sigmaNode\_298K\_w10}{S\_real}{194.119428516}
+\goldrow{diag}{sigmaNode\_298K\_w10}{T}{298}
+\goldrow{diag}{sigmaNode\_298K\_w10}{Z}{1}
+\goldrow{diag}{sigmaNode\_298K\_w10}{gamma}{1.31180210468}
+\goldrow{diag}{sigmaNode\_298K\_w10}{surface\_tension}{0.04734}
+\goldrow{diag}{sigmaNode\_298K\_w10}{v\_molar}{0.0247770986016}
+\goldrow{diag}{sigmaNode\_313K\_w20}{Cp\_ig}{36.8040671468}
+\goldmore{67}
+\end{tutgolden}
+
+\clearpage
 \tutentry{mixing01\_water\_acetone}{tutorials/props/transport/mixing01\_water\_acetone}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

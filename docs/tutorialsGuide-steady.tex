@@ -8861,6 +8861,45 @@ Basis: N2 3 kmol/h (the fast light gas) + water 200 kmol/h (the slow heavy liqui
 \end{tutgolden}
 
 \clearpage
+\tutentry{pipe03\_sucrose\_syrup\_measured}{tutorials/steady/hydraulics/pipe03\_sucrose\_syrup\_measured}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (L1) at (0.0,-0.0) {\textbf{L1}\\[-1pt]{\tiny pipe}};
+  \draw[->] ($(L1.west)+(-1.05,0.00)$) -- ($(L1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(L1.east)+(0,0.00)$) -- ($(L1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {delivered};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Pipe pressure drop of a sucrose syrup whose viscosity is the case's own measured table (24 rows over temperature and sucrose mass fraction, Nain et al. 2013), interpolated between rows}
+\begin{tutnarrative}
+A single PIPE element carrying a sucrose syrup (12.5 mass \% sucrose in water, 301.15 K, 3 bar) through 20 m of 0.05 m commercial-steel pipe. The Reynolds number needs the syrup's VISCOSITY, and no law of any record prices it: the case's own measured table does -- 24 rows, six temperatures by four sucrose mass fractions (Nain, Lather \& Sharma 2013, from the NIST ThermoML Archive), selected by the variant `nainTable` of constant/thermoPhysPropDict (`thermo nainTable;` below). The state of the syrup, 301.15 K and w 0.125, lies BETWEEN rows (298.15 and 303.15 K; 0.10 and 0.15), so the viscosity the pipe takes is the table's interpolation, not a row's.
+
+feed (syrup, 3 bar) $\to$ [L1 pipe, thermo nainTable] $\to$ delivered
+
+The golden master pins the `source` of the pipe's viscosity as the stated table (`stated.nainSucroseWaterViscosity`), and the Reynolds number, the friction factor and the pressure drop that follow from it.
+
+\end{tutnarrative}
+\tutreadme{A steady pipe whose Reynolds number needs the syrup's viscosity, and no law of any record prices it (DEV.md 4c C421 slice (8)). The case's own table does: constant/experiments/nainSucroseWaterViscosity.dat, 24 rows (six temperatures, 293.15-318.15 K, by four sucrose mass fractions, 0.05-0.20), kind measured, from Nain, Lather \& Sharma, J. Chem. Thermodyn. 58 (2013) 101-109, doi:10.1016/j.jct.2012.11.001 (the NIST ThermoML Archive's rows), selected by the variant nainTable (thermo nainTable; on the unit).}
+\tutreadme{The syrup (12.5 mass \% sucrose, 301.15 K) lies between rows, so the viscosity (1.202 mPa s) is the declared interpolation, ( logReciprocal monotoneCubic ). The golden master pins the viscosity's source as the table (stated.nainSucroseWaterViscosity) and the pressure drop that follows.}
+\tutreadme{Run: runCase tutorials/steady/hydraulics/pipe03\_sucrose\_syrup\_measured.}
+\begin{tutgolden}
+\goldrow{stream}{delivered}{F}{0.279866259279}
+\goldrow{stream}{delivered}{T}{301.15}
+\goldrow{stream}{feed}{F}{0.279866259279}
+\goldrow{stream}{feed}{T}{301.15}
+\goldrow{kpi}{L1}{F}{0.279866259279}
+\goldrow{kpi}{L1}{P\_in}{300000}
+\goldrow{kpi}{L1}{P\_out}{257487.669679}
+\goldrow{kpi}{L1}{dP\_elevation}{0}
+\goldrow{kpi}{L1}{dP\_fittings}{7309.72180741}
+\goldrow{kpi}{L1}{dP\_friction}{35202.6085138}
+\goldrow{kpi}{L1}{deltaP}{42512.3303212}
+\goldrow{kpi}{L1}{density}{1044.55017402}
+\goldrow{kpi}{L1}{frictionFactor}{0.0216713771721}
+\goldrow{kpi}{L1}{head\_loss\_m}{4.15016085949}
+\goldmore{13}
+\end{tutgolden}
+
+\clearpage
 \tutentry{pumpSystem01\_operating\_point}{tutorials/steady/hydraulics/pumpSystem01\_operating\_point}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

@@ -3402,6 +3402,106 @@ name only from two \file{constant/} folders, and their per-node pairs base
 already differs, so the identities differ anyway; the table's text is kept
 in the identity as the guard that does not depend on that base.
 
+\subsection{A measured mixture table: many rows over temperature and composition}\label{sec:measured-mixture-table}
+
+A liquid MIXTURE's viscosity, thermal conductivity or surface tension may be
+given as a table of measured rows (C421 slice (8), form~1 of the design record
+\file{docs/design/measured-facts-materials-and-flow-curves.md}).  The record is
+the case's own \file{constant/experiments/<name>.dat}, the grammar the one-row
+\emph{stated mixture value} already used (\code{property}, \code{system},
+\code{solvent}, \code{columns} with units, flat row-major \code{data},
+\code{provenance}), now with many rows.  The entry that cites it in the property
+dictionary is
+\code{transport \{ liquid \{ viscosity \{ measured \{ <name> \{ use method;
+interpolation (...); \} \} \} \} \}} (likewise \code{thermalConductivity} and
+\code{interface \{ surfaceTension \}}); the columns are $T$ (\code{T}, K), the
+mass fractions \code{w[<c>]} of the non-solvent components (declared \code{-}), an
+optional \code{P} (stated by the source, one value, not applied), and the value
+(\code{mu}, \code{lambda} or \code{sigma}, in a unit of its dimension).
+
+\paragraph{The grid.}  Let the declared axes be $T$ and the mass fractions
+$w_c$; an axis is \emph{varying} if its column holds more than one distinct
+value.  The rows must be a RECTANGULAR GRID over the varying axes (every
+combination of the axis values exactly once); a scattered set on more than one
+axis is refused by name.  A column with one value is a held axis (no
+interpolation).
+
+\paragraph{Interpolation, one axis at a time.}  The entry declares one word
+per varying axis, in the order of the columns (one word for one axis, a list
+$(\ldots)$ otherwise), from the four of the table law --- \code{linear},
+\code{logLinear}, \code{logReciprocal} (ln $y$ linear in $1/T$; the $T$ axis
+only), \code{monotoneCubic} (Fritsch and Carlson) --- with \code{monotoneCubic}
+needing 3 values on its axis and a composition axis taking \code{linear} or
+\code{monotoneCubic} only (a mass fraction may be 0).  Writing the grid as
+$y(i_1, \ldots, i_n)$ over the varying axes $a_1, \ldots, a_n$, the value at
+$(c_1, \ldots, c_n)$ is
+\begin{equation*}
+y^{(1)}(i_2,\ldots,i_n) = \mathcal I_{a_1}\big[\,y(\cdot, i_2,\ldots,i_n)\,\big](c_1),\quad
+y^{(2)}(i_3,\ldots) = \mathcal I_{a_2}\big[\,y^{(1)}(\cdot, i_3,\ldots)\,\big](c_2),\ \ldots
+\end{equation*}
+where $\mathcal I_a[\cdot](c)$ is the one-axis interpolant of
+\S\ref{sec:record-law-table} on the axis values (it returns a node's own value
+exactly): the first axis is reduced over the whole grid, then the second over
+what is left, and so on.  The result depends on the order, which is why the order
+is the file's and is printed.
+
+\paragraph{Three domains.}  The SUPPORT of an axis is its span
+$[\min, \max]$ of the row values --- computed, never typed.  The AUTHORISED box
+is what the case stands the value over: \code{box} (the word the one-row records
+use) or \code{authorised} --- one spelling per file --- with a \code{reason},
+required when the box is wider than the support, in the record or in the entry.
+A state is dealt with by where it lies: inside the support the value is the
+interpolation; between the support and the authorised box each coordinate is
+held at the nearest edge, $c_a \to \min(\max(c_a, \mathrm{lo}_a), \mathrm{hi}_a)$,
+so the value is the nearest edge row's, and the largest excursion of the run
+(per axis and side) is announced once on the console and restated at the end of
+the run in the advisory block; outside the box the run REFUSES, whatever the
+consumer (an answer or a solver's trial state), by name, and no law is ever
+substituted.  A ONE-ROW record has the support of a point and an authorised box
+as before: the value stands over the whole box, with the reason in the
+dictionary entry, as it did (the case's assumption away from the stated point).
+
+\paragraph{What the values are: \code{kind}.}  The record's
+\code{provenance \{ kind measured | adopted | estimated; \}} says what the rows
+are: \code{measured} (a measurement), \code{adopted} (a value its authors chose
+to use, the packed-column cases' representative viscosity by its own source's
+words) or \code{estimated} (a correlation's output the case freezes).  It is
+REQUIRED beside more than one row; a one-row record without one runs and says so
+once.  The run's liquid-properties table prints the word beside the source, and
+the property's origin follows it: a row's own value is \code{literature}, an
+interpolated value \code{derived}, a held edge \code{assumed}; \code{adopted}
+lowers every value to \code{assumed} and \code{estimated} to \code{estimated}.
+
+\paragraph{Components the table does not describe.}  A liquid holding a
+component that is neither a column nor in the record's \code{system} is refused
+(the set is part of the box) unless the entry says
+\code{ignores ( <components> ); ignoresReason "..."; ignoresUpTo <w>;}: those
+components may be present up to the mass fraction
+$\sum_{i\in\mathrm{ign}} x_i M_i / \sum_i x_i M_i \le w_{\max}$ of the liquid, the
+table is then read at the composition renormalised over its own set
+($w_c = x_c M_c / \sum_{i\in\mathrm{set}} x_i M_i$), their presence is announced once
+and recorded in the liquid-properties table as a declared hypothesis with the
+largest share seen; beyond $w_{\max}$ the run refuses.
+
+\paragraph{Limits of this slice.}  Pressure is not an axis: the package's
+liquid viscosity, conductivity and surface tension take $(T, x)$ only, so a
+\code{P} column is the pressure the source states (one value).  The liquid density's
+\code{measured} point (\S\ref{sec:liquid-density-measured}) keeps its own reader
+and method order and is not part of this form.  The resolved view prints, for a
+table: the record, its kind, the rows, each axis with its support and
+interpolation, the authorised box with the rule between the two, and what is
+ignored.
+
+\paragraph{Witnesses.}  \file{tutorials/props/transport/measured01\_methanol\_glycol\_viscosity\_grid}
+(Roy, Pradhan and Dewan, Fluid Phase Equilib.\ 282 (2009) 51--57: 12 viscosities
+of methanol + ethane-1,2-diol, three temperatures by four mass fractions, as the NIST
+ThermoML Archive gives them), \file{tutorials/props/transport/measured02\_ethanol\_water\_surface\_tension\_grid}
+(Raza et al., J.\ Chem.\ Eng.\ Data 64 (2019) 5049--5056: 10 surface tensions of aqueous ethanol)
+and \file{tutorials/steady/hydraulics/pipe03\_sucrose\_syrup\_measured} (a pipe on a
+24-row sucrose viscosity table, Nain, Lather and Sharma, J.\ Chem.\ Thermodyn.\ 58 (2013)
+101--109).  The gate \code{check\_table\_laws}, arm (l), recomputes every value
+independently and holds the refusals above.
+
 % ---------------------------------------------------------------------
 \section{Where a unit takes its liquid properties from}\label{sec:liquid-property-sources}
 

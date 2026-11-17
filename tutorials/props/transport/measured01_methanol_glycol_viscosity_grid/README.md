@@ -17,5 +17,5 @@ slice (8), form 1 of `docs/design/measured-facts-materials-and-flow-curves.md`).
   value is held and the largest excursion announced once, at the end of the run.
 
 Run: `runCase tutorials/props/transport/measured01_methanol_glycol_viscosity_grid`.
-Gate: `check_table_laws` (arm `measured_mixture_tables`).  Theory Guide
-`sec:record-law-table-mixture`.
+Gate: `check_table_laws` (arm (l)).  Theory Guide
+`sec:measured-mixture-table`.

@@ -798,7 +798,7 @@ solver throws a clear error naming the missing slot.
   `kind`, columns `T` and `D` WITH units, ONE point (tables: slice (c)), a `box`; cited
   the other way round it is refused.  A box wider than the point needs `reason`.
 - A paper's one liquid viscosity for a run is a STATED mixture value of a constituent
-  set (grammar key `measured`, as for the density): `viscosity { measured { <name> { use
+  set (one row here; MANY rows on a grid of T and w: "A measured MIXTURE table" below) (grammar key `measured`, as for the density): `viscosity { measured { <name> { use
   method|check; reason "..."; } } }` with `constant/experiments/<name>.dat` (`property
   liquidViscosity; system; solvent;` columns `mu` and, if stated, `T`, `P`, `w[<c>]`;
   `box { T (lo hi); w[<c>] (lo hi); }`; `provenance { citation "..."; basis "<what the
@@ -905,6 +905,74 @@ caloric { liquidHeatCapacity { pin ( { component water; table crcWaterCp; interp
   `props/heat/table02_water_liquid_cp_points`, `props/heat/table03_trial_state_refused`
   (EXPECTED-FAIL lesson), `steady/flowsheets/table05_sector_table_pins` (two
   sectors, one pin text, one file each).  Gate `check_table_laws`.  Theory Guide `sec:record-law-table`.
+
+### A measured MIXTURE table: many rows over T and w (C421 slice (8))
+
+A liquid MIXTURE's viscosity, thermal conductivity or surface tension may be a
+table of measured rows, the same `constant/experiments/<name>.dat` the one-row
+stated value uses, now with many rows.  Cite it from the property block:
+
+```
+transport { liquid { viscosity { measured {
+    royMethanolEthaneDiolViscosity { use method; interpolation ( logReciprocal monotoneCubic ); }
+} } } }
+// liquid thermalConductivity { measured { ... } } (column `lambda`, W/m/K)
+// interface surfaceTension  { measured { ... } }   (column `sigma`, N/m)
+```
+```
+// constant/experiments/royMethanolEthaneDiolViscosity.dat
+provenance { origin literature; kind measured; basis "..."; citation "..."; via "..."; sha256 "..."; }
+property liquidViscosity;  system ( methanol ethyleneGlycol );  solvent methanol;
+columns ( { name T; unit K; } { name P; unit kPa; } { name w[ethyleneGlycol]; unit -; } { name mu; unit Pa.s; } );
+data ( 293.15 101 0 0.0005814   298.15 101 0 0.0005436 ... );
+authorised { T ( 290 306 ); w[ethyleneGlycol] ( 0 0.80 ); reason "..."; }
+```
+
+- AXES: `T` and one `w[<c>]` per NON-SOLVENT component (mass fractions, unit `-`).
+  `P` is the pressure the source states: ONE value, not applied (the package's
+  three properties take (T, composition), so pressure is not an axis; a `P`
+  column that varies is refused by name).  Values must be positive.
+- A GRID: the rows must be a RECTANGULAR GRID over the varying axes (every
+  combination once).  A scattered set on two or more axes, or a repeated value, is
+  refused ("a RECTANGULAR GRID is required").
+- `interpolation`: ONE word for one varying axis, a list `( ... )` in the order of
+  the file's columns otherwise.  The words are the table law's: `linear`,
+  `logLinear`, `logReciprocal` (T only), `monotoneCubic` (needs 3 values on its
+  axis); a composition axis takes `linear` or `monotoneCubic` only.  Interpolated
+  ONE AXIS AT A TIME in that order (the first axis reduced over the grid, then the
+  next).  Required beside many rows; refused beside one.
+- THREE DOMAINS.  SUPPORT = the rows' span per axis (computed).  AUTHORISED = the
+  record's `box { ... }` (as the one-row records spell it) or `authorised { ... }`
+  -- ONE spelling per file, both refused -- and a `reason`, required when it is
+  wider than the support (in the dictionary entry, as the one-row records have it,
+  or in the record's box; not both).  Inside the support: interpolate.  Between
+  support and authorised: the nearest edge's value is HELD, announced once on the
+  console and the largest excursion restated in the end-of-run advisory
+  (category `table`, locus `measured table <name>`).  Outside the authorised box:
+  refused by name.  A one-row record behaves as before (its value over its box).
+- `provenance { kind measured | adopted | estimated; }` is REQUIRED beside more
+  than one row (R3): a measurement, a value its authors chose to use, or a
+  frozen correlation output.  A one-row record without it runs and says so once.
+  The liquid-properties table prints the word with the source; the origin is
+  `literature` on a row, `derived` between rows, `assumed` past the support or for
+  `kind adopted`.  The 38 one-row viscosity records of the shipped cases say
+  `kind adopted` (their own basis: "representative values as employed", "not a
+  measurement", "ASSUMED").
+- `ignores ( <components> ); ignoresReason "..."; ignoresUpTo <w>;` on the entry:
+  components of the liquid that are neither axes nor in `system` may be present up
+  to a mass fraction `<w>` of the liquid (REQUIRED with `ignores`); the table is
+  read at the composition renormalised over its set; announced once, listed under
+  `[hypothesis]` in the liquid-properties table; beyond the bound the run refuses.
+- The resolved view prints the record, kind, rows, each axis with its support and
+  interpolation, the authorised box, and what is ignored.
+- NOT in this slice: pressure as an axis; the liquid density's `measured` point
+  (its own reader and method order, `docs/ai/thermo.md` above); a scattered set;
+  a flow curve; a material.
+- Witnesses: `props/transport/measured01_methanol_glycol_viscosity_grid` (Roy et
+  al. 2009, 3 x 4), `props/transport/measured02_ethanol_water_surface_tension_grid`
+  (Raza et al. 2019, 2 x 5), `steady/hydraulics/pipe03_sucrose_syrup_measured` (a
+  pipe on a 6 x 4 table, Nain et al. 2013).  Gate `check_table_laws` arm (l).
+  Theory Guide `sec:measured-mixture-table`.
 
 ### Liquid mixing rules (`mixingRule`, C331)
 
