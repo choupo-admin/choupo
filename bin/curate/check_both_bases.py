@@ -74,6 +74,7 @@ Exit 0 = all hold.  Exit 1 = a named failure.
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -285,7 +286,7 @@ def lint_with_state(edit=None, case=CASE):
     """Copy the case, put converged/ in as 0/, optionally edit, then lint."""
     tmp = tempfile.mkdtemp(prefix="bothbases-")
     dst = os.path.join(tmp, os.path.basename(case))
-    shutil.copytree(case, dst)
+    case_records.copytree(case, dst)
     src = os.path.join(dst, "converged")
     zero = os.path.join(dst, "0")
     shutil.rmtree(zero, ignore_errors=True)

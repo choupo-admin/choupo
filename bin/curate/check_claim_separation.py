@@ -63,6 +63,7 @@ Exit 1 listing the failing arm."""
 import pathlib
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -157,7 +158,7 @@ def main() -> int:
     # -- A5: a MISSED criterion is not a refusal --------------------------
     with tempfile.TemporaryDirectory() as td:
         d = pathlib.Path(td) / "probe"
-        shutil.copytree(CASE, d)
+        case_records.copytree(CASE, d)
         pd = d / "system/propsDict"
         body = pd.read_text().replace("maxAAD  0.1 percent;",
                                       "maxAAD  0.000001 percent;", 1)
@@ -187,7 +188,7 @@ def main() -> int:
     #  no held-out validation".
     with tempfile.TemporaryDirectory() as td:
         dl = pathlib.Path(td) / "legacy"
-        shutil.copytree(LEGACY, dl)
+        case_records.copytree(LEGACY, dl)
         cd = dl / "system/controlDict"
         cd.write_text(re.sub(r"verbosity\s+\d+;", "verbosity 3;", cd.read_text(), count=1))
         rc_l, out_l = run(dl)

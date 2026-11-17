@@ -31,6 +31,7 @@ Exit 1 on any violated limit, with the numbers.
 import json
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -55,7 +56,7 @@ def run_case(case):
 
 def clone(tmp, name):
     dst = Path(tmp) / name
-    shutil.copytree(BASE, dst)
+    case_records.copytree(BASE, dst)
     (dst / "constant/propertyManifest").unlink()      # unsealed probe
     for d in ("converged", "reports"):
         shutil.rmtree(dst / d, ignore_errors=True)

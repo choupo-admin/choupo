@@ -109,6 +109,7 @@ S3 -- the 0.44 of the auto J_L changed to 0.45 (both occurrences):
 import json
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -184,7 +185,7 @@ def probe(case, edit, binary=PROPS, rel="system/propsDict"):
     d = Path(tempfile.mkdtemp(prefix="bd_probe_"))
     try:
         dst = d / "case"
-        shutil.copytree(case, dst)
+        case_records.copytree(case, dst)
         f = dst / rel
         f.write_text(edit(f.read_text()))
         return run(binary, dst)

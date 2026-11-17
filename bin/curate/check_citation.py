@@ -59,6 +59,7 @@ By-hand sabotages (run 2026-10-26):
 import json
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -239,7 +240,7 @@ def arm_e():
                           ("empty", 'citations ( "A real source." "" );'),
                           ("the old word", 'references ( "A real source." );')):
             case = Path(td) / tag
-            shutil.copytree(WITH_REFS, case)
+            case_records.copytree(WITH_REFS, case)
             cd = case / "system" / "controlDict"
             txt = cd.read_text(encoding="utf-8")
             txt = re.sub(r"^citations\s*\(.*?\)\s*;", body, txt, count=1,

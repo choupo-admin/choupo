@@ -64,6 +64,7 @@ import math
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -275,7 +276,7 @@ def recompute(case, op, diag, name):
 def probe(src, mutate, must, label):
     with tempfile.TemporaryDirectory() as tmp:
         d = Path(tmp) / src.name
-        shutil.copytree(src, d, ignore=shutil.ignore_patterns("expected", "*.csv", "curation"))
+        case_records.copytree(src, d, ignore=shutil.ignore_patterns("expected", "*.csv", "curation"))
         pd = d / "system/propsDict"
         pd.write_text(mutate(pd.read_text()))
         rc, out = run(d)

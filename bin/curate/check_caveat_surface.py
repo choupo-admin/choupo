@@ -114,6 +114,7 @@ import json
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -212,7 +213,7 @@ def run_copy(case, binary, outer=None):
     env = dict(os.environ, CHOUPO_HOME=str(ROOT))
     with tempfile.TemporaryDirectory(prefix="caveat_") as tmp:
         dst = Path(tmp) / Path(case).name
-        shutil.copytree(ROOT / case, dst)
+        case_records.copytree(ROOT / case, dst)
         if outer is not None:
             (dst / "system" / "outerDict").write_text(outer)
         p = subprocess.run([str(binary), "."], cwd=str(dst), env=env,

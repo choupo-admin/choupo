@@ -65,6 +65,7 @@ import math
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -134,7 +135,7 @@ def result_json(out: str):
 
 def fixture(tmp: Path, name: str, edit) -> Path:
     dst = tmp / name
-    shutil.copytree(CASE, dst, ignore=shutil.ignore_patterns("converged", "design", "reports",
+    case_records.copytree(CASE, dst, ignore=shutil.ignore_patterns("converged", "design", "reports",
                     "iterations", "log.*", "*.json"))
     edit(dst)
     return dst
