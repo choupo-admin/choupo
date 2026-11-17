@@ -15,7 +15,8 @@ again only when one of them changes (DEV.md 4c C394, decision 1).
                                                          stored labels or -
     bin/curate/suite_reuse.py case-plan <root> --explain how each case is keyed:
                                                          narrow or whole
-    bin/curate/suite_reuse.py migrate-keys [root]        re-key the stored curation
+    bin/curate/suite_reuse.py migrate-keys [root] [--harness-from REV]
+                                                         re-key the stored curation
                                                          verdicts to the current
                                                          key format (no run)
     bin/curate/suite_reuse.py verify-reads <case>...     strace the run and hold
@@ -94,10 +95,27 @@ included).  A new-format key carries KEY_FORMAT in its material, so it can
 never equal an old one; `migrate-keys` recognises a stored verdict by the
 OLD-format key of the tree in hand (case_keys(norm=False), used by nothing
 else) and rewrites it under the new key, keeping its date and commit and
-adding "migrated from key <old>".  Run it with the environment the sweep has
-(CHOUPO_HOME the tree's root: the key holds the data root's path).  The
-golden-band mode, which runTests exports, is read from golden_bands.py when
+adding "migrated from key <old>".  Run it with CHOUPO_HOME unset or the tree's
+root.  The golden-band mode, which runTests exports, is read from golden_bands.py when
 the variable is unset.
+
+NO ABSOLUTE PATH IS IN A CASE KEY (format 3).  The data root enters as the
+token DATA_ROOT (the files under it are hashed by content) and the constant/
+cascade directories by their path relative to the repository root (`above#N`
+for one above it), so two checkouts of one commit at two paths compute one
+key; what the engine objects hold is path-free too (no object contains the
+tree's path, and an object compiled at another path is byte-identical).  What
+still tells two trees apart, rightly: the build (an edit of code), data/local
+(ignored, read by the engine: a tree whose data/local differs re-runs the
+whole-tree cases, 307 of them), and the text of bin/runTests (the file itself
+is in a case's harness, so ANY edit of it re-keys every case).
+
+THE VERDICT STORE CAN BE SHARED.  CHOUPO_REUSE_STORE=<directory> moves ONLY the
+curation verdicts (the `cases/` files, content-keyed) there, for every tree
+that sets it; the stat-signature hash cache and the symbol cache stay per
+tree.  bin/runTests writes a verdict to a temp file in that directory and
+renames it (atomic: two sweeps on two trees may run at once), and migrate-keys
+does the same.  Default unchanged: build/reuse/cases in the tree.
 
 A content hash is cached in build/reuse/hashcache.tsv under the file's full
 stat signature -- size, mtime, ctime, inode, device -- so a key costs stat

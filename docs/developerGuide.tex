@@ -2106,7 +2106,13 @@ word stay); tables, the \code{expected} golden and a record the case's
 \file{propertyManifest} hash-verifies are hashed whole.  A change to a stamp no
 fit reads therefore moves no key (it had re-run all 1260 curation fits on
 2026-11-18); \code{suite\_reuse.py migrate-keys} re-keys the stored verdicts of
-the earlier format when they describe the tree in hand.  On an unchanged key the earlier PASS is
+the earlier formats when they describe the tree in hand.  No absolute path
+is in a case key, so two checkouts of one commit compute one key (what still
+differs rightly: the build, the private \file{data/local/}, and the text of
+\file{bin/runTests}, which any edit re-keys); and \code{CHOUPO\_REUSE\_STORE=DIR}
+moves the curation verdicts to a directory several trees share (written
+atomically, a temp file and a rename; the hash cache stays per tree), so a
+sweep in a fresh integration worktree reuses what another tree proved.  On an unchanged key the earlier PASS is
 printed \code{REUSED}, with the key and the date it was taken, and counted
 apart (\code{... / REUSED n} at the end of the tally line); a FAIL or a SKIP is
 never stored, so it always runs again.  Verdicts live under
