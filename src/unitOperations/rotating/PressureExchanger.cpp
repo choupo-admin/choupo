@@ -29,6 +29,7 @@ License
 #include "PressureExchanger.H"
 #include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
+#include "unitOperations/UnitTypedProperties.H"
 #include "core/Advisory.H"
 
 #include <cmath>
@@ -125,6 +126,10 @@ int PressureExchanger::solve(const DictPtr& dict,
 
     // ---- The three declared parameters, the drain and the source ----------
     auto oper = dict->subDict("operation");
+    //  A UNIT BLOCK DOES NOT CARRY A PROPERTY (DEV.md 4c C421, C398 A4): a
+    //  density, viscosity or diffusivity typed here, at any depth, is refused
+    //  BY NAME with the line to write in the property dictionary.
+    unitTypedProperties::refuse(oper, "pressureExchanger '" + (dict->name().empty() ? type() : dict->name()) + "': ", "pressure exchanger");
     const scalar eta = requiredFraction(oper, "efficiency", 0.0, true, 1.0, false,
         "the pressure-transfer (energy) efficiency, eta = (Q_HPout P_HPout"
         " + Q_LPout P_LPout) / (Q_HPin P_HPin + Q_LPin P_LPin), 95-98 % for the"
@@ -177,63 +182,28 @@ int PressureExchanger::solve(const DictPtr& dict,
         if (verbosity >= 2) std::cout << "  [pressureExchanger] " << b << "\n";
     }
 
-    // ---- Liquid molar volume of each inlet (the pump's reading) ----------
-    //   v = sum x_i Vliq_i over the components that carry one; a dissolved
-    //   ion or a salt with an aqueous bridge carries none and contributes no
-    //   volume (dilute-solution reading, ANNOUNCED); any other component
-    //   without Vliq refuses.  Q = F v, the volumetric flow the balances use.
-    scalar x_ions_total = 0.0;
-    std::string ions;
+    // ---- Liquid molar volume of each inlet --------------------------------
+    //   v = M / rho, rho the property door's liquid density of THAT inlet at
+    //   its own T, P and composition (DEV.md 4c C421) -- the pump's reading.
+    //   The stored 25 C molar volume of each component is no longer summed:
+    //   a dissolved salt's volume is in the solution's density, where it
+    //   belongs, and the dilute-solution reading the old sum announced is gone.
+    //   Q = F v, the volumetric flow the balances use.
     auto molarVolume = [&](const Feed& f) -> scalar
     {
-        scalar v = 0.0;
-        for (std::size_t i = 0; i < n; ++i)
-        {
-            if (!(f.z[i] > 0.0)) continue;
-            const scalar vi = thermo.comp(i).Vliq();
-            if (vi <= 0.0)
-            {
-                if (thermo.comp(i).hasAqueousMapping())
-                {
-                    x_ions_total += f.z[i];
-                    const std::string nm = thermo.comp(i).name();
-                    if (ions.find(nm) == std::string::npos)
-                        ions += (ions.empty() ? "" : " ") + nm;
-                    continue;
-                }
-                throw std::runtime_error(locus + ": component '"
-                    + thermo.comp(i).name() + "' in '" + f.name + "' has no"
-                    " liquid molar volume (Vliq) in its record -- the"
-                    " volumetric balances need one (or an aqueous bridge, for"
-                    " a dissolved solute, which then contributes no volume).");
-            }
-            v += f.z[i] * vi;
-        }
-        if (!(v > 0.0))
-            throw std::runtime_error(locus + ": '" + f.name + "' has no"
-                " component with a liquid molar volume -- no volume to"
-                " exchange.");
-        return v;                                   // m3/mol
+        scalar Mbar = 0.0;                                   // g/mol
+        for (std::size_t i = 0; i < n; ++i) Mbar += f.z[i] * thermo.comp(i).MW();
+        const liquidProperty::Consumer who{ type(), unitLabel };
+        liquidProperty::Request ask;
+        ask.thermo = &thermo; ask.T = f.T; ask.P = f.P; ask.x = f.z; ask.who = &who;
+        const scalar rho = liquidProperty::density(ask).value;   // kg/m3
+        if (!(rho > 0.0))
+            throw std::runtime_error(locus + ": '" + f.name + "' has no liquid"
+                " density -- no volume to exchange.");
+        return (Mbar * 1.0e-3) / rho;               // m3/mol
     };
     const scalar v_hp = molarVolume(hp);
     const scalar v_lp = molarVolume(lp);
-    sVector zBoth(n, 0.0);
-    for (std::size_t i = 0; i < n; ++i) zBoth[i] = hp.z[i] + lp.z[i];
-    for (const scalar v : { v_hp, v_lp })
-        PropertySourceLog::instance().useHere("liquidVolume", x_ions_total > 0.0
-            ? liquidSource::recordVliqIonsMassKept : liquidSource::recordVliqFlat,
-            liquidProperty::statedDatumTemperatures(thermo, zBoth), "",
-            "bypass", took(v), "not applied");
-    if (x_ions_total > 0.0)
-    {
-        char b[480];
-        std::snprintf(b, sizeof(b), "dissolved solute(s) (%s) carry no liquid"
-            " molar volume: each stream's volume is its solvent's"
-            " (dilute-solution reading, the pump's), and the two solutions'"
-            " volumes are taken additive", ions.c_str());
-        AdvisoryLog::instance().add("approximation", "info", locus, b);
-        if (verbosity >= 2) std::cout << "  [pressureExchanger] " << b << "\n";
-    }
     const scalar F_hp = hp.F * 1000.0, F_lp = lp.F * 1000.0;   // mol/s
     const scalar Q_HPin = F_hp * v_hp;                         // m3/s
     const scalar Q_LPin = F_lp * v_lp;
@@ -481,7 +451,7 @@ int PressureExchanger::solve(const DictPtr& dict,
 
 //  WHAT THE DEVICE ACCEPTS (DEV.md 4c C188 item 5; C192): a LIQUID on both
 //  ports, the aqueous solvent in both, every component carried into the
-//  volumetric balances -- a solute with no Vliq through its aqueous bridge.
+//  volumetric balances, on the property door's liquid density (C421).
 UnitAcceptance PressureExchanger::acceptance() const
 {
     UnitAcceptance a;
@@ -496,19 +466,19 @@ UnitAcceptance PressureExchanger::acceptance() const
     a.solvent.aqueousRequired = true;
     a.solvent.why = "the device is the seawater-RO energy-recovery device:"
         " both streams are aqueous solutions, the salinity it moves between"
-        " them is the solute mass fraction on the aqueous solvent, and a"
-        " dissolved solute's volume is taken as the solvent's.";
+        " them is the solute mass fraction on the aqueous solvent, and the"
+        " stream's volume is its liquid density's (the property door's).";
     a.solvent.remedy = "carry the aqueous solvent (water unless the case"
         " declares another) in BOTH feeds.";
     a.models.rule = UnitAcceptance::ModelsRule::everyComponent;
-    a.models.sentence = "every component the two streams carry, each with a"
-        " liquid molar volume or an aqueous bridge (a dissolved solute, whose"
-        " volume is then the solvent's)";
-    a.models.why = "the balances are volumetric and every component is"
-        " carried in them; one with neither a Vliq nor an aqueous bridge has"
-        " no volume to be displaced by and refuses at the solve.";
-    a.models.remedy = "give the component a liquid molar volume in its record,"
-        " or declare its aqueous bridge.";
+    a.models.sentence = "every component the two streams carry, in a liquid"
+        " whose density the property door can price at the inlet's state";
+    a.models.why = "the balances are volumetric on the liquid density of each"
+        " inlet, asked of the property door; a liquid it cannot price refuses"
+        " at the solve, by name.";
+    a.models.remedy = "give the components a liquid volume in their records,"
+        " or declare a density method or a measured record for the set in the"
+        " property dictionary.";
     return a;
 }
 

@@ -145,7 +145,7 @@
   permeate); 0/ therefore holds the converged state of a previous run and the
   case restarts from it in two iterations.  Changing a pressure or a flow
   moves the answer: re-seed from converged/ or tune the split fraction
-  (0.4791) to balance the exchanger.  The intake flow, the split, the two
+  (0.4740 since C421; 0.4791 before the exchanger priced its volumes from the property door) to balance the exchanger.  The intake flow, the split, the two
   pass pressures and the first-pass pressure were solved together for the
   product, 47.2 %, 87 % and a balanced exchanger.
 
@@ -211,7 +211,7 @@ units
         type        splitter;
         in          feed1;
         outputs     ( toHPpump  toPX );
-        operation   { fractions ( 0.479078  0.520922 ); }
+        operation   { fractions ( 0.473983  0.526017 ); }   // RETUNED (DEV.md 4c C421): the exchanger balanced on the door's liquid densities of each inlet, not on the 25 C volume sums (was 0.479078 0.520922)
     }
     {
         name        HPpump;
