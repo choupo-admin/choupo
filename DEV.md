@@ -4338,6 +4338,46 @@ accepts today, and that is a policy call.
 > fails.  First polymer anchor, when a case asks: the hydrolyser of a
 > ring-opening polyamide from the textbook (five segments, six species,
 > fifteen reactions with their constants; model outputs, not measurements).
+>
+> **C428 (Vitor, 2026-11-18, relayed from the reviewing session at his
+> request: a "Choose a solvent" lens in the Explorer replacing the Hildebrand
+> lens "Cohesion of the pure liquids", which answers no question -- "Vitor
+> did not know what it is for, and that is the defect" -- plus the Hansen
+> triples curated from primary sources).**  A COMMISSION; the pedagogy is
+> his.  The screen, from the user's task "I have this substance; which
+> solvent or blend dissolves it?": the target and candidate solvents; the
+> Teas triangle with pure solvents as points, binary blends as lines, the
+> target as a marker, a blend the engine finds two-phase drawn as a labelled
+> gap; a table ranked by RED with each blend's best proportion and the
+> observed outcome where the case carries one; the Hildebrand delta as the
+> check dD^2+dP^2+dH^2 = delta^2 and as the first rung of the lesson, not as
+> a lens; later a second view, the real solubility from a solid-liquid flash
+> (UNIFAC, COSMO-SAC or a fitted NRTL), teaching the ladder Hansen to
+> screen, a predictive gamma for the short list, a fitted pair for the
+> choice.  The engine already has every piece (`solubilityParameter`, the
+> `hansen {}` block, `hansenMixture` with its two-phase refusal).  WEIGHED
+> AGAINST THE ARCHITECTURE, MEASURED: it needs no new concept, and it
+> CONFIRMS two rules of the day's design record.  (1) ONE HOME: the
+> catalogue holds no Hansen triple; 21 case records carry one, and acetone,
+> n-hexane, nitromethane and polystyrene are typed identically in
+> solvent02 and solvent03 (the same thesis rows) -- two homes of one fact,
+> exactly what C421 removes.  A solvent's triple is an arity-1 fact with a
+> model name: a `hansen {}` block on the catalogue's component record (the
+> three-tier rule's second tier), read at the page, with Tref, origin and
+> source.  (2) A TARGET'S SPHERE IS A SAMPLE'S BEHAVIOUR: the stored fact is
+> the observed rows (solvent, dissolves or not) and the centre and R0 are a
+> FIT of them, a derived view with its residual (rule R1 of
+> `measured-facts-materials-and-flow-curves.md`); solvent03 already carries
+> such rows.  A polymer's triple measured by its author stays a case fact
+> of that sample.  DECIDED, ORDER: (a) the catalogue triples from Hansen's
+> 1969 paper (filed today, `Articles/Thermodynamics-PhaseEquilibria/
+> hansen1969-universality-solubility-parameter.pdf`, its DOI now confirmed
+> by the reviewing session as the file's name) -- this one is C421 work and
+> runs inside it: the four duplicated solvents become references; (b) the
+> Stefanis-Panayiotou 2008 group method as a CURATION tool writing flagged
+> estimates under `data/groupEstimative/`, never a runtime resolver; (c) the
+> lens and (d) the solubility view after C421, as new features.  The two
+> no-grant compilations named stay a cross-check only (licence policy).
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
