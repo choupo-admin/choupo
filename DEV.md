@@ -3989,6 +3989,61 @@ accepts today, and that is a policy call.
 > is a letter to a reviewer, and what the review returns is weighed by its
 > content (an AI's agreement is not a validation).  If it proves a good
 > overview it becomes the opening of `docs/architecture/property-architecture.md`.
+>
+> **C424: THE OUTSIDE REVIEW OF C423, WEIGHED POINT BY POINT (2026-11-18;
+> Vitor brought it as an opinion, "tu e que decides").  It read the letter,
+> not the code; each point was measured against the tree before it was
+> accepted.**  (1) MODEL BOUNDARIES: its demand is already the contract
+> (`docs/ai/energy.md` section 7: hold (T,P,z), H jumps, the step printed as
+> a model-inconsistency quantity, never used to close the balance; the one
+> case with such a step stays pinned OPEN in the energy gate).  The letter
+> said only "reported", which undersold it.  ACCEPTED as new work: the
+> distinction it draws between a DATUM offset and a MODEL difference, and
+> its example -- IF97 lives on the triple-point datum
+> (`ThermoPackage.cpp:577`) inside a project on the elements datum; whether
+> a stream crossing from an IF97 water package to a reacting package is
+> bridged has NOT been verified.  To measure, by a two-sector probe.
+> (2) COHERENCE OF THE BLOCKS: H^E is deliberately NOT derived from a
+> VLE-fitted G^E (`ThermoPackage.cpp:1750`: added only when every pair
+> carries a calorimetric refit; otherwise an announced omission) -- the
+> reviewer's identity is right, and the choice stands because a
+> VLE-regressed temperature dependence gives poor heats of mixing.
+> ACCEPTED: the dictionary does not say WHO governs each calculation when
+> `pureFluids` sits beside an `equilibrium` block; the resolved view must
+> print it (equilibrium, enthalpy, density, each with its governor).
+> (3) IDENTITY: ACCEPTED, and it is the best point.  One pair may have
+> several legitimate parameter sets (VLE or LLE, other sources, other
+> temperature forms); the catalogue holds one file per pair and model, so a
+> second set can only live as a case variation.  The remedy mirrors what a
+> component record already does for its laws (`preferred` + named sets):
+> named sets inside the pair record, a case naming the set.  The letter's
+> question about triples was naive: Pitzer theta and psi are already in the
+> tree.  And `Cl` the ion under the atom's name, held by 33 `distinctFrom`
+> declarations, is an identity debt, not a design: the ion components are
+> renamed.  Both queued after the door slices of C421.  (4)
+> REPRODUCIBILITY: partly there (git holds every hashed content; `--seal
+> <case> --to <dir>` exports the records a run used).  NOT VERIFIED: that
+> the case a student downloads carries them.  To measure.  (5) ONE FORMAT,
+> SEVERAL INTERFACES: agreed, and already decided (rheology is not a
+> function of (T,P,x)).  ACCEPTED: the key `measured` names a value the
+> Schulz record itself calls "not a measurement"; the experiments record
+> gains a required kind (measured | adopted by the authors | estimated),
+> in the design of item (7).  (6) THE BOX IS NOT THE SUPPORT: ACCEPTED in
+> full, into the design of item (7): the domain the points support (their
+> hull), the domain the case authorises (the box, with a reason when
+> wider), and the interpolation rule are three things, printed as three.
+> (7) REFUSAL: a calculation already asks only for the slice it needs.
+> ACCEPTED as a candidate after C421: a domain refusal at a solver's TRIAL
+> state returned as a failed step the solver may shorten, never at an
+> accepted state (today `table03_trial_state_refused` is a lesson that the
+> run ends).  SCHEMA VERSION: the reviewer advises against 2 -> 1 because
+> one number would name two grammars.  MEASURED: no file of these two
+> record types was ever stamped 1, so there is no collision; Vitor's order
+> stands for the tree.  But the measurement found what the architect's own
+> decision had missed: release Choupo-2608 ships 396 dictionaries stamped
+> 2 in today's grammar, and REFUSING 2 would break every case a student
+> holds.  CORRECTED: 1 in the tree (gated); a 2 on an older file runs and
+> is announced once, with the line to write.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
