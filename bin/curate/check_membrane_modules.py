@@ -114,6 +114,7 @@ import json
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -283,7 +284,7 @@ def copy_case(src, dst):
     #  The sealed manifest is the donor's, and this is not the donor (the same
     #  move as check_feed_thermal_state's and check_evaporator_chest_phase's
     #  probe builders).
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns("converged", "log.*", "expected",
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns("converged", "log.*", "expected",
                                                             "reports", "design",
                                                             "propertyManifest"))
 

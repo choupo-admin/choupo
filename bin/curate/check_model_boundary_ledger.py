@@ -114,6 +114,7 @@ Exit 1 listing failures."""
 import json
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -129,7 +130,7 @@ failures = []
 
 def fresh(tmp: Path, tag: str, src: Path) -> Path:
     d = tmp / tag
-    shutil.copytree(src, d, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, d, ignore=shutil.ignore_patterns(
         "converged", "reports", "log.*", "resultJson*"))
     return d
 

@@ -98,6 +98,7 @@ import json
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -215,7 +216,7 @@ def snapshot(out):
 
 
 def copy_case(src, dst):
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
         "converged", "log.*", "expected", "reports", "design", "propertyManifest"))
 
 

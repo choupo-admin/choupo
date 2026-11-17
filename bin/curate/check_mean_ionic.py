@@ -91,6 +91,7 @@ import math
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -233,7 +234,7 @@ def probe(mutate, label, must_contain):
     d = tempfile.mkdtemp(prefix="meanionic_")
     dst = os.path.join(d, "case")
     try:
-        shutil.copytree(CASE, dst)
+        case_records.copytree(CASE, dst)
         p = os.path.join(dst, "system", "propsDict")
         s = open(p, encoding="utf-8").read()
         open(p, "w", encoding="utf-8").write(mutate(s))

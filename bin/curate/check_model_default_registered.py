@@ -151,6 +151,7 @@ it, so the specific numbers live in this docstring and the message points here.
 """
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -282,7 +283,7 @@ def application_of(case_dir):
 def run_chain_case(tmp, label, case, pattern, word, tag):
     """Copy the case, swap the word, run it.  Returns (rc, output)."""
     dst = Path(tmp) / (Path(case).name + "-" + tag)
-    shutil.copytree(ROOT / case, dst)
+    case_records.copytree(ROOT / case, dst)
     fd = dst / "system" / "flowsheetDict"
     text = fd.read_text(encoding="utf-8")
     new, n = re.subn(pattern, lambda m: m.group(1) + word + m.group(2), text,

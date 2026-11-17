@@ -85,6 +85,7 @@ import json
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -168,7 +169,7 @@ def run(case):
 
 
 def copy_case(src, dst):
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
         "converged", "log.*", "expected", "reports", "design", "propertyManifest"))
 
 
@@ -417,7 +418,7 @@ def main():
                 ("module+spacer", ROOT / "tutorials/steady/membranes/membrane28_water_permeance_from_sheets",
                  ("NF270-4040.dat", "SW30HR-380.dat", "Spacer-28mil.dat"))):
             sd = tmp / ("seal_" + label.replace("+", "_"))
-            shutil.copytree(src, sd, ignore=shutil.ignore_patterns(
+            case_records.copytree(src, sd, ignore=shutil.ignore_patterns(
                 "converged", "log.*", "reports", "design", "propertyManifest"))
             #  `parameters` too (C402): a membrane case's density is the package's, and a sealed case's water
             #  carries its reference equation (parameters/Helmholtz/IAPWS95.dat); the importer brings it back,
