@@ -3710,6 +3710,30 @@ accepts today, and that is a policy call.
 > probes in one builder's lane, in batches of about ten, the kit growing
 > only by what a batch needs (reading a result file, a positive control, a
 > run with arguments).
+>
+> **C420, THE PARETO CUT (Vitor, 2026-11-17: "pelo que vejo nao ha forma
+> Pareto de melhorar isto sem perder eficiencias"; then: "quero em primeiro
+> lugar seguranca em vez de rapidez, mas era bom ter o melhor dos dois
+> mundos").**  MEASURED: the engine is 308 738 lines, the gates 149 729: a
+> test suite half the size of the code is an ordinary proportion, the volume
+> is not the defect.  168 gates still copy a case with their own `copytree`
+> and import neither `case_records` nor `gatekit`: that is the plumbing that
+> broke 37 gates on 11-17.  DECIDED, SAFETY FIRST: (1) the conversion
+> campaign STOPS after batch 2 (in flight; it confirms the data format).  No
+> existing gate is rewritten for the sake of its line count; a gate is
+> rewritten only when it has failed repeatedly for reasons that are not its
+> guarantee, one at a time.  (2) ONE SLICE: those 168 gates take their probe
+> copy from `gatekit.probe_copy` -- a substitution of the copy call, nothing
+> else in the gate changes, the claim line byte-identical before and after,
+> each gate's exit code and output captured on both sides.  (3) NEW refusal
+> and announcement probes are born as data under the runner (rule 4e (4)
+> still applies: the real defect named in the group's header).  (4) THE
+> PROOF OF THE SLICE is the strongest the project has, taken once, alone,
+> overnight: `bin/runTests --nightly` (the full sweep with the gate
+> self-test's sabotage arms and gates-judge-tracked), so every ported gate
+> is shown both green on the tree and red under its sabotage.  Nothing of
+> rule 4b is weakened at any step; speed comes from the tiers, the pool and
+> the reuse already landed, never from asserting less.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
