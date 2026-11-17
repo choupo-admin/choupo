@@ -136,18 +136,34 @@ describe("the two witnesses — bundled, and one system", () => {
 
   it("their SEALED records are byte-identical, not merely equivalent", () => {
     // The declarations agreeing is not the same claim as the records
-    // resolving identically.  Both witnesses ship their own sealed copies;
-    // compare every one of them.
+    // resolving identically.  Since C413 a case REFERENCES the catalogue: it
+    // carries no copy of a record, and its constant/propertyManifest pins
+    // every record the run consumed by the record's computational hash.  Two
+    // witnesses that pin the same records under the same hashes resolve them
+    // byte-identically (a hash is the record), so compare every pin (and any
+    // held local copy, if one is ever declared again).
     const map = rawOf(MAP_WITNESS), col = rawOf(COLUMN_WITNESS);
-    const sealed = (r: { [k: string]: string }) => Object.keys(r)
+    const pins = (r: { [k: string]: string }) => {
+      const m = r["constant/propertyManifest"] ?? "";
+      return [...m.matchAll(/^\s*"((?:components|parameters|chemistry|species|assets)\/[^"]*)"\s+"([^"]+)"\s*;/gm)]
+        .map((x) => `${x[1]} ${x[2]}`).sort();
+    };
+    const records = (r: { [k: string]: string }) => Object.keys(r)
       .filter((k) => k.startsWith("constant/components/")
         || k.startsWith("constant/parameters/"))
       .sort();
-    const keys = sealed(map);
-    expect(keys.length, "the map witness ships no sealed records — this test "
+    const keys = pins(map);
+    expect(keys.length, "the map witness pins no catalogue record — this test "
       + "would then be comparing two empty sets").toBeGreaterThan(0);
-    expect(keys).toEqual(sealed(col));
-    for (const k of keys)
+    expect(keys.some((k) => k.startsWith("components/")),
+      "the map witness resolves no component record").toBe(true);
+    // The pins that matter to the claim: the components and the activity
+    // model's parameters; the column additionally pins the chemistry file
+    // its (unused here) aqueous block names.
+    const same = (x: string) => !x.startsWith("chemistry/");
+    expect(keys.filter(same)).toEqual(pins(col).filter(same));
+    expect(records(map)).toEqual(records(col));
+    for (const k of records(map))
       expect(map[k], `sealed record '${k}' differs between the witnesses`)
         .toBe(col[k]);
   });

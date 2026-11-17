@@ -34,6 +34,7 @@ import {
 } from "../src/ui/methods/PumpSystemTool.js";
 import { PUMP_LIMITS, PUMP_STEPS } from "../src/ui/methods/pumpSystemLesson.js";
 import { witnessOutput } from "./witnessRead.js";
+import { readCaseRecord } from "./caseRecordRead.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = join(HERE, "..", "..");
@@ -331,7 +332,7 @@ describe("the claims are true of the run the page draws", () => {
     //  publishes it through its head, rho = dp / (head·g), and v = M/rho.
     const mw = Number(
       /^\s*MW\s+([0-9.eE+-]+)\s*;/m.exec(
-        readFileSync(join(WITNESS, "constant/components/water.dat"), "utf-8"),
+        readCaseRecord(join(WITNESS, "constant/components/water.dat")),
       )![1]);
     const rho = col("pump01.dP")[0]! / (col("pump01.head_m")[0]! * 9.80665);
     expect(rho).toBeGreaterThan(997.0);
