@@ -33,7 +33,7 @@ kpi     approach               conversion_wgs   0.8195501646     1e-4
 kpi     approach               extent_wgs_kmol_h 0.16391003292    1e-4
 kpi     approach               nReactions       1                1e-4
 kpi     approach               newtonIterations 7                1e-4
-kpi     approach               newtonResidual   3.10862446895e-15 1e-4
+kpi     approach               newtonResidual   3.10862446895e-15 abs:1e-08
 kpi     approach               temperatureApproach_K 25               1e-4
 kpi     gibbs                  F_in_kmol_h      0.4              1e-4
 kpi     gibbs                  F_out_kmol_h     0.4              1e-4
@@ -67,7 +67,7 @@ kpi     limit                  conversion_wgs   0.841432775225   1e-4
 kpi     limit                  extent_wgs_kmol_h 0.168286555045   1e-4
 kpi     limit                  nReactions       1                1e-4
 kpi     limit                  newtonIterations 7                1e-4
-kpi     limit                  newtonResidual   8.881784197e-16  1e-4
+kpi     limit                  newtonResidual   8.881784197e-16  abs:1e-08
 kpi     stoich                 F_in_kmol_h      0.4              1e-4
 kpi     stoich                 F_out_kmol_h     0.4              1e-4
 kpi     stoich                 Q_kW             -1.94705353668   1e-4

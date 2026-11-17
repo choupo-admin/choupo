@@ -135,7 +135,7 @@ kpi     RO                     feedFlow_elem5   0.00134956883881 1e-4
 kpi     RO                     feedFlow_elem6   0.00129832931209 1e-4
 kpi     RO                     feedFlow_elem7   0.00126600855763 1e-4
 kpi     RO                     hydraulicDiameter 0.0009144        1e-4
-kpi     RO                     mass_closure_rel 1.88264683766e-16 1e-4
+kpi     RO                     mass_closure_rel 1.88264683766e-16 abs:1e-09
 kpi     RO                     recovery_elem1   0.195757235376   1e-4
 kpi     RO                     recovery_elem2   0.312023888548   1e-4
 kpi     RO                     recovery_elem3   0.378396083662   1e-4
@@ -143,7 +143,7 @@ kpi     RO                     recovery_elem4   0.416150218481   1e-4
 kpi     RO                     recovery_elem5   0.438317436349   1e-4
 kpi     RO                     recovery_elem6   0.452300024632   1e-4
 kpi     RO                     recovery_elem7   0.4620106494     1e-4
-kpi     RO                     solute_closure_rel 9.642493915e-16  1e-4
+kpi     RO                     solute_closure_rel 9.642493915e-16  abs:1e-09
 kpi     RO                     u_crossflow_inlet 0.196040237113   1e-4
 kpi     RO                     vessels          2                1e-4
 kpi     RO                     water_recovery   0.4620106494     1e-4
