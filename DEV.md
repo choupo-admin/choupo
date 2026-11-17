@@ -4193,6 +4193,92 @@ accepts today, and that is a policy call.
 > several choices, foreign-language user models inside a property route,
 > interfaces to closed programs, logic blocks, predictive control, the
 > refinery suites.
+>
+> **THE DESIGN RECORD IS WRITTEN AND RULED (2026-11-18, on Vitor's "ja estou
+> a ficar descansado ... Avanca!"):
+> `docs/design/measured-facts-materials-and-flow-curves.md`.**  One
+> experiment record (R1 the raw rows are the stored fact and a fit is a
+> derived view; R2 support, authorised domain and interpolation are three
+> things, printed as three; R3 a required kind measured / adopted /
+> estimated; R4 the sample's conditions are part of its identity; R5 a unit
+> and a basis on every column); four kinds of subject (fluid property, flow
+> curve, material, sample behaviour); R6 a sample's test data are named by
+> the unit and answered by one service, never typed in the unit; the door in
+> three forms; R7-R10 the flow curve is the fluid's, the shear rate the
+> unit's, the impeller's constant and power curve an asset record's, the
+> shaft power a work stream, and what is refused; the material M1-M7, of
+> which M7 (no attribute a unit edits; a char is another material) and the
+> first witness are PUT TO VITOR.  The two outside-review points accepted in
+> C424 (the word `measured`, the box against the support) are in it as R3
+> and R2.  Order of building in its section 7; step 1 (tables under
+> `measured`) is C421 (7) and unblocks the spray dryer's and the exchangers'
+> door slices.
+>
+> **C427 (Vitor, 2026-11-18: "achas que se pode ja preparar a arquitetura de
+> polimeros?  Punhas um caso ou dois, adaptavas o Explorer, criavas
+> classificacoes dos componentes e ficava ja tudo pronto!  Mas tu e que
+> sabes melhor o que fazer").**  DECIDED: YES TO THE ARCHITECTURE NOW, NO TO
+> THE POLYMER PHYSICS NOW.  The reason is one the day's own design exposes:
+> the material (C425, M2) makes a stream carry mass flows beside its molar
+> part; a chain-growth polymer needs it to carry moment flows; the size
+> distribution is already carried.  These are ONE concept, and designing the
+> stream's extension for the material alone would mean opening the stream
+> twice.  So the design record gains, before any spike: (1) CARRIED
+> QUANTITIES -- extensive, conserved quantities a stream carries beside its
+> molar flows, each attached to a carrier, each with a declared law (they
+> add on mixing, split with their carrier, change only by a declared rate
+> inside a unit that solves their balance); a quantity with no such law is
+> not carried (which is why moisture is a component and an analysis is fixed
+> data: M7 stands, and is now the consequence of a rule instead of a
+> preference); (2) THE KINDS OF COMPONENT, one closed vocabulary the
+> records, the engine's acceptance rules and the Explorer all read:
+> molecular species, aqueous species, crystalline solid, material, segment,
+> polymer, oligomer -- today the tree has only `role` and scattered habits.
+> The spike on the stream is then taken ONCE, with a material and with a
+> polymer's zeroth, first and second moments as its two subjects.  NOT NOW:
+> polymer property models, polymer phase equilibrium, the kinetic schemes;
+> they wait for a case that asks, with the three notes being read today
+> (polymer characterisation and properties, a step-growth textbook) as
+> their foundation.  A first polymer witness is chosen only after those
+> notes are in.  The Explorer follows the vocabulary when records of the
+> new kinds exist, not before.
+>
+> **C427, WRITTEN (2026-11-18): sections 5b and 5c of
+> `docs/design/measured-facts-materials-and-flow-curves.md`, ruled.**  Three
+> more notes were read first (the reference manuals' polymer
+> characterisation and property volumes; a textbook of step-growth process
+> modelling; the newer edition of the property-methods volume).  WHAT THEY
+> CHANGED: the textbook uses NO moments for step growth -- segments are
+> species, the chain count is half the end segments -- and says in its own
+> words that this route cannot give the weight average; so step-growth
+> polymers need NOTHING carried, only the kind `segment`, and the carried
+> quantity is needed for the second moment and for chain growth alone: the
+> concept is real and narrower than assumed in the morning.  RULED: Q1 a
+> carried quantity is extensive, conserved, attached to a carrier, of a
+> closed list of kinds (a material's mass flow, a size distribution, a
+> chain-length moment); Q2 its law belongs to its kind -- add on mixing,
+> divide with the carrier unless the unit models its fractionation, change
+> only by a declared rate in a unit that solves its balance, and a unit
+> that changes a carrier with no rate for what it carries REFUSES; Q3 what
+> has no such law is not carried (M7 is its consequence); Q4 a polymer's
+> mass and atoms live in its segments as species, the first moment is
+> derived, there are no apparent moles; Q5-Q7 what a polymer carries when it
+> carries, the smallest honest chain-growth model (the reactions that break
+> the three-moment closure refused by name), a chain average asked through
+> the door; Q8 ONE spike, two subjects, written criteria.  5c: the kinds of
+> component as one closed vocabulary (molecular, pseudo, crystalline,
+> segment, material); a polymer is a declaration of the case naming its
+> segments, not a record.  NOT TAKEN from the reference: a fact stored
+> twice (apparent moles and first moment), several ways to supply one
+> attribute with the first winning in silence, a column that ignores
+> attributes, a missing group parameter dropped without a word.  Also from
+> the day's reading, added to C426's small list: the symmetric or
+> unsymmetric reference state of the electrolyte model declared by the case
+> (both are already derived in the engine; one is exposed), and a guide
+> page on where each of the two composition bases of an electrolyte stream
+> fails.  First polymer anchor, when a case asks: the hydrolyser of a
+> ring-opening polyamide from the textbook (five segments, six species,
+> fifteen reactions with their constants; model outputs, not measurements).
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
