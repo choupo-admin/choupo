@@ -582,7 +582,7 @@ export function chromCaseFiles(s: EngineSpec): Record<string, string> {
     ].join("\n"),
     "constant/thermoPhysPropDict": [
       "recordType    thermophysicalPropertySystem;",
-      "schemaVersion 2;",
+      "schemaVersion 1;",
       `components    ( ${a} ${b} ${CHROM_CARRIER} );`,
       "equilibrium { formulation gammaPhi; liquid { activityModel ideal; standardState pureLiquid; } "
         + "vapour { fugacityModel idealGas; } }",

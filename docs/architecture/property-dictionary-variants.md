@@ -13,7 +13,7 @@ The proposed contract uses blocks with a physical meaning:
 
 ```text
 recordType thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components      ( ... );
 equilibrium     { ... }   // fugacidade, atividade e equilibrio de fases
@@ -72,7 +72,7 @@ fugacityModel
 
 ```text
 recordType thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components ( benzene toluene );
 
 equilibrium
@@ -389,7 +389,7 @@ references and interactions live in their own records, not in special components
 
 ```text
 recordType thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components ( water );
 
 aqueousProperties
@@ -767,7 +767,7 @@ which saturation indices can be computed.
 
 ```text
 recordType thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components ( water );
 
@@ -899,7 +899,7 @@ the hydrate reaction's quotient.
 
 ```text
 recordType thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components ( water LiCl );
 

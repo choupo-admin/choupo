@@ -260,7 +260,7 @@ export function evidenceRunPlan(pair: [string, string], datasets: EvidenceDatase
     propsDict: { operations },
     thermoPackage: {
       recordType: "thermophysicalPropertySystem",
-      schemaVersion: 2,
+      schemaVersion: 1,
       components: [xComponent, partner],
       equilibrium: {
         formulation: "gammaPhi",

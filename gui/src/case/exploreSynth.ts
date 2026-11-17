@@ -274,7 +274,7 @@ export function synthesizeExploreCase(spec: ExploreSpec): CaseFiles {
     };
     const thermoPackage: JsonDict = {
       recordType: "thermophysicalPropertySystem",
-      schemaVersion: 2,
+      schemaVersion: 1,
       components: ["water"], // placeholder; the estimate reads its groups from the op
       equilibrium: {
         formulation: "gammaPhi",
@@ -325,7 +325,7 @@ export function synthesizeExploreCase(spec: ExploreSpec): CaseFiles {
       // The speciation stack reads the aqueous surface as physics; the
       // activity model is declared here, exactly as the corpus cases do.
       recordType: "thermophysicalPropertySystem",
-      schemaVersion: 2,
+      schemaVersion: 1,
       components: [...spec.components],
       aqueousProperties: {
         solvent: "water",
@@ -541,7 +541,7 @@ export function synthesizeExploreCase(spec: ExploreSpec): CaseFiles {
   const thermoPackage: JsonDict = (spec.ternary?.mode === "lle" || spec.binaryLle || spec.vleTwoLiquid)
     ? {
         recordType: "thermophysicalPropertySystem",
-        schemaVersion: 2,
+        schemaVersion: 1,
         components: [...spec.components],
         equilibrium: {
           formulation: "gammaGamma",
@@ -557,7 +557,7 @@ export function synthesizeExploreCase(spec: ExploreSpec): CaseFiles {
         // The speciate family reads the aqueous surface as physics; the op's
         // own activityModel knob (davies | pitzer) selects the engine.
         recordType: "thermophysicalPropertySystem",
-        schemaVersion: 2,
+        schemaVersion: 1,
         components: [...spec.components],
         aqueousProperties: {
           solvent: "water",
@@ -566,7 +566,7 @@ export function synthesizeExploreCase(spec: ExploreSpec): CaseFiles {
       }
     : {
         recordType: "thermophysicalPropertySystem",
-        schemaVersion: 2,
+        schemaVersion: 1,
         components: [...spec.components],
         equilibrium: {
           formulation: "gammaPhi",

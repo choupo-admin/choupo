@@ -18,7 +18,7 @@
   The unit tests below pin the four states on hand-built fixtures, which is
   worth having.  But the defect this module exists to end lived for months
   precisely because no test ever asked the reader about a REAL case: every
-  shipped dict is schemaVersion 2, the reader looked for v1 keys, and a
+  shipped dict is schemaVersion 1, the reader looked for v1 keys, and a
   fixture written by the same hand that wrote the reader would have agreed
   with it.
 
@@ -40,7 +40,7 @@ import { TUTORIALS } from "../src/cases/tutorials.js";
 describe("caseThermo: four states, none of them a guess", () => {
   it("reads the v2 gammaPhi world -- a declared model is DECLARED", () => {
     const t = caseThermo({
-      schemaVersion: 2,
+      schemaVersion: 1,
       components: ["benzene", "toluene"],
       equilibrium: {
         formulation: "gammaPhi",
@@ -48,7 +48,7 @@ describe("caseThermo: four states, none of them a guess", () => {
         vapour: { fugacityModel: "idealGas" },
       },
     });
-    expect(t.schemaVersion).toBe(2);
+    expect(t.schemaVersion).toBe(1);
     expect(t.formulation).toBe("gammaPhi");
     expect(t.liquid.state).toBe("declared");
     expect(t.liquid.model).toBe("NRTL");
@@ -64,7 +64,7 @@ describe("caseThermo: four states, none of them a guess", () => {
     //  attached: that the author declared nothing.  A reader cannot then
     //  tell a deliberate ideal assumption from a forgotten one.
     const t = caseThermo({
-      schemaVersion: 2,
+      schemaVersion: 1,
       equilibrium: {
         formulation: "gammaPhi",
         liquid: { activityModel: { model: "ideal" } },
@@ -80,7 +80,7 @@ describe("caseThermo: four states, none of them a guess", () => {
     //  solutes the infinite-dilution rung, so the liquid's model word is
     //  `solutionModel`, not `activityModel`.
     const t = caseThermo({
-      schemaVersion: 2,
+      schemaVersion: 1,
       equilibrium: {
         formulation: "diluteSolution",
         liquid: {
@@ -102,7 +102,7 @@ describe("caseThermo: four states, none of them a guess", () => {
 
   it("reads a two-liquid case as one entry per phase", () => {
     const t = caseThermo({
-      schemaVersion: 2,
+      schemaVersion: 1,
       equilibrium: {
         formulation: "gammaGamma",
         liquidPhases: [
@@ -119,7 +119,7 @@ describe("caseThermo: four states, none of them a guess", () => {
 
   it("accepts the bare-word form as well as the block form", () => {
     const t = caseThermo({
-      schemaVersion: 2,
+      schemaVersion: 1,
       equilibrium: { liquid: { activityModel: "davies" } },
     });
     expect(t.liquid.model).toBe("davies");
@@ -128,7 +128,7 @@ describe("caseThermo: four states, none of them a guess", () => {
   it("a phase block with no model word is noModel, and names the "
     + "formulation that settles it", () => {
     const t = caseThermo({
-      schemaVersion: 2,
+      schemaVersion: 1,
       equilibrium: { formulation: "gammaPhi", liquid: { solvent: { component: "water" } } },
     });
     expect(t.liquid.state).toBe("noModel");
@@ -139,7 +139,7 @@ describe("caseThermo: four states, none of them a guess", () => {
 
   it("REFUSES a file with no equilibrium block instead of reporting an "
     + "absence", () => {
-    const t = caseThermo({ schemaVersion: 2, components: ["water"] });
+    const t = caseThermo({ schemaVersion: 1, components: ["water"] });
     expect(t.unreadableReason).toBeTruthy();
     expect(t.unreadableReason).toContain("no equilibrium block");
     expect(t.liquid.state).toBe("unreadable");

@@ -173,7 +173,7 @@ Three shapes of question dominate.  Use this rough decision tree:
 
    ```
    recordType     thermophysicalPropertySystem;
-   schemaVersion  2;
+   schemaVersion  1;
    components     ( benzene toluene );
    equilibrium
    {
@@ -203,7 +203,7 @@ with nothing failing.  The live inventory is `generated/releaseInventory.json`
 Big changes, recent first:
 
 - The v2 case grammar (2026-07-17): `constant/thermoPhysPropDict`
-  (`recordType thermophysicalPropertySystem; schemaVersion 2;`) declares
+  (`recordType thermophysicalPropertySystem; schemaVersion 1;`) declares
   the whole system inline — the five VLE worlds selected by
   `equilibrium.formulation` (`gammaPhi` / `gammaGamma` / `diluteSolution` /
   `phiPhi` / `electrolyteGammaPhi`), per-group standard states, caloric routes, and

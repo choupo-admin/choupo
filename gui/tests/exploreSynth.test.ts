@@ -65,7 +65,7 @@ describe("Property Explorer synthesizer", () => {
       f.thermoPackage as Record<string, unknown>;
     const def = tp(synthesizeExploreCase(spec));
     expect(def["recordType"]).toBe("thermophysicalPropertySystem");
-    expect(def["schemaVersion"]).toBe(2);
+    expect(def["schemaVersion"]).toBe(1);
     const eq = def["equilibrium"] as Record<string, Record<string, unknown> | string>;
     expect(eq["formulation"]).toBe("gammaPhi");
     expect((eq["liquid"] as Record<string, unknown>)["activityModel"])

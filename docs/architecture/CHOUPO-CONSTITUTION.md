@@ -33,7 +33,7 @@ case/
 │   └── postDict             post-processing chain (sizing, cost)                      [opt]
 ├── constant/
 │   ├── thermoPhysPropDict   the case's OWN declarative thermodynamics (SELF-CONTAINED,
-│   │                          recordType thermophysicalPropertySystem; schemaVersion 2)
+│   │                          recordType thermophysicalPropertySystem; schemaVersion 1)
 │   ├── propertyManifest     SEALED record registry (bin/choupo-import; sha256 per record) [opt]
 │   ├── components/          sealed / case-local component records                    [opt]
 │   ├── species/ parameters/ chemistry/   sealed record homes (as the case reaches)   [opt]
@@ -155,7 +155,7 @@ two-phase stream carries it as the phase seed) — never a decorative `0`, never
 ## 4. Property architecture — `thermoPhysPropDict` + SELF-CONTAINMENT
 
 **A case declares its OWN thermodynamics in `constant/thermoPhysPropDict`
-(`recordType thermophysicalPropertySystem; schemaVersion 2;`) — every case is
+(`recordType thermophysicalPropertySystem; schemaVersion 1;`) — every case is
 declaratively self-DESCRIBING (inline, no shared selector; the builder assembles
 each `equilibrium.formulation` natively — v1 `propertyDict`/`thermoPackage` are
 REFUSED with a migration error).  A case is runtime self-CONTAINED only once

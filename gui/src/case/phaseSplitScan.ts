@@ -201,7 +201,7 @@ export function synthThermo(components: string[], activityModel: string,
   if (present.length === 0 && phaseSet !== "VL")
     return {
       recordType: "thermophysicalPropertySystem",
-      schemaVersion: 2,
+      schemaVersion: 1,
       components: [...components],
       equilibrium: {
         formulation: "gammaGamma",
@@ -215,7 +215,7 @@ export function synthThermo(components: string[], activityModel: string,
   if (present.length === 0)
     return {
       recordType: "thermophysicalPropertySystem",
-      schemaVersion: 2,
+      schemaVersion: 1,
       components: [...components],
       equilibrium: {
         formulation: "gammaPhi",
@@ -225,7 +225,7 @@ export function synthThermo(components: string[], activityModel: string,
     };
   return {
     recordType: "thermophysicalPropertySystem",
-    schemaVersion: 2,
+    schemaVersion: 1,
     components: [...components],
     equilibrium: {
       formulation: "gammaGamma",

@@ -261,7 +261,7 @@ function ssRun(): Map<string, Diag> {
         + `P ${P} Pa; composition { CH4 1.0; } } properties ( H_ig H_R H_real Z ); }`)
         .join("\n") + "\n);\n");
     writeFileSync(join(dir, "constant/thermoPhysPropDict"),
-      "recordType thermophysicalPropertySystem;\nschemaVersion 2;\ncomponents ( CH4 );\n"
+      "recordType thermophysicalPropertySystem;\nschemaVersion 1;\ncomponents ( CH4 );\n"
       + "equilibrium\n{\n    formulation phiPhi;\n    equationOfState { model SRK; }\n}\n");
     const r = spawnSync(bin, [dir], { cwd: REPO_ROOT, encoding: "utf-8",
       env: { ...process.env, CHOUPO_HOME: REPO_ROOT }, maxBuffer: 64 * 1024 * 1024 });

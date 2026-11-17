@@ -227,7 +227,7 @@ reports { massBalance { } elementBalance { } energyBalance { } }
 `constant/thermoPhysPropDict`
 ```
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components    ( ethane ethylene H2 );
 equilibrium
 {

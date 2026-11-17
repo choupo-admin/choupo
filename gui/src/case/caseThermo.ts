@@ -23,7 +23,7 @@
   CONSTRUCTION.  Finding nothing, they did not say so: they asserted
   "(not declared — defaults to ideal)" and "(not declared — defaults to ideal
   gas)".  Measured over the corpus on 2026-09-14: 404 thermoPhysPropDict, ALL
-  schemaVersion 2, of which 365 declare BOTH a liquid model and a vapour
+  schemaVersion 1, of which 365 declare BOTH a liquid model and a vapour
   fugacity model and were told they declare neither.  Vitor found it on a
   200 bar Haber-Bosch plant, which the panel described as ideal gas.
 

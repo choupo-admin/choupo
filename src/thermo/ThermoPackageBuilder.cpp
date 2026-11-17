@@ -2084,10 +2084,8 @@ ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db
         {
             const double sv = pkg->lookupScalarOrDefault("schemaVersion", 0);
             if (sv == 2)
-                throw std::runtime_error("thermophysicalPropertySystem: this"
-                    " record type is at schemaVersion 1 since 2026-11-18;"
-                    " write `schemaVersion 1;`");
-            if (sv != 1)
+                announceSchemaStamp2("thermoPhysPropDict");
+            else if (sv != 1)
                 throw std::runtime_error("thermophysicalPropertySystem requires"
                     " schemaVersion 1;");
         }

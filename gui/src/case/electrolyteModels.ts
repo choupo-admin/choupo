@@ -208,7 +208,7 @@ export function emControlDict(what: string): string {
 export function emPackageThermo(s: SaltDef, model: PkgModel): string {
   return [
     "recordType    thermophysicalPropertySystem;",
-    "schemaVersion 2;", "",
+    "schemaVersion 1;", "",
     `components    ( water ${s.id} );`, "",
     "equilibrium", "{",
     "    formulation electrolyteGammaPhi;",
@@ -226,7 +226,7 @@ export function emPackageThermo(s: SaltDef, model: PkgModel): string {
 /** The aqueous surface the speciation solver reads Davies from. */
 export const EM_DAVIES_THERMO = [
   "recordType    thermophysicalPropertySystem;",
-  "schemaVersion 2;", "",
+  "schemaVersion 1;", "",
   "components    ( water );", "",
   "aqueousProperties", "{",
   "    activityCoefficients { model Davies; referenceBasis aqueousMolality; }",

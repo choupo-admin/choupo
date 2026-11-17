@@ -1062,7 +1062,7 @@ it.  An op without a schema is an op nobody can find.
 Property data in Choupo is \emph{declarative systems with OpenFOAM-like
 explicit files}.  A case does not hand the solver a bag of numbers; it
 \emph{declares} its thermophysical system --- \file{constant/thermoPhysPropDict}
-(\code{recordType thermophysicalPropertySystem; schemaVersion 2;}), one
+(\code{recordType thermophysicalPropertySystem; schemaVersion 1;}), one
 record naming the components, the equilibrium formulation, the model in
 each phase slot, and the parameter files the run needs.  The one-sentence
 contract:
@@ -1167,7 +1167,7 @@ removed rather than kept as ceremony).  A minimal electrolyte system
 
 \begin{lstlisting}
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components ( water NaCl );
 equilibrium
 {

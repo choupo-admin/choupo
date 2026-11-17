@@ -8,7 +8,7 @@ identity:
 
 ```
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( benzene  toluene );
 

@@ -204,7 +204,7 @@ export function envelopePlan(spec: EnvelopeSpec): EnvelopePlan {
   const thermoPackage: JsonDict = liquidCheck === "probed"
     ? {
         recordType: "thermophysicalPropertySystem",
-        schemaVersion: 2,
+        schemaVersion: 1,
         components: [...spec.components],
         equilibrium: {
           formulation: "gammaGamma",
@@ -217,7 +217,7 @@ export function envelopePlan(spec: EnvelopeSpec): EnvelopePlan {
       }
     : {
         recordType: "thermophysicalPropertySystem",
-        schemaVersion: 2,
+        schemaVersion: 1,
         components: [...spec.components],
         equilibrium: {
           formulation: "gammaPhi",

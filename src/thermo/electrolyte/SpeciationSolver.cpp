@@ -396,10 +396,13 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                     auto e = Dictionary::fromFile(f.string());
                     if (e->lookupWordOrDefault("recordType", "")
                         != "gasLiquidEquilibrium") continue;
-                    if (e->lookupScalarOrDefault("schemaVersion", 1) == 2)
-                        throw std::runtime_error(f.string() + ": recordType"
-                            " gasLiquidEquilibrium is at schemaVersion 1 since"
-                            " 2026-11-18; write `schemaVersion 1;`");
+                    {
+                        const double sv = e->lookupScalarOrDefault("schemaVersion", 1);
+                        if (sv == 2) announceSchemaStamp2(f.string());
+                        else if (sv != 1)
+                            throw std::runtime_error(f.string() + ": recordType"
+                                " gasLiquidEquilibrium requires schemaVersion 1;");
+                    }
                     GasEntry g;
                     //  Canonical schema (D2 identity wave, 2026-07-26):
                     //  gasSpecies / dissolvedSpecies / solvent / convention.

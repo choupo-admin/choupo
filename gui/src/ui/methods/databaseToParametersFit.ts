@@ -176,7 +176,7 @@ export function pairFitCaseFiles(
   ].join("\n");
   const thermo = [
     "recordType    thermophysicalPropertySystem;",
-    "schemaVersion 2;", "",
+    "schemaVersion 1;", "",
     `components       ( ${c1}  ${c2} );`, "",
     "equilibrium", "{", "    formulation gammaPhi;", "",
     "    liquid", "    {", "        activityModel", "        {",

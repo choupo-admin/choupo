@@ -26,7 +26,7 @@ does not keep.
 ```
 a case DECLARES its system INLINE       (constant/thermoPhysPropDict — the CENTRE;
         │                                recordType thermophysicalPropertySystem,
-        │                                schemaVersion 2; the shared-catalogue
+        │                                schemaVersion 1; the shared-catalogue
         │                                `package <name>;` selector is RETIRED,
         │                                and v1 propertyDict/thermoPackage refused)
         │  declares: components · equilibrium.formulation · per-phase models · parameters

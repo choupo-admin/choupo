@@ -20,6 +20,9 @@
   SPDX-License-Identifier: GPL-3.0-or-later
 \*---------------------------------------------------------------------------*/
 
+#include "core/Advisory.H"
+
+#include <iostream>
 #include <set>
 #include <string>
 
@@ -50,6 +53,19 @@ inline bool announceOnce(const std::string& key)
 {
     static std::set<std::string> seen;
     return seen.insert(key).second;
+}
+
+// A record of the property system or of the Henry kind stamped
+// `schemaVersion 2` (the stamp of releases up to Choupo-2608; the same
+// grammar) is ACCEPTED and announced ONCE per run, on the advisory channel,
+// naming the first file met.  Any other stamp but 1 is refused by the caller.
+inline void announceSchemaStamp2(const std::string& what)
+{
+    const std::string msg = what + " stamped schemaVersion 2 (the stamp of"
+        " releases up to Choupo-2608; same grammar): write `schemaVersion 1;`";
+    if (AdvisoryLog::instance().addAnnouncedOnce("schemaVersion2", "init",
+            "warning", "schemaVersion", msg))
+        std::cerr << "[schema] " << msg << "\n";
 }
 
 } // namespace Choupo

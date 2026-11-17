@@ -119,7 +119,7 @@ export function rcmControlDict(what: string): string {
 export function rcmThermoDict(comps: readonly string[]): string {
   return [
     "recordType    thermophysicalPropertySystem;",
-    "schemaVersion 2;", "",
+    "schemaVersion 1;", "",
     `components    ( ${comps.join(" ")} );`, "",
     "equilibrium", "{",
     "    formulation gammaPhi;",

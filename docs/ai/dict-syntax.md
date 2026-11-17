@@ -603,7 +603,7 @@ keys:
 
 ```
 recordType     thermophysicalPropertySystem;   // typed record marker
-schemaVersion  2;
+schemaVersion  1;
 
 components     ( water CO2 );
 

@@ -90,7 +90,7 @@
 # that can decide is the root's.  Its second draft then FAILED on correct code:
 # `H_missing` is a list of names in component order, so it is compared as a
 # set.
-import json, subprocess, sys, tempfile, os
+import json, re, subprocess, sys, tempfile, os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -108,11 +108,11 @@ CTRL = 'application   choupoProps;\ndescription   "negative gate";\nverbosity 1;
 
 # (name, thermoPhysPropDict body, expected message fragment)
 NEGATIVES = [
- ("stamp-2-refused",
-  "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+ ("stamp-3-refused",
+  "recordType thermophysicalPropertySystem;\nschemaVersion 3;\n"
   "components ( water );\nequilibrium { formulation gammaPhi;"
   " liquid { activityModel ideal; } vapour { fugacityModel idealGas; } }\n",
-  "write `schemaVersion 1;`"),
+  "requires schemaVersion 1"),
  ("unknown-formulation",
   "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
   "components ( water );\nequilibrium { formulation quantumFoam; }\n",
@@ -844,6 +844,55 @@ def run_grammar_negative(tmp, name, layout, binary, frag):
     return None
 
 
+STAMP2 = ("recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+          "components ( water );\nequilibrium { formulation gammaPhi;"
+          " liquid { activityModel ideal; } vapour { fugacityModel idealGas; } }\n")
+
+
+def stamp2_arm(tmp):
+    """A stamp of 2 (releases up to Choupo-2608, same grammar) is ACCEPTED and
+    announced ONCE per run with the remedy; the tree itself carries none."""
+    case = Path(tmp) / "stamp2"
+    (case / "system").mkdir(parents=True)
+    (case / "constant").mkdir()
+    (case / "system" / "controlDict").write_text(CTRL)
+    (case / "system" / "propsDict").write_text(BASE_PROPS)
+    (case / "constant" / "thermoPhysPropDict").write_text(STAMP2)
+    r = subprocess.run([str(PROPS), str(case)], capture_output=True,
+                       text=True, cwd=ROOT)
+    out = r.stdout + r.stderr
+    fails = []
+    if r.returncode != 0:
+        fails.append("stamp-2-announced: REFUSED (exit %d) -- 2 must run" % r.returncode)
+    n = out.count("[schema] ")
+    if n != 1:
+        fails.append("stamp-2-announced: the announcement appears %d times,"
+                     " expected exactly 1" % n)
+    elif "write `schemaVersion 1;`" not in out:
+        fails.append("stamp-2-announced: the remedy line is missing")
+    return fails
+
+
+def tree_stamp_arm():
+    """No tracked record of the two types may carry schemaVersion 2."""
+    rx_t = re.compile(r"recordType\s+(thermophysicalPropertySystem|gasLiquidEquilibrium)\b")
+    rx_s = re.compile(r"^[ \t]*schemaVersion[ \t]+2\b", re.M)
+    bad = []
+    for top in ("tutorials", "data", "benchmarks"):
+        for dp, dn, fn in os.walk(ROOT / top):
+            dn[:] = [d for d in dn if d not in ("local", "converged")]
+            for f in fn:
+                p = Path(dp) / f
+                try:
+                    t = p.read_text()
+                except Exception:
+                    continue
+                if rx_s.search(t) and rx_t.search(t):
+                    bad.append(str(p.relative_to(ROOT)))
+    return ["tree: %s carries schemaVersion 2 (every record of these two types is at 1)" % b
+            for b in bad[:20]]
+
+
 def main():
     fails = []
     with tempfile.TemporaryDirectory(prefix="choupo-neg-") as tmp:
@@ -866,6 +915,8 @@ def main():
             bad = run_grammar_negative(tmp, name, layout, binary, frag)
             if bad:
                 fails.append(bad)
+        fails.extend(stamp2_arm(tmp))
+        fails.extend(tree_stamp_arm())
         fails.extend(solid_phase_arm(tmp))
         fails.extend(active_salt_arm(tmp))
         fails.extend(advice_read_arm(tmp))

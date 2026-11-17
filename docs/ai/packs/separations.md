@@ -173,7 +173,7 @@ verbosity     3;
 `constant/thermoPhysPropDict`
 ```
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components    ( benzene  toluene );
 equilibrium
 {
