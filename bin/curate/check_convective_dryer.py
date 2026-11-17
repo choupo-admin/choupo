@@ -42,6 +42,7 @@ the falling period, which the model does not have (it is announced).
 import json
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -91,7 +92,7 @@ def main():
              " not pass")
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp) / "case"
-        shutil.copytree(CASE, work)
+        case_records.copytree(CASE, work)
         rc, out = run(work)
         if rc != 0:
             fail(f"the witness did not run (exit {rc}):\n{out[-800:]}")
@@ -139,7 +140,7 @@ def main():
         if fine.count("nSteps            400;") != 2:
             fail("(e) could not place nSteps in both dryers of the witness")
         pdir = Path(tmp) / "fine"
-        shutil.copytree(CASE, pdir)
+        case_records.copytree(CASE, pdir)
         (pdir / "system/flowsheetDict").write_text(fine)
         rc, outf = run(pdir)
         if rc != 0:
@@ -178,7 +179,7 @@ def main():
         p0 = Path(tmp) / "undeclared"
         if p0.exists():
             shutil.rmtree(p0)
-        shutil.copytree(CASE, p0)
+        case_records.copytree(CASE, p0)
         (p0 / "0/hotAir").write_text(air0.replace("phase           gas;\n", ""))
         if (p0 / "0/hotAir").read_text() == air0:
             fail("(f0) the undeclared-air probe edited nothing -- it cannot fire")
@@ -195,7 +196,7 @@ def main():
             p = Path(tmp) / "probe"
             if p.exists():
                 shutil.rmtree(p)
-            shutil.copytree(CASE, p)
+            case_records.copytree(CASE, p)
             (p / rel).write_text(text)
             rc, o = run(p)
             if rc == 0:

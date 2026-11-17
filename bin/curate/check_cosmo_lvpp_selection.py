@@ -43,6 +43,7 @@ SABOTAGES (2026-11-11, by hand on the witness, restored by copy):
 import csv
 import math
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -103,7 +104,7 @@ def main() -> int:
     require_solver(PROPS, "choupoProps")
     with tempfile.TemporaryDirectory(prefix="cosmo-lvpp-sel-") as tmp:
         case = Path(tmp) / CASE.name
-        shutil.copytree(CASE, case)
+        case_records.copytree(CASE, case)
         p = subprocess.run([str(PROPS), "."], cwd=case, capture_output=True,
                            text=True, timeout=600)
         if p.returncode != 0:

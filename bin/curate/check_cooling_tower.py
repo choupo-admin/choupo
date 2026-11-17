@@ -58,6 +58,7 @@ facts), and the golden values (runTests' own row comparison carries those).
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -79,7 +80,7 @@ def run(case: Path):
 
 def copy(tmp: Path, tag: str) -> Path:
     case = tmp / tag
-    shutil.copytree(CASE, case,
+    case_records.copytree(CASE, case,
                     ignore=shutil.ignore_patterns("expected", "log.*",
                                                   "reports", "converged"))
     return case

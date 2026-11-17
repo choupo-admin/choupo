@@ -11,6 +11,7 @@ report walked the raw flowsheetDict, found no inline units in a composite,
 and published an empty boundary as if it were physics)."""
 import csv
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -24,7 +25,7 @@ CASE = ROOT / "tutorials" / "steady" / "flowsheets" / "composite01_two_flashes"
 def main():
     with tempfile.TemporaryDirectory(prefix="choupo-comprep-") as tmp:
         case = Path(tmp) / "case"
-        shutil.copytree(CASE, case,
+        case_records.copytree(CASE, case,
                         ignore=shutil.ignore_patterns("log.choupo*", "reports",
                                                       "converged"))
         r = subprocess.run([str(SOLVE), str(case)], capture_output=True,

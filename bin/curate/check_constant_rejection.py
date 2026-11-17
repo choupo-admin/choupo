@@ -81,6 +81,7 @@ import math
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -118,7 +119,7 @@ def result_of(out):
 def copy_case(src, dst):
     #  A probe is not its donor: the sealed manifest stays behind (the move
     #  check_membrane_modules' builder makes), and so do run outputs.
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
         "converged", "log.*", "expected", "reports", "design", "propertyManifest",
         "latest", "solution.log", "trajectory.csv", "[0-9]*.[0-9]*"))
     #  Time directories of a batch donor (1, 5, ... but never 0/).

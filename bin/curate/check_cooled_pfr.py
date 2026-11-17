@@ -76,6 +76,7 @@ import json
 import math
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -105,7 +106,7 @@ def run(case):
 
 def copy(src, td):
     dst = Path(td) / "case"
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
         "reports", "converged", "log.*", "iterations", "design",
         "designspec_history.csv"))
     return dst

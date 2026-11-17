@@ -113,6 +113,7 @@ import json
 import math
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -144,7 +145,7 @@ def copy(td, post_edit=None):
     """A copy of the witness at its design point; `post_edit` edits its
     postDict, or is (relative path, edit) to edit another file."""
     dst = Path(td) / "case"
-    shutil.copytree(CASE, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(CASE, dst, ignore=shutil.ignore_patterns(
         "reports", "converged", "design", "designspec_history.csv"))
     (dst / "system/outerDict").unlink()
     if post_edit:
@@ -249,7 +250,7 @@ report { file designspec_history.csv; }
 def two_beds(td, outer):
     src = ROOT / "tutorials/steady/reactors/pfr02_reversible_wgs"
     dst = Path(td) / "twobeds"
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
         "reports", "converged", "log.*", "iterations", "design"))
     fs = dst / "system/flowsheetDict"
     t = fs.read_text()
