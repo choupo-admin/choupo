@@ -80,7 +80,7 @@ so the band's own edge would test the last bit of the refusal:
         (4.0, 6.0) kJ/(kg K), i.e. 9.3 to 13.9 K;
         heatExchanger, `phase liquid;` at 550 K against 300 K water at
         2 p_sat: |H_closure_gap_kW| <= 1e-6 kW at every e;
-        pipe, `phase liquid;` at 550 K with a declared viscosity: it must
+        pipe, `phase liquid;` at 550 K with the property dictionary's Vogel viscosity: it must
         run at every e, on the liquid path, with a density above ten
         times the ideal-gas density P M / (R T) (24.1 kg/m3 there; the
         saturated liquid is 755.8 kg/m3, the vapour 31.9).
@@ -295,7 +295,7 @@ UNIT_CASES = {
 (
     { name U; type pipe; in probe; outputs ( out );
       operation { geometry { D 0.1 m; L 50 m; roughness 4.6e-5 m; dz 0 m; }
-                  viscosity 1.0e-4 Pa.s; } }
+                } }
 );
 """,
 }
@@ -308,6 +308,10 @@ def build_unit(tmp: Path, kind: str, T: float, ph: str, P: float) -> Path:
     case_records.copytree(TEMPLATE / "constant", d / "constant")
     shutil.copy(TEMPLATE / "system" / "controlDict", d / "system" / "controlDict")
     (d / "system" / "flowsheetDict").write_text(UNIT_CASES[kind])
+    if kind == "pipe":
+        #  C421: a pipe does not carry a viscosity; the property dictionary does (water's Vogel law).
+        with open(d / "constant" / "thermoPhysPropDict", "a") as fh:
+            fh.write("\ntransport\n{\n    liquid\n    {\n        viscosity { model Vogel; }\n    }\n}\n")
     (d / "0" / "probe").write_text(STATE.format(T=T, P=P, ph=ph))
     if kind == "heatExchanger":
         (d / "0" / "partner").write_text(STATE.format(T=300.0, P=2.0 * P, ph="liquid"))

@@ -837,7 +837,7 @@ def arm_p(tmp: pathlib.Path, fail: list) -> str:
     (case / "pipe.cho").write_text("")
     (case / "system" / "flowsheetDict").write_text(
         "units\n(\n    { name P1; type pipe; in RawLiquid; outputs ( "
-        "downstream ); operation { viscosity 1.4e-4 Pa.s; geometry { D 0.1 m; "
+        "downstream ); operation { geometry { D 0.1 m; "
         "L 50 m; roughness 4.6e-5 m; dz 0 m; } } }\n);\n")
     #  The gate's OWN copy is held at 200 bar (the shipped letdown01 is left
     #  at 140): the arm's subject is a pipe refusing on a dissolved gas's

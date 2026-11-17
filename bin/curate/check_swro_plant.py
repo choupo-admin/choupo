@@ -717,6 +717,17 @@ def churchill(Re, rr):
     return 8.0 * ((8.0 / Re) ** 12 + 1.0 / (A + B) ** 1.5) ** (1.0 / 12.0)
 
 
+def _measured_mu():
+    """The seawater viscosity the case's property dictionary holds (the one row of its measured record), read
+    from the file and never from the engine: the headers ask the door, which returns it (C421)."""
+    rec = (CASE / "constant" / "experiments" / "seawater35_NaClboron_liquidViscosity.dat").read_text()
+    m = re.search(r"\bdata\s*\(\s*[0-9.eE+-]+\s+([0-9.eE+-]+)\s", rec)
+    return float(m.group(1)) if m else None
+
+
+MEASURED_MU = _measured_mu()
+
+
 def header_entries(post: str):
     """[(unit, text)] for every postDict entry of type pipeHeader."""
     out = []
@@ -745,7 +756,7 @@ def arm_l(res):
         vmin, vmax = numu(txt, "min", "m/s"), numu(txt, "max", "m/s")
         bores = sorted(float(x) for x in re.findall(r"insideDiameter\s+([0-9.eE+-]+)\s*m\b", txt))
         eps = numu(txt, "value", "mm")
-        mu = numu(txt, "value", "Pa.s")
+        mu = MEASURED_MU      # C421: the header's viscosity is the case's measured record, not a header declaration
         fm = re.search(r"frictionModel\s+(\w+);", txt)
         roles = re.findall(r"role\s+(\w+);\s*stream\s+(\w+);", txt)
         if None in (vmin, vmax, eps, mu) or not bores or not roles or not fm or fm.group(1) != "Churchill":
@@ -818,7 +829,11 @@ def arm_m(tmp):
             "min     1.0 m/s;\n                    max     2.0 m/s;", "min     1.99 m/s;\n                    max     2.0 m/s;"),
             ["NO declared size fits", "below the window's minimum"])
     #  "header-without-a-viscosity" retired (C402): the package now declares the seawater's stated viscosity, so a
-    #  header with no viscosity of its own asks the package for it and is not refused.  What stays here: three arms.
+    #  header with no viscosity of its own asks the package for it and is not refused.
+    #  C421: the converse -- a viscosity TYPED in a header is refused by name, with the line to write.
+    refused("header-with-a-typed-viscosity", lambda d: sub_file(P(d),
+            "frictionModel Churchill;", "frictionModel Churchill;\n                viscosity { value 1.0e-3 Pa.s; source \"x\"; reason \"y\"; }"),
+            ["pipeHeader", "viscosity", "typed", "thermoPhysPropDict"])
     return n
 
 
@@ -880,7 +895,7 @@ def main():
           "cannot share, an exchanger above its pressure rating, per-train sizing with no trains declared).  NOT CHECKED: that any "
           "number is the real plant's (the PDF is a manufacturer's claim at assumed test conditions; every pump, vessel and "
           "rack number not read from a page is ASSUMED and says so), the layout against any code or the real site, the first "
-          "law, and boron's pH computed from the carbonate system (Stage 2: the pH is a declared label).  THE HEADERS (C199): the %d header items (feed, brine and permeate of three banks, six trains) have their required bore, nominal bore, velocity inside the declared window, Reynolds number, Churchill friction factor and pressure drop per metre recomputed from the dicts and the stream masses (the density is the package's, range-checked only); %d more fixtures refuse by name (no velocity window, no bore that fits, a window above the nearest bore, no viscosity).  NOT CHECKED: that the window or the list of bores is a standard's (both are the case's, assumed), the header's length, fittings and wall."
+          "law, and boron's pH computed from the carbonate system (Stage 2: the pH is a declared label).  THE HEADERS (C199): the %d header items (feed, brine and permeate of three banks, six trains) have their required bore, nominal bore, velocity inside the declared window, Reynolds number, Churchill friction factor and pressure drop per metre recomputed from the dicts and the stream masses (the density is the package's, range-checked only); %d more fixtures refuse by name (no velocity window, no bore that fits, a window above the nearest bore, a viscosity typed in the header).  NOT CHECKED: that the window or the list of bores is a standard's (both are the case's, assumed), the header's length, fittings and wall."
           % (CASE.name, prod, r1 * 100, r2 * 100, tds, fac, b, nref, ni, nr, SKIDS, SKIDS, spec,
              pumps["HPpump"][0], pumps["Booster"][0], pumps["Pass2Pump"][0], pumps["IntakePump"][2], px, nb, bld[0], bld[1], nref2, nh, nref3))
     return 0
