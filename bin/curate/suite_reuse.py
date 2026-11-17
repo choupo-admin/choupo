@@ -330,7 +330,8 @@ H = Hasher()
 #  divergence the run can see.  Those are hashed whole, as before.
 # --------------------------------------------------------------------------
 
-KEY_FORMAT = "normalised-dictionaries-v2"      # added to a new-format key only
+KEY_FORMAT = "normalised-dictionaries-v3-pathfree"   # added to a new-format key only
+KEY_FORMAT_V2 = "normalised-dictionaries-v2"         # the format of 2026-11-18 (absolute paths in the key)
 _STAMP = re.compile(r"^schemaVersion[ ]+[12][ ]*;$")
 _WORDCH = re.compile(r"[A-Za-z0-9_.+:/\[\]$=\-]")      # Dictionary.cpp isWordChar
 _NOT_DICT_EXT = {".csv", ".tsv", ".txt", ".json", ".py", ".md", ".cho",
@@ -604,15 +605,27 @@ def resolver_depth():
 CASE_SKIP = ("archiveExtracts",)
 
 
-def cascade(start: Path, norm=False):
+def cascade(start: Path, norm=False, pathfree=True):
     """[(<dir>/constant, digest)] for the run directory `start` and every
     parent the engine's walk reaches (dictionary files by their normalised
     text when `norm`)."""
     depth, _ = resolver_depth()
     out, p = [], start.resolve() if start.exists() else start
-    for _ in range(depth):
+    root = ROOT.resolve()
+    for i in range(depth):
         c = p / "constant"
-        out.append((str(c), dir_digest(c, CASE_SKIP, norm)))
+        if pathfree:
+            #  the label of a directory is its path RELATIVE to the repository
+            #  root, or `above#<level>` for one above it: two checkouts of one
+            #  commit at two paths must compute one key (the digest holds the
+            #  content, and absence)
+            try:
+                label = c.relative_to(root).as_posix()
+            except ValueError:
+                label = f"above#{i}"
+        else:
+            label = str(c)
+        out.append((label, dir_digest(c, CASE_SKIP, norm)))
         if p.parent == p:
             break
         p = p.parent
@@ -924,9 +937,13 @@ def golden_mode():
         if r.returncode == 0 else ""
 
 
-def case_harness():
-    """-> (digest, n) of what check_case executes."""
-    text = (ROOT / "bin" / "runTests").read_text(errors="ignore")
+def case_harness(text=None):
+    """-> (digest, n) of what check_case executes.  `text` is the bin/runTests
+    to read (default: this tree's); only migrate-keys passes another, the one
+    a stored verdict was taken under."""
+    override = text is not None
+    if text is None:
+        text = (ROOT / "bin" / "runTests").read_text(errors="ignore")
     fns = runtests_functions(text)
     seen, todo = set(), ["check_case_body", "check_case"]
     while todo:
@@ -951,7 +968,12 @@ def case_harness():
     files = sorted(set(files) | {s for s in scripts if s.is_file()})
     pairs = [("fn:" + f, hashlib.sha256(fns[f].encode()).hexdigest())
              for f in sorted(seen)]
-    pairs += [(p.relative_to(ROOT).as_posix(), H.sha(p)) for p in files]
+    #  bin/runTests is itself in the closure (a script names it), whole: a
+    #  text passed by migrate-keys stands for the file as it was.
+    pairs += [(p.relative_to(ROOT).as_posix(),
+               hashlib.sha256(text.encode()).hexdigest()
+               if override and p == ROOT / "bin" / "runTests" else H.sha(p))
+              for p in files]
     mode = golden_mode()
     pairs.append(("golden-mode", mode))
     return digest(pairs), (sorted(seen), files)
@@ -1243,14 +1265,14 @@ def case_names(case_files):
     return sorted(w for w in words if w in names)
 
 
-def narrow_data(case_files):
+def narrow_data(case_files, pathfree=True):
     """-> (digest, (names, files)): the narrow data half of a pair or
     component case."""
     dr = data_root()
     idx, _ = stem_index()
     names = case_names(case_files)
     files = sorted({f for n in names for f in idx.get(n, [])})
-    pairs = [("root", str(dr))]
+    pairs = [("root", "DATA_ROOT" if pathfree else str(dr))]
     pairs += [(f, H.sha(dr / f)) for f in files]
     for a in ("data/standards/assets", "data/local/assets"):
         pairs.append((a, dir_digest(dr / a)))
@@ -1263,23 +1285,23 @@ def narrow_data(case_files):
     return digest(pairs), (names, files)
 
 
-def dirs_data(dirs):
+def dirs_data(dirs, pathfree=True):
     """The data half of a DIRS_RULE case: the named catalogue directories of
     both tiers, hashed whole."""
     dr = data_root()
-    pairs = [("root", str(dr))]
+    pairs = [("root", "DATA_ROOT" if pathfree else str(dr))]
     for t in ("standards", "local"):
         for d in dirs:
             pairs.append((f"data/{t}/{d}", dir_digest(dr / "data" / t / d)))
     return digest(pairs)
 
 
-def data_half_for(case_rel, case_files, coarse):
+def data_half_for(case_rel, case_files, coarse, pathfree=True):
     """-> (the data part of a narrow case's key, its label)."""
     if case_rel in DIRS_RULE_CASES:
-        return ("data-dirs", dirs_data(DIRS_RULE_CASES[case_rel])), "data=dirs"
+        return ("data-dirs", dirs_data(DIRS_RULE_CASES[case_rel], pathfree)), "data=dirs"
     if case_kind(case_rel) in NARROW_DATA_KINDS:
-        return ("data-narrow", narrow_data(case_files)[0]), "data=narrow"
+        return ("data-narrow", narrow_data(case_files, pathfree)[0]), "data=narrow"
     return ("data", coarse), "data=WHOLE-TREE"
 
 
@@ -1456,21 +1478,25 @@ def pinned_key_parts(case_abs: Path):
     return parts
 
 
-def case_keys(root_rel, norm=True):
+def case_keys(root_rel, fmt=3, runtests_text=None):
     """The key of every curation case under root_rel, in the key format `norm`
     selects -> (rows, None) with rows = [(case, key, data label, engine
     label)], or (None, the reason).
 
-    norm=True is THE key: dictionary files by their normalised text, and the
-    format word in the key.  norm=False is the format of 2026-11-17 and
-    earlier, kept ONLY so `migrate-keys` can recognise a stored verdict; it is
-    used by nothing else and may be deleted once the store has been migrated."""
+    fmt 3 is THE key: dictionary files by their normalised text, no absolute
+    path anywhere, and KEY_FORMAT in the material.  fmt 2 (normalised text,
+    absolute paths: the data root and the constant/ directories by path) and
+    fmt 1 (whole files, absolute paths, no tag) are the formats of
+    2026-11-18 and earlier, kept ONLY so `migrate-keys` can recognise a stored
+    verdict; nothing else uses them and they may be deleted once every store
+    has been migrated."""
+    norm, pathfree = fmt >= 2, fmt >= 3
     eng, n_obj = engine_half()
     if eng is None:
         return None, f"engine half unreadable ({n_obj})"
     dat, n_dat = data_half(["data/standards", "data/groupEstimative",
                             "data/README.md"], True)
-    har, _ = case_harness()
+    har, _ = case_harness(runtests_text)
     plat = platform_half()
     base = digest([("engine", eng), ("data", dat), ("harness", har),
                    ("platform", plat)])
@@ -1521,7 +1547,7 @@ def case_keys(root_rel, norm=True):
         #  The resolver's cascade from this case (review SE-01): the case's
         #  own constant/ in full (ignored files too, the fetched extracts
         #  aside) and every parent's constant/, present or absent.
-        pairs += cascade(ROOT / c, norm)
+        pairs += cascade(ROOT / c, norm, pathfree)
         #  THE COMPOSED KEY (C414 (3) + C413).  ENGINE: the narrow reach when the
         #  case is a choupoProps fit, else the whole engine.  DATA: the case's
         #  PINS when it has them (exact: the current hash of each pinned file
@@ -1533,11 +1559,12 @@ def case_keys(root_rel, norm=True):
         if pp is not None:
             dpart, dlabel = ("data-pinned", pinned_data()), "data=pins"
         elif ne:
-            dpart, dlabel = data_half_for(c, per[c], dat)
+            dpart, dlabel = data_half_for(c, per[c], dat, pathfree)
         else:
             dpart, dlabel = ("data", dat), "data=WHOLE-TREE"
         cbase = digest([engp, dpart, ("harness", har), ("platform", plat)]
-                       + ([("keyFormat", KEY_FORMAT)] if norm else []))
+                       + ([("keyFormat", KEY_FORMAT if pathfree else KEY_FORMAT_V2)]
+                          if norm else []))
         e = (f"engine=narrow({nn} objects; ops {','.join(nops)})" if ne
              else f"engine=WHOLE ({nn})")
         rows.append((c, digest([("base", cbase)] + sorted(pairs) + (pp or [])),
@@ -1546,9 +1573,18 @@ def case_keys(root_rel, norm=True):
     return rows, None
 
 
+def case_store():
+    """The directory of the curation verdicts: CHOUPO_REUSE_STORE when set (a
+    directory several trees may share -- the verdicts are content-keyed, and
+    bin/runTests writes them with a temp file and a rename in the same
+    directory), else build/reuse/cases in this tree."""
+    v = os.environ.get("CHOUPO_REUSE_STORE")
+    return Path(v) if v else STORE / "cases"
+
+
 def _stored_case(c):
     """-> (path, lines) of the verdict stored for case c, lines [] when none."""
-    stored = STORE / "cases" / (c.replace("/", "__") + ".tsv")
+    stored = case_store() / (c.replace("/", "__") + ".tsv")
     try:
         return stored, stored.read_text().splitlines()
     except OSError:
@@ -1576,22 +1612,59 @@ def case_plan(root_rel, explain=False):
     return 0
 
 
-def migrate_keys(root_rel="data/curation"):
-    """Re-key the stored curation verdicts from the format of 2026-11-17 to
-    the normalised one, WITHOUT running anything: a verdict whose stored key is
-    the OLD-format key of THIS tree describes exactly this tree, so the same
-    verdict (labels, date, commit) is written under the new-format key with a
-    `migrated from key <old>` field on its date line.  A verdict that matches
-    neither is left alone (its case runs, correctly).  Idempotent."""
+def _runtests_at(rev):
+    r = subprocess.run(["git", "-C", str(ROOT), "show", f"{rev}:bin/runTests"],
+                       capture_output=True, text=True, errors="ignore")
+    return r.stdout if r.returncode == 0 else None
+
+
+def migrate_keys(argv):
+    """migrate-keys [root] [--harness-from REV]...
+
+    Re-key the stored curation verdicts to the current key format (3),
+    WITHOUT running anything.  A verdict whose stored key is the format-1 or
+    format-2 key of THIS tree describes exactly this tree, so the same verdict
+    (labels, date, commit) is written under the format-3 key with a `migrated
+    from key <old>` field on its date line (atomically: a temp file in the
+    store's directory, then a rename).  A verdict that matches no format is
+    left alone (its case runs, correctly).  Idempotent.  Works on the store
+    case_store() names (CHOUPO_REUSE_STORE, else this tree's).
+
+    The key holds the text of the bin/runTests functions check_case reaches,
+    so a verdict taken before an edit of them was keyed on the OLD text: the
+    old-format keys are also computed with bin/runTests as it stood at each
+    `--harness-from REV` (default: the merge-base with origin/main, then
+    origin/main itself), and the run text is the current one."""
     if disabled():
         return 2
-    new, why = case_keys(root_rel, norm=True)
-    old, why2 = case_keys(root_rel, norm=False)
-    if new is None or old is None:
-        print(f"# not keyed: {why or why2}", file=sys.stderr)
+    root_rel, revs, i = "data/curation", [], 0
+    while i < len(argv):
+        if argv[i] == "--harness-from" and i + 1 < len(argv):
+            revs.append(argv[i + 1])
+            i += 2
+        else:
+            root_rel = argv[i].rstrip("/")
+            i += 1
+    if not revs:
+        mb = subprocess.run(["git", "-C", str(ROOT), "merge-base", "HEAD",
+                             "origin/main"], capture_output=True, text=True)
+        revs = ([mb.stdout.strip()] if mb.returncode == 0 and mb.stdout.strip()
+                else []) + ["origin/main"]
+    texts = [None] + [t for t in (_runtests_at(r) for r in revs) if t]
+    new, why = case_keys(root_rel, 3)
+    if new is None:
+        print(f"# not keyed: {why}", file=sys.stderr)
         return 1
-    oldk = {c: k for c, k, _, _ in old}
-    n = dict(migrated=0, already=0, nomatch=0, noverdict=0)
+    old = {c: [] for c, _, _, _ in new}          # c -> [(format, key)]
+    for f in (2, 1):
+        for t in texts:
+            rows, why2 = case_keys(root_rel, f, t)
+            if rows is None:
+                print(f"# not keyed: {why2}", file=sys.stderr)
+                return 1
+            for c, k, _, _ in rows:
+                old[c].append((f, k))
+    n = dict(migrated1=0, migrated2=0, already=0, nomatch=0, noverdict=0)
     other = []
     for c, key, _, _ in new:
         path, lines = _stored_case(c)
@@ -1600,21 +1673,24 @@ def migrate_keys(root_rel="data/curation"):
             continue
         if lines[0] == key:
             n["already"] += 1
-        elif lines[0] == oldk[c]:
-            lines[1] = f"{lines[1]}, migrated from key {lines[0]}"
-            lines[0] = key
-            tmp = path.with_suffix(f".{os.getpid()}.tmp")
-            tmp.write_text("\n".join(lines) + "\n")
-            os.replace(tmp, path)
-            n["migrated"] += 1
-        else:
+            continue
+        f = next((f for f, k in old[c] if lines[0] == k), None)
+        if f is None:
             n["nomatch"] += 1
             other.append(c)
-    print(f"migrate-keys {root_rel}: {len(new)} cases keyed; "
-          f"{n['migrated']} migrated, {n['already']} already in the new "
-          f"format, {n['nomatch']} stored verdict(s) match neither format of "
-          f"this tree (will run), {n['noverdict']} without a stored verdict "
-          f"(will run)")
+            continue
+        lines[1] = f"{lines[1]}, migrated from key {lines[0]}"
+        lines[0] = key
+        tmp = path.with_suffix(f".{os.getpid()}.tmp")
+        tmp.write_text("\n".join(lines) + "\n")
+        os.replace(tmp, path)
+        n[f"migrated{f}"] += 1
+    print(f"migrate-keys {root_rel} (store {case_store()}): {len(new)} cases "
+          f"keyed; {n['migrated1'] + n['migrated2']} migrated "
+          f"({n['migrated1']} from format 1, {n['migrated2']} from format 2), "
+          f"{n['already']} already in format 3, {n['nomatch']} stored "
+          f"verdict(s) match no format of this tree (will run), "
+          f"{n['noverdict']} without a stored verdict (will run)")
     for c in other[:20]:
         print(f"  not migrated: {c}")
     return 0
@@ -1703,8 +1779,8 @@ def main(argv):
         return store(argv[1], argv[2], argv[3])
     if argv[:1] == ["verify-reads"]:
         return verify_reads(argv[1:])
-    if argv[:1] == ["migrate-keys"] and len(argv) in (1, 2):
-        return migrate_keys(*(a.rstrip("/") for a in argv[1:]))
+    if argv[:1] == ["migrate-keys"]:
+        return migrate_keys(argv[1:])
     if argv[:1] == ["case-plan"] and len(argv) in (2, 3):
         return case_plan(argv[1].rstrip("/"), explain=argv[2:] == ["--explain"])
     if argv[:1] == ["key"] and len(argv) == 2:

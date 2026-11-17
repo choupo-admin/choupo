@@ -8830,8 +8830,8 @@ check_case() {
        && [ "$expected_fail" -eq "$_ef0" ] && [ "$pass" -gt "$_p0" ] \
        && [ "${#PASSED_LABELS[@]}" -eq $((pass - _p0)) ]; then
         local _s
-        _s="$ROOT/build/reuse/cases/$(printf '%s' "${_d#"$ROOT"/}" | sed 's#/#__#g').tsv"
-        mkdir -p "$ROOT/build/reuse/cases"
+        _s="${CHOUPO_REUSE_STORE:-$ROOT/build/reuse/cases}/$(printf '%s' "${_d#"$ROOT"/}" | sed 's#/#__#g').tsv"
+        mkdir -p "${CHOUPO_REUSE_STORE:-$ROOT/build/reuse/cases}"
         { printf '%s\n' "$_k" "$(date -u '+%Y-%m-%d %H:%M UTC'), commit $(git -C "$ROOT" rev-parse --short=10 HEAD 2>/dev/null || echo unknown)"
           printf '%s\n' "${PASSED_LABELS[@]}"; } > "$_s.$$" && mv -f "$_s.$$" "$_s"
     fi
