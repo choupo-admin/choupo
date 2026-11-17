@@ -31,16 +31,16 @@ the reader to find out.  Sabotage by hand: delete the addAnnouncedOnce call in
 ThermoPackageBuilder.cpp resolveActivity, rebuild -> arms (a),(b) fail.
 """
 import importlib.util
-import os
-import re
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-PROPS = ROOT / "choupoProps"
 sys.path.insert(0, str(Path(__file__).parent))
+import gatekit  # noqa: E402
+
+#  The probe case is BUILT here (a two-component thermoPhysPropDict, not a copy of
+#  a shipped case) by check_regressed_pairs.run_span_probe, which also runs it;
+#  what the kit gives this gate is the tree's own binary or a refusal by name.
 spec = importlib.util.spec_from_file_location(
     "crp", Path(__file__).parent / "check_regressed_pairs.py")
 crp = importlib.util.module_from_spec(spec)
@@ -52,8 +52,10 @@ LINE = f"[unreviewed] pair {I}-{J}"
 
 def main():
     fails = []
-    if not PROPS.exists():
-        print("check_inline_pair_announced: FAIL choupoProps is not built")
+    try:
+        gatekit.binary("choupoProps")
+    except gatekit.GateRefusal as e:
+        print(f"check_inline_pair_announced: FAIL {e}")
         return 1
     rec = crp.STD / f"{I}-{J}.dat"
     if not rec.exists():
