@@ -67,6 +67,7 @@ import json
 import math
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -265,7 +266,7 @@ def main() -> int:
     with tempfile.TemporaryDirectory() as tmp:
         # ---- (b) the witness case -----------------------------------------
         wc = Path(tmp) / "witness"
-        shutil.copytree(CASE, wc, ignore=shutil.ignore_patterns("*.csv", "expected"))
+        case_records.copytree(CASE, wc, ignore=shutil.ignore_patterns("*.csv", "expected"))
         rc, out = engine_run(wc)
         if rc != 0:
             fails.append("(b) the witness case did not run (rc %d): %s" % (rc, out[-400:]))

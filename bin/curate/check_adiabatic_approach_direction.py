@@ -91,6 +91,7 @@ import json
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -131,7 +132,7 @@ def fixture(td: str, name: str, edits) -> Path:
     flowsheetDict; every edit must land exactly once, or the fixture is
     STALE and the probe would run the engine on the wrong question."""
     dst = Path(td) / name
-    shutil.copytree(WITNESS, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(WITNESS, dst, ignore=shutil.ignore_patterns(
         "converged", "reports", "iterations", "design"))
     f = dst / "system" / "flowsheetDict"
     t = f.read_text()
@@ -246,7 +247,7 @@ def main() -> int:
             fails.append("(e) the dT = 0 run prints an approach line")
         if ISO.exists():
             iso = Path(td) / "iso"
-            shutil.copytree(ISO, iso, ignore=shutil.ignore_patterns(
+            case_records.copytree(ISO, iso, ignore=shutil.ignore_patterns(
                 "converged", "reports", "iterations", "design"))
             rc, out_i, js_i = run(iso)
             if rc != 0 or js_i is None:

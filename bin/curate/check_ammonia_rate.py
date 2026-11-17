@@ -113,6 +113,7 @@ import json
 import math
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -240,7 +241,7 @@ def point(label, T, P_atm, eta):
 
 def probe_case(td, reactions_text, report, points):
     dst = Path(td) / "case"
-    shutil.copytree(CASE, dst, ignore=shutil.ignore_patterns("reports", "converged"))
+    case_records.copytree(CASE, dst, ignore=shutil.ignore_patterns("reports", "converged"))
     (dst / "constant/reactions").write_text(reactions_text)
     rep = " ".join(f"{{ name {n}; unit {u}; }}" for n, u in report)
     (dst / "system/propsDict").write_text(
@@ -251,7 +252,7 @@ def probe_case(td, reactions_text, report, points):
 def refusal(edit_props, edit_rx, label, fails, expect):
     with tempfile.TemporaryDirectory() as td:
         dst = Path(td) / "case"
-        shutil.copytree(CASE, dst, ignore=shutil.ignore_patterns("reports", "converged"))
+        case_records.copytree(CASE, dst, ignore=shutil.ignore_patterns("reports", "converged"))
         pd, rx = dst / "system/propsDict", dst / "constant/reactions"
         pd.write_text(edit_props(pd.read_text()))
         rx.write_text(edit_rx(rx.read_text()))

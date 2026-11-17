@@ -88,6 +88,7 @@ Exit 0 = all hold.  Exit 1 = a named failure.
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -234,7 +235,7 @@ def run(case):
 
 def copy_with_solvent(src, tmp, word):
     dst = os.path.join(tmp, os.path.basename(src) + "_" + word)
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
         "converged", "iterations", "reports", "design", "log.*"))
     tp = os.path.join(dst, "constant", "thermoPhysPropDict")
     t = open(tp).read()

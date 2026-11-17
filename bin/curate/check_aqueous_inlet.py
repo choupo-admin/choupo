@@ -12,6 +12,7 @@ not stop the others: every verdict is reported.
 """
 
 import contextlib
+import case_records  # noqa: E402  (the probe copy has one home)
 import io
 import sys
 import traceback
@@ -155,7 +156,7 @@ differ, and because the next witness may not be so obliging.
         """Copy the sealed case with a replacement 0/feed; return (rc, out, dir)."""
         td = tempfile.mkdtemp()
         sub = pathlib.Path(td) / tag
-        shutil.copytree(CASE, sub)
+        case_records.copytree(CASE, sub)
         for stale in ("converged", "reports"):
             if (sub / stale).exists():
                 shutil.rmtree(sub / stale)
@@ -592,7 +593,7 @@ fall-through to dissolved):
     def staged(mutate=None):
         d = tempfile.mkdtemp(prefix="qual_")
         dst = os.path.join(d, "case")
-        shutil.copytree(CASE, dst)
+        case_records.copytree(CASE, dst)
         if mutate:
             p = os.path.join(dst, "0", "feed")
             s = open(p, encoding="utf-8").read()
@@ -845,7 +846,7 @@ into the wrapper (the detect/read split):
     def stage(src):
         d = tempfile.mkdtemp(prefix="matwrap_")
         dst = os.path.join(d, os.path.basename(src))
-        shutil.copytree(src, dst)
+        case_records.copytree(src, dst)
         return d, dst
 
 

@@ -121,6 +121,7 @@ two lines passes them; (a4) and the behavioural arms are what remain.
 """
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -302,7 +303,7 @@ def run(case):
 def probe(op_line):
     tmp = Path(tempfile.mkdtemp(prefix="activityDomain."))
     case = tmp / "probe"
-    shutil.copytree(WITNESS, case, ignore=shutil.ignore_patterns(
+    case_records.copytree(WITNESS, case, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "log.*", "reports"))
     (case / "system/propsDict").write_text(
         "operations\n(\n" + op_line + "\n);\n")

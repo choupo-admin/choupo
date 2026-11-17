@@ -224,6 +224,7 @@ import json
 import pathlib
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -313,7 +314,7 @@ def rows_of(adjblock):
 def variant(feed_body, tag):
     td = tempfile.mkdtemp()
     sub = pathlib.Path(td) / tag
-    shutil.copytree(CASE, sub)
+    case_records.copytree(CASE, sub)
     for stale in ("converged", "reports"):
         if (sub / stale).exists():
             shutil.rmtree(sub / stale)
