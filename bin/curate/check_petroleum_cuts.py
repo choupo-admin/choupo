@@ -384,6 +384,10 @@ def main():
         use = d / "use"
         shutil.copytree(CASE, use)
         (use / "constant/propertyManifest").unlink()
+        # The case ships no constant/components/ (C413: it references the
+        # catalogue); the folder existed only as a run's leftover in a used
+        # checkout, so on a clean tree the promotion had nowhere to go.
+        (use / "constant/components").mkdir(parents=True, exist_ok=True)
         for f in recs:
             if f.name.startswith("petCut_"):
                 shutil.copy(f, use / "constant/components" / f.name.replace(".estimated", ""))
