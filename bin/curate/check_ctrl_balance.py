@@ -62,6 +62,26 @@ PARTIAL_B = ("elementalComposition\n{\n    basis massFraction;\n"
              "    }\n}\n")
 
 
+def own_record(case, name, kind):
+    """The toy record `name` as a case-local file the probe may edit.  The catalogue
+    carries toys of the same name; the probe's edits make a DIFFERENT species under
+    that name (other formula, other MW), which a case-local record must declare:
+    `kind` is `distinctFrom` where the catalogue's formula is a real element symbol
+    ("B" is boron, so C2H4O2 disagrees) and `variationOf` where it is a toy label
+    the engine cannot compare ("A")."""
+    f = case_records.ensure_local(case, f"components/{name}.dat")
+    t = f.read_text()
+    #  a record the base case already carries declares a variation of its own: the
+    #  probe's edit makes it another species, so the declaration is restated
+    t = re.sub(r"(?m)^(variationOf|overlayOf|distinctFrom)\s+\w+;[^\n]*\n", "", t)
+    t = re.sub(r"(?m)^variationReason\s+[^\n]*\n", "", t)
+    t = re.sub(r"(?m)^(name\s+%s;[^\n]*\n)" % name,
+               r'\1%s %s;\nvariationReason "gate fixture: a toy with real formulas";\n' % (kind, name),
+               t, count=1)
+    f.write_text(t)
+    return f
+
+
 def make_case(tmp, name, src, *, real_formulas=False, no_reaction=False,
               a_to_2b=False, rtol=None, add_ghost=False,
               partial_late_B=False):
@@ -81,8 +101,8 @@ def make_case(tmp, name, src, *, real_formulas=False, no_reaction=False,
     case_records.copytree(src, case, ignore=ignore)
     case_records.unpin(case)          # a probe copy of a pinned case behaves as the unsealed case it is
     if real_formulas:
-        a = case / "constant" / "components" / "compA.dat"
-        b = case / "constant" / "components" / "compB.dat"
+        a = own_record(case, "compA", "variationOf")
+        b = own_record(case, "compB", "distinctFrom")
         a.write_text(re.sub(r"(?m)^MW\s+[^;]+;", "MW          60.0;",
                      re.sub(r"(?m)^formula\s+[^;]+;", "formula     C2H4O2;",
                             a.read_text())))
@@ -118,7 +138,7 @@ def make_case(tmp, name, src, *, real_formulas=False, no_reaction=False,
         # compB starts at zero inventory with zero feed and only APPEARS as
         # the reaction produces it: the promotion path.  It loses its toy
         # formula and declares a PARTIAL composition.
-        b = case / "constant" / "components" / "compB.dat"
+        b = own_record(case, "compB", "variationOf")    # `pseudoB` is no element symbol
         b.write_text(re.sub(r"(?m)^formula\s+[^;]+;",
                             "formula     pseudoB;", b.read_text())
                      + PARTIAL_B)
