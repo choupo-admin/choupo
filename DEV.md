@@ -3836,6 +3836,37 @@ accepts today, and that is a policy call.
 > reason"); nothing to do.  (1) is 63 entries in 41 cases (the 56 counted
 > manifests carrying the word, 15 with an empty block).  Running: (1) and
 > (5) by two Sonnet builders; then (4), the liquid-property door, last.
+>
+> **C421, ITEMS (1) AND (5) LANDED (2026-11-18).**  (1) HELD COPIES 63 -> 0
+> (ceiling lowered to 0): no entry was an exact copy, none undecided --
+> 33 already declared `distinctFrom` (the ion components Cl-/NO3-/H+ under
+> the catalogue's names), 30 full copies of an older snapshot that added one
+> value (the Fuller `diffusionVolume`, C329) became `overlayOf` deltas
+> carrying that value alone (these 15 column cases now read the catalogue for
+> everything else), 9 adsorption isotherm pairs and 2 isoButene records became
+> `variationOf` with the difference and its source quoted (isoButene dHf
+> -17885 J/mol from the measured heat of combustion against the catalogue's
+> Joback -10250).  Every one of the 41 cases' goldens unchanged, never
+> re-recorded; `--scope` 46/0 with mass, element and energy closed.  The
+> property route bench was re-recorded with Vitor's explicit authorisation
+> (the builder's attempt was refused by the permission system and the
+> architect did not run it for him until Vitor said yes): 0 of the 14 796
+> blocks present before and after moved; the new overlay groups resolve to
+> the catalogue's values bit for bit.  FOUND, registered: (a) batch09/10 --
+> a case-local adsorbent overlay makes the engine read isotherm pairs ONLY
+> from the case's own directory, so a pair cannot be a reference there (the
+> two stay declared variations); (b) 16 case records declared `variationOf`
+> are equal to the catalogue in every value and 2 differ in text only
+> (Ar-NH3 in five ammonia cases, air, NaCl-water, ...): FALSE VARIATIONS,
+> the sixth count of this order, next; the catalogue's Ar-NH3 comment about
+> "two copies kept in step by hand" is stale and goes with them.  (5) GATES
+> WITH THEIR OWN CASE COPY 22 -> 0: 15 ported byte-identical (unread_keys,
+> regressed_pairs, relief_valve among them), 7 declared in
+> `debt_registry.OWN_CASE_COPY` with the reason at the call (partial copies
+> of constant/ or system/, a fixture, seal_verdict's unmaterialised pins, and
+> three nested-suite gates whose port failed and was reverted);
+> check_debt_registry holds the list true.  `--fast` 88/0 on the merge.
+> LEFT: (6) the false variations; (4) the liquid-property door, last.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
