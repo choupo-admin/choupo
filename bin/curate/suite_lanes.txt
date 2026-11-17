@@ -238,11 +238,10 @@ PRE  | SERIAL | bin/curate/check_reference_rung.py                 | writes buil
 PRE  | PAR    | bin/curate/check_explain_property.py               | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO    | bin/curate/check_seal_growth.py                    | ISO (private slot tree; measured: writes base.csv (+1 more))
 PRE  | PAR    | bin/curate/check_exergy.py                         | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
-PRE  | PAR    | bin/curate/check_glob_raw.py                       | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_gui_static.py                         | merged (DEV.md 4c C419) from glob_raw, viewport_units; lane = the strictest of the former lanes (PAR, PAR)
 PRE  | PAR    | bin/curate/check_unit_families.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO    | bin/curate/check_intro_trace.py                    | ISO (private slot tree; measured: writes tutorials/steady/flash/adiabaticFlash01_benzene_toluene/converged (+26 more))
 PRE  | PAR    | bin/curate/check_guide_anchors.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
-PRE  | PAR    | bin/curate/check_viewport_units.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_mixing_ledger.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/check_ice_freezing.py                   | writes build/linux64Gcc/freezingProbe
 PRE  | ISO    | bin/curate/check_phase_split_scan.py               | ISO (private slot tree; measured: writes freeze.csv (+1 more))

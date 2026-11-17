@@ -6617,15 +6617,15 @@ PYEOF
     # SITE -- fails while dev and vitest stay green.  It blocked three
     # consecutive publishes; this is the cheap local check for the
     # construct, on the check_wasm_dialect pattern.
-    if gate_exec "$ROOT/bin/curate/check_glob_raw.py" > /tmp/globraw.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "glob-raw-gate" "$(head -1 /tmp/globraw.$$)"
+    if gate_exec "$ROOT/bin/curate/check_gui_static.py" > /tmp/gui_static.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "gui-static-gate" "$(gate_claim check_gui_static /tmp/gui_static.$$ | cut -c1-240)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_glob_raw.py)\n" "glob-raw-gate"
-        cat /tmp/globraw.$$
+        printf "FAIL  %-40s  (run bin/curate/check_gui_static.py)\n" "gui-static-gate"
+        cat /tmp/gui_static.$$
         fail=$((fail+1))
     fi
-    rm -f /tmp/globraw.$$
+    rm -f /tmp/gui_static.$$
 
     # unit-family gate (2026-09-22).  Vitor: the flowsheet boxes carry no
     # symbol of the unit operation.  Measured, the engine registers 51 unit
@@ -6684,15 +6684,7 @@ PYEOF
     # Desktop cannot see the difference: 100vh and 100dvh are the same number
     # without a retracting chrome, so every screen, test and screenshot here
     # agrees while the phone is broken.  A gate is the only thing that looks.
-    if gate_exec "$ROOT/bin/curate/check_viewport_units.py" > /tmp/viewportunits.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "viewport-unit-gate" "$(head -1 /tmp/viewportunits.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_viewport_units.py)\n" "viewport-unit-gate"
-        cat /tmp/viewportunits.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/viewportunits.$$
+    #  (check_viewport_units is an ARM of check_gui_static, run at the first site of its cluster; DEV.md 4c C419)
 
     # mixing-ledger gate (2026-08-31).  The mixingRules op publishes the
     # one-fluid decomposition through EquationOfState::mixingLedger -- a

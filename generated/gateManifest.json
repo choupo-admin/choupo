@@ -481,11 +481,6 @@
       "claim": null,
       "seconds": 0.0
     },
-    "check_glob_raw": {
-      "exit": 0,
-      "claim": "check_glob_raw: OK -- 18 source file(s) call import.meta.glob; every glob over a non-JavaScript pattern asks for it raw, so rollup receives strings and never tries to parse a .dat as JavaScript.  The probe (the exact construct that blocked three site publishes on 2026-08-31) is still rejected.  NOT CHECKED: this is a SOURCE scan, not a build -- it cannot see any OTHER way to break `vite build`, and it does not run rollup.",
-      "seconds": 0.0
-    },
     "check_glossary_bans": {
       "exit": 0,
       "claim": "check_glossary_bans: OK -- 58431 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 62896 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
@@ -1105,11 +1100,6 @@
       "exit": 0,
       "claim": "check_verdict_parity: OK -- the 5 curation verdicts (heldOutPerformed, notClaimed, notValidated, validated, validationRefused) are spelled identically in all FIVE of their homes -- CurationDossier.cpp (the authority), the TS union, the Component Inspector's renderer table, the fit panel's meaning table (added 2026-09-04 when the verdict reached the machine channel) and the verdict colour table the fit panel and the props review screen draw (held since 2026-10-24); every human-visible \"validation\" in src/ (5 file(s) carry the word in an output string) sits where a partition is CONSUMED.  Does NOT check the dossier's written JSON, nor whether a verdict is correct for a given fit.",
       "seconds": 0.3
-    },
-    "check_viewport_units": {
-      "exit": 0,
-      "claim": "check_viewport_units: OK -- the full-viewport height has ONE home (gui/src/theme-overrides.css: `100vh` with an `@supports (height: 100dvh)` upgrade), 11 site(s) read var(--choupo-vh), and no bare `100vh` remains in gui/src code except a declaration restated in `100dvh` for a document that cannot inherit the variable.  NOT CHECKED: `100vw` (a different defect with a different remedy, and nothing here was changed for it), whether the app actually fits a phone (no script sees a rendered page), and any stylesheet outside gui/src.",
-      "seconds": 0.6
     },
     "check_vlle_fallback": {
       "exit": 0,
@@ -1860,6 +1850,11 @@
       "exit": 0,
       "claim": "check_way_in: OK -- [start_here] the way in is intact: 9 ordered steps, every one an existing case that ships a golden and is therefore checked on every suite run, and both the README and bin/listCases point at it.  NOT CHECKED: whether the ORDER is pedagogically right, whether nine is the right number, or whether each step's one-line claim is true of its case -- those are teaching judgements and no gate can make them. || [first_path_agrees] all 9 cases the written curriculum (docs/start-here.md) teaches exist, carry a README.md, and declare `tier tutorial;`, so the app's \"start here: the first path\" folder contains the whole of it; the document's own announced count matches the entries found, so a silently-empty parse cannot pass.  NOT CHECKED: the ORDER (the folder is a SET and says so; a declared order is a deferred case-format decision), whether any case suits its position (a reading judgement), and the welcome cards (gui/tests/firstPath.test.ts owns that claim -- a second home for it is the defect this gate exists to prevent).",
       "seconds": 0.0
+    },
+    "check_gui_static": {
+      "exit": 0,
+      "claim": "check_gui_static: OK -- [glob_raw] 19 source file(s) call import.meta.glob; every glob over a non-JavaScript pattern asks for it raw, so rollup receives strings and never tries to parse a .dat as JavaScript.  The probe (the exact construct that blocked three site publishes on 2026-08-31) is still rejected.  NOT CHECKED: this is a SOURCE scan, not a build -- it cannot see any OTHER way to break `vite build`, and it does not run rollup. || [viewport_units] the full-viewport height has ONE home (gui/src/theme-overrides.css: `100vh` with an `@supports (height: 100dvh)` upgrade), 11 site(s) read var(--choupo-vh), and no bare `100vh` remains in gui/src code except a declaration restated in `100dvh` for a document that cannot inherit the variable.  NOT CHECKED: `100vw` (a different defect with a different remedy, and nothing here was changed for it), whether the app actually fits a phone (no script sees a rendered page), and any stylesheet outside gui/src.",
+      "seconds": 0.5
     }
   }
 }

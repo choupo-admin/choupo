@@ -294,7 +294,7 @@ one is invisible to the entire toolchain: without a retracting chrome
 `100vh` and `100dvh` are the same number, so every developer screen, every
 test and every screenshot agrees while the phone is broken.  A defect no
 part of the workbench can see is exactly what a gate is for --
-`check_viewport_units`.
+`check_gui_static` (arm `check_viewport_units`).
 
 ## 2.6 Legibility, colour and the keyboard (DEV.md 4c C168, 2026-10-26)
 
