@@ -41,11 +41,31 @@ leading or trailing blanks.
 
   probe     <name>             a refusal probe (expected exit: non-zero)
   control   <name>             a positive control (expected exit: zero)
+    base / binary / strip / timeout   (inside a probe) override the group's own
+                               for this probe alone: a group may mix bases and
+                               binaries (C420 batch 2: the solverDict lint runs
+                               four binaries on four cases)
     edit    <file> TAB <old> TAB <new>
                                change a file of the copy; `old` starting with
                                `re:` is a regex (multi-line mode), `\\n` is a
-                               newline; an `old` that is absent FAILS the probe
+                               newline; an `old` that is absent FAILS the probe.
+                               To APPEND to a file use `re:\\Z` as `old`.
+    editall <file> TAB <old> TAB <new>
+                               the same, but replaces EVERY occurrence (`edit`
+                               replaces the first only): a case that states one
+                               thing twice (two operations, two pins)
+    add     <file> TAB <text>  create a NEW file in the copy (`\\n` = newline,
+                               parent directories made); a file that already
+                               exists FAILS the probe (it would test something else)
+    copy    <dest> TAB <src>   put a file of the repository (`src`, relative to
+                               the repo) at `dest` in the copy; a missing `src`
+                               FAILS the probe.  Edits, adds and copies apply in
+                               the order written.
     match   <regex>            the output must match (all of them; DOTALL)
+    nomatch <regex>            the output must NOT match (all of them; DOTALL):
+                               a silence claim ("the lint does not cry wolf").
+                               Use it on a `control` (exit zero), so that the
+                               silence is not merely a crash
     exit    nonzero | zero | <n>   override the expected exit
     ok      <fragment>         this probe's words in a composed OK line
 
@@ -55,6 +75,7 @@ must not pass).  Python standard library only.
 import contextlib
 import io
 import re
+import shutil
 import sys
 from pathlib import Path
 
@@ -86,16 +107,31 @@ def parse(path):
         parts = s.split(None, 1)
         key, val = parts[0], (parts[1] if len(parts) > 1 else "")
         if key in ("probe", "control"):
-            cur = {"kind": key, "name": val, "edits": [], "match": [], "exit": None, "ok": None}
+            cur = {"kind": key, "name": val, "ops": [], "match": [], "nomatch": [],
+                   "exit": None, "ok": None}
             g["probes"].append(cur)
             last = (cur, "name")
-        elif key == "edit":
+        elif key in ("edit", "editall"):
             f = val.split("\t")
             if len(f) == 2:                    # an empty <new>: the trailing TAB was stripped
                 f.append("")
             if cur is None or len(f) != 3:
                 raise SystemExit(f"{path}:{n}: `edit` needs <file>TAB<old>TAB<new> inside a probe")
-            cur["edits"].append((f[0].strip(), f[1].replace("\\n", "\n"), f[2].replace("\\n", "\n")))
+            cur["ops"].append((key, f[0].strip(), f[1].replace("\\n", "\n"),
+                               f[2].replace("\\n", "\n")))
+            last = None
+        elif key in ("add", "copy"):
+            f = val.split("\t")
+            if cur is None or len(f) != 2:
+                raise SystemExit(f"{path}:{n}: `{key}` needs <file>TAB<text|src> inside a probe")
+            cur["ops"].append((key, f[0].strip(), f[1].replace("\\n", "\n"), None))
+            last = None
+        elif key in ("base", "binary", "strip", "timeout") and cur is not None:
+            cur[key] = (val.split() if key == "strip"
+                        else int(val) if key == "timeout" else val)
+            last = None
+        elif key == "nomatch" and cur is not None:
+            cur["nomatch"].append(val)
             last = None
         elif key == "match" and cur is not None:
             cur["match"].append(val)
@@ -124,18 +160,46 @@ def parse(path):
     return g
 
 
-def run_probe(g, p, bin_path):
-    """None when the probe held, else the failure text."""
-    with gatekit.probe_copy(g["base"], g["strip"]) as case:
-        for rel, old, new in p["edits"]:
-            regex = old.startswith("re:")
-            try:
-                gatekit.edit(case / rel, old[3:] if regex else old, new, regex=regex)
-            except gatekit.EditNotApplied as e:
-                return f"{p['name']}: the edit did not apply ({e}) -- the probe tests nothing"
-            except FileNotFoundError:
-                return f"{p['name']}: {rel} is not in the base case -- the probe is stale"
-        rc, out = gatekit.run(bin_path, case, g["timeout"])
+def apply_op(case, op):
+    """Apply one edit / add / copy to the probe copy; return a failure text or None."""
+    kind, rel, x, y = op
+    if kind in ("edit", "editall"):
+        regex = x.startswith("re:")
+        try:
+            gatekit.edit(case / rel, x[3:] if regex else x, y, regex=regex,
+                         count=0 if kind == "editall" else 1)
+        except gatekit.EditNotApplied as e:
+            return f"the edit did not apply ({e}) -- the probe tests nothing"
+        except FileNotFoundError:
+            return f"{rel} is not in the base case -- the probe is stale"
+    elif kind == "add":
+        dst = case / rel
+        if dst.exists():
+            return f"{rel} already exists in the base case -- `add` would test something else"
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        dst.write_text(x)
+    else:                                              # copy
+        src = gatekit.repo / x
+        if not src.is_file():
+            return f"{x} is not in the repository -- the probe is stale"
+        (case / rel).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(src, case / rel)
+    return None
+
+
+def run_probe(g, p):
+    """None when the probe held, else the failure text.  base, binary, strip and
+    timeout are the probe's own when it names them, else the group's."""
+    try:
+        bin_path = gatekit.binary(p.get("binary", g["binary"]))
+        with gatekit.probe_copy(p.get("base", g["base"]), p.get("strip", g["strip"])) as case:
+            for op in p["ops"]:
+                bad = apply_op(case, op)
+                if bad:
+                    return f"{p['name']}: {bad}"
+            rc, out = gatekit.run(bin_path, case, p.get("timeout", g["timeout"]))
+    except gatekit.GateRefusal as e:
+        return f"{p['name']}: {e}"
     want = p["exit"] or ("zero" if p["kind"] == "control" else "nonzero")
     if want == "nonzero" and rc == 0:
         return f"{p['name']}: the probe RAN (exit 0) -- the refusal is gone"
@@ -147,25 +211,22 @@ def run_probe(g, p, bin_path):
         if not re.search(rx, out, re.S):
             return (f"{p['name']}: exit {rc}, but the output does not match /{rx}/:\n      "
                     + out[-500:])
+    for rx in p["nomatch"]:
+        if re.search(rx, out, re.S):
+            return (f"{p['name']}: exit {rc}, but the output matches /{rx}/ -- "
+                    "it must stay silent on this")
     return None
 
 
 def run_group(g):
     """Print the group's verdict lines; return (ok, claim)."""
-    fails, frags, bin_path = [], [], None
-    try:
-        bin_path = gatekit.binary(g["binary"])
-        gatekit.base_case(g["base"])
-    except gatekit.GateRefusal as e:
-        fails.append(str(e))
-        bin_path = None
-    if bin_path:
-        for p in g["probes"]:
-            f = run_probe(g, p, bin_path)
-            if f:
-                fails.append(f)
-            elif p["ok"]:
-                frags.append(p["ok"])
+    fails, frags = [], []
+    for p in g["probes"]:
+        f = run_probe(g, p)
+        if f:
+            fails.append(f)
+        elif p["ok"]:
+            frags.append(p["ok"])
     ok_text = g["ok"] if "ok" in g else "; ".join(frags) + g.get("ok_tail", "")
     head = g.get("ok_head")
     rc = gatekit.verdict(g["row"], fails, ok_text, ok_head=head, fail_head=g.get("fail_head"),
