@@ -7053,15 +7053,15 @@ PYEOF
     #  six that did not included tutorials/plant/acetonePlant, the plant the
     #  whole document builds toward.  A student who read the document and a
     #  student who clicked the folder were taught two different courses.
-    if gate_exec "$ROOT/bin/curate/check_first_path_agrees.py" > /tmp/firstpath.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "first-path-gate" "$(head -1 /tmp/firstpath.$$)"
+    if gate_exec "$ROOT/bin/curate/check_way_in.py" > /tmp/way_in.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "way-in-gate" "$(gate_claim check_way_in /tmp/way_in.$$ | cut -c1-240)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_first_path_agrees.py)\n" "first-path-gate"
-        cat /tmp/firstpath.$$
+        printf "FAIL  %-40s  (run bin/curate/check_way_in.py)\n" "way-in-gate"
+        cat /tmp/way_in.$$
         fail=$((fail+1))
     fi
-    rm -f /tmp/firstpath.$$
+    rm -f /tmp/way_in.$$
 
     # Gibbs-Duhem gate (2026-08-07).  The first check in the tree that asks
     # whether a thermodynamic model is RIGHT rather than UNCHANGED.  A golden
@@ -7291,15 +7291,7 @@ PYEOF
     # cases in order and is the first thing a newcomer is pointed at, from the
     # README and from listCases.  A curated list of paths held in prose is
     # exactly the shape that rots when other work renames a case.
-    if gate_exec "$ROOT/bin/curate/check_start_here.py" > /tmp/sh.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "start-here-gate" "$(tail -1 /tmp/sh.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_start_here.py)\n" "start-here-gate"
-        cat /tmp/sh.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/sh.$$
+    #  (check_start_here is an ARM of check_way_in, run at the first site of its cluster; DEV.md 4c C419)
 
     # The TUTORIALS GUIDE is generated from the cases too, and until
     # 2026-08-14 nothing noticed when it fell behind them: the generator
