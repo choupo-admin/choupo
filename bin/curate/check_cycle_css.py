@@ -28,6 +28,7 @@ import json
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -75,7 +76,7 @@ UNROLLED = """recipe
 
 def make_case(tmp: Path, tag: str, block: str) -> Path:
     case = tmp / f"probe_{tag}"
-    shutil.copytree(BASE, case, ignore=shutil.ignore_patterns(
+    case_records.copytree(BASE, case, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "[0-9]*", "resultJson*"))
     fs = case / FS
     t = fs.read_text()

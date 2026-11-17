@@ -49,6 +49,7 @@ import json
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -103,7 +104,7 @@ def main() -> int:
         return 1
     with tempfile.TemporaryDirectory() as td:
         case = Path(td) / "dep"
-        shutil.copytree(CASE, case, ignore=shutil.ignore_patterns(
+        case_records.copytree(CASE, case, ignore=shutil.ignore_patterns(
             "expected", "log.*", "reports", "converged"))
         pd = case / "system" / "propsDict"
         s = pd.read_text()

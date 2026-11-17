@@ -111,6 +111,7 @@ import json
 import math
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -484,7 +485,7 @@ PROBES = [
 
 def probe(tmp, tag, op_extra, net_edit, needle):
     d = Path(tmp) / tag
-    shutil.copytree(WITNESS, d, ignore=shutil.ignore_patterns("*.csv"))
+    case_records.copytree(WITNESS, d, ignore=shutil.ignore_patterns("*.csv"))
     net = d / "constant/plant/network"
     t = net.read_text()
     if net_edit:
@@ -567,7 +568,7 @@ def main():
             for meter in streams:
                 for size in (float(lo.group(1)), float(hi.group(1))):
                     d = Path(tmp) / f"knob_{meter}_{size:g}"
-                    shutil.copytree(WITNESS, d, ignore=shutil.ignore_patterns("*.csv"))
+                    case_records.copytree(WITNESS, d, ignore=shutil.ignore_patterns("*.csv"))
                     body = ("        network constant/plant/network;\n"
                             "        readings constant/plant/readings;\n        alpha 0.05;\n"
                             f"        syntheticDrift {{ meter {meter}; size {size:g} t/h; }}\n")

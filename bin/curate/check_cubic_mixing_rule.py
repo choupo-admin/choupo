@@ -81,6 +81,7 @@ import math
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -470,7 +471,7 @@ def refusals():
         tmp = Path(tempfile.mkdtemp(prefix="cmr_gate_"))
         try:
             cp = tmp / "case"
-            shutil.copytree(WITNESS, cp, ignore=shutil.ignore_patterns("*.csv"))
+            case_records.copytree(WITNESS, cp, ignore=shutil.ignore_patterns("*.csv"))
             (cp / "constant/thermoPhysPropDict").write_text(text)
             first = "N2" if "N2 water" in text else "methanol"
             if first == "N2":                    # an unsealed case: the catalogue supplies N2
@@ -494,7 +495,7 @@ def refusals():
     tmp = Path(tempfile.mkdtemp(prefix="cmr_gate_"))
     try:
         cp = tmp / "case"
-        shutil.copytree(WITNESS, cp, ignore=shutil.ignore_patterns("*.csv"))
+        case_records.copytree(WITNESS, cp, ignore=shutil.ignore_patterns("*.csv"))
         (cp / "system/propsDict").write_text(
             "operations\n(\n    {\n        name hot;\n        type propertyPoint;\n        thermo mhv1;\n"
             "        state { T 450 K; P 20 bar; composition { methanol 0.5; water 0.5; } }\n"

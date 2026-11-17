@@ -144,6 +144,7 @@ import json
 import math
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -214,7 +215,7 @@ def prepare(work, name, src, text=None, strip=False):
     d = work / name
     if d.exists():
         shutil.rmtree(d)
-    shutil.copytree(src, d, ignore=shutil.ignore_patterns("reports", "converged",
+    case_records.copytree(src, d, ignore=shutil.ignore_patterns("reports", "converged",
                                                           "design", "iterations"))
     if strip:
         p = d / "system" / "postDict"

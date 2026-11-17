@@ -15,6 +15,7 @@ real corpus case, each required to refuse BY MESSAGE.
 A missing binary REFUSES (a check that cannot run must not pass).
 """
 import re, shutil, subprocess, sys, tempfile
+import case_records  # noqa: E402  (the probe copy has one home)
 from pathlib import Path
 
 repo = Path(__file__).resolve().parents[2]
@@ -39,7 +40,7 @@ if not base.is_dir():
 def probe(mutate, must_match, excl_match, label):
     with tempfile.TemporaryDirectory() as td:
         case = Path(td) / "probe"
-        shutil.copytree(base, case)
+        case_records.copytree(base, case)
         mutate(case)
         r = subprocess.run([str(solve)], cwd=case, capture_output=True,
                            text=True, timeout=600)

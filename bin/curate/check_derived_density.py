@@ -86,6 +86,7 @@ alone):
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -110,7 +111,7 @@ def rho_kell(t):
 def staged(density_repl, extra=None):
     d = tempfile.mkdtemp(prefix="dvdens_")
     dst = os.path.join(d, "case")
-    shutil.copytree(CASE, dst)
+    case_records.copytree(CASE, dst)
     p = os.path.join(dst, "0", "feed")
     s = open(p, encoding="utf-8").read()
     if MEASURED not in s:
