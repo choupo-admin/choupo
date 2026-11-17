@@ -70,6 +70,7 @@ import math
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -200,7 +201,7 @@ def main() -> int:
 
     with tempfile.TemporaryDirectory(prefix="explainProbe.") as td:
         probe = Path(td) / "probe"
-        shutil.copytree(WITNESS, probe)
+        case_records.copytree(WITNESS, probe)
         for junk in ("log.choupoProps", "entropy_vs_T.csv",
                      "entropy_vs_P.csv"):
             (probe / junk).unlink(missing_ok=True)
