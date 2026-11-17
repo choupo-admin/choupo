@@ -123,7 +123,14 @@ int SolubilityParameter::run(const DictPtr& dict,
                               " energy to take the square root of");
             continue;
         }
-        if (c.Vliq() <= 0)
+        //  A stored liquid volume is what the route reads (anchored on Rackett or
+        //  held flat); a record with none would be priced by bare Rackett, an
+        //  ESTIMATE this bench refuses to put under a cohesive energy (C421: the
+        //  question is asked of the package's route, not of the stored datum).
+        const auto vRoute = thermo.liquidVolumeRouteOf(
+            static_cast<std::size_t>(&c - thermo.components().data()));
+        if (vRoute != ThermoPackage::LiquidVolumeRoute::anchoredRackett
+            && vRoute != ThermoPackage::LiquidVolumeRoute::flatVliq)
         {
             refused.push_back(c.name() + ": no liquid molar volume (Vliq) --"
                               " a cohesive energy DENSITY needs a volume");
@@ -141,16 +148,16 @@ int SolubilityParameter::run(const DictPtr& dict,
         Derived d;
         d.name  = c.name();
         d.dHvap = c.Hvap_latent(T);              // J/mol, Watson
-        //  The volume at T.  A record without `VliqT` keeps the stored
-        //  datum (its 25 C volume, as before).  A record that states its
-        //  datum at another temperature (C378: a gas whose Vliq is the
-        //  volume at its normal boiling point) is asked through the one
-        //  home of the liquid volume, at T: reading a boiling-point volume
-        //  as a 25 C one put Cl2's delta about 6 % high at 25 C.
-        d.Vm    = c.hasVliqT()
-                ? thermo.liquidMolarVolumeOf(
-                      static_cast<std::size_t>(&c - thermo.components().data()), T)
-                : c.Vliq();                      // m3/mol
+        //  The volume at T, asked of the one home of the liquid volume
+        //  (C421: no stored-datum read here).  At the record's own datum
+        //  temperature it returns the stored Vliq; at another T it is the
+        //  package's temperature dependence, and a record that states its
+        //  datum at another temperature (`VliqT`, C378: a gas whose Vliq is
+        //  the volume at its normal boiling point) is carried to T the same
+        //  way (reading a boiling-point volume as a 25 C one put Cl2's delta
+        //  about 6 % high at 25 C).
+        d.Vm    = thermo.liquidMolarVolumeOf(
+                      static_cast<std::size_t>(&c - thermo.components().data()), T);   // m3/mol
         { static std::atomic<unsigned> seen{0}; PropertySourceLog::instance().parameterOnce(seen, "Hildebrand solubility parameter", "the molar volume in delta = sqrt((dHvap - RT)/V)"); }
 
         //  R T is the vaporisation work against the surroundings: what is
