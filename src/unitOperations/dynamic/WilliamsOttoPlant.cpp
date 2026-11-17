@@ -28,6 +28,7 @@ License
 
 #include "WilliamsOttoPlant.H"
 #include "core/PropertySourceLog.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include <atomic>
 #include "streams/Composition.H"
 #include "thermo/Component.H"
@@ -46,7 +47,6 @@ namespace Choupo {
 namespace {
     constexpr scalar kA[3] = { 5.9755e9, 2.5962e12, 9.6283e15 };  // 1/h
     constexpr scalar kB[3] = { 12000.0, 15000.0, 20000.0 };       // degR
-    constexpr scalar RHO0  = 50.0;                                // lb/ft3
     constexpr scalar KLB_PER_KMOL = 453.592;                      // the MW convention
 }
 
@@ -140,18 +140,24 @@ sVector WilliamsOttoPlant::rates_(const sVector& m) const
     scalar mt = 0.0;
     for (auto v : m) mt += std::max<scalar>(v, 0.0);
     if (mt <= 0.0) return sVector(6, 0.0);
-    const scalar V = mt / RHO0;                       // Sum m_i/rho0, equal rho0
-    {
-        //  The case's unit name, once per unit and run (review DX-04): the
-        //  counter belongs to this plant, not to the process.
-        PropertySourceLog::instance().useOnce(propertySeen_, type_, name_, "liquidDensity",
-            liquidSource::benchmarkConstantDensity, "bypass",
-            took(RHO0 * 16.01846337));            // lb/ft3 -> kg/m3, for the table only
-    }
+    //  THE DENSITY, asked of the property door (DEV.md 4c C421).  The paper
+    //  states "pure-substance densities rho0A..rho0G = 50 lb/ft3" and
+    //  V = Sum m_i/rho0i (arXiv:2004.07614, sec. 3, eq. 3.14); the case's
+    //  six component records carry Vliq = MW / rho0, and the door mixes the
+    //  volumes additively -- the paper's own V.  rho cancels out of every
+    //  k_i m_i m_j / V term (k_i = a_i / rho), and is read ONCE for both so
+    //  the cancellation is exact.
+    sVector xMol(thermo_->n(), 0.0);
+    for (std::size_t s = 0; s < 6; ++s)
+        xMol[comp_[s]] = std::max<scalar>(m[s], 0.0) / mt;    // equal MW: mass = mole fraction
+    const liquidProperty::Consumer who{ type_, name_ };
+    const scalar rho0 = liquidProperty::evaluate(*thermo_, liquidProperty::Property::density,
+        T_R_ / 1.8, P_bar_ * 1.0e5, xMol, who).value / 16.01846337;   // kg/m3 -> lb/ft3
+    const scalar V = mt / rho0;                       // Sum m_i/rho0, equal rho0
 
-    const scalar k1 = kA[0] / RHO0 * std::exp(-kB[0] / T_R_);
-    const scalar k2 = kA[1] / RHO0 * std::exp(-kB[1] / T_R_);
-    const scalar k3 = kA[2] / RHO0 * std::exp(-kB[2] / T_R_);
+    const scalar k1 = kA[0] / rho0 * std::exp(-kB[0] / T_R_);
+    const scalar k2 = kA[1] / rho0 * std::exp(-kB[1] / T_R_);
+    const scalar k3 = kA[2] / rho0 * std::exp(-kB[2] / T_R_);
 
     const scalar r1 = k1 * mA * mB / V;               // klb/h
     const scalar r2 = k2 * mB * mC / V;
