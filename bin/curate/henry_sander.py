@@ -306,7 +306,7 @@ def case():
     (BATCH / "constant" / "thermoPhysPropDict").write_text(
         "/*  Placeholder the bench requires; no operation reads it.  The case asks the\n"
         "    INSTALLATION catalogue, which holds the records.  */\n\n"
-        "recordType    thermophysicalPropertySystem;\nschemaVersion 2;\n\n"
+        "recordType    thermophysicalPropertySystem;\nschemaVersion 1;\n\n"
         "components       ( water );\n\n"
         "equilibrium\n{\n    formulation gammaPhi;\n"
         "    liquid { activityModel { model ideal; } }\n    vapour { fugacityModel idealGas; }\n}\n")

@@ -56,7 +56,7 @@ def _case(tmp, tag, components, model, ops, verbosity=2):
     (case / "system" / "propsDict").write_text(
         "operations\n(\n" + "\n".join(ops) + "\n);\n")
     (case / "constant" / "thermoPhysPropDict").write_text(
-        "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
         f"components ( {' '.join(components)} );\n"
         "equilibrium\n{\n    formulation gammaPhi;\n"
         f"    liquid {{ activityModel {{ model {model}; }}"

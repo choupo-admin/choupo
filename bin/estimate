@@ -56,7 +56,7 @@ operations
 EOF
 cat > "$tmp/constant/thermoPhysPropDict" <<EOF
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components ( $name );
 equilibrium
 {

@@ -118,7 +118,7 @@ def speciate_case(tmp, name, T, chem=None):
     (d / "system/controlDict").write_text(
         'application choupoProps;\ndescription "gate probe";\nverbosity 2;\n')
     (d / "constant/thermoPhysPropDict").write_text(
-        "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
         "components ( water );\naqueousProperties { activityCoefficients "
         "{ model Davies; referenceBasis aqueousMolality; } }\n")
     shutil.copy(ROOT / "data/standards/components/water.dat",

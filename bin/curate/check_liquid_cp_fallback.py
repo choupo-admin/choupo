@@ -184,7 +184,7 @@ def probe(tmp, record_text, comps, unit="pump"):
     with open(os.path.join(tmp, "system", "controlDict"), "w") as fh:
         fh.write("application choupoSolve;\ndescription \"probe\";\nverbosity 3;\n")
     with open(os.path.join(tmp, "constant", "thermoPhysPropDict"), "w") as fh:
-        fh.write("recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        fh.write("recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
                  "components ( %s );\n"
                  "equilibrium { formulation gammaPhi;"
                  " liquid { activityModel { model ideal; } standardState pureLiquid; }"

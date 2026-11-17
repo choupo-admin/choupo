@@ -8,7 +8,7 @@ The loader keeps a LEGACY ADAPTER strictly at its boundary (old external
 cases open, converted in memory, announced `[legacy] ... re-import
 recommended`) -- but the corpus this repo SHIPS must be canonical:
 
-  * data/standards/chemistry/ gasLiquidEquilibrium records: schemaVersion 2
+  * data/standards/chemistry/ gasLiquidEquilibrium records: schemaVersion 1
     with the typed identity (gasSpecies / dissolvedSpecies / solvent /
     convention) and WITHOUT the legacy `gas` / `dissolved` keys;
   * data/standards/parameters/Henry/ pair records: the typed identity
@@ -46,8 +46,8 @@ def check_gasliquid(p, label):
     if re.search(r'\bgas\s+\S+\s*;', t) or re.search(r'\bdissolved\s', t):
         bad.append(f"{label}: legacy gas/dissolved keys present -- legacy"
                    f" schema is accepted for migration only, never shipped")
-    if not re.search(r'\bschemaVersion\s+2\s*;', t):
-        bad.append(f"{label}: gasLiquidEquilibrium must be schemaVersion 2")
+    if not re.search(r'\bschemaVersion\s+1\s*;', t):
+        bad.append(f"{label}: gasLiquidEquilibrium must be schemaVersion 1")
 
 
 def check_henry(p, label):

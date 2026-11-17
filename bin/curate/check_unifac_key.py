@@ -298,7 +298,7 @@ def main() -> int:
                 'application choupoProps;\ndescription "unifac key probe";\n'
                 'verbosity 3;\n')
             (tmp / "constant" / "thermoPhysPropDict").write_text(
-                "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+                "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
                 f"components ( {probe.stem} water );\nequilibrium\n{{\n"
                 " formulation gammaPhi;\n"
                 " liquid { activityModel UNIFAC; standardState pureLiquid; }\n"

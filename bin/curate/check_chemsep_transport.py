@@ -227,7 +227,7 @@ def write_case(dirpath: Path, comp: str, ops: str):
         'verbosity     3;\n')
     (dirpath / "constant" / "thermoPhysPropDict").write_text(
         "recordType    thermophysicalPropertySystem;\n"
-        "schemaVersion 2;\n"
+        "schemaVersion 1;\n"
         f"components    ( {comp} );\n"
         "equilibrium\n{\n    formulation gammaPhi;\n"
         "    liquid  { activityModel ideal;  standardState pureLiquid; }\n"

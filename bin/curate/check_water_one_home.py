@@ -71,7 +71,7 @@ def main():
         (d / "constant" / "components" / "water.dat").write_text(t)
         (d / "system" / "controlDict").write_text("application choupoProps;\nverbosity 2;\n")
         (d / "constant" / "thermoPhysPropDict").write_text(
-            "recordType thermophysicalPropertySystem;\nschemaVersion 2;\ncomponents ( water );\n"
+            "recordType thermophysicalPropertySystem;\nschemaVersion 1;\ncomponents ( water );\n"
             "equilibrium { formulation gammaPhi; liquid { activityModel ideal; standardState pureLiquid; }"
             " vapour { fugacityModel idealGas; } }\n")
         ops = "".join("{ name T%d; type propertyPoint; state { T %.10g K; P 1 bar; composition { water 1.0; } }"

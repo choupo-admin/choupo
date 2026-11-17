@@ -163,7 +163,7 @@ def main():
     print("\n// ---- recommended constant/thermoPhysPropDict"
           " (review + promote) ----")
     print("recordType    thermophysicalPropertySystem;")
-    print("schemaVersion 2;")
+    print("schemaVersion 1;")
     print()
     print("components    ( " + "  ".join(names) + " );")
     print()

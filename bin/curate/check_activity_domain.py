@@ -396,7 +396,7 @@ D_EXPECTED = {0.1: ("-2.7", "+21"), 0.2: ("+2.3", "+50"),
               0.3: ("+7.1", "+87"), 0.4: ("+11.6", "+134")}
 D_IN_GUIDE = ["-2.7", "+2.3", "+7.1", "+11.6", "+21", "+50", "+87"]
 DAVIES_SURFACE = """recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components ( water );
 aqueousProperties
 {

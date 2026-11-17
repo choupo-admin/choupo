@@ -709,7 +709,7 @@ def declare(write):
         (case / "constant" / "thermoPhysPropDict").write_text(
             "/*  Placeholder the bench requires; no operation reads it.  The case asks the\n"
             "    catalogue (or this case's own constant/parameters/Henry/) for the record.  */\n\n"
-            "recordType    thermophysicalPropertySystem;\nschemaVersion 2;\n\n"
+            "recordType    thermophysicalPropertySystem;\nschemaVersion 1;\n\n"
             f"components       ( {v} );\n\nequilibrium\n{{\n    formulation gammaPhi;\n"
             "    liquid { activityModel { model ideal; } }\n    vapour { fugacityModel idealGas; }\n}\n")
         cls = (f"{s}: " + ("record `role solute;`" if fs["role"] == "solute" else

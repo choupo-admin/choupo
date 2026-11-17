@@ -146,7 +146,7 @@ def op_diags(out):
 
 
 PHIPHI = """recordType thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components ( %s );
 equilibrium
 {

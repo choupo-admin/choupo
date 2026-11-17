@@ -7996,7 +7996,7 @@ PYEOF
 
     # Legacy-schema gate (D2 closed migration): no pre-identity gas-liquid
     # schema in the dev corpus -- standards chemistry records canonical
-    # (schemaVersion 2 + typed identity), Henry pairs identity-complete,
+    # (schemaVersion 1 + typed identity), Henry pairs identity-complete,
     # sealed tutorial mirrors re-imported.  The loader's legacy adapter is
     # for OLD EXTERNAL cases only (announced, converted in memory).
     if gate_exec "$ROOT/bin/curate/check_legacy_schema.py" > /tmp/lsgate.$$ 2>&1; then

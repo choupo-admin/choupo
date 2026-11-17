@@ -4,7 +4,7 @@
 # migrate_thermoPhysProp.py -- STRICT cohort migration to the v2 contract.
 #
 # Rewrites a tutorial case's constant/propertyDict as constant/thermoPhysPropDict
-# (recordType thermophysicalPropertySystem; schemaVersion 2) ONLY when the v1
+# (recordType thermophysicalPropertySystem; schemaVersion 1) ONLY when the v1
 # dict is EXACTLY one of the mapped cohort forms:
 #
 #   T1 (ideal gamma-phi):
@@ -776,7 +776,7 @@ def parse_inline_pairs(stripped, original, span):
 def emit_gamma_gamma(components_verbatim, liquids, vapor):
     out = (HEADER_GAMMAGAMMA
            + "\nrecordType    thermophysicalPropertySystem;\n"
-           + "schemaVersion 2;\n\n"
+           + "schemaVersion 1;\n\n"
            + components_verbatim + "\n\n"
            + "equilibrium\n{\n"
            + "    formulation gammaGamma;         "
@@ -879,7 +879,7 @@ def emit_gamma_phi(components_verbatim, model, pair_decls, transport,
                   "    }\n")
     return (header
             + "\nrecordType    thermophysicalPropertySystem;\n"
-            + "schemaVersion 2;\n\n"
+            + "schemaVersion 1;\n\n"
             + components_verbatim + "\n\n"
             + "equilibrium\n{\n"
             + "    formulation gammaPhi;\n\n"
@@ -901,7 +901,7 @@ def emit_dilute(components_verbatim, solvent, solutes, eos="idealGas"):
                'Henry/%s-%s.dat"; }\n' % (su, solvent, su, solvent))
     return (HEADER_DILUTE
             + "\nrecordType    thermophysicalPropertySystem;\n"
-            + "schemaVersion 2;\n\n"
+            + "schemaVersion 1;\n\n"
             + components_verbatim + "\n\n"
             + "equilibrium\n{\n"
             + "    formulation diluteSolution;\n\n"

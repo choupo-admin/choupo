@@ -278,7 +278,7 @@ def extract_px(xml, block, into, fake_cache=None, x_of=None):
 # --------------------------------------------------------------------------
 def thermo_dict(c1, c2, header=""):
     return f"""{header}recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( {c1}  {c2} );
 
@@ -1767,7 +1767,7 @@ verbosity     2;
     Antoine after).  NOT sealed, for that reason.  */
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( {comp} );
 

@@ -394,7 +394,7 @@ def main():
                 shutil.copy(f, use / "constant/components" / f.name.replace(".estimated", ""))
         comps = " ".join(f"petCut_{i:02d}" for i in range(1, 6))
         (use / "constant/thermoPhysPropDict").write_text(
-            "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+            "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
             f"components ( {comps} );\n"
             "equilibrium { formulation gammaPhi;\n"
             " liquid { activityModel ideal; standardState pureLiquid; }\n"

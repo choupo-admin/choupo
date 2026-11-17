@@ -92,7 +92,7 @@ def probe(tmp: Path, name: str) -> Path:
         'application choupoProps;\ndescription "name hint probe";\n'
         'verbosity 3;\n')
     (d / "constant" / "thermoPhysPropDict").write_text(
-        "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
         f"components ( {name} styrene );\nequilibrium\n{{\n"
         " formulation gammaPhi;\n"
         " liquid { activityModel ideal; standardState pureLiquid; }\n"

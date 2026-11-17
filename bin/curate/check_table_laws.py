@@ -569,7 +569,7 @@ def arm_j(tmp):
     #  constant/thermoPhysPropDict (which inherits its sector's) and selected
     #  by `thermo unitTable;` -- the unit's folder reads ITS experiments/.
     (unit / "constant/thermoPhysPropDict").write_text(
-        "recordType    thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        "recordType    thermophysicalPropertySystem;\nschemaVersion 1;\n"
         "inherits \"../../../constant\";\n"
         "variants { unitTable { transport { liquid { viscosity { pin ( { component water;"
         "  table crcWaterMu;  interpolation logReciprocal;  reason \"check_table_laws (j)\"; } );"

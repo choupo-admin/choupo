@@ -33,7 +33,7 @@ ROOT = Path(__file__).resolve().parents[2]
 PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
 
 CTRL = 'application   choupoProps;\ndescription   "element gate";\nverbosity 3;\n'
-V2 = ("recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+V2 = ("recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
       "components ( water );\nequilibrium { formulation gammaPhi;"
       " liquid { activityModel ideal; } vapour { fugacityModel idealGas; } }\n")
 PROPS_DICT = """operations

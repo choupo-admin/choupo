@@ -147,7 +147,7 @@ def probe(tmp: Path, a: str, b: str) -> Path:
         'application choupoProps;\ndescription "unifac gap probe";\n'
         'verbosity 3;\n')
     (d / "constant" / "thermoPhysPropDict").write_text(
-        "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
         f"components ( {a} {b} );\nequilibrium\n{{\n formulation gammaPhi;\n"
         " liquid { activityModel UNIFAC; standardState pureLiquid; }\n"
         " vapour { fugacityModel idealGas; }\n}\n")

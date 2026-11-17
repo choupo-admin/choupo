@@ -171,7 +171,7 @@ description   "check_reactor_limits fixture";
 verbosity     3;
 """
 MTBE_THERMO = """recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components       ( isoButene methanol methylTertButylEther );
 equilibrium
 {

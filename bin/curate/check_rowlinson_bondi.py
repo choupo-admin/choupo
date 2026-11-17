@@ -320,7 +320,7 @@ with tempfile.TemporaryDirectory() as td:
         (cdir / "nDecane.dat").write_text(txt2)
         (tmp / "case" / "system").mkdir(parents=True)
         (tmp / "case" / "constant" / "thermoPhysPropDict").write_text(
-            "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+            "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
             "components ( nDecane );\nequilibrium\n{\n"
             "  formulation gammaPhi;\n"
             "  liquid { activityModel ideal; standardState pureLiquid; }\n"

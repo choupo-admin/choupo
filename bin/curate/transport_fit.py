@@ -625,7 +625,7 @@ def cmd_case():
     (BATCH / "constant" / "thermoPhysPropDict").write_text(
         hdr + "/*  C327: components that received a fitted liquidViscosity / liquidThermalConductivity.  An ideal liquid:\n"
         "    every property asked is a pure-component one.  NOT sealed.  */\n\n"
-        "recordType    thermophysicalPropertySystem;\nschemaVersion 2;\n\n"
+        "recordType    thermophysicalPropertySystem;\nschemaVersion 1;\n\n"
         "components       ( " + "  ".join(names) + " );\n\n"
         "equilibrium\n{\n    formulation gammaPhi;\n    liquid { activityModel { model ideal; } }\n    vapour { fugacityModel idealGas; }\n}\n")
     ops = ""

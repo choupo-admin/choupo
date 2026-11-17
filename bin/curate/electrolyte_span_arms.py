@@ -46,11 +46,11 @@ HEAD = ('application choupoProps;\ndescription "electrolyte span probe";\n'
 
 def _thermo(model, components, hmw=False):
     if hmw:
-        return ("recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        return ("recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
                 "components ( water );\naqueousProperties\n{\n"
                 "    activityCoefficients { model PitzerHMW;"
                 " referenceBasis aqueousMolality; }\n}\n")
-    return ("recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+    return ("recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
             f"components ( {components} );\n"
             "equilibrium\n{\n    formulation electrolyteGammaPhi;\n"
             f"    aqueous {{ activityModel {{ model {model}; }}"
@@ -212,7 +212,7 @@ def arm_o(tmp, fails):
         "operations\n(\n    { name g; type activityCoefficients;"
         " temperature 298.15; composition { oCresol 0.5; pXylene 0.5; } }\n);\n")
     (case / "constant" / "thermoPhysPropDict").write_text(
-        "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
         "components ( oCresol pXylene );\nequilibrium\n{\n"
         "    formulation gammaPhi;\n"
         "    liquid { activityModel { model NRTL; } standardState pureLiquid; }\n"

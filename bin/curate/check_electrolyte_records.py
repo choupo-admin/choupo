@@ -43,7 +43,7 @@ POPS = [
   [(r"\blogK25\b", "a logK25"), (r'source\s+"', "a source citation")], 45),
  ("gas-liquid", "gases.dat", ["chemistry"],
   "recordType gasLiquidEquilibrium",
-  [("schemaVersion 2", "schemaVersion 2"),
+  [("schemaVersion 1", "schemaVersion 1"),
    (r"\bgasSpecies\b", "a typed gasSpecies"),
    (r"\bdissolvedSpecies\b", "a typed dissolvedSpecies"),
    (r"\blogK25\b", "a logK25"), (r'source\s+"', "a source citation")], 6),
@@ -125,7 +125,7 @@ def _probe(work: Path, cation: str, anion: str, local_record: str = None):
         " molality { from 1; to 1; n 2; } output { file k.csv; } }\n);\n"
         % (cation, anion))
     (work / "constant/thermoPhysPropDict").write_text(
-        "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
         "components ( water );\nequilibrium { formulation gammaPhi; liquid {"
         " activityModel ideal; standardState pureLiquid; } vapour {"
         " fugacityModel idealGas; } }\n")

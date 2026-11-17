@@ -152,7 +152,7 @@ SOLVE = BUILD / "choupoSolve"
 INIT0 = ROOT / "bin" / "choupo-init0"
 
 SYSTEM_PHIPHI = """recordType thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components ( %s );
 equilibrium
 {

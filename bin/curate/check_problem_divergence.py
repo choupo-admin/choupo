@@ -174,7 +174,7 @@ failures = []
 #  from the corpus so the arms do not depend on a tutorial's data staying
 #  the way it is today.
 SYSTEM = """recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( %(comps)s );
 %(approx)s
@@ -535,7 +535,7 @@ with tempfile.TemporaryDirectory() as td:
     #  authorised exit works, and that the two are the SAME contract as the
     #  pair substitution (refuse / record / announce), not a second one.
     H2SYS = """recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components       ( ethanol  water  H2 );
 equilibrium
 {

@@ -111,7 +111,7 @@ FIXTURE = {
         " outputs ( HotOut  CwOut );\n      operation { area 50 m2;  U 500 "
         "W/m2/K;  flow counter; } }\n);\n",
     "constant/thermoPhysPropDict":
-        "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
         "components ( N2 water );\nequilibrium { formulation gammaPhi; "
         "liquid { activityModel ideal; } vapour { fugacityModel idealGas; } }\n",
     "0/Hot":    "componentMolarFlows { N2 100 kmol/h; }\nT 450 K; P 5 bar; phase gas;\n",

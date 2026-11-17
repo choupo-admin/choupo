@@ -229,7 +229,7 @@ def curves(case: Path):
 #  envelope op calls.  Expected values are an INDEPENDENT Peng-Robinson
 #  phi-phi calculation (kij = 0 unless stated), not the engine's output.
 _PHIPHI_THERMO = """recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components    ( %(comps)s );
 equilibrium
 {
@@ -338,7 +338,7 @@ def _write_case(root, comps, eq_block):
     (root / "system" / "controlDict").write_text(
         "application choupoProps;\ndescription \"EoS root probe\";\nverbosity 0;\n")
     (root / "constant" / "thermoPhysPropDict").write_text(
-        "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
         "components ( %s );\n%s" % (" ".join(comps), eq_block))
 
 
@@ -727,7 +727,7 @@ def main() -> int:
         (probe / "system" / "controlDict").write_text(
             "application choupoProps;\ndescription \"PR78 probe\";\nverbosity 3;\n")
         (probe / "constant" / "thermoPhysPropDict").write_text(
-            "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+            "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
             "components ( methanol water );\n"
             "equilibrium\n{\n    formulation gammaPhi;\n"
             "    liquid { activityModel ideal; standardState pureLiquid; }\n"

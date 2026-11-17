@@ -163,7 +163,7 @@ def mkcase(d, comps, points, local=None):
     (d / "system/controlDict").write_text(
         'application choupoProps;\ndescription "probe";\nverbosity 1;\n')
     (d / "constant/thermoPhysPropDict").write_text(
-        "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
         "components ( %s );\nequilibrium\n{\n formulation gammaPhi;\n"
         " liquid { activityModel { model ideal; } }\n"
         " vapour { fugacityModel idealGas; }\n}\n" % "  ".join(comps))

@@ -303,7 +303,7 @@ verbosity     3;
 """
 
 THERMO = """recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components    ( CO  N2 );
 equilibrium
 {
@@ -364,7 +364,7 @@ def build_probe(tmp: Path, name: str, *, geometry="sphere", dimkey="radius",
         p.mkdir(parents=True)
         (p / "CO.dat").write_text(
             "recordType effectiveDiffusivity;\n"
-            "schemaVersion 2;\n"
+            "schemaVersion 1;\n"
             "catalyst  probePellet;\n"
             "species   CO;\n"
             f"D_eff     {measured:.9e};\n"

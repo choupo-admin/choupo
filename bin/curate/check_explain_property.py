@@ -131,7 +131,7 @@ operations
 
 PUREFLUID_THERMO = """
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components    ( water );
 equilibrium
 {

@@ -701,7 +701,7 @@ def run_span_probe(tmp, i, j, temps, inline=None):
                  f" a_ji {inline['a_ji']!r}; b_ji {inline['b_ji']!r};"
                  f" alpha {inline['alpha']!r}; }} }}")
     (case / "constant" / "thermoPhysPropDict").write_text(
-        "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
         f"components ( {i} {j} );\n"
         "equilibrium\n{\n    formulation gammaPhi;\n"
         f"    liquid {{ activityModel {{ model NRTL;{pairs} }}"

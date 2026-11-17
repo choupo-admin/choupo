@@ -439,7 +439,7 @@ verbosity     2;
 """
 
 PROBE_THERMO = """recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components ( %s water );
 equilibrium
 {

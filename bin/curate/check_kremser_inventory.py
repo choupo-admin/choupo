@@ -125,7 +125,7 @@ def expect_refusal(arm: str, case: Path, needles):
 
 
 GAMMA_PHI = """recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components       ( NH3  N2  water );
 equilibrium
 {

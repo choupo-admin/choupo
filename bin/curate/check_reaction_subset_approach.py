@@ -976,7 +976,7 @@ def main() -> int:
             "application choupoSolve;\ndescription \"gate fixture\";\n"
             "verbosity 3;\n")
         (cl / "constant" / "thermoPhysPropDict").write_text(
-            "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+            "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
             "components ( nHexadecane O2 N2 CO2 water );\n"
             "equilibrium { formulation gammaPhi;\n"
             "  liquid { activityModel ideal; standardState pureLiquid; }\n"

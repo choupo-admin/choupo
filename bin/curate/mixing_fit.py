@@ -196,7 +196,7 @@ def harvest(a, b, prop):
 
 def thermo_text(i, j, act):
     act = act or "ideal"
-    return ("recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+    return ("recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
             f"components ( {i} {j} );\n"
             "equilibrium { formulation gammaPhi;"
             f" liquid {{ activityModel {{ model {act}; }} }}"

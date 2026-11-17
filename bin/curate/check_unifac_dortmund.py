@@ -313,7 +313,7 @@ def write_case(d, components, tag):
     (d / "x.cho").write_text("")
     (d / "system/controlDict").write_text('application choupoProps;\ndescription "%s";\nverbosity 1;\n' % tag)
     (d / "constant/thermoPhysPropDict").write_text(
-        "recordType thermophysicalPropertySystem;\nschemaVersion 2;\ncomponents ( %s );\n"
+        "recordType thermophysicalPropertySystem;\nschemaVersion 1;\ncomponents ( %s );\n"
         "equilibrium { formulation gammaPhi; liquid { activityModel { model UNIFACDortmund; }"
         " standardState pureLiquid; } vapour { fugacityModel idealGas; } }\n" % " ".join(components))
     comp = " ".join("%s %s;" % (c, 1.0 / len(components)) for c in components)

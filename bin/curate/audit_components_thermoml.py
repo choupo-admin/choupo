@@ -322,7 +322,7 @@ def read_record(name):
 #  Engine evaluation (choupoProps), one scratch case per component
 # --------------------------------------------------------------------------
 
-HEADER = "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+HEADER = "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
 
 
 def write_case(case, comp, transport_model):

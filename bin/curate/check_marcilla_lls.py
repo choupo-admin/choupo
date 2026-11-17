@@ -168,7 +168,7 @@ try:
     #  it shipped.
     with open(os.path.join(tmp, "constant", "thermoPhysPropDict"), "w") as f:
         f.write("recordType    thermophysicalPropertySystem;\n"
-                "schemaVersion 2;\n"
+                "schemaVersion 1;\n"
                 "components    ( water  %s );\n"
                 "equilibrium\n{\n    formulation gammaGamma;\n"
                 "    liquid { activityModel { model UNIFAC; } }\n"

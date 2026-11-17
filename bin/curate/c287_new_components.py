@@ -1590,7 +1590,7 @@ def write_c309_case():
         BANNER + "/*  The components DEV.md 4c C309 added (slice 3 of C287); an ideal liquid,\n"
         "    because every property this case asks is a pure-component one.  NOT\n"
         "    sealed: the case exists to load the catalogue records as they stand.  */\n\n"
-        "recordType    thermophysicalPropertySystem;\nschemaVersion 2;\n\n"
+        "recordType    thermophysicalPropertySystem;\nschemaVersion 1;\n\n"
         f"components       ( {comps} );\n\n"
         "equilibrium\n{\n    formulation gammaPhi;\n    liquid { activityModel { model ideal; } }\n"
         "    vapour { fugacityModel idealGas; }\n}\n")

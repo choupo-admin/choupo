@@ -220,7 +220,7 @@ def _case_files(stem, ent):
         f"description   \"{stem}: Pitzer and eNRTL fitted to evaluated gamma_pm and phi, 25 C\";\n"
         "verbosity     2;\n")
     thermo = HEADER.format(body=f"  {stem} -- the solvent; the ions are read by name from species/.") + (
-        "\nrecordType    thermophysicalPropertySystem;\nschemaVersion 2;\n\n"
+        "\nrecordType    thermophysicalPropertySystem;\nschemaVersion 1;\n\n"
         "components ( water );\n\nequilibrium\n{\n    formulation gammaPhi;\n\n"
         "    liquid\n    {\n        activityModel ideal;\n        standardState pureLiquid;\n    }\n\n"
         "    vapour\n    {\n        fugacityModel idealGas;\n    }\n}\n")
