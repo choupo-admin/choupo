@@ -16,6 +16,10 @@ import io
 import sys
 import traceback
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -81,7 +85,7 @@ outcome; nothing is read from a stored result.
                     out.append(nm)
             return out
 
-        shutil.copytree(src, case, ignore=ignore)
+        case_records.copytree(src, case, ignore=ignore)
         return case
 
 
@@ -354,7 +358,7 @@ from a byte copy and rebuilt), outcomes as MEASURED:
                     if (NUM.match(n) and n != "0") or n.endswith(".csv")
                     or n in ("latest", "reports", "postProcessing")
                     or n.startswith("log.")]
-        shutil.copytree(src, dst, ignore=ign, symlinks=True)
+        case_records.copytree(src, dst, ignore=ign, symlinks=True)
         return dst
 
 

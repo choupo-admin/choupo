@@ -39,6 +39,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "choupoSolve"
@@ -105,7 +109,7 @@ else:
 #  Same feed, raised above its three-phase bubble pressure: no vapour at all.
 with tempfile.TemporaryDirectory() as td:
     sub = Path(td) / CASE.name
-    shutil.copytree(CASE, sub)
+    case_records.copytree(CASE, sub)
     fd = sub / "system" / "flowsheetDict"
     fd.write_text(re.sub(r"P\s+0\.353\s+atm;", "P 0.50 atm;", fd.read_text()))
     for stale in ("converged", "reports"):

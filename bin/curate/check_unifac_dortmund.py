@@ -63,6 +63,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data/standards/parameters/UNIFACDortmund"
@@ -403,7 +407,7 @@ def table_xi_problems(case_dir):
 
 
 def copy_case(dst):
-    shutil.copytree(CASE, dst, ignore=shutil.ignore_patterns("*.csv", "result*", "log*"))
+    case_records.copytree(CASE, dst, ignore=shutil.ignore_patterns("*.csv", "result*", "log*"))
 
 
 def run_gate():
