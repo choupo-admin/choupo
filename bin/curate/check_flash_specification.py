@@ -89,6 +89,7 @@ import json
 import math
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -281,7 +282,7 @@ def golden_rows(case):
 
 def arm_c(tmp):
     d = Path(tmp) / "witness"
-    shutil.copytree(WITNESS, d)
+    case_records.copytree(WITNESS, d)
     rc, out, err = run(d)
     D = diags(result_json(out))
     if rc != 0:

@@ -129,6 +129,7 @@ import json
 import math
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -311,7 +312,7 @@ def check_arithmetic(case, csv_name, solvents, target_name, basis, tag):
 def probe(tmp, tag, edit):
     """A copy of solvent01 with `edit(dir)` applied; returns (rc, out+err)."""
     d = Path(tmp) / tag
-    shutil.copytree(SYN, d, ignore=shutil.ignore_patterns("expected", "*.csv"))
+    case_records.copytree(SYN, d, ignore=shutil.ignore_patterns("expected", "*.csv"))
     edit(d)
     rc, out, err = run(d)
     return rc, out + err

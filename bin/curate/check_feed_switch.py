@@ -71,6 +71,7 @@ Exit 1 listing failures."""
 import json
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -85,7 +86,7 @@ failures = []
 
 def make_variant(tmp: Path, key: str, value: str) -> Path:
     case = tmp / f"probe_{re.sub(r'[^A-Za-z0-9]', '_', key + value)}"
-    shutil.copytree(BASE, case, ignore=shutil.ignore_patterns(
+    case_records.copytree(BASE, case, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "[0-9]*", "resultJson*"))
     ctrl = case / "system" / "controlDict"
     txt = ctrl.read_text()
@@ -172,7 +173,7 @@ def copy_case(tmp: Path, base: Path, tag: str) -> Path:
     case = tmp / f"ci00_{tag}"
     if case.exists():
         shutil.rmtree(case)
-    shutil.copytree(base, case, ignore=shutil.ignore_patterns(
+    case_records.copytree(base, case, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "[1-9]*", "resultJson*", "log.*"))
     return case
 

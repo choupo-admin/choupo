@@ -71,6 +71,7 @@ import json
 import math
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -171,7 +172,7 @@ def main():
 
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td) / "lle"
-        shutil.copytree(LLE, tmp)
+        case_records.copytree(LLE, tmp)
         for f in list(tmp.glob("*.csv")) + list(tmp.glob("log.*")):
             f.unlink()
         rc, out, err = run(PROPS, tmp)
@@ -235,7 +236,7 @@ def main():
 
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td) / "sc"
-        shutil.copytree(SHORT, tmp)
+        case_records.copytree(SHORT, tmp)
         rc, out, err = run(PROPS, tmp)
         if rc != 0:
             fail(f"extractionShortcut01 did not run (exit {rc})")
@@ -285,7 +286,7 @@ def main():
                         ("hets deleted", lambda t: re.sub(r"\n\s*hets\s+[^\n]*", "", t))):
         with tempfile.TemporaryDirectory() as td:
             tmp = Path(td) / "e3"
-            shutil.copytree(EX3, tmp)
+            case_records.copytree(EX3, tmp)
             fs = tmp / "system/flowsheetDict"
             fs.write_text(edit(fs.read_text()))
             rc, out, err = run(SOLVE, tmp)

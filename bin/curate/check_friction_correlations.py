@@ -159,6 +159,7 @@ import json
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -197,7 +198,7 @@ def run_pipe_probe(pipe, solve, kmol_h, tag):
     tmpd = Path(tempfile.mkdtemp(prefix=f"choupo-pipe-{tag}-"))
     try:
         probe = tmpd / f"pipe01_{tag}"
-        shutil.copytree(pipe, probe,
+        case_records.copytree(pipe, probe,
                         ignore=shutil.ignore_patterns("converged", "log.*",
                                                       "reports", "iterations"))
         feed = probe / "0" / "feed"
@@ -423,7 +424,7 @@ def main():
     tmpd = Path(tempfile.mkdtemp(prefix="choupo-pipe-vapour-"))
     try:
         probe = tmpd / "pipe01_vapour"
-        shutil.copytree(pipe, probe,
+        case_records.copytree(pipe, probe,
                         ignore=shutil.ignore_patterns("converged", "log.*",
                                                       "reports", "iterations"))
         feed = probe / "0" / "feed"
