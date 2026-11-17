@@ -3595,6 +3595,22 @@ accepts today, and that is a policy call.
 > **C417 (Vitor, 2026-11-16: "quero atacar as vias reacionais de quimica organica e inorganica atraves de EduTools com questionarios no fim").**  A COMMISSION; it absorbs C215 (organic reaction classes), C216 (biorefinery reactions) and C218 (reversible vs irreversible, quenching).  The architect's shape: ONE route-card template and ONE quiz component reused by every route.  Each card: the industrial route from feedstock to product; the balanced equations (checked by the engine's element balance); atom economy and E-factor; Delta_r H and K(T) computed from the catalogue; equilibrium conversion against T and P (the lever a student moves); why this reactor and these conditions; by-products, separations, hazards; a link to the Choupo case that runs it.  The quiz ends each card: 5-8 questions, every answer computed or cited, each with its explanation.  First six, where cases or data exist: inorganic -- Haber-Bosch, Ostwald nitric acid, contact sulfuric acid; organic -- methanol synthesis, ethylene oxide to ethylene glycol, cumene to phenol and acetone.  Next: chlor-alkali, Solvay, acetic acid by carbonylation, hydroformylation, nitration, esterification.  Sources to read first: Moulijn, Makkee & van Diepen, Chemical Process Technology; Weissermel & Arpe, Industrial Organic Chemistry; Buchner et al., Industrial Inorganic Chemistry; Greenwood & Earnshaw for the inorganic chemistry.  After the month.
 > **C418 (Vitor, 2026-11-16, areas not yet covered; the architect's ranking).**  Candidates: (1) bioprocess -- a bioreactor with growth, O2 transfer (kLa) and scale-up, and downstream as a chain; (2) wastewater with activated-sludge models (ASM); (3) multiphase reactors (trickle bed, bubble column, slurry); (4) electrochemistry beyond ED (electrolyser C214 W7, fuel cell, battery); (5) freeze-drying, freezing and thermal sterilisation (F0); then furnaces and combustion, polymerisation, LCA and carbon footprint from the balances, leaching.  Books requested from Vitor for each.  After the month, one at a time.
 
+> **C419 (Vitor, 2026-11-17, watching the batch's landing wait on the gate
+> self-test after a sweep in which all 608 cases passed and 37 gates were
+> red: "Isto ja esta em modo Systemantics ... criaste o ministerio de
+> certificacao do Choupo! HELP!").**  He is right on the numbers: 371 gates,
+> and the day went to repairing the system that watches Choupo.  DECIDED
+> (architect), built from the C414 (3) gate audit of 11-16: (1) TIERS: the
+> per-batch sweep stops running the gates that test gates or re-prove what
+> did not change -- regressed-pairs, gate-selftest, gates-judge-tracked --
+> which move to a `--nightly` tier and are printed DEFERRED by name and
+> count in every other run, never silently skipped; (2) MERGES: the audit's
+> clusters A, C-M, O-W (80 gates -> 23), one printed line per former gate;
+> the conservation gates (CLAUDE.md 4b) and the per-model probes stay;
+> (3) RULE: no new gate without a real defect it would have caught, named in
+> its header; a gate that has never failed on a real defect is a candidate
+> for the next cut.  Reported to Vitor as a number before and after.
+
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
 > equation-of-state root under phiPhi; LR-01 fixed), the C415 pilot
