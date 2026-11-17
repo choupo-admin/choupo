@@ -44,6 +44,8 @@ Description
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/transport/StokesEinstein.H"
+#include "thermo/LiquidPropertyDoor.H"
+#include "unitOperations/UnitTypedProperties.H"
 #include "thermo/electrochem/EDStack.H"
 #include "thermo/electrochem/EDStackRegistry.H"
 #include "thermo/electrolyte/AqueousActivity.H"
@@ -89,6 +91,7 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
                                       const ThermoPackage& thermo,
                                       const DictPtr&       /*reactionsDict*/)
 {
+    PropertySourceLog::Scope propertyScope(type(), name());   // the door records its uses under this unit
     thermo_ = &thermo;
     const std::size_t Nc = thermo.n();
     const std::string who = type() + " '" + name() + "'";
@@ -115,6 +118,8 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
     checkInitialTanks(unitDict, thermo, who);
 
     auto op = unitDict->subDict("operation");
+    //  A property typed in the unit block is refused by name (DEV.md 4c C402/C421).
+    unitTypedProperties::refuse(op, "batchElectrodialysis '" + name() + "': ", "electrodialysis rig");
 
     // ---- the stack record is REQUIRED ------------------------------------
     //  This unit has no legacy inline form to preserve.  The crossflow
@@ -320,20 +325,12 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
     // ---- the solvent, resolved ONCE (the rig is isothermal) ---------------
     //  ONE home for the factor since C148 (thermo/transport/StokesEinstein.H),
     //  the same arithmetic in the same order.
-    PropertySourceLog::instance().use(type(), name(), "liquidDensity", liquidSource::diluteCarrierDensity);
-    const stokesEinstein::Factor se = stokesEinstein::factorFor(thermo, iWater_, state_.T);
-    if (se.priced)
+    nu_ = edCell::solventKinematicViscosity(type(), thermo, iWater_, state_.T, state_.P);
     {
-        nu_       = se.mu / edCell::RHO_CARRIER;
+        const stokesEinstein::Factor se = liquidProperty::ionDiffusivityFactor(thermo, state_.T, static_cast<long>(iWater_));
         seFactor_ = se.value;
-        muPriced_ = true;
+        muPriced_ = se.priced;
     }
-    if (muPriced_)
-        PropertySourceLog::instance().use(type(), name(), "liquidKinematicViscosity",
-            liquidSource::stokesEinsteinSolvent, "kernel", took(nu_, state_.T));
-    else
-        PropertySourceLog::instance().use(type(), name(), "liquidKinematicViscosity",
-            liquidSource::waterKinematicViscosity);
 
     // ---- the counter-ions ------------------------------------------------
     //  Until C35 (2026-10-05) a diluate with more than one cation or one
@@ -347,7 +344,7 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
     //  the steady stack's own convention; on a single salt it is THE cation.
     const edCell::ChannelState ch0 =
         edCell::buildChannel(type(), thermo, fractions(state_.n), iWater_,
-                             state_.T, *act_);
+                             state_.T, state_.P, *act_);
     {
         bool haveCat = false, haveAn = false;
         nCations_ = nAnions_ = 0;
@@ -429,13 +426,6 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
             " DEFAULTS to 0.9.  It fixes how much salt each coulomb moves,"
             " so every demineralisation number below scales with it.",
             "model");
-    if (!muPriced_)
-        say("legacy", "the ion diffusivities were used at their curated 25 C"
-            " reference with NO Stokes-Einstein correction to the run"
-            " temperature -- the case declares no `transport { liquid {"
-            " viscosity { model Vogel; } } }`, so the viscosity ratio the"
-            " correction needs is unavailable, and the kinematic viscosity"
-            " fell back to 1e-6 m2/s.", "provenance");
     if (nCations_ > 1 || nAnions_ > 1)
         say("model", "the diluate carries " + std::to_string(nCations_)
             + " cation(s) (" + cationName_ + ") and "
@@ -601,13 +591,20 @@ sVector BatchElectrodialysis::fractions(const sVector& n) const
     return x;
 }
 
-//  The tank volume on the DILUTE-CARRIER density the whole unit is built on
-//  (edCell::RHO_CARRIER): the water alone, which is exactly the basis the
-//  molalities -- and therefore the concentrations, the conductivity and the
-//  limiting current -- are closed on.  One conversion, one basis.
+//  The tank volume: the tank's MASS over the solution's density from the one
+//  door (DEV.md 4c C421; it was the water's volume at 1000 kg/m3).
 scalar BatchElectrodialysis::waterVolume(const sVector& n) const
 {
-    return n[iWater_] * 1000.0 * edCell::MW_WATER_KG / edCell::RHO_CARRIER;
+    scalar m = 0.0, tot = 0.0;
+    for (std::size_t i = 0; i < n.size(); ++i)
+    {
+        m += std::max(n[i], 0.0) * thermo_->comp(i).MW();
+        tot += std::max(n[i], 0.0);
+    }
+    if (tot <= 0.0) return 0.0;
+    sVector x(n.size(), 0.0);
+    for (std::size_t i = 0; i < n.size(); ++i) x[i] = std::max(n[i], 0.0) / tot;
+    return m / edCell::solutionDensity(*thermo_, state_.T, state_.P, x);
 }
 
 // ---------------------------------------------------------------------------
@@ -616,11 +613,12 @@ scalar BatchElectrodialysis::waterVolume(const sVector& n) const
 BatchElectrodialysis::Instant
 BatchElectrodialysis::evaluate(const sVector& nD, const sVector& nC) const
 {
+    PropertySourceLog::Scope propertyScope(type(), name());   // the door records its uses under this unit
     Instant s;
     s.chD = edCell::buildChannel(type(), *thermo_, fractions(nD), iWater_,
-                                 state_.T, *act_);
+                                 state_.T, state_.P, *act_);
     s.chC = edCell::buildChannel(type(), *thermo_, fractions(nC), iWater_,
-                                 state_.T, *act_);
+                                 state_.T, state_.P, *act_);
     s.lc  = edCell::predictiveLimitingCurrent(*stack_, s.chD, Qdil_, nu_,
                                               seFactor_);
 
@@ -702,6 +700,7 @@ std::size_t BatchElectrodialysis::odeNPositive() const
 
 void BatchElectrodialysis::setOdeState(const sVector& y)
 {
+    PropertySourceLog::Scope propertyScope(type(), name());   // the door records its uses under this unit
     const std::size_t Nc = state_.n.size();
     for (std::size_t i = 0; i < Nc; ++i) state_.n[i] = y[i];
     for (std::size_t i = 0; i < Nc; ++i) nConc_[i]   = y[Nc + i];

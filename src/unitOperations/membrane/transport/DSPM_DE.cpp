@@ -61,6 +61,7 @@ License
 
 #include "DSPM_DE.H"
 #include "thermo/transport/StokesEinstein.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "PoreNernstPlanck.H"
 
 #include "core/Advisory.H"
@@ -536,7 +537,7 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     //  298.15 K, and 1 -- announced -- when no liquid-viscosity model is
     //  declared.  It reaches the pore (hindered diffusion and convection) and
     //  the film's per-ion k through the same ic.D / ia.D.
-    const stokesEinstein::Factor se = stokesEinstein::factor(thermo, T);
+    const stokesEinstein::Factor se = liquidProperty::ionDiffusivityFactor(thermo, T);
     stokesEinstein::announce(se, "transport DSPM-DE", "ion D0 of the pore and"
                              " the film", 2);
     //  The unit's table says what this law did to the species records' D0

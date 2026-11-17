@@ -29,6 +29,7 @@ License
 #include "Polarisation.H"
 #include "thermo/PropertyDomainError.H"
 #include "thermo/transport/StokesEinstein.H"
+#include "thermo/LiquidPropertyDoor.H"
 
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -653,7 +654,7 @@ Polarisation buildPolarisation(const DictPtr&                  operation,
     //  thermo/transport/StokesEinstein.H; DEV.md 4c C145/C148).  The factor
     //  is 1 EXACTLY at 298.15 K, and 1 -- announced -- when the case
     //  declares no liquid-viscosity model.
-    const stokesEinstein::Factor se = stokesEinstein::factor(thermo, T_K);
+    const stokesEinstein::Factor se = liquidProperty::ionDiffusivityFactor(thermo, T_K);
     bool readD0 = false;
     for (std::size_t idx : soluteIdx)
     {

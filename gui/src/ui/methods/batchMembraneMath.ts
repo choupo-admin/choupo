@@ -107,7 +107,7 @@ export function solutesFromKpis(unitKpis: UnitKpis | undefined): string[] {
  * THE SIGNATURE IS `V_permeated_m3` (BatchDiafilter.cpp:596), which no other
  * unit in the tree publishes.  `concentrationFactor` alone would NOT do:
  * `batchElectrodialysis` publishes a key of that name for a different
- * quantity (BatchElectrodialysis.cpp:934), and a detector that matched it
+ * quantity (BatchElectrodialysis.cpp:968), and a detector that matched it
  * would open this page on an electrodialysis stack.  `diavolumes` is required
  * beside it because the two arrive together from the same unit and a block
  * carrying one without the other is not a shape this reader understands.

@@ -117,6 +117,12 @@ Result soluteDiffusivity(const ThermoPackage& thermo, scalar T, std::size_t iSol
     return r;
 }
 
+stokesEinstein::Factor ionDiffusivityFactor(const ThermoPackage& thermo, scalar T_K, long iSolvent)
+{
+    return iSolvent < 0 ? stokesEinstein::factor(thermo, T_K)
+                        : stokesEinstein::factorFor(thermo, static_cast<std::size_t>(iSolvent), T_K);
+}
+
 Result evaluateUnrecorded(const ThermoPackage& thermo, Property p, scalar T,
                           scalar P, const sVector& x)
 {

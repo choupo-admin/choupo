@@ -58,3 +58,20 @@ transport
         viscosity { model Vogel; }
     }
 }
+
+//  THE CHANNEL'S LIQUID DENSITY comes from the property door, not from a
+//  1000 kg/m3 typed in the unit (C421).  The dissolved ions have no liquid
+//  volume of their own, so the case DECLARES the reading: they keep their
+//  mass and add none to the volume, i.e. rho = rho_water(T) (1 + w_ions).
+//  The engine's own bound on that hypothesis is about +1.8 % on rho at
+//  1 mol/kg (AqueousVolumetric.H); the channel's ions stay under the
+//  stated mass fraction.
+approximations
+{
+    massWithoutVolume
+    {
+        components      ( K HTart );
+        maxMassFraction 0.06;
+        reason          "the stack's dissolved ions keep their mass and add no volume to the channel liquid's density (rho = rho_water(T) x (1 + w_ions), the ions' mass fraction at most 0.06); a unit asks the property door for the solution density, and an ion with no liquid volume needs this declared reading (C421: the 1000 kg/m3 dilute-carrier constant the unit used to assume is gone)";
+    }
+}

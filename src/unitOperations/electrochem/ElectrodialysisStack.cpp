@@ -34,6 +34,8 @@ License
 #include "LimitingCurrent.H"
 #include "thermo/electrolyte/IonTransport.H"
 #include "thermo/transport/StokesEinstein.H"
+#include "thermo/LiquidPropertyDoor.H"
+#include "unitOperations/UnitTypedProperties.H"
 
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -136,6 +138,9 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
 
     // ---- operation{} hardware ---------------------------------------------
     auto op = dict->subDict("operation");
+    //  A property typed in the unit block is refused by name (DEV.md 4c C402/C421): the
+    //  property dictionary holds it and this unit asks the one door.
+    unitTypedProperties::refuse(op, "electrodialysisStack '" + unitLabel + "': ", "electrodialysis stack");
 
     //  THE STACK RECORD (2026-09-16).  `stack <name>;` names a `kind edStack`
     //  record in assets/ and the record supplies what the case used to type:
@@ -255,9 +260,9 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     auto act = electrolyte::AqueousActivity::New(aqChem.activityModel);
 
     // Build channel states ONCE per pass (NOT inside any inner I loop).
-    ChannelState chD = edCell::buildChannel(type(), thermo, dil.z, iWater, T, *act,
+    ChannelState chD = edCell::buildChannel(type(), thermo, dil.z, iWater, T, dil.P, *act,
                                             passIdx);
-    ChannelState chC = edCell::buildChannel(type(), thermo, con.z, iWater, T, *act,
+    ChannelState chC = edCell::buildChannel(type(), thermo, con.z, iWater, T, con.P, *act,
                                             passIdx);
 
     // mol/s of each transferable ion entering the diluate channel (the cap on
@@ -347,9 +352,10 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     //  run side by side in one hydraulic pass.  A declared velocity could
     //  contradict the flow and nothing noticed -- while it sets k and
     //  therefore i_lim.
-    const scalar rho_carrier = liquidSource::diluteCarrierDensity.value;   // kg/m3, the dilute-carrier value this unit already uses
-    PropertySourceLog::instance().useHere("liquidDensity", liquidSource::diluteCarrierDensity);
-    const scalar Q_dil_in = dil.F * dil.z[iWater] * 1000.0 * MW_WATER_KG / rho_carrier;  // m3/s
+    //  The diluate's volumetric flow: its MASS flow over the solution's density
+    //  from the one door (DEV.md 4c C421; it was the water's volume at 1000 kg/m3).
+    const scalar massFlowDil = edCell::carrierMassFlow(thermo, dil.F, dil.z, passIdx);   // kg/s
+    const scalar Q_dil_in = massFlowDil / chD.rhoSolution;      // m3/s
     scalar u_superficial = 0.0, u_interstitial = 0.0, channelsPerPass = 0.0;
     scalar pathLength = 0.0, sectionEmpty = 0.0;
     if (hasStack)
@@ -372,26 +378,14 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     //  corrected through Stokes-Einstein.  So is this, from the SAME
     //  viscosity model at both temperatures -- and when the case declares no
     //  liquid-viscosity model there is no correction and the run SAYS so.
-    scalar mu_solvent = 0.0, nu_solvent = liquidSource::waterKinematicViscosity.value, seFactor = 1.0;
-    bool   muPriced = false;
-    //  ONE home for the factor since C148: thermo/transport/StokesEinstein.H,
-    //  the same arithmetic in the same order (the membrane units call it too).
-    {
-        const stokesEinstein::Factor se = stokesEinstein::factorFor(thermo, iWater, T);
-        if (se.priced)
-        {
-            mu_solvent = se.mu;
-            nu_solvent = mu_solvent / rho_carrier;
-            seFactor   = se.value;
-            muPriced   = true;
-        }
-        if (muPriced)
-            PropertySourceLog::instance().useHere("liquidKinematicViscosity",
-                liquidSource::stokesEinsteinSolvent, "kernel", took(nu_solvent, T));
-        else
-            PropertySourceLog::instance().useHere("liquidKinematicViscosity",
-                liquidSource::waterKinematicViscosity);
-    }
+    //  The kinematic viscosity of the pure solvent: the door's viscosity over
+    //  the door's density, refused by name when the case declares no
+    //  liquid-viscosity model (no assumed 1e-6 m2/s).  The Stokes-Einstein
+    //  factor is the same door's viscosity ratio.
+    const scalar nu_solvent = edCell::solventKinematicViscosity(type(), thermo, iWater, T, dil.P);
+    const stokesEinstein::Factor se = liquidProperty::ionDiffusivityFactor(thermo, T, static_cast<long>(iWater));
+    const scalar seFactor = se.value;
+    const bool   muPriced = se.priced;
 
     scalar D_eff = 0.0, k_c_eff = 0.0, Sh_lc = 0.0, Re_lc = 0.0, Sc_lc = 0.0;
     scalar i_lim = 0.0, i_lim_cem = 0.0, i_lim_aem = 0.0, i_lim_eq16 = 0.0;
@@ -441,8 +435,7 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         for (const auto& nm : chD.ion) D_mean += electrolyte::ionD0(nm);
         D_mean /= static_cast<scalar>(chD.ion.size());
         const scalar d_h   = 2.0 * h_ch;                     // slit hydraulic diameter [m]
-        const scalar nu    = liquidSource::waterKinematicViscosity.value;   // m2/s (water, announced)
-        PropertySourceLog::instance().useHere("liquidKinematicViscosity", liquidSource::waterKinematicViscosity);
+        const scalar nu    = nu_solvent;   // m2/s, the door's pure-solvent value
         const scalar L_ch  = op->lookupScalarOrDefault("channelLength", 0.5, Dims::length); // m
         const scalar Re    = vel * d_h / nu;
         const scalar Sc    = nu / D_mean;
@@ -491,13 +484,6 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
                 " of channels in parallel.  Name a `kind edStack` record"
                 " (`stack <name>;`) and the velocity is derived and printed"
                 " with its arithmetic.", "provenance");
-        if (lcModel == "GeraldesAfonso2010" && !muPriced)
-            say("legacy", "the ion diffusivities were used at their curated"
-                " 25 C reference with NO Stokes-Einstein correction to the run"
-                " temperature -- the case declares no `transport {"
-                " liquidViscosity { model Vogel; } }`, so the viscosity ratio"
-                " the correction needs is unavailable, and the kinematic"
-                " viscosity fell back to 1e-6 m2/s.", "provenance");
         if (hasStack)
         {
             //  A cross-check, not a derivation: the source states the channel
@@ -657,7 +643,7 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     {
         const FaradaySplit s = faradaySplit(Icur);
         return edCell::buildChannel(type(), thermo, moleFractions(s.FzD),
-                                    iWater, T, *act, passIdx).kappa;
+                                    iWater, T, dil.P, *act, passIdx).kappa;
     };
 
     scalar I = 0.0;
@@ -843,8 +829,9 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     // specific energy [kWh / m3 of diluate product].  Diluate volumetric flow ~
     // water molar flow * MW_water / rho.
     const scalar Fwater_kmol_s = outD.F * outD.z[iWater];      // kmol/s water in diluate
-    const scalar Q_dil_m3_s = Fwater_kmol_s * 1000.0 * MW_WATER_KG
-                            / liquidSource::diluteCarrierDensity.value;   // m3/s
+    const scalar massFlowOutD = edCell::carrierMassFlow(thermo, outD.F, outD.z, passIdx);   // kg/s
+    const scalar Q_dil_m3_s = (Fwater_kmol_s > 0.0)
+        ? massFlowOutD / edCell::solutionDensity(thermo, outD.T, outD.P, edCell::carrierComposition(outD.z, passIdx)) : 0.0;   // m3/s, the door's density
     const scalar specEnergy = (Q_dil_m3_s > 0.0)
         ? (W_electric / 1000.0) / (Q_dil_m3_s * 3600.0)        // kW / (m3/h) = kWh/m3
         : 0.0;

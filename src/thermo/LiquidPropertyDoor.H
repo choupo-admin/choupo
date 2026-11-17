@@ -49,6 +49,7 @@ Description
 #pragma once
 
 #include "core/Types.H"
+#include "thermo/transport/StokesEinstein.H"
 
 #include <string>
 #include <vector>
@@ -123,6 +124,15 @@ Result evaluate(const ThermoPackage& thermo, Property p, scalar T_K, scalar P_Pa
 //  box is never extrapolated).
 Result soluteDiffusivity(const ThermoPackage& thermo, scalar T_K, std::size_t iSolute,
                          std::size_t iSolvent, const Consumer* who = nullptr);
+
+//  THE TEMPERATURE FACTOR OF AN ION'S D0 (DEV.md 4c C421, the membrane and
+//  electrodialysis family): D(T)/D0 = (T/T0)(mu(T0)/mu(T)) on the pure
+//  solvent's liquid viscosity, which this asks of the door (the case's
+//  declared model, twice).  `iSolvent` < 0: the package's declared solvent.
+//  Not priced (value 1, `priced` false) when the case declares no
+//  liquid-viscosity model; the caller says so, or refuses.
+stokesEinstein::Factor ionDiffusivityFactor(const ThermoPackage& thermo, scalar T_K,
+                                            long iSolvent = -1);
 
 //  The same, RECORDING NOTHING: for a value the caller computes into a
 //  context its model may not read (a condensing film's surface tension),

@@ -3461,7 +3461,10 @@ and concentrate — pumped through the same stack the steady
 `edCell::predictiveLimitingCurrent` — the same assembly of Geraldes &
 Afonso (2010) Eqs. A13/12/13/15/16, the same `kind edStack` record, the
 same Nernst / ohmic / Faraday relations — once per instant instead of once
-per pass.  **That is the point of it.**  `i_lim` is a PREDICTION from the
+per pass.  Its liquid properties are the steady stack's: tank volumes and the
+molality-to-concentration factor from the property door's density, the
+kinematic viscosity from the declared liquid-viscosity model (refused when
+absent), a typed property in `operation` refused by name.  **That is the point of it.**  `i_lim` is a PREDICTION from the
 DILUATE COMPOSITION, so in a batch run it FALLS as the tank depletes, and a
 constant-current run crosses into the over-limiting regime part way
 through.  No steady case can show that.
@@ -4098,6 +4101,14 @@ operation { stack EUR2C-7P18;    // a `kind edStack` record in assets/
             limitingCurrent { model GeraldesAfonso2010; }   // optional; see below
 }
 ```
+**Liquid properties (C421).**  The unit holds none: a density, viscosity or
+diffusivity typed in `operation` is refused by name.  The solution density of
+each channel and the pure solvent's viscosity come from the property door;
+the case declares `transport { liquid { viscosity { model Vogel; } } }` (without
+a viscosity model the unit is refused, it no longer assumes 1e-6 m2/s) and
+`approximations { massWithoutVolume { components ( Na Cl ); maxMassFraction
+0.06; reason "..."; } }` for the dissolved ions (they keep their mass and add
+no volume).
 The record supplies the cell pairs, the active area, the channel (height,
 width, spacer porosity and type), the hydraulic passes, the stack's own
 Sherwood correlation and its limits.  **Declaring any of `N_cellpairs`,

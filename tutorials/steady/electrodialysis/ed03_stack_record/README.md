@@ -118,3 +118,7 @@ value overrides the other.
 a real bench run **recirculates** the diluate through a tank for minutes.
 That batch arrangement is not modelled — see the "not in this slice" section
 of `docs/design/a-stack-is-a-record-and-its-limiting-current-is-predicted.md`.
+
+## Liquid properties (C421)
+
+The unit holds no liquid property.  The channel's solution density and the pure solvent's viscosity come from the property door: `transport { liquid { viscosity { model Vogel; } } }` and `approximations { massWithoutVolume { ... } }` (the dissolved ions keep their mass and add no volume) are declared in `constant/thermoPhysPropDict`.  Before C421 the unit used 1000 kg/m3 for every channel and, in the cases that declared no viscosity model, a fixed 1e-6 m2/s; both are gone (a case with no viscosity model is refused by name).  Every golden value moved by at most 0.6 %, because the door's water at 25 C is 997.07 kg/m3 and the channel's solution density carries its ions' mass: `docs/audits/2026-11-18-door-electrochem-membrane-moved-goldens.md` lists each moved row.

@@ -288,7 +288,7 @@ private:
     scalar  area_ = 0.0, hCh_ = 0.0;
     scalar  xi_ = 0.9, E_electrodes_ = 0.0;
     scalar  Qdil_ = 0.0;                    // m3/s, the declared recirculation rate
-    scalar  nu_ = liquidSource::waterKinematicViscosity.value, seFactor_ = 1.0;  // the solvent, resolved once
+    scalar  nu_ = 0.0, seFactor_ = 1.0;  // the solvent, resolved once
     bool    muPriced_ = false;
     Drive        drive_   = Drive::Current;
     scalar       IDeclared_ = 0.0, UDeclared_ = 0.0;
