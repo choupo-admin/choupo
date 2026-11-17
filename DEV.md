@@ -4430,6 +4430,33 @@ accepts today, and that is a policy call.
 > move into each dataset's experiment record, read from there.  Ratchet: 44
 > sites left, none of this family.  Proof: build clean, the four cases PASS
 > unchanged, the ratchet, schema, guide and doctrine gates exit 0.
+>
+> **C429: THE REGRESSION CHECKER WAS BLIND BELOW 1e-9 (found 2026-11-18 by
+> the architect, integrating door slice (c)).**  A general reported that
+> ed08/ed09/ed04 moved `D_ion_*` rows (+11.7 % on the tartrate ion) that its
+> slice could not have caused.  Measured: on main, ed08 PUBLISHES
+> `D_ion_HTart 8.455e-10` (the catalogue's D0 since C403) against a golden
+> `7.568e-10`, and the suite says PASS.  The cause is one line of
+> `bin/runTests` `within_tol`: `rel = (ae > 1e-9) ? diff/ae : diff` -- for
+> any expected value at or below 1e-9 in magnitude the comparison is
+> ABSOLUTE at the RELATIVE tolerance (1e-4), so a diffusivity, a membrane
+> permeability, a trace mole fraction or a pore current can move by any
+> factor and pass.  CENSUS of the goldens: 999 rows with 0 < |value| <= 1e-9
+> compared that way, in 181 cases; 776 of them are residuals and closures
+> (where an absolute band is the intent, though 1e-4 is far too wide for a
+> round-off quantity), 223 are PHYSICAL quantities in 66 cases (pore
+> currents, carbonate molalities, ion diffusivities, trace compositions,
+> fabricated-carrier moles, saturation indices).  C413 slice 3b's commit
+> lists `HTart +11.7 %` among its explained moves, yet the golden kept the
+> old value: the move was never recorded because nothing failed.  REMEDY,
+> queued tonight as its own slice: a non-zero expected value is compared
+> RELATIVELY whatever its size; a row whose kind is a residual or closure is
+> compared on an ABSOLUTE band its class declares (golden_bands.tsv already
+> holds classes), never on a relative tolerance read as absolute; zero keeps
+> its absolute rule.  Every row the honest comparison turns red is listed
+> with its cause, and re-recorded only where the cause is a known, explained
+> change (C403's D0, C413's re-pointing); anything unexplained is a finding.
+
 
 
 
