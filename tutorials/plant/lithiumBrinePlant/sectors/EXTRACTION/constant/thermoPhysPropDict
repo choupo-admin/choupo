@@ -17,7 +17,7 @@
   pins exactly that).  activeComponents projects the pair domain.
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 inherits "../../../constant";
 
 activeComponents

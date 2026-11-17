@@ -28,7 +28,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( toluene  H2  benzene  CH4 );
 

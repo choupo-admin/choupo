@@ -1,5 +1,5 @@
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 /*---------------------------------------------------------------------------*\
   THE DILUTE-SOLUTION FORMULATION, and why this case does NOT run the package

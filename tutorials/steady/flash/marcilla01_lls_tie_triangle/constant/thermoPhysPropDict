@@ -51,7 +51,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components    ( NaCl  nButanol  ethanol  water );
 

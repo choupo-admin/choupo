@@ -36,7 +36,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components    ( aceticAcid  benzene  ethanol  water );
 

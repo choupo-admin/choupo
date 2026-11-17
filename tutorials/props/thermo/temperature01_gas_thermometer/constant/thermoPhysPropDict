@@ -13,7 +13,7 @@
     not need to be -- what this case shows is that Z DEPARTS FROM 1, and by
     roughly how much, not the third decimal of that departure.                */
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components       ( nitrogen );
 equilibrium
 {

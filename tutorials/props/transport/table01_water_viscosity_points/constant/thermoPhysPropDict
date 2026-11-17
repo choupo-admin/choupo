@@ -27,7 +27,7 @@
     columns as declared, and its source.  */
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components ( water );
 

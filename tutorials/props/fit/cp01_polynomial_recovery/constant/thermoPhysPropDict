@@ -9,7 +9,7 @@
     ideal-gas Cp can be read against the fitted liquid one.
 */
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components    ( Dichloroethane );
 

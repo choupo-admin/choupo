@@ -48,7 +48,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components    ( K2SO4  KCl  Na2SO4  NaCl  water );
 

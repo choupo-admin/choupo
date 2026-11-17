@@ -21,7 +21,7 @@
   burner and its hot air), so no printed number depends on that K.
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components
 (

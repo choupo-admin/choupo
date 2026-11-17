@@ -35,7 +35,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( N2  H2  NH3  Ar );
 

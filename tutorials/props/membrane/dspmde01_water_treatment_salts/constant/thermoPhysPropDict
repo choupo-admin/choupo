@@ -14,7 +14,7 @@
   species record.  No phase equilibrium is computed here.
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( water NaCl NaNO3 NaF KBr Na2CO3 NH4Cl
                    calciumNitrate KNO3 MgCl2 NaBr MgSO4 );

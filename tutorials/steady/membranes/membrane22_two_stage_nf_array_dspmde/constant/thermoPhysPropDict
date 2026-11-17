@@ -19,7 +19,7 @@
   the declaration the run would use the 25 C values and say so.
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( water  NaCl  CaCl2  MgSO4 );
 

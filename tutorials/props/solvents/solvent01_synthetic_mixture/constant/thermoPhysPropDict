@@ -14,7 +14,7 @@
   target, read as a record (constant/components/polymerP.dat).
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components ( solventA solventB );
 equilibrium
 {

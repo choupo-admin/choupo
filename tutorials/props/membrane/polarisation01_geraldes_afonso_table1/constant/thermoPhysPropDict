@@ -13,7 +13,7 @@
   species records.  No phase equilibrium is computed here.
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( water Na Cl dye );
 

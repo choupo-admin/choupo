@@ -1,5 +1,5 @@
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 // The Explorer envelope lens's frame for a BINARY on a non-ideal liquid
 // (EX-02, 2026-11-15): two liquid phases on UNIFAC, so the T-x-y's own

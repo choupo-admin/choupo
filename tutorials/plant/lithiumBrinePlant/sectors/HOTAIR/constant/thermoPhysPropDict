@@ -11,7 +11,7 @@
   component set (methane burner: combustion species, ideal-gas world).
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 inherits "../../../constant";
 
 components ( CH4 O2 N2 CO CO2 water H2 );

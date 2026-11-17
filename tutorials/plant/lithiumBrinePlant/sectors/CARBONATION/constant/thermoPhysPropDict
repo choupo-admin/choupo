@@ -12,7 +12,7 @@
   ideal default -- the crystalliser reads the solubility curve).
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 inherits "../../../constant";
 
 components ( water Li2CO3 );

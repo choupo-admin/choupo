@@ -14,7 +14,7 @@
   declared aqueous chemistry below).  membrane01's form with one more solute.
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( water  NaCl  boron );
 

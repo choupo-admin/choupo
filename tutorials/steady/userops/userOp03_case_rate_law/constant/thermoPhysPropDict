@@ -14,7 +14,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( isomerA  isomerB );   // case-local synthetic isomers (constant/components/)
 

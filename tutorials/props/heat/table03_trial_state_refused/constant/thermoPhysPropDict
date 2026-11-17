@@ -24,7 +24,7 @@
     operation ends the run with the refusal a student must be able to read.  */
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components ( water );
 

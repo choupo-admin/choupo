@@ -9,7 +9,7 @@
 |  identity the flash solves is exactly  gamma_w * x_w = exp(-dG_fus/RT).     |
 \*-----------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components ( water ethanol );
 

@@ -25,7 +25,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components ( CH4 O2 N2 CO CO2 water H2 );
 

@@ -7,7 +7,7 @@
     the model begins -- and can watch the residual grow on the pressure scan.
 */
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components    ( N2 O2 );
 

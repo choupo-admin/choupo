@@ -19,7 +19,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components ( methanol  isoButene  methylTertButylEther  propane  isoButane
              nButane  1Butene  cis2Butene  trans2Butene );

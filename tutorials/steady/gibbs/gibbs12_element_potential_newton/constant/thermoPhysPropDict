@@ -21,7 +21,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( CO  water  CO2  H2  CH4  graphite  NH3  O2  N2  NO );
 

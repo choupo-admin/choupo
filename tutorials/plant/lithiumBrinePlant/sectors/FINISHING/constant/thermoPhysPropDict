@@ -11,7 +11,7 @@
   component set (drying/recovery air world, molecular ideal default).
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 inherits "../../../constant";
 
 components ( water N2 O2 CO2 Li2CO3 );

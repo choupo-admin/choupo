@@ -14,7 +14,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( wo_A wo_B wo_C wo_E wo_P wo_G );
 

@@ -13,7 +13,7 @@
   form the scaling audit and the SDEM law both read.
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( water Mg SO4 Na Cl NO3 NH4 );
 

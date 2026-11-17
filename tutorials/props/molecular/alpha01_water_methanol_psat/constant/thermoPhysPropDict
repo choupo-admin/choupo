@@ -9,7 +9,7 @@
     without `alphaFunction MathiasCopeman;`, so that `P_bubble` of the pure
     liquid is the CUBIC's own saturation pressure.  Nothing else differs.   */
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components    ( water methanol );
 

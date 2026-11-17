@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 //  Air as the CARRIER and water as the CONDENSABLE.  Only the condensable
 //  needs a vapour-pressure model here -- the carrier contributes its heat

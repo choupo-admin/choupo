@@ -11,7 +11,7 @@
     (six points, every second of the handbook's), never from the plant's.  */
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 inherits      "../../../constant";
 

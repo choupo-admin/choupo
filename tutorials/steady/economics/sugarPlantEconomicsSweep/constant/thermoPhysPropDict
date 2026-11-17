@@ -23,7 +23,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( water  sucrose  N2  ethanol  CO2 );
 

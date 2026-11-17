@@ -1,5 +1,5 @@
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 // C256 (2026-11-09), MEASURED: the branches marched past propane's Tc
 // (369.8 K) rest on its vapour pressure CONTINUED past Tc -- that surface is

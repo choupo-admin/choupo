@@ -59,7 +59,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 //  THREE COMPONENTS, and the two that basis01 also carries are DELIBERATELY
 //  absent.  basis01 is a basis-carriage witness and needs a nonionising

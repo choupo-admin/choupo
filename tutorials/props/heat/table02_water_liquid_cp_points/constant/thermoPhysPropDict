@@ -30,7 +30,7 @@
     enthalpy is anchored (the elements datum).  */
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components ( water );
 

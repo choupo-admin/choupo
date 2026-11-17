@@ -1,5 +1,5 @@
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 // The same frame and feed as envelope02_c3c4c5_branch_stop, and the same
 // statement (C256, 2026-11-09, measured there): the branches marched past

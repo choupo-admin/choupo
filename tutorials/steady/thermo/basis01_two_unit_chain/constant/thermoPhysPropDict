@@ -53,7 +53,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components    ( NH3  CO2  water  ethanol  N2 );
 

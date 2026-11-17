@@ -1,5 +1,5 @@
 recordType gasLiquidEquilibrium;
-schemaVersion 2;
+schemaVersion 1;
 
 // Equilibrium-parameterisation identity (ADR 2026-07-26, D2 migration wave):
 // typed physical family + versioned convention profile.  gasSpecies is the

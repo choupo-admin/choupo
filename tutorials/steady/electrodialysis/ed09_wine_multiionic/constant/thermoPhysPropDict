@@ -17,7 +17,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 //  K is the FIRST cation, so it is the reference ion of the printed
 //  `demin` line; the conductivity target itself does not depend on the

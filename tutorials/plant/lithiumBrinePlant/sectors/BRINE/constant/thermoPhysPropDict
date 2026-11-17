@@ -13,7 +13,7 @@
   Ksp from the component's solidPhases{}).
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 inherits "../../../constant";
 
 // Active salt NaCl: named by chemistryDict's `halite`, which NaCl's record owns -- never

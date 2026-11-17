@@ -22,7 +22,7 @@
     property operation over a solid pellet, and nothing flashes.               */
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components    ( CO  N2 );
 

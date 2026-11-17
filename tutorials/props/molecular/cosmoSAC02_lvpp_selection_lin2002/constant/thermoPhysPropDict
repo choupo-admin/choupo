@@ -15,7 +15,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( water Dichloroethane 14Dioxane 1Hexene 1Nitropropane aceticAcid acetone acetonitrile aniline benzene carbonTetrachloride chloroform cyclohexane diethylEther ethylamine ethylAcetate methylAcetate methylEthylKetone nButane nButanol butanal nHeptane nHexane nOctane nPentane 1Propanol nitroethane nitromethane propionitrile pyridine tetrahydrofuran triethylamine ethanol );
 

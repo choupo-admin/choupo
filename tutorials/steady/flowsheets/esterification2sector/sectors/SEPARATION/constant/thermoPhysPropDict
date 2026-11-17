@@ -16,7 +16,7 @@
   standard library.
 \*---------------------------------------------------------------------------*/
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 inherits "../../../constant";
 
 //  VARIANTS (DEV.md 4c C398 / C402): what a unit's inline `thermo { }` used to

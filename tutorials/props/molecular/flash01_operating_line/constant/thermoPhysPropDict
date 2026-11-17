@@ -19,7 +19,7 @@
     carries those (props/compare/acetone04_acetone_water_vle), and the tool
     points at them rather than pretending the world is ideal.                */
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( benzene  toluene );
 

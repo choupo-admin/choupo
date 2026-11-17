@@ -18,7 +18,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components ( H2S SO2 water CO2 CO N2 O2 H2 S2 S8 S SO carbonylSulfide CS2 );
 

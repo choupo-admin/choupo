@@ -14,7 +14,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( 12PropyleneOxide  water  methanol  12Propanediol );
 
