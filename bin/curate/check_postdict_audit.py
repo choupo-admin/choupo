@@ -116,33 +116,31 @@ WHAT THIS GATE DOES **NOT** COVER, stated so its OK line cannot imply it:
     passes both the audit and this gate.
   * It ANNOUNCES; it does not refuse.  Nothing here asserts a run fails.
 """
+import contextlib
 import re
-import shutil
-import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-CASE = ROOT / "tutorials/steady/economics/economics01_esterification_dcf"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import gatekit  # noqa: E402
+
+ROOT = gatekit.repo
+CASE = "tutorials/steady/economics/economics01_esterification_dcf"
 DICT_H = ROOT / "src/core/Dictionary.H"
 DICT_CPP = ROOT / "src/core/Dictionary.cpp"
-BIN = ROOT / "choupoSolve"
+BIN = None
 
 fails = []
 
 
 def run(case_dir):
-    p = subprocess.run([str(BIN), str(case_dir)], capture_output=True, text=True,
-                       cwd=str(ROOT), timeout=300)
-    return p.stdout + p.stderr
+    return gatekit.run(BIN, case_dir, timeout=300)[1]
 
 
-def make_probe(tmp, post_text):
-    d = Path(tmp) / "probe"
-    if d.exists():
-        shutil.rmtree(d)
-    shutil.copytree(CASE, d)
+def make_probe(stack, post_text):
+    """A private copy of the case with `post_text` as its postDict; it lives as
+    long as `stack` (a contextlib.ExitStack)."""
+    d = stack.enter_context(gatekit.probe_copy(CASE))
     (d / "system" / "postDict").write_text(post_text)
     return d
 
@@ -180,12 +178,14 @@ def dict_lines(out):
 
 
 def main():
-    if not BIN.exists():
-        print("check_postdict_audit: FAIL -- choupoSolve missing; run `make all`")
+    global BIN
+    try:
+        BIN = gatekit.binary("choupoSolve")
+    except gatekit.GateRefusal as e:
+        print(f"check_postdict_audit: FAIL -- {e}")
         return 1
 
-    tmp = tempfile.mkdtemp(prefix="postdict_audit_")
-    try:
+    with contextlib.ExitStack() as tmp:
         # ---- (h) the negative, first: the mechanism must be able to be quiet
         d = make_probe(tmp, GOOD_POST)
         out_good = run(d)
@@ -328,8 +328,6 @@ def main():
             fails.append(f"(i) an extra unread key moved the cost: "
                          f"{good_total} -> {total}.  An announcement that "
                          "changes an answer is not an announcement")
-    finally:
-        shutil.rmtree(tmp, ignore_errors=True)
 
     if fails:
         print("check_postdict_audit: FAIL")
