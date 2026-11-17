@@ -313,7 +313,7 @@ while [ $# -gt 0 ]; do
         --jobs=*)  _JOBS="${1#--jobs=}"; shift ;;
         --no-reuse) export CHOUPO_NO_REUSE=1; shift ;;   # INPUT-KEYED REUSE, below
         --no-fast-stamp) export CHOUPO_SWEEP_WITHOUT_FAST=1; shift ;;   # --fast FIRST, below
-        --nightly) export CHOUPO_NIGHTLY=1; shift ;;     # THE NIGHTLY TIER, below (C419)
+        --nightly) CHOUPO_NIGHTLY=1; shift ;;     # THE NIGHTLY TIER, below (C419); NOT exported: a gate that runs `bin/runTests <case>` inside the sweep must get a plain run, not a refusal (C420, measured on the first --nightly)
         --list-nightly) _LIST_NIGHTLY=1; shift ;;
         *)         _rest+=("$1"); shift ;;
     esac
