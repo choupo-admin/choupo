@@ -32263,6 +32263,27 @@ flagged honestly as the \emph{smooth free disk} --- a vaned wheel pumps air like
 draws \emph{more}, so this is a lower bound.  The split (liquid KE, windage, drive
 efficiency) is printed in the atomiser note; the power feeds sizing and costing.
 
+\paragraph{Where the atomiser's liquid properties come from.}  The three liquid inputs
+of every correlation above, $\rho_L$, $\mu_L$ and $\sigma$, are the \emph{feed's}, asked of
+the property package at the feed's own temperature and composition (the one door,
+\code{liquidProperty::evaluate}); a unit never types them.  $\rho_L$ is the density of the
+\emph{solution}, dissolved solids counted through the molar volumes (a $40$~wt\,\% sucrose
+liquor is $1178$~kg\,m$^{-3}$, not water's $997$); the same $\rho_L$ sets the powder size,
+$d_p=d_{32}\,(x_{\text{solid}}\rho_L/\rho_p)^{1/3}$.  $\mu_L$ is the case's
+\code{transport.liquid.viscosity} --- a model, or a \code{measured} table of the solution
+(\code{kind measured} or \code{adopted}, with its authorised range: inside it the table
+interpolates, a little beyond it the nearest edge is held and announced, farther the run
+refuses).  $\sigma$ is taken on the volatile solvent alone (the dissolved solid has no
+liquid surface of its own: an announced approximation, small for a sugar in water).  A
+package holding no viscosity or surface tension for the feed refuses by name, quoting the
+line to write; there is no water default, and a property word typed in the unit's
+\code{operation} is refused.  Because $d_{32}\propto\mu_L^{0.2}\rho_L^{-0.5}$ on the wheel,
+the correction is sizeable for a syrup: a $40$~wt\,\% sucrose feed at $25^\circ$C ($\mu_L=5.2$ against
+$1$~mPa\,s) gives a spray $28\,\%$ coarser than the water value.  The rotary wheel's windage
+reads the drying gas's viscosity from the vapour model at the inlet-air state (it was a typed
+$1.8\times10^{-5}$~Pa\,s).  Source of the sucrose rows: Swindells, Snyder, Hardy \& Golden
+(1958), Supplement to NBS Circular 440, Tables 132--133.
+
 \paragraph{References.}  Marshall (1954); Masters (1991); Lefebvre \& McDonell (2017,
 DOI 10.1201/9781315120911); Wang \& Lefebvre, \emph{J.\ Propulsion \& Power} 3 (1987) 11
 (DOI 10.2514/3.22946); Nukiyama \& Tanasawa, \emph{Trans.\ Soc.\ Mech.\ Eng.\ Japan} 5

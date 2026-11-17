@@ -12,9 +12,6 @@ src/unitOperations/crystallisation/Crystalliser.cpp	vliq	5
 src/unitOperations/dynamic/WilliamsOttoPlant.cpp	literal	1
 src/unitOperations/electrochem/ElectrodialysisStack.cpp	conversion	2
 src/unitOperations/electrochem/ElectrodialysisStack.cpp	direct	1
-src/unitOperations/heatTransfer/SprayDryer.cpp	keyRead	5
-src/unitOperations/heatTransfer/SprayDryer.cpp	vliq	4
-src/unitOperations/heatTransfer/atomizer/Atomizer.H	literal	1
 src/unitOperations/heatTransfer/htc/BellDelaware.cpp	keyRead	1
 src/unitOperations/heatTransfer/htc/Rohsenow.H	literal	2
 src/unitOperations/hydraulics/Pipe.cpp	keyRead	10

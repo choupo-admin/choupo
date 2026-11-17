@@ -1,0 +1,60 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The dynamic viscosity of aqueous sucrose at 20 mass percent, four
+  temperatures (20, 25, 30, 35 C), from the 20 percent row of Table 132
+  (revised 1957), page 6 of the Supplement to NBS Circular 440 (centipoise
+  converted to Pa s).  The Bureau's own measured solutions start at 30 percent;
+  the 20 percent values rest on the very precise measurements of Jones and
+  Stauffer at 25 C (the primary basis, the Supplement says) and on
+  interpolation at the other temperatures, so the record is `kind adopted`.
+  It serves the one case whose feed is MORE DILUTE than 20 percent: its
+  authorised box reaches down to 15 percent and the 20 percent row is HELD
+  there, announced (Table 131 gives the 16.7 percent solution at 20 C as
+  1.70 cP against 1.945 cP at 20 percent: the held value overstates the
+  viscosity by about 14 percent).  Transcribed from the page image and read
+  a second time against it.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    //  sha256 is of the `data ( );` block of THIS file as transcribed.
+    sha256       "cdbf019d9769c67cad59e9defccbf3f0bb99708c308f5df7d9d5e8a88eadb322";
+    origin       literature;
+    kind         adopted;
+    basis        "adopted: the 20 wt % row of Table 132 (revised 1957, p. 6): 25 C fixed on Jones & Stauffer's precise measurement, the other columns derived; stood over a feed of lower concentration as a hypothesis of the case";
+    citation     "Swindells, J. F.; Snyder, C. F.; Hardy, R. C.; Golden, P. E. (1958). Viscosities of Sucrose Solutions at Various Temperatures: Tables of Recalculated Values. Supplement to National Bureau of Standards Circular 440, U.S. Government Printing Office, Washington. doi:10.6028/NBS.CIRC.440sup (public domain, a U.S. Government work)";
+    via          "the PDF of the Supplement, page 6 (Table 132), read from the page image";
+}
+
+property    liquidViscosity;
+system      ( sucrose water );
+solvent     water;
+
+columns
+(
+    { name T;           unit K;    }
+    { name w[sucrose];  unit -;    }
+    { name mu;          unit Pa.s; }
+);
+data
+(
+    293.15  0.2  0.001945
+    298.15  0.2  0.001695
+    303.15  0.2  0.001493
+    308.15  0.2  0.001325
+);
+
+//  The case's feed is 16.7 wt % (sucrose standing for whey solids): below the one concentration the record holds.
+authorised
+{
+    T           ( 293.15 308.15 );
+    w[sucrose]  ( 0.15 0.20 );
+    reason      "the whey case's feed is 16.7 mass percent of sucrose-equivalent solids, below the table's lowest solution; the 20 percent row is held for it, an approximation of the case (about +14 % in viscosity by Table 131 at 20 C), not a measurement";
+}

@@ -1,0 +1,70 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The dynamic viscosity of aqueous sucrose at 12 states: four temperatures
+  (20, 25, 30, 35 C) by three sucrose mass fractions (0.30, 0.40, 0.50), from
+  Table 132 (revised 1957), page 6 of the Supplement to NBS Circular 440 (the
+  columns 20, 25, 30 and 35 C and the rows 30, 40 and 50 percent, centipoise
+  converted to Pa s).  These three concentrations are among the solutions the
+  National Bureau of Standards MEASURED (30, 40, 50, 60, 65, 70 percent by
+  weight in vacuum, 0 to 35 C, accurate to about 0.1 percent, water at 20 C
+  taken as 1.0020 cP): the tabulated values are the recalculation of that
+  measurement.  Rows below 20 C are left out (not needed), and so are the
+  columns flagged `a` (extrapolated below the measured temperature range)
+  and 40 C (above 35 C the table rests largely on Bingham and Jackson, not on
+  the NBS measurement).  Every value was transcribed from the page image
+  and read a second time against it (Table 130, page 4, repeats the 20 and
+  25 C columns: 3.187/2.735, 6.167/5.164, 15.43/12.40, identical).
+
+  Read by transport.liquid.viscosity.measured (DEV.md 4c C421 slice (8)).
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    //  sha256 is of the `data ( );` block of THIS file as transcribed.
+    sha256       "fcfd00d01f5e80827c972e3899121e70535f4e86bfb19e649d217e088959c994";
+    origin       literature;
+    kind         measured;
+    basis        "measured: the NBS viscosity of aqueous sucrose, 30 / 40 / 50 wt % by weight in vacuum, 20-35 C, recalculated on water = 1.0020 cP at 20 C (Table 132 revised 1957, p. 6; the values are the Bureau's, accurate to about 0.1 %)";
+    citation     "Swindells, J. F.; Snyder, C. F.; Hardy, R. C.; Golden, P. E. (1958). Viscosities of Sucrose Solutions at Various Temperatures: Tables of Recalculated Values. Supplement to National Bureau of Standards Circular 440, U.S. Government Printing Office, Washington. doi:10.6028/NBS.CIRC.440sup (public domain, a U.S. Government work)";
+    via          "the PDF of the Supplement, pages 4 and 6 (Tables 130 and 132), read from the page images";
+}
+
+property    liquidViscosity;
+system      ( sucrose water );
+solvent     water;
+
+columns
+(
+    { name T;           unit K;    }
+    { name w[sucrose];  unit -;    }
+    { name mu;          unit Pa.s; }
+);
+data
+(
+    293.15  0.3  0.003187
+    298.15  0.3  0.002735
+    303.15  0.3  0.002373
+    308.15  0.3  0.002078
+    293.15  0.4  0.006167
+    298.15  0.4  0.005164
+    303.15  0.4  0.004375
+    308.15  0.4  0.003747
+    293.15  0.5  0.01543
+    298.15  0.5  0.0124
+    303.15  0.5  0.01011
+    308.15  0.5  0.008358
+);
+
+//  Exactly the rows' support: nothing is stood over beyond the table.
+authorised
+{
+    T           ( 293.15 308.15 );
+    w[sucrose]  ( 0.30 0.50 );
+}

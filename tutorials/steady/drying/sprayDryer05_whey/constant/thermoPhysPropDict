@@ -62,6 +62,23 @@ equilibrium
 
 transport
 {
+    //  The FEED's viscosity, which the atomiser reads (DEV.md 4c C421: a liquid property is never typed in the
+    //  unit).  Swindells et al. (1958), the 20 wt % row, `kind adopted`: the feed is 16.7 wt % solids (sucrose standing for whey solids), below the NBS solutions, so the edge row is held and announced (about +14 % in viscosity).
+    liquid
+    {
+        viscosity
+        {
+            measured
+            {
+                swindellsSucrose20pctViscosity
+                {
+                    use            method;
+                    interpolation  logReciprocal;     // T only: the record holds one concentration
+                }
+            }
+        }
+    }
+
     vapour
     {
         viscosity           { model Chung; }    // gas mu (drying h/k_c)

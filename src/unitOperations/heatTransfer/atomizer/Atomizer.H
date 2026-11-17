@@ -83,7 +83,7 @@ public:
         // atomiser falls back to its own `deltaP`.  (Information follows streams.)
         scalar pFeed    = 0.0;
         scalar pChamber = 0.0;
-        scalar muGas    = 1.8e-5;   // gas dynamic viscosity [Pa.s] -- rotary windage
+        scalar muGas    = 0.0;      // gas dynamic viscosity [Pa.s] -- rotary windage; the dryer sets it from the package (C421), 0 = windage not priced
     };
 
     // d32 = Sauter mean diameter [m]; spread = Rosin-Rammler width q (higher =

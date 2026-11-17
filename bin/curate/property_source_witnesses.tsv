@@ -4,7 +4,7 @@ tutorials/steady/membranes/membrane27_swro_energy_recovery	HPpump	liquidDensity	
 tutorials/steady/membranes/membrane15_module_nf270_4040	NF	liquidDensity	idealMixing[referenceEquation.IAPWS95+massWithoutVolume]
 tutorials/steady/membranes/membrane27_swro_energy_recovery	RO	liquidViscosity	stated.seawater35_NaCl_liquidViscosity
 tutorials/steady/crystallisation/crystalliser08_nacl_antisolvent_msmpr	cryst	liquidVolume	bypass.recordVliq25C.missingIsZero
-tutorials/steady/drying/sprayDryer01_sugar	dryer	liquidDensity	bypass.solventVliq25C
+tutorials/steady/drying/sprayDryer01_sugar	dryer	liquidDensity	liquidVolume.idealMix[anchoredRackett+flatVliq]
 tutorials/steady/electrodialysis/ed01_nacl_desalination	edStack	liquidKinematicViscosity	constant.waterKinematic1e-6
 tutorials/steady/electrodialysis/ed01_nacl_desalination	edStack	liquidDensity	constant.diluteCarrier
 tutorials/plant/aceticAcid02_plant	methanolTank	liquidDensity	liquidVolume.idealMix[anchoredRackett]

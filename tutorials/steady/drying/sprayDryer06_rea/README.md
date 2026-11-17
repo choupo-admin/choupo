@@ -15,18 +15,18 @@ things differ.
   default characteristic drying curve (a constant rate down to Xc = 0.15,
   then a falling rate).
 * The HARDWARE: the wheel turns at 5 000 rpm instead of 20 000, so the
-  droplets are coarser (about 139 um instead of 60), and the chamber is
-  0.5 m tall instead of 5 m.
+  droplets are coarser (about 177 um instead of 77), and the chamber is
+  1.2 m tall instead of 5 m.
 
 ## Why the hardware had to change
 
-In sprayDryer01 a droplet finishes its constant-rate drying in 0.08 s and
-the chamber holds it 7.1 s.  Whatever the rate model, the powder reaches the
+In sprayDryer01 a droplet finishes its constant-rate drying in 0.15 s and
+the chamber holds it 6.4 s.  Whatever the rate model, the powder reaches the
 isotherm's equilibrium moisture long before the outlet, and the outlet
 reports only that equilibrium: put `model chen;` into sprayDryer01 and every
 number stays the same to the last digit.  A kinetic model decides the
 product only where the residence time is comparable to the drying time.
-Here the constant-rate drying takes 0.34 s and the residence is 0.46 s, so
+Here the constant-rate drying takes 0.55 s and the residence is 0.80 s, so
 the powder leaves before it is at equilibrium.
 
 ## What to compare
@@ -37,8 +37,8 @@ characteristic drying curve on the same 1-D trajectory) and run again.
 
 | | REA (`chen`, this case) | drying curve (`langrishKockel`) | sprayDryer01 |
 |---|---|---|---|
-| residence time | 0.46 s | 0.46 s | 7.1 s |
-| powder moisture | about 2.2 wt% | about 1.6 wt% | 1.54 wt% (equilibrium) |
+| residence time | 0.80 s | 0.80 s | 6.4 s |
+| powder moisture | about 2.0 wt% | about 1.6 wt% | 1.57 wt% (equilibrium) |
 
 The REA leaves the powder wetter: its rate falls smoothly from the first
 second of drying, while the drying curve keeps the full rate down to the
@@ -51,3 +51,15 @@ trusting either.
 The run also announces the atomiser's SHEET/FILM regime, as it does for
 sprayDryer01: the Friedman droplet size is used outside the ligament regime
 it was fitted in.
+
+## What changed on 2026-11-18 (DEV.md 4c C421, door slice B)
+
+The atomiser no longer takes water's viscosity and density: it reads the
+FEED's own, from the property dictionary (the NBS table of aqueous sucrose,
+Swindells et al. 1958, 5.16 mPa s for 40 wt % at 25 C, and the solution's
+1178 kg/m3).  The same 5 000 rpm wheel therefore makes a coarser spray than
+it did (177 um, not 139), the 0.5 m chamber that used to leave the powder
+at 2.2 wt % left it at 38 wt % (the REA and the curve alike, so the lesson
+was lost), and the chamber is now 1.2 m tall, which restores the regime this
+case exists to show.  Typing a viscosity or a density in `operation` is
+refused by name.
