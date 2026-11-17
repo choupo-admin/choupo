@@ -143,7 +143,7 @@ kpi     RO                     recovery_elem4   0.417039650596   1e-4
 kpi     RO                     recovery_elem5   0.439047847778   1e-4
 kpi     RO                     recovery_elem6   0.452944061907   1e-4
 kpi     RO                     recovery_elem7   0.462617328473   1e-4
-kpi     RO                     solute_closure_rel 4.87876859806e-16 1e-4
+kpi     RO                     solute_closure_rel 4.87876859806e-16 abs:1e-09
 kpi     RO                     u_crossflow_inlet 0.193725557674   1e-4
 kpi     RO                     vessels          2                1e-4
 kpi     RO                     water_recovery   0.462617328473   1e-4

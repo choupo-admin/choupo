@@ -16,12 +16,12 @@ kpi     bed                    gasInventory_mol 0.0806360746763  1e-4
 kpi     bed                    n_He_final       8.06360746763e-05 1e-4
 kpi     bed                    t_end            2                1e-4
 kpi     bed                    totalMoles_final 8.06360746763e-05 1e-4
-kpi     campaign               element_He_closure_rel 1.56781951488e-15 1e-4
-kpi     campaign               element_worst_closure_rel 1.56781951488e-15 1e-4
+kpi     campaign               element_He_closure_rel 1.56781951488e-15 abs:1e-09
+kpi     campaign               element_worst_closure_rel 1.56781951488e-15 abs:1e-09
 kpi     campaign               energy_H_external_kJ 0                1e-4
 kpi     campaign               energy_Q_ledger_kJ 0.000106635845324 1e-4
 kpi     campaign               energy_balance_available 1                1e-4
-kpi     campaign               energy_closure_rel 1.77610602166e-12 1e-4
+kpi     campaign               energy_closure_rel 1.77610602166e-12 abs:1e-09
 kpi     campaign               energy_dH_vessels_kJ 0.000106635845325 1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
 kpi     campaign               energy_records_valid 2                1e-4
@@ -29,7 +29,7 @@ kpi     campaign               energy_residual_kJ 1.89396567006e-16 abs:1e-09
 kpi     campaign               mass_kg_external_out 0.000161635242506 1e-4
 kpi     campaign               mass_kg_final    0.000322753952499 1e-4
 kpi     campaign               mass_kg_initial  0.000484389195005 1e-4
-kpi     campaign               mass_residual_kg 7.04731412116e-19 1e-4
+kpi     campaign               mass_residual_kg 7.04731412116e-19 abs:1e-09
 kpi     campaign               moles_kmol_external_out 4.03825619612e-05 1e-4
 kpi     campaign               moles_kmol_final 8.06360746763e-05 1e-4
 kpi     campaign               moles_kmol_initial 0.000121018636638 1e-4

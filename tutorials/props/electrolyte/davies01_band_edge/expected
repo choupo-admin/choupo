@@ -2,7 +2,7 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 diag    davies_m0p05           I                0.0500001          1e-4
-diag    davies_m0p05           SI_halite        -4.34316           1e-4
+diag    davies_m0p05           SI_halite        -4.34316           abs:0.0004343
 diag    davies_m0p05           aw               0.9982             1e-4
 diag    davies_m0p05           gamma_Cl         0.821203           1e-4
 diag    davies_m0p05           gamma_Na         0.821203           1e-4
@@ -10,7 +10,7 @@ diag    davies_m0p05           m_Cl             0.05               1e-4
 diag    davies_m0p05           m_Na             0.05               1e-4
 diag    davies_m0p05           pH               7.00292            1e-4
 diag    hmw_m0p05              I                0.0500001          1e-4
-diag    hmw_m0p05              SI_halite        -4.34351           1e-4
+diag    hmw_m0p05              SI_halite        -4.34351           abs:0.0004344
 diag    hmw_m0p05              aw               0.998302           1e-4
 diag    hmw_m0p05              gamma_Cl         0.820867           1e-4
 diag    hmw_m0p05              gamma_Na         0.820867           1e-4
@@ -18,7 +18,7 @@ diag    hmw_m0p05              m_Cl             0.05               1e-4
 diag    hmw_m0p05              m_Na             0.05               1e-4
 diag    hmw_m0p05              pH               6.99841            1e-4
 diag    davies_m0p1            I                0.1                1e-4
-diag    davies_m0p1            SI_halite        -3.78446           1e-4
+diag    davies_m0p1            SI_halite        -3.78446           abs:0.0003784
 diag    davies_m0p1            aw               0.996403           1e-4
 diag    davies_m0p1            gamma_Cl         0.781216           1e-4
 diag    davies_m0p1            gamma_Na         0.781216           1e-4
@@ -26,7 +26,7 @@ diag    davies_m0p1            m_Cl             0.1                1e-4
 diag    davies_m0p1            m_Na             0.1                1e-4
 diag    davies_m0p1            pH               7.00533            1e-4
 diag    hmw_m0p1               I                0.1                1e-4
-diag    hmw_m0p1               SI_halite        -3.78844           1e-4
+diag    hmw_m0p1               SI_halite        -3.78844           abs:0.0003788
 diag    hmw_m0p1               aw               0.996646           1e-4
 diag    hmw_m0p1               gamma_Cl         0.777646           1e-4
 diag    hmw_m0p1               gamma_Na         0.777646           1e-4
@@ -34,7 +34,7 @@ diag    hmw_m0p1               m_Cl             0.1                1e-4
 diag    hmw_m0p1               m_Na             0.1                1e-4
 diag    hmw_m0p1               pH               6.99649            1e-4
 diag    davies_m0p25           I                0.25               1e-4
-diag    davies_m0p25           SI_halite        -3.03762           1e-4
+diag    davies_m0p25           SI_halite        -3.03762           abs:0.0003038
 diag    davies_m0p25           aw               0.991033           1e-4
 diag    davies_m0p25           gamma_Cl         0.738329           1e-4
 diag    davies_m0p25           gamma_Na         0.738329           1e-4
@@ -42,7 +42,7 @@ diag    davies_m0p25           m_Cl             0.25               1e-4
 diag    davies_m0p25           m_Na             0.25               1e-4
 diag    davies_m0p25           pH               7.01198            1e-4
 diag    hmw_m0p25              I                0.25               1e-4
-diag    hmw_m0p25              SI_halite        -3.06003           1e-4
+diag    hmw_m0p25              SI_halite        -3.06003           abs:0.000306
 diag    hmw_m0p25              aw               0.991729           1e-4
 diag    hmw_m0p25              gamma_Cl         0.719527           1e-4
 diag    hmw_m0p25              gamma_Na         0.719527           1e-4
@@ -50,7 +50,7 @@ diag    hmw_m0p25              m_Cl             0.25               1e-4
 diag    hmw_m0p25              m_Na             0.25               1e-4
 diag    hmw_m0p25              pH               6.99046            1e-4
 diag    davies_m0p5            I                0.5                1e-4
-diag    davies_m0p5            SI_halite        -2.44156           1e-4
+diag    davies_m0p5            SI_halite        -2.44156           abs:0.0002442
 diag    davies_m0p5            aw               0.982146           1e-4
 diag    davies_m0p5            gamma_Cl         0.733248           1e-4
 diag    davies_m0p5            gamma_Na         0.733248           1e-4
@@ -58,7 +58,7 @@ diag    davies_m0p5            m_Cl             0.5                1e-4
 diag    davies_m0p5            m_Na             0.5                1e-4
 diag    davies_m0p5            pH               7.02326            1e-4
 diag    hmw_m0p5               I                0.5                1e-4
-diag    hmw_m0p5               SI_halite        -2.50552           1e-4
+diag    hmw_m0p5               SI_halite        -2.50552           abs:0.0002506
 diag    hmw_m0p5               aw               0.983528           1e-4
 diag    hmw_m0p5               gamma_Cl         0.681197           1e-4
 diag    hmw_m0p5               gamma_Na         0.681197           1e-4
@@ -66,7 +66,7 @@ diag    hmw_m0p5               m_Cl             0.5                1e-4
 diag    hmw_m0p5               m_Na             0.5                1e-4
 diag    hmw_m0p5               pH               6.98081            1e-4
 diag    davies_m1p0            I                1                  1e-4
-diag    davies_m1p0            SI_halite        -1.774             1e-4
+diag    davies_m1p0            SI_halite        -1.774             abs:0.0001774
 diag    davies_m1p0            aw               0.964611           1e-4
 diag    davies_m1p0            gamma_Cl         0.790679           1e-4
 diag    davies_m1p0            gamma_Na         0.790679           1e-4
@@ -74,7 +74,7 @@ diag    davies_m1p0            m_Cl             1                  1e-4
 diag    davies_m1p0            m_Na             1                  1e-4
 diag    davies_m1p0            pH               7.05043            1e-4
 diag    hmw_m1p0               I                1                  1e-4
-diag    hmw_m1p0               SI_halite        -1.93464           1e-4
+diag    hmw_m1p0               SI_halite        -1.93464           abs:0.0001935
 diag    hmw_m1p0               aw               0.966826           1e-4
 diag    hmw_m1p0               gamma_Cl         0.657172           1e-4
 diag    hmw_m1p0               gamma_Na         0.657172           1e-4
@@ -82,7 +82,7 @@ diag    hmw_m1p0               m_Cl             1                  1e-4
 diag    hmw_m1p0               m_Na             1                  1e-4
 diag    hmw_m1p0               pH               6.96473            1e-4
 diag    davies_m2p0            I                2                  1e-4
-diag    davies_m2p0            SI_halite        -0.953442          1e-4
+diag    davies_m2p0            SI_halite        -0.953442          abs:9.534e-05
 diag    davies_m2p0            aw               0.930475           1e-4
 diag    davies_m2p0            gamma_Cl         1.01683            1e-4
 diag    davies_m2p0            gamma_Na         1.01683            1e-4
@@ -90,7 +90,7 @@ diag    davies_m2p0            m_Cl             2                  1e-4
 diag    davies_m2p0            m_Na             2                  1e-4
 diag    davies_m2p0            pH               7.13303            1e-4
 diag    hmw_m2p0               I                2                  1e-4
-diag    hmw_m2p0               SI_halite        -1.31761           1e-4
+diag    hmw_m2p0               SI_halite        -1.31761           abs:0.0001318
 diag    hmw_m2p0               aw               0.931545           1e-4
 diag    hmw_m2p0               gamma_Cl         0.668596           1e-4
 diag    hmw_m2p0               gamma_Na         0.668596           1e-4
@@ -98,7 +98,7 @@ diag    hmw_m2p0               m_Cl             2                  1e-4
 diag    hmw_m2p0               m_Na             2                  1e-4
 diag    hmw_m2p0               pH               6.94918            1e-4
 diag    davies_m4p0            I                4                  1e-4
-diag    davies_m4p0            SI_halite        0.17812            1e-4
+diag    davies_m4p0            SI_halite        0.17812            abs:1.781e-05
 diag    davies_m4p0            aw               0.865784           1e-4
 diag    davies_m4p0            gamma_Cl         1.87068            1e-4
 diag    davies_m4p0            gamma_Na         1.87068            1e-4
@@ -106,7 +106,7 @@ diag    davies_m4p0            m_Cl             4                  1e-4
 diag    davies_m4p0            m_Na             4                  1e-4
 diag    davies_m4p0            pH               7.41501            1e-4
 diag    hmw_m4p0               I                4                  1e-4
-diag    hmw_m4p0               SI_halite        -0.578259          1e-4
+diag    hmw_m4p0               SI_halite        -0.578259          abs:5.783e-05
 diag    hmw_m4p0               aw               0.851549           1e-4
 diag    hmw_m4p0               gamma_Cl         0.783088           1e-4
 diag    hmw_m4p0               gamma_Na         0.783088           1e-4
@@ -114,7 +114,7 @@ diag    hmw_m4p0               m_Cl             4                  1e-4
 diag    hmw_m4p0               m_Na             4                  1e-4
 diag    hmw_m4p0               pH               6.99174            1e-4
 diag    davies_m6p0            I                6                  1e-4
-diag    davies_m6p0            SI_halite        1.098              1e-4
+diag    davies_m6p0            SI_halite        1.098              abs:0.0001098
 diag    davies_m6p0            aw               0.80559            1e-4
 diag    davies_m6p0            gamma_Cl         3.59623            1e-4
 diag    davies_m6p0            gamma_Na         3.59623            1e-4
@@ -122,7 +122,7 @@ diag    davies_m6p0            m_Cl             6                  1e-4
 diag    davies_m6p0            m_Na             6                  1e-4
 diag    davies_m6p0            pH               7.76979            1e-4
 diag    hmw_m6p0               I                6                  1e-4
-diag    hmw_m6p0               SI_halite        -0.0217581         1e-4
+diag    hmw_m6p0               SI_halite        -0.0217581         abs:2.176e-06
 diag    hmw_m6p0               aw               0.759214           1e-4
 diag    hmw_m6p0               gamma_Cl         0.990763           1e-4
 diag    hmw_m6p0               gamma_Na         0.990763           1e-4
@@ -130,34 +130,34 @@ diag    hmw_m6p0               m_Cl             6                  1e-4
 diag    hmw_m6p0               m_Na             6                  1e-4
 diag    hmw_m6p0               pH               7.10674            1e-4
 diag    davies_m0p05           chargeImposed    1                1e-4
-diag    davies_m0p05           chargeResidual   -4.67876e-15     1e-4
+diag    davies_m0p05           chargeResidual   -4.67876e-15     abs:1e-12
 diag    hmw_m0p05              chargeImposed    1                1e-4
-diag    hmw_m0p05              chargeResidual   -3.96056e-15     1e-4
+diag    hmw_m0p05              chargeResidual   -3.96056e-15     abs:1e-12
 diag    davies_m0p1            chargeImposed    1                1e-4
-diag    davies_m0p1            chargeResidual   -1.89231e-14     1e-4
+diag    davies_m0p1            chargeResidual   -1.89231e-14     abs:1e-12
 diag    hmw_m0p1               chargeImposed    1                1e-4
-diag    hmw_m0p1               chargeResidual   -1.66627e-14     1e-4
+diag    hmw_m0p1               chargeResidual   -1.66627e-14     abs:1e-12
 diag    davies_m0p25           chargeImposed    1                1e-4
-diag    davies_m0p25           chargeResidual   -1.09795e-13     1e-4
+diag    davies_m0p25           chargeResidual   -1.09795e-13     abs:1e-12
 diag    hmw_m0p25              chargeImposed    1                1e-4
-diag    hmw_m0p25              chargeResidual   -9.6654e-14      1e-4
+diag    hmw_m0p25              chargeResidual   -9.6654e-14      abs:1e-12
 diag    davies_m0p5            chargeImposed    1                1e-4
-diag    davies_m0p5            chargeResidual   -4.22944e-13     1e-4
+diag    davies_m0p5            chargeResidual   -4.22944e-13     abs:1e-12
 diag    hmw_m0p5               chargeImposed    1                1e-4
-diag    hmw_m0p5               chargeResidual   -3.72344e-13     1e-4
+diag    hmw_m0p5               chargeResidual   -3.72344e-13     abs:1e-12
 diag    davies_m1p0            chargeImposed    1                1e-4
-diag    davies_m1p0            chargeResidual   -5.88235e-17     1e-4
+diag    davies_m1p0            chargeResidual   -5.88235e-17     abs:1e-12
 diag    hmw_m1p0               chargeImposed    1                1e-4
-diag    hmw_m1p0               chargeResidual   1.69229e-16      1e-4
+diag    hmw_m1p0               chargeResidual   1.69229e-16      abs:1e-12
 diag    davies_m2p0            chargeImposed    1                1e-4
-diag    davies_m2p0            chargeResidual   -6.39009e-17     1e-4
+diag    davies_m2p0            chargeResidual   -6.39009e-17     abs:1e-12
 diag    hmw_m2p0               chargeImposed    1                1e-4
-diag    hmw_m2p0               chargeResidual   8.0751e-17       1e-4
+diag    hmw_m2p0               chargeResidual   8.0751e-17       abs:1e-12
 diag    davies_m4p0            chargeImposed    1                1e-4
-diag    davies_m4p0            chargeResidual   -1.04377e-16     1e-4
+diag    davies_m4p0            chargeResidual   -1.04377e-16     abs:1e-12
 diag    hmw_m4p0               chargeImposed    1                1e-4
-diag    hmw_m4p0               chargeResidual   -1.94923e-16     1e-4
+diag    hmw_m4p0               chargeResidual   -1.94923e-16     abs:1e-12
 diag    davies_m6p0            chargeImposed    1                1e-4
-diag    davies_m6p0            chargeResidual   -8.95889e-16     1e-4
+diag    davies_m6p0            chargeResidual   -8.95889e-16     abs:1e-12
 diag    hmw_m6p0               chargeImposed    1                1e-4
-diag    hmw_m6p0               chargeResidual   -5.07344e-15     1e-4
+diag    hmw_m6p0               chargeResidual   -5.07344e-15     abs:1e-12

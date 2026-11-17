@@ -892,7 +892,7 @@ kpi     CONVERTER.Bed1         GHSV_normal_h    44665.4032506     1e-4
 kpi     CONVERTER.Bed1         L_bed_m          2.58215447939    1e-4
 kpi     CONVERTER.Bed1         L_over_D         1.15012366948    1e-4
 kpi     CONVERTER.Bed1         P_out_bar        150.444335266    1e-4
-kpi     CONVERTER.Bed1         Q_kW             7.27595761418e-12 1e-4
+kpi     CONVERTER.Bed1         Q_kW             7.27595761418e-12 abs:0.0001
 kpi     CONVERTER.Bed1         Re_p_in          6296.46134471    1e-4
 kpi     CONVERTER.Bed1         T                651.28792431    1e-4
 kpi     CONVERTER.Bed1         T_eq_outlet_K    816.696317836    1e-4
@@ -932,7 +932,7 @@ kpi     CONVERTER.Bed2         GHSV_normal_h    21865.2574386     1e-4
 kpi     CONVERTER.Bed2         L_bed_m          4.8709380348    1e-4
 kpi     CONVERTER.Bed2         L_over_D         2.16957628643    1e-4
 kpi     CONVERTER.Bed2         P_out_bar        149.815067229    1e-4
-kpi     CONVERTER.Bed2         Q_kW             -2.18278728426e-11 1e-4
+kpi     CONVERTER.Bed2         Q_kW             -2.18278728426e-11 abs:0.0001
 kpi     CONVERTER.Bed2         Re_p_in          6265.75130362    1e-4
 kpi     CONVERTER.Bed2         T                693.15           1e-4
 kpi     CONVERTER.Bed2         T_eq_outlet_K    768.941056039    1e-4
@@ -972,7 +972,7 @@ kpi     CONVERTER.Bed3         GHSV_normal_h    12401.33042    1e-4
 kpi     CONVERTER.Bed3         L_bed_m          8.22778565732    1e-4
 kpi     CONVERTER.Bed3         L_over_D         3.66475790175    1e-4
 kpi     CONVERTER.Bed3         P_out_bar        148.815066956    1e-4
-kpi     CONVERTER.Bed3         Q_kW             1.09139364213e-11 1e-4
+kpi     CONVERTER.Bed3         Q_kW             1.09139364213e-11 abs:0.0001
 kpi     CONVERTER.Bed3         Re_p_in          6454.00903407    1e-4
 kpi     CONVERTER.Bed3         T                683.15           1e-4
 kpi     CONVERTER.Bed3         T_eq_outlet_K    740.677064292    1e-4

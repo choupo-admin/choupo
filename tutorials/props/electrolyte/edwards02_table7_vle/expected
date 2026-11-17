@@ -5,7 +5,7 @@ diag    table7_row1            I                1.547              1e-4
 diag    table7_row1            P_atm            2.48995158361            1e-4
 diag    table7_row1            aw               0.946304           1e-4
 diag    table7_row1            chargeImposed    1                  1e-4
-diag    table7_row1            chargeResidual   2.5541e-13         1e-4
+diag    table7_row1            chargeResidual   2.5541e-13         abs:1e-12
 diag    table7_row1            gamma_CO2aq      0.919147           1e-4
 diag    table7_row1            gamma_CO3        0.022685           1e-4
 diag    table7_row1            gamma_HCO3       0.268386           1e-4
@@ -29,7 +29,7 @@ diag    table7_row2            I                1.247              1e-4
 diag    table7_row2            P_atm            1.89570959997            1e-4
 diag    table7_row2            aw               0.933746           1e-4
 diag    table7_row2            chargeImposed    1                  1e-4
-diag    table7_row2            chargeResidual   6.37283e-17        1e-4
+diag    table7_row2            chargeResidual   6.37283e-17        abs:1e-12
 diag    table7_row2            gamma_CO2aq      0.846548           1e-4
 diag    table7_row2            gamma_CO3        0.0321054          1e-4
 diag    table7_row2            gamma_HCO3       0.289328           1e-4
@@ -53,7 +53,7 @@ diag    table7_row3            I                0.995665           1e-4
 diag    table7_row3            P_atm            1.88343136844             1e-4
 diag    table7_row3            aw               0.923999           1e-4
 diag    table7_row3            chargeImposed    1                  1e-4
-diag    table7_row3            chargeResidual   3.29779e-17        1e-4
+diag    table7_row3            chargeResidual   3.29779e-17        abs:1e-12
 diag    table7_row3            gamma_CO2aq      0.78901            1e-4
 diag    table7_row3            gamma_CO3        0.0453317          1e-4
 diag    table7_row3            gamma_HCO3       0.312751           1e-4
@@ -77,7 +77,7 @@ diag    row1_nocarbamate       I                1.61255            1e-4
 diag    row1_nocarbamate       P_atm            2.43585967184            1e-4
 diag    row1_nocarbamate       aw               0.944546           1e-4
 diag    row1_nocarbamate       chargeImposed    1                  1e-4
-diag    row1_nocarbamate       chargeResidual   -6.9594e-17        1e-4
+diag    row1_nocarbamate       chargeResidual   -6.9594e-17        abs:1e-12
 diag    row1_nocarbamate       gamma_CO2aq      0.891109           1e-4
 diag    row1_nocarbamate       gamma_CO3        0.0235414          1e-4
 diag    row1_nocarbamate       gamma_HCO3       0.265973           1e-4

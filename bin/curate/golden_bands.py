@@ -27,6 +27,13 @@ round-off of a balance.
 TWO GROUPS OF CLASSES.
   platform  count, condition, parameter, objective: applied only in CROSS mode
             (`cross`), never on disk, never tighter than the file's own band.
+  residual, zero  (C429) residual_closure / _mass_abs / _charge / _pore / _newton /
+            _identity (rule `abs`: abs:max(param, 1e-4 x |expected|) on EVERY row of the
+            class) and zero_duty (rule `abs_if_tiny`: abs:param on a row recorded at
+            round-off, |expected| <= 1e-9).  ON DISK, any platform: the compare in
+            bin/runTests is RELATIVE for every non-zero expected whatever its size, so a
+            round-off quantity must declare its absolute band here or it is judged
+            relatively.  The default `apply` groups are residual and zero.
   residual  residual_boundary / _hx / _ledger: ON DISK as `abs:<v>`
             (`apply`, the recorder's wrapper and `rewrite-all`), because a
             residual's meaning is absolute on any platform.  The band is
@@ -62,6 +69,7 @@ ROOT = Path(__file__).resolve().parents[2]
 TABLE = ROOT / "bin" / "curate" / "golden_bands.tsv"
 RECORDING = ROOT / "bin" / "curate" / "recording_platform.txt"
 FLOOR = 1e-9
+REL_BAND = 1e-4      # the relative band a direct row carries; an `abs` class is never tighter
 BOUNDARY_NO_DENOM_KW = 1e-3
 
 LEDGER_TERMS = ("energy_dH_vessels_kJ", "energy_Q_ledger_kJ", "energy_H_external_kJ",
@@ -135,6 +143,7 @@ class BandClass:
         self.key_re = re.compile(key_re)
         self.param = float(self.param)
         self.group = ("residual" if self.name.startswith("residual_")
+                      else "zero" if self.name.startswith("zero_")
                       else "direct" if self.name == "direct" else "platform")
 
 
@@ -246,6 +255,21 @@ def prescribed(cls, kind, name, key, gv, block, expected=None):
     """The tolerance string the class prescribes, or (None, why) when it cannot be computed."""
     if cls.rule == "rel":
         return f"{cls.param:g}", None
+    if cls.rule in ("abs", "abs_if_tiny"):
+        #  C429: a fixed absolute band, never tighter than the 1e-4 relative band
+        #  the row used to carry.  `abs_if_tiny` applies only to a row recorded at
+        #  round-off; any other row keeps its band (the "keep" marker).
+        try:
+            e = abs(float(expected))
+        except (TypeError, ValueError):
+            return None, "its expected value is not a number"
+        if e == 0.0:                     # zero keeps its absolute rule as authored (C429, item 3)
+            return None, "keep"
+        if cls.rule == "abs_if_tiny":
+            if e > FLOOR:
+                return None, "keep"
+            return "abs:" + fmt(cls.param), None
+        return "abs:" + fmt(max(cls.param, REL_BAND * e)), None
     term, why = term_for(cls, name, key, gv, block)
     if term is None:
         if cls.name == "residual_boundary":
@@ -261,7 +285,7 @@ def prescribed(cls, kind, name, key, gv, block, expected=None):
     return "abs:" + fmt(max(FLOOR, cls.param * term)), None
 
 
-def apply_text(text, block=None, groups=("residual",)):
+def apply_text(text, block=None, groups=("residual",), only=None):
     """Rewrite the tolerance column of the rows of TEXT that belong to a class of
     GROUPS; returns (new text, changed, skipped).  A relative class never makes
     a row TIGHTER than the band it already has."""
@@ -277,8 +301,12 @@ def apply_text(text, block=None, groups=("residual",)):
         cls = classify(kind, name, key)
         if cls is None or cls.rule == "none" or ("all" not in groups and cls.group not in groups):
             continue
+        if only is not None and cls.name not in only:
+            continue
         want, why = prescribed(cls, kind, name, key, gv, block, toks[3][0])
         if want is None:
+            if why == "keep":
+                continue
             skipped.append((kind, name, key, why))
             continue
         if cls.group == "platform":
@@ -310,7 +338,7 @@ def groups_arg(argv):
     if "--groups" in argv:
         g = argv[argv.index("--groups") + 1]
         return ("all",) if g == "all" else (g,)
-    return ("residual",)
+    return ("residual", "zero")
 
 
 def cmd_apply(argv):
@@ -384,14 +412,16 @@ def goldens():
 def cmd_rewrite_all(argv):
     dry = "--dry-run" in argv
     groups = groups_arg(argv)
+    only = set(argv[argv.index("--classes") + 1].split(",")) if "--classes" in argv else None
     per_class = {}
     for g in goldens():
         text = g.read_text()
         needs_block = any(c is not None and c.name == "residual_boundary" and ("all" in groups or c.group in groups)
+                          and (only is None or c.name in only)
                           for _, toks in parse_rows(text)
                           for c in [classify(toks[0][0], toks[1][0], toks[2][0])])
         block = run_boundary_block(g.parent) if needs_block else None
-        new, changed, skipped = apply_text(text, block, groups)
+        new, changed, skipped = apply_text(text, block, groups, only)
         for s in skipped:
             print(f"SKIPPED {g.relative_to(ROOT)}: {s}")
         b = text.split("\n")

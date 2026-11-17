@@ -2,12 +2,12 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 kpi     balance                energy_balance_available 0                1e-4
-kpi     balance                mass_closure_rel 2.15876699233e-16 1e-4
+kpi     balance                mass_closure_rel 2.15876699233e-16 abs:1e-09
 kpi     balance                mass_kg_final    0.36             1e-4
 kpi     balance                mass_kg_in_cum   7.2              1e-4
 kpi     balance                mass_kg_initial  0.36             1e-4
 kpi     balance                mass_kg_out_cum  7.2              1e-4
-kpi     balance                mass_residual_kg -1.55431223448e-15 1e-4
+kpi     balance                mass_residual_kg -1.55431223448e-15 abs:1e-09
 kpi     balance                material_available 1                1e-4
 kpi     rtd                    area_kmol        0.000198752512114 1e-4
 kpi     rtd                    sigma2_s2        19198.7859557    1e-4

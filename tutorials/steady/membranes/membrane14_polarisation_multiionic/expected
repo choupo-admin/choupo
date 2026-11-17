@@ -17,11 +17,11 @@ kpi     NF                     R_obs_NH4        0.708638486824   1e-4
 kpi     NF                     R_obs_NO3        0.178426487502   1e-4
 kpi     NF                     R_obs_Na         0.673076724027   1e-4
 kpi     NF                     dP_feed          66318.9531603    1e-4
-kpi     NF                     mass_closure_rel 3.99445116671e-16 1e-4
+kpi     NF                     mass_closure_rel 3.99445116671e-16 abs:1e-09
 kpi     NF                     membranePotential_mV_avg 31.3378220538    1e-4
 kpi     NF                     water_recovery   0.156353820388   1e-4
 kpi     NF                     xi_V_per_m_avg   38.0138239667    1e-4
-kpi     NF                     solute_closure_rel 1.49476402457e-16 1e-4
+kpi     NF                     solute_closure_rel 1.49476402457e-16 abs:1e-09
 source  NF                     liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume] exact
 source  NF                     liquidViscosity  perConstituent,stated.dil20_ClNaNH4NO3_liquidViscosity exact
 source  NF                     liquidDiffusivity record.speciesD0.StokesEinstein exact

@@ -5,7 +5,7 @@ diag    acetic_acid            I                0.00137088690909   1e-4
 diag    acetic_acid            T_K              298.15             1e-4
 diag    acetic_acid            aw               0.998175469954     1e-4
 diag    acetic_acid            chargeImposed    1                  1e-4
-diag    acetic_acid            chargeResidual   1.87058337115e-16  1e-4
+diag    acetic_acid            chargeResidual   1.87058337115e-16  abs:1e-12
 diag    acetic_acid            gamma_Acetate    0.95940269903      1e-4
 diag    acetic_acid            gamma_HAc        1                  1e-4
 diag    acetic_acid            m_Acetate        0.00137088690118   1e-4
@@ -15,7 +15,7 @@ diag    acetic_half            I                0.0500259823931    1e-4
 diag    acetic_half            T_K              298.15             1e-4
 diag    acetic_half            aw               0.997300930971     1e-4
 diag    acetic_half            chargeImposed    1                  1e-4
-diag    acetic_half            chargeResidual   1.06396671823e-16  1e-4
+diag    acetic_half            chargeResidual   1.06396671823e-16  abs:1e-12
 diag    acetic_half            gamma_Acetate    0.821173167123     1e-4
 diag    acetic_half            gamma_HAc        1                  1e-4
 diag    acetic_half            m_Acetate        0.0500259818239    1e-4
@@ -25,7 +25,7 @@ diag    acetic_sodium          I                0.100000002166     1e-4
 diag    acetic_sodium          T_K              298.15             1e-4
 diag    acetic_sodium          aw               0.996403347666     1e-4
 diag    acetic_sodium          chargeImposed    1                  1e-4
-diag    acetic_sodium          chargeResidual   -8.90379839046e-15 1e-4
+diag    acetic_sodium          chargeResidual   -8.90379839046e-15 abs:1e-12
 diag    acetic_sodium          gamma_Acetate    0.781215644678     1e-4
 diag    acetic_sodium          gamma_HAc        1                  1e-4
 diag    acetic_sodium          m_Acetate        0.0999924640358    1e-4
@@ -35,7 +35,7 @@ diag    formic_acid            I                0.0045226695131    1e-4
 diag    formic_acid            T_K              298.15             1e-4
 diag    formic_acid            aw               0.998118795796     1e-4
 diag    formic_acid            chargeImposed    1                  1e-4
-diag    formic_acid            chargeResidual   -3.7953261264e-16  1e-4
+diag    formic_acid            chargeResidual   -3.7953261264e-16  abs:1e-12
 diag    formic_acid            gamma_Formate    0.93015490482      1e-4
 diag    formic_acid            gamma_HFo        1                  1e-4
 diag    formic_acid            m_Formate        0.00452266951054   1e-4
@@ -45,7 +45,7 @@ diag    formic_half            I                0.0502720838141    1e-4
 diag    formic_half            T_K              298.15             1e-4
 diag    formic_half            aw               0.99729650944      1e-4
 diag    formic_half            chargeImposed    1                  1e-4
-diag    formic_half            chargeResidual   5.81160308894e-17  1e-4
+diag    formic_half            chargeResidual   5.81160308894e-17  abs:1e-12
 diag    formic_half            gamma_Formate    0.820890696508     1e-4
 diag    formic_half            gamma_HFo        1                  1e-4
 diag    formic_half            m_Formate        0.0502720837598    1e-4
@@ -55,7 +55,7 @@ diag    formic_sodium          I                0.100000007031     1e-4
 diag    formic_sodium          T_K              298.15             1e-4
 diag    formic_sodium          aw               0.996403441209     1e-4
 diag    formic_sodium          chargeImposed    1                  1e-4
-diag    formic_sodium          chargeResidual   -6.81797947131e-16 1e-4
+diag    formic_sodium          chargeResidual   -6.81797947131e-16 abs:1e-12
 diag    formic_sodium          gamma_Formate    0.781215641943     1e-4
 diag    formic_sodium          gamma_HFo        1                  1e-4
 diag    formic_sodium          m_Formate        0.0999976849836    1e-4

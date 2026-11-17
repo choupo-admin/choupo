@@ -61,7 +61,7 @@ kpi     synthesis150           conversion_ammoniaSynthesis 0.406409029589     1e
 kpi     synthesis150           extent_ammoniaSynthesis_kmol_h 596.608455437      1e-4
 kpi     synthesis150           nReactions       1                  1e-4
 kpi     synthesis150           newtonIterations 5                  1e-4
-kpi     synthesis150           newtonResidual   6.05101799729e-14  1e-4
+kpi     synthesis150           newtonResidual   6.05101799729e-14  abs:1e-08
 kpi     synthesis50            F_in_kmol_h      5872               1e-4
 kpi     synthesis50            F_out_kmol_h     5247.95790694      1e-4
 kpi     synthesis50            Kp_ammoniaSynthesis 8.89825760324e-05  1e-4
@@ -71,7 +71,7 @@ kpi     synthesis50            conversion_ammoniaSynthesis 0.212548396818     1e
 kpi     synthesis50            extent_ammoniaSynthesis_kmol_h 312.021046528      1e-4
 kpi     synthesis50            nReactions       1                  1e-4
 kpi     synthesis50            newtonIterations 5                  1e-4
-kpi     synthesis50            newtonResidual   1.70163610723e-17  1e-4
+kpi     synthesis50            newtonResidual   1.70163610723e-17  abs:1e-08
 kpi     waterSplitting         F_in_kmol_h      4404               1e-4
 kpi     waterSplitting         F_out_kmol_h     6606               1e-4
 kpi     waterSplitting         Q_kW             295833.806667      1e-4

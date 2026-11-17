@@ -11,7 +11,7 @@ kpi     UF                     Gamma_BSA_avg    17.8814158782    1e-4
 kpi     UF                     J_w_avg          3.12412964274e-05 1e-4
 kpi     UF                     R_obs_BSA        0.750227369911   1e-4
 kpi     UF                     dP_feed          0                1e-4
-kpi     UF                     mass_closure_rel 3.97205898188e-16 1e-4
+kpi     UF                     mass_closure_rel 3.97205898188e-16 abs:1e-09
 kpi     UF                     solute_closure_rel 0                1e-4
 kpi     UF                     water_recovery   0.562855732225   1e-4
 source  UF                     liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume] exact

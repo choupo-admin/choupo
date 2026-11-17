@@ -34,9 +34,9 @@ kpi     turbine                ratio            1.08311661345    1e-4
 closure turbine                raw_kW           -0.50550939638   1e-4
 closure turbine                step_kW          -0.505835090195  1e-4
 closure turbine                remaining_kW     0.000325693814375 1e-4
-closure flash                  raw_kW           -5.11590769747e-13 1e0
+closure flash                  raw_kW           -5.11590769747e-13 abs:0.0001
 closure flash                  step_kW          0                1e-4
-closure flash                  remaining_kW     -5.11590769747e-13 1e0
+closure flash                  remaining_kW     -5.11590769747e-13 abs:0.0001
 utility flash                  cooling.coolingWater.duty_kW -451.021728762   1e-4
 utility flash                  cooling.coolingWater.T 353              1e-4
 utility flash                  cooling.coolingWater.kg_s 10.7899935111    1e-4

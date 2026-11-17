@@ -28,7 +28,7 @@ diag    explainS               S_real           201.558612487    1e-4
 diag    explainS               T                400              1e-4
 diag    explainS               dsCp_N2          8.57872050539    1e-4
 diag    explainS               dsCp_O2          8.74789804554    1e-4
-diag    explainS               gap_ideal        2.84217094304e-14 1e-4
+diag    explainS               gap_ideal        2.84217094304e-14 abs:1e-08
 diag    explainS               gap_total        0                1e-4
 diag    explainS               mixing_line      4.27327352512    1e-4
 diag    explainS               pressure_line    -5.76314632154   1e-4

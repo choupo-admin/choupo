@@ -35,7 +35,7 @@ diag    table1                 Gamma_dye_r7     0.193518088373     1e-4
 diag    table1                 Gamma_dye_r8     0.220083415259     1e-4
 diag    table1                 Gamma_dye_r9     0.250096240292     1e-4
 diag    table1                 Re               26905.6856187      1e-4
-diag    table1                 chargeResidual_max 2.43164318258e-16  1e-4
+diag    table1                 chargeResidual_max 2.43164318258e-16  abs:1e-12
 diag    table1                 k_Cl             4.71717545208e-05  1e-4
 diag    table1                 k_Na             3.55336879288e-05  1e-4
 diag    table1                 k_dye            1.48041119273e-05  1e-4

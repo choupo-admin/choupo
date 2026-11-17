@@ -99,7 +99,7 @@ kpi     Stage1                 feedFlow_elem6   0.00217805696695 1e-4
 kpi     Stage1                 hydraulicDiameter 0.000951805555556 1e-4
 kpi     Stage1                 leafWidth        1.3612412178     1e-4
 kpi     Stage1                 leaves           16               1e-4
-kpi     Stage1                 mass_closure_rel 1.33148372224e-16 1e-4
+kpi     Stage1                 mass_closure_rel 1.33148372224e-16 abs:1e-09
 kpi     Stage1                 membranePotential_mV_avg 12.3612394833    1e-4
 kpi     Stage1                 recovery_elem1   0.107596241724   1e-4
 kpi     Stage1                 recovery_elem2   0.192136384698   1e-4
@@ -107,7 +107,7 @@ kpi     Stage1                 recovery_elem3   0.258219040334   1e-4
 kpi     Stage1                 recovery_elem4   0.309238293566   1e-4
 kpi     Stage1                 recovery_elem5   0.347697634967   1e-4
 kpi     Stage1                 recovery_elem6   0.375440517951   1e-4
-kpi     Stage1                 solute_closure_rel 7.97207479769e-16 1e-4
+kpi     Stage1                 solute_closure_rel 7.97207479769e-16 abs:1e-09
 kpi     Stage1                 u_crossflow_inlet 0.223709525184   1e-4
 kpi     Stage1                 vessels          4                1e-4
 kpi     Stage1                 water_recovery   0.375440517951   1e-4
@@ -185,7 +185,7 @@ kpi     Stage2                 feedFlow_elem6   0.00280539587234 1e-4
 kpi     Stage2                 hydraulicDiameter 0.000951805555556 1e-4
 kpi     Stage2                 leafWidth        1.3612412178     1e-4
 kpi     Stage2                 leaves           16               1e-4
-kpi     Stage2                 mass_closure_rel 4.26375312682e-16 1e-4
+kpi     Stage2                 mass_closure_rel 4.26375312682e-16 abs:1e-09
 kpi     Stage2                 membranePotential_mV_avg 13.4373364548    1e-4
 kpi     Stage2                 recovery_elem1   0.10945420206    1e-4
 kpi     Stage2                 recovery_elem2   0.192030351644   1e-4
@@ -193,7 +193,7 @@ kpi     Stage2                 recovery_elem3   0.253334068704   1e-4
 kpi     Stage2                 recovery_elem4   0.297433036594   1e-4
 kpi     Stage2                 recovery_elem5   0.327282956294   1e-4
 kpi     Stage2                 recovery_elem6   0.345050477744   1e-4
-kpi     Stage2                 solute_closure_rel 7.85045380504e-16 1e-4
+kpi     Stage2                 solute_closure_rel 7.85045380504e-16 abs:1e-09
 kpi     Stage2                 u_crossflow_inlet 0.279399688362   1e-4
 kpi     Stage2                 vessels          2                1e-4
 kpi     Stage2                 water_recovery   0.345050477744   1e-4

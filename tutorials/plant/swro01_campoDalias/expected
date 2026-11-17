@@ -265,7 +265,7 @@ kpi     RO1                    feedFlow_elem5   0.00123048653453 1e-4
 kpi     RO1                    feedFlow_elem6   0.00115830129614 1e-4
 kpi     RO1                    feedFlow_elem7   0.00111093880457 1e-4
 kpi     RO1                    hydraulicDiameter 0.0009144        1e-4
-kpi     RO1                    mass_closure_rel 2.17326318748e-16 1e-4
+kpi     RO1                    mass_closure_rel 2.17326318748e-16 abs:1e-09
 kpi     RO1                    ratedTest_R_obs_NaCl 0.9975           1e-4
 kpi     RO1                    ratedTest_R_obs_boron 0.91             1e-4
 kpi     RO1                    ratedTest_cm_over_cb_NaCl 1.10791198379    1e-4
@@ -281,7 +281,7 @@ kpi     RO1                    recovery_elem4   0.385495686814   1e-4
 kpi     RO1                    recovery_elem5   0.421544956021   1e-4
 kpi     RO1                    recovery_elem6   0.445197758827   1e-4
 kpi     RO1                    recovery_elem7   0.460486271763   1e-4
-kpi     RO1                    solute_closure_rel 5.56753855746e-16 1e-4
+kpi     RO1                    solute_closure_rel 5.56753855746e-16 abs:1e-09
 kpi     RO1                    u_crossflow_inlet 0.160645864292   1e-4
 kpi     RO1                    vessels          1398             1e-4
 kpi     RO1                    water_recovery   0.460486271763   1e-4
@@ -367,7 +367,7 @@ kpi     RO2a                   recovery_elem4   0.415858923655   1e-4
 kpi     RO2a                   recovery_elem5   0.510522033964   1e-4
 kpi     RO2a                   recovery_elem6   0.602682362709   1e-4
 kpi     RO2a                   recovery_elem7   0.692560692979   1e-4
-kpi     RO2a                   solute_closure_rel 3.06795496168e-16 1e-4
+kpi     RO2a                   solute_closure_rel 3.06795496168e-16 abs:1e-09
 kpi     RO2a                   u_crossflow_inlet 0.302189923784   1e-4
 kpi     RO2a                   vessels          324              1e-4
 kpi     RO2a                   water_recovery   0.692560692979   1e-4
@@ -437,7 +437,7 @@ kpi     RO2b                   feedFlow_elem5   0.00245680715082 1e-4
 kpi     RO2b                   feedFlow_elem6   0.00217277926701 1e-4
 kpi     RO2b                   feedFlow_elem7   0.00190158362219 1e-4
 kpi     RO2b                   hydraulicDiameter 0.0009144        1e-4
-kpi     RO2b                   mass_closure_rel 2.37182598907e-16 1e-4
+kpi     RO2b                   mass_closure_rel 2.37182598907e-16 abs:1e-09
 kpi     RO2b                   ratedTest_R_obs_NaCl 0.992            1e-4
 kpi     RO2b                   ratedTest_R_obs_boron 0.95             1e-4
 kpi     RO2b                   ratedTest_cm_over_cb_NaCl 1.20104556504    1e-4
@@ -453,7 +453,7 @@ kpi     RO2b                   recovery_elem4   0.345750181576   1e-4
 kpi     RO2b                   recovery_elem5   0.421387046826   1e-4
 kpi     RO2b                   recovery_elem6   0.493606676      1e-4
 kpi     RO2b                   recovery_elem7   0.562613963465   1e-4
-kpi     RO2b                   solute_closure_rel 8.60549608999e-16 1e-4
+kpi     RO2b                   solute_closure_rel 8.60549608999e-16 abs:1e-09
 kpi     RO2b                   u_crossflow_inlet 0.278667812807   1e-4
 kpi     RO2b                   vessels          108              1e-4
 kpi     RO2b                   water_recovery   0.562613963465   1e-4

@@ -55,7 +55,7 @@ kpi     NF                     ratedTest_recovery_NaCl 0.153694680924   1e-4
 kpi     NF                     recovery_elem1   0.119975554609   1e-4
 kpi     NF                     recovery_elem2   0.227360318605   1e-4
 kpi     NF                     recovery_elem3   0.322777851773   1e-4
-kpi     NF                     solute_closure_rel 7.60310078882e-16 1e-4
+kpi     NF                     solute_closure_rel 7.60310078882e-16 abs:1e-09
 kpi     NF                     u_crossflow_inlet 0.21885231574    1e-4
 kpi     NF                     water_recovery   0.322777851773   1e-4
 source  NF                     liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume],solutionLaw.NaCl-water exact

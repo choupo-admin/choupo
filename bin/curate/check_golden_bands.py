@@ -83,9 +83,29 @@ def check_text(text, label, block=None):
         if cls is None:
             bad.append(f"{label}: {kind} {name} {key} belongs to no class of the table")
             continue
-        if cls.group != "residual" or claim == "anchor" or tol == "exact":
+        if cls.group not in ("residual", "zero") or claim == "anchor" or tol == "exact":
             continue
         row = f"{label}: {kind} {name} {key}"
+        if cls.rule in ("abs", "abs_if_tiny"):
+            #  C429: an `abs` class puts every NON-ZERO row of its keys on the absolute
+            #  band max(param, 1e-4 x |e|) (abs_if_tiny: abs:param, only a row recorded at
+            #  round-off); an expected 0 keeps the absolute band it was authored with.
+            want, why = gb.prescribed(cls, kind, name, key, gv, block, toks[3][0])
+            if want is None:
+                continue
+            if not tol.startswith("abs:"):
+                bad.append(f"{row} is a round-off quantity of class {cls.name} banded {tol}: its band must be the "
+                           f"ABSOLUTE {want} (a relative band on a residual is the C429 blindness in reverse)")
+                continue
+            try:
+                v = float(tol[4:])
+            except ValueError:
+                bad.append(f"{row}: band {tol} is not abs:<number>")
+                continue
+            wv = float(want[4:])
+            if abs(v - wv) > 0.01 * wv:
+                bad.append(f"{row}: band {tol} but class {cls.name} prescribes {want}")
+            continue
         if not tol.startswith("abs:"):
             bad.append(f"{row} is a closure residual ({cls.name}) banded {tol}: a residual is compared on an "
                        f"ABSOLUTE band written in the row (abs:<v>), never a relative one")
@@ -170,6 +190,88 @@ def arm_transformation():
     return problems
 
 
+def arm_blind():
+    """(f) C429: the checker is not blind below 1e-9.  (1) each class matches the rows it
+    claims and nothing else; (2) the class table puts round-off rows on an absolute band and
+    leaves physical rows relative; (3) the comparator itself (`within_tol`, cut out of
+    bin/runTests) judges a non-zero value below 1e-9 relatively.  -> problems"""
+    problems = []
+    claims = [  # (kind, name, key, the class it must be in)
+        ("kpi", "campaign", "mass_closure_rel", "residual_closure"),
+        ("kpi", "campaign", "element_C_closure_rel", "residual_closure"),
+        ("kpi", "NF", "kpi_solute_closure_rel_final", "residual_closure"),
+        ("kpi", "cyclone", "fluidMassClosure", "residual_closure"),
+        ("kpi", "plant", "mass_residual_kg", "residual_mass_abs"),
+        ("diag", "tris_half", "chargeResidual", "residual_charge"),
+        ("diag", "monovalentWater", "poreResidual_p2", "residual_pore"),
+        ("diag", "monovalentWater", "poreCurrent_p1", "residual_pore"),
+        ("diag", "monovalentWater", "permeateCharge_max", "residual_pore"),
+        ("kpi", "CSTR", "newtonResidual", "residual_newton"),
+        ("diag", "thiele", "newton_residual", "residual_newton"),
+        ("diag", "h_identity", "water_kirchhoff_rel", "residual_identity"),
+        ("diag", "h_identity", "worst_rel_err", "residual_identity"),
+        ("kpi", "bed", "mass_closure_CO2", "residual_identity"),
+        ("diag", "calciteEq_25C", "SI_calcite", "residual_saturation"),
+        ("kpi", "bed", "carrier_fabricated_mol", "zero_balance"),
+        ("kpi", "bed", "carrier_makeup_rel", "zero_balance"),
+        ("kpi", "bed", "deltaP_first_to_out_Pa", "zero_pressure_drop"),
+        ("kpi", "bed", "Q_kW", "zero_duty"),
+        ("boundary", "global", "Q_boundary_kW", "zero_duty"),
+        ("closure", "flash", "remaining_kW", "zero_duty")]
+    for kind, name, key, want in claims:
+        c = gb.classify(kind, name, key)
+        if c is None or c.name != want:
+            problems.append(f"blind arm: {kind} {name} {key} is in class {c.name if c else None}, expected {want}")
+    physical = [("kpi", "ED", "D_ion_HTart"), ("kpi", "ED", "D_ion_Mg"), ("kpi", "u", "D_eff"),
+                ("diag", "carb", "m_CO3"), ("diag", "carb", "Robs_Br_p1"), ("diag", "membrane", "c_porePerm_Cl_pN"),
+                ("diag", "membrane", "poreTolerance"), ("kpi", "col", "y_CHN"), ("kpi", "bed", "n_H_final"),
+                ("diag", "membrane", "partitionPerm_SON_pN"), ("diag", "carb", "pH"),
+                ("kpi", "bed", "closure_worst_abs_nope")]
+    for kind, name, key in physical:
+        c = gb.classify(kind, name, key)
+        if c is not None and c.name != "direct":
+            problems.append(f"blind arm: the physical row {kind} {name} {key} is caught by class {c.name}: "
+                            "a residual class must match residuals by name and by meaning, nothing else")
+    src = ("kpi     ED      D_ion_HTart          7.568e-10        1e-4\n"
+           "kpi     campaign mass_closure_rel    4.5e-16          1e-4\n"
+           "kpi     campaign mass_closure_rel    3e-3             1e-4\n"
+           "kpi     campaign mass_closure_rel    0                1e-3\n"
+           "kpi     bed     Q_kW                 7.3e-12          1e-4\n"
+           "kpi     bed     Q_kW                 1500             1e-4\n"
+           "kpi     bed     Q_kW                 0                1e-4\n")
+    new, _, _ = gb.apply_text(src, None, ("residual", "zero"))
+    got = [t[4][0] for _, t in gb.parse_rows(new)]
+    want = ["1e-4", "abs:1e-09", "abs:3e-07", "1e-3", "abs:0.0001", "1e-4", "1e-4"]
+    if got != want:
+        problems.append(f"blind arm: apply gave {got}, expected {want} (physical row relative; round-off closure absolute "
+                        "and never tighter than 1e-4 relative; a duty of real size and an expected 0 untouched)")
+    rejected, _ = check_text(new, "synthetic-blind", None)
+    if rejected:
+        problems.append("blind arm: the checker rejects the prescribed absolute forms: " + "; ".join(rejected))
+    bad, _ = check_text(src, "synthetic-relative", None)
+    if not any("round-off quantity" in b for b in bad):
+        problems.append("blind arm: a round-off row left on a RELATIVE band was NOT rejected")
+    # (3) the comparator, cut out of bin/runTests
+    text = (ROOT / "bin" / "runTests").read_text()
+    i = text.index("\nwithin_tol() {")
+    j = text.index("\n}\n", i)
+    fn = text[i:j + 3]
+    cases = [("8.455e-10", "7.568e-10", "1e-4", 1, "physical 7.568e-10 published as 8.455e-10: FAIL"),
+             ("7.5681e-10", "7.568e-10", "1e-4", 0, "physical value inside its relative band: PASS"),
+             ("5e-5", "0", "1e-4", 0, "expected 0 stays absolute: inside"),
+             ("2e-4", "0", "1e-4", 1, "expected 0 stays absolute: outside"),
+             ("2e-13", "1e-13", "abs:1e-9", 0, "abs: band, round-off moved inside it"),
+             ("2e-8", "1e-13", "abs:1e-9", 1, "abs: band, round-off moved beyond it"),
+             ("1e-14", "1e-17", "1e-4", 1, "round-off on a RELATIVE band is judged relatively now: FAIL")]
+    for a, e, t, want_rc, what in cases:
+        r = subprocess.run(["bash", "-c", fn + f'\nwithin_tol "{a}" "{e}" "{t}"; echo $?'],
+                           capture_output=True, text=True)
+        rc = int((r.stdout.strip().splitlines() or ["99"])[-1])
+        if rc != want_rc:
+            problems.append(f"blind arm: within_tol {a} vs {e} band {t} ({what}) exited {rc}, expected {want_rc}")
+    return problems
+
+
 def run_tests_on(case_dir, mode):
     env = dict(os.environ)
     env["CHOUPO_HOME"] = str(ROOT)
@@ -247,6 +349,7 @@ def main():
     problems = []
     problems += arm_checker()
     problems += arm_transformation()
+    problems += arm_blind()
     cmp_problems, n_cmp = arm_comparator()
     problems += cmp_problems
     n_rows = n_form_only = 0

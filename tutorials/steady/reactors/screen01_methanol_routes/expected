@@ -44,7 +44,7 @@ kpi     equilA                 conversion_routeA 0.529340322518     1e-4
 kpi     equilA                 extent_routeA_kmol_h 0.264670161259     1e-4
 kpi     equilA                 nReactions       1                  1e-4
 kpi     equilA                 newtonIterations 6                  1e-4
-kpi     equilA                 newtonResidual   3.5527136788e-15   1e-4
+kpi     equilA                 newtonResidual   3.5527136788e-15   abs:1e-08
 kpi     equilB                 F_in_kmol_h      2                  1e-4
 kpi     equilB                 F_out_kmol_h     1.78814886715      1e-4
 kpi     equilB                 Kp_routeB        2.20390119824e-05  1e-4
@@ -54,7 +54,7 @@ kpi     equilB                 conversion_routeB 0.21185113285      1e-4
 kpi     equilB                 extent_routeB_kmol_h 0.105925566425     1e-4
 kpi     equilB                 nReactions       1                  1e-4
 kpi     equilB                 newtonIterations 5                  1e-4
-kpi     equilB                 newtonResidual   1.7763568394e-15   1e-4
+kpi     equilB                 newtonResidual   1.7763568394e-15   abs:1e-08
 kpi     equilC                 F_in_kmol_h      1                  1e-4
 kpi     equilC                 F_out_kmol_h     0.666666691834     1e-4
 kpi     equilC                 Kp_routeC        9.2931026685e+19   1e-4
@@ -64,7 +64,7 @@ kpi     equilC                 conversion_routeC 0.999999924497     1e-4
 kpi     equilC                 extent_routeC_kmol_h 0.333333308166     1e-4
 kpi     equilC                 nReactions       1                  1e-4
 kpi     equilC                 newtonIterations 13                 1e-4
-kpi     equilC                 newtonResidual   1.6588293239e-15   1e-4
+kpi     equilC                 newtonResidual   1.6588293239e-15   abs:1e-08
 kpi     gibbsC                 F_in_kmol_h      1                  1e-4
 kpi     gibbsC                 F_out_kmol_h     1.00094265864      1e-4
 kpi     gibbsC                 N_in_mol_s       0.277777777778     1e-4

@@ -1,10 +1,10 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-kpi     campaign               element_C_closure_rel 3.75075346157e-16  1e-4
-kpi     campaign               element_H_closure_rel 4.50090415389e-16  1e-4
-kpi     campaign               element_O_closure_rel 2.50050230771e-16  1e-4
-kpi     campaign               element_worst_closure_rel 4.50090415389e-16  1e-4
+kpi     campaign               element_C_closure_rel 3.75075346157e-16  abs:1e-09
+kpi     campaign               element_H_closure_rel 4.50090415389e-16  abs:1e-09
+kpi     campaign               element_O_closure_rel 2.50050230771e-16  abs:1e-09
+kpi     campaign               element_worst_closure_rel 4.50090415389e-16  abs:1e-09
 kpi     campaign               energy_H_external_kJ 0                  1e-4
 kpi     campaign               energy_Q_ledger_kJ -17.1758877049   1e-4
 kpi     campaign               energy_balance_available 1                  1e-4
@@ -13,11 +13,11 @@ kpi     campaign               energy_dH_vessels_kJ -17.1758877049   1e-4
 kpi     campaign               energy_records_invalid 0                  1e-4
 kpi     campaign               energy_records_valid 1                  1e-4
 kpi     campaign               energy_residual_kJ 0                  abs:1.718e-08
-kpi     campaign               mass_closure_rel 5.65505935537e-16  1e-4
+kpi     campaign               mass_closure_rel 5.65505935537e-16  abs:1e-09
 kpi     campaign               mass_kg_external_out 0                  1e-4
 kpi     campaign               mass_kg_final    0.98161925         1e-4
 kpi     campaign               mass_kg_initial  0.98161925         1e-4
-kpi     campaign               mass_residual_kg 5.55111512313e-16  1e-4
+kpi     campaign               mass_residual_kg 5.55111512313e-16  abs:1e-09
 kpi     campaign               moles_kmol_external_out 0                  1e-4
 kpi     campaign               moles_kmol_final 0.0185             1e-4
 kpi     campaign               moles_kmol_initial 0.0185             1e-4

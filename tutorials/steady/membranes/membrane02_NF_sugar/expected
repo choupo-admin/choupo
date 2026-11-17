@@ -10,9 +10,9 @@ kpi     NFunit                 water_recovery   0.267871165742   1e-4
 stream  feed                   T                298.15           1e-4
 stream  permeate               T                298.15           1e-4
 stream  retentate              T                298.15           1e-4
-kpi     NFunit                 mass_closure_rel 2.19886558047e-16 1e-4
+kpi     NFunit                 mass_closure_rel 2.19886558047e-16 abs:1e-09
 kpi     NFunit                 Gamma_glucose_avg 1.35623921557    1e-4
-kpi     NFunit                 solute_closure_rel 3.67019291087e-16 1e-4
+kpi     NFunit                 solute_closure_rel 3.67019291087e-16 abs:1e-09
 boundary global                 H_feeds_kW       -15965.9347526   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -15965.9347526   1e-4

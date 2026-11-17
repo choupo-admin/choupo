@@ -17,7 +17,7 @@ kpi     cell                   R_obs_NH4        0.706494323845   1e-4
 kpi     cell                   R_obs_NO3        0.170216892441   1e-4
 kpi     cell                   R_obs_Na         0.654079035024   1e-4
 kpi     cell                   dP_feed          2327.51005669    1e-4
-kpi     cell                   mass_closure_rel 1.28422369823e-16 1e-4
+kpi     cell                   mass_closure_rel 1.28422369823e-16 abs:1e-09
 kpi     cell                   membranePotential_mV_avg 33.3508829018    1e-4
 kpi     cell                   u_crossflow_inlet 0.200324231246   1e-4
 kpi     cell                   water_recovery   0.025277197377   1e-4
@@ -29,6 +29,6 @@ kpi     cell                   Re_inlet         282.916938258    1e-4
 kpi     cell                   Re_max           282.916938258    1e-4
 kpi     cell                   Re_min           275.765590968    1e-4
 kpi     cell                   hydraulicDiameter 0.0014166        1e-4
-kpi     cell                   solute_closure_rel 1.92227883818e-16 1e-4
+kpi     cell                   solute_closure_rel 1.92227883818e-16 abs:1e-09
 kpi     cell                   mu_feed          0.001002         1e-4
 kpi     cell                   rho_feed         998.955054712    1e-4

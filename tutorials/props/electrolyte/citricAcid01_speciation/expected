@@ -5,7 +5,7 @@ diag    Na_0p000               I                0.00913819583954   1e-4
 diag    Na_0p000               T_K              298.15             1e-4
 diag    Na_0p000               aw               0.998036268103     1e-4
 diag    Na_0p000               chargeImposed    1                  1e-4
-diag    Na_0p000               chargeResidual   -4.98975134936e-16 1e-4
+diag    Na_0p000               chargeResidual   -4.98975134936e-16 abs:1e-12
 diag    Na_0p000               gamma_Cit        0.40934717054      1e-4
 diag    Na_0p000               gamma_H2Cit      0.905522170902     1e-4
 diag    Na_0p000               gamma_H3Cit      1                  1e-4
@@ -19,7 +19,7 @@ diag    Na_0p025               I                0.0280636873076    1e-4
 diag    Na_0p025               T_K              298.15             1e-4
 diag    Na_0p025               aw               0.997701409863     1e-4
 diag    Na_0p025               chargeImposed    1                  1e-4
-diag    Na_0p025               chargeResidual   2.30246752913e-16  1e-4
+diag    Na_0p025               chargeResidual   2.30246752913e-16  abs:1e-12
 diag    Na_0p025               gamma_Cit        0.239908955403     1e-4
 diag    Na_0p025               gamma_H2Cit      0.853328544392     1e-4
 diag    Na_0p025               gamma_H3Cit      1                  1e-4
@@ -33,7 +33,7 @@ diag    Na_0p050               I                0.0527632150424    1e-4
 diag    Na_0p050               T_K              298.15             1e-4
 diag    Na_0p050               aw               0.997280391497     1e-4
 diag    Na_0p050               chargeImposed    1                  1e-4
-diag    Na_0p050               chargeResidual   1.80121196473e-16  1e-4
+diag    Na_0p050               chargeResidual   1.80121196473e-16  abs:1e-12
 diag    Na_0p050               gamma_Cit        0.164159199373     1e-4
 diag    Na_0p050               gamma_H2Cit      0.818101609844     1e-4
 diag    Na_0p050               gamma_H3Cit      1                  1e-4
@@ -47,7 +47,7 @@ diag    Na_0p075               I                0.0808410598331    1e-4
 diag    Na_0p075               T_K              298.15             1e-4
 diag    Na_0p075               aw               0.996842614769     1e-4
 diag    Na_0p075               chargeImposed    1                  1e-4
-diag    Na_0p075               chargeResidual   -5.92566074118e-16 1e-4
+diag    Na_0p075               chargeResidual   -5.92566074118e-16 abs:1e-12
 diag    Na_0p075               gamma_Cit        0.124502525841     1e-4
 diag    Na_0p075               gamma_H2Cit      0.793348929844     1e-4
 diag    Na_0p075               gamma_H3Cit      1                  1e-4
@@ -61,7 +61,7 @@ diag    Na_0p100               I                0.114712740827     1e-4
 diag    Na_0p100               T_K              298.15             1e-4
 diag    Na_0p100               aw               0.99639908188      1e-4
 diag    Na_0p100               chargeImposed    1                  1e-4
-diag    Na_0p100               chargeResidual   -1.05664078414e-17 1e-4
+diag    Na_0p100               chargeResidual   -1.05664078414e-17 abs:1e-12
 diag    Na_0p100               gamma_Cit        0.0992379173893    1e-4
 diag    Na_0p100               gamma_H2Cit      0.773605837059     1e-4
 diag    Na_0p100               gamma_H3Cit      1                  1e-4
@@ -75,7 +75,7 @@ diag    Na_0p150               I                0.20412233828      1e-4
 diag    Na_0p150               T_K              298.15             1e-4
 diag    Na_0p150               aw               0.995505372784     1e-4
 diag    Na_0p150               chargeImposed    1                  1e-4
-diag    Na_0p150               chargeResidual   -1.04996708685e-15 1e-4
+diag    Na_0p150               chargeResidual   -1.04996708685e-15 abs:1e-12
 diag    Na_0p150               gamma_Cit        0.0712313440183    1e-4
 diag    Na_0p150               gamma_H2Cit      0.745622518126     1e-4
 diag    Na_0p150               gamma_H3Cit      1                  1e-4
@@ -89,7 +89,7 @@ diag    Na_0p200               I                0.314951020342     1e-4
 diag    Na_0p200               T_K              298.15             1e-4
 diag    Na_0p200               aw               0.99460985595      1e-4
 diag    Na_0p200               chargeImposed    1                  1e-4
-diag    Na_0p200               chargeResidual   -9.52825798944e-16 1e-4
+diag    Na_0p200               chargeResidual   -9.52825798944e-16 abs:1e-12
 diag    Na_0p200               gamma_Cit        0.0607749080699    1e-4
 diag    Na_0p200               gamma_H2Cit      0.732585395872     1e-4
 diag    Na_0p200               gamma_H3Cit      1                  1e-4
@@ -103,7 +103,7 @@ diag    Na_0p250               I                0.45181583444      1e-4
 diag    Na_0p250               T_K              298.15             1e-4
 diag    Na_0p250               aw               0.993714544143     1e-4
 diag    Na_0p250               chargeImposed    1                  1e-4
-diag    Na_0p250               chargeResidual   -3.65719380487e-16 1e-4
+diag    Na_0p250               chargeResidual   -3.65719380487e-16 abs:1e-12
 diag    Na_0p250               gamma_Cit        0.0598525370145    1e-4
 diag    Na_0p250               gamma_H2Cit      0.731341612318     1e-4
 diag    Na_0p250               gamma_H3Cit      1                  1e-4

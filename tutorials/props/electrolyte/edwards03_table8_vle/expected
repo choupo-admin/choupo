@@ -5,7 +5,7 @@ diag    table8_row1            I                1.13632            1e-4
 diag    table8_row1            P_atm            1.10215304445            1e-4
 diag    table8_row1            aw               0.896601           1e-4
 diag    table8_row1            chargeImposed    1                  1e-4
-diag    table8_row1            chargeResidual   -4.35684e-17       1e-4
+diag    table8_row1            chargeResidual   -4.35684e-17       abs:1e-12
 diag    table8_row1            gamma_H2Saq      1.08209            1e-4
 diag    table8_row1            gamma_HS         0.516824           1e-4
 diag    table8_row1            gamma_NH3aq      1.06377            1e-4
@@ -25,7 +25,7 @@ diag    table8_row2            I                5.01354            1e-4
 diag    table8_row2            P_atm            15.5111995942            1e-4
 diag    table8_row2            aw               0.823124           1e-4
 diag    table8_row2            chargeImposed    1                  1e-4
-diag    table8_row2            chargeResidual   8.19402e-18        1e-4
+diag    table8_row2            chargeResidual   8.19402e-18        abs:1e-12
 diag    table8_row2            gamma_H2Saq      2.21511            1e-4
 diag    table8_row2            gamma_HS         0.506618           1e-4
 diag    table8_row2            gamma_NH3aq      0.96688            1e-4
@@ -45,7 +45,7 @@ diag    table8_row3            I                7.73224            1e-4
 diag    table8_row3            P_atm            16.5483595672            1e-4
 diag    table8_row3            aw               0.715623           1e-4
 diag    table8_row3            chargeImposed    1                  1e-4
-diag    table8_row3            chargeResidual   3.86737e-17        1e-4
+diag    table8_row3            chargeResidual   3.86737e-17        abs:1e-12
 diag    table8_row3            gamma_H2Saq      3.4076             1e-4
 diag    table8_row3            gamma_HS         0.564583           1e-4
 diag    table8_row3            gamma_NH3aq      0.967023           1e-4

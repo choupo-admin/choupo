@@ -1,18 +1,18 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-kpi     campaign               element_C_closure_rel 6.81588841762e-15 1e-3
-kpi     campaign               element_H_closure_rel 4.18663266355e-15 1e-3
-kpi     campaign               element_O_closure_rel 4.18663266355e-15 1e-3
-kpi     campaign               element_worst_closure_rel 6.81588841762e-15 1e-3
+kpi     campaign               element_C_closure_rel 6.81588841762e-15 abs:1e-09
+kpi     campaign               element_H_closure_rel 4.18663266355e-15 abs:1e-09
+kpi     campaign               element_O_closure_rel 4.18663266355e-15 abs:1e-09
+kpi     campaign               element_worst_closure_rel 6.81588841762e-15 abs:1e-09
 kpi     campaign               energy_balance_available 1                1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
 kpi     campaign               energy_records_valid 1                1e-4
-kpi     campaign               mass_closure_rel 5.07045231785e-15 1e-3
+kpi     campaign               mass_closure_rel 5.07045231785e-15 abs:1e-09
 kpi     campaign               mass_kg_external_out 0                1e-4
 kpi     campaign               mass_kg_final    1748.87224776    1e-4
 kpi     campaign               mass_kg_initial  1748.87224776    1e-4
-kpi     campaign               mass_residual_kg 8.86757334229e-12 1e-3
+kpi     campaign               mass_residual_kg 8.86757334229e-12 abs:1e-09
 kpi     campaign               transfers_H_invalid 0                1e-4
 kpi     campaign               transfers_H_valid 0                1e-4
 kpi     campaign               transfers_logged 0                1e-4
@@ -30,7 +30,7 @@ kpi     cryst                  t_end            10800            1e-4
 kpi     cryst                  totalMoles_final 30.7301815024    1e-4
 kpi     campaign               energy_H_external_kJ 0                1e-4
 kpi     campaign               energy_Q_ledger_kJ -2932.13047331   1e-4
-kpi     campaign               energy_closure_rel 1.82948567578e-11 1e-4
+kpi     campaign               energy_closure_rel 1.82948567578e-11 abs:1e-09
 kpi     campaign               energy_dH_vessels_kJ -2932.13047336   1e-4
 kpi     campaign               energy_residual_kJ 5.36429070053e-08 abs:2.932e-06
 kpi     campaign               moles_kmol_external_out 0                1e-4

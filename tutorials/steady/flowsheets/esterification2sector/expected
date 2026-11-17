@@ -15,7 +15,7 @@ stream  reactorOut             T                360              1e-4
 stream  vapor                  T                355              1e-4
 closure SEPARATION.flash       raw_kW           682.07994094    1e-4
 closure SEPARATION.flash       step_kW          682.07994094    1e-4
-closure SEPARATION.flash       remaining_kW     -1.25055521494e-12 1e-4
+closure SEPARATION.flash       remaining_kW     -1.25055521494e-12 abs:0.0001
 boundary global                 H_feeds_kW       -10380.5032208   1e-4
 boundary global                 Q_boundary_kW    -236.018384446   1e-4
 boundary global                 H_products_kW    -9934.44166432   1e-4
@@ -44,7 +44,7 @@ kpi     REACTION.reactor       T_out            360              1e-4
 kpi     REACTION.reactor       V_R              0.5              1e-4
 kpi     REACTION.reactor       k_esterification_etac 0.00697369186719 1e-4
 kpi     REACTION.reactor       nReactions       1                1e-4
-kpi     REACTION.reactor       newtonResidual   3.5527136788e-15 1e-4
+kpi     REACTION.reactor       newtonResidual   3.5527136788e-15 abs:1e-08
 kpi     REACTION.reactor       tau_s            283.716592468    1e-4
 kpi     REACTION.reactor       xi_esterification_etac_mol_per_s 9.22592230211    1e-4
 kpi     SEPARATION.flash       F_alpha          0.014742407187  1e-4

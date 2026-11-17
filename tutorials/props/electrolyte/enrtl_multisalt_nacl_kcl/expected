@@ -13,7 +13,7 @@ diag    harned_nacl_kcl        harned_alpha_2   -0.0256162918946 1e-4
 diag    harned_nacl_kcl        harned_slope_1   -0.262435837152  1e-4
 diag    harned_nacl_kcl        harned_slope_2   -0.235934767418  1e-4
 diag    harned_nacl_kcl        oracle_pure_dev  4.03345401523e-09 1e-4
-diag    harned_nacl_kcl        reduction_pin_dev 1.11022302463e-15 1e-4
+diag    harned_nacl_kcl        reduction_pin_dev 1.11022302463e-15 abs:1e-08
 diag    harned_nacl_kcl        tauEE            0                1e-4
 diag    harned_nacl_kcl        totalMolality    4                1e-4
 diag    harned_nacl_kcl_refined consistent       1                1e-4
@@ -29,6 +29,6 @@ diag    harned_nacl_kcl_refined harned_alpha_2   -0.0186767800113 1e-4
 diag    harned_nacl_kcl_refined harned_slope_1   -0.165895064638  1e-4
 diag    harned_nacl_kcl_refined harned_slope_2   -0.172019500957  1e-4
 diag    harned_nacl_kcl_refined oracle_pure_dev  4.03345401523e-09 1e-4
-diag    harned_nacl_kcl_refined reduction_pin_dev 1.11022302463e-15 1e-4
+diag    harned_nacl_kcl_refined reduction_pin_dev 1.11022302463e-15 abs:1e-08
 diag    harned_nacl_kcl_refined tauEE            0                1e-4
 diag    harned_nacl_kcl_refined totalMolality    4                1e-4

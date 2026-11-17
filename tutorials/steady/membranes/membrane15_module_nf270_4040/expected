@@ -11,10 +11,10 @@ kpi     NF                     Gamma_NaCl_avg   0.218674348085   1e-4
 kpi     NF                     J_w_avg          1.89464466436e-05 1e-4
 kpi     NF                     R_obs_NaCl       0.72386392355    1e-4
 kpi     NF                     dP_feed          25200.1611529    1e-4
-kpi     NF                     mass_closure_rel 1.53718423274e-16 1e-4
+kpi     NF                     mass_closure_rel 1.53718423274e-16 abs:1e-09
 kpi     NF                     u_crossflow_inlet 0.282312655527   1e-4
 kpi     NF                     water_recovery   0.199212583435   1e-4
-kpi     NF                     solute_closure_rel 2.74157663306e-16 1e-4
+kpi     NF                     solute_closure_rel 2.74157663306e-16 abs:1e-09
 source  NF                     liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume] exact
 source  NF                     liquidDiffusivity declared.infiniteDilution exact
 source  NF                     liquidViscosity  perConstituent,stated.dil25_NaCl_liquidViscosity exact

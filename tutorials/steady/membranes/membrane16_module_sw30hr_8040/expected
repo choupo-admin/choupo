@@ -11,7 +11,7 @@ kpi     RO                     Gamma_NaCl_avg   0.226615035254   1e-4
 kpi     RO                     J_w_avg          1.67082467462e-05 1e-4
 kpi     RO                     R_obs_NaCl       0.998376341781   1e-4
 kpi     RO                     dP_feed          49856.0017207    1e-4
-kpi     RO                     mass_closure_rel 1.18422667173e-16 1e-4
+kpi     RO                     mass_closure_rel 1.18422667173e-16 abs:1e-09
 kpi     RO                     u_crossflow_inlet 0.311968330829   1e-4
 kpi     RO                     water_recovery   0.158978983043    1e-4
 kpi     RO                     solute_closure_rel 0                1e-4

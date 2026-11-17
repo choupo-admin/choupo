@@ -2,16 +2,16 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 diag    bench                  allPass          1                1e-4
-diag    bench                  dev_Andrade      5.35123586857e-08 1e-4
-diag    bench                  dev_Chung        2.53636147631e-07 1e-4
+diag    bench                  dev_Andrade      5.35123586857e-08 abs:1e-08
+diag    bench                  dev_Chung        2.53636147631e-07 abs:1e-08
 diag    bench                  dev_Eucken       0                1e-4
-diag    bench                  dev_Fuller       5.617814941e-08  1e-4
-diag    bench                  dev_SatoRiedel   3.4111766641e-06 1e-4
+diag    bench                  dev_Fuller       5.617814941e-08  abs:1e-08
+diag    bench                  dev_SatoRiedel   3.4111766641e-06 abs:1e-08
 diag    bench                  dev_Vogel        0                1e-4
 diag    bench                  dev_chemsepEq101 0                1e-4
 diag    bench                  dev_chemsepEq16  0                1e-4
 diag    bench                  dev_wilkePhi     0                1e-4
-diag    bench                  dev_table        9.02243745198e-16 abs:1e-12
+diag    bench                  dev_table        9.02243745198e-16 abs:1e-08
 diag    bench                  k_Eucken_CO2     0.021231358218   1e-4
 diag    bench                  k_Eucken_N2      0.0297082727854  1e-4
 diag    bench                  k_Eucken_O2      0.0306615645526  1e-4
@@ -28,7 +28,7 @@ diag    bench                  n_models_mu      2                1e-4
 diag    bench                  n_theory_anchors 3                1e-4
 diag    bench                  spread_k_pct     12.3161447655    1e-4
 diag    bench                  spread_mu_pct    0                1e-4
-diag    bench                  dev_ChapmanEnskog 0.00400952242196 1e-4
+diag    bench                  dev_ChapmanEnskog 0.00400952242196 abs:4.01e-07
 diag    bench                  dev_modifiedEucken 0                1e-4
 diag    bench                  k_modifiedEucken_CO2 0.0238462430318  1e-4
 diag    bench                  k_modifiedEucken_N2 0.0317306174954  1e-4

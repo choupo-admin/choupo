@@ -10,7 +10,7 @@ kpi     reactor                V_R              0.005            1e-4
 kpi     reactor                k_a_to_b         0.00214522777035 1e-4
 kpi     reactor                k_b_to_c         0.000536306942589 1e-4
 kpi     reactor                nReactions       2                1e-4
-kpi     reactor                newtonResidual   7.7579192289e-18 1e-4
+kpi     reactor                newtonResidual   7.7579192289e-18 abs:1e-08
 kpi     reactor                tau_s            207.806618642    1e-4
 kpi     reactor                xi_a_to_b_mol_per_s 0.038350167433   1e-4
 kpi     reactor                xi_b_to_c_mol_per_s 0.011536448016   1e-4

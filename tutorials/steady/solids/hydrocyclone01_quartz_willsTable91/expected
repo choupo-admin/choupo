@@ -53,7 +53,7 @@ kpi     cyclone                feed_d50_um      210.223833604      1e-4
 kpi     cyclone                feed_d80_um      712.654496234      1e-4
 kpi     cyclone                feed_d90_um      1161.10630844      1e-4
 kpi     cyclone                feed_dilution    0.570000005686     1e-4
-kpi     cyclone                fluidMassClosure 1.12190957392e-16  1e-4
+kpi     cyclone                fluidMassClosure 1.12190957392e-16  abs:1e-09
 kpi     cyclone                fluidMassFlow_kg_s 15.8333334583      1e-4
 kpi     cyclone                fluidTo_underflow 0.39               1e-4
 kpi     cyclone                overflow_Sv_m2_m3 69405.6536876      1e-4

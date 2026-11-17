@@ -62,14 +62,14 @@ kpi     NF                     feedFlow_elem6   0.00199790171621 1e-4
 kpi     NF                     hydraulicDiameter 0.000951805555556 1e-4
 kpi     NF                     leafWidth        1.3612412178     1e-4
 kpi     NF                     leaves           16               1e-4
-kpi     NF                     mass_closure_rel 2.66453244833e-16 1e-4
+kpi     NF                     mass_closure_rel 2.66453244833e-16 abs:1e-09
 kpi     NF                     recovery_elem1   0.136041984215   1e-4
 kpi     NF                     recovery_elem2   0.238254022768   1e-4
 kpi     NF                     recovery_elem3   0.313074792281   1e-4
 kpi     NF                     recovery_elem4   0.365883312079   1e-4
 kpi     NF                     recovery_elem5   0.401134675944   1e-4
 kpi     NF                     recovery_elem6   0.422405581912   1e-4
-kpi     NF                     solute_closure_rel 4.89359054783e-16 1e-4
+kpi     NF                     solute_closure_rel 4.89359054783e-16 abs:1e-09
 kpi     NF                     u_crossflow_inlet 0.223516273206   1e-4
 kpi     NF                     water_recovery   0.422405581912   1e-4
 source  NF                     liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume] exact

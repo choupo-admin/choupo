@@ -1,5 +1,5 @@
 # C429 census (2026-11-18): every golden row with 0 < |value| <= 1e-9 (tutorials/** and data/curation/** expected*), not `exact`, not `abs:`, BEFORE the remedy.
-# class_assigned = the golden_bands.tsv class the row now belongs to.  residual_* / zero_duty: compared on an absolute band declared by the class;
+# class_assigned = the golden_bands.tsv class the row now belongs to.  residual_* / zero_*: compared on an absolute band declared by the class;
 # direct = a PHYSICAL quantity, compared relatively; objective = a fit statistic (platform class, relative).
 case	kind	name	key	value	band_before	class_assigned	nature
 tutorials/batch/adsorber/batch13_breakthrough_co2	kpi	bed	mass_closure_CO2	6.86742033269e-14	1e-4	residual_identity	residual/closure
@@ -33,13 +33,13 @@ tutorials/batch/adsorber/batch17_dilute_ergun_limit	kpi	campaign	element_O_closu
 tutorials/batch/adsorber/batch17_dilute_ergun_limit	kpi	campaign	element_worst_closure_rel	5.33128627003e-13	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch17_dilute_ergun_limit	kpi	campaign	mass_closure_rel	2.6805259481e-13	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch17_dilute_ergun_limit	kpi	campaign	mass_residual_kg	4.34770458296e-14	1e-4	residual_mass_abs	residual/closure
-tutorials/batch/adsorber/batch17_dilute_ergun_limit	kpi	ergun	carrier_fabricated_mol	-5.95434812567e-12	1e-4	direct	physical
+tutorials/batch/adsorber/batch17_dilute_ergun_limit	kpi	ergun	carrier_fabricated_mol	-5.95434812567e-12	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch17_dilute_ergun_limit	kpi	ergun	mass_closure_CO2	4.41372549831e-13	1e-4	residual_identity	residual/closure
 tutorials/batch/adsorber/batch17_dilute_ergun_limit	kpi	legacy	mass_closure_CO2	4.40673750275e-13	1e-4	residual_identity	residual/closure
-tutorials/batch/adsorber/batch17_dilute_ergun_limit	kpi	ergun	carrier_makeup_rel	-2.95211462851e-13	1e-4	direct	physical
-tutorials/batch/adsorber/batch18_ergun_conservation	kpi	bed	carrier_fabricated_mol	-7.95807864051e-13	1e-4	direct	physical
+tutorials/batch/adsorber/batch17_dilute_ergun_limit	kpi	ergun	carrier_makeup_rel	-2.95211462851e-13	1e-4	zero_balance	zero by construction (round-off)
+tutorials/batch/adsorber/batch18_ergun_conservation	kpi	bed	carrier_fabricated_mol	-7.95807864051e-13	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch18_ergun_conservation	kpi	bed	mass_closure_CO2	2.15282822286e-14	1e-4	residual_identity	residual/closure
-tutorials/batch/adsorber/batch18_ergun_conservation	kpi	bed	carrier_makeup_rel	-9.39415951794e-15	1e-4	direct	physical
+tutorials/batch/adsorber/batch18_ergun_conservation	kpi	bed	carrier_makeup_rel	-9.39415951794e-15	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch18_ergun_conservation	kpi	campaign	element_C_closure_rel	4.09552852868e-16	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch18_ergun_conservation	kpi	campaign	element_He_closure_rel	1.92515051152e-16	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch18_ergun_conservation	kpi	campaign	element_O_closure_rel	4.09552852868e-16	1e-4	residual_closure	residual/closure
@@ -54,9 +54,9 @@ tutorials/batch/adsorber/batch19_feed_switch_purge	kpi	campaign	element_O_closur
 tutorials/batch/adsorber/batch19_feed_switch_purge	kpi	campaign	element_worst_closure_rel	5.0049469458e-14	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch19_feed_switch_purge	kpi	campaign	mass_closure_rel	2.8458276914e-14	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch19_feed_switch_purge	kpi	campaign	mass_residual_kg	5.46229728116e-14	1e-4	residual_mass_abs	residual/closure
-tutorials/batch/adsorber/batch20_thermal_breakthrough	kpi	bed	carrier_fabricated_mol	2.4897417461e-11	1e-4	direct	physical
+tutorials/batch/adsorber/batch20_thermal_breakthrough	kpi	bed	carrier_fabricated_mol	2.4897417461e-11	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch20_thermal_breakthrough	kpi	bed	mass_closure_CO2	3.70873589302e-14	1e-4	residual_identity	residual/closure
-tutorials/batch/adsorber/batch20_thermal_breakthrough	kpi	bed	carrier_makeup_rel	1.02866046721e-13	1e-4	direct	physical
+tutorials/batch/adsorber/batch20_thermal_breakthrough	kpi	bed	carrier_makeup_rel	1.02866046721e-13	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch20_thermal_breakthrough	kpi	campaign	element_C_closure_rel	3.82249329343e-16	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch20_thermal_breakthrough	kpi	campaign	element_He_closure_rel	4.04575926784e-16	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch20_thermal_breakthrough	kpi	campaign	element_O_closure_rel	3.82249329343e-16	1e-4	residual_closure	residual/closure
@@ -64,9 +64,9 @@ tutorials/batch/adsorber/batch20_thermal_breakthrough	kpi	campaign	element_worst
 tutorials/batch/adsorber/batch20_thermal_breakthrough	kpi	campaign	energy_closure_rel	1.52653440211e-16	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch20_thermal_breakthrough	kpi	campaign	mass_closure_rel	3.66774347853e-16	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch20_thermal_breakthrough	kpi	campaign	mass_residual_kg	8.881784197e-16	1e-4	residual_mass_abs	residual/closure
-tutorials/batch/adsorber/batch21_tsa_hot_purge	kpi	bed	carrier_fabricated_mol	-1.13686837722e-12	1e-4	direct	physical
+tutorials/batch/adsorber/batch21_tsa_hot_purge	kpi	bed	carrier_fabricated_mol	-1.13686837722e-12	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch21_tsa_hot_purge	kpi	bed	mass_closure_CO2	4.72969836841e-15	1e-4	residual_identity	residual/closure
-tutorials/batch/adsorber/batch21_tsa_hot_purge	kpi	bed	carrier_makeup_rel	-4.69707975897e-15	1e-4	direct	physical
+tutorials/batch/adsorber/batch21_tsa_hot_purge	kpi	bed	carrier_makeup_rel	-4.69707975897e-15	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch21_tsa_hot_purge	kpi	campaign	element_C_closure_rel	2.10237131139e-15	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch21_tsa_hot_purge	kpi	campaign	element_He_closure_rel	1.41811112184e-15	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch21_tsa_hot_purge	kpi	campaign	element_O_closure_rel	2.10237131139e-15	1e-4	residual_closure	residual/closure
@@ -74,9 +74,9 @@ tutorials/batch/adsorber/batch21_tsa_hot_purge	kpi	campaign	element_worst_closur
 tutorials/batch/adsorber/batch21_tsa_hot_purge	kpi	campaign	energy_closure_rel	2.16178944715e-15	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch21_tsa_hot_purge	kpi	campaign	mass_closure_rel	1.88850191335e-15	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch21_tsa_hot_purge	kpi	campaign	mass_residual_kg	5.38458166943e-15	1e-4	residual_mass_abs	residual/closure
-tutorials/batch/adsorber/batch22_wall_cooled	kpi	bed	carrier_fabricated_mol	2.4698465495e-11	1e-4	direct	physical
+tutorials/batch/adsorber/batch22_wall_cooled	kpi	bed	carrier_fabricated_mol	2.4698465495e-11	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch22_wall_cooled	kpi	bed	mass_closure_CO2	3.7968061385e-14	1e-4	residual_identity	residual/closure
-tutorials/batch/adsorber/batch22_wall_cooled	kpi	bed	carrier_makeup_rel	1.02044057764e-13	1e-4	direct	physical
+tutorials/batch/adsorber/batch22_wall_cooled	kpi	bed	carrier_makeup_rel	1.02044057764e-13	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch22_wall_cooled	kpi	campaign	element_C_closure_rel	2.10237131139e-15	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch22_wall_cooled	kpi	campaign	element_He_closure_rel	1.34858642261e-15	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch22_wall_cooled	kpi	campaign	element_O_closure_rel	2.10237131139e-15	1e-4	residual_closure	residual/closure
@@ -84,9 +84,9 @@ tutorials/batch/adsorber/batch22_wall_cooled	kpi	campaign	element_worst_closure_
 tutorials/batch/adsorber/batch22_wall_cooled	kpi	campaign	energy_closure_rel	2.26785468986e-15	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch22_wall_cooled	kpi	campaign	mass_closure_rel	1.65048456534e-15	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch22_wall_cooled	kpi	campaign	mass_residual_kg	3.99680288865e-15	1e-4	residual_mass_abs	residual/closure
-tutorials/batch/adsorber/batch23_tsa_cycles	kpi	bed	carrier_fabricated_mol	-5.09885467181e-11	1e-4	direct	physical
+tutorials/batch/adsorber/batch23_tsa_cycles	kpi	bed	carrier_fabricated_mol	-5.09885467181e-11	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch23_tsa_cycles	kpi	bed	mass_closure_CO2	6.95863667995e-14	1e-4	residual_identity	residual/closure
-tutorials/batch/adsorber/batch23_tsa_cycles	kpi	bed	carrier_makeup_rel	-1.17035570661e-13	1e-4	direct	physical
+tutorials/batch/adsorber/batch23_tsa_cycles	kpi	bed	carrier_makeup_rel	-1.17035570661e-13	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch23_tsa_cycles	kpi	campaign	element_C_closure_rel	6.37082215572e-16	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch23_tsa_cycles	kpi	campaign	element_He_closure_rel	2.49973939878e-15	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch23_tsa_cycles	kpi	campaign	element_O_closure_rel	6.37082215572e-16	1e-4	residual_closure	residual/closure
@@ -94,23 +94,23 @@ tutorials/batch/adsorber/batch23_tsa_cycles	kpi	campaign	element_worst_closure_r
 tutorials/batch/adsorber/batch23_tsa_cycles	kpi	campaign	energy_closure_rel	1.70790600779e-15	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch23_tsa_cycles	kpi	campaign	mass_closure_rel	7.70533067848e-16	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch23_tsa_cycles	kpi	campaign	mass_residual_kg	7.9936057773e-15	1e-4	residual_mass_abs	residual/closure
-tutorials/batch/adsorber/batch24_blowdown_inert	kpi	bed	carrier_fabricated_mol	-8.881784197e-16	1e-4	direct	physical
-tutorials/batch/adsorber/batch24_blowdown_inert	kpi	bed	deltaP_first_to_out_Pa	1.45519152284e-11	1e-4	direct	physical
-tutorials/batch/adsorber/batch24_blowdown_inert	kpi	bed	carrier_makeup_rel	-2.20175613702e-16	1e-4	direct	physical
+tutorials/batch/adsorber/batch24_blowdown_inert	kpi	bed	carrier_fabricated_mol	-8.881784197e-16	1e-4	zero_balance	zero by construction (round-off)
+tutorials/batch/adsorber/batch24_blowdown_inert	kpi	bed	deltaP_first_to_out_Pa	1.45519152284e-11	1e-4	zero_pressure_drop	zero by construction (round-off)
+tutorials/batch/adsorber/batch24_blowdown_inert	kpi	bed	carrier_makeup_rel	-2.20175613702e-16	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch24_blowdown_inert	kpi	campaign	element_He_closure_rel	4.28601822768e-16	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch24_blowdown_inert	kpi	campaign	element_worst_closure_rel	4.28601822768e-16	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch24_blowdown_inert	kpi	campaign	energy_closure_rel	1.11022302238e-15	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch24_blowdown_inert	kpi	campaign	mass_closure_rel	5.710978834e-16	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch24_blowdown_inert	kpi	campaign	mass_residual_kg	5.55111512313e-17	1e-4	residual_mass_abs	residual/closure
-tutorials/batch/adsorber/batch24_tsa_until_css	kpi	bed	carrier_fabricated_mol	1.42108547152e-11	1e-4	direct	physical
+tutorials/batch/adsorber/batch24_tsa_until_css	kpi	bed	carrier_fabricated_mol	1.42108547152e-11	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch24_tsa_until_css	kpi	bed	mass_closure_CO2	4.97433793918e-14	1e-4	residual_identity	residual/closure
-tutorials/batch/adsorber/batch24_tsa_until_css	kpi	bed	carrier_makeup_rel	4.89279141559e-14	1e-4	direct	physical
+tutorials/batch/adsorber/batch24_tsa_until_css	kpi	bed	carrier_makeup_rel	4.89279141559e-14	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch24_tsa_until_css	kpi	campaign	element_He_closure_rel	3.20439661786e-16	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch24_tsa_until_css	kpi	campaign	element_worst_closure_rel	3.20439661786e-16	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch24_tsa_until_css	kpi	campaign	mass_closure_rel	1.39461646399e-16	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch24_tsa_until_css	kpi	campaign	mass_residual_kg	3.5527136788e-15	1e-4	residual_mass_abs	residual/closure
-tutorials/batch/adsorber/batch25_blowdown_thermal	kpi	bed	carrier_fabricated_mol	4.17443857259e-14	1e-4	direct	physical
-tutorials/batch/adsorber/batch25_blowdown_thermal	kpi	bed	carrier_makeup_rel	1.0348253844e-14	1e-4	direct	physical
+tutorials/batch/adsorber/batch25_blowdown_thermal	kpi	bed	carrier_fabricated_mol	4.17443857259e-14	1e-4	zero_balance	zero by construction (round-off)
+tutorials/batch/adsorber/batch25_blowdown_thermal	kpi	bed	carrier_makeup_rel	1.0348253844e-14	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch25_blowdown_thermal	kpi	campaign	element_He_closure_rel	2.84788407623e-15	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch25_blowdown_thermal	kpi	campaign	element_worst_closure_rel	2.84788407623e-15	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch25_blowdown_thermal	kpi	campaign	mass_closure_rel	2.98833586173e-15	1e-4	residual_closure	residual/closure
@@ -118,16 +118,16 @@ tutorials/batch/adsorber/batch25_blowdown_thermal	kpi	campaign	mass_residual_kg	
 tutorials/batch/adsorber/batch25_blowdown_thermal	kpi	campaign	energy_closure_rel	4.48879197267e-10	1e-4	residual_closure	residual/closure
 tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedUpwind	E_adsorption_seg0_kJ	-2.6519254011e-28	1e-4	direct	physical
 tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedUpwind	E_adsorption_total_kJ	-2.6519254011e-28	1e-4	direct	physical
-tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedUpwind	carrier_fabricated_mol	1.32596270055e-29	1e-4	direct	physical
-tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedUpwind	carrier_makeup_rel	3.28700455746e-30	1e-4	direct	physical
+tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedUpwind	carrier_fabricated_mol	1.32596270055e-29	1e-4	zero_balance	zero by construction (round-off)
+tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedUpwind	carrier_makeup_rel	3.28700455746e-30	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedUpwind	mass_closure_CO2	1.30352993952e-14	1e-4	residual_identity	residual/closure
 tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedUpwind	n_CO2_final	1.01631846403e-33	1e-4	direct	physical
 tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedUpwind	qbar_CO2_final	5.3038508022e-30	1e-4	direct	physical
 tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedVanLeer	E_adsorption_seg0_kJ	-2.99714369515e-44	1e-4	direct	physical
 tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedVanLeer	E_adsorption_total_kJ	-2.99714369515e-44	1e-4	direct	physical
 tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedVanLeer	c_min_CO2	-1.31962832448e-26	1e-4	direct	physical
-tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedVanLeer	carrier_fabricated_mol	1.49857184757e-45	1e-4	direct	physical
-tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedVanLeer	carrier_makeup_rel	3.71489521584e-46	1e-4	direct	physical
+tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedVanLeer	carrier_fabricated_mol	1.49857184757e-45	1e-4	zero_balance	zero by construction (round-off)
+tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedVanLeer	carrier_makeup_rel	3.71489521584e-46	1e-4	zero_balance	zero by construction (round-off)
 tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedVanLeer	mass_closure_CO2	2.64737523799e-14	1e-4	residual_identity	residual/closure
 tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedVanLeer	n_CO2_final	1.11166946766e-49	1e-4	direct	physical
 tutorials/batch/adsorber/batch29_pulse_two_schemes	kpi	bedVanLeer	q_min_CO2	-3.47588284322e-29	1e-4	direct	physical
@@ -371,9 +371,9 @@ tutorials/ctrl/ctrl22_reactor_level_and_temperature	kpi	balance	energy_closure_r
 tutorials/ctrl/ctrl22_reactor_level_and_temperature	kpi	balance	mass_closure_rel	1.64932562313e-14	1e-4	residual_closure	residual/closure
 tutorials/ctrl/ctrl22_reactor_level_and_temperature	kpi	balance	mass_residual_kg	-5.86908299738e-12	1e-4	residual_mass_abs	residual/closure
 tutorials/plant/acetonePlant	kpi	C1	x_D_LK	4.94903618327e-10	1e-4	direct	physical
-tutorials/plant/greenAmmonia03_basicDesign	kpi	CONVERTER.Bed1	Q_kW	7.27595761418e-12	1e-4	zero_duty	zero by construction (round-off duty)
-tutorials/plant/greenAmmonia03_basicDesign	kpi	CONVERTER.Bed2	Q_kW	-2.18278728426e-11	1e-4	zero_duty	zero by construction (round-off duty)
-tutorials/plant/greenAmmonia03_basicDesign	kpi	CONVERTER.Bed3	Q_kW	1.09139364213e-11	1e-4	zero_duty	zero by construction (round-off duty)
+tutorials/plant/greenAmmonia03_basicDesign	kpi	CONVERTER.Bed1	Q_kW	7.27595761418e-12	1e-4	zero_duty	zero by construction (round-off)
+tutorials/plant/greenAmmonia03_basicDesign	kpi	CONVERTER.Bed2	Q_kW	-2.18278728426e-11	1e-4	zero_duty	zero by construction (round-off)
+tutorials/plant/greenAmmonia03_basicDesign	kpi	CONVERTER.Bed3	Q_kW	1.09139364213e-11	1e-4	zero_duty	zero by construction (round-off)
 tutorials/plant/swro01_campoDalias	kpi	RO1	mass_closure_rel	2.17326318748e-16	1e-4	residual_closure	residual/closure
 tutorials/plant/swro01_campoDalias	kpi	RO1	solute_closure_rel	5.56753855746e-16	1e-4	residual_closure	residual/closure
 tutorials/plant/swro01_campoDalias	kpi	RO2a	solute_closure_rel	3.06795496168e-16	1e-4	residual_closure	residual/closure
@@ -509,16 +509,16 @@ tutorials/props/electrolyte/inorganicLadders01_goldberg	diag	sulfite_1p5eq	charg
 tutorials/props/electrolyte/inorganicLadders01_goldberg	diag	hydrazine_half	chargeResidual	-8.27474686703e-16	1e-4	residual_charge	residual/closure
 tutorials/props/electrolyte/inorganicLadders01_goldberg	diag	hydrazine_half	m_N2H6	3.3084445217e-11	1e-4	direct	physical
 tutorials/props/electrolyte/overlay01_nacl_ksp	diag	naclWater	chargeResidual	-6.39009e-17	1e-4	residual_charge	residual/closure
-tutorials/props/electrolyte/pb82_calcite_open_co2	diag	calciteEq_25C	SI_calcite	3.22147e-11	1e-4	direct	physical
+tutorials/props/electrolyte/pb82_calcite_open_co2	diag	calciteEq_25C	SI_calcite	3.22147e-11	1e-4	residual_saturation	residual/closure
 tutorials/props/electrolyte/pb82_calcite_open_co2	diag	calciteEq_25C	chargeResidual	2.22179e-18	1e-4	residual_charge	residual/closure
-tutorials/props/electrolyte/precipitation_ro_brackish	diag	pin_gypsum_amount	SI_gypsum	1.33618e-10	1e-4	direct	physical
-tutorials/props/electrolyte/precipitation_ro_brackish	diag	feed_eq	SI_calcite	5.83222e-12	1e-4	direct	physical
+tutorials/props/electrolyte/precipitation_ro_brackish	diag	pin_gypsum_amount	SI_gypsum	1.33618e-10	1e-4	residual_saturation	residual/closure
+tutorials/props/electrolyte/precipitation_ro_brackish	diag	feed_eq	SI_calcite	5.83222e-12	1e-4	residual_saturation	residual/closure
 tutorials/props/electrolyte/precipitation_ro_brackish	diag	feed	chargeResidual	8.97053e-17	1e-4	residual_charge	residual/closure
 tutorials/props/electrolyte/precipitation_ro_brackish	diag	feed_eq	chargeResidual	7.18296e-17	1e-4	residual_charge	residual/closure
 tutorials/props/electrolyte/rainwater_air	diag	air25	chargeResidual	-7.84311e-16	1e-4	residual_charge	residual/closure
 tutorials/props/electrolyte/rainwater_air	diag	air10	chargeResidual	7.15152e-16	1e-4	residual_charge	residual/closure
 tutorials/props/electrolyte/scaling_ro_brackish	diag	feed	chargeResidual	8.97053e-17	1e-4	residual_charge	residual/closure
-tutorials/props/electrolyte/tartaricAcid_acidulation	diag	gypsum_ceiling	SI_gypsum	4.57458959602e-10	1e-4	direct	physical
+tutorials/props/electrolyte/tartaricAcid_acidulation	diag	gypsum_ceiling	SI_gypsum	4.57458959602e-10	1e-4	residual_saturation	residual/closure
 tutorials/props/electrolyte/tartaricAcid_acidulation	diag	acidulation_pitzer	chargeResidual	-5.922041699e-17	1e-4	residual_charge	residual/closure
 tutorials/props/electrolyte/tartaricAcid_acidulation	diag	acidulation_davies	chargeResidual	-4.30980449582e-17	1e-4	residual_charge	residual/closure
 tutorials/props/electrolyte/tartaricAcid_acidulation	diag	gypsum_ceiling	chargeResidual	3.58506941474e-17	1e-4	residual_charge	residual/closure
@@ -846,7 +846,7 @@ tutorials/steady/electrodialysis/ed09_wine_multiionic	kpi	edStack	D_ion_Lactate	
 tutorials/steady/electrodialysis/ed09_wine_multiionic	kpi	edStack	D_ion_Mal	7.88e-10	1e-4	direct	physical
 tutorials/steady/electrodialysis/ed09_wine_multiionic	kpi	edStack	D_ion_Mg	7.06e-10	1e-4	direct	physical
 tutorials/steady/electrodialysis/ed09_wine_multiionic	kpi	edStack	D_ion_Tart	7.568e-10	1e-4	direct	physical
-tutorials/steady/flowsheets/esterification2sector	closure	SEPARATION.flash	remaining_kW	-1.25055521494e-12	1e-4	zero_duty	zero by construction (round-off duty)
+tutorials/steady/flowsheets/esterification2sector	closure	SEPARATION.flash	remaining_kW	-1.25055521494e-12	1e-4	zero_duty	zero by construction (round-off)
 tutorials/steady/flowsheets/esterification2sector	kpi	REACTION.reactor	newtonResidual	3.5527136788e-15	1e-4	residual_newton	residual/closure
 tutorials/steady/gas-solid/cyclone04_high_loading	kpi	cyclone	d50	1e-09	1e-4	direct	physical
 tutorials/steady/gibbs/claus01_thermal_stage	kpi	boiler	y_CS2	1.42503459738e-10	1e-4	direct	physical
@@ -889,8 +889,8 @@ tutorials/steady/membranes/membrane16_module_sw30hr_8040	kpi	RO	mass_closure_rel
 tutorials/steady/membranes/membrane17_sepa_cf_flat_cell	kpi	cell	mass_closure_rel	1.28422369823e-16	1e-4	residual_closure	residual/closure
 tutorials/steady/membranes/membrane17_sepa_cf_flat_cell	kpi	cell	solute_closure_rel	1.92227883818e-16	1e-4	residual_closure	residual/closure
 tutorials/steady/membranes/membrane18_nf_feed_and_bleed	kpi	NF	mass_closure_rel	2.5021631934e-16	1e-4	residual_closure	residual/closure
-tutorials/steady/membranes/membrane18_nf_feed_and_bleed	boundary	global	Q_boundary_kW	-1.45519152284e-11	1e-4	zero_duty	zero by construction (round-off duty)
-tutorials/steady/membranes/membrane18_nf_feed_and_bleed	kpi	MIX	Q_kW	-1.45519152284e-11	1e-4	zero_duty	zero by construction (round-off duty)
+tutorials/steady/membranes/membrane18_nf_feed_and_bleed	boundary	global	Q_boundary_kW	-1.45519152284e-11	1e-4	zero_duty	zero by construction (round-off)
+tutorials/steady/membranes/membrane18_nf_feed_and_bleed	kpi	MIX	Q_kW	-1.45519152284e-11	1e-4	zero_duty	zero by construction (round-off)
 tutorials/steady/membranes/membrane19_uf_gel_polarisation	kpi	UF	mass_closure_rel	3.97205898188e-16	1e-4	residual_closure	residual/closure
 tutorials/steady/membranes/membrane20_dspmde_pore_finite_difference	kpi	NF_MgSO4_pore	mass_closure_rel	2.21746332086e-16	1e-4	residual_closure	residual/closure
 tutorials/steady/membranes/membrane20_dspmde_pore_finite_difference	kpi	NF_MgSO4_pore	solute_closure_rel	3.38813178902e-16	1e-4	residual_closure	residual/closure
@@ -926,20 +926,20 @@ tutorials/steady/optimisation/optim04_membrane_recovery_scaling	kpi	vessel	mass_
 tutorials/steady/optimisation/optim04_membrane_recovery_scaling	kpi	vessel	solute_closure_rel	9.85510178563e-16	1e-4	residual_closure	residual/closure
 tutorials/steady/power/combined01_brayton_rankine	kpi	gibbsCombustor	y_CH4	1.54398601879e-35	1e-4	direct	physical
 tutorials/steady/power/combined02_brayton_rankine_shaft	kpi	gibbsCombustor	y_CH4	1.54398601879e-35	1e-4	direct	physical
-tutorials/steady/power/rankine02_water	boundary	global	Q_boundary_kW	2.06448191875e-10	1e-4	zero_duty	zero by construction (round-off duty)
+tutorials/steady/power/rankine02_water	boundary	global	Q_boundary_kW	2.06448191875e-10	1e-4	zero_duty	zero by construction (round-off)
 tutorials/steady/reactors/ammoniaRoutes01_screening	kpi	synthesis150	newtonResidual	6.05101799729e-14	1e-4	residual_newton	residual/closure
 tutorials/steady/reactors/ammoniaRoutes01_screening	kpi	synthesis50	newtonResidual	1.70163610723e-17	1e-4	residual_newton	residual/closure
 tutorials/steady/reactors/cstr03_series_selectivity	kpi	reactor	newtonResidual	7.7579192289e-18	1e-4	residual_newton	residual/closure
-tutorials/steady/reactors/cstr04_adiabatic	kpi	reactor	Q_kW	-3.62376795238e-12	1e-4	zero_duty	zero by construction (round-off duty)
+tutorials/steady/reactors/cstr04_adiabatic	kpi	reactor	Q_kW	-3.62376795238e-12	1e-4	zero_duty	zero by construction (round-off)
 tutorials/steady/reactors/cstr04_adiabatic	kpi	reactor	newtonResidual	1.38777878078e-17	1e-4	residual_newton	residual/closure
-tutorials/steady/reactors/cstr04_adiabatic	boundary	global	Q_boundary_kW	-3.62376795238e-12	1e-4	zero_duty	zero by construction (round-off duty)
-tutorials/steady/reactors/cstr05_multiplicity	kpi	reactor	Q_kW	1.172395514e-11	1e-4	zero_duty	zero by construction (round-off duty)
+tutorials/steady/reactors/cstr04_adiabatic	boundary	global	Q_boundary_kW	-3.62376795238e-12	1e-4	zero_duty	zero by construction (round-off)
+tutorials/steady/reactors/cstr05_multiplicity	kpi	reactor	Q_kW	1.172395514e-11	1e-4	zero_duty	zero by construction (round-off)
 tutorials/steady/reactors/cstr05_multiplicity	kpi	reactor	newtonResidual	5.94587313413e-15	1e-4	residual_newton	residual/closure
-tutorials/steady/reactors/cstr05_multiplicity	boundary	global	Q_boundary_kW	1.172395514e-11	1e-4	zero_duty	zero by construction (round-off duty)
+tutorials/steady/reactors/cstr05_multiplicity	boundary	global	Q_boundary_kW	1.172395514e-11	1e-4	zero_duty	zero by construction (round-off)
 tutorials/steady/reactors/cstr07_lhhw_methylAcetate	kpi	reactor	newtonResidual	4.16333634234e-17	1e-4	residual_newton	residual/closure
-tutorials/steady/reactors/cstr08_furusawa_bistable	kpi	reactor	Q_kW	-7.81597009336e-14	1e-4	zero_duty	zero by construction (round-off duty)
+tutorials/steady/reactors/cstr08_furusawa_bistable	kpi	reactor	Q_kW	-7.81597009336e-14	1e-4	zero_duty	zero by construction (round-off)
 tutorials/steady/reactors/cstr08_furusawa_bistable	kpi	reactor	newtonResidual	1.73472347598e-18	1e-4	residual_newton	residual/closure
-tutorials/steady/reactors/cstr08_furusawa_bistable	boundary	global	Q_boundary_kW	-7.81597009336e-14	1e-4	zero_duty	zero by construction (round-off duty)
+tutorials/steady/reactors/cstr08_furusawa_bistable	boundary	global	Q_boundary_kW	-7.81597009336e-14	1e-4	zero_duty	zero by construction (round-off)
 tutorials/steady/reactors/equil01_reforming	kpi	reformer	newtonResidual	8.881784197e-16	1e-4	residual_newton	residual/closure
 tutorials/steady/reactors/equil02_methanol_declared_pathways	kpi	complete	conversion_methanolSynthesis	3.69907429267e-10	1e-4	direct	physical
 tutorials/steady/reactors/equil02_methanol_declared_pathways	kpi	complete	newtonResidual	3.5527136788e-15	1e-4	residual_newton	residual/closure
@@ -952,8 +952,8 @@ tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways	kpi	complet
 tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways	kpi	declared	newtonResidual	3.110844915e-13	1e-4	residual_newton	residual/closure
 tutorials/steady/reactors/ladder01_wgs_three_rungs	kpi	approach	newtonResidual	3.10862446895e-15	1e-4	residual_newton	residual/closure
 tutorials/steady/reactors/ladder01_wgs_three_rungs	kpi	limit	newtonResidual	8.881784197e-16	1e-4	residual_newton	residual/closure
-tutorials/steady/reactors/pfr04_adiabatic	kpi	reactor	Q_kW	-1.42108547152e-14	1e-4	zero_duty	zero by construction (round-off duty)
-tutorials/steady/reactors/pfr04_adiabatic	boundary	global	Q_boundary_kW	-1.42108547152e-14	1e-4	zero_duty	zero by construction (round-off duty)
+tutorials/steady/reactors/pfr04_adiabatic	kpi	reactor	Q_kW	-1.42108547152e-14	1e-4	zero_duty	zero by construction (round-off)
+tutorials/steady/reactors/pfr04_adiabatic	boundary	global	Q_boundary_kW	-1.42108547152e-14	1e-4	zero_duty	zero by construction (round-off)
 tutorials/steady/reactors/screen01_methanol_routes	kpi	equilA	newtonResidual	3.5527136788e-15	1e-4	residual_newton	residual/closure
 tutorials/steady/reactors/screen01_methanol_routes	kpi	equilB	newtonResidual	1.7763568394e-15	1e-4	residual_newton	residual/closure
 tutorials/steady/reactors/screen01_methanol_routes	kpi	equilC	newtonResidual	1.6588293239e-15	1e-4	residual_newton	residual/closure
@@ -963,12 +963,12 @@ tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit	kpi	millFirstHa
 tutorials/steady/solids/filter01_caco3_rotaryDrum	kpi	drum	formationTimeClosure	3.44505568853e-16	1e-4	residual_closure	residual/closure
 tutorials/steady/solids/filter03_drum_area_medium_tabulatedWash	kpi	drum	formationTimeClosure	2.1822838349e-16	1e-4	residual_closure	residual/closure
 tutorials/steady/solids/hydrocyclone01_quartz_willsTable91	kpi	cyclone	fluidMassClosure	1.12190957392e-16	1e-4	residual_closure	residual/closure
-tutorials/steady/thermo/basis01_two_unit_chain	closure	divider	step_kW	-9.09494701773e-13	1e0	zero_duty	zero by construction (round-off duty)
-tutorials/steady/thermo/basis01_two_unit_chain	closure	divider	remaining_kW	9.09494701773e-13	1e0	zero_duty	zero by construction (round-off duty)
-tutorials/steady/thermo/perUnitThermo01_srk_nrtl	closure	flash	raw_kW	-5.11590769747e-13	1e0	zero_duty	zero by construction (round-off duty)
-tutorials/steady/thermo/perUnitThermo01_srk_nrtl	closure	flash	remaining_kW	-5.11590769747e-13	1e0	zero_duty	zero by construction (round-off duty)
-tutorials/steady/thermo/variants01_ethanol_water_line	closure	line	raw_kW	-1.45519152284e-11	1e0	zero_duty	zero by construction (round-off duty)
-tutorials/steady/thermo/variants01_ethanol_water_line	closure	line	remaining_kW	-1.45519152284e-11	1e0	zero_duty	zero by construction (round-off duty)
+tutorials/steady/thermo/basis01_two_unit_chain	closure	divider	step_kW	-9.09494701773e-13	1e0	zero_duty	zero by construction (round-off)
+tutorials/steady/thermo/basis01_two_unit_chain	closure	divider	remaining_kW	9.09494701773e-13	1e0	zero_duty	zero by construction (round-off)
+tutorials/steady/thermo/perUnitThermo01_srk_nrtl	closure	flash	raw_kW	-5.11590769747e-13	1e0	zero_duty	zero by construction (round-off)
+tutorials/steady/thermo/perUnitThermo01_srk_nrtl	closure	flash	remaining_kW	-5.11590769747e-13	1e0	zero_duty	zero by construction (round-off)
+tutorials/steady/thermo/variants01_ethanol_water_line	closure	line	raw_kW	-1.45519152284e-11	1e0	zero_duty	zero by construction (round-off)
+tutorials/steady/thermo/variants01_ethanol_water_line	closure	line	remaining_kW	-1.45519152284e-11	1e0	zero_duty	zero by construction (round-off)
 tutorials/steady/userops/userOp03_case_rate_law	kpi	reactorCode	newtonResidual	1.13797860024e-15	1e-4	residual_newton	residual/closure
 tutorials/steady/userops/userOp03_case_rate_law	kpi	reactorExpr	newtonResidual	1.13797860024e-15	1e-4	residual_newton	residual/closure
 tutorials/unsteady/unsteady01_startup_transient	kpi	balance	mass_closure_rel	1.77265609598e-14	1e-4	residual_closure	residual/closure

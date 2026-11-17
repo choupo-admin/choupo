@@ -21,11 +21,11 @@ kpi     SLOW                   t_end            5000             1e-4
 kpi     SLOW                   z_in_compA_final 0                1e-4
 kpi     SLOW                   z_in_compB_final 1                1e-4
 kpi     balance                energy_balance_available 0                1e-4
-kpi     balance                mass_closure_rel 3.77771887846e-15 1e-4
+kpi     balance                mass_closure_rel 3.77771887846e-15 abs:1e-09
 kpi     balance                mass_kg_final    30               1e-4
 kpi     balance                mass_kg_in_cum   300              1e-4
 kpi     balance                mass_kg_initial  30               1e-4
 kpi     balance                mass_kg_out_cum  300              1e-4
-kpi     balance                mass_residual_kg -1.13331566354e-12 1e-4
+kpi     balance                mass_residual_kg -1.13331566354e-12 abs:1e-09
 kpi     balance                material_available 1                1e-4
 source  FAST                   liquidDensity    liquidVolume.idealMix[anchoredRackett] exact

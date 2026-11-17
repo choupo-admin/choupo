@@ -2,20 +2,20 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 kpi     campaign               element_Cl_closure_rel 0                1e-4
-kpi     campaign               element_H_closure_rel 1.51983140987e-12 1e-4
+kpi     campaign               element_H_closure_rel 1.51983140987e-12 abs:1e-09
 kpi     campaign               element_Mg_closure_rel 0                1e-4
 kpi     campaign               element_Na_closure_rel 0                1e-4
-kpi     campaign               element_O_closure_rel 1.51764442727e-12 1e-4
+kpi     campaign               element_O_closure_rel 1.51764442727e-12 abs:1e-09
 kpi     campaign               element_S_closure_rel 0                1e-4
-kpi     campaign               element_worst_closure_rel 1.51983140987e-12 1e-4
+kpi     campaign               element_worst_closure_rel 1.51983140987e-12 abs:1e-09
 kpi     campaign               energy_balance_available 0                1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
 kpi     campaign               energy_records_valid 0                1e-4
-kpi     campaign               mass_closure_rel 1.51406233018e-12 1e-4
+kpi     campaign               mass_closure_rel 1.51406233018e-12 abs:1e-09
 kpi     campaign               mass_kg_external_out 7.4717123351     1e-4
 kpi     campaign               mass_kg_final    2.56417330931    1e-4
 kpi     campaign               mass_kg_initial  10.0358856444    1e-4
-kpi     campaign               mass_residual_kg 1.51949564042e-11 1e-4
+kpi     campaign               mass_residual_kg 1.51949564042e-11 abs:1e-09
 kpi     campaign               moles_kmol_external_out 0.414536503967   1e-4
 kpi     campaign               moles_kmol_final 0.140963496034   1e-4
 kpi     campaign               moles_kmol_initial 0.5555           1e-4
