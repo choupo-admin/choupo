@@ -307,6 +307,54 @@ elements and energy close; a quantity entering a unit that neither models
 nor refuses it is impossible by construction; the state files round-trip;
 no existing case moves.
 
+## 5d. The spike on the stream, with its criteria (C427; written 2026-11-18)
+
+WHAT EXISTS, measured at `src/streams/ProcessStream.H` lines 184-193: a
+stream already carries, beside `F`, `z` and `vf`, a solid molar flow per
+component `s` and ONE size distribution `psd` of the combined solid; 14
+unit sources read or write `.psd`, and the mixer (`Mixer.cpp` 142-300)
+combines distributions mass-weighted by hand.  So the stream has been opened
+once already, ad hoc: the spike turns that opening into the general one,
+and the size distribution is its first tenant, migrated.
+
+THE SHAPE TO PROVE (not to build in full).  A stream gains an ordered set
+of CARRIED QUANTITIES, each `{ kind, carrier, values, unit }`; the kinds
+are a closed list registered by the explicit-factory pattern of section 5 of
+CLAUDE.md (a kind = one class: its law of mixing, its law of division, its
+state-file form, its report form).  Kinds in the spike: `sizeDistribution`
+(the existing `psd`, carrier = the solid of the stream), `materialMass`
+(carrier = a named material, value = kg/s), `chainMoment` (carrier = a
+declared polymer, order 0 or 2, value = kmol/s or its moment unit).  The
+mixer and the splitter stop knowing any kind: they call the kind's laws.
+A unit declares, in its acceptance (`UnitAcceptance`), the kinds it MODELS;
+any other kind on an inlet is refused by name before the solve.
+
+CRITERIA, ALL REQUIRED, each a scripted check in the spike's branch:
+S1  No existing case moves: every golden byte-identical, `--fast` and a
+    `--scope` over the 14 PSD-carrying units' cases; the size distribution,
+    migrated into the new mechanism, prints and writes exactly as before.
+S2  Mass, elements and energy close on a probe flowsheet that carries a
+    material through mixer -> splitter -> dryer-stub, and on a polymer's
+    zeroth and second moments through mixer -> splitter -> one reactor with
+    an analytic answer (a constant-rate step growth whose moments are closed
+    form); each closure printed by the existing balance reports, the gates
+    unchanged.
+S3  By construction, not by test: a carried quantity entering a unit that
+    neither models nor refuses it is IMPOSSIBLE (the acceptance check runs
+    before every solve); proven by a probe that adds a `chainMoment` to a
+    heater's inlet and is refused naming the kind and the unit.
+S4  The state files round-trip: a carried quantity written in `0/` or
+    `converged/` reads back to the same bits; an old state file without the
+    block reads as "none carried".
+S5  The cost is measured: the walk's wall clock on the 14 PSD cases within
+    5 % of today's; the memory of a stream with no carried quantity
+    unchanged.
+S6  The design survives contact: anything the spike shows the record got
+    wrong is written back into this section before any further slice.
+OUT OF THE SPIKE: the material's analyses and enthalpy (M1-M4), any polymer
+property or kinetics, the GUI.  The spike's verdict is a page in this
+record: kept, changed, or abandoned, with the evidence.
+
 ## 5c. The kinds of component (C427)
 
 Today a record says `role nonvolatile` or `role solute` (105 records) and
