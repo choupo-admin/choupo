@@ -8,7 +8,6 @@
 src/postProcessing/sizing/PipeHeaderSize.cpp	keyRead	2
 src/postProcessing/sizing/RatedMachineSize.cpp	conversion	1
 src/postProcessing/sizing/ReliefArithmetic.H	literal	1
-src/postProcessing/sizing/ShellTubeHX.cpp	direct	1
 src/propertyOps/DataReconciliation.cpp	keyRead	1
 src/propertyOps/EstimateComponent.cpp	keyRead	2
 src/propertyOps/FitParametersMembrane.cpp	keyRead	5
@@ -29,8 +28,6 @@ src/unitOperations/crystallisation/Crystalliser.cpp	vliq	5
 src/unitOperations/dynamic/WilliamsOttoPlant.cpp	literal	1
 src/unitOperations/electrochem/ElectrodialysisStack.cpp	conversion	2
 src/unitOperations/electrochem/ElectrodialysisStack.cpp	direct	1
-src/unitOperations/heatTransfer/HeatExchanger.cpp	direct	1
-src/unitOperations/heatTransfer/PhaseChanger.cpp	direct	2
 src/unitOperations/heatTransfer/SprayDryer.cpp	keyRead	5
 src/unitOperations/heatTransfer/SprayDryer.cpp	vliq	6
 src/unitOperations/heatTransfer/atomizer/Atomizer.H	literal	1

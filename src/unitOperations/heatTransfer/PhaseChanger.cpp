@@ -876,7 +876,7 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
             catch (const std::exception&) { rethrowHardRefusal(); ctx.sigma = 0.0; }
         }
         ctx.rho_l       = liquidProperty::evaluate(thermo, liquidProperty::Property::density, T_f, P_out, z).value;
-        ctx.lambda_l    = thermo.thermalConductivityLiquid(T_f, z);
+        ctx.lambda_l    = liquidProperty::evaluate(thermo, liquidProperty::Property::thermalConductivity, T_f, P_out, z).value;
         ctx.mu_l        = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T_f, P_out, z).value;
         // mass cp: molar Cp_liquid / M.
         scalar cp_molar = 0.0;
@@ -1318,7 +1318,7 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
 
     // Liquid film properties just below Tsat (saturated liquid -- pool boiling).
     const scalar mu_l     = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, Tsat - dTsat, P_out, z).value;
-    const scalar lambda_l = thermo.thermalConductivityLiquid(Tsat - dTsat, z);
+    const scalar lambda_l = liquidProperty::evaluate(thermo, liquidProperty::Property::thermalConductivity, Tsat - dTsat, P_out, z).value;
     // Liquid mass-cp at Tsat.  Prefer the pure-fluid kernel (IF97 cp_molar on
     // the saturated-liquid line) when the dominant component is flagged; else
     // the component cpLiquid model.  cp_l is LOAD-BEARING for Rohsenow (the

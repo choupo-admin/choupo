@@ -242,7 +242,7 @@ int HeatExchanger::solve(const DictPtr& dict,
         };
         auto streamLambda = [&](const Stream& s) -> scalar
         {
-            return (s.vf < 0.5) ? thermo.thermalConductivityLiquid(s.T, s.z)
+            return (s.vf < 0.5) ? liquidProperty::evaluate(thermo, liquidProperty::Property::thermalConductivity, s.T, s.P, s.z).value
                                 : thermo.thermalConductivityGas(s.T, s.z);
         };
         // Mass flow [kg/s] = F[kmol/s] * MW_avg[kg/kmol].

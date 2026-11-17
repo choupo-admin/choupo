@@ -238,7 +238,7 @@ SideFluid price(const ThermoPackage& tp, const FluidState& s, bool heating,
             "Declare a viscosity model in the package's `transport {}`.");
         f.lambda = need("thermal conductivity",
             s.vapour ? tp.thermalConductivityGas(s.T, s.z)
-                     : tp.thermalConductivityLiquid(s.T, s.z),
+                     : liquidProperty::evaluate(tp, liquidProperty::Property::thermalConductivity, s.T, s.P, s.z, liquidProperty::Consumer{"sizing.shellTubeHX", who}).value,
             "Declare a conductivity model in the package's `transport {}`.");
         //  The heat capacity is the derivative of the package's OWN enthalpy
         //  at the state, on the declared phase -- the surface the duty itself
