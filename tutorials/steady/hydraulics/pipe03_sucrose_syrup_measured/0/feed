@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     12.5 mass % sucrose: n_sucrose / n_water = (0.125/342.297) / (0.875/18.015). ---*/
+
+componentMolarFlows
+{
+    sucrose  7.5185334039 kmol/h;
+    water    1000 kmol/h;
+}
+
+T               301.15 K;
+P               300000 Pa;

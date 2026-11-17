@@ -1,0 +1,54 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  measured02 -- a liquid MIXTURE surface tension as a TABLE of measured rows
+    (DEV.md 4c C421 slice (8); docs/design/measured-facts-materials-and-flow-curves.md,
+    form 1), the same grammar as measured01 on the interface block.
+
+    The liquid is aqueous ethanol.  Its surface tension is
+    constant/experiments/razaEthanolWaterSurfaceTension.dat: 10 rows, two
+    temperatures by five ethanol mass fractions, `kind measured`, read from
+    the article the file cites.  `interpolation ( linear monotoneCubic )`:
+    along T (two values: a chord), linear; along w[ethanol], the monotone cubic
+    of Fritsch & Carlson, which follows the steep fall near pure water without
+    the overshoot of an ordinary cubic -- one axis at a time, T first.
+
+    THREE DOMAINS (R2).  The SUPPORT is computed from the rows: T 298-313 K,
+    w[ethanol] 0-0.20.  The AUTHORISED box is wider (T 293-318 K, w 0-0.22):
+    between them the nearest edge's value is held and the largest excursion
+    announced at the end of the run; outside it the run REFUSES.  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+
+components ( ethanol water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid { activityModel { model ideal; } }
+    vapour { fugacityModel idealGas; }
+}
+
+transport
+{
+    interface
+    {
+        surfaceTension
+        {
+            measured
+            {
+                razaEthanolWaterSurfaceTension
+                {
+                    use            method;
+                    interpolation  ( linear monotoneCubic );     // T, then w[ethanol]
+                }
+            }
+        }
+    }
+}

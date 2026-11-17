@@ -1,0 +1,30 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  delivered              F                0.279866259279     1e-4
+stream  delivered              T                301.15             1e-4
+stream  feed                   F                0.279866259279     1e-4
+stream  feed                   T                301.15             1e-4
+kpi     L1                     F                0.279866259279     1e-4
+kpi     L1                     P_in             300000             1e-4
+kpi     L1                     P_out            257487.669679      1e-4
+kpi     L1                     dP_elevation     0                  1e-4
+kpi     L1                     dP_fittings      7309.72180741      1e-4
+kpi     L1                     dP_friction      35202.6085138      1e-4
+kpi     L1                     deltaP           42512.3303212      1e-4
+kpi     L1                     density          1044.55017402      1e-4
+kpi     L1                     frictionFactor   0.0216713771721    1e-4
+kpi     L1                     head_loss_m      4.15016085949      1e-4
+kpi     L1                     regime           2                  1e-4
+kpi     L1                     reynolds         121171.225978      1e-4
+kpi     L1                     velocity         2.78846062847      1e-4
+kpi     L1                     viscosity        0.00120188890193   1e-4
+boundary global               H_feeds_kW       -84127.0246765     1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    -84127.0246765     1e-4
+boundary global               noBoundary       false              exact
+closure L1                     raw_kW           0                  1e-4
+closure L1                     step_kW          0                  1e-4
+closure L1                     remaining_kW     0                  1e-4
+source  L1                     liquidDensity    liquidVolume.idealMix[anchoredRackett+flatVliq] exact
+source  L1                     liquidViscosity  stated.nainSucroseWaterViscosity exact

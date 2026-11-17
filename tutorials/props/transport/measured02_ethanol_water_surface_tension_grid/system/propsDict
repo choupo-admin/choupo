@@ -1,0 +1,75 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  measured02 -- the surface tension of aqueous ethanol from a measured grid.
+    (Compositions are MOLE fractions: x_ethanol = (w/46.069) / (w/46.069 +
+    (1 - w)/18.015), the molar masses of the component records, so the mass
+    fraction the table reads is the w in each name to twelve digits.)
+
+    sigmaNode_*     ON a row of the grid (298 K, w 0.10; 313 K, w 0.20): the
+                    article's own value, exactly (47.34 and 36.71 mN/m).
+    sigmaBetween_*  BETWEEN rows (305.5 K, w 0.075; 310 K, w 0.125): the
+                    declared interpolation, T then w -- the gate recomputes it
+                    independently.
+    sigmaHeld_*     BETWEEN the support and the authorised box: 295 K lies 3 K
+                    below the first temperature (298 K); w 0.22 lies 0.02 above
+                    the last fraction (0.20).  The nearest edge's value is held
+                    and the largest excursion is announced at the end of the run.
+    sigmaPastBox_refused  a scan 317-319 K at w 0.10: 317 and 318 K lie in the
+                    authorised box (held at the last temperature, 313 K), 319 K
+                    is past it and REFUSED by name.
+
+    The golden master locks every computed value at reltol 1e-4.  */
+
+operations
+(
+    {
+        name        sigmaNode_298K_w10;
+        type        propertyPoint;
+        state       { T 298 K;  P 1 bar;  composition { ethanol 0.041640085430;  water 0.958359914570; } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigmaNode_313K_w20;
+        type        propertyPoint;
+        state       { T 313 K;  P 1 bar;  composition { ethanol 0.089054876391;  water 0.910945123609; } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigmaBetween_305K_w075;
+        type        propertyPoint;
+        state       { T 305.5 K;  P 1 bar;  composition { ethanol 0.030731867090;  water 0.969268132910; } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigmaBetween_310K_w125;
+        type        propertyPoint;
+        state       { T 310 K;  P 1 bar;  composition { ethanol 0.052907799752;  water 0.947092200248; } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigmaHeld_T_295K_w10;
+        type        propertyPoint;
+        state       { T 295 K;  P 1 bar;  composition { ethanol 0.041640085430;  water 0.958359914570; } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigmaHeld_w_298K_w22;
+        type        propertyPoint;
+        state       { T 298 K;  P 1 bar;  composition { ethanol 0.099337997329;  water 0.900662002671; } }
+        properties  ( surface_tension );
+    }
+    {
+        name        sigmaPastBox_refused;
+        type        propertyScan1D;
+        vary        { variable T;  from 317 K;  to 319 K;  n 3; }
+        state       { P 1 bar;  composition { ethanol 0.041640085430;  water 0.958359914570; } }
+        properties  ( surface_tension );
+        output      { file sigmaPastBox_refused.csv; }
+    }
+);

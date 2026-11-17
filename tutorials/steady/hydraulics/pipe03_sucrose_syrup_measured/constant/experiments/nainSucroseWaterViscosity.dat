@@ -1,0 +1,82 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The dynamic viscosity of aqueous sucrose at 24 states: six temperatures
+  (293.15 to 318.15 K, every 5 K) by four sucrose mass fractions (0.05, 0.10,
+  0.15, 0.20), as the article reports them.  These are the article's own
+  solvent-only rows (no amino acid in the solution), transcribed exactly as the NIST ThermoML Archive
+  gives them, row after row in the archive's order (mass fraction outer,
+  temperature inner); the archive attaches an expanded uncertainty of about
+  2.2 % to every value, which is not carried in this file.
+
+  Read by transport.liquid.viscosity.measured (DEV.md 4c C421 slice (8)):
+  a table over T and w[sucrose], a rectangular grid.  The record states what
+  the values are (`kind measured`); the case that reads it states how to
+  interpolate and how far the table may stand.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    //  sha256 is of the `data ( );` block of THIS file as transcribed: it tells this
+    //  transcription from a corrected one.
+    sha256       "871333121dea4a3a4683d48c6ea8d0dc1d72ba88117f894a8f25db9367aade15";
+    origin       literature;
+    kind         measured;
+    basis        "measured: viscosities of aqueous sucrose (the article's solvent, 0 molal amino acid) at 293.15-318.15 K, 5-20 mass % sucrose";
+    citation     "Nain, A. K.; Lather, M.; Sharma, R. K. (2013). Study of solute-solute and solute-solvent interactions of L-methionine in aqueous-sucrose solutions at different temperatures. J. Chem. Thermodyn. 58, 101-109. doi:10.1016/j.jct.2012.11.001 (the binary water + D-sucrose viscosity block of the article's data)";
+    via          "NIST ThermoML Archive (archive doi 10.18434/mds2-2422), file 10.1016/j.jct.2012.11.001.xml, property 'Viscosity, Pa*s', variables Temperature, K and Mass fraction[D-sucrose]";
+}
+
+property    liquidViscosity;
+system      ( sucrose water );
+solvent     water;
+
+columns
+(
+    { name T;           unit K;    }
+    { name w[sucrose];  unit -;    }
+    { name mu;          unit Pa.s; }
+);
+data
+(
+    293.15  0.05  0.0012137
+    298.15  0.05  0.001011
+    303.15  0.05  0.0009129
+    308.15  0.05  0.0008285
+    313.15  0.05  0.0007457
+    318.15  0.05  0.0006946
+    293.15  0.1  0.0013765
+    298.15  0.1  0.0011832
+    303.15  0.1  0.0010606
+    308.15  0.1  0.0009614
+    313.15  0.1  0.0008804
+    318.15  0.1  0.0008179
+    293.15  0.15  0.0016088
+    298.15  0.15  0.0014184
+    303.15  0.15  0.0012523
+    308.15  0.15  0.0011291
+    313.15  0.15  0.001025
+    318.15  0.15  0.0009402
+    293.15  0.2  0.0019318
+    298.15  0.2  0.0017558
+    303.15  0.2  0.0015489
+    308.15  0.2  0.0013963
+    313.15  0.2  0.0012495
+    318.15  0.2  0.00115
+);
+
+//  What the case may stand the table over: a few kelvin and a few percent of
+//  sucrose past the rows' support (293.15-318.15 K, 0.05-0.20).  The reason is
+//  written here, with the box (the same words are accepted in the case's entry).
+authorised
+{
+    T           ( 290 321 );
+    w[sucrose]  ( 0.03 0.22 );
+    reason      "a few kelvin and a few mass percent of sucrose past the rows, to show the nearest edge held and announced; the viscosity there is the edge row's, an approximation of the case, not a measurement";
+}

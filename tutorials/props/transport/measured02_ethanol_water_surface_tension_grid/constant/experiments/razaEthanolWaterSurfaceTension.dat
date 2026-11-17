@@ -1,0 +1,70 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The surface tension (liquid-gas) of aqueous ethanol at 10 states: two
+  temperatures (298 and 313 K) by five ethanol mass fractions (0, 0.05, 0.10,
+  0.15, 0.20), by the ring-tensiometer method, as the article reports them.
+  Transcribed exactly as the NIST ThermoML Archive gives them, row after row
+  in the archive's order (temperature outer, mass fraction inner); the archive
+  attaches an expanded uncertainty of about 1.3 % to each value, which is not
+  carried in this file.  The surface tension falls from 72 to 38 mN/m between
+  pure water and 20 % ethanol: the fall is steepest in the first few percent,
+  which is what a monotone cubic along the mass fraction keeps and a straight
+  line does not.
+
+  Read by transport.interface.surfaceTension.measured (DEV.md 4c C421 slice
+  (8)): a table over T and w[ethanol], a rectangular grid.  The record states
+  what the values are (`kind measured`); the case that reads it states how to
+  interpolate and how far the table may stand.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    //  sha256 is of the `data ( );` block of THIS file as transcribed: it tells this
+    //  transcription from a corrected one.
+    sha256       "4e51fd9dc65a7e66e52f1f4f9bd9f54c3c018a2e97371b16cdfb01d0b8d35a86";
+    origin       literature;
+    kind         measured;
+    basis        "measured: ring-tensiometer surface tensions of ethanol + water at 298 and 313 K, 0-20 mass % ethanol";
+    citation     "Raza, M. A.; Hallett, P. D.; Liu, X.; He, M.; Afzal, W. (2019). Surface Tension of Aqueous Solutions of Small-Chain Amino and Organic Acids. J. Chem. Eng. Data 64, 5049-5056. doi:10.1021/acs.jced.9b00026 (the ethanol + water block of the article's data)";
+    via          "NIST ThermoML Archive (archive doi 10.18434/mds2-2422), file 10.1021/acs.jced.9b00026.xml, property 'Surface tension liquid-gas, N/m', variables Temperature, K and Mass fraction[ethanol]";
+}
+
+property    surfaceTension;
+system      ( ethanol water );
+solvent     water;
+
+columns
+(
+    { name T;            unit K;    }
+    { name w[ethanol];   unit -;    }
+    { name sigma;        unit N/m;  }
+);
+data
+(
+    298  0  0.07204
+    298  0.05  0.05514
+    298  0.1  0.04734
+    298  0.15  0.04196
+    298  0.2  0.0382
+    313  0  0.06989
+    313  0.05  0.05313
+    313  0.1  0.04592
+    313  0.15  0.04041
+    313  0.2  0.03671
+);
+
+//  What the case may stand the table over: a few kelvin past the rows' support
+//  (298-313 K) and up to 22 % ethanol (the rows end at 20 %).
+authorised
+{
+    T             ( 293 318 );
+    w[ethanol]    ( 0 0.22 );
+    reason        "a few kelvin and two mass percent of ethanol past the rows, to show the nearest edge held and announced; the surface tension there is the edge row's, an approximation of the case, not a measurement";
+}

@@ -1,0 +1,61 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  measured01 -- a liquid MIXTURE property as a TABLE of measured rows (DEV.md
+    4c C421 slice (8); docs/design/measured-facts-materials-and-flow-curves.md,
+    form 1).
+
+    The liquid is methanol + ethylene glycol.  Its viscosity is
+    constant/experiments/royMethanolEthaneDiolViscosity.dat: 12 rows, three
+    temperatures by four glycol mass fractions, `kind measured`, read from the
+    article the file cites.  The entry below says HOW to read it --
+    `interpolation ( logReciprocal monotoneCubic )`: along T, ln mu is linear
+    in 1/T (the Arrhenius form); along w[ethyleneGlycol], the monotone cubic of
+    Fritsch & Carlson -- one axis at a time, T first (the order of the file's
+    columns).
+
+    THREE DOMAINS (R2).  The SUPPORT is computed from the rows: T 293.15-303.15
+    K, w[ethyleneGlycol] 0-0.75; inside it the table interpolates, and on a row
+    it returns the row's own value.  The AUTHORISED box is wider (T 290-306 K,
+    w 0-0.80): between the support and it the value of the nearest edge is held
+    and the largest excursion announced, at the end of the run.  Outside the
+    authorised box the run REFUSES -- a table is never extrapolated nor handed
+    over to a law.
+
+    The pure components keep their record laws (a pure liquid is not a mixture:
+    the table answers only where both components are present).  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+
+components ( methanol ethyleneGlycol );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid { activityModel { model ideal; } }
+    vapour { fugacityModel idealGas; }
+}
+
+transport
+{
+    liquid
+    {
+        viscosity
+        {
+            measured
+            {
+                royMethanolEthaneDiolViscosity
+                {
+                    use            method;
+                    interpolation  ( logReciprocal monotoneCubic );     // T, then w[ethyleneGlycol]
+                }
+            }
+        }
+    }
+}

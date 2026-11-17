@@ -1,0 +1,75 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  measured01 -- the viscosity of methanol + ethylene glycol from a measured grid.
+    (Compositions are MOLE fractions: x_glycol = (w/62.06784) / (w/62.06784 +
+    (1 - w)/32.042), the molar masses of the component records, so the mass
+    fraction the table reads is the w in each name to twelve digits.)
+
+    muNode_*     ON a row of the grid (298.15 K, w 0.25; 303.15 K, w 0.50): the
+                 article's own value, exactly (1.0295 and 1.8101 mPa s).
+    muBetween_*  BETWEEN rows (295.65 K, w 0.375; 300.65 K, w 0.625): the
+                 declared interpolation, T then w -- the gate recomputes it
+                 independently.
+    muHeld_*     BETWEEN the support and the authorised box: 291.15 K lies
+                 2 K below the first temperature (293.15 K); w 0.78 lies 0.03
+                 above the last fraction (0.75).  The nearest edge's value is
+                 held and the largest excursion is announced at the end of the run.
+    muPastBox_refused  a scan 305-307 K at w 0.50: 305 and 306 K lie in the
+                 authorised box (held at the last temperature, 303.15 K), 307 K
+                 is past it and REFUSED by name.
+
+    The golden master locks every computed value at reltol 1e-4.  */
+
+operations
+(
+    {
+        name        muNode_298K_w25;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 1 bar;  composition { methanol 0.853183698799;  ethyleneGlycol 0.146816301201; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muNode_303K_w50;
+        type        propertyPoint;
+        state       { T 303.15 K;  P 1 bar;  composition { methanol 0.659525507641;  ethyleneGlycol 0.340474492359; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muBetween_296K_w375;
+        type        propertyPoint;
+        state       { T 295.65 K;  P 1 bar;  composition { methanol 0.763507429418;  ethyleneGlycol 0.236492570582; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muBetween_301K_w625;
+        type        propertyPoint;
+        state       { T 300.65 K;  P 1 bar;  composition { methanol 0.537518050681;  ethyleneGlycol 0.462481949319; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muHeld_T_291K_w50;
+        type        propertyPoint;
+        state       { T 291.15 K;  P 1 bar;  composition { methanol 0.659525507641;  ethyleneGlycol 0.340474492359; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muHeld_w_298K_w78;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 1 bar;  composition { methanol 0.353318054384;  ethyleneGlycol 0.646681945616; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muPastBox_refused;
+        type        propertyScan1D;
+        vary        { variable T;  from 305 K;  to 307 K;  n 3; }
+        state       { P 1 bar;  composition { methanol 0.659525507641;  ethyleneGlycol 0.340474492359; } }
+        properties  ( viscosity_liquid );
+        output      { file muPastBox_refused.csv; }
+    }
+);

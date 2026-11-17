@@ -1,0 +1,56 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  pipe03_sucrose_syrup_measured
+
+  A single PIPE element carrying a sucrose syrup (12.5 mass % sucrose in
+  water, 301.15 K, 3 bar) through 20 m of 0.05 m commercial-steel pipe.  The
+  Reynolds number needs the syrup's VISCOSITY, and no law of any record
+  prices it: the case's own measured table does -- 24 rows, six temperatures
+  by four sucrose mass fractions (Nain, Lather & Sharma 2013, from the NIST
+  ThermoML Archive), selected by the variant `nainTable` of
+  constant/thermoPhysPropDict (`thermo nainTable;` below).  The state of the
+  syrup, 301.15 K and w 0.125, lies BETWEEN rows (298.15 and 303.15 K; 0.10
+  and 0.15), so the viscosity the pipe takes is the table's interpolation,
+  not a row's.
+
+    feed (syrup, 3 bar)  ->  [L1 pipe, thermo nainTable]  ->  delivered
+
+  The golden master pins the `source` of the pipe's viscosity as the stated
+  table (`stated.nainSucroseWaterViscosity`), and the Reynolds number, the
+  friction factor and the pressure drop that follow from it.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        L1;
+        type        pipe;
+        model       Churchill;
+        thermo      nainTable;            // the variant that carries the measured table
+        in          feed;
+        outputs     ( delivered );
+
+        operation
+        {
+            geometry
+            {
+                D          0.05    m;
+                L          20.0    m;
+                roughness  4.6e-5  m;
+                dz         0.0     m;
+
+                fittings
+                (
+                    { K 0.9;  count 2; }   // two 90-degree elbows
+                );
+            }
+        }
+    }
+);

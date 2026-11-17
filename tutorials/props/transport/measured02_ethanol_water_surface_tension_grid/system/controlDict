@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoProps;
+description   "A measured mixture table: the surface tension of aqueous ethanol on a 2 x 5 grid of temperature and mass fraction (Raza, Hallett, Liu, He & Afzal 2019), interpolated between the rows, held at the nearest edge between the rows and the authorised box (announced), refused outside it";
+
+verbosity     2;

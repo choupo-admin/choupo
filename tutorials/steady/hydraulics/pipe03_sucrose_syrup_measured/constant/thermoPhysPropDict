@@ -1,0 +1,71 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  pipe03 -- a unit on a MEASURED MIXTURE TABLE (DEV.md 4c C421 slice (8)).
+
+    Sucrose has no liquid-viscosity law, so the system block `viscosity { }`
+    leaves the property to the records, and for sucrose the records hold
+    nothing: a unit that asks the system for this liquid's viscosity is
+    refused, by name.  The variant `nainTable` states ONLY what differs: the
+    liquid viscosity of {sucrose, water} is the case's table,
+    constant/experiments/nainSucroseWaterViscosity.dat -- 24 rows, six
+    temperatures (293.15-318.15 K) by four sucrose mass fractions
+    (0.05-0.20), `kind measured`, read from the article the file cites --
+    interpolated `( logReciprocal monotoneCubic )`: along T, ln mu linear in
+    1/T (the Arrhenius form); along w[sucrose], the monotone cubic of
+    Fritsch & Carlson, one axis at a time, T first.
+
+    Inside the rows' support the table interpolates; a few kelvin or a few
+    percent of sucrose beyond it (the record's authorised box, T 290-321 K,
+    w 0.03-0.22) the nearest edge's value is held and announced; outside the
+    box the unit's run REFUSES.  The pipe is selected by the unit's
+    `thermo nainTable;`.  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+
+components ( sucrose water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid { activityModel { model ideal; } }
+    vapour { fugacityModel idealGas; }
+}
+
+transport
+{
+    liquid
+    {
+        viscosity { }      // no word: each constituent's record law -- none for sucrose
+    }
+}
+
+variants
+{
+    nainTable
+    {
+        transport
+        {
+            liquid
+            {
+                viscosity
+                {
+                    measured
+                    {
+                        nainSucroseWaterViscosity
+                        {
+                            use            method;
+                            interpolation  ( logReciprocal monotoneCubic );     // T, then w[sucrose]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
