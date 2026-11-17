@@ -4125,6 +4125,25 @@ accepts today, and that is a policy call.
 > heating value.  Correlations, if any is used, are read in their original
 > papers: the manual's coal equations carry printing errors (flagged in the
 > notes).  Waits for Vitor's reading; after C421.
+>
+> **C426 (Vitor, 2026-11-18: go through the material he filed and say what
+> is easy to implement, by Pareto, for non-conventional solids AND for the
+> other features the reference world has and Choupo has not; "isso e
+> importante para consolidarmos a arquitetura").**  A GAP STUDY, evidence
+> first: three Sonnet readers, each comparing one side of the reference
+> manuals with Choupo's own capability index, case catalogue and unit
+> catalogue -- (a) every unit model and flowsheeting feature, (b) the
+> property system, (c) the TASKS a university textbook of process
+> simulation teaches, chapter by chapter, against the case or lesson that
+> teaches the same in Choupo.  One row per capability: present / partial /
+> absent with the word and the case, what data and code it would need, a
+> size (S fits an existing factory; M a new unit or record type; L a new
+> concept reaching the stream, the door or the solver), and whether it needs
+> a new architectural concept.  The architect ranks and decides; the notes
+> are private (`Studies/2026-11-18-solids-and-materials/`, files 08-10),
+> beside the solids notes 01-07 (rheology 05 and filtration 06 still being
+> read from the two books that arrived today).  The tracked outcome is the
+> ranked list here.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
