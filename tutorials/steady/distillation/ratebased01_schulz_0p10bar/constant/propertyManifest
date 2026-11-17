@@ -21,14 +21,11 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/oXylene.dat"  "d1148c226e409f4a3e5eba0b7eaf27bfbd2e3306c38b2eb84d025ced76ca32c8";
+        "components/pXylene.dat"  "2f9ce119482f38bfd3e002cd560bee534819bd68489d101e9132a6a03cafd958";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "utilities/coolingWater.dat"  "caa0cba6b3eb42538c0842ec4c504d553f0bc88b3b15acb3b89519dc4ac69125";
         "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
-    }
-    held
-    {
-        "components/oXylene.dat"  "2355c34d82d450ea28579460787b2bd5a343b5bab0e02b98160fa63420ab9c24";
-        "components/pXylene.dat"  "d8be665ab0ea73aa429e832082c346a76ce6030e32936ff326a21b4efa3e535e";
     }
 }

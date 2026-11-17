@@ -21,14 +21,11 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/cyclohexane.dat"  "1c27782a4a7f9db4d5b5b9f3d67991a1865569b0f9089a066ec225d82f966ae1";
+        "components/nHeptane.dat"  "d9e6e6bed3a47d8b106d6f68b547ef3eedab0948c8c89fd94dd37f5027c87756";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "utilities/coolingWater.dat"  "caa0cba6b3eb42538c0842ec4c504d553f0bc88b3b15acb3b89519dc4ac69125";
         "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
-    }
-    held
-    {
-        "components/cyclohexane.dat"  "498ee67224e316d258a1da03e996aad117dc08cf64761591c73ee43314c620b2";
-        "components/nHeptane.dat"  "8bf8fe022a2243653094b08ada873e0250b1159ef955b84cdbd1fcddf2747dd9";
     }
 }
