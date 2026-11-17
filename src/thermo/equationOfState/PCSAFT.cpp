@@ -494,7 +494,8 @@ scalar PCSAFT::H_residualAt(scalar T_K, scalar P_Pa, const sVector& y, bool liqu
 {
     // H^res = -R T^2 (d(a_res/RT)/dT)_{rho,x} * ... plus (Z-1) RT.  Use the
     // total-T derivative of a_res at fixed rho: H^res/RT = -T (dã/dT)_rho + (Z-1)
-    // VAPOUR root (the family contract -- ThermoPackage's vapour enthalpy).
+    // At the root named: the vapour root for the family contract
+    // (ThermoPackage's vapour enthalpy), the liquid root for H_residualLiquid (C410).
     const scalar rho = solveDensity(T_K, P_Pa, y, liquid);
     const scalar hT = T_K * 1.0e-6;
     const scalar dadT = (aRes(T_K+hT, rho, y) - aRes(T_K-hT, rho, y)) / (2.0*hT);
@@ -504,7 +505,7 @@ scalar PCSAFT::H_residualAt(scalar T_K, scalar P_Pa, const sVector& y, bool liqu
 
 scalar PCSAFT::S_residualAt(scalar T_K, scalar P_Pa, const sVector& y, bool liquid) const
 {
-    const scalar rho = solveDensity(T_K, P_Pa, y, liquid);   // vapour root (contract)
+    const scalar rho = solveDensity(T_K, P_Pa, y, liquid);   // the root named (C410)
     const scalar hT = T_K * 1.0e-6;
     const scalar aR = aRes(T_K, rho, y);
     const scalar dadT = (aRes(T_K+hT, rho, y) - aRes(T_K-hT, rho, y)) / (2.0*hT);
