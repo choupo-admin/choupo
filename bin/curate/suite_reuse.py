@@ -15,6 +15,10 @@ again only when one of them changes (DEV.md 4c C394, decision 1).
                                                          stored labels or -
     bin/curate/suite_reuse.py case-plan <root> --explain how each case is keyed:
                                                          narrow or whole
+    bin/curate/suite_reuse.py migrate-keys [root] [--harness-from REV]
+                                                         re-key the stored curation
+                                                         verdicts to the current
+                                                         key format (no run)
     bin/curate/suite_reuse.py verify-reads <case>...     strace the run and hold
                                                          its reads to the key
     bin/curate/suite_reuse.py key <gate>                 print the key and the
@@ -74,6 +78,58 @@ WHAT A KEY IS.  A sha256 over exactly the inputs the verdict reads:
   * THE PLATFORM -- `uname -m`, the Python version and golden_bands' platform
     fingerprint (CPU, C library, compiler; review SE-03).
 
+THE DICTIONARIES OF A CASE ENTER THE KEY AS NORMALISED TEXT (DEV.md 4c C421
+(8)).  A landing changed the `schemaVersion` stamp of all 1260 curation cases
+and a key over each file's bytes re-ran every fit.  Now the files of a case's
+system/ and constant/ (and of the constant/ of each parent the resolver walks)
+are hashed after normalise_dictionary(): comments removed where the engine's
+tokenizer sees one (at the start of a token, never inside a "string" or in the
+middle of a word), blank lines dropped, blank runs collapsed to one space, and
+the top-level line `schemaVersion 1;` / `schemaVersion 2;` dropped.  NOT
+dropped: `recordType <word>;` (the engine branches on its value), a stamp with
+any other value (the engine refuses it), every key, number, word and string.
+Hashed whole as before: tables (.csv .tsv .txt .json), the `expected` golden,
+archiveExtracts/, experiments/, a dossier, and any record the constant/'s
+propertyManifest names (the seal check hashes its parsed content, stamp
+included).  A new-format key carries KEY_FORMAT in its material, so it can
+never equal an old one; `migrate-keys` recognises a stored verdict by the
+OLD-format key of the tree in hand (case_keys(norm=False), used by nothing
+else) and rewrites it under the new key, keeping its date and commit and
+adding "migrated from key <old>".  Run it with CHOUPO_HOME unset or the tree's
+root.  The golden-band mode, which runTests exports, is read from golden_bands.py when
+the variable is unset.
+
+NO ABSOLUTE PATH IS IN A CASE KEY (format 3).  The data root enters as the
+token DATA_ROOT (the files under it are hashed by content) and the constant/
+cascade directories by their path relative to the repository root (`above#N`
+for one above it), so two checkouts of one commit at two paths compute one
+key; what the engine objects hold is path-free too (no object contains the
+tree's path, and an object compiled at another path is byte-identical).  What
+still tells two trees apart, rightly: the build (an edit of code), data/local
+(ignored, read by the engine: a tree whose data/local differs re-runs the
+whole-tree cases, 307 of them), and the harness (below).
+
+THE HARNESS OF A CASE IS bin/runTests SPLIT (format 4).  Formats 1-3 hashed the
+whole file, so any edit of it -- a new gate block is the commonest -- re-keyed
+every case.  Now the key holds (a) the text of check_case, check_case_body and
+every function reachable from them or from a retained top-level line, (b)
+every top-level line that is not inside a function and not inside a GATE BLOCK
+(so every export, assignment, mode switch and call around the cases), and (c)
+the harness files as before.  A gate block, the only thing left out, is the
+documented shape -- the comments above `    if gate_exec ...`, the statement to
+its `    fi`, and the `    rm -f` lines after it -- and only when it sets
+nothing but the tally counters (no export, unset, source, cd, declare, eval,
+trap, set, shopt, no other assignment); any other structure is KEPT, so a miss
+re-keys and cannot reuse wrongly.  See runtests_split().  Not in the key: the
+bodies of functions nothing reaches, a gate block, and this file.
+
+THE VERDICT STORE CAN BE SHARED.  CHOUPO_REUSE_STORE=<directory> moves ONLY the
+curation verdicts (the `cases/` files, content-keyed) there, for every tree
+that sets it; the stat-signature hash cache and the symbol cache stay per
+tree.  bin/runTests writes a verdict to a temp file in that directory and
+renames it (atomic: two sweeps on two trees may run at once), and migrate-keys
+does the same.  Default unchanged: build/reuse/cases in the tree.
+
 A content hash is cached in build/reuse/hashcache.tsv under the file's full
 stat signature -- size, mtime, ctime, inode, device -- so a key costs stat
 calls after the first run, and a same-size edit whose mtime was put back
@@ -122,6 +178,7 @@ only to walks: a gate that grows a read outside its key stops being reused
 the day it does, instead of being reused wrongly.
 """
 import ast
+import functools
 import hashlib
 import json
 import os
@@ -271,6 +328,148 @@ class Hasher:
 H = Hasher()
 
 
+# --------------------------------------------------------------------------
+#  THE NORMALISED TEXT OF A DICTIONARY (DEV.md 4c C421 (8), measured 2026-11-18)
+#
+#  A landing changed ONE digit, the `schemaVersion` stamp, in the thermoPhysPropDict
+#  of all 1260 curation cases, and a key over each file's bytes re-ran every fit
+#  to prove a stamp no fit reads changes no fit.  The key of a case now hashes
+#  the NORMALISED text of its dictionary files, and nothing else is looser:
+#
+#    * comments are removed -- `//` to the end of the line and `/* */` -- where
+#      the engine's tokenizer (src/core/Dictionary.cpp skipWhitespaceAndComments)
+#      sees one: at the START of a token, never inside a "quoted string" and
+#      never in the middle of a word (`/` is a word character, so `a//b` is one
+#      word and is kept whole);
+#    * blank lines go, and runs of blanks inside a line become one space (a
+#      newline is KEPT: a line is a row to a table-like record, and the
+#      tokenizer's blank/newline equivalence is not used);
+#    * the stamp line `schemaVersion 1;` or `schemaVersion 2;` at the top level
+#      of the file goes -- the two values the engine accepts (ThermoAnnounce.H
+#      reads 2 with one announcement, 1 silently); any other value stays in the
+#      text, because the engine REFUSES it and a refused case must not be
+#      reused.  `recordType <word>;` is NOT dropped (see the DEV.md note): the
+#      engine reads its value to choose the grammar path
+#      (ThermoPackageBuilder.cpp:2082, ChemistrySystem.H:75, ...).
+#
+#  Applied only to the dictionary text of a case (its system/ and constant/
+#  files and its constant/ cascade).  NOT applied to: a table (`.csv`, `.tsv`,
+#  `.txt`, `.json`, `.py`, `.md`), the `expected` golden, `archiveExtracts/`,
+#  `experiments/` (measured-value tables), a dossier, and a record the
+#  propertyManifest of its constant/ names -- that one is hashed by the seal
+#  check on its PARSED content, stamp included, so a stamp edit there is a
+#  divergence the run can see.  Those are hashed whole, as before.
+# --------------------------------------------------------------------------
+
+KEY_FORMATS = {2: "normalised-dictionaries-v2",            # absolute paths in the key
+               3: "normalised-dictionaries-v3-pathfree",   # no absolute path
+               4: "normalised-dictionaries-v4-splitharness"}  # + bin/runTests keyed by its split text
+CURRENT_FORMAT = 4
+_STAMP = re.compile(r"^schemaVersion[ ]+[12][ ]*;$")
+_WORDCH = re.compile(r"[A-Za-z0-9_.+:/\[\]$=\-]")      # Dictionary.cpp isWordChar
+_NOT_DICT_EXT = {".csv", ".tsv", ".txt", ".json", ".py", ".md", ".cho",
+                 ".dossier", ".gitignore"}
+
+
+def normalise_dictionary(text):
+    """-> the normalised text (see the header above)."""
+    out, i, n = [], 0, len(text)
+    boundary = True                      # at the start of a token?
+    while i < n:
+        c = text[i]
+        if c == '"':                     # a string: copied untouched
+            j = i + 1
+            while j < n and text[j] != '"':
+                j += 2 if text[j] == "\\" else 1
+            out.append(text[i:j + 1])
+            i, boundary = j + 1, True
+            continue
+        if boundary and c == "/" and text.startswith("//", i):
+            j = text.find("\n", i)
+            i = n if j < 0 else j        # keep the newline itself
+            continue
+        if boundary and c == "/" and text.startswith("/*", i):
+            j = text.find("*/", i + 2)
+            i = n if j < 0 else j + 2
+            out.append(" ")              # a comment separates tokens
+            boundary = True
+            continue
+        out.append(c)
+        boundary = not (_WORDCH.match(c) or c in "eE")
+        i += 1
+    text = "".join(out)
+    # top-level lines: depth counted outside strings
+    lines, depth, instr = [], 0, False
+    for ln in text.split("\n"):
+        top = depth == 0 and not instr
+        t = re.sub(r"[ \t\r\f\v]+", " ", ln).strip()
+        for ch in ln:
+            if ch == '"':
+                instr = not instr
+            elif not instr:
+                depth += (ch == "{") - (ch == "}")
+        if not t or (top and _STAMP.match(t)):
+            continue
+        lines.append(t)
+    return "\n".join(lines) + "\n"
+
+
+@functools.lru_cache(maxsize=None)
+def _manifest_text(cdir):
+    try:
+        return (Path(cdir) / "propertyManifest").read_text(errors="ignore")
+    except OSError:
+        return ""
+
+
+def _claimed_by_manifest(p: Path):
+    """True when the propertyManifest beside p's constant/ names p's record."""
+    parts = p.parts
+    if "constant" not in parts:
+        return False
+    k = len(parts) - 1 - parts[::-1].index("constant")
+    cdir = Path(*parts[:k + 1])
+    rel = "/".join(parts[k + 1:])
+    if not rel or rel == "propertyManifest":
+        return False
+    return f'"{rel}"' in _manifest_text(str(cdir))
+
+
+def is_dictionary_text(p: Path):
+    """Is this file one whose NORMALISED text keys it (see the header)?"""
+    parts = p.parts
+    if "system" not in parts and "constant" not in parts:
+        return False
+    if p.suffix in _NOT_DICT_EXT or p.name.startswith("expected"):
+        return False
+    if "archiveExtracts" in parts or "experiments" in parts:
+        return False
+    return not _claimed_by_manifest(p)
+
+
+def key_sha(p: Path, norm):
+    """The hash a case's key holds for file p: normalised when `norm` and p is
+    dictionary text, else the plain content hash (H.sha)."""
+    if not (norm and is_dictionary_text(p)):
+        return H.sha(p)
+    try:
+        st = p.stat()
+    except OSError:
+        return "MISSING"
+    k, sig = "N:" + str(p), Hasher.signature(st)
+    c = H.cache.get(k)
+    if c and c[0] == sig:
+        return c[1]
+    try:
+        d = hashlib.sha256(normalise_dictionary(
+            p.read_text(errors="replace")).encode()).hexdigest()
+    except OSError:
+        return "MISSING"
+    H.cache[k] = (sig, d)
+    H.dirty = True
+    return d
+
+
 def git_files(paths):
     """Tracked + untracked-not-ignored files under `paths` (repository-relative)."""
     p = subprocess.run(["git", "-C", str(ROOT), "ls-files", "-co",
@@ -356,18 +555,18 @@ def walk_files(d: Path, skip=()):
 _DIR_DIGESTS = {}
 
 
-def dir_digest(d: Path, skip=()):
+def dir_digest(d: Path, skip=(), norm=False):
     """The digest of everything under d -- tracked, untracked AND ignored --
     or ABSENT.  Absence is part of a key: a constant/ that appears is a
     change."""
-    k = (str(d), tuple(skip))
+    k = (str(d), tuple(skip), norm)
     if k not in _DIR_DIGESTS:
         if not d.exists():
             _DIR_DIGESTS[k] = "ABSENT"
         elif not d.is_dir():
             _DIR_DIGESTS[k] = "FILE:" + H.sha(d)
         else:
-            _DIR_DIGESTS[k] = digest([(f.relative_to(d).as_posix(), H.sha(f))
+            _DIR_DIGESTS[k] = digest([(f.relative_to(d).as_posix(), key_sha(f, norm))
                                       for f in walk_files(d, skip)])
     return _DIR_DIGESTS[k]
 
@@ -439,14 +638,27 @@ def resolver_depth():
 CASE_SKIP = ("archiveExtracts",)
 
 
-def cascade(start: Path):
+def cascade(start: Path, norm=False, pathfree=True):
     """[(<dir>/constant, digest)] for the run directory `start` and every
-    parent the engine's walk reaches."""
+    parent the engine's walk reaches (dictionary files by their normalised
+    text when `norm`)."""
     depth, _ = resolver_depth()
     out, p = [], start.resolve() if start.exists() else start
-    for _ in range(depth):
+    root = ROOT.resolve()
+    for i in range(depth):
         c = p / "constant"
-        out.append((str(c), dir_digest(c, CASE_SKIP)))
+        if pathfree:
+            #  the label of a directory is its path RELATIVE to the repository
+            #  root, or `above#<level>` for one above it: two checkouts of one
+            #  commit at two paths must compute one key (the digest holds the
+            #  content, and absence)
+            try:
+                label = c.relative_to(root).as_posix()
+            except ValueError:
+                label = f"above#{i}"
+        else:
+            label = str(c)
+        out.append((label, dir_digest(c, CASE_SKIP, norm)))
         if p.parent == p:
             break
         p = p.parent
@@ -742,9 +954,146 @@ def runtests_functions(text):
     return out
 
 
-def case_harness():
-    """-> (digest, n) of what check_case executes."""
-    text = (ROOT / "bin" / "runTests").read_text(errors="ignore")
+# --------------------------------------------------------------------------
+#  THE HARNESS OF A CASE, SPLIT (key format 4; the maintainer's rule of
+#  2026-11-18).  Formats 1-3 hashed bin/runTests WHOLE, so any edit of it --
+#  a new gate block is the commonest -- re-keyed all 1260 cases.  Format 4
+#  hashes what a case's verdict can depend on:
+#
+#    (a) the text of check_case, check_case_body and every shell function
+#        reachable from them or from a retained top-level line (found by
+#        name among the defined functions);
+#    (b) every top-level line of the file that is neither inside a function
+#        definition nor inside a GATE BLOCK -- so every export, assignment,
+#        mode switch, guard and call that runs before or around the cases;
+#    (c) the other harness files (scripts the closure names, golden_bands...),
+#        as before, minus this tool itself (its output IS the key).
+#
+#  A GATE BLOCK, the only thing left out, is exactly the documented shape: the
+#  comment and blank lines directly above `    if gate_exec ...`, the
+#  statement through its `    fi` (four spaces), the blank lines after it and
+#  the `    rm -f ...` lines that follow -- and ONLY when its statements hold no
+#  export/unset/source/cd/declare/eval/trap/set/shopt and no assignment but the
+#  tally counters (pass, fail, known_broken, expected_fail, reused, skipped,
+#  nprob): a block that sets anything else stays hashed.  The bodies of
+#  functions not reachable stay out: they never run in a case's path.
+#  Structure that does not parse this way is KEPT, never dropped: a miss
+#  re-keys, it cannot reuse wrongly.
+# --------------------------------------------------------------------------
+
+_TALLY = re.compile(r"^(pass|fail|known_broken|expected_fail|reused|skipped|nprob)=")
+_SETS = re.compile(r"^(export|unset|source|\.|cd|declare|typeset|eval|exec|trap|"
+                   r"set|shopt|local|read|mapfile)\b")
+_ASSIGN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(\[.*\])?\+?=")
+
+
+def runtests_function_ranges(lines):
+    """{name: (first line, last line)} of every top-level function (the same
+    rule as runtests_functions)."""
+    out, i = {}, 0
+    while i < len(lines):
+        m = RUNTESTS_FN.match(lines[i])
+        if not m:
+            i += 1
+            continue
+        if lines[i].rstrip().endswith("}") and lines[i].count("{") <= \
+                lines[i].count("}"):
+            out[m.group(1)] = (i, i)
+            i += 1
+            continue
+        j = i + 1
+        while j < len(lines) and lines[j].rstrip() != "}":
+            j += 1
+        out[m.group(1)] = (i, min(j, len(lines) - 1))
+        i = j + 1
+    return out
+
+
+def runtests_gate_blocks(lines):
+    """[(first, last)] line ranges of the gate blocks of the documented shape."""
+    blocks, n = [], len(lines)
+    for i, l in enumerate(lines):
+        if not l.startswith("    if gate_exec "):
+            continue
+        j = i + 1
+        while j < n and lines[j] != "    fi":
+            j += 1
+        if j >= n:
+            continue
+        ok = True
+        for x in lines[i:j + 1]:
+            t = x.strip()
+            if not t or t.startswith("#"):
+                continue
+            if _SETS.match(t) or (_ASSIGN.match(t) and not _TALLY.match(t)):
+                ok = False
+                break
+        if not ok:
+            continue
+        a = i
+        while a > 0 and (not lines[a - 1].strip() or lines[a - 1].lstrip().startswith("#")):
+            a -= 1
+        b = j
+        while b + 1 < n and (not lines[b + 1].strip() or lines[b + 1].startswith("    rm -f ")):
+            b += 1
+        blocks.append((a, b))
+    return blocks
+
+
+def runtests_split(text):
+    """-> (the harness text of format 4, [the retained top-level lines], the
+    reachable function names)."""
+    lines = text.split("\n")
+    fr = runtests_function_ranges(lines)
+    drop = set()
+    for a, b in runtests_gate_blocks(lines):
+        drop.update(range(a, b + 1))
+    infn = set()
+    for a, b in fr.values():
+        infn.update(range(a, b + 1))
+    top = [l for i, l in enumerate(lines) if i not in infn and i not in drop]
+    bodies = {n: "\n".join(lines[a:b + 1]) for n, (a, b) in fr.items()}
+    seen, todo = set(), ["check_case_body", "check_case"]
+    toptext = "\n".join(top)
+    for g in bodies:
+        if re.search(r"(?<![\w-])" + re.escape(g) + r"(?![\w-])", toptext):
+            todo.append(g)
+    while todo:
+        f = todo.pop()
+        if f in seen or f not in bodies:
+            continue
+        seen.add(f)
+        for g in bodies:
+            if g not in seen and re.search(r"(?<![\w-])" + re.escape(g)
+                                           + r"(?![\w-])", bodies[f]):
+                todo.append(g)
+    return (toptext + "\n" + "\n".join(bodies[f] for f in sorted(seen)),
+            top, sorted(seen))
+
+
+def golden_mode():
+    """The golden-band mode this run compares in, as bin/runTests exports it
+    (CHOUPO_REUSE_GOLDEN_MODE = the first two fields of `golden_bands.py
+    mode`).  A standalone call (`case-plan`, `migrate-keys`) asks the same
+    tool, so its keys equal the sweep's -- before, it read an empty string and
+    no key it printed could equal a stored one."""
+    v = os.environ.get("CHOUPO_REUSE_GOLDEN_MODE")
+    if v is not None:
+        return v
+    r = subprocess.run([sys.executable, "-I", str(ROOT / "bin" / "curate"
+                                                  / "golden_bands.py"), "mode"],
+                       capture_output=True, text=True)
+    return "\t".join(r.stdout.rstrip("\n").split("\t")[:2]) \
+        if r.returncode == 0 else ""
+
+
+def case_harness(text=None, split=False):
+    """-> (digest, n) of what check_case executes.  `text` is the bin/runTests
+    to read (default: this tree's); only migrate-keys passes another, the one
+    a stored verdict was taken under."""
+    override = text is not None
+    if text is None:
+        text = (ROOT / "bin" / "runTests").read_text(errors="ignore")
     fns = runtests_functions(text)
     seen, todo = set(), ["check_case_body", "check_case"]
     while todo:
@@ -757,6 +1106,13 @@ def case_harness():
                                            + r"(?![\w-])", fns[f]):
                 todo.append(g)
     body = "\n".join(fns[f] for f in sorted(seen))
+    split_text = None
+    if split:
+        #  the scripts named are those of check_case's closure only (as in
+        #  formats 1-3): the retained top-level text names every gate script
+        #  (lists, modes), and keying them all would re-key every case on any
+        #  gate edit
+        split_text, _top, _reach = runtests_split(text)
     scripts = set()
     for w in re.findall(r"\$ROOT/(bin/[A-Za-z0-9_./-]+)", body):
         if (ROOT / w).is_file():
@@ -765,12 +1121,26 @@ def case_harness():
         scripts.add(ROOT / "bin" / "curate" / "golden_bands.tsv")
     scripts.add(ROOT / "bin" / "curate" / "golden_bands.tsv")
     scripts.add(ROOT / "bin" / "curate" / "recording_platform.txt")
+    if split:
+        scripts.discard(ROOT / "bin" / "curate" / "suite_reuse.py")
     files = harness_closure(sorted(scripts))
     files = sorted(set(files) | {s for s in scripts if s.is_file()})
-    pairs = [("fn:" + f, hashlib.sha256(fns[f].encode()).hexdigest())
-             for f in sorted(seen)]
-    pairs += [(p.relative_to(ROOT).as_posix(), H.sha(p)) for p in files]
-    mode = os.environ.get("CHOUPO_REUSE_GOLDEN_MODE", "")
+    if split:
+        #  format 4: the file is represented by its split text, and this tool
+        #  (whose output is the key) is not a harness file
+        files = [f for f in files if f not in (ROOT / "bin" / "runTests",
+                                              ROOT / "bin" / "curate" / "suite_reuse.py")]
+        pairs = [("runTests-split", hashlib.sha256(split_text.encode()).hexdigest())]
+    else:
+        pairs = [("fn:" + f, hashlib.sha256(fns[f].encode()).hexdigest())
+                 for f in sorted(seen)]
+    #  bin/runTests is itself in the closure (a script names it), whole: a
+    #  text passed by migrate-keys stands for the file as it was.
+    pairs += [(p.relative_to(ROOT).as_posix(),
+               hashlib.sha256(text.encode()).hexdigest()
+               if override and p == ROOT / "bin" / "runTests" else H.sha(p))
+              for p in files]
+    mode = golden_mode()
     pairs.append(("golden-mode", mode))
     return digest(pairs), (sorted(seen), files)
 
@@ -1061,14 +1431,14 @@ def case_names(case_files):
     return sorted(w for w in words if w in names)
 
 
-def narrow_data(case_files):
+def narrow_data(case_files, pathfree=True):
     """-> (digest, (names, files)): the narrow data half of a pair or
     component case."""
     dr = data_root()
     idx, _ = stem_index()
     names = case_names(case_files)
     files = sorted({f for n in names for f in idx.get(n, [])})
-    pairs = [("root", str(dr))]
+    pairs = [("root", "DATA_ROOT" if pathfree else str(dr))]
     pairs += [(f, H.sha(dr / f)) for f in files]
     for a in ("data/standards/assets", "data/local/assets"):
         pairs.append((a, dir_digest(dr / a)))
@@ -1081,23 +1451,23 @@ def narrow_data(case_files):
     return digest(pairs), (names, files)
 
 
-def dirs_data(dirs):
+def dirs_data(dirs, pathfree=True):
     """The data half of a DIRS_RULE case: the named catalogue directories of
     both tiers, hashed whole."""
     dr = data_root()
-    pairs = [("root", str(dr))]
+    pairs = [("root", "DATA_ROOT" if pathfree else str(dr))]
     for t in ("standards", "local"):
         for d in dirs:
             pairs.append((f"data/{t}/{d}", dir_digest(dr / "data" / t / d)))
     return digest(pairs)
 
 
-def data_half_for(case_rel, case_files, coarse):
+def data_half_for(case_rel, case_files, coarse, pathfree=True):
     """-> (the data part of a narrow case's key, its label)."""
     if case_rel in DIRS_RULE_CASES:
-        return ("data-dirs", dirs_data(DIRS_RULE_CASES[case_rel])), "data=dirs"
+        return ("data-dirs", dirs_data(DIRS_RULE_CASES[case_rel], pathfree)), "data=dirs"
     if case_kind(case_rel) in NARROW_DATA_KINDS:
-        return ("data-narrow", narrow_data(case_files)[0]), "data=narrow"
+        return ("data-narrow", narrow_data(case_files, pathfree)[0]), "data=narrow"
     return ("data", coarse), "data=WHOLE-TREE"
 
 
@@ -1274,18 +1644,25 @@ def pinned_key_parts(case_abs: Path):
     return parts
 
 
-def case_plan(root_rel, explain=False):
-    """One line per case under root_rel: <dir>\\t<key>\\t<labels|->\\t<date>
-    (or, with explain, <dir>\\t<engine>\\t<data>: how each case is keyed)."""
-    if disabled():
-        return 2
+def case_keys(root_rel, fmt=CURRENT_FORMAT, runtests_text=None):
+    """The key of every curation case under root_rel, in the key format `norm`
+    selects -> (rows, None) with rows = [(case, key, data label, engine
+    label)], or (None, the reason).
+
+    fmt 3 is THE key: dictionary files by their normalised text, no absolute
+    path anywhere, and KEY_FORMAT in the material.  fmt 2 (normalised text,
+    absolute paths: the data root and the constant/ directories by path) and
+    fmt 1 (whole files, absolute paths, no tag) are the formats of
+    2026-11-18 and earlier, kept ONLY so `migrate-keys` can recognise a stored
+    verdict; nothing else uses them and they may be deleted once every store
+    has been migrated."""
+    norm, pathfree, split = fmt >= 2, fmt >= 3, fmt >= 4
     eng, n_obj = engine_half()
     if eng is None:
-        print(f"# not keyed: engine half unreadable ({n_obj})", file=sys.stderr)
-        return 1
+        return None, f"engine half unreadable ({n_obj})"
     dat, n_dat = data_half(["data/standards", "data/groupEstimative",
                             "data/README.md"], True)
-    har, _ = case_harness()
+    har, _ = case_harness(runtests_text, split)
     plat = platform_half()
     base = digest([("engine", eng), ("data", dat), ("harness", har),
                    ("platform", plat)])
@@ -1324,18 +1701,19 @@ def case_plan(root_rel, explain=False):
             if d in caseset:
                 per[d].append(f)
             d = os.path.dirname(d)
+    rows = []
     for c in cases:
-        pairs = [(f, H.sha(ROOT / f)) for f in per[c]]
+        pairs = [(f, key_sha(ROOT / f, norm)) for f in per[c]]
         #  loose files in the directories above the case (a README beside two
         #  sibling cases) -- generous: never read, but cheap to include
         d = os.path.dirname(c)
         while d and d.startswith(root_rel.rstrip("/")):
-            pairs += [(f, H.sha(ROOT / f)) for f in loose.get(d, [])]
+            pairs += [(f, key_sha(ROOT / f, norm)) for f in loose.get(d, [])]
             d = os.path.dirname(d)
         #  The resolver's cascade from this case (review SE-01): the case's
         #  own constant/ in full (ignored files too, the fetched extracts
         #  aside) and every parent's constant/, present or absent.
-        pairs += cascade(ROOT / c)
+        pairs += cascade(ROOT / c, norm, pathfree)
         #  THE COMPOSED KEY (C414 (3) + C413).  ENGINE: the narrow reach when the
         #  case is a choupoProps fit, else the whole engine.  DATA: the case's
         #  PINS when it has them (exact: the current hash of each pinned file
@@ -1347,26 +1725,140 @@ def case_plan(root_rel, explain=False):
         if pp is not None:
             dpart, dlabel = ("data-pinned", pinned_data()), "data=pins"
         elif ne:
-            dpart, dlabel = data_half_for(c, per[c], dat)
+            dpart, dlabel = data_half_for(c, per[c], dat, pathfree)
         else:
             dpart, dlabel = ("data", dat), "data=WHOLE-TREE"
-        cbase = digest([engp, dpart, ("harness", har), ("platform", plat)])
+        cbase = digest([engp, dpart, ("harness", har), ("platform", plat)]
+                       + ([("keyFormat", KEY_FORMATS[fmt])] if norm else []))
+        e = (f"engine=narrow({nn} objects; ops {','.join(nops)})" if ne
+             else f"engine=WHOLE ({nn})")
+        rows.append((c, digest([("base", cbase)] + sorted(pairs) + (pp or [])),
+                     dlabel, e))
+    H.save()
+    return rows, None
+
+
+def case_store():
+    """The directory of the curation verdicts: CHOUPO_REUSE_STORE when set (a
+    directory several trees may share -- the verdicts are content-keyed, and
+    bin/runTests writes them with a temp file and a rename in the same
+    directory), else build/reuse/cases in this tree."""
+    v = os.environ.get("CHOUPO_REUSE_STORE")
+    return Path(v) if v else STORE / "cases"
+
+
+def _stored_case(c):
+    """-> (path, lines) of the verdict stored for case c, lines [] when none."""
+    stored = case_store() / (c.replace("/", "__") + ".tsv")
+    try:
+        return stored, stored.read_text().splitlines()
+    except OSError:
+        return stored, []
+
+
+def case_plan(root_rel, explain=False):
+    """One line per case under root_rel: <dir>\\t<key>\\t<labels|->\\t<date>
+    (or, with explain, <dir>\\t<engine>\\t<data>: how each case is keyed)."""
+    if disabled():
+        return 2
+    rows, why = case_keys(root_rel)
+    if rows is None:
+        print(f"# not keyed: {why}", file=sys.stderr)
+        return 1
+    for c, key, dlabel, e in rows:
         if explain:
-            e = (f"engine=narrow({nn} objects; ops {','.join(nops)})" if ne
-                 else f"engine=WHOLE ({nn})")
             print(f"{c}\t{e}\t{dlabel}")
             continue
-        key = digest([("base", cbase)] + sorted(pairs) + (pp or []))
-        stored = STORE / "cases" / (c.replace("/", "__") + ".tsv")
+        _, lines = _stored_case(c)
         labels, date = "-", "-"
-        try:
-            lines = stored.read_text().splitlines()
-            if len(lines) >= 3 and lines[0] == key:
-                date, labels = lines[1], "\x1f".join(lines[2:])
-        except OSError:
-            pass
+        if len(lines) >= 3 and lines[0] == key:
+            date, labels = lines[1], "\x1f".join(lines[2:])
         print(f"{c}\t{key}\t{labels}\t{date}")
-    H.save()
+    return 0
+
+
+def _runtests_at(rev):
+    r = subprocess.run(["git", "-C", str(ROOT), "show", f"{rev}:bin/runTests"],
+                       capture_output=True, text=True, errors="ignore")
+    return r.stdout if r.returncode == 0 else None
+
+
+def migrate_keys(argv):
+    """migrate-keys [root] [--harness-from REV]...
+
+    Re-key the stored curation verdicts to the current key format (4),
+    WITHOUT running anything.  A verdict whose stored key is the format-1 or
+    format-2 key of THIS tree describes exactly this tree, so the same verdict
+    (labels, date, commit) is written under the format-4 key with a `migrated
+    from key <old>` field on its date line (atomically: a temp file in the
+    store's directory, then a rename).  A verdict that matches no format is
+    left alone (its case runs, correctly).  Idempotent.  Works on the store
+    case_store() names (CHOUPO_REUSE_STORE, else this tree's).
+
+    The key holds the text of the bin/runTests functions check_case reaches,
+    so a verdict taken before an edit of them was keyed on the OLD text: the
+    old-format keys are also computed with bin/runTests as it stood at each
+    `--harness-from REV` (default: the merge-base with origin/main, then
+    origin/main itself), and the run text is the current one."""
+    if disabled():
+        return 2
+    root_rel, revs, i = "data/curation", [], 0
+    while i < len(argv):
+        if argv[i] == "--harness-from" and i + 1 < len(argv):
+            revs.append(argv[i + 1])
+            i += 2
+        else:
+            root_rel = argv[i].rstrip("/")
+            i += 1
+    if not revs:
+        mb = subprocess.run(["git", "-C", str(ROOT), "merge-base", "HEAD",
+                             "origin/main"], capture_output=True, text=True)
+        revs = ([mb.stdout.strip()] if mb.returncode == 0 and mb.stdout.strip()
+                else []) + ["origin/main"]
+    texts = [None] + [t for t in (_runtests_at(r) for r in revs) if t]
+    new, why = case_keys(root_rel)
+    if new is None:
+        print(f"# not keyed: {why}", file=sys.stderr)
+        return 1
+    old = {c: [] for c, _, _, _ in new}          # c -> [(format, key)]
+    for f in (3, 2, 1):
+        for t in texts:
+            rows, why2 = case_keys(root_rel, f, t)
+            if rows is None:
+                print(f"# not keyed: {why2}", file=sys.stderr)
+                return 1
+            for c, k, _, _ in rows:
+                old[c].append((f, k))
+    n = dict(migrated1=0, migrated2=0, migrated3=0, already=0, nomatch=0, noverdict=0)
+    other = []
+    for c, key, _, _ in new:
+        path, lines = _stored_case(c)
+        if len(lines) < 3:
+            n["noverdict"] += 1
+            continue
+        if lines[0] == key:
+            n["already"] += 1
+            continue
+        f = next((f for f, k in old[c] if lines[0] == k), None)
+        if f is None:
+            n["nomatch"] += 1
+            other.append(c)
+            continue
+        lines[1] = f"{lines[1]}, migrated from key {lines[0]}"
+        lines[0] = key
+        tmp = path.with_suffix(f".{os.getpid()}.tmp")
+        tmp.write_text("\n".join(lines) + "\n")
+        os.replace(tmp, path)
+        n[f"migrated{f}"] += 1
+    print(f"migrate-keys {root_rel} (store {case_store()}): {len(new)} cases "
+          f"keyed; {n['migrated1'] + n['migrated2'] + n['migrated3']} migrated "
+          f"({n['migrated1']} from format 1, {n['migrated2']} from format 2, "
+          f"{n['migrated3']} from format 3), "
+          f"{n['already']} already in format {CURRENT_FORMAT}, {n['nomatch']} stored "
+          f"verdict(s) match no format of this tree (will run), "
+          f"{n['noverdict']} without a stored verdict (will run)")
+    for c in other[:20]:
+        print(f"  not migrated: {c}")
     return 0
 
 
@@ -1453,6 +1945,8 @@ def main(argv):
         return store(argv[1], argv[2], argv[3])
     if argv[:1] == ["verify-reads"]:
         return verify_reads(argv[1:])
+    if argv[:1] == ["migrate-keys"]:
+        return migrate_keys(argv[1:])
     if argv[:1] == ["case-plan"] and len(argv) in (2, 3):
         return case_plan(argv[1].rstrip("/"), explain=argv[2:] == ["--explain"])
     if argv[:1] == ["key"] and len(argv) == 2:
