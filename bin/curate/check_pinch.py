@@ -78,6 +78,7 @@ Exit 1 listing failures."""
     import os
     import re
     import shutil
+    import case_records  # noqa: E402
     import subprocess
     import sys
     import tempfile
@@ -137,7 +138,7 @@ Exit 1 listing failures."""
 
     def copy(tmp: Path, tag: str) -> Path:
         case = tmp / tag
-        shutil.copytree(CASE, case,
+        case_records.copytree(CASE, case,
                         ignore=shutil.ignore_patterns("expected", "log.*",
                                                       "reports", "converged"))
         return case
@@ -327,7 +328,7 @@ Exit 1 listing failures."""
 
         # ---- (d) the plant that was misread: a threshold problem, no hot utility
         am = tmp / "ammonia02"
-        shutil.copytree(ROOT / "tutorials" / "plant" / "ammonia02_full_plant", am,
+        case_records.copytree(ROOT / "tutorials" / "plant" / "ammonia02_full_plant", am,
                         ignore=shutil.ignore_patterns("expected", "log.*",
                                                       "reports", "converged"))
         rc, out = run(am)
@@ -480,7 +481,7 @@ Exit 1 listing failures."""
                                 f"/{k.get('Q_excluded_kW')} (expected 4/0/0)")
 
             p2 = tmp / "pop2"
-            shutil.copytree(ROOT / "tutorials" / "steady" / "flowsheets"
+            case_records.copytree(ROOT / "tutorials" / "steady" / "flowsheets"
                             / "process02_reactor_hx_flash", p2,
                             ignore=shutil.ignore_patterns("expected", "log.*",
                                                           "reports", "converged"))
@@ -509,7 +510,7 @@ Exit 1 listing failures."""
                                     " reactor's Q_kW as excluded")
 
             p3 = tmp / "pop3"
-            shutil.copytree(ROOT / "tutorials" / "steady" / "heat"
+            case_records.copytree(ROOT / "tutorials" / "steady" / "heat"
                             / "heatExchanger01_water_water", p3,
                             ignore=shutil.ignore_patterns("expected", "log.*",
                                                           "reports", "converged"))
@@ -607,6 +608,7 @@ Exit 1 listing failures."""
     import csv
     import re
     import shutil
+    import case_records  # noqa: E402
     import subprocess
     import sys
     import tempfile
@@ -660,7 +662,7 @@ Exit 1 listing failures."""
             return 1
         with tempfile.TemporaryDirectory() as td:
             case = Path(td) / CASE.name
-            shutil.copytree(CASE, case, ignore=shutil.ignore_patterns(
+            case_records.copytree(CASE, case, ignore=shutil.ignore_patterns(
                 "expected", "log.*", "reports", "converged", "resultJson*"))
             p = subprocess.run([str(SOLVE), "."], cwd=case,
                                capture_output=True, text=True, timeout=600)
@@ -802,6 +804,7 @@ Exit 1 listing failures."""
     import os
     import re
     import shutil
+    import case_records  # noqa: E402
     import subprocess
     import sys
     import tempfile
@@ -888,7 +891,7 @@ Exit 1 listing failures."""
             results = {}
             for tag in ("right", "wrong"):
                 c = tmp / tag
-                shutil.copytree(CASE, c, ignore=ig)
+                case_records.copytree(CASE, c, ignore=ig)
                 if tag == "wrong":
                     fd = c / "system" / "flowsheetDict"
                     txt = fd.read_text()

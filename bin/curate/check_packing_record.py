@@ -71,6 +71,7 @@ import json
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -147,7 +148,7 @@ def rows(out):
 
 def copy_case(src: Path, tmp: Path, tag: str) -> Path:
     dst = tmp / tag
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
         "reports", "converged", "iterations", "log.*", "expected", "*.csv"))
     (dst / "system" / "outerDict").unlink(missing_ok=True)
     return dst

@@ -98,6 +98,7 @@ S5 -- the magnitude caveat dropped from the table:
 import math
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -142,7 +143,7 @@ def deltas(case: Path):
 
 def build_probe(tmp: Path, mags: dict, break_unit=None, partial=None) -> Path:
     case = tmp / ("probe" + (break_unit or "") + (partial or ""))
-    shutil.copytree(CASE, case, dirs_exist_ok=True)
+    case_records.copytree(CASE, case, dirs_exist_ok=True)
     (case / "constant" / "components").mkdir(parents=True, exist_ok=True)
     for nm, (fd, fp, fh) in DIRS.items():
         if nm not in mags:

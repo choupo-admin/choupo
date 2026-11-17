@@ -54,6 +54,7 @@ Exit 1 listing failures."""
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -86,7 +87,7 @@ def flows(path):
 
 
 def copy(src, dst):
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
         "expected", "log.*", "converged", "reports"))
     mp = dst / "constant" / "propertyManifest"
     if mp.exists():

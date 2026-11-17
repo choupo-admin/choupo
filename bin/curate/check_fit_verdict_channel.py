@@ -136,6 +136,7 @@ once mid-series and invalidated one result, which was redone):
 """
 import json
 import re, re, shutil, subprocess, sys, tempfile
+import case_records  # noqa: E402
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -153,7 +154,7 @@ def fail(msg):
 
 def run_case(src: Path, tmp: Path):
     d = tmp / src.name
-    shutil.copytree(src, d)
+    case_records.copytree(src, d)
     r = subprocess.run([str(ROOT / "choupoProps"), "."], cwd=d,
                        capture_output=True, text=True, timeout=600)
     m = re.search(r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>",
@@ -222,7 +223,7 @@ def probe(rel, name, edits, tmp):
     """Copy a case, apply (file, old, new) edits (each must apply), run
     choupoProps; return (exit, stdout+stderr, json-or-None)."""
     d = tmp / name
-    shutil.copytree(ROOT / rel, d)
+    case_records.copytree(ROOT / rel, d)
     for f, old, new in edits:
         p = d / f
         t = p.read_text()

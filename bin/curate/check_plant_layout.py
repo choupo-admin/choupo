@@ -458,6 +458,7 @@ strengthened):
 import json
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -486,7 +487,7 @@ def prepare(work, name, src, edit=None, drop_layout=False):
     d = work / name
     if d.exists():
         shutil.rmtree(d)
-    shutil.copytree(src, d, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, d, ignore=shutil.ignore_patterns(
         "reports", "converged", "design", "iterations"))
     lay = d / "system" / "layoutDict"
     if drop_layout and lay.exists():

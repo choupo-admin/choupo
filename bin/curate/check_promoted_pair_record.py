@@ -98,6 +98,7 @@ WHAT THIS GATE DOES **NOT** COVER, stated so its OK line cannot imply it:
 """
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -130,7 +131,7 @@ def main():
     try:
         # ---- (a) the record is written, header-first --------------------
         work = tmp / "curate02"
-        shutil.copytree(CASE, work)
+        case_records.copytree(CASE, work)
         for stale in work.glob("*.proposal.dat"):
             stale.unlink()
         rc, out = run(PROPS, work)
@@ -225,7 +226,7 @@ def main():
 
         # ---- (e) the record ROUND-TRIPS through the pair reader ----------
         rt = tmp / "flash"
-        shutil.copytree(FLASH, rt)
+        case_records.copytree(FLASH, rt)
         shutil.rmtree(rt / "converged", ignore_errors=True)
         tpd = rt / "constant" / "thermoPhysPropDict"
         text = _strip_block(tpd.read_text(), "binaryParameters")

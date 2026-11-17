@@ -75,6 +75,7 @@ import json
 import math
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -123,7 +124,7 @@ TRANSPORT = "\ntransport { vapour { viscosity { model Chung; } } }\n"
 
 def make(td, operation=None, single=False, transport=True, feed=True):
     dst = Path(td) / "case"
-    shutil.copytree(CASE, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(CASE, dst, ignore=shutil.ignore_patterns(
         "reports", "converged", "log.*", "iterations", "design"))
     fs = dst / "system/flowsheetDict"
     txt = fs.read_text()

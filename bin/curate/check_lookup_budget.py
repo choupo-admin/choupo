@@ -67,6 +67,7 @@ import subprocess
 import sys
 import tempfile
 import shutil
+import case_records  # noqa: E402
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -293,7 +294,7 @@ def main():
     # ---- (h) grammar ------------------------------------------------------------
     with tempfile.TemporaryDirectory() as tmp:
         d = Path(tmp) / "bad"
-        shutil.copytree(PAIR, d)
+        case_records.copytree(PAIR, d)
         (d / "system/propsDict").write_text(
             "operations\n(\n    { name x; type pairLookup; components ( water water ); }\n);\n")
         rc, out, err = run(d)
@@ -313,7 +314,7 @@ def main():
     #  sealed -- check_sealed_corpus): a copy of the ladder case without its manifest.
     with tempfile.TemporaryDirectory() as td:
         unsealed = Path(td) / "unsealed"
-        shutil.copytree(PAIR, unsealed)
+        case_records.copytree(PAIR, unsealed)
         (unsealed / "constant" / "propertyManifest").unlink()
         (unsealed / "system" / "propsDict").write_text(
             "operations\n(\n    { name p_curated; type pairLookup; components ( ethanol water ); }\n);\n")

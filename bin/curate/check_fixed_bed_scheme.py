@@ -75,6 +75,7 @@ import math
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -98,7 +99,7 @@ failures = []
 
 def variant(tmp: Path, base: Path, tag: str, fs_edits=(), ctrl_edits=()):
     case = tmp / tag
-    shutil.copytree(base, case, ignore=shutil.ignore_patterns(
+    case_records.copytree(base, case, ignore=shutil.ignore_patterns(
         "expected", "[0-9]*", "latest", "reports", "*.csv", "log*",
         "solution.log"))
     fs = case / "system" / "flowsheetDict"

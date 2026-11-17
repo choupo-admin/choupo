@@ -60,6 +60,7 @@ SABOTAGES (by hand, 2026-11-05; see DEV.md C226): listed in the entry.
 import json
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -105,7 +106,7 @@ def ties_of(path):
 
 def copy_case(tmp, name):
     dst = tmp / name
-    shutil.copytree(CASE, dst)
+    case_records.copytree(CASE, dst)
     return dst
 
 

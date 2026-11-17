@@ -63,6 +63,7 @@ import math
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -226,7 +227,7 @@ def props_case(td, ops):
     beyond water (copied from the witness)."""
     witness = ROOT / "tutorials" / "props" / "steam" / "steam03_if97_region3"
     case = Path(td) / "case"
-    shutil.copytree(witness, case, ignore=shutil.ignore_patterns(
+    case_records.copytree(witness, case, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "results*", "log*"))
     (case / "system" / "propsDict").write_text(
         "// check_if97_regions: a generated probe case\n"
