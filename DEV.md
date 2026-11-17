@@ -3917,6 +3917,43 @@ accepts today, and that is a policy call.
 > viscosity a table (C421 (7)) or an Arrhenius term with a polynomial in
 > the mass fraction is the better teaching object.  Ranked after C421 (7),
 > which gives the same capability for measured points with no fit at all.
+>
+> **C421 (6) LANDED, AND (7) CORRECTED BY READING THE ENGINE (2026-11-18,
+> on Fable; Vitor: is the property architecture then elegant for filtration,
+> dryers, slurries, "em que o sistema e messy e exige dados experimentais
+> diretos"?).**  (6) FALSE VARIATIONS: 16 retired to references (Ar-NH3 in
+> five ammonia cases, NaCl-water in ten membrane cases, cosmoSAC02's stale
+> triethylamine), goldens unchanged, `--scope` 19/0 with mass and energy
+> closed, `--fast` 88/0; KEPT with a true reason: psychro02's air (the
+> catalogue's air is a mixture table, the case needs a component),
+> estimatedSpecies01's OH (the witness of an estimate), batch09/10's
+> isotherm pairs.  (7) THE ARCHITECT HAD ANSWERED "NOT TODAY" TOO BROADLY:
+> the property dictionary ALREADY holds a mixture's measured liquid
+> viscosity and density (`measured { <name> { use method|check; reason; } }`
+> with `constant/experiments/<name>.dat`: system, columns, a box in T and
+> mass fractions, `provenance { citation; basis }`; C398, read at
+> `docs/ai/thermo.md` "A paper's one liquid viscosity" and
+> `LiquidPropertyDoor.cpp:154`).  It holds ONE POINT standing over its box.
+> So (7) is not a new concept: it is `measured` growing from one point to
+> MANY POINTS with a declared interpolation per axis, and to thermal
+> conductivity and surface tension.  THE JUDGEMENT asked for, by the three
+> kinds of data a messy system needs: (A) STATE PROPERTIES OF THE MESSY
+> LIQUID (a syrup's viscosity, a broth's density): one home, the property
+> dictionary's `measured`; elegant once (7) lands.  (B) BEHAVIOUR OF A
+> SAMPLE that is no state function of the fluid: cake resistance and
+> compressibility, medium resistance, sorption isotherm, drying curve,
+> settling data, gel concentration.  NOT ELEGANT TODAY: three homes -- the
+> case's component record (sorption), an asset record (membranes,
+> adsorbents), and the unit's own `operation` (CakeFilter reads
+> `specificCakeResistance`, `alpha0`, `compressibility`, `mediumResistance`,
+> `wetToDryCakeRatio`; two filters on one slurry type them twice).  DECIDED:
+> the SAME experiments grammar (system, property, columns with units, box,
+> basis, citation) is the one home of a sample's measured behaviour, a unit
+> naming the dataset instead of typing its numbers; designed WITH (7) so the
+> grammar is one, built after it, family by family.  (C) RHEOLOGY: a slurry
+> whose viscosity depends on shear rate is not a function of (T, P, x), the
+> door's signature; nothing in `src/` models it (no yield stress, no power
+> law).  A gap, named; a candidate after C421, not part of it.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
