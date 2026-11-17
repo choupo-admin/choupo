@@ -3760,15 +3760,15 @@ PYEOF
     # equal an independent Python problem-table over the same segments,
     # the composite CSV is coherent, the pass never runs uninvited, and
     # dTmin <= 0 refuses; sabotage-verified (wrong shift -> 3 probes fail).
-    if gate_exec "$ROOT/bin/curate/check_pinch_p1.py" > /tmp/pnch.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "pinch-p1-gate" "$(tail -1 /tmp/pnch.$$)"
+    if gate_exec "$ROOT/bin/curate/check_pinch.py" > /tmp/pinch.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pinch-gate" "$(gate_claim check_pinch /tmp/pinch.$$ | cut -c1-240)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_pinch_p1.py)\n" "pinch-p1-gate"
-        cat /tmp/pnch.$$
+        printf "FAIL  %-40s  (run bin/curate/check_pinch.py)\n" "pinch-gate"
+        cat /tmp/pinch.$$
         fail=$((fail+1))
     fi
-    rm -f /tmp/pnch.$$
+    rm -f /tmp/pinch.$$
 
     # Cooling tower (Merkel): the published Merkel number and Chebyshev-4
     # companion reproduced from the unit's own published diagram, the
@@ -3864,15 +3864,7 @@ PYEOF
     # never appears, and the violation diagnostics satisfy
     # violations == current - target; sabotage-verified (flipped
     # below-pinch inequality -> 4 wording probes fail by value).
-    if gate_exec "$ROOT/bin/curate/check_pinch_p2.py" > /tmp/pnc2.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "pinch-p2-gate" "$(tail -1 /tmp/pnc2.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_pinch_p2.py)\n" "pinch-p2-gate"
-        cat /tmp/pnc2.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/pnc2.$$
+    #  (check_pinch_p2 is an ARM of check_pinch, run at the first site of its cluster; DEV.md 4c C419)
 
     # Pinch UTILITY gate (DEV.md 4c C230): a service is not a process
     # stream.  ammonia02's cooling water (declared circuit) is left out of
@@ -3880,15 +3872,7 @@ PYEOF
     # problem, no pinch); the same case with the circuit deleted gives the
     # old pinch, so the two are told apart; sabotage-verified (exclusion
     # disabled, utility side swapped -> RIGHT probes fail by value).
-    if gate_exec "$ROOT/bin/curate/check_pinch_utility.py" > /tmp/pncu.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "pinch-utility-gate" "$(tail -1 /tmp/pncu.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_pinch_utility.py)\n" "pinch-utility-gate"
-        cat /tmp/pncu.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/pncu.$$
+    #  (check_pinch_utility is an ARM of check_pinch, run at the first site of its cluster; DEV.md 4c C419)
 
     # P-swing gate (P1 outlet-pressure switch + P2 feed-valve closure over
     # the section-9 expansion widening, ratified battery 2026-08-03):

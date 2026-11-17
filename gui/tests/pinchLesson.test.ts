@@ -248,7 +248,7 @@ describe("the honest half", () => {
 
 describe("the wording doctrine the pinch pass enforces", () => {
   it("the banned superlative appears in NONE of the three files", () => {
-    //  Gate-enforced in the repository (bin/curate/check_pinch_p2.py, and
+    //  Gate-enforced in the repository (bin/curate/check_pinch.py, arm pinch_p2, and
     //  tests/pinchCompositeTool.test.ts for the tool).  Assembled at runtime
     //  so this test file is not itself a violation.
     const banned = new RegExp("opt" + "imal", "i");

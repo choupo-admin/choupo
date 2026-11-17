@@ -183,7 +183,7 @@ Legend: **Owner** = canonical home of the logic/representation ·
 - Prod → Cons: `system/postDict` → `design/`, `economics/`, `reports/pinch/`
 - Never: the pinch pass rewriting the network or saying "optimal"; costing without a designed equipment
 - Contract: `docs/design/pinch-programme-scope.md`
-- Witness: `designEconomics` · Gates: `check_pinch_p1`, `check_pinch_p2`, `check_economics_honesty`
+- Witness: `designEconomics` · Gates: `check_pinch`, `check_economics_honesty`
 
 ## Data & verification machinery
 
