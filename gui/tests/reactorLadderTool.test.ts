@@ -137,9 +137,10 @@ describe("the reactor-ladder lesson", () => {
       golden("limit", "conversion_wgs"));
   });
 
-  it("names the liquid-basis volume among its limits", () => {
+  it("names the gas basis and the illustrative rate among its limits", () => {
     const l = LADDER_LIMITS.find((x) => x.id === "volume-is-a-shape");
-    expect(l?.body).toContain("PFR.cpp:677");  // C259: the comment moved from 647 to 649 to 675
+    expect(l?.body).toContain("equation of state");   // C421: the gas basis, no longer the liquid volume
+    expect(l?.body).toContain("illustrative");
   });
 });
 

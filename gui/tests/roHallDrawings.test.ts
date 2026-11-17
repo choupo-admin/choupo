@@ -92,7 +92,7 @@ describe("the train schematic", () => {
     const d = train();
     expect(d.unresolved).toEqual([]);
     for (const w of ["233 vessels x 7 elements", "54 vessels x 7 elements", "18 vessels x 7 elements",
-                     "6 devices", "RO1 (first pass)", "RO2a (2nd pass)", "RO2b (2nd pass)"])
+                     "7 devices", "RO1 (first pass)", "RO2a (2nd pass)", "RO2b (2nd pass)"])
       expect(d.svg, w).toContain(w);
     //  racks: 5 / 2 / 1 of 4 tiers x 12 / 3 tiers x 6? -- read from the sheets themselves
     const sheets = trainSheets(allSheets(hall().designFiles), 1);

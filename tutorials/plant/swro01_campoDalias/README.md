@@ -38,8 +38,11 @@ train: `system/postDict` declares `trains { count 6; ... }` and the pumps, the
 exchanger arrays and the vessel banks yield items `train1` .. `train6` with
 their per-train numbers beside the plant's.  A pump is rated by the largest
 machine one make builds (Sulzer MSD-RO, 1600 m3/h: one per train at 50 % load,
-plus a declared spare), the exchanger array is 6 devices of the Energy Recovery
-PX Q650 window per train under its 83 bar limit, and each pass's vessels stand
+plus a declared spare), the exchanger array is 7 devices of the Energy Recovery
+PX Q650 window per train under its 83 bar limit (a RESULT of the sizing
+rule ceil(Q_LP / 147.6 m3/h) = ceil(6.02): it was 6 while the exchanger priced
+a dissolved salt with no volume, 5.84 devices of flow; with the seawater's true
+density, DEV.md 4c C421, the low-pressure flow is 888 m3/h per train), and each pass's vessels stand
 in racks (233 vessels of 7.64 m in 5 racks of four tiers, the loading clearance
 of one vessel length at the east end of each bank).  The 42 items stand in the
 four rooms of one reverse-osmosis building in `system/layoutDict`.  What the

@@ -34,7 +34,7 @@ units
 
         operation
         {
-            V_R           2.0e-3;   // m³ --- large enough to reach X_eq
+            V_R           1.0e-2;   // m³ --- large enough to reach X_eq (the gas basis; the CSTR sibling's volume)
             nSteps        200;
             writeInterval 20;       // axial profile every 20 steps
         }

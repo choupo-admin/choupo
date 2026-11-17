@@ -38,6 +38,7 @@ License
 #include "core/Constants.H"
 #include "core/RegistryRefusal.H"
 #include "core/Units.H"
+#include "unitOperations/UnitTypedProperties.H"
 #include "thermo/equationOfState/EquationOfState.H"
 #include "thermo/reaction/ExpressionRate.H"
 #include "thermo/reaction/ReactionRate.H"
@@ -88,6 +89,40 @@ std::string unitNameOf(const DictPtr& dict)
                                  : dict->lookupWordOrDefault("name", "pfr");
 }
 
+//  THE FEED'S MOLAR VOLUME, on the basis the feed's phase names (DEV.md 4c
+//  C421; the CSTR's own rule).  A LIQUID feed: v = M / rho, rho the property
+//  door's liquid density at the feed's own T, P and composition -- never the
+//  sum of the components' stored 25 C molar volumes; the door records the
+//  use and a state it cannot price refuses by name.  An all-VAPOUR feed (a
+//  gas-phase reactor whose law is written in concentrations): v = M / rho_V,
+//  the case's equation of state at the feed's T and P -- a vapour has no
+//  "liquid volume" at 600 K.  A two-phase feed keeps the liquid basis.
+const NamedSource vapourVolumeEquationOfState
+    { "kernel.vapourVolume.equationOfState",
+      "property kernel: the feed is all vapour, so its molar volume is the vapour's, from the case's equation of state at the feed temperature and pressure (not a liquid property)" };
+
+bool feedIsVapour(scalar vf_in) { return vf_in >= 1.0 - 1.0e-9; }
+
+scalar feedMolarVolume(const ThermoPackage& thermo, scalar T, scalar P,
+                       const sVector& z, scalar vf_in, const std::string& unit)
+{
+    scalar Mbar = 0.0;                                       // g/mol
+    for (std::size_t i = 0; i < z.size(); ++i) Mbar += z[i] * thermo.comp(i).MW();
+    if (feedIsVapour(vf_in))
+    {
+        const scalar rhoV = thermo.density(T, P, z, DensityPhase::Vapour);   // kg/m3
+        const scalar v = (Mbar * 1.0e-3) / rhoV;             // m3/mol
+        PropertySourceLog::instance().useHere("vapourVolume", vapourVolumeEquationOfState,
+            "kernel", took(v, T, P, compositionKey(z)), "applied");
+        return v;
+    }
+    const liquidProperty::Consumer who{ "pfr", unit };
+    liquidProperty::Request ask;
+    ask.thermo = &thermo; ask.T = T; ask.P = P; ask.x = z; ask.who = &who;
+    const scalar rhoL = liquidProperty::density(ask).value;  // kg/m3
+    return (Mbar * 1.0e-3) / rhoL;                           // m3/mol
+}
+
 } // namespace
 
 int PFR::solve(const DictPtr& dict,
@@ -96,6 +131,10 @@ int PFR::solve(const DictPtr& dict,
 {
     auto feedDict = dict->subDict("feed");
     auto operDict = dict->subDict("operation");
+    //  A UNIT BLOCK DOES NOT CARRY A PROPERTY (DEV.md 4c C421, C398 A4): a
+    //  density, viscosity or diffusivity typed here, at any depth, is refused
+    //  BY NAME with the line to write in the property dictionary.
+    unitTypedProperties::refuse(operDict, "pfr '" + unitNameOf(dict) + "': ", "pfr");
     auto compDict = dict->subDict("composition");
     // `reaction` is read AFTER the multi-reaction branch: a multi-reaction unit
     // declares `reactions ( r1 r2 );` and carries no single `reaction`.
@@ -190,16 +229,9 @@ int PFR::solve(const DictPtr& dict,
     }
 
     // -- Q from feed (liquid molar volume) --------------------------------
-    scalar V_mol_in = 0.0;
-    for (std::size_t i = 0; i < n; ++i)
-    {
-        if (thermo.comp(i).Vliq() <= 0.0)
-            throw std::runtime_error("PFR: component '" + thermo.comp(i).name()
-                + "' missing Vliq — required for liquid concentration");
-        V_mol_in += z_in[i] * thermo.comp(i).Vliq();
-    }
+    const scalar V_mol_in = feedMolarVolume(thermo, T,
+        feedDict->lookupScalarOrDefault("P", 101325.0), z_in, vf_in, unitNameOf(dict));
     const scalar Q = F_in_mol_s * V_mol_in;          // m³/s
-    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, liquidProperty::statedDatumTemperatures(thermo, z_in), "", "bypass", took(V_mol_in), "not applied");
 
     // -- Initial molar flow vector ---------------------------------------
     sVector F_i(n);
@@ -565,7 +597,9 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     std::vector<std::unique_ptr<ReactionRate>> law;
     law.reserve(R);
     RateOffer offer;
-    offer.concentrationBasis = "F_i / Q, Q on the liquid basis F * sum z_i Vliq_i";
+    offer.concentrationBasis = feedIsVapour(vf_in)
+        ? "F_i / Q, Q on the gas basis F * v_vapour(T_feed, P_feed) from the case's equation of state"
+        : "F_i / Q, Q on the liquid basis F M / rho_liquid at the feed state (the property door's liquid density)";
     //  A law that reads P gets the FEED's declared pressure, never the
     //  1 atm the reactor otherwise assumes for its phase resolution.
     if (!(dict->subDict("feed")->lookupScalarOrDefault("P", 0.0) > 0.0))
@@ -687,18 +721,9 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     for (std::size_t i = 0; i < n; ++i) F_i[i] = z_in[i] * F_in;
     bool anyConcLaw = false;
     for (std::size_t j = 0; j < R; ++j) if (law[j]->needsConcentration()) anyConcLaw = true;
-    scalar V_mol_in = 0.0;
-    if (anyConcLaw)
-        for (std::size_t i = 0; i < n; ++i)
-        {
-            if (thermo.comp(i).Vliq() <= 0.0)
-                throw std::runtime_error("PFR: component '" + thermo.comp(i).name()
-                    + "' has Vliq <= 0 -- needed for liquid concentration");
-            V_mol_in += z_in[i] * thermo.comp(i).Vliq();
-        }
+    const scalar V_mol_in = anyConcLaw
+        ? feedMolarVolume(thermo, T, P, z_in, vf_in, unitNameOf(dict)) : 0.0;
     const scalar Q   = anyConcLaw ? F_in * V_mol_in : 0.0;
-    if (anyConcLaw)
-        PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, liquidProperty::statedDatumTemperatures(thermo, z_in), "", "bypass", took(V_mol_in), "not applied");
     const scalar tau = anyConcLaw ? V_R / Q : 0.0;
 
     // ---- THE BED'S GEOMETRY AND AN OPT-IN ERGUN PRESSURE DROP (C66) -------

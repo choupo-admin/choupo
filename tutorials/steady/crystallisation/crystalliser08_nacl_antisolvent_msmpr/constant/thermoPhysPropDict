@@ -52,3 +52,22 @@ caloric
         enthalpyRoute idealGasCp;
     }
 }
+
+// THE LIQUOR'S VOLUME (DEV.md 4c C421): the MSMPR's residence time tau = V/Q
+// asks the property door for the liquor's density.  The package holds a
+// density law for NaCl in water, but none for NaCl in a water-ethanol
+// mixture, so this case DECLARES the hypothesis the unit used to make
+// unannounced (it summed the components' stored volumes and gave the dissolved
+// salt none): the NaCl keeps its mass and adds no volume.  The bound, 0.15, is
+// set from the converged run's own [hypothesis] line: the largest NaCl share
+// of the liquor it reaches is 0.117 by mass (the saturated brine is 26.4 %,
+// and the ethanol fed with it dilutes it).
+approximations
+{
+    massWithoutVolume
+    {
+        components      ( NaCl );
+        maxMassFraction 0.15;
+        reason          "the water-ethanol-NaCl liquor has no density law in the catalogue, only water-NaCl does; the dissolved salt keeps its mass and adds no volume, the reading this unit made silently before C421.  The largest NaCl share of the liquor the run reaches is 0.117 by mass (the saturated brine feed is 26.4 %, and the ethanol fed with it dilutes it)";
+    }
+}

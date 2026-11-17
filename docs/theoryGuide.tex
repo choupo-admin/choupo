@@ -3721,17 +3721,19 @@ model.
   \S\ref{sec:liquid-density-methods}) --- the pump and the CSTR, since
   2026-11-13: the liquid density at the inlet (pump) or feed (CSTR) state,
   by the method resolved for the constituent set.
-\item \textbf{Computed by the unit itself} --- the pressure exchanger, the
-  liquid PFR, the MSMPR and FVM crystalliser, the spray dryer: each
-  component's 25\,$^\circ$C molar volume, with no temperature or pressure
-  effect.  The pressure exchanger gives a dissolved ion no volume and keeps
-  its mass; the crystalliser gives a component without a volume none, and
-  does not say so.
-\item \textbf{A constant of the unit} --- (the electrodialysis cell,
-  stack and batch rig held 1000\,kg/m$^3$ and a kinematic viscosity of
-  $10^{-6}$\,m$^2$/s until C421; they ask the property door now, and are
-  refused when no viscosity model is declared);
-  1\,mPa\,s and 72\,mN/m as the spray dryer's defaults.  (The spiral-wound
+\item \textbf{The door, since C421} --- the pressure exchanger (each inlet at
+  its own $T$, $P$ and composition), the liquid PFR (the feed liquid basis
+  $\bar v = M/\rho$), the MSMPR and FVM crystalliser (the liquor at the
+  operating temperature, and the pure antisolvent in the mixed-solvent
+  activity term) and the catalyst pellet's liquid diffusivity: each asks the
+  door and the run's table names the method.  A dissolved salt's volume is in
+  the solution's density; no component is silently left out of the volume.
+\item \textbf{Computed by the unit itself, or a constant of the unit} ---
+  none since C421 (2026-11-18).  Until then the spray dryer took each
+  component's 25\,$^\circ$C molar volume and its 1\,mPa\,s and 72\,mN/m
+  defaults, and the electrodialysis cell, stack and batch rig held
+  1000\,kg/m$^3$ and a kinematic viscosity of $10^{-6}$\,m$^2$/s; all now ask
+  the door, and refuse by name when the case declares no law.  (The spiral-wound
   module's and the batch diafilter's constants, 1000\,kg/m$^3$, 1\,mPa\,s
   and $1.6\times10^{-9}$\,m$^2$/s, are gone since C402: section~\ref{sec:membrane-liquid-properties}.)
 \item \textbf{Declared by the case} --- a viscosity or surface tension a pipe,
@@ -22674,8 +22676,10 @@ This is one nonlinear equation in $S$, solved by a bracketed
 Newton-1D (Chapter~\ref{ch:nr1d}) on $[1, S_{\text{feed}}]$ --- the
 left side rises with $S$, the right side falls, so the root is unique.
 The residence time itself is a \emph{result} of the hardware,
-$\tau = V/Q$, with $Q=\sum_i F_i \bar V_{\text{liq},i}$ the volumetric
-throughput.
+$\tau = V/Q$, with $Q = F\,\bar M/\rho$ the volumetric throughput, $\rho$ the
+property door's liquid density of the feed liquor at the operating
+temperature (the sum of the components' stored 25\,$^\circ$C molar volumes
+was retired by C421); the liquid PFR's feed volume $Q$ is read the same way.
 
 \begin{intuition}
 The finite-kinetics MSMPR refines the equilibrium model in a physically
@@ -26833,7 +26837,8 @@ and why it has exactly the three imperfections its data sheet quotes.
 The unit \code{pressureExchanger} carries no physics of its own beyond
 three algebraic balances on its two inlets --- the brine (high pressure
 in) and the seawater (low pressure in) --- each on a volumetric basis,
-$Q=\dot n\,\bar v$ with $\bar v$ the liquid molar volume of the stream:
+$Q=\dot n\,\bar v$ with $\bar v = \bar M/\rho$ the liquid molar volume of the stream,
+$\rho$ the property door's density at the inlet's own $T$, $P$ and composition:
 
 \begin{equation}
    Q_{\text{HP,out}} = (1-\lambda)\,Q_{\text{HP,in}},\qquad

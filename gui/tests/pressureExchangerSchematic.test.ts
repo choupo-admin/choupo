@@ -58,9 +58,9 @@ inlets
         global      "brine";
         bc          tear;
         T           298.15 K;
-        P           5411851.8 Pa;
-        F           0.13310427 kmol/s;
-        mdot        2.5052835 kg/s;
+        P           5409844.3 Pa;
+        F           0.13485327 kmol/s;
+        mdot        2.5380784 kg/s;
         vapourFraction 0;
     }
     port1
@@ -82,9 +82,9 @@ outlets
         global      "pxHPout";
         bc          interior;
         T           298.15 K;
-        P           5335848.7 Pa;
-        F           0.12987889 kmol/s;
-        mdot        2.3958923 kg/s;
+        P           5332433.7 Pa;
+        F           0.13289941 kmol/s;
+        mdot        2.4515933 kg/s;
         vapourFraction 0;
     }
     port1
@@ -93,32 +93,32 @@ outlets
         bc          computed;
         T           298.15 K;
         P           130000 Pa;
-        F           0.13585842 kmol/s;
-        mdot        2.5545372 kg/s;
+        F           0.1345869 kmol/s;
+        mdot        2.5316312 kg/s;
         vapourFraction 0;
     }
 }
 
 sizing
 {
-    P_HPin                54.118518 bar;
-    P_HPout               53.358487 bar;
-    P_recovered           51.358487 bar;
-    Q_HP                  8.4858541 m3/h;
-    Q_HPout               8.3585663 m3/h;
-    Q_LP                  8.538313 m3/h;
-    Q_LPout               8.6656008 m3/h;
-    boosterPower          0.38113034 kW;
-    dP_HP                 0.76003061 bar;
+    P_HPin                54.098443 bar;
+    P_HPout               53.324337 bar;
+    P_recovered           51.324337 bar;
+    Q_HP                  8.7777092 m3/h;
+    Q_HPout               8.6460436 m3/h;
+    Q_LP                  8.6285759 m3/h;
+    Q_LPout               8.7602416 m3/h;
+    boosterPower          0.40244046 kW;
+    dP_HP                 0.77410648 bar;
     dP_LP                 0.7 bar;
     efficiency            [0 0 0 0 0] 0.96;
-    flowPerRotor          8.538313 m3/h;
+    flowPerRotor          8.6285759 m3/h;
     leakage               [0 0 0 0 0] 0.015;
     mixing                [0 0 0 0 0] 0.03;
     pressureDesign        70 bar;
     ratedFlowPerUnit      60 m3/h;
     rotors                [0 0 0 0 0] 1;
-    salinityIncrease      [0 0 0 0 0] 0.027191214;
+    salinityIncrease      [0 0 0 0 0] 0.026858174;
 }
 `;
 
@@ -138,9 +138,9 @@ describe("the pressure exchanger is dispatched on its equipment word", () => {
 describe("the drawing letters what the sheet states and nothing else", () => {
   it("names the four ports with the pressures the run wrote, in bar", () => {
     const d = pressureExchangerSvg(sheet());
-    expect(d.svg).toContain("brine  54.12 bar");
+    expect(d.svg).toContain("brine  54.10 bar");
     expect(d.svg).toContain("toPX  2.00 bar");
-    expect(d.svg).toContain("pxHPout  53.36 bar");
+    expect(d.svg).toContain("pxHPout  53.32 bar");
     expect(d.svg).toContain("spentBrine  1.30 bar");
     for (const w of ["HP in", "HP out", "LP in", "LP out"]) expect(d.svg).toContain(w);
   });
@@ -151,7 +151,7 @@ describe("the drawing letters what the sheet states and nothing else", () => {
     expect(d.rotors).toBe(1);
     expect(d.svg).toContain(`1 rotor in parallel (${PROVENANCE_WORD.choupo})`);
     expect(d.svg).toContain(`rated 60 m3/h per unit (${PROVENANCE_WORD.declared})`);
-    expect(d.svg).toContain(`recovers 51.36 bar (${PROVENANCE_WORD.choupo})`);
+    expect(d.svg).toContain(`recovers 51.32 bar (${PROVENANCE_WORD.choupo})`);
     expect(d.svg).toContain(`fill="${PROVENANCE_INK.declared}"`);
     expect(d.svg).toContain(`fill="${PROVENANCE_INK.choupo}"`);
   });
@@ -159,8 +159,8 @@ describe("the drawing letters what the sheet states and nothing else", () => {
   it("draws the booster beside the high-pressure outlet with the HYDRAULIC duty", () => {
     const d = pressureExchangerSvg(sheet());
     expect(d.svg).toContain(">booster<");
-    expect(d.svg).toContain(`0.3811 kW (${PROVENANCE_WORD.choupo})`);
-    expect(d.svg).toContain(`HP side loses 0.76 bar (${PROVENANCE_WORD.choupo})`);
+    expect(d.svg).toContain(`0.4024 kW (${PROVENANCE_WORD.choupo})`);
+    expect(d.svg).toContain(`HP side loses 0.7741 bar (${PROVENANCE_WORD.choupo})`);
   });
 
   it("says the rotor is nominal and the design pressure's provenance is not published", () => {
@@ -178,7 +178,7 @@ describe("the drawing letters what the sheet states and nothing else", () => {
     expect(texts).toContain("pressure-transfer efficiency 0.96");
     expect(texts).toContain("volumetric mixing 0.03");
     expect(texts).toContain("leakage (lubrication flow) 0.015");
-    expect(texts.some((t) => t.includes("2.72 %"))).toBe(true);
+    expect(texts.some((t) => t.includes("2.69 %"))).toBe(true);
     expect(d.notes.filter((n) => n.who === "declared").length).toBe(3);
     expect(d.notes.some((n) => n.who === null && /NOT costed/.test(n.text))).toBe(true);
   });

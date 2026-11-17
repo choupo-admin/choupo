@@ -38,7 +38,7 @@ wgs
     kinetics
     {
         type   Arrhenius;
-        A      60.0;           // ILLUSTRATIVE (pfr02)
+        A      1.0e6;          // ILLUSTRATIVE (pfr02's; ten below the CSTR sibling's, see pfr02: the PFR's explicit RK4 needs r dV / F < 2.8)
         Ea     8.0e4;          // J/mol
     }
 }

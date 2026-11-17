@@ -18,12 +18,9 @@ name        wo_G;
 CAS         00-00-0;
 
 MW          453.592;   // 1 klb per kmol -- the Williams-Otto unit convention
-Tc          500.0;
-Pc          50.0;
-omega       0.10;
 Tb          320.0;
 HvapTb      28000;
-Vliq        8.0e-5;
+Vliq        5.66336470e-4;   // m3/mol = MW / rho0, rho0 = 50 lb/ft3 (Schmid et al. 2020, arXiv:2004.07614, sec. 3: "pure-substance densities rho0A..rho0G = 50 lb/ft3", eq. 3.14); the door mixes these volumes additively, the paper's own V = Sum m_i/rho0i
 
 vaporPressure
 {

@@ -16,6 +16,7 @@ License
 
 #include "unitOperations/crystallisation/CrystallisationSaturation.H"
 #include "core/PropertySourceLog.H"
+#include "thermo/LiquidPropertyDoor.H"
 
 #include "thermo/ThermoPackage.H"
 //  The electrolyte route calls gammaPM / saturationKsp / relativePermittivity
@@ -24,7 +25,6 @@ License
 #include "thermo/electrolyte/ElectrolyteModel.H"
 #include "thermo/electrolyte/UnmodelledSolutes.H"
 
-#include <atomic>
 #include <cmath>
 #include <vector>
 #include <stdexcept>
@@ -62,7 +62,7 @@ bool crystHasCarrier(const ThermoPackage& thermo, const sVector& z,
 }
 
 SatState crystSaturation(const ThermoPackage& thermo, const sVector& z, scalar F, scalar T_op,
-                         const std::string& soluteOverride)
+                         const std::string& soluteOverride, const std::string& consumerUnit)
 {
     const std::size_t n = thermo.n();
     SatState r;  r.iSolute = n;  r.iSolv = n;  r.iAnti = n;
@@ -123,8 +123,20 @@ SatState crystSaturation(const ThermoPackage& thermo, const sVector& z, scalar F
             const Component& anti = thermo.comp(r.iAnti);
             const scalar nSolv = z[r.iSolv], nAnti = z[r.iAnti];
             r.xAnti = (nSolv + nAnti > 0.0) ? nAnti / (nSolv + nAnti) : 0.0;
-            MwAnti = anti.MW();  epsAnti = anti.relativePermittivity();  vAnti = anti.Vliq();
-            { static std::atomic<unsigned> seen{0}; PropertySourceLog::instance().parameterOnce(seen, "mixed-solvent electrolyte activity (antisolvent crystallisation)", "the antisolvent molar volume"); }
+            MwAnti = anti.MW();  epsAnti = anti.relativePermittivity();
+            //  THE ANTISOLVENT'S MOLAR VOLUME (the mixed-solvent activity term's
+            //  input) is M / rho of the PURE antisolvent at T_op, rho asked of the
+            //  property door (DEV.md 4c C421) -- not the record's stored 25 C
+            //  volume.  The saturation carries no pressure: 1 atm.
+            {
+                sVector xPure(n, 0.0);  xPure[r.iAnti] = 1.0;
+                const liquidProperty::Consumer who{ "crystalliser", consumerUnit };
+                liquidProperty::Request ask;
+                ask.thermo = &thermo; ask.T = T_op; ask.P = 101325.0; ask.x = xPure;
+                ask.who = consumerUnit.empty() ? nullptr : &who;
+                vAnti = (MwAnti * 1.0e-3) / liquidProperty::density(ask).value;   // m3/mol
+            }
+            r.vAnti = vAnti;
             r.solvent_mass = F * (z[r.iSolv] * r.MW_solv + z[r.iAnti] * MwAnti);
         }
         const scalar Ksp = thermo.electrolyte().saturationKsp(T_op);

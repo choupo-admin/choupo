@@ -24,6 +24,10 @@ propertyManifest
         "components/compA.dat"  "22ab27ce5daa8cee1dc76f34f94257010ead6bd091ea2dea5f2cc15cdcfe0e3b";
         "components/compB.dat"  "0f756f8d73171fa3d39c422960262aa74cef201e15c17c78e114d8411b1f7638";
         "components/compC.dat"  "a0e44c4a0f737aff0088497d688c6a7d99d02d537f73bced7d3731e4b8b20d02";
+        "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+        "parameters/Helmholtz/SetzmannWagner1991.dat"  "2d75e1bff7b606847ff65b4854ca906f0f653cabb28036d87d7330109cf49b10";
+        "parameters/Helmholtz/Span2000.dat"  "ff57a1c162fb3e3d2b93332832d5472106b988a43db93d6537f5a1e8751dd032";
+        "parameters/Helmholtz/SpanWagner1996.dat"  "45e5b08168038ca401f0a99ec275378fa7fec8658671fc3c954dd201e1bff76a";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }

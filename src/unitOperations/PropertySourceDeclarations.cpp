@@ -33,12 +33,17 @@ const std::map<std::string, std::vector<Row>>& table()
 {
     static const std::map<std::string, std::vector<Row>> t = {
         { "pump",              { { "liquidDensity",     { "kernel" } } } },   // C378 pilot: the kernel's methods
-        { "pressureExchanger", { { "liquidVolume",      { "bypass" } } } },
+        { "pressureExchanger", { { "liquidDensity",     { "kernel" } } } },      // C421: the door
         { "cstr",              { { "liquidDensity",     { "kernel" } },   // C378 pilot: the kernel's methods
                                  { "vapourVolume",      { "kernel" } } } },
-        { "pfr",               { { "liquidVolume",      { "bypass" } },
+        //  C421: the liquid basis asks the door; a gas feed's volume is the
+        //  equation of state's (as the cstr's); the catalyst pellet's liquid
+        //  diffusivity is the door's too.
+        { "pfr",               { { "liquidDensity",     { "kernel" } },
+                                 { "vapourVolume",      { "kernel" } },
                                  { "liquidDiffusivity", { "kernel" } } } },
-        { "crystalliser",      { { "liquidVolume",      { "bypass" } } } },
+        { "catalystPellet",    { { "liquidDiffusivity", { "kernel" } } } },
+        { "crystalliser",      { { "liquidDensity",     { "kernel" } } } },
         { "sprayDryer",        { { "liquidDensity",     { "bypass" } },
                                  { "liquidViscosity",   { "kernel", "declared", "bypass" } },
                                  { "surfaceTension",    { "kernel", "declared", "bypass" } } } },
@@ -71,10 +76,10 @@ const std::map<std::string, std::vector<Row>>& table()
         //  The time-integrated vessels (the dynamic driver declares as the
         //  steady path does; review DX-06).  The variable-volume vessels
         //  price their liquid through the kernel; the Williams-Otto plant
-        //  carries the benchmark's own constant density.
+        //  carries the benchmark's density in the case's own Vliq records (C421).
         { "dynamicTank",       { { "liquidDensity",     { "kernel" } } } },
         { "dynamicCSTR",       { { "liquidDensity",     { "kernel" } } } },
-        { "williamsOttoPlant", { { "liquidDensity",     { "bypass" } } } },
+        { "williamsOttoPlant", { { "liquidDensity",     { "kernel" } } } },   // C421: the door, over the case's Vliq records
         { "hydrocyclone",      { { "liquidDensity",     { "kernel" } } } },
         { "cakeFilter",        { { "liquidDensity",     { "kernel" } },
                                  { "liquidViscosity",   { "kernel" } } } },
