@@ -18,6 +18,8 @@
   neither enters the answer; `equilibrium { fromRecords true; }` would use s_298.
 \*---------------------------------------------------------------------------*/
 name        isoButene;
+variationOf isoButene;
+variationReason "the case's dHf_298 is -17885 J/mol where the catalogue's is -10250 J/mol (a Joback estimate): its own banner derives it from the measured heat of combustion, Prosen, Maron & Rossini, J. Res. Natl. Bur. Stand. 46 (1951) 106, doi 10.6028/jres.046.015, with CODATA CO2(g) and H2O(l); provenance of dHf_298 is origin literature, uncertainty +/- 1.1 kJ/mol (catalogue: origin estimated, Joback)";
 
 //  Review state, MACHINE-READABLE (AP2, 2026-08-05).  This used to
 //  live only in the banner above, which the parser discards -- so the

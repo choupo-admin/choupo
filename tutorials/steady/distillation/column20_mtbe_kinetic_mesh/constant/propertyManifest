@@ -37,8 +37,4 @@ propertyManifest
         "utilities/coolingWater.dat"  "caa0cba6b3eb42538c0842ec4c504d553f0bc88b3b15acb3b89519dc4ac69125";
         "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
     }
-    held
-    {
-        "components/isoButene.dat"  "070ff989397a9a7a34ec9b8bd1fbd79dc889457f7f3c8d38c83dd43d23e30817";
-    }
 }
