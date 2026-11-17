@@ -1,9 +1,14 @@
 # Measured facts, materials and flow curves: one experiments grammar, three forms of the property door (C421 (7), C425, C426)
 
 Kind: PROPOSAL, with measurement.  Status: RULED by the architect 2026-11-18
-for sections 2-4 and 6-8; section 5 (the material) is PUT TO VITOR on two
-points of pedagogy before it is built.  Nothing built: no engine, data, case
-or golden changed by this record.
+for sections 2-4, 5b, 5c and 6-8; section 5 (the material) is PUT TO VITOR
+on two points of pedagogy before it is built.  Nothing built: no engine,
+data, case or golden changed by this record.  SECOND HEAD (same day, C427):
+sections 5b (carried quantities) and 5c (the kinds of component) were added
+after Vitor asked whether the architecture could be prepared for polymers
+now, and three more notes were read (polymer characterisation and
+properties in the reference manuals; a textbook of step-growth process
+modelling).
 
 Asked by Vitor, in one day: a spray dryer whose syrup viscosity and surface
 tension follow a table in temperature and sucrose content; a heat exchanger
@@ -224,10 +229,110 @@ FIRST WITNESS proposed: a biomass dryer feeding a combustor, the first law
 closed across both from the measured heating value.  PUT TO VITOR: this, a
 sewage sludge, or an ore?
 
+## 5b. Carried quantities (C427)
+
+THE OBSERVATION.  The material makes a stream carry mass flows beside its
+molar part (M2); a chain-growth polymer needs it to carry moments of its
+chain-length distribution; the size distribution is carried today.  These
+are one concept, and the stream is opened for it once.
+
+WHAT WAS READ.  In the reference world every attributed component hangs a
+vector on the stream.  Where that vector has a law it works: a polymer's
+flow-type attributes are "primary conserved quantities" that add on mixing,
+divide in proportion to their component on every split, and are balanced in
+reactors like moles.  Where it has none (the analyses of a heterogeneous
+solid) the manuals state no closure and their own examples print open
+component balances.  Four habits of that mechanism are NOT taken: the same
+fact stored twice (a polymer's flow in "apparent moles of average segment"
+and its first moment); up to four equivalent ways to supply one attribute,
+the first present winning in silence; a column model that ignores
+attributes; property parameters taken from the polymer, else its segments,
+else group contributions, a missing group dropped without a word.  The
+textbook read beside the manuals uses no moments at all for step growth:
+segments (repeat and end) are SPECIES, the chain count is half the end
+segments, the number-average molar mass follows; and it says in its own
+words that this route cannot give the weight average or the polydispersity.
+It prints no atom balance, and admits an energy inconsistency in one heat of
+reaction.
+
+Q1.  A CARRIED QUANTITY is extensive, conserved, attached to a CARRIER (a
+component or a declared set of components of the stream), of a kind in a
+closed list, in declared units.  The first kinds: the mass flow of a
+material; the size distribution of a particulate carrier (existing); a
+moment of a polymer's chain-length distribution.
+
+Q2.  ITS LAW IS PART OF ITS KIND, NOT OF THE CASE.  Carried quantities ADD
+when streams mix.  They DIVIDE WITH THEIR CARRIER when a unit divides a
+stream, unless the unit is a model of their fractionation and says so (a
+classifier for a size distribution).  They CHANGE only inside a unit that
+solves their balance with a declared rate.  A unit that changes the amount
+of a carrier and has no rate for what the carrier carries REFUSES by name:
+nothing is ignored, and nothing is copied through a reaction.
+
+Q3.  WHAT HAS NO SUCH LAW IS NOT CARRIED.  A moisture content, an analysis,
+a quality index are not extensive conserved quantities: moisture is the
+component water, an analysis is fixed data of the material, an index is
+computed on request.  This is the rule of which M7 is the consequence.
+
+Q4.  ONE HOME FOR A POLYMER'S MASS AND ATOMS: ITS SEGMENTS, AS SPECIES.
+A segment is a component with a formula and a formation datum like any
+other, so mass, elements and energy close by the rules every case already
+obeys.  The first moment is then DERIVED from the segment flows and is never
+carried; there are no apparent moles.  Step growth needs no carried
+quantity: its chain count is derived from the end-segment flows, and what a
+case assumes about the distribution (the most-probable one) is an
+ANNOUNCED approximation with its consequence printed, as the existing
+`polymer {}` block of the step-growth cases already does in effect.
+
+Q5.  WHAT A POLYMER CARRIES, WHEN IT CARRIES: the zeroth moment (the chain
+count, when end groups are not conserved species) and the second (for the
+weight average), each a flow.  The distribution itself is never carried: it
+is a derived view, reconstructed where a model allows and labelled as such.
+
+Q6.  THE SMALLEST HONEST CHAIN-GROWTH MODEL, for the day a case asks: dead
+polymer's zeroth and second moments carried, live chains by the
+quasi-steady-state algebra, and the reactions that break the closure of
+three moments (transfer to polymer, long-chain branching) REFUSED by name
+rather than closed by an unstated assumption.
+
+Q7.  A PROPERTY THAT NEEDS A CHAIN AVERAGE asks for it as a quantity the
+package derives from the stream (number-average molar mass from segments
+and chain count), through the door's first form; its parameters live on the
+segment records, and a missing one is a refusal.
+
+Q8.  THE SPIKE IS TAKEN ONCE, with written criteria, on two subjects: a
+material through a dryer and a splitter, and a polymer's two moments through
+a mixer, a splitter and one reactor with an analytic answer.  Criteria: mass,
+elements and energy close; a quantity entering a unit that neither models
+nor refuses it is impossible by construction; the state files round-trip;
+no existing case moves.
+
+## 5c. The kinds of component (C427)
+
+Today a record says `role nonvolatile` or `role solute` (105 records) and
+the rest is habit.  One closed vocabulary, read by the records, by the
+units' acceptance rules and by the Explorer:
+
+| kind | has | takes part in phase equilibrium | basis |
+|---|---|---|---|
+| molecular | formula, molar mass | yes | molar |
+| pseudo | a declared characterisation, an estimated molar mass | yes | molar |
+| crystalline | formula, molar mass, a solid datum | only where a solid phase is declared | molar |
+| segment | formula, molar mass; never free | as part of its polymer | molar |
+| material | analyses; no formula | never | mass |
+
+An aqueous species keeps its own tree (`species/`).  A POLYMER is not a
+kind of record: it is a declaration of the case naming its segments (the
+carrier of Q1), so no polymer "component" duplicates what its segments
+state.  An oligomer is a molecular record that says which segments it is
+made of.  `role` stays what it is, a statement about volatility in a case.
+The Explorer follows the vocabulary when records of the new kinds exist.
+
 ## 6. What this record does not do
 
-Conserved attributes on a stream (the chain-length moments of a chain-growth
-polymer); time-dependent and viscoelastic fluids; turbulent non-Newtonian
+The polymer PHYSICS (property models from segments, phase equilibrium with
+polymers, the kinetic schemes of chain growth): section 5b prepares the
+stream and the vocabulary for them and builds none; time-dependent and viscoelastic fluids; turbulent non-Newtonian
 pipe flow beyond one declared method (the methods differ by up to a half
 among themselves, by the book); a neural network as a law (C422, a candidate
 with its three conditions).
@@ -254,6 +359,11 @@ Every step carries its guide section, its catalogue entry and its witness
 
 ## 8. Rejected
 
+* A POLYMER AS ONE COMPONENT IN "APPARENT MOLES" with its true size in an
+  attribute: the same mass stated twice, and a stoichiometry that must be
+  kept consistent with a reference molar mass by hand.
+* SEVERAL EQUIVALENT WAYS TO SUPPLY ONE CARRIED QUANTITY, first present
+  wins: two homes at the door.
 * MUTABLE ATTRIBUTES CARRIED BY THE STREAM.  They need a mixing rule per
   attribute and a conservation law per attribute; where the reference world
   has one (polymers) it works, where it has none (heterogeneous solids) its

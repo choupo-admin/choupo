@@ -4242,6 +4242,43 @@ accepts today, and that is a policy call.
 > their foundation.  A first polymer witness is chosen only after those
 > notes are in.  The Explorer follows the vocabulary when records of the
 > new kinds exist, not before.
+>
+> **C427, WRITTEN (2026-11-18): sections 5b and 5c of
+> `docs/design/measured-facts-materials-and-flow-curves.md`, ruled.**  Three
+> more notes were read first (the reference manuals' polymer
+> characterisation and property volumes; a textbook of step-growth process
+> modelling; the newer edition of the property-methods volume).  WHAT THEY
+> CHANGED: the textbook uses NO moments for step growth -- segments are
+> species, the chain count is half the end segments -- and says in its own
+> words that this route cannot give the weight average; so step-growth
+> polymers need NOTHING carried, only the kind `segment`, and the carried
+> quantity is needed for the second moment and for chain growth alone: the
+> concept is real and narrower than assumed in the morning.  RULED: Q1 a
+> carried quantity is extensive, conserved, attached to a carrier, of a
+> closed list of kinds (a material's mass flow, a size distribution, a
+> chain-length moment); Q2 its law belongs to its kind -- add on mixing,
+> divide with the carrier unless the unit models its fractionation, change
+> only by a declared rate in a unit that solves its balance, and a unit
+> that changes a carrier with no rate for what it carries REFUSES; Q3 what
+> has no such law is not carried (M7 is its consequence); Q4 a polymer's
+> mass and atoms live in its segments as species, the first moment is
+> derived, there are no apparent moles; Q5-Q7 what a polymer carries when it
+> carries, the smallest honest chain-growth model (the reactions that break
+> the three-moment closure refused by name), a chain average asked through
+> the door; Q8 ONE spike, two subjects, written criteria.  5c: the kinds of
+> component as one closed vocabulary (molecular, pseudo, crystalline,
+> segment, material); a polymer is a declaration of the case naming its
+> segments, not a record.  NOT TAKEN from the reference: a fact stored
+> twice (apparent moles and first moment), several ways to supply one
+> attribute with the first winning in silence, a column that ignores
+> attributes, a missing group parameter dropped without a word.  Also from
+> the day's reading, added to C426's small list: the symmetric or
+> unsymmetric reference state of the electrolyte model declared by the case
+> (both are already derived in the engine; one is exposed), and a guide
+> page on where each of the two composition bases of an electrolyte stream
+> fails.  First polymer anchor, when a case asks: the hydrolyser of a
+> ring-opening polyamide from the textbook (five segments, six species,
+> fifteen reactions with their constants; model outputs, not measurements).
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
