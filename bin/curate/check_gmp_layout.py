@@ -314,6 +314,7 @@ def prepare(work, name, layout):
     d = work / name
     if d.exists():
         shutil.rmtree(d)
+    # C421 exception: the copy is handed to a nested bin/runTests (--record / check arms); tried through case_records.copytree on 2026-11-17 and the gate FAILED (arm (f) failed: runTests --record exited 0 but recorded nothing (no kpis/streams block)), so the plain copy stays.
     shutil.copytree(SRC, d, ignore=shutil.ignore_patterns(
         "reports", "converged", "design", "iterations", "expected"))
     (d / "system" / "layoutDict").write_text(layout)
@@ -1085,6 +1086,7 @@ def arm_witness(work):
     d = work / "witness"
     if d.exists():
         shutil.rmtree(d)
+    # C421 exception: the copy is handed to a nested bin/runTests (--record / check arms); tried through case_records.copytree on 2026-11-17 and the gate FAILED (arm (f) failed: runTests --record exited 0 but recorded nothing (no kpis/streams block)), so the plain copy stays.
     shutil.copytree(WITNESS, d, ignore=shutil.ignore_patterns(
         "reports", "converged", "design", "iterations"))
     out, err, rc, j = solve(d)

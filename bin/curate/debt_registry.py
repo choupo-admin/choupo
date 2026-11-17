@@ -1024,3 +1024,18 @@ THERMO_SUBDICT_READERS = {
     "src/thermo/PropertyVariants.cpp": 1,                 # fragmentOf: a props operation's own declaration
     "src/reporting/ModelBoundaryLedger.cpp": 1,           # the engine's stamped copy only (`@selectedVariant`)
 }
+
+#  The gates that copy a case (or part of one) by their own code instead of
+#  `case_records.copytree` / `gatekit.probe_copy` (DEV.md 4c C421 item 5): gate
+#  basename -> why its own copy is right.  Each such gate also carries a
+#  `# C421 exception:` comment at the copy.  Read by check_debt_registry.py,
+#  which fails a gate that copies a tree with neither the home nor an entry here.
+OWN_CASE_COPY = {
+    "check_audit_remaining.py": "partial copies (a donor's constant/ and system/, one record left out on purpose), not a whole case",
+    "check_feed_thermal_state.py": "a donor's constant/ only, its propertyManifest removed on purpose after the copy",
+    "check_seal_verdict.py": "probes edit the manifest pins and expect the unpinned-read refusal, so the copy must not materialise the catalogue records",
+    "check_neutral_master_mineral.py": "not a case copy: the source is a fixture under bin/curate/fixtures",
+    "check_golden_bands.py": "the copy goes to a nested bin/runTests; through case_records.copytree 8 comparator arms failed (runTests exit 1), observed 2026-11-17",
+    "check_gmp_layout.py": "the copy goes to a nested bin/runTests --record; through case_records.copytree arm (f) failed (nothing recorded), observed 2026-11-17",
+    "check_batch_plan.py": "the copy goes to a nested bin/runTests --record; through case_records.copytree arms (g) and (l) failed (nothing recorded), observed 2026-11-17",
+}

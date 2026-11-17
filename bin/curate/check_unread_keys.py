@@ -86,6 +86,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gate_prereq import require_solver
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import case_records  # noqa: E402  (the probe copy has one home)
 SOLVER = os.path.join(ROOT, "choupoSolve")
 WITNESS = os.path.join(ROOT, "tutorials", "steady", "distillation",
                        "column11_murphree")
@@ -134,7 +135,7 @@ require_solver(SOLVER)
 tmp = tempfile.mkdtemp(prefix="unreadkeys-")
 try:
     dst = os.path.join(tmp, "c")
-    shutil.copytree(WITNESS, dst)
+    case_records.copytree(WITNESS, dst)
     fsd = os.path.join(dst, "system", "flowsheetDict")
     text = open(fsd, errors="replace").read()
     if "murphreeEfficiency" not in text:
@@ -179,7 +180,7 @@ NESTED = os.path.join(ROOT, "tutorials", "steady", "solids",
 tmp = tempfile.mkdtemp(prefix="unreadkeys-nested-")
 try:
     dst = os.path.join(tmp, "c")
-    shutil.copytree(NESTED, dst)
+    case_records.copytree(NESTED, dst)
     fsd = os.path.join(dst, "system", "flowsheetDict")
     text = open(fsd, errors="replace").read()
     if not re.search(r"geometry\s*\{[^}]*\bdz\s", text):
@@ -295,7 +296,7 @@ try:
          ("model totalReflux", "packing")),
     ):
         dst5 = os.path.join(tmp5, blk)
-        shutil.copytree(WITNESS, dst5)
+        case_records.copytree(WITNESS, dst5)
         fs5 = os.path.join(dst5, "system", "flowsheetDict")
         t5 = open(fs5, errors="replace").read()
         t5n = re.sub(r"murphreeEfficiency\s+[\d.]+\s*;[^\n]*", text_block, t5, count=1)
@@ -324,7 +325,7 @@ try:
     src6 = os.path.join(ROOT, "tutorials", "steady", "distillation",
                         "trayEfficiency05_chanFair_yanagi14")
     dst6 = os.path.join(tmp5, "ternary")
-    shutil.copytree(src6, dst6)
+    case_records.copytree(src6, dst6)
     shutil.rmtree(os.path.join(dst6, "expected"), ignore_errors=True)
     for f in ("outerDict",):
         try:

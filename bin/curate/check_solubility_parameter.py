@@ -59,6 +59,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+import case_records  # noqa: E402  (the probe copy has one home)
 CASE = ROOT / "tutorials/props/molecular/solubility01_hildebrand_ladder"
 BIN = ROOT / "choupoProps"
 BAND = 0.015
@@ -118,7 +119,7 @@ def main():
     probe = ROOT / "generated/probes/solubility"
     shutil.rmtree(probe, ignore_errors=True)
     noAnchor = probe / "noAnchor"
-    shutil.copytree(CASE, noAnchor, ignore=shutil.ignore_patterns(
+    case_records.copytree(CASE, noAnchor, ignore=shutil.ignore_patterns(
         "*.csv", "log.*", "expected"))
     #  Strip the anchors by overlaying case-local component records that
     #  carry every field EXCEPT the published delta.
@@ -151,7 +152,7 @@ def main():
     for label, mutate, expect in PROBES:
         p = ROOT / "generated/probes/solubility" / label
         shutil.rmtree(p, ignore_errors=True)
-        shutil.copytree(CASE, p, ignore=shutil.ignore_patterns(
+        case_records.copytree(CASE, p, ignore=shutil.ignore_patterns(
             "*.csv", "log.*", "expected"))
         mutate(p)
         pout, _ = run(p)

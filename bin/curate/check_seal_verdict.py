@@ -64,6 +64,7 @@ def export_sealed_base(tmp: Path) -> Path:
     case is no longer sealed once it references the catalogue."""
     dest = tmp / "sealed_base"
     if (BASE / MAN).exists() and "sealed" in (BASE / MAN).read_text() and "pins" not in (BASE / MAN).read_text():
+        # C421 exception: the sealed fixture is a copy of a sealed case whose records must stay exactly as sealed (no materialising from the catalogue).
         shutil.copytree(BASE, dest, ignore=shutil.ignore_patterns(
             "expected", "*.csv", "converged", "iterations", "log.*", "resultJson*"))
         return dest
@@ -76,6 +77,7 @@ def export_sealed_base(tmp: Path) -> Path:
 
 def make_case(tmp: Path, tag: str, rec_edit=None, man_edit=None) -> Path:
     case = tmp / f"probe_{tag}"
+    # C421 exception: the probe edits the manifest's pins and expects the unpinned-read refusal to fire, so the copy must NOT materialise the catalogue records.
     shutil.copytree(SEALED_BASE or BASE, case, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "converged", "iterations", "resultJson*"))
     if rec_edit:
@@ -92,6 +94,7 @@ FLASH = ROOT / "tutorials" / "steady" / "flash" / "flash01_benzene_toluene"
 
 def make_flash(tmp: Path, tag: str, man_edit=None) -> Path:
     case = tmp / f"pin_{tag}"
+    # C421 exception: the probe edits the manifest's pins and expects the unpinned-read refusal to fire, so the copy must NOT materialise the catalogue records.
     shutil.copytree(FLASH, case, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "converged", "iterations", "log.*", "resultJson*"))
     if man_edit:

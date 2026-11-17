@@ -484,6 +484,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+import case_records  # noqa: E402  (the probe copy has one home)
 
 SECTORED = "tutorials/plant/ChemicalPlantTutorial"                   # sectors, sizeDistribution x2
 FLAT    = "tutorials/steady/distillation/column09_tray_hydraulics"  # stageProfile + marker
@@ -828,7 +829,7 @@ def check_swept(problems, notes):
 #  file operation, never a source patch and a rebuild.
 # ---------------------------------------------------------------------------
 def copy_case(dst):
-    shutil.copytree(ROOT / SEEDED, dst,
+    case_records.copytree(ROOT / SEEDED, dst,
                     ignore=shutil.ignore_patterns("converged", "reports",
                                                   "iterations", "design",
                                                   "log.*"))
@@ -1328,7 +1329,7 @@ def check_round_trip_crystalliser(problems, notes):
     tmp = Path(tempfile.mkdtemp(prefix="choupo_cryst_"))
     try:
         case = tmp / "cryst"
-        shutil.copytree(ROOT / CRYST, case)
+        case_records.copytree(ROOT / CRYST, case)
         shutil.rmtree(case / VIEW, ignore_errors=True)
         rc, out, err = run_case(case)
         if rc != 0:
@@ -1657,7 +1658,7 @@ def check_resolvers(problems, notes):
 
 def copy_any(rel, dst):
     """A case, minus every run output, at `dst`."""
-    shutil.copytree(ROOT / rel, dst,
+    case_records.copytree(ROOT / rel, dst,
                     ignore=shutil.ignore_patterns("converged", "reports",
                                                   "iterations", "design",
                                                   "log.*"))

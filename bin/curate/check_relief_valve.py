@@ -93,6 +93,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+import case_records  # noqa: E402  (the probe copy has one home)
 _CACHE = os.environ.get("CHOUPO_SUITE_OUTPUTS")
 #  The engine finds its catalogue (the construction materials included)
 #  through CHOUPO_HOME; a fixture copied to a temporary directory is not
@@ -424,7 +425,7 @@ COSTING = '''costing { method Turton; year 2026; cepci 820; cepci2001 397; usdTo
 
 def fixture(td, name, body):
     d = Path(td) / name
-    shutil.copytree(FIXTURE_SRC, d)
+    case_records.copytree(FIXTURE_SRC, d)
     for x in ("design", "converged", "reports", "expected"):
         p = d / x
         if p.is_dir():

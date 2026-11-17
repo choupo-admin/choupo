@@ -219,6 +219,7 @@ import threading
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+import case_records  # noqa: E402  (the probe copy has one home)
 
 #  WHERE THIS GATE READS BY PATTERN OR THROUGH A SUBPROCESS (DEV.md 4c C394,
 #  review SE-09), declared for bin/curate/gate_scan_roots.py so that
@@ -805,7 +806,7 @@ def check_ll_arm(tmp, fails):
                      "cannot run, so it must not pass")
         return 0
     work = tmp / "arm-h"
-    shutil.copytree(case, work)
+    case_records.copytree(case, work)
     p = subprocess.run([str(PROPS), "."], cwd=str(work), capture_output=True,
                        text=True, timeout=900)
     prop = work / "nButanol-water.proposal.dat"
@@ -1158,7 +1159,7 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
             if mdoi:
                 pts += [(mdoi.group(1), t, pk) for t, pk in rows]
         work = tmp / ("vp-" + case.relative_to(ROOT).as_posix().replace("/", "__"))
-        shutil.copytree(case, work)
+        case_records.copytree(case, work)
         pr = subprocess.run([str(PROPS), "."], cwd=str(work), capture_output=True,
                             text=True, timeout=900, env=dict(os.environ, CHOUPO_HOME=str(ROOT)))
         out = pr.stdout + pr.stderr
@@ -1449,6 +1450,7 @@ def check_vp_window_negatives(tmp, fails):
     #  (1) disagreeing window
     work = Path(tempfile.mkdtemp(prefix="vpwin-", dir=ROOT / "build"))
     try:
+        # C421 exception: a partial copy (the case's system/ only, never a whole case), so there is nothing to materialise.
         shutil.copytree(case / "system", work / "system")
         cd = work / "system" / "curationDict"
         edited = re.sub(r"pressureMax\s+[0-9.eE+-]+\s+kPa", "pressureMax  150 kPa",
@@ -1866,7 +1868,7 @@ def check_model_records(tmp, runs, fetched, fails, not_run):
             if case_rel not in runs:
                 if work.exists():
                     shutil.rmtree(work)
-                shutil.copytree(case, work)
+                case_records.copytree(case, work)
                 for stale in work.glob("*.proposal.dat"):
                     stale.unlink()
                 p = subprocess.run([str(PROPS), "."], cwd=str(work),
@@ -2090,7 +2092,7 @@ def main():
         #  a leaf name in every pair that has two (`Tx`, C296).
         work = tmp / case.relative_to(ROOT).as_posix().replace("/", "__")
         def _run_case():
-            shutil.copytree(case, work)
+            case_records.copytree(case, work)
             for stale in work.glob("*.proposal.dat"):
                 stale.unlink()
             p = subprocess.run([str(PROPS), "."], cwd=str(work),

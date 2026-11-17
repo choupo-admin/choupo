@@ -203,6 +203,7 @@ def arm_comparator():
         d = {}
         for k, src in srcs.items():
             d[k] = Path(tmp) / k
+            # C421 exception: the copy is handed to a nested bin/runTests (the comparator arms); tried through case_records.copytree on 2026-11-17 and the gate FAILED (8 arms expected PASS and runTests exited 1 on the materialised copy), so the plain copy stays.
             shutil.copytree(src, d[k], ignore=shutil.ignore_patterns("reports", "converged", "iterations", "expected",
                                                                      "postProcessing", "fit_history*", "parity*"))
 

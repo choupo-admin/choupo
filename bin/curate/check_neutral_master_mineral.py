@@ -87,6 +87,7 @@ def main():
     global CASE
     with tempfile.TemporaryDirectory() as td:
         CASE = Path(td) / "neutralMasterMineral"
+        # C421 exception: not a case copy -- the source is a fixture under bin/curate/fixtures, not a shipped case.
         shutil.copytree(FIXTURE, CASE)
         return check()
 

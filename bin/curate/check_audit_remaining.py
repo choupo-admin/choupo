@@ -280,6 +280,7 @@ def run_props(case):
 def m24_copy(tmp, name, options, no_record=False):
     case = Path(tmp) / name
     case.mkdir()
+    # C421 exception: a partial copy (only constant/, system/ and 0/ of the donor, with one record left out on purpose), not a whole case.
     for d in ("constant", "system", "0"):
         shutil.copytree(M24 / d, case / d, ignore=shutil.ignore_patterns(
             "NF270_FdL2021.dat"))
@@ -345,6 +346,7 @@ def pcsaft_scan(tmp, T, lo, hi, n):
     if case.exists():
         shutil.rmtree(case)
     case.mkdir()
+    # C421 exception: a partial copy (only the donor's constant/ and system/, never a whole case), so there is no case to materialise.
     shutil.copytree(PCS / "constant", case / "constant")
     shutil.copytree(PCS / "system", case / "system")
     pd = case / "system" / "propsDict"
