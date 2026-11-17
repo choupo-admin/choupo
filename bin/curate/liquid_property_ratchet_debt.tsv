@@ -5,17 +5,12 @@
 # layer itself, the benches whose subject is a dataset's own experimental conditions, names that are not liquid properties).
 # C402 rest step 1: the detector's false positives (kW <-> W, kmol <-> mol, statistical weights, bounds) are exempt by
 # FALSE_POSITIVES in the checker, each with its reason; what is pinned below is real or undecided.
-src/unitOperations/batch/BatchElectrodialysis.cpp	direct	1
 src/unitOperations/crystallisation/CrystallisationSaturation.cpp	vliq	1
 src/unitOperations/crystallisation/Crystalliser.cpp	vliq	5
 src/unitOperations/dynamic/WilliamsOttoPlant.cpp	literal	1
-src/unitOperations/electrochem/ElectrodialysisStack.cpp	conversion	2
-src/unitOperations/electrochem/ElectrodialysisStack.cpp	direct	1
 src/unitOperations/heatTransfer/SprayDryer.cpp	keyRead	5
 src/unitOperations/heatTransfer/SprayDryer.cpp	vliq	4
 src/unitOperations/heatTransfer/atomizer/Atomizer.H	literal	1
-src/unitOperations/membrane/massTransfer/Polarisation.cpp	direct	1
-src/unitOperations/membrane/transport/DSPM_DE.cpp	direct	1
 src/unitOperations/reactor/PFR.cpp	vliq	4
 src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp	direct	1
 src/unitOperations/rotating/PressureExchanger.cpp	vliq	1

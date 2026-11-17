@@ -46,6 +46,7 @@ Description
 #include "thermo/RecordResolver.H"
 #include "thermo/Component.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "thermo/electrochem/EDStack.H"
 #include "thermo/electrolyte/AqueousActivity.H"
 #include "thermo/electrolyte/IonTransport.H"
@@ -100,12 +101,63 @@ void readIEMPair(const std::string& who, const std::string& name,
     aem = readLeg("aem");
 }
 
+scalar solutionDensity(const ThermoPackage& thermo, scalar T, scalar P, const sVector& z)
+{
+    //  The kernel's density METHODS (a solution's mixing, the case's declared
+    //  massWithoutVolume reading), recorded under the unit being solved.
+    liquidProperty::Consumer who;
+    const bool site = PropertySourceLog::instance().current(who.type, who.unit);
+    liquidProperty::Request ask;
+    ask.thermo = &thermo; ask.T = T; ask.P = P; ask.x = z;
+    ask.who = site ? &who : nullptr;
+    return liquidProperty::density(ask).value;
+}
+
+sVector carrierComposition(const sVector& z, const std::vector<std::size_t>& passThrough)
+{
+    sVector c = z;
+    scalar tot = 0.0;
+    for (std::size_t i = 0; i < c.size(); ++i)
+    {
+        if (std::find(passThrough.begin(), passThrough.end(), i) != passThrough.end()) c[i] = 0.0;
+        tot += c[i];
+    }
+    if (tot > 0.0) for (auto& v : c) v /= tot;
+    return c;
+}
+
+scalar carrierMassFlow(const ThermoPackage& thermo, scalar F, const sVector& z,
+                       const std::vector<std::size_t>& passThrough)
+{
+    scalar m = 0.0;
+    for (std::size_t i = 0; i < z.size(); ++i)
+    {
+        if (std::find(passThrough.begin(), passThrough.end(), i) != passThrough.end()) continue;
+        m += z[i] * thermo.comp(i).MW();
+    }
+    return F * m;
+}
+
+scalar solventKinematicViscosity(const std::string& who, const ThermoPackage& thermo,
+                                 std::size_t iSolvent, scalar T, scalar P)
+{
+    if (!thermo.hasLiquidViscosity())
+        throw std::runtime_error(who + ": the Reynolds and Schmidt numbers need the solvent's"
+            " kinematic viscosity, and the case declares no liquid-viscosity model.  Write, in"
+            " constant/thermoPhysPropDict: `transport { liquid { viscosity { model Vogel; } } }`"
+            " (the unit no longer assumes 1e-6 m2/s).");
+    sVector x(thermo.n(), 0.0);
+    x[iSolvent] = 1.0;
+    const scalar mu  = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T, P, x).value;
+    return mu / solutionDensity(thermo, T, P, x);
+}
+
 // Build the ionic state of a channel from a feed stream (mole fractions),
 // freezing the Davies gammas ONCE.  Reuses the electrolyte stack (AqueousActivity
 // "davies") -- NO parallel gamma implementation.
 ChannelState buildChannel(const std::string& who,
                           const ThermoPackage& thermo, const sVector& z,
-                          std::size_t iWater, scalar T,
+                          std::size_t iWater, scalar T, scalar P,
                           const electrolyte::AqueousActivity& act,
                           const std::vector<std::size_t>& passThrough)
 {
@@ -139,6 +191,16 @@ ChannelState buildChannel(const std::string& who,
         throw std::runtime_error(who + ": a channel carries no "
             "ions -- nothing to transport");
 
+    //  The solution's density from the one door, and the solvent's share of it
+    //  (mass fraction x rho): the molality -> concentration factor.
+    {
+        const sVector zc = carrierComposition(z, passThrough);
+        scalar mTot = 0.0;
+        for (std::size_t i = 0; i < thermo.n(); ++i) mTot += zc[i] * thermo.comp(i).MW();
+        ch.rhoSolution = solutionDensity(thermo, T, P, zc);
+        ch.rhoCarrier  = ch.rhoSolution * (zc[iWater] * thermo.comp(iWater).MW()) / mTot;
+    }
+
     // ionic strength I = 0.5 sum m_i z_i^2
     scalar I = 0.0;
     for (std::size_t k = 0; k < ch.m.size(); ++k) I += ch.m[k] * ch.z[k] * ch.z[k];
@@ -157,7 +219,7 @@ ChannelState buildChannel(const std::string& who,
     //   lambda_i = z_i^2 F^2 D0_i / (R T)   [S m2/mol]   (equivalent conductance)
     //   kappa    = sum c_i lambda_i,  c_i [mol/m3] ~ m_i * rho_water
     // (dilute approximation rho ~ 1000 kg/m3; the unit ANNOUNCES it).
-    const scalar rho_w = liquidSource::diluteCarrierDensity.value;   // kg/m3 (dilute carrier approx)
+    const scalar rho_w = ch.rhoCarrier;   // kg solvent / m3 of solution, from the door's density
     scalar kappa = 0.0, c_eq = 0.0;
     for (std::size_t k = 0; k < ch.m.size(); ++k)
     {
@@ -227,7 +289,7 @@ LimitingCurrent predictiveLimitingCurrent(const EDStack&      stk,
         edLimitingCurrent::Ion io;
         io.name = chD.ion[k].key;
         io.z    = chD.z[k];
-        io.C    = chD.m[k] * RHO_CARRIER;              // mol/m3 (dilute carrier)
+        io.C    = chD.m[k] * chD.rhoCarrier;           // mol/m3
         io.D    = electrolyte::ionD0(chD.ion[k]) * seFactor;
         lc.ions.push_back(io);
     }
@@ -335,7 +397,7 @@ CounterIonSplit counterIonRates(const std::string&  who,
             edLimitingCurrent::Ion io;
             io.name = ch.ion[k].key;
             io.z    = ch.z[k];
-            io.C    = ch.m[k] * RHO_CARRIER;
+            io.C    = ch.m[k] * ch.rhoCarrier;
             io.D    = splitDiffusivity(who, ch.ion[k], rows, ch);
             ions.push_back(io);
         }

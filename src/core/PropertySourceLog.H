@@ -110,9 +110,6 @@ std::size_t compositionKey(const std::vector<double>& x);
 
 namespace liquidSource {
 //  THE ONE HOME of each source a unit computes itself (plan, section 1).
-inline const ConstantSource diluteCarrierDensity
-    { 1000.0, "constant.diluteCarrier",
-      "a constant of the unit, 1000 kg/m3: the dilute-carrier density the whole unit is built on" };
 inline const ConstantSource waterViscosityKnob
     { 1.0e-3, "default.water1e-3",
       "a constant of the unit, 1 mPa s (water near 20 C), used because the case declares no viscosity and no viscosity model" };
@@ -134,12 +131,6 @@ inline const NamedSource solventVliqFlat
 inline const NamedSource solventsVliqIdealMix
     { "bypass.solventsVliq25C.idealMix",
       "computed by the unit itself, not by the property kernel: the solvents' 25 C molar volumes mixed ideally (the dissolved solids are not counted), with no temperature or pressure effect" };
-inline const ConstantSource waterKinematicViscosity
-    { 1.0e-6, "constant.waterKinematic1e-6",
-      "a constant of the unit, 1e-6 m2/s: the kinematic viscosity of water near 20 C (no viscosity model is declared)" };
-inline const NamedSource stokesEinsteinSolvent
-    { "kernel.solventViscosity.StokesEinstein",
-      "property kernel: the pure solvent's viscosity (the case's model), divided by the unit's 1000 kg/m3 carrier density" };
 inline const NamedSource kernelLiquidDiffusivity
     { "kernel.liquidDiffusivity",
       "property kernel: the case's liquid-diffusivity model (solute at infinite dilution in the medium)" };

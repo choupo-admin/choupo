@@ -4,7 +4,6 @@
 tag	analysisDensity	derived.laboratoryAnalysis	derived from the laboratory analysis the case authorises: water's density at the sample temperature (Kell) plus the dissolved solids
 tag	benchmarkConstantDensity	constant.benchmark.WilliamsOtto	a constant of the published benchmark the unit reproduces: 50 lb/ft3 (800.9 kg/m3), equal for every species
 tag	declaredByCase	declared.case	the value the case declares for this unit
-tag	diluteCarrierDensity	constant.diluteCarrier	a constant of the unit, 1000 kg/m3: the dilute-carrier density the whole unit is built on
 tag	kernelLiquidDiffusivity	kernel.liquidDiffusivity	property kernel: the case's liquid-diffusivity model (solute at infinite dilution in the medium)
 tag	recordVliqFlat	bypass.recordVliq25C	computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect
 tag	recordVliqIonsMassKept	bypass.recordVliq25C.ionsNoVolume	computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect; a dissolved ion keeps its mass and adds no volume
@@ -14,7 +13,5 @@ tag	solventsVliqIdealMix	bypass.solventsVliq25C.idealMix	computed by the unit it
 tag	speciesRecordD0	record.speciesD0.StokesEinstein	each ion's diffusivity from its species record, scaled to temperature by Stokes-Einstein
 tag	speciesRecordD0AtCuration	record.speciesD0.at25C	each ion's diffusivity from its species record, at the 25 C it is curated at (the unit runs at 25 C)
 tag	speciesRecordD0Uncorrected	record.speciesD0.uncorrected	each ion's diffusivity from its species record at 25 C, NOT corrected to the unit's temperature: the case declares no liquid-viscosity model
-tag	stokesEinsteinSolvent	kernel.solventViscosity.StokesEinstein	property kernel: the pure solvent's viscosity (the case's model), divided by the unit's 1000 kg/m3 carrier density
-tag	waterKinematicViscosity	constant.waterKinematic1e-6	a constant of the unit, 1e-6 m2/s: the kinematic viscosity of water near 20 C (no viscosity model is declared)
 tag	waterSurfaceTensionFallback	fallback.water0.072	a constant of the unit, 72 mN/m (water), used because the kernel could not give one
 tag	waterViscosityKnob	default.water1e-3	a constant of the unit, 1 mPa s (water near 20 C), used because the case declares no viscosity and no viscosity model

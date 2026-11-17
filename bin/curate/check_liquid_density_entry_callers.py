@@ -19,6 +19,7 @@ THE CALLERS, by file, with the number of call sites each holds:
   src/unitOperations/reactor/CSTR.cpp           1   the CSTR (feed state, liquid basis)
   src/unitOperations/membrane/SpiralWoundModule.cpp  1   the module's feed density (C402)
   src/unitOperations/membrane/RatedTestInversion.cpp 1   the rated-test probe's feed density (C402)
+  src/unitOperations/electrochem/EDCell.cpp     1   the electrodialysis channel's solution density (C421)
   src/unitOperations/batch/BatchDiafilter.cpp   1   the holdup's density, which the make-up solvent shares (C402)
   src/propertyOps/PropertyEvaluator.cpp         1   the props bench key `rho_liquid_kernel`
   src/applications/choupoProps/PropertyRouteBench.cpp  4   the route bench (its sweep, the address-reuse and the domain-trial checks)
@@ -45,6 +46,7 @@ ALLOWED = {
     "src/unitOperations/reactor/CSTR.cpp": 1,
     "src/unitOperations/membrane/SpiralWoundModule.cpp": 1,    # the module's feed density (C402)
     "src/unitOperations/membrane/RatedTestInversion.cpp": 1,   # the rated-test probe's feed density (C402)
+    "src/unitOperations/electrochem/EDCell.cpp": 1,            # the electrodialysis channel's solution density (C421)
     "src/unitOperations/batch/BatchDiafilter.cpp": 1,          # the holdup's density, the make-up's too (C402)
     "src/propertyOps/PropertyEvaluator.cpp": 1,
     "src/applications/choupoProps/PropertyRouteBench.cpp": 4,   # the sweep, the address-reuse check, the domain-trial check (two calls)

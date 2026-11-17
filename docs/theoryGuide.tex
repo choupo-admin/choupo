@@ -3727,10 +3727,10 @@ model.
   effect.  The pressure exchanger gives a dissolved ion no volume and keeps
   its mass; the crystalliser gives a component without a volume none, and
   does not say so.
-\item \textbf{A constant of the unit} --- 1000\,kg/m$^3$ in the
-  electrodialysis cell, stack and batch rig (the dilute carrier they are
-  built on); a kinematic viscosity of $10^{-6}$\,m$^2$/s in the
-  electrodialysis stack and batch rig when no viscosity model is declared;
+\item \textbf{A constant of the unit} --- (the electrodialysis cell,
+  stack and batch rig held 1000\,kg/m$^3$ and a kinematic viscosity of
+  $10^{-6}$\,m$^2$/s until C421; they ask the property door now, and are
+  refused when no viscosity model is declared);
   1\,mPa\,s and 72\,mN/m as the spray dryer's defaults.  (The spiral-wound
   module's and the batch diafilter's constants, 1000\,kg/m$^3$, 1\,mPa\,s
   and $1.6\times10^{-9}$\,m$^2$/s, are gone since C402: section~\ref{sec:membrane-liquid-properties}.)
@@ -25299,8 +25299,13 @@ was read from; the hydrated radius beside it is Nightingale's
 \cite{Nightingale1959}, a separate column that this equation does not
 read) via the
 \textbf{Nernst--Einstein} relation, and $c_i \approx m_i\rho_w$ in the
-dilute-carrier approximation ($\rho_w\approx 1000\ \mathrm{kg/m^3}$,
-announced).  The per-cell-pair resistance is the series sum\cite{Strathmann2004}
+dilute-carrier approximation, $m_i\rho_w$ with
+$\rho_w = w_\text{solvent}\,\rho_\text{solution}$ the solvent's mass per
+cubic metre of the channel's solution, the density asked of the property
+door at the channel's temperature, pressure and composition (the dissolved
+ions keep their mass and add no volume, declared by the case under
+\code{approximations}; a viscosity model must also be declared, for the
+Reynolds and Schmidt numbers).  The per-cell-pair resistance is the series sum\cite{Strathmann2004}
 %
 \begin{equation}
   R_\text{pair}

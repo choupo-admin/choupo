@@ -268,7 +268,6 @@ ED04 = ROOT / "tutorials/steady/electrodialysis/ed04_limiting_current_multiionic
 ED05 = ROOT / "tutorials/steady/electrodialysis/ed05_industrial_stack"
 ED09 = ROOT / "tutorials/steady/electrodialysis/ed09_wine_multiionic"
 MW_WATER = 0.0180153          # kg/mol, the unit's own molality closure
-RHO_CARRIER = 1000.0          # kg/m3, the dilute-carrier density the unit announces
 FARADAY = 96485.33212
 
 #  THE TABLE: a second transcription of Geraldes & Afonso (2010), in SI.
@@ -427,12 +426,31 @@ def copy_case(src, dst):
         "converged", "log.*", "expected", "reports", "design"))
 
 
-def water_flow_m3_s(stream_file):
-    """The diluate feed's volumetric flow, from the case's OWN declaration, on
-    the dilute-carrier density the unit announces."""
+def water_flow_m3_s(stream_file, rho_water):
+    """The diluate feed's volumetric flow, from the case's OWN declaration.
+    Since C421 the unit asks the property door for the channel's density, and
+    the cases declare `massWithoutVolume` for the ions (they keep their mass
+    and add no volume): the solution's volume is then the WATER's, so
+    Q = water mass / rho_water, with rho_water the pure-water density the run
+    published (the Helmholtz IAPWS95 row of the unit's property sources)."""
     d = parse_record(stream_file)
     kmol_h = si(d["componentMolarFlows"]["water"])          # -> kmol/s
-    return kmol_h * 1000.0 * MW_WATER / RHO_CARRIER          # m3/s
+    return kmol_h * water_record_mw_kg_per_kmol() / rho_water   # m3/s
+
+
+def water_record_mw_kg_per_kmol():
+    """The water record's own MW: the mass the unit's flow is built on."""
+    import re
+    m = re.search(r"^MW\s+([0-9.]+)\s*;", (ASSETS.parent / "components" / "water.dat").read_text(), re.M)
+    return float(m.group(1))
+
+
+def published_water_density(j, unit):
+    for u in j.get("propertySources", {}).get("used", []):
+        if (u.get("unit") == unit and u.get("property") == "liquidDensity"
+                and u.get("sourceId") == "referenceEquation.IAPWS95"):
+            return u["valueMin"]
+    return None
 
 
 # ------------------------------------------------- the paper, in Python
@@ -967,7 +985,12 @@ def main():
             failures.append("(b) %s/%s: the run published no %s -- the predictive"
                             " route did not produce a number" % (case.name, unit, missing))
             return
-        Q = water_flow_m3_s(case / "0" / stream)
+        rho_w = published_water_density(j, unit)
+        if rho_w is None:
+            failures.append("(b) %s/%s: the run published no pure-water liquid density (the"
+                            " door's IAPWS95 row) to hold the volumetric flow against" % (case.name, unit))
+            return
+        Q = water_flow_m3_s(case / "0" / stream, rho_w)
         u = Q / ((NP / PASSES) * W * H)
         if not close(u, k["u_superficial"], 1e-9):
             failures.append("(b) %s/%s: u = Q/(n W h) = %.9e but the run published %.9e"

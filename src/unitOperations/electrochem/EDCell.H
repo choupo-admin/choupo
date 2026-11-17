@@ -97,10 +97,30 @@ namespace edCell {
 //  uses): a channel's molality is n_ion / (n_water * MW_WATER_KG).
 constexpr scalar MW_WATER_KG = 0.0180153;
 
-//- kg/m3.  The DILUTE-CARRIER density that turns a molality into a
-//  concentration.  Announced by every consumer; it is the same constant the
-//  conductivity and the limiting current are both built on.
-inline const scalar RHO_CARRIER = liquidSource::diluteCarrierDensity.value;
+//- The liquid density of a channel's solution [kg/m3], asked of the one door
+//  (DEV.md 4c C421) at (T, P, the mole fractions z, every component).  A
+//  dissolved ion with no liquid volume is refused by the door unless the
+//  case declares `approximations { massWithoutVolume { ... } }`.
+scalar solutionDensity(const ThermoPackage& thermo, scalar T, scalar P, const sVector& z);
+
+//- THE CARRIER: the composition the stack's equations see, with the
+//  components a case DECLARED to cross the stack outside them (`passThrough`)
+//  removed and the rest renormalised.  Their presence changes no number
+//  (check_unit_acceptance, arm (i)), so the density and the volumetric flow
+//  are those of the carrier alone.
+sVector carrierComposition(const sVector& z, const std::vector<std::size_t>& passThrough);
+
+//- The carrier's mass flow [kg/s] of a stream of molar flow F [kmol/s] and
+//  composition z: the passed-through components' mass is not counted.
+scalar carrierMassFlow(const ThermoPackage& thermo, scalar F, const sVector& z,
+                       const std::vector<std::size_t>& passThrough);
+
+//- The kinematic viscosity of the PURE SOLVENT at T [m2/s] = the door's
+//  viscosity / the door's density, both of the solvent alone.  Refused by
+//  name when the case declares no liquid-viscosity model (no silent water
+//  value); `who` names the unit in the message.
+scalar solventKinematicViscosity(const std::string& who, const ThermoPackage& thermo,
+                                 std::size_t iSolvent, scalar T, scalar P);
 
 // ---------------------------------------------------------------------------
 //  One IEM (cation- or anion-exchange) membrane's read-in properties.
@@ -134,6 +154,8 @@ struct ChannelState
     scalar                   I = 0.0;    // ionic strength [mol/kg]
     scalar                   kappa = 0.0;// specific conductivity [S/m]
     scalar                   c_eq = 0.0; // equivalent concentration [mol/m3]
+    scalar                   rhoSolution = 0.0; // the solution's density [kg/m3], the door's
+    scalar                   rhoCarrier = 0.0;  // kg of solvent per m3 of solution: turns a molality into a concentration
 };
 
 //- Build the ionic state of a channel from a MOLE-FRACTION composition,
@@ -151,6 +173,7 @@ ChannelState buildChannel(const std::string&   who,
                           const sVector&       z,
                           std::size_t          iWater,
                           scalar               T,
+                          scalar               P,
                           const electrolyte::AqueousActivity& act,
                           const std::vector<std::size_t>& passThrough = {});
 
