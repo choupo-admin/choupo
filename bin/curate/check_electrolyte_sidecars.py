@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """The `constant/electrolyte/` sidecars: ALL legs retired (the last one,
 `speciationMode replace`, converted 2026-08-02 to D-R1's declared
-`networkScope restricted` -- see check_restricted_network for that side).
+`networkScope restricted` -- see the restricted-network group of
+check_refusal_probes for that side).
 
 Design record: DEV.md section 5 debt 3.
 
@@ -40,35 +41,25 @@ checked for any regrowth of the retired forms.  When `replace` finally gets a
 canonical home, THIS FILE is what has to change -- which is the point.
 
 Exit 1 listing failures."""
-import os
 import re
-import shutil
-import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import gatekit  # noqa: E402
+
+ROOT = gatekit.repo
 TART = ROOT / "tutorials" / "props" / "electrolyte" / "tartaricAcid_acidulation"
 PITZ = ROOT / "tutorials" / "props" / "electrolyte" / "pitzer_seawater_verify"
 SIDECAR = "constant/electrolyte/speciation.dat"
+STRIP = ("expected",)
 
 failures = []
+PROPS = None
 
 
 def run(case: Path):
-    env = dict(os.environ, CHOUPO_HOME=str(ROOT))
-    p = subprocess.run([str(PROPS), "."], cwd=case, env=env,
-                       capture_output=True, text=True, timeout=900)
-    return p.returncode, p.stdout + p.stderr
-
-
-def copy(tmp: Path, src: Path, tag: str) -> Path:
-    case = tmp / tag
-    shutil.copytree(src, case, ignore=shutil.ignore_patterns("expected", "*.csv",
-                                                             "log.*"))
-    return case
+    return gatekit.run(PROPS, case, timeout=900)
 
 
 def want(res, tag: str, needles):
@@ -82,8 +73,11 @@ def want(res, tag: str, needles):
 
 
 def main() -> int:
-    if not PROPS.exists():
-        print(f"check_electrolyte_sidecars: {PROPS} missing -- build first")
+    global PROPS
+    try:
+        PROPS = gatekit.binary("choupoProps")
+    except gatekit.GateRefusal as e:
+        print(f"check_electrolyte_sidecars: {e}")
         return 1
 
     # ---- CORPUS: the sidecar directory may not regrow ANYWHERE -------------
@@ -106,7 +100,8 @@ def main() -> int:
         if not (TART / rel).exists():
             failures.append(f"POSITIVE: tartaricAcid_acidulation lacks {rel}"
                             " -- the canonical route is not what it runs on")
-    rc, out = run(TART)
+    with gatekit.probe_copy(TART, STRIP) as case:
+        rc, out = run(case)
     if rc != 0:
         failures.append(f"POSITIVE: tartaricAcid_acidulation exited {rc}")
     else:
@@ -128,37 +123,37 @@ def main() -> int:
 
     # ---- CONVERTED SURVIVOR: the restriction now lives in the declaration --
     #      (D-R1, approved 2026-08-02; the deep checks are
-    #      check_restricted_network's -- here only the sidecar absence.)
+    #      the restricted-network group's of check_refusal_probes -- here
+    #      only the sidecar absence.)
     if (PITZ / "constant" / "electrolyte").exists():
         failures.append("CONVERTED: pitzer_seawater_verify still ships a"
                         " constant/electrolyte/ sidecar -- it converted to"
                         " `networkScope restricted` and the directory must"
                         " stay gone")
 
-    with tempfile.TemporaryDirectory() as td:
-        tmp = Path(td)
-
-        # ---- REFUSAL: the retired identity monolith -----------------------
-        case = copy(tmp, TART, "ions")
+    # ---- REFUSAL: the retired identity monolith -----------------------
+    with gatekit.probe_copy(TART, STRIP) as case:
         d = case / "constant" / "electrolyte"
         d.mkdir(parents=True, exist_ok=True)
         (d / "ions.dat").write_text(
             'ions ( { species Tart; ion "C4H4O6-2"; z -2; MW 148.07; } );\n')
-        want(run(case), "ionsMonolith",
-             ["RETIRED monolith identity list",
-              "constant/species/<name>.dat",
-              "arity failure"])
+        res = run(case)
+    want(res, "ionsMonolith",
+         ["RETIRED monolith identity list",
+          "constant/species/<name>.dat",
+          "arity failure"])
 
-        # ---- REFUSAL: ANY speciation.dat sidecar (whole file retired) -----
-        case = copy(tmp, PITZ, "sidecar")
+    # ---- REFUSAL: ANY speciation.dat sidecar (whole file retired) -----
+    with gatekit.probe_copy(PITZ, STRIP) as case:
         f = case / SIDECAR
         f.parent.mkdir(parents=True, exist_ok=True)
         f.write_text("speciationMode replace;\nreactions ( );\n")
-        want(run(case), "sidecarRetired",
-             ["constant/electrolyte/speciation.dat sidecar is"
-              " RETIRED",
-              "networkScope restricted;",
-              "pitzer_seawater_verify"])
+        res = run(case)
+    want(res, "sidecarRetired",
+         ["constant/electrolyte/speciation.dat sidecar is"
+          " RETIRED",
+          "networkScope restricted;",
+          "pitzer_seawater_verify"])
 
     if failures:
         print("check_electrolyte_sidecars: FAIL")
