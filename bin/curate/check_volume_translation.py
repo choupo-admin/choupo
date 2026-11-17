@@ -274,6 +274,50 @@ def main() -> int:
     except Exception as exc:
         fail.append(f"(g) the package arm could not run: {exc}")
 
+    #  (h) C410, review LR-01: THE LIQUID ROUTE IS CHOSEN ONCE PER PACKAGE, never per
+    #  stream.  A phiPhi SRK package of pure liquid propane plus a component whose
+    #  datum is a pureLiquid rung (no ideal-gas leg) cannot take the liquid root, so the
+    #  WHOLE package keeps the formation-datum liquid; the reviewer's reproduction was a
+    #  +1434 J/mol jump of pure liquid propane from a 1e-9 trace of that component, with
+    #  no announcement.  Here H(1e-9 trace) - H(0 trace) must be < 1e-3 J/mol, and the
+    #  fallback must be announced once, naming the component.
+    try:
+        wd2 = Path(tempfile.mkdtemp(prefix="vt_route_"))
+        try:
+            case = wd2 / "case"
+            (case / "constant" / "components").mkdir(parents=True)
+            shutil.copytree(ROOT / "tutorials/steady/flash/flash09_n2ch4_stryjek/system", case / "system")
+            prop = (ROOT / "data/standards/components/propane.dat").read_text()
+            (case / "constant/components/propane.dat").write_text(prop)
+            tr = prop.replace("name        propane;", "name        trace;").replace(
+                "dHf_298   -104700.0;", "referenceState pureLiquid;\n    dHf_298   -104700.0;")
+            if tr == prop or "referenceState pureLiquid" not in tr:
+                fail.append("(h) the trace component could not be made from propane.dat")
+            (case / "constant/components/trace.dat").write_text(tr)
+            tp = (ROOT / "tutorials/steady/flash/flash09_n2ch4_stryjek/constant/thermoPhysPropDict").read_text()
+            tp = tp.replace("components ( N2 CH4 );", "components ( propane trace );")
+            i0 = tp.index("        binaryInteractions"); j0 = tp.index("    liquid {")
+            (case / "constant/thermoPhysPropDict").write_text(tp[:i0] + "    }\n\n" + tp[j0:])
+            import os
+            req = wd2 / "req.txt"
+            req.write_text("HLIQ 231.0 20.0e5 1.0 0.0\nHLIQ 231.0 20.0e5 0.999999999 1e-9\n")
+            pr2 = subprocess.run([str(gap.PROBE), str(case), str(req)], capture_output=True, text=True,
+                                 env=dict(os.environ, CHOUPO_HOME=str(ROOT)), timeout=300)
+            vals = [float(l.split()[1]) for l in pr2.stdout.splitlines() if l.startswith("OK ")]
+            if len(vals) != 2:
+                fail.append("(h) the trace probe gave no two values: " + (pr2.stderr or pr2.stdout)[-300:])
+            else:
+                if abs(vals[1] - vals[0]) > 1e-3:
+                    fail.append(f"(h) a 1e-9 trace of a pureLiquid component moves the pure liquid's H by "
+                                f"{vals[1] - vals[0]:.6g} J/mol: the liquid route is chosen per stream")
+                if "WHOLE package keeps the formation-datum liquid" not in pr2.stderr \
+                        or "component 'trace'" not in pr2.stderr:
+                    fail.append("(h) the package-wide fallback was not announced by name (component 'trace')")
+        finally:
+            shutil.rmtree(wd2, ignore_errors=True)
+    except Exception as exc:
+        fail.append(f"(h) the route arm could not run: {exc}")
+
     #  (e) the refusal, on a throwaway copy
     tmp = Path(tempfile.mkdtemp(prefix="vt_gate_"))
     try:
