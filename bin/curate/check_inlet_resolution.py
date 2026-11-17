@@ -516,6 +516,7 @@ WHAT THIS DOES NOT CHECK, said plainly:
 import pathlib
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -734,7 +735,7 @@ def arm_o(tmp: pathlib.Path, fail: list) -> str:
 
     # (o2) OUTPUT: the C92 witness's let-down liquid and its own bubble P
     plant = tmp / "ammonia02_incipient"
-    shutil.copytree(ROOT / LETDOWN_SRC, plant)
+    case_records.copytree(ROOT / LETDOWN_SRC, plant)
     rc, log = run(plant)
     m = re.search(r'"P_bubble":\s*([-0-9.eE+]+)', log)
     liq = plant / "converged" / LETDOWN_LIQUID
@@ -890,7 +891,7 @@ def arm_q(tmp: pathlib.Path, fail: list) -> str:
     said = []
     for T, shape in (("80", "two-phase"), ("70", "all liquid")):
         case = tmp / ("compressor_suction_" + T)
-        shutil.copytree(ROOT / COMPRESSOR_CASE, case)
+        case_records.copytree(ROOT / COMPRESSOR_CASE, case)
         feed = case / "0" / "feed"
         text, n = re.subn(r"(?m)^T\s+298\.15 K;", "T               %s K;" % T,
                           feed.read_text())
@@ -912,7 +913,7 @@ def arm_q(tmp: pathlib.Path, fail: list) -> str:
         m = re.search(r"vapour fraction ([0-9.eE+-]+)", log)
         said.append("%s K V/F = %s, exit %d" % (T, m.group(1) if m else "?", rc))
     case = tmp / "compressor_suction_shipped"
-    shutil.copytree(ROOT / COMPRESSOR_CASE, case)
+    case_records.copytree(ROOT / COMPRESSOR_CASE, case)
     rc, _ = run(case)
     if rc != 0:
         fail.append("(q2) compressor01 as shipped (a vapour at 298.15 K) "
@@ -928,7 +929,7 @@ def main() -> int:
         # (a) + (c) the identity claim, on three cases
         for rel in IDENTITY:
             case = tmp / pathlib.Path(rel).name
-            shutil.copytree(ROOT / rel, case)
+            case_records.copytree(ROOT / rel, case)
             rc, log = run(case)
             if rc != 0:
                 fail.append(f"{rel}: run failed (rc={rc})")
@@ -954,7 +955,7 @@ def main() -> int:
 
         # (d) the pin is honoured AND announced
         pinned = tmp / "flash19_pinned"
-        shutil.copytree(ROOT / "tutorials/steady/flash/flash19_organic_and_precipitate",
+        case_records.copytree(ROOT / "tutorials/steady/flash/flash19_organic_and_precipitate",
                         pinned)
         feed = pinned / "0" / "feed"
         feed.write_text(feed.read_text().rstrip() + "\nphase           liquid;\n")
@@ -996,7 +997,7 @@ def main() -> int:
 
         # (f2) + (g) the phase pass, on the case that proved it disarmed.
         am = tmp / "ammonia02"
-        shutil.copytree(
+        case_records.copytree(
             ROOT / "tutorials/plant/ammonia02_full_plant", am)
         rc, log = run(am)
         if rc != 0:
@@ -1076,7 +1077,7 @@ def main() -> int:
 
         # (h2)-(h4) the supercritical witness, run fresh
         sc = tmp / "ammoniaReactor04"
-        shutil.copytree(ROOT / SUPERCRITICAL, sc)
+        case_records.copytree(ROOT / SUPERCRITICAL, sc)
         rc, log = run(sc)
         if rc != 0:
             fail.append("(h) ammoniaReactor04_kineticSizing did not run -- the "
@@ -1190,7 +1191,7 @@ def main() -> int:
         # (i2) OUTPUT: the witness, whose three undeclared superheated feeds
         #  must reach the valve, the mixer and the splitter as vapours.
         w = tmp / "inletState01"
-        shutil.copytree(ROOT / WITNESS, w)
+        case_records.copytree(ROOT / WITNESS, w)
         rc, wlog = run(w)
         if rc != 0:
             fail.append(f"(i2) {WITNESS} did not run (rc={rc})")
@@ -1679,7 +1680,7 @@ def main() -> int:
                 ("cstr06_lowP", JACKETED_SRC, "jacketed", "0.7", "400",
                  "twoPhase")):
             ad = tmp / tag
-            shutil.copytree(ROOT / src_case, ad,
+            case_records.copytree(ROOT / src_case, ad,
                             ignore=shutil.ignore_patterns("converged", "reports",
                                                           "design", "log.*"))
             for f in (ad / "0").iterdir():
@@ -1755,7 +1756,7 @@ def main() -> int:
 
         # (e) the negative control: a real pressure-drop duty survives
         ctrl = tmp / "flash13"
-        shutil.copytree(ROOT / CONTROL, ctrl)
+        case_records.copytree(ROOT / CONTROL, ctrl)
         rc, log = run(ctrl)
         qs = duties(log)
         if rc != 0 or not qs:

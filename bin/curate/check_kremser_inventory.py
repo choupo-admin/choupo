@@ -66,6 +66,7 @@ Exit 0 = every arm holds.
 
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -85,7 +86,7 @@ def run(case: Path):
 
 
 def probe(src: Path, dst: Path) -> Path:
-    shutil.copytree(src, dst)
+    case_records.copytree(src, dst)
     #  A modified case legitimately diverges from its seal and its golden.
     for junk in ("converged", "reports", "design", "expected",
                  "constant/propertyManifest"):

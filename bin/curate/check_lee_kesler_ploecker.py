@@ -93,6 +93,7 @@ import math
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -669,7 +670,7 @@ def package_route_problems(probe, wd):
     bad = []
     env = dict(os.environ, CHOUPO_HOME=str(ROOT))
     case = Path(wd) / "lkp01"
-    shutil.copytree(CASE1, case, ignore=shutil.ignore_patterns("*.csv", "result*", "log*"))
+    case_records.copytree(CASE1, case, ignore=shutil.ignore_patterns("*.csv", "result*", "log*"))
     p = subprocess.run([str(PROPS), "."], cwd=case, env=env, capture_output=True, text=True, timeout=900)
     if p.returncode != 0:
         return ["(c) the lkp01 case did not run: exit %d\n%s" % (p.returncode, (p.stdout + p.stderr)[-600:])]
@@ -824,7 +825,7 @@ def measured_problems(wd):
     bad = []
     env = dict(os.environ, CHOUPO_HOME=str(ROOT))
     case = Path(wd) / "lkp02"
-    shutil.copytree(CASE2, case, ignore=shutil.ignore_patterns("*.csv", "result*", "log*"))
+    case_records.copytree(CASE2, case, ignore=shutil.ignore_patterns("*.csv", "result*", "log*"))
     p = subprocess.run([str(PROPS), "."], cwd=case, env=env, capture_output=True, text=True, timeout=1200)
     if p.returncode != 0:
         return ["(h) the lkp02 case did not run: exit %d\n%s" % (p.returncode, (p.stdout + p.stderr)[-600:])], {}
@@ -879,7 +880,7 @@ def refusal_problems(wd):
 
     def fresh(tag, props=None):
         d = Path(wd) / tag
-        shutil.copytree(CASE2, d, ignore=shutil.ignore_patterns("*.csv", "result*", "log*"))
+        case_records.copytree(CASE2, d, ignore=shutil.ignore_patterns("*.csv", "result*", "log*"))
         (d / "constant/propertyManifest").unlink()       # read the catalogue, not the sealed copies
         if props is not None:
             (d / "system/propsDict").write_text("operations\n(\n" + props + "\n);\n")

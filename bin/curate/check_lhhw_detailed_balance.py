@@ -77,6 +77,7 @@ import json
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -224,7 +225,7 @@ def main() -> int:
         for rel, binary in NATIVE:
             src = ROOT / "tutorials" / rel
             dst = Path(tmp) / src.name
-            shutil.copytree(src, dst)
+            case_records.copytree(src, dst)
             rx = dst / "constant" / "reactions"
             text = rx.read_text()
             new = re.sub(r"(\{\s*component\s+CO;\s*nu\s+-1;\s*order\s+)1(\s*;)",
@@ -258,7 +259,7 @@ def main() -> int:
         src = ROOT / "tutorials" / "batch/reactor/batch04_reversible_wgs"
         for rev in ("true", "false"):
             dst = Path(tmp) / ("col_" + rev)
-            shutil.copytree(src, dst)
+            case_records.copytree(src, dst)
             rx = dst / "constant" / "reactions"
             text = rx.read_text()
             new = re.sub(r"\{\s*component\s+H2;\s*nu\s+1;\s*order\s+0;\s*\}",
