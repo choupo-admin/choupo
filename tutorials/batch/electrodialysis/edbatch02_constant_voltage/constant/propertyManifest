@@ -26,8 +26,4 @@ propertyManifest
         "species/Cl.dat"  "77c9cffcfc3674c034800724ba22333a585a19fbc6a467df63876e68e73abae6";
         "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
     }
-    held
-    {
-        "components/Cl.dat"  "8b2f6029b7c039f6ebe718fc97e94a51768bfc5c9785856b13d1e973bf2c21f0";
-    }
 }

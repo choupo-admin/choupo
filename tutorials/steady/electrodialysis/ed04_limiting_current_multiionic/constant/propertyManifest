@@ -28,8 +28,4 @@ propertyManifest
         "species/Mg.dat"  "0282a568e26f8b6cff18f134b4f56ead2833df3aa18fc7c1799db09f756fad17";
         "species/SO4.dat"  "352fd2de8769dede4cacfd3f2535b652f73e8028630fd08fa5541f3e778ffcf4";
     }
-    held
-    {
-        "components/Cl.dat"  "8b2f6029b7c039f6ebe718fc97e94a51768bfc5c9785856b13d1e973bf2c21f0";
-    }
 }
