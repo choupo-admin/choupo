@@ -11,7 +11,7 @@
     sealed: the case exists to load the catalogue records as they stand.  */
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( 1122Tetrachloroethane  ethylPropionate  nButylFormate  ethylButanoate  nButylPropionate  pyrrole  3Methylthiophene  isopentylAcetate  2Chlorobutane  1Methoxy2Propanol  ethylLactate  nPropylPropionate  2Ethyl1Hexanol  dichloromethane  diethylSuccinate  244Trimethyl1Pentene  furan  perfluorooctane  diNPropylEther  2Ethylthiophene  methylPentanoate  tertButylAcetate  1Methoxy2PropylAcetate  morpholine  fluoroethane  pentanenitrile  11Diethoxyethane  pentanoicAcid  2Amino2Methyl1Propanol  cyclopentanone  benzoBThiophene  2Methylfuran  nButylButanoate  methylLactate  ethylHexanoate  diphenylmethane  vinylPropionate  2Ethoxypropene );
 

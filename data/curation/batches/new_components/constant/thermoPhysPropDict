@@ -11,7 +11,7 @@
     the case exists to load the catalogue records as they stand.  */
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( 2Ethoxyethanol  ethylOctanoate  13Propanediol  13Butanediol  16Hexanediol  allylAlcohol  33Oxydipropanol  methylLevulinate );
 

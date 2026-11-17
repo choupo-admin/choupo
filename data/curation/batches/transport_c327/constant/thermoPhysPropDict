@@ -10,7 +10,7 @@
     every property asked is a pure-component one.  NOT sealed.  */
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( 12Butanediol  12Propanediol  13Butanediol  13Propanediol  1Chlorobutane  1Decanol  1Octanol  2Butoxyethanol  2Chlorobutane  2Ethoxyethanol  2Ethylthiophene  33Oxydipropanol  3Methyl1Butanol  Dichloroethane  NaNO3  R245fa  aceticAcid  acetone  benzene  cyclohexane  cyclopentane  cyclopentanol  diethylEther  diethylSuccinate  diethyleneGlycolDiethylEther  dimethylCarbonate  dimethylEther  ethanol  ethylAcetate  ethylBenzene  ethylButanoate  ethylDecanoate  ethylHexanoate  ethylLactate  ethylOctanoate  ethylPropionate  fluoroethane  isohexane  isopentane  isopentylAcetate  mXylene  methylButanoate  methylDecanoate  methylHeptanoate  methylHexanoate  methylLactate  methylLevulinate  methylLinoleate  methylLinolenate  methylOctanoate  methylPalmitate  methylPentanoate  methylStearate  nButylButanoate  nDecane  nDodecane  nHeptane  nHexane  nNonane  nOctane  nUndecane  oXylene  pXylene  pentanoicAcid  squalane  tetradecanoicAcid  tetrahydropyran  toluene );
 

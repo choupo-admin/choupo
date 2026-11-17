@@ -2,7 +2,7 @@
     INSTALLATION catalogue, which holds the records.  */
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components       ( water );
 

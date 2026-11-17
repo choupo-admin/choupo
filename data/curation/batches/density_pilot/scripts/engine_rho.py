@@ -26,7 +26,7 @@ verbosity 3;
 """
 
 THERMO = """recordType thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 components ( %(comps)s );
 equilibrium
 {
