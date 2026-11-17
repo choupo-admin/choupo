@@ -3734,6 +3734,31 @@ accepts today, and that is a policy call.
 > is shown both green on the tree and red under its sabotage.  Nothing of
 > rule 4b is weakened at any step; speed comes from the tiers, the pool and
 > the reuse already landed, never from asserting less.
+>
+> **C420, BATCH 2 LANDED, AND IT CONFIRMS THE CUT (2026-11-17).**  Of 13
+> refusal and announcement gates read in full, TWO fit the table
+> (restricted_network 175 -> 61 lines of data, solverdict_lint 135 -> 73;
+> scripts deleted), TEN stay scripts with their plumbing on the kit
+> (inline_pair_announced, sequential_plan, volatility_declaration,
+> electrolyte_sidecars, flash_model, solid_property_refusals,
+> negative_pressure, postdict_audit, estimated_species_announced,
+> optimiser_converged: each reads numbers, scans source or edits
+> structurally), ONE is left (unread_keys: a corpus walk).  Net -100 lines;
+> gates 355 -> 353.  So "46 refusal probes become data" was optimistic by a
+> factor of about six: a gate that only refuses is rare, most also prove a
+> number.  The table grew to its limit (per-probe base and binary, editall,
+> add, copy, nomatch) and grows no further: anything needing more is a
+> script on the kit.  PROVEN: all 12 claim lines byte-identical; 12 of 12
+> data sabotages and 11 of 11 script sabotages red; the runner and the
+> eleven kit scripts run at once exit 0 and leave the tree clean (retaken by
+> the architect on the merge with main); `--fast` 88/0 (does not reach
+> them).  STRONGER THAN BEFORE in two places: an edit whose text is absent
+> now fails (two arms of restricted_network had tolerated it), and a
+> negative control must run and stay silent (a crash had counted as
+> silence).  Four runs that wrote in the case directory now run in probe
+> copies (electrolyte_sidecars and flash_model ISO -> PAR).  NOT PROVEN:
+> the pooled replay in a full sweep, and the ISO -> PAR claims by the lane
+> tracer: both are what the `--nightly` sweep of the next slice shows.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
