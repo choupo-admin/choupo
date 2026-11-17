@@ -67,6 +67,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 NAME = "check_density_pilot"
 CASES = ROOT / "tutorials" / "steady" / "thermo"
@@ -111,8 +114,14 @@ OLD_ANTOINE = """vaporPressure
 
 
 def with_antoine_water(d):
-    rec = d / "constant" / "components" / "water.dat"
+    #  the case references the catalogue: the record to edit is put in the copy,
+    #  declared as the variation it is, and the copy's pins are dropped
+    rec = case_records.ensure_local(d, "components/water.dat")
+    case_records.unpin(d)
     t = rec.read_text()
+    t = re.sub(r"(?m)^(name\s+water;[^\n]*\n)",
+               r'\1variationOf water;\nvariationReason "probe: the old Antoine law put back to test the two-lines mechanism";\n',
+               t, count=1)
     m = re.search(r"(?m)^vaporPressure\s*\{", t)
     depth, i = 0, m.end() - 1
     while True:
