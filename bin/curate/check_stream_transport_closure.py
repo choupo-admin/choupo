@@ -46,6 +46,10 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
@@ -84,7 +88,7 @@ def parse_stream_file(path: pathlib.Path):
 def run_case(rel: str, tmp: pathlib.Path) -> dict:
     src = ROOT / rel
     dst = tmp / src.name
-    shutil.copytree(src, dst)
+    case_records.copytree(src, dst)
     for junk in dst.glob("log.*"):
         junk.unlink()
     p = subprocess.run([str(ROOT / "bin" / "runCase"), "-f", str(dst)],

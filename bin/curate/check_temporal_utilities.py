@@ -46,6 +46,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 BATCH = ROOT / "build" / "linux64Gcc" / "choupoBatch"
@@ -60,7 +64,7 @@ failures = []
 
 def run_case(tmp: Path, src: Path):
     case = tmp / src.name
-    shutil.copytree(src, case, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, case, ignore=shutil.ignore_patterns(
         "expected", "log.*", "reports", "resultJson*"))
     env = {"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"}
     p = subprocess.run([str(BATCH), "."], cwd=case, env=env,

@@ -82,6 +82,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 repo = Path(__file__).resolve().parents[2]
 solve = repo / "choupoSolve"
@@ -128,7 +132,7 @@ def resultJson(out):
 with tempfile.TemporaryDirectory() as td:
     case = Path(td) / "uq"
     (case / "system").mkdir(parents=True)
-    shutil.copytree(uniquacBase / "constant", case / "constant")
+    case_records.copytree(uniquacBase / "constant", case / "constant")
     (case / "uq.cho").write_text("")
     (case / "system/controlDict").write_text(
         "application choupoProps;\n"
@@ -161,7 +165,7 @@ with tempfile.TemporaryDirectory() as td:
 # ---- (b) an exhausted flash outer loop -----------------------------------
 with tempfile.TemporaryDirectory() as td:
     case = Path(td) / "f02"
-    shutil.copytree(flash02, case)
+    case_records.copytree(flash02, case)
     rc0, out0 = run(solve, case)
     fd = case / "system/flowsheetDict"
     txt = fd.read_text()
@@ -188,7 +192,7 @@ with tempfile.TemporaryDirectory() as td:
 def satProbe(unitType, flows, label, word, P="2061600", genuine=None):
     with tempfile.TemporaryDirectory() as td:
         case = Path(td) / "sat"
-        shutil.copytree(flash09, case)
+        case_records.copytree(flash09, case)
         for f in ("liq", "vap"):
             p = case / "0" / f
             if p.exists():
@@ -245,7 +249,7 @@ for f in (satProbe("bubbleT", ("0.149515816249", "0.850484183751"),
 X_AZ = 0.84022650349168
 with tempfile.TemporaryDirectory() as td:
     case = Path(td) / "az"
-    shutil.copytree(uniquacBase, case)
+    case_records.copytree(uniquacBase, case)
     feed = case / "0/feed"
     t = feed.read_text()
     t2 = re.sub(r"ethanol\s+30 kmol/h;", "ethanol    %.16g kmol/h;" % (100 * X_AZ), t)
@@ -286,7 +290,7 @@ with tempfile.TemporaryDirectory() as td:
 
 with tempfile.TemporaryDirectory() as td:
     case = Path(td) / "b01"
-    shutil.copytree(bubble01, case)
+    case_records.copytree(bubble01, case)
     rc, out = run(solve, case)
     if rc != 0 or not re.search(r"Converged:\s+yes", out) \
             or re.search(r"root found is TRIVIAL", out):
@@ -296,7 +300,7 @@ with tempfile.TemporaryDirectory() as td:
 # ---- (e) the T-x-y block ---------------------------------------------------
 with tempfile.TemporaryDirectory() as td:
     case = Path(td) / "f09"
-    shutil.copytree(flash09, case)
+    case_records.copytree(flash09, case)
     rc, out = run(solve, case)
     if '"Tbubble"' in out:
         fails.append("(e) flash09's result still carries a T-x-y Tbubble array"
@@ -306,7 +310,7 @@ with tempfile.TemporaryDirectory() as td:
                      " omitted")
 with tempfile.TemporaryDirectory() as td:
     case = Path(td) / "f01"
-    shutil.copytree(flash01, case)
+    case_records.copytree(flash01, case)
     rc, out = run(solve, case)
     if '"Tbubble"' not in out:
         fails.append("(e) negative: flash01 (ideal-gas benzene/toluene) lost"
