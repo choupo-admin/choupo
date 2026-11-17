@@ -103,6 +103,7 @@ import math
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -196,7 +197,7 @@ def main():
     blocks = paper_case.op_blocks((CASE / "system" / "propsDict").read_text())
     with tempfile.TemporaryDirectory(prefix="porewhy_") as d:
         case = Path(d) / "case"
-        shutil.copytree(CASE, case, ignore=shutil.ignore_patterns("postProcessing"))
+        case_records.copytree(CASE, case, ignore=shutil.ignore_patterns("postProcessing"))
         env = dict(os.environ, CHOUPO_HOME=str(ROOT))
         r = subprocess.run([str(PROPS), str(case)], capture_output=True, text=True,
                            timeout=1800, env=env, cwd=str(case))

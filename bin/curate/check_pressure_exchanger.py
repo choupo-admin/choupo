@@ -113,6 +113,7 @@ import math
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -241,7 +242,7 @@ def arm_a(res):
 # ---------------------------------------------------------------------------
 def fixture(tmp: Path, name: str, edit) -> Path:
     dst = tmp / name
-    shutil.copytree(CASE, dst, ignore=shutil.ignore_patterns("converged", "design",
+    case_records.copytree(CASE, dst, ignore=shutil.ignore_patterns("converged", "design",
                     "reports", "iterations", "log.*", "*.json"))
     edit(dst)
     return dst

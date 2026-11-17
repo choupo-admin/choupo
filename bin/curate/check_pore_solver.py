@@ -251,6 +251,7 @@ import math
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -289,7 +290,7 @@ def result_of(out):
 
 
 def copy_case(src, dst):
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
         "expected", "converged", "reports", "design", "*.csv"))
     return dst
 

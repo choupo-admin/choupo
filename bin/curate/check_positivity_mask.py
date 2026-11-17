@@ -128,6 +128,7 @@ import json
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -277,7 +278,7 @@ holdup
 # -------------------------------------------------------- the batch fixture
 def build_batch(tmp, end_time):
     case = Path(tmp) / "batch_two_vessels"
-    shutil.copytree(BATCH_DONOR, case, ignore=shutil.ignore_patterns(
+    case_records.copytree(BATCH_DONOR, case, ignore=shutil.ignore_patterns(
         "expected", "propertyManifest", "converged", "log.*", "reports",
         "trajectory.csv", "[1-9]*", "0.*"))
     # ethanol 0.00925 kmol in 1 litre; a zeroth-order rate of 1e-2 kmol/(m3 s)

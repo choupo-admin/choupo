@@ -60,6 +60,7 @@ another item (check_plant_layout arm (k)), the GUI drawing of the nozzles
 import json
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -96,7 +97,7 @@ def prepare(work, name, src, layout_edit=None, layout_text=None):
     d = work / name
     if d.exists():
         shutil.rmtree(d)
-    shutil.copytree(src, d, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, d, ignore=shutil.ignore_patterns(
         "reports", "converged", "design", "iterations"))
     lay = d / "system" / "layoutDict"
     if layout_text is not None:

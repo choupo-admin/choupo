@@ -111,6 +111,7 @@ import json
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -220,7 +221,7 @@ def solve_paper(Jv, k, D, z, cb, cp, T):
 def build_props_probe(dst, ions, close_by, dataset_text, policy):
     #  without the case's views: a probe changes the ions its figures name, and
     #  those figures are check_postprocessing's (DEV.md 4c C147, C149)
-    shutil.copytree(PROPS_CASE, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(PROPS_CASE, dst, ignore=shutil.ignore_patterns(
         "log.*", "expected", "reports", "postProcessing"))
     (dst / "constant" / "experimental" / "probe.dat").write_text(dataset_text)
     pd = dst / "system" / "propsDict"
@@ -347,7 +348,7 @@ def main():
         # ---------------- (d) the refusals ------------------------------------
         def probe_refusal(label, mutate, must_contain):
             dd = tmp / label
-            shutil.copytree(PROPS_CASE, dd, ignore=shutil.ignore_patterns(
+            case_records.copytree(PROPS_CASE, dd, ignore=shutil.ignore_patterns(
                 "log.*", "expected", "reports", "postProcessing"))
             pdd = dd / "system" / "propsDict"
             pdd.write_text(strip_views(pdd.read_text()))
@@ -430,7 +431,7 @@ def main():
         # the negative: the uncoupled twin
         with tempfile.TemporaryDirectory() as tmp:
             dn = Path(tmp) / "none"
-            shutil.copytree(M14, dn, ignore=shutil.ignore_patterns("converged", "log.*", "expected", "reports"))
+            case_records.copytree(M14, dn, ignore=shutil.ignore_patterns("converged", "log.*", "expected", "reports"))
             p = dn / "system/flowsheetDict"
             p.write_text(p.read_text().replace("ionCoupling        electroneutral;", "ionCoupling        none;"))
             rcn, outn = run("choupoSolve", dn)
