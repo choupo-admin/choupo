@@ -3629,6 +3629,24 @@ accepts today, and that is a policy call.
 > (3) RULE: no new gate without a real defect it would have caught, named in
 > its header; a gate that has never failed on a real defect is a candidate
 > for the next cut.  Reported to Vitor as a number before and after.
+>
+> **C420 (Vitor, 2026-11-17, asking whether the simulator is now easier to
+> maintain; the architect: a little, and the 358 gates are the largest
+> maintenance cost left -- 37 went red on 11-17 and none was a physics
+> error).**  A COMMISSION: rule 4e (4) is applied to the gates that already
+> exist.  METHOD: (1) evidence, by Sonnet readers, one row per gate: the
+> claim in its header, the real defect it names (commit or DEV entry), whether
+> it ever failed on a real commit, its seconds, the files it reads, the gates
+> that hold the same guarantee; (2) the verdict, by the architect on Fable
+> (Vitor switched the session to it for this: "como isso e muito importante
+> vou ativar o Fable"): a MAP OF GUARANTEES -- each guarantee Choupo gives,
+> the one gate that holds it, and for every other gate KEEP / NIGHTLY / MERGE
+> INTO / DELETE with its reason, written here before any file moves; (3)
+> execution by one Sonnet builder, a Sonnet reviewer confirming no closure is
+> left unguarded.  NOT NEGOTIABLE: every gate of rule 4b (mass, element,
+> energy, solute and campaign closures, `--record` refusing an open closure)
+> stays in every mode; so do the licence and standards-write gates.  Target:
+> under 250, never by a quota -- a gate with a real defect behind it stays.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the

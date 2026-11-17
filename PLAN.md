@@ -52,6 +52,7 @@ LANDED 2026-11-17: the batch of C413 slice 3, C410 and the C415 pilot (one full 
 
 | status | what | ref |
 |---|---|---|
+| RUNNING 11-17 | The gate cut, second pass: rule 4e (4) applied to the 358 existing gates. Evidence by Sonnet readers, the map of guarantees and the verdict by the architect (written in DEV.md before any file moves), then one builder and one reviewer. The closure gates of rule 4b are out of scope. | C420 |
 | ONE WRITER since 11-12 | The laptop session builds everything; the cloud session reviews what has landed and reports under docs/reviews/ (it fixes nothing). The laptop inherits the cloud's documentation debt, liquid-liquid pairs in bulk, the generated catalogue page, the Gibbs-Duhem test and the reference EoS open items | C364, C363, C362 |
 | LANDED 11-12 | Catalogue: severe fits stay (NRTL 793, UNIQUAC 374, Wilson 790 records; a severe pair is promoted only if it beats the ideal mixture on its own points); aqueous species 53 -> 74 (NBS / CODATA); electrolytes (eNRTL 48, Pitzer 99); transport and surface-tension records; Henry in water and in organic solvents | C333, C334, C320, C311, C327, C328, C321 |
 | LANDED 11-12 | EduTools shelf "Property data & parameters" (7 tools, the path "From a measurement to a parameter"); rule 4d and its gate `check_feature_documented` (41 names of pinned debt, may only shrink); main's red gates after the 11-12 re-record repaired (species citations, Claus and ammonia-inventory prose, the relief witness) | C332, C315, C316, C322, C338 |
