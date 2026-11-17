@@ -68,29 +68,27 @@ rebuild -> arm (a) fails; return early on any one of the four words -> (a) or
 van 't Hoff announcement in SpeciationSolver -> (g) fails; drop the
 unrecognised-word branch -> (h) fails.
 """
+import contextlib
 import json
-import os
 import re
 import shutil
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import case_records  # noqa: E402
+import gatekit  # noqa: E402
 
-ROOT = Path(__file__).resolve().parents[2]
-PROPS = ROOT / "choupoProps"
+ROOT = gatekit.repo
+PROPS = None
 WITNESS = ROOT / "tutorials/props/electrolyte/estimatedSpecies01_announced"
 LINE = "[estimate] species 'OH'"
+_STACK = None          # holds the probe copies of the witness for the length of main()
 
 
 def run(case):
-    env = dict(os.environ, CHOUPO_HOME=str(ROOT))
-    p = subprocess.run([str(PROPS), "."], cwd=str(case), env=env,
-                       capture_output=True, text=True, timeout=300)
-    return p.returncode, p.stdout + p.stderr
+    return gatekit.run(PROPS, case, timeout=300)
 
 
 def result(out):
@@ -148,8 +146,7 @@ PROVENANCE = (
 
 
 def variant(tmp, name, edit):
-    dst = tmp / name
-    shutil.copytree(WITNESS, dst)
+    dst = _STACK.enter_context(gatekit.probe_copy(WITNESS))
     #  the witness references the catalogue: the record to edit is put in the copy,
     #  declared as the variation it is, and the copy's pins are dropped
     f = case_records.ensure_local(dst, "species/OH.dat")
@@ -167,14 +164,15 @@ def variant(tmp, name, edit):
 
 
 def main():
+    global PROPS, _STACK
     fails = []
-    if not PROPS.exists():
-        print("check_estimated_species_announced: FAIL choupoProps is not built")
+    try:
+        PROPS = gatekit.binary("choupoProps")
+        gatekit.base_case(WITNESS)
+    except gatekit.GateRefusal as e:
+        print(f"check_estimated_species_announced: FAIL {e}")
         return 1
-    if not WITNESS.is_dir():
-        print("check_estimated_species_announced: FAIL witness case missing")
-        return 1
-    with tempfile.TemporaryDirectory() as t:
+    with tempfile.TemporaryDirectory() as t, contextlib.ExitStack() as _STACK:
         tmp = Path(t)
         rc, out = run(variant(tmp, "a", lambda s: s))
         if rc != 0:
