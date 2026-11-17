@@ -3035,15 +3035,15 @@ if [ "$#" -eq 0 ]; then
     #  authoritative material-input form per inlet -- a wrapper beside a
     #  top-level form is refused rather than resolved by an undeclared
     #  precedence.  The round trip is witnessed, not asserted.
-    if gate_exec "$ROOT/bin/curate/check_material_wrapper.py" > /tmp/matwrap.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "material-wrapper" "$(head -1 /tmp/matwrap.$$)"
+    if gate_exec "$ROOT/bin/curate/check_aqueous_inlet.py" > /tmp/aqueous_inlet.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "aqueous-inlet-gate" "$(gate_claim check_aqueous_inlet /tmp/aqueous_inlet.$$ | cut -c1-240)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_material_wrapper.py)\n" "material-wrapper"
-        cat /tmp/matwrap.$$
+        printf "FAIL  %-40s  (run bin/curate/check_aqueous_inlet.py)\n" "aqueous-inlet-gate"
+        cat /tmp/aqueous_inlet.$$
         fail=$((fail+1))
     fi
-    rm -f /tmp/matwrap.$$
+    rm -f /tmp/aqueous_inlet.$$
 
     #  gamma_pm, the MEASURABLE activity coefficient (2026-08-10).  Every
     #  gamma the speciation published before this was a single-ion one, which
@@ -3109,7 +3109,6 @@ if [ "$#" -eq 0 ]; then
                    "case-manifest-gate case_manifest.py --check" \
                    "generated-artefacts-gate generated_artefacts.py --check" \
                    "equilibrium-state-ref-gate check_equilibrium_state_ref.py" \
-                   "aqueous-qualifier-gate check_aqueous_qualifier.py" \
                    "derived-density-gate check_derived_density.py" \
                    "volumetric-rung1-gate check_volumetric_rung1.py" \
                    "models-catalogue-gate check_models_catalogue.py" \
@@ -8230,15 +8229,7 @@ PYEOF
     # mg/L, and eight refusals fire by name.  Invisible to a golden master:
     # the reconciliation happens on READ, so a correction that silently
     # stopped being applied leaves the KPIs where they were.
-    if gate_exec "$ROOT/bin/curate/check_aqueous_analysis.py" > /tmp/aqagate.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "aqueous-analysis-gate" "$(head -1 /tmp/aqagate.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_aqueous_analysis.py)\n" "aqueous-analysis-gate"
-        cat /tmp/aqagate.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/aqagate.$$
+    #  (check_aqueous_analysis is an ARM of check_aqueous_inlet, run at the first site of its cluster; DEV.md 4c C419)
 
     # Aqueous-reconciliation gate (A2): constrained WEIGHTED LEAST SQUARES
     # over the measured analytical quantities, recomputed independently here
