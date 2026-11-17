@@ -172,6 +172,7 @@ EXCLUSIONS = [
                  "site/analytics.conf", "site/frozenApps.txt",
                  "bin/curate/recording_platform.txt",
                  "bin/curate/suite_lanes.txt",
+                 "bin/curate/refusal_probes/*.probes",
                  "bin/curate/migrate_thermoPhysProp.skipped.txt",
                  ".claude/settings.json"]),
     _e("not-a-code-kind-markup",

@@ -3683,6 +3683,33 @@ accepts today, and that is a policy call.
 > lines, sabotage arms still red), judged before the rest.  The measure
 > reported is lines of gate code and the count of files a layout change
 > touches, not the number of gates.
+>
+> **C420, THE PILOT LANDED (2026-11-17).**  `bin/curate/gatekit.py` (128
+> lines: repository root, the tree's own binary or a refusal by name, a
+> private probe copy through `case_records.copytree`, the run, an edit that
+> FAILS when its text is absent, the verdict lines) and
+> `bin/curate/check_refusal_probes.py` (215 lines) walking
+> `bin/curate/refusal_probes/*.probes`.  Four gates became data (pid
+> refusals 67 lines of script -> 36 of data; pump liquid inlet 96 -> 23;
+> shortcut column 153 -> 25; membrane feed scope 127 -> 50) and their
+> scripts are deleted; `check_forward_order` stays a script, on the kit (its
+> edit is structural and it has four binaries and positive controls: the
+> table is not bent for it).  PROVEN: the four OK lines byte-identical to the
+> former gates'; every group red under a sabotaged copy of its data
+> (`--probes-dir`), `forward_order` red under a sabotaged message, an edit
+> whose text is absent red; the two gates run side by side exit 0 and leave
+> the tree clean (both PAR now; pump and membrane ran SERIAL, forward_order
+> ISO); `--fast` 88/0 (it does not reach these gates: stated).  A NEW GROUP
+> NEEDS NO EDIT OF `bin/runTests`: the runner ends with one `@row` line per
+> group and the suite prints one result row from each.  HONEST COUNT: the
+> pilot is 692 lines where there were 595, because the kit and the runner
+> are paid once; gates 358 -> 355.  Each further probe costs its data only.
+> NOT PROVEN: a full sweep's pooled replay of the new site (`gate_exec` is
+> keyed by argv and the site has the shape of the C419 merged sites; the
+> next sweep is the proof).  NEXT: the remaining refusal and announcement
+> probes in one builder's lane, in batches of about ten, the kit growing
+> only by what a batch needs (reading a result file, a positive control, a
+> run with arguments).
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
