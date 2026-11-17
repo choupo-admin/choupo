@@ -124,13 +124,11 @@ PRE  | PAR    | bin/curate/check_stream_transport_closure.py       | traced: wri
 PRE  | ISO*2  | bin/curate/check_solute_basis.py                   | ISO (private slot tree; measured: writes tutorials/batch/crystallisation/batch13_nacl_pitzer/.tmp_1080 (+322 more))
 PRE  | ISO*2  | bin/curate/check_drill_in.py                       | ISO (private slot tree; measured: writes tutorials/plant/ChemicalPlantTutorial/converged (+469 more))
 PRE  | ISO    | bin/curate/check_feed_switch.py                    | ISO (private slot tree; measured: writes 0, 0/bed.profile (a case written in place; re-traced alone))
-PRE  | ISO    | bin/curate/check_solverdict_lint.py                | ISO (private slot tree; measured: writes balanceTrajectory.csv (+4 more))
 PRE  | ISO    | bin/curate/check_thermal_bed.py                    | ISO (private slot tree; measured: writes 0 (+8 more))
 PRE  | PAR    | bin/curate/check_volatility_declaration.py         | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_seal_verdict.py                   | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO*2  | bin/curate/check_cycle_css.py                      | ISO (private slot tree; measured: writes 0 (+392 more))
 PRE  | ISO    | bin/curate/check_electrolyte_sidecars.py           | ISO (private slot tree; measured: writes acidulation_davies.csv (+4 more))
-PRE  | ISO    | bin/curate/check_restricted_network.py             | ISO (private slot tree; measured: writes rainwater_10C.csv (+3 more))
 PRE  | SERIAL | bin/curate/check_pinch.py                              | merged (DEV.md 4c C419) from pinch_p1, pinch_p2, pinch_utility; lane = the strictest of the former lanes (ISO, ISO)
 PRE  | PAR    | bin/curate/check_cooling_tower.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_reactor_limits.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool

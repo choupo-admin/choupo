@@ -3655,19 +3655,7 @@ PYEOF
     fi
     rm -f /tmp/posmask.$$
 
-    # solverDict-lint gate: a system/solverDict in a batch/ctrl case is a
-    # file nobody reads -- announced by name with the cost stated (the
-    # unread-keys posture), never refused; clean cases stay silent
-    # (sabotage-verified 2026-08-01).
-    if gate_exec "$ROOT/bin/curate/check_solverdict_lint.py" > /tmp/sdlint.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "solverdict-lint-gate" "$(tail -1 /tmp/sdlint.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_solverdict_lint.py)\n" "solverdict-lint-gate"
-        cat /tmp/sdlint.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/sdlint.$$
+    #  (solverdict_lint is a GROUP of check_refusal_probes, run at the first site of its cluster; DEV.md 4c C420)
 
     # A5-T1 thermal-bed gate: the adiabatic bed announces its equilibrium-
     # theory anchors and the design's 6 scope refusals fire named
@@ -3743,18 +3731,7 @@ PYEOF
     fi
     rm -f /tmp/elsc.$$
 
-    # D-R1 restricted-network gate (approved 2026-08-02): the declared
-    # `networkScope restricted` announces + labels + refuses its five
-    # dishonest shapes; sabotage-verified (no-op parser -> 7 probes fail).
-    if gate_exec "$ROOT/bin/curate/check_restricted_network.py" > /tmp/rnet.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "restricted-network-gate" "$(tail -1 /tmp/rnet.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_restricted_network.py)\n" "restricted-network-gate"
-        cat /tmp/rnet.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/rnet.$$
+    #  (restricted_network is a GROUP of check_refusal_probes, run at the first site of its cluster; DEV.md 4c C420)
 
     # Pinch P1 gate (approved 2026-08-02, P1 only): the pass's targets
     # equal an independent Python problem-table over the same segments,

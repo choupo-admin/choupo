@@ -1,0 +1,61 @@
+# A deliberately RESTRICTED speciation network is DECLARED, refused when dishonest,
+# announced and labelled (DEV.md 4c D-R1; design record
+# docs/design/restricted-speciation-network.md, approved 2026-08-02 with two
+# conditions: the reduced network passes the same consistency machinery as the full
+# one, and every result from a reduced model is clearly labelled).
+# Former gate: check_restricted_network.py.  Probed through the real binary on the
+# converted witness pitzer_seawater_verify (networkScope restricted / water-dissociation,
+# stated once per pin, so the removals replace every occurrence).
+#  witness   runs, ANNOUNCES the restriction, quotes the reason, carries the label.
+#  1..5      no list / no reason / a name matching no loaded record / `networkScope
+#            full` beside a list (two authorities) / an admitted record unreachable
+#            from the feed (a restriction that restricts nothing is a false claim).
+#  negative  an ordinary full-scope case carries NO announcement and NO label.
+group      restricted-network
+row        restricted-network-gate
+binary     choupoProps
+base       tutorials/props/electrolyte/pitzer_seawater_verify
+strip      expected
+timeout    900
+ok_head    "check_restricted_network: OK -- "
+fail_head  "check_restricted_network: FAIL"
+ok         the declared restricted network announces itself and quotes its reason,
++          labels its results (networkRestricted), and refuses the five dishonest shapes
++          (no list / no reason / unknown record / two authorities / unreachable
++          admission); a full-scope case stays silent
+
+control    WITNESS: announce + reason + label
+  match    RESTRICTED network \(networkScope
+  match    NON-pairing major-ion treatment
+  match    networkRestricted
+
+probe      REFUSAL-1 (no network list)
+  editall  system/propsDict	network      ( water-dissociation );
+  match    networkScope restricted
+  match    requires a non-empty `network
+
+probe      REFUSAL-2 (no reason)
+  editall  system/propsDict	re:reason\s+"[^"]*";
+  match    requires a non-empty `reason
+  match    student
+
+probe      REFUSAL-3 (unknown record name)
+  editall  system/propsDict	network      ( water-dissociation );	network      ( no-such-record );
+  match    'no-such-record'
+  match    no loaded chemistry record
+  match    Loaded records:
+
+probe      REFUSAL-4 (full scope beside a list: two authorities)
+  edit     system/propsDict	networkScope restricted;	networkScope full;
+  match    TWO
+  match    authorities
+
+probe      REFUSAL-5 (admitted but unreachable from this feed)
+  copy     constant/chemistry/CaSO4aq-formation.dat	data/standards/chemistry/CaSO4aq-formation.dat
+  edit     system/propsDict	network      ( water-dissociation );	network      ( water-dissociation CaSO4aq-formation );
+  match    unreachable from this feed
+
+control    NEGATIVE (a full-scope case stays silent)
+  base     tutorials/props/electrolyte/rainwater_air
+  nomatch  RESTRICTED network
+  nomatch  networkRestricted

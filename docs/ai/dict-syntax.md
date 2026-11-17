@@ -964,7 +964,7 @@ explicit; what must NOT exist is a solver option ignored in silence):
 | `controlDict` `timeStepping` / `timeSteppingControl {}` | TIME control of the transient binaries (choupoBatch/choupoSemiContinuous/choupoCtrl) | `adaptive;` + `rtol/atol/deltaT0/deltaTmax/maxGrowth/maxSteps` |
 | `fixedBedAdsorber` sub-stepping | that unit's own inner discretisation | reads BOTH its `solver{rtol, samplingInterval, jacobian}` and controlDict timing |
 
-The anti-silence contract (gate `check_solverdict_lint`, all four
+The anti-silence contract (probe group `solverdict-lint` of `check_refusal_probes`, all four
 binaries): a `system/solverDict` in a batch/ctrl/props case is announced
 by name with its cost stated ("every value in it had NO effect"), and a
 transient `timeStepping`/`timeSteppingControl` in a steady case is
@@ -1054,7 +1054,7 @@ The run announces the restriction and quotes the reason; results carry a
 records, so a re-import can never silently un-restrict the physics.  The
 reduced network passes the same charge/stoichiometry verification as the
 full one.  Reference: `tutorials/props/electrolyte/pitzer_seawater_verify`;
-gate `check_restricted_network`.  (The old `constant/electrolyte/`
+probe group `restricted-network` of `check_refusal_probes`.  (The old `constant/electrolyte/`
 sidecar is fully retired.)
 
 ## Views: the figures and tables of a props run (choupoProps, DEV.md 4c C147, C149)

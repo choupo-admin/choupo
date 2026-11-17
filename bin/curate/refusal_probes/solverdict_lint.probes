@@ -1,0 +1,73 @@
+# A system/solverDict in a batch, ctrl or props case is a FILE nobody reads -- the
+# unread-key defect one level up -- and the binary must SAY so: it ANNOUNCES, never
+# refuses (the unread-keys posture, DEV.md 4b).  Scoping record:
+# docs/design/solverdict-consolidation-scope.md (option A's non-contentious half; the
+# A/B/C grammar decision stays with Vitor).
+# Former gate: check_solverdict_lint.py.  Every probe is a CONTROL: the run must
+# continue (exit zero) and carry the announcement (naming the file and the cost), and
+# each unmodified case must stay silent (the lint must not cry wolf).  Four binaries,
+# four shipped cases; the steady one is the mirror image: a transient time-solver key
+# (`timeStepping adaptive;` appended to controlDict) that choupoSolve never reads.
+# The NEGATIVE controls also require the case to RUN: the former gate let a crash
+# count as silence.
+group      solverdict-lint
+row        solverdict-lint-gate
+binary     choupoSolve
+base       tutorials/steady/flash/flash01_benzene_toluene
+strip      expected converged reports
+timeout    600
+ok_head    "check_solverdict_lint: OK -- "
+fail_head  "check_solverdict_lint: FAIL"
+ok         an ignored system/solverDict is announced by name in batch, ctrl AND props,
++          a transient timeStepping key is announced by the steady binary (runs
++          continue; cost stated), and the clean cases stay silent
+
+control    POSITIVE-batch (recipe02 + a solverDict)
+  base     tutorials/batch/recipes/recipe02_setpoint_ramp
+  binary   choupoBatch
+  strip    expected
+  add      system/solverDict	// gate probe: a file this binary never reads\nrtol 1e-9;\n
+  match    \[dict\] system/solverDict is present but choupoBatch does not read it
+  match    NO effect
+
+control    NEGATIVE-batch (recipe02 as shipped)
+  base     tutorials/batch/recipes/recipe02_setpoint_ramp
+  binary   choupoBatch
+  strip    expected
+  nomatch  system/solverDict is present
+
+control    POSITIVE-ctrl (ctrl01 + a solverDict)
+  base     tutorials/ctrl/ctrl01_cstr_temp_control
+  binary   choupoCtrl
+  strip    expected
+  add      system/solverDict	// gate probe: a file this binary never reads\nrtol 1e-9;\n
+  match    \[dict\] system/solverDict is present but choupoCtrl does not read it
+  match    NO effect
+
+control    NEGATIVE-ctrl (ctrl01 as shipped)
+  base     tutorials/ctrl/ctrl01_cstr_temp_control
+  binary   choupoCtrl
+  strip    expected
+  nomatch  system/solverDict is present
+
+control    POSITIVE-props (pcsaft01 + a solverDict)
+  base     tutorials/props/molecular/pcsaft01_pure_nhexane
+  binary   choupoProps
+  strip    expected
+  add      system/solverDict	// gate probe: a file this binary never reads\nrtol 1e-9;\n
+  match    \[dict\] system/solverDict is present but choupoProps does not read it
+  match    NO effect
+
+control    NEGATIVE-props (pcsaft01 as shipped)
+  base     tutorials/props/molecular/pcsaft01_pure_nhexane
+  binary   choupoProps
+  strip    expected
+  nomatch  system/solverDict is present
+
+control    POSITIVE-steady (flash01 + `timeStepping adaptive;` in controlDict)
+  edit     system/controlDict	re:\Z	\ntimeStepping adaptive;\n
+  match    \[dict\] controlDict `timeStepping` is present but choupoSolve
+  match    NO effect
+
+control    NEGATIVE-steady (flash01 as shipped)
+  nomatch  `timeStepping` is present
