@@ -270,6 +270,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records   # noqa: E402  (C413: a pinned case carries no record copy)
+
 ROOT = Path(__file__).resolve().parents[2]
 EVAP = ROOT / "src" / "unitOperations" / "heatTransfer" / "Evaporator.cpp"
 COLUMN = ROOT / "src" / "unitOperations" / "distillation" / "DistillationColumn.cpp"
@@ -349,7 +352,7 @@ def build_fixture(root: Path, T_chest: str, phase: str, tag: str) -> Path:
         shutil.rmtree(case)
     (case / "system").mkdir(parents=True)
     (case / "0").mkdir()
-    shutil.copytree(DONOR / "constant", case / "constant")
+    case_records.copytree(DONOR / "constant", case / "constant")
     #  The sealed manifest is the donor's, and this is not the donor.
     (case / "constant" / "propertyManifest").unlink(missing_ok=True)
     (case / "system" / "controlDict").write_text(CONTROL)
@@ -721,7 +724,7 @@ def main() -> int:
         else:
             ant = {}
             for comp in ("benzene", "toluene"):
-                txt = (SATMIX / "constant" / "components" / f"{comp}.dat").read_text()
+                txt = case_records.record_path(SATMIX, f"components/{comp}.dat").read_text()
                 m = re.search(r"model\s+Antoine;.*?coefficients\s*\(\s*([-0-9.eE+]+)\s+"
                               r"([-0-9.eE+]+)\s+([-0-9.eE+]+)\s*\)", txt, re.S)
                 ant[comp] = tuple(float(g) for g in m.groups())
