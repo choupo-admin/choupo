@@ -123,8 +123,25 @@ def record_number(comp, key):
 
 
 def record_number_at(path, key):
-    m = re.search(r"^\s*" + key + r"\s+([0-9.eE+-]+)\s*;", Path(path).read_text(), re.M)
+    """`key` of the record at `path`; when that file is an `overlayOf` delta
+    that does not state the key (C421: the case's records carry only what
+    differs), the catalogue record it overlays."""
+    pat = r"^\s*" + key + r"\s+([0-9.eE+-]+)\s*;"
+    text = Path(path).read_text()
+    m = re.search(pat, text, re.M)
+    if m is None and re.search(r"^\s*overlayOf\s", text, re.M):
+        m = re.search(pat, (case_records.STD / "components" / Path(path).name).read_text(), re.M)
     return float(m.group(1))
+
+
+def set_record_number(rec, key, value):
+    """Write `key value;` in the case's record: replace its line, or -- in an
+    overlay that does not state the key -- add it (an overlay's key replaces
+    the catalogue's)."""
+    text = rec.read_text()
+    pat = r"(?m)^" + key + r"\s+[0-9.eE+-]+;"
+    line = f"{key}          {value};"
+    rec.write_text(re.sub(pat, line, text) if re.search(pat, text) else text.rstrip("\n") + "\n" + line + "\n")
 
 
 RACKETT_R = 8.314462618
@@ -926,7 +943,7 @@ def main():
         #  trays (321.9-330 K) sit between 0.9 Tc and Tc: nothing is above Tc.
         rec = case_records.ensure_local(d, "components/cyclohexane.dat")
         case_records.unpin(d)
-        rec.write_text(re.sub(r"(?m)^Tc\s+[0-9.eE+-]+;", "Tc          360.0;", rec.read_text()))
+        set_record_number(rec, "Tc", "360.0")
         Tc = {"cyclohexane": 360.0,
               "nHeptane": record_number_at(case_records.record_path(d, "components/nHeptane.dat"), "Tc")}
         rc, out = run(d, "choupoSolve")
