@@ -189,7 +189,7 @@ PRE  | PAR    | bin/curate/check_convective_dryer.py               | traced: wri
 PRE  | PAR    | bin/curate/check_evaporative_dryer.py              | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_spray_dryer_solvents.py           | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO    | bin/curate/check_quasi_steady.py                   | ISO (private slot tree; measured: writes balanceTrajectory.csv (+2 more))
-PRE  | ISO    | bin/curate/check_time_state_layout.py              | ISO (private slot tree; measured: writes balanceTrajectory.csv (+8 more))
+PRE  | ISO    | bin/curate/check_time_integrated_layout.py             | merged (DEV.md 4c C419) from time_integrated, time_state_layout; lane = the strictest of the former lanes (ISO, PAR)
 PRE  | ISO    | bin/curate/check_uf_gel.py                         | ISO (private slot tree; measured: writes balanceTrajectory.csv (+2 more))
 PRE  | ISO    | bin/curate/check_sdem.py                           | ISO (private slot tree; measured: writes tutorials/steady/membranes/membrane12_sdem_nf270_nacl_traces/converged (+27 more))
 PRE  | ISO    | bin/curate/check_polarisation_coupling.py          | ISO (private slot tree; measured: writes tutorials/props/membrane/polarisation01_geraldes_afonso_table1/postProcessing (+44 more))
@@ -205,7 +205,6 @@ PRE  | PAR    | bin/curate/check_pore_partition.py                 | traced: wri
 PRE  | SERIAL | bin/curate/check_postprocessing.py                 | writes data/local/adsorption/equilibria/zeolite13X/CO2.dat
 PRE  | ISO    | bin/curate/check_ed_stack.py                       | ISO (private slot tree; measured: writes tutorials/steady/electrodialysis/ed01_nacl_desalination/converged (+89 more))
 PRE  | ISO*3  | bin/curate/check_ed_batch.py                       | ISO (private slot tree; measured: writes tutorials/batch/electrodialysis/edbatch01_constant_current/.tmp_100 (+635 more))
-PRE  | PAR    | bin/curate/check_time_integrated.py                | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO    | bin/curate/check_block_tridiagonal.py              | ISO (private slot tree; measured: writes tutorials/steady/distillation/column02_simultaneous/converged (+17 more))
 PRE  | ISO    | bin/curate/check_ode_block_structure.py            | ISO (private slot tree; measured: writes 0 (+94 more))
 PRE  | PAR    | bin/curate/check_rodas4_order.py                   | writes only a temp dir (probe binary)

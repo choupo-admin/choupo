@@ -3763,7 +3763,7 @@ by what leaves, so the answer depends on the time step; the driver REFUSES it
 by name, listing the loop's units and streams and the remedies above.  The
 test is structural (a cycle of the routes, the declared `in`/`inputs`/
 `outputs`, and `DynamicUnitOperation::setsOutletFlow()`), not a reading of the
-numbers.  Held by `bin/curate/check_time_integrated.py`, which also runs the
+numbers.  Held by `bin/curate/check_time_integrated_layout.py`, which also runs the
 shipped loops to show they are not refused.
 
 ```

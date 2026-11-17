@@ -1011,11 +1011,6 @@
       "claim": "check_thiele_pellet: OK -- the intraparticle field and eta(phi) are recomputed HERE from the closed form (series Bessel, no engine value read back as an oracle) and the engine reproduces them: the numerical field within the discretisation error its own grid admits, its analytical column to 1e-12, eta by BOTH the volume integral and the independent surface flux, the whole eta(phi) family over all three geometries, an observed order of convergence of 2, and phi = phi_char/3 satisfying the formula reactor/CatalystPellet.H already quotes.  Seven refusals fire on probe cases (no D_eff route, D_eff filed on the catalyst record, a geometry/dimension mismatch, even nodes, two rate-constant spellings, tortuosity below 1, an unknown geometry); a measured D_eff record WINS and the derived value is reported beside it as a finding, while a case without one announces no cross-check.  NOT covered: whether the witness pellet is real (it is a declared teaching surrogate), the non-isothermal pellet, orders other than one, the external film, the liquid-medium route, and whether any reactor APPLIES eta -- none does yet.",
       "seconds": 0.5
     },
-    "check_time_state_layout": {
-      "exit": 0,
-      "claim": "check_time_state_layout: OK -- the time-integrated cases read and write the ratified layout (0/<stream>, 0/internalStates/<unit>), refuse the retired one, and write restartable <t>/ directories by default (not checked: a closed-loop or clock-driven restart)",
-      "seconds": 4.5
-    },
     "check_transport_correlations": {
       "exit": 0,
       "claim": "check_transport_correlations: OK -- all 12 transport correlations (five families + the shared Wilke phi_ij) verify against their own anchors within their tolerance (1e-4, or the 1 % the Chapman-Enskog reproduction anchor DECLARES and prints) and print a window, a dated PRIMARY citation (the two ChemSep forms: an undated databank citation, pinned; the law type table: its source is per law) and the KIND of anchor (3 theory, 9 arithmetic, recounted from the output); Chung mu, Eucken k, Wilke mu_mix and Wassiljewa k_mix for N2/O2/CO2/water at 373.15 K and Chapman-Enskog mu and modified-Eucken k for seven gases at 300 K are RECOMPUTED here from the sealed records (sigma, eps/k parsed in the loader's grammar) to 1e-9 and agree; Svehla's printed N2 viscosity is reproduced from his constants within 0.40 % and the engine's anchor deviation equals this recount; the spread sentence keys on models EVALUATED (present on transport01, absent on transport02, whose two spreads are nonzero) and a component without a block is LISTED as not evaluable; Chung announces Vc-estimated and polar-terms-dropped once per component; Chapman-Enskog announces both origins FITTED with the report page for all seven; Eucken flags every polyatomic and not argon; the Theory Guide shows the lennardJones grammar the loader reads and no Sutherland/viscosityGas key; a record without the block REFUSES by name with the remedy (stripped copy); a spray dryer with no transport model REFUSES with the remedy and a declared liquid model it cannot price REFUSES rather than substituting water; membrane01 announces its [legacy] default; phi_ij and Omega(2,2)* each have ONE home (source arms); propose_lennard_jones.py is deterministic, writes the blocks the witness carries, and REFUSES data/standards/; the sealed blocks cite NASA TR R-132 with `licence publicDomain;` and per-value origins; four goldens unmoved.  NOT CHECKED: that any correlation is RIGHT -- the catalogue holds no measured transport data, Svehla's sigma/eps-k are his fits to pre-1962 measurements and are not validated here; the page-image transcription is not re-read; Fuller and the liquid models are verify()-only.",
@@ -1661,11 +1656,6 @@
       "claim": "check_solid_property_refusals: OK -- the five witnesses still run; a solid with no rho_p is refused by name in the cyclone, the pneumatic conveyor and the spray dryer (no zero, no 1500 kg/m3); an absent k_v runs the MSMPR on the sphere and ANNOUNCES it; a sorption block missing C or K is refused naming the key.  NOT CHECKED: that the harmonic mean suits a real powder, the hydrocyclone, the batch dryer and the time-integrated binaries, the equilibrium crystalliser.",
       "seconds": 0.3
     },
-    "check_time_integrated": {
-      "exit": 0,
-      "claim": "check_time_integrated: OK -- TI-01 fixture: 34-field header held on every row; TI-02: the closed leaking loop is refused; unsteady03, unsteady04, unsteady05 still run; TI-03: a `recipe` is refused by name under choupoSemiContinuous and choupoCtrl",
-      "seconds": 7.0
-    },
     "check_species_c373": {
       "exit": 0,
       "claim": "check_species_c373: OK -- 295 governed files reproduce byte-identically from the tables (72 families, 187 species, 115 ionisation steps, 119 formation readings); 54 ladder steps held to the family's one-scale tolerance; NOT CHECKED: that a number equals the page it was read from (the tables name table and page and flag every value read from an image), and any dCp (the record grammar has no place for it)",
@@ -1855,6 +1845,11 @@
       "exit": 0,
       "claim": "check_gui_static: OK -- [glob_raw] 19 source file(s) call import.meta.glob; every glob over a non-JavaScript pattern asks for it raw, so rollup receives strings and never tries to parse a .dat as JavaScript.  The probe (the exact construct that blocked three site publishes on 2026-08-31) is still rejected.  NOT CHECKED: this is a SOURCE scan, not a build -- it cannot see any OTHER way to break `vite build`, and it does not run rollup. || [viewport_units] the full-viewport height has ONE home (gui/src/theme-overrides.css: `100vh` with an `@supports (height: 100dvh)` upgrade), 11 site(s) read var(--choupo-vh), and no bare `100vh` remains in gui/src code except a declaration restated in `100dvh` for a document that cannot inherit the variable.  NOT CHECKED: `100vw` (a different defect with a different remedy, and nothing here was changed for it), whether the app actually fits a phone (no script sees a rendered page), and any stylesheet outside gui/src.",
       "seconds": 0.5
+    },
+    "check_time_integrated_layout": {
+      "exit": 0,
+      "claim": "check_time_integrated_layout: OK -- [time_integrated] TI-01 fixture: 34-field header held on every row; TI-02: the closed leaking loop is refused; unsteady03, unsteady04, unsteady05 still run; TI-03: a `recipe` is refused by name under choupoSemiContinuous and choupoCtrl || [time_state_layout] the time-integrated cases read and write the ratified layout (0/<stream>, 0/internalStates/<unit>), refuse the retired one, and write restartable <t>/ directories by default (not checked: a closed-loop or clock-driven restart)",
+      "seconds": 10.6
     }
   }
 }

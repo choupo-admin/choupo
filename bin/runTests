@@ -5094,15 +5094,15 @@ PYEOF
     # with a holdup {} block), refuse the retired 0/internalState +
     # 0/streamFaces naming the migrator, and write <t>/ directories by
     # default that restart the case (or say why they cannot).
-    if gate_exec "$ROOT/bin/curate/check_time_state_layout.py" > /tmp/tslayout.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "time-state-layout-gate" "$(head -1 /tmp/tslayout.$$)"
+    if gate_exec "$ROOT/bin/curate/check_time_integrated_layout.py" > /tmp/time_integrated_layout.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "time-integrated-layout-gate" "$(gate_claim check_time_integrated_layout /tmp/time_integrated_layout.$$ | cut -c1-240)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_time_state_layout.py)\n" "time-state-layout-gate"
-        cat /tmp/tslayout.$$
+        printf "FAIL  %-40s  (run bin/curate/check_time_integrated_layout.py)\n" "time-integrated-layout-gate"
+        cat /tmp/time_integrated_layout.$$
         fail=$((fail+1))
     fi
-    rm -f /tmp/tslayout.$$
+    rm -f /tmp/time_integrated_layout.$$
 
     # UF gel-polarisation gate (2026-09-30, C27).  membrane19's flux is the
     # gel-limited closed form at every node, flat from 3 to 5 bar, exactly
@@ -5688,15 +5688,7 @@ PYEOF
     # a trajectory.csv column set fixed at t = 0, an undetermined loop flow
     # refused before integrating, a `recipe` the binary cannot act on refused
     # by name -- each on a probe the gate builds and runs.
-    if gate_exec "$ROOT/bin/curate/check_time_integrated.py" > /tmp/timeint.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "time-integrated-gate" "$(grep -m1 '^check_time_integrated: OK' /tmp/timeint.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_time_integrated.py)\n" "time-integrated-gate"
-        cat /tmp/timeint.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/timeint.$$
+    #  (check_time_integrated is an ARM of check_time_integrated_layout, run at the first site of its cluster; DEV.md 4c C419)
 
     # block-tridiagonal gate (2026-08-25).  The MESH declares its Jacobian
     # structure; the declaration is audited on the first iteration and the

@@ -102,7 +102,7 @@ A column that exists for an item the run can carry (an ion a tank starts
 without, an `xD_<comp>` of a still charged empty) is present from the first
 row and reads 0 until the item appears.  Read it by column name.  `bin/runTests`
 holds the shape on every time-integrated case it runs, and
-`bin/curate/check_time_integrated.py` builds the case that used to break it
+`bin/curate/check_time_integrated_layout.py` builds the case that used to break it
 (review 2026-11-12, TI-01).
 
 ## The views repeat the plant
