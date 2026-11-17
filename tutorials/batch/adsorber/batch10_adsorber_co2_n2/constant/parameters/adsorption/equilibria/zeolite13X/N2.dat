@@ -45,6 +45,8 @@ schemaVersion   1;
 
 adsorbent       zeolite13X;
 adsorbate       N2;
+variationOf N2;
+variationReason "vendored byte-copy of the standards record made 2026-07-13 (its own header: sha256 of the frozen reference at vendoring time); it differs from the catalogue today only in provenance origin (literature here, assumed in the catalogue) and in lacking the catalogue's quality teachingOnly; kept as a local record because a case-local adsorbent overlay makes the engine read isotherm pairs from the case-local equilibria directory alone (a catalogue pair is not consulted: verified 2026-11-18, the run refuses without it)";
 
 model           langmuir;
 

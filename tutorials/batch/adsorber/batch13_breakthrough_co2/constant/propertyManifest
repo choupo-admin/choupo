@@ -28,8 +28,4 @@ propertyManifest
         "parameters/adsorption/equilibria/zeolite13X/"  "relevant:778e2facea1e7953890fd224729d73b3da2829d7cc752a7605b367fa4ed8f6a9";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }
-    held
-    {
-        "parameters/adsorption/equilibria/zeolite13X/CO2.dat"  "dba1a72762e525381c9785acb641cce25871877bf5a228e8954b1741d056241a";
-    }
 }

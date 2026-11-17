@@ -23,6 +23,8 @@ schemaVersion   1;
 
 adsorbent       zeolite13X;
 adsorbate       CO2;
+variationOf CO2;
+variationReason "the case's tRef is 298 K, not the catalogue's 298.15 K: its own provenance says 'case-local anchor copy of the standards record, tRef re-anchored 298.15 -> 298 K = the run temperature so b(T) = b_298 exactly (A3 spec anchors_a3.py convention); q_max/b/dH_ads unchanged'; the catalogue record also carries quality teachingOnly and origin assumed where this one says origin literature";
 
 model           langmuir;
 
