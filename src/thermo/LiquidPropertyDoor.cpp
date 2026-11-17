@@ -151,8 +151,11 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
     r.quality.domain   = "not declared";
     r.quality.evidence = "not quantified";
     std::string pressure = "not applied";
-    const liquidTransport::ViscosityMeasurement* measured =
-        (p == Property::viscosity) ? thermo.liquidViscosityMeasurementFor(x) : nullptr;
+    const char* measuredProperty = p == Property::viscosity           ? "liquidViscosity"
+                                 : p == Property::thermalConductivity ? "liquidThermalConductivity"
+                                 : p == Property::surfaceTension      ? "surfaceTension" : nullptr;
+    const liquidTransport::MixtureMeasurement* measured =
+        measuredProperty ? thermo.measuredMixtureFor(measuredProperty, x) : nullptr;
     if (measured)
     {
         //  A STATED MIXTURE VISCOSITY the case marks as its set's method
@@ -163,12 +166,29 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
         //  assumption.  The origin is printed per site and origin, as the
         //  density's is (review row DF-10).
         r.methodId = "stated." + measured->name;
-        r.label = "property kernel: the case's " + liquidTransport::statedWords(*measured) + " ("
-                + measured->where + "), stood over the box the case declared"
-                  " (reason: " + measured->reason + ")";
-        const bool atPoint = liquidTransport::atStatedPoint(*measured, T,
-            liquidTransport::massFractionsOf(thermo.components(), measured->set, x));
-        r.quality.origin     = (atPoint && !measured->assumedValue) ? "literature" : "assumed";
+        const std::string quantity = liquidTransport::quantityWord(measured->property);
+        r.label = measured->isTable()
+            ? "property kernel: the case's " + liquidTransport::statedWords(*measured) + " ("
+              + measured->where + "), interpolated inside its rows (" + liquidTransport::interpolationWords(*measured)
+              + "), the nearest edge held inside the " + liquidTransport::boxName(*measured) + " the case declared"
+              + (measured->reason.empty() ? std::string() : " (reason: " + measured->reason + ")")
+              + "; kind " + measured->kind
+            : "property kernel: the case's " + liquidTransport::statedWords(*measured) + " ("
+              + measured->where + "), stood over the box the case declared"
+                " (reason: " + measured->reason + ")"
+              + (measured->kind.empty() ? std::string() : "; kind " + measured->kind);
+        const auto wState = liquidTransport::massFractionsOf(thermo.components(), measured->set, x);
+        const bool atPoint = liquidTransport::atStatedPoint(*measured, T, wState);
+        //  A TABLE (C421 (8)): a row's own value is the source's; between rows it is derived from
+        //  them; past the support the nearest edge is held, the case's assumption; the record's
+        //  `kind` can only lower this (adopted: assumed; estimated: estimated).
+        const bool inside = measured->isTable() ? liquidTransport::insideSupport(*measured, T, wState) : atPoint;
+        if (measured->isTable())
+            r.quality.origin = measured->kind == "estimated" ? "estimated"
+                             : (measured->kind == "adopted" || measured->assumedValue || !inside) ? "assumed"
+                             : atPoint ? "literature" : "derived";
+        else
+            r.quality.origin = (atPoint && !measured->assumedValue) ? "literature" : "assumed";
         {
             std::string type, unit;
             const bool site = who ? (type = who->type, unit = who->unit, true)
@@ -180,14 +200,17 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
             bool fresh = false;
             { std::lock_guard<std::mutex> lk(mx); fresh = printed.insert(key).second; }
             if (fresh && record)
-                std::cout << "  [liquid viscosity] " << (site ? type + " " + unit : std::string("no unit"))
+                std::cout << "  [" << quantity << "] " << (site ? type + " " + unit : std::string("no unit"))
                           << ": " << r.methodId << " (origin " << r.quality.origin << "; "
                           << (atPoint ? "the source's stated point"
+                                      : measured->isTable() && inside ? "between the source's rows, interpolated"
+                                      : measured->isTable() ? "past the rows' support, the nearest edge held"
                                       : "away from the source's stated point, the case's assumption")
                           << ")\n";
         }
         r.quality.provenance = measured->where;
-        r.quality.domain     = "inside the case's box (hard)";
+        r.quality.domain     = measured->isTable() ? "inside the case's " + liquidTransport::boxName(*measured) + " (hard); interpolated inside the rows"
+                                                   : std::string("inside the case's box (hard)");
         for (const std::size_t k : measured->set)
             r.leaves.push_back({ thermo.comp(k).name(), r.methodId, 0.0 });
         pressure = "not applied (saturated liquid)";

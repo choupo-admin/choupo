@@ -709,9 +709,15 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
         //  liquid diffusivity's declared quantity, in the lines the package
         //  describes itself by (LiquidTransportDeclarations.H, describe).
         std::vector<std::string> declared;
-        if (std::string(tr.key) == "liquidViscosity")
-            for (const auto& m : pkg.liquidViscosityMeasurements())
-                declared.push_back("  " + liquidTransport::describe(m, pkg.components()));
+        {
+            const auto& ms = std::string(tr.key) == "liquidViscosity"    ? pkg.liquidViscosityMeasurements()
+                           : std::string(tr.key) == "liquidConductivity" ? pkg.liquidConductivityMeasurements()
+                           : std::string(tr.key) == "surfaceTension"     ? pkg.surfaceTensionMeasurements()
+                                                                         : std::vector<liquidTransport::MixtureMeasurement>{};
+            for (const auto& m : ms)
+                for (const auto& line : liquidTransport::describeLines(m, pkg.components()))
+                    declared.push_back("  " + line);
+        }
         if (std::string(tr.key) == "liquidDiffusivity")
         {
             for (const auto& line : liquidTransport::describe(pkg.liquidDiffusivityDeclaration(), pkg.components()))
@@ -824,8 +830,9 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
             d.push_back(pure);
             pureFluidLines();
         }
-        if (std::string(tr.key) == "liquidViscosity")
-            d.insert(d.end(), declared.begin(), declared.end());   // C398 (d): the measured mixture values
+        if (std::string(tr.key) == "liquidViscosity" || std::string(tr.key) == "liquidConductivity"
+            || std::string(tr.key) == "surfaceTension")
+            d.insert(d.end(), declared.begin(), declared.end());   // C398 (d), C421 (8): the measured mixture values
         //  THE MODEL AND THE RULE THE PACKAGE HOLDS (review CV-20), in the
         //  fields their self-description prints.
         {

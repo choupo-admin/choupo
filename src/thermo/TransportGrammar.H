@@ -106,7 +106,9 @@ inline bool readInsideBlock(const std::string& phase, const std::string& prop,
                             const std::string& k)
 {
     if (readInsideBlock(k)) return true;
-    if (phase == "liquid" && prop == "viscosity") return k == "measured";
+    //  C421 slice (8): the liquid thermal conductivity and the surface tension take `measured {}` too.
+    if (phase == "liquid" && (prop == "viscosity" || prop == "thermalConductivity")) return k == "measured";
+    if (phase == "interface" && prop == "surfaceTension") return k == "measured";
     if (phase == "liquid" && prop == "diffusivity")
         return k == "returns" || k == "composition" || k == "infiniteDilution"
             || k == "thermodynamicFactor";

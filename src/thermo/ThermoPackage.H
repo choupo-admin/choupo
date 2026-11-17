@@ -729,6 +729,15 @@ public:
     const std::vector<liquidTransport::ViscosityMeasurement>& liquidViscosityMeasurements() const
     { return liquidViscosityMeasured_; }
     const liquidTransport::ViscosityMeasurement* liquidViscosityMeasurementFor(const sVector& x) const;
+    //  The same for the liquid thermal conductivity and the surface tension (C421 slice (8)),
+    //  and the generic door: `property` is liquidViscosity, liquidThermalConductivity or
+    //  surfaceTension.
+    const std::vector<liquidTransport::MixtureMeasurement>& liquidConductivityMeasurements() const
+    { return liquidConductivityMeasured_; }
+    const std::vector<liquidTransport::MixtureMeasurement>& surfaceTensionMeasurements() const
+    { return surfaceTensionMeasured_; }
+    const liquidTransport::MixtureMeasurement* measuredMixtureFor(const std::string& property,
+                                                                  const sVector& x) const;
 
     // Surface tension: optional sub-block `transport { surfaceTension {
     // model BrockBird; } }`.  A genuinely new property KIND.  When a phase
@@ -1028,6 +1037,11 @@ private:
     liquidTransport::DiffusivityDeclaration   liquidDiffusionDecl_;        // C398 slice (d)
     std::vector<liquidTransport::ViscosityMeasurement> liquidViscosityMeasured_;
     scalar measuredOrCheckedViscosity(scalar T, const sVector& x, const scalar* computed) const;
+    std::vector<liquidTransport::MixtureMeasurement> liquidConductivityMeasured_;   // C421 slice (8)
+    std::vector<liquidTransport::MixtureMeasurement> surfaceTensionMeasured_;
+    scalar measuredOrChecked(const std::string& property, scalar T, const sVector& x,
+                             const scalar* computed) const;
+    const std::vector<liquidTransport::MixtureMeasurement>& measuredOf(const std::string& property) const;
     scalar infiniteDilutionInMixture(scalar T, std::size_t i, std::size_t j, scalar muMix) const;
     std::unique_ptr<SurfaceTensionModel>      surfaceTension_;
     //  The LIQUID MIXING RULES (DEV.md 4c C331), one per property, built

@@ -108,7 +108,7 @@ ThermoPackage& ThermoPackage::operator=(ThermoPackage&& o) noexcept
         liquidViscosity_    = std::move(o.liquidViscosity_);
         liquidConductivity_ = std::move(o.liquidConductivity_);
         liquidDiffusivity_  = std::move(o.liquidDiffusivity_);   liquidDiffusionDecl_ = std::move(o.liquidDiffusionDecl_);   liquidViscosityMeasured_ = std::move(o.liquidViscosityMeasured_);   // C398 (d)
-        surfaceTension_     = std::move(o.surfaceTension_);
+        surfaceTension_     = std::move(o.surfaceTension_);   liquidConductivityMeasured_ = std::move(o.liquidConductivityMeasured_);   surfaceTensionMeasured_ = std::move(o.surfaceTensionMeasured_);   // C421 (8)
         liquidViscosityMixing_    = std::move(o.liquidViscosityMixing_);
         liquidConductivityMixing_ = std::move(o.liquidConductivityMixing_);
         surfaceTensionMixing_     = std::move(o.surfaceTensionMixing_);
@@ -543,7 +543,7 @@ void ThermoPackage::readTransportBlock(const DictPtr& td)
         const DictPtr b = td->subDict("liquidConductivity");
         if (b->found("model")) liquidConductivity_ = LiquidConductivityModel::New(b);
         liquidConductivityMixing_ = LiquidConductivityMixingRule::New(b);
-        resolveLiquidLaws("liquidConductivity", b);
+        resolveLiquidLaws("liquidConductivity", b);   liquidConductivityMeasured_ = liquidTransport::readMeasurements(b, components_, "liquidThermalConductivity");   // C421 (8)
     }
     if (td->found("liquidDiffusivity"))   // the declared quantity, C398 (d): LiquidTransportDeclarations.H
         if (!(liquidDiffusionDecl_ = liquidTransport::readDiffusivity(td->subDict("liquidDiffusivity"), components_)).defaultModel.empty())
@@ -553,7 +553,7 @@ void ThermoPackage::readTransportBlock(const DictPtr& td)
         const DictPtr b = td->subDict("surfaceTension");
         if (b->found("model")) surfaceTension_ = SurfaceTensionModel::New(b);
         surfaceTensionMixing_ = SurfaceTensionMixingRule::New(b);
-        resolveLiquidLaws("surfaceTension", b);
+        resolveLiquidLaws("surfaceTension", b);   surfaceTensionMeasured_ = liquidTransport::readMeasurements(b, components_, "surfaceTension");   // C421 (8)
     }
 }
 
@@ -2320,7 +2320,7 @@ scalar ThermoPackage::thermalConductivityLiquid(scalar T, const sVector& x) cons
                            "the formulation's own (T, density); at the saturated liquid");
             return m.lambda(T, m.p_sat(T));   // saturated-liquid state
         }
-    if (liquidConductivityLaws_.empty())
+    if (measuredMixtureFor("liquidThermalConductivity", x)) { return measuredOrChecked("liquidThermalConductivity", T, x, nullptr); }   if (liquidConductivityLaws_.empty())   // a measured mixture table first (C421 (8))
         throw std::runtime_error("ThermoPackage::thermalConductivityLiquid: no"
             " model --- add `transport { liquid { thermalConductivity { } } }`"
             " to the property dictionary (each constituent then takes its"
@@ -2332,7 +2332,7 @@ scalar ThermoPackage::thermalConductivityLiquid(scalar T, const sVector& x) cons
     for (std::size_t i = 0; i < N; ++i)
         if (x[i] > 0.0)
             lam[i] = pureLiquidConductivity(i, T);
-    return liquidConductivityMixing_->mix(T, x, lam, liquidMixingContext());   // W/(m·K)
+    { const scalar mixed = liquidConductivityMixing_->mix(T, x, lam, liquidMixingContext());   return liquidConductivityMeasured_.empty() ? mixed : measuredOrChecked("liquidThermalConductivity", T, x, &mixed); }   // W/(m·K)
 }
 
 scalar ThermoPackage::diffusivityLiquid(scalar T, std::size_t i, std::size_t j) const
@@ -2369,7 +2369,7 @@ scalar ThermoPackage::surfaceTension(scalar T, const sVector& x) const
                            "the formulation's own (the saturation line)");
             return m.sigma(T);
         }
-    if (surfaceTensionLaws_.empty())
+    if (measuredMixtureFor("surfaceTension", x)) { return measuredOrChecked("surfaceTension", T, x, nullptr); }   if (surfaceTensionLaws_.empty())   // a measured mixture table first (C421 (8))
         throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, "ThermoPackage::surfaceTension: no model ---"
             " add `transport { interface { surfaceTension { } } }` to the"
             " property dictionary (each constituent then takes its record's"
@@ -2381,7 +2381,7 @@ scalar ThermoPackage::surfaceTension(scalar T, const sVector& x) const
     for (std::size_t i = 0; i < N; ++i)
         if (x[i] > 0.0)
             sig[i] = pureSurfaceTension(i, T);
-    return surfaceTensionMixing_->mix(T, x, sig, liquidMixingContext());   // N/m
+    { const scalar mixed = surfaceTensionMixing_->mix(T, x, sig, liquidMixingContext());   return surfaceTensionMeasured_.empty() ? mixed : measuredOrChecked("surfaceTension", T, x, &mixed); }   // N/m
 }
 
 namespace {
@@ -3357,7 +3357,10 @@ void ThermoPackage::traceSelf() const
             emit(recordLaws::modelLine("mixture", std::string(k[1]) + ".mixingRule", info.rule, "the package's rule",
                  orNone(info.ruleWindow, "none declared"), orNone(info.ruleCitation, "not stated by the rule")));
     }
-    for (const auto& m : liquidViscosityMeasured_) emit(liquidTransport::describe(m, components_));   // C398 (d)
+    //  C398 (d), C421 (8): the measured mixture values, in the lines the view prints.
+    for (const auto* ms : { &liquidViscosityMeasured_, &liquidConductivityMeasured_, &surfaceTensionMeasured_ })
+        for (const auto& m : *ms)
+            for (const auto& line : liquidTransport::describeLines(m, components_)) emit(line);
     for (const auto& line : liquidTransport::describe(liquidDiffusionDecl_, components_)) emit(line);
     if (!transportMethodInfo("viscosity").model.empty())
         emit(recordLaws::modelLine("mixture", "vapourViscosity.mixingRule", "Wilke", "fixed in code",
@@ -3437,10 +3440,26 @@ std::string setWords(const std::vector<Component>& comps, const std::vector<std:
 }
 } // namespace
 
+const std::vector<liquidTransport::MixtureMeasurement>&
+ThermoPackage::measuredOf(const std::string& property) const
+{
+    if (property == "liquidThermalConductivity") return liquidConductivityMeasured_;
+    if (property == "surfaceTension")            return surfaceTensionMeasured_;
+    return liquidViscosityMeasured_;
+}
+
 const liquidTransport::ViscosityMeasurement*
 ThermoPackage::liquidViscosityMeasurementFor(const sVector& x) const
 {
-    if (liquidViscosityMeasured_.empty()) return nullptr;
+    return measuredMixtureFor("liquidViscosity", x);
+}
+
+const liquidTransport::MixtureMeasurement*
+ThermoPackage::measuredMixtureFor(const std::string& property, const sVector& x) const
+{
+    const auto& measured = measuredOf(property);
+    if (measured.empty()) return nullptr;
+    const std::string quantity = liquidTransport::quantityWord(property);
     std::vector<std::size_t> set;
     for (std::size_t i = 0; i < x.size() && i < components_.size(); ++i)
         if (x[i] > 0.0) set.push_back(i);
@@ -3448,9 +3467,20 @@ ThermoPackage::liquidViscosityMeasurementFor(const sVector& x) const
     //  nanofiltration and a seawater unit, a feed with and without a trace
     //  constituent -- declares one stated value per set; the refusal below is
     //  for a liquid that NONE of them describes).
-    for (const auto& m : liquidViscosityMeasured_)
+    for (const auto& m : measured)
         if (m.use == "method" && m.set == set) return &m;
-    for (const auto& m : liquidViscosityMeasured_)
+    //  THE COMPONENTS A RECORD IGNORES (C421 slice (8), F): the liquid's set
+    //  is the record's set plus members of its `ignores`; the share is
+    //  checked against the bound where the value is taken.
+    for (const auto& m : measured)
+    {
+        if (m.use != "method" || m.ignored.empty()) continue;
+        std::vector<std::size_t> core;
+        for (const std::size_t i : set)
+            if (std::find(m.ignored.begin(), m.ignored.end(), i) == m.ignored.end()) core.push_back(i);
+        if (core == m.set) return &m;
+    }
+    for (const auto& m : measured)
     {
         if (m.use != "method") continue;
         if (m.set == set) return &m;
@@ -3472,17 +3502,18 @@ ThermoPackage::liquidViscosityMeasurementFor(const sVector& x) const
             const std::string msg = "the " + liquidTransport::statedWords(m) + " does not describe pure "
                 + components_[set.front()].name() + "; its record law is used";
             if (AdvisoryLog::instance().addAnnouncedOnce("statedViscosityPure:" + m.name + ":"
-                    + components_[set.front()].name(), "approximation", "info", "liquid viscosity", msg))
-                std::cout << "  [liquid viscosity] " << msg << "\n";
+                    + components_[set.front()].name(), "approximation", "info", quantity, msg))
+                std::cout << "  [" << quantity << "] " << msg << "\n";
             continue;
         }
         std::vector<std::size_t> extra, missing;
         for (const std::size_t i : set)
-            if (std::find(m.set.begin(), m.set.end(), i) == m.set.end()) extra.push_back(i);
+            if (std::find(m.set.begin(), m.set.end(), i) == m.set.end()
+                && std::find(m.ignored.begin(), m.ignored.end(), i) == m.ignored.end()) extra.push_back(i);
         for (const std::size_t i : m.set)
             if (std::find(set.begin(), set.end(), i) == set.end()) missing.push_back(i);
         throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
-            "liquid viscosity of " + setWords(components_, set) + ": the case's "
+            quantity + " of " + setWords(components_, set) + ": the case's "
             + liquidTransport::statedWords(m) + " (" + m.where + ") describes "
             + setWords(components_, m.set) + ", and this liquid "
             + (extra.empty() ? std::string() : "also holds " + setWords(components_, extra))
@@ -3490,48 +3521,74 @@ ThermoPackage::liquidViscosityMeasurementFor(const sVector& x) const
             + (missing.empty() ? std::string() : "holds no " + setWords(components_, missing))
             + " -- outside the box of the stated value (its set is part of its box); a stated"
               " value is never handed over to a law.",
-            "a liquid of exactly the stated set, or a stated value for this set");
+            "a liquid of exactly the stated set, or a stated value for this set"
+            + std::string(m.ignored.empty() ? ", or `ignores ( <components> ); ignoresReason \"...\";"
+                                              " ignoresUpTo <mass fraction>;` on the entry" : ""));
     }
     return nullptr;
 }
 
 //  `computed` null: the `use method` measurement of x's set IS the value
-//  inside its box, and a state outside the box is refused (never handed over
-//  to a law).  `computed` given: the value stands, and each `use check`
-//  measurement of x's set inside its box is printed beside it, once.
+//  inside its authorised box, and a state outside the box is refused (never
+//  handed over to a law).  `computed` given: the value stands, and each
+//  `use check` measurement of x's set inside its box is printed beside it,
+//  once.
 scalar ThermoPackage::measuredOrCheckedViscosity(scalar T, const sVector& x,
                                                  const scalar* computed) const
 {
+    return measuredOrChecked("liquidViscosity", T, x, computed);
+}
+
+scalar ThermoPackage::measuredOrChecked(const std::string& property, scalar T, const sVector& x,
+                                        const scalar* computed) const
+{
+    const std::string quantity = liquidTransport::quantityWord(property);
+    const std::string unit = liquidTransport::valueUnit(property);
     if (!computed)
     {
-        const liquidTransport::ViscosityMeasurement& m = *liquidViscosityMeasurementFor(x);
-        const std::string out = liquidTransport::outsideBox(m, T,
-            liquidTransport::massFractionsOf(components_, m.set, x));
+        const liquidTransport::MixtureMeasurement& m = *measuredMixtureFor(property, x);
+        //  F: what the record ignores is present up to its bound, or the run refuses.
+        const scalar share = liquidTransport::ignoredShare(components_, m, x);
+        if (share > 0.0)
+        {
+            if (share > m.ignoresUpTo)
+                throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+                    quantity + " of " + setWords(components_, m.set) + ": the components table "
+                    + m.name + " ignores make up a mass fraction of " + fmtG("%.6g", share)
+                    + " of this liquid, beyond the " + fmtG("%.6g", m.ignoresUpTo) + " the case declared"
+                    " (ignoresUpTo; reason for ignoring: " + m.ignoresReason + ").",
+                    "a liquid with less of the ignored components, or a larger `ignoresUpTo` with its"
+                    " reason (a hypothesis), or a record that describes them");
+            liquidTransport::announceIgnored(m, components_, share);
+        }
+        const std::map<std::string, scalar> w = liquidTransport::massFractionsOf(components_, m.set, x);
+        const std::string out = liquidTransport::outsideBox(m, T, w);
         if (!out.empty())
             throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
-                "liquid viscosity of " + setWords(components_, m.set) + ": " + out
-                + " is outside the box the case declared for its " + liquidTransport::statedWords(m)
+                quantity + " of " + setWords(components_, m.set) + ": " + out
+                + " is outside the " + liquidTransport::boxName(m) + " the case declared for its " + liquidTransport::statedWords(m)
                 + " (" + m.where + ").  A stated value the case marks as the set's method is never"
                   " extrapolated nor handed over to another.",
-                "a state inside the box, or a wider box with its reason (a hypothesis)");
-        return m.mu;
+                "a state inside the " + liquidTransport::boxName(m) + ", or a wider one with its reason (a hypothesis)");
+        return liquidTransport::valueAt(m, T, w);
     }
     std::vector<std::size_t> set;
     for (std::size_t i = 0; i < x.size() && i < components_.size(); ++i)
         if (x[i] > 0.0) set.push_back(i);
-    for (const auto& m : liquidViscosityMeasured_)
+    for (const auto& m : measuredOf(property))
     {
         if (m.use != "check" || m.set != set) continue;
-        const std::string out = liquidTransport::outsideBox(m, T,
-            liquidTransport::massFractionsOf(components_, m.set, x));
+        const auto w = liquidTransport::massFractionsOf(components_, m.set, x);
+        const std::string out = liquidTransport::outsideBox(m, T, w);
+        const scalar v = out.empty() ? liquidTransport::valueAt(m, T, w) : m.mu;
         const std::string msg = out.empty()
-            ? liquidTransport::statedWords(m) + " " + fmtG("%.6g Pa s", m.mu) + " beside the computed "
-              + fmtG("%.6g Pa s", *computed) + " (" + fmtG("%+.3g %%", (*computed / m.mu - 1.0) * 100.0)
+            ? liquidTransport::statedWords(m) + " " + fmtG("%.6g ", v) + unit + " beside the computed "
+              + fmtG("%.6g ", *computed) + unit + " (" + fmtG("%+.3g %%", (*computed / v - 1.0) * 100.0)
               + "), at " + fmtG("%.6g K", T) + "; checked, not used"
             : liquidTransport::statedWords(m) + ": not at its conditions (" + out + ")";
         if (AdvisoryLog::instance().addAnnouncedOnce("liquidViscosityChecked:" + m.name,
-                "approximation", "info", "liquid viscosity", msg))
-            std::cout << "  [liquid viscosity] " << msg << "\n";
+                "approximation", "info", quantity, msg))
+            std::cout << "  [" << quantity << "] " << msg << "\n";
     }
     return *computed;
 }

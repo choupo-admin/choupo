@@ -139,7 +139,8 @@ void stampWalk(const DictPtr& d, const std::string& dir, const std::string& pare
             //  volumetric { liquid { measured { <name> { ... } } } }, and the
             //  stated mixture viscosity transport { liquid { viscosity {
             //  measured { <name> { ... } } } } } (C398 slice (d))
-            if (parentKey == "measured" && (grandKey == "liquid" || grandKey == "viscosity")
+            if (parentKey == "measured" && (grandKey == "liquid" || grandKey == "viscosity"
+                                            || grandKey == "thermalConductivity" || grandKey == "surfaceTension")
                 && !sub->found(experimentsDirKey()))
                 sub->insert(experimentsDirKey(), EntryValue(dir));
             stampWalk(sub, dir, k, parentKey);

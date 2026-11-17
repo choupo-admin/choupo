@@ -86,25 +86,88 @@ namespace liquidTransport {
 // ---------------------------------------------------------------------------
 //  (1) a measured mixture viscosity
 // ---------------------------------------------------------------------------
-struct ViscosityMeasurement
+struct MixtureMeasurement
 {
     std::string name, use, reason, citation, where, solvent;
     std::string basis;                       // provenance.basis: what kind of value the source states
+    std::string kind;                        // provenance.kind: measured | adopted | estimated ("" on a one-row record that states none)
+    std::string property;                    // liquidViscosity | liquidThermalConductivity | surfaceTension
     bool   assumedValue = false;             // provenance.origin `assumed`: no primary read; the value is the case's own assumption, even at its stated point
     std::vector<std::size_t> set;            // package indices, ascending
-    scalar mu = 0.0;                         // Pa s
+    scalar mu = 0.0;                         // THE value of a one-row record (SI); of a table, its first row
     bool   hasT = false;
     scalar T    = 0.0;                       // K, when the source states it
     bool   hasP = false;
     scalar P    = 0.0;                       // Pa, when the source states it (not applied)
-    std::map<std::string, scalar> w;         // stated mass fractions (incl. the solvent's rest)
+    std::map<std::string, scalar> w;         // stated mass fractions (incl. the solvent's rest), ONE-ROW record
+    //  THE AUTHORISED DOMAIN (R2): what the case stands the value over.
     std::pair<scalar, scalar> boxT{0, 0};
     std::map<std::string, std::pair<scalar, scalar>> boxW;   // every constituent but the solvent
+    std::string boxWord{"box"};              // the spelling the record used: `box` or `authorised`
+
+    //  MANY ROWS (C421 slice (8), form 1).  One axis per declared column among
+    //  T and w[<c>]: its distinct values ascending (the SUPPORT is their
+    //  span); an axis with one value is degenerate (held, never interpolated).
+    struct Axis
+    {
+        std::string name;                    // "T" | "w[<component>]"
+        std::string component;               // "" for T
+        std::vector<scalar> v;               // distinct values, ascending
+        std::string interpolation;           // "" when degenerate
+        bool varies() const { return v.size() > 1; }
+        scalar lo() const { return v.front(); }
+        scalar hi() const { return v.back(); }
+    };
+    std::vector<Axis> axes;                  // in the order of the file's columns
+    std::vector<scalar> grid;                // over the VARYING axes, the first slowest; one value when none varies
+    std::size_t rows = 1;
+    //  Components the table does not describe, present up to a bound (F).
+    std::vector<std::size_t> ignored;        // package indices
+    scalar ignoresUpTo = 0.0;                // mass fraction of the liquid
+    std::string ignoresReason;
+
+    bool isTable() const { return rows > 1; }
 };
+using ViscosityMeasurement = MixtureMeasurement;
+
+//  "box" or "authorised box": the record's own spelling, as a noun phrase.
+inline std::string boxName(const MixtureMeasurement& m)
+{ return m.boxWord == "box" ? std::string("box") : std::string("authorised box"); }
+
+//  The words and the column of one property of the record's grammar.
+const char* quantityWord(const std::string& property);      // "liquid viscosity" ...
+const char* valueColumn(const std::string& property);       // "mu" | "lambda" | "sigma"
+const char* valueUnit(const std::string& property);         // "Pa s" | "W/(m K)" | "N/m"
+
+//  Reads `measured {}` of the flat block of `property` (`liquidViscosity`,
+//  `liquidThermalConductivity` or `surfaceTension`); empty when absent.
+std::vector<MixtureMeasurement>
+readMeasurements(const DictPtr& block, const std::vector<Component>& comps,
+                 const std::string& property);
 
 //  Reads `measured {}` of the flat `liquidViscosity` block; empty when absent.
 std::vector<ViscosityMeasurement>
 readViscosityMeasurements(const DictPtr& block, const std::vector<Component>& comps);
+
+//  The value of the record at (T, w): inside the SUPPORT the declared
+//  interpolation, one axis at a time in the order of the file's columns;
+//  between the support and the authorised box the nearest edge's value (the
+//  one-row form's behaviour), the largest excursion announced once per run;
+//  the caller has already refused outside the authorised box.
+scalar valueAt(const MixtureMeasurement& m, scalar T, const std::map<std::string, scalar>& w);
+
+//  Said once per record and run (advisory + console), and recorded for the
+//  liquid-properties table's hypotheses: the liquid holds components the
+//  record ignores, `share` of its mass, below the declared bound.
+void announceIgnored(const MixtureMeasurement& m, const std::vector<Component>& comps, scalar share);
+
+//  True when every declared axis coordinate of (T, w) lies inside the rows' support.
+bool insideSupport(const MixtureMeasurement& m, scalar T, const std::map<std::string, scalar>& w);
+
+//  The mass fraction of the liquid x held by the constituents the record
+//  ignores (0 when none is present).
+scalar ignoredShare(const std::vector<Component>& comps, const MixtureMeasurement& m,
+                    const sVector& x);
 
 //  The mass fractions of the set's constituents in x (by package index).
 std::map<std::string, scalar>
@@ -199,6 +262,12 @@ DiffusivityDeclaration readDiffusivity(const DictPtr& block, const std::vector<C
 //  resolved view prints (gate check_view_matches_calls compares the two).
 // ---------------------------------------------------------------------------
 std::string describe(const ViscosityMeasurement& m, const std::vector<Component>& comps);
+//  "T: logReciprocal; w[NaCl]: linear" -- the declared interpolation per varying axis.
+std::string interpolationWords(const ViscosityMeasurement& m);
+//  The resolved view's lines for a record: one line for a one-row record, the record,
+//  kind, rows, axes with their support, the authorised box, the interpolation per axis
+//  and what is ignored for a table (C421 slice (8), G).
+std::vector<std::string> describeLines(const ViscosityMeasurement& m, const std::vector<Component>& comps);
 std::vector<std::string> describe(const DiffusivityDeclaration& d, const std::vector<Component>& comps);
 
 } // namespace liquidTransport
