@@ -171,6 +171,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+import case_records  # noqa: E402  (the probe copy has one home)
 CASE = ROOT / "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars"
 FITSET = CASE / "constant/experiments/ethanol-water-bubble-j.fluid.2011.06.009.dat"
 VALSET = CASE / "constant/experiments/ethanol-water-bubble-je2008704.dat"
@@ -289,7 +290,7 @@ def main():
     #  advisory.  A run that merely prints has delivered and not been received.
     unchk = ROOT / "generated/probes/heldOutPressure/reviewStatusUnchecked"
     shutil.rmtree(unchk.parent, ignore_errors=True)
-    shutil.copytree(CASE, unchk, ignore=shutil.ignore_patterns(
+    case_records.copytree(CASE, unchk, ignore=shutil.ignore_patterns(
         "*.csv", "log.*", "expected"))
     for ds in (FITSET, VALSET):
         p = unchk / "constant/experiments" / ds.name
@@ -317,7 +318,7 @@ def main():
         shutil.rmtree(probes)
     for label, mutate, expect in PROBES:
         d = probes / label
-        shutil.copytree(CASE, d, ignore=shutil.ignore_patterns(
+        case_records.copytree(CASE, d, ignore=shutil.ignore_patterns(
             "*.csv", "log.*", "expected"))
         mutate(d)
         pout, _ = run(d)

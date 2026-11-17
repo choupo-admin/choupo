@@ -104,6 +104,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+import case_records  # noqa: E402  (the probe copy has one home)
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 CASE = ROOT / "tutorials/steady/userops/userOp03_case_rate_law"
 
@@ -178,7 +179,7 @@ def kpi(js, unit, key):
 def expression_only_copy(td):
     """The witness's expression half alone: no code/, so the plain binary runs it."""
     dst = Path(td) / "case"
-    shutil.copytree(CASE, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(CASE, dst, ignore=shutil.ignore_patterns(
         "code", "converged", "reports", "design", "*.build"))
     fs = dst / "system/flowsheetDict"
     t = fs.read_text()
@@ -269,7 +270,7 @@ def main() -> int:
         def probe(label, edit, expect, must_run=False):
             with tempfile.TemporaryDirectory() as td2:
                 dst = Path(td2) / "case"
-                shutil.copytree(base, dst, ignore=shutil.ignore_patterns("converged", "reports"))
+                case_records.copytree(base, dst, ignore=shutil.ignore_patterns("converged", "reports"))
                 rx = dst / "constant/reactions"
                 rx.write_text(edit(rx.read_text()))
                 rcp, outp = run(dst)
@@ -344,7 +345,7 @@ def main() -> int:
         #  not hand it the 1 atm it assumes for its own phase resolution.
         with tempfile.TemporaryDirectory() as td3:
             dst = Path(td3) / "case"
-            shutil.copytree(base, dst, ignore=shutil.ignore_patterns("converged", "reports"))
+            case_records.copytree(base, dst, ignore=shutil.ignore_patterns("converged", "reports"))
             feed = dst / "0/feedExpr"
             feed.write_text(re.sub(r"\nP\s+[^;]*;", "\n", feed.read_text()))
             rx = dst / "constant/reactions"

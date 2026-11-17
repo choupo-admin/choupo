@@ -91,6 +91,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+import case_records  # noqa: E402  (the probe copy has one home)
 CASE = ROOT / "tutorials/props/estimate/petroleumCuts01_riazi_table36_tbp"
 PROPS = ROOT / "choupoProps"
 SRC_H = ROOT / "src/propertyOps/PetroleumCuts.H"
@@ -271,7 +272,7 @@ def probe(propsdict_text, extra_edit=None):
     d = Path(tempfile.mkdtemp(prefix="pc_probe_"))
     try:
         dst = d / "case"
-        shutil.copytree(CASE, dst)
+        case_records.copytree(CASE, dst)
         for stale in list((dst / "constant/components").glob("*.estimated.dat")):
             stale.unlink()
         (dst / "system/propsDict").write_text(propsdict_text)
@@ -303,7 +304,7 @@ def main():
     d = Path(tempfile.mkdtemp(prefix="pc_wit_"))
     try:
         wit = d / "case"
-        shutil.copytree(CASE, wit)
+        case_records.copytree(CASE, wit)
         for stale in list((wit / "constant/components").glob("*.estimated.dat")):
             stale.unlink()
         rc, out = run(PROPS, wit)
@@ -382,7 +383,7 @@ def main():
                 fails.append("(e) the record header's SG/API/Watson K differ from the published ones")
         # promote by `mv` (as the header says) into an UNSEALED copy and use them
         use = d / "use"
-        shutil.copytree(CASE, use)
+        case_records.copytree(CASE, use)
         (use / "constant/propertyManifest").unlink()
         # The case ships no constant/components/ (C413: it references the
         # catalogue); the folder existed only as a run's leftover in a used

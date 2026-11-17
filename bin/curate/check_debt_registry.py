@@ -101,6 +101,26 @@ def main() -> int:
                         "\"what are we tolerating?\" has exactly one home -- "
                         "move it into debt_registry.py and import it.")
 
+    #  C421: a gate that copies a tree with neither the one copy home
+    #  (case_records / gatekit) nor a declared reason in OWN_CASE_COPY fails; a
+    #  declared reason must belong to a gate that exists and still copies.
+    used.add("OWN_CASE_COPY")
+    sys.path.insert(0, str(HERE))
+    import debt_registry
+    own = debt_registry.OWN_CASE_COPY
+    for p in sorted(HERE.glob("check_*.py")):
+        t = p.read_text()
+        if "copytree" not in t:
+            continue
+        if not re.search(r"case_records|gatekit", t) and p.name not in own:
+            fail.append(f"{p.name}: copies a tree by its own code with neither "
+                        "case_records/gatekit nor an OWN_CASE_COPY entry (C421).")
+    for name in own:
+        q = HERE / name
+        if not q.exists() or "C421 exception:" not in q.read_text():
+            fail.append(f"OWN_CASE_COPY[{name!r}]: the gate is missing or carries "
+                        "no `# C421 exception:` comment at its copy.")
+
     orphans = sorted(n for n in registry_names
                      if n.isupper() and n not in used
                      and not n.endswith("_DEBT"))

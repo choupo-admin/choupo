@@ -194,6 +194,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+import case_records  # noqa: E402  (the probe copy has one home)
 BUILD = ROOT / "build" / "linux64Gcc"
 CASE = ROOT / "tutorials" / "ctrl" / "ctrl17_step_reaction_curve"
 
@@ -337,7 +338,7 @@ def run(binary, cwd):
 def stage(tmp, name):
     """A fresh COPY of the tutorial case.  The tree is never touched."""
     dst = Path(tmp) / name
-    shutil.copytree(CASE, dst)
+    case_records.copytree(CASE, dst)
     for junk in dst.glob("*.csv"):
         junk.unlink()
     return dst

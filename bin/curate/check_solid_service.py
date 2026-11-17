@@ -41,6 +41,7 @@ import subprocess
 import sys
 
 ROOT  = pathlib.Path(__file__).resolve().parents[2]
+import case_records  # noqa: E402  (the probe copy has one home)
 SRC   = ROOT / "bin" / "curate" / "_solidServiceProbe.cpp"
 SVC   = ROOT / "src" / "thermo" / "solidEquilibrium" / "SolidEquilibriumService.cpp"
 PROBE = ROOT / "build" / "linux64Gcc" / "_solidServiceProbe"
@@ -170,7 +171,7 @@ def main() -> int:
     import shutil, tempfile
     with tempfile.TemporaryDirectory() as td:
         base = pathlib.Path(td) / "c3"
-        shutil.copytree(ROOT / "tutorials/steady/flash/vlle01_waterButanol", base)
+        case_records.copytree(ROOT / "tutorials/steady/flash/vlle01_waterButanol", base)
         tp = base / "constant" / "thermoPhysPropDict"
         s0 = tp.read_text()
         m = re.search(r"liquidPhases\s*\((.*?)\);", s0, re.S)
@@ -233,7 +234,7 @@ def main() -> int:
     # the solid formation rung -- the S4b withhold is CLOSED by R-E3/R-E4).
     with tempfile.TemporaryDirectory() as td:
         base = pathlib.Path(td) / "sle"
-        shutil.copytree(
+        case_records.copytree(
             ROOT / "tutorials/steady/flash/flash21_freeze_concentration", base)
         for junk in base.glob("log.*"):
             junk.unlink()
@@ -290,7 +291,7 @@ def main() -> int:
     # live from a fresh copy; the CSV is the report's own artefact.
     with tempfile.TemporaryDirectory() as td:
         base = pathlib.Path(td) / "rung"
-        shutil.copytree(
+        case_records.copytree(
             ROOT / "tutorials/steady/flash/flash19_organic_and_precipitate",
             base)
         for junk in base.glob("log.*"):

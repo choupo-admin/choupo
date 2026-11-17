@@ -181,6 +181,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+import case_records  # noqa: E402  (the probe copy has one home)
 BUILD = ROOT / "build" / "linux64Gcc"
 GAS = ROOT / "tutorials" / "props" / "molecular" / "envelope01_natural_gas"
 #  Named envelope02_root_jump until C235 (2026-11-07).  Its jump was an
@@ -613,7 +614,7 @@ def main() -> int:
     import tempfile
     with tempfile.TemporaryDirectory(prefix="choupo-envstart-") as td:
         probe = Path(td) / "envelope01_probe"
-        shutil.copytree(GAS, probe)
+        case_records.copytree(GAS, probe)
         pd = probe / "system" / "propsDict"
         txt = pd.read_text()
         pd.write_text(txt.replace("to 60 bar", "to 40 bar"))

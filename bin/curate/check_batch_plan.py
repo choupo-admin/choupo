@@ -349,6 +349,7 @@ def copy_witness(work, name, edit=None):
     d = work / name
     if d.exists():
         shutil.rmtree(d)
+    # C421 exception: the copy is handed to a nested bin/runTests (--record arms); tried through case_records.copytree on 2026-11-17 and the gate FAILED (arms (g) and (l) failed: runTests --record exited 0 but recorded nothing), so the plain copy stays.
     shutil.copytree(WITNESS, d, ignore=shutil.ignore_patterns(
         "reports", "converged", "design", "iterations", "expected"))
     if edit:
@@ -1453,6 +1454,7 @@ def arm_absent(work):
     d = work / "econ"
     if d.exists():
         shutil.rmtree(d)
+    # C421 exception: the copy is handed to a nested bin/runTests (--record arms); tried through case_records.copytree on 2026-11-17 and the gate FAILED (arms (g) and (l) failed: runTests --record exited 0 but recorded nothing), so the plain copy stays.
     shutil.copytree(ECON, d, ignore=shutil.ignore_patterns(
         "reports", "converged", "design", "iterations"))
     out, err, rc, j = solve(d)
@@ -1615,6 +1617,7 @@ def arm_product_clean(work):
     dd = work / "donepezil02"
     if dd.exists():
         shutil.rmtree(dd)
+    # C421 exception: the copy is handed to a nested bin/runTests (--record arms); tried through case_records.copytree on 2026-11-17 and the gate FAILED (arms (g) and (l) failed: runTests --record exited 0 but recorded nothing), so the plain copy stays.
     shutil.copytree(DONEPEZIL02, dd, ignore=shutil.ignore_patterns(
         "reports", "converged", "design", "iterations", "expected"))
     out3, err3, rc3, j3 = solve(dd)

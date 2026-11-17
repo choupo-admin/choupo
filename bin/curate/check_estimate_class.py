@@ -66,6 +66,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+import case_records  # noqa: E402  (the probe copy has one home)
 HOME = ROOT / "src/postProcessing/EstimateClass.H"
 PASS = ROOT / "src/postProcessing/EconomicsPass.cpp"
 DOC = ROOT / "docs/design-heuristics.md"
@@ -186,7 +187,7 @@ def main() -> int:
         import shutil, tempfile
         with tempfile.TemporaryDirectory() as td:
             probe = Path(td) / "declared"
-            shutil.copytree(ROOT / CASE, probe)
+            case_records.copytree(ROOT / CASE, probe)
             pd = probe / "system" / "postDict"
             txt = pd.read_text(encoding="utf-8")
             pd.write_text(txt.replace("estimateClass       4;",
@@ -206,7 +207,7 @@ def main() -> int:
 
             # (g) an unregistered class refuses BY NAME
             probe2 = Path(td) / "badclass"
-            shutil.copytree(ROOT / CASE, probe2)
+            case_records.copytree(ROOT / CASE, probe2)
             pd2 = probe2 / "system" / "postDict"
             pd2.write_text(pd2.read_text(encoding="utf-8")
                            .replace("estimateClass       4;",

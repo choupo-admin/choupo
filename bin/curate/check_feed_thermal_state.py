@@ -269,6 +269,7 @@ def build_fixture(root: Path, quality: str, vf: str) -> Path:
         shutil.rmtree(case)
     (case / "system").mkdir(parents=True)
     (case / "0").mkdir()
+    # C421 exception: a partial copy (the donor's constant/ only) whose propertyManifest is then removed on purpose; materialising pins first would change what the probe reads.
     shutil.copytree(DONOR / "constant", case / "constant")
     #  The sealed manifest is the donor's, and this is not the donor.
     (case / "constant" / "propertyManifest").unlink(missing_ok=True)
@@ -292,6 +293,7 @@ def build_multi_fixture(root: Path, quality: str, stage_b: int = 10,
         shutil.rmtree(case)
     (case / "system").mkdir(parents=True)
     (case / "0").mkdir()
+    # C421 exception: a partial copy (the donor's constant/ only) whose propertyManifest is then removed on purpose; materialising pins first would change what the probe reads.
     shutil.copytree(DONOR / "constant", case / "constant")
     (case / "constant" / "propertyManifest").unlink(missing_ok=True)
     (case / "system" / "controlDict").write_text(CONTROL)

@@ -170,6 +170,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import record_psat  # noqa: E402  (Antoine or Wagner, read from the record's own text)
 
 ROOT = Path(__file__).resolve().parents[2]
+import case_records  # noqa: E402  (the probe copy has one home)
 BATCH = ROOT / "build" / "linux64Gcc" / "choupoBatch"
 CASE = ROOT / "tutorials" / "batch" / "drying" / "dryer01_sucrose_tray"
 
@@ -185,7 +186,7 @@ def run(case: Path):
 
 def copy(tmp: Path, tag: str) -> Path:
     case = tmp / tag
-    shutil.copytree(CASE, case,
+    case_records.copytree(CASE, case,
                     ignore=shutil.ignore_patterns("expected", "log.*",
                                                   "reports", "converged",
                                                   "trajectory.csv"))

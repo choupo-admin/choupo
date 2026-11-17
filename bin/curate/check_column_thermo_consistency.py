@@ -127,6 +127,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+import case_records  # noqa: E402  (the probe copy has one home)
 BUILD = ROOT / "build" / "linux64Gcc"
 SOLVE = ROOT / "choupoSolve"
 PROBE = BUILD / "columnThermoProbe"
@@ -573,7 +574,7 @@ def probe_srk_copy(tmp):
     """column06 on an SRK vapour: the non-ideal witness for (b) and (a2)."""
     src = ROOT / "tutorials" / "steady" / "distillation" / "column06_fullMESH"
     dst = Path(tmp) / "column06_srk_probe"
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
         "converged", "reports", "iterations", "design", "economics"))
     tp = dst / "constant" / "thermoPhysPropDict"
     s = tp.read_text()
@@ -597,7 +598,7 @@ def probe_enthalpic_q(tmp):
     probe's enthalpies at the package-level bubble and dew points."""
     src = ROOT / "tutorials" / "steady" / "distillation" / "column01_benzene_toluene"
     dst = Path(tmp) / "column01_subcooled_probe"
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
         "converged", "reports", "iterations", "design", "economics"))
     f = dst / "0" / "feed"
     s = f.read_text()
@@ -641,7 +642,7 @@ def probe_reactive_refusals(tmp):
     out = []
     for model in ("fullMESH", "MESH", "NaphtaliSandholm"):
         dst = Path(tmp) / ("column05_" + model)
-        shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+        case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
             "converged", "reports", "iterations", "design", "economics"))
         fd = dst / "system" / "flowsheetDict"
         s = fd.read_text()

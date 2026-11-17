@@ -141,6 +141,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+import case_records  # noqa: E402  (the probe copy has one home)
 PROBE = ROOT / "build" / "linux64Gcc" / "freezingProbe"
 SRC = ROOT / "bin" / "curate" / "_freezingProbe.cpp"
 WATER = ROOT / "data/standards/components/water.dat"
@@ -464,7 +465,7 @@ def main() -> int:
     with tempfile.TemporaryDirectory() as td:
         def sle(tag, water, eth, T):
             case = Path(td) / tag
-            shutil.copytree(flash21, case, ignore=lambda d, names: [
+            case_records.copytree(flash21, case, ignore=lambda d, names: [
                 x for x in names if x in ("expected", "converged", "reports")
                 or x.startswith("log.")])
             if water is not None:
