@@ -2644,9 +2644,23 @@ identity, the printed Sigma formula evaluated by hand).
 Hardware: wheel atomiser geometry + chamber.  Atomisation by
 Friedman, drying kinetics by Ranz-Marshall + Lewis falling rate,
 equilibrium by GAB sorption isotherm.  A solid with no `rho_p` REFUSES by name
-(no 1500 kg/m3 default); a solvent with no liquid molar volume `Vliq` REFUSES by name
-(the droplet density is read from it; no 1000 kg/m3 default), and so does a drying-air
-temperature of 0 K or below (no 1.2 kg/m3 air); a `sorption {}` block must carry Xm, C and K.
+(no 1500 kg/m3 default); a drying-air temperature of 0 K or below REFUSES (no 1.2 kg/m3
+air); a `sorption {}` block must carry Xm, C and K.
+
+**The feed's liquid properties come from the property dictionary, through the door**
+(`liquidProperty::evaluate`, DEV.md 4c C421 slice B), at the feed's own T and composition:
+the droplet density is the SOLUTION's (dissolved solids counted: 40 wt % sucrose is 1178
+kg/m3, not water's 997), the viscosity is `transport { liquid { viscosity { ... } } }`
+(a model, or a `measured` table of the solution: `kind measured | adopted`), the surface
+tension is `transport { interface { surfaceTension { ... } } }` taken on the volatile
+solvent (the dissolved solid is not counted: an announced approximation), and the rotary
+wheel's windage uses the vapour-viscosity model at the air's inlet state.  A package that
+holds no viscosity or surface tension for the feed REFUSES by name with the line to write:
+there is no water default (1 mPa s, 0.072 N/m) and no 1.8e-5 Pa s air.  A property word
+(`liquidViscosity`, `viscosity`, `density`, `sigma`, `surfaceTension`, ...) typed in
+`operation`, at any depth, is REFUSED by name.  Witnesses: `sprayDryer01_sugar` (NBS table,
+`kind measured`), `sprayDryer05_whey` (an `adopted` row held below its range, announced),
+`apalutamide01_tablets` (one `adopted` row), the sugar plant (a variant, `thermo sdMagma;`).
 
 Selectable chamber `model`s (an unrecognised word REFUSES, naming these):
 - `marshall` (**default**, alias `lumped`).  The inlet/outlet short-cut plus a
@@ -2662,7 +2676,7 @@ The KPIs of `marshall` and `langrishKockel` can agree to the byte on the same
 case — the difference is the axial `profile.csv` — so read the profile, not
 only the summary, when you change this word.  And the three kinetics agree
 to the byte wherever the residence time dwarfs the drying time (sprayDryer01:
-7.1 s against 0.07 s): the kinetics only show where the two are comparable
+6.4 s against 0.15 s): the kinetics only show where the two are comparable
 (`sprayDryer06_rea`, coarse droplets in the same chamber).
 
 **Which air the isotherm reads.**  `X_equilibrium` is the GAB moisture at the

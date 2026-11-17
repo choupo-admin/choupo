@@ -37,9 +37,13 @@
   only.  The atomisation reads the liquid's surface tension from the property
   layer: Brock-Bird on the volatile solvent at the feed temperature (a
   corresponding-states estimate; acetone is not hydrogen-bonded, the case in
-  which Brock-Bird does best).  The liquid viscosity is NOT a model here: the
-  spray solution is a polymer solution whose viscosity no record carries, so
-  the dryer's `operation` DECLARES it (system/flowsheetDict).
+  which Brock-Bird does best).  The liquid viscosity is the carrier's: nothing
+  dissolves in this model (the API and the HPMCAS are solids in every stream),
+  so the liquid the dryer atomises is acetone and its viscosity is acetone's
+  record law.  The viscosity of the real HPMCAS solution (the case's earlier
+  author-set guess of 0.02 Pa s, typed in the dryer's block) is NOT read: a
+  liquid property is never typed in a unit's `operation` (DEV.md 4c C421), and
+  a polymer solution is not what this model carries.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
@@ -72,6 +76,13 @@ equilibrium
 
 transport
 {
+    //  The liquid the dryer atomises is the SOLVENT (acetone): the API and the HPMCAS ride in the SOLID phase of every
+    //  stream, nothing dissolves, so the feed liquid's viscosity is acetone's own record law (DEV.md 4c C421).
+    liquid
+    {
+        viscosity { }       // no word: each constituent's record law
+    }
+
     vapour
     {
         viscosity           { model Chung; }    // gas mu (drying h, k_c)

@@ -279,7 +279,7 @@ What the dossier sourced is marked *(dossier)*; the rest is the case's.
 | `blower` | shaft power, efficiency | 1 kW, 0.70 (the pressure it reaches is a result) |
 | `gasHeater` | drying-gas inlet | 120 C (the patent gives none) |
 | `0/n2Makeup` | nitrogen make-up 22.5 kg/h with a 5 % purge, so the loop holds 450 kg/h of nitrogen | set so that the exhaust leaves at **46 C**, the patent's PSD-3 outlet *(dossier)* |
-| `SD` | a pressure nozzle *(dossier)* at an atomising pressure of 30 bar, sized by the class-average curve; chamber 1.2 m x 2.5 m; spray-solution viscosity 0.02 Pa s | the pressure, the chamber and the viscosity are NOT in any document read — the viscosity of an HPMCAS solution in acetone must be measured |
+| `SD` | a pressure nozzle *(dossier)* at an atomising pressure of 30 bar, sized by the class-average curve; chamber 1.2 m x 2.5 m; the liquid atomised is the solvent (acetone's own viscosity: nothing dissolves in this model) | the pressure and the chamber are NOT in any document read; the viscosity of an HPMCAS solution in acetone (the earlier 0.02 Pa s guess, no longer typed or read) must be measured |
 | `exhaustCooler`, `solventCondenser` | outlet temperatures | 35 C, **-10 C** (the recovery knob; the patent's PSD-3 condenser runs at -9 C *(dossier)*) |
 | `purgeSplit` | purge fraction | 5 % |
 | `blender` | declared at 25 C | the dispersion is HELD (secondary drying, QC release) before blending, so it is at room temperature; the heat it gave the room is the blender's published duty |
@@ -610,7 +610,7 @@ room.
   the run: the wet bulb is solved with the Lewis relation Le = 1, while
   acetone in nitrogen has Le = 1.6; the atomiser is the pressure nozzle's
   class-average curve, which reads the pressure only (not the viscosity,
-  which is a declared guess); the surface tension is a corresponding-states
+  which is the solvent's: nothing dissolves in this model); the surface tension is a corresponding-states
   estimate.
 - **The nitrogen dissolved in the recovered acetone is not a solubility.**
   N2 is above its critical temperature (126 K) at -10 C, and on this case's

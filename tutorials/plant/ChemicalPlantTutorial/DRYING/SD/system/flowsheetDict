@@ -16,6 +16,7 @@
 \*---------------------------------------------------------------------------*/
 
 type        sprayDryer;
+thermo      sdMagma;      // the variant that carries the feed's viscosity table (constant/thermoPhysPropDict)
 operation
 {
     wheelDiameter    0.1 m;

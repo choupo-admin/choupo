@@ -37,7 +37,7 @@ units
             chamberDiameter  1.0 m;             // drying chamber (HARDWARE)
             chamberHeight    10.0 m;             // -> residence time is a RESULT (L / v_particle)
             // flow co;  (default: co-current gas + droplets)
-            // liquidViscosity / surfaceTension default to water.
+            // the feed's viscosity, density and surface tension come from constant/thermoPhysPropDict (a property typed here is refused).
         }
         dryingCurve  sugarDrying;    // KINETICS: Xc + curve, in constant/dryingKinetics
         // (the equilibrium GAB sorption ISOTHERM is in

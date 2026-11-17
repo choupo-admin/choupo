@@ -162,13 +162,16 @@ units
     //  is off, said on the run): the SECONDARY drying every real dispersion
     //  needs (the patent's vacuum tray dryer with a nitrogen sweep at 40 C,
     //  to the ICH Q3C limit for acetone, 5 000 ppm) is NOT modelled.
-    //  `liquidViscosity` is DECLARED because no record carries the viscosity
-    //  of an HPMCAS solution in acetone: 0.02 Pa s is an AUTHOR-SET guess,
-    //  made for the earlier 10 wt % solution and kept for the 5 wt % one,
-    //  which is thinner -- to be measured (dossier red team, item 5).  The
-    //  class-average curve does not read it; `correlation wangLefebvre;` in
-    //  the atomiser block does (with the nozzle's film thickness and cone
-    //  angle, which the group must then declare too) -- README question 1.
+    //  The atomiser's liquid is the SOLVENT: its viscosity, density and surface
+    //  tension come from the property dictionary (DEV.md 4c C421: a liquid
+    //  property is never typed in the unit), and since the API and the HPMCAS
+    //  ride in the solid phase of every stream (nothing dissolves in this
+    //  model) the viscosity is acetone's own record law.  The case used to
+    //  type `liquidViscosity 0.02` (an AUTHOR-SET guess for an HPMCAS solution,
+    //  made for the earlier 10 wt % solution): it is gone, and the class-average
+    //  curve never read it; `correlation wangLefebvre;` in the atomiser block
+    //  would read acetone's viscosity, not a polymer solution's -- README
+    //  question 1.
     {
         name        SD;
         type        sprayDryer;
@@ -183,7 +186,6 @@ units
             }
             chamberDiameter  1.2 m;      // drying chamber -- ASSUMED
             chamberHeight    2.5 m;      // -> residence time is a RESULT
-            liquidViscosity  0.02;       // Pa s -- ASSUMED, see above
         }
     }
 

@@ -34,6 +34,7 @@ License
 #include "atomizer/Atomizer.H"
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
+#include "unitOperations/UnitTypedProperties.H"
 #include "solver/NewtonRaphson.H"
 #include "streams/StreamMass.H"
 #include "unitOperations/flash/StreamEquilibrium.H"   // the ONE resolve-and-price home
@@ -115,47 +116,36 @@ int SprayDryer::solve(const DictPtr& dict,
     const sVector sFeed = readSolids(feedDict);    // kmol/s of suspended crystals
 
     // -------------------------------------------------------------------
-    //  Operation = atomiser HARDWARE only (the credo).  Liquid viscosity
-    //  / surface tension default to water (Choupo carries neither yet);
-    //  they are knobs, not specs.
+    //  Operation = atomiser HARDWARE only (the credo).  A LIQUID PROPERTY IS NEVER
+    //  TYPED HERE (DEV.md 4c C421, door slice B): the feed's viscosity, surface
+    //  tension and density come from the property dictionary through the door,
+    //  at the feed's own temperature and composition, and a property word in
+    //  `operation` (at any depth) is REFUSED by name with the line to write.
     // -------------------------------------------------------------------
     auto oper = dict->subDict("operation");
-    // Liquid viscosity for atomisation: the SOLUTION mu_L from the property layer
-    // (its mixing rule -> a concentrated/viscous feed gives COARSER droplets),
-    // when a liquidViscosity model is declared; else the operation knob (default
-    // water, byte-stable for cases without a transport model).
-    scalar muL = oper->lookupScalarOrDefault("liquidViscosity", liquidSource::waterViscosityKnob.value);
-    if (!thermo.hasLiquidViscosity())
-        PropertySourceLog::instance().useHere("liquidViscosity", oper->found("liquidViscosity")
-            ? liquidSource::declaredByCase : NamedSource{ liquidSource::waterViscosityKnob.id,
-                                                          liquidSource::waterViscosityKnob.label },
-            oper->found("liquidViscosity") ? "declared" : "bypass", took(muL));
-    std::string muLSource = "operation.liquidViscosity knob (default water 1e-3; no liquidViscosity model)";
-    if (thermo.hasLiquidViscosity())
+    const std::string sdWho = "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'";
+    unitTypedProperties::refuse(oper, sdWho + ": ", "spray dryer");
+    //  The feed's liquid viscosity: the SOLUTION mu_L (T_feed, x_feed) from the
+    //  property layer -- a record law with its mixing rule, or a measured table
+    //  of the solution.  A viscous feed gives COARSER droplets.  A package that
+    //  holds no viscosity for this liquid REFUSES, quoting its own reason; the
+    //  atomiser never goes on with a water value.
+    scalar muL = 0.0;
+    std::string muLSource;
+    try
     {
-        //  A DECLARED model that cannot price this feed REFUSES, quoting the
-        //  package's own reason (2026-09-05).  Until then this was a
-        //  catch(...) that kept the water knob: the case had DECLARED a
-        //  liquid-viscosity model, the model could not serve (a solute with
-        //  no viscosity block, say), and the atomiser went on with 1e-3 Pa.s
-        //  and a source string naming a model that was not running.  The
-        //  remedy is the record's, not the unit's, and it is named.
-        try
-        {
-            muL = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T_feed, 0.0, zFeed).value;
-            muLSource = "property layer mu_L(T_feed, x_feed) -- SOLUTION viscosity via the mixing rule";
-        }
-        catch (const std::exception& e)
-        {
-            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
-            throw std::runtime_error("SprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "': the case"
-                " declares a liquidViscosity transport model and it cannot"
-                " price the feed -- " + std::string(e.what()) + "\n  Remedy:"
-                " give every feed component the block that model reads, or"
-                " remove the liquidViscosity declaration and set"
-                " `operation.liquidViscosity` explicitly.  The unit will NOT"
-                " substitute water for a declared model.");
-        }
+        muL = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T_feed, 0.0, zFeed).value;
+        muLSource = "property layer mu_L(T_feed, x_feed) -- SOLUTION viscosity (the case's model or measured table)";
+    }
+    catch (const std::exception& e)
+    {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
+        throw std::runtime_error(sdWho + ": the atomiser needs the feed's liquid viscosity and the package cannot"
+            " price it -- " + std::string(e.what()) + "\n  Remedy: state the feed's viscosity in"
+            " constant/thermoPhysPropDict: a model (`transport { liquid { viscosity { model <word>; } } }`), or a"
+            " measured table of the solution (`viscosity { measured { <name> { use method; interpolation ( ... ); } } }`"
+            " with constant/experiments/<name>.dat, `provenance { kind measured | adopted; basis \"...\"; }`).  The unit"
+            " does not substitute the viscosity of water, and `operation` carries no property.");
     }
     const scalar nRR   = oper->lookupScalarOrDefault("spreadParameter", 2.2);  // Rosin-Rammler width
     const scalar Dch   = oper->lookupScalarOrDefault("chamberDiameter", 0.0);  // m  (drying chamber)
@@ -381,31 +371,18 @@ int SprayDryer::solve(const DictPtr& dict,
     }
 
     // -------------------------------------------------------------------
-    //  Surface tension of the atomising liquid -- HONEST CASCADE (glass-box):
-    //    (1) explicit `surfaceTension` in operation{}  -> the knob wins;
-    //    (2) else the property layer  thermo.surfaceTension(T_feed, x_liq)
-    //        -- the REAL sigma(T) of the liquid (IAPWS R1-76 if water is
-    //        IF97-flagged, else the generic SurfaceTensionModel) evaluated
-    //        at the atomisation (feed) temperature.  The non-volatile solid
-    //        has no liquid surface, so sigma is taken on the volatile
-    //        solvent (water) -- a unit vector in iSolv -- which also keeps
-    //        the BrockBird correlation off the solid's missing Tc/Pc/Tb;
-    //    (3) else (no sigma model declared / the accessor throws) -> the
-    //        0.072 N/m water fallback, so cases WITHOUT a sigma model stay
-    //        byte-stable.
+    //  Surface tension of the atomising liquid, from the property layer (C421):
+    //  sigma(T_feed) of the volatile solvent liquid -- the non-volatile solid
+    //  has no liquid surface, so sigma is taken on the solvent at its feed
+    //  composition (a unit vector for one solvent), which also keeps a
+    //  correlation off the solid's missing Tc/Pc/Tb.  For a dissolved sugar
+    //  that is an ANNOUNCED approximation (sucrose lowers sigma of water by
+    //  a few per cent at most).  A package with no surface-tension law for
+    //  the solvent REFUSES, naming the line to write; there is no 0.072 N/m.
     // -------------------------------------------------------------------
-    scalar sigma = liquidSource::waterSurfaceTensionFallback.value;
-    std::string sigmaSource = "default (0.072 N/m, water)";
-    if (oper->found("surfaceTension"))
+    scalar sigma = 0.0;
+    std::string sigmaSource;
     {
-        sigma = oper->lookupScalar("surfaceTension");
-        PropertySourceLog::instance().useHere("surfaceTension", liquidSource::declaredByCase, "declared", took(sigma));
-        sigmaSource = "operation{} knob";
-    }
-    else
-    {
-        //  surface = the volatile solvent (for several, the solvent liquid
-        //  at its feed composition, through the package's mixing rule)
         const sVector& xLiq = xs;
         try
         {
@@ -417,14 +394,16 @@ int SprayDryer::solve(const DictPtr& dict,
                 + (thermo.surfaceTensionMethod().rfind("BrockBird", 0) == 0
                        ? "; Brock-Bird OVERPREDICTS hydrogen-bonded liquids, +49 % on water at 25 C"
                        : "")
-                + "; d32 varies with sigma^0.6)";
+                + "; the dissolved solid is NOT counted -- an announced approximation; d32 varies with sigma^0.6)";
         }
-        catch (const std::exception&)
+        catch (const std::exception& e)
         {
             rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
-            sigma = liquidSource::waterSurfaceTensionFallback.value;   // no sigma model -> byte-stable fallback
-            PropertySourceLog::instance().useHere("surfaceTension", liquidSource::waterSurfaceTensionFallback);
-            sigmaSource = "default (0.072 N/m, water -- no surfaceTension model)";
+            throw std::runtime_error(sdWho + ": the atomiser needs the surface tension of the solvent liquid and the"
+                " package cannot price it -- " + std::string(e.what()) + "\n  Remedy: state it in"
+                " constant/thermoPhysPropDict: `transport { interface { surfaceTension { model StoredCorrelation; } } }`"
+                " (the records' own laws) or `model BrockBird;`, or a measured table.  The unit does not"
+                " substitute 0.072 N/m, and `operation` carries no property.");
         }
     }
 
@@ -594,35 +573,21 @@ int SprayDryer::solve(const DictPtr& dict,
     //  shrinks to the powder particle as solvent leaves:
     //      d_p = d32 · (x_solid,mass · ρ_L / ρ_solid)^(1/3)
     // -------------------------------------------------------------------
-    //  C402 rest, step 3: a solvent with no declared liquid molar volume REFUSES
-    //  (it used to fall back to 1000 kg/m3; no shipped case relied on it).
-    const std::string sdWho = "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'";
-    if (!multiSolvent && !(solv.Vliq() > 0.0))
-        throw std::runtime_error(sdWho + ": the solvent '" + solv.name() + "' declares no liquid molar"
-            " volume (`Vliq`), which the droplet density is read from.  Declare `Vliq` (with its `VliqT`) in"
-            " the component's record, or in the case's own constant/components/" + solv.name() + ".");
-    scalar rho_L = (MW_w / 1000.0) / solv.Vliq();
-    if (!multiSolvent)
-        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::solventVliqFlat,
-            liquidProperty::statedDatumTemperatures(thermo, xs), "", "bypass", took(rho_L), "not applied");
-    if (multiSolvent)
+    //  The droplet's liquid density, from the property layer (C421) at the feed's
+    //  own temperature and composition: the SOLUTION, dissolved solids counted
+    //  (a 40 wt % sucrose liquor is ~1.18 times water's density), through the
+    //  door's volumes.  A component the package holds no liquid volume for
+    //  REFUSES by name, quoting the remedy the door states.
+    scalar rho_L = 0.0;
+    try
     {
-        //  The solvent liquid's density at its feed composition: molar
-        //  volumes ADD (ideal mixing; the excess volume of acetone/water or
-        //  ethanol/water is a few per cent, beneath d32's cube-root
-        //  sensitivity).  A solvent with no declared Vliq REFUSES, as above.
-        scalar V = 0.0;
-        for (auto i : solvents)
-        {
-            if (!(thermo.comp(i).Vliq() > 0.0))
-                throw std::runtime_error(sdWho + ": the solvent '" + thermo.comp(i).name() + "' of the feed declares"
-                    " no liquid molar volume (`Vliq`), which the droplet density is read from.  Declare `Vliq`"
-                    " (with its `VliqT`) in the component's record, or in the case's own constant/components/"
-                    + thermo.comp(i).name() + ".");
-            V += xs[i] * thermo.comp(i).Vliq();
-        }
-        rho_L = (MW_w / 1000.0) / V;
-        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::solventsVliqIdealMix, liquidProperty::statedDatumTemperatures(thermo, xs), "", "bypass", took(rho_L), "not applied");
+        rho_L = liquidProperty::evaluate(thermo, liquidProperty::Property::density, T_feed, P_feed, zFeed).value;
+    }
+    catch (const std::exception& e)
+    {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
+        throw std::runtime_error(sdWho + ": the droplet density the atomiser and the powder size read cannot be"
+            " priced for the feed liquid -- " + std::string(e.what()));
     }
     scalar MW_air_in = 0.0;
     for (std::size_t i = 0; i < n; ++i) MW_air_in += yAir[i] * thermo.comp(i).MW();
@@ -630,7 +595,10 @@ int SprayDryer::solve(const DictPtr& dict,
         throw std::runtime_error(sdWho + ": the drying air's temperature must be above 0 K to price its density"
             " (the ideal-gas density of the declared air; there is no default density).");
     const scalar rho_air_in = P_air * MW_air_in / (R * T_air);
-    const Atomizer::Feed afeed { m_feed, rho_L, muL, sigma, rho_air_in, P_feed, P_air };
+    //  The drying gas's viscosity at the inlet air's state (the rotary wheel's windage): the package's
+    //  vapour viscosity model, the one the drying kinetics below also need -- it was a typed 1.8e-5 Pa s.
+    const scalar muGasIn = thermo.viscosityGas(T_air, yAir);
+    const Atomizer::Feed afeed { m_feed, rho_L, muL, sigma, rho_air_in, P_feed, P_air, muGasIn };
     const Atomizer::DropletResult drop = atomiser->dropletSize(afeed);
     const scalar d32 = drop.d32;
     if (verbosity >= 2)

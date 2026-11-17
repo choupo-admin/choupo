@@ -41,10 +41,32 @@ equilibrium
 
 transport
 {
+    //  The FEED's viscosity, which the atomiser reads (DEV.md 4c C421: a liquid property is never typed in the
+    //  unit).  Swindells et al. (1958), the NBS table: 30-50 wt % sucrose, 20-35 C, `kind measured`; the feed is 40 wt % at 25 C, inside the rows.
+    liquid
+    {
+        viscosity
+        {
+            measured
+            {
+                swindellsSucroseWaterViscosity
+                {
+                    use            method;
+                    interpolation  ( logReciprocal monotoneCubic );     // T, then w[sucrose]
+                }
+            }
+        }
+    }
+
     vapour
     {
         viscosity           { model Chung; }
         thermalConductivity { model Eucken; }
         diffusivity         { model Fuller; }
+    }
+
+    interface
+    {
+        surfaceTension { model StoredCorrelation; }   // water's own record law (0.072 N/m at 25 C); the dissolved sugar is not counted
     }
 }

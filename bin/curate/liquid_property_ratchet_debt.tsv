@@ -8,9 +8,6 @@
 src/unitOperations/crystallisation/CrystallisationSaturation.cpp	vliq	1
 src/unitOperations/crystallisation/Crystalliser.cpp	vliq	5
 src/unitOperations/dynamic/WilliamsOttoPlant.cpp	literal	1
-src/unitOperations/heatTransfer/SprayDryer.cpp	keyRead	5
-src/unitOperations/heatTransfer/SprayDryer.cpp	vliq	4
-src/unitOperations/heatTransfer/atomizer/Atomizer.H	literal	1
 src/unitOperations/reactor/PFR.cpp	vliq	4
 src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp	direct	1
 src/unitOperations/rotating/PressureExchanger.cpp	vliq	1

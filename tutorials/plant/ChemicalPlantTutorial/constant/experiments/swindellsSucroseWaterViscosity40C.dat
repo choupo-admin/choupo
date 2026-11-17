@@ -1,0 +1,65 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The dynamic viscosity of aqueous sucrose at 40 C (313.15 K) for seven sucrose
+  mass fractions (0.30, 0.40, 0.50, 0.60, 0.65, 0.70, 0.75), the 40 C column of
+  Table 132 (revised 1957), page 6 of the Supplement to NBS Circular 440
+  (centipoise converted to Pa s).  The Bureau did NOT measure above 35 C: its
+  Table 132 says that above 35 C the tabulated values "are based largely on the
+  results of Bingham and Jackson, Landt, and Bennett and Nees", so the record
+  is `kind adopted` -- a published recalculation of other authors' measurements
+  adopted by the case, not a measurement of the Bureau.  It serves the
+  magma the sugar-plant spray dryer is fed at the crystalliser's 40 C: the
+  converged feed is 76 mass percent sucrose, one point beyond the table's last
+  row (75), so the authorised box reaches 78 percent and the 75 percent value is
+  HELD there, announced (the real viscosity at 76 percent is higher, by about
+  a quarter to a third: the table rises by a factor 3.4 between 70 and 75).
+  Transcribed from the page image and read a second time against it.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    //  sha256 is of the `data ( );` block of THIS file as transcribed.
+    sha256       "482c0530ab9abdb22364b8a492ae9634442e831c5daa2b7b0ebb43dc6f9b9d4f";
+    origin       literature;
+    kind         adopted;
+    basis        "adopted: the 40 C column of Table 132 (revised 1957), p. 6 of the NBS Supplement, which above 35 C the Bureau tabulates largely from the results of Bingham & Jackson, Landt, and Bennett & Nees, not from its own measurement (which stopped at 35 C)";
+    citation     "Swindells, J. F.; Snyder, C. F.; Hardy, R. C.; Golden, P. E. (1958). Viscosities of Sucrose Solutions at Various Temperatures: Tables of Recalculated Values. Supplement to National Bureau of Standards Circular 440, U.S. Government Printing Office, Washington. doi:10.6028/NBS.CIRC.440sup (public domain, a U.S. Government work)";
+    via          "the PDF of the Supplement, page 6 (Table 132), read from the page image";
+}
+
+property    liquidViscosity;
+system      ( sucrose water );
+solvent     water;
+
+columns
+(
+    { name T;           unit K;    }
+    { name w[sucrose];  unit -;    }
+    { name mu;          unit Pa.s; }
+);
+data
+(
+    313.15  0.3  0.001833
+    313.15  0.4  0.003241
+    313.15  0.5  0.006991
+    313.15  0.6  0.02104
+    313.15  0.65  0.04436
+    313.15  0.7  0.114
+    313.15  0.75  0.3895
+);
+
+//  Held beyond the rows on the concentration axis (the converged magma is 76 wt %) and across the few
+//  tenths of a kelvin the crystalliser's temperature is not exactly 313.15 K; nothing else.
+authorised
+{
+    T           ( 312.65 313.65 );
+    w[sucrose]  ( 0.30 0.78 );
+    reason      "the plant's spray-dryer feed is a magma of 76 mass percent sucrose at the crystalliser's 313.15 K: one point beyond the last row (75 percent), where the 75 percent value is held (an understatement of the viscosity by a quarter or a third), and a half kelvin either side of the single temperature";
+}
