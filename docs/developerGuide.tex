@@ -2108,8 +2108,16 @@ fit reads therefore moves no key (it had re-run all 1260 curation fits on
 2026-11-18); \code{suite\_reuse.py migrate-keys} re-keys the stored verdicts of
 the earlier formats when they describe the tree in hand.  No absolute path
 is in a case key, so two checkouts of one commit compute one key (what still
-differs rightly: the build, the private \file{data/local/}, and the text of
-\file{bin/runTests}, which any edit re-keys); and \code{CHOUPO\_REUSE\_STORE=DIR}
+differs rightly: the build, the private \file{data/local/}, and the harness).
+The harness of a case is \file{bin/runTests} \emph{split}: the text of
+\code{check\_case} and every function reachable from it or from a retained
+top-level line, and every top-level line outside the functions and outside the
+gate blocks (the documented shape: the comments, \code{if gate\_exec ... fi}
+and the \code{rm -f} after it, provided the block sets nothing but the tally
+counters); structure that does not parse so is kept, so a miss re-keys and
+cannot reuse wrongly.  Adding or editing a gate block moves no case key; an
+edit of \code{check\_case}, of a function it calls, or of a top-level export
+moves all of them.  And \code{CHOUPO\_REUSE\_STORE=DIR}
 moves the curation verdicts to a directory several trees share (written
 atomically, a temp file and a rename; the hash cache stays per tree), so a
 sweep in a fresh integration worktree reuses what another tree proved.  On an unchanged key the earlier PASS is
