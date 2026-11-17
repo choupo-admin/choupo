@@ -1,0 +1,32 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- the case REFERENCES the catalogue
+  (DEV.md 4c C413; context: case root).  Written by
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and, per scanned registry directory, ONE
+  `"<dir>/"  "relevant:<hash>"` line: the hash of the sorted names that
+  EXIST there and are relevant to the case (a Henry or solution pair among
+  its components), so a relevant pair that arrives or leaves is a drift
+  and an unrelated edit is not.  A registry parses a whole directory;
+  only the names the case selects are pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
+  `held` (transitional): a local copy kept IN FORCE, read alone, verified
+  against its own hash -- debt that only shrinks (check_case_records).
+\*----------------------------------------------------------*/
+propertyManifest
+{
+    pins
+    {
+        "components/acetone.dat"  "4dd7feddf8f4d9b0885fa6c01254944343d7ab96f0e0e3d6deaea74f708e7414";
+        "components/nHexane.dat"  "ff9c08ff50aa6edde6b66eff8d6ce9a88948f503c34b085a6ca2d4017b7d92fa";
+        "components/nitromethane.dat"  "8b42efdedd1c3dfeba6b87da0c03a46d7d45044e6e83ffa54e3afc643f67a836";
+        "components/polystyrene.dat"  "49f1bbe9e778db69831acec0a53010e28f438de74a194cd1d8c6d744bfcbac67";
+        "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+        "parameters/UNIFAC/groups.dat"  "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+        "parameters/UNIFAC/interactions.dat"  "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+        "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+    }
+}

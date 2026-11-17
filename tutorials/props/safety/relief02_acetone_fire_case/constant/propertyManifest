@@ -21,7 +21,7 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
-        "components/acetone.dat"  "977debb88dcb18c4b3a58417ff9ee758e107808d0b57c4c69166a5553d06b84a";
+        "components/acetone.dat"  "4dd7feddf8f4d9b0885fa6c01254944343d7ab96f0e0e3d6deaea74f708e7414";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }

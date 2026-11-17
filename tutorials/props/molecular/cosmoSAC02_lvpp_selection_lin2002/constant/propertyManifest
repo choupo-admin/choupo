@@ -26,7 +26,7 @@ propertyManifest
         "components/1Propanol.dat"  "057efedc0c5aec4a201a96626b0f276557801cc5de2c9ae6265b634933e96f03";
         "components/Dichloroethane.dat"  "0a48de29840603f2145df9cf4115b1db6d3c85a3361a045f53b8ce4d8ab4dbb5";
         "components/aceticAcid.dat"  "d7b882c31c2c0ed0135e15c61ed71815d4b9f15e42eddf71056f01d1d90b5a84";
-        "components/acetone.dat"  "977debb88dcb18c4b3a58417ff9ee758e107808d0b57c4c69166a5553d06b84a";
+        "components/acetone.dat"  "4dd7feddf8f4d9b0885fa6c01254944343d7ab96f0e0e3d6deaea74f708e7414";
         "components/acetonitrile.dat"  "398dc590046321dd24fc101560dfdac682a699a47b127824c614b64fe1413da8";
         "components/aniline.dat"  "0a7fc469db9d1387baa178e9db6e956886278acf98b3d645bb97c5d5b8d00d7f";
         "components/benzene.dat"  "d33a713d9e0ca4d840778e4a8abd11516ee4ed8ea2523f71ffab890eeec3c6d2";
@@ -37,7 +37,7 @@ propertyManifest
         "components/diethylEther.dat"  "adb9c5bb0e4137e016d8ad4a898ee08ebae90cda4330398da3737b5051cd78e4";
         "components/ethylamine.dat"  "5964336b5a3ce2fa9a59721916176f1f2de7f5b00230d5abeb9274c1a07a524b";
         "components/nitroethane.dat"  "eff8aaaaf038d0cb4a819d2505e5af436f278d4cba40579717907ddfbb100880";
-        "components/nitromethane.dat"  "120af509fc4e5c5fba7b2235dd57bdea6a4072b691ef69e03945c2fb97b5bd90";
+        "components/nitromethane.dat"  "8b42efdedd1c3dfeba6b87da0c03a46d7d45044e6e83ffa54e3afc643f67a836";
         "components/propionitrile.dat"  "3484e16ffb57c55e88709116d3b59604303570f853b1b8e1e7d9ba69b4be2a25";
         "components/triethylamine.dat"  "0f7d9ac5a1f59f6b2bb53552093a237056f915122343bdace3efdf2d6dc8d2a6";
         "parameters/Henry/"  "relevant:efe255990df34af0b3f95298d17cd3b35a75b7258da159a1905177c0d4eae385";

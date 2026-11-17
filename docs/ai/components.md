@@ -1407,6 +1407,13 @@ Each carries ρ, F_M (Turton), σ_y, max T, max P.
   refused at load without `Vliq`, at or above `Tc`, or below the record's
   `triplePoint.T`.
   Twenty catalogue records carry it (C378); gate `check_vliq_datum`.
+- `hansen { dD; dP; dH; Tref; }` — the Hansen solubility-parameter triple of
+  the pure liquid, Pa^0.5 (the three-component split of the cohesion; a
+  model's fact, with a `provenance { hansen { ... } }` block).  Catalogue
+  records carrying one: acetone, nHexane, nitromethane (Hansen 1967 thesis
+  Table 2.1, cross-read on Hansen 1969 Table I; DEV.md 4c C428).  Read by
+  `hansenMixture`; a case references it, never retypes it.  A SAMPLE's triple
+  (a polymer measured by its author) stays in the case record.
 - `Antoine { ... }` — `log10(Psat [bar]) = A − B/(T + C)` for VLE (a
   coefficient checked or fitted on ln is off by ln 10; the engine is
   log10, src/thermo/vaporPressure/Antoine.cpp).

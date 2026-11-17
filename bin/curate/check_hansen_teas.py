@@ -114,6 +114,9 @@ DIRS = {"benzene": (.90, .30, .20), "acetone": (.75, .55, .30),
         "ethanol": (.55, .35, .75), "water": (.40, .35, .85)}
 
 
+REAL_TRIPLE_IN_CATALOGUE = ("nHexane",)   # DEV.md 4c C428
+
+
 def run(case: Path):
     p = subprocess.run([str(BUILD / "choupoProps"), str(case)],
                        capture_output=True, text=True, timeout=600)
@@ -163,7 +166,16 @@ def build_probe(tmp: Path, mags: dict, break_unit=None, partial=None) -> Path:
         body += "    Tref  298.15 K;\n"
         body += "}\n"
         (case / "constant" / "components" / f"{nm}.dat").write_text(
-            (STD / f"{nm}.dat").read_text() + body)
+            re.sub(r"(?m)^hansen\n\{.*?^\}\n", "",
+                   (STD / f"{nm}.dat").read_text(), flags=re.S) + body)
+    #  C428: a catalogue record that now carries a REAL triple (n-hexane) would
+    #  add a fifth, non-synthetic row to the probe's table; the probe is about
+    #  its own constructed directions, so the real triple is stripped here.
+    for nm in REAL_TRIPLE_IN_CATALOGUE:
+        if nm not in DIRS:
+            (case / "constant" / "components" / f"{nm}.dat").write_text(
+                re.sub(r"(?m)^hansen\n\{.*?^\}\n", "",
+                       (STD / f"{nm}.dat").read_text(), flags=re.S))
     return case
 
 

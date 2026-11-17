@@ -92,8 +92,28 @@ source
     review        { state pending; reviewer unassigned; }
 }
 
+//  HANSEN solubility-parameter triple (DEV.md 4c C428; a model's fact about
+//  the pure liquid, read by `hansenMixture` and the Explorer's solvent lens).
+//  Hansen 1967 thesis, Table 2.1 row 39 "Nitromethane", revised placements:
+//  delta_d = 7.70, delta_p = 9.2, delta_h = 2.5 (cal/cm3)^0.5, x sqrt(4.184e6) = 2045.4828.
+hansen
+{
+    dD    15750.2;        // Pa^0.5   = 7.70 (cal/cm3)^0.5, thesis Table 2.1 row 39
+    dP    18818.4;        // Pa^0.5   = 9.2
+    dH    5113.7;        // Pa^0.5   = 2.5
+    Tref  298.15 K;       // adopted: the thesis prints no temperature beside Table 2.1
+}
+
 provenance
 {
+    hansen
+    {
+        origin        literature;
+        method        "Hansen 1967 thesis, Table 2.1 row 39 (Nitromethane), revised placements; (cal/cm3)^0.5 x 2045.4828 -> Pa^0.5";
+        citation      "Hansen, C. M., The Three Dimensional Solubility Parameter and Solvent Diffusion Coefficient, doctoral dissertation, Danish Technical Press, Copenhagen (1967), Table 2.1 (pages 18-19); no DOI. Cross-check read on the page image: Hansen, Ind. Eng. Chem. Prod. Res. Dev. 8 (1969) 2, doi 10.1021/i360029a002, Table I row N03: 7.70 / 9.2 / 2.5, identical";
+        reviewStatus  interim;
+        notes         "transcribed from the thesis page image 2026-10-21; cross-read on the 1969 paper's page image 2026-11-17 (same three digits); Tref 298.15 K adopted, the thesis states no temperature beside the table";
+    }
     MW
     {
         origin        literature;

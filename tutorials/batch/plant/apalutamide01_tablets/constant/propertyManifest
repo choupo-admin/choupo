@@ -24,7 +24,7 @@ propertyManifest
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
         "components/N2.dat"  "89834e7bdadc120e039062b0c02040531c9f6c65176c2091faa380e13db810ab";
         "components/O2.dat"  "27e9c81dbbc53cf3a3cdbd7bbe1dbad0dc2292fb93a397f065ac5eec815e7656";
-        "components/acetone.dat"  "977debb88dcb18c4b3a58417ff9ee758e107808d0b57c4c69166a5553d06b84a";
+        "components/acetone.dat"  "4dd7feddf8f4d9b0885fa6c01254944343d7ab96f0e0e3d6deaea74f708e7414";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:920c84617ff128a12841448d5e917c7c5ebba05bf9ef7a43a3052b6ab3aa2179";
         "parameters/Henry/N2-water.dat"  "6e597edbafb3f88076dac89a14cfa53d85b9bc2df19cc088d9b8171fdc5fd765";

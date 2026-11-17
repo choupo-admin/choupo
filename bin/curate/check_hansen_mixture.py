@@ -197,8 +197,13 @@ def scalar(text, key):
 
 
 def hansen_block(path):
-    t = strip_comments(path.read_text())
+    # C428: a solvent's triple lives in the catalogue record; the case-local
+    # file is read first (an overlay or a sample), the catalogue second.
+    t = strip_comments(path.read_text()) if path.exists() else ""
     m = re.search(r"hansen\s*\{(.*?)\}", t, flags=re.S)
+    if not m and (STD / path.name).exists():
+        t = strip_comments((STD / path.name).read_text())
+        m = re.search(r"hansen\s*\{(.*?)\}", t, flags=re.S)
     if not m:
         return None
     b = m.group(1)
