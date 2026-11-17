@@ -192,8 +192,11 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
             r.leaves.push_back({ thermo.comp(k).name(), r.methodId, 0.0 });
         pressure = "not applied (saturated liquid)";
     }
-    else if (p == Property::thermalConductivity || p == Property::diffusivity)
+    else if ((p == Property::thermalConductivity && !thermo.pureFluidCarrying(x))
+             || p == Property::diffusivity)
     {
+        //  A pure fluid carried by its formulation takes the branch below, as
+        //  the package's own thermalConductivityLiquid does (its first test).
         const bool k = (p == Property::thermalConductivity);
         const std::string m = k ? thermo.liquidConductivityMethod() : thermo.liquidDiffusivityMethod();
         r.methodId = m;
@@ -256,12 +259,13 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
             //  The formulation that gives THIS property, named by the model
             //  that computed it (DR-01): IF97 gives no viscosity and no
             //  surface tension.
+            const bool sat = (p == Property::viscosity || p == Property::thermalConductivity);
             r.label = "property kernel: "
-                    + (p == Property::viscosity ? model->viscosityFormulation()
-                                                : model->surfaceTensionFormulation())
-                    + (p == Property::viscosity ? ", at saturation" : "");
-            pressure = (p == Property::viscosity) ? "not applied (saturated liquid)"
-                                                  : "";
+                    + (p == Property::viscosity           ? model->viscosityFormulation()
+                     : p == Property::thermalConductivity ? model->conductivityFormulation()
+                                                          : model->surfaceTensionFormulation())
+                    + (sat ? ", at saturation" : "");
+            pressure = sat ? "not applied (saturated liquid)" : "";
         }
     }
     else if (p == Property::density)

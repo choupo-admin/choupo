@@ -125,7 +125,7 @@ describe("propertySources: the green-ammonia plant (several units, grouped)", ()
     expect(sep[0]!.unit).toBe("inventory 'Separator'");
     expect(sep[0]!.sourceClass).toBe("kernel");
     expect(rowsOfUnit(ps, "Aftercooler").map((r) => r.property).sort())
-      .toEqual(["liquidDensity", "liquidViscosity"]);
+      .toEqual(["liquidDensity", "liquidThermalConductivity", "liquidViscosity"]);
     expect(rowsOfUnit(ps, "Sep")).toHaveLength(0);          // a prefix is not the unit
     expect(rowsOfUnit(ps, "NoSuchUnit")).toHaveLength(0);
   });

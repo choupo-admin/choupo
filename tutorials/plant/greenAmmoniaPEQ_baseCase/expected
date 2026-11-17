@@ -1803,3 +1803,9 @@ kpi     economics              breakEven_operating_sales 206095703.738    1e-4
 kpi     economics              breakEven_operating_variable 703532821.465    1e-4
 kpi     economics              breakEven_price_H2Feed 1.78130846387    1e-4
 kpi     economics              breakEven_price_ProductNH3 1.93005376389    1e-4
+boundary global                 noBoundary       false            exact
+boundary global                 residual_denom_kW 85196.023105     1e-4
+source  ShellTubeHX:_unit_'Aftercooler'_(design) liquidThermalConductivity pureFluid.IF97   exact
+source  ShellTubeHX:_unit_'Intercooler'_(design) liquidThermalConductivity pureFluid.IF97   exact
+source  ShellTubeHX:_unit_'N2Cooler'_(design) liquidThermalConductivity pureFluid.IF97   exact
+source  ShellTubeHX:_unit_'WaterCooler'_(design) liquidThermalConductivity pureFluid.IF97   exact

@@ -198,6 +198,7 @@ const DISPLAY: Record<string, Display> = {
   liquidDensity:            { words: "liquid density", unit: "kg/m3", scale: 1, digits: 2, fixed: true },
   liquidVolume:             { words: "liquid molar volume", unit: "cm3/mol", scale: 1e6, digits: 2, fixed: true },
   liquidViscosity:          { words: "liquid viscosity", unit: "mPa s", scale: 1e3, digits: 4, fixed: false },
+  liquidThermalConductivity: { words: "liquid thermal conductivity", unit: "W/(m K)", scale: 1, digits: 4, fixed: false },
   surfaceTension:           { words: "surface tension", unit: "mN/m", scale: 1e3, digits: 4, fixed: false },
   liquidDiffusivity:        { words: "liquid diffusivity", unit: "m2/s", scale: 1, digits: 3, fixed: false },
   liquidKinematicViscosity: { words: "liquid kinematic viscosity", unit: "m2/s", scale: 1, digits: 3, fixed: false },
