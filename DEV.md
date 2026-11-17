@@ -4144,6 +4144,55 @@ accepts today, and that is a policy call.
 > beside the solids notes 01-07 (rheology 05 and filtration 06 still being
 > read from the two books that arrived today).  The tracked outcome is the
 > ranked list here.
+>
+> **C426, THE RANKING (2026-11-18; the three tables are in, about 210 rows;
+> the claims of absence the ranking rests on were re-checked in `src/` by
+> the architect: no polytropic path, no NPSH quantity, no pumparound or
+> interstage heater, no yield reactor or component splitter except as user
+> units, no pump or compressor curve, no dead time, no relay).**  THE
+> FINDING THAT MATTERS FOR THE ARCHITECTURE: of everything the reference
+> world offers, only FOUR things need a concept Choupo lacks, and three of
+> them are the ones this week's study already named -- (A) the MATERIAL, a
+> mass-basis solid described by analyses (C425); (B) one home for a
+> SAMPLE's measured behaviour; (C) a constitutive law that needs a variable
+> the unit supplies (rheology: the shear rate); (D) conserved attributes on
+> a stream (chain-length moments of a chain-growth polymer) -- out until a
+> case asks.  Everything else, about 200 rows, fits a factory or a record
+> type that exists.  A fifth "concept" the readers listed is REFUSED: a
+> calculator that reads a result and writes an input inside the sequence
+> is a side channel around the streams; Choupo's way stays the declared
+> design specification and the outer drivers.  ONE DESIGN RECORD FIRST
+> (the consolidation Vitor asked for): the property door's three forms --
+> (T, P, composition) for a fluid; (material, T, P) on a mass basis; (fluid
+> state + the unit's own variable) for a flow curve -- and ONE experiments
+> grammar under them all: mixture tables (C421 (7)), a sample's test data
+> (raw rows, the instrument or test named, the sample's conditions, the
+> supported and the authorised domain), a material's analyses.  Written and
+> ruled before any of it is built.  THE CHEAP LIST, after C421, in this
+> order (each S: an existing factory, existing data, its guide section and
+> a witness): 1 the yield reactor and the component splitter as built-in
+> units (they exist as user units; the material needs the first); 2 pump
+> NPSH available; 3 a polytropic compressor path; 4 heating and cooling
+> curves of a heater, a condenser, an exchanger; 5 a valve by flow
+> coefficient and opening; 6 the Margules, Van Laar and Redlich-Kister
+> activity models; 7 a shortcut column rated at given stages and reflux; 8
+> profitability index and modified rate of return; 9 properties of the
+> user's choice in the stream table; 10 a splitter that divides each phase
+> on its own; 11 the second cubic's MHV2 rule and an alpha function that is
+> right above the critical temperature (this one also serves the 32 cases
+> that price a supercritical gas through a vapour pressure); 12 a
+> corresponding-states liquid density behind the density door; 13 a
+> stand-alone solids washer.  THEN, each M: dead time, cascade and a relay
+> test in the control layer; pump and compressor performance curves; column
+> pumparounds and interstage heaters; a reactive amine absorber as a case;
+> kinetic parameters regressed from batch data; a multistage compressor; an
+> air cooler; a fired heater.  DELIBERATELY NOT COPIED: blocks that break
+> balances by design, automatic tear selection (the declared-tear contract
+> stands), default-on estimation of a missing parameter, a user-visible
+> graph of routes, alternative enthalpy datums, method names that bundle
+> several choices, foreign-language user models inside a property route,
+> interfaces to closed programs, logic blocks, predictive control, the
+> refinery suites.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
