@@ -3954,6 +3954,26 @@ accepts today, and that is a policy call.
 > whose viscosity depends on shear rate is not a function of (T, P, x), the
 > door's signature; nothing in `src/` models it (no yield stress, no power
 > law).  A gap, named; a candidate after C421, not part of it.
+>
+> **C421 (8): ONE SCHEMA VERSION (Vitor, 2026-11-18, an ORDER, on seeing
+> `schemaVersion 2;` in a dictionary: "Ja disse ha muito tempo que queria
+> que o legacy 1 fosse eliminado!" and, told the old grammar is dead and 2
+> is only the stamp: "so ha a versao 1!!").**  He is right on the content:
+> the v1 property grammar is refused by its RECORD TYPE (`propertyDict` /
+> `thermoPackage` no longer read), so the number discriminates nothing; a
+> `2` that survives a dead `1` is a memorial, and every other record type
+> of the tree is at 1 (6439 files).  MEASURED: `schemaVersion 2` is written
+> in 632 `thermophysicalPropertySystem` dictionaries and 60
+> `gasLiquidEquilibrium` records under tutorials/ and data/standards/, 1273
+> files under data/curation/, and named in 4 files of src/ (the check is
+> `ThermoPackageBuilder.cpp:2084`), 5 of gui/src, 2 GUI tests, 48 tools,
+> 37 docs, 12 site files.  DECIDED: every record type is at schemaVersion 1;
+> the engine accepts 1 for these two types and REFUSES 2 by name with the
+> line to write (no silent acceptance of both: two spellings of one fact is
+> what this order removes); writers, tools, guides, the GUI and the site
+> follow in the same slice; seals and pins re-taken only where the stamp is
+> inside what they hash, each counted.  It reaches every case, so its proof
+> is the `--nightly` sweep that closes C421.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
