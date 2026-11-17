@@ -172,8 +172,8 @@ propertyManifest
         "utilities/coolingWater.dat"
         {
             type          imported;
-            sha256        "f2b49f44b13c255504f854a2b33d497ffacbdbd75d8da147cd7bf69430aca84d";
-            computationalSha256 "caa0cba6b3eb42538c0842ec4c504d553f0bc88b3b15acb3b89519dc4ac69125";
+            sha256        "09888c1c2b95dc54213950ac623661ff18bbda521d895721be11743ba2e9c523";
+            computationalSha256 "a56494132642337e92cca25e5fcb943c8e7d6b3f48b630442da8613aca961798";
             origin        "data/standards/utilities/coolingWater.dat";
             originSha256  "76f5c52bae70a4cb81e9a8c469dfdb793ab2aea42205830c93d4aec35cc2d051";
             release       Choupo-2608;

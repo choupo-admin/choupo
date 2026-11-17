@@ -28,8 +28,8 @@ propertyManifest
         "chemistry/CO2-dissolution.dat"
         {
             type          imported;
-            sha256        "983e95a8c5ed8760792f36ce2861ca3687d380f21da2621bca37106eace0cfa5";
-            computationalSha256 "e1b6e8c2046e725f69fa5bf2fa09b78badc708addb733d30d37d5452c8395599";
+            sha256        "e728e9babf0cb8b4904f703c6532576ccdde436c778487531650568f18211fbc";
+            computationalSha256 "59a090d031015b3a2aa290e9d3c704025fd05a4d5e9fa9f2a6b6d994982c0923";
             origin        "data/standards/chemistry/CO2-dissolution.dat";
             originSha256  "5ef7de6a6144c281f04c4b01c7f45f2c16edeb1075f3e78a76179f5d03dfabaf";
             release       Choupo-2607;
@@ -55,8 +55,8 @@ propertyManifest
         "chemistry/N2-dissolution.dat"
         {
             type          imported;
-            sha256        "52bfd8720fd1d6ab9daa085ee13e7b05fa4104ccb3bb5965222673f53afc4270";
-            computationalSha256 "b0e13c92d98d2330728e48db97d540864fba306efd5ee746a37268f728dcbba6";
+            sha256        "e4c778cb5b3de200fcd0b799cc95a6c2923881ea7fe50c1cd8896cd91f2dd29d";
+            computationalSha256 "accd3ec10a1efc828b6b38fb8b607570d18eb4e1f2905d0e1a3ec881dec3136b";
             origin        "data/standards/chemistry/N2-dissolution.dat";
             originSha256  "89754020a3fdc9971bd064fdaa50af205e2a41788eb4402e17ad429b9cd7b0ed";
             release       Choupo-2607;
@@ -64,8 +64,8 @@ propertyManifest
         "chemistry/O2-dissolution.dat"
         {
             type          imported;
-            sha256        "273998c6c552addfe9ac3b9f1d6f64610f0ce7047e985457497ebfcd04b2b8ac";
-            computationalSha256 "7d954b3858b0b440d4600ce402b456732fb916cd3be970b278797840e6b9d2a5";
+            sha256        "a77f8f6747c02888c70d16787085ba1f6027a2e75b3dfb85d030a37a89008bfc";
+            computationalSha256 "72388a6836be132efa90697410f1ad003c5d4e806379c632e613ba35f1bf3960";
             origin        "data/standards/chemistry/O2-dissolution.dat";
             originSha256  "d7dd9c9ef0ec213ea66b2e44b63bcd6dfdc8e8c8c10f4e3b77a6156fb7034d22";
             release       Choupo-2607;

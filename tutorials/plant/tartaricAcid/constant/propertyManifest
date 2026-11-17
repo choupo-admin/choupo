@@ -20,7 +20,7 @@ propertyManifest
 {
     pins
     {
-        "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
         "components/CaSO4.dat"  "fca177b8969fb57553ce0b8605e996260a47765d2aa40da542096ee32fd3e347";
         "components/KOH.dat"  "42ac554e98ef0bd2fad9b74f503dc9709d1c562da83fa6236c777b0d04b188a6";
         "components/calciumHydroxide.dat"  "908bcce3216400672556c95c3cc6cfaa4bc82498b329b71f42d5be026a3e5403";

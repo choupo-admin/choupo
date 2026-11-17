@@ -28,8 +28,8 @@ propertyManifest
         "chemistry/H2-dissolution.dat"
         {
             type          imported;
-            sha256        "4aab95cf7c062013710366ca2ddf1a81fc8b3a8e9d43be170055f6fbf16e051e";
-            computationalSha256 "e3fbb51443f39b780796dc5e55c5007983861b7272934af960825002dd445392";
+            sha256        "06dd2066182a6b859cd05dfffd5e4537067a459237cb3c021f9d77c6f1b63529";
+            computationalSha256 "39dd4d184f48cb43cad6164404ec8d4a3ae05116c874427a0357ef2ffa4d7d67";
             origin        "data/standards/chemistry/H2-dissolution.dat";
             originSha256  "065ee16371ba60c84e6996ab6e8ba3697c4f3d2285692c441639f0a0e8a7673e";
             release       Choupo-2608;
@@ -37,8 +37,8 @@ propertyManifest
         "chemistry/N2-dissolution.dat"
         {
             type          imported;
-            sha256        "83688dee560d0292ad8d94d83ed0bfd2e791ebf0596e6117d46a1bdfab8a15f8";
-            computationalSha256 "b0e13c92d98d2330728e48db97d540864fba306efd5ee746a37268f728dcbba6";
+            sha256        "9aedc50cd38e3b5b4d32e1d785285f85ef93e93682b82e4b16a66cdbfc069cf8";
+            computationalSha256 "accd3ec10a1efc828b6b38fb8b607570d18eb4e1f2905d0e1a3ec881dec3136b";
             origin        "data/standards/chemistry/N2-dissolution.dat";
             originSha256  "89754020a3fdc9971bd064fdaa50af205e2a41788eb4402e17ad429b9cd7b0ed";
             release       Choupo-2608;

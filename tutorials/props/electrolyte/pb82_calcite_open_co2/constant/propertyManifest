@@ -28,8 +28,8 @@ propertyManifest
         "chemistry/CO2-dissolution.dat"
         {
             type          imported;
-            sha256        "c0d24b05d46dbead196735625fb375c50356b6d2d6d3afb8809c9380db23ba11";
-            computationalSha256 "e1b6e8c2046e725f69fa5bf2fa09b78badc708addb733d30d37d5452c8395599";
+            sha256        "90cb294cda4295f7031ecb88f827e7fd04b6b52ca169b624be6ed6a626439070";
+            computationalSha256 "59a090d031015b3a2aa290e9d3c704025fd05a4d5e9fa9f2a6b6d994982c0923";
             origin        "data/standards/chemistry/CO2-dissolution.dat";
             originSha256  "5ef7de6a6144c281f04c4b01c7f45f2c16edeb1075f3e78a76179f5d03dfabaf";
             release       Choupo-2608;

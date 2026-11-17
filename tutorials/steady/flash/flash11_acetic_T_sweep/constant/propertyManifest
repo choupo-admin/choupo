@@ -51,8 +51,8 @@ propertyManifest
         "chemistry/water-vapour-equilibrium.dat"
         {
             type          imported;
-            sha256        "4f266c1c74767669c5589cde2b1f92f7146c1c885b7784ae9c7cfc625f7f7748";
-            computationalSha256 "5703967e70e86e30fcfb91cc8743e755ce4ffbf44df490505c521c8961178d56";
+            sha256        "357e2e4196fb188ca8c725f6c3af3b8b71dc001e69853af3d352f298713c941f";
+            computationalSha256 "41abc0f8e6b8c852f109f077759c3a3dab39ef5077b014e266b9e90c60c81248";
             origin        "data/standards/chemistry/water-vapour-equilibrium.dat";
             originSha256  "4f266c1c74767669c5589cde2b1f92f7146c1c885b7784ae9c7cfc625f7f7748";
             release       Choupo-2607;

@@ -22,7 +22,7 @@ propertyManifest
     {
         "assets/SS304.dat"  "fb39ed984805c9e3315dbe002f67394d7864ce918c99fcaf3a7ffeb28b6a7280";
         "assets/SS316.dat"  "343dbf4db1c3d53822af46cb83ed92c204a187b58cedffc591458ca54dde59c6";
-        "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
         "components/CO2.dat"  "d3f0aed5182384187b60745f71f93cc3062a4ccc6c5542f6fe6d3d222b22eee0";
         "components/N2.dat"  "89834e7bdadc120e039062b0c02040531c9f6c65176c2091faa380e13db810ab";
         "components/ethanol.dat"  "9cfd836ade9dbe6f2a7b6fbd2836aa94e4ce3b7eefffc85d4693bd1466f4bc7c";
@@ -37,7 +37,7 @@ propertyManifest
         "parameters/Henry/ethanol-water.dat"  "8d6c542980e2dd37de73fd7fcc8d4e3b6538ccdaf208ec21180ba6dcbc7cf8d8";
         "parameters/solution/"  "relevant:a9ce5ad8d484e42a7994be6c8e226fb3bbe3026821df2e2094e01b3dc58f733a";
         "parameters/solution/sucrose-water.dat"  "11e8f9216989a7844edb9dc965d153f9cb672a6dc79b5561a6089d23d293640e";
-        "utilities/coolingWater.dat"  "caa0cba6b3eb42538c0842ec4c504d553f0bc88b3b15acb3b89519dc4ac69125";
+        "utilities/coolingWater.dat"  "a56494132642337e92cca25e5fcb943c8e7d6b3f48b630442da8613aca961798";
         "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
     }
 }

@@ -23,7 +23,7 @@ propertyManifest
         "assets/SS316.dat"  "343dbf4db1c3d53822af46cb83ed92c204a187b58cedffc591458ca54dde59c6";
         "assets/SW30HR.dat"  "054eb463b31ae348898c2f13d62a29dc34cb103913050ec3e437c4850569bf64";
         "assets/SWRO.dat"  "5c0608d39a99013114d70c5c59934ce32ff524e7d448238c8dd5115f8e6f2076";
-        "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
         "components/NaCl.dat"  "3d1ba703a92e85049fb8855689a78a3b17a3fca04d365b36bae0c31b9c233575";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";

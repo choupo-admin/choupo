@@ -20,7 +20,7 @@ propertyManifest
 {
     pins
     {
-        "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
         "components/NaOH.dat"  "76ba64b9b1ecb8487caa6b74ff9090de2170f66fb9cf56be3958e492b2f07710";
         "components/glucose.dat"  "db72cbe9d5a7e163c13152cb5e1bb33de8edf242703b689ac814fb5bdc0d432e";
         "components/sucrose.dat"  "0f672de68a751fafd5257f7c55a79aa9203ea02d8d641a03b44b506c12d96901";

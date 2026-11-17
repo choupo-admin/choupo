@@ -20,7 +20,7 @@ propertyManifest
 {
     pins
     {
-        "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
         "components/1Butene.dat"  "19afd7c3b9577e167e7c9b8ff6c5fb4a18bc218ca47e6f4216cc43e3bd54b680";
         "components/cis2Butene.dat"  "f6d8d34fde4fc2654629f8ec99300d88c02723a5aacf0f2a929b34410c12f6aa";
         "components/isoButane.dat"  "aeed413305d87b77d2973e6a66aba0f967f964f44e5dc197591e51e7d66601ce";
@@ -34,7 +34,7 @@ propertyManifest
         "parameters/UNIFAC/groups.dat"  "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
         "parameters/UNIFAC/interactions.dat"  "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-        "utilities/coolingWater.dat"  "caa0cba6b3eb42538c0842ec4c504d553f0bc88b3b15acb3b89519dc4ac69125";
+        "utilities/coolingWater.dat"  "a56494132642337e92cca25e5fcb943c8e7d6b3f48b630442da8613aca961798";
         "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
     }
 }

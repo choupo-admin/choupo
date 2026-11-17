@@ -28,8 +28,8 @@ propertyManifest
         "chemistry/CO2-dissolution.dat"
         {
             type          imported;
-            sha256        "c0d24b05d46dbead196735625fb375c50356b6d2d6d3afb8809c9380db23ba11";
-            computationalSha256 "e1b6e8c2046e725f69fa5bf2fa09b78badc708addb733d30d37d5452c8395599";
+            sha256        "90cb294cda4295f7031ecb88f827e7fd04b6b52ca169b624be6ed6a626439070";
+            computationalSha256 "59a090d031015b3a2aa290e9d3c704025fd05a4d5e9fa9f2a6b6d994982c0923";
             origin        "data/standards/chemistry/CO2-dissolution.dat";
             originSha256  "5ef7de6a6144c281f04c4b01c7f45f2c16edeb1075f3e78a76179f5d03dfabaf";
             release       Choupo-2608;
@@ -82,8 +82,8 @@ propertyManifest
         "chemistry/water-vapour-equilibrium.dat"
         {
             type          imported;
-            sha256        "4f266c1c74767669c5589cde2b1f92f7146c1c885b7784ae9c7cfc625f7f7748";
-            computationalSha256 "5703967e70e86e30fcfb91cc8743e755ce4ffbf44df490505c521c8961178d56";
+            sha256        "357e2e4196fb188ca8c725f6c3af3b8b71dc001e69853af3d352f298713c941f";
+            computationalSha256 "41abc0f8e6b8c852f109f077759c3a3dab39ef5077b014e266b9e90c60c81248";
             origin        "data/standards/chemistry/water-vapour-equilibrium.dat";
             originSha256  "4f266c1c74767669c5589cde2b1f92f7146c1c885b7784ae9c7cfc625f7f7748";
             release       Choupo-2608;

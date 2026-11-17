@@ -28,8 +28,8 @@ propertyManifest
         "chemistry/CO2-dissolution.dat"
         {
             type          imported;
-            sha256        "c0d24b05d46dbead196735625fb375c50356b6d2d6d3afb8809c9380db23ba11";
-            computationalSha256 "e1b6e8c2046e725f69fa5bf2fa09b78badc708addb733d30d37d5452c8395599";
+            sha256        "90cb294cda4295f7031ecb88f827e7fd04b6b52ca169b624be6ed6a626439070";
+            computationalSha256 "59a090d031015b3a2aa290e9d3c704025fd05a4d5e9fa9f2a6b6d994982c0923";
             origin        "data/standards/chemistry/CO2-dissolution.dat";
             originSha256  "5ef7de6a6144c281f04c4b01c7f45f2c16edeb1075f3e78a76179f5d03dfabaf";
             release       Choupo-2608;
@@ -55,8 +55,8 @@ propertyManifest
         "chemistry/NH3-dissolution.dat"
         {
             type          imported;
-            sha256        "6f22c6bc04a8e4186972b3fe45e278af75703ffa566358b0952418fd72931151";
-            computationalSha256 "caaf3c342aba7840739ab029b823a54d308b673d337cb627df432b61283a3212";
+            sha256        "f2be721b2f753efb16befe3c3dbfbe71e0e03102c061c436fc100f50803207c3";
+            computationalSha256 "5083edfaddb4b079dd8403892da6710363ffcb378df66a854d8e63f08a3da1b3";
             origin        "data/standards/chemistry/NH3-dissolution.dat";
             originSha256  "e707768f135e63f59a24e0a7c629ddd09e8aee1d80822b5be5358f829f88a495";
             release       Choupo-2608;
@@ -82,8 +82,8 @@ propertyManifest
         "chemistry/water-vapour-equilibrium.dat"
         {
             type          imported;
-            sha256        "4f266c1c74767669c5589cde2b1f92f7146c1c885b7784ae9c7cfc625f7f7748";
-            computationalSha256 "5703967e70e86e30fcfb91cc8743e755ce4ffbf44df490505c521c8961178d56";
+            sha256        "357e2e4196fb188ca8c725f6c3af3b8b71dc001e69853af3d352f298713c941f";
+            computationalSha256 "41abc0f8e6b8c852f109f077759c3a3dab39ef5077b014e266b9e90c60c81248";
             origin        "data/standards/chemistry/water-vapour-equilibrium.dat";
             originSha256  "4f266c1c74767669c5589cde2b1f92f7146c1c885b7784ae9c7cfc625f7f7748";
             release       Choupo-2608;
@@ -181,8 +181,8 @@ propertyManifest
         "utilities/coolingWater.dat"
         {
             type          imported;
-            sha256        "f2b49f44b13c255504f854a2b33d497ffacbdbd75d8da147cd7bf69430aca84d";
-            computationalSha256 "caa0cba6b3eb42538c0842ec4c504d553f0bc88b3b15acb3b89519dc4ac69125";
+            sha256        "09888c1c2b95dc54213950ac623661ff18bbda521d895721be11743ba2e9c523";
+            computationalSha256 "a56494132642337e92cca25e5fcb943c8e7d6b3f48b630442da8613aca961798";
             origin        "data/standards/utilities/coolingWater.dat";
             originSha256  "76f5c52bae70a4cb81e9a8c469dfdb793ab2aea42205830c93d4aec35cc2d051";
             release       Choupo-2608;
