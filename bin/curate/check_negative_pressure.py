@@ -84,28 +84,27 @@ rebuilt before the next); OBSERVED output, abridged:
   S4 -- the guard widened to `s.P <= 0.0` (the sentinel refused):
         (d) the cstr case exited 2 with the negative-pressure refusal
 """
-import os
 import re
 import shutil
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-BUILD = ROOT / "build" / "linux64Gcc"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records  # noqa: E402
+import gatekit  # noqa: E402
+
+ROOT = gatekit.repo
 SRC = ROOT / "src"
 PIPE = "tutorials/steady/hydraulics/pipe01_water_line"
 CSTR = "tutorials/steady/reactors/cstr01_first_order"
+SOLVE = None
 
 fails = []
 
 
 def run(case: Path):
-    env = dict(os.environ, CHOUPO_HOME=str(ROOT))
-    p = subprocess.run([str(BUILD / "choupoSolve"), "."], cwd=case,
-                       capture_output=True, text=True, timeout=900, env=env)
-    return p.returncode, p.stdout + p.stderr
+    return gatekit.run(SOLVE, case, timeout=900)
 
 
 FEED = ("componentMolarFlows\n{\n    water    %s kmol/h;\n}\n\n"
@@ -116,7 +115,7 @@ def skeleton(tmp: Path, tag: str) -> Path:
     d = tmp / tag
     (d / "system").mkdir(parents=True)
     (d / "0").mkdir()
-    shutil.copytree(ROOT / PIPE / "constant", d / "constant", symlinks=True)
+    case_records.copy_constant(ROOT / PIPE, d)
     shutil.copy(ROOT / PIPE / "system" / "controlDict", d / "system")
     (d / (tag + ".cho")).write_text("")
     return d
@@ -256,11 +255,8 @@ def arm_trial(tmp: Path):
 
 
 def arm_sentinel(tmp: Path):
-    d = tmp / "cstr"
-    shutil.copytree(ROOT / CSTR, d, symlinks=True,
-                    ignore=shutil.ignore_patterns("expected", "converged",
-                                                  "reports", "*.csv", "*.log"))
-    rc, out = run(d)
+    with gatekit.probe_copy(CSTR, ("expected", "converged", "reports")) as d:
+        rc, out = run(d)
     if rc != 0 or "NEGATIVE pressure" in out:
         fails.append(f"(d) cstr01 (P == 0 sentinel) exited {rc}:\n"
                      + out[-400:])
@@ -313,9 +309,11 @@ def arm_source():
 
 
 def main() -> int:
-    if not (BUILD / "choupoSolve").exists():
-        print("check_negative_pressure: FAILED -- no build of choupoSolve; "
-              "a check that cannot run must not pass")
+    global SOLVE
+    try:
+        SOLVE = gatekit.binary("choupoSolve")
+    except gatekit.GateRefusal as e:
+        print(f"check_negative_pressure: FAILED -- {e}")
         return 1
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
