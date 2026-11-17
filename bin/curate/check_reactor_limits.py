@@ -86,6 +86,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "build/linux64Gcc"
@@ -103,7 +107,7 @@ def run(case: Path, binary: str = "choupoSolve"):
 
 
 def probe(src: Path, dst: Path) -> Path:
-    shutil.copytree(src, dst)
+    case_records.copytree(src, dst)
     for junk in ("converged", "reports", "design", "expected", "latest",
                  "constant/propertyManifest"):
         t = dst / junk
@@ -431,7 +435,7 @@ def main() -> int:
             src = T / "steady/reactors/equil02_methanol_declared_pathways"
             for sub in ("system", "0"):
                 (dw / sub).mkdir(parents=True)
-            shutil.copytree(src / "constant", dw / "constant",
+            case_records.copytree(src / "constant", dw / "constant",
                             ignore=shutil.ignore_patterns("propertyManifest"))
             (dw / "w.cho").write_text("")
             (dw / "system/controlDict").write_text(CONTROL)

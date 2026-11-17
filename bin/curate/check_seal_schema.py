@@ -38,6 +38,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
@@ -57,7 +61,7 @@ def export_witness(tmp):
     holds a stale copy): its local copies and manifest are dropped, then `choupo-import <copy>` seals
     it, so every record is `imported` and hash-claimed as the probes below require."""
     dest = Path(tmp) / "witness_sealed"
-    shutil.copytree(CASE, dest, ignore=shutil.ignore_patterns(
+    case_records.copytree(CASE, dest, ignore=shutil.ignore_patterns(
         "expected", "log.*", "reports", "converged", "resultJson*"))
     for f in (dest / "constant").rglob("*.dat"):
         f.unlink()
@@ -116,7 +120,7 @@ def main() -> int:
 
         # ---- sealed-case probes ----------------------------------------
         case = tmp / CASE.name
-        shutil.copytree(WITNESS or CASE, case, ignore=shutil.ignore_patterns(
+        case_records.copytree(WITNESS or CASE, case, ignore=shutil.ignore_patterns(
             "expected", "log.*", "reports", "converged", "resultJson*"))
         mf = case / "constant" / "propertyManifest"
         if "sealSchema         computational;" not in mf.read_text():
@@ -162,7 +166,7 @@ def main() -> int:
 
         # ---- MIGRATE: idempotence + fail-closed ------------------------
         case2 = tmp / ("m_" + CASE.name)
-        shutil.copytree(WITNESS or CASE, case2, ignore=shutil.ignore_patterns(
+        case_records.copytree(WITNESS or CASE, case2, ignore=shutil.ignore_patterns(
             "expected", "log.*", "reports", "converged", "resultJson*"))
         r = subprocess.run([sys.executable, str(MIGRATE), str(case2)],
                            capture_output=True, text=True)

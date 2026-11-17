@@ -88,6 +88,10 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CASE = os.path.join(ROOT, "tutorials", "steady", "flash",
@@ -124,7 +128,7 @@ def curated_V0(species):
 def staged(density_line, mutate_records=None, unseal=False, do_import=True):
     d = tempfile.mkdtemp(prefix="rung1_")
     dst = os.path.join(d, "case")
-    shutil.copytree(CASE, dst)
+    case_records.copytree(CASE, dst)
     p = os.path.join(dst, "0", "feed")
     s = open(p, encoding="utf-8").read()
     if MEASURED not in s:

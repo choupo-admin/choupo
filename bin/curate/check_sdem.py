@@ -107,6 +107,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 BUILD = ROOT / "build" / "linux64Gcc"
@@ -221,7 +225,7 @@ def build_probe(dst, salt, trace_scale):
     #  The sealed manifest is the donor's, and this is not the donor (the same
     #  move as check_feed_thermal_state's and check_evaporator_chest_phase's
     #  probe builders).
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns("converged", "log.*", "expected",
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns("converged", "log.*", "expected",
                                                             "reports", "experimental",
                                                             "propertyManifest"))
     cat, zc, Pc = TABLE1[salt]["cation"]; an, za, Pa = TABLE1[salt]["anion"]
@@ -370,7 +374,7 @@ def main():
         def probe(name, mutate):
             d = Path(tmp) / name
             #  the donor is sealed -- see the note in build_probe
-            shutil.copytree(src, d, ignore=shutil.ignore_patterns("converged", "log.*",
+            case_records.copytree(src, d, ignore=shutil.ignore_patterns("converged", "log.*",
                                                                    "expected", "reports",
                                                                    "propertyManifest"))
             mutate(d)

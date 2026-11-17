@@ -215,6 +215,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "build" / "linux64Gcc" / "choupoSolve"
@@ -233,7 +237,7 @@ def run(args, case=None):
 
 
 def copy_case(base, dest):
-    shutil.copytree(base, dest)
+    case_records.copytree(base, dest)
     for sub in ("constant/propertyManifest", "expected"):
         p = dest / sub
         if p.exists():

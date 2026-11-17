@@ -103,6 +103,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 ROOT = Path(__file__).resolve().parents[2]
@@ -236,7 +240,7 @@ def arm_d(tmp):
             #  what last ran in this checkout; the claim must not depend on
             #  that, so such a case is planned on a copy without run outputs.
             c = Path(tmp) / f"d{i}_{case.name}"
-            shutil.copytree(case, c, ignore=shutil.ignore_patterns(
+            case_records.copytree(case, c, ignore=shutil.ignore_patterns(
                 "*.csv", "log.*", "converged", "reports", "postProcessing"))
             case = c
         rc, out = run(["--plan", case])
@@ -323,7 +327,7 @@ def arm_e(tmp):
 
 def copy_ctrl17(tmp, name):
     d = Path(tmp) / name
-    shutil.copytree(CTRL17, d, ignore=shutil.ignore_patterns(
+    case_records.copytree(CTRL17, d, ignore=shutil.ignore_patterns(
         "*.csv", "log.*", "converged", "reports", "[0-9]*.[0-9]*", "postProcessing"))
     return d
 

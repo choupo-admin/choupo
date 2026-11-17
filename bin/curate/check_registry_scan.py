@@ -65,6 +65,10 @@ import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gate_prereq import require_solver
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SOLVER = os.path.join(ROOT, "choupoSolve")
@@ -100,7 +104,7 @@ def run_mutated(case, mutate):
     tmp = tempfile.mkdtemp(prefix="regscan.")
     try:
         dst = os.path.join(tmp, "case")
-        shutil.copytree(case, dst)
+        case_records.copytree(case, dst)
         for junk in ("converged", "reports", "iterations"):
             shutil.rmtree(os.path.join(dst, junk), ignore_errors=True)
         mutate(dst)
@@ -252,7 +256,7 @@ else:
     tmp = tempfile.mkdtemp(prefix="regscan.")
     try:
         dst = os.path.join(tmp, "case")
-        shutil.copytree(VLE, dst)
+        case_records.copytree(VLE, dst)
         #  The tutorial directory holds the CSVs of whoever ran it last (run
         #  output, gitignored).  Copying them along would make the "nothing
         #  written" assertion below read a leftover and call it a write --

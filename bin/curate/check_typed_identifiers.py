@@ -110,6 +110,10 @@ print(f"typed-identifier gate: no laundered crossings in unit ops;"
 #  nothing about it.
 # ---------------------------------------------------------------------------
 import re as _re, shutil as _shutil, subprocess as _sub, tempfile as _tmp
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 _SOLVER = ROOT / "choupoSolve"
 _CASE = ROOT / "tutorials" / "steady" / "membranes" / "membrane08_softened_scaling"
@@ -123,7 +127,7 @@ else:
     _tmpdir = _tmp.mkdtemp(prefix="bridge.")
     try:
         _dst = Path(_tmpdir) / "case"
-        _shutil.copytree(_CASE, _dst)
+        case_records.copytree(_CASE, _dst)
         for _junk in ("converged", "reports"):
             _shutil.rmtree(_dst / _junk, ignore_errors=True)
         _f = _dst / "constant" / "components" / "Ca.dat"

@@ -72,6 +72,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "build" / "linux64Gcc" / "choupoSolve"
@@ -101,7 +105,7 @@ def advisories(stdout):
 
 def build_witness(tmp, bar):
     w = Path(tmp) / f"txyWitness_{bar}bar"
-    shutil.copytree(BASE, w)
+    case_records.copytree(BASE, w)
     for sub in ("constant/propertyManifest", "constant/components", "expected"):
         p = w / sub
         if p.is_dir():

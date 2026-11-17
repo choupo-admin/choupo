@@ -93,6 +93,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import record_psat  # noqa: E402  (Antoine or Wagner, read from the record's own text)
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "choupoSolve"
@@ -114,7 +118,7 @@ def fail(msg):
 def make(tmp, name, solvent, n_solvent, n_water, keep_sorption=False,
          air=None, model=None, no_outlet=False):
     work = Path(tmp) / name
-    shutil.copytree(SRC, work, ignore=shutil.ignore_patterns(
+    case_records.copytree(SRC, work, ignore=shutil.ignore_patterns(
         "converged", "reports", "design", "postProcessing", "iterations"))
     (work / "constant/propertyManifest").unlink()
     rec = (STD / f"{solvent}.dat").read_text()
@@ -374,7 +378,7 @@ def main():
 
         # (g) one solvent: the old route
         w = Path(tmp) / "single"
-        shutil.copytree(SRC, w, ignore=shutil.ignore_patterns(
+        case_records.copytree(SRC, w, ignore=shutil.ignore_patterns(
             "converged", "reports", "design", "postProcessing", "iterations"))
         rc, out = run(w)
         if rc != 0:

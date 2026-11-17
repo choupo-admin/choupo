@@ -64,6 +64,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 BATCH = ROOT / "build" / "linux64Gcc" / "choupoBatch"
@@ -82,7 +86,7 @@ def rel(a, b):
 def batch_case(tmp, name, orders, A, units, n_ethanol, n_acid):
     """orders = (order_ethanol, order_acid).  V = 1 m3, 10 ms, RK4 1 ms."""
     case = Path(tmp) / name
-    shutil.copytree(DONOR, case, ignore=shutil.ignore_patterns(
+    case_records.copytree(DONOR, case, ignore=shutil.ignore_patterns(
         "expected", "converged", "log.*", "reports", "trajectory.csv",
         "[1-9]*", "0.*"))
     rx = case / "constant" / "reactions"
@@ -256,7 +260,7 @@ def main():
 
 def dynamic_case(tmp, name, nA, nB):
     case = Path(tmp) / name
-    shutil.copytree(DONOR_DYN, case, ignore=shutil.ignore_patterns(
+    case_records.copytree(DONOR_DYN, case, ignore=shutil.ignore_patterns(
         "expected", "converged", "log.*", "reports", "trajectory.csv",
         "[1-9]*", "0.0*", "latest", "solution.log", "balanceTrajectory.*"))
     rx = case / "constant" / "reactions"

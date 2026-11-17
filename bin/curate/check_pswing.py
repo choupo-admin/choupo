@@ -38,6 +38,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 BATCH = ROOT / "build" / "linux64Gcc" / "choupoBatch"
@@ -125,7 +129,7 @@ def main() -> int:
 
         def probe(tag, old, new, needles):
             case = tmp / tag
-            shutil.copytree(A, case,
+            case_records.copytree(A, case,
                             ignore=shutil.ignore_patterns("expected", "log.*",
                                                           "[0-9]*",
                                                           "trajectory.csv"))

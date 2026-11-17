@@ -44,6 +44,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 BATCH = ROOT / "build" / "linux64Gcc" / "choupoBatch"
@@ -58,7 +62,7 @@ failures = []
 def make_case(tmp: Path, tag: str, fs_edit=None, ctrl_edit=None,
               base: Path = BASE) -> Path:
     case = tmp / f"probe_{tag}"
-    shutil.copytree(base, case, ignore=shutil.ignore_patterns(
+    case_records.copytree(base, case, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "[0-9]*", "resultJson*"))
     ctrl = case / "system" / "controlDict"
     txt = ctrl.read_text()

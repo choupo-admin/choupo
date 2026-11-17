@@ -27,6 +27,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
@@ -34,7 +38,7 @@ PLANT = ROOT / "tutorials" / "plant" / "ChemicalPlantTutorial"
 
 def check_writer(tmp, bad):
     case = Path(tmp) / "plant"
-    shutil.copytree(PLANT, case,
+    case_records.copytree(PLANT, case,
                     ignore=shutil.ignore_patterns("log.choupo*", "reports",
                                                   "converged", "iterations",
                                                   "postProcessing"))

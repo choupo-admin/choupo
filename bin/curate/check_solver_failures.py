@@ -119,6 +119,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 BUILD = ROOT / "build" / "linux64Gcc"
@@ -252,7 +256,7 @@ def arm_probe(tmp: Path):
 
 
 def copy_case(rel: str, dst: Path) -> Path:
-    shutil.copytree(ROOT / rel, dst, symlinks=True, ignore=shutil.ignore_patterns(
+    case_records.copytree(ROOT / rel, dst, symlinks=True, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "latest", "latest.txt", "converged", "*.log",
         "balanceTrajectory.meta", "reports"))
     for d in dst.iterdir():

@@ -56,6 +56,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import curation_roots  # noqa: E402
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = curation_roots.ROOT
 CASES = curation_roots.ELECTROLYTES
@@ -130,7 +134,7 @@ def run_case(rel):
     src = ROOT / rel
     tmp = Path(tempfile.mkdtemp(prefix="c311gate_"))
     dst = tmp / src.name
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns("*.proposal.dat", "log.*"))
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns("*.proposal.dat", "log.*"))
     p = subprocess.run([str(PROPS), "."], cwd=str(dst), capture_output=True, text=True, env=ENV)
     _RUNS[rel] = (dst, p)
     return _RUNS[rel]

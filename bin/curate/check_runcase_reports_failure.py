@@ -53,6 +53,10 @@ the QUIET or APPEND paths, nor whether the log itself is complete.
 """
 import re, shutil, subprocess, sys, tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 CASE = ROOT / "tutorials" / "steady" / "flash" / "flash01_benzene_toluene"
@@ -81,7 +85,7 @@ def main():
 
         #  ---- the NEGATIVE first: an intact case must run and stay quiet ----
         good = tmp / "good"
-        shutil.copytree(CASE, good)
+        case_records.copytree(CASE, good)
         for junk in ("converged", "reports"):
             shutil.rmtree(good / junk, ignore_errors=True)
         rc, out = run_case(good)
@@ -95,7 +99,7 @@ def main():
 
         #  ---- the POSITIVE: a case that cannot run must SAY so ----
         bad = tmp / "bad"
-        shutil.copytree(CASE, bad)
+        case_records.copytree(CASE, bad)
         for junk in ("converged", "reports"):
             shutil.rmtree(bad / junk, ignore_errors=True)
         fs = bad / "system" / "flowsheetDict"

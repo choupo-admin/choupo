@@ -273,6 +273,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path, PurePosixPath
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -934,7 +938,7 @@ def main() -> int:
     tmp = tempfile.mkdtemp(prefix="choupo_streamhome_")
     try:
         dst = os.path.join(tmp, "case")
-        shutil.copytree(str(ROOT / SECTORED), dst,
+        case_records.copytree(str(ROOT / SECTORED), dst,
                         ignore=shutil.ignore_patterns("converged", "iterations",
                                                       "postProcessing", "design",
                                                       "economics"))

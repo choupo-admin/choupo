@@ -75,6 +75,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 TABLE = ROOT / "bin" / "curate" / "property_source_witnesses.tsv"
@@ -212,7 +216,7 @@ def run(case: Path):
     env = dict(os.environ, CHOUPO_HOME=str(ROOT), LC_ALL="C")
     with tempfile.TemporaryDirectory() as tmp:
         dst = Path(tmp) / case.name
-        shutil.copytree(case, dst)
+        case_records.copytree(case, dst)
         p = subprocess.run([str(exe), "."], cwd=dst, env=env, capture_output=True,
                            text=True, timeout=900)
     blocks = RESULT.findall(p.stdout)

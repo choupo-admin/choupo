@@ -124,6 +124,10 @@ import subprocess
 import tempfile
 import sys
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
@@ -280,7 +284,7 @@ def main() -> int:
         #  the state this case was measured in before it was sealed.
         def unsealed_copy(name):
             d = Path(tmp) / name
-            shutil.copytree(CASE, d)
+            case_records.copytree(CASE, d)
             (d / "constant/propertyManifest").unlink(missing_ok=True)
             shutil.rmtree(d / "constant/components", ignore_errors=True)
             return d
