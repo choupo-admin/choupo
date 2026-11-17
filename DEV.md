@@ -4456,6 +4456,32 @@ accepts today, and that is a policy call.
 > its absolute rule.  Every row the honest comparison turns red is listed
 > with its cause, and re-recorded only where the cause is a known, explained
 > change (C403's D0, C413's re-pointing); anything unexplained is a finding.
+>
+> **C421 DOOR SLICES (a) AND (c) LANDED (2026-11-18), merged together.**
+> (a) pipe, pipe header, the boiling and shell-side correlations: the pipe
+> and the header REFUSE a property typed in their dictionaries (the two-phase
+> gas viscosity too, moved to the vapour transport block); Rohsenow's and
+> Bell-Delaware's textbook verifications are declared exceptions (they
+> reproduce a book's worked example on the book's own inputs).  Moved:
+> swro01's three headers (viscosity 1.0e-3 typed -> the plant's measured
+> seawater 0.966 mPa s the modules already used: -3.4 %; 270 rows), pipe02
+> (Re +1.5e-4; and in-tolerance rows refreshed, which the architect checked
+> against main's own binary: main already published those values).  (c)
+> electrodialysis stack and batch, membrane polarisation, DSPM-DE: the
+> solution's density and the solvent's viscosity from the door (water 997.07
+> at 25 C, not 1000: -0.29 %; the 1e-6 m2/s kinematic fallback gone), the
+> ion-diffusivity temperature factor through one door function; 13 ED cases
+> re-recorded, rows moved by 0.3-1.0 %, each in
+> `docs/audits/2026-11-18-door-electrochem-membrane-moved-goldens.md`; the
+> general's report that the D_ion rows were "not this slice's" was right in
+> substance and is C429.  Proof on the merged tree: the 64 cases of both
+> families 71/0 with mass, element, energy and campaign closures held;
+> `--gui` 46/0 after re-pointing eight lesson citations into
+> HansenMixture.cpp that slice (e) had moved (main's `--gui` was red since
+> (e) landed: that slice ran no `--gui`, wrongly judging no cited file had
+> moved); the 13 gates the slices touch exit 0.  Ratchet: 82 -> 25 with
+> (b) to come.
+
 
 
 
