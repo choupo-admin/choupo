@@ -75,6 +75,9 @@ import subprocess
 import sys
 import tempfile
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import case_records   # noqa: E402  (C413: a pinned case carries no record copy)
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CASE = ROOT / "tutorials/props/curation/curate01_water_evidence_partition"
 PROPS = ROOT / "choupoProps"
@@ -215,7 +218,7 @@ def main():
         #  arm noticed a difference, not that it would catch the actual leak.
         #  `reviewStatus interim;` is announced by name when a record is
         #  resolved, so its ABSENCE is the evidence.
-        poisoned = (d / "constant/components/water.dat").read_text() \
+        poisoned = case_records.ensure_local(d, "components/water.dat").read_text() \
                  + "\nreviewStatus interim;\n"
         (d / "curation/components/water.dat").write_text(poisoned)
         rc_p, out_p = run(d)
