@@ -3595,6 +3595,25 @@ accepts today, and that is a policy call.
 > **C417 (Vitor, 2026-11-16: "quero atacar as vias reacionais de quimica organica e inorganica atraves de EduTools com questionarios no fim").**  A COMMISSION; it absorbs C215 (organic reaction classes), C216 (biorefinery reactions) and C218 (reversible vs irreversible, quenching).  The architect's shape: ONE route-card template and ONE quiz component reused by every route.  Each card: the industrial route from feedstock to product; the balanced equations (checked by the engine's element balance); atom economy and E-factor; Delta_r H and K(T) computed from the catalogue; equilibrium conversion against T and P (the lever a student moves); why this reactor and these conditions; by-products, separations, hazards; a link to the Choupo case that runs it.  The quiz ends each card: 5-8 questions, every answer computed or cited, each with its explanation.  First six, where cases or data exist: inorganic -- Haber-Bosch, Ostwald nitric acid, contact sulfuric acid; organic -- methanol synthesis, ethylene oxide to ethylene glycol, cumene to phenol and acetone.  Next: chlor-alkali, Solvay, acetic acid by carbonylation, hydroformylation, nitration, esterification.  Sources to read first: Moulijn, Makkee & van Diepen, Chemical Process Technology; Weissermel & Arpe, Industrial Organic Chemistry; Buchner et al., Industrial Inorganic Chemistry; Greenwood & Earnshaw for the inorganic chemistry.  After the month.
 > **C418 (Vitor, 2026-11-16, areas not yet covered; the architect's ranking).**  Candidates: (1) bioprocess -- a bioreactor with growth, O2 transfer (kLa) and scale-up, and downstream as a chain; (2) wastewater with activated-sludge models (ASM); (3) multiphase reactors (trickle bed, bubble column, slurry); (4) electrochemistry beyond ED (electrolyser C214 W7, fuel cell, battery); (5) freeze-drying, freezing and thermal sterilisation (F0); then furnaces and combustion, polymerisation, LCA and carbon footprint from the balances, leaching.  Books requested from Vitor for each.  After the month, one at a time.
 
+> **THE 2026-11-17b BATCH LANDED (no full sweep: no path every case goes
+> through changed).**  (1) C419 first cut: the nightly tier (regressed-pairs,
+> gate-selftest, gates-judge-tracked run only under `bin/runTests --nightly`,
+> in CI's full tier and at a release; every other run prints them DEFERRED by
+> name), seven merges (18 gates -> 7; 371 -> 358), and CLAUDE.md rule 4e (4).
+> (2) the interface suite's setup runs each witness case once, longest
+> first: 195 engine launches -> 51, about 470 s -> 290 s.  (3) C402: the
+> ratchet stops counting 44 false positives (132 -> 82 sites), the four
+> exchangers take conductivity through the door (byte-identical), the spray
+> dryer refuses a solvent with no Vliq and a drying air at 0 K instead of
+> taking 1000 and 1.2 kg/m3; --gui then found the door naming no source for
+> a pure fluid's conductivity: fixed, 4 source rows appended.  OPEN in C402,
+> each moves published numbers: water viscosity 1e-3 in 10 spray dryers,
+> surface tension 0.072 in 3 cases, 1000 kg/m3 and 1e-6 m2/s in the 14 ED
+> cases.  (4) the Explorer's y-x and T-x-y mark an azeotrope where y - x
+> changes sign (ethanol/water showed seven points for one).  Evidence:
+> `--fast` 88/0, `--gui` (re-run after the fix), the 7 merged gates, --scope
+> on 39 exchanger cases 44/0 with closures held.
+
 > **C419 (Vitor, 2026-11-17, watching the batch's landing wait on the gate
 > self-test after a sweep in which all 608 cases passed and 37 gates were
 > red: "Isto ja esta em modo Systemantics ... criaste o ministerio de
