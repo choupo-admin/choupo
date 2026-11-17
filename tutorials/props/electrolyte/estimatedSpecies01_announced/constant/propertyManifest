@@ -27,6 +27,5 @@ propertyManifest
         "parameters/solution/"  "relevant:c230bd52bb5226b2fc760817e521760bf18be1e1cb1f1f2348ca204186869952";
         "parameters/solution/NaOH-water.dat"  "905421c3faa84cb1f40d15f9435f75193465a3a4dede8ee55ca81e7c33b7a7c4";
         "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
-        "species/OH.dat"  "98259ca11eab721d7ea066607140c389b6b7f946e6df0d7c435c6ea1ee5fd0c5";
     }
 }

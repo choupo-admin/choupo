@@ -154,11 +154,14 @@ def variant(tmp, name, edit):
     #  declared as the variation it is, and the copy's pins are dropped
     f = case_records.ensure_local(dst, "species/OH.dat")
     case_records.unpin(dst)
-    txt = re.sub(r"(?m)^(name\s+OH;[^\n]*\n)",
-                 r'\1variationOf OH;\nvariationReason "gate probe";\n', f.read_text(), count=1)
-    #  the witness's own copy used to carry this block (C413 slice 3 removed the
-    #  copy; the case now reads the catalogue's measured OH): the probe puts it back
-    txt = re.sub(r"(?m)^(cpAq \{[^\n]*\}\n)", lambda m: m.group(1) + PROVENANCE, txt, count=1)
+    #  the case carries its own OH record again (a declared `variationOf` whose
+    #  provenance block is the witness): the probe edits THAT record as shipped
+    txt = f.read_text()
+    if "variationOf" not in txt:
+        txt = re.sub(r"(?m)^(name\s+OH;[^\n]*\n)",
+                     r'\1variationOf OH;\nvariationReason "gate probe";\n', txt, count=1)
+    if "origin  estimated" not in txt:
+        txt = re.sub(r"(?m)^(cpAq \{[^\n]*\}\n)", lambda m: m.group(1) + PROVENANCE, txt, count=1)
     f.write_text(edit(txt))
     return dst
 
