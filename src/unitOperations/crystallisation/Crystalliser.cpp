@@ -29,6 +29,7 @@ License
 #include "Crystalliser.H"
 #include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
+#include "unitOperations/UnitTypedProperties.H"
 #include "streams/PsdOnGrid.H"
 #include "unitOperations/crystallisation/CrystallisationSaturation.H"
 #include "CrystallisationHeat.H"
@@ -97,6 +98,21 @@ FeedState readCombinedFeed(const DictPtr& dict, const ThermoPackage& thermo)
 
 } // anonymous namespace
 
+
+//  THE LIQUOR'S VOLUME (DEV.md 4c C421): the volumetric throughput of the feed
+//  liquor is F M / rho, rho the property door's liquid density at the
+//  vessel's own T_op, P and the liquor's composition -- not the sum of the
+//  components' stored 25 C molar volumes.  Returns m3 per kmol of feed.
+static scalar liquorVolumePerKmol(const ThermoPackage& thermo, scalar T, scalar P,
+                                  const sVector& z, const std::string& unit)
+{
+    scalar Mbar = 0.0;                                       // kg/kmol
+    for (std::size_t i = 0; i < z.size(); ++i) Mbar += z[i] * thermo.comp(i).MW();
+    const liquidProperty::Consumer who{ "crystalliser", unit };
+    liquidProperty::Request ask;
+    ask.thermo = &thermo; ask.T = T; ask.P = P; ask.x = z; ask.who = &who;
+    return Mbar / liquidProperty::density(ask).value;
+}
 
 // Heat RELEASED per mol of crystal leaving a saturated solution [J/mol].
 // The body lives in the SHARED crystallisationHeatPerMol resolver
@@ -232,6 +248,10 @@ int Crystalliser::solveEquilibrium(const DictPtr& dict,
 
     // ---- Operation: the operating temperature (a setpoint) -------------
     auto oper = dict->subDict("operation");
+    //  A UNIT BLOCK DOES NOT CARRY A PROPERTY (DEV.md 4c C421, C398 A4): a
+    //  density, viscosity or diffusivity typed here, at any depth, is refused
+    //  BY NAME with the line to write in the property dictionary.
+    unitTypedProperties::refuse(oper, "crystalliser '" + (dict->name().empty() ? std::string("crystalliser") : dict->name()) + "': ", "crystalliser");
     const scalar T_op = oper->lookupScalar("operatingTemperature", Dims::temperature);
     // `solute <name>;` (optional) picks WHICH salt this unit crystallises when the
     // feed carries more than one (two crystallisers in series, each on its own salt).
@@ -242,7 +262,8 @@ int Crystalliser::solveEquilibrium(const DictPtr& dict,
     //  per-component solubility curve.  `useElec` is now PER-SOLUTE: true only when
     //  the target solute IS the package's electrolyte salt (so KHT can use its
     //  curve while KCl uses the eNRTL, in one package).
-    const SatState sat = crystSaturation(thermo, z, F, T_op, soluteSel);
+    const SatState sat = crystSaturation(thermo, z, F, T_op, soluteSel,
+        dict->name().empty() ? std::string("crystalliser") : dict->name());
     const bool   useElec = sat.useElec;
     const scalar elecSolubility = useElec ? thermo.electrolyte().solubility() : 0.0;
     const scalar elecDHcryst    = oper->lookupScalarOrDefault("dHcryst", 0.0);
@@ -379,7 +400,7 @@ int Crystalliser::solveEquilibrium(const DictPtr& dict,
         kpis_["m_sat"]        = m_sat_eff;                                 // mol/kg (aqueous OR mixed), at T_op
         kpis_["gamma_pm_sat"] = mixedSolvent
             ? thermo.electrolyte().gammaPMMixed(m_sat_eff, xAnti, thermo.comp(iAnti).MW(),
-                  thermo.comp(iAnti).relativePermittivity(), thermo.comp(iAnti).Vliq(), T_op)
+                  thermo.comp(iAnti).relativePermittivity(), sat.vAnti, T_op)
             : thermo.electrolyte().gammaPM(m_sat_eff, T_op);
         kpis_["Ksp_activity"] = thermo.electrolyte().saturationKsp(T_op);  // ion-activity product at T_op
         if (mixedSolvent) kpis_["antisolvent_xfrac"] = xAnti;             // salt-free x of antisolvent
@@ -463,6 +484,10 @@ int Crystalliser::solveMSMPR(const DictPtr& dict,
     const sVector& z = fd.z;
 
     auto oper = dict->subDict("operation");
+    //  A UNIT BLOCK DOES NOT CARRY A PROPERTY (DEV.md 4c C421, C398 A4): a
+    //  density, viscosity or diffusivity typed here, at any depth, is refused
+    //  BY NAME with the line to write in the property dictionary.
+    unitTypedProperties::refuse(oper, "crystalliser '" + (dict->name().empty() ? std::string("crystalliser") : dict->name()) + "': ", "crystalliser");
     const scalar T_op = oper->lookupScalar("operatingTemperature", Dims::temperature);
     const scalar V    = oper->lookupScalar("volume", Dims::volume);   // working suspension volume [m^3]
 
@@ -472,7 +497,8 @@ int Crystalliser::solveMSMPR(const DictPtr& dict,
     // as a solubility-curve solute -- the population balance then operates on
     // S = c/c_sat regardless of where c_sat came from.
     const std::string soluteSel = oper->lookupWordOrDefault("solute", "");
-    const SatState sat = crystSaturation(thermo, z, F, T_op, soluteSel);
+    const SatState sat = crystSaturation(thermo, z, F, T_op, soluteSel,
+        dict->name().empty() ? std::string("crystalliser") : dict->name());
     const bool useElec = sat.useElec;
     const std::size_t iSolute = sat.iSolute;
     const Component& sol  = thermo.comp(iSolute);
@@ -503,29 +529,11 @@ int Crystalliser::solveMSMPR(const DictPtr& dict,
 
     // ---- Hydraulics: volumetric throughput Q and residence time τ -------
     //  Q = liquid volumetric flow Σ F_i V_liq,i (solvent-dominated).
-    scalar Q = 0.0;                                         // m^3/s
-    for (std::size_t i = 0; i < n; ++i)
-        Q += F * z[i] * 1000.0 * thermo.comp(i).Vliq();    // kmol/s·(mol/kmol)·(m^3/mol)
-    if (Q <= 0.0)
-        throw std::runtime_error("Crystalliser(MSMPR): zero volumetric flow"
-            " (components need a `Vliq` to size the residence time).");
+    const scalar Q = F * liquorVolumePerKmol(thermo, T_op, P, z,
+        dict->name().empty() ? std::string("crystalliser") : dict->name());   // m^3/s
+    if (!(Q > 0.0))
+        throw std::runtime_error("Crystalliser(MSMPR): zero volumetric flow.");
     const scalar tau = V / Q;                              // s
-    {
-        //  Which components were taken at zero volume, and how much of the
-        //  liquor they are (review DR-05).
-        std::string zeroed;
-        scalar xZero = 0.0;
-        for (std::size_t i = 0; i < n; ++i)
-            if (z[i] > 0.0 && !(thermo.comp(i).Vliq() > 0.0))
-            { zeroed += (zeroed.empty() ? "" : ", ") + thermo.comp(i).name(); xZero += z[i]; }
-        char b[64];
-        std::snprintf(b, sizeof(b), "%.3g", static_cast<double>(xZero));
-        PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqSilentZero,
-            liquidProperty::statedDatumTemperatures(thermo, z), zeroed.empty() ? std::string()
-                           : "; taken at zero volume here: " + zeroed + ", mole fraction "
-                             + b + " of the liquor",
-            "bypass", took(Q / (F * 1000.0)), "not applied");
-    }
 
     const scalar c_sat        = sat.c_sat;                 // kg solute / kg solvent (helper)
     const scalar solvent_mass = sat.solvent_mass;          // kg/s (reference OR total solvent)
@@ -767,6 +775,10 @@ int Crystalliser::solveDiscretizedPBE(const DictPtr& dict,
     const sVector& z = fd.z;
 
     auto oper = dict->subDict("operation");
+    //  A UNIT BLOCK DOES NOT CARRY A PROPERTY (DEV.md 4c C421, C398 A4): a
+    //  density, viscosity or diffusivity typed here, at any depth, is refused
+    //  BY NAME with the line to write in the property dictionary.
+    unitTypedProperties::refuse(oper, "crystalliser '" + (dict->name().empty() ? std::string("crystalliser") : dict->name()) + "': ", "crystalliser");
     const scalar T_op = oper->lookupScalar("operatingTemperature", Dims::temperature);
     const scalar V    = oper->lookupScalar("volume", Dims::volume);
     // Grid hardware: how many bins + what's the largest size we care about.
@@ -781,7 +793,8 @@ int Crystalliser::solveDiscretizedPBE(const DictPtr& dict,
     // ---- Solute / solvent / (antisolvent) + saturation -- shared helper
     //      (electrolyte m_sat(T) OR a solubility curve, same as MSMPR). --------
     const std::string soluteSel = oper->lookupWordOrDefault("solute", "");
-    const SatState sat = crystSaturation(thermo, z, F, T_op, soluteSel);
+    const SatState sat = crystSaturation(thermo, z, F, T_op, soluteSel,
+        dict->name().empty() ? std::string("crystalliser") : dict->name());
     const bool useElec = sat.useElec;
     const std::size_t iSolute = sat.iSolute;
     const Component& sol  = thermo.comp(iSolute);
@@ -815,29 +828,11 @@ int Crystalliser::solveDiscretizedPBE(const DictPtr& dict,
             " would need an inner iteration coupling B0 to mu3; deferred.");
 
     // ---- Hydraulics: Q, tau -------------------------------------------
-    scalar Q = 0.0;
-    for (std::size_t i = 0; i < n; ++i)
-        Q += F * z[i] * 1000.0 * thermo.comp(i).Vliq();
-    if (Q <= 0.0)
-        throw std::runtime_error("Crystalliser(FVM): zero volumetric flow"
-            " (components need a `Vliq`).");
-    const scalar tau = V / Q;
-    {
-        //  Which components were taken at zero volume, and how much of the
-        //  liquor they are (review DR-05).
-        std::string zeroed;
-        scalar xZero = 0.0;
-        for (std::size_t i = 0; i < n; ++i)
-            if (z[i] > 0.0 && !(thermo.comp(i).Vliq() > 0.0))
-            { zeroed += (zeroed.empty() ? "" : ", ") + thermo.comp(i).name(); xZero += z[i]; }
-        char b[64];
-        std::snprintf(b, sizeof(b), "%.3g", static_cast<double>(xZero));
-        PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqSilentZero,
-            liquidProperty::statedDatumTemperatures(thermo, z), zeroed.empty() ? std::string()
-                           : "; taken at zero volume here: " + zeroed + ", mole fraction "
-                             + b + " of the liquor",
-            "bypass", took(Q / (F * 1000.0)), "not applied");
-    }
+    const scalar Q = F * liquorVolumePerKmol(thermo, T_op, P, z,
+        dict->name().empty() ? std::string("crystalliser") : dict->name());   // m^3/s
+    if (!(Q > 0.0))
+        throw std::runtime_error("Crystalliser(FVM): zero volumetric flow.");
+    const scalar tau = V / Q;                              // s
 
     const scalar c_sat        = sat.c_sat;                 // helper (electrolyte OR curve)
     const scalar solvent_mass = sat.solvent_mass;

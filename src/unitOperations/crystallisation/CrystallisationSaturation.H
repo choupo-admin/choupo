@@ -78,6 +78,7 @@ struct SatState
     scalar solvent_mass = 0.0;   // kg/s
     scalar xAnti = 0.0;
     scalar MW_sol = 0.0, MW_solv = 0.0;
+    scalar vAnti = 0.0;          // m3/mol, the pure antisolvent at T_op (property door), mixed-solvent route
 
     //- What this saturation LEFT OUT, in the resolver's own words.
     //
@@ -98,12 +99,16 @@ struct SatState
 //  T_op, by the ELECTROLYTE route when the package resolves ions and the
 //  target IS its salt, and by the component's own solubility curve otherwise.
 //  `soluteOverride` (empty = auto) names which species to crystallise when the
-//  feed carries more than one crystallisable salt.
+//  feed carries more than one crystallisable salt.  `consumerUnit` (the
+//  crystalliser's name in the case, empty = none) names the unit the
+//  property door records the mixed-solvent antisolvent's volume against
+//  (DEV.md 4c C421); empty records nothing.
 SatState crystSaturation(const ThermoPackage& thermo,
                          const sVector&       z,
                          scalar               F,
                          scalar               T_op,
-                         const std::string&   soluteOverride = "");
+                         const std::string&   soluteOverride = "",
+                         const std::string&   consumerUnit = "");
 
 //- The two FEED facts the saturation stands on, without an operation-
 //  selected solute (DEV.md 4c C188 item 5): the solute the unit would pick
