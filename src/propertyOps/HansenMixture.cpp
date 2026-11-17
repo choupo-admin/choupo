@@ -196,21 +196,23 @@ int HansenMixture::run(const DictPtr& dict,
                    " `hansen { dD; dP; dH; Tref; }` (Pa^0.5, K) with the"
                    " primary source of each value, case-locally or in the"
                    " record; nothing is estimated here.");
-        if (!(c->Vliq() > 0))
+        {   //  a stored liquid volume is what the package's route reads (C421: asked of the
+            //  route, not of the datum); bare Rackett would be an estimate under a volume fraction
+            const auto vRoute = thermo.liquidVolumeRouteOf(idx);
+            if (vRoute != ThermoPackage::LiquidVolumeRoute::anchoredRackett
+                && vRoute != ThermoPackage::LiquidVolumeRoute::flatVliq)
             refuse("solvent '" + nm + "' declares no liquid molar volume"
                    " (Vliq) -- the volume-fraction rule and the mole"
                    " fractions of the phase check both need it.");
+        }
         Solvent s;
         s.name = nm; s.index = idx;
         s.dD = c->hansenD(); s.dP = c->hansenP(); s.dH = c->hansenH();
         s.Tref = c->hansenTref();
         //  The volume-fraction rule reads the solvents' volumes at one
-        //  temperature, the Tref their triples belong to.  A record that
-        //  states its `Vliq` at another temperature (`VliqT`, C378) is asked
-        //  through the one home of the liquid volume at Tref; any other
-        //  record keeps its stored 25 C datum, as before.
-        s.Vliq = c->hasVliqT() ? thermo.liquidMolarVolumeOf(idx, s.Tref)
-                               : c->Vliq();
+        //  temperature, the Tref their triples belong to, asked of the one
+        //  home of the liquid volume at Tref (C421: no stored-datum read).
+        s.Vliq = thermo.liquidMolarVolumeOf(idx, s.Tref);
         { static std::atomic<unsigned> seen{0}; PropertySourceLog::instance().parameterOnce(seen, "Hansen solubility parameters of a mixture", "the volume fractions of the solvents"); }
         s.MW   = c->MW();
         solvents.push_back(s);

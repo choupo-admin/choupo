@@ -69,6 +69,12 @@ ratchet_probe_new.tsv, DX-02: all but the constant from another header,
 which is NOT CHECKED) are classified on every run, and the gate FAILS if any
 of them is not caught: a hole a review found cannot reopen silently.
 
+DECLARED EXCEPTIONS (C421 slice E): a file whose SUBJECT is the property (the props
+evaluator, a reference equation of state, the steam tables) or a dataset's own
+experimental conditions (the membrane benches) reads records by design; it is listed in
+DECLARED_EXCEPTIONS with its class and its reason, holds no pin, and a class not listed
+for it still fails.
+
 FALSE POSITIVES ARE EXEMPT, NOT PINNED (C402 rest, step 1): a kW <-> W or
 kmol <-> mol conversion on a duty, a name that merely contains "mu" or "nu"
 (`amountPerKmol`), a statistical weight `sigma = 1.0`, a relief accumulation
@@ -171,9 +177,48 @@ FALSE_POSITIVES = [
      "the kJ -> J factor of a unit-string parser"),
     ("literal", re.compile(r"\bsigma\s*=\s*1\.0\s*;"),
      "a statistical weight (fit residual), not a surface tension"),
+    ("conversion", re.compile(r'kp\(""\)\s*\*\s*1000\.0\s*\*\s*kp\(""\)'),
+     "kmol/s -> mol/s times the pump's own published molar volume, which is the pump's door density (C421 slice E)"),
+    ("literal", re.compile(r"\bwaterRefDensity\s*=\s*999\.0107539518483"),
+     "the reference density of API 520's specific gravity (water, the standard's own datum): a definition inside a"
+     " formula, not the process liquid's property; the value is the one the open `fluids` implementation takes (the"
+     " standard itself was not read), and the header says so (C421 slice E)"),
     ("literal", re.compile(r"\bc\.rho\s*=\s*1\.0;\s*c\.mu\s*=\s*1\.0"),
      "dimensionless Re-Pr grid: properties normalised to 1"),
 ]
+#  C421 door slice E (the property layer and the bench tools): a FILE whose SUBJECT is
+#  the property or the stored datum itself reads records, or a typed experimental
+#  condition, BY DESIGN.  Each is a declared exception, with the class it covers and
+#  the reason; it is NOT pinned debt, and a new class in one of these files still
+#  fails.  (file, class) -> reason.
+DECLARED_EXCEPTIONS = {
+    ("src/propertyOps/PropertyEvaluator.cpp", "direct"):
+        "the props bench's evaluator IS the property layer: it asks the package for each property the case names"
+        " at the scan state, to print what the package answers (a unit would ask the door)",
+    ("src/propertyOps/PropertyPoint.cpp", "direct"):
+        "propertyPoint reports the package's own surface tension at a state: the property layer, not a consumer",
+    ("src/propertyOps/ReferenceEoSOp.cpp", "keyRead"):
+        "`rho` is the independent variable of a reference equation of state (T, rho), not a liquid property typed in a unit",
+    ("src/propertyOps/ReferenceEoSOp.cpp", "phaseVariable"):
+        "the reference fluid's own density(T, p, branch): the subject of the op is the reference equation of state",
+    ("src/propertyOps/SteamTables.cpp", "keyRead"):
+        "`rho` is the independent variable of IAPWS-IF97 region 3 (T, rho): a state, not a typed liquid property",
+    ("src/propertyOps/FitParametersMembrane.cpp", "keyRead"):
+        "a fit to a dataset: the cell's viscosity and density are the experiment's own conditions, beside its J_v and"
+        " concentrations (the bench has no feed state to ask the door for); `diffusivity` is the neutral solute's fit input",
+    ("src/propertyOps/PoreTransportBench.cpp", "keyRead"):
+        "a pore-model check against a dataset: the cell's viscosity and density are the experiment's own conditions",
+    ("src/propertyOps/PolarisationIndex.cpp", "keyRead"):
+        "reproduces a paper's table: the stirred cell's viscosity and density are the paper's stated experimental conditions",
+    ("src/propertyOps/LleResidual.cpp", "keyRead"):
+        "`sigma` is a mole-fraction weight of a fit residual, not a surface tension",
+    ("src/propertyOps/DataReconciliation.cpp", "keyRead"):
+        "`sigma` is a measurement's standard deviation, not a surface tension",
+    ("src/propertyOps/EstimateComponent.cpp", "keyRead"):
+        "`density` is the reference value a group-contribution estimate is compared with (the estimator's subject), not a unit input",
+    ("src/propertyOps/ThielePellet.cpp", "keyRead"):
+        "`thermalConductivity` is the catalyst pellet's (a solid), not a liquid",
+}
 COMMENT = re.compile(r"^\s*(//|\*)")
 STRING = re.compile(r'"(\\.|[^"\\])*"')
 #  The door review's eighteen probe lines and the re-review's nine caught
@@ -353,6 +398,8 @@ def count():
             files += 1
             rel = p.relative_to(ROOT).as_posix()
             for k, n in classify(p.read_text(errors="replace")).items():
+                if (rel, k) in DECLARED_EXCEPTIONS:
+                    continue
                 found[(rel, k)] = found.get((rel, k), 0) + n
     return found, files
 
