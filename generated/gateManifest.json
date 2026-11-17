@@ -439,7 +439,7 @@
     "check_forward_order": {
       "exit": 0,
       "claim": "check_forward_order: OK -- an undeclared forward order on a reactant is refused with its remedy in all 4 reactor kinds (cstr (ethanol), pfr (aceticAcid), batchReactor (aceticAcid), dynamicCSTR (compA)); an explicit `order 0;` is still honoured and a product with no order is still accepted",
-      "seconds": 1.2
+      "seconds": 0.2
     },
     "check_friction_correlations": {
       "exit": 0,
@@ -666,11 +666,6 @@
       "claim": null,
       "seconds": 18.3
     },
-    "check_pid_refusals": {
-      "exit": 0,
-      "claim": "pid-refusals: OK -- both gain refusals fire from a real corpus case with their named remedies (foreign key -> the Kc/tauI conversion; all-zero -> declare a gain or remove the controller).",
-      "seconds": 0.3
-    },
     "check_polarisation_coupling": {
       "exit": 0,
       "claim": "check_polarisation_coupling: OK -- the polarisationIndex bench on Geraldes & Afonso (2007) Table 1 reproduces an independent Python solve of Eqs. (25)-(28) on all 10 rows (Gamma per ion AND xi to 1e-8); a single salt obeys the paper's closed form Eq. (20) with Eqs. (19), (23), (24) to 1e-10; `filmTheory` + `none` reduces to c_p + (c_b - c_p) exp(J_v/k) to 1e-11 (the JSON's 12 digits); 4 refusals fire by name; the used default is announced on membrane12 and not on membrane14; membrane14's published wall is electroneutral to 1e-9 on every node, prices k per ion, publishes xi, and its `ionCoupling none` twin polarises the trace ions differently.  NOT CHECKED: the paper's Fig. 7 Nernst-Planck comparison (not reproduced), any MEASURED polarisation index (none exists), DSPM-DE and the batch vessel under the coupled film, a film with a potential inside it.",
@@ -830,11 +825,6 @@
       "exit": 0,
       "claim": "check_sector_hierarchy: OK -- tutorials/plant/ChemicalPlantTutorial carries its 4 declared sector(s) ['CONCENTRATION', 'DRYING', 'FERMENTATION', 'MAIN'] into the sizing table, sizing.csv, costs.csv (3 subtotal rows reproducing their own unit rows and the TOTAL) and the capital-by-sector console block (3 share(s) summing to 99.9 %); tutorials/steady/flowsheets/process02_with_design, which has no sectors, prints no banner, no capital-by-sector block and no `sector` column in either CSV.  Every heading is checked against the case's own `sectors ( ... )` declaration, with leaves separated by the engine's own test (a member whose dict declares a `type`), the result JSON's `unitSectors` map (11 entr(ies)) agrees with sizing.csv unit for unit, the `equipment` array (5 item(s)) agrees with BOTH CSVs on sector and on cost, and none of the 4 reader(s) takes a last-dot substring of a unit name.  THE STREAM SIDE IS HELD THE SAME WAY, in the three roles it has: the 3 file(s) that read a stamped chain's HEAD (the converged/-view bucketing, the stream table's `crossing` column) do it through the ONE home `topLevelSector`, the ownership rule itself reads the chain WHOLE and consumes the stamp, the 1 that SUPPLIES the stamp to the pre-solve path assembly builds a `SectorOfUnit` from the flattened dict's own `sector` key, none of the 4 takes a single-dot split of a unit name, and the detector saying so is proven to flag all three removed constructs on its own probe.  WHERE EACH STREAM'S STATE FILE LIVES (the 2026-09-07 rule: the LOWEST level whose subtree contains every endpoint) is checked for 2 sectored case(s), 40 stream(s) in all, by recomputing the level from the AUTHORED root `connections {}` block and comparing it with the engine's published `--manifest`: a plant inlet and a sector-to-sector crossing at the domain's own level `MAIN/`, a plant outlet LABEL leaving the file with the sector that owns the identity, a stream no root edge mentions staying inside its sector, and no file loose at the view root.  The run's own streamTable agrees on the 3 stream(s) it independently reports as crossing -- each in NEITHER endpoint's folder.  tutorials/steady/flowsheets/process02_with_design has no sectors and all 5 of its state files stay flat.  A file left at the address the retired rule gave is REFUSED and the move is announced with both addresses.  ONE ROW PER PHYSICAL STREAM: the sectored witness's streamTable draws 25 row(s), exactly the manifest's stream ids and no label among them, and the 9 row(s) the plant exports carry its OWN outlet name in a `label` column -- each one a name the root dict declares, each row filed as a product -- while the flat witness gains no such column.  NOT CHECKED: whether any cost is right; NESTING DEEPER THAN ONE LEVEL -- no corpus case puts a sector inside a sector, so nothing here distinguishes `A/B/` from `A/` for an internal stream, and nothing exercises the case where the domain's own level and `MAIN` stop coinciding with one tier; whether a unit name and its stamp agree (on this corpus they do, which is why arms (d) and (g) read the source); whether a stream's OWN 0/ file holds the right numbers (this arm is about the address, never the contents); and the GUI, which does not read the sector yet.",
       "seconds": 0.4
-    },
-    "check_shortcut_column_refusals": {
-      "exit": 0,
-      "claim": null,
-      "seconds": 0.1
     },
     "check_size_distribution": {
       "exit": 0,
@@ -1266,16 +1256,6 @@
       "claim": "check_txy_bubble_verdict: OK -- at 2 bar 2 of 29 unconverged compositions are dropped and counted, 27 drawn, none at the 200 K floor; at 1 bar 18 of 29 fail and the diagram is refused by name; flash01's 29-point diagram is drawn with no count; flash20 (PC-SAFT) draws all 29 points, 18 of them accepted at |f| <= 1e-5 short of the Newton's 1e-8 and announced (worst |f| = 3.66e-06); the column's bubbleTWithItsVapour reads the verdict of all 3 bubbleT calls and folds it into its flag; the guard reads xUnconverged and no 200 K constant; the count reaches the caveat block on both witnesses.  NOT checked: whether a point is RIGHT beyond its residual, and the Wang-Henke stage loop's bubbleT calls (judged by the column's stage test)",
       "seconds": 16.2
     },
-    "check_membrane_feed_scope": {
-      "exit": 0,
-      "claim": "check_membrane_feed_scope: OK -- an ethanol feed is refused naming the component and the remedy; a water-free feed is refused for its missing solvent; membrane01 (water + NaCl) runs as before.  NOT checked: the declared pass-through approximation (C188, not built)",
-      "seconds": 0.1
-    },
-    "check_pump_liquid_inlet": {
-      "exit": 0,
-      "claim": "check_pump_liquid_inlet: OK -- a vapour inlet (water, 400 K, 1 bar) is refused, naming the compressor; pump01 (liquid water) runs as before.  NOT checked: a produced two-phase inlet (no corpus case feeds a pump one)",
-      "seconds": 0.0
-    },
     "check_solver_failures": {
       "exit": 0,
       "claim": "check_solver_failures: OK -- a failed computation is refused, not returned: the probe (solver sources alone, bounds-checked) sees dy/dt = y^2 asked to t = 2 refused by name at t = 0.999972 s with NOTHING committed, a declared maxSteps 5 refused (and 8 bad maxSteps declarations -- 0, 2.5, 1e12, or under fixed stepping -- refused by name before integrating), a well-posed interval untouched; the QP gives x = 1 (not 0) for x >= 1, flags x >= 1 with x <= 0 INFEASIBLE instead of certifying it, and the reconciliation refuses laws that force b = -1; the SQP reaches x = -1 (not 0) on the reviewer's half-evaluable model under forward and central differences with the one-sided step counted, stops unconverged when no difference exists, and solves an inconsistent first linearisation under a counted Powell relaxation within 2.0e-05 of its box; 3 binaries (batch06, ctrl03, unsteady01) refuse a failed interval with no time directory, no converged/ and the t = 0 trajectory row alone; a sweep over the failing ctrl03 reports 2 of 2 evaluations FAILED; 3 `->integrate(` call site(s) outside src/solver/ODE read .ok.  NOT covered: the fixed-step RK4 time loop (units refuse on their own), whether a corpus case SHOULD converge, the SQP path on corpus cases (their goldens), any restoration beyond Powell's relaxation.",
@@ -1304,7 +1284,7 @@
     "check_unit_acceptance": {
       "exit": 0,
       "claim": "check_unit_acceptance: OK -- the two units' refusals live in the contract (source); the five slice-B units refuse through their contracts (source); ethanol-in-RO refused before any unit ran; choupo-lint reports ethanol-in-RO; vapour-into-pump refused before any unit ran; choupo-lint reports vapour-into-pump; a produced vapour is refused by the pump at its solve; benzene-into-ED refused before any unit ran; ED-without-aqueous-chemistry refused before any unit ran; unbridged-Ca-into-softener refused before any unit ran; solute-free-crystalliser-feed refused before any unit ran; a produced diluate carrying benzene is refused by the next stack at its solve; ed10: benzene 0.01 kmol/h carried to the diluate unchanged, recorded once as a declaredApproximation, mass and carbon balances closed, every stack KPI equal to the benzene-free twin's; passThrough fate-not-offered refused before any unit ran; passThrough no-fate refused before any unit ran; passThrough no-reason refused before any unit ran; passThrough modelled-ion refused before any unit ran; passThrough the-solvent refused before any unit ran; passThrough not-a-component refused before any unit ran; passThrough unit-offers-none refused before any unit ran; choupoBatch --describe-units lists 9 vessel types, 3 declared; the rig refuses through its contract at initialise; the batch diafilter refuses ethanol in its holdup by name, through its contract (rule aqueousSolventAndNonvolatileSolutes); liquid-into-turbine refused before any unit ran; solute-without-Henry-pair refused before any unit ran; vapour-wash-into-absorber refused before any unit ran; two-volatiles-into-evaporator refused before any unit ran; --describe-units lists 60 types, 25 declared; the slice-D units refuse through the contract (source) and declare per-port phases; the generated acceptance text is current and names exactly the 28 declared unit(s) in unit-ops.md and the GUI's unitAcceptance.json; check_membrane_feed_scope and check_pump_liquid_inlet pass.  Scope: the migrated units (slices A-C: spiralWoundModule, pump, electrodialysisStack, ionExchanger, crystalliser, batchElectrodialysis, batchDiafilter; slice D: compressor, turbine, absorber, stripper, extractor, evaporator, batchCrystalliser, plus the declaration-only column, shortcut, flashes, valve, heatExchanger, mixer, splitter), the default on cyclone, and passThrough on the ED stack; NOT checked: a run witness of the extractor's liquid-only ports and of the batch crystalliser's refusals (source and --describe-units arms only); the energy balance of a pass-through on a case whose package prices it on a different phase than it carries, the text outside the generated acceptance regions, a recycle bringing a new component into a migrated unit",
-      "seconds": 1.0
+      "seconds": 0.8
     },
     "check_third_body_rate": {
       "exit": 0,
@@ -1800,6 +1780,11 @@
       "exit": 0,
       "claim": "check_pinch: OK -- [pinch_p1] witness targets equal the independent cascade (107.5 / 40 / 353.15), CSV coherent, negative silent, dTmin<=0 refused; the cascade CLASSIFIES the problem (interior pinch, several pinches, threshold either utility or neither, Q_H,min - Q_C,min = 67.5 kW at dTmin 1/20/40, the worked table and summary.csv equal the independent cascade, ammonia02 is a threshold plant, no TypeScript cascade); the population is published and labelled -- an excluded Q_kW duty is listed and the targets say NOT the plant's, and a two-stream exchanger enters as both sides with its duty in neither current-utility total (no duty is ADDED to the population: columns, reactors and crystallisers stay excluded) || [pinch_p2] 6 exhaustive pairs equal the independent duty bound, CP-rule wording exact, no 'optimal' anywhere, violations 120+260 == the 380 kW excess over target || [pinch_utility] ammonia02's cooling water (declared circuit CW1) is a utility row, not a stream: targets equal the independent cascade over the 5 process segments (Q_H,min 0, Q_C,min 95732.5 kW, no pinch); the same case with the circuit deleted counts the water and gives the old pinch, so the gate tells them apart (the exclusion reads the declared circuit and category, never a stream name)",
       "seconds": 1.0
+    },
+    "check_refusal_probes": {
+      "exit": 0,
+      "claim": "check_refusal_probes: OK -- 4 group(s): membrane-feed-scope, pid-refusals, pump-liquid-inlet, shortcut-column-refusals",
+      "seconds": 0.4
     }
   }
 }

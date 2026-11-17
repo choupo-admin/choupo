@@ -4738,15 +4738,33 @@ PYEOF
     # The two PID gain refusals fire with their named remedies (I5): the
     # textbook Kc/tauI spelling used to run the loop with zero action at
     # exit 0 (2026-08-22).
-    if gate_exec "$ROOT/bin/curate/check_pid_refusals.py" > /tmp/pidr.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "pid-refusals-gate" "$(tail -1 /tmp/pidr.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_pid_refusals.py)\n" "pid-refusals-gate"
-        cat /tmp/pidr.$$
-        fail=$((fail+1))
+    # THE REFUSAL PROBES (DEV.md 4c C420): one runner walks the probe groups of
+    # bin/curate/refusal_probes/ (pid-refusals, pump-liquid-inlet,
+    # shortcut-column-refusals, membrane-feed-scope) and ends with one
+    # `@row <label> PASS|FAIL <claim>` line per group; each becomes the same
+    # PASS/FAIL result row the former gate printed.  A new group adds its row
+    # here by itself.
+    gate_exec "$ROOT/bin/curate/check_refusal_probes.py" > /tmp/refprobes.$$ 2>&1
+    refprobes_rc=$?
+    refprobes_rows=0; refprobes_bad=0
+    while read -r _at refprobes_label refprobes_verdict refprobes_claim; do
+        refprobes_rows=$((refprobes_rows+1))
+        if [ "$refprobes_verdict" = PASS ]; then
+            printf "PASS  %-40s  (%s)\n" "$refprobes_label" "$refprobes_claim"
+            pass=$((pass+1))
+        else
+            printf "FAIL  %-40s  (run bin/curate/check_refusal_probes.py --only <group>)\n" "$refprobes_label"
+            refprobes_bad=$((refprobes_bad+1)); fail=$((fail+1))
+        fi
+    done < <(grep '^@row ' /tmp/refprobes.$$)
+    if [ "$refprobes_bad" -gt 0 ] || [ "$refprobes_rc" -ne 0 ] || [ "$refprobes_rows" -eq 0 ]; then
+        grep -v '^@row ' /tmp/refprobes.$$
+        if [ "$refprobes_bad" -eq 0 ]; then
+            printf "FAIL  %-40s  (run bin/curate/check_refusal_probes.py)\n" "refusal-probes"
+            fail=$((fail+1))
+        fi
     fi
-    rm -f /tmp/pidr.$$
+    rm -f /tmp/refprobes.$$
 
     # The three costing refusals fire and are handled by the AS6 posture:
     # unit named FAILED, excluded, totals stamped INCOMPLETE (2026-08-22 --
@@ -4955,15 +4973,7 @@ PYEOF
     # stage published as 0.0 when Kirkbride could not be formed.  The first two
     # refuse by name now; the third WITHHOLDS, and the gate says plainly that
     # that branch is latent rather than claiming to exercise it.
-    if gate_exec "$ROOT/bin/curate/check_shortcut_column_refusals.py" > /tmp/fugref.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "shortcut-column-refusals-gate" "$(head -1 /tmp/fugref.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_shortcut_column_refusals.py)\n" "shortcut-column-refusals-gate"
-        cat /tmp/fugref.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/fugref.$$
+    #  (shortcut_column_refusals is a GROUP of check_refusal_probes, run at the first site of its cluster; DEV.md 4c C420)
 
     # A missing property of a solid is refused or announced, never replaced
     # in silence (2026-11-12, review SP-01..SP-05): a solid with no rho_p
@@ -5341,29 +5351,13 @@ PYEOF
     # component that is neither water nor a declared nonvolatile solute (an
     # ethanol feed) left in NEITHER outlet, its mass re-counted as water, at
     # exit 0.  It is refused by name now, and so is a feed with no water.
-    if gate_exec "$ROOT/bin/curate/check_membrane_feed_scope.py" > /tmp/memscope.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "membrane-feed-scope" "$(head -1 /tmp/memscope.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_membrane_feed_scope.py)\n" "membrane-feed-scope"
-        cat /tmp/memscope.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/memscope.$$
+    #  (membrane_feed_scope is a GROUP of check_refusal_probes, run at the first site of its cluster; DEV.md 4c C420)
 
     # pump liquid-inlet gate (2026-10-31, DEV.md 4c C188 defect 2).  The
     # incompressible pump never read its inlet's phase, so a vapour was pumped
     # on a liquid volume and published liquid, at exit 0.  It refuses now,
     # naming the compressor.
-    if gate_exec "$ROOT/bin/curate/check_pump_liquid_inlet.py" > /tmp/pumpinlet.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "pump-liquid-inlet" "$(head -1 /tmp/pumpinlet.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_pump_liquid_inlet.py)\n" "pump-liquid-inlet"
-        cat /tmp/pumpinlet.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/pumpinlet.$$
+    #  (pump_liquid_inlet is a GROUP of check_refusal_probes, run at the first site of its cluster; DEV.md 4c C420)
 
     # unit-acceptance gate (2026-10-31, DEV.md 4c C188 item 5, slice A).  What
     # a unit accepts is a DECLARATION (UnitOperation::acceptance()), refused by

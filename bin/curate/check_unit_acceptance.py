@@ -40,8 +40,9 @@ units that already refused: `spiralWoundModule` and `pump`.
       phases [liquid]; spiralWoundModule: declared, aqueous solvent required,
       rule aqueousSolventAndNonvolatileSolutes; mixer (unmigrated): not
       declared, both phases, rule everyComponent.
-  (e) THE TWO DEFECT GATES STILL PASS: check_membrane_feed_scope and
-      check_pump_liquid_inlet.
+  (e) THE TWO DEFECT GATES STILL PASS: the membrane-feed-scope and
+      pump-liquid-inlet groups of check_refusal_probes (formerly the scripts
+      check_membrane_feed_scope and check_pump_liquid_inlet; DEV.md 4c C420).
 
 SABOTAGES (by hand, 2026-10-31, each restored and rebuilt; outputs verbatim,
 long tails elided):
@@ -407,11 +408,12 @@ def arm_d(fail, ok):
 
 
 def arm_e(fail, ok):
-    for g in ("check_membrane_feed_scope.py", "check_pump_liquid_inlet.py"):
-        r = subprocess.run([sys.executable, str(ROOT / "bin" / "curate" / g)],
+    for g in ("membrane-feed-scope", "pump-liquid-inlet"):
+        r = subprocess.run([sys.executable, str(ROOT / "bin" / "curate" / "check_refusal_probes.py"),
+                            "--only", g],
                            capture_output=True, text=True, timeout=1800)
         if r.returncode != 0:
-            fail.append(f"(e) {g} FAILED:\n      " + (r.stdout + r.stderr)[-500:])
+            fail.append(f"(e) check_refusal_probes --only {g} FAILED:\n      " + (r.stdout + r.stderr)[-500:])
     if not any(f.startswith("(e)") for f in fail):
         ok.append("check_membrane_feed_scope and check_pump_liquid_inlet pass")
 
