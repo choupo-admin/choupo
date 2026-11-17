@@ -3,21 +3,15 @@
 # C402 round 2 (review MB-05): src/propertyOps is in the scan; the keyRead pins there are the props benches' readers of a typed
 # viscosity / density (PolarisationIndex, FitParametersMembrane), left in place: their shipped cases reproduce a paper's own inputs
 # at several temperatures, which the one-stated-value-per-set grammar of slice (d) cannot hold (hand-back).
-src/postProcessing/EconomicsPass.cpp	literal	2
+# C402 rest step 1: the detector's false positives (kW <-> W, kmol <-> mol, statistical weights, bounds) are exempt by
+# FALSE_POSITIVES in the checker, each with its reason; what is pinned below is real or undecided.
 src/postProcessing/sizing/PipeHeaderSize.cpp	keyRead	2
 src/postProcessing/sizing/RatedMachineSize.cpp	conversion	1
-src/postProcessing/sizing/ReliefArithmetic.H	literal	4
-src/postProcessing/sizing/ReliefValveSize.cpp	conversion	1
-src/postProcessing/sizing/ReliefValveSize.cpp	literal	1
-src/postProcessing/sizing/ShellTubeHX.cpp	conversion	1
-src/postProcessing/sizing/ShellTubeHX.cpp	direct	1
+src/postProcessing/sizing/ReliefArithmetic.H	literal	1
 src/propertyOps/DataReconciliation.cpp	keyRead	1
 src/propertyOps/EstimateComponent.cpp	keyRead	2
 src/propertyOps/FitParametersMembrane.cpp	keyRead	5
-src/propertyOps/FitParametersMembrane.cpp	literal	1
 src/propertyOps/HansenMixture.cpp	vliq	2
-src/propertyOps/HeatTransferBench.cpp	literal	1
-src/propertyOps/LleResidual.H	literal	1
 src/propertyOps/LleResidual.cpp	keyRead	2
 src/propertyOps/PolarisationIndex.cpp	keyRead	4
 src/propertyOps/PoreTransportBench.cpp	keyRead	4
@@ -29,39 +23,19 @@ src/propertyOps/SolubilityParameter.cpp	vliq	2
 src/propertyOps/SteamTables.cpp	keyRead	2
 src/propertyOps/ThielePellet.cpp	keyRead	1
 src/unitOperations/batch/BatchElectrodialysis.cpp	direct	1
-src/unitOperations/batch/BatchReactor.cpp	literal	1
 src/unitOperations/crystallisation/CrystallisationSaturation.cpp	vliq	1
-src/unitOperations/crystallisation/Crystalliser.cpp	conversion	6
 src/unitOperations/crystallisation/Crystalliser.cpp	vliq	5
-src/unitOperations/distillation/PackingRBF.H	literal	1
-src/unitOperations/dynamic/DynamicCSTR.cpp	conversion	1
-src/unitOperations/dynamic/DynamicTank.cpp	conversion	1
 src/unitOperations/dynamic/WilliamsOttoPlant.cpp	literal	1
 src/unitOperations/electrochem/ElectrodialysisStack.cpp	conversion	2
 src/unitOperations/electrochem/ElectrodialysisStack.cpp	direct	1
-src/unitOperations/flash/IsothermalFlash.cpp	conversion	1
-src/unitOperations/heatTransfer/HeatExchanger.cpp	conversion	1
-src/unitOperations/heatTransfer/HeatExchanger.cpp	direct	1
-src/unitOperations/heatTransfer/MultiStreamHX.cpp	conversion	1
-src/unitOperations/heatTransfer/PhaseChanger.cpp	conversion	4
-src/unitOperations/heatTransfer/PhaseChanger.cpp	direct	2
 src/unitOperations/heatTransfer/SprayDryer.cpp	keyRead	5
-src/unitOperations/heatTransfer/SprayDryer.cpp	vliq	6
+src/unitOperations/heatTransfer/SprayDryer.cpp	vliq	4
 src/unitOperations/heatTransfer/atomizer/Atomizer.H	literal	1
 src/unitOperations/heatTransfer/htc/BellDelaware.cpp	keyRead	1
 src/unitOperations/heatTransfer/htc/Rohsenow.H	literal	2
 src/unitOperations/hydraulics/Pipe.cpp	keyRead	10
-src/unitOperations/membrane/SpiralWoundModule.cpp	conversion	2
 src/unitOperations/membrane/massTransfer/Polarisation.cpp	direct	1
-src/unitOperations/membrane/osmotic/OsmoticModel.H	literal	1
 src/unitOperations/membrane/transport/DSPM_DE.cpp	direct	1
-src/unitOperations/reactor/CSTR.cpp	conversion	1
-src/unitOperations/reactor/CSTR.cpp	literal	3
-src/unitOperations/reactor/ConversionReactor.cpp	conversion	3
-src/unitOperations/reactor/EquilibriumReactor.cpp	conversion	1
-src/unitOperations/reactor/PFR.cpp	conversion	2
-src/unitOperations/reactor/PFR.cpp	literal	2
 src/unitOperations/reactor/PFR.cpp	vliq	4
 src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp	direct	1
 src/unitOperations/rotating/PressureExchanger.cpp	vliq	1
-src/unitOperations/separation/TSATwinBed.cpp	conversion	1

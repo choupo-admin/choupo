@@ -5,9 +5,7 @@ tag	analysisDensity	derived.laboratoryAnalysis	derived from the laboratory analy
 tag	benchmarkConstantDensity	constant.benchmark.WilliamsOtto	a constant of the published benchmark the unit reproduces: 50 lb/ft3 (800.9 kg/m3), equal for every species
 tag	declaredByCase	declared.case	the value the case declares for this unit
 tag	diluteCarrierDensity	constant.diluteCarrier	a constant of the unit, 1000 kg/m3: the dilute-carrier density the whole unit is built on
-tag	dropletDensityFallback	fallback.1000	a constant of the unit, 1000 kg/m3, used because a solvent has no 25 C molar volume
 tag	kernelLiquidDiffusivity	kernel.liquidDiffusivity	property kernel: the case's liquid-diffusivity model (solute at infinite dilution in the medium)
-tag	pumpHeadDensityFallback	fallback.1000	a constant of the unit, 1000 kg/m3, used for the head because no component has a liquid volume
 tag	recordVliqFlat	bypass.recordVliq25C	computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect
 tag	recordVliqIonsMassKept	bypass.recordVliq25C.ionsNoVolume	computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect; a dissolved ion keeps its mass and adds no volume
 tag	recordVliqSilentZero	bypass.recordVliq25C.missingIsZero	computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect; a component without one adds no volume

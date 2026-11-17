@@ -113,12 +113,6 @@ namespace liquidSource {
 inline const ConstantSource diluteCarrierDensity
     { 1000.0, "constant.diluteCarrier",
       "a constant of the unit, 1000 kg/m3: the dilute-carrier density the whole unit is built on" };
-inline const ConstantSource dropletDensityFallback
-    { 1000.0, "fallback.1000",
-      "a constant of the unit, 1000 kg/m3, used because a solvent has no 25 C molar volume" };
-inline const ConstantSource pumpHeadDensityFallback
-    { 1000.0, "fallback.1000",
-      "a constant of the unit, 1000 kg/m3, used for the head because no component has a liquid volume" };
 inline const ConstantSource waterViscosityKnob
     { 1.0e-3, "default.water1e-3",
       "a constant of the unit, 1 mPa s (water near 20 C), used because the case declares no viscosity and no viscosity model" };

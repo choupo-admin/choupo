@@ -69,10 +69,11 @@ ratchet_probe_new.tsv, DX-02: all but the constant from another header,
 which is NOT CHECKED) are classified on every run, and the gate FAILS if any
 of them is not caught: a hole a review found cannot reopen silently.
 
-FALSE POSITIVES PINNED AS DEBT, said here and in the claim: a kg/kmol ->
-kg/mol or kmol -> mol conversion on a volume line (`/ rho`) is counted, and
-`PackingRBF.H`'s flooding gradient `dPflood = 1025.0` (Pa/m) is counted as a
-seawater-like literal.
+FALSE POSITIVES ARE EXEMPT, NOT PINNED (C402 rest, step 1): a kW <-> W or
+kmol <-> mol conversion on a duty, a name that merely contains "mu" or "nu"
+(`amountPerKmol`), a statistical weight `sigma = 1.0`, a relief accumulation
+fraction, `PackingRBF.H`'s flooding gradient (Pa/m) and a few bounds are listed
+in FALSE_POSITIVES with the reason of each; no probe line may match one.
 
 WHAT IT CANNOT SEE, said here and in its claim: a density, viscosity or
 surface tension built from an expression with a non-literal term and no
@@ -139,6 +140,40 @@ KEYREAD = re.compile(
     r"\b(found|lookup\w*)\s*\(\s*\"(viscosity|diffusivity|rho|rho_feed|rho_diafiltrate|mu_feed|D_solute"
     r"|liquidViscosity|liquidDiffusivity|liquidDensity|density|surfaceTension|sigma|thermalConductivity)\"")
 ZERO_KEYREAD = ("src/unitOperations/membrane/", "src/unitOperations/batch/BatchDiafilter")
+#  C402 (step 1): the detector's FALSE POSITIVES, each with its reason.  A line
+#  that matches one of these is NOT counted in the class named; every pattern is
+#  anchored on a name or a marker that cannot be a liquid property, and none of
+#  them may catch one of the FIXTURES (the gate checks that too).
+#  (class, regex on the code of the line, reason)
+FALSE_POSITIVES = [
+    ("conversion", re.compile(r"\b(H_(in|out|mid)|h_(in|out)|Cp_\w+|dHcryst\w*|UA\w*|T_jacket_?|sensibleJ"
+                              r"|Q_?(kW|W)\b|Q\w*_(kW|W)\b|\w*KW\b|y\[n\])"),
+     "a duty: kW <-> W or kmol <-> mol on an enthalpy, heat-capacity or UA product"),
+    ("conversion", re.compile(r"\b(Q_cryst|Q_sensible)\b"),
+     "a duty: crystallisation / sensible heat, kmol -> mol"),
+    ("conversion", re.compile(r"\b(c_b|conc)\[\w+\]\s*\*\s*1\.0e3\s*/\s*rho|=\s*(c_b|conc)\[\w+\]"),
+     "kmol/m3 -> mol/kg water; rho is the door's"),
+    ("conversion", re.compile(r"\bW_kg_h\s*/\s*rd\.rho\s*\*\s*1000\.0\s*/\s*60\.0"),
+     "m3 -> L and h -> min; rd.rho is the one door's phaseDensity"),
+    ("conversion", re.compile(r"\bQw\s*=\s*std::abs\(Q_kW\)"),
+     "a duty, kW -> W"),
+    ("literal", re.compile(r"\bamountPerKmol\b"),
+     "kmol -> mol factor; the name contains 'mu' (a-MU-nt)"),
+    ("literal", re.compile(r"\bscalar\s+nu\s*=\s*1\.0\s*;"),
+     "van't Hoff factor, a count, not a kinematic viscosity"),
+    ("literal", re.compile(r"\baccumulation\w*\s*=|\bdPflood\s*="),
+     "a relief accumulation fraction / psi limit; a flooding gradient in Pa/m"),
+    ("literal", re.compile(r"\boperatorAnnualHours\b|\biHi\s*=\s*1000\.0"),
+     "operator hours per year; an upper bound of a root scan"),
+    ("literal", re.compile(r"\bso\.upper\s*="),
+     "an upper bound (a temperature) for a root search"),
+    ("literal", re.compile(r"\bf\s*=\s*1000\.0\s*;"),
+     "the kJ -> J factor of a unit-string parser"),
+    ("literal", re.compile(r"\bsigma\s*=\s*1\.0\s*;"),
+     "a statistical weight (fit residual), not a surface tension"),
+    ("literal", re.compile(r"\bc\.rho\s*=\s*1\.0;\s*c\.mu\s*=\s*1\.0"),
+     "dimensionless Re-Pr grid: properties normalised to 1"),
+]
 COMMENT = re.compile(r"^\s*(//|\*)")
 STRING = re.compile(r'"(\\.|[^"\\])*"')
 #  The door review's eighteen probe lines and the re-review's nine caught
@@ -290,6 +325,8 @@ def classify(text):
     for code in lines:
         for k, rx in LINE_CLASSES.items():
             subject = STRING.sub('""', code) if k == "conversion" else code
+            if any(fk == k and frx.search(subject) for fk, frx, _ in FALSE_POSITIVES):
+                continue
             n = len(rx.findall(subject)) if k == "vliq" else (1 if rx.search(subject) else 0)
             if n:
                 hits[k] = hits.get(k, 0) + n
@@ -321,6 +358,13 @@ def count():
 
 
 def main() -> int:
+    swallowed = [f for f in FIXTURES for fk, frx, _ in FALSE_POSITIVES
+                 if frx.search(f.replace("\\n", "\n"))]
+    if swallowed:
+        print(f"{NAME}: FAIL -- a false-positive exemption swallows a probe line:")
+        for f in swallowed:
+            print(f"  SWALLOWED  {f}")
+        return 1
     missed = [f for f in FIXTURES if not classify(f.replace("\\n", "\n"))]
     if missed:
         print(f"{NAME}: FAIL -- {len(missed)} of the door review's {len(FIXTURES)} probe "
@@ -382,9 +426,7 @@ def main() -> int:
           "that says no property (a variable read under an unrelated key, a constant "
           "spelled otherwise in another header), a brine density outside 997-1030 under "
           "a name that says no sea/brine, a conversion line that names no volume or flow, "
-          "thermo/ and propertyOps/; counted and pinned although false: a kg/kmol or "
-          "kmol/mol conversion on a volume line and PackingRBF.H's dPflood 1025 Pa/m; "
-          "a phase-variable density call guarded by if/else rather than a ternary would "
+          "thermo/ and propertyOps/; a duty line that carries none of the exempt markers is counted although false (none today); the exemptions are listed in FALSE_POSITIVES; a phase-variable density call guarded by if/else rather than a ternary would "
           "be counted too (none today).")
     return 0
 
