@@ -36,7 +36,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components ( methanol water H2 CO2 CO N2 O2 Ar );
 

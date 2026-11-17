@@ -44,7 +44,7 @@ description "Once-through cooling water from the plant tower (25 -> 35 C)";
 thermophysicalSystem
 {
     recordType    thermophysicalPropertySystem;
-    schemaVersion 2;
+    schemaVersion 1;
 
     components    ( water );
 

@@ -3,7 +3,7 @@
   a(CH4,aq) = K(T) * p[atm].
 \*---------------------------------------------------------------------------*/
 recordType gasLiquidEquilibrium;
-schemaVersion 2;
+schemaVersion 1;
 
 // Equilibrium-parameterisation identity (ADR 2026-07-26): typed physical
 // family + versioned convention profile.  The Sander H_xp pair

@@ -1,5 +1,5 @@
 recordType gasLiquidEquilibrium;
-schemaVersion 2;
+schemaVersion 1;
 
 // Acetic acid gas-liquid transfer (gasSpecies = the component's declared
 // formula, the gasOf contract: water -> H2O, aceticAcid -> C2H4O2)

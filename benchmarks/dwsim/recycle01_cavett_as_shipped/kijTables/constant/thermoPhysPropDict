@@ -6,7 +6,7 @@
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
-schemaVersion 2;
+schemaVersion 1;
 
 components ( N2 CO2 H2S CH4 ethane propane isoButane nButane
              isopentane nPentane nHexane nHeptane nOctane nNonane nDecane );
