@@ -67,6 +67,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 CASE = ROOT / "tutorials/steady/thermo/variants01_ethanol_water_line"
@@ -94,7 +98,7 @@ def fail(arm, msg):
 
 def copy_case(tmp, name):
     d = Path(tmp) / name
-    shutil.copytree(CASE, d, ignore=shutil.ignore_patterns(
+    case_records.copytree(CASE, d, ignore=shutil.ignore_patterns(
         "converged", "postProcessing", "reports", "log.*", "*.csv"))
     return d
 
