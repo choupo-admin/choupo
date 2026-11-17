@@ -3867,6 +3867,56 @@ accepts today, and that is a policy call.
 > three nested-suite gates whose port failed and was reverted);
 > check_debt_registry holds the list true.  `--fast` 88/0 on the merge.
 > LEFT: (6) the false variations; (4) the liquid-property door, last.
+>
+> **C421 (7): A STREAM'S LIQUID PROPERTY AS A TABLE, IN T AND IN
+> COMPOSITION (Vitor, 2026-11-18, asking first for a spray dryer of water,
+> sucrose and a pseudo-component A whose viscosity and surface tension
+> follow a table in T and the sucrose concentration, then whether a heat
+> exchanger's own property dictionary can state viscosity and thermal
+> conductivity as functions of T alone, independent of composition; and,
+> angrily, "eu acho que ja tinha falado que isto era importante ser
+> implementado").  HE HAD: C399 (2026-11-14) recorded his request that
+> properties given "a bruta sob a forma de tabela" must be possible, and
+> C398 slice (c) delivered only part of it -- a PURE COMPONENT's liquid
+> viscosity, liquid Cp or solid Cp against T (`src/thermo/PropertyTable.cpp`
+> lines 85-87 refuse every other property).  The two cases he asked about
+> today are both outside that slice: a MIXTURE property tabulated in T and
+> in a composition axis, and a mixture property in T alone that the case
+> declares independent of composition; and thermal conductivity, surface
+> tension and density are not table properties at all.  A request recorded
+> and delivered narrower than asked, with the narrowing never said to him,
+> is the defect; it is repaired, not argued.  DECIDED: this is C421's
+> seventh item and comes BEFORE the door slices of the units that need it
+> (the spray dryer's `operation.liquidViscosity` knob and its 1e-3 / 0.072
+> defaults exist precisely because a case has no honest home for a
+> measured syrup property; the door cannot refuse the knob until the
+> dictionary can hold the table).  SCOPE: in `transport { liquid {
+> viscosity | thermalConductivity } }`, `interface { surfaceTension }` and
+> `volumetric { liquid density }`, a MIXTURE law of type table whose axes
+> the case declares (T, and zero or more composition axes such as the mass
+> fraction of a named component), its components outside the axes stated
+> as ignored with a reason, the points in `constant/experiments/` like the
+> pure-component tables, interpolation declared per axis, the ends hard as
+> now; selectable in a named variant, so a heat exchanger or a dryer can
+> take it with `thermo <variant>;`.  Design written and ruled by the
+> architect before a builder starts; guides in the same slice (rule 4d).
+>
+> **C422 (Vitor, 2026-11-18, a question: could an agent use the property
+> kernel, take a dataset, fit a neural network, and the property dictionary
+> use its weights to predict viscosity, conductivity and the rest?).  A
+> CANDIDATE, after C421.**  The architect's judgement: technically small (a
+> feed-forward network is a few matrix products in C++, no dependency; the
+> weights a record like any law's coefficients; the fit a `choupoProps`
+> operation beside `fitParameters`).  Three conditions before it is built,
+> because a network extrapolates silently and a student cannot read it: (1)
+> a DECLARED DOMAIN (the box, or better the hull, of the training points)
+> outside which it REFUSES, as a table's ends do; (2) the fit reports its
+> in-sample and held-out residuals and they travel with the record; (3) it
+> is offered only where a table or a simple correlation in T and
+> composition does not fit the data within its scatter -- for a syrup's
+> viscosity a table (C421 (7)) or an Arrhenius term with a polynomial in
+> the mass fraction is the better teaching object.  Ranked after C421 (7),
+> which gives the same capability for measured points with no fit at all.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
