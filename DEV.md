@@ -4378,6 +4378,39 @@ accepts today, and that is a policy call.
 > estimates under `data/groupEstimative/`, never a runtime resolver; (c) the
 > lens and (d) the solubility view after C421, as new features.  The two
 > no-grant compilations named stay a cross-check only (licence policy).
+>
+> **C421 (7) LANDED (2026-11-18): measured tables of a liquid mixture.**  A
+> `measured` record holds a rectangular grid on T and mass fractions, with
+> the interpolation declared per axis, for viscosity, thermal conductivity
+> and surface tension; support (from the rows), authorised box and
+> interpolation are three things, printed as three; between support and box
+> the edge is held and announced once with the largest excursion; outside,
+> refused; `kind` measured / adopted / estimated is required on a multi-row
+> record (the 38 one-row records became `adopted`, each by its own basis
+> sentence); components outside the axes `ignores`-d up to a declared bound.
+> Not built, with reasons: P as an axis (the package's transport takes
+> (T, x)); density (its measured path is a separate reader with a method
+> order; its own slice).  Three witnesses on journal data from the local
+> ThermoML archive (methanol + ethylene glycol viscosity 3 x 4; ethanol +
+> water surface tension; a pipe on a sucrose syrup table).  No golden row
+> moved (the word `adopted` appended to 38 source labels).  VALIDATION, AND
+> A FULL SWEEP STOPPED ON PURPOSE: `bin/integrate --plan` reached the sweep
+> by file inclusion (the package and the door are included everywhere), and
+> it was launched; Vitor objected that only the cases with tables can be
+> reached ("so os casos com tabelas e que deviam ser testados"), and on the
+> behaviour he is right (rule 4c: by what the change can reach, not by the
+> files it includes): the new path runs only for a `measured` entry, every
+> case holding one was run byte-identical (35), `--fast` ran one case per
+> family 88/0, `--gui` 46/0, and the 19 gates and 8 generators that read the
+> touched files exit 0.  The sweep was stopped in its disposable
+> integration tree, before its case walk; nothing it wrote reached main.
+> It had begun re-running the 1260 curation fits, CORRECTLY by the reuse
+> key's rule (the key hashes the engine objects a fit reaches, and the
+> package's object changed): the key is per object, not per function, and
+> that granularity stays (a finer one would have to know which functions a
+> run executes).  The closing `--nightly` of tonight's plan carries the
+> combination of all of tonight's slices.
+
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
