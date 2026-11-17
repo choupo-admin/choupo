@@ -25,11 +25,16 @@
   requires every bundled file to have exactly one entry and every keyword an
   entry claims the file declares to be declared in the real text.
 
-  EVERY ENGINE CLAIM CARRIES THE LINE IT WAS READ AT.  A `Cite` is a file,
-  a line and a string that must be ON that line; the test opens the file and
-  checks.  Citations are written ONLY through `Cite` objects -- a bare
-  file-colon-line typed into prose here would be a claim nobody holds, and the
-  test refuses one (the 2026-08-28/29 citation rule, CLAUDE.md 6).
+  EVERY ENGINE CLAIM NAMES THE SYMBOL IT WAS READ IN, NEVER A LINE NUMBER
+  (DEV.md 4c C415).  A `Cite` is a file, the function that holds the
+  statement (`symbol`; or a named `// [anchor: x]` marker; or the whole file
+  where neither fits) and a string that must be INSIDE it; the test opens the
+  file, resolves the symbol and checks.  So the engine can move code freely
+  and the page does not break, while a renamed function or a deleted
+  statement fails by name.  Citations are written ONLY through `Cite`
+  objects -- a bare file-colon-line typed into prose here would be a claim
+  nobody holds, and the test refuses one (the 2026-08-28/29 citation rule,
+  CLAUDE.md 6).
 
   THE BREAKS EDIT A COPY, AND ONLY FILES THAT TRAVEL VERBATIM.  The browser
   does not hand the engine every file as authored: `serialiseCase`
@@ -50,15 +55,20 @@ export const CASE_ASSEMBLY_WITNESS = "steady/flash/flash01_benzene_toluene";
 
 // ---- Citations --------------------------------------------------------------
 
-/** One engine (or tool) line a claim rests on.  `contains` must be ON that
- *  line -- not near it -- which is what the test checks. */
+/** One engine (or tool) statement a claim rests on.  `contains` must be
+ *  INSIDE the scope -- the symbol's body, the anchor's span or, with neither,
+ *  the file -- which is what the test checks. */
 export interface Cite {
   readonly file: string;
-  readonly line: number;
+  readonly symbol?: string;
+  readonly anchor?: string;
   readonly contains: string;
 }
 
-export const citeText = (c: Cite): string => `${c.file}:${c.line}`;
+/** How the page names a citation: `file#symbol`, `file#[anchor]` or `file`. */
+export const citeText = (c: Cite): string =>
+  c.symbol !== undefined ? `${c.file}#${c.symbol}`
+    : c.anchor !== undefined ? `${c.file}#[${c.anchor}]` : c.file;
 
 const MAIN = "src/applications/choupoSolve/main.cpp";
 const FLOWSHEET = "src/unitOperations/flowsheet/Flowsheet.cpp";
@@ -66,126 +76,125 @@ const STATE_IO = "src/streams/StreamStateIO.cpp";
 const DICT = "src/core/Dictionary.cpp";
 const BUILDER = "src/thermo/ThermoPackageBuilder.cpp";
 
-/** Every line this page cites, by name.  ONE home: the file table, the
- *  assembly list, the breaks and the lesson prose all reach a line through
- *  this map, so a line that moves is corrected once. */
+/** Every statement this page cites, by name.  ONE home: the file table, the
+ *  assembly list, the breaks and the lesson prose all reach it through
+ *  this map. */
 export const CITES = {
-  runCaseApplication: { file: "bin/runCase", line: 263,
+  runCaseApplication: { file: "bin/runCase",
     contains: "application[[:space:]]+" },
-  runCaseLog: { file: "bin/runCase", line: 308,
+  runCaseLog: { file: "bin/runCase",
     contains: 'LOG="$CASE_ABS/log.$APP"' },
-  registerUnits: { file: MAIN, line: 534,
+  registerUnits: { file: MAIN, symbol: "main",
     contains: "UnitOperation   ::registerBuiltins();" },
-  registerFlash: { file: "src/unitOperations/UnitOperation.cpp", line: 166,
+  registerFlash: { file: "src/unitOperations/UnitOperation.cpp", symbol: "UnitOperation::registerBuiltins",
     contains: 'reg("isothermalFlash"' },
-  flowsheetWhere: { file: MAIN, line: 661,
+  flowsheetWhere: { file: MAIN, symbol: "main",
     contains: 'fs::exists("flowsheetDict") ? "flowsheetDict" : "system/flowsheetDict"' },
-  flowsheetRead: { file: MAIN, line: 662,
+  flowsheetRead: { file: MAIN, symbol: "main",
     contains: "auto flowsheetDict = Dictionary::fromFile(flowsheetPath);" },
-  controlDictRead: { file: MAIN, line: 663,
+  controlDictRead: { file: MAIN, symbol: "main",
     contains: 'Dictionary::fromFile(resolveUp("system/controlDict"))' },
-  verbosityRead: { file: MAIN, line: 668,
+  verbosityRead: { file: MAIN, symbol: "main",
     contains: 'lookupScalarOrDefault("verbosity", 3)' },
-  sealVerify: { file: MAIN, line: 688, contains: "records::verifySeal(verbosity);" },
-  sealFunction: { file: "src/thermo/SealCheck.cpp", line: 60,
+  sealVerify: { file: MAIN, symbol: "main", contains: "records::verifySeal(verbosity);" },
+  sealFunction: { file: "src/thermo/SealCheck.cpp",
     contains: "int verifySeal(int verbosity)" },
-  thermoWhere: { file: MAIN, line: 705,
+  thermoWhere: { file: MAIN, symbol: "main",
     contains: 'resolveUp("constant/thermoPhysPropDict")' },
-  thermoRecordType: { file: MAIN, line: 730,
+  thermoRecordType: { file: MAIN, symbol: "main",
     contains: '!= "thermophysicalPropertySystem"' },
-  solverDictRead: { file: MAIN, line: 774,
+  solverDictRead: { file: MAIN, symbol: "main",
     contains: 'Dictionary::fromFile("system/solverDict")' },
-  outerDictRead: { file: MAIN, line: 812,
+  outerDictRead: { file: MAIN, symbol: "main",
     contains: 'Dictionary::fromFile("system/outerDict")' },
-  postDictRead: { file: MAIN, line: 816,
+  postDictRead: { file: MAIN, symbol: "main",
     contains: 'Dictionary::fromFile("system/postDict")' },
-  reportsRead: { file: MAIN, line: 890,
+  reportsRead: { file: MAIN, symbol: "main",
     contains: 'controlDict->subDict("reports")' },
-  applicationRead: { file: MAIN, line: 937,
+  applicationRead: { file: MAIN, symbol: "main",
     contains: 'lookupWordOrDefault("application", "choupoSolve")' },
-  thermoBuild: { file: MAIN, line: 192,
+  thermoBuild: { file: MAIN, symbol: "runSimulation",
     contains: "ThermoPackage thermo = ThermoPackageBuilder::build(" },
-  formulationRead: { file: BUILDER, line: 2418,
+  formulationRead: { file: BUILDER,
     contains: 'eq->lookupWord("formulation")' },
-  activityWordRead: { file: BUILDER, line: 2286,
+  activityWordRead: { file: BUILDER,
     contains: 'holder->entryValue("activityModel")' },
   activityLookup: { file: "src/thermo/activityCoefficient/ActivityModel.cpp",
-    line: 85, contains: "registry().find(modelName)" },
+    symbol: "ActivityModel::New", contains: "registry().find(modelName)" },
   activityRefusal: { file: "src/thermo/activityCoefficient/ActivityModel.cpp",
-    line: 87, contains: "throw std::runtime_error(registryRefusal::message(" },
-  componentFile: { file: "src/thermo/Database.cpp", line: 259,
+    symbol: "ActivityModel::New", contains: "throw std::runtime_error(registryRefusal::message(" },
+  componentFile: { file: "src/thermo/Database.cpp", symbol: "Database::componentDict",
     contains: 'p / "constant" / "components" / (name + ".dat")' },
-  componentSealed: { file: "src/thermo/Database.cpp", line: 267,
+  componentSealed: { file: "src/thermo/Database.cpp", symbol: "Database::componentDict",
     contains: "const bool sealed = records::sealed();" },
-  solve: { file: MAIN, line: 289,
+  solve: { file: MAIN, symbol: "runSimulation",
     contains: "int rc = flowsheet.solve(flowsheetDict, thermo, verbosity);" },
-  stateRead: { file: FLOWSHEET, line: 2294,
+  stateRead: { file: FLOWSHEET, symbol: "Flowsheet::solve",
     contains: 'StreamStateIO::readStateDir("0", thermo)' },
-  streamsBlockRefused: { file: FLOWSHEET, line: 2301,
+  streamsBlockRefused: { file: FLOWSHEET, symbol: "Flowsheet::solve",
     contains: 'if (dict->found("streams"))' },
-  completeness: { file: FLOWSHEET, line: 2586,
+  completeness: { file: FLOWSHEET, symbol: "Flowsheet::solve",
     contains: '"Flowsheet: 0/ COMPLETENESS violated BEFORE the "' },
-  completenessMissing: { file: FLOWSHEET, line: 2595,
+  completenessMissing: { file: FLOWSHEET, symbol: "Flowsheet::solve",
     contains: 'msg += "  MISSING  0/"' },
-  planValidate: { file: FLOWSHEET, line: 2680,
+  planValidate: { file: FLOWSHEET, symbol: "Flowsheet::solve",
     contains: "validateSequentialPlan(tears, verbosity, &recycleLoops_)" },
-  declaredOrder: { file: FLOWSHEET, line: 3309,
+  declaredOrder: { file: FLOWSHEET, symbol: "Flowsheet::solve",
     contains: "for (const auto& udict : units)" },
-  unitFactory: { file: FLOWSHEET, line: 1156,
+  unitFactory: { file: FLOWSHEET, symbol: "runUnit",
     contains: "auto unit = UnitOperation::New(utype);" },
-  solverMerge: { file: "src/unitOperations/flowsheet/UnitInputs.cpp", line: 129,
+  solverMerge: { file: "src/unitOperations/flowsheet/UnitInputs.cpp",
     contains: "if (solverDict && solverDict->found(utype))" },
-  solverMergeYields: { file: "src/unitOperations/flowsheet/UnitInputs.cpp",
-    line: 133, contains: "if (!out->found(key))" },
+  solverMergeYields: { file: "src/unitOperations/flowsheet/UnitInputs.cpp", contains: "if (!out->found(key))" },
   flashModelWord: { file: "src/unitOperations/flash/IsothermalFlash.cpp",
-    line: 2160, contains: 'declaredModel != "rachfordRice"' },
+    symbol: "IsothermalFlash::solve", contains: 'declaredModel != "rachfordRice"' },
   flashPressureDims: { file: "src/unitOperations/flash/IsothermalFlash.cpp",
-    line: 2068, contains: 'lookupScalar("P", Dims::pressure)' },
-  stateT: { file: STATE_IO, line: 3161,
+    symbol: "IsothermalFlash::inletEquilibriumOptions", contains: 'lookupScalar("P", Dims::pressure)' },
+  stateT: { file: STATE_IO, symbol: "readStreamState",
     contains: 'lookupScalarOrDefault("T", 0.0, Dims::temperature)' },
-  stateP: { file: STATE_IO, line: 3171,
+  stateP: { file: STATE_IO, symbol: "readStreamState",
     contains: 'lookupScalarOrDefault("P", 0.0, Dims::pressure)' },
-  vfCheck: { file: STATE_IO, line: 3207,
+  vfCheck: { file: STATE_IO, symbol: "readStreamState",
     contains: 'if (d->found("vaporFraction"))' },
-  overSpecified: { file: STATE_IO, line: 3263,
+  overSpecified: { file: STATE_IO, symbol: "readStreamState",
     contains: "OVER-SPECIFIED -- declares T = " },
-  dictComment: { file: DICT, line: 208,
+  dictComment: { file: DICT,
     contains: "src_[pos_+1] == '/'" },
-  dictSubDict: { file: DICT, line: 346,
+  dictSubDict: { file: DICT,
     contains: "parseEntries(*sub, /*topLevel=*/false);" },
-  unitLookup: { file: DICT, line: 460,
+  unitLookup: { file: DICT,
     contains: "units::lookupUnit(suffix)" },
-  unitUnknown: { file: DICT, line: 463,
+  unitUnknown: { file: DICT,
     contains: ": unknown unit suffix '" },
-  unitToSI: { file: DICT, line: 469, contains: "v *= spec->factor;" },
-  dimsCheck: { file: DICT, line: 949,
+  unitToSI: { file: DICT, contains: "v *= spec->factor;" },
+  dimsCheck: { file: DICT,
     contains: "it->second != expectedDims" },
-  unitBar: { file: "src/core/Units.cpp", line: 54,
+  unitBar: { file: "src/core/Units.cpp",
     contains: '{ "bar",     UnitSpec{ bar_to_Pa,   Dims::pressure } }' },
-  unitKmolH: { file: "src/core/Units.cpp", line: 62,
+  unitKmolH: { file: "src/core/Units.cpp",
     contains: '{ "kmol/h",  UnitSpec{ kmol_per_h_to_kmol_per_s' },
-  postChain: { file: MAIN, line: 1549, contains: "pp->run(result)" },
-  reportsRun: { file: MAIN, line: 1612, contains: "runReports(result);" },
-  reportsDir: { file: MAIN, line: 1074,
+  postChain: { file: MAIN, symbol: "main", contains: "pp->run(result)" },
+  reportsRun: { file: MAIN, symbol: "main", contains: "runReports(result);" },
+  reportsDir: { file: MAIN, symbol: "main",
     contains: '(postProc ? "postProcessing" : "reports")' },
-  convergedWrite: { file: MAIN, line: 1614, contains: "writeConverged(result);" },
-  convergedOnlyIfConverged: { file: MAIN, line: 1183,
+  convergedWrite: { file: MAIN, symbol: "main", contains: "writeConverged(result);" },
+  convergedOnlyIfConverged: { file: MAIN, symbol: "main",
     contains: "if (!result.converged) return;" },
-  convergedWipe: { file: MAIN, line: 1187, contains: "fs::remove_all(dir);" },
-  designWrite: { file: MAIN, line: 1615, contains: "writeDesignSheets(result);" },
-  designNone: { file: "src/io/DesignSheetWriter.cpp", line: 183,
+  convergedWipe: { file: MAIN, symbol: "main", contains: "fs::remove_all(dir);" },
+  designWrite: { file: MAIN, symbol: "main", contains: "writeDesignSheets(result);" },
+  designNone: { file: "src/io/DesignSheetWriter.cpp", symbol: "write",
     contains: "if (result.sizings.empty()) return 0;" },
-  resultJson: { file: MAIN, line: 1643,
+  resultJson: { file: MAIN, symbol: "main",
     contains: "emitResultJson(std::cout, result);" },
-  errorPrinted: { file: MAIN, line: 1656,
+  errorPrinted: { file: MAIN,
     contains: 'std::cerr << "\\nERROR: " << e.what()' },
-  guiCho: { file: "gui/src/ui/FlowCanvas.tsx", line: 495,
+  guiCho: { file: "gui/src/ui/FlowCanvas.tsx",
     contains: 'k.endsWith(".cho")' },
-  guiReadme: { file: "gui/src/cases/tutorials.ts", line: 492,
+  guiReadme: { file: "gui/src/cases/tutorials.ts",
     contains: 'entry.readme = files["README.md"]' },
-  guiNoExpected: { file: "gui/src/cases/tutorials.ts", line: 124,
+  guiNoExpected: { file: "gui/src/cases/tutorials.ts",
     contains: '"!../../../tutorials/**/expected"' },
-  guiVerbatim: { file: "gui/src/adapters/WasmAdapter.ts", line: 412,
+  guiVerbatim: { file: "gui/src/adapters/WasmAdapter.ts",
     contains: "if (caseFiles.extraFiles) {" },
 } as const satisfies { [name: string]: Cite };
 

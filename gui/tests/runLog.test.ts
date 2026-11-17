@@ -44,7 +44,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import {
-  CITES, KIND_ORDER, KINDS, MARKERS, RUNS, VERBOSITY, blockLines, classifyLog,
+  CITES, KIND_ORDER, KINDS, MARKERS, RUNS, citeText, VERBOSITY, blockLines, classifyLog,
   exitCodeOf, kindCounts, refusalOf, stripResultBlock, witnessRaw,
   type LogLine, type RunWitness, type Verbosity,
 } from "../src/ui/methods/runLog.js";
@@ -52,27 +52,23 @@ import { RUN_LOG_LIMITS, RUN_LOG_STEPS } from "../src/ui/methods/runLogLesson.js
 import { WEGSTEIN_STEPS } from "../src/ui/methods/wegsteinLesson.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
 import { filesToCaseFiles } from "../src/cases/tutorials.js";
+import { resolveCite } from "./support/engineCite.js";
 import { serialiseCase } from "../src/adapters/WasmAdapter.js";
 
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 // ---- 1. Citations ---------------------------------------------------------------
 
-describe("every file:line the page cites lands on what it claims", () => {
+describe("every engine citation of the page resolves, and its quoted statement is inside its symbol", () => {
   it("found citations at all -- an empty audit is not a passing audit", () => {
     expect(Object.keys(CITES).length).toBeGreaterThan(60);
   });
 
   for (const [name, c] of Object.entries(CITES)) {
-    it(`${name}: ${c.file}:${c.line}`, () => {
-      const path = join(REPO, c.file);
-      expect(existsSync(path), `${c.file} does not exist`).toBe(true);
-      const lines = readFileSync(path, "utf-8").split("\n");
-      expect(c.line, `${c.file} has ${lines.length} lines`)
-        .toBeLessThanOrEqual(lines.length);
-      expect(lines[c.line - 1] ?? "",
-        `${c.file}:${c.line} does not carry ${JSON.stringify(c.contains)}`)
-        .toContain(c.contains);
+    it(`${name}: ${citeText(c)}`, () => {
+      //  Throws a message naming what no longer holds: the file, the symbol
+      //  or anchor, or the quoted fragment that left its scope.
+      resolveCite(REPO, c);
     });
   }
 
