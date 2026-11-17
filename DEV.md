@@ -3647,6 +3647,42 @@ accepts today, and that is a policy call.
 > energy, solute and campaign closures, `--record` refusing an open closure)
 > stays in every mode; so do the licence and standards-write gates.  Target:
 > under 250, never by a quota -- a gate with a real defect behind it stays.
+>
+> **C420, FIRST RESULT (2026-11-17, the evidence is in: 358 rows,
+> `docs/audits/2026-11-17-gate-evidence.tsv`; six Sonnet readers, no gate
+> run).**  THE CRITERION CUTS ALMOST NOTHING, AND THE TARGET WAS WRONG.  Not
+> one of the 358 gates lacks a named origin, and 109 carry evidence of having
+> been red on a later change: deletion by rule 4e (4) is not the remedy, and
+> "under 250 by deletion" was the architect's guess, withdrawn.  What the
+> table shows instead: the gates are 149 959 lines of Python; 287 of them call
+> the engine through their own `subprocess` code, 211 copy a case with their
+> own `copytree`, 243 make their own temporary directory, 187 define their
+> own `run` function, and only 39 import the shared record helper.  By what
+> they assert: 144 hold PHYSICS (60 a number against a source, 84 an identity
+> or a limit; 68 502 lines), 46 are REFUSAL or ANNOUNCEMENT probes (20 979
+> lines), 33 conservation, 24 documentation freshness, 37 catalogue
+> integrity, 38 structure, 9 ratchets, 8 meta, 8 interface, 5 build, 3
+> licence, 3 pinned blocks.  DIAGNOSIS: Choupo does not have too many
+> checks; it has NO TEST KIT.  Each check re-implements "copy a case, change
+> a dict, run a binary, read the result, compare, print the claim", so a
+> change of layout breaks every copy of that plumbing: the 37 red gates of
+> 11-17 were 37 copies of one stale path, not 37 guarantees.  DECIDED: (1)
+> ONE KIT (a `gatekit` module beside the gates): probe copy of a case, dict mutation,
+> engine run with the worktree's own binary, result and golden readers, the
+> claim line, the exit code; a layout change is then repaired in one file.
+> (2) THE 46 REFUSAL PROBES BECOME DATA: one directory per probe (the base
+> case it copies, the edit, the message and exit code expected), walked by
+> one runner that prints one verdict line per probe; a new refusal is then a
+> few lines of data, not a 450-line script.  (3) A PHYSICS gate that only
+> compares a published KPI with a printed number becomes `anchor` rows of
+> its case (the mechanism 31 cases already use), checked by the case walk;
+> one that recomputes independently stays a gate, on the kit.  (4) Nothing
+> of rule 4b, the licence gates or the standards-write guard changes
+> behaviour; they move onto the kit last, each proven by its sabotage arm.
+> ORDER: the kit and five gates ported as the pilot (byte-identical verdict
+> lines, sabotage arms still red), judged before the rest.  The measure
+> reported is lines of gate code and the count of files a layout change
+> touches, not the number of gates.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
