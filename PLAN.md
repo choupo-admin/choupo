@@ -42,6 +42,8 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 
 ## The next days (2026-11-16, agreed with Vitor)
 
+LANDED 2026-11-17: the batch of C413 slice 3, C410 and the C415 pilot (one full sweep; DEV.md 4c, "THE 2026-11-17 BATCH LANDED"). NEXT: the witness start of the interface suite (each case once), the C402 rest, C413's leftovers.
+
 1. TODAY: the batch `batch/2026-11-16` -- water on IAPWS + 24 water pairs refitted, the per-component alpha, C402 fragments and membranes, d2, MHV1/MHV2, Lee-Kesler-Plocker -- ONE full sweep alone on the laptop, moved rows attributed, landed together (CLAUDE.md 4e).
 2. 11-17 to 11-20: CONSOLIDATION FREEZE (C414), no new feature: C413 cases reference the catalogue; C412 test selection by model signature; the gate audit.
 3. From 11-21: the month's items (Jacobs & Krishna, the demonstration path), then fixes, WASM, publish, rehearsal.

@@ -3595,6 +3595,45 @@ accepts today, and that is a policy call.
 > **C417 (Vitor, 2026-11-16: "quero atacar as vias reacionais de quimica organica e inorganica atraves de EduTools com questionarios no fim").**  A COMMISSION; it absorbs C215 (organic reaction classes), C216 (biorefinery reactions) and C218 (reversible vs irreversible, quenching).  The architect's shape: ONE route-card template and ONE quiz component reused by every route.  Each card: the industrial route from feedstock to product; the balanced equations (checked by the engine's element balance); atom economy and E-factor; Delta_r H and K(T) computed from the catalogue; equilibrium conversion against T and P (the lever a student moves); why this reactor and these conditions; by-products, separations, hazards; a link to the Choupo case that runs it.  The quiz ends each card: 5-8 questions, every answer computed or cited, each with its explanation.  First six, where cases or data exist: inorganic -- Haber-Bosch, Ostwald nitric acid, contact sulfuric acid; organic -- methanol synthesis, ethylene oxide to ethylene glycol, cumene to phenol and acetone.  Next: chlor-alkali, Solvay, acetic acid by carbonylation, hydroformylation, nitration, esterification.  Sources to read first: Moulijn, Makkee & van Diepen, Chemical Process Technology; Weissermel & Arpe, Industrial Organic Chemistry; Buchner et al., Industrial Inorganic Chemistry; Greenwood & Earnshaw for the inorganic chemistry.  After the month.
 > **C418 (Vitor, 2026-11-16, areas not yet covered; the architect's ranking).**  Candidates: (1) bioprocess -- a bioreactor with growth, O2 transfer (kLa) and scale-up, and downstream as a chain; (2) wastewater with activated-sludge models (ASM); (3) multiphase reactors (trickle bed, bubble column, slurry); (4) electrochemistry beyond ED (electrolyser C214 W7, fuel cell, battery); (5) freeze-drying, freezing and thermal sterilisation (F0); then furnaces and combustion, polymerisation, LCA and carbon footprint from the balances, leaching.  Books requested from Vitor for each.  After the month, one at a time.
 
+> **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
+> catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
+> equation-of-state root under phiPhi; LR-01 fixed), the C415 pilot
+> (citations by symbol) and the greenAmmoniaPEQ bund wall (4 -> 4.5 m).**
+> ONE full sweep, alone (`bin/runTests -j 10`, 71 min): every one of the 608
+> cases PASSED with mass held on 306 steady cases, elements on 286, energy on
+> 123 (7 pinned) and the closures of 87 time-integrated cases; 37 GATES and
+> 13 interface tests were red.  Cause of about 30 of them: the gate or test
+> read `<case>/constant/components/<x>.dat`, a copy slice 3 had removed; they
+> now read the record the run reads (`case_records.record_path`,
+> `ensure_local`, `copytree`), no assertion weakened.  REAL LOSSES the sweep
+> uncovered, each fixed: (1) slice 3's proof ("no golden moved") is blind to
+> a field no golden prints: flash15_refused_salt_basis_rank lost
+> `aqueousSpeciation` on four salts (restored as `overlayOf` records) and
+> estimatedSpecies01_announced lost `origin estimated` on OH (restored as a
+> `variationOf` record); a key-by-key audit of every deleted copy against
+> the catalogue found no other lost `aqueousSpeciation` or provenance word;
+> ACCEPTED and recorded: `role solute` on H2/N2 in 12 ammonia cases (their
+> goldens passed the sweep, so the key is not reached there), `dissociation`
+> on MgSO4/Na2SO4 (the catalogue derives the same number from
+> `dissociatesTo`).  (2) greenAmmonia03_basicDesign declared the design point
+> of before C410 (V_Bed1..3, D_converter); the four values follow the
+> converged design (D 2.2427 -> 2.24511 m), golden unchanged.  (3) letdown01
+> and letdown02 mirror that plant's converged streams: re-copied and
+> re-recorded, the moved rows in commits 687f9b4b2 and d363483d1.  (4) two
+> app tools read a component record inside the case and would have shown NaN
+> on a referencing case: one resolver in `gui/src/case/caseRecordRead.ts`.
+> (5) ten residual bands re-derived with `golden_bands.py apply` (no value
+> moved); two stale licence pins removed.  After the fixes, NOT a second
+> sweep (no engine source changed since it): the 34 gates re-run 34/0,
+> `--scope` on the five touched cases 9/0 with their closures, `--gui` 50/0,
+> the gate self-test and gates-judge-tracked.  LESSON (the commander's):
+> before a batch's sweep, run the gates whose source names a path a slice
+> deleted, and ask what the slice's own proof cannot see.  OPEN: LR-02..04,
+> CL-06, CL-07, edwards02 (KNOWN-BROKEN), the 63 held copies, an unsealed
+> local record that drops a key inherits it from the catalogue silently and
+> an undeclared shadow skips a dimension check (both registered for C413's
+> next slice).
+
 > **THE 2026-11-16b BATCH LANDED: C413 slices 0-2 and the curation-fit
 > reuse key.**  539 cases reference the catalogue through pins (consumed
 > records plus one `relevant:` set line per scanned registry), 1504 copies
