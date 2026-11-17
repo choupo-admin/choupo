@@ -39,42 +39,26 @@ Flowsheet.cpp disabled and rebuilt -> (b), (c) and (d) FAILED (each ran to
 exit 0 and wrote converged/); reverted.
 
 Exit 1 listing failures."""
-import os
-import shutil
-import subprocess
+import contextlib
 import sys
-import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
-RECYCLE = ROOT / "tutorials" / "steady" / "flowsheets" / "process03_recycle"
-CHAIN = ROOT / "tutorials" / "steady" / "flowsheets" / "process01_reactor_flash"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import gatekit  # noqa: E402
+
+RECYCLE = "tutorials/steady/flowsheets/process03_recycle"
+CHAIN = "tutorials/steady/flowsheets/process01_reactor_flash"
+STRIP = ("expected", "reports", "converged")
 
 failures = []
 
 
-def run(case: Path):
-    env = dict(os.environ, CHOUPO_HOME=str(ROOT))
-    p = subprocess.run([str(SOLVE), "."], cwd=case, env=env,
-                       capture_output=True, text=True, timeout=600)
-    return p.returncode, p.stdout + p.stderr
-
-
-def copy(src: Path, tmp: Path, tag: str) -> Path:
-    case = tmp / tag
-    shutil.copytree(src, case,
-                    ignore=shutil.ignore_patterns("expected", "log.*",
-                                                  "reports", "converged"))
-    return case
-
-
 def edit(path: Path, old: str, new: str):
-    s = path.read_text()
-    if s.count(old) != 1:
+    """The fixture text must occur EXACTLY once; a stale fixture stops the gate."""
+    if path.read_text().count(old) != 1:
         raise SystemExit(f"check_sequential_plan: fixture text not found once"
                          f" in {path}: {old!r} -- fix the GATE")
-    path.write_text(s.replace(old, new))
+    gatekit.edit(path, old, new)
 
 
 def refused(tag: str, rc: int, out: str, case: Path, words):
@@ -88,27 +72,34 @@ def refused(tag: str, rc: int, out: str, case: Path, words):
 
 
 def main() -> int:
-    if not SOLVE.exists():
-        print(f"check_sequential_plan: {SOLVE} missing -- build first")
+    try:
+        solve = gatekit.binary("choupoSolve")
+    except gatekit.GateRefusal as e:
+        print(f"check_sequential_plan: {e}")
         return 1
-    with tempfile.TemporaryDirectory() as td:
-        tmp = Path(td)
 
-        w = copy(RECYCLE, tmp, "witness")
+    def run(case: Path):
+        return gatekit.run(solve, case)
+
+    with contextlib.ExitStack() as stack:
+        def copy(src: str) -> Path:
+            return stack.enter_context(gatekit.probe_copy(src, STRIP))
+
+        w = copy(RECYCLE)
         rc, out = run(w)
         if rc != 0:
             failures.append(f"(a) witness: exit {rc}")
         if not (w / "converged").is_dir():
             failures.append("(a) witness: no converged/ written")
 
-        m = copy(RECYCLE, tmp, "missing")
+        m = copy(RECYCLE)
         edit(m / "system" / "solverDict",
              "tearStreams           ( recycle );", "")
         rc, out = run(m)
         refused("(b) undeclared recycle", rc, out, m,
                 ["MISSING TEAR", "recycle"])
 
-        o = copy(CHAIN, tmp, "order")
+        o = copy(CHAIN)
         fd = o / "system" / "flowsheetDict"
         s = fd.read_text()
         a = s.index("    {\n        name        reactor;")
@@ -124,7 +115,7 @@ def main() -> int:
         rc, out = run(o)
         refused("(c) acyclic, reverse order", rc, out, o, ["INVALID ORDER"])
 
-        f = copy(RECYCLE, tmp, "forward")
+        f = copy(RECYCLE)
         edit(f / "system" / "solverDict",
              "tearStreams           ( recycle );",
              "tearStreams           ( recycle  mixed );")
