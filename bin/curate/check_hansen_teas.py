@@ -114,7 +114,7 @@ DIRS = {"benzene": (.90, .30, .20), "acetone": (.75, .55, .30),
         "ethanol": (.55, .35, .75), "water": (.40, .35, .85)}
 
 
-REAL_TRIPLE_IN_CATALOGUE = ("nHexane",)   # DEV.md 4c C428
+REAL_TRIPLE_IN_CATALOGUE = ("nHexane", "acetone", "nitromethane")   # DEV.md 4c C428: the catalogue records that carry a measured triple
 
 
 def run(case: Path):
@@ -171,11 +171,15 @@ def build_probe(tmp: Path, mags: dict, break_unit=None, partial=None) -> Path:
     #  C428: a catalogue record that now carries a REAL triple (n-hexane) would
     #  add a fifth, non-synthetic row to the probe's table; the probe is about
     #  its own constructed directions, so the real triple is stripped here.
+    #  A local copy without the block would inherit it again (an unsealed
+    #  case's local record backfills from the catalogue: C413's silent
+    #  backfill), so such a component leaves the probe's system instead.
+    tpp = case / "constant" / "thermoPhysPropDict"
+    txt = tpp.read_text()
     for nm in REAL_TRIPLE_IN_CATALOGUE:
         if nm not in DIRS:
-            (case / "constant" / "components" / f"{nm}.dat").write_text(
-                re.sub(r"(?m)^hansen\n\{.*?^\}\n", "",
-                       (STD / f"{nm}.dat").read_text(), flags=re.S))
+            txt = re.sub(r"(?m)^(components\s*\(.*?)\b" + nm + r"\b", r"\1", txt)
+    tpp.write_text(txt)
     return case
 
 
@@ -184,7 +188,21 @@ def main() -> int:
     tmp = Path(tempfile.mkdtemp(prefix="hansen_gate_"))
     try:
         # ---- (a) the honest absence ------------------------------------
-        rc, out = run(CASE)
+        #  Since C428 the catalogue carries real triples (acetone, n-hexane),
+        #  so the shipped ladder case no longer shows the TOTAL absence; the
+        #  arm runs a copy of it with those components removed from its
+        #  system, which is the state it is about.  (A local copy without
+        #  the block would not do: an unsealed case's local record inherits
+        #  a missing block from the catalogue -- the silent backfill of C413.)
+        absent = tmp / "absent"
+        shutil.copytree(CASE, absent)
+        tpp = absent / "constant" / "thermoPhysPropDict"
+        txt = tpp.read_text()
+        for nm in REAL_TRIPLE_IN_CATALOGUE:
+            txt = re.sub(r"(?m)^(components\s*\(.*?)\b" + nm + r"\b", r"\1", txt)
+        tpp.write_text(txt)
+        (absent / "constant" / "propertyManifest").unlink(missing_ok=True)
+        rc, out = run(absent)
         if rc != 0:
             fails.append(f"the shipped ladder case did not run (exit {rc})")
         elif "no component" not in out or "hansen { dD; dP; dH; Tref; }" not in out:

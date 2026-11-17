@@ -377,7 +377,7 @@ int SolubilityParameter::run(const DictPtr& dict,
                      " target with it (`hansenMixture`);\n"
                      "  what is absent is the DATA, not the capability."
                      "  Hansen parameters are a\n"
-                     "  separate dataset this catalogue does not hold, and"
+                     "  separate dataset, curated per substance (C428), and"
                      " none is invented here.\n";
         diag_["n_hansen"] = 0;
     }
