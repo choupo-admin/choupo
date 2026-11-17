@@ -34,3 +34,6 @@ boundary global                 Q_boundary_kW    -928.001272355   1e-4
 boundary global                 H_products_kW    410.592350277    1e-4
 source  condenser              liquidDensity    pureFluid.IF97   exact
 source  condenser              liquidViscosity  pureFluid.IF97   exact
+boundary global                 noBoundary       false            exact
+boundary global                 residual_denom_kW 928.001272355    1e-4
+source  condenser              liquidThermalConductivity pureFluid.IF97   exact

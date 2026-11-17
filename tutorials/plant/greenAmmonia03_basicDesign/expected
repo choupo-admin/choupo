@@ -1270,3 +1270,9 @@ source  ShellTubeHX:_unit_'N2Cooler'_(design) liquidViscosity  pureFluid.IF97   
 source  ShellTubeHX:_unit_'WaterCooler'_(design) liquidDensity    pureFluid.IF97   exact
 source  ShellTubeHX:_unit_'WaterCooler'_(design) liquidViscosity  pureFluid.IF97   exact
 source  storage_'NH3Storage'   liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+boundary global                 noBoundary       false            exact
+boundary global                 residual_denom_kW 85297.9976572    1e-4
+source  ShellTubeHX:_unit_'Aftercooler'_(design) liquidThermalConductivity pureFluid.IF97   exact
+source  ShellTubeHX:_unit_'Intercooler'_(design) liquidThermalConductivity pureFluid.IF97   exact
+source  ShellTubeHX:_unit_'N2Cooler'_(design) liquidThermalConductivity pureFluid.IF97   exact
+source  ShellTubeHX:_unit_'WaterCooler'_(design) liquidThermalConductivity pureFluid.IF97   exact

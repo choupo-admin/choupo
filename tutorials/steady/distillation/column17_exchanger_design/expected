@@ -208,3 +208,7 @@ source  ShellTubeHX:_column_'column17'_condenser_(design) liquidViscosity  Andra
 source  ShellTubeHX:_column_'column17'_reboiler_(design) liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
 source  ShellTubeHX:_column_'column17'_reboiler_(design) liquidViscosity  Andrade/GrunbergNissan exact
 source  ShellTubeHX:_column_'column17'_reboiler_(design) surfaceTension   BrockBird/Butler exact
+boundary global                 noBoundary       false            exact
+boundary global                 residual_denom_kW 1994.79835063    1e-4
+source  ShellTubeHX:_column_'column17'_condenser_(design) liquidThermalConductivity SatoRiedel/Li,pureFluid.IF97 exact
+source  ShellTubeHX:_column_'column17'_reboiler_(design) liquidThermalConductivity SatoRiedel/Li    exact

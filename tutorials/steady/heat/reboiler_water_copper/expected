@@ -30,3 +30,6 @@ boundary global                 H_products_kW    319.134064176    1e-4
 source  reboiler               liquidDensity    pureFluid.IF97   exact
 source  reboiler               liquidViscosity  pureFluid.IF97   exact
 source  reboiler               surfaceTension   pureFluid.IF97   exact
+boundary global                 noBoundary       false            exact
+boundary global                 residual_denom_kW 111.836570636    1e-4
+source  reboiler               liquidThermalConductivity pureFluid.IF97   exact

@@ -48,3 +48,5 @@ boundary global                 H_products_kW    11660.2416486    1e-4
 kpi     hx                     H_closure_gap_kW -2.61154150394e-06 abs:1.888e-05
 source  hx                     liquidDensity    pureFluid.IF97   exact
 source  hx                     liquidViscosity  pureFluid.IF97   exact
+boundary global                 noBoundary       false            exact
+source  hx                     liquidThermalConductivity pureFluid.IF97   exact
