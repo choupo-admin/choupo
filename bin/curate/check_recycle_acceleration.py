@@ -49,6 +49,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 WITNESS = ROOT / "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue"
@@ -163,7 +167,7 @@ def run_case(case_src, solver_word, tag):
     import os
     with tempfile.TemporaryDirectory() as td:
         dst = Path(td) / "c"
-        shutil.copytree(case_src, dst, ignore=shutil.ignore_patterns("converged", "iterations", "reports", "design", "log.*"))
+        case_records.copytree(case_src, dst, ignore=shutil.ignore_patterns("converged", "iterations", "reports", "design", "log.*"))
         sd = dst / "system/solverDict"
         txt = sd.read_text()
         if re.search(r"^\s*recycleSolver\s+\w+\s*;", txt, re.M):
