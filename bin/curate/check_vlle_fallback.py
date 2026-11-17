@@ -184,6 +184,9 @@ import subprocess
 import sys
 import tempfile
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import case_records  # noqa: E402
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 WITNESS = "tutorials/steady/flash/vlle04_two_liquids_decanter"
 UNIT = "decanter01"
@@ -377,7 +380,15 @@ def main() -> int:
 
         fx = pathlib.Path(td) / "vlle03_datum"
         shutil.copytree(ROOT / WITNESS3, fx, ignore=ignore)
-        for dat in sorted((fx / "constant" / "components").glob("comp*.dat")):
+        #  the witness references the catalogue: each component's record is put in the
+        #  copy (declared as the variation it is, same species) and the pins dropped
+        case_records.unpin(fx)
+        for nm in ("compA", "compB", "compC"):
+            dat = case_records.ensure_local(fx, f"components/{nm}.dat")
+            dat.write_text(re.sub(
+                r"(?m)^(name\s+%s;[^\n]*\n)" % nm,
+                r'\1variationOf %s;\nvariationReason "fixture: adds an invented formation datum";\n' % nm,
+                dat.read_text(), count=1))
             with dat.open("a") as f:
                 f.write("\n// FIXTURE (check_vlle_fallback arm (e2)): an "
                         "invented datum so the energy report can run.\n"
