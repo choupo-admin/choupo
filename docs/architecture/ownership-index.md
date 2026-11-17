@@ -109,7 +109,7 @@ Legend: **Owner** = canonical home of the logic/representation ·
 - Prod → Cons: authored `0/<stream>` + solver results → `converged/<stream>`, GUI, reports, `bin/choupo-drill`
 - Never: stream values inside `flowsheetDict` (`streams{}` refused); two competing material forms on one inlet; a writer emitting a form the reader refuses; a second derivation of where a state file lives (a stream sits at the LOWEST level containing every ENDPOINT of it — 2026-09-07); moving or ignoring a misplaced file in silence
 - Contract: `docs/architecture/stream-state-architecture.md`; `docs/design/a-stream-belongs-to-the-graph-that-contains-both-ends.md`
-- Witness: `recycleFlowsheet` · Gates: `check_material_wrapper`, `check_stream_transport_closure`, `check_sector_hierarchy`, `check_drill_in`
+- Witness: `recycleFlowsheet` · Gates: `check_aqueous_inlet`, `check_stream_transport_closure`, `check_sector_hierarchy`, `check_drill_in`
 
 **S2 — Speciation attachment (THE TWO BASES) & `phases{}` decomposition**
 - Owner: `src/streams/SpeciationBlock.cpp` (block); post-solve pass + `phases{}` reader
@@ -123,7 +123,7 @@ Legend: **Owner** = canonical home of the logic/representation ·
 - Prod → Cons: lab sheet in `0/<stream>` (never rewritten) → `converged/` `calculated{analysisReconciliation, conservedInventory}` → reports only
 - Never: reconciling into the measurement; a silent adjustment; a built-in uncertainty table (`genericWaterAnalysis-v1` refused); pH adjustment (other side of the boundary); any iterative density at all (`provenance iterative;` REFUSED -- no composition-dependent volume closure exists; the direct closure is `derivedDiluteVolume`, both terms recorded); an iteration whose update is independent of the iterate (the constant-map ceremony, rejected 2026-08-10)
 - Contract: `docs/design/aqueous-analysis-inlet-scope.md` §8–9
-- Witness: `aqueousAnalysisInlet` · Gates: `check_aqueous_analysis`, `check_aqueous_reconciliation`, `check_aqueous_qualifier`, `check_derived_density`, `check_volumetric_rung1`
+- Witness: `aqueousAnalysisInlet` · Gates: `check_aqueous_inlet`, `check_aqueous_reconciliation`, `check_derived_density`, `check_volumetric_rung1`
 
 ## Solvers & flowsheet
 
@@ -183,7 +183,7 @@ Legend: **Owner** = canonical home of the logic/representation ·
 - Prod → Cons: `system/postDict` → `design/`, `economics/`, `reports/pinch/`
 - Never: the pinch pass rewriting the network or saying "optimal"; costing without a designed equipment
 - Contract: `docs/design/pinch-programme-scope.md`
-- Witness: `designEconomics` · Gates: `check_pinch_p1`, `check_pinch_p2`, `check_economics_honesty`
+- Witness: `designEconomics` · Gates: `check_pinch`, `check_economics_honesty`
 
 ## Data & verification machinery
 

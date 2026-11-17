@@ -81,13 +81,23 @@
 #  the same commit; when unsure, SERIAL.
 # =============================================================================
 
+#  NIGHTLY lines (2026-11-17, DEV.md 4c C419): `NIGHTLY | - | argv | reason`.
+#  A gate named here does NOT run in the default sweep, --gui, --fast, --scope
+#  or --witnesses; each run prints it `DEFERRED` and counts it in the tally.
+#  `bin/runTests --nightly` (CI's full tier, a release) runs it at its site, in
+#  the lane its PRE line gives it.  Candidates: a gate that tests gates, or
+#  re-proves what did not change.  The only list; runTests nightly_set reads it.
+NIGHTLY | - | bin/curate/check_regressed_pairs.py     | re-runs every regressed fit (about 5 minutes on a pool of eight): the catalogue records change rarely
+NIGHTLY | - | bin/curate/check_gate_selftest.py       | tests the gates by sabotage (a gate that tests gates); minutes of builds
+NIGHTLY | - | bin/curate/check_gates_judge_tracked.py | re-proves that the gates read the tracked tree, not the disk; the claim does not move with a case or a record
+
 # ---- CASE -----------------------------------------------------------------------
 CASE | SERIAL | tutorials/props/adsorption/isotherm02_fit_jaschik | writes data/local/adsorption/equilibria/zeolite13X/CO2.dat (its promotable fit), outside its own directory
 
 # ---- PRE ----------------------------------------------------------------------
 PRE  | PAR    | bin/curate/check_doctrine.py                       | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_readme_capabilities.py            | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
-PRE  | ISO    | bin/curate/check_material_wrapper.py               | ISO (private slot tree; measured: writes tutorials/steady/flash/analysis01_water_analysis_inlet/converged (+27 more))
+PRE  | SERIAL | bin/curate/check_aqueous_inlet.py                      | merged (DEV.md 4c C419) from material_wrapper, aqueous_analysis, aqueous_qualifier (the last had no lane: it ran in the operational-memory loop); lane = the strictest of the former lanes (ISO, ISO, unlisted = SERIAL)
 PRE  | ISO    | bin/curate/check_mean_ionic.py                     | ISO (private slot tree; measured: writes tutorials/props/electrolyte/pitzer_seawater_verify/reduction_nacl.csv (+1 more))
 PRE  | PAR    | bin/curate/check_witness_tier.py                   | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_fastset.py                        | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool (re-traced alone: its first exit 1 was two untracked files this sweep had left in bin/)
@@ -121,11 +131,10 @@ PRE  | PAR    | bin/curate/check_seal_verdict.py                   | traced: wri
 PRE  | ISO*2  | bin/curate/check_cycle_css.py                      | ISO (private slot tree; measured: writes 0 (+392 more))
 PRE  | ISO    | bin/curate/check_electrolyte_sidecars.py           | ISO (private slot tree; measured: writes acidulation_davies.csv (+4 more))
 PRE  | ISO    | bin/curate/check_restricted_network.py             | ISO (private slot tree; measured: writes rainwater_10C.csv (+3 more))
-PRE  | ISO    | bin/curate/check_pinch_p1.py                       | ISO (private slot tree; measured: writes reports (+4 more))
+PRE  | SERIAL | bin/curate/check_pinch.py                              | merged (DEV.md 4c C419) from pinch_p1, pinch_p2, pinch_utility; lane = the strictest of the former lanes (ISO, ISO)
 PRE  | PAR    | bin/curate/check_cooling_tower.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_reactor_limits.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/check_batch_dryer.py                    | writes trajectory.csv
-PRE  | ISO    | bin/curate/check_pinch_p2.py                       | ISO (private slot tree; measured: writes reports (+4 more))
 PRE  | ISO    | bin/curate/check_pswing.py                         | ISO (private slot tree; measured: writes 0 (+194 more))
 PRE  | PAR    | bin/curate/check_basis_spike.py                    | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_model_boundary_ledger.py          | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
@@ -170,7 +179,7 @@ PRE  | ISO    | bin/curate/check_caveat_surface.py                 | ISO (privat
 PRE  | SERIAL | bin/curate/check_advisory_attribution.py           | writes build/advisoryPromotionProbe (+38 more)
 PRE  | PAR    | bin/curate/check_bjerrum_prose.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_process_prose.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
-PRE  | PAR    | bin/curate/check_guide_menu.py                     | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_guides_static.py                      | merged (DEV.md 4c C419) from guide_anchors, guide_environments, guide_menu, guide_paths, guide_pdf_version, curator_parity; lane = the strictest of the former lanes (PAR, PAR, PAR, PAR, PAR, PAR)
 PRE  | PAR    | bin/curate/check_rules_of_thumb.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO    | bin/curate/check_shortcut_column_refusals.py       | ISO (private slot tree; measured: writes tutorials/steady/distillation/shortcut01_benzene_toluene/converged (+12 more))
 PRE  | ISO*2  | bin/curate/check_diafiltration.py                  | ISO (private slot tree; measured: writes tutorials/batch/membrane/diafilter01_nf_desalting/.tmp_10 (+560 more))
@@ -179,7 +188,7 @@ PRE  | PAR    | bin/curate/check_convective_dryer.py               | traced: wri
 PRE  | PAR    | bin/curate/check_evaporative_dryer.py              | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_spray_dryer_solvents.py           | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO    | bin/curate/check_quasi_steady.py                   | ISO (private slot tree; measured: writes balanceTrajectory.csv (+2 more))
-PRE  | ISO    | bin/curate/check_time_state_layout.py              | ISO (private slot tree; measured: writes balanceTrajectory.csv (+8 more))
+PRE  | ISO    | bin/curate/check_time_integrated_layout.py             | merged (DEV.md 4c C419) from time_integrated, time_state_layout; lane = the strictest of the former lanes (ISO, PAR)
 PRE  | ISO    | bin/curate/check_uf_gel.py                         | ISO (private slot tree; measured: writes balanceTrajectory.csv (+2 more))
 PRE  | ISO    | bin/curate/check_sdem.py                           | ISO (private slot tree; measured: writes tutorials/steady/membranes/membrane12_sdem_nf270_nacl_traces/converged (+27 more))
 PRE  | ISO    | bin/curate/check_polarisation_coupling.py          | ISO (private slot tree; measured: writes tutorials/props/membrane/polarisation01_geraldes_afonso_table1/postProcessing (+44 more))
@@ -189,13 +198,11 @@ PRE  | ISO    | bin/curate/check_spiral_array.py                   | ISO (privat
 PRE  | ISO    | bin/curate/check_constant_rejection.py             | ISO (private slot tree; measured: writes tutorials/steady/membranes/membrane23_constant_rejection_nf8040/converged (+13 more))
 PRE  | PAR    | bin/curate/check_ion_diffusivity_temperature.py    | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO    | bin/curate/check_pore_solver.py                    | ISO (private slot tree; measured: writes tutorials/steady/membranes/membrane20_dspmde_pore_finite_difference/converged (+25 more))
-PRE  | PAR    | bin/curate/check_nanofiltran_reference.py          | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
-PRE  | PAR    | bin/curate/check_nanofiltran_paper.py              | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_nanofiltran_as_received.py            | merged (DEV.md 4c C419) from nanofiltran_paper, nanofiltran_reference; lane = the strictest of the former lanes (PAR, PAR)
 PRE  | PAR    | bin/curate/check_pore_partition.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/check_postprocessing.py                 | writes data/local/adsorption/equilibria/zeolite13X/CO2.dat
 PRE  | ISO    | bin/curate/check_ed_stack.py                       | ISO (private slot tree; measured: writes tutorials/steady/electrodialysis/ed01_nacl_desalination/converged (+89 more))
 PRE  | ISO*3  | bin/curate/check_ed_batch.py                       | ISO (private slot tree; measured: writes tutorials/batch/electrodialysis/edbatch01_constant_current/.tmp_100 (+635 more))
-PRE  | PAR    | bin/curate/check_time_integrated.py                | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO    | bin/curate/check_block_tridiagonal.py              | ISO (private slot tree; measured: writes tutorials/steady/distillation/column02_simultaneous/converged (+17 more))
 PRE  | ISO    | bin/curate/check_ode_block_structure.py            | ISO (private slot tree; measured: writes 0 (+94 more))
 PRE  | PAR    | bin/curate/check_rodas4_order.py                   | writes only a temp dir (probe binary)
@@ -228,11 +235,9 @@ PRE  | SERIAL | bin/curate/check_reference_rung.py                 | writes buil
 PRE  | PAR    | bin/curate/check_explain_property.py               | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO    | bin/curate/check_seal_growth.py                    | ISO (private slot tree; measured: writes base.csv (+1 more))
 PRE  | PAR    | bin/curate/check_exergy.py                         | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
-PRE  | PAR    | bin/curate/check_glob_raw.py                       | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_gui_static.py                         | merged (DEV.md 4c C419) from glob_raw, viewport_units; lane = the strictest of the former lanes (PAR, PAR)
 PRE  | PAR    | bin/curate/check_unit_families.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO    | bin/curate/check_intro_trace.py                    | ISO (private slot tree; measured: writes tutorials/steady/flash/adiabaticFlash01_benzene_toluene/converged (+26 more))
-PRE  | PAR    | bin/curate/check_guide_anchors.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
-PRE  | PAR    | bin/curate/check_viewport_units.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_mixing_ledger.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/check_ice_freezing.py                   | writes build/linux64Gcc/freezingProbe
 PRE  | ISO    | bin/curate/check_phase_split_scan.py               | ISO (private slot tree; measured: writes freeze.csv (+1 more))
@@ -245,7 +250,7 @@ PRE  | PAR    | bin/curate/check_duty_inversion.py                 | traced: wri
 PRE  | ISO    | bin/curate/check_marcilla_lls.py                   | ISO (private slot tree; measured: writes tutorials/steady/flash/marcilla01_lls_tie_triangle/converged (+13 more))
 PRE  | PAR    | bin/curate/check_convergence_residual.py           | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_case_tiers.py                     | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
-PRE  | PAR    | bin/curate/check_first_path_agrees.py              | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_way_in.py                             | merged (DEV.md 4c C419) from start_here, first_path_agrees; lane = the strictest of the former lanes (PAR, PAR)
 PRE  | SERIAL | bin/curate/check_gibbs_duhem.py                    | writes build/linux64Gcc/gdProbe
 PRE  | ISO    | bin/curate/check_gibbs_solid_phase.py              | ISO (private slot tree; measured: writes tutorials/steady/gibbs/gibbs02_steam_reforming/converged (+23 more))
 PRE  | SERIAL | bin/curate/check_ion_gibbs_duhem.py                | writes build/linux64Gcc/ionGdProbe
@@ -256,7 +261,6 @@ PRE  | PAR    | bin/curate/check_seal_schema.py                    | traced: wri
 PRE  | ISO    | bin/curate/check_temporal_utilities.py             | ISO (private slot tree; measured: writes reports (+4 more))
 PRE  | SERIAL | bin/curate/check_pcsaft_association.py             | builds the gibbsAuditProbe into build/ (gibbs_audit_probe.py) -- caught by the leak scan in the 2026-11-16b sweep; was PAR: traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_doc_references.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
-PRE  | PAR    | bin/curate/check_start_here.py                     | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/gen_tutorials_guide.py --check          | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/gen_sdem_validation.py --check          | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/gen_ammonia_stage_comparison.py --check | writes designspec_history.csv (+12 more)
@@ -265,8 +269,6 @@ PRE  | PAR    | bin/curate/check_theory_citations.py               | traced: wri
 PRE  | SERIAL | bin/curate/check_compile_clean.py                  | has its own pool of workers: it runs alone, with the machine
 PRE  | ISO    | bin/curate/check_lumped_cp_note.py                 | ISO (private slot tree; measured: writes tutorials/steady/absorption/absorber01_NH3_water/converged (+47 more))
 PRE  | ISO    | bin/curate/check_kremser_inventory.py              | ISO (private slot tree; measured: writes tutorials/steady/absorption/absorber01_NH3_water/converged (+35 more))
-PRE  | PAR    | bin/curate/check_guide_environments.py             | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
-PRE  | PAR    | bin/curate/check_guide_paths.py                    | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/regen-llm-docs --check                         | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_schema_coverage.py                | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_default_reports.py                | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
@@ -309,7 +311,6 @@ PRE  | PAR    | bin/curate/check_sealed_corpus.py                  | traced: wri
 PRE  | SERIAL | bin/curate/check_basis_rank.py                     | writes tutorials/steady/flash/flash14_calcite_carbonate_basis/converged (+12 more)
 PRE  | ISO    | bin/curate/check_two_liquids.py                    | ISO (private slot tree; measured: writes tutorials/steady/flash/flash17_two_liquids_reactive/converged (+13 more))
 PRE  | ISO    | bin/curate/check_stream_basis.py                   | ISO (private slot tree; measured: writes tutorials/steady/flash/flash18_water_analysis_basis/converged (+12 more))
-PRE  | ISO    | bin/curate/check_aqueous_analysis.py               | ISO (private slot tree; measured: writes tutorials/steady/flash/analysis01_water_analysis_inlet/converged (+12 more))
 PRE  | ISO    | bin/curate/check_aqueous_reconciliation.py         | ISO (private slot tree; measured: writes tutorials/steady/flash/analysis02_weighted_least_squares/converged (+12 more))
 PRE  | PAR    | bin/curate/check_element_balance.py                | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO    | bin/curate/check_ctrl_balance.py                   | ISO (private slot tree; measured: writes balanceTrajectory.csv (+124 more))
@@ -325,9 +326,7 @@ PRE  | PAR    | bin/curate/check_validation_subset.py              | traced: wri
 PRE  | SERIAL | bin/curate/check_overlay_aad_pinned.py             | writes tutorials/props/compare/acetone01_ipa_water_azeotrope/exp_luyben2011_1atm.csv (+277 more)
 PRE  | PAR    | bin/curate/props_ops_reference.py --check          | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/guide_version.py --check                | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
-PRE  | PAR    | bin/curate/check_guide_pdf_version.py              | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/check_guide_pdf_fresh.py                | writes /home/user/choupo/.git/worktrees/agent-aee4b36c000520b85/index (+1 more)
-PRE  | PAR    | bin/curate/check_curator_parity.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/banner_version.py --check               | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_adsorption_tree.py                | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_h_surface.py                      | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool

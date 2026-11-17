@@ -177,10 +177,10 @@ jobs:
           mkdir -p "$RUNNER_TEMP/ci-out"
           bin/runTests --fast 2>&1 | tee "$RUNNER_TEMP/ci-out/runTests-fast.log"
 
-      - name: bin/runTests (full sweep)
+      - name: bin/runTests --nightly (full sweep + nightly tier)
         run: |
           mkdir -p "$RUNNER_TEMP/ci-out"
-          bin/runTests 2>&1 | tee "$RUNNER_TEMP/ci-out/runTests-full.log"
+          bin/runTests --nightly 2>&1 | tee "$RUNNER_TEMP/ci-out/runTests-full.log"
 
       - name: Verdict against the pinned platform divergences
         run: python3 .github/scripts/ci-full-verdict.py "$RUNNER_TEMP/ci-out/runTests-full.log"

@@ -188,7 +188,7 @@ export function canonicalName(token: string): string {
 //  failure appears only in `vite build`, which is the site.  It cost three
 //  blocked publishes on 2026-08-31; same shape as the WASM-dialect
 //  incident (CLAUDE.md §6): a green suite is not evidence about the site.
-//  Gate: check_glob_raw.
+//  Gate: check_gui_static (arm check_glob_raw).
 const MIXTURE_STEMS = new Set(
   Object.keys(import.meta.glob("../../../data/standards/mixtures/*.dat", {
     query: "?raw", import: "default", eager: true,

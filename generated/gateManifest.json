@@ -36,20 +36,10 @@
       "claim": null,
       "seconds": 0.2
     },
-    "check_aqueous_analysis": {
-      "exit": 0,
-      "claim": "check_aqueous_analysis: OK -- the analysis inlet resolves through its three separately recorded layers (measurement in 0/, reconciled inventory in converged/ under calculated{}, equilibrium in the answer); the authored file is byte-identical after the run; the ion balance recomputed here from the authored mg/L (with the `as CaCO3` surrogate) agrees with the engine's, is non-zero before, zero after, and the charge the listed adjustments move equals the residue they cancel; eight refusals fire BY NAME (no density route, iterative (REFUSED outright -- no composition-dependent volume closure exists; the honest direct closure is derivedDiluteVolume, gate check_derived_density), correction over the limit, pH as the balancing variable, weightedLeastSquares without an enforce list, a sigma limit on a single-species rule, two material forms, no rule on a non-closing analysis) and a closing analysis passes through ANNOUNCED; a plain componentMolarFlows stream produces no record at all.  NOT CHECKED: whether the reconciled water is RIGHT (absorbing a residue into one ion is a convention, not a measurement), and whether the carried uncertainties are USED -- A1 only records them.",
-      "seconds": 0.3
-    },
     "check_aqueous_navigation": {
       "exit": 0,
       "claim": null,
       "seconds": 0.0
-    },
-    "check_aqueous_qualifier": {
-      "exit": 0,
-      "claim": "check_aqueous_qualifier: OK -- the declared case preserves its qualifiers as data (block default + every measured row, no inline row comments); an unresolved analyte refuses naming both remedies; per-row overrides resolve to the identical answer; total, freeIon and an unknown word each refuse naming their reason.  NOT COVERED: total/freeIon SEMANTICS (none exist yet, by ruling -- Q4/Q5 must be rewritten when a slice defines them), the reconciliation arithmetic (its own gates), and whether `dissolved` is true of a given sheet (the author's declaration, which is the point).",
-      "seconds": 0.2
     },
     "check_aqueous_reconciliation": {
       "exit": 0,
@@ -205,11 +195,6 @@
       "exit": 0,
       "claim": null,
       "seconds": 3.8
-    },
-    "check_curator_parity": {
-      "exit": 0,
-      "claim": "check_curator_parity: OK -- 1 curator named in BOTH docs/preamble.tex and AUTHORS, each with a stated scope, and none of them in \\manualauthors (the macro that feeds every guide's copyright line); 1 EduTool(s) declare a curator on the tool ITSELF and each agrees with AUTHORS in both directions; the 2 guide author lists carried by \\manualauthors agree name for name with AUTHORS' own sections.  NOT CHECKED: whether consent was given (a fact outside the tree, recorded in AUTHORS and verifiable by no gate) and whether a scope string is true of the section it names.",
-      "seconds": 0.0
     },
     "check_cycle_css": {
       "exit": 0,
@@ -436,11 +421,6 @@
       "claim": "check_feed_thermal_state: OK -- a distillation column takes its feed's thermal state from the STREAM, resolving it where the stream leaves it unpinned, and REFUSES an `operation.feedQuality` that contradicts it, naming both numbers and both remedies; an agreeing feedQuality passes silently and a case with none runs; neither duty site prices the distillate at the top tray's temperature instead of the one it publishes; and the flagship column01_benzene_toluene closes its plant-boundary first law at or below 1e-6 kW, read from the engine's own report; a feed that resolves single-phase VAPOUR is not read as a saturated liquid, in the single-feed branch and in the `feeds ( ... )` multi-feed branch, which refuses a contradicting `quality` naming the resolved state and prices a two-phase and a vapour feed as the energy report does (H_products - H_feeds = Q_reboiler + Q_condenser to 1e-6 kW); and the full MESH's stage energy rows price every feed by its own resolution, never the merged blend (source arm (j)), and two feeds sharing a stage are priced as two terms under `simultaneous` and `fullMESH` (output arm (k)).  SCANNED: fixture cases written by this gate (six single-feed variants, four multi-feed) and src/unitOperations/distillation/DistillationColumn.cpp.  NOT CHECKED: the plant boundary of a multi-feed column (the report drops its duties as an internal exchanger's); an inline `feeds` entry on the single-feed branch; whether a DECLARED feed state is true of the feed; and the reactive distillate temperature, which is knowingly the top tray's and says so.",
       "seconds": 0.6
     },
-    "check_first_path_agrees": {
-      "exit": 0,
-      "claim": "check_first_path_agrees: OK -- all 9 cases the written curriculum (docs/start-here.md) teaches exist, carry a README.md, and declare `tier tutorial;`, so the app's \"start here: the first path\" folder contains the whole of it; the document's own announced count matches the entries found, so a silently-empty parse cannot pass.  NOT CHECKED: the ORDER (the folder is a SET and says so; a declared order is a deferred case-format decision), whether any case suits its position (a reading judgement), and the welcome cards (gui/tests/firstPath.test.ts owns that claim -- a second home for it is the defect this gate exists to prevent).",
-      "seconds": 0.0
-    },
     "check_fit_verdict_channel": {
       "exit": 0,
       "claim": "check_fit_verdict_channel: OK -- 4 fit operation(s) across 3 witness(es) publish a curation verdict; for each one the RESULT JSON and the CURATION DOSSIER carry the SAME word, and the CONSOLE mentions it (mentions, not matches: the two op families print the verdict in two different shapes -- a `VERDICT` heading vs prose -- which is recorded in this gate rather than papered over); every verdict carries the band it was judged against (or states in words that none was declared); both polarities are exercised (validated, validationRefused); every published verdict is pinned by a `verdict` row in its case's golden; and all 3 op(s) that call CurationDossier::verdictOf publish a `curation()` object, so an op that decides in silence fails here rather than going unnoticed.  (f) every declared band is held to its statistic's unit (`percent` vs aad_heldout_pct [%]; `points` vs heldOut_AAD_pct [points]); a band in `points` against a relative statistic, a band with no unit word, the membrane band in `percent` against its points statistic, and a band on a statistic mixing rejection points and flux per cent each REFUSE by name, membrane24's band in `points` runs to its pinned verdict, and every op class that calls verdictOf calls requireBandInUnitOf.  (g) 8 fitted pair parameter(s) publish exactly the unit their activity model's pairParameterUnits() declares (read from the model source), none where it declares none.  NOT CHECKED: whether any verdict is RIGHT (the engine decides it from the case's own declared band -- this gate checks only that every sink reports the SAME one), and whether the GUI renders it (gui/tests owns that; no browser runs here).",
@@ -486,11 +466,6 @@
       "claim": null,
       "seconds": 0.0
     },
-    "check_glob_raw": {
-      "exit": 0,
-      "claim": "check_glob_raw: OK -- 18 source file(s) call import.meta.glob; every glob over a non-JavaScript pattern asks for it raw, so rollup receives strings and never tries to parse a .dat as JavaScript.  The probe (the exact construct that blocked three site publishes on 2026-08-31) is still rejected.  NOT CHECKED: this is a SOURCE scan, not a build -- it cannot see any OTHER way to break `vite build`, and it does not run rollup.",
-      "seconds": 0.0
-    },
     "check_glossary_bans": {
       "exit": 0,
       "claim": "check_glossary_bans: OK -- 58431 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 62896 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
@@ -501,35 +476,10 @@
       "claim": "[check_groups] OK -- every enforced compound declares its groups.  NOT ENFORCED, and counted rather than hidden: 91 record(s) carry `reviewStatus interim` and no groups block, because the databank they were imported from does not supply group assignments and this project does not derive them from structure.  Each becomes enforced the moment it is marked reviewed.",
       "seconds": 0.2
     },
-    "check_guide_anchors": {
-      "exit": 0,
-      "claim": "check_guide_anchors: OK -- all 271 guide anchor(s) the GUI links to resolve to a real \\label (OP_DEST 29 into per-entry guide, PROPS_DEST 5 into propsGuide, PROPS_MODEL_DEST 69 into per-entry guide, SLOT_MODEL_DEST 47 into per-entry guide, THEORY_DEST 64 into theoryGuide, op:<type> fallback 57 into propsGuide).  NOT CHECKED, and deliberately: whether a LIVE anchor is the RIGHT one.  That is the defect this gate was written after -- `adiabaticFlash` pointed at `ch:flash`, a label that exists, on a section titled \"Isothermal flash\" -- and every mechanical form of the check accuses innocent umbrella sections, so the judgement is written beside the entries instead.",
-      "seconds": 0.0
-    },
-    "check_guide_environments": {
-      "exit": 0,
-      "claim": "check_guide_environments: OK -- 4761 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
-      "seconds": 0.1
-    },
-    "check_guide_menu": {
-      "exit": 0,
-      "claim": "check_guide_menu: OK -- all 8 guide(s) in docs/Makefile's DOCS (userGuide, developerGuide, theoryGuide, propsGuide, eduToolsGuide, designGuide, explorerGuide, tutorialsGuide) reach the Help menu, which MAPS the generated list rather than naming any of them, and GuideName is derived from the same line.  NOT CHECKED: that a browser paints the items, that each PDF exists (copyDocs warns, buildSite refuses), or the LANDING page, which links two of eight by editorial choice.",
-      "seconds": 0.0
-    },
-    "check_guide_paths": {
-      "exit": 0,
-      "claim": "check_guide_paths: OK -- 1449 path citations across the .tex manuals all resolve (9 allowed as paths the reader is told to create).  NOT checked: whether the PROSE about a path is true, any NUMBER stated in a manual, anything outside docs/*.tex, or run OUTPUTS (log/, converged/, reports/ ...), which a clean clone does not have.",
-      "seconds": 0.2
-    },
     "check_guide_pdf_fresh": {
       "exit": 0,
       "claim": "check_guide_pdf_fresh: OK -- 8 guide PDF(s) are renders of the sources now in the tree (freshness by git ancestry over each guide's own .tex plus everything it \\inputs, plus preamble/version), and all 8 tracked top-level docs/*.pdf are guides that docs/Makefile builds.  NOT checked: that a PDF dirty beside a dirty source was really rebuilt from it, that any render is CORRECT (that is the compile), the 7 PDF(s) under docs/slides/, or the published site's own copies.",
       "seconds": 0.3
-    },
-    "check_guide_pdf_version": {
-      "exit": 0,
-      "claim": "check_guide_pdf_version: OK -- all 8 guide PDFs render 'Choupo-dev' on their title page (the artefact a reader opens, not just the source it compiles from)",
-      "seconds": 0.2
     },
     "check_h_surface": {
       "exit": 0,
@@ -626,11 +576,6 @@
       "claim": "check_mass_closure: OK -- 277 steady case(s) close their plant-boundary mass balance within 0.5 % of 100, read from the engine's own massBalance report and never recomputed here; of those, 3 publish a PROCESS scope (they DECLARE a utility circuit, and the process closure is the number held -- the total one is diluted by the circuit's own mass) and the rest are held on their total closure, which for them IS the whole balance.  4 invalid declarations were built and every one refused BY NAME (supply == return, a service outside the catalogue, a supply that is not a boundary inlet, a pair that does not conserve).  4 ran the report and state they have NO MATERIAL BOUNDARY (a closed cycle: their per-unit balances carry the verification), 1 are told ALOUD by the engine that their declared chain did not run under an outer driver (announced, so not silent), 7 exit non-zero and belong to the suite's exit-code check rather than this one, and 13 neither declare the report nor emit one.  Every one of those is LISTED rather than skipped, because an absence nobody counts is not a finding -- and a case that DECLARES the report and never gets it FAILS by name, which is how a 113 % closure shipped unseen until 2026-09-04.  THE ATOM BALANCE CARRIES THE SAME SEPARATION and is held here too: a plant that DECLARES a circuit must publish `process.<element>` rows, one that declares none must publish none, and the scope must ACTUALLY REMOVE something -- below 99 % of the total on at least one element, because a scope that reproduces the total removes nothing and is the failure that looks like success (judged on 1 plant(s) run in this pass that publish a process atom scope, each read through report files that pass says it wrote).  NOT CHECKED: whether those process figures are RIGHT (they are a derived view of streams the goldens already pin), energy closure, and PER-UNIT closure (two units can cancel and this arm would not see it).  CLOSURE BY CONSTRUCTION (C174) -- NOT EVIDENCE: 42 unit material closure(s) hold because the unit FILLED a term from the balance (spiralWoundModule: water in the retentate and the permeate), in 30 case(s) whose closure above therefore says nothing about that term; 42 are verified by the unit's own second route (every solute balanced on its own) and 0 are NOT VERIFIED (none); every in-scope witness among 1 was read.",
       "seconds": 446.2
     },
-    "check_material_wrapper": {
-      "exit": 0,
-      "claim": "check_material_wrapper: OK -- the `material { ... }` wrapper resolves identically to the bare form (analysis AND componentMolarFlows: one rule), and a wrapper beside a top-level form is refused by name.  NOT COVERED: the writer (the analysis form is author-only input; converged/ emits the resolved material, so the ruling's writer-emits-canonical clause has no subject here), the `equilibriumState` cross-reference (its own gate: check_equilibrium_state_ref), and slices C/B.",
-      "seconds": 0.2
-    },
     "check_mean_ionic": {
       "exit": 0,
       "claim": "check_mean_ionic: OK -- every published gamma_pm recomputed independently from the run's own per-ion gammas and the species charges (6 pair(s), 1:1 / 2:1 / 1:2 / 2:2 all covered), each with its derived nu+/nu- announced; on the single-salt composition gamma_pm IS the geometric mean of its two ions to machine level and those two agree to 1e-06 -- the speciation solve's own convergence, NOT machine level, which this arm used to demand and got only from six-digit rounded output; a backwards cation/anion pair and an unknown species both refuse by name.  NOT COVERED: whether any gamma_pm AGREES WITH MEASUREMENT -- it does not for 4 of the 6 seawater salts, which is a recorded finding in the case header and VALIDATION.md, not a gate; the single-ion gammas and the Pitzer kernel themselves; a geometric vs ARITHMETIC mean on the 1:1 salt (for two equal numbers they coincide -- R1's unsymmetrical pairs separate them); ops other than `speciate`.",
@@ -725,16 +670,6 @@
       "exit": 0,
       "claim": "pid-refusals: OK -- both gain refusals fire from a real corpus case with their named remedies (foreign key -> the Kc/tauI conversion; all-zero -> declare a gain or remove the controller).",
       "seconds": 0.3
-    },
-    "check_pinch_p1": {
-      "exit": 0,
-      "claim": "check_pinch_p1: OK -- witness targets equal the independent cascade (107.5 / 40 / 353.15), CSV coherent, negative silent, dTmin<=0 refused; the cascade CLASSIFIES the problem (interior pinch, several pinches, threshold either utility or neither, Q_H,min - Q_C,min = 67.5 kW at dTmin 1/20/40, the worked table and summary.csv equal the independent cascade, ammonia02 is a threshold plant, no TypeScript cascade); the population is published and labelled -- an excluded Q_kW duty is listed and the targets say NOT the plant's, and a two-stream exchanger enters as both sides with its duty in neither current-utility total (no duty is ADDED to the population: columns, reactors and crystallisers stay excluded)",
-      "seconds": 0.3
-    },
-    "check_pinch_p2": {
-      "exit": 0,
-      "claim": "check_pinch_p2: OK -- 6 exhaustive pairs equal the independent duty bound, CP-rule wording exact, no 'optimal' anywhere, violations 120+260 == the 380 kW excess over target",
-      "seconds": 0.0
     },
     "check_polarisation_coupling": {
       "exit": 0,
@@ -966,11 +901,6 @@
       "claim": "check_standards_write_guard: OK -- the refusal to write into data/standards/ is enforced in 42 writing file(s) across src/ (52 guard call(s), recounted here and never transcribed), each reaching the ONE home records::refuseStandardsWrite.  Both rules fire through the real binary: a literal `standards` component (proven on fitParameters' `proposal` AND propertyScan1D's `file`, each exiting non-zero, naming the rule and the remedy, writing nothing) and CONTAINMENT under the resolved catalogue root reached by a SYMLINK whose name carries no such component -- the route the literal scan cannot see. Before this existed, one op enforced the rule and `fitParameters proposal` wrote a promotable pair record into a standards path at exit 0. The negative holds: an ordinary path still writes its record with its verdict.  NOT COVERED: the outer drivers' `path` keys (dict paths, not filesystem paths -- guarding one would refuse a legitimate case); READS from the catalogue, which are what the engine is for; a path derived inside a helper an op calls (arm (a) is file- and key-level); the guarded ops other than the two probed, which are covered structurally only; and bin/curate/*, whose job IS to promote into the catalogue.  1 file(s) are EXEMPT from the structural arm, each because it reads such a key without writing through it -- and each exemption's PREMISE is verified here (every stream it opens names a string literal), never taken on trust.  `fitParameters` is checked to refuse BEFORE it regresses (no `Final chi2` ahead of the refusal): it guards `proposal` twice -- at the read and on the path `auto` resolves to -- and without that ordering check the loss of the early one is invisible, which is how the first sabotage of this gate survived.",
       "seconds": 0.2
     },
-    "check_start_here": {
-      "exit": 0,
-      "claim": "check_start_here: OK -- the way in is intact: 9 ordered steps, every one an existing case that ships a golden and is therefore checked on every suite run, and both the README and bin/listCases point at it.  NOT CHECKED: whether the ORDER is pedagogically right, whether nine is the right number, or whether each step's one-line claim is true of its case -- those are teaching judgements and no gate can make them.",
-      "seconds": 0.0
-    },
     "check_std_includes": {
       "exit": 0,
       "claim": null,
@@ -1025,11 +955,6 @@
       "exit": 0,
       "claim": "check_thiele_pellet: OK -- the intraparticle field and eta(phi) are recomputed HERE from the closed form (series Bessel, no engine value read back as an oracle) and the engine reproduces them: the numerical field within the discretisation error its own grid admits, its analytical column to 1e-12, eta by BOTH the volume integral and the independent surface flux, the whole eta(phi) family over all three geometries, an observed order of convergence of 2, and phi = phi_char/3 satisfying the formula reactor/CatalystPellet.H already quotes.  Seven refusals fire on probe cases (no D_eff route, D_eff filed on the catalyst record, a geometry/dimension mismatch, even nodes, two rate-constant spellings, tortuosity below 1, an unknown geometry); a measured D_eff record WINS and the derived value is reported beside it as a finding, while a case without one announces no cross-check.  NOT covered: whether the witness pellet is real (it is a declared teaching surrogate), the non-isothermal pellet, orders other than one, the external film, the liquid-medium route, and whether any reactor APPLIES eta -- none does yet.",
       "seconds": 0.5
-    },
-    "check_time_state_layout": {
-      "exit": 0,
-      "claim": "check_time_state_layout: OK -- the time-integrated cases read and write the ratified layout (0/<stream>, 0/internalStates/<unit>), refuse the retired one, and write restartable <t>/ directories by default (not checked: a closed-loop or clock-driven restart)",
-      "seconds": 4.5
     },
     "check_transport_correlations": {
       "exit": 0,
@@ -1115,11 +1040,6 @@
       "exit": 0,
       "claim": "check_verdict_parity: OK -- the 5 curation verdicts (heldOutPerformed, notClaimed, notValidated, validated, validationRefused) are spelled identically in all FIVE of their homes -- CurationDossier.cpp (the authority), the TS union, the Component Inspector's renderer table, the fit panel's meaning table (added 2026-09-04 when the verdict reached the machine channel) and the verdict colour table the fit panel and the props review screen draw (held since 2026-10-24); every human-visible \"validation\" in src/ (5 file(s) carry the word in an output string) sits where a partition is CONSUMED.  Does NOT check the dossier's written JSON, nor whether a verdict is correct for a given fit.",
       "seconds": 0.3
-    },
-    "check_viewport_units": {
-      "exit": 0,
-      "claim": "check_viewport_units: OK -- the full-viewport height has ONE home (gui/src/theme-overrides.css: `100vh` with an `@supports (height: 100dvh)` upgrade), 11 site(s) read var(--choupo-vh), and no bare `100vh` remains in gui/src code except a declaration restated in `100dvh` for a document that cannot inherit the variable.  NOT CHECKED: `100vw` (a different defect with a different remedy, and nothing here was changed for it), whether the app actually fits a phone (no script sees a rendered page), and any stylesheet outside gui/src.",
-      "seconds": 0.6
     },
     "check_vlle_fallback": {
       "exit": 0,
@@ -1241,20 +1161,10 @@
       "claim": "check_hansen_mixture: OK -- solvent01: 21 rows rebuilt (volume); solvent02/hexaneAcetone: 21 rows rebuilt (volume); solvent02/hexaneNitromethane: 4 rows rebuilt (mole); solvent03/screen: 13 rows rebuilt (pure); synthetic minimum 2.000 at 0.5, ends 6.000; hexane/nitromethane: 17 twoPhase, 2 homogeneous of 21; T stated beside Tref; a warm probe announced, Ra unmoved; 9 refusals by name; rule named an approximation; affinity not solubility; gamma = 1 named; confrontation: 13 solvents, residual 3: acetone (RED 0.93, rated 3), nitroethane (RED 1.39, rated 2), cyclohexane (RED 1.06, rated 1).  Rebuilt from the records, never from the CSV's own columns.  NOT checked: any measured blend point (the thesis tabulates pure solvents only), the Hansen values themselves (transcriptions, interim), UNIFAC's gap against a measured miscibility, a mass-basis sweep.",
       "seconds": 0.3
     },
-    "check_nanofiltran_reference": {
-      "exit": 0,
-      "claim": "check_nanofiltran_reference: OK -- 13 NanoFiltran inputs are the matching rule's and its 5 vendored files hash as received; 35 anchors equal reference.tsv; Choupo's pore at 401/801/1601 nodes shows order 2.00-2.00 and, extrapolated, agrees with NanoFiltran extrapolated (ND 102/204) within 7.9e-07 relative on all 35 rows (bound 2e-06); at the case's 801 nodes the worst row is 1.7e-05 from NanoFiltran, inside every anchor; 6 refusals fire by name.  NOT CHECKED: whether NanoFiltran is right (code-to-code is not validation), the as-received program's Davies constant (a finding), the default DSPM-DE path, any measured membrane.",
-      "seconds": 3.2
-    },
     "check_spiral_array": {
       "exit": 0,
       "claim": "check_spiral_array: OK -- the five Schock & Miquel feed-spacer records carry Tab. 1's h_SP, d_F and eps (p. 343, a second transcription) and Eqs. 23/17 recomputed here reproduce its S_V,SP and d_h within the printed rounding, the mesh route (Eqs. 20-22) its eps within 0.005; Eq. 30 / Eq. 24 coefficients and the 100 < Re < 1000 window on every record; Spacer-28mil marks its two estimates; the four Generic-* elements carry the retired table's areas, whole leaves, no stored width or membrane, the FT30 spacer, estimates with notes and a derived leaf width in 0.5-2.0 m; membrane21 publishes Eq. 17's d_h and A/(2nL), its crossflow recomputes the per-vessel feed, each stage closes per component to 1e-9, k_i/k_Na = (D_i/D_Na)^0.75 at every node and the inlet k_Na is Eq. 30 on Eq. 17 to 1e-9; 4 vessels on F are 4x one vessel on F/4 to 1e-10; a low-Re twin announces both windows and exits 0, membrane21 none; 9 refusals fire by name; the same element under DSPM-DE (membrane22: a pore at every station, D(T), the salts' two legs announced, each stage closed to 1e-9, under 60 s) and under constantRejection (membrane23) runs, and solutionDiffusion on a salt feed still refuses the coupling.  NOT CHECKED: whether the generic estimates are good, the transcription against the PDF, any measured array, vessel maldistribution, the permeate-side drop, the spacer's edge bypass.",
       "seconds": 1.8
-    },
-    "check_nanofiltran_paper": {
-      "exit": 0,
-      "claim": "check_nanofiltran_paper: OK -- Table 2 transcribed as PAPER_TABLE2 and reproduced by NanoFiltran AS RECEIVED (iterations exact, Na+ within 2.5e-05, the rest within 5.6e-06), which the Davies-corrected program is not: the table carries the ln 10; Choupo's stiff pore at 401/801/1601 nodes (order 2.00-2.00), extrapolated, agrees with the corrected NanoFiltran within 7.2e-08 on the permeates and the potential and 1.1e-07 on the pore's faces; 60 printed numbers of part C's header (the former nanofiltran02) and its 4 anchors are the measurement's; the Fig. 3 CSV (20 markers) is the digitiser's, fresh and pixel-consistent; part B's 10 ops (the former nanofiltran03) are the paper's Eqs. 43-46 at the read feeds, Choupo meets NanoFiltran on them within 1.9e-08, NanoFiltran with the paper's settings lands on the drawn line within 0.5 reading errors at 20 markers, and against EXPERIMENT the rms of R_obs is 0.077 (NanoFiltran's 0.078) inside every anchor.  NOT CHECKED: whether the model is right for CA30 (its inputs are fits to these data), any measurement uncertainty (none stated), Fig. 4 beyond the profile's faces, D(T).",
-      "seconds": 1.6
     },
     "check_constant_rejection": {
       "exit": 0,
@@ -1561,11 +1471,6 @@
       "claim": "check_lle_residual: OK -- the mixed T_bubble+LLE fit of the SYNTHETIC water + 1-butanol witness recovers the generating b_ij and b_ji to 1e-5 from two starts and validates against held-out bubble temperatures and tie lines; 13 tie lines recomputed by an independent convex hull agree with the datasets; six refusals fire by name on probes built here (ideal start, weighting equal, no sigma, no band, one liquid phase, kind LLE alone); a held-out tie line the model leaves as ONE liquid is named, counted, and a notValidated miss.  NOT checked: any real water + 1-butanol measurement, the dilute-branch accuracy below the flash's 1e-4 floor.",
       "seconds": 0.2
     },
-    "check_pinch_utility": {
-      "exit": 0,
-      "claim": "check_pinch_utility: OK -- ammonia02's cooling water (declared circuit CW1) is a utility row, not a stream: targets equal the independent cascade over the 5 process segments (Q_H,min 0, Q_C,min 95732.5 kW, no pinch); the same case with the circuit deleted counts the water and gives the old pinch, so the gate tells them apart (the exclusion reads the declared circuit and category, never a stream name)",
-      "seconds": 0.3
-    },
     "check_reactive_mesh": {
       "exit": 0,
       "claim": "check_reactive_mesh: OK -- the full MESH carries a mole-changing reaction: on column19_mtbe_reactive_mesh (methanol + isobutene <=> MTBE, Sum nu = -1) it converges with |ln Q - ln K_a(T)| below 1e-8 on every reactive stage (x, T and gamma READ from the published profile, K_a from the paper's Eq. 15 evaluated here), closes mass, every element, the plant-boundary first law and the reboiler's own envelope WITHOUT a plug, satisfies B + D = F + Sum(nu) Sum(xi) overall and per component, reproduces the 21 runs of the paper's Table II with AAD 4.6 % (max 8.5 %), recomputes the `fromRecords` K_a(T) independently and prints its distance from Eq. 15 unadjusted, and refuses by name Sum nu != 0 under simultaneous, an invalid pair of specifications, a total condenser with bottomsRate and a reacting species with no formation datum.  SCANNED: the witness and nine fixtures written by this gate, src/unitOperations/distillation/DistillationColumn.cpp.  NOT CHECKED: agreement with any measured column (nothing here is validated against a measurement); UNIFAC's accuracy; the sealed bytes.",
@@ -1680,11 +1585,6 @@
       "exit": 0,
       "claim": "check_solid_property_refusals: OK -- the five witnesses still run; a solid with no rho_p is refused by name in the cyclone, the pneumatic conveyor and the spray dryer (no zero, no 1500 kg/m3); an absent k_v runs the MSMPR on the sphere and ANNOUNCES it; a sorption block missing C or K is refused naming the key.  NOT CHECKED: that the harmonic mean suits a real powder, the hydrocyclone, the batch dryer and the time-integrated binaries, the equilibrium crystalliser.",
       "seconds": 0.3
-    },
-    "check_time_integrated": {
-      "exit": 0,
-      "claim": "check_time_integrated: OK -- TI-01 fixture: 34-field header held on every row; TI-02: the closed leaking loop is refused; unsteady03, unsteady04, unsteady05 still run; TI-03: a `recipe` is refused by name under choupoSemiContinuous and choupoCtrl",
-      "seconds": 7.0
     },
     "check_species_c373": {
       "exit": 0,
@@ -1865,6 +1765,41 @@
       "exit": 0,
       "claim": "check_shadow_identity: OK -- the pin scope (an unrelated Henry pair edited leaves flash01 pinned; a relevant pair that ARRIVES is `drifted` (appeared); a consumed record edited is `changed`; an unparseable one is refused), an unsealed case run strict and a HELD copy refuse another species; and on copies of the pinned witness: an undeclared homonym of another charge, a `variationOf` whose formula disagrees, a `distinctFrom` on the same species, a missing variationReason (strict), an undeclared copy (strict), an unpinned read and a changed pin each REFUSE by name with their remedy (announced as `drifted` in the result when not strict); a declared distinctFrom on another charge and a faithful variationOf run; `pins` beside `sealed` refuses; a pin for a record read alone is named; Cl and HOCl carry their chlorine spelling.  NOT CHECKED: that a declared variation's numbers are right, or any case other than the witness.",
       "seconds": 1.6
+    },
+    "check_way_in": {
+      "exit": 0,
+      "claim": "check_way_in: OK -- [start_here] the way in is intact: 9 ordered steps, every one an existing case that ships a golden and is therefore checked on every suite run, and both the README and bin/listCases point at it.  NOT CHECKED: whether the ORDER is pedagogically right, whether nine is the right number, or whether each step's one-line claim is true of its case -- those are teaching judgements and no gate can make them. || [first_path_agrees] all 9 cases the written curriculum (docs/start-here.md) teaches exist, carry a README.md, and declare `tier tutorial;`, so the app's \"start here: the first path\" folder contains the whole of it; the document's own announced count matches the entries found, so a silently-empty parse cannot pass.  NOT CHECKED: the ORDER (the folder is a SET and says so; a declared order is a deferred case-format decision), whether any case suits its position (a reading judgement), and the welcome cards (gui/tests/firstPath.test.ts owns that claim -- a second home for it is the defect this gate exists to prevent).",
+      "seconds": 0.0
+    },
+    "check_gui_static": {
+      "exit": 0,
+      "claim": "check_gui_static: OK -- [glob_raw] 19 source file(s) call import.meta.glob; every glob over a non-JavaScript pattern asks for it raw, so rollup receives strings and never tries to parse a .dat as JavaScript.  The probe (the exact construct that blocked three site publishes on 2026-08-31) is still rejected.  NOT CHECKED: this is a SOURCE scan, not a build -- it cannot see any OTHER way to break `vite build`, and it does not run rollup. || [viewport_units] the full-viewport height has ONE home (gui/src/theme-overrides.css: `100vh` with an `@supports (height: 100dvh)` upgrade), 11 site(s) read var(--choupo-vh), and no bare `100vh` remains in gui/src code except a declaration restated in `100dvh` for a document that cannot inherit the variable.  NOT CHECKED: `100vw` (a different defect with a different remedy, and nothing here was changed for it), whether the app actually fits a phone (no script sees a rendered page), and any stylesheet outside gui/src.",
+      "seconds": 0.5
+    },
+    "check_time_integrated_layout": {
+      "exit": 0,
+      "claim": "check_time_integrated_layout: OK -- [time_integrated] TI-01 fixture: 34-field header held on every row; TI-02: the closed leaking loop is refused; unsteady03, unsteady04, unsteady05 still run; TI-03: a `recipe` is refused by name under choupoSemiContinuous and choupoCtrl || [time_state_layout] the time-integrated cases read and write the ratified layout (0/<stream>, 0/internalStates/<unit>), refuse the retired one, and write restartable <t>/ directories by default (not checked: a closed-loop or clock-driven restart)",
+      "seconds": 10.6
+    },
+    "check_nanofiltran_as_received": {
+      "exit": 0,
+      "claim": "check_nanofiltran_as_received: OK -- [nanofiltran_paper] Table 2 transcribed as PAPER_TABLE2 and reproduced by NanoFiltran AS RECEIVED (iterations exact, Na+ within 2.5e-05, the rest within 5.6e-06), which the Davies-corrected program is not: the table carries the ln 10; Choupo's stiff pore at 401/801/1601 nodes (order 2.00-2.00), extrapolated, agrees with the corrected NanoFiltran within 7.2e-08 on the permeates and the potential and 1.1e-07 on the pore's faces; 60 printed numbers of part C's header (the former nanofiltran02) and its 4 anchors are the measurement's; the Fig. 3 CSV (20 markers) is the digitiser's, fresh and pixel-consistent; part B's 10 ops (the former nanofiltran03) are the paper's Eqs. 43-46 at the read feeds, Choupo meets NanoFiltran on them within 1.9e-08, NanoFiltran with the paper's settings lands on the drawn line within 0.5 reading errors at 20 markers, and against EXPERIMENT the rms of R_obs is 0.077 (NanoFiltran's 0.078) inside every anchor.  NOT CHECKED: whether the model is right for CA30 (its inputs are fits to these data), any measurement uncertainty (none stated), Fig. 4 beyond the profile's faces, D(T). || [nanofiltran_reference] 13 NanoFiltran inputs are the matching rule's and its 5 vendored files hash as received; 35 anchors equal reference.tsv; Choupo's pore at 401/801/1601 nodes shows order 2.00-2.00 and, extrapolated, agrees with NanoFiltran extrapolated (ND 102/204) within 7.9e-07 relative on all 35 rows (bound 2e-06); at the case's 801 nodes the worst row is 1.7e-05 from NanoFiltran, inside every anchor; 6 refusals fire by name.  NOT CHECKED: whether NanoFiltran is right (code-to-code is not validation), the as-received program's Davies constant (a finding), the default DSPM-DE path, any measured membrane.",
+      "seconds": 2.6
+    },
+    "check_aqueous_inlet": {
+      "exit": 0,
+      "claim": "check_aqueous_inlet: OK -- [aqueous_analysis] the analysis inlet resolves through its three separately recorded layers (measurement in 0/, reconciled inventory in converged/ under calculated{}, equilibrium in the answer); the authored file is byte-identical after the run; the ion balance recomputed here from the authored mg/L (with the `as CaCO3` surrogate) agrees with the engine's, is non-zero before, zero after, and the charge the listed adjustments move equals the residue they cancel; eight refusals fire BY NAME (no density route, iterative (REFUSED outright -- no composition-dependent volume closure exists; the honest direct closure is derivedDiluteVolume, gate check_derived_density), correction over the limit, pH as the balancing variable, weightedLeastSquares without an enforce list, a sigma limit on a single-species rule, two material forms, no rule on a non-closing analysis) and a closing analysis passes through ANNOUNCED; a plain componentMolarFlows stream produces no record at all.  NOT CHECKED: whether the reconciled water is RIGHT (absorbing a residue into one ion is a convention, not a measurement), and whether the carried uncertainties are USED -- A1 only records them. || [aqueous_qualifier] the declared case preserves its qualifiers as data (block default + every measured row, no inline row comments); an unresolved analyte refuses naming both remedies; per-row overrides resolve to the identical answer; total, freeIon and an unknown word each refuse naming their reason.  NOT COVERED: total/freeIon SEMANTICS (none exist yet, by ruling -- Q4/Q5 must be rewritten when a slice defines them), the reconciliation arithmetic (its own gates), and whether `dissolved` is true of a given sheet (the author's declaration, which is the point). || [material_wrapper] the `material { ... }` wrapper resolves identically to the bare form (analysis AND componentMolarFlows: one rule), and a wrapper beside a top-level form is refused by name.  NOT COVERED: the writer (the analysis form is author-only input; converged/ emits the resolved material, so the ruling's writer-emits-canonical clause has no subject here), the `equilibriumState` cross-reference (its own gate: check_equilibrium_state_ref), and slices C/B.",
+      "seconds": 0.5
+    },
+    "check_guides_static": {
+      "exit": 0,
+      "claim": "check_guides_static: OK -- [guide_anchors] all 276 guide anchor(s) the GUI links to resolve to a real \\label (OP_DEST 29 into per-entry guide, PROPS_DEST 5 into propsGuide, PROPS_MODEL_DEST 74 into per-entry guide, SLOT_MODEL_DEST 47 into per-entry guide, THEORY_DEST 64 into theoryGuide, op:<type> fallback 57 into propsGuide).  NOT CHECKED, and deliberately: whether a LIVE anchor is the RIGHT one.  That is the defect this gate was written after -- `adiabaticFlash` pointed at `ch:flash`, a label that exists, on a section titled \"Isothermal flash\" -- and every mechanical form of the check accuses innocent umbrella sections, so the judgement is written beside the entries instead. || [guide_environments] 4808 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here. || [guide_menu] all 8 guide(s) in docs/Makefile's DOCS (userGuide, developerGuide, theoryGuide, propsGuide, eduToolsGuide, designGuide, explorerGuide, tutorialsGuide) reach the Help menu, which MAPS the generated list rather than naming any of them, and GuideName is derived from the same line.  NOT CHECKED: that a browser paints the items, that each PDF exists (copyDocs warns, buildSite refuses), or the LANDING page, which links two of eight by editorial choice. || [guide_paths] 1723 path citations across the .tex manuals all resolve (9 allowed as paths the reader is told to create).  NOT checked: whether the PROSE about a path is true, any NUMBER stated in a manual, anything outside docs/*.tex, or run OUTPUTS (log/, converged/, reports/ ...), which a clean clone does not have. || [guide_pdf_version] all 8 guide PDFs render 'Choupo-dev' on their title page (the artefact a reader opens, not just the source it compiles from) || [curator_parity] 1 curator named in BOTH docs/preamble.tex and AUTHORS, each with a stated scope, and none of them in \\manualauthors (the macro that feeds every guide's copyright line); 1 EduTool(s) declare a curator on the tool ITSELF and each agrees with AUTHORS in both directions; the 2 guide author lists carried by \\manualauthors agree name for name with AUTHORS' own sections.  NOT CHECKED: whether consent was given (a fact outside the tree, recorded in AUTHORS and verifiable by no gate) and whether a scope string is true of the section it names.",
+      "seconds": 0.3
+    },
+    "check_pinch": {
+      "exit": 0,
+      "claim": "check_pinch: OK -- [pinch_p1] witness targets equal the independent cascade (107.5 / 40 / 353.15), CSV coherent, negative silent, dTmin<=0 refused; the cascade CLASSIFIES the problem (interior pinch, several pinches, threshold either utility or neither, Q_H,min - Q_C,min = 67.5 kW at dTmin 1/20/40, the worked table and summary.csv equal the independent cascade, ammonia02 is a threshold plant, no TypeScript cascade); the population is published and labelled -- an excluded Q_kW duty is listed and the targets say NOT the plant's, and a two-stream exchanger enters as both sides with its duty in neither current-utility total (no duty is ADDED to the population: columns, reactors and crystallisers stay excluded) || [pinch_p2] 6 exhaustive pairs equal the independent duty bound, CP-rule wording exact, no 'optimal' anywhere, violations 120+260 == the 380 kW excess over target || [pinch_utility] ammonia02's cooling water (declared circuit CW1) is a utility row, not a stream: targets equal the independent cascade over the 5 process segments (Q_H,min 0, Q_C,min 95732.5 kW, no pinch); the same case with the circuit deleted counts the water and gives the old pinch, so the gate tells them apart (the exclusion reads the declared circuit and category, never a stream name)",
+      "seconds": 1.0
     }
   }
 }

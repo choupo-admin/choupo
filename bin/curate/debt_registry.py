@@ -995,7 +995,7 @@ SCAN_ROOTS_UNRESOLVED = {
     'check_stream_faces': "bin/curate/check_stream_faces.py:46 (case / 'iterations').iterdir()",
     'check_stream_transport_closure': "bin/curate/check_stream_transport_closure.py:88 dst.glob('log.*')",
     'check_thermoml_index': "bin/curate/check_thermoml_index.py:173 dest.glob('water-vapourPressure-*.dat')",
-    'check_time_state_layout': 'bin/curate/check_time_state_layout.py:132 case.iterdir()',
+    'check_time_integrated_layout': 'bin/curate/check_time_integrated_layout.py:377 case.iterdir()',
     'check_transport_correlations': "bin/curate/check_transport_correlations.py:761 t.glob('*.dat')",
     'check_typed_identifiers': "bin/curate/check_typed_identifiers.py:78 comp.glob('*.dat')",
     'check_uf_gel': 'bin/curate/check_uf_gel.py:186 d.iterdir()',

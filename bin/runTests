@@ -188,6 +188,10 @@
 #                                       (tutorials/FASTSET) + 4 conservation
 #                                       gates scoped to that same pass
 #      runTests --gui                 # the gui/-ONLY path (no C++, no case)
+#      runTests --nightly             # the sweep PLUS the NIGHTLY tier (CI's full
+#                                       tier, a release); any other run prints
+#                                       each nightly gate DEFERRED, counted in
+#                                       the tally.  `--list-nightly` names them.
 #      runTests --record <case>       # write/refresh that case's expected
 #                                       from the current run (golden master)
 #
@@ -309,10 +313,38 @@ while [ $# -gt 0 ]; do
         --jobs=*)  _JOBS="${1#--jobs=}"; shift ;;
         --no-reuse) export CHOUPO_NO_REUSE=1; shift ;;   # INPUT-KEYED REUSE, below
         --no-fast-stamp) export CHOUPO_SWEEP_WITHOUT_FAST=1; shift ;;   # --fast FIRST, below
+        --nightly) export CHOUPO_NIGHTLY=1; shift ;;     # THE NIGHTLY TIER, below (C419)
+        --list-nightly) _LIST_NIGHTLY=1; shift ;;
         *)         _rest+=("$1"); shift ;;
     esac
 done
 set -- ${_rest[@]+"${_rest[@]}"}
+#  THE NIGHTLY TIER (DEV.md 4c C419).  The gates listed `NIGHTLY` in
+#  bin/curate/suite_lanes.txt (the ONE list) are the ones that test gates or
+#  re-prove what did not change; the per-batch sweep, --gui, --fast, --scope and
+#  --witnesses do not run them and PRINT each as DEFERRED, never silently.
+#  `runTests --nightly` is the full sweep PLUS them (CI's full tier and a
+#  release run it); a gate's own script can always be run by name.
+nightly_set() {      # the stems of the NIGHTLY lines of suite_lanes.txt
+    awk -F'|' '{ s = $1; gsub(/ /, "", s) } s == "NIGHTLY" {
+        a = $3; sub(/^[ \t]*bin\/curate\//, "", a); sub(/\.py[ \t]*$/, "", a); print a }' \
+        "$ROOT/bin/curate/suite_lanes.txt"
+}
+if [ -n "${_LIST_NIGHTLY:-}" ]; then nightly_set; exit 0; fi
+if [ -n "${CHOUPO_NIGHTLY:-}" ] && [ "$#" -gt 0 ]; then
+    echo "usage: runTests --nightly  (the full sweep plus the nightly tier; takes no cases and no other tier flag)"; exit 2
+fi
+deferred=0
+#  nightly_defer <stem> <label> -- 0 (and the DEFERRED line printed, counted)
+#  when this run does not run the gate; 1 when it must.
+nightly_defer() {
+    [ -z "${CHOUPO_NIGHTLY:-}" ] || return 1
+    nightly_set | grep -qx "$1" || return 1
+    local _l="${1#check_}"; _l="${_l//_/-}"
+    printf "DEFERRED  %-40s  (nightly tier; run bin/runTests --nightly)\n" "$_l"
+    deferred=$((deferred+1))
+    return 0
+}
 NCPU=$(nproc 2>/dev/null || echo 1)
 JOBS="${_JOBS:-$NCPU}"
 case "$JOBS" in
@@ -1877,6 +1909,7 @@ if [ "${1:-}" = "--gui" ]; then
     }
     for g in $gates; do
         name=$(basename "$g" .py)
+        if nightly_defer "$name"; then continue; fi
         if [ "$JOBS" -gt 1 ] && [ -n "$(gate_lane_of "bin/curate/$name.py")" ]; then
             gui_batch+=("$name"); continue
         fi
@@ -1889,7 +1922,7 @@ if [ "${1:-}" = "--gui" ]; then
     python3 "$ROOT/bin/curate/gate_pool.py" clean --root "$ROOT" || true
 
     echo
-    echo "PASS $gpass / FAIL $gfail"
+    if [ "$deferred" -gt 0 ]; then echo "PASS $gpass / FAIL $gfail / DEFERRED $deferred"; else echo "PASS $gpass / FAIL $gfail"; fi
     echo "  ^ the gui/-ONLY path.  It says nothing about the solver: no corpus"
     echo "    case was CHECKED (four witnesses ran only to generate the files the"
     echo "    GUI tests read) and no C++ was compiled.  If this commit also touches"
@@ -2877,6 +2910,11 @@ case "$GB_TOP" in
     *)      echo "[golden bands] strict: $(printf '%s' "$GB_TOP" | cut -f2) -- every golden is compared as written";;
 esac
 [ "$#" -eq 0 ] && gate_segments          # the gates' segments (THE GATES, above)
+#  A run that is not the sweep (--fast, --scope, --witnesses, a named case) runs
+#  none of the gates; the nightly ones are still NAMED, so no tier hides them.
+if [ "$#" -gt 0 ] && [ -z "$RECORD" ]; then
+    for _ng in $(nightly_set); do nightly_defer "$_ng" || true; done
+fi
 
 # --- THE SWEEP'S ECONOMY (DEV.md 4c C394) ----------------------------------
 #  (a) `--fast` FIRST.  The fast set holds one case per family and runs in
@@ -2997,15 +3035,15 @@ if [ "$#" -eq 0 ]; then
     #  authoritative material-input form per inlet -- a wrapper beside a
     #  top-level form is refused rather than resolved by an undeclared
     #  precedence.  The round trip is witnessed, not asserted.
-    if gate_exec "$ROOT/bin/curate/check_material_wrapper.py" > /tmp/matwrap.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "material-wrapper" "$(head -1 /tmp/matwrap.$$)"
+    if gate_exec "$ROOT/bin/curate/check_aqueous_inlet.py" > /tmp/aqueous_inlet.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "aqueous-inlet-gate" "$(gate_claim check_aqueous_inlet /tmp/aqueous_inlet.$$ | cut -c1-240)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_material_wrapper.py)\n" "material-wrapper"
-        cat /tmp/matwrap.$$
+        printf "FAIL  %-40s  (run bin/curate/check_aqueous_inlet.py)\n" "aqueous-inlet-gate"
+        cat /tmp/aqueous_inlet.$$
         fail=$((fail+1))
     fi
-    rm -f /tmp/matwrap.$$
+    rm -f /tmp/aqueous_inlet.$$
 
     #  gamma_pm, the MEASURABLE activity coefficient (2026-08-10).  Every
     #  gamma the speciation published before this was a single-ion one, which
@@ -3071,7 +3109,6 @@ if [ "$#" -eq 0 ]; then
                    "case-manifest-gate case_manifest.py --check" \
                    "generated-artefacts-gate generated_artefacts.py --check" \
                    "equilibrium-state-ref-gate check_equilibrium_state_ref.py" \
-                   "aqueous-qualifier-gate check_aqueous_qualifier.py" \
                    "derived-density-gate check_derived_density.py" \
                    "volumetric-rung1-gate check_volumetric_rung1.py" \
                    "models-catalogue-gate check_models_catalogue.py" \
@@ -3723,15 +3760,15 @@ PYEOF
     # equal an independent Python problem-table over the same segments,
     # the composite CSV is coherent, the pass never runs uninvited, and
     # dTmin <= 0 refuses; sabotage-verified (wrong shift -> 3 probes fail).
-    if gate_exec "$ROOT/bin/curate/check_pinch_p1.py" > /tmp/pnch.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "pinch-p1-gate" "$(tail -1 /tmp/pnch.$$)"
+    if gate_exec "$ROOT/bin/curate/check_pinch.py" > /tmp/pinch.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pinch-gate" "$(gate_claim check_pinch /tmp/pinch.$$ | cut -c1-240)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_pinch_p1.py)\n" "pinch-p1-gate"
-        cat /tmp/pnch.$$
+        printf "FAIL  %-40s  (run bin/curate/check_pinch.py)\n" "pinch-gate"
+        cat /tmp/pinch.$$
         fail=$((fail+1))
     fi
-    rm -f /tmp/pnch.$$
+    rm -f /tmp/pinch.$$
 
     # Cooling tower (Merkel): the published Merkel number and Chebyshev-4
     # companion reproduced from the unit's own published diagram, the
@@ -3827,15 +3864,7 @@ PYEOF
     # never appears, and the violation diagnostics satisfy
     # violations == current - target; sabotage-verified (flipped
     # below-pinch inequality -> 4 wording probes fail by value).
-    if gate_exec "$ROOT/bin/curate/check_pinch_p2.py" > /tmp/pnc2.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "pinch-p2-gate" "$(tail -1 /tmp/pnc2.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_pinch_p2.py)\n" "pinch-p2-gate"
-        cat /tmp/pnc2.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/pnc2.$$
+    #  (check_pinch_p2 is an ARM of check_pinch, run at the first site of its cluster; DEV.md 4c C419)
 
     # Pinch UTILITY gate (DEV.md 4c C230): a service is not a process
     # stream.  ammonia02's cooling water (declared circuit) is left out of
@@ -3843,15 +3872,7 @@ PYEOF
     # problem, no pinch); the same case with the circuit deleted gives the
     # old pinch, so the two are told apart; sabotage-verified (exclusion
     # disabled, utility side swapped -> RIGHT probes fail by value).
-    if gate_exec "$ROOT/bin/curate/check_pinch_utility.py" > /tmp/pncu.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "pinch-utility-gate" "$(tail -1 /tmp/pncu.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_pinch_utility.py)\n" "pinch-utility-gate"
-        cat /tmp/pncu.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/pncu.$$
+    #  (check_pinch_utility is an ARM of check_pinch, run at the first site of its cluster; DEV.md 4c C419)
 
     # P-swing gate (P1 outlet-pressure switch + P2 feed-valve closure over
     # the section-9 expansion widening, ratified battery 2026-08-03):
@@ -4901,15 +4922,15 @@ PYEOF
     # was built, published and reachable from nowhere in the app, and was
     # reported as deleted.  An unreachable document is indistinguishable from
     # a deleted one.  4 sabotages.
-    if gate_exec "$ROOT/bin/curate/check_guide_menu.py" > /tmp/guidemenu.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "guide-menu-gate" "$(head -1 /tmp/guidemenu.$$)"
+    if gate_exec "$ROOT/bin/curate/check_guides_static.py" > /tmp/guides_static.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "guides-static-gate" "$(gate_claim check_guides_static /tmp/guides_static.$$ | cut -c1-240)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_guide_menu.py)\n" "guide-menu-gate"
-        cat /tmp/guidemenu.$$
+        printf "FAIL  %-40s  (run bin/curate/check_guides_static.py)\n" "guides-static-gate"
+        cat /tmp/guides_static.$$
         fail=$((fail+1))
     fi
-    rm -f /tmp/guidemenu.$$
+    rm -f /tmp/guides_static.$$
 
     # Rules-of-Thumb index (2026-09-01).  The Design Guide IS the heuristics
     # reference and the EduTool that opens it must INDEX it, never quote it:
@@ -5056,15 +5077,15 @@ PYEOF
     # with a holdup {} block), refuse the retired 0/internalState +
     # 0/streamFaces naming the migrator, and write <t>/ directories by
     # default that restart the case (or say why they cannot).
-    if gate_exec "$ROOT/bin/curate/check_time_state_layout.py" > /tmp/tslayout.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "time-state-layout-gate" "$(head -1 /tmp/tslayout.$$)"
+    if gate_exec "$ROOT/bin/curate/check_time_integrated_layout.py" > /tmp/time_integrated_layout.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "time-integrated-layout-gate" "$(gate_claim check_time_integrated_layout /tmp/time_integrated_layout.$$ | cut -c1-240)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_time_state_layout.py)\n" "time-state-layout-gate"
-        cat /tmp/tslayout.$$
+        printf "FAIL  %-40s  (run bin/curate/check_time_integrated_layout.py)\n" "time-integrated-layout-gate"
+        cat /tmp/time_integrated_layout.$$
         fail=$((fail+1))
     fi
-    rm -f /tmp/tslayout.$$
+    rm -f /tmp/time_integrated_layout.$$
 
     # UF gel-polarisation gate (2026-09-30, C27).  membrane19's flux is the
     # gel-limited closed form at every node, flat from 3 to 5 bar, exactly
@@ -5533,15 +5554,15 @@ PYEOF
     # NanoFiltran's within 2e-6 on every row, and six refusals fire.  Needs
     # no gfortran (bin/curate/nanofiltran/regenerate.py does, and refuses
     # without it).  6 by-hand sabotages in its docstring.
-    if gate_exec "$ROOT/bin/curate/check_nanofiltran_reference.py" > /tmp/nanofiltran.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "nanofiltran-reference-gate" "$(grep -m1 '^check_nanofiltran_reference: OK' /tmp/nanofiltran.$$)"
+    if gate_exec "$ROOT/bin/curate/check_nanofiltran_as_received.py" > /tmp/nanofiltran_as_received.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "nanofiltran-as-received-gate" "$(gate_claim check_nanofiltran_as_received /tmp/nanofiltran_as_received.$$ | cut -c1-240)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_nanofiltran_reference.py)\n" "nanofiltran-reference-gate"
-        cat /tmp/nanofiltran.$$
+        printf "FAIL  %-40s  (run bin/curate/check_nanofiltran_as_received.py)\n" "nanofiltran-as-received-gate"
+        cat /tmp/nanofiltran_as_received.$$
         fail=$((fail+1))
     fi
-    rm -f /tmp/nanofiltran.$$
+    rm -f /tmp/nanofiltran_as_received.$$
 
     # NanoFiltran PAPER gate (2026-10-24, DEV.md 4c C145).  The paper's own
     # two comparisons: its Table 2 is NanoFiltran AS RECEIVED (iterations
@@ -5553,15 +5574,7 @@ PYEOF
     # the experiment inside bands sized to the disagreement (part B; one case per paper since C147).
     # Needs no gfortran (regenerate_paper.py does).  8 by-hand sabotages in
     # its docstring.
-    if gate_exec "$ROOT/bin/curate/check_nanofiltran_paper.py" > /tmp/nanofiltranpaper.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "nanofiltran-paper-gate" "$(grep -m1 '^check_nanofiltran_paper: OK' /tmp/nanofiltranpaper.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_nanofiltran_paper.py)\n" "nanofiltran-paper-gate"
-        cat /tmp/nanofiltranpaper.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/nanofiltranpaper.$$
+    #  (check_nanofiltran_paper is an ARM of check_nanofiltran_as_received, run at the first site of its cluster; DEV.md 4c C419)
 
     # PORE-PARTITION gate (2026-10-25, DEV.md 4c C165).  WHY the DSPM-DE
     # pore held each ion back, as the props bench now publishes it: every
@@ -5650,15 +5663,7 @@ PYEOF
     # a trajectory.csv column set fixed at t = 0, an undetermined loop flow
     # refused before integrating, a `recipe` the binary cannot act on refused
     # by name -- each on a probe the gate builds and runs.
-    if gate_exec "$ROOT/bin/curate/check_time_integrated.py" > /tmp/timeint.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "time-integrated-gate" "$(grep -m1 '^check_time_integrated: OK' /tmp/timeint.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_time_integrated.py)\n" "time-integrated-gate"
-        cat /tmp/timeint.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/timeint.$$
+    #  (check_time_integrated is an ARM of check_time_integrated_layout, run at the first site of its cluster; DEV.md 4c C419)
 
     # block-tridiagonal gate (2026-08-25).  The MESH declares its Jacobian
     # structure; the declaration is audited on the first iteration and the
@@ -5876,7 +5881,9 @@ PYEOF
     #  reproduced, which is reported SKIP and counted as NEITHER pass nor fail
     #  -- the method-tools-gate convention below, never a green line.
     #  KEYED (C394): run only when its inputs changed; see reuse_gate above.
-    if reuse_gate check_regressed_pairs "regressed-pairs-gate"; then
+    if nightly_defer check_regressed_pairs; then
+        rp_rc=reused; : > /tmp/regpairs.$$
+    elif reuse_gate check_regressed_pairs "regressed-pairs-gate"; then
         rp_rc=reused; : > /tmp/regpairs.$$
     else
         gate_exec "$ROOT/bin/curate/check_regressed_pairs.py" > /tmp/regpairs.$$ 2>&1
@@ -6577,15 +6584,15 @@ PYEOF
     # SITE -- fails while dev and vitest stay green.  It blocked three
     # consecutive publishes; this is the cheap local check for the
     # construct, on the check_wasm_dialect pattern.
-    if gate_exec "$ROOT/bin/curate/check_glob_raw.py" > /tmp/globraw.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "glob-raw-gate" "$(head -1 /tmp/globraw.$$)"
+    if gate_exec "$ROOT/bin/curate/check_gui_static.py" > /tmp/gui_static.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "gui-static-gate" "$(gate_claim check_gui_static /tmp/gui_static.$$ | cut -c1-240)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_glob_raw.py)\n" "glob-raw-gate"
-        cat /tmp/globraw.$$
+        printf "FAIL  %-40s  (run bin/curate/check_gui_static.py)\n" "gui-static-gate"
+        cat /tmp/gui_static.$$
         fail=$((fail+1))
     fi
-    rm -f /tmp/globraw.$$
+    rm -f /tmp/gui_static.$$
 
     # unit-family gate (2026-09-22).  Vitor: the flowsheet boxes carry no
     # symbol of the unit operation.  Measured, the engine registers 51 unit
@@ -6627,15 +6634,7 @@ PYEOF
     # destination).  A label renamed in a guide breaks every link to it in
     # SILENCE -- the PDF just opens at page one -- and the map is TypeScript
     # while the labels are LaTeX, so no compiler or test saw across the seam.
-    if gate_exec "$ROOT/bin/curate/check_guide_anchors.py" > /tmp/guideanch.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "guide-anchor-gate" "$(head -1 /tmp/guideanch.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_guide_anchors.py)\n" "guide-anchor-gate"
-        cat /tmp/guideanch.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/guideanch.$$
+    #  (check_guide_anchors is an ARM of check_guides_static, run at the first site of its cluster; DEV.md 4c C419)
 
     # viewport-unit gate (2026-09-22).  The app shell is a full-viewport box
     # with `overflow: hidden`.  Written `height: 100vh` it lays out taller
@@ -6644,15 +6643,7 @@ PYEOF
     # Desktop cannot see the difference: 100vh and 100dvh are the same number
     # without a retracting chrome, so every screen, test and screenshot here
     # agrees while the phone is broken.  A gate is the only thing that looks.
-    if gate_exec "$ROOT/bin/curate/check_viewport_units.py" > /tmp/viewportunits.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "viewport-unit-gate" "$(head -1 /tmp/viewportunits.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_viewport_units.py)\n" "viewport-unit-gate"
-        cat /tmp/viewportunits.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/viewportunits.$$
+    #  (check_viewport_units is an ARM of check_gui_static, run at the first site of its cluster; DEV.md 4c C419)
 
     # mixing-ledger gate (2026-08-31).  The mixingRules op publishes the
     # one-fluid decomposition through EquationOfState::mixingLedger -- a
@@ -6868,7 +6859,9 @@ PYEOF
     # it still fails when it should, and that has to be asked empirically.
     # It prints its own coverage (a small minority of the gates) and names the
     # rest UNAUDITED rather than letting a green line imply the whole set.
-    if gate_exec "$ROOT/bin/curate/check_gate_selftest.py" > /tmp/gateself.$$ 2>&1; then
+    if nightly_defer check_gate_selftest; then
+        :
+    elif gate_exec "$ROOT/bin/curate/check_gate_selftest.py" > /tmp/gateself.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "gate-selftest" "$(head -1 /tmp/gateself.$$)"
         pass=$((pass+1))
     else
@@ -7011,15 +7004,15 @@ PYEOF
     #  six that did not included tutorials/plant/acetonePlant, the plant the
     #  whole document builds toward.  A student who read the document and a
     #  student who clicked the folder were taught two different courses.
-    if gate_exec "$ROOT/bin/curate/check_first_path_agrees.py" > /tmp/firstpath.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "first-path-gate" "$(head -1 /tmp/firstpath.$$)"
+    if gate_exec "$ROOT/bin/curate/check_way_in.py" > /tmp/way_in.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "way-in-gate" "$(gate_claim check_way_in /tmp/way_in.$$ | cut -c1-240)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_first_path_agrees.py)\n" "first-path-gate"
-        cat /tmp/firstpath.$$
+        printf "FAIL  %-40s  (run bin/curate/check_way_in.py)\n" "way-in-gate"
+        cat /tmp/way_in.$$
         fail=$((fail+1))
     fi
-    rm -f /tmp/firstpath.$$
+    rm -f /tmp/way_in.$$
 
     # Gibbs-Duhem gate (2026-08-07).  The first check in the tree that asks
     # whether a thermodynamic model is RIGHT rather than UNCHANGED.  A golden
@@ -7249,15 +7242,7 @@ PYEOF
     # cases in order and is the first thing a newcomer is pointed at, from the
     # README and from listCases.  A curated list of paths held in prose is
     # exactly the shape that rots when other work renames a case.
-    if gate_exec "$ROOT/bin/curate/check_start_here.py" > /tmp/sh.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "start-here-gate" "$(tail -1 /tmp/sh.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_start_here.py)\n" "start-here-gate"
-        cat /tmp/sh.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/sh.$$
+    #  (check_start_here is an ARM of check_way_in, run at the first site of its cluster; DEV.md 4c C419)
 
     # The TUTORIALS GUIDE is generated from the cases too, and until
     # 2026-08-14 nothing noticed when it fell behind them: the generator
@@ -7406,26 +7391,9 @@ PYEOF
     # dying since the commit that added them and nothing said so -- no gate
     # builds the guides, and buildSite's refusal only fires when someone runs
     # it.  Running LaTeX here would cost minutes; this is the static half.
-    if gate_exec "$ROOT/bin/curate/check_guide_environments.py" > /tmp/genv.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "check_guide_environments" "$(tail -1 /tmp/genv.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (a manual will not compile)\n" "check_guide_environments"
-        cat /tmp/genv.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/genv.$$
+    #  (check_guide_environments is an ARM of check_guides_static, run at the first site of its cluster; DEV.md 4c C419)
 
-    if gate_exec "$ROOT/bin/curate/check_guide_paths.py" > /tmp/gpaths.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "check_guide_paths" "$(tail -1 /tmp/gpaths.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (a manual cites a path that is not in the tree)\n" \
-            "check_guide_paths"
-        cat /tmp/gpaths.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/gpaths.$$
+    #  (check_guide_paths is an ARM of check_guides_static, run at the first site of its cluster; DEV.md 4c C419)
 
     if gate_exec "$ROOT/bin/regen-llm-docs" --check > /tmp/regen.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "generated-doc-gate" "$(tail -1 /tmp/regen.$$)"
@@ -7933,7 +7901,9 @@ PYEOF
     # commit (DEV.md 4c C170 item 4: private data/local/ and untracked files
     # changed verdicts on Vitor's laptop).  Writes probe files into the tree
     # (and removes them), so it has no PAR lane in suite_lanes.txt.
-    if gate_exec "$ROOT/bin/curate/check_gates_judge_tracked.py" > /tmp/judgetracked.$$ 2>&1; then
+    if nightly_defer check_gates_judge_tracked; then
+        :
+    elif gate_exec "$ROOT/bin/curate/check_gates_judge_tracked.py" > /tmp/judgetracked.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "gates-judge-tracked-gate" "$(tail -1 /tmp/judgetracked.$$)"
         pass=$((pass+1))
     else
@@ -8218,15 +8188,7 @@ PYEOF
     # mg/L, and eight refusals fire by name.  Invisible to a golden master:
     # the reconciliation happens on READ, so a correction that silently
     # stopped being applied leaves the KPIs where they were.
-    if gate_exec "$ROOT/bin/curate/check_aqueous_analysis.py" > /tmp/aqagate.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "aqueous-analysis-gate" "$(head -1 /tmp/aqagate.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_aqueous_analysis.py)\n" "aqueous-analysis-gate"
-        cat /tmp/aqagate.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/aqagate.$$
+    #  (check_aqueous_analysis is an ARM of check_aqueous_inlet, run at the first site of its cluster; DEV.md 4c C419)
 
     # Aqueous-reconciliation gate (A2): constrained WEIGHTED LEAST SQUARES
     # over the measured analytical quantities, recomputed independently here
@@ -8549,15 +8511,7 @@ PYEOF
     # the repository's own PDF was correct.
     # Sabotage-verified with the real stale artefact: dropping the deployed
     # 2607 PDF into docs/ fails by name and reports the version it found.
-    if gate_exec "$ROOT/bin/curate/check_guide_pdf_version.py" > /tmp/gpdf.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "guide-pdf-version-gate" "$(tail -1 /tmp/gpdf.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (rebuild: make -C docs all)\n" "guide-pdf-version-gate"
-        cat /tmp/gpdf.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/gpdf.$$
+    #  (check_guide_pdf_version is an ARM of check_guides_static, run at the first site of its cluster; DEV.md 4c C419)
 
     #  ITS SIBLING, AND THE DEFECT THE VERSION GATE CANNOT SEE.  The check
     #  above reads the rendered TITLE PAGE for the version string; a PDF built
@@ -8587,15 +8541,7 @@ PYEOF
     #  and requires every curator to state the SCOPE they answer for.
     #  Its arm (c) also holds the guide AUTHOR lists, which had lived in both
     #  files with nothing keeping them equal.
-    if gate_exec "$ROOT/bin/curate/check_curator_parity.py" > /tmp/curator.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "curator-parity-gate" "$(head -1 /tmp/curator.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_curator_parity.py)\n" "curator-parity-gate"
-        cat /tmp/curator.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/curator.$$
+    #  (check_curator_parity is an ARM of check_guides_static, run at the first site of its cluster; DEV.md 4c C419)
 
     # Banner version-stamp gate (Vitor, 2026-08-04 -- the OpenFOAM.org
     # arrangement).  Every file in the tree carries the version of the LINE
@@ -9851,15 +9797,18 @@ fi
 rm -f "$GB_LOG"
 #  REUSED is counted APART and appended after the four words every reader of
 #  this line parses (`^PASS n / FAIL n`), so no reader mistakes it for a PASS.
-if [ "${reused:-0}" -gt 0 ]; then
-    echo "PASS $pass / FAIL $fail / KNOWN-BROKEN $known_broken / EXPECTED-FAIL $expected_fail / REUSED $reused"
-else
-    echo "PASS $pass / FAIL $fail / KNOWN-BROKEN $known_broken / EXPECTED-FAIL $expected_fail"
-fi
+_tally="PASS $pass / FAIL $fail / KNOWN-BROKEN $known_broken / EXPECTED-FAIL $expected_fail"
+[ "${reused:-0}" -gt 0 ] && _tally="$_tally / REUSED $reused"
+[ "${deferred:-0}" -gt 0 ] && _tally="$_tally / DEFERRED $deferred"
+echo "$_tally"
 if [ "${reused:-0}" -gt 0 ]; then
     echo "  ^ $reused item(s) were NOT RUN by this sweep: REUSED, each with the key of"
     echo "    its inputs and the date its PASS was taken (bin/curate/suite_reuse.py)."
     echo "    \`bin/runTests --no-reuse\` runs them."
+fi
+if [ "${deferred:-0}" -gt 0 ]; then
+    echo "  ^ $deferred gate(s) were NOT RUN by this run: DEFERRED to the nightly tier"
+    echo "    (each named above; bin/curate/suite_lanes.txt, NIGHTLY lines).  \`bin/runTests --nightly\` runs them."
 fi
 if [ -n "${SWEEP_WITHOUT_FAST:-}" ]; then
     echo "  ^ AND THIS SWEEP STARTED WITHOUT A --fast PASS ON ITS TREE (overridden)."
