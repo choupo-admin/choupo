@@ -4006,6 +4006,34 @@ accepts today, and that is a policy call.
 > the same tree, so the correction does not itself force the re-run it
 > removes; proof: a following sweep prints 1260 REUSED, 0 to run.
 >
+> **THE REUSE KEY, LANDED (2026-11-18; Vitor: "trata disso porque isto que
+> estas a fazer e inutil").**  Three defects, each found by proving the
+> one before: (1) a case's dictionaries were hashed whole, so a stamp or a
+> comment re-ran its fit: they are hashed as normalised text now, the
+> record type KEPT (the engine branches on it; the builder refused the
+> brief's wider cut, rightly); (2) a verdict was tied to the PATH of the
+> tree and the store lived inside it, so every sweep in a fresh integration
+> worktree began from nothing whatever the key said: no absolute path is in
+> a key now (three places), objects compiled at another path are
+> byte-identical, and `CHOUPO_REUSE_STORE` shares the verdicts between
+> trees, written atomically; (3) `bin/runTests` was hashed whole into every
+> case key, so a new gate block re-ran every fit: it enters split -- the
+> case checker's closure and every top-level line outside functions and
+> gate blocks (all 343 gate blocks of the documented shape qualify, 6202 of
+> 9827 lines).  PROVEN ON THE PLAN, no fit run: a stamp and a comment
+> changed in 3 cases -> 1260 REUSED; one parameter 0.30 -> 0.31 -> 1 to run,
+> the right one; a gate block added, a comment in a gate block -> 1260
+> REUSED; a line in the checker, in a function it calls, a top-level export,
+> the pins mode -> 1260 to run; a second checkout at another path -> 953
+> reused at once and all 1260 once its private `data/local/` matched (the
+> 307 Henry and electrolyte cases rightly read that tree).  The verdicts of
+> today's sweep were migrated key to key (1260 of 1260) into
+> `~/.cache/choupo/reuse-store/cases`; `--fast` 88/0.  STATED LIMITS: an
+> edit of the checker's closure or of a top-level line still re-keys all;
+> the catalogue records in the data half are hashed whole (a stamp change
+> THERE would still move keys); `isotherm02_fit_jaschik` writes a record
+> into `data/local/` during a sweep, which makes two trees differ.
+>
 > **C423 (Vitor, 2026-11-18: explain to an outside AI reviewer the final
 > structure of the thermophysical properties, why it scales, the hierarchy
 > of standards and local dictionaries, with several example dictionaries
