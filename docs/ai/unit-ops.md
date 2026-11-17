@@ -3058,8 +3058,12 @@ Friction-factor sub-models via the `model` slot:
 - `Colebrook` --- implicit Colebrook-White solved by fixed-point; the
   classical turbulent reference; same laminar branch.
 
-Viscosity comes from the property package's `liquidViscosity` model, or an
-`operation { viscosity <v> Pa.s; }` override (Re needs it).
+Viscosity comes from the property dictionary (`transport { liquid { viscosity {
+model Vogel; } } }`, or a `measured` record), asked through the one liquid-property
+door at the line's own T, P and composition (Re needs it).  A pipe block does not
+carry a property: `viscosity`, `surfaceTension`, `gasViscosity` (and every other
+property word) typed in `operation` or in `twoPhase` is REFUSED by name, with the
+line to write in the property dictionary (DEV.md 4c C421).
 ```
 { name P1;  type pipe;  model Churchill;   // Churchill (default) | Haaland | Colebrook
   in feed;  outputs ( downstream );
@@ -3099,10 +3103,12 @@ factor):
   a two-phase friction-factor ratio; needs surface tension.
 
 Needs both phase properties: `rho_G`/`rho_L` from `density()` (idealGas vapour +
-Rackett liquid), `mu_L` from `liquidViscosity` (or the `operation { viscosity }`
-override), `mu_G` from `transport { viscosity { model Chung; } }` (or `twoPhase { gasViscosity
-<v> Pa.s; }`).  Friedel/BeggsBrill also need `transport { surfaceTension { model
-BrockBird; } }` (or `twoPhase { surfaceTension <v> N/m; }`).  Scope: **adiabatic**
+Rackett liquid), `mu_L` from the liquid door (`transport { liquid { viscosity { model Vogel; } } }`;
+a supercritical trace in the liquid is dropped for the property), `mu_G` from
+`transport { vapour { viscosity { model Chung; } } }`.  Friedel/BeggsBrill also need
+`transport { interface { surfaceTension { model BrockBird; } } }`.  None of the three is
+typed in the pipe (`operation { viscosity }`, `twoPhase { gasViscosity }` and
+`twoPhase { surfaceTension }` are refused by name, C421).  Scope: **adiabatic**
 (the inlet `vf` is held along the pipe — no flashing in the line).  Extra two-phase KPIs: `vaporFraction`, `quality_mass`, `holdup_liquid`,
 `voidFraction`, `X_martinelli`, `phi_L2`, `jG`, `jL`, `rho_G`, `rho_L`, `Re_Ls`,
 `Re_Gs`.  Validated framework: Lockhart & Martinelli, Chem. Eng. Prog. 45 (1949)
@@ -3111,7 +3117,6 @@ BrockBird; } }` (or `twoPhase { surfaceTension <v> N/m; }`).  Scope: **adiabatic
 { name P1;  type pipe;  model Churchill;  in feed;  outputs ( downstream );
   operation {
     geometry { D 0.05 m;  L 10 m;  roughness 4.6e-5 m; }   // horizontal (dz 0)
-    viscosity 8.9e-4 Pa.s;                 // liquid mu (water; trace gas has none)
     twoPhase { model LockhartMartinelli; } // LockhartMartinelli | homogeneous
   }
 }

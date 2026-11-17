@@ -29,6 +29,7 @@ License
 #include "Pipe.H"
 #include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
+#include "unitOperations/UnitTypedProperties.H"   // a property typed in `operation` is refused by name (C421)
 #include "core/Advisory.H"                          // the transition-band announcement
 #include "core/Constants.H"
 #include "unitOperations/flash/IsothermalFlash.H"   // feed-flash for the gas-liquid split
@@ -79,6 +80,13 @@ int Pipe::solve(const DictPtr& dict,
     auto feedDict = dict->subDict("feed");
     auto operDict = dict->subDict("operation");
     auto compDict = dict->subDict("composition");
+
+    //  A PIPE BLOCK DOES NOT CARRY A PROPERTY (DEV.md 4c C421, door slice A).
+    //  A liquid viscosity, a surface tension or a GAS viscosity typed in
+    //  `operation` (or in its `twoPhase` block) is refused BY NAME with the
+    //  line to write in the property dictionary; the pipe asks the package.
+    unitTypedProperties::refuse(operDict, "pipe '" + (dict->name().empty() ? type() : dict->name()) + "': ", "pipe",
+        { { "gasViscosity", "`transport { vapour { viscosity { model <word>; } } }` (or a `measured` record)" } });
 
     const scalar F   = feedDict->lookupScalar("F", Dims::molarFlow);  // kmol/s
     const scalar T   = feedDict->lookupScalar("T", Dims::temperature);
@@ -262,22 +270,13 @@ int Pipe::solve(const DictPtr& dict,
             const scalar rhoL = liquidProperty::evaluate(thermo, liquidProperty::Property::density, T, Pin, xlp).value;
             if (rhoG <= 0.0 || rhoL <= 0.0)
                 throw std::runtime_error("Pipe(two-phase): non-physical phase density.");
+            //  Every phase property is the package's (the door for the liquid, the
+            //  package's own vapour viscosity law for the gas): none is typed here.
             scalar muL, muG;
-            if (operDict->found("viscosity"))
-            {
-                muL = operDict->lookupScalar("viscosity", Dims::viscosity);
-                PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared", took(muL));
-                std::cout << "  [pipe] liquid viscosity: USER OVERRIDE from"
-                             " operation.viscosity = " << muL << " Pa.s"
-                             " (the thermoPackage liquidViscosity model is"
-                             " bypassed for this unit).\n";
-            }
-            else if (thermo.hasLiquidViscosity()) muL = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T, Pin, xlp).value;
-            else throw std::runtime_error("Pipe(two-phase): no liquid viscosity -- add a "
-                "thermoPackage liquidViscosity model, or operation { viscosity <v> Pa.s; }.");
-            if (tpDict && tpDict->found("gasViscosity"))
-                muG = tpDict->lookupScalar("gasViscosity", Dims::viscosity);
-            else muG = thermo.viscosityGas(T, yv);   // throws with its own remedy if absent
+            if (thermo.hasLiquidViscosity()) muL = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T, Pin, xlp).value;
+            else throw std::runtime_error("Pipe(two-phase): no liquid viscosity -- add `transport { liquid {"
+                " viscosity { model Vogel; } } }` (or a `measured` record) to the property dictionary.");
+            muG = thermo.viscosityGas(T, yv);   // throws with its own remedy if absent
             if (muL <= 0.0 || muG <= 0.0)
                 throw std::runtime_error("Pipe(two-phase): non-physical phase viscosity.");
 
@@ -327,10 +326,7 @@ int Pipe::solve(const DictPtr& dict,
             {
                 // Friedel (1979): a general two-phase multiplier on the TOTAL mass
                 // flux flowing as liquid; needs surface tension (Weber number).
-                const scalar sigma = (tpDict && tpDict->found("surfaceTension"))
-                    ? tpDict->lookupScalar("surfaceTension") : liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T, Pin, xlp).value;
-                if (tpDict && tpDict->found("surfaceTension"))
-                    PropertySourceLog::instance().useHere("surfaceTension", liquidSource::declaredByCase, "declared", took(sigma));
+                const scalar sigma = liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T, Pin, xlp).value;
                 if (sigma <= 0.0) throw std::runtime_error("Pipe(Friedel): non-physical surface tension.");
                 const scalar G    = Wtot / area;                         // mass flux kg/m2.s
                 const scalar rhoH = 1.0 / (quality / rhoG + (1.0 - quality) / rhoL);
@@ -355,10 +351,7 @@ int Pipe::solve(const DictPtr& dict,
             {
                 // Beggs & Brill (1973): flow-pattern map + holdup (+ inclination)
                 // + a two-phase friction-factor ratio.  Needs surface tension.
-                const scalar sigma = (tpDict && tpDict->found("surfaceTension"))
-                    ? tpDict->lookupScalar("surfaceTension") : liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T, Pin, xlp).value;
-                if (tpDict && tpDict->found("surfaceTension"))
-                    PropertySourceLog::instance().useHere("surfaceTension", liquidSource::declaredByCase, "declared", took(sigma));
+                const scalar sigma = liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T, Pin, xlp).value;
                 if (sigma <= 0.0) throw std::runtime_error("Pipe(BeggsBrill): non-physical surface tension.");
                 const scalar vm   = jG + jL;                    // mixture velocity
                 const scalar lamL = jL / vm;                    // no-slip liquid holdup
@@ -474,17 +467,10 @@ int Pipe::solve(const DictPtr& dict,
     if (rho <= 0.0)
         throw std::runtime_error("Pipe: non-physical liquid density.");
 
-    //   Viscosity: explicit operation override wins (self-contained cases),
-    //   else the thermoPackage liquidViscosity model.  Required for Re.
+    //   Viscosity: the property dictionary's (door).  Required for Re.
     scalar mu;
     std::string muSource;
-    if (operDict->found("viscosity"))
-    {
-        mu = operDict->lookupScalar("viscosity", Dims::viscosity);
-        PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared", took(mu));
-        muSource = "operation override";
-    }
-    else if (thermo.hasLiquidViscosity())
+    if (thermo.hasLiquidViscosity())
     {
         mu = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T, Pin, z).value;
         muSource = "thermoPackage liquidViscosity";
@@ -493,9 +479,10 @@ int Pipe::solve(const DictPtr& dict,
     {
         throw std::runtime_error(
             "Pipe: no liquid viscosity available.  Add a "
-            "`transport { liquidViscosity { model Vogel; } }` block to the "
-            "thermoPackage, or give `operation { viscosity <value> Pa.s; }` "
-            "directly.  The Reynolds number needs it.");
+            "`transport { liquid { viscosity { model Vogel; } } }` block "
+            "(or a `measured` record) to the property dictionary.  "
+            "The Reynolds number needs it; a viscosity is never typed in "
+            "the pipe's `operation`.");
     }
     if (mu <= 0.0)
         throw std::runtime_error("Pipe: non-physical liquid viscosity.");

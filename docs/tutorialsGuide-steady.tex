@@ -8841,23 +8841,23 @@ Basis: N2 3 kmol/h (the fast light gas) + water 200 kmol/h (the slow heavy liqui
 \tutreadme{The Lockhart-Martinelli correlation (Chem. Eng. Prog. 45 (1949) 39) was developed and validated on isothermal air-water (and similar gas-liquid) pipe data --- so air-water is exactly the system it is trusted on. The model structure here (X, $\varphi$\_L$^2$, the tt/vt/tv/vv C-selection, the Butterworth 1975 void fraction) reproduces that framework.}
 \tutreadme{Switch twoPhase \{ model ...; \} and compare --- the spread IS a lesson (two-phase $\Delta$P correlations routinely disagree by \textasciitilde{}50 \%):}
 \tutreadme{Layer 2 (Friedel, BeggsBrill) needs surface tension --- supplied here by transport \{ surfaceTension \{ model BrockBird; \} \} (from water's Tc/Pc/Tb). Beggs-Brill also classifies the flow pattern (segregated / intermittent / distributed) and corrects holdup for pipe inclination (here horizontal, so $\psi$ = 1).}
-\tutreadme{- Adiabatic: the inlet vapour fraction is held along the pipe (no flashing / condensation in the line). Flashing flow is a future increment. - Liquid density: ?\_L = 877 kg/m$^3$ comes from the Rackett branch, \textasciitilde{}12 \% low for water (a known anomaly, also in pipe01\_water\_line). It biases the $\ast$absolute$\ast$ $\Delta$P; the correlation $\ast$structure$\ast$ is unaffected. - Liquid viscosity via operation \{ viscosity ...; \} (water's value): the flash leaves a trace of dissolved N$_2$ in the liquid and the Vogel model has no N$_2$ entry.}
+\tutreadme{- Adiabatic: the inlet vapour fraction is held along the pipe (no flashing / condensation in the line). Flashing flow is a future increment. - Liquid density: ?\_L = 877 kg/m$^3$ comes from the Rackett branch, \textasciitilde{}12 \% low for water (a known anomaly, also in pipe01\_water\_line). It biases the $\ast$absolute$\ast$ $\Delta$P; the correlation $\ast$structure$\ast$ is unaffected. - Liquid viscosity is the property dictionary's (transport \{ liquid \{ viscosity \{ model Vogel; \} \} \}), asked at the line's T, P and the liquid's composition; the trace of supercritical N2 the flash leaves in the liquid is dropped for the property, so the water-only Vogel model answers. A viscosity typed in the pipe's operation is refused by name (C421): it used to be typed here as 8.9e-4 Pa.s, water at 25 C.}
 \begin{tutgolden}
 \goldrow{stream}{downstream}{F}{0.0563888888889}
 \goldrow{stream}{feed}{F}{0.0563888888889}
 \goldrow{kpi}{P1}{F}{0.0563888888889}
 \goldrow{kpi}{P1}{P\_in}{200000}
-\goldrow{kpi}{P1}{P\_out}{192501.980585}
-\goldrow{kpi}{P1}{Re\_Gs}{34128.3649811}
-\goldrow{kpi}{P1}{Re\_Ls}{28630.0809685}
-\goldrow{kpi}{P1}{X\_martinelli}{2.04761715451}
+\goldrow{kpi}{P1}{P\_out}{192502.007675}
+\goldrow{kpi}{P1}{Re\_Gs}{34129.0625967}
+\goldrow{kpi}{P1}{Re\_Ls}{28634.2953177}
+\goldrow{kpi}{P1}{X\_martinelli}{2.04756728812}
 \goldrow{kpi}{P1}{dP\_elevation}{0}
-\goldrow{kpi}{P1}{dP\_friction}{7498.01941512}
-\goldrow{kpi}{P1}{deltaP}{7498.01941512}
-\goldrow{kpi}{P1}{holdup\_liquid}{0.317751315591}
-\goldrow{kpi}{P1}{jG}{5.33703580701}
-\goldrow{kpi}{P1}{jL}{0.511171302981}
-\goldmore{14}
+\goldrow{kpi}{P1}{dP\_friction}{7497.99232537}
+\goldrow{kpi}{P1}{deltaP}{7497.99232537}
+\goldrow{kpi}{P1}{holdup\_liquid}{0.317747567143}
+\goldrow{kpi}{P1}{jG}{5.33711933234}
+\goldrow{kpi}{P1}{jL}{0.511171181109}
+\goldmore{15}
 \end{tutgolden}
 
 \clearpage

@@ -60,5 +60,8 @@ distributed) and corrects holdup for pipe **inclination** (here horizontal, so
 - **Liquid density**: ρ_L = 877 kg/m³ comes from the **Rackett** branch, ~12 % low
   for water (a known anomaly, also in `pipe01_water_line`). It biases the
   *absolute* ΔP; the correlation *structure* is unaffected.
-- Liquid viscosity via `operation { viscosity ...; }` (water's value): the flash
-  leaves a trace of dissolved N₂ in the liquid and the Vogel model has no N₂ entry.
+- Liquid viscosity is the property dictionary's (`transport { liquid { viscosity { model Vogel; } } }`),
+  asked at the line's T, P and the liquid's composition; the trace of supercritical N2 the flash
+  leaves in the liquid is dropped for the property, so the water-only Vogel model answers.  A
+  viscosity typed in the pipe's `operation` is refused by name (C421): it used to be typed here as
+  8.9e-4 Pa.s, water at 25 C.

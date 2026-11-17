@@ -173,6 +173,18 @@ FALSE_POSITIVES = [
      "a statistical weight (fit residual), not a surface tension"),
     ("literal", re.compile(r"\bc\.rho\s*=\s*1\.0;\s*c\.mu\s*=\s*1\.0"),
      "dimensionless Re-Pr grid: properties normalised to 1"),
+    ("literal", re.compile(r"\bmu_l\s*=\s*279\.0e-6\b|\brho_v\s*=\s*0\.5956\b"),
+     "C421 door slice A: Rohsenow::verify() reproduces Incropera & DeWitt's worked example with the TEXTBOOK's"
+     " saturated-water table values (A.6, 100 C: 279e-6, 957.9, 0.5956, 58.9e-3, 4217): the inputs of a published"
+     " anchor, not a package's liquid; the package's water would test the package, not the formula"),
+]
+#  C421: a keyRead site that must stay, declared with its reason (a statement-level exemption).
+KEYREAD_EXEMPT = [
+    (re.compile(r"\bf\.rho\s*=\s*d->lookupScalar\(\s*\"rho\""),
+     "C421 door slice A: bellDelaware::readFluid() is read ONLY by the props bench (BellDelawareBench, which reproduces"
+     " Hewitt, Shires & Bott Example 6.2 and Serth Example 6.1 from the BOOK's own fluid properties: the case header says"
+     " 'the bench is the textbook's inputs, not a package's'); the unit (HeatExchanger) reads readSpec only and takes its"
+     " fluid from the streams through the door"),
 ]
 COMMENT = re.compile(r"^\s*(//|\*)")
 STRING = re.compile(r'"(\\.|[^"\\])*"')
@@ -334,6 +346,8 @@ def classify(text):
         n = len(DIRECT_OTHER.findall(stmt))
         d, v = density_calls(stmt)
         kr = len(KEYREAD.findall(stmt))
+        if kr and any(rx.search(stmt) for rx, _ in KEYREAD_EXEMPT):
+            kr = 0
         if kr:
             hits["keyRead"] = hits.get("keyRead", 0) + kr
         if n + d:

@@ -28,6 +28,7 @@ License
 
 #include "PipeHeaderSize.H"
 #include "thermo/LiquidPropertyDoor.H"
+#include "unitOperations/UnitTypedProperties.H"   // a property typed in the header is refused by name (C421)
 #include "PhaseDensity.H"
 #include "TrainSplit.H"
 #include "core/Dimensions.H"
@@ -95,6 +96,10 @@ std::vector<EquipmentSizing> PipeHeaderSize::size(const std::string& unitName,
     const std::vector<DictPtr> headers = designRules->lookupDictList("headers");
     if (headers.empty())
         throw std::runtime_error(unitWho + ": `headers` is empty.");
+
+    //  A header's block does not carry a property (DEV.md 4c C421): a viscosity (or any property
+    //  word) typed in the designRules or in a header is refused by name, with the line to write.
+    unitTypedProperties::refuse(designRules, unitWho + ": ", "pipe header");
 
     std::vector<EquipmentSizing> out;
     for (const DictPtr& H : headers)
@@ -171,35 +176,18 @@ std::vector<EquipmentSizing> PipeHeaderSize::size(const std::string& unitName,
         const scalar Qplant = rd.massFlow / rho;                  // m3/s
         const scalar Q = Qplant / nTr;
 
+        //  The viscosity is the one door's, at the stream's own T, P and composition (a typed one is refused above).
         scalar mu = 0.0;
         std::string muFrom;
         {
-            const DictPtr vb = (H->found("viscosity")
-                                && std::holds_alternative<DictPtr>(H->entryValue("viscosity")))
-                ? H->subDict("viscosity")
-                : (designRules->found("viscosity")
-                   && std::holds_alternative<DictPtr>(designRules->entryValue("viscosity")))
-                    ? designRules->subDict("viscosity") : nullptr;
-            if (vb)
-            {
-                for (const char* k : { "source", "reason" }) needText(vb, "viscosity", k, who);
-                if (!vb->found("value"))
-                    throw std::runtime_error(who + ": `viscosity { value <Pa.s>; }` is not declared.");
-                mu = vb->lookupScalar("value", Dims::viscosity);
-                muFrom = "declared by the case: " + vb->lookupWord("source");
-            }
-            else
-            {
-                const ProcessStream& s = result.streams.at(stream);
-                std::shared_ptr<const ThermoPackage> pkg = result.thermoForPost();
-                if (!pkg || !pkg->hasLiquidViscosity())
-                    throw std::runtime_error(who + ": the case's package has no"
-                        " liquid-viscosity model and the header declares no"
-                        " `viscosity { value <Pa.s>; source; reason; }`.  No"
-                        " viscosity is guessed.");
-                mu = liquidProperty::evaluate(*pkg, liquidProperty::Property::viscosity, s.T, s.P, s.z, liquidProperty::Consumer{"sizing.pipeHeader", who}).value;
-                muFrom = "the case's liquid-viscosity model";
-            }
+            const ProcessStream& s = result.streams.at(stream);
+            std::shared_ptr<const ThermoPackage> pkg = result.thermoForPost();
+            if (!pkg || !pkg->hasLiquidViscosity())
+                throw std::runtime_error(who + ": the case's package has no liquid-viscosity model."
+                    "  Add `transport { liquid { viscosity { model <word>; } } }` (or a `measured` record) to"
+                    " the property dictionary.  No viscosity is guessed.");
+            mu = liquidProperty::evaluate(*pkg, liquidProperty::Property::viscosity, s.T, s.P, s.z, liquidProperty::Consumer{"sizing.pipeHeader", who}).value;
+            muFrom = "the case's liquid-viscosity model";
         }
         if (!(mu > 0.0) || !std::isfinite(mu))
             throw std::runtime_error(who + ": non-physical viscosity " + fmt(mu) + " Pa.s.");

@@ -16258,8 +16258,10 @@ window, its PRIMARY citation and a self-check anchor, and
 \code{transport \{ viscosity \{ model Chung; \} \}} and
 \code{liquidViscosity \{ model Andrade; \}} blocks of
 \file{thermoPhysPropDict}.  Consumers include the pipe (Reynolds
-number and friction factor, with an announced
-\code{operation.viscosity} override), the heat-exchanger HTC
+number and friction factor; every phase property is the property
+dictionary's, asked through the one liquid-property door, and a
+property typed in the pipe's \code{operation} or \code{twoPhase} block
+is refused by name, DEV.md 4c C421), the heat-exchanger HTC
 correlations, the spray dryer, and the packed-bed Ergun pressure
 drop.  A unit that needs a viscosity no declared model provides
 refuses loudly with the remedy --- no silent default.

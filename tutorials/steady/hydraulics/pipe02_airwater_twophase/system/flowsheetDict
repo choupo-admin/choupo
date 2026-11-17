@@ -46,11 +46,11 @@ units
                 L          10.0    m;      // straight length, horizontal (dz = 0)
                 roughness  4.6e-5  m;      // commercial steel
             }
-            // Liquid-viscosity override: the liquid phase is ~pure water, but the
-            // flash leaves a trace of dissolved N2 there and the per-component
-            // Vogel model has no N2 entry -- so give water's value directly
-            // (8.9e-4 Pa.s at 25 C, the liquid the line actually carries).
-            viscosity  8.9e-4 Pa.s;
+            // No viscosity here: a pipe block does not carry a property (C421).  The
+            // liquid viscosity is the property dictionary's `transport { liquid {
+            // viscosity { model Vogel; } } }`, asked at the line's own T, P and the
+            // liquid's composition (the supercritical N2 the flash leaves in it is
+            // dropped for the property, so the water-only Vogel model answers).
             twoPhase
             {
                 model  LockhartMartinelli;   // LockhartMartinelli | homogeneous

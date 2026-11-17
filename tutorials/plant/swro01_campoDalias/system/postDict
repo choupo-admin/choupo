@@ -315,12 +315,6 @@ sizing
                     source  "the textbook roughness of commercial steel (0.045 mm, Moody chart); not read from a source for this pipe's material";
                     reason  "an author-set value for a clean header; the real wall (duplex steel, GRP) is smoother or rougher by the maker's figure";
                 }
-                viscosity
-                {
-                    value   1.0e-3 Pa.s;
-                    source  "ASSUMED seawater near 20 C, the same value the case's modules use; the package declares no liquid-viscosity model";
-                    reason  "the Reynolds number needs one; the drop per metre is insensitive to it in rough turbulent flow";
-                }
             }
         }
         {
@@ -362,12 +356,6 @@ sizing
                     source  "the textbook roughness of commercial steel (0.045 mm, Moody chart); not read from a source for this pipe's material";
                     reason  "an author-set value for a clean header; the real wall (duplex steel, GRP) is smoother or rougher by the maker's figure";
                 }
-                viscosity
-                {
-                    value   1.0e-3 Pa.s;
-                    source  "ASSUMED seawater near 20 C, the same value the case's modules use; the package declares no liquid-viscosity model";
-                    reason  "the Reynolds number needs one; the drop per metre is insensitive to it in rough turbulent flow";
-                }
             }
         }
         {
@@ -408,12 +396,6 @@ sizing
                     value   0.045 mm;
                     source  "the textbook roughness of commercial steel (0.045 mm, Moody chart); not read from a source for this pipe's material";
                     reason  "an author-set value for a clean header; the real wall (duplex steel, GRP) is smoother or rougher by the maker's figure";
-                }
-                viscosity
-                {
-                    value   1.0e-3 Pa.s;
-                    source  "ASSUMED seawater near 20 C, the same value the case's modules use; the package declares no liquid-viscosity model";
-                    reason  "the Reynolds number needs one; the drop per metre is insensitive to it in rough turbulent flow";
                 }
             }
         }

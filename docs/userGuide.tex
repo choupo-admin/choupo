@@ -2537,7 +2537,9 @@ The case lists them, \code{headers ( \{ role feed; stream roFeed; \} \dots{}
 )}, and declares a velocity window \code{velocity \{ min; max; origin; source;
 reason; \}}, the inside diameters it can buy \code{nominalSizes \{ sizes ( \{
 insideDiameter \dots{}; \} \dots{} ); \dots{} \}}, a roughness, a friction
-correlation and a viscosity (the package here declares none).  The sizer reads
+correlation (the liquid viscosity is not typed: the sizer asks the
+property dictionary at the named stream's state, and a \code{viscosity}
+typed in the header is refused by name).  The sizer reads
 the volumetric flow of the named stream per train and takes the
 smallest declared bore not below $D=\sqrt{4Q/(\pi v_{\max})}$, provided its
 velocity stays above $v_{\min}$; if none fits it refuses, naming the window,
