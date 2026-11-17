@@ -4938,15 +4938,15 @@ PYEOF
     # was built, published and reachable from nowhere in the app, and was
     # reported as deleted.  An unreachable document is indistinguishable from
     # a deleted one.  4 sabotages.
-    if gate_exec "$ROOT/bin/curate/check_guide_menu.py" > /tmp/guidemenu.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "guide-menu-gate" "$(head -1 /tmp/guidemenu.$$)"
+    if gate_exec "$ROOT/bin/curate/check_guides_static.py" > /tmp/guides_static.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "guides-static-gate" "$(gate_claim check_guides_static /tmp/guides_static.$$ | cut -c1-240)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_guide_menu.py)\n" "guide-menu-gate"
-        cat /tmp/guidemenu.$$
+        printf "FAIL  %-40s  (run bin/curate/check_guides_static.py)\n" "guides-static-gate"
+        cat /tmp/guides_static.$$
         fail=$((fail+1))
     fi
-    rm -f /tmp/guidemenu.$$
+    rm -f /tmp/guides_static.$$
 
     # Rules-of-Thumb index (2026-09-01).  The Design Guide IS the heuristics
     # reference and the EduTool that opens it must INDEX it, never quote it:
@@ -6650,15 +6650,7 @@ PYEOF
     # destination).  A label renamed in a guide breaks every link to it in
     # SILENCE -- the PDF just opens at page one -- and the map is TypeScript
     # while the labels are LaTeX, so no compiler or test saw across the seam.
-    if gate_exec "$ROOT/bin/curate/check_guide_anchors.py" > /tmp/guideanch.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "guide-anchor-gate" "$(head -1 /tmp/guideanch.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_guide_anchors.py)\n" "guide-anchor-gate"
-        cat /tmp/guideanch.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/guideanch.$$
+    #  (check_guide_anchors is an ARM of check_guides_static, run at the first site of its cluster; DEV.md 4c C419)
 
     # viewport-unit gate (2026-09-22).  The app shell is a full-viewport box
     # with `overflow: hidden`.  Written `height: 100vh` it lays out taller
@@ -7415,26 +7407,9 @@ PYEOF
     # dying since the commit that added them and nothing said so -- no gate
     # builds the guides, and buildSite's refusal only fires when someone runs
     # it.  Running LaTeX here would cost minutes; this is the static half.
-    if gate_exec "$ROOT/bin/curate/check_guide_environments.py" > /tmp/genv.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "check_guide_environments" "$(tail -1 /tmp/genv.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (a manual will not compile)\n" "check_guide_environments"
-        cat /tmp/genv.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/genv.$$
+    #  (check_guide_environments is an ARM of check_guides_static, run at the first site of its cluster; DEV.md 4c C419)
 
-    if gate_exec "$ROOT/bin/curate/check_guide_paths.py" > /tmp/gpaths.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "check_guide_paths" "$(tail -1 /tmp/gpaths.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (a manual cites a path that is not in the tree)\n" \
-            "check_guide_paths"
-        cat /tmp/gpaths.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/gpaths.$$
+    #  (check_guide_paths is an ARM of check_guides_static, run at the first site of its cluster; DEV.md 4c C419)
 
     if gate_exec "$ROOT/bin/regen-llm-docs" --check > /tmp/regen.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "generated-doc-gate" "$(tail -1 /tmp/regen.$$)"
@@ -8552,15 +8527,7 @@ PYEOF
     # the repository's own PDF was correct.
     # Sabotage-verified with the real stale artefact: dropping the deployed
     # 2607 PDF into docs/ fails by name and reports the version it found.
-    if gate_exec "$ROOT/bin/curate/check_guide_pdf_version.py" > /tmp/gpdf.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "guide-pdf-version-gate" "$(tail -1 /tmp/gpdf.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (rebuild: make -C docs all)\n" "guide-pdf-version-gate"
-        cat /tmp/gpdf.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/gpdf.$$
+    #  (check_guide_pdf_version is an ARM of check_guides_static, run at the first site of its cluster; DEV.md 4c C419)
 
     #  ITS SIBLING, AND THE DEFECT THE VERSION GATE CANNOT SEE.  The check
     #  above reads the rendered TITLE PAGE for the version string; a PDF built
@@ -8590,15 +8557,7 @@ PYEOF
     #  and requires every curator to state the SCOPE they answer for.
     #  Its arm (c) also holds the guide AUTHOR lists, which had lived in both
     #  files with nothing keeping them equal.
-    if gate_exec "$ROOT/bin/curate/check_curator_parity.py" > /tmp/curator.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "curator-parity-gate" "$(head -1 /tmp/curator.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_curator_parity.py)\n" "curator-parity-gate"
-        cat /tmp/curator.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/curator.$$
+    #  (check_curator_parity is an ARM of check_guides_static, run at the first site of its cluster; DEV.md 4c C419)
 
     # Banner version-stamp gate (Vitor, 2026-08-04 -- the OpenFOAM.org
     # arrangement).  Every file in the tree carries the version of the LINE

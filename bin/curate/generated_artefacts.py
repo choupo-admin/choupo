@@ -195,7 +195,7 @@ ENTRIES = [
        note="only the block between its BEGIN/END GENERATED markers"),
     _e("guideMenu", ["gui/src/help/guides.generated.ts"],
        ["node", "gui/scripts/copyDocs.mjs"],
-       [PY, "bin/curate/check_guide_menu.py"], "pre"),
+       [PY, "bin/curate/check_guides_static.py", "--arm", "guide_menu"], "pre"),
     _e("citation", ["src/core/CitationTemplate.H",
                     "gui/src/help/citation.generated.ts"],
        [PY, "bin/curate/gen_citation.py"],

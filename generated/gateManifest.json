@@ -196,11 +196,6 @@
       "claim": null,
       "seconds": 3.8
     },
-    "check_curator_parity": {
-      "exit": 0,
-      "claim": "check_curator_parity: OK -- 1 curator named in BOTH docs/preamble.tex and AUTHORS, each with a stated scope, and none of them in \\manualauthors (the macro that feeds every guide's copyright line); 1 EduTool(s) declare a curator on the tool ITSELF and each agrees with AUTHORS in both directions; the 2 guide author lists carried by \\manualauthors agree name for name with AUTHORS' own sections.  NOT CHECKED: whether consent was given (a fact outside the tree, recorded in AUTHORS and verifiable by no gate) and whether a scope string is true of the section it names.",
-      "seconds": 0.0
-    },
     "check_cycle_css": {
       "exit": 0,
       "claim": "check_cycle_css: OK -- a declared cycle reproduces the unrolled recipe KPI for KPI (structure, never physics); the CSS verdict is announced and measured, and UNAVAILABLE when the case declares no tolerance; 4 refusals fire named (step outside the period, when{} in a step, fractional repeat, zero tolerance).  `repeat untilCSS;` stops the campaign at the cyclic steady state -- the witness declares 6 cycles and uses 2, announcing why -- and its three refusals fire named (no cssTolerance, no maxCycles, an unknown repeat word); the norm that STOPS the run is the same number it REPORTS.  NOT CHECKED: whether the declared tolerance is a WISE one -- the witness records that this bed's loading is still visibly drifting at a tolerance the full-state norm already satisfies, which is a judgement the case owns and no gate can make.",
@@ -481,35 +476,10 @@
       "claim": "[check_groups] OK -- every enforced compound declares its groups.  NOT ENFORCED, and counted rather than hidden: 91 record(s) carry `reviewStatus interim` and no groups block, because the databank they were imported from does not supply group assignments and this project does not derive them from structure.  Each becomes enforced the moment it is marked reviewed.",
       "seconds": 0.2
     },
-    "check_guide_anchors": {
-      "exit": 0,
-      "claim": "check_guide_anchors: OK -- all 271 guide anchor(s) the GUI links to resolve to a real \\label (OP_DEST 29 into per-entry guide, PROPS_DEST 5 into propsGuide, PROPS_MODEL_DEST 69 into per-entry guide, SLOT_MODEL_DEST 47 into per-entry guide, THEORY_DEST 64 into theoryGuide, op:<type> fallback 57 into propsGuide).  NOT CHECKED, and deliberately: whether a LIVE anchor is the RIGHT one.  That is the defect this gate was written after -- `adiabaticFlash` pointed at `ch:flash`, a label that exists, on a section titled \"Isothermal flash\" -- and every mechanical form of the check accuses innocent umbrella sections, so the judgement is written beside the entries instead.",
-      "seconds": 0.0
-    },
-    "check_guide_environments": {
-      "exit": 0,
-      "claim": "check_guide_environments: OK -- 4761 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
-      "seconds": 0.1
-    },
-    "check_guide_menu": {
-      "exit": 0,
-      "claim": "check_guide_menu: OK -- all 8 guide(s) in docs/Makefile's DOCS (userGuide, developerGuide, theoryGuide, propsGuide, eduToolsGuide, designGuide, explorerGuide, tutorialsGuide) reach the Help menu, which MAPS the generated list rather than naming any of them, and GuideName is derived from the same line.  NOT CHECKED: that a browser paints the items, that each PDF exists (copyDocs warns, buildSite refuses), or the LANDING page, which links two of eight by editorial choice.",
-      "seconds": 0.0
-    },
-    "check_guide_paths": {
-      "exit": 0,
-      "claim": "check_guide_paths: OK -- 1449 path citations across the .tex manuals all resolve (9 allowed as paths the reader is told to create).  NOT checked: whether the PROSE about a path is true, any NUMBER stated in a manual, anything outside docs/*.tex, or run OUTPUTS (log/, converged/, reports/ ...), which a clean clone does not have.",
-      "seconds": 0.2
-    },
     "check_guide_pdf_fresh": {
       "exit": 0,
       "claim": "check_guide_pdf_fresh: OK -- 8 guide PDF(s) are renders of the sources now in the tree (freshness by git ancestry over each guide's own .tex plus everything it \\inputs, plus preamble/version), and all 8 tracked top-level docs/*.pdf are guides that docs/Makefile builds.  NOT checked: that a PDF dirty beside a dirty source was really rebuilt from it, that any render is CORRECT (that is the compile), the 7 PDF(s) under docs/slides/, or the published site's own copies.",
       "seconds": 0.3
-    },
-    "check_guide_pdf_version": {
-      "exit": 0,
-      "claim": "check_guide_pdf_version: OK -- all 8 guide PDFs render 'Choupo-dev' on their title page (the artefact a reader opens, not just the source it compiles from)",
-      "seconds": 0.2
     },
     "check_h_surface": {
       "exit": 0,
@@ -1835,6 +1805,11 @@
       "exit": 0,
       "claim": "check_aqueous_inlet: OK -- [aqueous_analysis] the analysis inlet resolves through its three separately recorded layers (measurement in 0/, reconciled inventory in converged/ under calculated{}, equilibrium in the answer); the authored file is byte-identical after the run; the ion balance recomputed here from the authored mg/L (with the `as CaCO3` surrogate) agrees with the engine's, is non-zero before, zero after, and the charge the listed adjustments move equals the residue they cancel; eight refusals fire BY NAME (no density route, iterative (REFUSED outright -- no composition-dependent volume closure exists; the honest direct closure is derivedDiluteVolume, gate check_derived_density), correction over the limit, pH as the balancing variable, weightedLeastSquares without an enforce list, a sigma limit on a single-species rule, two material forms, no rule on a non-closing analysis) and a closing analysis passes through ANNOUNCED; a plain componentMolarFlows stream produces no record at all.  NOT CHECKED: whether the reconciled water is RIGHT (absorbing a residue into one ion is a convention, not a measurement), and whether the carried uncertainties are USED -- A1 only records them. || [aqueous_qualifier] the declared case preserves its qualifiers as data (block default + every measured row, no inline row comments); an unresolved analyte refuses naming both remedies; per-row overrides resolve to the identical answer; total, freeIon and an unknown word each refuse naming their reason.  NOT COVERED: total/freeIon SEMANTICS (none exist yet, by ruling -- Q4/Q5 must be rewritten when a slice defines them), the reconciliation arithmetic (its own gates), and whether `dissolved` is true of a given sheet (the author's declaration, which is the point). || [material_wrapper] the `material { ... }` wrapper resolves identically to the bare form (analysis AND componentMolarFlows: one rule), and a wrapper beside a top-level form is refused by name.  NOT COVERED: the writer (the analysis form is author-only input; converged/ emits the resolved material, so the ruling's writer-emits-canonical clause has no subject here), the `equilibriumState` cross-reference (its own gate: check_equilibrium_state_ref), and slices C/B.",
       "seconds": 0.5
+    },
+    "check_guides_static": {
+      "exit": 0,
+      "claim": "check_guides_static: OK -- [guide_anchors] all 276 guide anchor(s) the GUI links to resolve to a real \\label (OP_DEST 29 into per-entry guide, PROPS_DEST 5 into propsGuide, PROPS_MODEL_DEST 74 into per-entry guide, SLOT_MODEL_DEST 47 into per-entry guide, THEORY_DEST 64 into theoryGuide, op:<type> fallback 57 into propsGuide).  NOT CHECKED, and deliberately: whether a LIVE anchor is the RIGHT one.  That is the defect this gate was written after -- `adiabaticFlash` pointed at `ch:flash`, a label that exists, on a section titled \"Isothermal flash\" -- and every mechanical form of the check accuses innocent umbrella sections, so the judgement is written beside the entries instead. || [guide_environments] 4808 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here. || [guide_menu] all 8 guide(s) in docs/Makefile's DOCS (userGuide, developerGuide, theoryGuide, propsGuide, eduToolsGuide, designGuide, explorerGuide, tutorialsGuide) reach the Help menu, which MAPS the generated list rather than naming any of them, and GuideName is derived from the same line.  NOT CHECKED: that a browser paints the items, that each PDF exists (copyDocs warns, buildSite refuses), or the LANDING page, which links two of eight by editorial choice. || [guide_paths] 1723 path citations across the .tex manuals all resolve (9 allowed as paths the reader is told to create).  NOT checked: whether the PROSE about a path is true, any NUMBER stated in a manual, anything outside docs/*.tex, or run OUTPUTS (log/, converged/, reports/ ...), which a clean clone does not have. || [guide_pdf_version] all 8 guide PDFs render 'Choupo-dev' on their title page (the artefact a reader opens, not just the source it compiles from) || [curator_parity] 1 curator named in BOTH docs/preamble.tex and AUTHORS, each with a stated scope, and none of them in \\manualauthors (the macro that feeds every guide's copyright line); 1 EduTool(s) declare a curator on the tool ITSELF and each agrees with AUTHORS in both directions; the 2 guide author lists carried by \\manualauthors agree name for name with AUTHORS' own sections.  NOT CHECKED: whether consent was given (a fact outside the tree, recorded in AUTHORS and verifiable by no gate) and whether a scope string is true of the section it names.",
+      "seconds": 0.3
     }
   }
 }
