@@ -3900,6 +3900,23 @@ accepts today, and that is a policy call.
 > now; selectable in a named variant, so a heat exchanger or a dryer can
 > take it with `thermo <variant>;`.  Design written and ruled by the
 > architect before a builder starts; guides in the same slice (rule 4d).
+>
+> **C422 (Vitor, 2026-11-18, a question: could an agent use the property
+> kernel, take a dataset, fit a neural network, and the property dictionary
+> use its weights to predict viscosity, conductivity and the rest?).  A
+> CANDIDATE, after C421.**  The architect's judgement: technically small (a
+> feed-forward network is a few matrix products in C++, no dependency; the
+> weights a record like any law's coefficients; the fit a `choupoProps`
+> operation beside `fitParameters`).  Three conditions before it is built,
+> because a network extrapolates silently and a student cannot read it: (1)
+> a DECLARED DOMAIN (the box, or better the hull, of the training points)
+> outside which it REFUSES, as a table's ends do; (2) the fit reports its
+> in-sample and held-out residuals and they travel with the record; (3) it
+> is offered only where a table or a simple correlation in T and
+> composition does not fit the data within its scatter -- for a syrup's
+> viscosity a table (C421 (7)) or an Arrhenius term with a polynomial in
+> the mass fraction is the better teaching object.  Ranked after C421 (7),
+> which gives the same capability for measured points with no fit at all.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
