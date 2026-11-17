@@ -4044,6 +4044,46 @@ accepts today, and that is a policy call.
 > 2 in today's grammar, and REFUSING 2 would break every case a student
 > holds.  CORRECTED: 1 in the tree (gated); a 2 on an older file runs and
 > is announced once, with the line to write.
+>
+> **C425 (Vitor, 2026-11-18: read the process-simulation book he filed and
+> judge the architecture against it; "acho que deve haver uma falha em
+> componentes nao convencionais").**  HE IS RIGHT.  READ: the solids
+> getting-started guide of a breadth-first simulator in the literature
+> folder (`SimulatorManuals/`, 89 pages; the coal-drying and coal-combustion
+> chapters) and the index of the 623-page applications textbook beside it.
+> (No book dated 11-17 is in the folder; its simulator books are of May.
+> Asked him where yesterday's is.)  WHAT THAT WORLD HAS, in its own three
+> notions: (i) a homogeneous solid with a formula and a molar mass that
+> takes no part in phase equilibrium; (ii) a HETEROGENEOUS solid with no
+> formula and no molar mass (coal, biomass, sludge, ash), described by
+> ANALYSES (proximate, ultimate, sulfur; a general constituent analysis for
+> anything else), on a MASS basis, for which only enthalpy and density are
+> computed, each by a model that reads those analyses; (iii) a particle
+> size distribution carried by the solid part of a stream.  Its analyses
+> are attributes a unit may CHANGE (a dryer lowers the moisture entry), and
+> a heterogeneous solid enters chemistry only through a yield step that
+> decomposes it into ordinary species, the heat of that step accounted.
+> WHAT CHOUPO HAS: (i) de facto -- CaCO3, graphite, sucrose are ordinary
+> records with `role nonvolatile`, a solid heat capacity and a formation
+> datum; (iii) the size distribution as a stream attribute (C361).  (ii) IS
+> ABSENT: every component needs a formula and a molar mass, streams are
+> molar, and nothing computes an enthalpy or a density from an analysis.
+> The property architecture's own non-goals say so ("inert /
+> non-conventional solids not in phase equilibrium: only precipitating
+> salts are modelled").  So coal, biomass, sewage sludge, food solids and
+> ores cannot be stated honestly today.  THE ARCHITECT'S DIRECTION, to be
+> designed and put to Vitor before anything is built (it is pedagogy and
+> architecture at once, and it is NOT part of C421): a MATERIAL -- a
+> component kind with no formula, on a mass basis, whose ANALYSIS is a
+> dataset of the case in the experiments grammar (it is the sample's own);
+> its ultimate analysis gives the element balance, its measured heating
+> value gives a formation enthalpy on the elements datum (so the first law
+> crosses a combustor as it does for any species), its density is a
+> measured or declared law; never offered to an equilibrium; converted to
+> species only by a declared yield whose atoms the engine checks.  DIFFERENT
+> ON PURPOSE in one thing: moisture is the COMPONENT water held by the
+> solid, not an attribute a unit edits -- an attribute that changes is mass
+> appearing without a stream, which rule 4b forbids.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
