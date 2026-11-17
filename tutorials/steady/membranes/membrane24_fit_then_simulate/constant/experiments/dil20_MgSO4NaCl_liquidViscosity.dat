@@ -8,6 +8,7 @@ provenance
 {
     sha256       "b04f7502c16a37568303fc1d6eed2c9cd28f0d7a53e7e1c5c33087535b25c845";
     source       literature;
+    kind         adopted;
     basis        "pure water at 20 C, taken for the dilute solution of MgSO4, NaCl: the value of the SOLVENT, not a measurement of the solution";
     citation     "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), table 'Concentrative properties of aqueous solutions', p. 8-57: 'the viscosity of pure water at 20 C is 1.002 mPa s'";
 }

@@ -12,6 +12,7 @@ provenance
 {
     sha256       "b2d8d5385837206771d31c361bd08f53145e02c58ab724bf0ca667851429a283";
     origin       assumed;
+    kind         adopted;
     basis        "ASSUMED: a representative viscosity of seawater of salinity 35 at 25 C, the figure a handbook compilation tabulates; its primary is not attributed (see the citation), so the case states it as its own assumption; a lumped NaCl stands for the salts";
     citation     "NO PRIMARY READ, and none in the literature folder.  Cross-check (enters no value): Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), table 'Properties of seawater as a function of temperature at salinity S=35 and normal atmospheric pressure', p. 14-12 (PDF page 1638 of Handbooks-DataCompilations/lide-crc-handbook-chemistry-physics-82ed.pdf): eta = 0.966 mPa s at 25 C, 1.085 at 20 C.  That table gives three general references (Unesco Technical Papers in Marine Science 36, 1981; Kennish, CRC Practical Handbook of Marine Science, 1989; Poisson, IEEE J. Ocean. Eng. OE-5, 50, 1981) and attributes no column to any of them, so no primary can be cited through it";
 }

@@ -8,6 +8,7 @@ provenance
 {
     sha256       "2eca1be4dfbf5431ca8754b0e377d14deb9d92130fd0a1d8b569198116e75a62";
     source       literature;
+    kind         adopted;
     basis        "pure water at 20 C, taken for the dilute solution of Cl, Na, NH4, NO3: the value of the SOLVENT, not a measurement of the solution";
     citation     "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), table 'Concentrative properties of aqueous solutions', p. 8-57: 'the viscosity of pure water at 20 C is 1.002 mPa s'";
 }

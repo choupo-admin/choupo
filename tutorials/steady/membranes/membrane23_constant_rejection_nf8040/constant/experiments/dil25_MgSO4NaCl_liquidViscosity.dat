@@ -8,6 +8,7 @@ provenance
 {
     sha256       "ed7362216578f2120293f47cb199e13474b11e9d56857b3476f4661fd04eb6aa";
     source       literature;
+    kind         adopted;
     basis        "pure water at 25 C, taken for the dilute solution of MgSO4, NaCl: the value of the SOLVENT, not a measurement of the solution";
     citation     "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), table 'Viscosity of liquids', p. 6-170: water, 0.890 mPa s at 25 C";
 }
