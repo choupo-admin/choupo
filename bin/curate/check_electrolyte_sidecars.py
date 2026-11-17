@@ -49,6 +49,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import gatekit  # noqa: E402
 
 ROOT = gatekit.repo
+#  The corpus arm walks tutorials/ for a regrown constant/electrolyte/ directory (the
+#  scan-root reader cannot evaluate gatekit.repo, so the root is declared).
+SCAN_ROOTS = ("tutorials/**/constant/electrolyte/*.dat",
+              "tutorials/props/electrolyte/tartaricAcid_acidulation",
+              "tutorials/props/electrolyte/pitzer_seawater_verify")
 TART = ROOT / "tutorials" / "props" / "electrolyte" / "tartaricAcid_acidulation"
 PITZ = ROOT / "tutorials" / "props" / "electrolyte" / "pitzer_seawater_verify"
 SIDECAR = "constant/electrolyte/speciation.dat"
