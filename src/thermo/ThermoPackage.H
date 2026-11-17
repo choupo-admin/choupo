@@ -397,10 +397,15 @@ public:
     // route the liquid leg of a phiPhi package through these; every other
     // package keeps the formation-datum liquid (H_liquid_formation), whose
     // heat-capacity-and-latent-heat surface carries no pressure.
-    // liquidOnEosRoot(z) says whether this route applies to a stream of
-    // composition z (a phiPhi world, an EoS with a liquid root, no
-    // electrolyte, every species with an ideal-gas leg).
-    bool   liquidOnEosRoot(const sVector& z) const;
+    // liquidOnEosRoot() says whether this route applies -- ONCE PER PACKAGE,
+    // never per stream or per composition (a phiPhi world, an EoS with a
+    // liquid root, no electrolyte, EVERY component with an ideal-gas leg).
+    // When a phiPhi package cannot take it, the whole package keeps the
+    // formation-datum liquid and the reason is announced once, by name;
+    // liquidRouteFallbackReason() is that reason ("" when the route is taken
+    // or the package is not phiPhi), which the resolved view prints too.
+    bool        liquidOnEosRoot() const;
+    std::string liquidRouteFallbackReason() const;
     scalar H_liquid_eos(scalar T_K, scalar P_Pa, const sVector& x) const;
     scalar S_liquid_eos(scalar T_K, scalar P_Pa, const sVector& x) const;
     scalar H_stream_formation(scalar T_K, scalar P_Pa, scalar vapFrac,
