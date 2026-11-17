@@ -26,25 +26,26 @@ correlation by manufacturing a number, which this project forbids).
                                                        (the arity sin)
 
 Exit 1 listing failures."""
+import contextlib
 import re
-import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import gatekit  # noqa: E402
+
+ROOT = gatekit.repo
 BASE = ROOT / "tutorials" / "steady" / "utilities" / "utility01_dowtherm_preheat"
 REC = "constant/components/dowthermA.dat"
+STRIP = ("expected", "converged", "iterations")
 
 failures = []
 
 
-SEALED_BASE = None     # the fixture, SEALED by the export (the tree's case references the catalogue, C413)
-
-
 def export_sealed_base(tmp: Path) -> Path:
+    """The fixture, SEALED by the export (the tree's case references the catalogue, C413)."""
     dest = tmp / "sealed_base"
     r = subprocess.run([str(ROOT / "bin" / "choupo-import"), "--seal", str(BASE), "--to", str(dest)],
                        capture_output=True, text=True)
@@ -53,21 +54,20 @@ def export_sealed_base(tmp: Path) -> Path:
     return dest
 
 
-def make_case(tmp: Path, tag: str, rec_edit=None) -> Path:
-    case = tmp / f"probe_{tag}"
-    shutil.copytree(SEALED_BASE or BASE, case, ignore=shutil.ignore_patterns(
-        "expected", "*.csv", "converged", "iterations", "resultJson*"))
-    if rec_edit:
-        p = case / REC
-        p.write_text(rec_edit(p.read_text()))
-        #  The sealed manifest hashes every mirrored record, so a probe that
-        #  edits one must drop the seal or the runtime refuses on provenance
-        #  instead of on the thing under test.
-        man = case / "constant" / "propertyManifest"
-        if man.exists():
-            man.write_text(re.sub(r"sealed\s+true;", "sealed false;",
-                                  man.read_text()))
-    return case
+@contextlib.contextmanager
+def make_case(sealed: Path, rec_edit=None):
+    with gatekit.probe_copy(sealed, STRIP) as case:
+        if rec_edit:
+            p = case / REC
+            p.write_text(rec_edit(p.read_text()))
+            #  The sealed manifest hashes every mirrored record, so a probe that
+            #  edits one must drop the seal or the runtime refuses on provenance
+            #  instead of on the thing under test.
+            man = case / "constant" / "propertyManifest"
+            if man.exists():
+                man.write_text(re.sub(r"sealed\s+true;", "sealed false;",
+                                      man.read_text()))
+        yield case
 
 
 def run(case: Path):
@@ -79,27 +79,36 @@ def run(case: Path):
     #  CHOUPO_HOME while passing in one that does not.  A gate whose verdict
     #  depends on the caller's environment is the permanently-green-gate
     #  defect wearing its inverse; the probe's real scenario is the sealed
-    #  case running on its own mirrors, so pin exactly that.
-    p = subprocess.run([str(SOLVE), "."], cwd=case,
-                       capture_output=True, text=True, timeout=600,
-                       env={"PATH": "/usr/bin:/bin"})
-    return p.returncode, p.stdout + p.stderr
+    #  case running on its own mirrors, so pin exactly that.  The working
+    #  directory is part of the pin (`inside=True`): the engine finds its
+    #  catalogue from there, and a probe standing in the repository finds it.
+    return gatekit.run(SOLVE, case, env={"PATH": "/usr/bin:/bin"}, inside=True)
+
+
+SOLVE = None
+
+
+def probe(sealed: Path, rec_edit=None):
+    with make_case(sealed, rec_edit) as case:
+        return run(case)
 
 
 def main() -> int:
-    if not SOLVE.exists():
-        print(f"check_volatility_declaration: {SOLVE} missing -- build first")
+    global SOLVE
+    try:
+        SOLVE = gatekit.binary("choupoSolve")
+    except gatekit.GateRefusal as e:
+        print(f"check_volatility_declaration: {e}")
         return 1
-    global SEALED_BASE
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
-        SEALED_BASE = export_sealed_base(tmp)
-        if not (SEALED_BASE / REC).exists():
-            print(f"check_volatility_declaration: fixture {SEALED_BASE/REC} missing")
+        sealed = export_sealed_base(tmp)
+        if not (sealed / REC).exists():
+            print(f"check_volatility_declaration: fixture {sealed/REC} missing")
             return 1
 
         # ---- CONTRADICTION: announced, and the run continues -------------
-        rc, out = run(make_case(tmp, "contradiction"))
+        rc, out = probe(sealed)
         if rc != 0:
             failures.append("CONTRADICTION: the simplification is LEGAL --"
                             f" expected exit 0, got {rc}\n" + out[-800:])
@@ -120,7 +129,7 @@ def main() -> int:
                           count=1)
             assert "volatility" not in out_, "probe failed to strip the block"
             return out_
-        rc, out = run(make_case(tmp, "unknown", strip_block))
+        rc, out = probe(sealed, strip_block)
         if rc != 0:
             failures.append(f"UNKNOWN: expected exit 0, got {rc}")
         for n in ("declares no volatility{} block",
@@ -148,7 +157,7 @@ def main() -> int:
               "one home"]),
         ]
         for tag, edit, needles in probes:
-            rc, out = run(make_case(tmp, tag, edit))
+            rc, out = probe(sealed, edit)
             if rc == 0:
                 failures.append(f"REFUSAL {tag}: expected nonzero exit,"
                                 " got 0 (the refusal is gone)")
