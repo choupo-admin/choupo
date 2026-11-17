@@ -4481,6 +4481,34 @@ accepts today, and that is a policy call.
 > (e) landed: that slice ran no `--gui`, wrongly judging no cited file had
 > moved); the 13 gates the slices touch exit 0.  Ratchet: 82 -> 25 with
 > (b) to come.
+>
+> **C421 DOOR SLICE (b) LANDED (2026-11-18): the spray dryer and its
+> atomiser.**  The feed's viscosity, surface tension and density come from
+> the door at the feed's state; a property typed in the dryer is refused by
+> name; the water defaults (1e-3 Pa s, 0.072 N/m) and the stored 25 C
+> volumes are gone; the atomiser's gas viscosity is the air's at its
+> temperature.  THE DATA: the sucrose cases' viscosity is the NBS table
+> (Swindells, Snyder, Hardy & Golden 1958, Supplement to NBS Circular 440,
+> public domain), read on the page images, every value twice: Table 132 at
+> 30/40/50 wt %, 20-35 C as `measured`; the whey feed (16.7 wt %, below the
+> measured range) on the table's 20 wt % row as `adopted` with an authorised
+> box and the excursion announced (it overstates by about 14 %, stated); the
+> plants' 76-81 wt % magma on the 40 C column as `adopted`, held at the 75
+> wt % edge (an understatement, stated), selected by the dryer alone through
+> a variant.  Surface tension: the package's water at the feed temperature,
+> the sugar ignored and said so.  MOVED, each row in
+> `docs/audits/2026-11-18-door-spraydryer-moved-goldens.md`: droplet d32
+> 60.4 -> 77.2 um on the sugar cases (viscosity x5.16 and density x1.18
+> through d32 ~ mu^0.2 rho^-0.5), the design chain's wheel speed 39 751 ->
+> 59 798 rpm, the sugar plant's d32 111 -> 307 um and NPV -28.76 -> -28.70
+> MEUR; sprayDryer06's chamber lengthened 0.5 -> 1.2 m so its lesson (the
+> reaction-engineering approach against the drying curve) still has a powder
+> to compare -- an AUTHORED change of a case input, recorded in its header
+> and README, judged by the architect as the lesson's intent kept.  Proof on
+> the merged tree: the 9 golden dryer cases 13/0 with mass, element and
+> energy closures held; the ratchet, source, unread-key and guide gates exit
+> 0.  Ratchet: 82 -> 15 (only family (d) remains).
+
 
 
 
