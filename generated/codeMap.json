@@ -6183,6 +6183,7 @@
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
    "src/thermo/transport/WilkeReduction.H",
+   "src/unitOperations/UnitTypedProperties.H",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
   ],
   "src/postProcessing/sizing/PressureExchangerSize.cpp": [
@@ -13688,6 +13689,7 @@
    "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/UnitTypedProperties.H",
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
@@ -26900,11 +26902,13 @@
    "src/unitOperations/valve/Valve.cpp"
   ],
   "src/unitOperations/UnitTypedProperties.H": [
+   "src/postProcessing/sizing/PipeHeaderSize.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
+   "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
   ],
   "src/unitOperations/batch/BatchAccumulator.H": [

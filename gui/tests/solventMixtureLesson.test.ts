@@ -270,16 +270,16 @@ describe("solvent-mixture: the lesson text", () => {
       "Component.cpp:276": 'if (!h->found("Tref"))',
       "Component.cpp:292": 'if (h->found("R0"))',
       "HansenMixture.cpp:123": "return std::sqrt(4.0 * a * a + b * b + c * c);",
-      "HansenMixture.cpp:288": "the Hansen parameters are held constant at their reference",
-      "HansenMixture.cpp:355": 'if (checkModel == "ideal")',
-      "HansenMixture.cpp:402-404":
+      "HansenMixture.cpp:290": "the Hansen parameters are held constant at their reference",
+      "HansenMixture.cpp:357": 'if (checkModel == "ideal")',
+      "HansenMixture.cpp:404-406":
         /p\.dD \+= phi\[i\] \* solvents\[i\]\.dD;\s*p\.dP \+= phi\[i\] \* solvents\[i\]\.dP;\s*p\.dH \+= phi\[i\] \* solvents\[i\]\.dH;/,
-      "HansenMixture.cpp:416-418":
+      "HansenMixture.cpp:418-420":
         /michelsenTPD\(thermo\.phase\(liqIdx\), T, P, z\);[\s\S]*p\.phase = st\.unstable \? "twoPhase" : "homogeneous";/,
-      "HansenMixture.cpp:421": 'if (p.phase != "twoPhase")',
-      "HansenMixture.cpp:440": 'const scalar n0 = basis == "mass" ? f0 / solvents[0].MW : f0;',
-      "HansenMixture.cpp:510": "if (p.hasRa && (!best || p.Ra < best->Ra)) best = &p;",
-      "HansenMixture.cpp:555": "Ra IS AN AFFINITY, NOT A SOLUBILITY",
+      "HansenMixture.cpp:423": 'if (p.phase != "twoPhase")',
+      "HansenMixture.cpp:442": 'const scalar n0 = basis == "mass" ? f0 / solvents[0].MW : f0;',
+      "HansenMixture.cpp:512": "if (p.hasRa && (!best || p.Ra < best->Ra)) best = &p;",
+      "HansenMixture.cpp:557": "Ra IS AN AFFINITY, NOT A SOLUBILITY",
       "StabilityTest.cpp:221": "best.unstable = (best.tmMin < tmTol);",
       //  C259: the step-5 formula now carries ln gamma_i(y) at the TRIAL
       //  composition, and its gloss cites the engine line that adds it.
