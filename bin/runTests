@@ -4717,7 +4717,8 @@ PYEOF
     # exit 0 (2026-08-22).
     # THE REFUSAL PROBES (DEV.md 4c C420): one runner walks the probe groups of
     # bin/curate/refusal_probes/ (pid-refusals, pump-liquid-inlet,
-    # shortcut-column-refusals, membrane-feed-scope) and ends with one
+    # shortcut-column-refusals, membrane-feed-scope, restricted-network,
+    # solverdict-lint) and ends with one
     # `@row <label> PASS|FAIL <claim>` line per group; each becomes the same
     # PASS/FAIL result row the former gate printed.  A new group adds its row
     # here by itself.

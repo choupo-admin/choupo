@@ -756,11 +756,6 @@
       "claim": null,
       "seconds": 0.1
     },
-    "check_restricted_network": {
-      "exit": 0,
-      "claim": "check_restricted_network: OK -- the declared restricted network announces itself and quotes its reason, labels its results (networkRestricted), and refuses the five dishonest shapes (no list / no reason / unknown record / two authorities / unreachable admission); a full-scope case stays silent",
-      "seconds": 0.6
-    },
     "check_retired_names": {
       "exit": 0,
       "claim": null,
@@ -850,11 +845,6 @@
       "exit": 0,
       "claim": null,
       "seconds": 0.5
-    },
-    "check_solverdict_lint": {
-      "exit": 0,
-      "claim": "check_solverdict_lint: OK -- an ignored system/solverDict is announced by name in batch, ctrl AND props, a transient timeStepping key is announced by the steady binary (runs continue; cost stated), and the clean cases stay silent",
-      "seconds": 3.2
     },
     "check_source_licence": {
       "exit": 0,
@@ -1783,8 +1773,8 @@
     },
     "check_refusal_probes": {
       "exit": 0,
-      "claim": "check_refusal_probes: OK -- 4 group(s): membrane-feed-scope, pid-refusals, pump-liquid-inlet, shortcut-column-refusals",
-      "seconds": 0.4
+      "claim": "check_refusal_probes: OK -- 6 group(s): membrane-feed-scope, pid-refusals, pump-liquid-inlet, restricted-network, shortcut-column-refusals, solverdict-lint",
+      "seconds": 0.7
     }
   }
 }
