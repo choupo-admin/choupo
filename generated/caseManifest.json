@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1878,
+  "cases": 1881,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 31
@@ -24877,6 +24877,36 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/transport/measured01_methanol_glycol_viscosity_grid": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/transport/measured02_ethanol_water_surface_tension_grid": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/transport/mixing01_water_acetone": {
    "application": "choupoProps",
    "ops": [
@@ -28153,6 +28183,23 @@
    ],
    "thermo": {
     "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/hydraulics/pipe03_sucrose_syrup_measured": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pipe"
+   ],
+   "unitModels": [
+    "Churchill"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
    },
    "roles": [],
    "hasGolden": true
@@ -31746,6 +31793,8 @@
     "tutorials/props/thermoTest/model4_speciation_scaling",
     "tutorials/props/transport/liquidDiffusivity01_pelkonen_ternary",
     "tutorials/props/transport/liquidDiffusivity02_kooijmanTaylor_ternary",
+    "tutorials/props/transport/measured01_methanol_glycol_viscosity_grid",
+    "tutorials/props/transport/measured02_ethanol_water_surface_tension_grid",
     "tutorials/props/transport/mixing01_water_acetone",
     "tutorials/props/transport/purelaws01_methanol_isopropanol_water",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
@@ -31992,6 +32041,7 @@
     "tutorials/steady/hydraulics/letdown01_ammonia_flashing",
     "tutorials/steady/hydraulics/pipe01_water_line",
     "tutorials/steady/hydraulics/pipe02_airwater_twophase",
+    "tutorials/steady/hydraulics/pipe03_sucrose_syrup_measured",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",
@@ -32714,6 +32764,7 @@
    "pipe": [
     "tutorials/steady/hydraulics/pipe01_water_line",
     "tutorials/steady/hydraulics/pipe02_airwater_twophase",
+    "tutorials/steady/hydraulics/pipe03_sucrose_syrup_measured",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/thermo/variants01_ethanol_water_line"
    ],
@@ -35292,6 +35343,8 @@
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/props/transport/liquidDiffusivity01_pelkonen_ternary",
+    "tutorials/props/transport/measured01_methanol_glycol_viscosity_grid",
+    "tutorials/props/transport/measured02_ethanol_water_surface_tension_grid",
     "tutorials/props/transport/purelaws01_methanol_isopropanol_water",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
     "tutorials/props/transport/table01_water_viscosity_points",
@@ -35426,6 +35479,7 @@
     "tutorials/steady/heat/pinch01_four_stream_classic",
     "tutorials/steady/heat/reboiler_water_copper",
     "tutorials/steady/hydraulics/pipe01_water_line",
+    "tutorials/steady/hydraulics/pipe03_sucrose_syrup_measured",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",
@@ -36671,6 +36725,8 @@
     "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/transport/liquidDiffusivity01_pelkonen_ternary",
     "tutorials/props/transport/liquidDiffusivity02_kooijmanTaylor_ternary",
+    "tutorials/props/transport/measured01_methanol_glycol_viscosity_grid",
+    "tutorials/props/transport/measured02_ethanol_water_surface_tension_grid",
     "tutorials/props/transport/mixing01_water_acetone",
     "tutorials/props/transport/purelaws01_methanol_isopropanol_water",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
@@ -37562,6 +37618,8 @@
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/temperature01_gas_thermometer",
+    "tutorials/props/transport/measured01_methanol_glycol_viscosity_grid",
+    "tutorials/props/transport/measured02_ethanol_water_surface_tension_grid",
     "tutorials/props/transport/table01_water_viscosity_points"
    ],
    "propertyScan2D": [

@@ -145,7 +145,8 @@
    "src/thermo/PackageAudit.H"
   ],
   "Axis": [
-   "src/outerDriver/GridSweepDriver.H"
+   "src/outerDriver/GridSweepDriver.H",
+   "src/thermo/transport/LiquidTransportDeclarations.H"
   ],
   "BagFilter": [
    "src/unitOperations/separation/BagFilter.H"
@@ -1421,6 +1422,9 @@
   "MixingRules": [
    "src/propertyOps/MixingRules.H"
   ],
+  "MixtureMeasurement": [
+   "src/thermo/transport/LiquidTransportDeclarations.H"
+  ],
   "ModelBoundaryFinding": [
    "src/core/ResultRecords.H"
   ],
@@ -2572,9 +2576,6 @@
   ],
   "VesselSize": [
    "src/postProcessing/sizing/VesselSize.H"
-  ],
-  "ViscosityMeasurement": [
-   "src/thermo/transport/LiquidTransportDeclarations.H"
   ],
   "VleConsistency": [
    "src/propertyOps/VleConsistency.H"
@@ -11448,6 +11449,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
    "src/core/ReadLog.H",
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
@@ -18496,6 +18498,7 @@
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/SaturatedVapour.cpp",
+   "src/thermo/transport/LiquidTransportDeclarations.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
    "src/thermo/transport/WilkeChang.cpp",
    "src/unitOperations/PropertySourceDeclarations.cpp",
