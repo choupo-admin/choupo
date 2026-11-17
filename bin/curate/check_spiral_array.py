@@ -124,6 +124,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from check_membrane_modules import (parse_record, si, word, close, run,  # noqa: E402
                                     result_of, copy_case, ROOT, ASSETS)
+import case_records  # noqa: E402  (C413: the record the run reads, case-local or catalogue)
 
 M21 = ROOT / "tutorials/steady/membranes/membrane21_two_stage_nf_array"
 M22 = ROOT / "tutorials/steady/membranes/membrane22_two_stage_nf_array_dspmde"
@@ -165,7 +166,7 @@ def unseal(src, dst):
 
 
 def species_D(case, ion):
-    t = (case / "constant/species" / (ion + ".dat")).read_text()
+    t = case_records.record_path(case, "species/" + ion + ".dat").read_text()
     t = re.sub(r"//[^\n]*", "", t)
     m = re.search(r"D0\s*\{\s*value\s+([0-9.eE+-]+)\s*;", t)
     return float(m.group(1))

@@ -167,6 +167,7 @@ import tempfile
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import record_psat  # noqa: E402
+import case_records  # noqa: E402  (C413: the record the run reads)
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
@@ -234,8 +235,8 @@ def antoine_tsat(case: pathlib.Path, component: str, P_Pa: float):
     """Tsat(P) [K] from the case's OWN vapour-pressure record (Antoine, or the
     IAPWS Wagner form water carries since 2026-11-16), recomputed here, never
     read off the engine.  None if the record carries neither."""
-    rec = case / "constant" / "components" / (component + ".dat")
-    if not rec.is_file() or P_Pa <= 0.0:
+    rec = case_records.record_path(case, "components/" + component + ".dat")
+    if rec is None or not rec.is_file() or P_Pa <= 0.0:
         return None
     try:
         return record_psat.tsat_k(rec.read_text(), P_Pa)

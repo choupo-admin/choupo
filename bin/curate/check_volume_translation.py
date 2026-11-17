@@ -44,13 +44,15 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "bin" / "curate"))
+import case_records  # noqa: E402  (C413: the record the run reads, case-local or catalogue)
 PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
 CASE = ROOT / "tutorials/props/molecular/volumeTranslation01_nhexane_peneloux"
 R = 8.314462618
 
 
 def rec(name, key):
-    txt = (CASE / "constant/components" / f"{name}.dat").read_text()
+    txt = case_records.record_path(CASE, f"components/{name}.dat").read_text()
     m = re.search(rf"^\s*{key}\s+([0-9.eE+-]+)\s*;", txt, re.M)
     if not m:
         raise ValueError(f"{name}: no {key}")

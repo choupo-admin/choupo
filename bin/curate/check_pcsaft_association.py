@@ -70,6 +70,8 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "bin" / "curate"))
+import case_records  # noqa: E402  (C413: a probe copy of a referencing case is materialised)
 PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
 CASE = ROOT / "tutorials" / "props" / "molecular" / "pcsaft03_association_pure"
 NHEX = ROOT / "tutorials" / "props" / "molecular" / "pcsaft01_pure_nhexane"
@@ -164,8 +166,8 @@ def main() -> int:
 
         def probe_case(tag):
             case = tmp / tag
-            shutil.copytree(CASE, case,
-                            ignore=shutil.ignore_patterns("expected", "log.*"))
+            case_records.copytree(CASE, case,
+                                  ignore=shutil.ignore_patterns("expected", "log.*"))
             #  Unseal: the probe edits the mirrored record, and the point is
             #  the COMPONENT refusal, not the manifest hash refusal.
             (case / "constant" / "propertyManifest").unlink()
