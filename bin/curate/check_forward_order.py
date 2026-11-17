@@ -68,14 +68,13 @@ which is not the same as harmless: it was waiting for the first user who
 wrote a reaction from a textbook and left the order to the default.
 """
 import re
-import shutil
-import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-BUILD = ROOT / "build" / "linux64Gcc"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import gatekit  # noqa: E402  (C420: the one home of the probe plumbing)
+
+ROOT = gatekit.repo
 
 #  (label, tutorial, binary, reactant whose `order` we delete, reactions file)
 NEGATIVES = [
@@ -114,9 +113,7 @@ def strip_order(text, want_component):
 
 
 def run(binary, case):
-    p = subprocess.run([str(BUILD / binary), str(case)],
-                       capture_output=True, text=True, timeout=300)
-    return p.returncode, p.stdout + p.stderr
+    return gatekit.run(gatekit.binary(binary), case, 300)
 
 
 def main() -> int:
@@ -127,12 +124,12 @@ def main() -> int:
         if not src.is_dir():
             failures.append(f"{label}: tutorial {rel} is missing")
             continue
-        if not (BUILD / binary).exists():
-            failures.append(f"{label}: {binary} not built")
+        try:
+            gatekit.binary(binary)
+        except gatekit.GateRefusal as e:
+            failures.append(f"{label}: {e}")
             continue
-        with tempfile.TemporaryDirectory() as td:
-            dst = Path(td) / src.name
-            shutil.copytree(src, dst)
+        with gatekit.probe_copy(src) as dst:
             rxn = dst / rxnrel
             text = rxn.read_text()
             new, which = strip_order(text, comp)
@@ -166,7 +163,8 @@ def main() -> int:
         failures.append("cstr01 no longer declares `order 0;` -- the positive "
                         "control is gone, re-point it at a case that does")
     else:
-        rc, out = run("choupoSolve", c)
+        with gatekit.probe_copy(c) as cc:       # a private copy: the run writes nothing in the tree
+            rc, out = run("choupoSolve", cc)
         if rc != 0:
             failures.append("cstr01 declares an explicit `order 0;` on a "
                             "reactant and no longer runs -- an explicit "
@@ -175,9 +173,7 @@ def main() -> int:
 
     #  (b2) a PRODUCT with no `order` must NOT be refused.  Delete it from a
     #       product entry and require the run to still succeed.
-    with tempfile.TemporaryDirectory() as td:
-        dst = Path(td) / "cstr01"
-        shutil.copytree(c, dst)
+    with gatekit.probe_copy(c) as dst:
         rxn = dst / "constant/reactions"
         text = rxn.read_text()
         done = False
