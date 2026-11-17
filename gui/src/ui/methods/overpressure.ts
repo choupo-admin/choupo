@@ -55,6 +55,7 @@
       secondary source quotes them; the Code itself was NOT read.
 \*---------------------------------------------------------------------------*/
 
+import { caseComponentScalar } from "../../case/caseRecordRead.js";
 import type { RunResult } from "../../adapters/SolverAdapter.js";
 import type { DictOverride } from "../../case/methodRun.js";
 
@@ -424,10 +425,7 @@ export function recordMolarMasses(
 export function recordScalar(
   raw: { [rel: string]: string } | undefined, comp: string, key: string,
 ): number | undefined {
-  const body = raw?.[`constant/components/${comp}.dat`];
-  if (!body) return undefined;
-  const m = new RegExp(`^${key}\\s+([0-9.eE+-]+)\\s*;`, "m").exec(body);
-  return m ? Number(m[1]) : undefined;
+  return caseComponentScalar(raw, comp, key);   // the case's own record, else the catalogue's
 }
 
 /** The `composition { ... }` block of the named operation in a propsDict.

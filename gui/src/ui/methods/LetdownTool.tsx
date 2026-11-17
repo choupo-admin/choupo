@@ -31,6 +31,7 @@
   property.
 \*---------------------------------------------------------------------------*/
 
+import { caseComponentRecord } from "../../case/caseRecordRead.js";
 import { useMemo, useState } from "react";
 
 import { Alert, Anchor, Box, Group, Loader, Stack, Table, Text, Title } from "@mantine/core";
@@ -124,7 +125,7 @@ function PanTable({ children }: { children: React.ReactNode }): JSX.Element {
  *  undefined -- a temperature-dependent one would need the engine's own
  *  integral, which this page will not imitate. */
 function constantLiquidCp(raw: { [rel: string]: string } | undefined, comp: string): number | undefined {
-  const body = raw?.[`constant/components/${comp}.dat`];
+  const body = caseComponentRecord(raw, comp);
   const m = body ? /liquidHeatCapacity\s*\{[^}]*coefficients\s*\(([^)]*)\)/.exec(body) : null;
   if (!m) return undefined;
   const c = m[1]!.trim().split(/\s+/).map(Number);

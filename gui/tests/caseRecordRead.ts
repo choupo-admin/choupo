@@ -17,6 +17,11 @@
  *  the records it reads, so a test that reads "the case's record" asks here.        */
 import { existsSync, readFileSync } from "node:fs";
 
+//  The app's resolver (gui/src/case/caseRecordRead.ts) is THE one: tests re-export it,
+//  and `readCaseRecord` below is only its filesystem form (a path, not a bundle).
+export { caseComponentRecord, caseComponentScalar, pinnedComponentNames }
+  from "../src/case/caseRecordRead.js";
+
 /** Read a file; when it is a `.../constant/<sub>` the case does not carry, read
  *  the catalogue's `data/standards/<sub>` instead. */
 export function readCaseRecord(path: string): string {

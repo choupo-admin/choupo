@@ -10,6 +10,7 @@
   Copyright (C) 2026 Vítor Geraldes
   SPDX-License-Identifier: GPL-3.0-or-later
 \*---------------------------------------------------------------------------*/
+import { caseComponentScalar, pinnedComponentNames } from "./caseRecordRead.js";
 const MW_RE = /^\s*MW\s+([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)\s*;/m;
 const NAME_RE = /(?:^|\/)components\/([^/]+)\.dat$/;
 
@@ -27,6 +28,13 @@ export function caseMolarMass(raw: { [p: string]: string } | undefined): { [c: s
       const v = Number(mw[1]);
       if (Number.isFinite(v) && v > 0) out[nm[1]!] = v;
     }
+  }
+  //  A case that REFERENCES the catalogue (C413) carries no copy of the records its
+  //  manifest pins: read their MW where the engine does.
+  for (const c of pinnedComponentNames(raw)) {
+    if (out[c] !== undefined) continue;
+    const v = caseComponentScalar(raw, c, "MW");
+    if (v !== undefined && Number.isFinite(v) && v > 0) out[c] = v;
   }
   return out;
 }
