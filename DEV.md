@@ -3795,6 +3795,35 @@ accepts today, and that is a policy call.
 > for rule 4c's sizing: a landing that adds a SUITE MODE or a published row
 > kind reaches every case that prints it, and the scope was chosen by the
 > cases the source edit touched, not by the rows the run prints.
+>
+> **C421 (Vitor, 2026-11-18, an ORDER: "Nao facas mais nada antes de
+> atingirmos a lei de John Gall!").**  Read with him the same hour: a complex
+> system that works grows from a simple system that works; the last days
+> simplified Choupo's base without losing what it does (2233 PASS, every
+> closure held).  THE BAR, decided by the architect so it can be measured
+> and closed: EVERY FACT THE ENGINE USES HAS ONE HOME, and the system still
+> works.  Measured 2026-11-18, the facts that still live in two places:
+> (1) 82 sites in 34 source files price a liquid property themselves instead
+> of asking the one door (`bin/curate/liquid_property_ratchet_debt.tsv`);
+> moving them moves published numbers (the water viscosity 1e-3 of ten spray
+> dryers, the 1000 kg/m3 of the electrodialysis cases, the surface tension
+> 0.072), each moved row named with its reason;
+> (2) 56 cases still hold a `held` local copy of a catalogue record (C413);
+> each becomes a reference, or a declared variation with its reason;
+> (3) the aqueous solvent found by the NAME 'water' in 8 places
+> (`AQUEOUS_SOLVENT_NAME_LITERALS`) instead of the package's declaration;
+> (4) three readers of the per-unit thermo subdict
+> (`THERMO_SUBDICT_READERS`) where there should be one;
+> (5) 22 gates that still copy a case by their own code.
+> DONE when the five read zero (or each survivor is a declared exception
+> with its reason), every landing proven as C420 was: by what it can reach,
+> and one `--nightly` at the end.  UNTIL THEN NOTHING ELSE: no new unit,
+> model, EduTool, gate, suite tier or infrastructure; C402's open items and
+> C413's next slice are THIS work, not beside it; the other open commissions
+> wait.  Data hygiene (citations, licence debt, documentation debt) is NOT
+> a two-homes fact and is out of this bar.  Order: (2), (3), (4), (5) are
+> small and move no number; (1) last, case by case, because it moves
+> published numbers.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the

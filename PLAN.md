@@ -52,6 +52,7 @@ LANDED 2026-11-17: the batch of C413 slice 3, C410 and the C415 pilot (one full 
 
 | status | what | ref |
 |---|---|---|
+| RUNNING 11-18, ONLY THIS (Vitor's order) | Gall's law: every fact the engine uses has one home, and it still works. Five counts to zero: 56 held case copies, 8 solvent-by-name, 3 thermo-subdict readers, 22 gates with their own copy, 82 liquid-property bypasses (last, they move published numbers). Nothing else until done. | C421 |
 | LANDED 11-18 | The gates, second pass (358 -> 353): one kit; six refusal groups as data; 137 gates copy a case through one home, each byte-identical; proven by the first `--nightly` (2233 PASS; the 8 red gates were the 11-17b landing's leftovers, fixed and re-run). Next, queued: the 61 SERIAL gates moved into private copies so the pool keeps the cores busy, one proven at a time. | C420 |
 | ONE WRITER since 11-12 | The laptop session builds everything; the cloud session reviews what has landed and reports under docs/reviews/ (it fixes nothing). The laptop inherits the cloud's documentation debt, liquid-liquid pairs in bulk, the generated catalogue page, the Gibbs-Duhem test and the reference EoS open items | C364, C363, C362 |
 | LANDED 11-12 | Catalogue: severe fits stay (NRTL 793, UNIQUAC 374, Wilson 790 records; a severe pair is promoted only if it beats the ideal mixture on its own points); aqueous species 53 -> 74 (NBS / CODATA); electrolytes (eNRTL 48, Pitzer 99); transport and surface-tension records; Henry in water and in organic solvents | C333, C334, C320, C311, C327, C328, C321 |
