@@ -4213,6 +4213,35 @@ accepts today, and that is a policy call.
 > and R2.  Order of building in its section 7; step 1 (tables under
 > `measured`) is C421 (7) and unblocks the spray dryer's and the exchangers'
 > door slices.
+>
+> **C427 (Vitor, 2026-11-18: "achas que se pode ja preparar a arquitetura de
+> polimeros?  Punhas um caso ou dois, adaptavas o Explorer, criavas
+> classificacoes dos componentes e ficava ja tudo pronto!  Mas tu e que
+> sabes melhor o que fazer").**  DECIDED: YES TO THE ARCHITECTURE NOW, NO TO
+> THE POLYMER PHYSICS NOW.  The reason is one the day's own design exposes:
+> the material (C425, M2) makes a stream carry mass flows beside its molar
+> part; a chain-growth polymer needs it to carry moment flows; the size
+> distribution is already carried.  These are ONE concept, and designing the
+> stream's extension for the material alone would mean opening the stream
+> twice.  So the design record gains, before any spike: (1) CARRIED
+> QUANTITIES -- extensive, conserved quantities a stream carries beside its
+> molar flows, each attached to a carrier, each with a declared law (they
+> add on mixing, split with their carrier, change only by a declared rate
+> inside a unit that solves their balance); a quantity with no such law is
+> not carried (which is why moisture is a component and an analysis is fixed
+> data: M7 stands, and is now the consequence of a rule instead of a
+> preference); (2) THE KINDS OF COMPONENT, one closed vocabulary the
+> records, the engine's acceptance rules and the Explorer all read:
+> molecular species, aqueous species, crystalline solid, material, segment,
+> polymer, oligomer -- today the tree has only `role` and scattered habits.
+> The spike on the stream is then taken ONCE, with a material and with a
+> polymer's zeroth, first and second moments as its two subjects.  NOT NOW:
+> polymer property models, polymer phase equilibrium, the kinetic schemes;
+> they wait for a case that asks, with the three notes being read today
+> (polymer characterisation and properties, a step-growth textbook) as
+> their foundation.  A first polymer witness is chosen only after those
+> notes are in.  The Explorer follows the vocabulary when records of the
+> new kinds exist, not before.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
