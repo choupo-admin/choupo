@@ -140,7 +140,7 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    implemented, symbols, validity window, source with equation numbers, the
    in-sample statement where one applies -- with a `\label`; (2) the Theory /
    F1 link of the block AND of each selectable model opens THAT section
-   (`gui/src/case/modelDocs.ts`, gate `check_guide_anchors`); (3) the
+   (`gui/src/case/modelDocs.ts`, gate `check_guides_static`, arm `guide_anchors`); (3) the
    Tutorials Guide, `docs/tutorials-catalogue.md`, `docs/ai/unit-ops.md` (or
    the matching `docs/ai` file) and the capability index carry it; (4) the
    PDFs are rebuilt.  EVERY BRIEF to a general lists these four as acceptance
@@ -166,7 +166,11 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    registered by name and queued as a slice of its own; it is never added to
    the brief in flight.  (3) A general whose branch shows no commit for an
    hour is LOOKED AT -- branch, worktree, processes, its last actions -- not
-   waited for.  Before dispatching, the brief states the real size of the
+   waited for.  (4) A NEW GATE NEEDS THE REAL DEFECT IT WOULD HAVE
+   CAUGHT, named in its header; the gates that test gates or re-prove an
+   unchanged input run in the nightly tier, printed DEFERRED by name in
+   every other run (Vitor, 2026-11-17: "criaste o ministerio de
+   certificacao do Choupo!"; DEV.md 4c C419).  Before dispatching, the brief states the real size of the
    change and the smallest evidence that closes it.
 
 5. **Do not change a permanent rule as a reflex to criticism.**  Change it
