@@ -15,6 +15,9 @@ again only when one of them changes (DEV.md 4c C394, decision 1).
                                                          stored labels or -
     bin/curate/suite_reuse.py case-plan <root> --explain how each case is keyed:
                                                          narrow or whole
+    bin/curate/suite_reuse.py migrate-keys [root]        re-key the stored curation
+                                                         verdicts to the current
+                                                         key format (no run)
     bin/curate/suite_reuse.py verify-reads <case>...     strace the run and hold
                                                          its reads to the key
     bin/curate/suite_reuse.py key <gate>                 print the key and the
@@ -74,6 +77,28 @@ WHAT A KEY IS.  A sha256 over exactly the inputs the verdict reads:
   * THE PLATFORM -- `uname -m`, the Python version and golden_bands' platform
     fingerprint (CPU, C library, compiler; review SE-03).
 
+THE DICTIONARIES OF A CASE ENTER THE KEY AS NORMALISED TEXT (DEV.md 4c C421
+(8)).  A landing changed the `schemaVersion` stamp of all 1260 curation cases
+and a key over each file's bytes re-ran every fit.  Now the files of a case's
+system/ and constant/ (and of the constant/ of each parent the resolver walks)
+are hashed after normalise_dictionary(): comments removed where the engine's
+tokenizer sees one (at the start of a token, never inside a "string" or in the
+middle of a word), blank lines dropped, blank runs collapsed to one space, and
+the top-level line `schemaVersion 1;` / `schemaVersion 2;` dropped.  NOT
+dropped: `recordType <word>;` (the engine branches on its value), a stamp with
+any other value (the engine refuses it), every key, number, word and string.
+Hashed whole as before: tables (.csv .tsv .txt .json), the `expected` golden,
+archiveExtracts/, experiments/, a dossier, and any record the constant/'s
+propertyManifest names (the seal check hashes its parsed content, stamp
+included).  A new-format key carries KEY_FORMAT in its material, so it can
+never equal an old one; `migrate-keys` recognises a stored verdict by the
+OLD-format key of the tree in hand (case_keys(norm=False), used by nothing
+else) and rewrites it under the new key, keeping its date and commit and
+adding "migrated from key <old>".  Run it with the environment the sweep has
+(CHOUPO_HOME the tree's root: the key holds the data root's path).  The
+golden-band mode, which runTests exports, is read from golden_bands.py when
+the variable is unset.
+
 A content hash is cached in build/reuse/hashcache.tsv under the file's full
 stat signature -- size, mtime, ctime, inode, device -- so a key costs stat
 calls after the first run, and a same-size edit whose mtime was put back
@@ -122,6 +147,7 @@ only to walks: a gate that grows a read outside its key stops being reused
 the day it does, instead of being reused wrongly.
 """
 import ast
+import functools
 import hashlib
 import json
 import os
@@ -271,6 +297,145 @@ class Hasher:
 H = Hasher()
 
 
+# --------------------------------------------------------------------------
+#  THE NORMALISED TEXT OF A DICTIONARY (DEV.md 4c C421 (8), measured 2026-11-18)
+#
+#  A landing changed ONE digit, the `schemaVersion` stamp, in the thermoPhysPropDict
+#  of all 1260 curation cases, and a key over each file's bytes re-ran every fit
+#  to prove a stamp no fit reads changes no fit.  The key of a case now hashes
+#  the NORMALISED text of its dictionary files, and nothing else is looser:
+#
+#    * comments are removed -- `//` to the end of the line and `/* */` -- where
+#      the engine's tokenizer (src/core/Dictionary.cpp skipWhitespaceAndComments)
+#      sees one: at the START of a token, never inside a "quoted string" and
+#      never in the middle of a word (`/` is a word character, so `a//b` is one
+#      word and is kept whole);
+#    * blank lines go, and runs of blanks inside a line become one space (a
+#      newline is KEPT: a line is a row to a table-like record, and the
+#      tokenizer's blank/newline equivalence is not used);
+#    * the stamp line `schemaVersion 1;` or `schemaVersion 2;` at the top level
+#      of the file goes -- the two values the engine accepts (ThermoAnnounce.H
+#      reads 2 with one announcement, 1 silently); any other value stays in the
+#      text, because the engine REFUSES it and a refused case must not be
+#      reused.  `recordType <word>;` is NOT dropped (see the DEV.md note): the
+#      engine reads its value to choose the grammar path
+#      (ThermoPackageBuilder.cpp:2082, ChemistrySystem.H:75, ...).
+#
+#  Applied only to the dictionary text of a case (its system/ and constant/
+#  files and its constant/ cascade).  NOT applied to: a table (`.csv`, `.tsv`,
+#  `.txt`, `.json`, `.py`, `.md`), the `expected` golden, `archiveExtracts/`,
+#  `experiments/` (measured-value tables), a dossier, and a record the
+#  propertyManifest of its constant/ names -- that one is hashed by the seal
+#  check on its PARSED content, stamp included, so a stamp edit there is a
+#  divergence the run can see.  Those are hashed whole, as before.
+# --------------------------------------------------------------------------
+
+KEY_FORMAT = "normalised-dictionaries-v2"      # added to a new-format key only
+_STAMP = re.compile(r"^schemaVersion[ ]+[12][ ]*;$")
+_WORDCH = re.compile(r"[A-Za-z0-9_.+:/\[\]$=\-]")      # Dictionary.cpp isWordChar
+_NOT_DICT_EXT = {".csv", ".tsv", ".txt", ".json", ".py", ".md", ".cho",
+                 ".dossier", ".gitignore"}
+
+
+def normalise_dictionary(text):
+    """-> the normalised text (see the header above)."""
+    out, i, n = [], 0, len(text)
+    boundary = True                      # at the start of a token?
+    while i < n:
+        c = text[i]
+        if c == '"':                     # a string: copied untouched
+            j = i + 1
+            while j < n and text[j] != '"':
+                j += 2 if text[j] == "\\" else 1
+            out.append(text[i:j + 1])
+            i, boundary = j + 1, True
+            continue
+        if boundary and c == "/" and text.startswith("//", i):
+            j = text.find("\n", i)
+            i = n if j < 0 else j        # keep the newline itself
+            continue
+        if boundary and c == "/" and text.startswith("/*", i):
+            j = text.find("*/", i + 2)
+            i = n if j < 0 else j + 2
+            out.append(" ")              # a comment separates tokens
+            boundary = True
+            continue
+        out.append(c)
+        boundary = not (_WORDCH.match(c) or c in "eE")
+        i += 1
+    text = "".join(out)
+    # top-level lines: depth counted outside strings
+    lines, depth, instr = [], 0, False
+    for ln in text.split("\n"):
+        top = depth == 0 and not instr
+        t = re.sub(r"[ \t\r\f\v]+", " ", ln).strip()
+        for ch in ln:
+            if ch == '"':
+                instr = not instr
+            elif not instr:
+                depth += (ch == "{") - (ch == "}")
+        if not t or (top and _STAMP.match(t)):
+            continue
+        lines.append(t)
+    return "\n".join(lines) + "\n"
+
+
+@functools.lru_cache(maxsize=None)
+def _manifest_text(cdir):
+    try:
+        return (Path(cdir) / "propertyManifest").read_text(errors="ignore")
+    except OSError:
+        return ""
+
+
+def _claimed_by_manifest(p: Path):
+    """True when the propertyManifest beside p's constant/ names p's record."""
+    parts = p.parts
+    if "constant" not in parts:
+        return False
+    k = len(parts) - 1 - parts[::-1].index("constant")
+    cdir = Path(*parts[:k + 1])
+    rel = "/".join(parts[k + 1:])
+    if not rel or rel == "propertyManifest":
+        return False
+    return f'"{rel}"' in _manifest_text(str(cdir))
+
+
+def is_dictionary_text(p: Path):
+    """Is this file one whose NORMALISED text keys it (see the header)?"""
+    parts = p.parts
+    if "system" not in parts and "constant" not in parts:
+        return False
+    if p.suffix in _NOT_DICT_EXT or p.name.startswith("expected"):
+        return False
+    if "archiveExtracts" in parts or "experiments" in parts:
+        return False
+    return not _claimed_by_manifest(p)
+
+
+def key_sha(p: Path, norm):
+    """The hash a case's key holds for file p: normalised when `norm` and p is
+    dictionary text, else the plain content hash (H.sha)."""
+    if not (norm and is_dictionary_text(p)):
+        return H.sha(p)
+    try:
+        st = p.stat()
+    except OSError:
+        return "MISSING"
+    k, sig = "N:" + str(p), Hasher.signature(st)
+    c = H.cache.get(k)
+    if c and c[0] == sig:
+        return c[1]
+    try:
+        d = hashlib.sha256(normalise_dictionary(
+            p.read_text(errors="replace")).encode()).hexdigest()
+    except OSError:
+        return "MISSING"
+    H.cache[k] = (sig, d)
+    H.dirty = True
+    return d
+
+
 def git_files(paths):
     """Tracked + untracked-not-ignored files under `paths` (repository-relative)."""
     p = subprocess.run(["git", "-C", str(ROOT), "ls-files", "-co",
@@ -356,18 +521,18 @@ def walk_files(d: Path, skip=()):
 _DIR_DIGESTS = {}
 
 
-def dir_digest(d: Path, skip=()):
+def dir_digest(d: Path, skip=(), norm=False):
     """The digest of everything under d -- tracked, untracked AND ignored --
     or ABSENT.  Absence is part of a key: a constant/ that appears is a
     change."""
-    k = (str(d), tuple(skip))
+    k = (str(d), tuple(skip), norm)
     if k not in _DIR_DIGESTS:
         if not d.exists():
             _DIR_DIGESTS[k] = "ABSENT"
         elif not d.is_dir():
             _DIR_DIGESTS[k] = "FILE:" + H.sha(d)
         else:
-            _DIR_DIGESTS[k] = digest([(f.relative_to(d).as_posix(), H.sha(f))
+            _DIR_DIGESTS[k] = digest([(f.relative_to(d).as_posix(), key_sha(f, norm))
                                       for f in walk_files(d, skip)])
     return _DIR_DIGESTS[k]
 
@@ -439,14 +604,15 @@ def resolver_depth():
 CASE_SKIP = ("archiveExtracts",)
 
 
-def cascade(start: Path):
+def cascade(start: Path, norm=False):
     """[(<dir>/constant, digest)] for the run directory `start` and every
-    parent the engine's walk reaches."""
+    parent the engine's walk reaches (dictionary files by their normalised
+    text when `norm`)."""
     depth, _ = resolver_depth()
     out, p = [], start.resolve() if start.exists() else start
     for _ in range(depth):
         c = p / "constant"
-        out.append((str(c), dir_digest(c, CASE_SKIP)))
+        out.append((str(c), dir_digest(c, CASE_SKIP, norm)))
         if p.parent == p:
             break
         p = p.parent
@@ -742,6 +908,22 @@ def runtests_functions(text):
     return out
 
 
+def golden_mode():
+    """The golden-band mode this run compares in, as bin/runTests exports it
+    (CHOUPO_REUSE_GOLDEN_MODE = the first two fields of `golden_bands.py
+    mode`).  A standalone call (`case-plan`, `migrate-keys`) asks the same
+    tool, so its keys equal the sweep's -- before, it read an empty string and
+    no key it printed could equal a stored one."""
+    v = os.environ.get("CHOUPO_REUSE_GOLDEN_MODE")
+    if v is not None:
+        return v
+    r = subprocess.run([sys.executable, "-I", str(ROOT / "bin" / "curate"
+                                                  / "golden_bands.py"), "mode"],
+                       capture_output=True, text=True)
+    return "\t".join(r.stdout.rstrip("\n").split("\t")[:2]) \
+        if r.returncode == 0 else ""
+
+
 def case_harness():
     """-> (digest, n) of what check_case executes."""
     text = (ROOT / "bin" / "runTests").read_text(errors="ignore")
@@ -770,7 +952,7 @@ def case_harness():
     pairs = [("fn:" + f, hashlib.sha256(fns[f].encode()).hexdigest())
              for f in sorted(seen)]
     pairs += [(p.relative_to(ROOT).as_posix(), H.sha(p)) for p in files]
-    mode = os.environ.get("CHOUPO_REUSE_GOLDEN_MODE", "")
+    mode = golden_mode()
     pairs.append(("golden-mode", mode))
     return digest(pairs), (sorted(seen), files)
 
@@ -1274,15 +1456,18 @@ def pinned_key_parts(case_abs: Path):
     return parts
 
 
-def case_plan(root_rel, explain=False):
-    """One line per case under root_rel: <dir>\\t<key>\\t<labels|->\\t<date>
-    (or, with explain, <dir>\\t<engine>\\t<data>: how each case is keyed)."""
-    if disabled():
-        return 2
+def case_keys(root_rel, norm=True):
+    """The key of every curation case under root_rel, in the key format `norm`
+    selects -> (rows, None) with rows = [(case, key, data label, engine
+    label)], or (None, the reason).
+
+    norm=True is THE key: dictionary files by their normalised text, and the
+    format word in the key.  norm=False is the format of 2026-11-17 and
+    earlier, kept ONLY so `migrate-keys` can recognise a stored verdict; it is
+    used by nothing else and may be deleted once the store has been migrated."""
     eng, n_obj = engine_half()
     if eng is None:
-        print(f"# not keyed: engine half unreadable ({n_obj})", file=sys.stderr)
-        return 1
+        return None, f"engine half unreadable ({n_obj})"
     dat, n_dat = data_half(["data/standards", "data/groupEstimative",
                             "data/README.md"], True)
     har, _ = case_harness()
@@ -1324,18 +1509,19 @@ def case_plan(root_rel, explain=False):
             if d in caseset:
                 per[d].append(f)
             d = os.path.dirname(d)
+    rows = []
     for c in cases:
-        pairs = [(f, H.sha(ROOT / f)) for f in per[c]]
+        pairs = [(f, key_sha(ROOT / f, norm)) for f in per[c]]
         #  loose files in the directories above the case (a README beside two
         #  sibling cases) -- generous: never read, but cheap to include
         d = os.path.dirname(c)
         while d and d.startswith(root_rel.rstrip("/")):
-            pairs += [(f, H.sha(ROOT / f)) for f in loose.get(d, [])]
+            pairs += [(f, key_sha(ROOT / f, norm)) for f in loose.get(d, [])]
             d = os.path.dirname(d)
         #  The resolver's cascade from this case (review SE-01): the case's
         #  own constant/ in full (ignored files too, the fetched extracts
         #  aside) and every parent's constant/, present or absent.
-        pairs += cascade(ROOT / c)
+        pairs += cascade(ROOT / c, norm)
         #  THE COMPOSED KEY (C414 (3) + C413).  ENGINE: the narrow reach when the
         #  case is a choupoProps fit, else the whole engine.  DATA: the case's
         #  PINS when it has them (exact: the current hash of each pinned file
@@ -1350,23 +1536,87 @@ def case_plan(root_rel, explain=False):
             dpart, dlabel = data_half_for(c, per[c], dat)
         else:
             dpart, dlabel = ("data", dat), "data=WHOLE-TREE"
-        cbase = digest([engp, dpart, ("harness", har), ("platform", plat)])
+        cbase = digest([engp, dpart, ("harness", har), ("platform", plat)]
+                       + ([("keyFormat", KEY_FORMAT)] if norm else []))
+        e = (f"engine=narrow({nn} objects; ops {','.join(nops)})" if ne
+             else f"engine=WHOLE ({nn})")
+        rows.append((c, digest([("base", cbase)] + sorted(pairs) + (pp or [])),
+                     dlabel, e))
+    H.save()
+    return rows, None
+
+
+def _stored_case(c):
+    """-> (path, lines) of the verdict stored for case c, lines [] when none."""
+    stored = STORE / "cases" / (c.replace("/", "__") + ".tsv")
+    try:
+        return stored, stored.read_text().splitlines()
+    except OSError:
+        return stored, []
+
+
+def case_plan(root_rel, explain=False):
+    """One line per case under root_rel: <dir>\\t<key>\\t<labels|->\\t<date>
+    (or, with explain, <dir>\\t<engine>\\t<data>: how each case is keyed)."""
+    if disabled():
+        return 2
+    rows, why = case_keys(root_rel)
+    if rows is None:
+        print(f"# not keyed: {why}", file=sys.stderr)
+        return 1
+    for c, key, dlabel, e in rows:
         if explain:
-            e = (f"engine=narrow({nn} objects; ops {','.join(nops)})" if ne
-                 else f"engine=WHOLE ({nn})")
             print(f"{c}\t{e}\t{dlabel}")
             continue
-        key = digest([("base", cbase)] + sorted(pairs) + (pp or []))
-        stored = STORE / "cases" / (c.replace("/", "__") + ".tsv")
+        _, lines = _stored_case(c)
         labels, date = "-", "-"
-        try:
-            lines = stored.read_text().splitlines()
-            if len(lines) >= 3 and lines[0] == key:
-                date, labels = lines[1], "\x1f".join(lines[2:])
-        except OSError:
-            pass
+        if len(lines) >= 3 and lines[0] == key:
+            date, labels = lines[1], "\x1f".join(lines[2:])
         print(f"{c}\t{key}\t{labels}\t{date}")
-    H.save()
+    return 0
+
+
+def migrate_keys(root_rel="data/curation"):
+    """Re-key the stored curation verdicts from the format of 2026-11-17 to
+    the normalised one, WITHOUT running anything: a verdict whose stored key is
+    the OLD-format key of THIS tree describes exactly this tree, so the same
+    verdict (labels, date, commit) is written under the new-format key with a
+    `migrated from key <old>` field on its date line.  A verdict that matches
+    neither is left alone (its case runs, correctly).  Idempotent."""
+    if disabled():
+        return 2
+    new, why = case_keys(root_rel, norm=True)
+    old, why2 = case_keys(root_rel, norm=False)
+    if new is None or old is None:
+        print(f"# not keyed: {why or why2}", file=sys.stderr)
+        return 1
+    oldk = {c: k for c, k, _, _ in old}
+    n = dict(migrated=0, already=0, nomatch=0, noverdict=0)
+    other = []
+    for c, key, _, _ in new:
+        path, lines = _stored_case(c)
+        if len(lines) < 3:
+            n["noverdict"] += 1
+            continue
+        if lines[0] == key:
+            n["already"] += 1
+        elif lines[0] == oldk[c]:
+            lines[1] = f"{lines[1]}, migrated from key {lines[0]}"
+            lines[0] = key
+            tmp = path.with_suffix(f".{os.getpid()}.tmp")
+            tmp.write_text("\n".join(lines) + "\n")
+            os.replace(tmp, path)
+            n["migrated"] += 1
+        else:
+            n["nomatch"] += 1
+            other.append(c)
+    print(f"migrate-keys {root_rel}: {len(new)} cases keyed; "
+          f"{n['migrated']} migrated, {n['already']} already in the new "
+          f"format, {n['nomatch']} stored verdict(s) match neither format of "
+          f"this tree (will run), {n['noverdict']} without a stored verdict "
+          f"(will run)")
+    for c in other[:20]:
+        print(f"  not migrated: {c}")
     return 0
 
 
@@ -1453,6 +1703,8 @@ def main(argv):
         return store(argv[1], argv[2], argv[3])
     if argv[:1] == ["verify-reads"]:
         return verify_reads(argv[1:])
+    if argv[:1] == ["migrate-keys"] and len(argv) in (1, 2):
+        return migrate_keys(*(a.rstrip("/") for a in argv[1:]))
     if argv[:1] == ["case-plan"] and len(argv) in (2, 3):
         return case_plan(argv[1].rstrip("/"), explain=argv[2:] == ["--explain"])
     if argv[:1] == ["key"] and len(argv) == 2:
