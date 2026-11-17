@@ -34,13 +34,13 @@
                                   would not (equil02 is that lesson).
     kinetic   pfr                 rung 3 -- the rate law.  Its axial profile
                                   rises toward the "limit" conversion and
-                                  never crosses it.  The volume is NOT a
-                                  physical gas volume: this reactor prices
-                                  concentrations on a liquid molar volume
-                                  (src/unitOperations/reactor/PFR.cpp, "Inlet
-                                  (mol/s) + liquid-basis volumetric flow"),
-                                  so read its profile against V_R as a
-                                  SHAPE, never as a size.
+                                  never crosses it.  The feed is a gas, so
+                                  the reactor prices its concentrations on
+                                  the gas, Q = F R T / P from the case's
+                                  equation of state (DEV.md 4c C421; until
+                                  then on the components' 25 C liquid
+                                  volumes).  The rate constant is the
+                                  illustrative one of pfr02 and cstr02.
 
   What each rung needs is the other half of the lesson: rung 1 a number
   someone must supply, rung 2 formation data the catalogue already has,
@@ -122,7 +122,7 @@ units
         outputs     ( outKinetic );
         operation
         {
-            V_R           1.0e-3;   // m3 -- a SHAPE axis, see the header
+            V_R           1.0e-2;   // m3 -- on the gas basis (see the header)
             nSteps        200;
             writeInterval 5;
         }

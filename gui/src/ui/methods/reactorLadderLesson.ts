@@ -230,7 +230,7 @@ X_\mathrm{eq} = \frac{\sqrt{K}}{1+\sqrt{K}}`,
     title: "Rung 3 — what the rate delivers: a volume",
     body: "Only now does a volume appear.  The plug-flow reactor integrates "
       + "the rate along the bed.  Its reverse term is built from the same "
-      + "equilibrium constant, $k_r = k_f / K$ (PFR.cpp:180–188), so the net "
+      + "equilibrium constant, $k_r = k_f / K$ (PFR.cpp:221–229), so the net "
       + "rate vanishes exactly at the limit: the profile rises toward the "
       + "rung-2 line and cannot cross it, however long the bed.  That "
       + "closure holds here for two reasons worth naming: the law's orders "
@@ -241,7 +241,7 @@ X_\mathrm{eq} = \frac{\sqrt{K}}{1+\sqrt{K}}`,
       + "the same basis and standard state as the rate law (the engine "
       + "converts for an ideal gas, Reaction.cpp:104–112, which is the basis "
       + "of the batch reactor; this liquid-basis PFR refuses such a reverse "
-      + "term by name, PFR.cpp:183–184), and a law whose "
+      + "term by name, PFR.cpp:223–224), and a law whose "
       + "orders are not the stoichiometric ones does not vanish at "
       + "equilibrium through that ratio alone.  Read the "
       + "shape.  Most of the conversion arrives in the first part of the bed, "
@@ -314,14 +314,15 @@ export interface LadderLimit { id: string; title: string; body: string }
 export const LADDER_LIMITS: readonly LadderLimit[] = [
   {
     id: "volume-is-a-shape",
-    title: "The PFR's volume axis is a shape, not a size.",
-    body: "This kinetic reactor prices concentrations on a liquid molar volume "
-      + "(PFR.cpp:677, \"liquid-basis volumetric flow\"), so on a gas at "
-      + "10 bar the concentrations, and hence the volume, are not those of "
-      + "the real gas.  The rate constant is pfr02's illustrative one, chosen "
-      + "small for the same reason.  What the profile shows faithfully is its "
-      + "shape and its ceiling.  Neither the axis nor the residence time is a "
-      + "design number.",
+    title: "The PFR's rate constant is illustrative, and its volume is the gas's.",
+    body: "The kinetic reactor takes the feed as a gas and prices its "
+      + "concentrations on the gas, Q = F R T / P from the case's equation of "
+      + "state (before DEV.md 4c C421 it priced a gas on the components' 25 C "
+      + "liquid volumes, and this page said the volume axis was a shape, not "
+      + "a size).  The rate constant is still pfr02's illustrative one, "
+      + "chosen so the explicit marching stays stable: it is not a measured "
+      + "catalyst's.  What the profile shows is the approach to its ceiling; "
+      + "the volume at which it arrives is not a design number.",
   },
   {
     id: "isothermal",

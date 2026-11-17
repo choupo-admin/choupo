@@ -20,8 +20,15 @@
        dG_rxn(T) = g_CO2 + g_H2 - g_CO - g_H2O  (all g_pure_ig)
 
   At T = 600 K, K_eq ~ 26.5; equilibrium conversion of an equimolar
-  CO + H2O feed (1 + 1, V_R = 1e-3 m^3) ~ 84 % (matches the textbook
+  CO + H2O feed (1 + 1, V_R = 1e-2 m^3) ~ 84 % (matches the textbook
   Smith-Van Ness Le Chatelier value).
+
+  THE FEED IS A GAS, AND THE PFR PRICES ITS CONCENTRATIONS ON THE GAS (DEV.md
+  4c C421): the feed is declared `phase gas;`, so Q = F R T / P from the
+  case's equation of state, exactly as the CSTR sibling does.  Until C421 the
+  unit priced this gas on its components' stored 25 C LIQUID volumes (Q about
+  186 times too small, concentrations that large), and A below was chosen
+  small for that reason.  A is now 1.0e6 (see below) and V_R 1e-2 m^3.
 \*---------------------------------------------------------------------------*/
 
 wgs_reversible
@@ -40,10 +47,9 @@ wgs_reversible
     kinetics
     {
         type   Arrhenius;
-        A      60.0;          // ILLUSTRATIVE rate.  These kinetic reactors are
-                       // liquid-phase models (Q from a near-liquid molar
-                       // volume), so the gas WGS sees a huge concentration
-                       // and is stiff for the explicit RK4 unless A is small.
+        A      1.0e6;         // ILLUSTRATIVE rate: mol/(m^3.s) * (m^3/mol)^2.  Ten times below the CSTR sibling's 1.0e7 because the PFR is
+                       // marched by an EXPLICIT RK4: r dV / F must stay below about 2.8 per step, and at 1.0e7 it is 4 (ladder01's
+                       // fifth of the feed: 10), the profile then sticks at zero conversion.
                        // The forward A only sets HOW FAST equilibrium is
                        // reached; K_eq -- hence X_eq ~ 0.841, identical to
                        // the CSTR -- is thermodynamic and A-independent.
