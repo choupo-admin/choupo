@@ -163,6 +163,16 @@ hand-kept alone was rejected because a family added without a line does not
 fail, it just stops running.  `--fast` **authorises no commit** and says so in
 its own verdict line.
 
+**The NIGHTLY tier (C419, 2026-11-17).**  Three gates are not run by the
+per-batch sweep, `--gui`, `--fast`, `--scope` or `--witnesses`: the
+regressed-pairs gate (re-fits every regressed pair), the gate self-test (tests
+gates by sabotage) and gates-judge-tracked (re-proves the gates read the tracked
+tree).  They are listed as `NIGHTLY` lines in `bin/curate/suite_lanes.txt` (the
+one list).  They are never skipped silently: every run prints
+`DEFERRED  <gate>  (nightly tier; ...)` for each and the tally line ends
+`/ DEFERRED n`.  `bin/runTests --nightly` is the full sweep plus them; CI's
+full tier and a release run it.  `bin/runTests --list-nightly` names them.
+
 **The ladder**:
 
 1. **While editing** — only the directly affected tests: the touched case,

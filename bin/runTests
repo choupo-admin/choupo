@@ -188,6 +188,10 @@
 #                                       (tutorials/FASTSET) + 4 conservation
 #                                       gates scoped to that same pass
 #      runTests --gui                 # the gui/-ONLY path (no C++, no case)
+#      runTests --nightly             # the sweep PLUS the NIGHTLY tier (CI's full
+#                                       tier, a release); any other run prints
+#                                       each nightly gate DEFERRED, counted in
+#                                       the tally.  `--list-nightly` names them.
 #      runTests --record <case>       # write/refresh that case's expected
 #                                       from the current run (golden master)
 #
@@ -309,10 +313,38 @@ while [ $# -gt 0 ]; do
         --jobs=*)  _JOBS="${1#--jobs=}"; shift ;;
         --no-reuse) export CHOUPO_NO_REUSE=1; shift ;;   # INPUT-KEYED REUSE, below
         --no-fast-stamp) export CHOUPO_SWEEP_WITHOUT_FAST=1; shift ;;   # --fast FIRST, below
+        --nightly) export CHOUPO_NIGHTLY=1; shift ;;     # THE NIGHTLY TIER, below (C419)
+        --list-nightly) _LIST_NIGHTLY=1; shift ;;
         *)         _rest+=("$1"); shift ;;
     esac
 done
 set -- ${_rest[@]+"${_rest[@]}"}
+#  THE NIGHTLY TIER (DEV.md 4c C419).  The gates listed `NIGHTLY` in
+#  bin/curate/suite_lanes.txt (the ONE list) are the ones that test gates or
+#  re-prove what did not change; the per-batch sweep, --gui, --fast, --scope and
+#  --witnesses do not run them and PRINT each as DEFERRED, never silently.
+#  `runTests --nightly` is the full sweep PLUS them (CI's full tier and a
+#  release run it); a gate's own script can always be run by name.
+nightly_set() {      # the stems of the NIGHTLY lines of suite_lanes.txt
+    awk -F'|' '{ s = $1; gsub(/ /, "", s) } s == "NIGHTLY" {
+        a = $3; sub(/^[ \t]*bin\/curate\//, "", a); sub(/\.py[ \t]*$/, "", a); print a }' \
+        "$ROOT/bin/curate/suite_lanes.txt"
+}
+if [ -n "${_LIST_NIGHTLY:-}" ]; then nightly_set; exit 0; fi
+if [ -n "${CHOUPO_NIGHTLY:-}" ] && [ "$#" -gt 0 ]; then
+    echo "usage: runTests --nightly  (the full sweep plus the nightly tier; takes no cases and no other tier flag)"; exit 2
+fi
+deferred=0
+#  nightly_defer <stem> <label> -- 0 (and the DEFERRED line printed, counted)
+#  when this run does not run the gate; 1 when it must.
+nightly_defer() {
+    [ -z "${CHOUPO_NIGHTLY:-}" ] || return 1
+    nightly_set | grep -qx "$1" || return 1
+    local _l="${1#check_}"; _l="${_l//_/-}"
+    printf "DEFERRED  %-40s  (nightly tier; run bin/runTests --nightly)\n" "$_l"
+    deferred=$((deferred+1))
+    return 0
+}
 NCPU=$(nproc 2>/dev/null || echo 1)
 JOBS="${_JOBS:-$NCPU}"
 case "$JOBS" in
@@ -1877,6 +1909,7 @@ if [ "${1:-}" = "--gui" ]; then
     }
     for g in $gates; do
         name=$(basename "$g" .py)
+        if nightly_defer "$name"; then continue; fi
         if [ "$JOBS" -gt 1 ] && [ -n "$(gate_lane_of "bin/curate/$name.py")" ]; then
             gui_batch+=("$name"); continue
         fi
@@ -1889,7 +1922,7 @@ if [ "${1:-}" = "--gui" ]; then
     python3 "$ROOT/bin/curate/gate_pool.py" clean --root "$ROOT" || true
 
     echo
-    echo "PASS $gpass / FAIL $gfail"
+    if [ "$deferred" -gt 0 ]; then echo "PASS $gpass / FAIL $gfail / DEFERRED $deferred"; else echo "PASS $gpass / FAIL $gfail"; fi
     echo "  ^ the gui/-ONLY path.  It says nothing about the solver: no corpus"
     echo "    case was CHECKED (four witnesses ran only to generate the files the"
     echo "    GUI tests read) and no C++ was compiled.  If this commit also touches"
@@ -2877,6 +2910,11 @@ case "$GB_TOP" in
     *)      echo "[golden bands] strict: $(printf '%s' "$GB_TOP" | cut -f2) -- every golden is compared as written";;
 esac
 [ "$#" -eq 0 ] && gate_segments          # the gates' segments (THE GATES, above)
+#  A run that is not the sweep (--fast, --scope, --witnesses, a named case) runs
+#  none of the gates; the nightly ones are still NAMED, so no tier hides them.
+if [ "$#" -gt 0 ] && [ -z "$RECORD" ]; then
+    for _ng in $(nightly_set); do nightly_defer "$_ng" || true; done
+fi
 
 # --- THE SWEEP'S ECONOMY (DEV.md 4c C394) ----------------------------------
 #  (a) `--fast` FIRST.  The fast set holds one case per family and runs in
@@ -5876,7 +5914,9 @@ PYEOF
     #  reproduced, which is reported SKIP and counted as NEITHER pass nor fail
     #  -- the method-tools-gate convention below, never a green line.
     #  KEYED (C394): run only when its inputs changed; see reuse_gate above.
-    if reuse_gate check_regressed_pairs "regressed-pairs-gate"; then
+    if nightly_defer check_regressed_pairs; then
+        rp_rc=reused; : > /tmp/regpairs.$$
+    elif reuse_gate check_regressed_pairs "regressed-pairs-gate"; then
         rp_rc=reused; : > /tmp/regpairs.$$
     else
         gate_exec "$ROOT/bin/curate/check_regressed_pairs.py" > /tmp/regpairs.$$ 2>&1
@@ -6868,7 +6908,9 @@ PYEOF
     # it still fails when it should, and that has to be asked empirically.
     # It prints its own coverage (a small minority of the gates) and names the
     # rest UNAUDITED rather than letting a green line imply the whole set.
-    if gate_exec "$ROOT/bin/curate/check_gate_selftest.py" > /tmp/gateself.$$ 2>&1; then
+    if nightly_defer check_gate_selftest; then
+        :
+    elif gate_exec "$ROOT/bin/curate/check_gate_selftest.py" > /tmp/gateself.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "gate-selftest" "$(head -1 /tmp/gateself.$$)"
         pass=$((pass+1))
     else
@@ -7933,7 +7975,9 @@ PYEOF
     # commit (DEV.md 4c C170 item 4: private data/local/ and untracked files
     # changed verdicts on Vitor's laptop).  Writes probe files into the tree
     # (and removes them), so it has no PAR lane in suite_lanes.txt.
-    if gate_exec "$ROOT/bin/curate/check_gates_judge_tracked.py" > /tmp/judgetracked.$$ 2>&1; then
+    if nightly_defer check_gates_judge_tracked; then
+        :
+    elif gate_exec "$ROOT/bin/curate/check_gates_judge_tracked.py" > /tmp/judgetracked.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "gates-judge-tracked-gate" "$(tail -1 /tmp/judgetracked.$$)"
         pass=$((pass+1))
     else
@@ -9851,15 +9895,18 @@ fi
 rm -f "$GB_LOG"
 #  REUSED is counted APART and appended after the four words every reader of
 #  this line parses (`^PASS n / FAIL n`), so no reader mistakes it for a PASS.
-if [ "${reused:-0}" -gt 0 ]; then
-    echo "PASS $pass / FAIL $fail / KNOWN-BROKEN $known_broken / EXPECTED-FAIL $expected_fail / REUSED $reused"
-else
-    echo "PASS $pass / FAIL $fail / KNOWN-BROKEN $known_broken / EXPECTED-FAIL $expected_fail"
-fi
+_tally="PASS $pass / FAIL $fail / KNOWN-BROKEN $known_broken / EXPECTED-FAIL $expected_fail"
+[ "${reused:-0}" -gt 0 ] && _tally="$_tally / REUSED $reused"
+[ "${deferred:-0}" -gt 0 ] && _tally="$_tally / DEFERRED $deferred"
+echo "$_tally"
 if [ "${reused:-0}" -gt 0 ]; then
     echo "  ^ $reused item(s) were NOT RUN by this sweep: REUSED, each with the key of"
     echo "    its inputs and the date its PASS was taken (bin/curate/suite_reuse.py)."
     echo "    \`bin/runTests --no-reuse\` runs them."
+fi
+if [ "${deferred:-0}" -gt 0 ]; then
+    echo "  ^ $deferred gate(s) were NOT RUN by this run: DEFERRED to the nightly tier"
+    echo "    (each named above; bin/curate/suite_lanes.txt, NIGHTLY lines).  \`bin/runTests --nightly\` runs them."
 fi
 if [ -n "${SWEEP_WITHOUT_FAST:-}" ]; then
     echo "  ^ AND THIS SWEEP STARTED WITHOUT A --fast PASS ON ITS TREE (overridden)."
