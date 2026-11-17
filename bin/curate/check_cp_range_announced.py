@@ -86,6 +86,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records   # noqa: E402  (C413)
+
 ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
@@ -192,8 +195,9 @@ def main() -> int:
     #  the pellet gate's first negative was proving on the day it shipped.
     with tempfile.TemporaryDirectory() as td:
         sab = Path(td) / "sabotage"
-        shutil.copytree(ROOT / SILENT, sab)
-        rec = sab / SILENT_RECORD
+        case_records.copytree(ROOT / SILENT, sab)
+        case_records.unpin(sab)     # C413: the probe edits a record, so it runs as an unsealed case
+        rec = case_records.ensure_local(sab, SILENT_RECORD[len("constant/"):])
         text = rec.read_text()
         if text.count(SILENT_WINDOW) != 1:
             fail.append(
