@@ -43,6 +43,8 @@ Description
                                       mole-number derivative IS ln phi_i
         GRESL T P x...                the same at the LIQUID root's departures
                                       (H_residualLiquid, S_residualLiquid; C410)
+        HLIQ T P z...                 H_stream_formation(T, P, 0, z), the package's
+                                      liquid-stream enthalpy [J/mol] (C410, LR-01)
         STREAMROOTS T P z...          the package's STREAM enthalpy and entropy
                                       (H_stream_formation / S_stream_formation)
                                       at vapour fraction 0 and 1, minus the
@@ -263,6 +265,14 @@ int main(int argc, char** argv)
                     const scalar g = thermo.eos().H_residualLiquid(T, P, y) / RT
                                    - thermo.eos().S_residualLiquid(T, P, y) / constant::R;
                     out << "OK " << g << "\n";
+                }
+                else if (op == "HLIQ")
+                {
+                    scalar T = 0.0, P = 0.0;
+                    ls >> T >> P;
+                    sVector y(n, 0.0);
+                    for (auto& v : y) ls >> v;
+                    out << "OK " << thermo.H_stream_formation(T, P, 0.0, y) << "\n";
                 }
                 else if (op == "STREAMROOTS")
                 {
