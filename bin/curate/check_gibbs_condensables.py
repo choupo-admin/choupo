@@ -69,6 +69,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records   # noqa: E402  (C413)
+
 ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 CASE = ROOT / "tutorials" / "steady" / "gibbs" / "gibbs07_wgs_cooled"
@@ -95,8 +98,8 @@ def fixture(tmp: Path, tag: str, T: str, model: str, gas_only: bool) -> Path:
     case = tmp / tag
     shutil.copytree(CASE, case, ignore=shutil.ignore_patterns(
         "expected", "log.*", "reports", "converged", "newtonLog.csv"))
-    (case / "constant" / "propertyManifest").unlink()
-    shutil.rmtree(case / "constant" / "components")
+    case_records.unpin(case)      # C413: the case references the catalogue (no manifest, no copies)
+    shutil.rmtree(case / "constant" / "components", ignore_errors=True)
     edit(case / "constant" / "thermoPhysPropDict",
          "components       ( CO  water  CO2  H2 );",
          "components       ( CO  water  CO2  H2  methanol );")
