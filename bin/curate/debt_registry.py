@@ -215,10 +215,8 @@ NC_COMPILATION = {
 #  its `closure` rows (AttributeError: `energyClosures` is a list there),
 #  so nothing could be staged.
 NO_GRANT_CASE_LOCAL = {
-    "tutorials/plant/greenAmmonia03_basicDesign/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/plant/greenAmmoniaPEQ_baseCase/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
+    #  empty since 2026-11-17: the two green-ammonia cases reference the
+    #  catalogue's NH3 record (C413 slice 3) and carry no mirror to re-import.
 }
 
 #  INVERTED_VALIDITY_WINDOWS -- REMOVED 2026-08-05, the waiver is discharged.

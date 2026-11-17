@@ -146,6 +146,7 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records  # noqa: E402  (C413: a case references the catalogue records it reads)
 import record_psat  # noqa: E402  (Antoine or Wagner, read from the record's own text)
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -170,7 +171,7 @@ def fail(msg):
 
 def run(src, tmp, name, edit=None):
     work = Path(tmp) / name
-    shutil.copytree(src, work)
+    case_records.copytree(src, work)
     if edit:
         edit(work)
     p = subprocess.run([str(BIN), "."], cwd=work, capture_output=True,
@@ -250,9 +251,9 @@ def set_T(path, old, new):
 
 # ---- (d) an independent wet bulb, from the case's own records --------------
 def record(case, comp):
-    p = case / "constant/components" / f"{comp}.dat"
-    if not p.exists():
-        fail(f"(d) {case.name} carries no constant/components/{comp}.dat")
+    p = case_records.record_path(case, f"components/{comp}.dat")
+    if p is None or not p.exists():
+        fail(f"(d) {case.name} neither carries nor references components/{comp}.dat")
     return p.read_text()
 
 

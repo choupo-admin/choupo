@@ -1,0 +1,12 @@
+/*---------------------------------------------------------------------------*\
+  Case-local DELTA of the standard NaCl record: the one line this case needs.
+  `overlayOf NaCl;` -- the reader deep-merges this file over
+  data/standards/components/NaCl.dat, so everything else comes from the catalogue.
+  The case exists to show the engine REFUSING a rank-deficient salt basis; the
+  refusal is only reached when each salt is declared reactive (an aqueous
+  speciation), which the catalogue record of NaCl does not declare.
+\*---------------------------------------------------------------------------*/
+overlayOf NaCl;
+variationReason "declares the salt reactive (aqueousSpeciation NaClSalt) so the basis-rank refusal, not an unrelated adapter refusal, is the case's outcome";
+
+aqueousSpeciation  NaClSalt;

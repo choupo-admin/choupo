@@ -63,6 +63,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records   # noqa: E402  (C413)
+
 ROOT = Path(__file__).resolve().parents[2]
 
 #  The interval keys this project uses for a declared validity window.
@@ -126,9 +129,10 @@ def probe_engine():
              "declares `Trange unknown;`"),
         ]:
             d = tmp / label
-            shutil.copytree(src, d)
+            case_records.copytree(src, d)
             if repl is not None:
-                rec = d / PROBE_RECORD
+                case_records.unpin(d)   # the probe edits a record: it runs unsealed
+                rec = case_records.ensure_local(d, PROBE_RECORD[len('constant/'):])
                 txt = rec.read_text()
                 m = re.search(r'(liquidHeatCapacity\s*\{.*?)Trange\s*\([^)]*\);',
                               txt, re.S)

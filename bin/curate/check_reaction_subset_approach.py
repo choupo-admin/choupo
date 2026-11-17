@@ -224,6 +224,7 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records  # noqa: E402  (C413: a pinned case carries no record copy)
 import record_psat  # noqa: E402  (Antoine or Wagner, from the record's own text)
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -266,7 +267,7 @@ def fixture(td: str, name: str, src: Path = EQUIL01, fs=None, rxn=None,
     Every edit must land exactly once -- a probe that silently misses its
     dict runs the engine on the wrong question."""
     dst = Path(td) / name
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
         "converged", "reports", "iterations", "design"))
     for rel, edits in (("system/flowsheetDict", fs),
                        ("constant/reactions", rxn), ("0/feed", feed)):
@@ -293,7 +294,7 @@ def close(a, b, rel):
 
 
 def dHf298(case: Path, comp: str) -> float:
-    txt = (case / "constant" / "components" / f"{comp}.dat").read_text()
+    txt = case_records.record_path(case, f"components/{comp}.dat").read_text()
     m = re.search(r"dHf_298\s+([-+0-9.eE]+)", txt)
     if not m:
         raise SystemExit(f"check_reaction_subset_approach: {comp}.dat carries "
@@ -335,7 +336,7 @@ def carbon_arms(td: str) -> None:
     T, P_BAR, SC = 900.0, 1.0, 1.0
 
     cw = Path(td) / "carbon"
-    shutil.copytree(EQUIL04, cw, ignore=shutil.ignore_patterns(
+    case_records.copytree(EQUIL04, cw, ignore=shutil.ignore_patterns(
         "converged", "reports", "iterations", "design"))
     rc, out, js = run(cw)
     if rc != 0 or js is None:
@@ -542,7 +543,7 @@ FAR_POINTS = ((300.0, 1.0), (300.0, 50.0), (500.0, 5.0), (700.0, 5.0),
 def gibbs_only(td: str, name: str, T: float, P: float) -> Path:
     """equil03's case and feed, the Gibbs reactor alone at (T, P)."""
     dst = Path(td) / name
-    shutil.copytree(EQUIL03, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(EQUIL03, dst, ignore=shutil.ignore_patterns(
         "converged", "reports", "iterations", "design"))
     for s in ("feedGibbs", "feedDeclared", "feedComplete", "outDeclared",
               "outComplete"):
@@ -575,7 +576,7 @@ def feed_far_arms(td: str) -> None:
     sp = {k: gsp.Gas(k, EQUIL03) for k in ATOMS}
     wt = gsp.record("water", EQUIL03)
     #  water's law is the IAPWS Wagner equation since 2026-11-16: read it through record_psat
-    water_text = (Path(EQUIL03) / "constant" / "components" / "water.dat").read_text()
+    water_text = case_records.record_path(EQUIL03, "components/water.dat").read_text()
     R = gsp.R
     for T, P in FAR_POINTS:
         tag = f"{T:g} K / {P:g} bar"
@@ -879,7 +880,7 @@ def main() -> int:
 
         # ---- (h) the witness ----------------------------------------------
         cw = Path(td) / "witness"
-        shutil.copytree(EQUIL02, cw, ignore=shutil.ignore_patterns(
+        case_records.copytree(EQUIL02, cw, ignore=shutil.ignore_patterns(
             "converged", "reports", "iterations", "design"))
         rcw, outw, jsw = run(cw)
         if rcw != 0:
@@ -904,7 +905,7 @@ def main() -> int:
 
         # ---- (j) a declared reaction that runs to completion --------------
         co = Path(td) / "ostwald"
-        shutil.copytree(EQUIL03, co, ignore=shutil.ignore_patterns(
+        case_records.copytree(EQUIL03, co, ignore=shutil.ignore_patterns(
             "converged", "reports", "iterations", "design"))
         rco3, outo, jso = run(co)
         if rco3 != 0:

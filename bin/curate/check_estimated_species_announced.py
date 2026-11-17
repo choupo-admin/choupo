@@ -77,6 +77,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 PROPS = ROOT / "choupoProps"
 WITNESS = ROOT / "tutorials/props/electrolyte/estimatedSpecies01_announced"
@@ -138,11 +141,28 @@ def drop_dh_block(text):
     return re.sub(r"\nprovenance\s*\{\s*dH\s*\{[^}]*\}\s*\}\n?", "\n", text)
 
 
+PROVENANCE = (
+    "provenance\n{\n    hfAq\n    {\n        origin  estimated;\n"
+    '        method  "WITNESS ONLY: declared estimated to exercise the announcement '
+    '(the catalogue value is the NBS measurement)";\n    }\n}\n')
+
+
 def variant(tmp, name, edit):
     dst = tmp / name
     shutil.copytree(WITNESS, dst)
-    f = dst / "constant/species/OH.dat"
-    f.write_text(edit(f.read_text()))
+    #  the witness references the catalogue: the record to edit is put in the copy,
+    #  declared as the variation it is, and the copy's pins are dropped
+    f = case_records.ensure_local(dst, "species/OH.dat")
+    case_records.unpin(dst)
+    #  the case carries its own OH record again (a declared `variationOf` whose
+    #  provenance block is the witness): the probe edits THAT record as shipped
+    txt = f.read_text()
+    if "variationOf" not in txt:
+        txt = re.sub(r"(?m)^(name\s+OH;[^\n]*\n)",
+                     r'\1variationOf OH;\nvariationReason "gate probe";\n', txt, count=1)
+    if "origin  estimated" not in txt:
+        txt = re.sub(r"(?m)^(cpAq \{[^\n]*\}\n)", lambda m: m.group(1) + PROVENANCE, txt, count=1)
+    f.write_text(edit(txt))
     return dst
 
 

@@ -3463,7 +3463,7 @@ def arm_bunds(work):
         fail(f"(p) an item holding no liquid by its sheet was announced unbunded:"
              f" {[f['a'] for f in finding(lay, 'unbundedLiquid')]}")
     # ---- a bund too small for its rule: announced, never refused --------
-    d = prepare(work, "bund_small", GREEN, sub("wall        { height 4 m; }",
+    d = prepare(work, "bund_small", GREEN, sub("wall        { height 4.5 m; }",
                                                 "wall        { height 2 m; }"))
     out, err, rc, j, lay = layout_of(d)
     bs = lay.get("bunds") or []

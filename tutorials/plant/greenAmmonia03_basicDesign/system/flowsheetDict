@@ -130,10 +130,10 @@ connections
 //  designed beds; they are never a specification.
 variables
 {
-    V_Bed1            10.0321 m3;
-    V_Bed2            19.1578 m3;
-    V_Bed3            32.4468 m3;
-    D_converter        2.2427 m;     // the CONVERTER's one diameter, read by every bed
+    V_Bed1            10.2222726633 m3;
+    V_Bed2            19.2831440238 m3;
+    V_Bed3            32.572283756 m3;
+    D_converter        2.24511028502 m;     // the CONVERTER's one diameter, read by every bed
     NH3_t_h            { compute "ProductNH3.F * 17.0305 * 3.6"; }
     NH3_t_day          { compute "NH3_t_h * 24"; }
     W_compression_kW   { compute "N2Boost.W_shaft_kW + MakeupComp1.W_shaft_kW + MakeupComp2.W_shaft_kW + RecycleComp.W_shaft_kW"; }

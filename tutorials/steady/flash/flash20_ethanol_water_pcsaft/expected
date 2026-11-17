@@ -41,4 +41,4 @@ stream  vapPCSAFT              T                358.15           1e-4
 boundary global                 H_feeds_kW       -13992.149776   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -14045.358991   1e-4
-boundary global                 residual_kW      53.2092150331    abs:0.004286
+boundary global                 residual_kW      53.2092150331    abs:0.005321

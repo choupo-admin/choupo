@@ -133,6 +133,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "bin" / "curate" / "nanofiltran"))
 sys.path.insert(0, str(ROOT / "bin" / "curate"))
 import paper_case  # noqa: E402
+import case_records  # noqa: E402  (C413: the record the run reads)
 from props_views import strip_views  # noqa: E402
 
 PROPS = ROOT / "choupoProps"
@@ -336,7 +337,7 @@ class Sources:
         return read_csv_rows(self.dir / self.refs[name]["file"])
 
     def _charge(self, ion):
-        txt = (self.dir / "constant" / "species" / (ion + ".dat")).read_text()
+        txt = case_records.record_path(self.dir, "species/" + ion + ".dat").read_text()
         return float(re.search(r"^charge\s+([-+]?\d+);", txt, re.M).group(1))
 
     def iso_dataset(self, op):

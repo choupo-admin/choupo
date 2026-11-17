@@ -50,6 +50,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 COMP = ROOT / "data" / "standards" / "components"
 DEBT = ROOT / "bin" / "curate" / "vliq_datum_debt.tsv"
@@ -92,10 +95,17 @@ def probe_wrong_dimension():
     with tempfile.TemporaryDirectory(prefix="vliqdatum_") as tmp:
         case = Path(tmp) / "case"
         shutil.copytree(PROBE_CASE, case)
-        rec = case / "constant" / "components" / "CH4.dat"
+        #  the probe case references the catalogue: the record to edit is put in the
+        #  copy, and the copy's pins are dropped (it is a different record now)
+        rec = case_records.ensure_local(case, "components/CH4.dat")
+        case_records.unpin(case)
         if not rec.exists():
             return f"arm (f) cannot run: {rec.relative_to(case)} is not in the probe case"
         t = rec.read_text(encoding="utf-8")
+        #  a case-local copy of a catalogue record must declare what it is
+        t = re.sub(r"^(name\s+CH4;[^\n]*\n)",
+                   r'\1variationOf CH4;\nvariationReason "arm (f) probe: a wrong-dimension VliqT";\n',
+                   t, count=1, flags=re.M)
         m = re.search(r"^Vliq\s[^\n]*\n", t, re.M)
         if not m:
             return "arm (f) cannot run: the probe record carries no `Vliq`"

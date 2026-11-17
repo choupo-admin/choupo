@@ -226,6 +226,7 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records  # noqa: E402  (C413: a case may reference the catalogue instead of carrying a copy)
 from runtests_verdict import verdict  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -390,7 +391,7 @@ def case_copy(src, ignore=("converged", "reports", "design", "log.*",
                            "expected")):
     tmp = Path(tempfile.mkdtemp(prefix="ctc_", dir=str(ROOT / "build")))
     dst = tmp / src.name
-    shutil.copytree(src, dst, ignore=shutil.ignore_patterns(*ignore))
+    case_records.copytree(src, dst, ignore=shutil.ignore_patterns(*ignore))
     return tmp, dst
 
 
@@ -469,8 +470,8 @@ def main():
     # ---- (b) recomputed from the RECORDS (transport01) --------------------
     rec = {}
     for g in GASES:
-        f = CASE / "constant/components" / f"{g}.dat"
-        if not f.exists():
+        f = case_records.record_path(CASE, f"components/{g}.dat")
+        if f is None:
             fails.append(f"transport01 is not sealed with {g}.dat -- cannot recompute from the record")
             continue
         tx = f.read_text()
@@ -683,8 +684,8 @@ def main():
     # ---- (l) Chapman-Enskog and the modified Eucken from the sealed records
     rec2 = {}
     for g in GASES2:
-        f = CASE2 / "constant/components" / f"{g}.dat"
-        if not f.exists():
+        f = case_records.record_path(CASE2, f"components/{g}.dat")
+        if f is None:
             fails.append(f"transport02 is not sealed with {g}.dat -- cannot recompute from the record")
             continue
         tx = f.read_text()
@@ -743,7 +744,7 @@ def main():
                      "reproduction named beside it")
 
     # ---- (n) Chapman-Enskog refuses by name, on a copy -----------------
-    tx = (CASE2 / "constant/components/N2.dat").read_text()
+    tx = case_records.record_path(CASE2, "components/N2.dat").read_text()
     blk = lj_block(tx)
     if blk is None:
         fails.append("transport02's N2.dat has no lennardJones block to strip -- arm (n) cannot run")

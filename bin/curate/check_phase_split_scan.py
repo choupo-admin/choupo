@@ -99,6 +99,8 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "bin" / "curate"))
+import case_records  # noqa: E402  (C413: a probe copy of a referencing case is materialised)
 BIN = ROOT / "choupoProps"
 WITNESS = ROOT / "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol"
 FLASH = ROOT / "tutorials/steady/flash"
@@ -155,6 +157,7 @@ def props_case(tmp, tag, steady, state, vary, extra=""):
     d = Path(tmp) / tag
     (d / "system").mkdir(parents=True)
     shutil.copytree(steady / "constant", d / "constant")
+    case_records.materialise(d)
     (d / "system/controlDict").write_text(
         'application choupoProps;\ndescription "probe";\nverbosity 3;\n')
     (d / "system/propsDict").write_text(
@@ -248,7 +251,7 @@ def main():
 
         # ---- the witness itself ----------------------------------------
         d = Path(tmp) / "witness"
-        shutil.copytree(WITNESS, d, ignore=shutil.ignore_patterns("expected", "*.csv"))
+        case_records.copytree(WITNESS, d, ignore=shutil.ignore_patterns("expected", "*.csv"))
         rc, out, err = run(d)
         if rc != 0:
             fail(f"the witness did not run (exit {rc}):\n{(out + err)[-1500:]}")
