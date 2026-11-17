@@ -29,6 +29,7 @@ License
 
 #include "EffectiveDiffusivity.H"
 #include "core/PropertySourceLog.H"
+#include "thermo/LiquidPropertyDoor.H"
 
 #include "Catalyst.H"
 
@@ -134,10 +135,11 @@ scalar molecularDiffusivity(const ThermoPackage& thermo,
         how = "liquid D0_" + r.species + " in " + r.counterDiffusing
             + " from the case's transport{ liquidDiffusivity{} } model at "
             + num(r.T_K, 2) + " K";
-        const scalar D = thermo.diffusivityLiquid(r.T_K, i, j);
-        PropertySourceLog::instance().useHere("liquidDiffusivity", liquidSource::kernelLiquidDiffusivity,
-            "kernel", took(D, r.T_K));
-        return D;
+        //  ONE door (DEV.md 4c C421): the diffusivity of the reacting species
+        //  in its solvent at infinite dilution, the way the property
+        //  dictionary declares it -- the door records the use.
+        const liquidProperty::Consumer who{ "catalystPellet", r.locus };
+        return liquidProperty::soluteDiffusivity(thermo, r.T_K, i, j, &who).value;
     }
     throw std::runtime_error(r.locus + ": unknown diffusion medium '"
         + r.medium + "'.  Declare `medium gas;` or `medium liquid;` -- a gas"
