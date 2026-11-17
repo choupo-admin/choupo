@@ -80,6 +80,7 @@ Sabotage 2 -- the writer emits the reference with no fingerprint:
 import os
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -102,7 +103,7 @@ def run(cwd):
 def stage():
     d = tempfile.mkdtemp(prefix="eqref_")
     dst = os.path.join(d, "case")
-    shutil.copytree(CASE, dst)
+    case_records.copytree(CASE, dst)
     #  THE WITNESS FEED MUST BE A LIQUID AT ITS OWN STATE (2026-10-03).
     #  flash16's shipped feed charges 2.0 kmol/h of CO2 into 97 kmol/h of
     #  water at 313 K and 1 atm, and its own equilibrium there is 2.1 %

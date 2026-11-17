@@ -59,6 +59,7 @@ import csv
 import json
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -80,7 +81,7 @@ def run(case_dir: Path):
 def stage(rel: str, edit=None):
     tmp = Path(tempfile.mkdtemp(prefix="equipment_list_"))
     dst = tmp / Path(rel).name
-    shutil.copytree(ROOT / rel, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(ROOT / rel, dst, ignore=shutil.ignore_patterns(
         "design", "reports", "converged", "postProcessing", "log.*"))
     if edit:
         edit(dst)

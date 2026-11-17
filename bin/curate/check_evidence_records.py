@@ -80,6 +80,7 @@ import subprocess
 import sys
 import tempfile
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import json
 from pathlib import Path
 
@@ -234,7 +235,7 @@ def csv_first_column(path: Path):
 def probe(name: str, edit, must_say: str):
     with tempfile.TemporaryDirectory() as td:
         case = Path(td) / "probe"
-        shutil.copytree(WITNESS, case)
+        case_records.copytree(WITNESS, case)
         pd = case / "system/propsDict"
         text = pd.read_text()
         i = text.index("\noperations")      # never the header comment, which quotes the grammar
@@ -280,7 +281,7 @@ def main():
     else:
         with tempfile.TemporaryDirectory() as td:
             case = Path(td) / "witness"
-            shutil.copytree(WITNESS, case)
+            case_records.copytree(WITNESS, case)
             rc, out, js = run(case)
             if rc != 0:
                 fails.append(f"witness: choupoProps exited {rc}")

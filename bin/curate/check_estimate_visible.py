@@ -101,6 +101,7 @@ WHAT THIS GATE DOES **NOT** COVER:
 """
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -177,7 +178,7 @@ def main():
     tmp = Path(tempfile.mkdtemp(prefix="choupo-estvis-"))
     try:
         work = tmp / "case"
-        shutil.copytree(CASE, work)
+        case_records.copytree(CASE, work)
         for stale in (work / "constant" / "components").glob("*.estimated.dat"):
             stale.unlink()
         p = subprocess.run([str(PROPS), "."], cwd=str(work),

@@ -53,6 +53,7 @@ Exit 1 naming the arm that failed.
 import json
 import re
 import shutil
+import case_records  # noqa: E402  (the probe copy has one home)
 import subprocess
 import sys
 import tempfile
@@ -160,7 +161,7 @@ def main() -> int:
 
     with tempfile.TemporaryDirectory(prefix="exergyProbe.") as td:
         probe = Path(td) / "probe"
-        shutil.copytree(WITNESS, probe)
+        case_records.copytree(WITNESS, probe)
         for junk in probe.glob("log.*"):
             junk.unlink()
 
