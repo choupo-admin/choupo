@@ -3759,6 +3759,42 @@ accepts today, and that is a policy call.
 > copies (electrolyte_sidecars and flash_model ISO -> PAR).  NOT PROVEN:
 > the pooled replay in a full sweep, and the ISO -> PAR claims by the lane
 > tracer: both are what the `--nightly` sweep of the next slice shows.
+>
+> **C420, THE COPY SLICE LANDED, PROVEN BY THE FIRST `--nightly` (2026-11-18).**
+> Three Sonnet builders, one rule: change only the copy of a shipped case,
+> keep the claim line byte-identical or revert.  137 gates now copy a case
+> through `case_records.copytree` (49 + 43 + 45), every one exit 0 and stdout
+> byte-identical before and after (`cmp`); 4 LEFT (they copy a subtree, or --
+> `check_seal_verdict` -- need a copy that does NOT materialise the pins, so
+> the unpinned-read refusal can fire: the shared copy is not neutral
+> everywhere, and that gate keeps its own); 16 SKIPPED (write the tree,
+> build, nested suite).  WHY THE TARGETED CHECKS WERE NOT ENOUGH (the written
+> reason for the full sweep): 137 gates changed at once and only the gate
+> self-test's sabotage arms show that a gate still fails when it must.  THE
+> SWEEP (`--fast` then `--nightly`, alone, on the three branches merged;
+> wall clock not measured, the laptop was suspended for 1 h 15 in the middle):
+> 2233 PASS / 8 FAIL / 1 KNOWN-BROKEN (edwards02) / 9 EXPECTED-FAIL.  Held:
+> mass on 306 steady cases, elements on 286, energy on 123 (7 pinned), the
+> closures of 87 time-integrated cases; gates-judge-tracked green.  NONE OF
+> THE 8 CAME FROM THE SLICE; all were left by the 11-17b landing, which went
+> in on `--fast`, `--gui` and a 39-case scope: (1) C419 EXPORTED its nightly
+> flag, so every gate that runs `bin/runTests <case>` inside the sweep was
+> refused with the nightly usage line (friction-correlations,
+> transport-correlations, component-name-hint, golden-bands, and the
+> self-test's golden-bands arm) -- the tier had never run until today; (2) a
+> self-test sabotage still aimed at the spray dryer's old pin (vliq 6, now 4
+> after C402), so the arm tested nothing; (3) the conductivity source of C402
+> printed in nine exchanger cases and was appended in one (13 unpinned rows,
+> additions only); (4) the tutorials guide and the developer guide PDF were
+> stale.  A fifth, found by builder B on a clean tree: `check_petroleum_cuts`
+> passed only in a checkout holding an ignored run leftover
+> (`constant/components/`) and failed everywhere else.  All five fixed; the
+> eight gates re-run green (the four nested-suite gates side by side, the
+> self-test alone, the guides, the source pins proven by the nine cases'
+> goldens, `--scope` over them 13/0 with mass and energy closed).  LESSON,
+> for rule 4c's sizing: a landing that adds a SUITE MODE or a published row
+> kind reaches every case that prints it, and the scope was chosen by the
+> cases the source edit touched, not by the rows the run prints.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
