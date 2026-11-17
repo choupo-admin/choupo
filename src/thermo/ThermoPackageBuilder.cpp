@@ -1972,7 +1972,7 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
 }
 
 // ============================================================================
-// THE case grammar: recordType thermophysicalPropertySystem, schemaVersion 2
+// THE case grammar: recordType thermophysicalPropertySystem, schemaVersion 1
 // -- physically-decomposed blocks (equilibrium / caloric / volumetric /
 // transport / pureFluids / aqueousProperties), every route DECLARED and
 // VERIFIED against what the engine implements; a route that does not match
@@ -2081,9 +2081,16 @@ ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db
     // directly; everything else gets a NAMED refusal, never a silent path.
     if (pkg->lookupWordOrDefault("recordType", "") == "thermophysicalPropertySystem")
     {
-        if (pkg->lookupScalarOrDefault("schemaVersion", 0) != 2)
-            throw std::runtime_error("thermophysicalPropertySystem requires"
-                " schemaVersion 2;");
+        {
+            const double sv = pkg->lookupScalarOrDefault("schemaVersion", 0);
+            if (sv == 2)
+                throw std::runtime_error("thermophysicalPropertySystem: this"
+                    " record type is at schemaVersion 1 since 2026-11-18;"
+                    " write `schemaVersion 1;`");
+            if (sv != 1)
+                throw std::runtime_error("thermophysicalPropertySystem requires"
+                    " schemaVersion 1;");
+        }
         if (v2NativeFormulation(pkg))
             return buildV2(pkg, db, chem);
         if (pkg->found("aqueousProperties"))

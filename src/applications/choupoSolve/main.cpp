@@ -698,7 +698,7 @@ try
     {
         // The case system lives in constant/thermoPhysPropDict (the *Dict
         // convention: flowsheetDict / solverDict / controlDict) -- one v2
-        // record (recordType thermophysicalPropertySystem; schemaVersion 2)
+        // record (recordType thermophysicalPropertySystem; schemaVersion 1)
         // the builder assembles natively by its equilibrium.formulation.  It
         // carries more than thermodynamics (transport, chemistry, solids); the
         // v1 propertyDict/thermoPackage grammars are refused (see below).

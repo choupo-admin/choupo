@@ -163,7 +163,7 @@ std::vector<double> numbers(const DictPtr& d, const std::string& key)
 std::string systemText(const std::vector<std::string>& comps,
                        const std::string& extra)
 {
-    std::string t = "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+    std::string t = "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
                     "components (";
     for (const auto& c : comps) t += " " + c;
     t += " );\nequilibrium\n{\n    formulation gammaPhi;\n"

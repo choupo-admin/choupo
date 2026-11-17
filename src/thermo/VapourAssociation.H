@@ -39,6 +39,7 @@
 #include <map>
 #include <optional>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
 namespace Choupo {
@@ -86,6 +87,10 @@ inline std::optional<Dimerisation> find(const std::string& gasSpecies)
                         == "gasLiquidEquilibrium"
                     && e->found("vapourDimerisation"))
                 {
+                    if (e->lookupScalarOrDefault("schemaVersion", 1) == 2)
+                        throw std::runtime_error(key + ": recordType"
+                            " gasLiquidEquilibrium is at schemaVersion 1 since"
+                            " 2026-11-18; write `schemaVersion 1;`");
                     const std::string gas = e->found("gasSpecies")
                         ? e->lookupWord("gasSpecies") : e->lookupWord("gas");
                     Dimerisation d = dimerisationFrom(e->subDict("vapourDimerisation"));

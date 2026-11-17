@@ -108,67 +108,72 @@ CTRL = 'application   choupoProps;\ndescription   "negative gate";\nverbosity 1;
 
 # (name, thermoPhysPropDict body, expected message fragment)
 NEGATIVES = [
- ("unknown-formulation",
+ ("stamp-2-refused",
   "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+  "components ( water );\nequilibrium { formulation gammaPhi;"
+  " liquid { activityModel ideal; } vapour { fugacityModel idealGas; } }\n",
+  "write `schemaVersion 1;`"),
+ ("unknown-formulation",
+  "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
   "components ( water );\nequilibrium { formulation quantumFoam; }\n",
   "is not implemented"),
  ("chemistry-inline",
-  "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+  "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
   "components ( water );\nchemistry { salts ( halite ); }\n"
   "equilibrium { formulation gammaPhi; liquid { activityModel ideal; }"
   " vapour { fugacityModel idealGas; } }\n",
   "constant/chemistryDict"),
  ("bad-standardState",
-  "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+  "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
   "components ( water );\nequilibrium { formulation gammaPhi;"
   " liquid { activityModel ideal; standardState fusedSalt; }"
   " vapour { fugacityModel idealGas; } }\n",
   "standardState must be pureLiquid"),
  ("retired-pairs-key",
-  "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+  "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
   "components ( water );\nequilibrium { formulation gammaPhi;"
   " liquid { activityModel { model NRTL; pairs ( { i water; j water; } ); } }"
   " vapour { fugacityModel idealGas; } }\n",
   "binaryParameters"),
  ("transport-mixingRule",
-  "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+  "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
   "components ( water );\nequilibrium { formulation gammaPhi;"
   " liquid { activityModel ideal; } vapour { fugacityModel idealGas; } }\n"
   "transport { vapour { viscosity { model Chung; mixingRule Wilke; } } }\n",
   "mixingRule is not SELECTABLE"),
  ("electrolyte-bad-model",
-  "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+  "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
   "components ( water NaCl );\nequilibrium { formulation electrolyteGammaPhi;"
   " aqueous { activityModel { model Debye; } }"
   " vapour { fugacityModel idealGas; } }\n",
   "implemented: Pitzer | eNRTL"),
  ("electrolyte-bad-basis",
-  "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+  "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
   "components ( water NaCl );\nequilibrium { formulation electrolyteGammaPhi;"
   " aqueous { activityModel { model Pitzer; } compositionBasis moleFraction; }"
   " vapour { fugacityModel idealGas; } }\n",
   "molality-based"),
  ("dilute-bad-rung",
-  "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+  "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
   "components ( water CO2 );\nequilibrium { formulation diluteSolution;"
   " liquid { solvent { component water; standardState infiniteDilution; }"
   " solutes { components ( CO2 ); } } vapour { fugacityModel idealGas; } }\n",
   "pureLiquid (Raoult) rung"),
  ("caloric-bad-basis",
-  "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+  "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
   "components ( water );\nequilibrium { formulation gammaPhi;"
   " liquid { activityModel ideal; } vapour { fugacityModel idealGas; } }\n"
   "caloric { energyBasis steamTables; }\n",
   "elementsDatum"),
  ("aqueous-bad-model",
-  "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+  "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
   "components ( water );\naqueousProperties { activityCoefficients"
   " { model Margules; } }\n",
   "implemented: Davies | PitzerHMW"),
 ]
 
 V2_SYSTEM = (
-    "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+    "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
     "components ( badcomp );\nequilibrium { formulation gammaPhi;"
     " liquid { activityModel ideal; } vapour { fugacityModel idealGas; } }\n")
 BADCOMP_PROPS = BASE_PROPS.replace("water", "badcomp")
@@ -219,7 +224,7 @@ GRAMMAR_NEGATIVES = [
 
 # ---- SOLID_PHASE: the chemistryDict phase-name arm ------------------------
 ELECTROLYTE_SYSTEM = (
-    "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+    "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
     "components ( water NaCl );\nequilibrium { formulation"
     " electrolyteGammaPhi; aqueous { activityModel { model Pitzer; } }"
     " vapour { fugacityModel idealGas; } }\n")
@@ -523,7 +528,7 @@ F13 = (ROOT / "tutorials" / "steady" / "flash"
        / "flash13_acetic_ethanol_vacuum_flash")
 BUILDER = ROOT / "src" / "thermo" / "ThermoPackageBuilder.cpp"
 GAMMAPHI_WATER = (
-    "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+    "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
     "components ( water );\n%sequilibrium { formulation gammaPhi;"
     " liquid { activityModel ideal; } vapour { fugacityModel idealGas; }"
     " %s}\n")

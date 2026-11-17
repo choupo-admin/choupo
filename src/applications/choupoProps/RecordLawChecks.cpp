@@ -123,7 +123,7 @@ double iapwsConductivity(const Database& db, double T)
     if (!pk)
     {
         const DictPtr d = Dictionary::fromString(
-            "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+            "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
             "components ( water );\n"
             "equilibrium { formulation gammaPhi; liquid { activityModel { model ideal; } }"
             " vapour { fugacityModel idealGas; } }\n"
