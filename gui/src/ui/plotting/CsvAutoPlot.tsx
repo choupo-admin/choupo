@@ -60,6 +60,7 @@ License
   cells render as NaN (Plotly drops them).
 \*---------------------------------------------------------------------------*/
 
+import { azeotropeCrossings } from "../../case/azeotropeCrossing";
 import { Box, Center, Group, NativeSelect, SegmentedControl, Text } from "@mantine/core";
 import { useMemo, useState } from "react";
 import { Plot, PLOT_CONFIG, PLOT_COLORS, PLOT_FONT, darkLayout } from "./plotly.js";
@@ -998,18 +999,11 @@ function TxyPlot({ parsed, info, overlays, defaultMode, modes, partner, P }: {
     [parsed.rows, iX, iTbub, iYeq],
   );
 
-  // Azeotrope detection: interior rows where |x - y| < 0.01 (relaxed from 0.005
-  // per the forum — some azeotropes, e.g. ethanol-water, only close to ~0.002
-  // on a coarse grid and were being missed).
+  // Azeotrope detection: a change of sign of (y - x), located between the
+  // two rows that bracket it (case/azeotropeCrossing.ts).  A closeness band
+  // marked every sampled point of a curve that hugs the diagonal.
   type AzeoPt = { x: number; T: number };
-  const azeo: AzeoPt[] = useMemo(() => {
-    const out: AzeoPt[] = [];
-    for (const r of rows) {
-      if (r.x > 0.05 && r.x < 0.95 && Math.abs(r.x - r.y) < 0.01)
-        out.push({ x: r.x, T: r.T });
-    }
-    return out;
-  }, [rows]);
+  const azeo: AzeoPt[] = useMemo(() => azeotropeCrossings(rows), [rows]);
 
   // Display bundle: temperature axis obeys the global Units menu; the title
   // names the real pair + the swept pressure when the caller supplies them.
@@ -1900,10 +1894,10 @@ function buildMultiTxyPlot(
         hovertemplate: `${m.name}<br>x_${comp}: %{x:.4f}<br>y_${comp}: %{y:.4f}<extra></extra>`,
       });
       // azeotrope: interior crossing of the diagonal.
-      const az = m.rows.find((r) => r.x > 0.05 && r.x < 0.95 && Math.abs(r.x - r.y) < 0.01);
+      const az = azeotropeCrossings(m.rows.map((r) => ({ x: r.x, y: r.y, T: NaN })))[0];
       if (az) data.push({
         type: "scatter", mode: "markers", name: `azeotrope · ${m.name}`,
-        x: [az.x], y: [az.y], showlegend: false,
+        x: [az.x], y: [az.x], showlegend: false,
         marker: { size: 9, color: color(i), symbol: "diamond", line: { color: "#fff", width: 1 } },
         hovertemplate: `azeotrope (${m.name})<br>x = y = %{x:.3f}<extra></extra>`,
       });
