@@ -3824,6 +3824,18 @@ accepts today, and that is a policy call.
 > a two-homes fact and is out of this bar.  Order: (2), (3), (4), (5) are
 > small and move no number; (1) last, case by case, because it moves
 > published numbers.
+>
+> **C421, THE COUNTS CORRECTED THE SAME HOUR (2026-11-18).**  Read
+> line by line instead of grepped: (2) is NOT eight literals -- it is three
+> in two props-bench ops (FreezingPoint is ABOUT water's ice; Speciate refuses
+> any other solvent by name before using the word), each already a declared
+> exception with its reason in `AQUEOUS_SOLVENT_NAME_LITERALS`; (3) is ONE
+> reader of a unit's thermo subdict (Flowsheet) plus two that read only the
+> engine's stamped copy, each declared in `THERMO_SUBDICT_READERS`.  Both
+> already meet the bar ("zero, or each survivor a declared exception with its
+> reason"); nothing to do.  (1) is 63 entries in 41 cases (the 56 counted
+> manifests carrying the word, 15 with an empty block).  Running: (1) and
+> (5) by two Sonnet builders; then (4), the liquid-property door, last.
 
 > **THE 2026-11-17 BATCH LANDED: C413 slice 3 (cases reference the
 > catalogue: held copies 1982 -> 63), C410 (the liquid H and S on the
