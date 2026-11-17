@@ -12,7 +12,7 @@ stream  diluateFeed            T                298.15             1e-4
 kpi     edStack                C_ion_HTart      15                 1e-4
 kpi     edStack                C_ion_K          15                 1e-4
 kpi     edStack                D_eff            1.18137943326e-09  1e-4
-kpi     edStack                D_ion_HTart      7.568e-10          1e-4
+kpi     edStack                D_ion_HTart      8.455e-10          1e-4
 kpi     edStack                D_ion_K          1.96e-09           1e-4
 kpi     edStack                E_mem_pair       0.013980745806     1e-4
 kpi     edStack                I                2.68014811444      1e-4

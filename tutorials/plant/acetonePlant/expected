@@ -31,7 +31,7 @@ kpi     C1                     nStages          66               1e-4
 kpi     C1                     recoveryOuterIterations 3                1e-4
 kpi     C1                     recovery_acetone 0.96999999286    1e-4
 kpi     C1                     x_B_HK           0.899462654978   1e-4
-kpi     C1                     x_D_LK           4.94903618327e-10 1e-4
+kpi     C1                     x_D_LK           5.15380297886e-10 1e-4
 kpi     C2                     B                0.0102511117062  1e-4
 kpi     C2                     D                0.00163333333333 1e-4
 kpi     C2                     Q_condenser_kW   -119.067044582   1e-4

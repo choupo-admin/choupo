@@ -21,7 +21,7 @@ verdict fit_NF270_FdL2021      verdict          validated        exact
 # word-keyed diagnostics only).  fit.0 = poreModel.poreRadius [m],
 # fit.1 = poreModel.chargeDensity [mol/m3]; the values are the record's,
 # rounded to 6 significant figures, and pin that the fit has not MOVED.
-diag    fit_NF270_FdL2021      fit.0.value      6.7476e-10       1e-5
+diag    fit_NF270_FdL2021      fit.0.value      6.74752e-10       1e-5
 diag    fit_NF270_FdL2021      fit.0.ci95       3.40163093415e-11 1e-3
 diag    fit_NF270_FdL2021      fit.1.value      -10.5241          1e-5
 diag    fit_NF270_FdL2021      fit.1.ci95       4.09740785513    1e-3

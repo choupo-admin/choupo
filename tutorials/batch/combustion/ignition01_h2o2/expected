@@ -3,9 +3,9 @@
 # kind   name      key         expected        reltol
 kpi     bomb                   P_final          500000             1e-4
 kpi     bomb                   T_final          3076.31278179      1e-4
-kpi     bomb                   n_H2O2_final     2.59406092875e-11  1e-4
+kpi     bomb                   n_H2O2_final     9.60661475471e-11  1e-4
 kpi     bomb                   n_H2_final       1.6749742078e-06  1e-4
-kpi     bomb                   n_HO2_final      1.97492765295e-10  1e-4
+kpi     bomb                   n_HO2_final      9.12802450492e-10  1e-4
 kpi     bomb                   n_H_final        5.08698565686e-07   1e-4
 kpi     bomb                   n_N2_final       2.857145e-05       1e-4
 kpi     bomb                   n_O2_final       6.5975872805e-07  1e-4

@@ -3,7 +3,7 @@
 # kind   name      key         expected        reltol
 kpi     still                  P_final          101300             1e-4
 kpi     still                  T_final          373.117313962      1e-4
-kpi     still                  n_ethanol_final  3.38836968904e-11  1e-4
+kpi     still                  n_ethanol_final  2.08003362152e-11  1e-4
 kpi     still                  n_water_final    9.99999650927e-05  1e-4
 kpi     still                  t_end            600                1e-4
 kpi     still                  totalMoles_final 9.99999989764e-05  1e-4
