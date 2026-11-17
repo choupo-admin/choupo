@@ -72,6 +72,10 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys as _sys_cr  # noqa: E402
+from pathlib import Path as _Path_cr  # noqa: E402
+_sys_cr.path.insert(0, str(_Path_cr(__file__).resolve().parent))
+import case_records  # noqa: E402  (C420: the probe copy has one home)
 
 ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "src"
@@ -150,7 +154,7 @@ def run_case(case_dir, binary="choupoProps", env=None):
 
 def stage(src_case, tmp):
     dst = Path(tmp) / "case"
-    shutil.copytree(src_case, dst)
+    case_records.copytree(src_case, dst)
     return dst
 
 
