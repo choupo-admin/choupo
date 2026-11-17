@@ -58,6 +58,7 @@ Exit 0 = all hold.  Exit 1 = a named failure.
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -196,7 +197,7 @@ def lint_refuses(label, mutate, expect, case="flash17_two_liquids_reactive",
     tmp = tempfile.mkdtemp(prefix="phasespec.")
     try:
         dst = os.path.join(tmp, "case")
-        shutil.copytree(os.path.join(FLASH, case), dst)
+        case_records.copytree(os.path.join(FLASH, case), dst)
         for junk in ("converged", "reports"):
             shutil.rmtree(os.path.join(dst, junk), ignore_errors=True)
         with open(os.path.join(dst, "0", "liquid"), "w") as f:
@@ -409,7 +410,7 @@ def solve_refuses(label, case_src, mutate_case, expect):
     tmp = tempfile.mkdtemp(prefix="phasename.")
     try:
         dst = os.path.join(tmp, "case")
-        shutil.copytree(case_src, dst)
+        case_records.copytree(case_src, dst)
         for junk in ("converged", "reports"):
             shutil.rmtree(os.path.join(dst, junk), ignore_errors=True)
         mutate_case(dst)
@@ -484,7 +485,7 @@ else:
     tmp = tempfile.mkdtemp(prefix="roundtrip.")
     try:
         dst = os.path.join(tmp, "case")
-        shutil.copytree(F13, dst)
+        case_records.copytree(F13, dst)
         for junk in ("converged", "reports"):
             shutil.rmtree(os.path.join(dst, junk), ignore_errors=True)
         #  A two-phase feed BY STATE, not by pin (2026-10-03): a mixture's

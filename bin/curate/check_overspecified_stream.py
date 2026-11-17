@@ -168,6 +168,7 @@ import json
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -386,7 +387,7 @@ def build_dyn(root: Path, T: str) -> Path:
     case = root / "dynFixture"
     if case.exists():
         shutil.rmtree(case)
-    shutil.copytree(DYN, case, ignore=shutil.ignore_patterns(
+    case_records.copytree(DYN, case, ignore=shutil.ignore_patterns(
         "expected", "log.*", "reports", "[0-9]*.[0-9]*", "converged"))
     for d in case.iterdir():                     # written time directories
         if d.is_dir() and re.fullmatch(r"[0-9.eE+-]+", d.name) and d.name != "0":

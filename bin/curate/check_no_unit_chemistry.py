@@ -242,6 +242,7 @@ if bad:
 #  4. The refusal, fired for real.
 # ---------------------------------------------------------------------------
 import shutil, subprocess, tempfile
+import case_records  # noqa: E402
 
 SOLVER = ROOT / "choupoSolve"
 CASE = ROOT / "tutorials" / "steady" / "flash" / "flash16_calcite_precipitation"
@@ -254,7 +255,7 @@ def _run_with(insert: str, variants: str = ""):
     tmp = tempfile.mkdtemp(prefix="unitchem.")
     try:
         dst = Path(tmp) / "case"
-        shutil.copytree(CASE, dst)
+        case_records.copytree(CASE, dst)
         for junk in ("converged", "reports"):
             shutil.rmtree(dst / junk, ignore_errors=True)
         fd = dst / "system" / "flowsheetDict"
@@ -345,7 +346,7 @@ else:
         tmp2 = tempfile.mkdtemp(prefix="unitchem2.")
         try:
             dst = Path(tmp2) / "case"
-            shutil.copytree(SECT, dst)
+            case_records.copytree(SECT, dst)
             for junk in ("converged", "reports"):
                 shutil.rmtree(dst / junk, ignore_errors=True)
             sfd = dst / "sectors" / "SEPARATION" / "system" / "flowsheetDict"

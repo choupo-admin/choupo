@@ -268,6 +268,7 @@ def main() -> int:
     #  defect) would announce and still be wrong -- the arithmetic is the arm.
     import json as _json
     import shutil as _sh
+    import case_records  # noqa: E402
     import tempfile as _tf
 
     def _result(out: str):
@@ -311,7 +312,7 @@ def main() -> int:
                                 "Da_kTau to anchor the recompute")
                 continue
             probe = Path(td) / Path(case).name
-            _sh.copytree(ROOT / case, probe)
+            case_records.copytree(ROOT / case, probe)
             fs = probe / "system" / "flowsheetDict"
             t = fs.read_text()
             t2 = re.sub(r"operation\s*\{", "operation   { catalystLoading %g;"
@@ -352,7 +353,7 @@ def main() -> int:
         #  the backstop; this arm proves the mechanism makes the backstop
         #  unreachable on the route that found the hole.)
         stiff = Path(td) / "pfr_stiff"
-        _sh.copytree(ROOT / "tutorials/steady/reactors/pfr01_first_order",
+        case_records.copytree(ROOT / "tutorials/steady/reactors/pfr01_first_order",
                      stiff)
         fs = stiff / "system" / "flowsheetDict"
         fs.write_text(re.sub(r"operation\s*\{",
@@ -388,7 +389,7 @@ def main() -> int:
               "{ component ethanol;       nu -1;  order -0.5; }"), "NEGATIVE"),
         ]:
             probe = Path(td) / ("mono_" + tag)
-            _sh.copytree(ROOT / "tutorials/steady/reactors/cstr01_first_order",
+            case_records.copytree(ROOT / "tutorials/steady/reactors/cstr01_first_order",
                          probe)
             rf = probe / "constant" / "reactions"
             t = rf.read_text()

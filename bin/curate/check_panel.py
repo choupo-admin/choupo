@@ -66,6 +66,7 @@ import csv
 import json
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -108,7 +109,7 @@ def make_case(work, name, panel=None, endTime=None, flowsheet_extra=None):
         shutil.rmtree(d)
     d.mkdir(parents=True)
     for sub in ("0", "constant", "system"):
-        shutil.copytree(WITNESS / sub, d / sub)
+        case_records.copytree(WITNESS / sub, d / sub)
     shutil.copy(WITNESS / "edbatch01_constant_current.cho", d / "case.cho")
     pd = d / "system" / "panelDict"
     if pd.exists():
@@ -682,7 +683,7 @@ def arm_others(work):
         d = work / ("other_" + binary)
         if d.exists():
             shutil.rmtree(d)
-        shutil.copytree(src, d, ignore=shutil.ignore_patterns(
+        case_records.copytree(src, d, ignore=shutil.ignore_patterns(
             "reports", "converged", "design", "iterations", "trajectory.csv"))
         (d / "system").mkdir(exist_ok=True)
         (d / "system" / "panelDict").write_text(panel(el()))

@@ -121,6 +121,7 @@ import json
 import os
 import re
 import shutil
+import case_records  # noqa: E402
 import subprocess
 import sys
 import tempfile
@@ -212,7 +213,7 @@ def run_batch(case: Path):
 
 
 def copy_case(base: Path, dst: Path) -> Path:
-    shutil.copytree(base, dst, ignore=shutil.ignore_patterns(
+    case_records.copytree(base, dst, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "[0-9]*", "resultJson*", "reports"))
     return dst
 
