@@ -29,8 +29,8 @@ kpi     flashPCSAFT            Q_kW             0                  1e-4
 kpi     flashPCSAFT            T                358.15             1e-4
 kpi     flashPCSAFT            V_over_F         0.648962581485     1e-4
 kpi     flashPCSAFT            phaseSet         0                  1e-4
-closure flashNRTL              raw_kW           -54.7525149473     1e-4
-closure flashNRTL              step_kW          -54.7525149473     1e-4
+closure flashNRTL              raw_kW           -53.2095471482     1e-4
+closure flashNRTL              step_kW          -53.2095471482     1e-4
 closure flashNRTL              remaining_kW     0                  1e-4
 stream  feedA                  T                358.15           1e-4
 stream  feedB                  T                358.15           1e-4
@@ -38,7 +38,7 @@ stream  liqNRTL                T                358.15           1e-4
 stream  liqPCSAFT              T                358.15           1e-4
 stream  vapNRTL                T                358.15           1e-4
 stream  vapPCSAFT              T                358.15           1e-4
-boundary global                 H_feeds_kW       -14014.9475299   1e-4
+boundary global                 H_feeds_kW       -13992.149776   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
-boundary global                 H_products_kW    -14069.7069277   1e-4
-boundary global                 residual_kW      54.7521690997    abs:0.004286
+boundary global                 H_products_kW    -14045.358991   1e-4
+boundary global                 residual_kW      53.2092150331    abs:0.004286

@@ -520,9 +520,9 @@ namespace {
             + "), as the identity H^R = -R T^2 d(sum y_i ln phi_i)/dT"
             " requires; a pair fitted to phase equilibrium only gives that"
             " slope from the same numbers that fix G^E, never from a heat of"
-            " mixing.  They reach the VAPOUR's enthalpy and entropy: a liquid"
-            " stream of a phiPhi package is priced on H_liquid_formation, not"
-            " on the cubic (DEV.md 4c C410)");
+            " mixing.  They reach both phases of a phiPhi package, each at"
+            " its own root: a liquid stream is priced on the cubic's liquid"
+            " root (DEV.md 4c C410)");
         return rule;
     }
 

@@ -388,6 +388,7 @@ void ThermoPackage::assembleTwoPhase(const std::vector<std::string>& namesIn,
         if (thermoAnnounce())
             std::cout << "VLE world: phi-phi (K = phi_L/phi_V, "
                       << eos_->modelName() << " both phases)\n";
+        (void) liquidOnEosRoot();       // announces a package-wide fallback, once (C410, LR-01)
     }
 
     auditFindings_ = collectAuditFindings(components_, activity_.get(), eos_.get());
@@ -1843,6 +1844,49 @@ scalar ThermoPackage::speciesPhaseEnthalpy(std::size_t i, scalar T,
     return c.h_pure_ig(T) - c.Hvap_latent(T);
 }
 
+//  THE LIQUID ON THE EQUATION OF STATE (C410).  See the header.  The route is
+//  chosen ONCE PER PACKAGE, never per stream (review LR-01): the liquid root
+//  prices every liquid stream when the world is phiPhi, the EoS has a liquid
+//  root, there is no electrolyte and EVERY component has an ideal-gas leg;
+//  otherwise the whole package keeps the formation-datum liquid, and says so
+//  once, naming the reason.  No composition ever switches the route.
+std::string ThermoPackage::liquidRouteFallbackReason() const
+{
+    if (vleWorld_ != "phiPhi") return "";           // not a phiPhi package: no claim
+    if (!eos_ || !eos_->hasLiquidRoot())
+        return "the equation of state has no liquid root";
+    if (hasElectrolyte())
+        return "the package carries an electrolyte (its liquid is the aqueous ion reference)";
+    for (std::size_t i = 0; i < n(); ++i)
+        if (!components_[i].hasCpIdealGas() || !components_[i].datumOnIdealGasRung())
+            return "component '" + components_[i].name() + "' has no ideal-gas leg"
+                   " (no idealGasHeatCapacity, or its datum is a liquid or solid rung)";
+    return "";
+}
+
+bool ThermoPackage::liquidOnEosRoot() const
+{
+    if (vleWorld_ != "phiPhi") return false;
+    const std::string why = liquidRouteFallbackReason();
+    if (why.empty()) return true;
+    if (AdvisoryLog::instance().add("thermo", "warning", "phiPhi liquid route", why))
+        std::cerr << "[thermo] phiPhi liquid enthalpy: the WHOLE package keeps the"
+                     " formation-datum liquid (liquid Cp, latent heat, no pressure"
+                     " term) for every stream, not the equation of state's liquid"
+                     " root, because " << why << "\n";
+    return false;
+}
+
+scalar ThermoPackage::H_liquid_eos(scalar T, scalar P_Pa, const sVector& x) const
+{
+    return H_ig(T, x) + eos_->H_residualLiquid(T, P_Pa, x);
+}
+
+scalar ThermoPackage::S_liquid_eos(scalar T, scalar P_Pa, const sVector& x) const
+{
+    return S_ig(T, P_Pa, x) + eos_->S_residualLiquid(T, P_Pa, x);
+}
+
 scalar ThermoPackage::H_stream_formation(scalar T, scalar P_Pa,
                                          scalar vapFrac,
                                          const sVector& z) const
@@ -1867,7 +1911,10 @@ scalar ThermoPackage::H_stream_formation(scalar T, scalar P_Pa,
         }
     }
 
-    if (vapFrac <= 0.0) return H_liquid_formation(T, z);
+    //  phiPhi: the liquid leg is the cubic's liquid root (C410).
+    const bool onEos = liquidOnEosRoot();
+    if (vapFrac <= 0.0)
+        return onEos ? H_liquid_eos(T, P_Pa, z) : H_liquid_formation(T, z);
 
     // NONVOLATILE species (no priceable ideal-gas leg -- sucrose, salts)
     // are WHOLLY liquid at ANY vapour fraction: their share contributes the
@@ -1897,7 +1944,8 @@ scalar ThermoPackage::H_stream_formation(scalar T, scalar P_Pa,
         }
     }
     if (vapFrac >= 1.0) return hNonvol + H_real(T, P_Pa, zV);
-    return (1.0 - vapFrac) * H_liquid_formation(T, z)
+    return (1.0 - vapFrac) * (onEos ? H_liquid_eos(T, P_Pa, z)
+                                    : H_liquid_formation(T, z))
          + vapFrac * (hNonvol + H_real(T, P_Pa, zV));
 }
 
@@ -1989,7 +2037,9 @@ scalar ThermoPackage::S_stream_formation(scalar T, scalar P_Pa,
         }
     }
 
-    if (vapFrac <= 0.0) return S_liquid_formation(T, z);
+    const bool onEos = liquidOnEosRoot();      // C410
+    if (vapFrac <= 0.0)
+        return onEos ? S_liquid_eos(T, P_Pa, z) : S_liquid_formation(T, z);
 
     for (std::size_t i = 0; i < n() && i < z.size(); ++i)
         if (z[i] > 0.0 && (!components_[i].hasCpIdealGas()
@@ -2003,7 +2053,8 @@ scalar ThermoPackage::S_stream_formation(scalar T, scalar P_Pa,
                 " refused.  Price the EQUILIBRIUM phases instead (sOfState).");
 
     if (vapFrac >= 1.0) return S_real(T, P_Pa, z);
-    return (1.0 - vapFrac) * S_liquid_formation(T, z)
+    return (1.0 - vapFrac) * (onEos ? S_liquid_eos(T, P_Pa, z)
+                                    : S_liquid_formation(T, z))
          + vapFrac * S_real(T, P_Pa, z);
 }
 

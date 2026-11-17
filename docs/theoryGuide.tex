@@ -10580,6 +10580,34 @@ entropy.  Both departures vanish as $P\to 0$ ($Z\to 1$, $B\to 0$),
 so the high-pressure correction switches itself off where it is not
 needed --- the same self-consistency as $\hat\varphi_i\to 1$.
 
+\paragraph{Which root prices which phase.}\label{sec:cubic-liquid-root}
+Eqs.~\eqref{eq:srk-HR}--\eqref{eq:srk-SR} are written for a root $Z$ of the
+cubic, and the cubic has two that matter: the \emph{vapour} root (the
+largest) and the \emph{liquid} root (the smallest).  Under a \code{phiPhi}
+package one equation of state prices both phases, and each phase is priced on
+its own root:
+\begin{equation}
+   H_{\mathrm{vap}} = H^{\mathrm{ig}}(T,\yv) + H^{\mathrm R}(T,P,\yv;Z_{\mathrm V}),
+   \qquad
+   H_{\mathrm{liq}} = H^{\mathrm{ig}}(T,\xv) + H^{\mathrm R}(T,P,\xv;Z_{\mathrm L}),
+   \label{eq:cubic-H-roots}
+\end{equation}
+and $S$ likewise with $S^{\mathrm R}$ and $S^{\mathrm{ig}}(T,P,\cdot)$; a
+two-phase stream is the quality-weighted sum of the two.  The volume
+translation's $-P\,c$ (Section~\ref{sec:peneloux}) and, under MHV1 or MHV2, the
+$H^{\mathrm E}$ slope (Section~\ref{sec:cubic-mixing-rule}) enter at both
+roots; Lee--Kesler--Ploecker and PC-SAFT are priced the same way at their
+own liquid roots.  A package that is \emph{not} \code{phiPhi} (a $\gamma$--$\varphi$
+package, whose liquid carries an activity model and not the cubic) keeps the
+formation-datum liquid, $\sum x_i[h^{\mathrm{ig}}_i - \Delta h^{\mathrm{vap}}_i]$,
+which has no pressure term.  On each root the Gibbs departure closes,
+$G^{\mathrm R} = H^{\mathrm R} - T S^{\mathrm R} = \Rgas T\sum_i x_i\ln\varphi_i$;
+the gate \code{check\_volume\_translation} holds it to $10^{-9}$ on both roots,
+shifted and unshifted.  Implemented in \code{EquationOfState::H\_residualLiquid}
+and \code{S\_residualLiquid} (cubics: one body, \code{CubicEoS::H\_residualAt},
+called with the root named) and routed by \code{ThermoPackage::H\_stream\_formation}
+and \code{S\_stream\_formation} for a \code{phiPhi} package.
+
 \subsection{Peng-Robinson: the same machine, two constants}
 
 Peng-Robinson (1976) \cite{PengRobinson1976} keeps the entire
@@ -10790,12 +10818,10 @@ moves by
    \label{eq:pen-H}
 \end{equation}
 (equivalently $h = u + Pv$ with $u$ unchanged and $v$ lowered by $c$).
-What moves is the equation of state's own departure, i.e.\ the
-\emph{vapour-root} $H^{\mathrm R}$ (by $-P\,c(\mathbf y)$).  Under
-\code{phiPhi} the enthalpy of the \emph{liquid} phase of a package is not the
-cubic's departure (it is the liquid formation enthalpy; DEV.md 4c C410), so
-a flash's liquid enthalpy does \emph{not} move and its total changes by
-$-\beta_V\,P\,c(\mathbf y)$ only, until that is closed.
+What moves is the equation of state's own departure, at \emph{either} root
+(Section~\ref{sec:cubic-liquid-root}): under \code{phiPhi} the liquid phase is
+priced on the cubic's liquid root, so the shift lowers its enthalpy by
+$P\,c(\mathbf x)$ as it lowers the vapour's by $P\,c(\mathbf y)$.
 
 \paragraph{Declaring it.}  Off unless asked, so no existing case moves.  The
 catalogue's component records carry no $z_{RA}$, so the case declares it,
@@ -11033,9 +11059,9 @@ fitted to phase equilibrium alone gives a slope fixed by the same two numbers
 that fix $g^{\mathrm E}$; the run says so once.  The first law of a flowsheet
 closes on \emph{any} single-valued $H(T,P,\mathbf y)$ and so cannot see a wrong
 slope; the gate checks Eq.~\eqref{eq:cmr-dep} against a temperature difference of
-the engine's own $\ln\varphi$ instead.  The departures reach the
-\emph{vapour} phase's enthalpy and entropy: under \code{phiPhi} a liquid
-stream is priced on the liquid formation enthalpy, not on the cubic (DEV.md 4c C410).
+the engine's own $\ln\varphi$ instead.  The departures reach both
+phases of a \code{phiPhi} package, each at its own root
+(Section~\ref{sec:cubic-liquid-root}).
 
 \paragraph{What the rule asks of the case.}
 \begin{itemize}
@@ -11667,8 +11693,9 @@ closure, the derivative, the pure limit and the refusals are held by
 \paragraph{Limits.}  Accuracy is best subcooled and superheated and falls near the
 critical region of a widely boiling mixture (LK, p.~510); the correlation is for
 non-polar and slightly polar fluids and was not fitted to hydrogen-bonding
-fluids; the liquid enthalpy of a \emph{mixture} in a phi--phi package follows the
-family contract (vapour-root departures), see DEV.md 4c C410; and $\kappa=1$ for
+fluids; the liquid enthalpy of a mixture in a phi--phi package is the liquid root's
+departure, eq.~(11) read at the liquid root
+(Section~\ref{sec:cubic-liquid-root}); and $\kappa=1$ for
 an unlisted asymmetric pair can be badly wrong.  Where a cubic with a good
 $k_{ij}$ exists the two will agree to a few per cent on a gas; the reason to
 reach for this model is the dense and the liquid region of a hydrocarbon

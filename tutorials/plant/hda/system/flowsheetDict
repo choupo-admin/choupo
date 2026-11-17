@@ -63,8 +63,9 @@ units
     //  the dissolved H2 and CH4 still enter that bubble point through a vapour
     //  pressure continued past their Tc; they leave in the distillate either
     //  way.  The liquids crossing into and out of it are re-interpreted at the
-    //  model boundary, and the energy ledger prices that step (a fraction of
-    //  a kW: liquids, not the 35-bar gas).
+    //  model boundary, and the energy ledger prices that step (1.9 kW since
+    //  C410 put the plant's liquid on the cubic's liquid root, 0.25 kW before:
+    //  liquids, not the 35-bar gas).
     { name Column;   type shortcutColumn;
       in hpLiquid;  outputs ( Benzene  TolueneRecycle );  // FUG: [distillate, bottoms]
       operation { lightKey benzene;  heavyKey toluene;  recoveryLK 0.99;  recoveryHK 0.01;  refluxFactor 1.3; }

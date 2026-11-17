@@ -38,8 +38,9 @@ MEASURED, 2026-10-25, against the parent build (PCSAFT.cpp without the
 the term, PCSAFT passes at the cubics' level (I1 1.4e-6 / 1.8e-6, I2 1.4e-8
 / 1.1e-7).
 
-NOT COVERED: the LIQUID root (`S_residual` reports the vapour root by the
-family contract, PCSAFT.cpp), mixtures, the association term in isolation,
+NOT COVERED: the LIQUID root's two identities here (`S_residual` reports the
+vapour root by the family contract; the liquid-root departures and G = H - T S
+on both roots are held by check_volume_translation, C410), mixtures, the association term in isolation,
 and whether the departure is RIGHT against measurement -- only that it is
 self-consistent with H_R and v in the convention S_real assumes.
 

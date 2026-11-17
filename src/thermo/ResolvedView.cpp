@@ -584,7 +584,12 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
     }
     {
         std::vector<std::string> d;
-        if (phiPhi)
+        if (phiPhi && !pkg.liquidRouteFallbackReason().empty())
+        {
+            d.push_back("formation-datum liquid for EVERY stream of this package (liquid Cp, latent heat, no pressure term),");
+            d.push_back("  NOT the liquid root's departures, because " + pkg.liquidRouteFallbackReason());
+        }
+        else if (phiPhi)
             d.push_back("equilibriumEquationOfState: the liquid root's departures, on the same ideal-gas legs");
         else if (pkg.hasElectrolyte())
         {

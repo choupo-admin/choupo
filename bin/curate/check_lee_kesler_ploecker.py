@@ -792,6 +792,13 @@ def package_problems(wd, probe_ok=True):
             s = sum(yy * lp for yy, lp in zip(y, lnphi))
             if abs(g - s) > 1e-9:
                 bad.append("(e) package G^R/RT: H^R/RT - S^R/R = %.12g but sum y ln phi = %.12g (T %g)" % (g, s, T))
+        # (e) C410: the same closure on the LIQUID root, the departures a liquid stream of a
+        # phiPhi package is priced on (H_residualLiquid, S_residualLiquid)
+        if rt == "L":
+            g = package_probe(case, ["GRESL %r %r %s" % (T, P, ys)], wd)[0][0]
+            s = sum(yy * lp for yy, lp in zip(y, lnphi))
+            if abs(g - s) > 1e-9:
+                bad.append("(e) package liquid-root G^R/RT: H^R/RT - S^R/R = %.12g but sum x ln phi_L = %.12g (T %g)" % (g, s, T))
     return bad
 
 

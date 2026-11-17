@@ -474,6 +474,18 @@ scalar LeeKeslerPloecker::S_residual(scalar T, scalar P, const sVector& y) const
     return constant::R * state(T, P, y, false).b.sOverR;
 }
 
+//  The LIQUID root's departures (C410): the same eq. (11) / (12) read at the
+//  liquid root of eq. (3).
+scalar LeeKeslerPloecker::H_residualLiquid(scalar T, scalar P, const sVector& y) const
+{
+    return constant::R * T * state(T, P, y, true).b.hOverRT;
+}
+
+scalar LeeKeslerPloecker::S_residualLiquid(scalar T, scalar P, const sVector& y) const
+{
+    return constant::R * state(T, P, y, true).b.sOverR;
+}
+
 //  PSEUDO-ROOT flags: eq. (3) has ONE root for either fluid; the root belongs
 //  to the phase its V_r says (0.29 = the simple fluid's P_c V/(R T_c) at the
 //  critical point).  A classification only -- the value never changes.

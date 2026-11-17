@@ -343,10 +343,22 @@ view (`volumeTranslation Peneloux: v = v_SRK - sum x_i c_i ...`).  Use it as a
 per-op or system variant (`variants { peneloux { equilibrium { ... } } }`,
 `thermo peneloux;`) to compare.  What it changes: `Z`, `v_molar`, `v_molar_liq`,
 `H_R` of `propertyPoint` and every unit that reads the EoS volume or
-departure.  What it does NOT change: K-values, flashes, `S_R`, the liquid-phase enthalpy of a phiPhi package (not the EoS's until DEV.md 4c C410), and the
+departure.  The shift enters `H_R` at both roots, so a phiPhi liquid stream's enthalpy moves too (C410).  What it does NOT change: K-values, flashes, `S_R`, and the
 Rackett liquid density of `ThermoPackage::density`.  Limits: fitted to
 saturated liquids at T_r = 0.7, useless near the critical point.  Witness:
 `tutorials/props/molecular/volumeTranslation01_nhexane_peneloux`.
+
+#### Which root prices which phase (phiPhi, C410)
+
+Under `formulation phiPhi` one equation of state prices both phases: a vapour stream is `H_ig + H_R` at the vapour root, a
+LIQUID stream (and the liquid half of a two-phase stream) is `H_ig + H_R` at the liquid root, and `S` likewise
+(`EquationOfState::H_residualLiquid`, `S_residualLiquid`; SRK, PengRobinson, LeeKeslerPloecker and PCSAFT; routed by
+`ThermoPackage::H_stream_formation` / `S_stream_formation`).  The volume translation's `-P c` and an MHV1/MHV2 `H^E` enter at
+both roots.  A gammaPhi package keeps its formation-datum liquid (liquid Cp, latent heat, no pressure term), and so does a
+package with an electrolyte or a species without an ideal-gas leg.  Effect: latent heats of a phiPhi column or flash are
+the cubic's own (column08 reboiler +8.7 %, cavett01 flash duties +25 to +40 %); the moved rows are in
+`docs/audits/2026-11-17-c410-moved-goldens.md`.  Theory Guide `sec:cubic-liquid-root`.  Gate: `check_volume_translation`
+holds G = H - T S on both roots and the stream routing of the shipped phiPhi packages.
 
 #### Cubic mixing rules: `vanDerWaalsOneFluid` (default), `MHV1`, `MHV2` — a cubic fed a low-pressure G^E model
 
@@ -405,8 +417,8 @@ word (the registry is listed); `PCSAFT` with a cubic rule; an `MHV1`/`MHV2` word
 gammaPhi / diluteSolution `vapour {}`.  A pure `β_i = a_i/(b_i R T)` outside
 `10 < β < 13`, the interval the polynomial `q(β)` was fitted on, is announced
 once.  The G^E model is called at the composition of the phase priced; its
-`H^E` (`−R T² d(G^E/RT)/dT`) enters `H_R` and `S_R`, the VAPOUR root's departures
-(a liquid stream of a phiPhi package is not the cubic's until DEV.md 4c C410).
+`H^E` (`−R T² d(G^E/RT)/dT`) enters `H_R` and `S_R` at both roots: a vapour stream
+is priced on the vapour root and a liquid stream of a phiPhi package on the LIQUID root (C410).
 The run prints the rule, its constants with their page, the G^E model and each
 pair with its tier and span, and the resolved view lists them.  What it is NOT:
 Huron–Vidal, Wong–Sandler and PSRK (later slices); a fitted alpha for water
@@ -434,8 +446,8 @@ another EoS, a pair naming a component the package lacks, `volumeTranslation` an
 a mixing rule other than the model's own.  An evaluation outside T_r 0.3–4 or
 P_r > 10 is announced once.  Limits: no strongly polar fluid (the three water
 pairs carry the paper's own "fortuitous"); accuracy falls near the critical region
-of a widely boiling mixture; the liquid-phase enthalpy of a phiPhi package follows
-the family contract (DEV.md 4c C410).  Witnesses:
+of a widely boiling mixture; the liquid-phase enthalpy of a phiPhi package is the departure at the
+liquid root (C410).  Witnesses:
 `tutorials/props/molecular/lkp01_lee_kesler_tables` (the equation against Tables
 5, 7, 9 of the paper, 21 anchor rows) and
 `tutorials/props/compare/lkp02_n2_ch4_ar_112K` (N2 + CH4, N2 + Ar and the ternary

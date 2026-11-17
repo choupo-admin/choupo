@@ -382,6 +382,32 @@ public:
     // and the energy-balance report falls back to the sensible datum
     // with a flagged note.
     scalar H_liquid_formation(scalar T_K, const sVector& x) const;
+
+    // ---- THE LIQUID ON THE EQUATION OF STATE, phiPhi (DEV.md 4c C410) ----
+    //
+    // Under a phiPhi package ONE cubic prices both phases, so a liquid-phase
+    // stream's enthalpy and entropy are the ideal-gas value plus the
+    // departures at the cubic's LIQUID root:
+    //
+    //     H_liquid_eos(T, P, x) = H_ig(T, x)    + eos.H_residualLiquid(T, P, x)
+    //     S_liquid_eos(T, P, x) = S_ig(T, P, x) + eos.S_residualLiquid(T, P, x)
+    //
+    // (the volume translation's -P c and a G^E mixing rule's H^E term are in
+    // the departure, at either root).  H_stream_formation / S_stream_formation
+    // route the liquid leg of a phiPhi package through these; every other
+    // package keeps the formation-datum liquid (H_liquid_formation), whose
+    // heat-capacity-and-latent-heat surface carries no pressure.
+    // liquidOnEosRoot() says whether this route applies -- ONCE PER PACKAGE,
+    // never per stream or per composition (a phiPhi world, an EoS with a
+    // liquid root, no electrolyte, EVERY component with an ideal-gas leg).
+    // When a phiPhi package cannot take it, the whole package keeps the
+    // formation-datum liquid and the reason is announced once, by name;
+    // liquidRouteFallbackReason() is that reason ("" when the route is taken
+    // or the package is not phiPhi), which the resolved view prints too.
+    bool        liquidOnEosRoot() const;
+    std::string liquidRouteFallbackReason() const;
+    scalar H_liquid_eos(scalar T_K, scalar P_Pa, const sVector& x) const;
+    scalar S_liquid_eos(scalar T_K, scalar P_Pa, const sVector& x) const;
     scalar H_stream_formation(scalar T_K, scalar P_Pa, scalar vapFrac,
                               const sVector& z) const;
 

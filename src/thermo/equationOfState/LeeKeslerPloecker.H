@@ -190,6 +190,8 @@ public:
     scalar  Z         (scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  H_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  S_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;
+    scalar  H_residualLiquid(scalar T_K, scalar P_Pa, const sVector& y) const override;
+    scalar  S_residualLiquid(scalar T_K, scalar P_Pa, const sVector& y) const override;
     bool    vapourRootIsPseudo(scalar T_K, scalar P_Pa, const sVector& y) const override;
     bool    liquidRootIsPseudo(scalar T_K, scalar P_Pa, const sVector& y) const override;
 

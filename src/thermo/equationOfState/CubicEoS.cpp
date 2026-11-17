@@ -425,8 +425,7 @@ std::string CubicEoS::volumeTranslationNote() const
         o << (i ? ", " : " ") << cNames_[i] << " " << std::setprecision(5)
           << cShift_[i] * 1.0e6;
     o << "; ln phi_i lowered by c_i P/RT in both phases (K-values and flashes"
-         " unchanged); the vapour-root H^R lowered by P c (the liquid-phase"
-         " enthalpy of a phiPhi package is not the EoS's: DEV.md 4c C410)";
+         " unchanged); H^R lowered by P c at either root";
     return o.str();
 }
 
@@ -522,11 +521,15 @@ sVector CubicEoS::phiLiquid(scalar T, scalar P, const sVector& y) const
     return phiAt(T, P, y, /*liquid*/true);
 }
 
-scalar CubicEoS::H_residual(scalar T, scalar P, const sVector& y) const
+//  THE DEPARTURES AT A NAMED ROOT (C410).  One body prices both roots: the
+//  vapour-root family (H_residual, S_residual) and the liquid-root pair
+//  call it with the root they mean, so the two phases can never be priced
+//  by two transcriptions of Sandler's equations.
+scalar CubicEoS::H_residualAt(scalar T, scalar P, const sVector& y, bool liquid) const
 {
     scalar B;
     CubicMixingRule::Mixed mx;
-    const scalar Zv = root(T, P, y, false, mx, nullptr, &B, false, true).Z;
+    const scalar Zv = root(T, P, y, liquid, mx, nullptr, &B, false, true).Z;
     // Sandler 4th ed eq. 6.4-30, generalised cubic.  a and da/dT are the
     // mixing rule's (CubicMixingRule.H: for an excess-Gibbs rule
     // da/dT = R b (beta + T dbeta/dT), so this IS Dahl & Michelsen's surface).
@@ -537,20 +540,43 @@ scalar CubicEoS::H_residual(scalar T, scalar P, const sVector& y) const
     //  read the other way), so H^R = -RT^2 d(ln phi)/dT moves by -P c for a
     //  T-independent c; equivalently h = u + P v with u unchanged and v
     //  lowered by c.  The paper prints no enthalpy equation; this is derived
-    //  from its fugacity relation.  Entropy (and phi) are unchanged.
+    //  from its fugacity relation.  Entropy (and phi) are unchanged.  The
+    //  shift is the same at either root (C410).
     if (cShift_.empty()) return HR;
     return HR - P * volumeShift(y);
 }
 
-scalar CubicEoS::S_residual(scalar T, scalar P, const sVector& y) const
+scalar CubicEoS::S_residualAt(scalar T, scalar P, const sVector& y, bool liquid) const
 {
     scalar B;
     CubicMixingRule::Mixed mx;
-    const scalar Zv = root(T, P, y, false, mx, nullptr, &B, false, true).Z;
+    const scalar Zv = root(T, P, y, liquid, mx, nullptr, &B, false, true).Z;
     // Sandler 4th ed eq. 6.4-31, generalised cubic.
     const scalar lnI = std::log((Zv + c_.sig * B) / (Zv + c_.eps * B));
     return constant::R * std::log(std::max(Zv - B, 1.0e-30))
          + (mx.dadT / ((c_.sig - c_.eps) * mx.b)) * lnI;
+}
+
+scalar CubicEoS::H_residual(scalar T, scalar P, const sVector& y) const
+{
+    return H_residualAt(T, P, y, false);
+}
+
+scalar CubicEoS::S_residual(scalar T, scalar P, const sVector& y) const
+{
+    return S_residualAt(T, P, y, false);
+}
+
+// The LIQUID root's departures (C410): what a liquid-phase stream of a phiPhi
+// package is priced on.
+scalar CubicEoS::H_residualLiquid(scalar T, scalar P, const sVector& y) const
+{
+    return H_residualAt(T, P, y, true);
+}
+
+scalar CubicEoS::S_residualLiquid(scalar T, scalar P, const sVector& y) const
+{
+    return S_residualAt(T, P, y, true);
 }
 
 // --- Peneloux volume translation: the declaration -------------------------
@@ -809,9 +835,8 @@ CubicEoS::readVolumeTranslation(const std::string& model, const DictPtr& eosDict
         + "): v = v_" + model + " - sum x_i c_i; ONE translated fluid: ln phi_i"
           " lowered by c_i P/RT in both phases (K-values and every flash are"
           " the untranslated " + model + "'s, to round-off; a reaction sees"
-          " exp(-sum nu_i c_i P/RT)); the vapour-root H^R is lowered by P c, S^R"
-          " unchanged (the liquid-phase enthalpy of a phiPhi package is not the"
-          " EoS's: DEV.md 4c C410)";
+          " exp(-sum nu_i c_i P/RT)); H^R is lowered by P c at either root, S^R"
+          " unchanged";
     if (thermoAnnounce()
         && AdvisoryLog::instance().add("thermo", "info",
                model + " volumeTranslation", gen))

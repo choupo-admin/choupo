@@ -490,21 +490,22 @@ sVector PCSAFT::phiLiquid(scalar T_K, scalar P_Pa, const sVector& y) const
     return out;
 }
 
-scalar PCSAFT::H_residual(scalar T_K, scalar P_Pa, const sVector& y) const
+scalar PCSAFT::H_residualAt(scalar T_K, scalar P_Pa, const sVector& y, bool liquid) const
 {
     // H^res = -R T^2 (d(a_res/RT)/dT)_{rho,x} * ... plus (Z-1) RT.  Use the
     // total-T derivative of a_res at fixed rho: H^res/RT = -T (dã/dT)_rho + (Z-1)
-    // VAPOUR root (the family contract -- ThermoPackage's vapour enthalpy).
-    const scalar rho = solveDensity(T_K, P_Pa, y, false);
+    // At the root named: the vapour root for the family contract
+    // (ThermoPackage's vapour enthalpy), the liquid root for H_residualLiquid (C410).
+    const scalar rho = solveDensity(T_K, P_Pa, y, liquid);
     const scalar hT = T_K * 1.0e-6;
     const scalar dadT = (aRes(T_K+hT, rho, y) - aRes(T_K-hT, rho, y)) / (2.0*hT);
     const scalar Zc = 1.0 + rho * daRes_dRho(T_K, rho, y);
     return constant::R * T_K * ( -T_K * dadT + (Zc - 1.0) );
 }
 
-scalar PCSAFT::S_residual(scalar T_K, scalar P_Pa, const sVector& y) const
+scalar PCSAFT::S_residualAt(scalar T_K, scalar P_Pa, const sVector& y, bool liquid) const
 {
-    const scalar rho = solveDensity(T_K, P_Pa, y, false);   // vapour root (contract)
+    const scalar rho = solveDensity(T_K, P_Pa, y, liquid);   // the root named (C410)
     const scalar hT = T_K * 1.0e-6;
     const scalar aR = aRes(T_K, rho, y);
     const scalar dadT = (aRes(T_K+hT, rho, y) - aRes(T_K-hT, rho, y)) / (2.0*hT);
@@ -521,6 +522,27 @@ scalar PCSAFT::S_residual(scalar T_K, scalar P_Pa, const sVector& y) const
     //  (dH_R/dT)_P = T (dS_R/dT)_P and (dG_R/dP)_T = v - RT/P.
     const scalar Zc = 1.0 + rho * daRes_dRho(T_K, rho, y);
     return constant::R * ( -T_K * dadT - aR + std::log(Zc) );
+}
+
+scalar PCSAFT::H_residual(scalar T_K, scalar P_Pa, const sVector& y) const
+{
+    return H_residualAt(T_K, P_Pa, y, false);
+}
+
+scalar PCSAFT::S_residual(scalar T_K, scalar P_Pa, const sVector& y) const
+{
+    return S_residualAt(T_K, P_Pa, y, false);
+}
+
+// The LIQUID root's departures (C410): the same expressions at the high-eta root.
+scalar PCSAFT::H_residualLiquid(scalar T_K, scalar P_Pa, const sVector& y) const
+{
+    return H_residualAt(T_K, P_Pa, y, true);
+}
+
+scalar PCSAFT::S_residualLiquid(scalar T_K, scalar P_Pa, const sVector& y) const
+{
+    return S_residualAt(T_K, P_Pa, y, true);
 }
 
 scalar PCSAFT::verify(int verbosity) const

@@ -2946,7 +2946,9 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
             "cubic mixing rule", mixingRuleWord,
             CubicMixingRule::registeredNames()));
 
-    // phiPhi: departure from the SAME EoS on both phases.
+    // phiPhi: departure from the SAME EoS on both phases -- the vapour stream
+    // at the vapour root, the liquid stream at the LIQUID root (C410:
+    // ThermoPackage::H_liquid_eos / S_liquid_eos, routed by H_stream_formation).
     verifyCal("liquid", "departureRoute", "equilibriumEquationOfState");
     verifyCal("vapour", "departureRoute", "equilibriumEquationOfState");
 
