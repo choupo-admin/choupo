@@ -88,13 +88,7 @@ inline std::optional<Dimerisation> find(const std::string& gasSpecies)
                         == "gasLiquidEquilibrium"
                     && e->found("vapourDimerisation"))
                 {
-                    {
-                        const double sv = e->lookupScalarOrDefault("schemaVersion", 1);
-                        if (sv == 2) announceSchemaStamp2(key);
-                        else if (sv != 1)
-                            throw std::runtime_error(key + ": recordType"
-                                " gasLiquidEquilibrium requires schemaVersion 1;");
-                    }
+                    (void)checkHenryStamp(*e, key);
                     const std::string gas = e->found("gasSpecies")
                         ? e->lookupWord("gasSpecies") : e->lookupWord("gas");
                     Dimerisation d = dimerisationFrom(e->subDict("vapourDimerisation"));

@@ -21,9 +21,11 @@
 \*---------------------------------------------------------------------------*/
 
 #include "core/Advisory.H"
+#include "core/Dictionary.H"
 
 #include <iostream>
 #include <set>
+#include <stdexcept>
 #include <string>
 
 #ifndef CHOUPO_THERMO_ANNOUNCE_H
@@ -66,6 +68,17 @@ inline void announceSchemaStamp2(const std::string& what)
     if (AdvisoryLog::instance().addAnnouncedOnce("schemaVersion2", "init",
             "warning", "schemaVersion", msg))
         std::cerr << "[schema] " << msg << "\n";
+}
+
+// A Henry (gasLiquidEquilibrium) record: 1 silently, 2 announced, else refused.
+inline bool checkHenryStamp(const Dictionary& e, const std::string& file)
+{
+    const double sv = e.lookupScalarOrDefault("schemaVersion", 1);
+    if (sv == 2) announceSchemaStamp2(file);
+    else if (sv != 1)
+        throw std::runtime_error(file + ": recordType gasLiquidEquilibrium"
+                                 " requires schemaVersion 1;");
+    return true;   // the record is read
 }
 
 } // namespace Choupo
