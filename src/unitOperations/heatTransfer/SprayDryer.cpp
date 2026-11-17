@@ -594,39 +594,42 @@ int SprayDryer::solve(const DictPtr& dict,
     //  shrinks to the powder particle as solvent leaves:
     //      d_p = d32 · (x_solid,mass · ρ_L / ρ_solid)^(1/3)
     // -------------------------------------------------------------------
-    scalar rho_L = (solv.Vliq() > 0.0) ? (MW_w / 1000.0) / solv.Vliq()
-                                       : liquidSource::dropletDensityFallback.value;
+    //  C402 rest, step 3: a solvent with no declared liquid molar volume REFUSES
+    //  (it used to fall back to 1000 kg/m3; no shipped case relied on it).
+    const std::string sdWho = "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'";
+    if (!multiSolvent && !(solv.Vliq() > 0.0))
+        throw std::runtime_error(sdWho + ": the solvent '" + solv.name() + "' declares no liquid molar"
+            " volume (`Vliq`), which the droplet density is read from.  Declare `Vliq` (with its `VliqT`) in"
+            " the component's record, or in the case's own constant/components/" + solv.name() + ".");
+    scalar rho_L = (MW_w / 1000.0) / solv.Vliq();
     if (!multiSolvent)
-        PropertySourceLog::instance().useHere("liquidDensity", solv.Vliq() > 0.0 ? liquidSource::solventVliqFlat
-            : NamedSource{ liquidSource::dropletDensityFallback.id, liquidSource::dropletDensityFallback.label },
-            liquidProperty::statedDatumTemperatures(thermo, xs), "", "bypass", took(rho_L), solv.Vliq() > 0.0 ? "not applied" : "");
+        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::solventVliqFlat,
+            liquidProperty::statedDatumTemperatures(thermo, xs), "", "bypass", took(rho_L), "not applied");
     if (multiSolvent)
     {
         //  The solvent liquid's density at its feed composition: molar
         //  volumes ADD (ideal mixing; the excess volume of acetone/water or
         //  ethanol/water is a few per cent, beneath d32's cube-root
-        //  sensitivity).  A solvent with no declared Vliq keeps the water
-        //  fallback of the one-solvent line above, said.
-        scalar V = 0.0; bool all = true;
+        //  sensitivity).  A solvent with no declared Vliq REFUSES, as above.
+        scalar V = 0.0;
         for (auto i : solvents)
         {
-            if (thermo.comp(i).Vliq() > 0.0) V += xs[i] * thermo.comp(i).Vliq();
-            else all = false;
+            if (!(thermo.comp(i).Vliq() > 0.0))
+                throw std::runtime_error(sdWho + ": the solvent '" + thermo.comp(i).name() + "' of the feed declares"
+                    " no liquid molar volume (`Vliq`), which the droplet density is read from.  Declare `Vliq`"
+                    " (with its `VliqT`) in the component's record, or in the case's own constant/components/"
+                    + thermo.comp(i).name() + ".");
+            V += xs[i] * thermo.comp(i).Vliq();
         }
-        rho_L = (all && V > 0.0) ? (MW_w / 1000.0) / V : liquidSource::dropletDensityFallback.value;
-        if (!(all && V > 0.0))
-            PropertySourceLog::instance().useHere("liquidDensity", liquidSource::dropletDensityFallback);
-        else
-            PropertySourceLog::instance().useHere("liquidDensity", liquidSource::solventsVliqIdealMix, liquidProperty::statedDatumTemperatures(thermo, xs), "", "bypass", took(rho_L), "not applied");
-        if (!all)
-            AdvisoryLog::instance().add("model", "warning",
-                "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'",
-                "a solvent of the feed declares no liquid molar volume (Vliq): the"
-                " droplet density is taken as 1000 kg/m3");
+        rho_L = (MW_w / 1000.0) / V;
+        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::solventsVliqIdealMix, liquidProperty::statedDatumTemperatures(thermo, xs), "", "bypass", took(rho_L), "not applied");
     }
     scalar MW_air_in = 0.0;
     for (std::size_t i = 0; i < n; ++i) MW_air_in += yAir[i] * thermo.comp(i).MW();
-    const scalar rho_air_in = (T_air > 0.0) ? P_air * MW_air_in / (R * T_air) : 1.2;
+    if (!(T_air > 0.0))
+        throw std::runtime_error(sdWho + ": the drying air's temperature must be above 0 K to price its density"
+            " (the ideal-gas density of the declared air; there is no default density).");
+    const scalar rho_air_in = P_air * MW_air_in / (R * T_air);
     const Atomizer::Feed afeed { m_feed, rho_L, muL, sigma, rho_air_in, P_feed, P_air };
     const Atomizer::DropletResult drop = atomiser->dropletSize(afeed);
     const scalar d32 = drop.d32;
