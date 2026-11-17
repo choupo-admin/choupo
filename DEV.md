@@ -4508,6 +4508,28 @@ accepts today, and that is a policy call.
 > the merged tree: the 9 golden dryer cases 13/0 with mass, element and
 > energy closures held; the ratchet, source, unread-key and guide gates exit
 > 0.  Ratchet: 82 -> 15 (only family (d) remains).
+>
+> **C428 (a) LANDED (2026-11-18): the first Hansen triples in the
+> catalogue.**  acetone, n-hexane and nitromethane carry `hansen {}` with
+> Tref and provenance (Hansen's 1967 thesis, Table 2.1 rows 29, 62, 39; the
+> 1969 paper's Table I read on the page image prints the same values, a
+> cross-check in the provenance).  Their identical copies in solvent02 and
+> solvent03 are gone (solvent02's nitromethane stays as an overlay carrying
+> only its UNIFAC groups); polystyrene stays a case sample.  The sum-rule
+> audit: hexane 0.3 %, acetone 1.4 %, nitromethane 3.3 % against the delta
+> derived from Hvap.  Moved: solubility01 now prints the two catalogue
+> triples (n_hansen 0 -> 2, the sum-rule row added; every other changed row
+> the same value at full precision), re-recorded; the route bench gained 32
+> blocks for the two overlays, 0 of 14 860 moved, re-recorded.  Two gates
+> adapted: the Teas gate's absence arm and its probe now drop the real-triple
+> components from the probe's SYSTEM, because a local copy without the block
+> inherits it from the catalogue (C413's silent backfill, met again); the
+> engine's absence sentence no longer says the catalogue holds no triple.
+> 27 cases naming the three solvents 32/0.  FOUND: solvent03 was never
+> pinned -- 11 of its local solvent records (benzene, cyclohexane, ethanol,
+> toluene, ...) carry Hansen triples the catalogue lacks and declare no
+> variation; they are the next one-home step of C428 (a).
+
 
 
 
