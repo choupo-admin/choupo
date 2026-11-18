@@ -4649,8 +4649,8 @@ accepts today, and that is a policy call.
 > open.**  THE DEFECT: the state of a commission had no home of its own --
 > it lived in prose scattered over 22 000 lines, so neither the plan nor the
 > page could be generated from it, and every summary was a fresh reading
-> that missed some.  RULED: `COMMISSIONS.tsv` at the root is the ONE home of
-> each commission's STATE (number, Portuguese title, state DONE / PARTIAL /
+> that missed some.  RULED: `BACKLOG.tsv` at the root is the ONE home of
+> each item's STATE (number, Portuguese title, state DONE / PARTIAL /
 > OPEN / DROPPED / NOT-A-COMMISSION, what is open, date asked, size, the
 > commit that closed it); DEV.md 4c keeps the narrative and the reasons.  A
 > gate holds it: every C number in 4c has one row and every row a number in
@@ -4660,6 +4660,14 @@ accepts today, and that is a policy call.
 > THE SAME COMMIT (the rule BRAIN.md already applies to its rows).  The
 > first table is a reading of every entry, each checked against main's
 > history, and is shown to Vitor before anything else is done.
+> ONE NAME (Vitor, the same hour: "Não chames nomes diferentes à mesma
+> merda! Como fazem os arquitetos de software?"): the industry's word is the
+> BACKLOG, a list of ITEMS, each with a STATUS.  From now on: the backlog is
+> `BACKLOG.tsv`; an item is `C<n>`; its status is one of DONE / PARTIAL /
+> OPEN / DROPPED / NOT-AN-ITEM; "commission", "request", "register entry"
+> and "pedido" are retired as names for it, in files and in conversation;
+> DEV.md 4c is the item's HISTORY (the narrative), never its status; PLAN.md
+> and the page are VIEWS of the backlog by horizon.
 
 > **C435 (Vitor, 2026-11-19 morning: an outside review of six shipped cases,
 > pasted for the architect to weigh).**  Its five points MEASURED before
