@@ -4700,6 +4700,28 @@ accepts today, and that is a policy call.
 > drawing deliverable on top of the routes, worth having, but the numbers on
 > the line sheet are the engineering and come first.
 
+> **C445 (cloud review asked by Vitor, 2026-11-19,
+> docs/reviews/2026-11-19-architecture-growth/REPORT.md: "does the solver
+> grow organically?").**  Verdict: organic where designed (a model is one
+> place; unit bypasses 82 -> 0; carried kinds a factory); still spreading in
+> five places.  RULED, in this order: (1) the two DEFECTS first -- the
+> agitated vessel's W_shaft is never billed as electricity
+> (UtilityAllocationReport bills `pump`/`compressor` by NAME), and the
+> particulate list in EconomicsPass omits seven units that already declare
+> a size distribution: bill on the W_shaft energy item and derive the list
+> from `acceptance()`, never a type name (a gate refuses a new type-name
+> table in the reports); lands after the C389 batch, which edits
+> EconomicsPass; (2) ONE density door: `evaluate(density)` goes through the
+> resolver, so swro01's tanks and pumps price one water (98.9 % vs the NaCl
+> law today); the moved rows are the architect's to audit (C00), listed in
+> the commit; (3) liquid Cp as a door property with one missing-datum
+> policy, the 75.4 literal and direct `cpLiquid().Cp(` refused by the
+> ratchet; (4) the size distribution in one home (Carried), the seven
+> private `solids {}` readers removed; (5) lesson citations anchored to a
+> symbol or marker, not a line number -- this IS C415's pilot, now made the
+> rule for every lesson (the pedagogy is unchanged: the student still reads
+> the cited line; only how the tool finds it changes).
+
 > **C390 RULING AMENDED (architect, 2026-11-19, on the batch sweep's
 > gate g1).**  The liquid pressure leg ran from psat(T), a lower limit that
 > moves with T, while the base surface is a fixed-pressure function (dh/dT
