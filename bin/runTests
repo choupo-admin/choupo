@@ -6849,6 +6849,23 @@ PYEOF
     fi
     rm -f /tmp/gateself.$$
 
+    # THE CASE A STUDENT TAKES AWAY RUNS ALONE (contract K4, design 7b): one
+    # case per tutorial family exported through the tool's own path, run with
+    # the catalogue hidden, compared with the in-tree run.  Real defect: a case
+    # that references the catalogue by hash ran in the tree and failed (or
+    # silently priced less) on the student's machine -- nightly tier.
+    if nightly_defer check_exported_case_runs_alone; then
+        :
+    elif gate_exec "$ROOT/bin/curate/check_exported_case_runs_alone.py" > /tmp/exportalone.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "exported-case-runs-alone" "$(tail -1 /tmp/exportalone.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_exported_case_runs_alone.py)\n" "exported-case-runs-alone"
+        grep -E '^FAIL' /tmp/exportalone.$$ | head -8
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/exportalone.$$
+
     # C2 solid-equilibrium spike gate (2026-08-08).  Keeps the spike's
     # architectural evidence LIVE for the review that decides migration:
     # three solid thermodynamic models behind one complementarity whose code

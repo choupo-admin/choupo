@@ -55,6 +55,8 @@ import { caseTeachingFiles } from "./caseTeaching.js";
 import { caseCitations, citationText, CITATION_FILE } from "./citation.js";
 import { engineVersionSnapshot, type EngineVersion } from "./engineVersion.js";
 import type { CaseFiles } from "./types.js";
+import { catalogueNeeds, readCatalogueFromWasm } from "./carryCatalogue.js";
+import { WASM_WORKER_URL } from "../adapters/wasmModule.js";
 
 /** Download the WHOLE case as a .zip, every file under its REAL path
  *  (system/..., constant/..., code/...), so the student takes it to their PC
@@ -62,9 +64,28 @@ import type { CaseFiles } from "./types.js";
  *  artefacts, logs, reports) are excluded -- they rebuild.  The case is
  *  self-contained: its components, pairs, reactions, and any code/ travel with
  *  it.  Pure download (a Blob) -- works on every browser, the GUI never writes. */
-export function downloadCaseZip(caseFiles: CaseFiles, tutorialName: string,
-  runOutputs?: { [relPath: string]: string }): void {
-  const built = buildCaseZip(caseFiles, tutorialName, runOutputs, engineVersionSnapshot());
+export async function downloadCaseZip(caseFiles: CaseFiles, tutorialName: string,
+  runOutputs?: { [relPath: string]: string }): Promise<void> {
+  //  K4: a case that references the catalogue leaves WITH the records it pins.
+  let catalogue: { [rel: string]: string } | undefined;
+  const needs = catalogueNeeds(caseFiles.rawFiles);
+  if (needs) {
+    try {
+      const got = await readCatalogueFromWasm(needs, WASM_WORKER_URL);
+      catalogue = got.files;
+      if (got.missing.length > 0)
+        console.warn("[download] pinned record(s) the bundled catalogue lacks: " + got.missing.join(", "));
+    } catch (err) {
+      //  announced, never silent: the zip is still made, but it will need the
+      //  installation's data/standards (the pins say which records).
+      const why = err instanceof Error ? err.message : String(err);
+      console.error("[download] could not read the pinned records: " + why);
+      if (typeof window !== "undefined")
+        window.alert("The case references the catalogue, and the records could not be read ("
+          + why + ").  The .zip is made WITHOUT them: it needs a Choupo installation's data/standards to run.");
+    }
+  }
+  const built = buildCaseZip(caseFiles, tutorialName, runOutputs, engineVersionSnapshot(), catalogue);
   if (!built) return;
   // fflate returns a Uint8Array; copy into a fresh ArrayBuffer-backed view so
   // the Blob gets exactly these bytes (avoids a possible pooled-buffer offset).
@@ -89,6 +110,10 @@ export function buildCaseZip(caseFiles: CaseFiles, tutorialName: string,
   /** The engine this page runs (wasm/version.json), named in CITATION.txt;
    *  null = no stamp found, and the file says so. */
   engine: EngineVersion | null = null,
+  /** The catalogue records a REFERENCING case pins (carryCatalogue.ts),
+   *  standards-relative; they travel under `data/standards/` INSIDE the case
+   *  folder, where the engine looks first, so the case runs alone (K4). */
+  catalogue?: { [stdRel: string]: string },
 ): { fileName: string; bytes: Uint8Array } | null {
   const raw = caseFiles.rawFiles;
   if (!raw || Object.keys(raw).length === 0) return null;
@@ -106,6 +131,10 @@ export function buildCaseZip(caseFiles: CaseFiles, tutorialName: string,
   for (const [p, text] of Object.entries(runOutputs ?? {})) {
     if (raw[p] !== undefined || skip(p) || p.startsWith("/") || p.split("/").includes("..")) continue;
     files[`${base}/${p}`] = strToU8(text);
+  }
+  for (const [rel, text] of Object.entries(catalogue ?? {})) {
+    if (rel.startsWith("/") || rel.split("/").includes("..")) continue;
+    files[`${base}/data/standards/${rel}`] = strToU8(text);
   }
   // Make the downloaded case "born taught" for the student's OWN local AI agent
   // (vendor-neutral, offline): add ai/choupo-authoring.md + AGENTS.md + CLAUDE.md

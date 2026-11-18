@@ -123,8 +123,57 @@ async function loadFactory(binary) {
 
 self.postMessage({ type: "log", line: "[worker] booted, awaiting run message" });
 
+//  THE CATALOGUE A DOWNLOADED CASE CARRIES (contract K4, docs/design/
+//  measured-facts-materials-and-flow-curves.md 7b).  A case that REFERENCES the
+//  catalogue (constant/propertyManifest `pins`) holds none of the records it
+//  reads, so its download must bring them or it will not run on a machine
+//  without this tree's data/standards.  The records live embedded in the WASM
+//  (/data/standards): this boots the engine WITHOUT running anything and reads
+//  back (a) every file the manifest pins, (b) per `relevant:` registry
+//  directory, the pair files relevant to the case's components (a stem `A-B`
+//  that splits at some '-' into two of them: PinCheck.cpp's rule).  Answers
+//  `catalogueFiles` {files: {"<standards-relative>": text}, missing: [...]}.
+async function readCatalogue(msg) {
+  const binary = msg.binary || "choupoSolve";
+  const files = {};
+  const missing = [];
+  try {
+    const factory = await loadFactory(binary);
+    const wasmUrl = engineUrl(`${binary}.wasm`);
+    const Module = await factory({
+      noInitialRun: true,
+      locateFile: (path) => (path.endsWith(".wasm") ? wasmUrl : path),
+      print: () => {},
+      printErr: () => {},
+    });
+    const FS = Module.FS;
+    const read = (rel) => {
+      try { files[rel] = FS.readFile("/data/standards/" + rel, { encoding: "utf8" }); }
+      catch (_) { missing.push(rel); }
+    };
+    for (const rel of msg.paths || []) read(rel);
+    const comps = new Set(msg.components || []);
+    for (const dir of msg.dirs || []) {
+      let names = [];
+      try { names = FS.readdir("/data/standards/" + dir); } catch (_) { continue; }
+      for (const n of names) {
+        if (!n.endsWith(".dat")) continue;
+        const stem = n.slice(0, -4);
+        let relevant = false;
+        for (let i = stem.indexOf("-"); i >= 0 && !relevant; i = stem.indexOf("-", i + 1))
+          relevant = comps.has(stem.slice(0, i)) && comps.has(stem.slice(i + 1));
+        if (relevant) read(dir + n);
+      }
+    }
+    self.postMessage({ type: "catalogueFiles", files, missing });
+  } catch (err) {
+    self.postMessage({ type: "error", message: String(err && err.message ? err.message : err) });
+  }
+}
+
 self.addEventListener("message", async (e) => {
   const msg = e.data;
+  if (msg && msg.type === "readCatalogue") { await readCatalogue(msg); return; }
   if (!msg || msg.type !== "run") return;
 
   let settled = false;

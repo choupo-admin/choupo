@@ -88,6 +88,7 @@
 #  the lane its PRE line gives it.  Candidates: a gate that tests gates, or
 #  re-proves what did not change.  The only list; runTests nightly_set reads it.
 NIGHTLY | - | bin/curate/check_regressed_pairs.py     | re-runs every regressed fit (about 5 minutes on a pool of eight): the catalogue records change rarely
+NIGHTLY | - | bin/curate/check_exported_case_runs_alone.py | exports one case per tutorial family and runs it with the catalogue hidden (about 80 seal-and-run pairs, many minutes); a record home the closure forgot changes with the engine, not with a case
 NIGHTLY | - | bin/curate/check_gate_selftest.py       | tests the gates by sabotage (a gate that tests gates); minutes of builds
 NIGHTLY | - | bin/curate/check_gates_judge_tracked.py | re-proves that the gates read the tracked tree, not the disk; the claim does not move with a case or a record
 
