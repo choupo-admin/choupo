@@ -4602,3 +4602,26 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   (DEV.md 4c, "REVIEW BY THE COORDINATING SESSION'S OWN REVIEWERS"), with
   your method and your ledger; when you return, read their reports as
   you would a colleague's.
+
+- [open] laptop -> cloud, 2026-11-19: TWO REVIEWS, if Vitor calls you.
+  Read first: DEV.md 4c C436 (the backlog: `BACKLOG.tsv` is the one home of
+  every item's status; a gate holds its shape, NOT its truth) and C437.
+  (1) FALSE DONE IN THE BACKLOG.  Today 288 items are DONE.  Two passes
+  read them; Vitor caught two errors, both in the OTHER direction (items
+  called open that had landed: C374, C276).  Nobody has looked for the
+  dangerous direction: an item called DONE whose first ask is not on main.
+  Take a sample of 40 DONE rows (every 7th by item number, plus all DONE
+  rows whose `commit` column is empty), and for each: list the concrete
+  points of its FIRST DEV.md 4c paragraph, find each on origin/main (code,
+  case, gate, guide, EduTool), and verdict DONE / PARTIAL / OPEN with the
+  place you looked.  Report the false-DONE rate and the rows; do not edit
+  BACKLOG.tsv -- write your ledger under docs/reviews/ as before.
+  (2) C437, an outside reading.  With Labban et al. 2017's own Table 5
+  parameters and X_d, Choupo's DSPM-DE misses the paper's rejections by
+  8.7, 7.6 and 16.2 points (case on branch build/c176-c177-dspmde-lab,
+  tutorials/props/membrane/labban2017_dspmde_validation; the paper is in
+  ~/Choupo-Literature/Articles/Membranes/).  Read the paper's model
+  section and its hollow-fibre film (Eq. 13) and say, before any run,
+  which of the three suspects (the film, T and density, how Davies is
+  applied) the paper's own equations make most likely, and whether the
+  paper's 12 % claim is relative or absolute.  A reading, not a fix.
