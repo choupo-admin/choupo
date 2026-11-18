@@ -36,35 +36,43 @@ License
 import { Table } from "@mantine/core";
 
 import type { StreamResult } from "../adapters/SolverAdapter.js";
-import { formatFlow, formatPressure, formatTemperature, temperatureLabel } from "../state/displayUnits.js";
+import { formatSig, formatFlow, formatPressure, formatTemperature, temperatureLabel } from "../state/displayUnits.js";
 import { useStore } from "../state/store.js";
+import { SortTh, useSortable } from "./SortableTable.js";
 
 export function UnitStreamsTable({ groups }: {
   groups: Array<{ dir: string; streams: StreamResult[] }>;
 }) {
   const prefs = useStore((st) => st.displayPrefs);
-  const rows = groups.flatMap(({ dir, streams }) => streams.map((st) => {
-    const comp = Object.entries(st.composition ?? {}).filter(([, x]) => (x as number) > 1e-4)
-      .sort((a, b) => (b[1] as number) - (a[1] as number)).map(([c, x]) => `${c} ${(x as number).toFixed(3)}`).join(" · ");
-    return (
-      <Table.Tr key={dir + st.name}>
-        <Table.Td>{st.name}</Table.Td><Table.Td c="dimmed">{dir}</Table.Td>
-        <Table.Td ta="right">{formatFlow(st.F, prefs.flow, 4)} {prefs.flow}</Table.Td>
-        <Table.Td ta="right">{(st.F_mass != null ? (st.F_mass * 3600).toFixed(1) : "—")} kg/h</Table.Td>
-        <Table.Td ta="right">{formatTemperature(st.T, prefs.temperature, 2)} {temperatureLabel(prefs.temperature)}</Table.Td>
-        <Table.Td ta="right">{formatPressure(st.P, prefs.pressure, 3)} {prefs.pressure}</Table.Td>
-        <Table.Td ta="right">{st.vf != null ? st.vf.toFixed(3) : "—"}</Table.Td>
-        <Table.Td>{comp || "—"}</Table.Td>
-      </Table.Tr>
-    );
+  const raw = groups.flatMap(({ dir, streams }) => streams.map((st) => {
+    const parts = Object.entries(st.composition ?? {}).filter(([, x]) => (x as number) > 1e-4)
+      .sort((a, b) => (b[1] as number) - (a[1] as number));
+    return { st, dir, key: dir + st.name,
+      comp: parts.map(([c, x]) => `${c} ${formatSig(x as number)}`).join(" · ") };
   }));
+  const s = useSortable(raw, {
+    stream: (r) => r.st.name, dir: (r) => r.dir, F: (r) => r.st.F,
+    mass: (r) => r.st.F_mass, T: (r) => r.st.T, P: (r) => r.st.P,
+    vf: (r) => r.st.vf, comp: (r) => r.comp,
+  });
+  const rows = s.rows.map(({ st, dir, key, comp }) => (
+    <Table.Tr key={key}>
+      <Table.Td>{st.name}</Table.Td><Table.Td c="dimmed">{dir}</Table.Td>
+      <Table.Td ta="right">{formatFlow(st.F, prefs.flow)} {prefs.flow}</Table.Td>
+      <Table.Td ta="right">{(st.F_mass != null ? formatSig(st.F_mass * 3600) : "—")} kg/h</Table.Td>
+      <Table.Td ta="right">{formatTemperature(st.T, prefs.temperature)} {temperatureLabel(prefs.temperature)}</Table.Td>
+      <Table.Td ta="right">{formatPressure(st.P, prefs.pressure)} {prefs.pressure}</Table.Td>
+      <Table.Td ta="right">{st.vf != null ? formatSig(st.vf) : "—"}</Table.Td>
+      <Table.Td>{comp || "—"}</Table.Td>
+    </Table.Tr>
+  ));
   return (
     <Table striped withTableBorder fz="sm" ff="monospace">
       <Table.Thead><Table.Tr>
-        <Table.Th>stream</Table.Th><Table.Th>dir</Table.Th>
-        <Table.Th ta="right">F</Table.Th><Table.Th ta="right">mass</Table.Th>
-        <Table.Th ta="right">T</Table.Th><Table.Th ta="right">P</Table.Th>
-        <Table.Th ta="right">vf</Table.Th><Table.Th>composition</Table.Th>
+        <SortTh s={s} k="stream">stream</SortTh><SortTh s={s} k="dir">dir</SortTh>
+        <SortTh s={s} k="F">F</SortTh><SortTh s={s} k="mass">mass</SortTh>
+        <SortTh s={s} k="T">T</SortTh><SortTh s={s} k="P">P</SortTh>
+        <SortTh s={s} k="vf">vf</SortTh><SortTh s={s} k="comp">composition</SortTh>
       </Table.Tr></Table.Thead>
       <Table.Tbody>{rows}</Table.Tbody>
     </Table>

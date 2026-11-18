@@ -171,7 +171,7 @@ describe("Reports: first-law table and utilities", () => {
   it("utilities: the duty column header and value follow", () => {
     const d = text(wrap(createElement(UtilitiesBody, { rows, economics: undefined })));
     expect(d).toContain("duty (kW)");
-    expect(d).toContain("2500.0");
+    expect(d).toContain("steamLP heating 2500 ");
     mock.state = { displayPrefs: SI };
     const m = text(wrap(createElement(UtilitiesBody, { rows, economics: undefined })));
     expect(m).toContain("duty (MW)");
