@@ -4628,7 +4628,18 @@ accepts today, and that is a policy call.
 > the replay's numbers; only a fit whose replay moved is re-fitted.  (b)
 > transport_c327 is investigated for its 1019 s.  (c) The curation fits stay
 > out of every tier but the full sweep.  Queued after the landing of
-> integ/all-1119.
+> integ/all-1119.  AMENDED the same hour, on the owner's second objection ("se
+> se prova que funciona num, então funciona nos restantes!"), which is right
+> in its principle: a changed function need not be proved once per CASE, only
+> once per INPUT ROUTE it has.  The property kernel's routes are already
+> measured that way: `check_property_route_bench` answers 14 892 (record,
+> route) blocks bit for bit.  So (d) ROUTE-KEYED REUSE comes FIRST: a fit whose
+> key moved only through the property kernel, while the route bench is
+> byte-identical on every record the fit reads, is REUSED without a replay;
+> replay (a) is the fallback when a route moved; refit only when the replay
+> moved.  What stays out: proving one case per category, because the routes
+> differ inside a category (water by IAPWS-95, a salt solution by ideal
+> mixing with ions, a measured table by interpolation).
 
 > **C427, THE SPIKE'S VERDICT (2026-11-19, the architect on Fable, having
 > read the kinds' interface on the branch `build/last-carried`): KEPT, WITH FIVE
