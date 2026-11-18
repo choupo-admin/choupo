@@ -4641,6 +4641,38 @@ accepts today, and that is a policy call.
 > differ inside a category (water by IAPWS-95, a salt solution by ideal
 > mixing with ions, a measured table by interpolation).
 
+> **C435 (Vitor, 2026-11-19 morning: an outside review of six shipped cases,
+> pasted for the architect to weigh).**  Its five points MEASURED before
+> ruling; all four factual ones hold.  (1) The Henry `source` lines: true,
+> and the builder REFUSES a `solutes` block without `binaryParameters`
+> (`src/thermo/ThermoPackageBuilder.cpp:2808`), so C433 must make that
+> construction resolve the pairs itself; folded into C433.  (2) flash02
+> retypes the catalogue's five NRTL numbers (identical to
+> data/standards/parameters/NRTL/ethanol-water.dat); 30 tutorial property
+> dictionaries carry inline pair coefficients.  RULED: an inline pair equal
+> to the catalogue's is a COPY and is removed (the pair resolves by name);
+> one that differs is the case's own and becomes a record in the case's
+> `constant/parameters/<Model>/`, declared; the inline form stays READABLE
+> for a user's case, announced, and the shipped corpus carries none.
+> Folded into C433.  (3) greenAmmonia03's outerDict says "each `initial`
+> below equals the value in" the flowsheet and does not (V_Bed1 10.0321 vs
+> 10.2222726633; D_converter 2.2427 vs 2.24511028502): two homes for one
+> starting point.  RULED: `initial` becomes OPTIONAL in the design-spec and
+> optimisation drivers and defaults to the variable's current value in the
+> case; the shipped cases whose `initial` only restates it drop the key; a
+> different `initial` stays legal and is printed beside the current value.
+> (4) The NanoFiltran props case types `viscosity` and `density` in ten and
+> thirteen operation blocks: the property operations are outside the door's
+> ratchet (it counts src/unitOperations and src/postProcessing).  RULED: the
+> values keep their intent (they reproduce the reference program's
+> hypothesis) and get ONE local declaration the operations select; the
+> ratchet's scan gains src/propertyOps with its debt counted.  (5) Headers
+> that bury the configuration (Bed1: 74 lines for 12 of configuration):
+> accepted in part -- change history and abandoned attempts move to the
+> case's README, the unit, the short reason and the source stay beside the
+> value; done first on the reference plant family, no gate.  The structure
+> plant -> sector -> equipment the review praises is kept.
+
 > **C434 (Vitor, 2026-11-19 05:35, after the landing: "Os casos não correm no
 > Firefox! ... no site aquilo não corre! Faz freeze").**  MEASURED, not
 > reproduced: the live site (built from 9c4ce7c5f) driven in headless
