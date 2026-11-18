@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: calciumSilicateParticles  -- a CASE-LOCAL PSEUDO-SOLID.
+  The calcium silicate of Wakeman & Tarleton (2005), Example 4.1, Table 4.8
+  (p. 122): "Solids density 1950 kg m-3", mean particle size 6.5 um.  The
+  density is the test's own number (the particles' effective density in the
+  suspension), not a crystallographic one.
+
+  MW 100 is a BASIS, not a molecule (it converts a mass flow into kmol/s;
+  no result depends on it).  No heat capacity and no formation datum: the
+  case's only unit is isothermal, and none is invented.
+  Sample-specific: lives in this case only (never data/standards).
+\*---------------------------------------------------------------------------*/
+
+name        calciumSilicateParticles;
+formula     "n/a";
+CAS         "n/a";
+
+MW          100.0;               // kg/kmol -- a BASIS (see header)
+role        nonvolatile;         // a solid: never enters the vapour
+
+solid
+{
+    rho_p   1950.0;              // kg/m^3, Wakeman & Tarleton Example 4.1, Table 4.8
+}

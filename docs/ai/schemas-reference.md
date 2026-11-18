@@ -174,16 +174,12 @@ Bubble-point temperature at fixed pressure: the T at which the first vapour bubb
 
 ## `cakeFilter`  (cakeFilter operation)
 
-A cake filter on a slurry, constant pressure, two-resistance law (Geankoplis, Hersel & Lepek 5th ed. section 24.2): t/V = K_p V/2 + B with K_p = mu alpha c_S/(A^2 dp), B = mu R_m/(A dp); a compressible cake alpha = alpha0 dp^s. Model rotaryDrum is continuous (declare cycleTime or area, the other is the result; eq. 24.2-26); batchPress is cyclic (declare area, filtratePerCycle and cleaningTime; the cycle time and the number of presses are results). The streams are cycle-averaged flows. Inlets (slurry [wash]), outlets (cake filtrate [spentWash]). The liquid viscosity is the package's and its model must be declared by the case.
+A cake filter on a slurry, constant pressure, two-resistance law (Geankoplis, Hersel & Lepek 5th ed. section 24.2): t/V = K_p V/2 + B with K_p = mu alpha c_S/(A^2 dp), B = mu R_m/(A dp); a compressible cake alpha = alpha0 dp^s. The cake law, the medium resistance and the wet-to-dry ratio are the SAMPLE's: `sample <name>;` names the record that holds them. Model rotaryDrum is continuous (declare cycleTime or area, the other is the result; eq. 24.2-26); batchPress is cyclic (declare area, filtratePerCycle and cleaningTime; the cycle time and the number of presses are results). The streams are cycle-averaged flows. Inlets (slurry [wash]), outlets (cake filtrate [spentWash]). The liquid viscosity is the package's and its model must be declared by the case.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `pressureDrop` | ✓ | number | Pa | -dp, constant over the cycle. |
-| `specificCakeResistance` |   | number | m/kg | Use this OR alpha0 with compressibility, never both. |
-| `alpha0` |   | number | SI | Read in SI (m/kg with dp in Pa); its dimensions have no integer form. Give with compressibility. |
-| `compressibility` |   | number | - | The exponent s of alpha = alpha0 dp^s (Geankoplis eq. 24.2-11). Give with alpha0. |
-| `mediumResistance` | ✓ | number | 1/m | 0 is a declaration (the medium neglected). |
-| `wetToDryCakeRatio` | ✓ | number | - | kg wet cake per kg dry cake: the cake moisture, declared (Geankoplis eq. 24.2-10). |
+| `sample` | ✓ | string | — | The name of the record in constant/experiments/<name>.dat that holds the cake law, the medium resistance and the wet-to-dry ratio m (kind… |
 | `submergence` |   | number | - | The fraction of each revolution in which cake forms. |
 | `cycleTime` |   | number | s | Declare this XOR area; the other is the result. |
 | `area` |   | number | m2 | batchPress: declared. rotaryDrum: declare this XOR cycleTime. |

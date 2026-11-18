@@ -1,0 +1,54 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+# =============================================================================
+#  WAKEMAN & TARLETON EXAMPLE 4.1 ANCHORS (the sample-behaviour slice), pp.
+#  122-123, a printed worked example: the cake and medium resistance DERIVED
+#  from the eleven t-V rows of Table 4.9 (stored in the sample record, not in
+#  the unit), by the line of t/V against V through rows 3-11.
+#
+#      quantity                      book        Choupo        gap       row
+#      alpha [m/kg]                  7.4e9       7.4303e9      +0.41 %   anchor
+#      R_m [1/m]                     1.54e10     1.5383e10     -0.11 %   anchor
+#
+#  THE GAP IS THE BOOK'S ROUNDING: it prints its regression as t/V = 1.742e6 V
+#  + 0.5186e4 (slope to 4 digits, intercept 5186); least squares through the
+#  same rows gives 1.7417e6 and 5196.7.  The 1 % band covers it; nothing tuned.
+#  The unit's K_p and B below are pinned tight: they are linear in these two.
+#  NOT ANCHORED: the cycle, the feed, the cake height (illustrative or the
+#  unit's, not the book's).
+kpi     press                  alpha_m_kg       7.4e9            1e-2     anchor
+kpi     press                  mediumResistance_1_m 1.54e10      1e-2     anchor
+# =============================================================================
+stream  cake                   F                7.17499306134e-05  1e-4
+stream  cake                   T                298.2              1e-4
+stream  filtrate               F                0.000466186458276  1e-4
+stream  filtrate               T                298.2              1e-4
+stream  slurry                 F                0.000537936388889  1e-4
+stream  slurry                 T                298.2              1e-4
+kpi     press                  B_s_m3           4619.10596981      1e-4
+kpi     press                  Kp_s_m6          3086793.67221      1e-4
+kpi     press                  area_m2          0.0429             1e-4
+kpi     press                  cS_eq24_2_10_kg_m3 59.3515601168      1e-4
+kpi     press                  cS_kg_m3         59.3515601168      1e-4
+kpi     press                  cakeLiquor_kg_s  0.0012025          1e-4
+kpi     press                  cakePorosity     0.824693195112     1e-4
+kpi     press                  cakeSolidsPerArea_kg_m2 15.2183487479      1e-4
+kpi     press                  cakeThickness_mm 44.517846379       1e-4
+kpi     press                  cleaningTime_s   600                1e-4
+kpi     press                  componentMassClosure 0                  1e-4
+kpi     press                  cycleTime_s      837.561182837      1e-4
+kpi     press                  filtratePerCycle_m3 0.011              1e-4
+kpi     press                  filtrate_m3_s    8.42437838223e-06  1e-4
+kpi     press                  filtrationFlux_m_s 0.000196372456462  1e-4
+kpi     press                  filtrationTime_s 237.561182837      1e-4
+kpi     press                  liquidMassFlow_kg_s 0.00960084904583   1e-4
+kpi     press                  mu_liquid_Pa_s   0.00088885596324   1e-4
+kpi     press                  pressesRequired  0.641448392954     1e-4
+kpi     press                  pressureDrop_Pa  69000              1e-4
+kpi     press                  rho_liquid       996.910236552      1e-4
+kpi     press                  rho_solid        1950               1e-4
+kpi     press                  solidsMassFlow_kg_s 0.0005             1e-4
+kpi     press                  solidsMassFraction 0.0495007892635    1e-4
+source  press                  liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  press                  liquidViscosity  Vogel/GrunbergNissan exact

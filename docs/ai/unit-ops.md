@@ -2507,7 +2507,25 @@ on the finest class).
 A cake filter on a SLURRY (a liquid carrying solids; not a gas-borne powder),
 constant pressure, the two-resistance law of Geankoplis, Hersel & Lepek 5th ed.
 section 24.2: `t/V = K_p V/2 + B`, `K_p = mu alpha c_S/(A^2 dp)`,
-`B = mu R_m/(A dp)`; a compressible cake `alpha = alpha0 dp^s`.  A negative
+`B = mu R_m/(A dp)`; a compressible cake `alpha = alpha0 dp^s`.  THE CAKE LAW,
+THE MEDIUM RESISTANCE AND `m` ARE THE SAMPLE'S, NOT THE UNIT'S: `operation {
+sample <name>; }` names a record `constant/experiments/<name>.dat` (property
+`filtrationTest`) and the unit asks it at its `pressureDrop`; typing
+`specificCakeResistance`, `alpha0`, `compressibility`, `mediumResistance` or
+`wetToDryCakeRatio` in the unit is REFUSED by name with the line to write.  The
+record (src/samples/SampleBehaviour.H, design R6): `provenance { citation;
+kind measured|adopted|estimated; basis }` (kind REQUIRED, printed in the run),
+`subject { suspension; medium }`, `conditions { ... }` (pH, flocculant, age ...,
+printed), then EITHER `tests ( { pressureDrop; area; solidsMassFraction;
+wetToDryRatio; filtrateViscosity; filtrateDensity; linearRegion { fromRow;
+toRow; reason }; columns ( {name t; unit s;} {name V; unit m3;} ); data ( ... ) } )`
+(`measured`: the raw t-V rows; alpha and R_m are DERIVED by the line t/V against
+V, Wakeman & Tarleton Ex 4.1) OR `stated { specificResistance | (alpha0
+compressibility); mediumResistance; wetToDryRatio }` (`adopted` or `estimated`:
+the values a source prints), and `authorised { pressureDrop { min; max }; rule
+nearest; reason }` (required for a stated record; wider than the rows' support
+only with a reason; outside it the service REFUSES).  A different medium is a
+different sample: a different record.  A negative
 `compressibility` is REFUSED by name (alpha would fall as dp rises); s above 1
 runs and is ANNOUNCED (K_p then grows as dp^(s-1): where the cake dominates the
 medium, a higher pressure drop gives LESS filtrate); 0 <= s <= 1 is silent.  Inlets
@@ -2516,8 +2534,8 @@ is continuous (declare `cycleTime` XOR `area`; the other is the result, eq.
 24.2-26); `model batchPress` is cyclic (declare `area`, `filtratePerCycle`,
 `cleaningTime`; the filtration, washing and cycle times and `pressesRequired` are
 results).  THE STREAMS ARE CYCLE-AVERAGED FLOWS: the cycle is a design result on
-the steady balance, never a second time axis.  The cake moisture is DECLARED
-(`wetToDryCakeRatio` m, kg wet per kg dry); the liquid viscosity and density are
+the steady balance, never a second time axis.  The cake moisture is the SAMPLE's, never predicted
+(`wetToDryRatio` m, kg wet per kg dry); the liquid viscosity and density are
 the package's (a case that declares no liquid viscosity model is refused).  A
 wash is a real second inlet and the spent wash a real third outlet: the solute
 left in the cake is the washing law's answer, `washing { model displacement; }`
@@ -2535,14 +2553,11 @@ operation
     pressureDrop      67.0 kPa;
     submergence       0.33;
     cycleTime         250 s;
-    alpha0            4.37e9;        // m/kg with dp in Pa: read in SI
-    compressibility   0.3;
-    mediumResistance  [0 -1 0 0 0] 0;
-    wetToDryCakeRatio 2.0;
+    sample            caco3_geankoplis_ex24_2_4;   // the cake law, R_m, m: constant/experiments/
 }
 ```
 A press with a through-washed cake: `model batchPress; inputs ( slurry washWater );
-outputs ( cake filtrate spentWash );` with `area`, `filtratePerCycle`,
+outputs ( cake filtrate spentWash );` with `sample caco3_geankoplis_ex24_2_1;`, `area`, `filtratePerCycle`,
 `cleaningTime`, `washFlowPath throughWashing;` (one quarter of the final rate,
 eq. 24.2-20; `sameAsFiltrate` is eq. 24.2-19) and a `washing { }` block.
 KPIs: `alpha_m_kg`, `cS_kg_m3` (beside `cS_eq24_2_10_kg_m3`), `filtrate_m3_s`,
@@ -2555,6 +2570,9 @@ Theory: `sec:cakeFilter` (`sec:cakeFilter-rotaryDrum`, `sec:cakeFilter-batchPres
 all four rows anchored, area 6.6434 vs 6.60 m2) and
 `tutorials/steady/solids/filter02_caco3_pressWashing` (Examples 24.2-1 to 24.2-3:
 five rows anchored, -0.16 to -0.58 %, one cause: the package's water viscosity);
+`tutorials/steady/solids/filter05_calciumSilicate_measuredTest` (a `measured` sample:
+the raw t-V rows of Wakeman & Tarleton Example 4.1, alpha 7.43e9 vs 7.4e9 m/kg and
+R_m 1.538e10 vs 1.54e10 1/m derived from them at 69 kPa, anchored);
 `tutorials/steady/solids/filter03_drum_area_medium_tabulatedWash` (a drum with a
 declared `area`, `mediumResistance` > 0 and a `tabulated` wash) and
 `tutorials/steady/solids/filter04_leafFilter_sameAsFiltrateWash` (`washFlowPath

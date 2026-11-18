@@ -1,0 +1,59 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  A SAMPLE'S BEHAVIOUR, ADOPTED: the CaCO3 cake law of Geankoplis, Hersel &
+  Lepek (5th ed.), Example 24.2-4, on a medium the CASE chose
+  (docs/design/measured-facts-materials-and-flow-curves.md, R6).
+
+  WHY THIS IS NOT filter01's RECORD: the medium resistance belongs to the
+  test (suspension AND medium).  Example 24.2-4 neglects the medium (B = 0);
+  this case gives its drum a cloth of R_m = 1.0e10 1/m, an ILLUSTRATIVE
+  number chosen to make Ruth's B V term matter (dropping it changes the
+  answer), which no book prints.  A different medium is a different sample,
+  so the cake law (the book's) is restated here beside the case's own cloth,
+  and the record says which part is whose.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    source       literature;
+    kind         adopted;
+    basis        "cake law alpha = (4.37e9)(-dp)^0.3 [m/kg, dp in Pa] and m = 2.0 kg wet cake / kg dry cake as Example 24.2-4 prints them; the medium resistance 1.0e10 1/m is NOT the book's: a value this case chose, illustrative";
+    citation     "Geankoplis, C.J.; Hersel, A.A.; Lepek, D.H. Transport Processes and Separation Process Principles, 5th ed. Prentice Hall. Example 24.2-4, pp. 1089-1090 (cake law and m); the medium resistance is the case's own, illustrative";
+}
+
+property    filtrationTest;
+
+subject
+{
+    suspension  "CaCO3 in water at 298.2 K, c_x = 0.191 kg solid per kg slurry (Example 24.2-4)";
+    medium      "an illustrative drum cloth, R_m = 1.0e10 1/m, chosen by this case (not the book's)";
+}
+
+conditions
+{
+    temperature   298.2 K;
+    solidsMassFraction  0.191;
+    pH            "not stated in the source";
+    particleSize  "not stated in the source";
+}
+
+stated
+{
+    alpha0              4.37e9;                    // m/kg/Pa^s, SI (Example 24.2-4)
+    compressibility     0.3;                       // eq. 24.2-11
+    mediumResistance    [0 -1 0 0 0] 1.0e10;       // 1/m, ILLUSTRATIVE (the case's)
+    wetToDryRatio       2.0;                       // Example 24.2-4
+}
+
+authorised
+{
+    pressureDrop  { min 67.0 kPa; max 67.0 kPa; }
+    reason        "the pressure drop of Example 24.2-4; the source states no range for its law";
+}

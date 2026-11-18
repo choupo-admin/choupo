@@ -28558,8 +28558,9 @@ that line as its profile (\code{V\_m3}, \code{t\_s}, \code{t\_over\_V\_s\_m3},
 \end{equation}
 (eq.~24.2-11, p.~1081), with $-\Delta p$ in Pa and $\alpha$ in m/kg;
 $\alpha_0$ is therefore read in SI, its dimensions having no integer form.
-The case gives EITHER a measured \dict{specificCakeResistance} $\alpha$ OR the
-pair \dict{alpha0}, \dict{compressibility} $s$ (both or neither; one beside
+The unit does not carry these numbers: they belong to the SAMPLE
+(\S\ref{sec:sampleBehaviour}), and the sample states EITHER a specific
+resistance $\alpha$ OR the pair $\alpha_0$, $s$ (both or neither; one beside
 the other is refused).  A negative $s$ is refused by name: $\alpha$ would FALL
 as the pressure drop rises, a cake that opens as it is squeezed, which this law
 has no reading for.  $0 \le s \le 1$ is the usual range and is silent.  An $s$
@@ -28592,8 +28593,63 @@ Geankoplis does).  These two are the unit's, not the book's.
 no bleed of fines); the cake law is the case's measured $\alpha$ or $(\alpha_0, s)$.
 Constant-rate filtration (section~24.2C) and centrifugal filtration
 (section~30.2E) are not built.  KEYS (none has a default): \dict{pressureDrop},
-\dict{mediumResistance} ($0$ is a declaration), \dict{wetToDryCakeRatio}, the
-cake law, and those of the model below.
+\dict{sample} (the record that holds the cake law, the medium resistance
+--- $0$ is a declaration --- and $m$), and those of the model below.
+
+\paragraph{Where the cake law lives: the sample's record.}\label{sec:sampleBehaviour}
+A cake resistance is not a property of the solid, nor of a phase state: it is a
+property of the WHOLE sample state --- the suspension (its pH, its flocculant
+and dose, its age, its solids concentration) and the medium it was filtered on.
+Wakeman and Tarleton report the same anatase changing about sevenfold in
+specific resistance with pH, an activated sludge almost tenfold in five days of
+storage, and say that ``it is usually poor practice to infer data from a
+different feed suspension'' (pp.~111--114).  So the number has ONE home, a record
+of the case, \file{constant/experiments/<name>.dat}, of
+\dict{property} \code{filtrationTest}, and the unit names it
+(\dict{sample} \code{<name>;}) and asks one service for the quantities it needs
+at its own pressure drop.  The numbers typed in the unit's \dict{operation}
+(\dict{specificCakeResistance}, \dict{alpha0}, \dict{compressibility},
+\dict{mediumResistance}, \dict{wetToDryCakeRatio}) are refused by name, with the
+line to write.  The record carries \dict{provenance} with a REQUIRED
+\dict{kind}: \code{measured} (raw rows), \code{adopted} (values its authors
+chose to use, as a book's worked example prints them) or \code{estimated} (a
+correlation's output the case freezes); the run prints the word beside every
+number taken.  It carries a \dict{subject} (suspension AND medium) and
+\dict{conditions} (what the test held fixed, printed beside the answer).
+
+For a \code{measured} record the stored fact is the RAW ROW: a table of $t$ and
+$V$ per pressure drop, with the area, the solids mass fraction $s$, the
+wet-to-dry ratio $m$ and the filtrate's viscosity and density.  Per test, the
+service fits the straight line of eq.~\eqref{eq:sl-filtration} through the
+declared linear region (the rows with $V>0$ whose first and last row, and the
+reason, the record states) by least squares, and
+\begin{equation}
+c = \frac{\rho_f\,s}{1 - m\,s},\qquad
+\alpha = \frac{2\,A^2\,(-\Delta p)\,\mathrm{slope}}{c\,\mu},\qquad
+R_m = \frac{A\,(-\Delta p)\,\mathrm{intercept}}{\mu}
+\label{eq:sample-filtration-test}
+\end{equation}
+(Wakeman and Tarleton, Example~4.1, pp.~122--123).  $\alpha$ is an AVERAGE
+at that pressure and $R_m$ the medium's at it; neither is stored.  Between
+tested pressures $\alpha$ follows the power law through the two neighbouring
+tests, $R_m$ and $m$ are linear in $-\Delta p$; the power law
+$\alpha = a\,(-\Delta p)^n$ through all tests is printed as a DERIVED VIEW with
+its residuals (two legitimate fits of one dataset differ, Example~4.2) and is
+not what the answer uses.  Example~4.1's eleven rows at 69~kPa give
+$\alpha = 7.43\times 10^{9}$~m/kg and $R_m = 1.54\times 10^{10}$~1/m against
+the book's $7.4\times 10^{9}$ and $1.54\times 10^{10}$ (the book prints its
+regression rounded).  The medium resistance of a test can come out negative
+(the book says so, p.~123); the engine does not run a negative resistance and
+refuses by name.
+
+\emph{Three domains, printed as three.}  The SUPPORT is computed from the rows
+(the pressures tested) and never typed.  The AUTHORISED domain, a declaration
+with a reason (\dict{authorised}), may be wider than the support: the nearest
+test's values then stand over the excess as a constant-property approximation,
+announced with the excursion.  Outside the authorised domain the service
+REFUSES.  An \code{adopted} or \code{estimated} record has no rows, so no
+support: its authorised domain is required, and its law is evaluated inside it.
+A medium that differs is a different sample: it is a different record.
 
 \paragraph{How a cyclic filter sits on a steady balance.}  The streams are the
 CYCLE-AVERAGED flows --- the steady balance per unit time --- and the cycle is

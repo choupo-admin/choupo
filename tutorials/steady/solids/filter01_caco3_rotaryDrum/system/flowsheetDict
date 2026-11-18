@@ -26,15 +26,10 @@ units
             pressureDrop        67.0 kPa;     // "a pressure drop of 67.0 kPa"
             submergence         0.33;         // "33% submergence of the drum"
             cycleTime           250 s;        // "The filter-cycle time is 250 s"
-            //  alpha = (4.37e9)(-dp)^0.3, "-dp in Pa and alpha in m/kg":
-            //  alpha0 is read in SI (its dimensions, m/kg/Pa^0.3, have no
-            //  integer form).
-            alpha0              4.37e9;
-            compressibility     0.3;
-            //  "neglecting and setting B = 0" (p. 1089): the medium is not
-            //  part of the example.  Declared, not defaulted.
-            mediumResistance    [0 -1 0 0 0] 0;
-            wetToDryCakeRatio   2.0;          // "kg wet cake/kg dry cake = m = 2.0"
+            //  The cake law alpha = (4.37e9)(-dp)^0.3, the medium neglected (B = 0,
+            //  p. 1089) and m = 2.0 are the SAMPLE's: one record, with its source and
+            //  its kind (adopted), the unit asks it at its pressure drop.
+            sample              caco3_geankoplis_ex24_2_4;
         }
     }
 );

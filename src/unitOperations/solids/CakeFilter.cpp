@@ -29,6 +29,7 @@ License
 #include "unitOperations/solids/CakeFilter.H"
 #include "unitOperations/solids/SolidLiquidCore.H"
 #include "core/Advisory.H"
+#include "samples/SampleBehaviour.H"
 #include "core/Dimensions.H"
 #include "thermo/ThermoPackage.H"
 
@@ -158,30 +159,24 @@ int CakeFilter::solve(const DictPtr& dict, const ThermoPackage& thermo, int verb
     const scalar dp = oper->lookupScalar("pressureDrop", Dims::pressure);
     if (!(dp > 0.0))
         throw std::runtime_error(me + ": `pressureDrop` must be positive.");
-    const bool hasA  = oper->found("specificCakeResistance");
-    const bool hasA0 = oper->found("alpha0");
-    const bool hasS  = oper->found("compressibility");
-    scalar alpha = 0.0, alpha0 = 0.0, sComp = 0.0;
-    if (hasA && (hasA0 || hasS))
-        throw std::runtime_error(me + ": `specificCakeResistance` is declared "
-            "beside `alpha0`/`compressibility` -- one cake law, not two.  An "
-            "incompressible cake declares alpha; a compressible one declares "
-            "alpha0 and s (alpha = alpha0 dp^s, Geankoplis eq. 24.2-11).");
-    if (hasA)
+    //  THE SAMPLE'S BEHAVIOUR HAS ONE HOME (docs/design/measured-facts-materials-and-
+    //  flow-curves.md R6): `sample <name>;` names the record in constant/experiments/,
+    //  and the service answers the cake and medium resistance and the wet-to-dry
+    //  ratio at THIS pressure drop, with its method and its support status.  The
+    //  numbers typed in `operation` are refused by name.
+    sampleBehaviour::refuseTypedSampleNumbers(oper, me + " (" + model + "): ", "cake filter");
+    need("sample");
+    const std::string sampleName = oper->lookupWord("sample");
+    const sampleBehaviour::Answer smp = sampleBehaviour::filtrationAt(sampleName, dp, me);
+    const std::string unitName = dict->name().empty()
+        ? dict->lookupWordOrDefault("name", "(unnamed)") : dict->name();
+    const bool hasA0 = smp.has("alpha0");
+    const scalar alpha = smp.value("specificResistance");
+    scalar alpha0 = 0.0, sComp = 0.0;
+    if (hasA0)
     {
-        alpha = oper->lookupScalar("specificCakeResistance", Dimensions(-1, 1, 0, 0, 0));
-    }
-    else if (hasA0 || hasS)
-    {
-        if (!(hasA0 && hasS))
-            throw std::runtime_error(me + ": a compressible cake needs BOTH "
-                "`alpha0` and `compressibility` (alpha = alpha0 dp^s, Geankoplis "
-                "eq. 24.2-11); only " + std::string(hasA0 ? "alpha0" : "compressibility")
-                + " is declared.");
-        //  alpha0 carries the dimensions m/kg/Pa^s, not expressible with
-        //  integer exponents: it is read in SI, with dp in Pa and alpha in m/kg.
-        alpha0 = oper->lookupScalar("alpha0");
-        sComp  = oper->lookupScalar("compressibility", Dims::dimensionless);
+        alpha0 = smp.value("alpha0");
+        sComp  = smp.value("compressibility");
         //  The range of s.  s < 0 says the cake gets MORE permeable as it is
         //  squeezed harder: no reading in this law, so it is refused.  s = 0
         //  is the incompressible cake and 0 < s <= 1 the usual range, both
@@ -192,12 +187,12 @@ int CakeFilter::solve(const DictPtr& dict, const ThermoPackage& thermo, int verb
         if (sComp < 0.0)
         {
             std::ostringstream m;
-            m << me << ": `compressibility` s = " << sComp << " is negative -- the "
-                 "cake resistance alpha = alpha0 dp^s would FALL as the pressure "
+            m << me << ": `compressibility` s = " << sComp << " is negative (sample `" << sampleName
+              << "`) -- the cake resistance alpha = alpha0 dp^s would FALL as the pressure "
                  "drop rises, a cake that opens as it is squeezed, which this law "
-                 "has no reading for (Geankoplis eq. 24.2-11).  Declare s >= 0 "
+                 "has no reading for (Geankoplis eq. 24.2-11).  State s >= 0 "
                  "from the slope of log(alpha) against log(dp) measured on this "
-                 "slurry, or `specificCakeResistance` for an incompressible cake.";
+                 "slurry, or a `specificResistance` for an incompressible cake, in the sample record.";
             throw std::runtime_error(m.str());
         }
         if (sComp > 1.0)
@@ -211,32 +206,28 @@ int CakeFilter::solve(const DictPtr& dict, const ThermoPackage& thermo, int verb
                  "medium's a HIGHER pressure drop gives LESS filtrate.  The "
                  "filter is computed as declared at dp = " << dp << " Pa; the "
                  "engine does not judge whether this s describes the slurry.";
-            const std::string unitName = dict->name().empty()
-                ? dict->lookupWordOrDefault("name", "(unnamed)") : dict->name();
             if (AdvisoryLog::instance().add("model", "warning", me + " " + unitName,
                                             m.str())
                 && verbosity >= 1)
                 std::cout << "  [" << me << "] " << unitName << ": " << m.str() << "\n";
         }
-        alpha  = alpha0 * std::pow(dp, sComp);
     }
-    else
-        throw std::runtime_error(me + ": the cake's specific resistance is "
-            "missing -- declare `specificCakeResistance` [m/kg] or, for a "
-            "compressible cake, `alpha0` and `compressibility`.  It is a "
-            "property of THIS slurry measured in a filtration test (Geankoplis "
-            "Example 24.2-1); no default exists.");
+    for (const auto& an : smp.announcements)
+        if (AdvisoryLog::instance().add("model", "warning", me + " " + unitName, an)
+            && verbosity >= 1)
+            std::cout << "  [" << me << "] " << unitName << ": " << an << "\n";
     if (!(alpha > 0.0))
         throw std::runtime_error(me + ": the specific cake resistance must be positive.");
-    need("mediumResistance");
-    const scalar Rm = oper->lookupScalar("mediumResistance", Dimensions(0, -1, 0, 0, 0));
+    const scalar Rm = smp.value("mediumResistance");
     if (Rm < 0.0)
-        throw std::runtime_error(me + ": `mediumResistance` cannot be negative.");
-    need("wetToDryCakeRatio");
-    const scalar mWet = oper->lookupScalar("wetToDryCakeRatio", Dims::dimensionless);
+        throw std::runtime_error(me + ": the medium resistance of sample `" + sampleName + "` is "
+            + std::to_string(Rm) + " 1/m, negative: an intercept of the test's t/V line can come out "
+            "negative (Wakeman & Tarleton p. 123) and the engine does not run a negative resistance.  "
+            "Re-read the record's `linearRegion`, or state the medium resistance of the test.");
+    const scalar mWet = smp.value("wetToDryRatio");
     if (!(mWet >= 1.0))
-        throw std::runtime_error(me + ": `wetToDryCakeRatio` (kg wet cake / kg "
-            "dry cake) is at least 1.");
+        throw std::runtime_error(me + ": `wetToDryRatio` (kg wet cake / kg "
+            "dry cake) of sample `" + sampleName + "` is at least 1.");
 
     //  ---- the balance: retained liquor, filtrate, c_S --------------------
     const scalar Lr = (mWet - 1.0) * f.mSolids;                 // kg/s liquor in the cake
@@ -504,7 +495,9 @@ int CakeFilter::solve(const DictPtr& dict, const ThermoPackage& thermo, int verb
                   << ", rho_s " << rhoS << " kg/m3, mu " << mu << " Pa s (package)\n"
                   << "  Cake law:     alpha = " << alpha << " m/kg";
         if (hasA0) std::cout << " = " << alpha0 << " x dp^" << sComp << " (eq. 24.2-11)";
-        std::cout << ";  R_m = " << Rm << " 1/m;  dp = " << dp << " Pa\n"
+        std::cout << ";  R_m = " << Rm << " 1/m;  dp = " << dp << " Pa\n";
+        for (const auto& l : smp.account) std::cout << "  Sample:       " << l << "\n";
+        std::cout
                   << "  Cake:         m = " << mWet << " kg wet / kg dry, porosity "
                   << eps << " (saturated);  retains " << Lr << " kg/s of liquor\n"
                   << "  c_S:          " << cS << " kg/m3 filtrate  (eq. 24.2-10: "

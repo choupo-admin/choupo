@@ -44,12 +44,19 @@ temporary directory, with CHOUPO_HOME set to this tree):
       with its `area` multiplied by 1.5 (AUF < 1) raises none -- the negative.
 
   (e) cakeFilter (SC-06).  filter01 with `compressibility -0.5` is REFUSED
-      (non-zero exit) naming the key and saying it is negative; with `1.5` it
+      (non-zero exit) naming the key and saying it is negative (the value is
+      edited in the case's SAMPLE record, constant/experiments/, where the
+      cake law lives since the sample-behaviour slice); with `1.5` it
       runs and the advisory says s is above 1 and that a higher pressure drop
       gives LESS filtrate.  That sentence is held to the engine's own
       equation: the same case at twice the pressure drop publishes a
       `Kp_s_m6` larger by 2^(s-1) = 2^0.5 (to 1e-6).  The shipped filter01
       (s = 0.3) raises no compressibility advisory -- the negative.
+
+  (k) cakeFilter, sample behaviour (design R6): a typed alpha0 is refused by
+      name, a pressure drop outside the record's authorised domain is refused,
+      a record with no `kind` is refused, and filter05's derived alpha and
+      R_m reproduce Wakeman & Tarleton Example 4.1 within 1 %.
 
   (f) mixer (SP-07).  Two SOLIDS-ONLY inlets do NOT print "liquid inlets
       merged"; two LIQUID inlets of the same probe shape DO (the positive
@@ -381,11 +388,20 @@ def main() -> int:
         def filt(tag, s=None, dp_scale=None):
             c = copy_case("filter01_caco3_rotaryDrum", td, tag)
             fs = c / "system" / "flowsheetDict"
-            if s is not None and not edit(fs, r"(compressibility\s+)[-0-9.]+;",
+            #  The cake law is the SAMPLE's (R6): the compressibility lives in the
+            #  case's record, and a different pressure drop needs the record's
+            #  authorised domain to cover it (a law is not extrapolated).
+            rec = c / "constant" / "experiments" / "caco3_geankoplis_ex24_2_4.dat"
+            if s is not None and not edit(rec, r"(compressibility\s+)[-0-9.]+;",
                                           rf"\g<1>{s};", count=1):
                 return None, None, None
             if dp_scale is not None and not edit(
                     fs, r"(pressureDrop\s+)([0-9.]+)(\s*kPa;)",
+                    lambda m: f"{m.group(1)}{dp_scale * float(m.group(2)):g}{m.group(3)}",
+                    count=1):
+                return None, None, None
+            if dp_scale is not None and not edit(
+                    rec, r"(max\s+)([0-9.]+)(\s*kPa;)",
                     lambda m: f"{m.group(1)}{dp_scale * float(m.group(2)):g}{m.group(3)}",
                     count=1):
                 return None, None, None
@@ -678,13 +694,78 @@ def main() -> int:
             else:
                 claims.append("bend key RoverD refused by name")
 
+        # ---- (k) cakeFilter: a sample's behaviour has ONE home (R6) ---------
+        #  THE DEFECT THIS ARM WOULD HAVE CAUGHT: until the sample-behaviour
+        #  slice (docs/design/measured-facts-materials-and-flow-curves.md R6) a
+        #  filter's alpha, R_m and m were typed in its `operation`, a number with
+        #  no kind, no conditions and no domain, copied into every case that used
+        #  the slurry.  Four probes on filter05 (a MEASURED record) hold the move:
+        #  (k1) a typed `alpha0` is REFUSED by name, with the line to write;
+        #  (k2) a pressure drop outside the record's authorised domain is REFUSED
+        #       and names the record (a sample is never extrapolated);
+        #  (k3) a record with no `kind` is REFUSED naming `kind`;
+        #  (k4) the derived values reproduce the printed example: alpha within 1 %
+        #       of 7.4e9 m/kg and R_m within 1 % of 1.54e10 1/m (W&T Ex 4.1).
+        def samp(tag):
+            c = copy_case("filter05_calciumSilicate_measuredTest", td, tag)
+            return (c, c / "system" / "flowsheetDict",
+                    c / "constant" / "experiments"
+                    / "calciumSilicate_hosseini1977_69kPa.dat")
+
+        c, fs, rec = samp("k_typed")
+        if not edit(fs, r"(\n\s+sample\s+calciumSilicate_hosseini1977_69kPa;)",
+                    r"\g<1> alpha0 1e9; compressibility 0.3;", count=1):
+            fails.append("(k) filter05 changed shape: no `sample` line")
+        else:
+            rc, out = run(c)
+            if rc == 0:
+                fails.append("(k1) a typed `alpha0` in a cakeFilter ran to exit 0")
+            elif "`alpha0` typed in `operation`" not in out or "sample <name>;" not in out:
+                fails.append("(k1) the typed alpha0 is refused without naming the key "
+                             "and the `sample <name>;` line to write")
+        c, fs, rec = samp("k_outside")
+        if not edit(fs, r"(pressureDrop\s+)69(\s*kPa;)", r"\g<1>100\g<2>", count=1):
+            fails.append("(k) filter05 changed shape: no 69 kPa pressureDrop")
+        else:
+            rc, out = run(c)
+            if rc == 0:
+                fails.append("(k2) dp outside the authorised domain ran to exit 0")
+            elif "outside the authorised domain" not in out \
+                    or "calciumSilicate_hosseini1977_69kPa" not in out:
+                fails.append("(k2) the out-of-domain refusal does not name the "
+                             "domain and the record")
+        c, fs, rec = samp("k_nokind")
+        if not edit(rec, r"\n\s*kind\s+measured;", "\n", count=1):
+            fails.append("(k) the record changed shape: no `kind measured;`")
+        else:
+            rc, out = run(c)
+            if rc == 0:
+                fails.append("(k3) a record with no `kind` ran to exit 0")
+            elif "kind measured|adopted|estimated" not in out:
+                fails.append("(k3) the missing-kind refusal does not name `kind`")
+        c, fs, rec = samp("k_ship")
+        rc, out = run(c)
+        js = result(out) if rc == 0 else None
+        k = next((kk for kk in (js or {}).get("kpis", {}).values()
+                  if "alpha_m_kg" in kk), None)
+        if k is None:
+            fails.append(f"(k4) filter05 did not run (exit {rc})")
+        else:
+            a, r = k["alpha_m_kg"], k["mediumResistance_1_m"]
+            if abs(a / 7.4e9 - 1) > 0.01 or abs(r / 1.54e10 - 1) > 0.01:
+                fails.append(f"(k4) alpha {a:.4g} m/kg, R_m {r:.4g} 1/m against the "
+                             "printed Example 4.1 (7.4e9, 1.54e10): not within 1 %")
+            else:
+                claims.append("sample record: typed numbers refused, out-of-domain "
+                              "refused, kind required, Ex 4.1 alpha/R_m within 1 %")
+
     if fails:
         print("check_solids_announcements: FAILED")
         for f in fails:
             print("  " + f)
         return 1
     print("check_solids_announcements: OK -- " + "; ".join(claims) +
-          " (10 arms, scratch copies; no hypothesis judged)")
+          " (11 arms, scratch copies; no hypothesis judged)")
     return 0
 
 

@@ -1,0 +1,35 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  filter05_calciumSilicate_measuredTest / flowsheetDict
+
+  One laboratory-scale press on a sample whose behaviour is a MEASURED test:
+  `sample calciumSilicate_hosseini1977_69kPa;` names the record of raw t-V
+  rows, and the cake and medium resistance are DERIVED from them at the
+  press's own pressure drop.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        press;
+        type        cakeFilter;
+        model       batchPress;
+        in          slurry;
+        outputs     ( cake filtrate );
+        operation
+        {
+            pressureDrop            69 kPa;           // the test's own pressure (Example 4.1)
+            sample                  calciumSilicate_hosseini1977_69kPa;
+            area                    0.0429 m2;        // the test's filter area (Table 4.8)
+            filtratePerCycle        0.011 m3;         // the test's last filtrate volume (Table 4.9)
+            cleaningTime            10 min;           // ILLUSTRATIVE: the book's test has no cycle
+        }
+    }
+);

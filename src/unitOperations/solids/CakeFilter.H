@@ -45,8 +45,14 @@ Description
     dp^s (eq. 24.2-11).  Ruth (1935) derived the integrated law; it is
     implemented here as Geankoplis prints it.
 
+    THE CAKE LAW IS THE SAMPLE'S, NOT THE UNIT'S (docs/design/measured-facts-
+    materials-and-flow-curves.md R6; src/samples/SampleBehaviour.H): `sample
+    <name>;` names a record in constant/experiments/ and the unit asks it for
+    alpha, R_m and m at its pressure drop; the numbers typed in `operation`
+    are refused by name.
+
     c_S IS NOT AN INPUT.  The cake holds m kg of wet cake per kg of dry
-    solids (`wetToDryCakeRatio`, DECLARED: cake moisture is a measurement of
+    solids (the sample's `wetToDryRatio`: cake moisture is a measurement of
     the cake, not a property any model here predicts).  The liquid the cake
     keeps, (m - 1) W, leaves with it; the rest is filtrate.  c_S = W / V
     follows from that balance and equals Geankoplis eq. 24.2-10, c_S = rho
