@@ -213,6 +213,7 @@ NOTE THE WATER LEG IS KNOWN TO BE 0.70 K LOW before it is measured again here: C
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{g\_ideal}\\[-1pt]{\tiny propertyScan1D}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{g\_nrtl}\\[-1pt]{\tiny propertyScan1D}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{g\_wilson}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{gamma\_ethanol\_three\_models}\\[-1pt]{\tiny series}};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Compare 3 activity models (ideal / NRTL / Wilson) for $\gamma$\_ethanol in equimolar mixture with water vs T}
@@ -2940,6 +2941,7 @@ WHAT TO LOOK FOR. (this run's numbers, Davies, 25 C; molalities in mmol/kg of ea
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{estimate\_acetone}\\[-1pt]{\tiny estimateComponent}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{estimated\_properties}\\[-1pt]{\tiny table}};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{CREATE a component from its groups: Joback estimate of acetone (2 CH3 + 1 ketone), validated against NIST --- see the estimate built up from groups}
@@ -3836,6 +3838,7 @@ The grid is logarithmic, 20 points per decade, so every decade holds 21 points, 
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{dysonSimon}\\[-1pt]{\tiny rateLawBench}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{locus\_of\_maximum\_rate}\\[-1pt]{\tiny table}};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{The ammonia synthesis rate of Dyson \& Simon (1968), WRITTEN in the case (constant/reactions, `type expression`, every constant with its unit and equation number) and put on the rate-law bench: Eq 19's pseudo-homogeneous rate, Eq 39's effectiveness factor as a declared table over Table I's three pressures, Eq 40, a declared 150-300 atm window and an announced pressure interpolation; the paper's anchors are held by a gate on every case's copy of the law. It locates the LOCUS OF MAXIMUM RATE at three conversions and shows it descending -- the curve ammonia03\_quench\_converter zigzags about -- and evaluates the rate at that converter's own bed states.}

@@ -292,8 +292,11 @@ a row's unit.  Internally the publications are named `unit:<name>` /
 `stream_<name>/` (so a unit and a stream cannot share a folder, and a view
 folder cannot collide with a `reportsLayout postProcessing;` report folder
 named like a unit); a view across sources and references is `case/`.  The unit
-of a KPI is published only where its key says it (`Q_reboiler_kW` -> kW); a
-profile column's from its name (`T` -> K, `T_K`, `x_`/`y_` -> "-", `stage`);
+of a KPI is published only where its UNIT declares it (`UnitOperation::kpiUnits()`,
+carried on `SimulationResult::kpiUnits`, DEV.md 4c C443): `N_min` and `R_min` of a
+shortcut column are "-", `T_in` / `T_out` of a heater are K, `Q_kW` kW.  It is
+never read off the key's spelling (that read `N_min` as minutes and `T_in` as
+inches); a KPI its unit does not declare publishes none.  A profile column's from its name (`T` -> K, `T_K`, `x_`/`y_` -> "-", `stage`);
 any other number publishes none, and the unit a view declares is then the
 author's statement, said on the console and recorded (`unitPublished false`).
 

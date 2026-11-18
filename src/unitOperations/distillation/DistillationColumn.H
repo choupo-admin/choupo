@@ -125,6 +125,12 @@ public:
         return kpis_;
     }
 
+    std::map<std::string, std::string> kpiUnits() const override
+    {
+        return { {"Q_reboiler_kW", "kW"}, {"Q_condenser_kW", "kW"},
+                 {"Q_reboiler_ownEnvelope_kW", "kW"} };
+    }
+
     std::vector<ClosureVariable> closureVariables() const override { return closures_; }
 
     std::optional<UnitProfile> profile() const override

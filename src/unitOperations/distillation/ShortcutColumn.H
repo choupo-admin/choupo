@@ -105,6 +105,16 @@ public:
     std::vector<ProcessStream>    producedStreams() const override { return produced_; }
     std::map<std::string, scalar> kpis()            const override { return kpis_; }
 
+    //  N_min, N_theoretical, feed_stage are stage counts; R_min, R the reflux
+    //  ratios (mol/mol); alpha the relative volatility; theta the Underwood
+    //  root; x_D_LK / x_B_HK mole fractions.  D and B are left undeclared.
+    std::map<std::string, std::string> kpiUnits() const override
+    {
+        return { {"N_min", "-"}, {"R_min", "-"}, {"N_theoretical", "-"}, {"R", "-"},
+                 {"feed_stage", "-"}, {"alpha_LK_HK", "-"}, {"theta", "-"},
+                 {"x_D_LK", "-"}, {"x_B_HK", "-"} };
+    }
+
 private:
     inline static const std::string type_ = "shortcutColumn";
     std::vector<ProcessStream>       produced_;

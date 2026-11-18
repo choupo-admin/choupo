@@ -11,7 +11,7 @@
 
   The lesson: a column in four equations (Fenske, Underwood, Gilliland, Kirkbride): the recoveries are declared and the stage count, the minimum reflux and the feed stage are what come out.
 
-  The plot: the four numbers that size the column: theoretical stages, operating reflux, feed stage and the relative volatility they rest on.
+  The plot: the numbers that size the column: the Fenske minimum stages and the Underwood minimum reflux, then the theoretical stages, operating reflux, feed stage and the relative volatility they rest on.
 
   This declares how the run is DRAWN, over what the run already publishes
   (every stream and every unit's KPIs and profile are nameable); it computes
@@ -25,9 +25,11 @@ views
         name    shortcut_design;
         type    table;
         title   "What the four equations returned";
-        note    "The operating reflux is declared as 1.3 times the Underwood minimum and Gilliland turns that pair into the theoretical stage count; Kirkbride places the feed. (The minimum stages and the minimum reflux are published by the unit under names the unit lookup reads as time units, so they are not drawn here.)";
+        note    "The operating reflux is declared as 1.3 times the Underwood minimum and Gilliland turns that pair into the theoretical stage count; Kirkbride places the feed.";
         columns
         (
+            { name Nmin; label "minimum stages (Fenske)"; unit "-"; }
+            { name Rmin; label "minimum reflux (Underwood)"; unit "-"; }
             { name N; label "theoretical stages"; unit "-"; }
             { name R; label "operating reflux ratio"; unit "-"; }
             { name feed; label "feed stage from the top"; unit "-"; }
@@ -35,7 +37,7 @@ views
         );
         rows
         (
-            { name column; label "shortcut column"; cells { N { unitOp column; key N_theoretical; } R { unitOp column; key R; } feed { unitOp column; key feed_stage; } alpha { unitOp column; key alpha_LK_HK; } } }
+            { name column; label "shortcut column"; cells { Nmin { unitOp column; key N_min; } Rmin { unitOp column; key R_min; } N { unitOp column; key N_theoretical; } R { unitOp column; key R; } feed { unitOp column; key feed_stage; } alpha { unitOp column; key alpha_LK_HK; } } }
         );
     }
 );

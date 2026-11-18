@@ -1007,6 +1007,52 @@ def arm_h(tmp):
     return n
 
 
+SC01 = ROOT / "tutorials/steady/distillation/shortcut01_benzene_toluene"
+
+
+def arm_i(tmp):
+    """THE UNIT OF A KPI IS THE UNIT'S TO DECLARE (C443).  The real defect: the
+    views engine read a KPI's unit off its NAME's suffix, so a shortcut column's
+    `N_min` and `R_min` (minimum stages, minimum reflux) were published in
+    minutes and a view naming them with unit "-" was refused (`N_min is published
+    in 'min'`); `T_in` / `T_out` read as inches.  Held here: shortcut01's view
+    draws N_min and R_min, equal to the run's KPIs; and declaring either in "min"
+    is refused, naming the unit the column PUBLISHED, "-"."""
+    n = {"cells": 0, "refusals": 0}
+    if not SOLVE.exists():
+        fails.append("(i) no choupoSolve binary (build first)")
+        return n
+    case = copy_full(tmp / "sc01", SC01)
+    for junk in ("reports", "converged", "postProcessing"):
+        shutil.rmtree(case / junk, ignore_errors=True)
+    rc, out, res = run_solve(case)
+    if rc != 0 or res is None:
+        fails.append("(i) shortcut01 did not run with its views (exit %d):\n%s" % (rc, out[-400:]))
+        return n
+    rows = read_csv_rows(case / "postProcessing/case/shortcut_design.csv")
+    row = next(r for r in rows if r.get("row") == "column")
+    for col, key in (("Nmin", "N_min"), ("Rmin", "R_min")):
+        want = res["kpis"]["column"][key]
+        if not near(num(row[col]), want, abs(want)):
+            fails.append("(i) shortcut_design %s is %s, the run's %s is %s" % (col, row[col], key, want))
+        n["cells"] += 1
+    base = (case / "system" / "postDict").read_text()
+    for col, key in (("Nmin", "N_min"), ("Rmin", "R_min")):
+        i = base.index("name %s; label" % col)
+        j = base.index('unit "-"', i)
+        mut = base[:j] + 'unit "min"' + base[j + len('unit "-"'):]
+        pc = copy_full(tmp / ("sc01_" + col), SC01)
+        (pc / "system" / "postDict").write_text(mut)
+        prc, pout, _ = run_solve(pc)
+        if prc == 0:
+            fails.append("(i) %s declared in minutes was ACCEPTED (exit 0)" % key)
+        elif "'%s' is published in '-' and declared in 'min'" % key not in pout:
+            fails.append("(i) %s in minutes exited %d without 'published in -':\n%s" % (key, prc, pout[-400:]))
+        else:
+            n["refusals"] += 1
+    return n
+
+
 def main():
     if not PROPS.exists():
         print("check_postprocessing: FAILED -- no choupoProps binary (build first)")
@@ -1018,6 +1064,7 @@ def main():
         fired = arm_e(tmp)
         arm_f(tmp)
         hh = arm_h(tmp)
+        ii = arm_i(tmp)
     if fails or any(g is None for g in got):
         print("check_postprocessing: FAILED")
         for f in fails:
@@ -1048,6 +1095,10 @@ def main():
           " run, differences recomputed) equal; %d refusals fire by name (an unknown stream,"
           " unit operation, diagnostic; an unknown reference column BEFORE the solve)."
           % (hh["views"], hh["numbers"], hh["refusals"]))
+    print("check_postprocessing (i): a KPI's unit is its unit's to declare -- shortcut01's N_min and"
+          " R_min (%d cells) equal the run's and publish '-'; %d declarations in minutes are refused"
+          " naming it (the name-suffix read called them minutes, T_in inches)."
+          % (ii["cells"], ii["refusals"]))
     return 0
 
 

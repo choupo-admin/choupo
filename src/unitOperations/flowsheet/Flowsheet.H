@@ -272,6 +272,8 @@ public:
 
     // 1-D internal profile (axial sweep / stage table) for units that
     // expose one.  Used by the GUI's profile plot.
+    const std::map<std::string, std::map<std::string, std::string>>& unitKpiUnits() const
+    { return unitKpiUnits_; }
     const std::map<std::string, UnitProfile>& unitProfiles() const
     { return unitProfiles_; }
 
@@ -435,6 +437,7 @@ private:
     std::map<std::string, SimulationResult::RecycleLoop>  recycleLoops_;
     std::vector<EnergyWire>                                energyWires_;
     std::map<std::string, std::map<std::string, scalar>>   unitKpis_;
+    std::map<std::string, std::map<std::string, std::string>> unitKpiUnits_;
     std::map<std::string, std::vector<scalar>>             unitResiduals_;
     // GLOBAL recycle-closure residual history (one per outer iteration).
     std::vector<scalar>                                    globalMassResiduals_;

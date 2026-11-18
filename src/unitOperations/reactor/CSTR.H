@@ -135,6 +135,12 @@ public:
         return kpis_;
     }
 
+    std::map<std::string, std::string> kpiUnits() const override
+    {
+        return { {"tau_s", "s"}, {"T", "K"}, {"T_out", "K"}, {"dT_rise", "K"},
+                 {"X_limiting", "-"}, {"Q_kW", "kW"} };
+    }
+
     std::vector<ClosureVariable> closureVariables() const override { return closures_; }
 
     //  The Van Heerden diagram of a NON-ISOTHERMAL solve: heat generated and
