@@ -170,8 +170,8 @@ C172	DONE		Um GUI ou dois: simulação e propriedades e dados			2026-10-26	M	d43
 C173	DONE		Auditoria externa às rotas de Gibbs e fases			2026-10-26	M	8e042855d	
 C174	DONE		Nenhum fecho por construção conta como evidência			2026-10-26	M	a7540f1f0	
 C175	DONE		MESH completo reativo			2026-10-26	L	5a6b99ea9	
-C176	OPEN	0	Conjunto de dados multi-ião de NF para testar DSPM-DE	Labban et al. 2017 (NF270/NF90, Na/Mg/Ca/Cl/SO4) já está na pasta de literatura; caso por construir: ajustar em sais simples e prever as misturas	construído, a aterrar	2026-10-26	M		
-C177	OPEN	0	Modelo de laboratório para ajuste de DSPM-DE	desenho fechado com o Vítor a 2026-11-19; por construir depois do C176, testado nos dados do Labban	construído, a aterrar	2026-10-26	M		
+C176	OPEN	0	Conjunto de dados multi-ião de NF para testar DSPM-DE	construído (validação contra o Labban 2017 com a banda declarada antes); a validar para aterrar	construído, a aterrar	2026-10-26	M		
+C177	OPEN	0	Modelo de laboratório para ajuste de DSPM-DE	construído e testado nos dados do Labban; a validar para aterrar	construído, a aterrar	2026-10-26	M		
 C178	DONE		Revisão externa de código (falhas de solver)			2026-10-27	M	648660158	
 C179	DONE		Espécie neutra não é ião: massa molar de mineral			2026-10-27	S	3e43d55f8	
 C180	DONE		Precipitação em função da temperatura, figura nativa			2026-10-27	M	55d638999	
@@ -297,7 +297,7 @@ C303	DONE		Registo local que herda chaves do catálogo em silêncio			2026-11-11
 C304	DONE		Relatório de pinch como relatório de engenharia			2026-11-11	M	73dce1019	
 C305	DONE		EduTool pinch: Compreender, Experimentar, Verificar			2026-11-11	M	ab89a76d6	
 C306	PARTIAL	79	Da lista de utilidades à energia integrada e tubagem de utilidades	balanço de vapor/condensado por coletor, desenho da rede de permutadores e P&ID por fazer	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-11	L	f9af88d4c	
-C307	PARTIAL	0	Algarismos significativos e ordenação de tabelas	fatia 2: algarismos significativos e ordenação nos fluxos, unidades, relatórios e fichas (HX); só Pinch e ficha de colunas feitos	general a trabalhar	2026-11-11	M	ea9b6d285	
+C307	PARTIAL	0	Algarismos significativos e ordenação de tabelas	general a construir a fatia 2: algarismos significativos e ordenação nas correntes, unidades, relatórios e fichas	general a trabalhar	2026-11-11	M	ea9b6d285	
 C308	OPEN	35	Aplicar técnica de Duhem para consistência dos pares	teste de Gibbs-Duhem (van Ness) por laboratório antes do ajuste, 'não testável' sem y, diagnóstico dos 17 severos	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-11	M		
 C309	PARTIAL	80	Máximo de compostos: séries IUPAC de propriedades críticas	restantes lotes de componentes (de ~647 bloqueados, só 41 novos + 17 atualizados) por Tc/Pc IUPAC e Cp Zabransky	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-11	L	03b2aa85d	
 C310	DONE		COSMO-SAC nativo com perfis sigma LVPP			2026-11-11	L	a218cfd0a	
@@ -351,8 +351,8 @@ C385	DONE		Ponto de equilíbrio em preço			2026-11-13	M	645e439a76
 C386	DONE		EduTool de rápido e lento com casos de estudo			2026-11-13	M	18c81e145	
 C387	DONE		Landing page com contagens atualizadas			2026-11-13	S	03653ad9ce	
 C388	DONE		EduTool de equilíbrio ou rate-based para dimensionar colunas			2026-11-13	M	ad2393915	
-C389	PARTIAL	0	Preços revistos nas fontes	o motor mostra a origem de cada preço no relatório económico (PR-07)	general a trabalhar	2026-11-13	M	e17dbedd5	
-C390	OPEN	0	Termo de pressão na entalpia líquida (bombas)	curar equação de referência do amoníaco e depois o termo de pressão v(1-aT)dP na entalpia líquida; tirar pump01/02 da lista	general a trabalhar	2026-11-13	M		
+C389	PARTIAL	0	Preços revistos nas fontes	construído (origem de cada preço na consola, CSV e interface; preço sem origem recusado); falta: preços das utilidades, verificador e guias	general a trabalhar	2026-11-13	M	e17dbedd5	
+C390	OPEN	0	Termo de pressão na entalpia líquida (bombas)	general a construir: termo de pressão v(1-αT)dP na entalpia do líquido, para fechar a energia das bombas	general a trabalhar	2026-11-13	M		
 C391	NOT-AN-ITEM		Discussão: gémeo digital interativo de um caso dinâmico			2026-11-13	S		
 C392	DONE		Laboratório virtual de fluidização com partículas a mexer			2026-11-13	M	ae0644d65	
 C393	DONE		Linha de titular e licença em todos os ficheiros de código			2026-11-14	M	a0b4c806f	
@@ -394,7 +394,7 @@ C428	PARTIAL	48	Lente Escolher um solvente (Hansen) no Explorer	lente 'Escolher 
 C429	DONE		Verificador de regressão cego abaixo de 1e-9			2026-11-18	M	580e5ae25	
 C430	DONE		Parar a varredura e construir a arquitetura final			2026-11-19	L	cf034baa0	
 C431	DONE		Segunda revisão externa ponderada (fechar K1-K4)			2026-11-19	L	a9642fe3b	
-C432	OPEN	0	Reutilização por rota dos 1260 ajustes (provar o kernel uma vez por categoria)	repetição por rota (d), repetição dos parâmetros guardados antes de reajustar (a), investigação do transport_c327 (b)	general a trabalhar	2026-11-19	M		
+C432	OPEN	0	Reutilização por rota dos 1260 ajustes (provar o kernel uma vez por categoria)	general a construir: reutilizar os ajustes quando nenhuma escala do motor mudou, repetir antes de reajustar	general a trabalhar	2026-11-19	M		
 C433	DONE		Ligações dos componentes e pares por modelo e conjunto nomeado			2026-11-19	M	cd2d3430e8	
 C434	DONE		Casos não correm no Firefox			2026-11-19	S	4e864ecf7	
 C435	PARTIAL	1	Cinco pontos da revisão externa de seis casos	(4) NanoFiltran: as propriedades da bancada declaradas uma vez espera o interruptor declarado da correção de Stokes-Einstein	só falta a parte (4), já desenhada; pequena	2026-11-19	M	cd2d3430e8	
