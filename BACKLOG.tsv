@@ -7,7 +7,7 @@ C5	NOT-AN-ITEM		Nota sobre o que o registo não consegue recuperar			2026-09-25	
 C6	PARTIAL	49	Caso de estudo amoníaco verde para artigo C&CE	artigo C&CE do caso verde por escrever (paper/cace trata o Choupo, sem amoníaco); paridade com ferramentas não medida	fila: primeiro os mais pequenos, depois os mais antigos	2026-09-24	L	e1c610765	
 C7	DONE		Nenhum concorrente nomeado no repositório			2026-09-24	M	4f6acfeb2	
 C8	DONE		Sequência de projeto por fases e EduTool no amoníaco verde			2026-09-24	L	6d1270c78	
-C9	DONE		EduTool do reator de Gibbs e aproximação ao equilíbrio			2026-09-25	M		
+C9	DONE		EduTool do reator de Gibbs e aproximação ao equilíbrio			2026-09-25	M	680faf6d0	
 C10	DONE		EduTool do que o equilíbrio com ΔT de aproximação alcança			2026-09-27	M	550d7f539	
 C11	DONE		Gibbs restrito a um subconjunto declarado de reações			2026-09-27	M	d39aa9653	
 C12	DONE		Propriedades da água fiáveis em toda a gama usada			2026-09-27	L	082c7efc8	
@@ -88,7 +88,7 @@ C87	DONE		Tanques de entrada e saída no processo do ácido acético			2026-10-1
 C88	DONE		Layout 3D com aspeto de fábrica			2026-10-18	M	8d4e82f4a	
 C89	DONE		Tanques no PEQ do amoníaco e tampão de H2			2026-10-18	M	c1e194538	
 C90	DONE		Layout exportado a cores, estradas e edifícios			2026-10-18	M	96c76c8eb	
-C91	DONE		Janela do layout dimensionada pelo leitor			2026-10-18	S	0ccd69330	
+C91	PARTIAL	91	Janela do layout dimensionada pelo leitor	registo de tubos acoplável ao lado da vista 3D (não construído)	revisão de fora 19-11: um ponto do pedido original nunca foi feito	2026-10-18	S	0ccd69330	
 C92	DONE		Tanques da fábrica completa dimensionados e colocados			2026-10-18	M	c920f6596	
 C93	DONE		Verificação de choque tubagem-pegada e vedação			2026-10-18	M	a64a86f18	
 C94	DONE		Guias de layout nos guias			2026-10-18	S	3f9da49c8	
@@ -149,7 +149,7 @@ C150	DONE		Segunda revisão externa dos EduTools R01-R28			2026-10-25	L	196107b7
 C151	PARTIAL	16	Caso props com estrutura: mapa de cálculo, árvore por disciplina, F1	fase 2: reorganizar pastas de tutorials/props por disciplina	fila: primeiro os mais pequenos, depois os mais antigos	2026-10-25	M	139eef840	
 C152	DONE		Um caso, dois modos: simulação de processo e propriedades e dados			2026-10-25	L	a8edacdd0	
 C153	DONE		Ecrã props: painel redimensionável e bloco que responde ao clique			2026-10-25	M	16ebfc5ec	
-C154	DONE		Percurso de um utilizador no caso NanoFiltran no site			2026-10-25	M	4c2f3db7d	
+C154	PARTIAL	92	Percurso de um utilizador no caso NanoFiltran no site	propriedades inativas marcadas (A_w de bancada com fluxo imposto) e F1 nas chaves do thermoPhysPropDict	revisão de fora 19-11: um ponto do pedido original nunca foi feito	2026-10-25	M	4c2f3db7d	
 C155	DONE		A transição laminar-turbulenta não é uma curva			2026-10-25	S	aa9e9a0a3	
 C156	DONE		Página de gráficos também navega por unidade			2026-10-25	S	57f6dd15e	
 C157	DONE		Choupo pronto para um investigador externo de membranas			2026-10-25	M	6fdace214	
@@ -161,7 +161,7 @@ C163	NOT-AN-ITEM		Questões abertas são decididas pelo comandante			2026-10-25	
 C164	DONE		GRI-Mech 3.0 não é usado diretamente			2026-10-25	M	0c860703d	
 C165	PARTIAL	17	Aluno de doutoramento aprende DSPM-DE com o caso NanoFiltran	fase 2: fluxo por nó com resíduo de fecho e 'seguir um ião' por fazer	fila: primeiro os mais pequenos, depois os mais antigos	2026-10-25	M	fe1b0c6ec	
 C166	DONE		NanoFiltran explicado para reimplementação por um doutorando			2026-10-25	M	caf445946	
-C167	DONE		A suite usa todos os núcleos			2026-10-25	M	a445a2a50	
+C167	PARTIAL	93	A suite usa todos os núcleos	prova de aceitação: uma suite completa em série e outra em paralelo com linhas de resultado idênticas	revisão de fora 19-11: um ponto do pedido original nunca foi feito	2026-10-25	M	a445a2a50	
 C168	DONE		Auditoria de usabilidade e acessibilidade do GUI de resultados			2026-10-25	M	1b153ac5d	
 C169	DONE		A coluna resolve a termodinâmica que as suas correntes trazem			2026-10-26	L	bc00f94b8	
 C170	NOT-AN-ITEM		Auditoria: nada do que foi dito se perde			2026-10-26	S		
@@ -206,7 +206,7 @@ C208	DONE		Casos C208 validados para aterrar			2026-11-03	M	54142109f
 C209	OPEN	21	Setor que diz quantas vezes se repete	não encontrado construído	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-02	M		
 C210	PARTIAL	65	Direção: Choupo ferramenta útil ao projeto farmacêutico	L1-L10 de longo prazo (via estéril, liofilizador, AVAC completo, Monte Carlo) por fazer	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-02	L	563d83b2c	
 C211	DONE		Índice de capacidades (pergunta de capacidade não é tarefa de projeto)			2026-11-03	S	7d1e9217d	
-C212	DONE		Avaliação económica de uma fábrica como EduTools			2026-11-03	L	2cc075d35	
+C212	PARTIAL	94	Avaliação económica de uma fábrica como EduTools	cada fator do EduTool com a gama citada ao lado (hoje só um ponteiro)	revisão de fora 19-11: um ponto do pedido original nunca foi feito	2026-11-03	L	2cc075d35	
 C213	DONE		Casos de estudo económicos documentados da literatura aberta			2026-11-03	M	29f5e2cd6	
 C214	PARTIAL	22	Kernel do Choupo comparado com o do simulador aberto de referência	W5 (válvula de controlo com Cv e característica) e W7 (eletrolisador de água) por construir	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-03	M	5ab7a4250	
 C215	OPEN	66	Classes de reação em EduTools, reações da biorrefinaria, brainstorm biotecnologia	EduTool de classes de reação orgânicas (absorvido pelo C417, por construir)	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-04	L		
@@ -232,7 +232,7 @@ C237	DONE		Limpar o plano CML dos itens rápidos			2026-11-07	M	c4323a4e9
 C238	PARTIAL	1	Prazo 2026-11-30: simulador para impressionar os colegas	caminho de demonstração por escrever, planta de referência mais cheia e ensaio no browser antes de 30-11	define o que os colegas vão ver a 30-11	2026-11-07	L	7cec264f0	
 C239	PARTIAL	72	Defeito do MTBE é uma família: validação não chega às colunas	process05/recycle02 (5 bar) e column05 (dímero acético) ainda com vapor ideal; S5-S7 por confirmar	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-07	L	4f4c7a416	
 C240	PARTIAL	2	Layout da fábrica NH3 completa continua fraco	ammonia02 sem torre, refrigeração nem flare como itens; laço compacto e testemunha de distância em fixture por fazer	a fábrica de amoníaco que vai ser mostrada	2026-11-07	M	81b991d8e	
-C241	DONE		Pequeno modelo do Choupo (BRAIN.md)			2026-11-07	M	39daf7d27	
+C241	PARTIAL	95	Pequeno modelo do Choupo (BRAIN.md)	dieta do CLAUDE.md para ~300 linhas (está em 1168)	revisão de fora 19-11: um ponto do pedido original nunca foi feito	2026-11-07	M	bab4dff30	
 C242	DONE		Sistema operativo do projeto			2026-11-07	M	cc0122b11	
 C243	DONE		Gráficos escolhidos pelo utilizador nos casos de controlo			2026-11-07	M	edb05278f	
 C244	DONE		Uma planta de referência por processo, variantes viram varrimentos			2026-11-07	L	7db132d80	
@@ -329,7 +329,7 @@ C363	NOT-AN-ITEM		Sessão da nuvem como validadora de componentes e binários			
 C364	NOT-AN-ITEM		Uma só sessão a operar			2026-11-12	S		
 C365	PARTIAL	13	Reimportar o PEQ amoníaco move linhas não autorizadas	bandeira do choupo-import que só aceita as linhas autorizadas e recusa as outras	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-12	S	188143200	
 C366	DONE		EduTool de mapas de curvas de resíduo			2026-11-12	M	72877cda7	
-C367	DONE		Pontos de ebulição errados e janela de ajuste			2026-11-12	M	e58d49c7b	
+C367	DONE		Pontos de ebulição errados e janela de ajuste			2026-11-12	M	34d81eaf1	
 C368	DONE		Organizar a literatura em pastas com nomes intuitivos			2026-11-12	M	b923591c8	
 C369	DONE		Literatura é do portátil; EduTools adicionais de adsorção e cromatografia			2026-11-12	M	356961c4c	
 C370	NOT-AN-ITEM		Três propostas da nuvem respondidas			2026-11-12	S		
@@ -337,7 +337,7 @@ C371	DONE		Painel de operador só de leitura (C371) e alarmes			2026-11-12	L	53a
 C372	DONE		Espécies dos ácidos orgânicos mais comuns (cítrico, málico, tartárico, láctico)			2026-11-12	M	492a67270	
 C373	DONE		Máximo de iões das compilações avaliadas			2026-11-12	L	36ddc8ba3	
 C374	DONE		Página inicial de EduTools com mais cor e sem a linha			2026-11-12	S	404e2f62a	
-C375	DONE		Três achados do motor na página de cromatografia			2026-11-12	M	5a0689270	
+C375	DONE		Três achados do motor na página de cromatografia			2026-11-12	M	c2ec992b68	
 C376	DONE		Dados de formação das espécies novas			2026-11-12	L	648972dcd	
 C377	PARTIAL	38	Modelo NaOH-água e subida do ponto de ebulição	Cp líquido da água acima de 373 K no pacote de eletrólitos (equação de referência)	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-12	M	a2b744c46	
 C378	DONE		Porta única de propriedades termofísicas (slice 0 e piloto)			2026-11-12	L	e6c89fce9	
@@ -346,17 +346,17 @@ C380	DONE		Segunda análise da organização do kernel de propriedades			2026-11
 C381	DONE		Instruções de IA sobre a arquitetura de propriedades			2026-11-12	M	a0266ceff	
 C382	DONE		Fluido especial pelos seus dados: água e equação de referência			2026-11-12	M	e813a435c	
 C383	NOT-AN-ITEM		Sessão de revisão passa a construir em territórios nomeados			2026-11-13	S		
-C384	DONE		Site sem publicar desde 12 de novembro			2026-11-13	S	560381c00	
-C385	DONE		Ponto de equilíbrio em preço			2026-11-13	M		
+C384	DONE		Site sem publicar desde 12 de novembro			2026-11-13	S	17999a2cc3	
+C385	DONE		Ponto de equilíbrio em preço			2026-11-13	M	645e439a76	
 C386	DONE		EduTool de rápido e lento com casos de estudo			2026-11-13	M	18c81e145	
-C387	DONE		Landing page com contagens atualizadas			2026-11-13	S		
+C387	DONE		Landing page com contagens atualizadas			2026-11-13	S	03653ad9ce	
 C388	DONE		EduTool de equilíbrio ou rate-based para dimensionar colunas			2026-11-13	M	ad2393915	
 C389	PARTIAL	0	Preços revistos nas fontes	o motor mostra a origem de cada preço no relatório económico (PR-07)	general a trabalhar	2026-11-13	M	e17dbedd5	
 C390	OPEN	0	Termo de pressão na entalpia líquida (bombas)	curar equação de referência do amoníaco e depois o termo de pressão v(1-aT)dP na entalpia líquida; tirar pump01/02 da lista	general a trabalhar	2026-11-13	M		
 C391	NOT-AN-ITEM		Discussão: gémeo digital interativo de um caso dinâmico			2026-11-13	S		
 C392	DONE		Laboratório virtual de fluidização com partículas a mexer			2026-11-13	M	ae0644d65	
 C393	DONE		Linha de titular e licença em todos os ficheiros de código			2026-11-14	M	a0b4c806f	
-C394	DONE		Economia da suite: reutilização por entrada			2026-11-14	M	aac2a4941	
+C394	DONE		Economia da suite: reutilização por entrada			2026-11-14	M	a28b24cfbb	
 C395	OPEN	39	EduTool sobre a limitação do HETP	secção HETP na página equilibrium-or-rate-based (âmbito por aprovar pelo Vítor)	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-14	M		
 C396	DONE		Dimensionar coluna e desenhar internos como no permutador			2026-11-14	L	d653a65ff	
 C397	DONE		Propriedades termofísicas declaradas num só dicionário do caso			2026-11-14	L	c2f0aa35a	
@@ -399,4 +399,4 @@ C433	OPEN	0	Ligações dos componentes e pares por modelo e conjunto nomeado	em 
 C434	DONE		Casos não correm no Firefox			2026-11-19	S	4e864ecf7	
 C435	OPEN	0	Cinco pontos da revisão externa de seis casos	cópias de pares inline, initial opcional, propriedades tipadas das operações props, cabeçalhos	construído, a aterrar	2026-11-19	M		
 C436	OPEN	0	Backlog com uma só casa (BACKLOG.tsv), verificado, e a vista gerada dele	gate check_backlog e a página gerada do backlog	em curso: gerar o PLAN.md do backlog	2026-11-19	M		
-C437	OPEN	48	DSPM-DE com os parâmetros do próprio Labban falha 8-16 pontos	testar sozinho cada suspeito: filme de fibra oca, T e densidade, Davies	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-19	M		
+C437	OPEN	48	DSPM-DE com os parâmetros do próprio Labban falha 8-16 pontos	testar primeiro a aplicação de Davies (o mais provável, pela leitura de fora 19-11), depois o filme de fibra oca; os 12 % do artigo são relativos	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-19	M		
