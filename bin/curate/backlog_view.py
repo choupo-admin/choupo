@@ -9,7 +9,8 @@ items in progress (rank 0), then the open and partial items by rank, each with
 its size, its reason for that place and what is missing; closed items are
 counted, not listed.
 
-    bin/curate/backlog_view.py OUT.html
+    bin/curate/backlog_view.py OUT.html     (a page)
+    bin/curate/backlog_view.py OUT.md       (a Markdown table, for a side panel)
 """
 import csv, html, sys
 from pathlib import Path
@@ -44,6 +45,24 @@ def main():
     def table(title, lst):
         return (f"<h2>{title} <small>{len(lst)}</small></h2><table>"
                 + "".join(row(r) for r in lst) + "</table>") if lst else ""
+
+    if sys.argv[1].endswith(".md"):
+        ico = {"S": "🟢", "M": "🟡", "L": "🔴"}
+        def mdrow(r):
+            rank = "▶" if r["rank"] == "0" else r["rank"]
+            st = "parcial" if r["status"] == "PARTIAL" else "aberto"
+            return f"| {rank} | {ico.get(r['size'], '')} | **{r['item']}** {r['title_pt']} | {st} |"
+        def mdtab(title, lst):
+            if not lst: return ""
+            return (f"\n### {title} ({len(lst)})\n\n| # | | Item | Estado |\n|---|---|---|---|\n"
+                    + "\n".join(mdrow(r) for r in lst) + "\n")
+        md = (f"# Backlog do Choupo\n\nPor prioridade (valor contra tamanho). ▶ em curso · "
+              f"🟢 horas · 🟡 um dia · 🔴 vários dias.  \nFeitos {count['DONE']} · parciais "
+              f"{count['PARTIAL']} · abertos {count['OPEN']} · largados {count['DROPPED']}.\n"
+              + mdtab("Em curso", now) + mdtab("Próximo lote", nxt) + mdtab("Depois", later))
+        Path(sys.argv[1]).write_text(md)
+        print(f"backlog_view: wrote {sys.argv[1]} ({len(open_)} open or partial items)")
+        return 0
 
     page = f"""<!doctype html><html lang="pt"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>Backlog do Choupo</title>
