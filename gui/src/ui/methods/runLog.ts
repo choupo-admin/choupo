@@ -991,10 +991,10 @@ export const RUNS: readonly RunWitness[] = [
       "divergenceNone", "caveatsBlock", "psat", "cp", "unmarked"] },
   { id: "bubble", case: "steady/flash/bubbleT01_ethanol_water", exit: 0,
     label: "bubbleT01 · a bubble point",
-    shows: "the bubble-T Newton and its result -- and, since C224, the "
-      + "[unreviewed] pair line this case earns by typing its NRTL "
-      + "coefficients in the case instead of naming a catalogue record",
-    prints: ["bubbleNewton", "bubbleResult", "caveatsBlock"] },
+    shows: "the bubble-T Newton and its result, the NRTL pair found by name "
+      + "in the catalogue (C433), and a caveat block that says \"none raised\" "
+      + "while two [unmarked] records are announced at their site",
+    prints: ["bubbleNewton", "bubbleResult", "caveatsNone", "unmarked"] },
   { id: "quiet", case: "steady/heat/heatExchanger01_water_water", exit: 0,
     label: "heatExchanger01 · nothing raised",
     shows: "a run whose caveat block says \"none raised\" — and the "
