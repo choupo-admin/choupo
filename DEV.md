@@ -13445,6 +13445,26 @@ accepts today, and that is a policy call.
 > fills in.  UNDER DISCUSSION -- nothing built until Vitor settles the
 > questions put to him that day.
 
+> **C176 + C177 RESUMED (Vitor, 2026-11-19: "avança", on the design below).**
+> C176 does not wait on Vitor: Labban, Liu, Chong & Lienhard (2017) is in
+> ~/Choupo-Literature (Articles/Membranes and ExperimentalValidation, the
+> journal version and the MIT accepted manuscript), with Fernandez de
+> Labastida & Yaroshchuk (2021) and Bowen, Mohammad & Hilal (1997).  C177's
+> DESIGN, agreed: (1) the laboratory fills ONE experiment record in the
+> measured-table grammar -- one row per point (feed concentration, pressure,
+> permeate flux, observed rejection per ion), the conditions once
+> (membrane, T, pH, cross-flow velocity or the cell's mass-transfer
+> coefficient), at least 3 concentrations x 3 pressures; (2) fitted: r_p and
+> Delta x / A_k from a neutral solute when the test has one, else from the
+> salts; X_d one per concentration, giving its isotherm; the pore dielectric
+> constant declared, not fitted; (3) polarisation from the measured
+> coefficient or the cell's correlation, declared in the record, never
+> hidden; (4) out: the parameters with their confidence intervals, computed
+> vs measured rejection against flux per concentration, one point held out
+> and predicted.  Order: C176 first (Labban's data fit on single salts, the
+> mixtures predicted, the band declared before the fit), then C177 tested on
+> the same data before it goes to a laboratory.
+
 > **C176. A MULTI-ION NF DATASET TO TEST DSPM-DE (Vitor, 2026-10-26:
 > "Sabes se ha algum artigo cientifico com imensos dados de rejeicao de
 > multiplos ioes que nos possamos usar para testar o modelo DSPM-DE?").**
