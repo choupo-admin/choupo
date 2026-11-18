@@ -11,8 +11,8 @@ called a landed EduTool (C247) open.
 
 Fails when: (a) an item C<n> headed in DEV.md 4c (`**C<n>`) has no row, or a
 row names no item there; (b) a status is outside DONE / PARTIAL / OPEN /
-DROPPED / NOT-AN-ITEM; (c) an OPEN or PARTIAL row has no horizon (now / day /
-3days / beyond), or a closed row has one; (d) a commit named in a row is not
+DROPPED / NOT-AN-ITEM; (c) an OPEN or PARTIAL row has no rank or no reason, the
+ranks are not 1..N (0 = in progress), or a closed row has a rank; (d) a commit named in a row is not
 in this repository's history; (e) a DROPPED row does not quote Vitor (only he
 drops an item); (f) a row is duplicated or the header is not the agreed one.
 It does NOT check that a status is TRUE -- that is a reading, kept by the rule
@@ -23,9 +23,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCAN_ROOTS = ("BACKLOG.tsv", "DEV.md")
-HEADER = ["item", "status", "horizon", "title_pt", "open_pt", "asked", "size", "commit", "waits_on"]
+HEADER = ["item", "status", "rank", "title_pt", "open_pt", "why_pt", "asked", "size", "commit", "waits_on"]
 STATUSES = {"DONE", "PARTIAL", "OPEN", "DROPPED", "NOT-AN-ITEM"}
-HORIZONS = {"now", "day", "3days", "beyond"}
 
 
 def items_in_register():
@@ -41,22 +40,31 @@ def main():
         bad.append(f"header is {rows[0]}, expected {HEADER}")
     body = rows[1:]
     seen = {}
+    ranks = []
     for i, r in enumerate(body, 2):
         if len(r) != len(HEADER):
             bad.append(f"line {i}: {len(r)} columns"); continue
-        c, st, hz = r[0], r[1], r[2]
+        c, st, rank = r[0], r[1], r[2]
         if c in seen:
             bad.append(f"{c}: duplicated (lines {seen[c]} and {i})")
         seen[c] = i
         if st not in STATUSES:
             bad.append(f"{c}: status '{st}'")
-        if st in ("OPEN", "PARTIAL") and hz not in HORIZONS:
-            bad.append(f"{c}: {st} with no horizon")
-        if st not in ("OPEN", "PARTIAL") and hz:
-            bad.append(f"{c}: {st} carries horizon '{hz}'")
+        if st in ("OPEN", "PARTIAL"):
+            if not rank.isdigit():
+                bad.append(f"{c}: {st} with no rank")
+            elif not r[5].strip():
+                bad.append(f"{c}: ranked {rank} with no reason (why_pt)")
+            else:
+                ranks.append(int(rank))
+        elif rank:
+            bad.append(f"{c}: {st} carries rank '{rank}'")
         if st == "DROPPED" and "Vitor" not in r[4] and "Vítor" not in r[4]:
             bad.append(f"{c}: DROPPED without Vitor's words in open_pt")
-    commits = sorted({r[7] for r in body if len(r) == len(HEADER) and r[7]})
+    pos = sorted(k for k in ranks if k > 0)
+    if pos and pos != list(range(1, len(pos) + 1)):
+        bad.append("ranks are not 1..N without gaps or repeats (rank 0 = in progress)")
+    commits = sorted({r[8] for r in body if len(r) == len(HEADER) and r[8]})
     for h in commits:
         if subprocess.run(["git", "-C", str(ROOT), "cat-file", "-e", h + "^{commit}"],
                           capture_output=True).returncode:
@@ -76,7 +84,7 @@ def main():
     n = {s: sum(1 for r in body if r[1] == s) for s in STATUSES}
     print("check_backlog: OK -- %d items, every one headed in DEV.md 4c has its row "
           "(DONE %d, PARTIAL %d, OPEN %d, DROPPED %d, NOT-AN-ITEM %d); every open or "
-          "partial item has a horizon; %d named commits are in history.  NOT checked: "
+          "partial item has a rank and a reason; %d named commits are in history.  NOT checked: "
           "that a status is true (a landing changes its row in the same commit)."
           % (len(body), n["DONE"], n["PARTIAL"], n["OPEN"], n["DROPPED"], n["NOT-AN-ITEM"], len(commits)))
     return 0

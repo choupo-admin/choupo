@@ -4664,6 +4664,18 @@ accepts today, and that is a policy call.
 > stale 10.03 m3; the ratchet's docstring; the Theory Guide entry for the
 > optional `initial`.
 
+> **C437 (architect, 2026-11-19, from C176's op E).**  With Labban et al.
+> 2017's own Table 5 parameters and X_d, Choupo's DSPM-DE misses the paper's
+> measured rejections by 8.7, 7.6 and 16.2 points at the three pressures
+> (the paper claims within 12 % relative; Na+ in NaCl+MgCl2 +4.5 % vs
+> measured -7.6 %).  Not isolated.  Candidates, each to be tested alone: the
+> hollow-fibre film (the engine has no hollow-fibre correlation; Eq. 13 was
+> expressed through StirredCell), T and density (unstated in the paper),
+> how the paper applies Davies.  An engine defect or the paper's
+> inconsistency -- to be decided by the test, not assumed.  Case: the Labban
+> validation case of C176, on the branch build/c176-c177-dspmde-lab until it
+> lands.
+
 > **C47 DROPPED by Vitor (2026-11-19: "nesse caso não vale a pena. Pensei que
 > fosse mais simples", on hearing it needs an account of his).**
 >
