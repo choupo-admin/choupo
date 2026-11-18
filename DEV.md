@@ -4641,6 +4641,23 @@ accepts today, and that is a policy call.
 > differ inside a category (water by IAPWS-95, a salt solution by ideal
 > mixing with ions, a measured table by interpolation).
 
+> **C433 (Vitor, 2026-11-19 04:50, on greenAmmoniaPEQ's Henry block: "porque
+> tens o link dos binários e não tens o link dos componentes?"; then, on the
+> architect's first answer that kept `source` for an exception: "Se houver
+> exceção, os parâmetros têm de ficar na pasta em que isso acontece!").**
+> RULED: a pair's address is NOT written in a case.  A pair is found as a
+> component is: by (model, i, j) through the one cascade -- the case's own
+> `constant/parameters/<Model>/<i>-<j>.dat` (and a sector's), then the
+> catalogue, then data/local -- and an exception is a RECORD IN THE CASE'S
+> OWN FOLDER, declared as a component overlay is (`overlayOf` /
+> `variationOf`), never a path to elsewhere.  `source "<path>"` is retired:
+> the 52 tutorial entries that carry it are rewritten to `<i>-<j> { }` by a
+> tool that proves each pointed at the file the cascade finds (any that does
+> not is a defect found, reported by name, moved into the case's folder);
+> afterwards a `source` is refused by name with the line to write.  A named
+> parameter set (C431 K3) is `<i>-<j> { set <name>; }`.  No number moves:
+> the file read is the same.  Queued after the landing of integ/all-1119.
+
 > **C427, THE SPIKE'S VERDICT (2026-11-19, the architect on Fable, having
 > read the kinds' interface on the branch `build/last-carried`): KEPT, WITH FIVE
 > CONDITIONS BEFORE IT IS CALLED THE MECHANISM.**  What holds: kinds by the
