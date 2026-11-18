@@ -255,6 +255,28 @@ RETIRED_PROBE = "species" + "Map"
 
 SABOTAGES += [
     {
+        "gate": "check_golden_comparator.py",
+        "kind": "detection",
+        "file": "bin/curate/within_tol.awk",
+        "find": "rel = (ae > 0) ? diff / ae : diff",
+        "replace": "rel = (ae > 1e-9) ? diff / ae : diff",
+        "why": "the C429 defect itself: put the 1e-9 floor back into the one "
+               "comparison and a value of 1e-12 moved 11.7 % reads as a PASS; "
+               "the comparator's own table must fail it.",
+    },
+    {
+        "gate": "check_golden_comparator.py",
+        "kind": "detection",
+        "file": "bin/curate/within_tol.awk",
+        "find": '    if (!isnum(a))                     return "FAIL"\n',
+        "replace": "",
+        "why": "awk coerces nan and inf to 0, which passes against an expected 0 "
+               "or any abs: band; the table's non-finite arm must fail it.",
+    },
+]
+
+SABOTAGES += [
+    {
         "gate": "check_golden_bands.py",
         "kind": "detection",
         "file": "bin/curate/golden_bands.tsv",
