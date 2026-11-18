@@ -53,7 +53,7 @@ C52	DONE		Utilidade de calor do conversor Gibbs		2026-10-07	M	aa37a7432
 C53	DONE		EduTool de como os dicionários montam um caso		2026-10-09	M	b3fc13ea6	
 C54	DONE		EduTool de como ler o log de uma corrida		2026-10-09	M	8f2ef3562	
 C55	DONE		Layout arrastado no fluxograma não é ficheiro rastreado		2026-10-07	S	5210e7f65	
-C56	DONE		Palavra "fractal" sai das superfícies do projeto		2026-10-09	S	0be87ade1	
+C56	DONE		O nome antigo do layout por sectores sai das superfícies do projeto		2026-10-09	S	0be87ade1	
 C57	DONE		Amoníaco verde por fases: margem bruta e leitos cinéticos		2026-10-10	L	ce9893c76	
 C58	DONE		EduTool de Front-End Loading		2026-10-10	M	fa51e73d0	
 C59	DONE		Layout automático do fluxograma legível		2026-10-10	M	58d9071cd	
