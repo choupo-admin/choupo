@@ -19,6 +19,7 @@
 
 provenance
 {
+    sha256       "9e57d7c3fe5dddd2558f28f985c8ad81446fcfbc16be60af3d3d86f0030309aa";
     origin       literature;
     kind         adopted;
     basis        "adopted: the source's stated water viscosity (8.97e-4 Pa.s) taken for the dilute feeds of its Table 1; the value of the SOLVENT, not a measurement of the solution";
