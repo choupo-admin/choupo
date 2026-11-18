@@ -79,6 +79,7 @@ Description
 #include "io/EquipmentListWriter.H"
 #include "postProcessing/layout/PlantLayout.H"
 #include "postProcessing/layout/BuildingLayout.H"
+#include "postProcessing/layout/LineSheets.H"
 #include "io/InternalStateIO.H"
 #include "postProcessing/PostProcessor.H"
 #include "postProcessing/views/RunPublications.H"
@@ -876,6 +877,9 @@ try
         }
         if (!layoutDict) return;
         res.layout = plantLayout::evaluate(*layoutDict, res, verbosity);
+        //  THE LINE LIST (DEV.md 4c C207): one sized specification per routed pipe;
+        //  absent `lineDesign {}`, nothing is computed and nothing is published.
+        lineSheets::evaluate(*layoutDict, res, verbosity);
         //  THE GMP INTERIOR (DEV.md 4c C97): `building {}`, checked against
         //  the plot plan just checked; absent, an empty record and no output.
         res.building = buildingLayout::evaluate(*layoutDict, res.layout, verbosity);
@@ -1274,6 +1278,9 @@ try
             tp = ThermoPackageBuilder::build(packageDict, db, chemPtr);
             DesignSheetWriter::write(fs::current_path().string(), result,
                                      tp, verbosity);
+            //  THE LINE SHEETS (C207), after `write()` rebuilt `design/` whole.
+            DesignSheetWriter::writeLineSheets(fs::current_path().string(), result,
+                                               verbosity);
             //  THE EQUIPMENT LIST, beside the sheets it recounts: it needs
             //  the costs a later pass adds, so it is written here too.
             EquipmentListWriter::write(fs::current_path().string(), result,

@@ -2383,7 +2383,8 @@ refrigerant --- with the service written in words in the tooltip, the
 register and the exported page (colour is one channel of two), and lists
 the lines in a table under the pipe register.
 
-\textbf{What is not here.} A pressure drop, a size, a cost, the steam and
+\textbf{What is not here.} For a utility line, a pressure drop, a size, a
+cost (the process pipes have them, in the line list that follows), the steam and
 the nitrogen headers, the cooling-water make-up and blowdown, and the
 line's own supports. The reference plant
 (\texttt{greenAmmoniaPEQ\_baseCase}) declares thirteen lines: eight of
@@ -2391,6 +2392,106 @@ cooling water between the tower and the four coolers, two of refrigerant
 between the package and the chiller, and three of flare header from the
 separator and the two let-down drums; its header says what it does not
 declare.
+
+\hypertarget{line-list}{%
+\subsection{The line list: one sheet for every routed
+pipe}\label{line-list}}\label{sec:line-list}
+
+A layout that routes a pipe knows its length, its bends and its height;
+the flowsheet knows the stream it carries. Together they are enough to
+size the line, and a reviewer of a plant's documents asks for exactly
+that: for each line, the size, the schedule, the velocity, the pressure
+drop and whether the fluid will erode the wall. A case that declares a
+\texttt{lineDesign} block in \texttt{system/layoutDict} gets one
+specification per \emph{process} pipe, as a sheet
+(\texttt{design/lines/<stream>}), as a row of the line list
+(\texttt{reports/lines/lineList.csv}) and as a record of the result's
+layout block. A case without the block is unchanged. The utility lines
+of the previous section stay unsized, as said there.
+
+\textbf{Service.} The service is read from the stream: a liquid is a
+\emph{discharge} line, or a \emph{suction} line where it runs into a pump
+(a line can be forced in \texttt{lineDesign.lines}); a vapour is a
+\emph{gas} line, or \emph{steam} where it is water above the declared
+pressure; a stream with both phases is \emph{two-phase}.
+
+\textbf{Velocity limits by service.} The case declares, per service, the
+window it adopts and the book it is read from; the engine owns no default.
+The shipped cases read Towler and Sinnott (2008), \S5.6, p.~265: pumped
+liquids 1--3~m/s and 0.5~kPa/m, gases and vapours 15--30~m/s and 0.02~\%
+of the line pressure per metre, high-pressure steam (above 8~bar)
+30--60~m/s; and, on p.~266, Rase's expressions $v \le 0.02\,d + 0.1$
+m/s for a pump suction ($d$ the inside diameter in mm) and a gas held to
+at most 30~\% of the critical velocity. The sonic velocity is the
+ideal-gas value $\sqrt{\gamma R T / M}$ with $\gamma = C_p/(C_p - R)$
+from the package's ideal-gas $C_p$, so a dense gas's true sonic velocity
+differs from it.
+
+\textbf{Erosion.} $\rho v^2$ is published on every line. No book in the
+literature folder gives a limit (Towler, p.~266, says only that the
+velocity must stay below the onset of erosion), so a limit is a number
+the case declares as \texttt{assumed}, with its reason; with one
+declared, the bore must also keep $\rho v^2$ below it, and the sheet says
+which limit governed. For the loop gas of the reference plant, at 150~bar
+and 40--50~kg/m$^3$, it is this limit, not the 15--30~m/s window, that
+sets the bore.
+
+\textbf{Size and schedule.} For each declared nominal size, smallest
+first, the wall that the pressure demands is the thin-cylinder form of
+ASME B31.3 as Towler gives it (Eq.~5.8, p.~263),
+\begin{equation}
+t_m = \frac{P\,d}{2\,(S E + P g)} + c, \qquad
+t_\mathrm{nom} = \frac{t_m}{1 - m},
+\end{equation}
+with $P$ the design gauge pressure (the stream's gauge pressure times a
+declared factor), $d$ the outside diameter, $S$ the material record's
+allowable stress, $E$ the quality factor, $g$ the temperature
+coefficient, $c$ the allowances and $m$ the mill under-tolerance. The
+lightest declared schedule whose wall is at least $t_\mathrm{nom}$ is
+taken; its inside diameter gives the velocity; the first size whose
+velocity is inside every limit is the line's. The schedule number of
+Eq.~5.9, $1000\,P/S$, is published beside it. The sizes, outside
+diameters and walls are the \emph{case's} table; the shipped cases read
+Perry's Handbook (9th ed., Table~10-22, from p.~10-70) for schedules 40,
+80 and 160, generated from the table itself. $S$ is the record's
+\texttt{sigma\_y}, which the record states is an unsourced teaching
+assertion, so the schedule is a teaching value; $g$ and the mill
+tolerance are not printed in any book of the folder and are declared
+\texttt{assumed}.
+
+\textbf{Pressure drop.} Darcy--Weisbach with the friction factor of the
+one correlation the case names (the pipe unit's own friction code),
+\begin{equation}
+\Delta P = f\,\frac{L + L_\mathrm{eq}}{D}\,\frac{\rho v^2}{2}
+ + \rho g\,\Delta z, \qquad
+L_\mathrm{eq} = (n_\mathrm{bend}\,k_\mathrm{bend} + n_\mathrm{valve}\,k_\mathrm{valve})\,D,
+\end{equation}
+with $L$ the routed length, one 90-degree elbow per direction change of
+the route ($k_\mathrm{bend}$ equivalent pipe diameters, Towler Table~5.3,
+p.~249: 30--40, 35 taken), the isolation valves the case declares per
+line ($k_\mathrm{valve} = 7.5$, a gate valve fully open), and $\Delta z$
+the height the route climbs. The straight-run drop per metre is compared
+with the book's guide; a line above it is flagged, never resized. A gas
+drop above 10~\% of the line pressure is flagged too, because the density
+is taken at the inlet.
+
+\textbf{Cost.} Only from prices the case declares per nominal size and
+schedule, with its currency and source; the costing pass has no pipe
+correlation, and a line with no declared price says so. The shipped
+teaching case uses the only pipe prices in the literature folder
+(Towler, problem 7.2, p.~425), which cover the 4~in lines alone.
+
+\textbf{What is not modelled}, and said on every sheet: the two-phase
+drop (Perry gives Lockhart--Martinelli; it is not built, and a two-phase
+line is listed \emph{not sized} unless the case declares a window for
+it), entrance and exit losses at the nozzles, the pump a line may need,
+the economic diameter (capital against pumping), thermal expansion,
+supports, and a gas line's change of density along its length.
+
+\textbf{Witnesses.} \texttt{line01\_pumped\_drum} is the smallest plant
+with a line list, with one line worked by hand in its README;
+\texttt{greenAmmoniaPEQ\_baseCase} lists its 24 process pipes (22 sized,
+the two two-phase ones listed not sized).
 
 \hypertarget{tank-farms-and-the-choice-of-storage}{%
 \subsection{Tank farms and the choice of

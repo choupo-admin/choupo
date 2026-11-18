@@ -205,11 +205,25 @@ batch plan, sizing, clean utilities, costing and economics on top
   hazardous zone or downwind of a release, roads without a gate, items out of
   reach of a road are announced; truck routes walked against a design
   vehicle; a fence derived from the plot.
-* Missing: pipe sizing, pressure drop and cost from the layout (process or
-  utility), steam and nitrogen lines, structures; no
+* THE LINE LIST (`key:lineDesign` in `system/layoutDict`): one sized
+  specification per ROUTED PROCESS pipe -- service (liquid discharge, liquid
+  suction before a pump, gas, steam, two-phase), nominal size and schedule
+  from the case's own size table (Perry Table 10-22 in the shipped cases) and
+  the wall of ASME B31.3 Eq. 5.8, velocity against the service window
+  (Towler and Sinnott s5.6), the sonic fraction and a declared rho v^2
+  erosion limit, Darcy-Weisbach drop with the route's bends and the declared
+  valves as equivalent lengths plus the static head, and a cost from prices
+  the case declares.  Written to `design/lines/<stream>` and
+  `reports/lines/lineList.csv`.  Every rule is a declared block with its
+  `source` and `reason` (`origin assumed` where no book in the literature
+  folder gives it); a two-phase line is listed not sized.
+* Missing: utility-line sizing, the two-phase drop, nozzle entrance and exit
+  losses, the pump a line needs, steam and nitrogen lines, structures; no
   spacing or zoning table is shipped (every distance is the case's).
 * Witnesses: `tutorials/plant/aceticAcid02_plant`,
-  `tutorials/plant/greenAmmoniaPEQ_baseCase` (the utility lines),
+  `tutorials/plant/greenAmmoniaPEQ_baseCase` (the utility lines and its 24
+  process lines' line list), `tutorials/plant/line01_pumped_drum` (the
+  smallest line list, one line worked by hand),
   `tutorials/batch/plant/apalutamide01_tablets` (`pack:layout`).
 
 ### Equipment list and tags (equipment register, tag numbers)
