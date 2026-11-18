@@ -67,7 +67,8 @@ import {
 
 import { useStore } from "../state/store.js";
 import { dutyFixed } from "../case/resultUnits.js";
-import { dutyLabel } from "../state/displayUnits.js";
+import { dutyLabel, formatDuty, formatSig } from "../state/displayUnits.js";
+import { SortTh, useSortable } from "./SortableTable.js";
 import { massBalance } from "../case/balances.js";
 import { annualUtilitiesLine } from "../case/annualBasis.js";
 import { heatExchangerDatasheetHtml } from "./HeatExchangerDatasheet.js";
@@ -296,30 +297,34 @@ export function UtilitiesBody({ rows, economics }: {
   }
   const utils = [...byUtil.entries()].sort((a, b) => b[1].eurh - a[1].eurh);
   const totalEurh = utils.reduce((a, [, g]) => a + g.eurh, 0);
+  const us = useSortable(utils.map(([name, g]) => ({ name, ...g })), {
+    utility: (r) => r.name, tier: (r) => r.tier, kW: (r) => r.kW,
+    kgh: (r) => r.kgh, MW: (r) => r.MW, eurh: (r) => r.eurh,
+  });
 
   if (rows.length === 0) return <Text size="sm" c="dimmed">No heat duties allocated.</Text>;
   return (
     <>
       <Table striped withTableBorder fz="sm" ff="monospace">
         <Table.Thead><Table.Tr>
-          <Table.Th>utility</Table.Th><Table.Th>tier</Table.Th>
-          <Table.Th ta="right">duty ({dutyLabel(duty)})</Table.Th><Table.Th ta="right">kg/h</Table.Th>
-          <Table.Th ta="right">MW</Table.Th><Table.Th ta="right">€/h</Table.Th>
+          <SortTh s={us} k="utility">utility</SortTh><SortTh s={us} k="tier">tier</SortTh>
+          <SortTh s={us} k="kW">duty ({dutyLabel(duty)})</SortTh><SortTh s={us} k="kgh">kg/h</SortTh>
+          <SortTh s={us} k="MW">MW</SortTh><SortTh s={us} k="eurh">€/h</SortTh>
         </Table.Tr></Table.Thead>
         <Table.Tbody>
-          {utils.map(([name, g]) => (
+          {us.rows.map(({ name, ...g }) => (
             <Table.Tr key={name}>
               <Table.Td>{name}</Table.Td>
               <Table.Td c={g.tier === "heating" ? "orange" : g.tier === "power" ? "violet" : "cyan"}>{g.tier}</Table.Td>
-              <Table.Td ta="right">{dutyFixed(g.kW, 1, { duty, temperature: "K" })}</Table.Td>
-              <Table.Td ta="right">{g.kgh > 0 ? g.kgh.toFixed(0) : "—"}</Table.Td>
-              <Table.Td ta="right">{g.MW.toFixed(2)}</Table.Td>
-              <Table.Td ta="right">{g.eurh.toFixed(1)}</Table.Td>
+              <Table.Td ta="right">{formatDuty(g.kW, duty)}</Table.Td>
+              <Table.Td ta="right">{g.kgh > 0 ? formatSig(g.kgh) : "—"}</Table.Td>
+              <Table.Td ta="right">{formatSig(g.MW)}</Table.Td>
+              <Table.Td ta="right">{formatSig(g.eurh)}</Table.Td>
             </Table.Tr>
           ))}
           <Table.Tr>
             <Table.Td colSpan={5} ta="right"><strong>Total</strong></Table.Td>
-            <Table.Td ta="right"><strong>{totalEurh.toFixed(1)} €/h</strong></Table.Td>
+            <Table.Td ta="right"><strong>{formatSig(totalEurh)} €/h</strong></Table.Td>
           </Table.Tr>
         </Table.Tbody>
       </Table>
@@ -334,28 +339,31 @@ export function UtilitiesBody({ rows, economics }: {
 function MassBody({ runResult }: { runResult: RunResult }) {
   const mb = massBalance(runResult.streams, runResult.componentMolarMass);
   const kgh = (kgs: number) => (kgs * 3600);
+  const ms = useSortable(mb.visibleComponents.map((c) => {
+    const i = kgh(mb.inPerComp[c] ?? 0), o = kgh(mb.outPerComp[c] ?? 0);
+    return { c, i, o, d: i - o };
+  }), { component: (r) => r.c, i: (r) => r.i, o: (r) => r.o, d: (r) => r.d });
   return (
     <>
       <Table striped withTableBorder fz="sm" ff="monospace">
         <Table.Thead><Table.Tr>
-          <Table.Th>component</Table.Th><Table.Th ta="right">in (kg/h)</Table.Th>
-          <Table.Th ta="right">out (kg/h)</Table.Th><Table.Th ta="right">Δ</Table.Th>
+          <SortTh s={ms} k="component">component</SortTh><SortTh s={ms} k="i">in (kg/h)</SortTh>
+          <SortTh s={ms} k="o">out (kg/h)</SortTh><SortTh s={ms} k="d">Δ</SortTh>
         </Table.Tr></Table.Thead>
         <Table.Tbody>
-          {mb.visibleComponents.map((c) => {
-            const i = kgh(mb.inPerComp[c] ?? 0), o = kgh(mb.outPerComp[c] ?? 0);
+          {ms.rows.map(({ c, i, o }) => {
             return (
               <Table.Tr key={c}>
-                <Table.Td>{c}</Table.Td><Table.Td ta="right">{i.toFixed(1)}</Table.Td>
-                <Table.Td ta="right">{o.toFixed(1)}</Table.Td>
-                <Table.Td ta="right" c={Math.abs(i - o) > 0.01 * Math.max(i, 1) ? "yellow.5" : "dimmed"}>{(i - o).toFixed(1)}</Table.Td>
+                <Table.Td>{c}</Table.Td><Table.Td ta="right">{formatSig(i)}</Table.Td>
+                <Table.Td ta="right">{formatSig(o)}</Table.Td>
+                <Table.Td ta="right" c={Math.abs(i - o) > 0.01 * Math.max(i, 1) ? "yellow.5" : "dimmed"}>{formatSig(i - o)}</Table.Td>
               </Table.Tr>
             );
           })}
           <Table.Tr>
             <Table.Td><strong>Total</strong></Table.Td>
-            <Table.Td ta="right"><strong>{kgh(mb.inSum).toFixed(1)}</strong></Table.Td>
-            <Table.Td ta="right"><strong>{kgh(mb.outSum).toFixed(1)}</strong></Table.Td>
+            <Table.Td ta="right"><strong>{formatSig(kgh(mb.inSum))}</strong></Table.Td>
+            <Table.Td ta="right"><strong>{formatSig(kgh(mb.outSum))}</strong></Table.Td>
             <Table.Td ta="right"><Text span fw={700} c={mb.closureErr > 1e-3 ? "yellow.5" : "teal.4"}>{(mb.closureErr * 100).toFixed(2)}%</Text></Table.Td>
           </Table.Tr>
         </Table.Tbody>

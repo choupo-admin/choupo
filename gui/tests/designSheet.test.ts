@@ -340,7 +340,7 @@ describe("the printable datasheet draws design/ and never recomputes it", () => 
     //  different question, never presented as the design.
     expect(html).toContain("RATING RESULT");
     expect(html).toContain("8.5 K");     // the rated LMTD, not the sheet's 10 K
-    expect(html).toContain("0.10 m²");   // the rated area, not the sheet's A
+    expect(html).toContain("0.1 m²");   // the rated area, not the sheet's A
     //  the authored geometry is labelled as the CASE's input, not as an output
     expect(html).toContain("DECLARED BY THE CASE");
   });

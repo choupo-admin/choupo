@@ -83,7 +83,7 @@ import { kernDatasheetHtml, kernDesignOf, kernView, type KernDesign }
 import { PROVENANCE_WORD } from "../case/equipmentSchematic.js";
 import { downloadOds } from "../case/odsExport.js";
 import { dTText, dutyText, type ResultUnitPrefs } from "../case/resultUnits.js";
-import { DEFAULT_PREFS } from "../state/displayUnits.js";
+import { DEFAULT_PREFS, formatSig } from "../state/displayUnits.js";
 
 type Kpis = { [k: string]: number };
 interface SideStreams { inlet?: StreamResult; outlet?: StreamResult; name: string; }
@@ -109,8 +109,11 @@ function resolveSides(unit: UnitSpec, streams: StreamResult[] | undefined):
   };
 }
 
-const K = (t: number | undefined) => (t === undefined ? "—" : (t - 273.15).toFixed(1));
-const N = (v: number | undefined, d = 1) => (v === undefined ? "—" : v.toFixed(d));
+// C307 slice 2: every number on the sheet follows the significant-figures
+// preference through the ONE helper (displayUnits.formatSig); the old
+// per-call decimals argument is kept for call-site compatibility and ignored.
+const K = (t: number | undefined) => (t === undefined ? "—" : formatSig(t - 273.15));
+const N = (v: number | undefined, _d = 1) => (v === undefined ? "—" : formatSig(v));
 
 /** A sizing value as the SHEET wrote it: six significant digits, then its own
  *  declared unit.  The unit is never supplied here -- `EquipmentSizing::set`

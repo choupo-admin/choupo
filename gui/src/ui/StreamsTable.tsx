@@ -336,7 +336,7 @@ export function StreamsTable() {
                 {hasSolids && (
                   <Table.Td style={{ textAlign: "right" }}>
                     {(s.F_solid_mass ?? 0) > 1e-12
-                      ? ((s.F_solid_mass ?? 0) * 3600).toFixed(2)
+                      ? formatSig((s.F_solid_mass ?? 0) * 3600)
                     : "—"}
                   </Table.Td>
                 )}
@@ -344,7 +344,7 @@ export function StreamsTable() {
                   <Table.Td style={{ textAlign: "right" }}>
                     {s.speciation?.pH === undefined
                       ? "—"
-                    : s.speciation.pH.toFixed(3)}
+                    : formatSig(s.speciation.pH)}
                   </Table.Td>
                 )}
                 {components.map((c) => {
