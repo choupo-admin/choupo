@@ -90,8 +90,18 @@ equilibrium
 //  rule -- DILUTE-GAS models: at the loop's 150 bar the real gas is more
 //  viscous and more conductive than this, and every exchanger sheet says so
 //  in its basis.  Chung announces, per component, what it estimates.
+//  LIQUID VISCOSITY (2026-11-19, DEV.md 4c C207): the line list sizes the
+//  three liquid-ammonia lines (RawLiquid, LetdownLiquid, ProductNH3), whose
+//  Reynolds number needs the liquid's viscosity.  No word: each constituent's
+//  record law (NH3's is an Andrade fit to the reference correlation).  The
+//  dissolved N2, H2 and Ar have no liquid state at these conditions, so the
+//  line list asks over the other components, renormalised, and says so.
 transport
 {
+    liquid
+    {
+        viscosity { }
+    }
     vapour
     {
         viscosity           { model Chung; }    // gas mu   (Tc, Pc, omega, M)

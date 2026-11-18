@@ -970,3 +970,169 @@ utilityLines
 );
 
 // ************************************************************************* //
+
+
+/*---------------------------------------------------------------------------*\
+  lineDesign -- THE LINE LIST (DEV.md 4c C207, C440).  One specification per
+  routed pipe: its service, the nominal size and schedule, the velocity, the
+  pressure drop, the rho v^2 check.  Written to design/lines/<stream> and
+  reports/lines/lineList.csv, and published in the result's layout block.
+
+  WHAT IS READ FROM A BOOK AND WHAT IS ASSUMED.  Each block below names its
+  source; `origin assumed` marks a number NO book in the literature folder
+  gives, which is therefore this case's own choice, with its reason:
+    * velocity windows by service, the allowable drop per metre, the 30 % of
+      the sonic velocity: Towler & Sinnott, Chemical Engineering Design
+      (2008), section 5.6, pp. 265-266;
+    * the wall of a pipe: Eq. 5.8 (the ASME B31.3 thin-cylinder form), p. 263;
+      the allowable stress is the material record's sigma_y, which that
+      record states is an unsourced teaching assertion;
+    * the fittings as equivalent pipe diameters: Towler Table 5.3, p. 249;
+    * the roughness of commercial steel pipe: Towler Table 5.2;
+    * the nominal sizes, outside diameters and walls of schedules 40, 80 and
+      160: Perry's Chemical Engineers' Handbook, 9th ed., Table 10-22 (from
+      p. 10-70), generated from the table's own text, not retyped;
+    * a limit on rho v^2 (erosion): NO book in the folder gives one (Towler
+      p. 266 only says the velocity must stay below the erosion onset), so
+      it is declared `assumed`;
+    * two-phase lines (WaterCooledEffluent, ChilledEffluent): no book in the
+      folder gives a velocity rule for multiphase flow, so no `twoPhase`
+      service is declared and the two lines are LISTED, NOT SIZED.
+  NOT MODELLED: two-phase drop, nozzle entrance and exit losses, the pump a
+  line may need, the economic diameter, a gas line's density change.  The gas
+  viscosity is the dilute-gas model's (at 150 bar the real gas is more
+  viscous), and the sonic velocity the ideal-gas value.
+\*---------------------------------------------------------------------------*/
+
+lineDesign
+{
+    frictionModel   Churchill;
+    material        carbonSteel;
+
+    roughness
+    {
+        value   0.046 mm;
+        source  "Towler and Sinnott 2008, Table 5.2, commercial steel pipe";
+        reason  "the pipe is commercial carbon steel";
+    }
+
+    wall
+    {
+        qualityFactor            1.0;
+        temperatureCoefficient   0.4;
+        allowance                1.5 mm;
+        millUndertolerance       0.125;
+        designPressureFactor     1.1;
+        source  "Towler and Sinnott 2008, Eq. 5.8 (ASME B31.3); the five numbers are this case's own assumptions (origin assumed)";
+        reason  "E 1 is seamless pipe; g 0.4 and the 12.5 percent mill undertolerance are the code's usual values, which no book in the folder prints; 1.5 mm covers a dry ammonia loop; the design pressure is 10 percent above the line's operating gauge pressure";
+    }
+
+    services
+    {
+        steamAbove  8 bar;
+
+        liquidDischarge
+        {
+            min  1 m/s;
+            max  3 m/s;
+            allowableDropPerMetre  [1 -2 -2 0 0] 500;
+            source  "Towler and Sinnott 2008, section 5.6, p. 265: liquids pumped, not viscous, 1-3 m/s, 0.5 kPa/m";
+            reason  "liquid ammonia lines of the let-down train";
+        }
+        liquidSuction
+        {
+            raseSlopePerMm  0.02;
+            raseIntercept   0.1 m/s;
+            source  "Towler and Sinnott 2008, p. 266, Rase 1953: pump suction 0.02 d + 0.1 m/s, d in mm";
+            reason  "no pump in this plant; the rule is declared so a case that adds one is sized";
+        }
+        gas
+        {
+            min  15 m/s;
+            max  30 m/s;
+            allowableDropFraction  0.0002;
+            sonicFraction          0.3;
+            source  "Towler and Sinnott 2008, section 5.6, pp. 265-266: gases and vapours 15-30 m/s, 0.02 percent of the line pressure per metre; velocity at most 30 percent of the critical velocity";
+            reason  "the loop gas, the make-up and the nitrogen lines";
+        }
+        steam
+        {
+            min  30 m/s;
+            max  60 m/s;
+            sonicFraction  0.3;
+            source  "Towler and Sinnott 2008, section 5.6, p. 265: high-pressure steam above 8 bar 30-60 m/s";
+            reason  "declared for a case that carries steam; this plant has none";
+        }
+    }
+
+    erosion
+    {
+        rhoV2Max  15000;
+        source    "assumed screening value, no source in the folder (searched: Towler and Sinnott ch. 5, Perry sections 6 and 10, Peters and Timmerhaus, Haydary, Moulijn, Biegler)";
+        reason    "ASSUMED screening value, NO SOURCE in the literature folder: the author set it for continuous clean service because no book there gives a rho v^2 limit; it bounds the velocity of a dense gas well below the 15-30 m/s window";
+    }
+
+    fittings
+    {
+        bendEquivalentDiameters   35;
+        valveEquivalentDiameters  7.5;
+        valvesPerLine             2;
+        source  "Towler and Sinnott 2008, Table 5.3, p. 249: 90 degree standard radius elbow 30-40 pipe diameters (35 taken); gate valve fully open 7.5";
+        reason  "one elbow per direction change of the routed pipe; two fully open isolation valves per line, one at each end, are this case's assumption";
+    }
+
+    nominalSizes
+    {
+        source  "Perry's Chemical Engineers' Handbook 9th ed., Table 10-22 (from p. 10-70): outside diameter and wall of schedules 40, 80 and 160";
+        reason  "the standard sizes a plant can buy, read from the table; the engine carries no size table of its own";
+        sizes
+        (
+            { nominalSize 0.125; outsideDiameter 0.405 in;
+              schedules ({ schedule 40; wall 0.068 in; } { schedule 80; wall 0.095 in; }); }
+            { nominalSize 0.25; outsideDiameter 0.540 in;
+              schedules ({ schedule 40; wall 0.088 in; } { schedule 80; wall 0.119 in; }); }
+            { nominalSize 0.375; outsideDiameter 0.675 in;
+              schedules ({ schedule 40; wall 0.091 in; } { schedule 80; wall 0.126 in; }); }
+            { nominalSize 0.5; outsideDiameter 0.840 in;
+              schedules ({ schedule 40; wall 0.109 in; } { schedule 80; wall 0.147 in; } { schedule 160; wall 0.188 in; }); }
+            { nominalSize 0.75; outsideDiameter 1.050 in;
+              schedules ({ schedule 40; wall 0.113 in; } { schedule 80; wall 0.154 in; } { schedule 160; wall 0.219 in; }); }
+            { nominalSize 1; outsideDiameter 1.315 in;
+              schedules ({ schedule 40; wall 0.133 in; } { schedule 80; wall 0.179 in; } { schedule 160; wall 0.250 in; }); }
+            { nominalSize 1.25; outsideDiameter 1.660 in;
+              schedules ({ schedule 40; wall 0.140 in; } { schedule 80; wall 0.191 in; } { schedule 160; wall 0.250 in; }); }
+            { nominalSize 1.5; outsideDiameter 1.900 in;
+              schedules ({ schedule 40; wall 0.145 in; } { schedule 80; wall 0.200 in; } { schedule 160; wall 0.281 in; }); }
+            { nominalSize 2; outsideDiameter 2.375 in;
+              schedules ({ schedule 40; wall 0.154 in; } { schedule 80; wall 0.218 in; } { schedule 160; wall 0.344 in; }); }
+            { nominalSize 2.5; outsideDiameter 2.875 in;
+              schedules ({ schedule 40; wall 0.203 in; } { schedule 80; wall 0.276 in; } { schedule 160; wall 0.375 in; }); }
+            { nominalSize 3; outsideDiameter 3.500 in;
+              schedules ({ schedule 40; wall 0.216 in; } { schedule 80; wall 0.300 in; } { schedule 160; wall 0.438 in; }); }
+            { nominalSize 3.5; outsideDiameter 4.000 in;
+              schedules ({ schedule 40; wall 0.226 in; } { schedule 80; wall 0.318 in; }); }
+            { nominalSize 4; outsideDiameter 4.500 in;
+              schedules ({ schedule 40; wall 0.237 in; } { schedule 80; wall 0.337 in; } { schedule 160; wall 0.531 in; }); }
+            { nominalSize 5; outsideDiameter 5.563 in;
+              schedules ({ schedule 40; wall 0.258 in; } { schedule 80; wall 0.375 in; } { schedule 160; wall 0.625 in; }); }
+            { nominalSize 6; outsideDiameter 6.625 in;
+              schedules ({ schedule 40; wall 0.280 in; } { schedule 80; wall 0.432 in; } { schedule 160; wall 0.719 in; }); }
+            { nominalSize 8; outsideDiameter 8.625 in;
+              schedules ({ schedule 40; wall 0.322 in; } { schedule 80; wall 0.500 in; } { schedule 160; wall 0.906 in; }); }
+            { nominalSize 10; outsideDiameter 10.750 in;
+              schedules ({ schedule 40; wall 0.365 in; } { schedule 80; wall 0.594 in; } { schedule 160; wall 1.125 in; }); }
+            { nominalSize 12; outsideDiameter 12.750 in;
+              schedules ({ schedule 40; wall 0.406 in; } { schedule 80; wall 0.688 in; } { schedule 160; wall 1.312 in; }); }
+            { nominalSize 14; outsideDiameter 14.000 in;
+              schedules ({ schedule 40; wall 0.438 in; } { schedule 80; wall 0.750 in; } { schedule 160; wall 1.406 in; }); }
+            { nominalSize 16; outsideDiameter 16.000 in;
+              schedules ({ schedule 40; wall 0.500 in; } { schedule 80; wall 0.844 in; } { schedule 160; wall 1.594 in; }); }
+            { nominalSize 18; outsideDiameter 18.000 in;
+              schedules ({ schedule 40; wall 0.562 in; } { schedule 80; wall 0.938 in; } { schedule 160; wall 1.781 in; }); }
+            { nominalSize 20; outsideDiameter 20.000 in;
+              schedules ({ schedule 40; wall 0.594 in; } { schedule 80; wall 1.031 in; } { schedule 160; wall 1.969 in; }); }
+            { nominalSize 24; outsideDiameter 24.000 in;
+              schedules ({ schedule 40; wall 0.688 in; } { schedule 80; wall 1.219 in; } { schedule 160; wall 2.344 in; }); }
+        );
+    }
+}

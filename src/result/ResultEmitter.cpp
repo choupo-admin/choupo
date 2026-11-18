@@ -1799,6 +1799,58 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             os << "] }";
         }
         os << (L.pipes.empty() ? "]" : "\n    ]");
+        //  THE LINE LIST (DEV.md 4c C207): one record per routed pipe, written
+        //  only when the case declares `lineDesign {}`, so every other case's
+        //  JSON is byte-for-byte what it was.  One line per record, with an
+        //  `"id"` (`line:<stream>`), so the golden `layout` kind pins it: the
+        //  service and state WORDS and the `line*` numbers below.
+        if (!L.lines.empty())
+        {
+            os << ",\n    \"lines\": [";
+            for (std::size_t i = 0; i < L.lines.size(); ++i)
+            {
+                const LineSheet& q = L.lines[i];
+                os << (i ? ",\n" : "\n") << "      { \"id\": " << esc(q.id())
+                   << ", \"stream\": " << esc(q.stream)
+                   << ", \"from\": " << esc(q.from) << ", \"to\": " << esc(q.to)
+                   << ", \"service\": " << esc(q.service)
+                   << ", \"sizeState\": " << esc(q.sized ? "sized" : "notSized")
+                   << ", \"length\": " << num(q.length)
+                   << ", \"lineBends\": " << q.bends;
+                if (!q.sized)
+                    os << ", \"reason\": " << esc(q.notSizedBecause) << " }";
+                else
+                {
+                    os << ", \"lineNps\": " << num(q.nps)
+                       << ", \"lineSchedule\": " << q.schedule
+                       << ", \"lineOutsideDiameter\": " << num(q.outsideDiameter)
+                       << ", \"lineWall\": " << num(q.wall)
+                       << ", \"lineWallRequired\": " << num(q.wallRequired)
+                       << ", \"lineInsideDiameter\": " << num(q.insideDiameter)
+                       << ", \"lineDesignPressure\": " << num(q.designPressure)
+                       << ", \"lineScheduleNumber\": " << num(q.scheduleNumberRequired)
+                       << ", \"lineFlow\": " << num(q.massFlow)
+                       << ", \"lineDensity\": " << num(q.density)
+                       << ", \"lineVelocity\": " << num(q.velocity)
+                       << ", \"lineVelocityMax\": " << num(q.velocityMax)
+                       << ", \"lineReynolds\": " << num(q.reynolds)
+                       << ", \"lineFriction\": " << num(q.frictionFactor)
+                       << ", \"lineEquivalentLength\": " << num(q.equivalentLength)
+                       << ", \"lineDropFriction\": " << num(q.dropFriction)
+                       << ", \"lineDropStatic\": " << num(q.dropStatic)
+                       << ", \"lineDrop\": " << num(q.dropTotal)
+                       << ", \"lineRhoV2\": " << num(q.rhoV2)
+                       << ", \"lineGovernedBy\": " << esc(q.governedBy);
+                    if (q.costed) os << ", \"lineCost\": " << num(q.cost);
+                    os << ", \"flags\": " << q.flags.size() << ", \"flagText\": [";
+                    for (std::size_t k = 0; k < q.flags.size(); ++k)
+                        os << (k ? ", " : "") << esc(q.flags[k]);
+                    os << "] }";
+                }
+            }
+            os << "\n    ]";
+            os << ",\n    \"lineBasis\": " << esc(L.lineBasis);
+        }
         if (!L.portConvention.empty())
             os << ",\n    \"portConvention\": " << esc(L.portConvention);
         os << ",\n    \"notRouted\": [";

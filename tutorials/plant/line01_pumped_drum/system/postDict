@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- the two sized items the layout places: the feed pump (a rated
+  machine) and the flash drum (a vessel).  Every number here is AUTHOR-SET
+  and marked so; the case teaches the LINES, not the equipment.
+\*---------------------------------------------------------------------------*/
+
+sizing
+{
+    units
+    (
+        {
+            unitName pump;  type ratedMachine;  material carbonSteel;
+            designRules
+            {
+                kind volumeRate;
+                rating
+                {
+                    maxFlowPerUnit  400 m3/h;
+                    origin          assumed;
+                    source          "author-set round number for a centrifugal feed pump of this size";
+                    reason          "the pump carries about 160 m3/h of liquid; one machine of 400 m3/h rating covers it";
+                }
+                installed { count 1;  source "one machine carries the duty";  reason "a teaching case with one pump"; }
+                spare     { count 0;  source "no stand-by machine drawn";     reason "kept out so the plan has one pump"; }
+            }
+        }
+        {
+            unitName drum;  type vessel;  material carbonSteel;
+            designRules
+            {
+                volume 15;                         // m3 -- ASSUMED, author-set round number
+                L_over_D 3;  pressureDesign 3;
+                corrosionAllow 0.003;  jointEfficiency 1.0;
+            }
+        }
+    );
+}

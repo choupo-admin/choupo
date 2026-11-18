@@ -131,6 +131,7 @@ tutorials/steady/reactors/ammoniaRoutes01_screening
 tutorials/steady/flowsheets/esterification2sector
 tutorials/plant/greenAmmonia02_feasibility150bar
 tutorials/plant/greenAmmonia02_feasibility50bar
+tutorials/plant/line01_pumped_drum
 tutorials/plant/greenAmmoniaPEQ_baseCase
 tutorials/plant/hda
 tutorials/plant/lithiumBrinePlant

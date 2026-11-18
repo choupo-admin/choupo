@@ -1495,6 +1495,71 @@ struct LayoutBund
     std::string source, reason;
 };
 
+//  ONE LINE OF THE LINE LIST (DEV.md 4c C207): the sized specification of one
+//  ROUTED pipe -- its service, the nominal size and schedule chosen, the
+//  velocity, the pressure drop, the erosion check and, where the case quotes
+//  one, the cost.  Built from the routed pipe (length, bends, elevation) and
+//  the stream it carries; published beside `pipes` and only when the case
+//  declares `lineDesign {}`, so every other case's result is unchanged.
+struct LineSheet
+{
+    std::string pipeId;         // LayoutPipe::id()
+    std::string stream;
+    std::string from, to;       // the two ends, as the pipe publishes them
+    std::string service;        // liquidDischarge | liquidSuction | gas | steam | twoPhase
+    std::string serviceWhy;     // how the service was read
+    bool        sized = false;
+    std::string notSizedBecause;
+    //  routing facts
+    scalar length = 0;          // [m] the polyline's own
+    int    bends = 0;           // direction changes of the route
+    int    valves = 0;          // declared isolation valves
+    scalar equivalentLength = 0;// [m] fittings + valves
+    scalar elevationRise = 0;   // [m] z(end) - z(start)
+    //  the fluid
+    scalar massFlow = 0;        // [kg/s]
+    scalar T = 0, P = 0;        // [K], [Pa]
+    scalar density = 0;         // [kg/m3]
+    scalar viscosity = 0;       // [Pa.s]
+    scalar volumeFlow = 0;      // [m3/s]
+    //  the limits applied
+    scalar velocityMin = 0, velocityMax = 0;   // [m/s]
+    scalar velocityErosion = 0;                // [m/s] from the rho v^2 limit (0 = none)
+    scalar velocitySonic = 0;                  // [m/s] the sonic limit applied (0 = none)
+    std::string governedBy;     // which limit set the bore
+    //  the pipe
+    std::string nominalSize;    // as the case names it (inch)
+    scalar nps = 0;
+    int    schedule = 0;
+    scalar outsideDiameter = 0; // [m]
+    scalar wall = 0;            // [m] the schedule's
+    scalar wallRequired = 0;    // [m] t_m of Eq 5.8
+    scalar insideDiameter = 0;  // [m]
+    scalar designPressure = 0;  // [Pa gauge]
+    scalar scheduleNumberRequired = 0;   // Eq 5.9
+    //  the hydraulics
+    scalar velocity = 0;        // [m/s]
+    scalar reynolds = 0;
+    scalar frictionFactor = 0;
+    scalar dropFriction = 0;    // [Pa] straight run + fittings (Darcy)
+    scalar dropStatic = 0;      // [Pa]
+    scalar dropTotal = 0;       // [Pa]
+    scalar dropPerMetre = 0;    // [Pa/m] of the straight run
+    scalar dropAllowable = 0;   // [Pa/m] the book's guide (0 = none)
+    scalar rhoV2 = 0;           // [kg/m/s2]
+    scalar rhoV2Limit = 0;      // [kg/m/s2] the case's (0 = none declared)
+    std::vector<std::string> flags;
+    //  cost
+    bool        costed = false;
+    scalar      pricePerMetre = 0;
+    scalar      cost = 0;
+    std::string currency;
+    std::string costNote;
+    std::string basis;          // the sentence a reader checks the sheet by
+    //  "pipe:<stream>" -> "line:<stream>"
+    std::string id() const { return "line:" + pipeId.substr(5); }
+};
+
 struct PlantLayoutRecord
 {
     std::vector<LayoutItem>            items;
@@ -1511,6 +1576,9 @@ struct PlantLayoutRecord
     std::vector<LayoutJunction>        junctions;
     std::vector<LayoutPipe>            pipes;
     std::vector<LayoutNotRouted>       notRouted;
+    //  C207: the line list (empty unless the case declares `lineDesign {}`).
+    std::vector<LineSheet>             lines;
+    std::string                        lineBasis;   // the declared rules, in words
     //  C268 slice 2: the declared utility lines (empty when the case declares
     //  none, and then nothing is published).  `lanesUsed` is how many rack
     //  lanes the process pipes took: the utility lines number on from it.

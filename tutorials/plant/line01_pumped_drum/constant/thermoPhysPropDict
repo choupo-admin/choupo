@@ -1,0 +1,61 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T2 gamma-phi mixture with a REAL activity model.
+  The builder VERIFIES the declared route against what actually runs and
+  prints the resolved plan ([v2 plan] in the log); pairs without an explicit
+  binaryParameters block resolve from the pair catalogue, exactly as before.
+  Migrated mechanically from the v1 flat form (physics identical);
+  v2 contract 2026-07-17.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+
+components       ( ethanol  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel
+        {
+            model NRTL;
+            binaryParameters   // each pair is found by name: the case's own record, else the catalogue's
+            {
+                ethanol-water { }
+            }
+        }
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+//  TRANSPORT (2026-11-19, DEV.md 4c C207).  The line list needs the liquid's
+//  and the vapour's viscosity for the Reynolds number of each line: the liquid
+//  from each constituent's record law (no word), the vapour from Chung's
+//  dilute-gas method.  No unit of the flowsheet reads either, so no number of
+//  the solve depends on this block.
+transport
+{
+    liquid
+    {
+        viscosity { }
+    }
+    vapour
+    {
+        viscosity { model Chung; }
+    }
+}

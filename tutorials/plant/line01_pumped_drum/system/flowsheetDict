@@ -1,0 +1,47 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  line01_pumped_drum -- the SMALLEST plant that has a line list.
+
+  A 40/60 mol % ethanol/water liquid (2500 kmol/h, 298 K, 1 atm) is pumped to
+  6 bar and let down into a flash drum at 374 K and 2 bar, where it splits
+  into a vapour and a liquid.  Four streams, four routed lines:
+
+      feed   --(suction)-->  pump  --(discharge)-->  drum  --> vapor
+                                                          --> liquid
+
+  The pump and the drum are the two placed items (system/layoutDict); the
+  four pipes are routed by the layout and sized by `lineDesign {}` in the
+  same file.  README.md works ONE line (the discharge) by hand.
+
+  The let-down from 6 bar to the drum's 2 bar is the flash's own pressure
+  specification: no valve is drawn, so the discharge line is the one that
+  carries the pump's 6 bar.
+\*---------------------------------------------------------------------------*/
+
+
+units
+(
+    {
+        name        pump;
+        type        pump;
+        in          feed;
+        outputs     ( pumped );
+
+        operation   { P_out 6.0 bar;  eta 0.70; }
+    }
+    {
+        name        drum;
+        type        isothermalFlash;
+        in          pumped;
+        outputs     ( liquid  vapor );
+
+        operation   { T 374.0 K;  P 2.0 bar; }
+    }
+);
