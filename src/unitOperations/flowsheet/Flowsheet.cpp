@@ -4563,7 +4563,7 @@ int Flowsheet::solve(const DictPtr& dict,
     modelBoundaries_ = computeModelBoundaries(units, streams_,
         [&](const DictPtr& u) -> const ThermoPackage&
         { return thermoFor(u->lookupWord("name"), u, thermo); });
-    printModelBoundaries(modelBoundaries_, verbosity);
+    printModelBoundaries(modelBoundaries_, verbosity);  refuseDatumFlips(modelBoundaries_);   // K1: a datum flip ENDS the run, by name
 
     // Non-zero on a non-converged recycle: the caller (runSimulation) maps
     // this to result.converged = false, so reports and the converged/ writer

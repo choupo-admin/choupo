@@ -3556,6 +3556,31 @@ verification values: IAPWS R15-11, Table~8 (Region~2), p.~14, at (0.3\,MPa,
 650\,K) and (50\,MPa, 800\,K), the viscosity (R12-08 on the IF97 density) and
 the background conductivity $\lambda-\lambda_2$ to $10^{-6}$.
 
+\paragraph{Who governs a pure-fluid component, and the datum contract.}\label{sec:pure-fluid-who-governs}
+When \code{pureFluids} sits beside an \code{equilibrium} block, a flagged
+component is answered by two objects, split by composition, and the resolved
+view prints the split (row ``who governs a pure-fluid component'') before the
+solve.  The \emph{phase boundary} --- $p_{\mathrm{sat}}$, the K-value, the
+liquid reference fugacity --- is the method's own curve at \emph{any}
+composition, inside the method's saturation window (IF97: 273.15 to
+647.096\,K); outside it the record's correlation answers, announced once.
+Enthalpy, entropy, density, the vapour and liquid viscosity and conductivity
+and the surface tension are the method's when the phase is pure in the
+component, $x_i\ge 0.999$ (the guard of \code{pureFluidRoute}); when the
+component is absent, $x_i\le10^{-12}$, the generic chain answers; for
+$10^{-12}<x_i<0.999$ the call is refused by name --- the generic chain does
+\emph{not} answer in between.  Diffusivity is not supplied by the pure-fluid
+route.  The method's $h$ and $s$ sit on its publication's datum, not on the
+elements datum, so $h_{\mathrm{PF}}-h_{\mathrm{formation}}$ has no physical
+meaning: a stream that joins a package with \code{pureFluids} to one without
+(two sectors, or a unit selecting a variant that adds \code{pureFluids}) is a
+\emph{datum flip}, refused by name by the model-boundary audit, with the
+stream, the producer and the consumer; a closed single-package loop
+(\code{rankine02\_water}) is not refused, because the constant offset cancels
+around it.  \code{check\_datum\_flip\_refused} holds both sides.  The bridge
+between the two datums (the formation enthalpy of the pure fluid's reference
+state) is not built; it is the declared way to lift the refusal.
+
 \paragraph{The phase a pure fluid is asked for.}\label{sec:pure-fluid-density-phase}
 A pure-fluid formulation (IF97~\cite{IAPWS_R797}, or a reference Helmholtz
 equation for water~\cite{IAPWS_R695}, CO$_2$~\cite{SpanWagner1996}, N$_2$ or

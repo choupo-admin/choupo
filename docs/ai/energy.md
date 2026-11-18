@@ -267,10 +267,11 @@ change to absorb.  Choupo therefore makes the honest choice:
   formation/sensible datum of the generic package, so a `ΔH` across that
   junction would subtract two unrelated gauges.  (A closed single-package loop
   — e.g. an IF97 Rankine cycle — never triggers this: the constant offset
-  cancels around the loop.  The refusal only fires across a per-unit variant
-  (`thermo <name>;`) that adds/removes a pure-fluid between adjacent units; that override
-  is itself a deferred feature, so until it ships a pure-fluid datum and the
-  formation datum simply cannot coexist in one case.)
+  cancels around the loop.  The refusal fires across a sector whose dictionary
+  adds `pureFluids`, or a unit that selects a variant (`thermo <name>;`) that
+  adds or removes it, between adjacent units; it ENDS THE RUN (K1, 2026-11-19),
+  naming the stream, both ends and both datums, held by `check_datum_flip_refused`.
+  The bridge between the datums is not built.)
 
 **Practical guidance for a case author:** default to ONE consistent global
 model.  Reach for a per-unit override only when the physics demands it (a real

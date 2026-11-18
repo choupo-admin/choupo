@@ -75,11 +75,35 @@ Description
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 namespace Choupo
 {
+//  THE DATUM FLIP (contract K1, design record 7b).  A pure-fluid method's h
+//  and s sit on its publication's datum, the generic chain's on the elements
+//  datum; a stream that joins the two is a number with no physical meaning
+//  once subtracted.  The finding's reason starts with this prefix, and
+//  `Flowsheet::solve` ENDS THE RUN on it, by name (a refusal that only
+//  printed let a converged run report a spurious first-law residual).
+constexpr const char* kDatumFlipPrefix = "datum change (pure-fluid <-> elements/formation enthalpy datum)";
+
+inline bool isDatumFlip(const ModelBoundaryFinding& f)
+{
+    return f.refused && f.reason.rfind(kDatumFlipPrefix, 0) == 0;
+}
+
+//  The datum a package's absolute enthalpy sits on, for the refusal's text.
+inline std::string describeEnthalpyDatum(const ThermoPackage& p)
+{
+    const std::vector<std::string> sel = p.pureFluidSelections();
+    if (sel.empty()) return "the elements (formation) datum";
+    std::string s = "the pure-fluid datum of its publication (";
+    for (std::size_t k = 0; k < sel.size(); ++k) s += (k ? "; " : "") + sel[k];
+    return s + ")";
+}
+
 // Compute the model-boundary findings for a converged flowsheet: every internal
 // stream whose producer and consumer use different thermo packages.  `packageOf`
 // returns the per-unit ThermoPackage (the Flowsheet's thermoFor, curried with
@@ -169,7 +193,10 @@ inline std::vector<ModelBoundaryFinding> computeModelBoundaries(
             if (Pup.pureFluidSelections().empty() != Pdn.pureFluidSelections().empty())
             {
                 f.refused = true;
-                f.reason  = "datum change (pure-fluid <-> formation enthalpy reference) -- dH ill-posed";
+                f.reason  = std::string(kDatumFlipPrefix) + ": producer package on "
+                          + describeEnthalpyDatum(Pup) + ", consumer package on "
+                          + describeEnthalpyDatum(Pdn)
+                          + " -- an enthalpy on one datum subtracted from an enthalpy on another has no physical meaning (dH ill-posed)";
                 found.push_back(f);
                 continue;
             }
@@ -209,6 +236,20 @@ inline std::vector<ModelBoundaryFinding> computeModelBoundaries(
     }
 
     return found;
+}
+
+//  A DATUM FLIP ENDS THE RUN, by name: the stream, both ends and both datums.
+//  Printed by printModelBoundaries at verbosity >= 2; raised here at every
+//  verbosity, because the energy report that follows would otherwise carry a
+//  first-law residual that is the two datums' gap.
+inline void refuseDatumFlips(const std::vector<ModelBoundaryFinding>& found)
+{
+    for (const auto& f : found)
+        if (isDatumFlip(f))
+            throw std::runtime_error("model boundary REFUSED on stream '" + f.stream
+                + "' (" + f.producer + " -> " + f.consumer + "): " + f.reason
+                + ".  Put both ends on one package, or build the bridge (the formation"
+                  " enthalpy of the pure fluid's reference state), which is not built.");
 }
 
 // Print the audit to the run log.  Silent when there are no boundaries or when

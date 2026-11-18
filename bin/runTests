@@ -6774,6 +6774,23 @@ PYEOF
     fi
     rm -f /tmp/pfphase.$$
 
+    # Datum-flip gate (2026-11-19, design record 7b, contract K1).  An enthalpy
+    # on one datum subtracted from an enthalpy on another has no physical
+    # meaning: a stream joining a pure-fluid package to an elements-datum one
+    # (two sectors, or a unit selecting a variant that adds pureFluids) is
+    # refused by name and ENDS the run; the closed single-package loops
+    # (rankine02_water, the same loop on a variant, two sectors both on IF97)
+    # are not refused.
+    if gate_exec "$ROOT/bin/curate/check_datum_flip_refused.py" > /tmp/dflip.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "datum-flip-refused-gate" "$(grep -m1 '^check_datum_flip_refused: OK' /tmp/dflip.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_datum_flip_refused.py)\n" "datum-flip-refused-gate"
+        cat /tmp/dflip.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/dflip.$$
+
     # IF97-regions gate (2026-11-04, DEV.md 4c C214 W6): the IAPWS-IF97 kernel
     # -- regions 1, 2, 3 (the Helmholtz form, new), 4 and B23 -- reproduces
     # every verification value PRINTED in Wagner et al. 2000 (Tables A3, A6,

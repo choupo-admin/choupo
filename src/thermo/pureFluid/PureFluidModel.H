@@ -72,10 +72,12 @@ Description
     model-boundary audit (ModelBoundaryAudit.H: "datum change ... dH
     ill-posed"), because the two absolute-H gauges are incommensurable.  A
     closed single-package loop (e.g. rankine02_water) never triggers it: the
-    constant offset cancels around the loop.  NOTE the standing limit -- the
-    per-unit pure-fluid override is itself deferred; until it ships, a
-    pure-fluid datum and the formation/sensible datum cannot coexist within
-    one case, and the audit refuses loudly if they ever do.
+    constant offset cancels around the loop.
+    The refusal ENDS THE RUN by name (stream, both ends, both datums;
+    Flowsheet::solve) and is held by bin/curate/check_datum_flip_refused.py
+    (two sectors, and the per-unit `thermo <variant>;` route).  The bridge
+    (the formation enthalpy of the pure fluid's reference state) is not
+    built; it is the declared way to lift the refusal.
 
     -- Factory --
 
