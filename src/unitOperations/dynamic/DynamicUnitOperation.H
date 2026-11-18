@@ -74,7 +74,7 @@ struct ContinuousStream
 {
     scalar              F = 0;       // molar flow [kmol/s]
     scalar              T = 0;       // temperature [K]
-    scalar              P = 0;       // pressure [bar]
+    scalar              P = 0;       // pressure [Pa] (SI)
     sVector             z;           // mole fractions
 
     scalar component(std::size_t i) const { return i < z.size() ? z[i] : 0.0; }

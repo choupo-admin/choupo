@@ -85,7 +85,7 @@ void WilliamsOttoPlant::initialise(const DictPtr&       unitDict,
     //  back out of totalMoles * x  [kmol == klb].
     auto initDict = unitDict->subDict("initial");
     const scalar T_K  = initDict->lookupScalar("T");
-    P_bar_ = initDict->lookupScalarOrDefault("P", 1.013);
+    P_Pa_ = initDict->lookupScalarOrDefault("P", 101300.0);   // Pa (C390: it was held as "bar" and multiplied by 1e5)
     const scalar nTot = initDict->lookupScalar("totalMoles");
     const sVector x = readComposition(initDict, thermo,
         "williamsOttoPlant '" + name_ + "' init");
@@ -152,7 +152,7 @@ sVector WilliamsOttoPlant::rates_(const sVector& m) const
         xMol[comp_[s]] = std::max<scalar>(m[s], 0.0) / mt;    // equal MW: mass = mole fraction
     const liquidProperty::Consumer who{ type_, name_ };
     const scalar rho0 = liquidProperty::evaluate(*thermo_, liquidProperty::Property::density,
-        T_R_ / 1.8, P_bar_ * 1.0e5, xMol, who).value / 16.01846337;   // kg/m3 -> lb/ft3
+        T_R_ / 1.8, P_Pa_, xMol, who).value / 16.01846337;   // kg/m3 -> lb/ft3
     const scalar V = mt / rho0;                       // Sum m_i/rho0, equal rho0
 
     const scalar k1 = kA[0] / rho0 * std::exp(-kB[0] / T_R_);
@@ -287,7 +287,7 @@ std::vector<std::string> WilliamsOttoPlant::stateLabels() const
 bool WilliamsOttoPlant::holdupRecord(HoldupRecord& h) const
 {
     h.T = T_R_ / 1.8;               // K
-    h.P = P_bar_;                   // as declared (the parser's SI)
+    h.P = P_Pa_;                   // as declared (the parser's SI)
     h.V = 0.0;                      // derived from the masses, never declared
     h.n.assign(thermo_->n(), 0.0);
     for (std::size_t s = 0; s < 6; ++s) h.n[comp_[s]] = m_[s];
@@ -303,7 +303,7 @@ ContinuousStream WilliamsOttoPlant::outletStream() const
     scalar mt = 0.0; for (auto v : m_) mt += v;
     s.F = mu_ / 3600.0;                     // klb/h == kmol/h -> kmol/s
     s.T = T_R_ / 1.8;
-    s.P = P_bar_;
+    s.P = P_Pa_;
     s.z.assign(thermo_->n(), 0.0);
     if (mt > 0.0)
         for (std::size_t sIdx = 0; sIdx < 6; ++sIdx)

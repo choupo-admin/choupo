@@ -70,7 +70,7 @@ struct BatchState
 {
     sVector n;       // mole numbers [kmol]
     scalar  T = 0;   // temperature [K]
-    scalar  P = 0;   // pressure [Pa] (SI, as the dictionary reader returns it; the header said bar and four ledger sites multiplied by 1e5 again, C390)
+    scalar  P = 0;   // pressure [Pa] (SI, as the dictionary reader returns it; see check_pressure_si)
     scalar  V = 0;   // volume [m³]
 
     //- The phase this package's enthalpy is priced in.  Every batch vessel's

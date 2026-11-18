@@ -1800,6 +1800,11 @@
       "exit": 0,
       "claim": "check_backlog: OK -- 401 items, every one headed in DEV.md 4c has its row (DONE 288, PARTIAL 55, OPEN 44, DROPPED 2, NOT-AN-ITEM 12); every open or partial item has a rank and a reason; 330 named commits are in history.  NOT checked: that a status is true (a landing changes its row in the same commit).",
       "seconds": 1.0
+    },
+    "check_pressure_si": {
+      "exit": 0,
+      "claim": "check_pressure_si: OK -- 411 files of src/unitOperations, src/dynamicDriver, src/applications, src/postProcessing: no pressure-named operand is multiplied by 1e5 and no pressure member is documented in bar; both rules caught all their probe lines.  NOT CHECKED: a rescaling by a named constant, a pressure under a name that does not start with P, and whether a number that is only compared is in the right unit.",
+      "seconds": 1.1
     }
   }
 }

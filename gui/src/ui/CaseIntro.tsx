@@ -70,6 +70,9 @@ const APP_LABEL: { [k: string]: string } = {
 // AND NOW PINNED, because the claim above went false without anything
 // noticing.  Three rows of the adiabatic trace drifted -- 3.17088e+04 where
 // the engine prints 3.30212e+04, and 1.83628e+04 where it prints 1.90096e+04
+// (2026-11-19, C390: the whole trace moved again because the liquid enthalpy now carries its
+// pressure term -- the 3 bar feed -- and the engine converges in seven iterations; every row
+// below was re-read from the engine's own run.)
 // -- on THE SCREEN WHOSE WHOLE PURPOSE IS TO PROVE THE BOX IS GLASS.  A
 // transcribed number is a second home for a result, and this one had no
 // reader: the literals appear nowhere else in gui/, docs/ or bin/.
@@ -129,16 +132,16 @@ const GUIDE: { [id: string]: { model: string; sequence: string; trace: string } 
     trace:
       "Outer Newton in T (energy balance):\n"
       + "   it       T [K]       H_out−Hreq\n"
-      + "  0     380.0000     3.30212e+04\n"
-      + "  1     365.0000    -2.22540e+03\n"
-      + "  2     380.0000     3.30212e+04\n"
-      + "  3     372.5000     1.90096e+04\n"
-      + "  4     369.0615     1.89020e+03\n"
-      + "  5     368.6619     6.48394e-01\n"
-      + "  8     368.6618    -2.15364e-03   ✓\n"
+      + "  0     380.0000     3.30124e+04\n"
+      + "  1     365.0000    -2.23255e+03\n"
+      + "  2     372.5000     1.90013e+04\n"
+      + "  3     369.0629     1.88908e+03\n"
+      + "  4     368.6635     6.62310e-01\n"
+      + "  5     368.6634    -9.73904e-02\n"
+      + "  7     368.6634    -2.11128e-03   ✓\n"
       + "\n"
       + "T_out = 368.66 K   (ΔT drop 11.34 K — no duty, the vapour pays for itself)\n"
-      + "V/F  = 0.0519   (two-phase)",
+      + "V/F  = 0.0521   (two-phase)",
   },
 };
 

@@ -156,7 +156,7 @@ protected:
 private:
     inline static const std::string type_ = "batchDryer";
 
-    BatchState           state_;              // n [kmol]; T [K]; P [bar]
+    BatchState           state_;              // n [kmol]; T [K]; P [Pa]
     const ThermoPackage* thermo_ = nullptr;
 
     std::size_t iSolid_ = 0;      // the sorbing solid (dry basis)

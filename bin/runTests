@@ -7733,6 +7733,16 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/floorratchet.$$
+    # pressure-in-SI gate (2026-11-19, DEV.md 4c C390).  The reader returns every pressure in Pa; the batch vessel state was documented as bar and five ledger sites priced a package at `P * 1.0e5` (a liquid at 1e10 Pa), silent until the liquid enthalpy gained its pressure term (still01 reboiler +30 -> -468 kJ).  The gate refuses a pressure-named operand multiplied by 1e5 and a pressure member documented in bar, after catching its own probe lines.
+    if gate_exec "$ROOT/bin/curate/check_pressure_si.py" > /tmp/pressuresi.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pressure-si-gate" "$(head -1 /tmp/pressuresi.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pressure_si.py)\n" "pressure-si-gate"
+        cat /tmp/pressuresi.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pressuresi.$$
     # liquid-volume datum gate (2026-11-13, DEV.md 4c C378, TR-12).  A record's `Vliq` belongs to `VliqT` (absent = 298.15 K); a temperature stated in the `Vliq` comment must agree with the key, a record with Tc < 330 K carrying `Vliq` must state its temperature, and the six unresolved records stay pinned by name in bin/curate/vliq_datum_debt.tsv (two-sided).
     if gate_exec "$ROOT/bin/curate/check_vliq_datum.py" > /tmp/vliqdatum.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "vliq-datum-gate" "$(head -1 /tmp/vliqdatum.$$)"

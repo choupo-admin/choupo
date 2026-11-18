@@ -64,3 +64,54 @@ reference equation (the density door's own rule: a record that names the fluid).
 
 NOT covered here: the three `--gui` failures (gui-tests, check_intro_trace,
 check_pinch) of the same batch were not examined in this round.
+
+## The same defect elsewhere: every pressure rescaling in src/unitOperations, dynamicDriver, applications, postProcessing
+
+Search: `* 1e5`, `*1.0e5`, `/ 1e5`, `* 1e-5` and the header comments of pressure members.  SITE BY SITE:
+
+- DEFECT, fixed: `DynamicCSTR` (constant-volume mode): `P` was read through the reader (Pa), documented
+  as bar, defaulted to `1.0` and handed to the package as `P_ * 1e5` (1e10 Pa for a declared `P 1.013 bar`),
+  while the stream it publishes carried `P_` itself (1 Pa by default).  Now Pa in both modes, default 101325,
+  no conversion.
+- DEFECT, fixed: `WilliamsOttoPlant`: `P_bar_` read as SI, multiplied by 1e5 for the density door, published
+  on streams as the raw member (1.013 Pa by default).  Now `P_Pa_`, default 101300 Pa.
+- DEFECT (the batch five): `BatchStill::phaseH_`, `BatchUnitOperation` charge pricing, `BatchReactor` x2,
+  `choupoBatch/main.cpp`, with `BatchDiafilter`'s package in bar: fixed in the previous commit.
+- HEADER COMMENTS saying a pressure member is in bar, now Pa: `BatchState::P`, `BatchStill::P_op_`,
+  `BatchDryer::state_`, `DynamicUnitOperation::P`, `DynamicCSTR::P_`.
+- SI-CORRECT, Pa -> bar for a printed line or a `_bar` KPI (division by 1e5, or `* 1e-5`): Absorber, Stripper,
+  Extractor, EquilibriumReactor, PFR, GibbsReactor, PhaseChanger, Evaporator, Compressor, Pump, Turbine,
+  IsentropicCore, Valve, Pipe, PressureExchanger (and its sizer), Mixer, Splitter, StorageTank, CoolingTower,
+  Heater, SpiralWoundModule, RatedTestInversion, TrayHydraulics, DistillationColumn, RateBasedSegment,
+  BubblePoint, DewPoint, IsothermalFlash, AdiabaticFlash, Flowsheet (messages), BatchAdsorber, BatchDiafilter
+  (TMP KPI), choupoSolve/main, choupoBatch/main (printing), GasStoreSize, StorageTankSize, VesselSize,
+  PhaseDensity, ShellTubeHX, UnitAcceptance.
+- SI-CORRECT, bar -> Pa where the source IS in bar: `IsothermalFlash` (`c.Pc() * 1e5`, the component record's Pc
+  is in bar, Component.H:103), `ReliefValveSize` (`Pset_g = pressureDesign * 1e5`, the item's declared unit is
+  checked to be bar one line above; `cj.Pc() * 1e5`), `VesselMechanics` (`pressureDesign_bar * 1e5`),
+  `Flowsheet` tear vector (`s.P / 1e5` packed, `v * 1e5` unpacked, a round trip), `RatedMachineSize` /
+  `PressureExchangerSize` (`/ 1e5` of Pa).  The design-rule `pressureDesign` numbers (StirredTank, VesselSize,
+  ColumnSize, CatalystBedSize, ConverterShellSize, CompressorSize) are read raw as bar by the Design Guide's
+  convention and published with unit "bar": consistent.
+- PROBE: `bin/curate/check_pressure_si.py` (wired in `bin/runTests`, claim in the gate manifest): a
+  pressure-named operand MULTIPLIED by 1e5, or a pressure member documented in bar, over these four trees;
+  its header names this defect; it catches its own probe lines (the old `pkg.P * 1.0e5`,
+  `state_.P * 1.0e5`, `P_op_ * 1.0e5`, `P_ * 1e5`, `scalar P = 0; // pressure [bar]`) and passes `Pc * 1e5`
+  and every `/ 1e5`.  Effect on goldens of the two dynamic fixes: none (27 dynamic cases, scope PASS 30 / FAIL 0).
+
+## The --gui failures (three, plus two the first round hid)
+
+- `gui-tests` (8 tests, 4 files): (i) `standardState.test.ts` and its lesson cite `ThermoPackage.cpp:1508`
+  for `H_real`, now 1511 (lines moved by the term's includes): re-pointed; (ii) `letdown.test.ts`: the props
+  witness (`letdown02_valve_fluid_properties`) copies letdown01's converged drum liquid and its ValveHP T_out, which
+  moved with the term (253.014 -> 255.034 K, N2 0.7166 -> 0.7390 ...): the witness's inputs and header re-copied
+  and its golden re-recorded; the lesson's hand estimate of the flash fraction now lands 6.9 % from the engine
+  (was within 6 %): the bound is 7 %, with the reason; (iii) `runLog.test.ts` (4 tests): the term's once-per-run
+  line was filed as an INFO advisory, which stopped two witnesses printing "ASSUMPTIONS AND CAVEATS: none raised."
+  A defect of mine: the term is the model, not a caveat; it is now said on stderr once per run and only a term that
+  changed sign is filed.
+- `check_intro_trace`: the first-run on-ramp trace of adiabaticFlash01 moved (3.30212e4 -> 3.30124e4 ..., seven
+  iterations now): the term as ruled (a 3 bar feed); the screen rows re-read from the engine's own run.
+- `check_pinch`: the hand-pinned Q_C,min of ammonia02 95732.5 -> 95708.8 kW (2.5e-4): the term as ruled (the
+  independent cascade still equals the engine to 1e-6).
+- `check_brain_fresh`: the new gate moves the generated gate count; `gen_brain_facts.py` run.

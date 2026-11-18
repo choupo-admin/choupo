@@ -79,7 +79,8 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
 
     if (!variableVolume_)
     {
-        P_  = initDict->lookupScalarOrDefault("P", 1.0);
+        //  Pa, as the reader returns it (it was documented as bar and read back x 1e5, C390)
+        P_  = initDict->lookupScalarOrDefault("P", 101325.0);
         V_  = initDict->lookupScalar("V");
         const scalar nTot = initDict->lookupScalar("totalMoles");
 
@@ -722,10 +723,8 @@ scalar DynamicCSTR::TfromH_(const sVector& n, scalar H, scalar Tguess) const
 scalar DynamicCSTR::hLiq_(std::size_t i, scalar T) const
 {
     return thermo_->speciesPhaseEnthalpy(
-        //  P_ is held in bar here (the liquid balance never used it); the
-        //  package's API is SI, so convert rather than hand it a number that
-        //  is 1e5 times too small and hope the liquid leg ignores it.
-        i, T, P_Pa_(), "liquid",
+        //  P_ is in Pa in both volume modes (C390).
+        i, T, P_, "liquid",
         ThermoPackage::ReferenceContext::StandardPhase);
 }
 

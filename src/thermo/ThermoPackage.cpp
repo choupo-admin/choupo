@@ -4095,9 +4095,12 @@ void announcePressureLeg(const std::string& comp,
                          const ThermoPackage::LiquidPressureLeg& l)
 {
     if (!l.priced || l.source.rfind("none", 0) == 0) return;
-    if (AdvisoryLog::instance().add("thermo", "info",
-            "liquid pressure term " + comp,
-            "v(1 - alpha T) dP from psat(T) to P, volume and slope: " + l.source))
+    //  SAID ONCE PER RUN ON stderr, NOT FILED AS AN ADVISORY: the term is the model, not a
+    //  caveat, and a run whose only note is this line would otherwise stop printing
+    //  "ASSUMPTIONS AND CAVEATS: none raised".  A term that changed sign (below) IS a caveat
+    //  and is filed.
+    static std::set<std::string> said;
+    if (said.insert(comp + "|" + l.source).second)
         std::cerr << "[thermo] liquid pressure term (" << comp << "): v (1 - alpha T) dP"
                      " from psat(T) to P; volume and its temperature slope from "
                   << l.source
