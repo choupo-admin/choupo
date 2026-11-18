@@ -4700,6 +4700,18 @@ accepts today, and that is a policy call.
 > drawing deliverable on top of the routes, worth having, but the numbers on
 > the line sheet are the engineering and come first.
 
+> **C444 EXTENDED (Vitor, 2026-11-18: "nos equipamentos em que isso é
+> preciso: as portas de homem?").**  RULED: yes, in the same nozzle
+> schedule -- manways and inspection openings are nozzles with a service
+> `manway`/`inspection`: vessels, drums, columns (one per section, the
+> spacing rule by tray count read in the folder's column-design sources),
+> storage tanks (shell and roof) and reactors; size and count from a rule
+> read at its page (Towler & Sinnott ch.13 on vessel openings; Kister or
+> Wankat for columns) or declared by the case with its reason; the flange
+> class follows the vessel's design pressure like any nozzle.  Where a unit
+> is too small for a person to enter, the rule says so and the sheet shows
+> an inspection opening instead.
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
