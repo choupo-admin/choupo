@@ -4608,6 +4608,28 @@ accepts today, and that is a policy call.
 > repeat unit + one water); the same on both bases, a modelling limit of the
 > liquid PFR to state or to lift.
 >
+> **C432 (Vitor, 2026-11-19 04:30, during the final sweep: "eu nunca mais quero
+> calcular os 1260 casos outra vez! ... testar um por categoria! Se cada
+> categoria passa é desnecessário correr o resto!").**  MEASURED first: in the
+> last sweep the reuse key re-ran all 1260 curation fits (`1260 keyed, 0 with
+> an unchanged key`), correctly by its own rule -- the property kernel every
+> fit reaches had changed -- and their result lines account for about 10 800 s
+> of the sweep's item time; ONE fit, transport_c327, took 1019 s alone.
+> RULED, the request weighed: ONE PER CATEGORY IS DECLINED, because a fit is
+> its own dataset and a pass on one says nothing about the next (this night's
+> evidence: the 58 hidden moves sat in 12 particular cases; 22 of 86 exported
+> cases failed one by one while their families passed) -- the suite would go
+> green over a moved pair, the failure rule 4b forbids.  WHAT IS DONE INSTEAD
+> (the owner's aim, kept): (a) REPLAY BEFORE REFIT -- when a fit's key moved,
+> the suite first evaluates the fit's objective at its STORED parameters on its
+> stored dataset (one evaluation, not an optimisation); if the objective and
+> every published statistic equal the stored ones to the golden tolerance, the
+> engine did not move that fit and the verdict is REUSED, printed as such with
+> the replay's numbers; only a fit whose replay moved is re-fitted.  (b)
+> transport_c327 is investigated for its 1019 s.  (c) The curation fits stay
+> out of every tier but the full sweep.  Queued after the landing of
+> integ/all-1119.
+
 > **C427, THE SPIKE'S VERDICT (2026-11-19, the architect on Fable, having
 > read the kinds' interface on the branch `build/last-carried`): KEPT, WITH FIVE
 > CONDITIONS BEFORE IT IS CALLED THE MECHANISM.**  What holds: kinds by the
