@@ -593,9 +593,9 @@ and are one or two sizes larger than the window alone would give.  Eleven lines 
 steel record states 100 bar): Makeup150, Makeup, Recycle, CompRecycle, Mixed, HotEffluent,
 CooledEffluent, PreheatedFeed, RawLiquid, UnreactedGas and Purge.  The flag is left
 standing: the material of the 150 bar lines is a design decision (DEV.md 4c C440), not
-one the line list makes.  `HotEffluent` also carries the flag "stream temperature above the record's
-maxT": the pipe schedule here is a teaching value on a record that its own header calls
-unsourced.  The two two-phase lines (the water cooler's and the chiller's outlets) are
+one the line list makes.  The line list does not repeat the record's temperature check (the sizing pass owns it; the
+733 K `HotEffluent` is above the record's 700 K), and the pipe schedule here is a teaching
+value on a record that its own header calls unsourced.  The two two-phase lines (the water cooler's and the chiller's outlets) are
 listed and NOT sized: no book in the folder gives a velocity rule for two-phase flow, and
 the Lockhart-Martinelli drop is not built.  The tiny `Purge` and `LetdownGas` lines sit at
 the bottom of the declared table (1/4 in and 1/2 in) and carry the "drop above the guide"

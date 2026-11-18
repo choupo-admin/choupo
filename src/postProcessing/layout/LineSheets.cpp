@@ -21,6 +21,7 @@ License
 #include "streams/StreamMass.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "thermo/PricedDensity.H"
+#include "postProcessing/sizing/MaterialLimits.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
 
@@ -451,10 +452,14 @@ void evaluate(const Dictionary& layoutDict, SimulationResult& result, int verbos
         if (S.rhoV2Limit > 0 && S.rhoV2 > S.rhoV2Limit * (1.0 + 1e-9))
             flag("rho v^2 above the declared erosion limit");
         if (!fr.inValidity && !fr.validityNote.empty()) flag(fr.validityNote);
-        if (mat.maxT > 0 && s.T > mat.maxT)
-            flag("stream temperature " + fmt(s.T) + " K above the material record's maxT " + fmt(mat.maxT) + " K");
+        //  The rating comparison has ONE home (materialLimits), which announces;
+        //  the flag records that it did.  The temperature comparison is the
+        //  sizing pass's alone and is not repeated here.
         if (mat.maxP > 0 && Pg * 1e-5 > mat.maxP)
-            flag("design pressure " + fmt(Pg * 1e-5) + " bar above the material record's maxP " + fmt(mat.maxP) + " bar");
+        {
+            materialLimits::pressure("line " + p.stream, mat, Pg * 1e-5);
+            flag("design pressure " + fmt(Pg * 1e-5) + " bar above the material record's rating (announced by the rating check)");
+        }
         if (rd.unpricedMoleFraction > 0.0) flag("density priced without " + fmt(rd.unpricedMoleFraction) + " mole fraction the package cannot price alone");
 
         //  cost
