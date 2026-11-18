@@ -215,13 +215,6 @@ DECLARED_EXCEPTIONS = {
         "the reference fluid's own density(T, p, branch): the subject of the op is the reference equation of state",
     ("src/propertyOps/SteamTables.cpp", "keyRead"):
         "`rho` is the independent variable of IAPWS-IF97 region 3 (T, rho): a state, not a typed liquid property",
-    ("src/propertyOps/FitParametersMembrane.cpp", "keyRead"):
-        "a fit to a dataset: the cell's viscosity and density are the experiment's own conditions, beside its J_v and"
-        " concentrations (the bench has no feed state to ask the door for); `diffusivity` is the neutral solute's fit input",
-    ("src/propertyOps/PoreTransportBench.cpp", "keyRead"):
-        "a pore-model check against a dataset: the cell's viscosity and density are the experiment's own conditions",
-    ("src/propertyOps/PolarisationIndex.cpp", "keyRead"):
-        "reproduces a paper's table: the stirred cell's viscosity and density are the paper's stated experimental conditions",
     ("src/propertyOps/LleResidual.cpp", "keyRead"):
         "`sigma` is a mole-fraction weight of a fit residual, not a surface tension",
     ("src/propertyOps/DataReconciliation.cpp", "keyRead"):

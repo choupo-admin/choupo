@@ -500,3 +500,59 @@ From -3 324.94 to -3 037.28 M EUR. The first step re-runs the feasibility case w
 * Everything the base case lists as not in it (the purge scrubber, the
   let-down gas recovery, the cooling-water, refrigeration and steam
   systems as equipment).
+
+## History
+
+Dated notes moved here from the dictionaries' headers (DEV.md 4c C435): the
+dictionaries state what each file is and why each value is what it is; how
+they got there is below.
+
+* **The slenderness of the beds (DEV.md 4c C66, C69).** Until C69 each bed took
+  its own slenderness, L/D 1.5; three diameters cannot share one shell, and a
+  one-shell converter built around the widest of them cost MORE than three
+  vessels, so the beds now share one diameter. Before that (C66), at each
+  bed's own L/D the case first carried the base case's converter ratio, 6.
+  Measured: at L/D 6 the first pass of the loop lost 35, 24 and 16 bar across
+  the three beds, and the recycle did not converge (a later iterate consumed a
+  bed's whole inlet pressure, refused by name). The scaling puts the converged
+  L/D 6 drops near 11, 5 and 3 bar -- three-quarters of the 20 bar between the
+  loop and the separator, on a budget of 1 bar each. At a fixed volume both the
+  superficial velocity and the length go as (L/D)^(2/3), so the drop goes as
+  (L/D)^2: at 1.5 the three beds lost 0.67, 0.31 and 0.17 bar.
+* **The bed volumes were found by hand until DEV.md 4c C66.** A unit folder with
+  no `variables {}` of its own did not resolve its `$references` against the
+  plant's until then.
+* **How the design point was reached (system/outerDict).** With the Ergun
+  pressure drop on, from the constant-pressure design point 8.7238 / 18.2281 /
+  31.4450 m3, the DesignSpec converged in two Newton steps and fifteen
+  evaluations; the hand-tuned 8.72 / 18.23 / 31.44 m3 the case carried before
+  C66 had reached that one in one step; with the fourth unknown (C69), from
+  8.8861 / 18.4225 / 31.7447 m3 and 2.26 m, in two Newton steps and nineteen
+  evaluations.
+* **2026-11-07 (768c81b93).** The designed point was re-solved by the case's own
+  design spec on the corrected reference, in 3 iterations: V_Bed1 8.9510 ->
+  10.0321 m3, V_Bed2 18.4115 -> 19.1578, V_Bed3 31.6971 -> 32.4468,
+  D_converter 2.2283 -> 2.2427 m (the smallest admissible diameter, bed 3
+  binding).
+* **2026-11-17 (7df5e64cd).** The declared design point in system/flowsheetDict
+  followed the converged design after C410: 10.2222726633 / 19.2831440238 /
+  32.572283756 m3 and 2.24511028502 m. The `initial` values of
+  system/outerDict were not followed and kept the 2026-11-07 point (10.0321 /
+  19.1578 / 32.4468 m3, 2.2427 m) beside a comment that said they equalled the
+  flowsheet's: two homes for one starting point.
+* **2026-11-19 (DEV.md 4c C435).** `initial` became optional in the design-spec
+  and optimisation drivers and defaults to the case's own value; the four
+  stale `initial` keys were dropped, so the flowsheet's design point is the one
+  start, printed as `start: case value`. Run from either start the Newton
+  ends on the same answer: from the stale initials, 2 iterations and 19
+  evaluations, ||F|| = 2.845893e-3, V = 10.222273 / 19.283144 / 32.572284 m3,
+  D = 2.245110 m; from the case value, 0 iterations and 1 evaluation,
+  ||F|| = 2.845856e-3, the same four numbers to the printed digits.
+* **The recycle cut and its tolerance (system/solverDict, DEV.md 4c C69).** The
+  energy-recycle cut was HotEffluent until the beds became the CONVERTER
+  sector; the converged answer is the same to the recycle tolerance. The
+  tolerance went from 1e-8 to 1e-10 with it: at 1e-8 bed 1's own first law
+  showed -3.1e-5 kW, above the report's 1e-6 kW floor for a unit with no duty,
+  and the run printed ENERGY BALANCE FAILED for a residual that was the
+  recycle's, not the bed's. At 1e-10 the Newton takes 23 iterations instead of
+  18 and the bed closes under the floor.

@@ -75,7 +75,11 @@ DesignSpec::DesignSpec(const DictPtr& dict)
         // initial / min / max are read with the dict's optional unit
         // suffix; the parser converts to canonical SI on the
         // way in.  So  `initial 100 kPa;`  yields 1e5 (Pa) here.
-        v.initial  = m->lookupScalar("initial");
+        //  C435: `initial` is OPTIONAL and defaults to the variable's value
+        //  in the case (resolved in run(), where the case is known), so a
+        //  starting point has ONE home unless the author declares another.
+        v.hasInitial = m->found("initial");
+        v.initial  = v.hasInitial ? m->lookupScalar("initial") : 0.0;
         v.lo       = m->lookupScalarOrDefault("min",
                         -std::numeric_limits<scalar>::infinity());
         v.hi       = m->lookupScalarOrDefault("max",
@@ -83,7 +87,7 @@ DesignSpec::DesignSpec(const DictPtr& dict)
         if (v.lo >= v.hi)
             throw std::runtime_error("DesignSpec: min >= max on variable '"
                 + v.variable + "'");
-        if (v.initial < v.lo || v.initial > v.hi)
+        if (v.hasInitial && (v.initial < v.lo || v.initial > v.hi))
             throw std::runtime_error("DesignSpec: initial outside [min,max]"
                 " on variable '" + v.variable + "'");
         vars_.push_back(std::move(v));
@@ -191,6 +195,39 @@ int DesignSpec::run()
         }
     }
 
+    //  C435: the start of every variable, and where it came from.
+    std::vector<std::string> startNote(n);
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        auto& v = vars_[i];
+        std::ostringstream o; o << std::scientific << std::setprecision(6);
+        if (v.variable.rfind("streams.", 0) == 0)
+        {
+            if (!v.hasInitial)
+                throw std::runtime_error("DesignSpec: variable '" + v.variable
+                    + "' is a stream-state channel, which has no value in"
+                    " the case's dictionaries to start from: declare"
+                    " `initial` for it.");
+            o << "outerDict initial";
+        }
+        else
+        {
+            const scalar cv = flowsheetDict_->varsDict()
+                                  ->lookupScalar(v.variable);
+            if (!v.hasInitial) { v.initial = cv; o << "case value"; }
+            else if (std::abs(cv - v.initial)
+                     <= 1e-12 * std::max(std::abs(cv), std::abs(v.initial)))
+                o << "outerDict initial (equals the case value)";
+            else
+                o << "outerDict initial (the case holds " << cv << ")";
+            if (v.initial < v.lo || v.initial > v.hi)
+                throw std::runtime_error("DesignSpec: the start of '"
+                    + v.variable + "' (" + o.str() + ", "
+                    + std::to_string(v.initial) + ") is outside [min,max]");
+        }
+        startNote[i] = o.str();
+    }
+
     std::cout << "\n=========================  Design Specification  =====================\n"
               << "  Equations / unknowns: " << n << "\n"
               << "  Manipulate (case-level $variables):\n";
@@ -198,7 +235,8 @@ int DesignSpec::run()
         std::cout << "    [" << i << "]  $" << vars_[i].variable
                   << "  x0 = " << std::scientific << std::setprecision(4)
                   << vars_[i].initial
-                  << "   in [" << vars_[i].lo << ", " << vars_[i].hi << "]\n";
+                  << "   in [" << vars_[i].lo << ", " << vars_[i].hi << "]"
+                  << "   start: " << startNote[i] << "\n";
     std::cout << "  Targets:\n";
     for (std::size_t j = 0; j < n; ++j)
     {

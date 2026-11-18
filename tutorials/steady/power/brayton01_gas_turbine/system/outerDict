@@ -18,7 +18,7 @@ type         designSpec;
 
 manipulate
 (
-    { variable W_turb;  initial -16.0 kW;  min -50.0 kW;  max -1.0 kW; }
+    { variable W_turb;  min -50.0 kW;  max -1.0 kW; }
 );
 
 targets

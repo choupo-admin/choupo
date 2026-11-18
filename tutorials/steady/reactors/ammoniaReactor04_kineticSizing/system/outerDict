@@ -67,7 +67,7 @@ manipulate
     //  Bounds are advisory clips on the Newton step, not physics: the lower
     //  bound keeps the FD Jacobian off a bed so short that the approach is
     //  hundreds of kelvin and the residual flat.
-    { variable V_bed;   initial 6.0;    min 1.0;   max 60.0; }    // m3 of catalyst bed
+    { variable V_bed;   min 1.0;   max 60.0; }    // m3 of catalyst bed
 );
 
 targets

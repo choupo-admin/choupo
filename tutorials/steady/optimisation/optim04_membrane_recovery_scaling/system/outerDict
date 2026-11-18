@@ -33,7 +33,6 @@ variables
         path     variables.nMods;
         min      3.0;
         max      9.0;
-        initial  5.0;
     }
 );
 

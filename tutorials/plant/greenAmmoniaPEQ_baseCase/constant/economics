@@ -5,7 +5,7 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   constant/economics -- the prices this appraisal is priced at (DEV.md 4c C44,
-  slice 4; the three prices replaced by CITED public figures on 2026-11-13).
+  slice 4).
   Currency: EUR per kg of the stream named.
 
   EVERY PRICE BELOW IS A PUBLIC, DATED, CITED FIGURE, read from the document

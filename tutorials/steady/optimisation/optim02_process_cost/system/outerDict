@@ -71,13 +71,11 @@ variables
         path     units[0].operation.V_R;
         min      0.002;
         max      0.010;
-        initial  0.005;
     }
     {
         path     units[1].operation.Q;
         min        0.0;
         max      500.0;
-        initial  150.0;
     }
 );
 

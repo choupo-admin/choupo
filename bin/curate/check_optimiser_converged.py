@@ -26,6 +26,22 @@ the fix on a copy of cavett01 (the corpus's smallest recycle case) with
 the SQP certified a KKT point on the same; the integer enumeration kept
 every value as "converged yes".
 
+ARM (e), C435 (2026-11-19): A STARTING POINT HAS ONE HOME.  The real defect it
+would have caught: tutorials/plant/greenAmmonia03_basicDesign/system/outerDict
+said "each `initial` below equals the value in system/flowsheetDict's
+`variables {}`" while V_Bed1 read 10.0321 there and 10.2222726633 in the
+flowsheet (the flowsheet's design point was re-solved on 2026-11-17 after C410
+and the four `initial` values were not followed): two homes for one starting
+point, one of them stale and a sentence swearing they agreed.  `initial` is
+optional since C435 and defaults to the case's value.  The arm reads every
+shipped designSpec outerDict: a `manipulate` entry whose `variable` is a plain
+scalar of the flowsheet's `variables {}` and whose `initial` EQUALS it (same
+unit word, to 1e-12) is a restatement and fails (drop the key); and a file
+whose text claims the starts equal the case's while one of them differs
+fails.  A differing `initial` with no such claim is legal (a start of its own,
+printed beside the case value).  NOT covered: an optimisation `path` (raw
+dictionary paths are not parsed here; the run prints both numbers).
+
 WHY A GATE OF ITS OWN, and not arms of check_solver_failures (C178): that
 gate compiles a probe against the solver sources and drives the three
 time-integrated binaries; this defect is choupoSolve's, in the driver layer
@@ -318,6 +334,60 @@ def arm_source():
     return n
 
 
+def _case_vars(fs_text: str) -> dict:
+    """name -> (value, unit word) for the plain `name value [unit];` entries of
+    the flowsheetDict's top-level `variables {}` block."""
+    m = re.search(r"^variables\s*\{(.*?)^\}", fs_text, re.S | re.M)
+    out = {}
+    if not m:
+        return out
+    for line in m.group(1).splitlines():
+        line = re.sub(r"//.*", "", line)
+        mm = re.match(r"\s*(\w+)\s+([-+0-9.eE]+)\s*([A-Za-z0-9/%]*)\s*;", line)
+        if mm:
+            out[mm.group(1)] = (float(mm.group(2)), mm.group(3))
+    return out
+
+
+def arm_starts():
+    """(e) one home for a starting point (C435)."""
+    claim = re.compile(r"each\s+`?initial`?[^.]{0,80}\bequals?\b|"
+                       r"\binitial\b[^.]{0,60}\b(same as|equal to|equals)\b[^.]{0,40}"
+                       r"(flowsheet|variables)", re.I | re.S)
+    n = 0
+    for od in sorted((ROOT / "tutorials").rglob("system/outerDict")):
+        txt = od.read_text(errors="replace")
+        code = re.sub(r"//[^\n]*", "", re.sub(r"/\*.*?\*/", "", txt, flags=re.S))
+        if not re.search(r"\btype\s+designSpec\s*;", code):
+            continue
+        fs = od.parent / "flowsheetDict"
+        if not fs.exists():
+            continue
+        cv = _case_vars(fs.read_text(errors="replace"))
+        differs = False
+        for m in re.finditer(r"\{\s*variable\s+(\w+)\s*;[^}]*?\binitial\s+([-+0-9.eE]+)\s*([A-Za-z0-9/%]*)\s*;", code):
+            name, val, unit = m.group(1), float(m.group(2)), m.group(3)
+            if name not in cv:
+                continue
+            n += 1
+            cval, cunit = cv[name]
+            SI = {"", "m", "m2", "m3", "K", "Pa", "kg", "s", "W", "mol", "kg/s"}
+            if cunit != unit and not (cunit in SI and unit in SI):
+                continue    # a conversion factor would be needed: not judged here
+            rel = abs(cval - val) / max(abs(cval), abs(val), 1e-300)
+            rel_path = od.relative_to(ROOT)
+            if rel <= 1e-12:
+                fails.append(f"(e) {rel_path}: `initial` of {name} restates the "
+                             "case's value; drop the key (the start defaults to it)")
+            else:
+                differs = True
+        if differs and claim.search(txt):
+            fails.append(f"(e) {od.relative_to(ROOT)}: the text claims the starts "
+                         "equal the case's, and one `initial` differs from "
+                         "system/flowsheetDict's `variables {}`")
+    return n
+
+
 def main() -> int:
     global SOLVE
     try:
@@ -330,6 +400,7 @@ def main() -> int:
         nPart, nTot = arm_partial(tmp)
         clean = arm_unchanged(tmp)
         nSites = arm_source()
+        nStarts = arm_starts()
     if fails:
         print("check_optimiser_converged: FAILED")
         for f in fails:
@@ -344,6 +415,7 @@ def main() -> int:
           "evaluations failed (did not converge), reports a finite best and "
           "replays a converged recycle; the converging copy prints no FAILED "
           f"line and ends 'status: converged' ({'held' if clean else 'NOT held'}); "
+          f"{nStarts} designSpec start(s) checked against the case's own value (none restates it, none is claimed equal while it differs); "
           f"{nSites} `simulator_(` call site(s) read the verdict through "
           "simulationFailure() before the result is read.  NOT covered: the "
           "sweep, gridSweep and designSpec drivers; whether a corpus "

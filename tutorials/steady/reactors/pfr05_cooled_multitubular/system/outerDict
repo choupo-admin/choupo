@@ -32,7 +32,7 @@ type designSpec;
 
 manipulate
 (
-    { variable nTubes;   initial 3000;  min 2200;  max 6000; }   // tubes
+    { variable nTubes;   min 2200;  max 6000; }   // tubes
 );
 
 targets

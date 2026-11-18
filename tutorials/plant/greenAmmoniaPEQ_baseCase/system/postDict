@@ -192,7 +192,7 @@
       still sized and priced.  For a compressor
       the material is recorded only (the correlation's F_BM 2.7 carries no
       material factor).
-    * U is no longer declared: it is each exchanger's design RESULT (the
+    * U is not declared: it is each exchanger's design RESULT (the
       exchanger paragraph above lists what IS declared instead).
     * vessels: a fully radiographed joint (jointEfficiency 1.0) and 3 mm of
       corrosion allowance; L/D 6 for the catalyst vessel (ammonia02's), 3
@@ -205,8 +205,7 @@
   every heat duty a unit publishes is served by the lowest-grade utility in
   constant/utilities/ that can take it across dTmin 10 K, carried by the
   unit's own process streams (the FEHE), or LISTED unserved -- never dropped.
-  Until C52 the converter's ~30.6 MW was dropped (the allocation read no
-  reactor's duty).  It is now served by a DECLARED utility,
+  The converter's ~30.6 MW is served by a DECLARED utility,
   `utility steamGenerationHP;` on the Converter: HP steam raised in a
   waste-heat boiler at the steamHP header's 41 bar, valued at -18 EUR/GJ --
   a CREDIT, an AUTHOR-SET ASSUMPTION stated in the case-local record

@@ -562,3 +562,21 @@ nitrogen, in four sectors with a deoxo reactor, a dryer, a purge scrubber,
 sizing and economics, and two case documents. It was rewritten to the
 project base data v2 at Vítor's request and simplified the same day; the
 earlier versions are in the git history.
+
+Dated notes moved here from the dictionaries' headers (DEV.md 4c C435):
+
+* **system/layoutDict, until 2026-11-09.** The file left two findings on purpose
+  for the groups to resolve: the two ammonia tanks 12 m apart against the 17 m
+  declared between two tanks, and the electrical substation 8 m from the axis
+  of MakeupComp1's zone 2 (radius 9 m), an ignition source inside a hazardous
+  area. Both were resolved when the plant became the course's reference: tank2
+  moved east inside the same bund (to 18 m, shell to shell), and the
+  substation moved west of the compressor row, at (16, -31) m no longer.
+* **system/postDict.** Until DEV.md 4c C52 the converter's ~30.6 MW was dropped
+  (the utility allocation read no reactor's duty); it is now served by the
+  declared `steamGenerationHP`. The exchangers' U was a declared assumption per
+  exchanger before they were designed (C44 slice 1); it is each exchanger's
+  design result now. The design pressure was 1.1 x the absolute operating
+  pressure before C150 R01; it is now the rule on the gauge pressure.
+* **constant/economics.** The three prices were replaced by CITED public
+  figures on 2026-11-13 (DEV.md 4c C389).

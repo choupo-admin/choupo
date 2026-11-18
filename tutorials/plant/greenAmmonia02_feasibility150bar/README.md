@@ -221,3 +221,10 @@ reading assumes).
 * Everything the base case lists as not in it (the purge scrubber, the
   let-down gas recovery, the cooling-water, refrigeration and steam
   systems as equipment) is not here either.
+
+## History
+
+* **The U values of system/postDict.** They are the same numbers the base case
+  declared for its exchangers before those were designed (git history of
+  `tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict`, DEV.md 4c C44
+  slice 1), plus two new ones (the EffluentCooler and the FeedPreheater).

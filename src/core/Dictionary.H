@@ -198,6 +198,9 @@ public:
     // to the N-th entry of a list-of-dicts.  The target entry must
     // already exist and be (or be convertible to) a scalar.
     void setScalarAtPath(const std::string& path, scalar value);
+    //  The value setScalarAtPath(path, .) would replace (same path walk, a
+    //  `$ref` resolved).  Used by the outer drivers: `initial` defaults to it.
+    scalar lookupScalarAtPath(const std::string& path);
 
     // ---- Parser interface --------------------------------------------------
     void insert(const std::string& key, EntryValue value);

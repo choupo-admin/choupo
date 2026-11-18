@@ -18,7 +18,7 @@ type         designSpec;
 
 manipulate
 (
-    { variable W_shaft;  initial 10.0 kW;  min 1.0 kW;  max 100.0 kW; }
+    { variable W_shaft;  min 1.0 kW;  max 100.0 kW; }
 );
 
 targets

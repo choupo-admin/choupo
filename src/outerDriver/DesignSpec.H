@@ -47,6 +47,7 @@ Description
         manipulate
         (
             { variable A;    initial 17;   min 5;   max 30;  unit m2;  }
+            { variable B;                  min 1;   max 9;  }   // no `initial`: starts at the case's B
             { variable P_1;  initial 100;  min 50;  max 160; unit kPa; }
         );
 
@@ -145,7 +146,8 @@ private:
     struct Manipulate
     {
         std::string variable;   // name in the case's `variables {... }` block
-        scalar      initial;    // in canonical SI (post unit-suffix conversion)
+        scalar      initial = 0;   // canonical SI (post unit-suffix conversion)
+        bool        hasInitial = false;   // else the case's value (C435)
         scalar      lo;
         scalar      hi;
     };

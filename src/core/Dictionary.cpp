@@ -990,11 +990,15 @@ std::string Dictionary::lookupWordOrDefault(const std::string& key,
     return found(key) ? lookupWord(key) : def;
 }
 
-// Path-based scalar modification.  See header for syntax.
-void Dictionary::setScalarAtPath(const std::string& path, scalar value)
+//  ONE path walk for the reader and the writer of a scalar at a dotted path
+//  (C435: `initial` defaults to the case's own value, read through the SAME
+//  resolution the driver then uses to set it).  Navigates to the parent of
+//  the leaf key and returns it with the leaf's name.
+static Dictionary* walkToLeafParent(Dictionary* root, const std::string& path,
+                                    const char* who, std::string& leaf)
 {
     if (path.empty())
-        throw std::runtime_error("setScalarAtPath: empty path");
+        throw std::runtime_error(std::string(who) + ": empty path");
 
     // Tokenize on '.'.
     std::vector<std::string> tokens;
@@ -1008,25 +1012,25 @@ void Dictionary::setScalarAtPath(const std::string& path, scalar value)
         if (!cur.empty()) tokens.push_back(cur);
     }
     if (tokens.empty())
-        throw std::runtime_error("setScalarAtPath: invalid path '" + path + "'");
+        throw std::runtime_error(std::string(who) + ": invalid path '" + path + "'");
 
     // Navigate to the parent of the leaf key.
-    Dictionary* node = this;
+    Dictionary* node = root;
     for (std::size_t k = 0; k + 1 < tokens.size(); ++k)
     {
         const std::string& t = tokens[k];
         auto open = t.find('[');
         if (open != std::string::npos)
         {
-            // name[N]  →  list-of-dicts navigation
+            // name[N]  ->  list-of-dicts navigation
             auto close = t.find(']');
             if (close == std::string::npos || close < open)
-                throw std::runtime_error("setScalarAtPath: malformed '" + t + "'");
+                throw std::runtime_error(std::string(who) + ": malformed '" + t + "'");
             const std::string listKey = t.substr(0, open);
             const std::size_t idx = std::stoul(t.substr(open + 1, close - open - 1));
             auto dicts = node->lookupDictList(listKey);
             if (idx >= dicts.size())
-                throw std::runtime_error("setScalarAtPath: index " +
+                throw std::runtime_error(std::string(who) + ": index " +
                     std::to_string(idx) + " out of range for '" + listKey + "'");
             node = dicts[idx].get();
         }
@@ -1036,8 +1040,24 @@ void Dictionary::setScalarAtPath(const std::string& path, scalar value)
             node = sub.get();
         }
     }
+    leaf = tokens.back();
+    return node;
+}
 
-    node->insert(tokens.back(), value);
+// Path-based scalar modification.  See header for syntax.
+void Dictionary::setScalarAtPath(const std::string& path, scalar value)
+{
+    std::string leaf;
+    Dictionary* node = walkToLeafParent(this, path, "setScalarAtPath", leaf);
+    node->insert(leaf, value);
+}
+
+// Path-based scalar read: the value setScalarAtPath(path, .) would replace.
+scalar Dictionary::lookupScalarAtPath(const std::string& path)
+{
+    std::string leaf;
+    Dictionary* node = walkToLeafParent(this, path, "lookupScalarAtPath", leaf);
+    return node->lookupScalar(leaf);
 }
 
 DictPtr Dictionary::fromFile(const std::string& path)

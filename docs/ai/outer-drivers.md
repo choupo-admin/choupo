@@ -139,8 +139,13 @@ report  { file designspec_history.csv; }    // optional; iteration history
 ```
 
 * `manipulate` entries take a bare `variable` name (the driver writes
-  `variables.<name>`), plus `initial` and optional `min`/`max` — all with
-  unit suffixes, converted to SI on read.  The variable MUST exist in the
+  `variables.<name>`), plus optional `initial`, `min` and `max` — all with
+  unit suffixes, converted to SI on read.  `initial` is OPTIONAL: left out,
+  the Newton starts at the variable's CURRENT value in the case (ONE home
+  for a starting point, DEV.md 4c C435).  Write it only to start somewhere
+  else; the run prints, per variable, `start: case value` or `start:
+  outerDict initial (the case holds <value>)`.  A `streams.` channel has no
+  case value to start from and still needs `initial`.  The variable MUST exist in the
   flowsheetDict's `variables {}` block or the driver refuses loudly.
 * `targets` entries are either a **value spec**
   `{ path <result-path>; value <X> <unit>; tol <X> <unit>; }` or an
@@ -174,6 +179,9 @@ variables                                  // 1..n knobs, RAW dict paths
     { path units[0].operation.refluxRatio;  min 3.0;  max 5.0;  initial 4.0; }
     { path units[0].operation.feedStage;    min 6;    max 12;   initial 8;   }
 );
+//  `initial` is OPTIONAL (C435): left out, the start is the value the case
+//  already holds at that path, printed as `start: case value`.  Give it only
+//  to start elsewhere; the run then prints both when they differ.
 
 objective
 {
