@@ -23,6 +23,7 @@ propertyManifest
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
         "components/nButanol.dat"  "799cc80894744dd5cfcf45140a6c1101b27e9608a8c4a42f53537979bb8684d5";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
+        "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
         "parameters/Henry/"  "relevant:e3098e0a2fedb37fb6f8ad185a5c1996e88df4af222a671a990bc3a0d4deba08";
         "parameters/Henry/nButanol-water.dat"  "1b460014cdbd82af4cfb3cac7403e392a0536065129f981ebcdda15dc2921e50";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";

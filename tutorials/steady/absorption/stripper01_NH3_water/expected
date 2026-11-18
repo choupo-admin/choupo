@@ -24,8 +24,8 @@ stream  liquidFeed             T                330              1e-4
 stream  richGas                T                315.973930965    1e-4
 stream  strippedLiquid         T                313.524974667    1e-4
 stream  strippingGas           T                330              1e-4
-boundary global                 H_feeds_kW       -7556.26081756   1e-4
+boundary global                 H_feeds_kW       -7556.25516364   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
-boundary global                 H_products_kW    -7576.12619431   1e-4
-boundary global                 residual_kW      19.8653767514    abs:0.001987
+boundary global                 H_products_kW    -7576.12435757   1e-4
+boundary global                 residual_kW      19.8691939321    abs:0.001987
 boundary global                 noBoundary       false            exact
