@@ -21,6 +21,16 @@ diretos"; and, on the reference manuals he filed: "acho que deve haver uma
 falha em componentes nao convencionais".  He was right on the last, and on
 the first he had asked before (DEV.md 4c C399).
 
+## 0. What "consolidated" means (2026-11-19, after an outside review)
+
+The architecture is CONSOLIDATED FOR A DECLARED SCOPE when: its contracts
+are implemented; the combinations it supports are verified by a witness;
+and every combination it does not support is REFUSED BY NAME, with the line
+to write or the reason.  It is not a promise that the stream, the door or
+the record grammar will never be opened again -- no set of examples can
+show that.  A combination with no defined, verifiable behaviour is the
+defect; an unsupported one that refuses is not.
+
 ## 1. What was measured before writing
 
 * The tree (2026-11-18): the property dictionary holds a mixture's measured
@@ -223,6 +233,10 @@ M7.  NO ATTRIBUTE THAT A UNIT EDITS.  Moisture is the COMPONENT water the
 solid holds, tied to the gas by the sample's sorption record; a converted
 solid (a char) is ANOTHER material with its own analysis.  The cost, stated:
 a solid whose composition changes continuously is a few lumped materials.
+(Amended 2026-11-19: with Q2's balance equation a material's element masses
+COULD be carried with declared rates, which is the honest form of a
+continuous conversion; it is out of the present scope and declared so, not
+ruled out.)
 PUT TO VITOR: is that the right picture for what he teaches?
 
 FIRST WITNESS proposed: a biomass dryer feeding a combustor, the first law
@@ -360,6 +374,10 @@ S5  The cost is measured: the walk's wall clock on the 14 PSD cases within
     unchanged.
 S6  The design survives contact: anything the spike shows the record got
     wrong is written back into this section before any further slice.
+THREE BEHAVIOURS, each shown on at least two kinds: mixing; division
+without fractionation; TRANSFORMATION (the size distribution through a mill
+or a crystalliser, the chain moments through the reactor).  Transport and
+mixing alone leave the hard part unproven.
 OUT OF THE SPIKE: the material's analyses and enthalpy (M1-M4), any polymer
 property or kinetics, the GUI.  The spike's verdict is a page in this
 record: kept, changed, or abandoned, with the evidence.
@@ -619,6 +637,74 @@ with its three conditions).
 
 Every step carries its guide section, its catalogue entry and its witness
 (CLAUDE.md rule 4d).
+
+## 7a. What the first sample-behaviour slice taught (2026-11-19)
+
+Built: the filtration test as the first kind (`src/samples/`), the cake
+filter naming `sample <name>;`, Wakeman & Tarleton's Example 4.1 reproduced
+from its own rows within 0.5 %.  Five corrections to this record, RULED:
+(i) THE ROW WINDOW IS PART OF THE RECORD: which rows a fit uses
+(`linearRegion { fromRow; toRow; reason; }`) is an analyst's decision about
+the data and is stored with it; R1 holds for everything else (the fit is a
+derived view).  (ii) ONE SLURRY, ONE RECORD across cases cannot be met by a
+case-local file, because a case is self-contained; when two shipped cases
+share a sample, the sample becomes a CATALOGUE record (`data/standards/
+samples/`, kind sample, its source and conditions), pinned by hash like any
+record -- a sample used by one case stays in that case.  (iii) A STATED law
+(an adopted book value with no rows) has no support, so its authorised
+domain is REQUIRED and starts at the case's operating point; widening it
+needs a reason.  Strict on purpose.  (iv) A measured medium resistance may
+be negative (the source says so); the unit refuses to USE a negative one,
+by name.  (v) A unit inside a sector reads the sector's own experiments
+folder, as table pins already do: to be done with the next kind.  For the
+next kinds the service gains declared state AXES (support as a hull, an
+interpolation per axis) and one reducer per kind by explicit factory.
+
+## 7b. The closure contracts (2026-11-19, from the second outside review)
+
+Four behaviours must be defined and held by a witness before the scope of
+section 0 is called consolidated.  Each is a contract, not new physics.
+
+K1.  A DATUM FLIP IS REFUSED.  A pure-fluid equation's enthalpy is on its
+publication's datum, not the elements datum; the source already states the
+rule (`src/thermo/pureFluid/PureFluidModel.H`, "Datum": valid only for a
+phase effectively pure in the flagged component; a flip across a model
+boundary "is hard-refused by the model-boundary audit ... dH ill-posed").
+What is missing is the PROOF: a probe of two sectors, one on a pure-fluid
+water package and one on a reacting package, joined by a stream, must be
+refused by name, and a closed single-package loop must not be.  If the probe
+shows the refusal does not fire, that is a defect to fix before anything
+else.  A bridge between the two datums (the formation enthalpy of the pure
+fluid's reference state) is NOT built; it is the declared way to lift the
+refusal later.
+
+K2.  WHO GOVERNS IS PRINTED.  When `pureFluids` sits beside an `equilibrium`
+block, the resolved view says, per component and per quantity (phase
+boundary, enthalpy, entropy, density, transport), which object answers, and
+the composition threshold at which the pure-fluid route gives way.  A
+witness pins those lines.
+
+K3.  A PAIR MAY HOLD SEVERAL NAMED PARAMETER SETS.  The identity of a set is
+(the species, the model and its convention profile, the set's name); a pair
+record gains `sets { <name> { parameters ...; provenance ...; validity ...;
+fittedTo vle | lle | vlle | calorimetry; } }` and `preferred <name>;`, the
+shape a component record already uses for its laws.  A case that needs
+another set says `set <name>;` beside the pair's `source`; the run prints
+the set used.  A record with one unnamed set reads as today (the set's name
+is `default`), so no existing record or case changes.  The ion components
+that share an atom's name (33 `distinctFrom` declarations) are RENAMED to
+their species names in a slice of their own; `distinctFrom` stays only as
+the grammar of a real homonym.
+
+K4.  THE CASE A STUDENT TAKES AWAY RUNS ALONE.  The exported case (the
+sealed form: its records copied and hashed) runs on a build whose catalogue
+is hidden, to the same result, and says so; a gate does exactly that on one
+case per family.
+
+Declined for the closure, with its reason: a refusal at a solver's TRIAL
+state as a recoverable failed step.  Today's behaviour is defined and
+witnessed (the run ends, by name); making it recoverable is an improvement
+of the solvers, not a missing contract.
 
 ## 8. Rejected
 

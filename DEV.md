@@ -4529,6 +4529,171 @@ accepts today, and that is a policy call.
 > pinned -- 11 of its local solvent records (benzene, cyclohexane, ethanol,
 > toluene, ...) carry Hansen triples the catalogue lacks and declare no
 > variation; they are the next one-home step of C428 (a).
+>
+> **C430 (Vitor, 2026-11-19, ~01:45: "para a suite e faz essa merda! Eu quero
+> o this is it!").**  AN ORDER, and on the content he is right: the final
+> sweep of tonight's batch (five door families, C429, C428 (a)) was in its
+> interface phase (no destructive gate running) and was stopped in its
+> integration tree; that tree is pushed as `integ/final-1118` (9a52244dc,
+> not main), and ONE sweep will now prove the larger batch instead of two
+> sweeps proving its halves (the batch rule).  The cost, stated: main stays
+> at tonight's earlier landings until that sweep passes.  "THIS IS IT" was
+> defined to him in these terms: the architecture is decided and written;
+> it is BUILT when (1) the last known two-homes defect, the silent backfill,
+> is closed, and (2) the three openings the design draws are cut -- the
+> stream's carried quantities (spike 5d), the door's third form (flow
+> curves, R7-R10), and the home of a sample's measured behaviour (R6).  The
+> material's own door (form 2) rests on (1) of the spike and follows it.
+> Four generals launched at once from `integ/final-1118`, disjoint slices,
+> common rules in a written brief; then one `--nightly` over everything.
+>
+> **C431: THE SECOND OUTSIDE REVIEW, WEIGHED (2026-11-19; it read the letter
+> of C430's claim, not the code).**  It did NOT accept "architecture
+> finished", and on five points it is right.  (1) THE DEFINITION PROMISED
+> TOO MUCH ("never reopening the stream, the door or the record grammar"):
+> accepted in full; the claim is now CONSOLIDATED FOR A DECLARED SCOPE --
+> contracts implemented, supported combinations verified, unsupported ones
+> refused by name (design record, new section 0).  (2) FIVE OPEN ITEMS
+> BELONG INSIDE THE CLOSURE, each needing a defined, verifiable behaviour,
+> not full physics: (a) the enthalpy datum between packages: prove the
+> conversion or REFUSE the connection; (b) a pure-fluid equation beside an
+> equilibrium block: the run says which governs each property and the
+> equilibrium; (c) several parameter sets for one pair: identity and
+> selection ("this is architecture of the data": accepted); (d) the case a
+> student downloads runs in a clean environment with its records verified;
+> (e) a refusal at a solver's TRIAL state against a definitive one --
+> PARTLY DECLINED: today's behaviour is defined and witnessed (the run ends,
+> by name; `table03_trial_state_refused`), so it does not block closure; a
+> recoverable trial refusal stays a candidate.  (3) CARRIED QUANTITIES:
+> "extensive is not conserved" -- the architect's Q1 said "conserved" and
+> was wrong; the contract is now basis + mixing + division + a balance
+> equation with its production terms, and the spike must show mixing,
+> division AND transformation (sent to the general in flight).  Its remark
+> that a continuous conversion need not be "another material": accepted as
+> a declared limit of scope (element masses could be carried with rates).
+> (4) THE COMPARATOR deserves tests of its own, apart from physics (small,
+> large, zero, negative; a multiplicative change of a small value must
+> fail; NaN and infinities never pass; missing or uncompared rows are
+> detected), and "every non-zero value relatively" is not universal (a
+> trace below a solver tolerance needs a justified absolute band beside the
+> relative one): accepted; and the three moves attributed by timeline are
+> NOT resolved until isolated by a counter-run.  (5) DO NOT ENLARGE THE
+> BATCH BEFORE TESTING IT: right, and it reverses what the architect did an
+> hour earlier on Vitor's order -- judged again on the content: four deep
+> slices (one opens the stream) on top of an unproven batch would make a
+> red sweep unreadable.  The integrated batch (`integ/final-1118`) is being
+> swept NOW, at reduced width beside the four generals (a stated exception
+> to "a sweep runs alone", with any timing failure re-run alone), and lands
+> on its own proof; the four slices land after, on theirs.  ALSO RIGHT ON
+> THE 41 %: the architect's own check confirmed Carothers on the published
+> conversions (1/(1-0.98142) = 53.83; 1/(1-0.96845) = 31.69) but could NOT
+> reproduce the conversion's fall from the density change by a second- or
+> third-order scaling (the residence time fell 13 %, the chain length's
+> excess 42 %); the polyesterification cases do not land until a directed,
+> independent integration of the case's own rate law explains it.
+>
+> **C431, THE 41 % IS EXPLAINED (2026-11-19, an independent general, no
+> file changed; note in the private Studies folder).**  The case's rate law
+> is PSEUDO-FIRST-ORDER in the monomer (`order 1`; the others 0), and the
+> reactor takes Q once at the feed, so the concentration cancels: p = 1 -
+> exp(-Da), Da = k tau, and with Carothers Xn = exp(Da).  The 13.3 % fall of
+> tau is Delta Da = -0.53, a factor exp(-0.53) = 0.589 on Xn (observed
+> 0.5887).  An independent integration reproduces BOTH published
+> conversions to nine digits (old basis v = 1.235e-4 m3/mol, the stored 25 C
+> volume; new v = 1.42433e-4 from the door's 927.87 kg/m3 at 450 K).  The
+> architect's second- and third-order estimates assumed a concentration
+> dependence the case does not have.  The polymer cases land with the
+> batch.  REGISTERED, not this slice's: the reactor does not update Q along
+> its length although the moles double in this reaction (one monomer -> one
+> repeat unit + one water); the same on both bases, a modelling limit of the
+> liquid PFR to state or to lift.
+>
+> **C432 (Vitor, 2026-11-19 04:30, during the final sweep: "eu nunca mais quero
+> calcular os 1260 casos outra vez! ... testar um por categoria! Se cada
+> categoria passa é desnecessário correr o resto!").**  MEASURED first: in the
+> last sweep the reuse key re-ran all 1260 curation fits (`1260 keyed, 0 with
+> an unchanged key`), correctly by its own rule -- the property kernel every
+> fit reaches had changed -- and their result lines account for about 10 800 s
+> of the sweep's item time; ONE fit, transport_c327, took 1019 s alone.
+> RULED, the request weighed: ONE PER CATEGORY IS DECLINED, because a fit is
+> its own dataset and a pass on one says nothing about the next (this night's
+> evidence: the 58 hidden moves sat in 12 particular cases; 22 of 86 exported
+> cases failed one by one while their families passed) -- the suite would go
+> green over a moved pair, the failure rule 4b forbids.  WHAT IS DONE INSTEAD
+> (the owner's aim, kept): (a) REPLAY BEFORE REFIT -- when a fit's key moved,
+> the suite first evaluates the fit's objective at its STORED parameters on its
+> stored dataset (one evaluation, not an optimisation); if the objective and
+> every published statistic equal the stored ones to the golden tolerance, the
+> engine did not move that fit and the verdict is REUSED, printed as such with
+> the replay's numbers; only a fit whose replay moved is re-fitted.  (b)
+> transport_c327 is investigated for its 1019 s.  (c) The curation fits stay
+> out of every tier but the full sweep.  Queued after the landing of
+> integ/all-1119.  AMENDED the same hour, on the owner's second objection ("se
+> se prova que funciona num, então funciona nos restantes!"), which is right
+> in its principle: a changed function need not be proved once per CASE, only
+> once per INPUT ROUTE it has.  The property kernel's routes are already
+> measured that way: `check_property_route_bench` answers 14 892 (record,
+> route) blocks bit for bit.  So (d) ROUTE-KEYED REUSE comes FIRST: a fit whose
+> key moved only through the property kernel, while the route bench is
+> byte-identical on every record the fit reads, is REUSED without a replay;
+> replay (a) is the fallback when a route moved; refit only when the replay
+> moved.  What stays out: proving one case per category, because the routes
+> differ inside a category (water by IAPWS-95, a salt solution by ideal
+> mixing with ions, a measured table by interpolation).
+
+> **C433 (Vitor, 2026-11-19 04:50, on greenAmmoniaPEQ's Henry block: "porque
+> tens o link dos binários e não tens o link dos componentes?"; then, on the
+> architect's first answer that kept `source` for an exception: "Se houver
+> exceção, os parâmetros têm de ficar na pasta em que isso acontece!").**
+> RULED: a pair's address is NOT written in a case.  A pair is found as a
+> component is: by (model, i, j) through the one cascade -- the case's own
+> `constant/parameters/<Model>/<i>-<j>.dat` (and a sector's), then the
+> catalogue, then data/local -- and an exception is a RECORD IN THE CASE'S
+> OWN FOLDER, declared as a component overlay is (`overlayOf` /
+> `variationOf`), never a path to elsewhere.  `source "<path>"` is retired:
+> the 52 tutorial entries that carry it are rewritten to `<i>-<j> { }` by a
+> tool that proves each pointed at the file the cascade finds (any that does
+> not is a defect found, reported by name, moved into the case's folder);
+> afterwards a `source` is refused by name with the line to write.  A named
+> parameter set (C431 K3) is `<i>-<j> { set <name>; }`.  No number moves:
+> the file read is the same.  Queued after the landing of integ/all-1119.
+
+> **C427, THE SPIKE'S VERDICT (2026-11-19, the architect on Fable, having
+> read the kinds' interface on the branch `build/last-carried`): KEPT, WITH FIVE
+> CONDITIONS BEFORE IT IS CALLED THE MECHANISM.**  What holds: kinds by the
+> explicit factory, each owning its mixing, division, state form, report
+> and TRANSFORMATION (a unit hands over the values it solved; a kind with no
+> production term refuses a change); the mixer and the splitter name no
+> kind; 106 cases byte-identical; mass and elements close on the probe;
+> state files round-trip; the three behaviours shown (the size distribution
+> transformed through the shipped mill, the chain moments through a probe
+> reactor against the closed form to 1e-14, a material's mass refused when a
+> reactor would change it).  It also FOUND A DEFECT: the splitter dropped
+> the size distribution on its branches.  What the design had wrong, now
+> ruled: a kind is EXTENSIVE, or INTENSIVE ON A CARRIER whose amount the
+> unit supplies as its weight (the size distribution is the second: a
+> stream cannot weigh it, it does not know molar masses).  THE CONDITIONS,
+> one slice on top of the spike's branch: (1) the 14 units that read or
+> write a size distribution DECLARE that they model it, and the exemption
+> `legacyUnchecked` is deleted -- "impossible by construction" must be true
+> of every kind, not of the new ones; (2) the batch driver and the batch
+> plant path refuse a carried quantity as the steady and time-integrated
+> paths do; (3) a kind that is a mass enters the MASS BALANCE REPORT through
+> its total (a material that the report cannot see is mass outside the
+> closure -- rule 4b); the element side waits for the material's analysis;
+> (4) `CarriedQuantity` loses the fields that belong to one kind (`order`,
+> `axis`, `edges`, `weight`): a kind's own attributes live in a block the
+> kind validates, so the stream's core type knows no kind either; (5) the
+> probe becomes a gate wired in the suite, its header naming the real
+> defect it would have caught (the splitter's lost distribution), with a
+> shipped witness of a splitter passing a distribution to its branches.
+> Measured and accepted: +24 bytes per stream.  NOT measured: the wall
+> clock (noise on a loaded laptop); retaken on the closing sweep's timings.
+> Registered for its own slice: the distribution's STORAGE still lives in
+> `ProcessStream::psd` and the `solids {}` wire.  On the outside reviewer's
+> question the spike answers YES IN PRINCIPLE: a continuously converting
+> solid's element masses fit as a vector-valued kind with a production
+> term, once (3) has its element form.
 
 
 
