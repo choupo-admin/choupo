@@ -2886,7 +2886,7 @@ def check_inventory(problems, notes):
         flags=re.S))
     declared = {}
     for unit, body in re.findall(
-            r'\{\s*unitName\s+(\w+)\s*;[^{]*designRules\s*\{[^}]*\}\s*'
+            r'\{\s*unitName\s+(\w+)\s*;[^{]*designRules\s*\{(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*\}\s*'
             r'inventory\s*\{\s*held\s*\((.*?)\)\s*;\s*\}', post_nc, re.S):
         declared[unit] = {s: float(f) for s, f in re.findall(
             r'\{\s*stream\s+(\w+)\s*;\s*fraction\s+([0-9.eE+-]+)\s*;\s*\}', body)}

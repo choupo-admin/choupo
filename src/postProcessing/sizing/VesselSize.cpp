@@ -17,6 +17,7 @@
 #include "VesselMechanics.H"
 #include "MaterialLimits.H"
 #include "DesignDefaults.H"
+#include "DrumSize.H"
 #include "core/Constants.H"
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
@@ -80,7 +81,16 @@ std::vector<EquipmentSizing> VesselSize::size(const std::string& unitName,
     const std::string flowKey  = designRules->lookupWordOrDefault("flowKey", "N_out_mol_s");
     const std::string flowUnit = designRules->lookupWordOrDefault("flowUnit", "mol/s");
     const bool flowKnown = k.count("T") && k.count("P") && k.count(flowKey);
-    const bool flowFree  = designRules->found("volume") && !flowKnown;
+    //  A SEPARATOR DRUM DECLARES `drum { ... }` (C318): its size comes from the
+    //  allowable vapour velocity, the liquid levels and the orientation
+    //  (`DrumSize`), not from a flow KPI.  It excludes the other bases.
+    const bool drumMode = designRules->found("drum");
+    if (drumMode && (designRules->found("volume") || designRules->found("residenceTime")
+                     || designRules->found("spaceVelocity")))
+        throw std::runtime_error("Vessel: unit '" + unitName + "' declares `drum {}`"
+            " and also a volume, residenceTime or spaceVelocity -- a drum is sized"
+            " by one basis only; remove the other.");
+    const bool flowFree  = drumMode || (designRules->found("volume") && !flowKnown);
     const scalar T = flowFree ? 0.0 : kpi("T");                 // K
     const scalar P = flowFree ? 1.0 : kpi("P");                 // Pa
 
@@ -92,12 +102,20 @@ std::vector<EquipmentSizing> VesselSize::size(const std::string& unitName,
 
     // --- Volume from exactly ONE design basis ----------------------------
     scalar V = 0.0;  std::string basis;
+    EquipmentSizing d;
+    drumSize::Result drumOut;
     //  `volume fromBatchPlan;` (DEV.md 4c C99): the vessel of a batch stage
     //  is the batch plan's V = S_j B / N_ip, so its volume has ONE home and
     //  follows the lot and the balance.  A sized item is ONE vessel, so a
     //  stage of several parallel units is refused here (it would be costed
     //  as one): price such a stage by a scaling quote instead.
-    if (designRules->found("volume")
+    if (drumMode)
+    {
+        d.unitName = unitName;  d.equipmentType = "vessel";  d.material = material.name;
+        drumOut = drumSize::size(unitName, result, designRules->subDict("drum"), d);
+        V = drumOut.V;  basis = drumOut.basis;
+    }
+    else if (designRules->found("volume")
         && std::holds_alternative<std::string>(designRules->entryValue("volume")))
     {
         const std::string w = designRules->lookupWord("volume");
@@ -212,7 +230,6 @@ std::vector<EquipmentSizing> VesselSize::size(const std::string& unitName,
     //  here, same key, same question).  They now come from the ONE home
     //  (`DesignDefaults`), which announces on use and marks the key here.
     //  NO VALUE CHANGED, the 2.5/3.0 disagreement included: see that header.
-    EquipmentSizing d;
     d.unitName       = unitName;
     d.equipmentType  = "vessel";
     d.material       = material.name;
@@ -226,7 +243,8 @@ std::vector<EquipmentSizing> VesselSize::size(const std::string& unitName,
         throw std::runtime_error("Vessel: material '" + material.name
             + "' has no sigma_y defined");
 
-    const scalar L_over_D = designDefault::valueOr(
+    const scalar L_over_D = drumMode ? drumOut.H / drumOut.D
+        : designDefault::valueOr(
         designRules, designDefault::vesselLoverD, "vessel", unitName, d);
     const scalar corrosionAllow = designDefault::valueOr(
         designRules, designDefault::corrosionAllow, "vessel", unitName, d);
@@ -236,8 +254,9 @@ std::vector<EquipmentSizing> VesselSize::size(const std::string& unitName,
     //  share (`MaterialLimits.H`): announced, never refused.
     materialLimits::pressure("vessel '" + unitName + "'", material, pressureDesign);
 
-    const scalar D = std::cbrt(4.0 * V / (constant::pi * L_over_D));   // m
-    const scalar H = L_over_D * D;                                     // m
+    const scalar D = drumMode ? drumOut.D
+                              : std::cbrt(4.0 * V / (constant::pi * L_over_D));   // m
+    const scalar H = drumMode ? drumOut.H : L_over_D * D;                         // m
     //  The ASME thin-wall shell, from the ONE home.  These two lines used to
     //  be written out here AND identically in `StirredTank.cpp`; the column
     //  sizer would have made four copies.  No number moved.

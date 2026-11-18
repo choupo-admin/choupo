@@ -26,6 +26,10 @@ Description
                                   absent or any other word is REFUSED)
         residenceTime  [s]    -> V = Q_gas * tau       (drum / separator)
         volume         [m^3]  -> V direct              (author-set)
+        drum { ... }          -> a SEPARATOR DRUM sized in detail by `DrumSize`
+                                  (C318): Souders-Brown velocity, levels,
+                                  orientation, nozzles; V, D, H are RESULTS.
+                                  Excludes the three bases above.
     Q_gas [m^3/s] is built from a molar-flow KPI (designRules.flowKey, default
     N_out_mol_s) at the unit's (T,P) via the ideal-gas law.  The pressure vessel
     is then sized ASME thin-wall exactly like StirredTank (D, L, wall, weight)
