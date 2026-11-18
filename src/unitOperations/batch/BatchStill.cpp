@@ -736,7 +736,11 @@ scalar BatchStill::phaseH_(const sVector& nv, scalar T, scalar vf)
     }
     try
     {
-        return thermo_->H_stream_formation(T, P_op_ > 0.0 ? P_op_ * 1.0e5 : 1.0e5,
+        //  P_op_ is in Pa (the dictionary reader converts `P 1.013 bar` to SI; the
+        //  header said "bar" and this line multiplied by 1e5 a second time, a
+        //  pressure of 1e10 Pa that nothing read until the liquid enthalpy gained
+        //  its pressure term, C390).
+        return thermo_->H_stream_formation(T, P_op_ > 0.0 ? P_op_ : 1.0e5,
                                  vf, z) * nTot;   // J/mol * kmol = kJ
     }
     catch (const std::exception& ex)

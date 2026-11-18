@@ -178,7 +178,7 @@ scalar BatchUnitOperation::packageEnthalpy_(const BatchState& pkg, bool& ok,
     try
     {
         return thermoPkg_->H_stream_formation(pkg.T,
-                   pkg.P > 0.0 ? pkg.P * 1.0e5 : 1.0e5, 0.0, z)
+                   pkg.P > 0.0 ? pkg.P : 1.0e5, 0.0, z)   // pkg.P is Pa (C390)
                * nTot;   // J/mol * kmol = kJ
     }
     catch (const std::exception& ex)

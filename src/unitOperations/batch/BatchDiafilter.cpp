@@ -496,7 +496,7 @@ BatchState BatchDiafilter::takeContinuousDischarge(scalar tNow)
     BatchState out;
     out.n.assign(state_.n.size(), 0.0);
     out.T  = state_.T;
-    out.P  = P_perm_ / 1.0e5;
+    out.P  = P_perm_;           // Pa, as every other BatchState (C390)
     out.vf = 0.0;
 
     //  SOLUTES: EXACT.  A solute has no inlet in this unit, so whatever

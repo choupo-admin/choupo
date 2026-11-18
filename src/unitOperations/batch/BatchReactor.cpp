@@ -862,7 +862,7 @@ void BatchReactor::emitImpulse_(scalar T_old, scalar T_new)
             // leak a fake residual into the balance.
             const scalar vf =
                 (energy_ == Energy::GasConstantV) ? 1.0 : 0.0;
-            const scalar P_Pa = state_.P > 0.0 ? state_.P * 1.0e5 : 1.0e5;
+            const scalar P_Pa = state_.P > 0.0 ? state_.P : 1.0e5;   // state_.P is Pa (C390)
             sVector z(state_.n.size());
             for (std::size_t i = 0; i < state_.n.size(); ++i)
                 z[i] = state_.n[i] / nTot;
@@ -910,7 +910,7 @@ scalar BatchReactor::isoMixH_(const sVector& nv) const
     for (auto v : nv) nTot += v;
     if (nTot <= 0.0) return 0.0;
     const scalar vf = (energy_ == Energy::GasConstantV) ? 1.0 : 0.0;
-    const scalar P_Pa = state_.P > 0.0 ? state_.P * 1.0e5 : 1.0e5;
+    const scalar P_Pa = state_.P > 0.0 ? state_.P : 1.0e5;   // state_.P is Pa (C390)
     sVector z(nv.size());
     for (std::size_t i = 0; i < nv.size(); ++i) z[i] = nv[i] / nTot;
     return thermo_->H_stream_formation(segT_, P_Pa, vf, z) * nTot;  // kJ

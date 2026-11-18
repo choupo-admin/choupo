@@ -949,7 +949,7 @@ if (flowsheetDict->found("cycle"))
             //  for a gas package (the fixed bed's effluent); pricing a gas
             //  on the liquid leg costs Hvap per mole, and the residual it
             //  produces reads exactly like a first-law violation.
-            return thermo.H_stream_formation(pkg.T, pkg.P > 0 ? pkg.P * 1.0e5 : 1.0e5,
+            return thermo.H_stream_formation(pkg.T, pkg.P > 0 ? pkg.P : 1.0e5,
                                    pkg.vf, z) * nTot;   // J/mol * kmol = kJ
         }
         catch (const std::exception&)
