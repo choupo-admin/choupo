@@ -4700,6 +4700,19 @@ accepts today, and that is a policy call.
 > drawing deliverable on top of the routes, worth having, but the numbers on
 > the line sheet are the engineering and come first.
 
+> **C443 (Vitor, 2026-11-19: "até era bom ter um gráfico supostamente
+> especificado em pós-processamento, dicionários, para o aluno ver um dado
+> plot mais intuitivo").**  Measured: the mechanism EXISTS --
+> `references ( ... )` + `views ( ... )` in a case's postDict or propsDict
+> (docs/design/a-post-processing-dictionary.md): the engine resolves every
+> name and writes the numbers, the GUI draws them first and computes
+> nothing.  But only FOUR cases declare views (column14 and three membrane
+> props cases).  RULED: (1) the rebuilt binary starter case (C439) declares
+> its T-x-y as its first view; (2) then every first-path case (`tier
+> tutorial;`) declares the one plot its lesson is about, so the student
+> opens on that plot; a view type a case needs and the engine lacks is
+> named and built, never drawn in the GUI.
+
 > **C442 (Vitor, 2026-11-19: "Parece que os EduTools precisam de um em
 > compressores?").**  Measured: no lesson is about compression (there is a
 > pump-system tool; compressors appear only in passing in seven lessons).
