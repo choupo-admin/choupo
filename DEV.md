@@ -4700,6 +4700,20 @@ accepts today, and that is a policy call.
 > drawing deliverable on top of the routes, worth having, but the numbers on
 > the line sheet are the engineering and come first.
 
+> **C442 (Vitor, 2026-11-19: "Parece que os EduTools precisam de um em
+> compressores?").**  Measured: no lesson is about compression (there is a
+> pump-system tool; compressors appear only in passing in seven lessons).
+> RULED (the architect's, pedagogy included since C00): yes, one EduTool,
+> "Compressing a gas": isentropic and polytropic work and efficiency, the
+> discharge temperature and why it limits one stage, staging with
+> intercooling (equal ratios per stage minimise the work for ideal gas,
+> derived), the work saved against one stage, and the real-gas correction
+> at the reference plant's 150 bar -- on the PEQ make-up compressors, every
+> number read from the engine by `file:line`.  ORDER: built AFTER the
+> compressor sizing of C440 (Brown 2005, Bloch 2006 in the folder), so the
+> lesson cites the staged design the engine will then print, not today's
+> single power number.
+
 > **C440 AUDIT DONE (2026-11-19, docs/audits/2026-11-19-c440-peq-sizing-audit.md,
 > read on origin/main).**  The reference plant's 17 units and two stores,
 > ranked by what a colleague reading its documents misses: (1) the 49 lines,
