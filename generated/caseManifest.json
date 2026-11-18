@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1891,
+  "cases": 1894,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 35
+  "anchored": 36
  },
  "cases": {
   "data/curation/batches/henry_sander": {
@@ -22886,12 +22886,14 @@
   "tutorials/props/curation/curate02_vle_heldout_ethanol_water": {
    "application": "choupoProps",
    "ops": [
-    "fitParameters"
+    "fitParameters",
+    "propertyScan1D"
    ],
    "thermo": {
     "formulation": "gammaPhi",
     "activityModels": [
-     "NRTL"
+     "NRTL",
+     "ideal"
     ]
    },
    "roles": [],
@@ -23988,6 +23990,37 @@
     ]
    },
    "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/membrane/dspmde02_lab_characterisation_template": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "series"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/membrane/labban2017_dspmde_validation": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
    "hasGolden": true
   },
   "tutorials/props/membrane/nanofiltran_geraldesAlves2008": {
@@ -27031,6 +27064,23 @@
     "formulation": "gammaGamma",
     "activityModels": [
      "NRTL"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash22_drum_sizing_benzene_toluene": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "unitModels": [
+    "rachfordRice"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
     ]
    },
    "roles": [],
@@ -31886,6 +31936,8 @@
     "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/membrane/dspmde01_water_treatment_salts",
+    "tutorials/props/membrane/dspmde02_lab_characterisation_template",
+    "tutorials/props/membrane/labban2017_dspmde_validation",
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/membrane/shortlist01_class_to_modules",
@@ -32122,6 +32174,7 @@
     "tutorials/steady/flash/flash20_ethanol_water_pcsaft",
     "tutorials/steady/flash/flash21_brine_co2_pitzer",
     "tutorials/steady/flash/flash21_freeze_concentration",
+    "tutorials/steady/flash/flash22_drum_sizing_benzene_toluene",
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
     "tutorials/steady/flash/leaf01_flash",
@@ -32844,6 +32897,7 @@
     "tutorials/steady/flash/flash20_ethanol_water_pcsaft",
     "tutorials/steady/flash/flash21_brine_co2_pitzer",
     "tutorials/steady/flash/flash21_freeze_concentration",
+    "tutorials/steady/flash/flash22_drum_sizing_benzene_toluene",
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
     "tutorials/steady/flash/leaf01_flash",
@@ -35440,6 +35494,7 @@
     "tutorials/props/compare/evidence01_methanol_water_points",
     "tutorials/props/compare/extractionShortcut01_perry_example15_1",
     "tutorials/props/curation/curate01_water_evidence_partition",
+    "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/curation/curate04_nrtl_methanol_water",
     "tutorials/props/curation/curate05_nrtl_acetone_methanol",
     "tutorials/props/curation/curate06_nrtl_isopropanol_water",
@@ -35489,6 +35544,8 @@
     "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/membrane/dspmde01_water_treatment_salts",
+    "tutorials/props/membrane/dspmde02_lab_characterisation_template",
+    "tutorials/props/membrane/labban2017_dspmde_validation",
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/membrane/shortlist01_class_to_modules",
@@ -35601,6 +35658,7 @@
     "tutorials/steady/flash/flash05_ternary_massFlows",
     "tutorials/steady/flash/flash06_sweep_T",
     "tutorials/steady/flash/flash07_gridsweep_TP",
+    "tutorials/steady/flash/flash22_drum_sizing_benzene_toluene",
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
     "tutorials/steady/flash/leaf01_flash",
@@ -36791,6 +36849,8 @@
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/curation/curate14_nrtl_butanol_water",
+    "tutorials/props/membrane/dspmde02_lab_characterisation_template",
+    "tutorials/props/membrane/labban2017_dspmde_validation",
     "tutorials/props/molecular/cosmoSAC03_ethanol_water_predictive",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
@@ -37790,6 +37850,7 @@
     "tutorials/props/compare/evidence01_methanol_water_points",
     "tutorials/props/compare/lkp02_n2_ch4_ar_112K",
     "tutorials/props/compare/unifacDortmund01_ethanol_water_reduced_pressure",
+    "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/curation/curate04_nrtl_methanol_water",
     "tutorials/props/curation/curate05_nrtl_acetone_methanol",
     "tutorials/props/curation/curate06_nrtl_isopropanol_water",
@@ -37852,6 +37913,7 @@
     "tutorials/props/thermoTest/model4_speciation_scaling"
    ],
    "series": [
+    "tutorials/props/membrane/dspmde02_lab_characterisation_template",
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1"
    ],
