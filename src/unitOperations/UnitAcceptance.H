@@ -63,6 +63,7 @@ Description
 
 #include "core/Dictionary.H"
 #include "core/Types.H"
+#include "streams/Carried.H"
 
 #include <functional>
 #include <optional>
@@ -193,6 +194,23 @@ struct UnitAcceptance
                                                  const ThermoPackage&)> test;
     };
     std::vector<Condition> refusesAlso;
+
+    //  THE CARRIED QUANTITIES THE UNIT MODELS (C427 spike, streams/Carried.H;
+    //  design record 5b Q2 and 5d S3).  A stream may carry a material's mass,
+    //  a polymer's moments; a unit either models a KIND (its balance, its
+    //  law) or the kind on an inlet is REFUSED by name before the solve --
+    //  nothing is ignored and nothing is copied through a unit that has no
+    //  rate for it.  The DEFAULT models none, so a unit that has not declared
+    //  one refuses every kind, which is the safe side.  `allKinds` is for a
+    //  unit whose law is the kind's own (the mixer adds, the splitter
+    //  divides); the size distribution is exempt for now (its units are not
+    //  declared yet; `CarriedKind::legacyUnchecked`).
+    struct Carried
+    {
+        bool                     allKinds = false;
+        std::vector<std::string> kinds;
+        std::string              sentence;   // what the unit does with them
+    } carried;
 };
 
 //  The word a ModelsRule / Capability / Scope is printed as (JSON, messages).
@@ -269,6 +287,17 @@ std::vector<std::string> acceptanceFindings(const UnitAcceptance& acc,
                                             const ThermoPackage&  thermo,
                                             const std::string&    where,
                                             const PassThroughDeclaration* pt = nullptr);
+
+//  THE CARRIED-QUANTITY CLAUSE: one finding per kind on the inlet that the
+//  unit does not model (empty = accepted).  Called for EVERY unit, declared
+//  or not, by the flowsheet's pre-solve pass (authored inlets) and by the
+//  hand-over to each unit (produced inlets), so a quantity entering a unit
+//  that neither models nor refuses it cannot happen.
+std::vector<std::string> carriedFindings(const UnitAcceptance& acc,
+                                         const std::string&    unitType,
+                                         const std::string&    where,
+                                         const std::string&    streamName,
+                                         const std::vector<CarriedQuantity>& carried);
 
 //  The unit's own check, at its solve: throws the findings, if any.
 void checkAcceptance(const UnitOperation&   unit,

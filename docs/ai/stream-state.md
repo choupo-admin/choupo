@@ -392,6 +392,21 @@ likewise appears only when some stream actually carries one.  A stream
 the topology does not know at all gets an EMPTY `sector` cell, never
 `(no sector)`: that phrase is a fact about a UNIT at the plant root.
 
+## Carried quantities (spike, C427)
+
+A stream carries, beside its molar part, an ordered set of carried quantities of a CLOSED list of kinds; each kind owns its basis, its law of mixing, its law of division, its balance (whether a production term may exist) and its state-file form.  In a state file they are one top-level block; an old file without it reads as "none carried":
+
+```
+carried
+{
+    flour   { kind materialMass; carrier wheatFlour; values ( 1.25 ); }   // kg/s, no production term
+    PS_mu0  { kind chainMoment;  carrier PS; order 0; values ( 0.002 ); } // kmol/s of chains
+    PS_mu2  { kind chainMoment;  carrier PS; order 2; values ( 8.5 ); }
+}
+```
+
+Kinds: `materialMass`, `chainMoment` (order 0 or 2 only; the first moment is derived from the segments), and `sizeDistribution` (the existing `particleSizeDistribution`, unchanged).  Only the mixer and the splitter model carried quantities today; a unit that does not model a kind REFUSES a stream that carries it, naming the kind, the unit and the stream (before the solve), and the time-integrated drivers refuse any.  Nothing is ignored and nothing is copied through a unit.  Witness and checks: `bin/curate/check_carried_spike.py` (a spike probe, not a tutorial).
+
 ---
 
 Full contract: `docs/architecture/stream-state-architecture.md`.

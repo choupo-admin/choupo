@@ -264,6 +264,18 @@ int Mill::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbosity)
 
     ParticleSizeDistribution feedPsd, prodPsd;
     feedPsd.edges = edges; feedPsd.diameter = xRep; feedPsd.massFrac = f;
+    //  THE TRANSFORMATION, through the carried kind (C427 spike, criterion
+    //  S1/3): the breakage balance above is this unit's own; the kind checks
+    //  that it moved mass between classes and made none, and hands back the
+    //  quantity.  The values are the ones solved, bit for bit.
+    {
+        CarriedQuantity fq;
+        fq.kind = "sizeDistribution"; fq.name = "particleSizeDistribution";
+        fq.carrier = "solid"; fq.axis = xRep; fq.edges = edges; fq.values = f;
+        fq.weight = mDot;
+        p = CarriedKind::New("sizeDistribution")
+                ->transform(fq, p, "mill").values;
+    }
     prodPsd.edges = edges; prodPsd.diameter = xRep; prodPsd.massFrac = p;
     const PsdMoments mf = psdMoments(edges, xRep, f);
     const PsdMoments mp = psdMoments(edges, xRep, p);

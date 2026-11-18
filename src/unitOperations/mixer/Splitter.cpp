@@ -87,6 +87,14 @@ int Splitter::solve(const DictPtr& dict,
         }
     }
 
+    //  Every carried quantity of the inlet (C427): each kind owns its law of
+    //  division, this unit knows none.  The size distribution is weighed by
+    //  the solid mass it describes.
+    scalar solidMass = 0.0;
+    for (std::size_t i = 0; i < n; ++i)
+        if (s_in[i] > 0.0) solidMass += s_in[i] * thermo.comp(i).MW();
+    const std::vector<CarriedQuantity> carriedIn = carriedOfInlet(*dict, solidMass);
+
     auto fractions = operDict->lookupList("fractions");
     if (fractions.empty())
         throw std::runtime_error("Splitter: 'fractions' list is empty");
@@ -124,6 +132,7 @@ int Splitter::solve(const DictPtr& dict,
         s.vf   = vf;                          // splitter preserves the phase
         s.s.assign(n, 0.0);
         for (std::size_t i = 0; i < n; ++i) s.s[i] = s_in[i] * fractions[k];
+        applyCarried(s, divideCarried(carriedIn, fractions[k]));
         produced_.push_back(s);
     }
 
@@ -141,6 +150,10 @@ UnitAcceptance Splitter::acceptance() const
         "every component of the inlet, divided by ONE fraction per outlet: "
         "it separates nothing, so every outlet has the inlet's composition, "
         "temperature and pressure";
+    a.carried.allKinds = true;
+    a.carried.sentence =
+        "every carried quantity divided with its carrier by the law of its "
+        "own kind: each outlet carries the outlet's fraction of it";
     return a;
 }
 

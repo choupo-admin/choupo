@@ -53,6 +53,7 @@ Description
 #pragma once
 
 #include "core/Types.H"
+#include "streams/Carried.H"
 
 #include <string>
 #include <vector>
@@ -191,6 +192,12 @@ struct ProcessStream
     // distribution of the combined solid phase.
     sVector                   s;     // solid molar flow per component [kmol/s]
     ParticleSizeDistribution  psd;   // particle-size distribution
+    //  THE OTHER CARRIED QUANTITIES (C427 spike, streams/Carried.H): the
+    //  ordered set a stream carries beside its molar part -- a material's
+    //  mass flow, a polymer's moments.  The size distribution above is the
+    //  first kind, kept in its own field for the 14 units that read it.
+    //  Empty on every stream of every case written before the spike.
+    std::vector<CarriedQuantity> carried;
     // Demand-driven flag.  Set true when the stream was declared
     // with `state saturatedVapour/Liquid` and no F --- typically a
     // utility (heating steam, cooling water) supplied by a plant header

@@ -565,4 +565,33 @@ void describeUnitsJson(std::ostream& os)
     describeAcceptancesJson(os, units);
 }
 
+std::vector<std::string> carriedFindings(const UnitAcceptance& acc,
+                                         const std::string&    unitType,
+                                         const std::string&    where,
+                                         const std::string&    streamName,
+                                         const std::vector<CarriedQuantity>& carried)
+{
+    std::vector<std::string> out;
+    for (const auto& q : carried)
+    {
+        if (carriedKindIsLegacyUnchecked(q.kind)) continue;
+        if (acc.carried.allKinds) continue;
+        if (std::find(acc.carried.kinds.begin(), acc.carried.kinds.end(), q.kind)
+            != acc.carried.kinds.end()) continue;
+        std::string modelled;
+        for (const auto& k : acc.carried.kinds) modelled += (modelled.empty() ? "" : ", ") + k;
+        out.push_back(where + ": inlet '" + streamName + "' carries the "
+            + q.kind + " '" + q.name + "' (carrier " + q.carrier
+            + "), and a " + unitType + " does not model that kind"
+            + (modelled.empty() ? std::string(" (it models no carried quantity)")
+                                : " (it models: " + modelled + ")")
+            + ".  A carried quantity is balanced by a unit that has its law,"
+              " or refused: it is never ignored and never copied through."
+              "  Remedy: take the quantity off this stream (drop it from the"
+              " state file), or route the stream through a unit that models"
+              " " + q.kind + " (a mixer or a splitter carry every kind).");
+    }
+    return out;
+}
+
 } // namespace Choupo

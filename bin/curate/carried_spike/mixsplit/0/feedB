@@ -1,0 +1,10 @@
+componentMolarFlows { benzene 90 kmol/h; toluene 60 kmol/h; }
+T 320 K;
+P 150000 Pa;
+phase liquid;
+carried
+{
+    flour   { kind materialMass; carrier wheatFlour; values ( 2.75 ); }
+    PS_mu0  { kind chainMoment; carrier PS; order 0; values ( 0.005 ); }
+    PS_mu2  { kind chainMoment; carrier PS; order 2; values ( 31.0 ); }
+}

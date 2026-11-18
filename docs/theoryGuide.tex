@@ -29000,6 +29000,56 @@ the disc stack's measured efficiency factor, the drive power.
 
 
 % ---------------------------------------------------------------------
+\subsection{Carried quantities on a stream (spike)}\label{sec:carried-quantities}
+
+A stream carries its molar part (\code{F}, \code{z}, \code{vf}, the solid flows
+\code{s}) and, beside it, an \emph{ordered set of carried quantities}, each a
+number or a vector with a declared basis, attached to a carrier (a material, a
+polymer, the solid).  The kinds are a closed list registered by the explicit
+factory pattern; this section states what each kind owns.  Status: a SPIKE
+(C427), run on three kinds; no material analysis, polymer property or kinetics
+is built on it, and the unit blocks that use it are the mixer and the splitter.
+
+\paragraph{What a kind owns.}  (i) its \emph{basis} and unit; (ii) its law of
+\emph{mixing}; (iii) its law of \emph{division} without fractionation; (iv) its
+\emph{balance}: whether a production or destruction term may exist for it; (v)
+its state-file form (a \code{carried \{ ... \}} block of the stream file) and
+its report line.  A carried quantity is not thereby conserved: two particles
+that merge keep their mass and halve their number.  A quantity changes only in
+a unit that solves its balance with a declared rate and hands the result to the
+kind, which refuses a change the kind does not allow and checks its invariants.
+
+\paragraph{The three kinds of the spike.}
+\begin{itemize}
+\item \code{materialMass}, the mass flow $\dot m$ of a declared material
+[kg/s].  Mass-like: mixing $\dot m = \sum_k \dot m_k$; a split sends the
+fraction $f$ of the carrier, $\dot m \to f\,\dot m$; \emph{no production
+term}, so a unit that would change it is refused by name.
+\item \code{chainMoment}, order $0$ or $2$ of a polymer's chain-length
+distribution, $\mu_j = \sum_i i^{\,j} n_i$ [kmol/s of chains $\times$ length$^j$].
+Moment-like: the same mixing and division laws; a production term exists
+(coupling and scission change $\mu_0$ and $\mu_2$).  The first moment is
+\emph{never carried}: it is derived from the segment flows, which are species.
+Step-growth coupling at a constant event rate $r$, mean field (the announced
+assumption): $\mathrm{d}\mu_0/\mathrm{d}\tau = -r$ and
+$\mathrm{d}\mu_2/\mathrm{d}\tau = 2r(\mu_1/\mu_0)^2$, so in plug flow
+$\mu_0 = \mu_{0,\mathrm{in}} - r\tau$ and
+$\mu_2 = \mu_{2,\mathrm{in}} + 2\mu_1^2(1/\mu_0 - 1/\mu_{0,\mathrm{in}})$.
+The probe \code{bin/curate/\_carriedProbe.cpp} reproduces it to $10^{-14}$.
+\item \code{sizeDistribution}, the existing particle-size distribution of the
+solid.  Intensive: mixing is the mass-weighted blend class by class on the
+case's grid (re-binned and announced otherwise, refused on two grids); division
+leaves the fractions unchanged; a transformation (the mill's breakage balance)
+redistributes mass between classes and makes none, which the kind checks.
+\end{itemize}
+
+\paragraph{What the unit declares.}  \code{UnitAcceptance::carried} lists the
+kinds a unit models; any other kind on an inlet is refused by name before the
+solve (the flowsheet's pre-solve pass for authored inlets, the hand-over for
+produced ones, the time-integrated driver at its state).  The mixer and the
+splitter model every kind because their law is the kind's own.
+\code{sizeDistribution} is exempt until the units that model it are declared.
+
 \section{Drying: spray dryer and solid dryer}\label{ch:drying-overview}
 
 %  This section and \S\ref{ch:drying} are a deliberate PAIR, not a double

@@ -1,0 +1,7 @@
+//  C427 SPIKE PROBE.
+//  feedA + feedB -> [M1 mixer] -> mixed -> [S1 splitter 0.3/0.7] -> sideA + sideB
+units
+(
+    { name M1; type mixer; inputs ( feedA feedB ); outputs ( mixed ); }
+    { name S1; type splitter; in mixed; outputs ( sideA sideB ); operation { fractions ( 0.3 0.7 ); } }
+);

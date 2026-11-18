@@ -28,6 +28,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "unitOperations/flowsheet/UnitInputs.H"
+#include "unitOperations/UnitAcceptance.H"
+#include "unitOperations/UnitOperation.H"
 
 #include <map>
 #include <memory>
@@ -89,7 +91,37 @@ DictPtr streamToDict(const ProcessStream& s, const ThermoPackage& thermo)
         }
         out->insert("solids", sol);
     }
+    carriedToDict(*out, s);     // C427: the stream's other carried quantities
     return out;
+}
+
+// ---------------------------------------------------------------------------
+//  S3 (C427): a carried quantity on an inlet whose unit does not model its
+//  kind is refused HERE, at the hand-over, before the unit's solve.  Costs
+//  nothing for a stream that carries nothing (the loop reads an empty vector).
+// ---------------------------------------------------------------------------
+static void refuseUnmodelledCarried(const std::string&               utype,
+                                    const std::string&               uname,
+                                    const std::vector<std::string>&  inNames,
+                                    const std::map<std::string, ProcessStream>& streams)
+{
+    std::unique_ptr<UnitOperation> unit;
+    std::vector<std::string> findings;
+    for (const auto& n : inNames)
+    {
+        const auto it = streams.find(n);
+        if (it == streams.end() || it->second.carried.empty()) continue;
+        if (!unit) unit = UnitOperation::New(utype);
+        for (auto& f : carriedFindings(unit->acceptance(), utype,
+                                       utype + " '" + uname + "'", n,
+                                       it->second.carried))
+            findings.push_back(std::move(f));
+    }
+    if (findings.empty()) return;
+    std::string msg = "Flowsheet: a carried quantity reaches a unit that does"
+                      " not model it (design record 5b/5d):\n";
+    for (const auto& f : findings) msg += "  " + f + "\n";
+    throw std::runtime_error(msg);
 }
 
 // ---------------------------------------------------------------------------
@@ -241,6 +273,7 @@ DictPtr buildAugmentedDict(const DictPtr&                          udict,
             dicts.push_back(streamToDict(streams.at(n), thermo));
         }
         out->insert("inputStreams", dicts);
+        refuseUnmodelledCarried(utype, udict->lookupWord("name"), names, streams);
     }
     if (udict->found("in") || singleInputs)
     {
@@ -251,6 +284,7 @@ DictPtr buildAugmentedDict(const DictPtr&                          udict,
             throw std::runtime_error("Flowsheet: input stream '" + inName
                 + "' not in registry");
         const auto& s = streams.at(inName);
+        refuseUnmodelledCarried(utype, udict->lookupWord("name"), { inName }, streams);
 
         auto feed = std::make_shared<Dictionary>("feed");
         feed->insert("F",     s.F);
@@ -299,6 +333,7 @@ DictPtr buildAugmentedDict(const DictPtr&                          udict,
             }
             out->insert("solids", sol);
         }
+        carriedToDict(*out, s);     // C427: beside `solids`, at the unit's top level
     }
     // No `in` and no `inputs`: legal for passive shaft sinks like
     // `electricLoad` that cross only an energy wire.  The augmented

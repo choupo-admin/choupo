@@ -255,19 +255,28 @@ words that this route cannot give the weight average or the polydispersity.
 It prints no atom balance, and admits an energy inconsistency in one heat of
 reaction.
 
-Q1.  A CARRIED QUANTITY is extensive, conserved, attached to a CARRIER (a
-component or a declared set of components of the stream), of a kind in a
-closed list, in declared units.  The first kinds: the mass flow of a
-material; the size distribution of a particulate carrier (existing); a
-moment of a polymer's chain-length distribution.
+Q1.  A CARRIED QUANTITY has a declared BASIS (what the number is, in which
+unit), is attached to a CARRIER (a component or a declared set of components
+of the stream), and is of a kind in a closed list.  EXTENSIVE DOES NOT MEAN
+CONSERVED (architect's correction, 2026-11-19, after an outside review): two
+particles that merge keep their mass and halve their number, and the moments
+of a distribution change under reaction.  The first kinds: the mass flow of a
+material (mass-like); the size distribution of a particulate carrier
+(existing; a redistribution of a mass); a moment of a polymer's chain-length
+distribution (moment-like).
 
-Q2.  ITS LAW IS PART OF ITS KIND, NOT OF THE CASE.  Carried quantities ADD
-when streams mix.  They DIVIDE WITH THEIR CARRIER when a unit divides a
-stream, unless the unit is a model of their fractionation and says so (a
-classifier for a size distribution).  They CHANGE only inside a unit that
-solves their balance with a declared rate.  A unit that changes the amount
-of a carrier and has no rate for what the carrier carries REFUSES by name:
-nothing is ignored, and nothing is copied through a reaction.
+Q2.  EACH KIND OWNS, AND THE CASE DOES NOT: its basis, its RULE OF MIXING, its
+RULE OF DIVISION, and its BALANCE EQUATION with the production or destruction
+terms that apply to its kind.  Mass-like kinds have NO production term;
+number-like and moment-like kinds have one.  Quantities ADD when streams mix
+(extensive kinds) or are weighed by their carrier (intensive kinds).  They
+DIVIDE WITH THEIR CARRIER when a unit divides a stream, unless the unit is a
+model of their fractionation and says so (a classifier for a size
+distribution).  They CHANGE only inside a unit that SOLVES THEIR BALANCE with
+a declared rate and hands the result to the kind, which refuses a change its
+kind does not allow and checks the kind's invariants.  A unit that changes
+the amount of a carrier and has no rate for what the carrier carries REFUSES
+by name: nothing is ignored, and nothing is copied through a reaction.
 
 Q3.  WHAT HAS NO SUCH LAW IS NOT CARRIED.  A moisture content, an analysis,
 a quality index are not extensive conserved quantities: moisture is the
@@ -354,6 +363,131 @@ S6  The design survives contact: anything the spike shows the record got
 OUT OF THE SPIKE: the material's analyses and enthalpy (M1-M4), any polymer
 property or kinetics, the GUI.  The spike's verdict is a page in this
 record: kept, changed, or abandoned, with the evidence.
+
+### 5d verdict (the spike was run 2026-11-19, branch `build/last-carried`): KEPT, with the changes below
+
+WHAT WAS BUILT.  `src/streams/Carried.{H,cpp}`: the closed list of kinds by
+the explicit factory (`CarriedKind::registerType/New/registerBuiltins`, called
+beside `SizeDistribution::registerBuiltins` in the four entry points).  A kind
+owns its basis, `mix`, `divide`, `allowsProduction`, `transform`, `writeState`,
+`readState`, `report`, `publishKpis`.  Kinds: `sizeDistribution`,
+`materialMass`, `chainMoment`.  `ProcessStream` gains `carried`; the mixer
+(`Mixer.cpp`) and splitter (`Splitter.cpp`) call `mixCarried` / `divideCarried`
+and name no kind; `UnitAcceptance::carried` declares the kinds a unit models.
+Probe: `bin/curate/check_carried_spike.py` (+ `_carriedProbe.cpp`, case
+`bin/curate/carried_spike/mixsplit`).
+
+THE THREE BEHAVIOURS, AND WHICH UNIT PROVED EACH FOR WHICH KIND.
+(1) MIXING: `sizeDistribution` (the shipped mixer, every mixer case golden
+byte-identical), `materialMass` and `chainMoment` (the mixer in the probe
+case, 4 and 0.007 and 39.5 to 1e-12).  (2) DIVISION WITHOUT FRACTIONATION: the
+shipped splitter, `materialMass` and `chainMoment` (0.3 / 0.7 of every value)
+and `sizeDistribution` (the fractions unchanged).  (3) TRANSFORMATION:
+`sizeDistribution` through the SHIPPED MILL (its breakage balance now hands its
+solution to `SizeDistributionKind::transform`, which checks that mass moved
+between classes and none was made; the mill's three cases and the closed
+circuit are byte-identical); `chainMoment` through the PROBE'S OWN reactor (no
+shipped unit solves a moment balance, the spike built none): constant-rate step
+growth, RK4 against the closed form to 2.5e-14 (mu0) and 1.4e-14 (mu2), the
+segments (mu1) unchanged and the chain count balanced by the events;
+`materialMass` through the same reactor is REFUSED by name when it would change
+(no production term).  The crystalliser was not routed through the mechanism.
+
+CRITERIA.  S1: `bin/runTests --scope` over the 106 cases of the 14 PSD-carrying
+units, every mixer, splitter, and every case naming a size distribution or a
+grid: 112 PASS, 0 FAIL, the conservation gates on that pass green; no golden
+moved (nothing to explain).  S2: the probe case runs under `choupoSolve`; the
+existing mass report closes 100.000 % and the element report 0.0000 % on it;
+the carried totals are checked by the script (a carried quantity has no report
+hook yet, see below).  S3: a `chainMoment` on an authored heater inlet is
+refused before any unit runs, naming kind, unit and stream; on a produced inlet
+(a mixer's outlet into a heater) it is refused at the hand-over; the
+time-integrated driver refuses it at its state.  S4: converged/ read back as 0/
+reproduces converged/ byte for byte; an old file without the block reads as
+none carried and none is written.  S5: see below.
+
+S5.  Memory: `sizeof(ProcessStream)` 440 -> 464 bytes (+24, one empty
+`std::vector`; 5.5 %), nothing allocated on a stream that carries nothing; the
+criterion "unchanged" is NOT met to the byte, and a null `shared_ptr` (+8)
+would be the cheaper form if it matters.  Wall clock: the 36 steady cases that
+carry a size distribution, each run 5 times alone on the new binary and on a
+build of the unmodified `integ/final-1118`, the minimum kept: 2.25 s -> 2.44 s
+in total (+8.6 %), of which one case (`crystalliser03`, 0.11 -> 0.26 s) is the
+whole excess; without it 2.14 -> 2.18 s (+2 %).  Each case runs in 30-300 ms on
+a laptop shared with three other builds, so the measurement is at the noise of
+the timer and the criterion (within 5 %) is NOT demonstrated either way; the
+only code added on the hot path of a case with no carried quantity is an empty
+vector test in the stream-table print, the mixer's group-by-name over at most
+one psd quantity, and one `CarriedKind::New` per psd blend.
+
+S6.  WHAT THE DESIGN GOT WRONG, OR LEFT OUT.
+a. EXTENSIVE IS NOT CONSERVED (the architect's correction, folded into Q1 and
+   Q2 above): the interface needed `allowsProduction` and `transform`, not
+   only mixing and division.  A kind's `transform` can check only what its OWN
+   quantity must satisfy; a CROSS-STREAM invariant (what leaves the solid
+   arrives in the gas) is the unit's and the balance report's, not the kind's.
+b. AN INTENSIVE KIND NEEDS THE CARRIER'S AMOUNT TO MIX.  The size distribution
+   is weighed by the solid mass, and a stream does not know molar masses: the
+   unit (the mixer, the splitter, the mill) computes the weight from the
+   package and hands it in.  The record said nothing of this; the rule is
+   "an intensive kind is weighed by the carrier's extensive total, read by the
+   unit from the package".
+c. THE SIZE DISTRIBUTION WAS MIGRATED IN LAWS, NOT IN STORAGE.  Its mixing law,
+   its state-file writer, its KPI publication and its transformation check now
+   live in the kind; its STORAGE is still `ProcessStream::psd` and the wire is
+   still `solids {}`, read by 14 units and 6 dict-wire sites.  Moving the
+   storage is a mechanical edit of those sites with no behavioural content and
+   would have risked S1 for no evidence; it is a slice of its own.  The reader
+   of a `particleSizeDistribution` block is also still in `StreamStateIO` (it
+   handles a declared continuous law).
+d. THE SPLITTER HAD BEEN DROPPING THE SIZE DISTRIBUTION on its branches (a
+   latent defect: it copied the solid flows and not the distribution).  The
+   kind's division law now gives each branch the fractions; no golden in the
+   106 cases moved, so no shipped case exercised it.
+e. SIZE DISTRIBUTION IS EXEMPT FROM THE ACCEPTANCE CHECK (`legacyUnchecked`)
+   because its 14 units have no declared acceptance; so S3 holds for the two
+   new kinds and for the size distribution only as before.  Declaring the 14
+   units (and the mill, which has no acceptance at all) is the next slice, and
+   until then "impossible by construction" is true of the new kinds only.
+f. S3 IS CLOSED AT THREE SEAMS, NOT ONE: the pre-solve pass (authored), the
+   hand-over in `buildAugmentedDict` (produced), the time-integrated driver's
+   state read.  The batch driver and the choupoBatch plant path were not
+   closed.  The check is generic (any unit class, declared or not), which the
+   per-unit `checkAcceptance` calls could not be: only a minority of the units call it.
+g. A CARRIED QUANTITY HAS NO BALANCE-REPORT HOOK.  The existing mass and
+   element reports see only the molar part, so S2's "closure printed by the
+   existing reports" holds for the molar part and the carried totals are
+   checked by the probe script.  A kind needs a `totals()` the reports sum
+   (a scalar for the mass-like kinds, a per-element vector below) before a
+   carried quantity can be in a first-law or element closure.
+h. THE REACTOR WAS A PROBE.  No shipped unit solves a moment balance, so the
+   transformation of `chainMoment` was proved on the probe's reactor through
+   the kind's `transform`, not inside a shipped unit; the first shipped unit to
+   carry a production term for it will be the polymer reactor itself.
+i. CAN A MATERIAL'S COMPOSITION BE CARRIED AS ELEMENT MASSES WITH DECLARED
+   RATES (a continuously converting solid)?  YES, INSIDE THIS MECHANISM,
+   from what the spike shows, with three named needs.  A kind `elementMass`
+   with a vector of values (the interface already allows a vector; the spike's
+   extensive kinds restricted themselves to one number) adds on mixing and
+   divides with its carrier like `materialMass`.  Its balance allows a
+   production term, because a converting solid (devolatilisation, char
+   burn-out) moves elements between the solid and the gas; the kind can check
+   only that the elements stay non-negative and that the unit supplied the
+   term (`transform` refuses a change with none).  NEEDS: (1) the cross-stream
+   invariant, element by element, is not the kind's: the element-balance
+   report must sum the carried element vector of every stream beside the
+   species' atoms (point g), and only then does the loss of carbon from the
+   solid equal its gain in the gas as a gated closure; (2) the unit supplies
+   the rate (kinetics, out of scope) and its transformation goes through
+   `transform`; (3) enthalpy from composition (heating value) is a property
+   of the quantity, not of the mechanism, and is not built.  Nothing in the
+   spike contradicts it; nothing in the spike proves it, since no unit
+   converts a carried quantity in a shipped flowsheet.
+j. NOT DONE, DELIBERATELY: `--describe-units` does not yet print
+   `UnitAcceptance::carried`; no shipped tutorial exercises the kinds (the
+   witness is a probe under `bin/curate/carried_spike/`, so the Tutorials
+   Guide and `docs/tutorials-catalogue.md` have no entry); the guide PDFs
+   were rebuilt for the Theory Guide only.
 
 ## 5c. The kinds of component (C427)
 
