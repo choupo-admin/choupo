@@ -265,7 +265,7 @@ def arm_blind():
              ("1e-14", "1e-17", "1e-4", 1, "round-off on a RELATIVE band is judged relatively now: FAIL")]
     for a, e, t, want_rc, what in cases:
         r = subprocess.run(["bash", "-c", fn + f'\nwithin_tol "{a}" "{e}" "{t}"; echo $?'],
-                           capture_output=True, text=True)
+                           capture_output=True, text=True, env=dict(os.environ, ROOT=str(ROOT)))
         rc = int((r.stdout.strip().splitlines() or ["99"])[-1])
         if rc != want_rc:
             problems.append(f"blind arm: within_tol {a} vs {e} band {t} ({what}) exited {rc}, expected {want_rc}")

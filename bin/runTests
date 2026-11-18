@@ -1553,14 +1553,9 @@ audit_catalogue() {
 #  the column are therefore: a plain number (relative, as above), `abs:<v>`
 #  (absolute) and `exact` (a word, compared by the check loop, never here).
 within_tol() {
-    awk -v a="$1" -v e="$2" -v t="$3" 'BEGIN{
-        if (a == "" )            { exit 2 }       # missing
-        ae = (e<0)?-e:e
-        diff = a-e; if (diff<0) diff=-diff
-        if (substr(t, 1, 4) == "abs:") { exit (diff <= substr(t, 5) + 0) ? 0 : 1 }
-        rel = (ae > 0) ? diff/ae : diff
-        exit (rel <= t) ? 0 : 1
-    }'
+    #  THE ONE COMPARISON lives in bin/curate/within_tol.awk (C429): this function
+    #  and bin/curate/check_golden_comparator.py both run that file.
+    awk -v a="$1" -v e="$2" -v t="$3" -f "$ROOT/bin/curate/within_tol.awk"
 }
 
 RECORD=
@@ -9378,6 +9373,19 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/gbands.$$
+
+    # Golden-comparator gate (C429, 2026-11-18): the ONE comparison
+    # (bin/curate/within_tol.awk) has tests of its own -- tiny, large, zero,
+    # signed, NaN/inf, missing and every class band at its edge.
+    if gate_exec "$ROOT/bin/curate/check_golden_comparator.py" > /tmp/gcmp.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "golden-comparator-gate" "$(gate_claim check_golden_comparator /tmp/gcmp.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_golden_comparator.py)\n" "golden-comparator-gate"
+        cat /tmp/gcmp.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gcmp.$$
 
     # impossible-phase pins (2026-08-27; moved after the walk 2026-09-05 --
     # it reads the single-pass cache, and before the walk there is none, so
