@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  pipe04_powerlaw_polymer_solution
+
+  A single PIPE carrying the book's polymer solution (rho 1075 kg/m3, 2500 kg/h) through 10 m
+  of 25 mm pipe.  The liquid is NON-NEWTONIAN: its flow curve is the property dictionary's
+  (constant/experiments/powerLawEx31.dat, kind adopted, the parameters of the example's
+  power law m = 3 Pa s^n, n = 0.5), read through a DERIVED FIT of the rows (`fit { model
+  powerLaw; }`, printed, nothing stored).  The pipe finds the wall shear stress that carries
+  the flow from the curve itself (eq. 3.46), asks the property door (form 3) for the apparent
+  viscosity there, and reports the Metzner-Reed Reynolds number: laminar.
+
+  ANCHOR.  The book prints (p. 114-115): Q = 6.46e-4 m3/s, V = 1.32 m/s, -dP = 110 kPa
+  (the closed form eq. 3.12 gives 110.1 kPa), centre-line velocity 2.2 m/s.  The same
+  fluid in a 37 mm pipe: 41.3 kPa; as a Newtonian fluid of 3 Pa s it would be 23 kPa.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        L1;
+        type        pipe;
+        in          feed;
+        outputs     ( delivered );
+
+        operation
+        {
+            geometry
+            {
+                D          0.025  m;
+                L          10.0  m;
+                roughness  4.6e-5  m;
+                dz         0.0  m;
+            }
+        }
+    }
+);

@@ -8726,6 +8726,76 @@ All film/saturation properties are IAPWS-IF97 water (incl. sigma via R1-76). The
 \subsection{hydraulics}
 \grouptheory{hydraulics}
 \clearpage
+\tutentry{agitation01\_helical\_ribbon\_polymer\_melt}{tutorials/steady/hydraulics/agitation01\_helical\_ribbon\_polymer\_melt}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (M1) at (0.0,-0.0) {\textbf{M1}\\[-1pt]{\tiny agitatedVessel}};
+  \draw[->] ($(M1.west)+(-1.05,0.00)$) -- ($(M1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(M1.east)+(0,0.00)$) -- ($(M1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {stirred};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Agitation power of a helical ribbon in a power-law polymer melt (Chhabra \& Richardson Example 8.5): D\_T 2.2 m, tip speed 1 m/s, m 200 Pa s\textasciicircum{}n, n 0.5 -- 9.84 kW}
+\begin{tutnarrative}
+A stirred vessel (`agitatedVessel`) holding the book's inelastic polymer melt (rho 980 kg/m3, power law m = 200 Pa s\textasciicircum{}n, n = 0.5), mixed by a helical ribbon with a tip speed of 1 m/s in a 2.2 m tank. WHO OWNS WHAT (R7): the flow curve is the FLUID's (the property dictionary, constant/experiments/powerLawEx85.dat); the Metzner-Otto constant k\_s = 30 and the laminar power constant K\_p (eq. 8.7, from the ribbon's geometry) are the IMPELLER's (the asset record constant/assets/helicalRibbonEx85.dat, kind impeller); the shear rate gamma\_avg = k\_s N is the UNIT's, and the unit asks the property door (form 3) for the apparent viscosity there.
+
+The shaft power is a Work item of the unit, W\_shaft\_kW, exactly as a pump's: it enters the plant boundary of the energy balance and leaves as the jacket's duty (isothermal, the default).
+
+ANCHOR. The book prints (Example 8.5, p. 417-418): D = 2.095 m, N = 0.152 Hz (9.1 rpm), gamma\_avg = 4.56 1/s, mu\_avg = 93.7 Pa s, Re = 6.98, K\_p = 494, P = 9838 W (9.84 kW), and the check Re\_cr = 183/Po\textasciicircum{}(1/3) = 44 (laminar). The book's own geometry has H/D = 1.5, past the 1.30 of eq. 8.7's data (p. 386): the case runs it as a HYPOTHESIS and says so.
+
+\end{tutnarrative}
+\tutreadme{agitatedVessel: the fluid's flow curve (property dictionary), the impeller's k\_s and K\_p (an asset record of kind impeller), the unit's gamma\_avg = k\_s N; the door gives mu\_app = 93.68 Pa s, Re = 6.977, K\_p = 494.4 (eq. 8.7), P = 9.833 kW (book 9.84), printed with k\_s's and K\_p's stated uncertainties as 6.97 .. 13.86 kW. The shaft power is the Work item W\_shaft\_kW; the jacket's duty closes the first law. The book's H/D = 1.5 is outside eq. 8.7's data (0.88-1.30): run as a declared hypothesis. agitation02 (yield stress) and agitation03 (shear-thickening) are the same case refused by name (R9).}
+\tutreadme{Run: runCase tutorials/steady/hydraulics/agitation01\_helical\_ribbon\_polymer\_melt.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0555092977778}
+\goldrow{stream}{feed}{T}{450}
+\goldrow{stream}{stirred}{F}{0.0555092977778}
+\goldrow{stream}{stirred}{T}{450}
+\goldrow{kpi}{M1}{D}{2.095}
+\goldrow{kpi}{M1}{F}{0.0555092977778}
+\goldrow{kpi}{M1}{Kp}{494}
+\goldrow{kpi}{M1}{N}{0.152}
+\goldrow{kpi}{M1}{P\_high\_W}{13857.5424556}
+\goldrow{kpi}{M1}{P\_low\_W}{6966.40741565}
+\goldrow{kpi}{M1}{Po}{70.8648189048}
+\goldrow{kpi}{M1}{Q\_kW}{-9.83272685656}
+\goldrow{kpi}{M1}{Re}{6.98}
+\goldrow{kpi}{M1}{T\_out}{450}
+\goldmore{19}
+\end{tutgolden}
+
+\clearpage
+\tutentry{agitation02\_yield\_stress\_refused}{tutorials/steady/hydraulics/agitation02\_yield\_stress\_refused}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (M1) at (0.0,-0.0) {\textbf{M1}\\[-1pt]{\tiny agitatedVessel}};
+  \draw[->] ($(M1.west)+(-1.05,0.00)$) -- ($(M1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(M1.east)+(0,0.00)$) -- ($(M1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {stirred};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{REFUSED: agitation power of a fluid with a yield stress (unyielded regions, R9)}
+\begin{tutnarrative}
+The agitation01 case with a yield stress added to the fluid's flow curve (a datum of its own, R8). The average-shear-rate concept needs ONE k\_s, and with a yield stress there are unyielded regions where the shear rate is zero (Chhabra \& Richardson, p. 395-396): the vessel REFUSES by name (R9; `.expect-nonconvergence`). The cavern model (eq. 8.12) is not built.
+
+\end{tutnarrative}
+\tutreadme{agitation01 with a yield stress on the flow curve: unyielded regions, no single k\_s (p. 395-396).}
+
+\clearpage
+\tutentry{agitation03\_shear\_thickening\_refused}{tutorials/steady/hydraulics/agitation03\_shear\_thickening\_refused}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (M1) at (0.0,-0.0) {\textbf{M1}\\[-1pt]{\tiny agitatedVessel}};
+  \draw[->] ($(M1.west)+(-1.05,0.00)$) -- ($(M1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(M1.east)+(0,0.00)$) -- ($(M1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {stirred};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{REFUSED: agitation power of a shear-thickening fluid (n = 1.3, R9)}
+\begin{tutnarrative}
+The agitation01 case with a SHEAR-THICKENING flow curve (a power law with n = 1.3, the case's own illustration). The viscosity is highest at the impeller, where the shear is highest, and "the impeller draws enormous power to rotate in this almost solidified material" (Chhabra \& Richardson, p. 396): the vessel REFUSES by name (R9; `.expect-nonconvergence`).
+
+\end{tutnarrative}
+\tutreadme{agitation01 with a power-law curve of index 1.3: the viscosity is highest at the impeller (p. 396).}
+
+\clearpage
 \tutentry{letdown01\_ammonia\_flashing}{tutorials/steady/hydraulics/letdown01\_ammonia\_flashing}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -8898,6 +8968,144 @@ The golden master pins the `source` of the pipe's viscosity as the stated table 
 \goldrow{kpi}{L1}{head\_loss\_m}{4.15016085949}
 \goldmore{13}
 \end{tutgolden}
+
+\clearpage
+\tutentry{pipe04\_powerlaw\_polymer\_solution}{tutorials/steady/hydraulics/pipe04\_powerlaw\_polymer\_solution}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (L1) at (0.0,-0.0) {\textbf{L1}\\[-1pt]{\tiny pipe}};
+  \draw[->] ($(L1.west)+(-1.05,0.00)$) -- ($(L1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(L1.east)+(0,0.00)$) -- ($(L1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {delivered};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Laminar pressure drop of a power-law polymer solution (Chhabra \& Richardson Example 3.1): 25 mm, 10 m, 2500 kg/h, m 3 Pa s\textasciicircum{}n, n 0.5 -- 110 kPa}
+\begin{tutnarrative}
+A single PIPE carrying the book's polymer solution (rho 1075 kg/m3, 2500 kg/h) through 10 m of 25 mm pipe. The liquid is NON-NEWTONIAN: its flow curve is the property dictionary's (constant/experiments/powerLawEx31.dat, kind adopted, the parameters of the example's power law m = 3 Pa s\textasciicircum{}n, n = 0.5), read through a DERIVED FIT of the rows (`fit \{ model powerLaw; \}`, printed, nothing stored). The pipe finds the wall shear stress that carries the flow from the curve itself (eq. 3.46), asks the property door (form 3) for the apparent viscosity there, and reports the Metzner-Reed Reynolds number: laminar.
+
+ANCHOR. The book prints (p. 114-115): Q = 6.46e-4 m3/s, V = 1.32 m/s, -dP = 110 kPa (the closed form eq. 3.12 gives 110.1 kPa), centre-line velocity 2.2 m/s. The same fluid in a 37 mm pipe: 41.3 kPa; as a Newtonian fluid of 3 Pa s it would be 23 kPa.
+
+\end{tutnarrative}
+\tutreadme{The liquid declares its FLOW CURVE in the property dictionary (door form 3, C421 (7)): rows of kind adopted generated from the example's tau = 3 gamma\textasciicircum{}0.5, read through a derived power-law fit (printed, nothing stored). The pipe finds the wall shear stress that carries the flow from the curve itself (eq. 3.46), asks the door for the apparent viscosity there, and reports the Metzner-Reed Reynolds number (216: laminar). -dP = 110.13 kPa against the book's 110 kPa; V = 1.316 m/s against 1.32 m/s; the closed form (eq. 3.12) gives the same 110.13 kPa.}
+\tutreadme{Run: runCase tutorials/steady/hydraulics/pipe04\_powerlaw\_polymer\_solution.}
+\begin{tutgolden}
+\goldrow{stream}{delivered}{F}{0.0385481236111}
+\goldrow{stream}{delivered}{T}{298.15}
+\goldrow{stream}{feed}{F}{0.0385481236111}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{kpi}{L1}{F}{0.0385481236111}
+\goldrow{kpi}{L1}{P\_in}{300000}
+\goldrow{kpi}{L1}{P\_out}{189871.224027}
+\goldrow{kpi}{L1}{dP\_elevation}{0}
+\goldrow{kpi}{L1}{dP\_fittings}{0}
+\goldrow{kpi}{L1}{dP\_friction}{110128.775973}
+\goldrow{kpi}{L1}{deltaP}{110000}
+\goldrow{kpi}{L1}{density}{1074.99997016}
+\goldrow{kpi}{L1}{frictionFactor}{0.295763139381}
+\goldrow{kpi}{L1}{head\_loss\_m}{10.446521069}
+\goldmore{17}
+\end{tutgolden}
+
+\clearpage
+\tutentry{pipe05\_herschelbulkley\_clay\_slurry}{tutorials/steady/hydraulics/pipe05\_herschelbulkley\_clay\_slurry}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (L1) at (0.0,-0.0) {\textbf{L1}\\[-1pt]{\tiny pipe}};
+  \draw[->] ($(L1.west)+(-1.05,0.00)$) -- ($(L1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(L1.east)+(0,0.00)$) -- ($(L1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {delivered};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Laminar pressure drop of a Herschel-Bulkley clay slurry (Chhabra \& Richardson Example 3.3): 40 mm, 500 m, 0.5 m/s, tau\_0 17 Pa -- 1.46 MPa}
+\begin{tutnarrative}
+A single PIPE carrying the book's yield-pseudoplastic clay slurry (rho 1500 kg/m3, tau\_0 = 17 Pa, m = 0.83 Pa s\textasciicircum{}n, n = 0.5) at 0.5 m/s through 500 m of 40 mm pipe. The flow curve is the property dictionary's: the ROWS (constant/experiments/herschelBulkleyEx33.dat, kind adopted), interpolated log-log between them, with the YIELD STRESS a datum of its own (`yieldStress \{ value 17 Pa; how ... \}`, R8: never read off a fit). The pipe solves eq. 3.46 on the table's own inverse: the wall stress that carries the flow, the plug radius R\_p = (tau\_0/tau\_w) R.
+
+ANCHOR. The book prints (p. 122-123): phi = tau\_0/tau\_w = 0.58, tau\_w = 29.31 Pa, -dP = 1.46e6 Pa, plug velocity 0.62 m/s, plug radius 11.6 mm.
+
+\end{tutnarrative}
+\tutreadme{The flow curve is the ROWS (log-log between them) with the yield stress, 17 Pa, a datum of its own (R8: never read off a fit). The wall stress comes from the table, not from the closed form: tau\_w = 29.336 Pa (book 29.31), phi = tau\_0/tau\_w = 0.5795 (0.58), -dP = 1.467 MPa (1.46 MPa), plug radius 11.59 mm (11.6 mm), plug velocity 0.619 m/s (0.62 m/s).}
+\tutreadme{Run: runCase tutorials/steady/hydraulics/pipe05\_herschelbulkley\_clay\_slurry.}
+\begin{tutgolden}
+\goldrow{stream}{delivered}{F}{0.0523162805556}
+\goldrow{stream}{delivered}{T}{298.15}
+\goldrow{stream}{feed}{F}{0.0523162805556}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{kpi}{L1}{F}{0.0523162805556}
+\goldrow{kpi}{L1}{P\_in}{2500000}
+\goldrow{kpi}{L1}{P\_out}{1033205.26145}
+\goldrow{kpi}{L1}{dP\_elevation}{0}
+\goldrow{kpi}{L1}{dP\_fittings}{0}
+\goldrow{kpi}{L1}{dP\_friction}{1466794.73855}
+\goldrow{kpi}{L1}{deltaP}{1.46e+06}
+\goldrow{kpi}{L1}{density}{1500}
+\goldrow{kpi}{L1}{frictionFactor}{0.625832424262}
+\goldrow{kpi}{L1}{head\_loss\_m}{99.7142917339}
+\goldmore{20}
+\end{tutgolden}
+
+\clearpage
+\tutentry{pipe06\_turbulent\_dodge\_metzner}{tutorials/steady/hydraulics/pipe06\_turbulent\_dodge\_metzner}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (L1) at (0.0,-0.0) {\textbf{L1}\\[-1pt]{\tiny pipe}};
+  \draw[->] ($(L1.west)+(-1.05,0.00)$) -- ($(L1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(L1.east)+(0,0.00)$) -- ($(L1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {delivered};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Turbulent pressure drop of a power-law polymer solution by the declared Dodge-Metzner method (eqs. 3.70-3.73): 100 mm, 100 m, 3 m/s, m 0.05 Pa s\textasciicircum{}n, n 0.7}
+\begin{tutnarrative}
+A dilute polymer solution (rho 1000 kg/m3, power law m = 0.05 Pa s\textasciicircum{}n, n = 0.7: the case's own numbers) at 3 m/s in 100 m of 100 mm pipe: Re\_MR is well past the laminar line (2100), so the pipe REFUSES unless the case declares a turbulent method (R9). This case declares `turbulent \{ method DodgeMetzner; \}` (Dodge \& Metzner 1959, eqs. 3.70-3.73, p. 138), with n' and m' at the prevailing wall stress taken from the laminar relation of the flow curve itself (the Metzner-Reed route, p. 151). The book's own warning is printed: the published turbulent methods differ by up to +-50 \% among themselves (p. 150-151). Its sister case pipe07 declares no method.
+
+\end{tutnarrative}
+\tutreadme{Re\_MR = 28925, far past the laminar line (2100): the pipe runs only because the case declares turbulent \{ method DodgeMetzner; \} (eqs. 3.70-3.73, window 2900-36000, n' 0.36-1). n' and m' are taken at the prevailing wall stress from the laminar relation of the flow curve. The numbers (f\_Fanning 0.004590, tau\_w 20.654 Pa, dP 82.6 kPa) were recomputed independently. The book's own warning is printed: the turbulent methods differ by up to +-50 \% (p. 150-151). pipe07 is the same case with no method declared: refused by name.}
+\tutreadme{Run: runCase tutorials/steady/hydraulics/pipe06\_turbulent\_dodge\_metzner.}
+\begin{tutgolden}
+\goldrow{stream}{delivered}{F}{1.30790701639}
+\goldrow{stream}{delivered}{T}{298.15}
+\goldrow{stream}{feed}{F}{1.30790701639}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{kpi}{L1}{F}{1.30790701639}
+\goldrow{kpi}{L1}{P\_in}{500000}
+\goldrow{kpi}{L1}{P\_out}{417384.331857}
+\goldrow{kpi}{L1}{dP\_elevation}{0}
+\goldrow{kpi}{L1}{dP\_fittings}{0}
+\goldrow{kpi}{L1}{dP\_friction}{82615.6681434}
+\goldrow{kpi}{L1}{deltaP}{82615.6681434}
+\goldrow{kpi}{L1}{density}{1000}
+\goldrow{kpi}{L1}{frictionFactor}{0.0183590373678}
+\goldrow{kpi}{L1}{head\_loss\_m}{8.42445362518}
+\goldmore{17}
+\end{tutgolden}
+
+\clearpage
+\tutentry{pipe07\_turbulent\_refused}{tutorials/steady/hydraulics/pipe07\_turbulent\_refused}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (L1) at (0.0,-0.0) {\textbf{L1}\\[-1pt]{\tiny pipe}};
+  \draw[->] ($(L1.west)+(-1.05,0.00)$) -- ($(L1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(L1.east)+(0,0.00)$) -- ($(L1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {delivered};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{REFUSED: turbulent flow of a power-law polymer solution with no turbulent method declared (R9)}
+\begin{tutnarrative}
+A dilute polymer solution (rho 1000 kg/m3, power law m = 0.05 Pa s\textasciicircum{}n, n = 0.7: the case's own numbers) at 3 m/s in 100 m of 100 mm pipe: Re\_MR is well past the laminar line (2100), so the pipe REFUSES unless the case declares a turbulent method (R9). This case declares NO method, so the run is REFUSED by name (`.expect-nonconvergence`); its sister pipe06 declares `turbulent \{ method DodgeMetzner; \}` (Dodge \& Metzner 1959, eqs. 3.70-3.73, p. 138), with n' and m' at the prevailing wall stress taken from the laminar relation of the flow curve itself (the Metzner-Reed route, p. 151). The book's own warning is printed: the published turbulent methods differ by up to +-50 \% among themselves (p. 150-151).
+
+\end{tutnarrative}
+\tutreadme{pipe06 without its turbulent \{ method DodgeMetzner; \} line. Marked .expect-nonconvergence: the refusal names the Reynolds number, the laminar limit and the line to write.}
+
+\clearpage
+\tutentry{pipe08\_flowcurve\_uncorrected\_refused}{tutorials/steady/hydraulics/pipe08\_flowcurve\_uncorrected\_refused}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (L1) at (0.0,-0.0) {\textbf{L1}\\[-1pt]{\tiny pipe}};
+  \draw[->] ($(L1.west)+(-1.05,0.00)$) -- ($(L1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(L1.east)+(0,0.00)$) -- ($(L1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {delivered};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{REFUSED: capillary readings without the Bagley end-effect correction and the slip test are not a flow curve (R8)}
+\begin{tutnarrative}
+The pipe04 case with a flow-curve record that claims to be capillary-rheometer readings but declares only two of the four corrections a capillary needs (Rabinowitsch-Mooney and the laminar-only exclusion; NOT the Bagley end-effect correction and NOT the wall-slip test). R8: such readings are REFUSED as a flow curve, naming the correction missing (`.expect-nonconvergence`). A raw rheometer reading is a flow curve only after the instrument's corrections (Chhabra \& Richardson, p. 36).
+
+\end{tutnarrative}
+\tutreadme{The record claims instrument capillary and declares two of the four corrections a capillary needs; the refusal names the first one missing (the Bagley end-effect correction).}
 
 \clearpage
 \tutentry{pumpSystem01\_operating\_point}{tutorials/steady/hydraulics/pumpSystem01\_operating\_point}

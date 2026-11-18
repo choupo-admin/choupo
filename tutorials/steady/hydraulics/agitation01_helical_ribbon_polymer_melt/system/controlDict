@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Meta-control for tutorial agitation01_helical_ribbon_polymer_melt.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Agitation power of a helical ribbon in a power-law polymer melt (Chhabra & Richardson Example 8.5): D_T 2.2 m, tip speed 1 m/s, m 200 Pa s^n, n 0.5 -- 9.84 kW";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

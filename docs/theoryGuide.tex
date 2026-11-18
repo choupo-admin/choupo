@@ -3502,6 +3502,85 @@ and \file{tutorials/steady/hydraulics/pipe03\_sucrose\_syrup\_measured} (a pipe 
 101--109).  The gate \code{check\_table\_laws}, arm (l), recomputes every value
 independently and holds the refusals above.
 
+\subsection{A liquid's flow curve: the door's third form}\label{sec:flow-curve}
+
+A liquid whose viscosity depends on how fast it is sheared has no single
+viscosity, and a number typed into a unit would be a number nobody declared.
+The design record \file{docs/design/measured-facts-materials-and-flow-curves.md}
+(C421~(7), rules R1--R10) gives such a liquid its own record and its own form
+of the property door.  The sources are Chhabra and
+Richardson~\cite{ChhabraRichardson2008} (\emph{Non-Newtonian Flow and Applied
+Rheology}, 2nd ed.; page numbers below are the book's printed ones).
+
+\paragraph{Who owns what (R7).}  The \emph{flow curve} is the fluid's and lives in
+the property dictionary, declared Newtonian \emph{by absence}:
+\code{transport \{ liquid \{ rheology \{ measured \{ <name> \{ use method;
+interpolation logLog; reason "..."; [fit \{ model powerLaw; \}] \} \} \} \} \}}.
+The \emph{shear} is the unit's, from its own geometry (a pipe's wall stress, a
+stirred vessel's $k_s N$); the impeller's constants are an asset record.  A unit
+never holds a viscosity; a property dictionary never holds a speed.
+
+\paragraph{The experiment record, and what makes readings a flow curve (R8).}
+The file \file{constant/experiments/<name>.dat} is an experiment record of kind
+\code{flowCurve}: \code{provenance} with a \code{citation}, a \code{kind}
+(\code{measured}, \code{adopted} or \code{estimated}, R3) and a \code{basis};
+\code{system} and \code{solvent}; \code{conditions} (the state of the sample:
+$T$, the mass fractions, and the \emph{instrument} with the \emph{corrections
+applied}); two columns of \code{gamma} (1/s), \code{tau} (Pa) and \code{mu}
+(Pa\,s); an optional \code{authorised} box; and an optional
+\code{yieldStress}.  A raw rheometer reading is a flow curve only after the
+instrument's corrections (the book, p.~36), so a record that does not declare
+them is refused \emph{by name}:
+\begin{center}\small
+\begin{tabular}{ll}
+instrument & corrections required in \code{corrected ( ... )} (book pages)\\\hline
+\code{capillary} & \code{RabinowitschMooney} (eq.~2.21, p.~60), \code{endEffects} (Bagley, p.~63--64), \code{slipChecked} (p.~68--70), \code{laminarOnly} (p.~75)\\
+\code{concentricCylindersNarrowGap} & \code{endEffects}, \code{slipChecked} (p.~76--78)\\
+\code{concentricCylindersWideGap} & \code{wideGapShearRate} (eqs.~2.38--2.41, p.~79--80), \code{endEffects}, \code{slipChecked}\\
+\code{coneAndPlate} & \code{gapChecked} (p.~83), \code{slipChecked}\\
+\code{parallelPlates} & \code{parallelPlateStress} (eq.~2.47, p.~87), \code{slipChecked}\\
+\code{model} & none: rows generated from a stated equation, so \code{kind} must be \code{adopted} or \code{estimated}
+\end{tabular}
+\end{center}
+The shear stress must \emph{rise} with the shear rate: a falling branch is slip,
+thixotropy or an instrument artefact (p.~64, 68, 80).  A \textbf{yield stress is a
+datum of its own} (\code{yieldStress \{ value; how; \}}), never read off a fit:
+for the same fluid the power-law, Bingham, Casson and Herschel--Bulkley fits give
+50.45, 42.58 and 32\,Pa where a vane gives 38.2\,Pa (Example~1.2, p.~23--25).
+
+\paragraph{The three domains (R2).}  The support is the span in shear rate of the
+rows, computed; the authorised domain is the record's
+\code{authorised \{ gamma (lo hi); T (lo hi); reason "..."; \}} (default: the
+support, and the stated $T$ and composition).  Between support and authorised
+the \emph{chord of the end segment} (log--log) is held and the largest excursion
+announced and restated at the end of the run; outside it the run refuses, whoever
+asks --- ``extrapolation should be avoided'' (p.~36).  The interpolation is
+declared: \code{logLog} (a power law between neighbouring rows, in
+$\tau-\tau_y$) or \code{linear}.
+
+\paragraph{A derived fit is a view (R1).}  \code{fit \{ model powerLaw |
+Bingham | HerschelBulkley; \}} fits at load, \emph{prints} the parameters, the
+residual of every row and the range fitted, and stores nothing:
+$\tau = m\dot\gamma^{\,n}$ (eq.~1.12) by least squares of $\ln\tau$ on
+$\ln\dot\gamma$; $\tau=\tau_y+\mu_B\dot\gamma$ (eq.~1.17) through the datum;
+$\tau=\tau_y+m\dot\gamma^{\,n}$ (eq.~1.18) on $\ln(\tau-\tau_y)$.  Bingham and
+Herschel--Bulkley \emph{require} the yield-stress datum.  Two fits of one dataset
+are two views of one fact, never two facts.
+
+\paragraph{The door, form 3.}  \code{liquidProperty::apparentViscosity(thermo, T,
+P, x, shear)} takes the shear \emph{the unit supplies} --- a rate or a stress ---
+and returns $\mu_{app}=\tau/\dot\gamma$ (p.~6) with the support status, recorded
+in the run's liquid-properties table as \code{flowCurve.<name>}.  The Newtonian
+question (\code{viscosityLiquid}, form~1) is \emph{refused} for a liquid that
+declares a flow curve: it has no one viscosity.  \code{timeDependent yes} is
+refused wherever the curve is asked (R9: the book states no general law for a
+thixotropic fluid, p.~22).
+
+\paragraph{Witnesses.}  \file{tutorials/steady/hydraulics/pipe04\_powerlaw\_polymer\_solution},
+\file{pipe05\_herschelbulkley\_clay\_slurry} and
+\file{agitation01\_helical\_ribbon\_polymer\_melt}, each held to the book's printed
+result (\S\ref{sec:pipe-nonnewtonian}, \S\ref{sec:agitated-vessel}).
+
 % ---------------------------------------------------------------------
 \section{Where a unit takes its liquid properties from}\label{sec:liquid-property-sources}
 
@@ -27182,6 +27261,64 @@ Churchill} for \code{Haaland} / \code{Colebrook} and watch $f$ barely
 move).
 \end{tutoriallink}
 
+\subsection{Non-Newtonian laminar flow: the wall stress from the flow curve}\label{sec:pipe-nonnewtonian}
+
+When the liquid declares a flow curve (\S\ref{sec:flow-curve}), the pipe does not
+form $\mathrm{Re}=\rho vD/\mu$ with a viscosity it was never given.  For a
+time-independent fluid whose shear rate is a function of the shear stress,
+$\dot\gamma=f(\tau)$, without wall slip, the mean velocity at a wall stress
+$\tau_w$ is exactly (eq.~3.46, p.~124--125)
+\begin{equation}
+V=\frac{R}{\tau_w^{3}}\int_{\tau_y}^{\tau_w}\tau^{2}f(\tau)\,\mathrm d\tau ,
+\qquad -\frac{\Delta p}{L}=\frac{4\tau_w}{D}\ \ (\text{eq.\ 3.2, p.\ 111}),
+\end{equation}
+($f=0$ below the yield stress $\tau_y$: the plug).  The pipe integrates the curve's own
+inverse $\tau\mapsto\dot\gamma$ by composite Gauss--Legendre on $\ln(\tau-\tau_y)$ with a
+breakpoint at every row, finds the $\tau_w$ that carries the flow, and asks the door
+(form~3) for the apparent viscosity at that wall stress, whose state, time dependence
+and domain it refuses.  The integral needs the curve \emph{from zero stress} and a
+table does not give it: the chord of the first segment is taken below the lowest
+measured rate, the share of the flow that stands on it is printed and announced.
+
+\paragraph{The Reynolds number and its limit.}  With $n'=\mathrm d\ln\tau_w/\mathrm d\ln(8V/D)$
+(eq.~2.20, computed pointwise from the laminar relation itself) and $m'=\tau_w/(8V/D)^{n'}$,
+the Metzner--Reed number is $\mathrm{Re}_{MR}=\rho V^{2-n'}D^{n'}/(8^{n'-1}m')=\rho VD/\mu_{eff}$
+with the \emph{effective} viscosity $\mu_{eff}=\tau_wD/(8V)$ (eqs.~3.57--3.58, p.~127) --- not the
+point value $\tau/\dot\gamma$ at the wall --- and the laminar friction factor is
+$f_F=16/\mathrm{Re}_{MR}$ (eq.~3.56).  The laminar relation ends at $\mathrm{Re}_{MR}=2100$,
+``the widely accepted figure ... for time-independent fluids characterized in terms of $n'$''
+(p.~133).  The pipe's \code{frictionFactor} KPI is the Darcy factor, $4f_F$, like the Newtonian path's.
+
+\paragraph{Turbulent flow is refused unless a method is declared (R9).}  Past 2100 the
+pipe stops, naming the number, unless \code{operation \{ turbulent \{ method DodgeMetzner; \} \}}.
+That method is
+\begin{equation}
+\frac1{\sqrt{f_F}}=\frac{4}{n'^{0.75}}\log_{10}\!\big[\mathrm{Re}_{MR}f_F^{(2-n')/2}\big]-\frac{0.4}{n'^{1.2}}
+\end{equation}
+(eqs.~3.70--3.73, p.~138), with $n'$ and $m'$ taken at the \emph{prevailing} wall stress from the
+laminar relation (the Metzner--Reed route, p.~151), valid on the data it was fitted to,
+$2900\le\mathrm{Re}_{MR}\le36\,000$, $0.36\le n'\le1$; outside, or between 2100 and 2900, the
+pipe refuses.  The book's own warning is printed: the published methods differ by up to
+$\pm50\,\%$ among themselves, where Newtonian turbulent correlations agree to $\pm5\,\%$
+(p.~150--151).  A \code{viscoelastic yes} record past the laminar limit is refused (p.~133, 137).
+The fittings' Newtonian loss coefficients are applied with a warning: the book finds little
+reliable information, and in laminar flow $K$ varies as $1/\mathrm{Re}$ (p.~190).
+
+\begin{example}[Chhabra and Richardson, Examples 3.1 and 3.3]
+\emph{3.1} (p.~114--115): polymer solution, $\rho=1075$\,kg/m$^3$, 2500\,kg/h, $D=25$\,mm,
+$L=10$\,m, $m=3$\,Pa\,s$^n$, $n=0.5$.  The book gets $V=1.32$\,m/s and $-\Delta p=110$\,kPa
+(a Newtonian fluid of 3\,Pa\,s would give 23\,kPa).  \emph{3.3} (p.~122--123): clay slurry,
+$\rho=1500$, $\tau_y=17$\,Pa, $m=0.83$, $n=0.5$, $D=40$\,mm, $L=500$\,m, $V=0.5$\,m/s:
+$\phi=\tau_y/\tau_w=0.58$, $\tau_w=29.31$\,Pa, $-\Delta p=1.46$\,MPa, plug radius 11.6\,mm.
+The witnesses reproduce both from the flow curve, not from the closed forms.
+\end{example}
+
+\begin{tutoriallink}
+\file{tutorials/steady/hydraulics/pipe04\_powerlaw\_polymer\_solution} (Example~3.1, a derived
+power-law fit of the rows) and \file{pipe05\_herschelbulkley\_clay\_slurry} (Example~3.3, the rows
+as a table with the yield stress as a datum).
+\end{tutoriallink}
+
 \subsection{Gas-liquid two-phase flow: Lockhart--Martinelli}\label{sec:pipe-twophase}
 
 When the feed flashes two-phase at $(T,P)$ --- the vapour fraction
@@ -27269,6 +27406,76 @@ water --- it biases the \emph{absolute} $\Delta P$, not the model structure.
 water; the two-phase path activates on its own, prints $X$, $\phi_L^2$, the
 holdup and the regime, and lets you compare \code{LockhartMartinelli} against
 \code{homogeneous}.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
+\section{Power of a stirred vessel: the average-shear-rate concept}\label{sec:agitated-vessel}
+
+The procedure and every constant below are Chhabra and Richardson's~\cite{ChhabraRichardson2008}
+(Ch.~8; page numbers are the book's printed ones); the helical-ribbon correlation is Delaplace and
+Leuliet's, as that book gives it (eq.~8.7).
+
+\begin{whatyoulllearn}
+The power an impeller draws is a fact of the impeller, the fluid and the speed, and
+it is \emph{energy}: it enters the vessel's balance as shaft work and leaves as heat in
+the contents.  This section follows Chhabra and Richardson (Ch.~8): the Metzner--Otto
+average shear rate turns a non-Newtonian liquid into a Newtonian one of apparent
+viscosity $\mu_{app}(k_sN)$, and the Newtonian laminar law gives the power.  What the
+concept cannot do --- yield-stress, shear-thickening, viscoelastic liquids --- is
+refused by name.
+\end{whatyoulllearn}
+
+\paragraph{Where the power lives.}  In the unit, not its sizer: the \code{stirredTank}
+sizer runs after the pass and cannot put work into a balance.  The unit \code{agitatedVessel}
+publishes \code{W\_shaft\_kW}, an energy item of kind Work exactly as a pump's, so the plant
+boundary of the energy balance carries it; in \code{thermalMode isothermal} (default) the jacket
+removes it ($Q=-W$, published), in \code{adiabatic} the contents warm up.  (The \code{cstr} does
+not take an agitator in this slice; the vessel is a mixing and holding unit.)
+
+\paragraph{Who owns what (R7).}  The flow curve is the fluid's (\S\ref{sec:flow-curve}).
+The impeller is an \emph{asset record} of kind \code{impeller} (\file{constant/assets/} or
+\file{data/standards/assets/}): its geometry ratios, the Metzner--Otto constant $k_s$ \emph{with
+its stated uncertainty} (``not uncommon ... $\pm25$--30\,\%'', p.~395), the laminar constant $K_p$
+(a value, or eq.~8.7 for a helical ribbon, with its stated $\pm20\,\%$ and its data window), the end
+of the laminar line, optionally a turbulent $\mathrm{Po}_t$, each with its source.  The speed and
+the vessel diameter are the unit's.
+
+\paragraph{The procedure (p.~391--392).}
+\begin{align}
+\dot\gamma_{avg}&=k_sN &&\text{(eq.\ 8.9)}\\
+\mu_{app}&=\tau/\dot\gamma\ \text{at}\ \dot\gamma_{avg} &&\text{(the door, form 3)}\\
+\mathrm{Re}&=\rho ND^2/\mu_{app} &&\text{(eq.\ 8.1)}\\
+\mathrm{Po}\,\mathrm{Re}&=K_p,\quad P=K_p\,\mu_{app}N^2D^3=\mathrm{Po}\,\rho N^3D^5 &&\text{(p.\ 385; eq.\ 8.5)}
+\end{align}
+with $K_p=91N_r^{0.79}[0.5(D_T/D-1)]^{-0.31}(s/D)^{-0.37}(W/D)^{0.16}(H/D)$ for a helical ribbon
+(eq.~8.7, 148 configurations, $\pm20\,\%$, $1.012\le D_T/D\le1.38$, $0.07\le W/D\le0.22$,
+$0.32\le s/D\le2.16$, $0.88\le H/D\le1.30$, $N_r=1,2$).  A geometry outside that window is
+\emph{refused} unless the unit declares \code{outsideCorrelationWindow \{ reason "..."; \}}, a
+hypothesis said in the run.  The laminar line ends at the record's $\mathrm{Re}_{cr}$
+(eq.~8.24: $183/\mathrm{Po}^{1/3}$ for the ribbon); above it the record's constant $\mathrm{Po}_t$
+(Table~8.1) applies only from $\mathrm{Re}=6370\,\mathrm{Po}_t^{-1/3}$ (eq.~8.8); between the two
+``no simple mathematical relationship exists between Po and Re'' (p.~386) and the vessel refuses.
+The printed power carries $k_s$'s uncertainty through the flow curve and $K_p$'s, as an interval.
+
+\paragraph{Refused by name (R9, p.~395--397).}  A flow curve with a \emph{yield stress}
+(unyielded regions: one average shear rate has no meaning; the cavern model, eq.~8.12, is not
+built); a \emph{shear-thickening} curve ($\mathrm d\ln\tau/\mathrm d\ln\dot\gamma>1$ at or above
+$\dot\gamma_{avg}$: ``the impeller draws enormous power'', p.~396); a \emph{viscoelastic} fluid
+(``no satisfactory correlations'', p.~397); a \emph{time-dependent} one; a transitional $\mathrm{Re}$;
+a laminar relation past its line.  Beyond the laminar line $k_s$ rises with $N$ faster than
+linearly (p.~395): said as a warning when a non-Newtonian liquid is run there.
+
+\begin{example}[Chhabra and Richardson, Example 8.5, p.~417--418]
+Helical ribbon, $D_T=2.2$\,m, $N_r=2$, $(D_T-D)/D=0.05$, $W/D=0.08$, $s/D=1$, $H/D=1.5$, in
+a polymer melt $\rho=980$, $m=200$\,Pa\,s$^n$, $n=0.5$; tip speed 1\,m/s, $k_s=30$.  The book:
+$D=2.095$\,m, $N=0.152$\,Hz, $\dot\gamma_{avg}=4.56$\,s$^{-1}$, $\mu_{avg}=93.7$\,Pa\,s,
+$\mathrm{Re}=6.98$, $K_p=494$, $P=9838$\,W, $\mathrm{Re}_{cr}=44$ (laminar).  Note the book's own
+$H/D=1.5$ lies past the 1.30 of eq.~8.7's data: the case runs it as a declared hypothesis.
+\end{example}
+
+\begin{tutoriallink}
+\file{tutorials/steady/hydraulics/agitation01\_helical\_ribbon\_polymer\_melt} --- Example~8.5 from the
+impeller record, the flow curve and the door; the shaft power as a Work item and the jacket's duty.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
@@ -32965,6 +33172,10 @@ and activity-coefficient models. Chapters 6 (vapour pressure), 8
 \bibitem{Watson} Watson, K. M., ``Thermodynamics of the Liquid State'',
 \emph{Ind. Eng. Chem.}, 35, 398 (1943). The heat-of-vaporisation
 correlation.
+
+\bibitem{ChhabraRichardson2008} Chhabra, R. P., \& Richardson, J. F. (2008).
+\emph{Non-Newtonian Flow and Applied Rheology: Engineering Applications}, 2nd ed.,
+Butterworth-Heinemann (printed page numbers; Ch.~1--3 and 8).
 
 \bibitem{IAPWS_R797} IAPWS R7-97(2012).  Every coefficient table in
 \file{src/thermo/iapws/IF97.cpp} is transcribed from this release at

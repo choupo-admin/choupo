@@ -107,7 +107,7 @@ ThermoPackage& ThermoPackage::operator=(ThermoPackage&& o) noexcept
         diffusivity_        = std::move(o.diffusivity_);
         liquidViscosity_    = std::move(o.liquidViscosity_);
         liquidConductivity_ = std::move(o.liquidConductivity_);
-        liquidDiffusivity_  = std::move(o.liquidDiffusivity_);   liquidDiffusionDecl_ = std::move(o.liquidDiffusionDecl_);   liquidViscosityMeasured_ = std::move(o.liquidViscosityMeasured_);   // C398 (d)
+        liquidDiffusivity_  = std::move(o.liquidDiffusivity_);   liquidDiffusionDecl_ = std::move(o.liquidDiffusionDecl_);   liquidViscosityMeasured_ = std::move(o.liquidViscosityMeasured_);   flowCurves_ = std::move(o.flowCurves_);   // C398 (d); C421 (7)
         surfaceTension_     = std::move(o.surfaceTension_);   liquidConductivityMeasured_ = std::move(o.liquidConductivityMeasured_);   surfaceTensionMeasured_ = std::move(o.surfaceTensionMeasured_);   // C421 (8)
         liquidViscosityMixing_    = std::move(o.liquidViscosityMixing_);
         liquidConductivityMixing_ = std::move(o.liquidConductivityMixing_);
@@ -524,7 +524,7 @@ void ThermoPackage::readTransportBlock(const DictPtr& td)
             ThermalConductivityModel::New(td->subDict("thermalConductivity"));
     if (td->found("diffusivity"))
         diffusivity_ = DiffusivityModel::New(td->subDict("diffusivity"));
-    // Liquid transport.
+    if (td->found("liquidRheology")) flowCurves_ = rheology::readFlowCurves(td->subDict("liquidRheology"), components_);   // Liquid transport; the flow curve, C421 (7)
     //  Each liquid property's block also names its MIXING RULE (C331):
     //  `mixingRule <name>;` beside `model`, the factory's default otherwise.
     //  The block's WORD, when it writes one, is built as the package's model
@@ -2272,7 +2272,7 @@ scalar ThermoPackage::diffusivityGas(scalar T, scalar P_Pa,
 }
 
 scalar ThermoPackage::viscosityLiquid(scalar T, const sVector& x) const
-{
+{   if (const rheology::FlowCurve* fc = flowCurveFor(x)) rheology::refuseNewtonianAsk(*fc, components_, x);   // C421 (7): a non-Newtonian liquid has no one viscosity
     if (!pureFluid_.empty())
         if (auto i = pureFluidRoute(pureFluid_, components_, x))
         {

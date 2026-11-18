@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Meta-control for tutorial pipe06_turbulent_dodge_metzner.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Turbulent pressure drop of a power-law polymer solution by the declared Dodge-Metzner method (eqs. 3.70-3.73): 100 mm, 100 m, 3 m/s, m 0.05 Pa s^n, n 0.7";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

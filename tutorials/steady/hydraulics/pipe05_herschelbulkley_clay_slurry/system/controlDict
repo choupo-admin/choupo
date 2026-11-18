@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Meta-control for tutorial pipe05_herschelbulkley_clay_slurry.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Laminar pressure drop of a Herschel-Bulkley clay slurry (Chhabra & Richardson Example 3.3): 40 mm, 500 m, 0.5 m/s, tau_0 17 Pa -- 1.46 MPa";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

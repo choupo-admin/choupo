@@ -906,6 +906,14 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
         }
         out.row(std::string(tr.label) + " (" + where + ")", c, d);
     }
+    //  THE FLOW CURVE (C421 (7)): a liquid that declares one is non-Newtonian; the view says so, per record.
+    if (!pkg.flowCurves().empty())
+    {
+        std::vector<std::string> d;
+        for (const auto& fc : pkg.flowCurves()) d.push_back("  " + fc.describe());
+        d.push_back("  the unit supplies the shear (door form 3: liquidProperty::apparentViscosity); the Newtonian liquid viscosity above is REFUSED for this liquid");
+        out.row("liquid rheology (transport.liquid.rheology)", "the case's measured flow curve", d);
+    }
     out.line("================  end of resolved properties: " + title + "  ================");
 }
 

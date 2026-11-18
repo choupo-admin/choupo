@@ -1,0 +1,43 @@
+/*---------------------------------------------------------------------------*\
+  constant/experiments/powerLawTurb.dat -- the flow curve of polymerSolution, as the case's experiment record
+
+  An experiment record of kind FLOW CURVE (docs/design/measured-facts-materials-and-flow-curves.md,
+  R1-R10).  These rows are NOT readings: the source prints the parameters of a constitutive
+  equation and no rows, so the rows are the equation evaluated at the shear rates below
+  (`instrument model`, `kind adopted`): the source's own numbers, nothing added.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    //  sha256 is of the `data ( );` block of THIS file as written: it tells these rows from an edited copy.
+    sha256       "0c10cc54604f6b69cd187996a4ef9f34ac9577aa6f8e55e7b1711ac730664f5f";
+    origin       literature;
+    kind         adopted;
+    basis        "a power law of the case's own (m = 0.05 Pa s^n, n = 0.7); rows generated from tau = m gamma^n";
+    citation     "Chhabra, R. P. and Richardson, J. F. (2008). Non-Newtonian Flow and Applied Rheology, 2nd ed., Butterworth-Heinemann. eq. 1.12, p. 9 (the parameters are the case's own, not the book's)";
+}
+
+property    flowCurve;
+system      ( polymerSolution );
+
+conditions
+{
+    instrument   model;
+    model        "tau = m gamma^n, m = 0.05 Pa s^n, n = 0.7 (a dilute polymer solution of the case's own: the book prints no turbulent power-law example in closed form)";
+    T            298.15 K;      // the source states no temperature: the case's nominal one
+}
+
+columns
+(
+    { name gamma; unit 1/s; }
+    { name tau;   unit Pa;  }
+);
+data
+(
+    1          0.05
+    10         0.250593617
+    100        1.25594322
+    1000       6.29462706
+    10000      31.5478672
+    100000     158.113883
+);

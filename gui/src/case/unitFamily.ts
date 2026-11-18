@@ -339,6 +339,11 @@ export const SYMBOLS: readonly UnitSymbolSpec[] = [
   //  ---- TRANSPORT AND STORAGE.
   { cls: "Pipe", label: "pipe run",
     path: "M4 20h40v8H4z M14 18v12 M34 18v12" },
+  { cls: "AgitatedVessel", label: "stirred vessel (shaft power computed)",
+    //  A vessel with a SHAFT and an impeller: the power is the unit's, a Work
+    //  item of the energy balance (C421 (7)); no reaction, no phase change.
+    path: "M12 14h24v26H12z M24 6v26 M17 32h14 M17 28v4 M31 28v4"
+        + " M3 20h9 M36 36h9" },
   { cls: "StorageTank", label: "storage tank",
     //  A tank with a ROOF and a level: nothing splits here.
     path: "M12 16h24v24H12z M12 16l12-7 12 7 M12 30h24"
@@ -501,6 +506,7 @@ export const UNIT_CLASS: { readonly [type: string]: string } = {
   valve: "Valve",
   storageTank: "StorageTank",
   pipe: "Pipe",
+  agitatedVessel: "AgitatedVessel",
   pneumaticConveyor: "PneumaticConveyor",
   mill: "Mill",
   classifier: "Classifier",

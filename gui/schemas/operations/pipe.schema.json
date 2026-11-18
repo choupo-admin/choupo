@@ -101,6 +101,23 @@
           "unit": "N/m"
         }
       }
+    },
+    "turbulent": {
+      "type": "object",
+      "title": "Turbulent non-Newtonian method",
+      "description": "For a liquid that declares a flow curve (transport.liquid.rheology): the method used past the laminar limit (Re_MR >= 2100, Chhabra & Richardson p. 133).  Absent, a turbulent non-Newtonian flow is REFUSED (R9).  DodgeMetzner = eqs. 3.70-3.73, valid on 2900 <= Re_MR <= 36000 and 0.36 <= n' <= 1; the book warns the methods differ by up to +-50 %.",
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "DodgeMetzner"
+          ],
+          "title": "Turbulent method"
+        }
+      },
+      "required": [
+        "method"
+      ]
     }
   },
   "required": [

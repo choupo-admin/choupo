@@ -1,0 +1,44 @@
+/*---------------------------------------------------------------------------*\
+  constant/experiments/powerLawEx31.dat -- the flow curve of polymerSolution, as the case's experiment record
+
+  An experiment record of kind FLOW CURVE (docs/design/measured-facts-materials-and-flow-curves.md,
+  R1-R10).  These rows are NOT readings: the source prints the parameters of a constitutive
+  equation and no rows, so the rows are the equation evaluated at the shear rates below
+  (`instrument model`, `kind adopted`): the source's own numbers, nothing added.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    //  sha256 is of the `data ( );` block of THIS file as written: it tells these rows from an edited copy.
+    sha256       "07a8d531b6b61f49c15f46a37190226b247ee558012f88b306565e8714c40d95";
+    origin       literature;
+    kind         measured;
+    basis        "the power-law parameters printed in Example 3.1 (m = 3 Pa s^n, n = 0.5); rows generated from tau = m gamma^n";
+    citation     "Chhabra, R. P. and Richardson, J. F. (2008). Non-Newtonian Flow and Applied Rheology, 2nd ed., Butterworth-Heinemann. Example 3.1, p. 114-115 (power law, eq. 1.12, p. 9)";
+}
+
+property    flowCurve;
+system      ( polymerSolution );
+
+conditions
+{
+    instrument   capillary;
+    corrected    ( RabinowitschMooney laminarOnly );   // Bagley end effects and the slip test are NOT declared
+    model        "tau = m gamma^n, m = 3 Pa s^n, n = 0.5 (Chhabra & Richardson eq. 1.12; Example 3.1, p. 114)";
+    T            298.15 K;      // the source states no temperature: the case's nominal one
+}
+
+columns
+(
+    { name gamma; unit 1/s; }
+    { name tau;   unit Pa;  }
+);
+data
+(
+    0.1        0.948683298
+    1          3
+    10         9.48683298
+    100        30
+    1000       94.8683298
+    10000      300
+);

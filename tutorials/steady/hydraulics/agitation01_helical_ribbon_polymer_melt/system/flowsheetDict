@@ -1,0 +1,48 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  agitation01_helical_ribbon_polymer_melt
+
+  A stirred vessel (`agitatedVessel`) holding the book's inelastic polymer melt (rho 980 kg/m3,
+  power law m = 200 Pa s^n, n = 0.5), mixed by a helical ribbon with a tip speed of 1 m/s in a
+  2.2 m tank.  WHO OWNS WHAT (R7): the flow curve is the FLUID's (the property dictionary,
+  constant/experiments/powerLawEx85.dat); the Metzner-Otto constant k_s = 30 and the laminar
+  power constant K_p (eq. 8.7, from the ribbon's geometry) are the IMPELLER's (the asset record
+  constant/assets/helicalRibbonEx85.dat, kind impeller); the shear rate gamma_avg = k_s N is the
+  UNIT's, and the unit asks the property door (form 3) for the apparent viscosity there.
+
+  The shaft power is a Work item of the unit, W_shaft_kW, exactly as a pump's: it enters the plant
+  boundary of the energy balance and leaves as the jacket's duty (isothermal, the default).
+
+  ANCHOR.  The book prints (Example 8.5, p. 417-418): D = 2.095 m, N = 0.152 Hz (9.1 rpm),
+  gamma_avg = 4.56 1/s, mu_avg = 93.7 Pa s, Re = 6.98, K_p = 494, P = 9838 W (9.84 kW), and the
+  check Re_cr = 183/Po^(1/3) = 44 (laminar).  The book's own geometry has H/D = 1.5, past the
+  1.30 of eq. 8.7's data (p. 386): the case runs it as a HYPOTHESIS and says so.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        M1;
+        type        agitatedVessel;
+        in          feed;
+        outputs     ( stirred );
+
+        operation
+        {
+            vessel    { D_T 2.2 m; }
+            impeller  { record helicalRibbonEx85; tipSpeed 1.0 m/s; }
+            thermalMode isothermal;
+            outsideCorrelationWindow
+            {
+                reason "the book's own Example 8.5 takes H/D = 1.5, past the 0.88-1.30 of the 148 configurations eq. 8.7 was fitted to (p. 386, 417); reproduced as printed";
+            }
+        }
+    }
+);

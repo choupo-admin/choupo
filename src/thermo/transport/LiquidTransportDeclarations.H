@@ -70,6 +70,7 @@ Description
 #include "core/Dictionary.H"
 #include "thermo/transport/WilkeReduction.H"   // the Wilke reduction (C329 B2a), used by ThermoPackage
 #include "core/Types.H"
+#include "thermo/transport/FlowCurve.H"   // C421 (7), form 3: the liquid rheology rides the same header
 
 #include <map>
 #include <optional>

@@ -2181,6 +2181,7 @@ static DictPtr v2TransportDict(const DictPtr& v2)
             {"liquid", "viscosity",           "liquidViscosity"},
             {"liquid", "thermalConductivity", "liquidConductivity"},
             {"liquid", "diffusivity",         "liquidDiffusivity"},
+            {"liquid", "rheology",            "liquidRheology"},          // C421 (7): the flow curve (door form 3)
             {"interface", "surfaceTension",   "surfaceTension"},
         };
         auto tr = v2->subDict("transport");
@@ -2220,7 +2221,7 @@ static DictPtr v2TransportDict(const DictPtr& v2)
             //  (ThermoPackage::resolveLiquidLaws).  Every other block names
             //  its model, because no record law exists for it; the factory
             //  defaults that used to answer in silence are gone (SL-04).
-            if (!pb->found("model") && !liquidMixing && !(std::string(mrow.v1key) == "liquidDiffusivity" && pb->found("infiniteDilution")))   // C398 (d): named in `infiniteDilution`
+            if (!pb->found("model") && !liquidMixing && std::string(mrow.v1key) != "liquidRheology" && !(std::string(mrow.v1key) == "liquidDiffusivity" && pb->found("infiniteDilution")))   // C398 (d): named in `infiniteDilution`
                 throw std::runtime_error("thermophysicalPropertySystem:"
                     " transport " + std::string(mrow.v2phase) + "." + mrow.v2prop
                     + " names no `model`: this property has no record law to"

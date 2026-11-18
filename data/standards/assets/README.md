@@ -16,6 +16,7 @@ record — one namespace, one consumer each:
 | `adsorbent` | `AdsorbentRegistry` (identity only; the per-species isotherms are PAIR data under `parameters/adsorption/equilibria/<name>/`) | activatedCarbon, zeolite13X, zeolite5A |
 | `ionExchangeResin` | the `exchange` props op / `IonExchanger` unit | SAC_Na |
 | `catalyst` | `CatalystRegistry` (pellet geometry, densities, `epsilon_p`, `tau`; consumed by the `thielePellet` props op) | *(none yet — see below)* |
+| `impeller` | `agitatedVessel` (`agitation/Impeller.H`: the Metzner-Otto constant `k_s` with its stated uncertainty, the laminar power constant `K_p` or the correlation of eq. 8.7, the end of the laminar line, an optional `Po_t`, each with its source; `impeller { record <name>; }`) -- a record is found in the case's `constant/assets/` first, then here | *(none in the catalogue yet; the witness `agitation01_helical_ribbon_polymer_melt` carries its own)* |
 | `packing` | `PackingRegistry` (a column's packing: NOMINAL geometry and per-correlation constants; `packing { record <name>; }` in `distillationColumn`, see below) | SulzerBX, MontzB1-250 |
 
 Each registry scans this ONE folder and filters by its own kind(s); a record

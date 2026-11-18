@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/agitatedVessel.schema.json",
+  "title": "agitatedVessel operation",
+  "description": "A stirred vessel whose shaft power is computed from the Metzner-Otto average shear rate (Chhabra & Richardson, Ch. 8) and enters the energy balance as the Work item W_shaft_kW.  The liquid's flow curve is the property dictionary's (Newtonian by absence); the impeller's k_s and K_p are an asset record of kind impeller; the vessel and the speed are this block's.  Refused by name: a yield-stress, shear-thickening, viscoelastic or time-dependent fluid; a transitional Reynolds number.",
+  "type": "object",
+  "properties": {
+    "vessel": {
+      "type": "object",
+      "title": "Vessel",
+      "properties": {
+        "D_T": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Tank diameter",
+          "unit": "m"
+        }
+      },
+      "required": [
+        "D_T"
+      ]
+    },
+    "impeller": {
+      "type": "object",
+      "title": "Impeller",
+      "description": "The impeller is an asset record (kind impeller) in constant/assets/ or data/standards/assets/.  Give ONE speed: N or tipSpeed.",
+      "properties": {
+        "record": {
+          "type": "string",
+          "title": "Impeller record name"
+        },
+        "D": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Impeller diameter",
+          "description": "Default: D_T / (1 + clearanceRatio) from the record.",
+          "unit": "m"
+        },
+        "N": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Rotational speed",
+          "unit": "1/s"
+        },
+        "tipSpeed": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Tip speed",
+          "description": "N = tipSpeed / (pi D).",
+          "unit": "m/s"
+        }
+      },
+      "required": [
+        "record"
+      ]
+    },
+    "thermalMode": {
+      "type": "string",
+      "enum": [
+        "isothermal",
+        "adiabatic"
+      ],
+      "title": "Thermal mode",
+      "description": "isothermal (default): the jacket removes the dissipated shaft power, T_out = T_in, the duty Q_kW = -W_shaft_kW is published.  adiabatic: the contents warm up."
+    },
+    "outsideCorrelationWindow": {
+      "type": "object",
+      "title": "A geometry outside the correlation's data",
+      "description": "Declares, with a reason, that the impeller geometry is outside the data range of the correlation that gives K_p (eq. 8.7).  Without it such a vessel is refused.",
+      "properties": {
+        "reason": {
+          "type": "string",
+          "title": "Reason"
+        }
+      },
+      "required": [
+        "reason"
+      ]
+    }
+  },
+  "required": [
+    "vessel",
+    "impeller"
+  ],
+  "additionalProperties": false
+}

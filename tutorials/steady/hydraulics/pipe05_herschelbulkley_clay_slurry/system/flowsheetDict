@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  pipe05_herschelbulkley_clay_slurry
+
+  A single PIPE carrying the book's yield-pseudoplastic clay slurry (rho 1500 kg/m3, tau_0 = 17 Pa,
+  m = 0.83 Pa s^n, n = 0.5) at 0.5 m/s through 500 m of 40 mm pipe.  The flow curve is the
+  property dictionary's: the ROWS (constant/experiments/herschelBulkleyEx33.dat, kind adopted),
+  interpolated log-log between them, with the YIELD STRESS a datum of its own
+  (`yieldStress { value 17 Pa; how ... }`, R8: never read off a fit).  The pipe solves
+  eq. 3.46 on the table's own inverse: the wall stress that carries the flow, the plug radius
+  R_p = (tau_0/tau_w) R.
+
+  ANCHOR.  The book prints (p. 122-123): phi = tau_0/tau_w = 0.58, tau_w = 29.31 Pa,
+  -dP = 1.46e6 Pa, plug velocity 0.62 m/s, plug radius 11.6 mm.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        L1;
+        type        pipe;
+        in          feed;
+        outputs     ( delivered );
+
+        operation
+        {
+            geometry
+            {
+                D          0.04  m;
+                L          500.0  m;
+                roughness  4.6e-5  m;
+                dz         0.0  m;
+            }
+        }
+    }
+);

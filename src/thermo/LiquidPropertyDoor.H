@@ -49,6 +49,7 @@ Description
 #pragma once
 
 #include "core/Types.H"
+#include "thermo/transport/FlowCurve.H"
 #include "thermo/transport/StokesEinstein.H"
 
 #include <string>
@@ -159,6 +160,43 @@ struct Request
     const Consumer*      who = nullptr;    // records the use when given
 };
 Result density(const Request& r);
+
+//  ---- FORM 3 OF THE DOOR (DEV.md 4c C421 (7); docs/design/measured-facts-materials-and-
+//  flow-curves.md, section 4, R7-R10): the APPARENT VISCOSITY AT A SHEAR THE UNIT SUPPLIES.
+//  A liquid that declares `transport { liquid { rheology { measured { .. } } } }` has no one
+//  viscosity (form 1 refuses it by name); the unit's own geometry gives the shear -- a
+//  pipe's wall rate, a stirred vessel's k_s N -- as a RATE (1/s) or as a STRESS (Pa), and the
+//  door answers mu_app = tau / gamma from the flow curve, refusing outside the support /
+//  authorised domain exactly as the measured tables do, and refusing a time-dependent
+//  record (R9).  A liquid that declares none is Newtonian BY ABSENCE: the answer is form 1's
+//  viscosity and the shear is irrelevant (index 1).
+struct Shear
+{
+    enum class Kind { rate, stress } kind = Kind::rate;
+    scalar value = 0.0;                               // 1/s or Pa
+    static Shear rate(scalar g)   { Shear s; s.kind = Kind::rate;   s.value = g; return s; }
+    static Shear stress(scalar t) { Shear s; s.kind = Kind::stress; s.value = t; return s; }
+};
+
+struct ApparentViscosity
+{
+    scalar      value = 0.0;                          // Pa s: tau / gamma
+    scalar      shearRate = 0.0;                      // 1/s the answer stands at
+    scalar      shearStress = 0.0;                    // Pa
+    scalar      index = 1.0;                          // d ln tau / d ln gamma there
+    bool        newtonian = true;
+    std::string methodId, label;
+    Quality     quality;
+    std::string domainWords;                          // "inside the rows (...)" | "the end chord ..."
+    std::string curveName;                            // "" when Newtonian
+    bool        yielded = true;                       // false: below the yield stress, the fluid does not flow
+    scalar      yieldStress = 0.0;
+    bool        viscoelastic = false;                 // the record's declaration
+    const rheology::FlowCurve* curve = nullptr;       // the validated record (nullptr: Newtonian); a unit that needs the whole curve (the pipe's integral) reads it here
+};
+ApparentViscosity apparentViscosity(const ThermoPackage& thermo, scalar T_K, scalar P_Pa,
+                                    const sVector& x, const Shear& shear,
+                                    const Consumer* who = nullptr);
 
 inline Result evaluate(const ThermoPackage& thermo, Property p, scalar T_K,
                        scalar P_Pa, const sVector& x, const Consumer& who,

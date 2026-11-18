@@ -64,9 +64,11 @@ namespace transportGrammar {
 inline const std::vector<std::string>& propertiesOf(const std::string& phase)
 {
     static const std::vector<std::string> fluid{ "viscosity", "thermalConductivity", "diffusivity" };
+    static const std::vector<std::string> liquidP{ "viscosity", "thermalConductivity", "diffusivity", "rheology" };   // C421 (7): the flow curve
     static const std::vector<std::string> iface{ "surfaceTension" };
     static const std::vector<std::string> none;
-    if (phase == "vapour" || phase == "liquid") return fluid;
+    if (phase == "liquid") return liquidP;
+    if (phase == "vapour") return fluid;
     if (phase == "interface") return iface;
     return none;
 }
@@ -87,6 +89,7 @@ inline std::string phaseStructuredSpelling(const std::string& flat)
     if (flat == "liquidViscosity")     return "liquid { viscosity { ... } }";
     if (flat == "liquidConductivity")  return "liquid { thermalConductivity { ... } }";
     if (flat == "liquidDiffusivity")   return "liquid { diffusivity { ... } }";
+    if (flat == "liquidRheology")      return "liquid { rheology { ... } }";
     if (flat == "surfaceTension")      return "interface { surfaceTension { ... } }";
     return "";
 }
@@ -109,6 +112,7 @@ inline bool readInsideBlock(const std::string& phase, const std::string& prop,
     //  C421 slice (8): the liquid thermal conductivity and the surface tension take `measured {}` too.
     if (phase == "liquid" && (prop == "viscosity" || prop == "thermalConductivity")) return k == "measured";
     if (phase == "interface" && prop == "surfaceTension") return k == "measured";
+    if (phase == "liquid" && prop == "rheology") return k == "measured";            // C421 (7)
     if (phase == "liquid" && prop == "diffusivity")
         return k == "returns" || k == "composition" || k == "infiniteDilution"
             || k == "thermodynamicFactor";

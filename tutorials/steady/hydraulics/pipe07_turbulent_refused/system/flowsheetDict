@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  pipe07_turbulent_refused
+
+  A dilute polymer solution (rho 1000 kg/m3, power law m = 0.05 Pa s^n, n = 0.7: the case's own
+  numbers) at 3 m/s in 100 m of 100 mm pipe: Re_MR is well past the laminar line (2100), so the
+  pipe REFUSES unless the case declares a turbulent method (R9).  This case declares NO method, so the run is
+  REFUSED by name (`.expect-nonconvergence`); its sister pipe06 declares
+  `turbulent { method DodgeMetzner; }` (Dodge & Metzner 1959, eqs. 3.70-3.73, p. 138), with n' and m'
+  at the prevailing wall stress taken from the laminar relation of the flow curve itself (the
+  Metzner-Reed route, p. 151).  The book's own warning is printed: the published turbulent methods
+  differ by up to +-50 % among themselves (p. 150-151).  
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        L1;
+        type        pipe;
+        in          feed;
+        outputs     ( delivered );
+
+        operation
+        {
+            geometry
+            {
+                D          0.1  m;
+                L          100.0  m;
+                roughness  4.6e-5  m;
+                dz         0.0  m;
+            }
+        }
+    }
+);
