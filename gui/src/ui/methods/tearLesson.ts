@@ -183,7 +183,7 @@ export const TEAR_STEPS: readonly LessonStep[] = [
         eq: String.raw`n_W = N_t (N_c + 3)`},
       { step: "Per torn stream, the Newton branch packs component flows, "
           + "the temperature and the pressure "
-          + "(src/unitOperations/flowsheet/Flowsheet.cpp:3729-3738). The "
+          + "(src/unitOperations/flowsheet/Flowsheet.cpp:3741-3750). The "
           + "pressure has been a tear variable since DEV.md 4c C186 (5).",
         eq: String.raw`n_N = N_t (N_c + 2)`},
       { step: "And one Newton step perturbs each of those variables up and "

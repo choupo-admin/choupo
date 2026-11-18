@@ -517,7 +517,17 @@ recycleWegsteinQmax    0.0;
 \noindent The Wegstein \cite{Wegstein} accelerator is the default;
 $q_{\min} = q_{\max} = 0$ degenerates to plain direct substitution
 for cases where acceleration is unsafe (flash regime switches,
-strongly non-linear recycles).
+strongly non-linear recycles).  One bound is the engine's own and is stated
+here because no source in the project's literature folder gives it: Wegstein's
+paper (1958) classifies $q$ by the slope $s$ of the iteration map and names no
+numerical limit, and the process-flowsheeting text of Biegler, Grossmann and
+Westerberg (1997) does not treat the method.  For a tear's \emph{pressure} the
+secant model $x^{*}=(g-s\,x)/(1-s)$ names the point the acceleration is heading for;
+when that point is not positive the loop has no feasible fixed point (a recycle
+whose pressure falls by the same $\Delta P$ every pass has $s=1-3\times10^{-4}$ and
+``converges'' to $-160$\,bar), and the acceleration is withheld for that entry: plain
+substitution, so the loop runs its \code{recycleMaxIter} passes and is refused by the
+tear's name.  The limits $q_{\min}$, $q_{\max}$ above are the declared ones.
 
 \noindent A third closure, \texttt{recycleSolver DominantEigenvalue;}, is the
 dominant eigenvalue method of Orbach and Crowe (Can.\ J.\ Chem.\ Eng.\ 49

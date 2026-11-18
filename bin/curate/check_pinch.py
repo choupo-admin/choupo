@@ -943,14 +943,14 @@ Exit 1 listing failures."""
                     if nseg != 5 or k.get("segments") != 5.0:
                         failures.append(f"RIGHT: {nseg} stream rows (expected 5:"
                                         " the water is not one)")
-                    #  95732.5 -> 95708.8 on 2026-11-19 (DEV.md 4c C390): the liquid
+                    #  95732.5 -> 95708.8 (moving reference) -> 95719.5 (fixed reference) on 2026-11-19 (DEV.md 4c C390): the liquid
                     #  enthalpy carries v(1 - alpha T) dP now, so the ammonia let-down and
                     #  separator duties of the witness moved (separator -38345.6 -> -38081.9 kW);
                     #  the independent cascade above still equals the engine to 1e-6.
-                    if not close(k["Q_C_min_kW"], 95708.8, 1e-5) or \
+                    if not close(k["Q_C_min_kW"], 95719.5, 1e-5) or \
                             abs(k["Q_H_min_kW"] or 0.0) > 1e-3:
                         failures.append("RIGHT: targets are not the hand-computed"
-                                        " 0 / 95708.8 kW (engine %r / %r)"
+                                        " 0 / 95719.5 kW (engine %r / %r)"
                                         % (k["Q_H_min_kW"], k["Q_C_min_kW"]))
                     if pin:
                         failures.append("RIGHT: a pinch was found; the problem is"
@@ -978,7 +978,7 @@ Exit 1 listing failures."""
         print("check_pinch_utility: OK -- ammonia02's cooling water (declared"
               " circuit CW1) is a utility row, not a stream: targets equal the"
               " independent cascade over the 5 process segments (Q_H,min 0,"
-              " Q_C,min 95708.8 kW, no pinch); the same case with the circuit"
+              " Q_C,min 95719.5 kW, no pinch); the same case with the circuit"
               " deleted counts the water and gives the old pinch, so the gate"
               " tells them apart (the exclusion reads the declared circuit and"
               " category, never a stream name)")

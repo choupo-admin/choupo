@@ -14,3 +14,10 @@
 
 tearStreams           ( Recycle );
 recycleSolver          Newton;
+
+//  THE TEAR IS CONVERGED TO 1e-10, NOT TO THE DEFAULT (C390 sweep fix).  The plant's first law
+//  compares the streams of the last sweep with the tear the mixer was handed; at the default tolerance
+//  that difference was 3.8e-7 of the enthalpy flow, which the report read as 0.042 kW of unexplained
+//  energy against an exchanged scale of 0.57 kW (the module's isothermal duty, Q_kW).  Newton on the
+//  tear needs three iterations either way; the residual is now 0.0000 kW.
+recycleTol 1e-10;
