@@ -317,7 +317,7 @@ blocks nested one level deeper —
 value it derives, and the form the Explorer's component inspector was taught to
 read on 2026-09-03.  Recounted at both depths:
 
-**census: 2377 direct + 3821 per-value = 6198 across 3095 files**
+**census: 2377 direct + 3831 per-value = 6208 across 3095 files**
 
 (recounted 2026-11-14, DEV.md 4c C398 slice (e): two packing records (`assets/SulzerBX.dat`, `assets/MontzB1-250.dat`) carry a `provenance {}` block whose entries are not origin words the census counts: +0 direct, +0 per-value, +2 files; and, before it,
 

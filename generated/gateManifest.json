@@ -203,7 +203,7 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 363 gate script(s) scanned; 11 waiver table(s) all resolve to debt_registry.py, and all 29 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified.",
+      "claim": "check_debt_registry: OK -- 356 gate script(s) scanned; 12 waiver table(s) all resolve to debt_registry.py, and all 31 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified.",
       "seconds": 0.7
     },
     "check_decision_index": {
@@ -623,8 +623,8 @@
     },
     "check_origin_census": {
       "exit": 0,
-      "claim": "check_origin_census: OK -- recounted at BOTH depths over 3094 file(s) carrying a `provenance {}`: 2376 origin declaration(s) as direct children and 3813 nested one level deeper in per-value blocks (6189 total; the largest are literature 2098, estimated 414, fitted 395, predictive 340), and the five-axes record states exactly those numbers.  The record had this size wrong twice, each time by counting at one depth, and its own lesson is that praising a form and never reading its values is how a census misses the population it was written to find.  NOT DONE HERE: the migration itself -- whether `predictive` and `estimated` may collapse into one word is a scientific classification the contract and `core/Origin.H` disagree about, and is reserved; nor is any individual mark judged RIGHT for its value; nor is data/local/ or the groupEstimative lake read.",
-      "seconds": 1.3
+      "claim": "check_origin_census: OK -- recounted at BOTH depths over 3095 file(s) carrying a `provenance {}`: 2377 origin declaration(s) as direct children and 3831 nested one level deeper in per-value blocks (6208 total; the largest are literature 2112, estimated 414, fitted 395, predictive 340), and the five-axes record states exactly those numbers.  The record had this size wrong twice, each time by counting at one depth, and its own lesson is that praising a form and never reading its values is how a census misses the population it was written to find.  NOT DONE HERE: the migration itself -- whether `predictive` and `estimated` may collapse into one word is a scientific classification the contract and `core/Origin.H` disagree about, and is reserved; nor is any individual mark judged RIGHT for its value; nor is data/local/ or the groupEstimative lake read.",
+      "seconds": 1.4
     },
     "check_origin_vocabulary": {
       "exit": 0,
@@ -1113,8 +1113,8 @@
     },
     "check_evidence_records": {
       "exit": 0,
-      "claim": "check_evidence_records: OK -- 78 of 99 dataset(s) under constant/experiments parse, name their subject, cite and carry a sha256; the other 21 are the MEASURED legacy set pinned in debt_registry.EVIDENCE_LEGACY_DATASETS, each lacking exactly what its pin says (a pin that grows or shrinks fails); none declares a `role`; data/local/evidence README tracked and .dat ignored; the witness evaluates at its 13 declared points (3 ops, CSV = dataset x to 1e-12, announced, n_points 13); 3 probes refuse by name.  NOT checked: any value against its article; the sha256 against the data block.",
-      "seconds": 0.4
+      "claim": "check_evidence_records: OK -- 128 of 149 dataset(s) under constant/experiments parse, name their subject, cite and carry a sha256; the other 21 are the MEASURED legacy set pinned in debt_registry.EVIDENCE_LEGACY_DATASETS, each lacking exactly what its pin says (a pin that grows or shrinks fails); none declares a `role`; data/local/evidence README tracked and .dat ignored; the witness evaluates at its 13 declared points (3 ops, CSV = dataset x to 1e-12, announced, n_points 13); 3 probes refuse by name.  NOT checked: any value against its article; the sha256 against the data block.",
+      "seconds": 0.2
     },
     "check_ode_block_structure": {
       "exit": 0,
@@ -1618,8 +1618,8 @@
     },
     "check_liquid_density_entry_callers": {
       "exit": 0,
-      "claim": "check_liquid_density_entry_callers: OK -- the pilot's entry liquidProperty::density has its 4 named callers (Pump.cpp, CSTR.cpp, PropertyEvaluator.cpp, PropertyRouteBench.cpp), each with its pinned call count; no other file under src/ calls it.  NOT CHECKED: the state each caller passes.",
-      "seconds": 0.8
+      "claim": "check_liquid_density_entry_callers: OK -- the pilot's entry liquidProperty::density has its 13 named callers (Pump.cpp, CSTR.cpp, SpiralWoundModule.cpp, RatedTestInversion.cpp, EDCell.cpp, BatchDiafilter.cpp, PFR.cpp, Crystalliser.cpp, CrystallisationSaturation.cpp, PressureExchanger.cpp, AgitatedVessel.cpp, PropertyEvaluator.cpp, PropertyRouteBench.cpp), each with its pinned call count; no other file under src/ calls it.  NOT CHECKED: the state each caller passes.",
+      "seconds": 0.5
     },
     "check_density_pilot": {
       "exit": 0,
@@ -1634,7 +1634,7 @@
     "check_source_headers": {
       "exit": 0,
       "claim": "source-headers: OK -- every tracked code file (9 kinds) carries the holder line and the licence identifier in its leading comment, no excluded third-party or held file carries one, the exclusion table is two-sided; the manifest is two-sided; author arm: OK",
-      "seconds": 1.1
+      "seconds": 1.2
     },
     "check_ratebased_segment": {
       "exit": 0,
@@ -1678,8 +1678,8 @@
     },
     "check_scan_roots": {
       "exit": 0,
-      "claim": "check_scan_roots: OK -- 69 of 371 gates carry a walk the plan cannot see, each pinned by name in debt_registry.SCAN_ROOTS_UNRESOLVED, and none was added.  NOT checked: whether a declared SCAN_ROOTS is complete, or walks inside an imported helper.",
-      "seconds": 2.6
+      "claim": "check_scan_roots: OK -- 69 of 357 gates carry a walk the plan cannot see, each pinned by name in debt_registry.SCAN_ROOTS_UNRESOLVED, and none was added.  NOT checked: whether a declared SCAN_ROOTS is complete, or walks inside an imported helper.",
+      "seconds": 2.7
     },
     "check_table_laws": {
       "exit": 0,
