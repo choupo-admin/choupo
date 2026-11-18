@@ -4712,6 +4712,20 @@ accepts today, and that is a policy call.
 > is too small for a person to enter, the rule says so and the sheet shows
 > an inspection opening instead.
 
+> **C447 (architect, 2026-11-18, from the C443 KPI-unit general).**  The
+> READMEs of first-path cases quote numbers the runs no longer print:
+> cstr01 52.59 % vs 50.75 %, pfr01 67.02 % vs 64.32 % (tau 310 -> 288 s
+> when the density door moved), flash02 V/F 0.7976 vs 0.7685, column16
+> 0.9812 vs 0.9510, column03, bubbleT01, the ammonia reactor ladder,
+> batch01; a heuristic scan finds ~190 candidates.  What a student reads
+> first is wrong and nothing catches it -- the golden pins the run, not the
+> prose.  RULED: (1) a README number that quotes a run is written with a
+> marker naming its golden row, and a gate compares the two (a moved row
+> then fails the README it feeds, and the re-record names it); (2) the
+> first-path READMEs are migrated first, then every README; (3) a README
+> number that is NOT a run's (a paper's value, a hand calculation) carries
+> no marker and is not checked.
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
