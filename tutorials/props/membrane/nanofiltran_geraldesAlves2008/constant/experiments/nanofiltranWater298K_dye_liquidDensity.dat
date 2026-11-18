@@ -19,6 +19,7 @@
 \*---------------------------------------------------------------------------*/
 provenance
 {
+    sha256       "97b89ca56dd0c6c433f30e7ec39e2ef98fd575da8299c642b274f751296be066";
     origin       literature;
     kind         adopted;
     basis        "adopted: the reference program's own constant density of water, 997 kg/m3, taken for the dilute feeds of this case; a hypothesis of the program, not a measurement of the solution";

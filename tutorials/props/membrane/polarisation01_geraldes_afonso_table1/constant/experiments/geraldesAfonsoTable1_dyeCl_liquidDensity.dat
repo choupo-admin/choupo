@@ -16,6 +16,7 @@
 \*---------------------------------------------------------------------------*/
 provenance
 {
+    sha256       "72410fc1b54b59129cdc9a89d127ae93e576eb8d6993299c71202b42ed69932b";
     origin       literature;
     kind         adopted;
     basis        "adopted: the source's stated density, 1000 kg/m3, taken for the dilute feeds of its Table 1; a hypothesis of the source, not a measurement of the solution";

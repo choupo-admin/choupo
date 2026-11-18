@@ -19,6 +19,7 @@
 
 provenance
 {
+    sha256       "edd16a49a0ed9389bc9b8e7835344198526aef218d900e2e263127468ef8c19f";
     origin       literature;
     kind         adopted;
     basis        "adopted: the reference program's own viscosity of water at 298.15 K (a Vogel fit inside NanoFiltran), taken for the dilute feeds of this case; the value of the SOLVENT, not a measurement of the solution";
