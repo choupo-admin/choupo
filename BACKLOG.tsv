@@ -394,7 +394,7 @@ C428	PARTIAL	48	Lente Escolher um solvente (Hansen) no Explorer	lente 'Escolher 
 C429	DONE		Verificador de regressão cego abaixo de 1e-9			2026-11-18	M	580e5ae25	
 C430	DONE		Parar a varredura e construir a arquitetura final			2026-11-19	L	cf034baa0	
 C431	DONE		Segunda revisão externa ponderada (fechar K1-K4)			2026-11-19	L	a9642fe3b	
-C432	OPEN	0	Reutilização por rota dos 1260 ajustes (provar o kernel uma vez por categoria)	general a construir: reutilizar os ajustes quando nenhuma escala do motor mudou, repetir antes de reajustar	general a trabalhar	2026-11-19	M		
+C432	OPEN	0	Reutilização por rota dos 1260 ajustes (provar o kernel uma vez por categoria)	construído (reutiliza por escala e repete antes de reajustar; o caso de 17 min passa a 3 s); aterra com a próxima suite completa, que ele próprio exige	general a trabalhar	2026-11-19	M		
 C433	DONE		Ligações dos componentes e pares por modelo e conjunto nomeado			2026-11-19	M	cd2d3430e8	
 C434	DONE		Casos não correm no Firefox			2026-11-19	S	4e864ecf7	
 C435	PARTIAL	1	Cinco pontos da revisão externa de seis casos	(4) NanoFiltran: as propriedades da bancada declaradas uma vez espera o interruptor declarado da correção de Stokes-Einstein	só falta a parte (4), já desenhada; pequena	2026-11-19	M	cd2d3430e8	
