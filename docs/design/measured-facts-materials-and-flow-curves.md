@@ -429,6 +429,28 @@ with its three conditions).
 Every step carries its guide section, its catalogue entry and its witness
 (CLAUDE.md rule 4d).
 
+## 7a. What the first sample-behaviour slice taught (2026-11-19)
+
+Built: the filtration test as the first kind (`src/samples/`), the cake
+filter naming `sample <name>;`, Wakeman & Tarleton's Example 4.1 reproduced
+from its own rows within 0.5 %.  Five corrections to this record, RULED:
+(i) THE ROW WINDOW IS PART OF THE RECORD: which rows a fit uses
+(`linearRegion { fromRow; toRow; reason; }`) is an analyst's decision about
+the data and is stored with it; R1 holds for everything else (the fit is a
+derived view).  (ii) ONE SLURRY, ONE RECORD across cases cannot be met by a
+case-local file, because a case is self-contained; when two shipped cases
+share a sample, the sample becomes a CATALOGUE record (`data/standards/
+samples/`, kind sample, its source and conditions), pinned by hash like any
+record -- a sample used by one case stays in that case.  (iii) A STATED law
+(an adopted book value with no rows) has no support, so its authorised
+domain is REQUIRED and starts at the case's operating point; widening it
+needs a reason.  Strict on purpose.  (iv) A measured medium resistance may
+be negative (the source says so); the unit refuses to USE a negative one,
+by name.  (v) A unit inside a sector reads the sector's own experiments
+folder, as table pins already do: to be done with the next kind.  For the
+next kinds the service gains declared state AXES (support as a hull, an
+interpolation per axis) and one reducer per kind by explicit factory.
+
 ## 7b. The closure contracts (2026-11-19, from the second outside review)
 
 Four behaviours must be defined and held by a witness before the scope of
