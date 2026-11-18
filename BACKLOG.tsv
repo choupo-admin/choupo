@@ -170,8 +170,8 @@ C172	DONE		Um GUI ou dois: simulação e propriedades e dados			2026-10-26	M	d43
 C173	DONE		Auditoria externa às rotas de Gibbs e fases			2026-10-26	M	8e042855d	
 C174	DONE		Nenhum fecho por construção conta como evidência			2026-10-26	M	a7540f1f0	
 C175	DONE		MESH completo reativo			2026-10-26	L	5a6b99ea9	
-C176	OPEN	0	Conjunto de dados multi-ião de NF para testar DSPM-DE	construído (validação contra o Labban 2017 com a banda declarada antes); a validar para aterrar	construído, a aterrar	2026-10-26	M		
-C177	OPEN	0	Modelo de laboratório para ajuste de DSPM-DE	construído e testado nos dados do Labban; a validar para aterrar	construído, a aterrar	2026-10-26	M		
+C176	DONE		Conjunto de dados multi-ião de NF para testar DSPM-DE			2026-10-26	M	d0c67f63b3	
+C177	DONE		Modelo de laboratório para ajuste de DSPM-DE			2026-10-26	M	d0c67f63b3	
 C178	DONE		Revisão externa de código (falhas de solver)			2026-10-27	M	648660158	
 C179	DONE		Espécie neutra não é ião: massa molar de mineral			2026-10-27	S	3e43d55f8	
 C180	DONE		Precipitação em função da temperatura, figura nativa			2026-10-27	M	55d638999	
