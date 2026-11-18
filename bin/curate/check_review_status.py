@@ -64,6 +64,24 @@ MARK = re.compile(r'^\s*reviewStatus\s+(\w+)\s*;', re.M)
 BANNER_ONLY = re.compile(r'PROPOSAL TIER')
 
 
+def record_status(text):
+    """The RECORD's own `reviewStatus` -- the one the engine announces at load
+    (Database.cpp reads the top-level key).  A `reviewStatus` nested in
+    `provenance { <value> { } }` is that one VALUE's status, voiced when the
+    value is priced (announceValueProvenance), so it is not a record-level
+    announcement and must not be counted as one: nHexane carries
+    `reviewStatus interim` on its Hansen triple only, which cavett01 never
+    reads, and the gate counted 8 against 7 lines.  Brace depth 0 = top level."""
+    depth, status = 0, None
+    for line in text.splitlines():
+        code = line.split("//")[0]
+        m = MARK.match(code) if depth == 0 else None
+        if m:
+            status = m.group(1)
+        depth += code.count("{") - code.count("}")
+    return status
+
+
 def run(case):
     p = subprocess.run([str(SOLVE), str(ROOT / case)],
                        capture_output=True, text=True, timeout=600)
@@ -85,7 +103,7 @@ def main() -> int:
                      (ROOT / POSITIVE / "constant" / "components").glob("*.dat")})
     recs = [case_records.record_path(ROOT / POSITIVE, k) for k in subs]
     want = sum(1 for p in recs
-               if p is not None and (m := MARK.search(p.read_text())) and m.group(1) == "interim")
+               if p is not None and record_status(p.read_text()) == "interim")
     if want == 0:
         fail.append(f"{Path(POSITIVE).name} mirrors no `reviewStatus interim` "
                     "record -- either the case was re-sealed away from them or "
