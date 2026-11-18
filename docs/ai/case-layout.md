@@ -361,6 +361,18 @@ propertyManifest
   `[held]`, verified against its own hash).  `--repin <record>` rewrites that
   record's line in every manifest that pins it.  `--seal <case> --to <dir>` EXPORTS
   a sealed copy (copies + `sealed true`), validated with the catalogue hidden.
+* **WHAT A DOWNLOADED CASE CONTAINS (contract K4).**  A case that references the
+  catalogue holds no record, so the case a student takes away must carry them.
+  Two exports, both held by `bin/curate/check_exported_case_runs_alone.py`
+  (a case per tutorial family, exported, run on a build whose catalogue is
+  hidden, result compared number by number with the in-tree run):
+  `bin/choupo-import --seal <case> --to <dir>` gives the SEALED form (records
+  copied and hashed, `sealed true`); the GUI's *Download case (.zip)* of a
+  referencing case adds the records the manifest pins -- and, per `relevant:`
+  registry line, the Henry/solution pair files relevant to the case's components
+  -- under `<case>/data/standards/<rel>`, the cwd's `data/` the engine looks at
+  first, so the unzipped folder runs from itself and its pins still verify
+  (`pinned`).  A case already sealed is downloaded as it is.
 * A run hashes every pin at start (`changed`, `vanished`) and compares the files
   it parsed with the pins at the end (`unpinned`); the result's `seal.verdict` is
   `pinned` or `drifted` with each record tagged.  Announced by default; REFUSED

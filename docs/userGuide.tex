@@ -1328,6 +1328,17 @@ run.  Most shipped tutorials are sealed this way (the first that instead
 \emph{references} the catalogue is described in \S\ref{sec:case-pins}); research
 cases and anything you archive with a thesis should be sealed too.
 
+\paragraph{The case you take away runs alone.}\label{sec:export-runs-alone}
+A case that \emph{references} the catalogue holds none of the records it
+reads, so it must not leave the tree as it is.  \code{bin/choupo-import
+--seal <case> --to <dir>} exports the sealed form (records copied and hashed);
+the app's \emph{Download case (.zip)} adds, under \file{data/standards/} inside
+the case folder, the records the manifest pins and the pair files relevant to
+the case's components, so the unzipped folder runs from itself and its pins
+still verify.  A gate (\code{check\_exported\_case\_runs\_alone}) exports one case
+per tutorial family, runs it with the catalogue hidden and compares its result
+with the in-tree run.
+
 \paragraph{What the seal claims: the content, not the bytes.}
 A manifest carrying \code{sealSchema computational;} claims the
 \emph{parsed} content of each record --- keys in declaration order, values

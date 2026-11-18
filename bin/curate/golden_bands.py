@@ -177,15 +177,17 @@ def classify(kind, name, key):
 
 
 def within_tol(got, want, tol):
-    """The ONE Python reader of a golden's tolerance column (bin/runTests'
-    within_tol is its awk twin): `abs:<v>` is |got-want| <= v; a plain number
-    is relative |got-want|/|want| <= tol, absolute when want is exactly 0."""
-    diff = abs(float(got) - float(want))
-    t = str(tol)
-    if t.startswith("abs:"):
-        return diff <= float(t[4:])
-    w = abs(float(want))
-    return (diff / w if w > 0 else diff) <= float(t)
+    """A golden row's verdict, by THE ONE comparison: bin/curate/within_tol.awk,
+    the file bin/runTests and check_golden_comparator run (C429).  No second
+    implementation lives here -- the importer had one and it drifted twice
+    (the 1e-9 floor, then a crash on `abs:`).  True only on PASS."""
+    import subprocess
+    from pathlib import Path
+    awk = Path(__file__).resolve().parent / "within_tol.awk"
+    r = subprocess.run(["awk", "-v", f"a={got}", "-v", f"e={want}",
+                        "-v", f"t={tol}", "-f", str(awk)],
+                       capture_output=True, text=True)
+    return r.returncode == 0
 
 
 def fmt(v):

@@ -29,6 +29,7 @@ License
 #include "SolutionRegistry.H"
 #include "core/Dictionary.H"
 #include "core/RegistryScan.H"
+#include "thermo/RecordResolver.H"
 
 #include <filesystem>
 #include <map>
@@ -55,33 +56,51 @@ std::map<std::string, SolutionPair>& registry()
 
 void SolutionRegistry::loadFrom(const std::string& dataRoot)
 {
-    fs::path dir = fs::path(dataRoot) / "standards" / "parameters" / "solution";
-    if (!fs::exists(dir)) return;
-
-    records::ScanGuard guard("SolutionRegistry", "solution pair");
-    for (auto& e : fs::directory_iterator(dir))
+    auto scan = [](const fs::path& dir, records::ScanGuard& guard)
     {
-        if (!e.is_regular_file()) continue;
-        if (e.path().extension() != ".dat") continue;
-        auto d = Dictionary::fromFile(e.path().string());
-        //  A record of the solution tier may carry the set's DENSITY law and
-        //  no heat of solution (C378 pilot: NaOH-water); the liquid-density
-        //  kernel reads it (liquidProperty/SolutionLaw), this enthalpy
-        //  registry does not -- registering it would read a heat of
-        //  solution that does not exist.  A file with neither is refused.
-        if (!d->found("dHsoln"))
+        if (!fs::exists(dir)) return;
+        for (auto& e : fs::directory_iterator(dir))
         {
-            if (d->found("liquidDensity")) continue;
-            throw std::runtime_error("SolutionRegistry: file '" + e.path().string()
-                + "' carries neither `dHsoln` nor a `liquidDensity` block");
+            if (!e.is_regular_file()) continue;
+            if (e.path().extension() != ".dat") continue;
+            auto d = Dictionary::fromFile(e.path().string());
+            //  A record of the solution tier may carry the set's DENSITY law and
+            //  no heat of solution (C378 pilot: NaOH-water); the liquid-density
+            //  kernel reads it (liquidProperty/SolutionLaw), this enthalpy
+            //  registry does not -- registering it would read a heat of
+            //  solution that does not exist.  A file with neither is refused.
+            if (!d->found("dHsoln"))
+            {
+                if (d->found("liquidDensity")) continue;
+                throw std::runtime_error("SolutionRegistry: file '" + e.path().string()
+                    + "' carries neither `dHsoln` nor a `liquidDensity` block");
+            }
+            SolutionPair s;
+            s.readFromDict(d);
+            if (s.solute().empty() || s.solvent().empty())
+                throw std::runtime_error("SolutionRegistry: file '"
+                    + e.path().string() + "' lacks `solute` or `solvent`");
+            guard.claim(key(s.solute(), s.solvent()), e.path().string());
+            registry()[key(s.solute(), s.solvent())] = std::move(s);
         }
-        SolutionPair s;
-        s.readFromDict(d);
-        if (s.solute().empty() || s.solvent().empty())
-            throw std::runtime_error("SolutionRegistry: file '"
-                + e.path().string() + "' lacks `solute` or `solvent`");
-        guard.claim(key(s.solute(), s.solvent()), e.path().string());
-        registry()[key(s.solute(), s.solvent())] = std::move(s);
+    };
+    //  THE SAME TWO TIERS AS THE HENRY REGISTRY (K4, the case a student takes
+    //  away runs alone): the catalogue first -- unless the case is strictly
+    //  sealed -- then the case's own constant/parameters/solution/, which wins
+    //  per (solute, solvent).  This registry read the catalogue ONLY, so a
+    //  sealed or exported case that carried its solution pair read nothing and
+    //  priced the heat of solution without it (crystalliser01_sugar 2.7 % off
+    //  its golden, ChemicalPlantTutorial refused) -- invisible in the tree,
+    //  where the catalogue is always beside the case.
+    if (!records::sealedStrict())
+    {
+        records::ScanGuard guard("SolutionRegistry", "solution pair");
+        scan(fs::path(dataRoot) / "standards" / "parameters" / "solution", guard);
+    }
+    {
+        records::ScanGuard guard("SolutionRegistry", "solution pair");
+        for (const auto& d : records::localScanDirs("parameters/solution"))
+            scan(d, guard);
     }
 }
 

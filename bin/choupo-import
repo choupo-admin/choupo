@@ -1530,7 +1530,14 @@ def validate_staged_agrees(staged, out):
             skipped_kinds[kind] = skipped_kinds.get(kind, 0) + 1
             continue
         want = float(f[3])
-        tol = f[4] if len(f) > 4 else "1e-4"   # a number, or `abs:<v>` (golden_bands.within_tol)
+        #  The tolerance column has three forms (a number, `abs:<v>`, `exact`);
+        #  the verdict is THE ONE comparison, bin/curate/within_tol.awk, through
+        #  golden_bands.within_tol -- this file once carried a copy that drifted
+        #  twice (the 1e-9 floor, then a crash on `abs:`; K4 found 20 cases it
+        #  could not export).  `exact` on a numeric row is a zero tolerance.
+        tol = f[4] if len(f) > 4 else "1e-4"
+        if tol == "exact":
+            tol = "0"
         if kind == "diag":
             got = diags.get(name, {}).get(key)
         elif kind == "kpi":
