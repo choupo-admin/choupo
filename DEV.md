@@ -4607,6 +4607,43 @@ accepts today, and that is a policy call.
 > its length although the moles double in this reaction (one monomer -> one
 > repeat unit + one water); the same on both bases, a modelling limit of the
 > liquid PFR to state or to lift.
+>
+> **C427, THE SPIKE'S VERDICT (2026-11-19, the architect on Fable, having
+> read `src/streams/Carried.H` on `build/last-carried`): KEPT, WITH FIVE
+> CONDITIONS BEFORE IT IS CALLED THE MECHANISM.**  What holds: kinds by the
+> explicit factory, each owning its mixing, division, state form, report
+> and TRANSFORMATION (a unit hands over the values it solved; a kind with no
+> production term refuses a change); the mixer and the splitter name no
+> kind; 106 cases byte-identical; mass and elements close on the probe;
+> state files round-trip; the three behaviours shown (the size distribution
+> transformed through the shipped mill, the chain moments through a probe
+> reactor against the closed form to 1e-14, a material's mass refused when a
+> reactor would change it).  It also FOUND A DEFECT: the splitter dropped
+> the size distribution on its branches.  What the design had wrong, now
+> ruled: a kind is EXTENSIVE, or INTENSIVE ON A CARRIER whose amount the
+> unit supplies as its weight (the size distribution is the second: a
+> stream cannot weigh it, it does not know molar masses).  THE CONDITIONS,
+> one slice on top of the spike's branch: (1) the 14 units that read or
+> write a size distribution DECLARE that they model it, and the exemption
+> `legacyUnchecked` is deleted -- "impossible by construction" must be true
+> of every kind, not of the new ones; (2) the batch driver and the batch
+> plant path refuse a carried quantity as the steady and time-integrated
+> paths do; (3) a kind that is a mass enters the MASS BALANCE REPORT through
+> its total (a material that the report cannot see is mass outside the
+> closure -- rule 4b); the element side waits for the material's analysis;
+> (4) `CarriedQuantity` loses the fields that belong to one kind (`order`,
+> `axis`, `edges`, `weight`): a kind's own attributes live in a block the
+> kind validates, so the stream's core type knows no kind either; (5) the
+> probe becomes a gate wired in the suite, its header naming the real
+> defect it would have caught (the splitter's lost distribution), with a
+> shipped witness of a splitter passing a distribution to its branches.
+> Measured and accepted: +24 bytes per stream.  NOT measured: the wall
+> clock (noise on a loaded laptop); retaken on the closing sweep's timings.
+> Registered for its own slice: the distribution's STORAGE still lives in
+> `ProcessStream::psd` and the `solids {}` wire.  On the outside reviewer's
+> question the spike answers YES IN PRINCIPLE: a continuously converting
+> solid's element masses fit as a vector-valued kind with a production
+> term, once (3) has its element form.
 
 
 
