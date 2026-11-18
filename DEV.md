@@ -4609,7 +4609,7 @@ accepts today, and that is a policy call.
 > liquid PFR to state or to lift.
 >
 > **C427, THE SPIKE'S VERDICT (2026-11-19, the architect on Fable, having
-> read `src/streams/Carried.H` on `build/last-carried`): KEPT, WITH FIVE
+> read the kinds' interface on the branch `build/last-carried`): KEPT, WITH FIVE
 > CONDITIONS BEFORE IT IS CALLED THE MECHANISM.**  What holds: kinds by the
 > explicit factory, each owning its mixing, division, state form, report
 > and TRANSFORMATION (a unit hands over the values it solved; a kind with no
