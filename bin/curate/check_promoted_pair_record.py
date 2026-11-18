@@ -175,8 +175,8 @@ def main():
                          "operation produced these coefficients")
 
         # ---- (c) the evidence is named, with roles and fingerprint ------
-        for ds, role in (("etoh-water-101kPa-fit.dat", "fit"),
-                         ("etoh-water-101kPa-heldout.dat", "validation")):
+        for ds, role in (("etoh-water-bubble-lai2014.dat", "fit"),
+                         ("etoh-water-bubble-lai2014.dat", "validation")):
             if ds not in prov:
                 fails.append("the record does not name its %s dataset (%s)"
                              % (role, ds))

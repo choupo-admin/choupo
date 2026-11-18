@@ -4664,6 +4664,117 @@ accepts today, and that is a policy call.
 > stale 10.03 m3; the ratchet's docstring; the Theory Guide entry for the
 > optional `initial`.
 
+> **C441 (Vitor, 2026-11-19: "haverá standards para escolhas de bombas
+> centrífugas, com selecção de curvas características, eficiência e NPSH? Ou
+> isto é completamente dependente dos fabricantes?"; then "Sim, põe no
+> backlog", having filed Gülich, Centrifugal Pumps, 4th ed., Springer 2020).**
+> RULED: two levels, both on the architecture closed on 11-18.  (1) A
+> GENERIC PUMP with no catalogue: from the duty point, the specific speed,
+> the efficiency to expect, an estimated NPSH required from the suction
+> specific speed, the NPSH margin against the available NPSH the flowsheet
+> computes, and whether the point lies in the preferred operating region --
+> every number marked `estimated`, every correlation read at its page in
+> Gülich (no number from memory); the pump's shaft power then follows from
+> that efficiency instead of a typed one, printed.  (2) A REAL PUMP: the
+> manufacturer's curve (head, efficiency and NPSH required against flow) is
+> a measured record of the case, like a filtration test or a flow curve;
+> the engine reads the operating point on it, the margin and the power, and
+> refuses a point outside its curve's range by name.  The standards that
+> fix the margins and the regions (the Hydraulic Institute's, API 610 /
+> ISO 13709, ISO 9906 for curve tolerances) are cited for what they rule,
+> without their numbers until a copy is in the folder.
+
+> **C440 (Vitor, 2026-11-19, on C238: "eu gostava de ver o dimensionamento
+> detalhado de todas as operações.  Por isso a C318 devia de vir primeiro, e
+> se calhar até os desenhos isométricos das condutas, com velocidades de
+> circulação recomendada, perdas de carga, etc., deviam de aparecer nas
+> folhas de especificação").**  RULED, weighed: (1) agreed -- C318 (the
+> drum's detailed sizing) moves to the head of the queue and is dispatched;
+> (2) agreed -- C207 (one specification sheet per line: diameter from the
+> recommended velocity of its service, the velocity, the pressure drop,
+> schedule and material) is second, because it is what a reviewer of a
+> plant's documents reads and the routed pipes already exist; (3) an AUDIT
+> follows: every unit of the reference plant against the detailed sizing it
+> has, so "all operations" is a list, not an impression; (4) isometric
+> drawings per line are kept as their own item, after (1)-(3): they are a
+> drawing deliverable on top of the routes, worth having, but the numbers on
+> the line sheet are the engineering and come first.
+
+> **C390 RULING AMENDED (architect, 2026-11-19, on the batch sweep's
+> gate g1).**  The liquid pressure leg ran from psat(T), a lower limit that
+> moves with T, while the base surface is a fixed-pressure function (dh/dT
+> = cp_liq from one Kirchhoff datum); fixed-P, dH - T dS was off by
+> -sum x_i v_i dpsat_i/dT (7.2e-4 of Cp on water at 330 K) -- the entropy
+> was not the enthalpy's partner.  RULED: the leg runs from ONE pressure
+> per component, P_ref,i = psat_i(T_ref,i) at its own datum temperature,
+> printed; dH = T dS then holds exactly at fixed P, the gate keeps its
+> exact form, K-values do not move, and the saturated-liquid enthalpy and
+> the latent heat move by the leg from P_ref,i to psat_i(T), sized in the
+> audit.  Rejected: an amended gate that tolerates the term (a glass box
+> does not ship an H/S pair failing a Maxwell identity a student can
+> check).  Also from that sweep: 82 cases pinned the Helmholtz records the
+> term reads; the closed-form pump's Cp identity (PA-04b) retired with the
+> closed-form pump.
+
+> **C444 (Vitor, 2026-11-19: "nas folhas de especificação finais devem
+> ficar também as especificações das tubuladuras onde ligam os tubos de
+> entrada e de saída?").**  RULED, yes: every equipment sheet carries a
+> NOZZLE SCHEDULE -- mark (N1, N2 ...), service, the stream and line it
+> connects, nominal size, flange pressure class and facing, orientation,
+> and its design pressure and temperature.  The nozzle is the end of a
+> line: its size comes from the line sheet (C207) unless the equipment's
+> own criterion asks more (the drum's rho v^2 limit of C318, an exchanger's
+> shell-side entrance), and a mismatch is printed as a reducer, never
+> silently resolved; the flange class is read from the pressure-temperature
+> rating of the flange material at the design P and T, the rating table
+> taken from a source in the folder (or declared by the case with its
+> reason until one is).  Built after C318 and C207 land, on both.
+
+> **C443 (Vitor, 2026-11-19: "até era bom ter um gráfico supostamente
+> especificado em pós-processamento, dicionários, para o aluno ver um dado
+> plot mais intuitivo").**  Measured: the mechanism EXISTS --
+> `references ( ... )` + `views ( ... )` in a case's postDict or propsDict
+> (docs/design/a-post-processing-dictionary.md): the engine resolves every
+> name and writes the numbers, the GUI draws them first and computes
+> nothing.  But only FOUR cases declare views (column14 and three membrane
+> props cases).  RULED: (1) the rebuilt binary starter case (C439) declares
+> its T-x-y as its first view; (2) then every first-path case (`tier
+> tutorial;`) declares the one plot its lesson is about, so the student
+> opens on that plot; a view type a case needs and the engine lacks is
+> named and built, never drawn in the GUI.
+
+> **C442 (Vitor, 2026-11-19: "Parece que os EduTools precisam de um em
+> compressores?").**  Measured: no lesson is about compression (there is a
+> pump-system tool; compressors appear only in passing in seven lessons).
+> RULED (the architect's, pedagogy included since C00): yes, one EduTool,
+> "Compressing a gas": isentropic and polytropic work and efficiency, the
+> discharge temperature and why it limits one stage, staging with
+> intercooling (equal ratios per stage minimise the work for ideal gas,
+> derived), the work saved against one stage, and the real-gas correction
+> at the reference plant's 150 bar -- on the PEQ make-up compressors, every
+> number read from the engine by `file:line`.  ORDER: built AFTER the
+> compressor sizing of C440 (Brown 2005, Bloch 2006 in the folder), so the
+> lesson cites the staged design the engine will then print, not today's
+> single power number.
+
+> **C440 AUDIT DONE (2026-11-19, docs/audits/2026-11-19-c440-peq-sizing-audit.md,
+> read on origin/main).**  The reference plant's 17 units and two stores,
+> ranked by what a colleague reading its documents misses: (1) the 49 lines,
+> none sized (C207, in progress); (2) the three drums on a typed residence
+> or a lower bound (C318, in progress); (3) the CONVERTER, the dearest
+> process item, sized as a plain vessel on an assumed space velocity while
+> `CatalystBedSize` and `ConverterShellSize` exist and are not wired in --
+> RULED next after C207: wire them, beds from the kinetics, the shell at
+> 166 bar and 733 K; (4) the four compressors (14.7 MW) sized as a power
+> number only -- stages, intercooling, discharge temperature and driver need
+> a compressor monograph the folder lacks (Vitor asked for one); (5) the
+> exchangers carry three named simplifications (a typed boiling film, the
+> condensate film uncredited, dilute-gas properties at 150 bar); (6) a
+> datasheet for vessels, compressors, tanks and stores; (7) the NH3 tank
+> priced on an atmospheric row and the H2 buffer's charging compressor
+> unpriced; (8) `ReliefValveSize` unused, no valves or piping in the cost.
+> The plant has no pump, so C441 reaches it not.
+
 > **C439 (Vitor, 2026-11-19: "os casos que estão na landing page foram
 > escolhidos logo no início ... Acho que falta um sobre criação de
 > componentes e binários").**  Measured: the four starter cards are the

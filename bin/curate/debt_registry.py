@@ -677,10 +677,6 @@ EVIDENCE_LEGACY_DATASETS = {
         "citation,sha256,subject",
     "tutorials/props/curation/curate01_water_evidence_partition/constant/experiments/psat-water-lowT.dat":
         "citation,sha256,subject",
-    "tutorials/props/curation/curate02_vle_heldout_ethanol_water/constant/experiments/etoh-water-101kPa-fit.dat":
-        "citation,sha256,subject",
-    "tutorials/props/curation/curate02_vle_heldout_ethanol_water/constant/experiments/etoh-water-101kPa-heldout.dat":
-        "citation,sha256,subject",
     "tutorials/props/curation/curate03_thermoml_fixture_bubble/constant/experiments/ethanol-water-bubble-binary-bubble-fixture-heldout.dat":
         "citation",
     "tutorials/props/curation/curate03_thermoml_fixture_bubble/constant/experiments/ethanol-water-bubble-binary-bubble-fixture.dat":

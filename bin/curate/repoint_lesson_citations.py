@@ -19,6 +19,15 @@ ambiguous claim (two places) or a missing one (none) REFUSES BY NAME and is
 never guessed.  `--check` only reports (exit 1 if anything is stale or
 refused); without it the edits are written (exit 1 only if something refused).
 
+THE FILE SET IS DERIVED, NEVER LISTED (C438, 2026-11-19).  Every .ts/.tsx under
+gui/src and gui/tests is scanned; no hand list.  The real defect this guards:
+plantRunMath.ts and plantCostMath.ts cited EconomicsPass.cpp lines as
+`{ file: "...", line: N, needle: "..." }`, a shape the tool did not read, so two
+economics lessons were stale while `--check` said OK.  Records now read
+`contains:`, `needle:` or `text:`; and a record-looking `file:, line:` that no
+shape reads, or a prose `X.cpp:N` whose file is missing or whose line is past
+the file's end, is a FINDING and fails `--check`.
+
 THE SHAPES IT MANAGES (the inventory is in
 docs/design/integration-has-a-cost.md; `--inventory` reprints it for the tree):
 
@@ -196,7 +205,7 @@ KEY_RE = re.compile(
     r"""(?P<q>["'])(?P<file>(?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\.(?:cpp|H|py|hpp)):"""
     r"""(?P<a>\d+)(?:-(?P<b>\d+))?(?P=q)\s*:\s*""")
 REC_RE = re.compile(
-    r"""file:\s*(?P<f>"[^"]+"|[A-Za-z_][A-Za-z0-9_]*)\s*,\s*line:\s*(?P<n>\d+)\s*,\s*contains:\s*""")
+    r"""file:\s*(?P<f>"[^"]+"|[A-Za-z_][A-Za-z0-9_]*)\s*,\s*line:\s*(?P<n>\d+)\s*,\s*(?:contains|needle|text):\s*""")
 ANCH_RE = re.compile(
     r"""\[\s*(?P<q>["'])(?P<f>[^"']+\.(?:cpp|H|py|hpp))(?P=q)\s*,\s*(?P<n>\d+)\s*,\s*""")
 TOKEN_RE = re.compile(
@@ -284,7 +293,41 @@ def scan(tree):
             if not isinstance(tgt, str):
                 it.status, it.detail = "unresolved", "%r resolves to %s" % (m.group("f"), tgt)
             items.append(it)
+    problems += unparsed_citations(tree, items)
     return items, problems
+
+
+# A record-looking `file: X, line: N` that REC_RE did not read, and a prose
+# citation whose file does not exist or whose line is past the file's end, are
+# FINDINGS: a citation this tool cannot read is one it cannot keep (DEV.md 4c
+# C438: two economics lessons cited EconomicsPass.cpp lines in a shape the tool
+# did not know, so --check said OK while they were stale, 2026-11-19).
+LOOSE_REC_RE = re.compile(r"""\bfile:\s*(?P<f>"[^"]+"|[A-Za-z_]\w*)\s*,\s*line:\s*(?P<n>\d+)\b""")
+
+
+def unparsed_citations(tree, items):
+    out = []
+    owned = defaultdict(set)
+    for it in items:
+        for rel, s, e, _ in it.nums:
+            owned[rel].add(s)
+    for rel in tree.ts_files:
+        with open(os.path.join(tree.root, rel), encoding="utf-8") as fh:
+            t = fh.read()
+        for m in LOOSE_REC_RE.finditer(t):
+            if m.start("n") not in owned[rel]:
+                out.append("%s: record `file: %s, line: %s` is in no shape the tool reads (offset %d)"
+                           % (rel, m.group("f"), m.group("n"), m.start()))
+        for m in TOKEN_RE.finditer(t):
+            a = int(m.group("a"))
+            b = int(m.group("b") or a)
+            tgt = tree.resolve(m.group("f"))
+            if tgt is None:
+                out.append("%s: citation %s:%s names a file that does not exist" % (rel, m.group("f"), fmt(a, b)))
+            elif isinstance(tgt, str) and b > len(tree.lines(tgt)):
+                out.append("%s: citation %s:%s is past the end of %s (%d lines)"
+                           % (rel, m.group("f"), fmt(a, b), tgt, len(tree.lines(tgt))))
+    return out
 
 
 # -------------------------------------------------------------------- solving
@@ -482,13 +525,15 @@ def main(argv=None):
         print("REFUSED (%s): %s -- %s  (in %s)" % (i.status, i.label(), i.detail, i.where))
     for c in conflicts:
         print("REFUSED (conflict):", c)
+    for p in problems:
+        print("FINDING (unparsed citation):", p)
     if not a.check and moved and not conflicts:
         files = apply(tree, items, tmap, shifts)
         print("repoint_lesson_citations: %d citation(s) re-pointed, %d file(s) edited" % (len(moved), len(files)))
-    elif not moved and not bad and not conflicts:
+    elif not moved and not bad and not conflicts and not (a.check and problems):
         print("repoint_lesson_citations: OK %d managed citation(s) current (shapes R/C/T)" % len(items))
     if a.check:
-        return 1 if (moved or bad or conflicts) else 0
+        return 1 if (moved or bad or conflicts or problems) else 0
     return 1 if (bad or conflicts) else 0
 
 

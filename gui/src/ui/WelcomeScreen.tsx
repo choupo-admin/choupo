@@ -95,7 +95,7 @@ export const SUGGESTED: { id: string; title: string; desc: string }[] = [
     desc: "A real flash drum: no heat added (Q=0) — the outlet T is the answer the energy balance gives." },
   { id: "props/curation/curate02_vle_heldout_ethanol_water",
     title: "Properties: fit a binary pair",
-    desc: "Regress NRTL on measured bubble points, then score it on three points it never saw." },
+    desc: "Fit a two-parameter NRTL pair to measured ethanol-water bubble points, then score it on four it never saw." },
   { id: "steady/flowsheets/process01_reactor_flash",
     title: "A first flowsheet",
     desc: "Reactor → flash: two units wired by their streams." },

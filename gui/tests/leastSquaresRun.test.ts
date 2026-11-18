@@ -69,14 +69,14 @@ describe("the witness the page runs", () => {
     expect(entry!.unsupportedReason).toBeUndefined();
   });
 
-  it("ships the two datasets the partition freezes, in constant/", () => {
+  it("ships the ONE dataset the partition splits by row, in constant/", () => {
     //  A sub-directory under constant/ — the shape the catalogue's
     //  unsupported list was once written for.  It IS bundled, and the worker
     //  mkdir-p's it into MEMFS, which is what makes this witness runnable.
     const paths = Object.keys(files!);
     const evidence = paths.filter((p) => p.startsWith("constant/experiments/"));
-    expect(evidence.length, "the fit and held-out datasets must both be "
-      + "bundled or the run cannot read its own evidence").toBe(2);
+    expect(evidence.length, "the evidence file (split into fit and held-out "
+      + "rows by `discard`) must be bundled or the run cannot read it").toBe(1);
   });
 
   it("declares the operation the page reads, with an evidence partition "
@@ -175,45 +175,48 @@ describe("every number the lesson quotes is the engine's", () => {
   ...LS_LIMITS.map((l) => `${l.title}\n${l.body}`)].join("\n");
 
   it("the fitted and held-out counts the page states are the run's", () => {
-    expect(diagOf("n_data")).toBe(8);
-    expect(diagOf("n_heldout")).toBe(3);
-    expect(diagOf("n_params")).toBe(4);
-    expect(diagOf("dof")).toBe(4);
-    expect(text).toMatch(/eight measured|eight points/i);
-    expect(text).toMatch(/three on this page|three points|three withheld/i);
-    expect(text).toMatch(/four NRTL|four of them|four fitted/i);
+    expect(diagOf("n_data")).toBe(10);
+    expect(diagOf("n_heldout")).toBe(4);
+    expect(diagOf("n_params")).toBe(2);
+    expect(diagOf("dof")).toBe(8);
+    expect(text).toMatch(/leaving ten and four/i);
+    expect(text).toMatch(/four on this page/i);
+    expect(text).toMatch(/two NRTL|two on this page/i);
   });
 
   it("Student's t at these degrees of freedom is the value quoted", () => {
-    expect(diagOf("t_crit95")).toBe(2.776);
-    expect(text).toContain("2.776");
+    expect(diagOf("t_crit95")).toBe(2.306);
+    expect(text).toContain("2.306");
     //  ... and the page's reason for quoting it: 1.96 is the large-sample
-    //  limit and this fit has four degrees of freedom.
+    //  limit and this fit has eight degrees of freedom.
     expect(text).toContain("1.96");
   });
 
   it("the condition number and the correlation are as the page describes", () => {
     const cond = diagOf("cond_JtJ");
-    expect(cond).toBeGreaterThan(3e11);
-    expect(cond).toBeLessThan(5e11);
+    expect(cond).toBeGreaterThan(25);
+    expect(cond).toBeLessThan(40);
+    expect(text).toMatch(/near 32/);
+    expect(diagOf("max_abs_corr")).toBeGreaterThan(0.93);
+    expect(diagOf("max_abs_corr")).toBeLessThan(0.95);
+    expect(text).toMatch(/0\.94/);
+    //  the history the page tells: the first, four-parameter version
     expect(text).toMatch(/4e11/);
-    //  "to within a ten-thousandth of perfectly"
-    expect(1 - diagOf("max_abs_corr")).toBeLessThan(1e-4);
     expect(text).toMatch(/ten-thousandth/);
     //  and the two thresholds the engine's own verdict uses
     expect(text).toContain("1e8");
     expect(text).toContain("0.999");
-    expect(diagOf("identifiable")).toBe(0);
-    expect(diagOf("well_conditioned")).toBe(0);
+    expect(diagOf("identifiable")).toBe(1);
+    expect(diagOf("well_conditioned")).toBe(1);
   });
 
-  it("the run is `validated` AND not identifiable, which is the page's point",
+  it("the run is `validated` AND identifiable, which the page says in words",
     () => {
       expect(expected).toMatch(
         new RegExp(`^verdict\\s+${LS_OP}\\s+verdict\\s+validated\\s`, "m"));
-      expect(diagOf("identifiable")).toBe(0);
+      expect(diagOf("identifiable")).toBe(1);
       expect(text).toMatch(/validated/);
-      expect(text).toMatch(/not individually identifiable|NOT individually/i);
+      expect(text).toMatch(/individually determined/i);
     });
 
   it("the held-out deviation really is inside the band the case declares", () => {
@@ -224,26 +227,26 @@ describe("every number the lesson quotes is the engine's", () => {
     //  The page says the margin is a factor, not an order of magnitude; that
     //  claim is checked here rather than asserted on the page.
     expect(band / diagOf("aad_heldout_pct")).toBeLessThan(3);
+    expect(band / diagOf("aad_heldout_pct")).toBeGreaterThan(1);
   });
 
   it("the band's own size in kelvin is the one the page quotes", () => {
-    //  "0.1 % of a ~356 K bubble temperature is about 0.36 K".
+    //  "0.061 % of a ~354 K bubble temperature is about 0.22 K".
     const aadPct = diagOf("aad_heldout_pct");
     const aadK = diagOf("aad_heldout_K");
     const T = 100 * aadK / aadPct;          // the mean held-out temperature
     expect(T).toBeGreaterThan(350);
     expect(T).toBeLessThan(360);
-    expect(0.001 * T).toBeGreaterThan(0.34);
-    expect(0.001 * T).toBeLessThan(0.38);
-    expect(text).toMatch(/0\.36 K/);
+    expect(0.00061 * T).toBeGreaterThan(0.20);
+    expect(0.00061 * T).toBeLessThan(0.24);
+    expect(text).toMatch(/0\.22 K/);
   });
 
   it("the search-bound argument quotes the bounds the case declares", () => {
     const props = tutorialByName(LS_WITNESS)!.files.rawFiles![LS_PROPS_FILE]!;
-    expect(props).toMatch(/a_ij;\s+initial\s+\S+\s+min\s+-15;\s+max\s+15;/);
-    expect(props).toMatch(/b_ij;\s+initial\s+\S+\s+min\s+-5000;\s+max\s+5000;/);
+    expect(props).toMatch(/b_ij;\s+initial\s+\S+\s+min\s+-3000;\s+max\s+3000;/);
     expect(text).toContain("15");
-    expect(text).toContain("5000");
+    expect(text).toContain("3000");
   });
 });
 

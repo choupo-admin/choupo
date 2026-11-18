@@ -32,10 +32,12 @@
   lesson: band, partition, fit, verdict.  A band declared after the fit is not
   a band.
 
-  THE THIRD THING, which the witness makes unavoidable: the fit on this page is
-  `validated` AND `NOT individually identifiable` at the same time.  Those are
-  two different questions and a student has to be able to read both off one
-  run.
+  THE THIRD THING: `validated` and `individually identifiable` are two
+  different questions and a student has to be able to read both off one run.
+  The witness (curate02) was rebuilt on 2026-11-19 (C439): its first version
+  fitted four coefficients to one isobar and was validated yet NOT
+  identifiable; the present one frees two and is both.  The page says which
+  it is by quoting the run, not by remembering the old one.
 
   WHERE THE CONTRACT THIS PAGE TEACHES IS WRITTEN DOWN, for a reader who wants
   the engine side rather than the lesson: `check_fit_verdict_channel` is the
@@ -76,8 +78,8 @@ export const LS_STEPS: readonly LessonStep[] = [
 \qquad r_i(p) = T_i^{\mathrm{model}}(p) - T_i^{\mathrm{exp}}`,
     where: [
       { sym: "p", means: "the parameter vector — the adjustable coefficients "
-        + "of the model. On this page it is the four NRTL coefficients of one "
-        + "binary pair" },
+        + "of the model. On this page it is the two NRTL coefficients b_ij and "
+        + "b_ji (in kelvin) of one binary pair" },
       { sym: "r_i", means: "the residual at measurement i: what the model "
         + "says minus what was measured", unit: "K here" },
       { sym: "T_i", means: "the bubble temperature at measurement i, either "
@@ -228,15 +230,17 @@ export const LS_STEPS: readonly LessonStep[] = [
       { sym: "j", means: "an index over the parameters, so the last line is "
         + "one diagonal entry at a time" },
     ],
-    note: "Why the scaling matters, in this very case. Two of the four fitted "
-      + "coefficients are dimensionless and two are in kelvin, and the case "
-      + "declares their search bounds accordingly: plus or minus 15 for the "
-      + "first pair and plus or minus 5000 for the second, more than two "
-      + "orders of magnitude apart. Damping by the identity would treat a "
-      + "step of one in each as the same size, which it plainly is not. "
+    note: "Why the scaling matters, and where this case would show it. Both "
+      + "fitted coefficients here are in kelvin (bounds plus or minus 3000), "
+      + "but free a_ij and a_ji as well, as the README suggests, and the "
+      + "parameters are no longer commensurable: those two are "
+      + "dimensionless, with bounds of plus or minus 15, more than two "
+      + "orders of magnitude from the others. Damping by the identity would "
+      + "treat a step of one in each as the same size, which it plainly is "
+      + "not. "
       + "Damping by "
       + "diag(J'J) makes the penalty carry the units of each parameter's own "
-      + "sensitivity, so the same lambda means the same thing for all four. "
+      + "sensitivity, so the same lambda means the same thing for every parameter. "
       + "Choupo writes the equation out at src/propertyOps/"
       + "FitParameters.cpp:258 and applies the damping at "
       + "FitParameters.cpp:279.",
@@ -294,7 +298,7 @@ export const LS_STEPS: readonly LessonStep[] = [
     body: "Every column of J is built by moving one parameter a little and "
       + "re-running every residual. That is expensive: one iteration costs "
       + "one full sweep of the residuals per parameter to build the Jacobian, "
-      + "plus one more to evaluate the trial step — five sweeps here, for four "
+      + "plus one more to evaluate the trial step — three sweeps here, for two "
       + "parameters — and each sweep is a bubble-point calculation at every "
       + "measured composition over a thermodynamic package rebuilt for the "
       + "perturbed coefficients. "
@@ -372,7 +376,7 @@ export const LS_STEPS: readonly LessonStep[] = [
         + "fitted points, which is the in-sample number in the units a reader "
         + "thinks in", unit: "K" },
       { sym: "\\nu", means: "the degrees of freedom left after the fit" },
-      { sym: "m", means: "the number of fitted parameters — four on this page" },
+      { sym: "m", means: "the number of fitted parameters — two on this page" },
       { sym: "\\chi_{\\mathrm{red}}", means: "the reduced sum of squares, the "
         + "in-sample number per degree of freedom" },
     ],
@@ -414,17 +418,18 @@ export const LS_STEPS: readonly LessonStep[] = [
       { sym: "\\mathrm{AAD}", means: "the average absolute deviation over the "
         + "held-out points, as a percentage of each measured temperature — "
         + "the quantity the acceptance band is declared in", unit: "%" },
-      { sym: "M", means: "the number of held-out measurements — three on this "
+      { sym: "M", means: "the number of held-out measurements — four on this "
         + "page" },
       { sym: "r_k", means: "the residual at held-out point k, computed with "
         + "the finished parameters", unit: "K" },
       { sym: "T_k", means: "the measured bubble temperature at held-out point "
         + "k", unit: "K" },
     ],
-    note: "The band on this page's case is 0.1 % of the bubble temperature, "
-      + "about 0.36 K, and the case states why in its own dict: it is the "
-      + "scatter of atmospheric bubble-point measurements in the compilation "
-      + "the numbers were transcribed from. A limit with no stated origin "
+    note: "The band on this page's case is 0.061 % of the bubble temperature, "
+      + "about 0.22 K, and the case states why in its own dict: the largest "
+      + "stated uncertainty of the held-out points (0.18 K) plus the "
+      + "catalogue's own boiling-point error at the two pure endpoints "
+      + "(0.03 K), as a percentage of the mean held-out temperature. A limit with no stated origin "
       + "cannot be told apart from one chosen after the residuals were seen, "
       + "which is why Choupo makes the origin mandatory whenever a band "
       + "exists.",
@@ -476,28 +481,33 @@ export const LS_STEPS: readonly LessonStep[] = [
   },
   {
     n: 10,
-    title: "Identifiability is a different question, and this fit fails it",
+    title: "Identifiability is a different question, and this fit passes it",
     body: "A model that predicts well and coefficients that are individually "
-      + "determined are two separate claims, and the run below makes one and "
+      + "determined are two separate claims, and a fit can make one and "
       + "not the other. After the search Choupo rebuilds the Jacobian at the "
       + "answer, inverts the normal matrix, and reports a standard error and "
       + "a 95 % interval per parameter, the correlation between every pair, "
-      + "and a condition number. On this case two pairs of parameters are "
-      + "correlated to within a ten-thousandth of perfectly and the condition "
-      + "number comes out around 4e11; the panel below reports, per "
-      + "parameter, whether the fitted value is bigger than its own 95 % "
-      + "interval, and on the shipped run it is not. The reason is "
-      + "physical, not numerical: the two halves of an NRTL coefficient "
-      + "always appear together as one temperature-dependent group, so eight "
-      + "points over a narrow temperature span cannot separate them. Data at "
-      + "a second pressure could.",
+      + "and a condition number. On this case the condition number comes out "
+      + "near 32 and the correlation of b_ij with b_ji is 0.94, strong but "
+      + "below the 0.999 line, so each coefficient is bigger than its own "
+      + "95 % interval and the run says the parameters are individually "
+      + "determined. It was not always so: the first version of this case "
+      + "freed all four NRTL coefficients, a_ij and a_ji as well, on the same "
+      + "kind of single-isobar data, and the condition number was around "
+      + "4e11 with pairs correlated to within a ten-thousandth of perfectly. "
+      + "The reason is physical, not numerical: the two halves of an NRTL "
+      + "coefficient always appear together as one temperature-dependent "
+      + "group, so points over a narrow temperature span cannot separate "
+      + "them. Fixing a_ij = a_ji = 0 is what made this fit well posed; free "
+      + "them again and watch the verdict stay while the identifiability "
+      + "goes.",
     derivation: [
       { step: "The covariance of the parameters, scaled by the in-sample "
           + "variance per degree of freedom.",
         eq: String.raw`C = \chi^2_{\mathrm{red}} \left( J' J \right)^{-1}` },
       { step: "The 95 % interval uses Student's t at the degrees of freedom "
-          + "you actually have. With four of them t is 2.776, not 1.96, and "
-          + "the interval is some 40 % wider than the normal one "
+          + "you actually have. With eight of them t is 2.306, not 1.96, and "
+          + "the interval is some 18 % wider than the normal one "
           + "(FitParameters.cpp:244).",
         eq: String.raw`p_j \pm t_{95}(\nu)\, \sqrt{C_{jj}}` },
       { step: "And the pairwise correlation, which is the one that catches "
@@ -515,7 +525,7 @@ export const LS_STEPS: readonly LessonStep[] = [
         + "of the pair the correlation below is taken over" },
       { sym: "C_{jk}", means: "the covariance of parameters j and k" },
       { sym: "t_{95}", means: "Student's two-sided 95 % critical value at nu "
-        + "degrees of freedom — 2.776 here, and 1.96 only in the limit of "
+        + "degrees of freedom — 2.306 here, and 1.96 only in the limit of "
         + "many points" },
       { sym: "\\rho_{jk}", means: "the correlation between parameters j and "
         + "k. Close to plus or minus one means the two trade off and the fit "
@@ -535,13 +545,13 @@ export const LS_STEPS: readonly LessonStep[] = [
     body: "The console scrolls. What outlives it is the file, and a promoted "
       + "parameter record is going to be moved into a catalogue folder and "
       + "simulated with by somebody who never saw this page. So Choupo writes "
-      + "the whole qualification into the record, not the four numbers alone: "
+      + "the whole qualification into the record, not the two numbers alone: "
       + "the origin word and the method that produced it, both datasets with "
       + "the role each was frozen in, the fingerprint of that declaration, "
       + "the held-out deviation over the withheld points, the band with the "
       + "reason it was set where it was, the verdict — and, in the header "
-      + "above everything, the warning that these coefficients are not "
-      + "individually identifiable. The record is written after the held-out "
+      + "above everything, the identifiability finding, with the warning "
+      + "whenever the coefficients are not individually determined. The record is written after the held-out "
       + "pass, deliberately, because before it the verdict does not exist.",
     note: "This is the point of the whole page. A fitted parameter is not a "
       + "number; it is a number together with the evidence it rests on, the "
@@ -568,16 +578,18 @@ export const LS_LIMITS: readonly LessonLimit[] = [
   {
     id: "evidence-quality",
     title: "A fit is only as good as its evidence, and held out is not independent",
-    body: "The eleven points on this page come from one compilation, at one "
-      + "pressure, transcribed within this repository. Splitting them into "
-      + "eight and three tests whether the model interpolates the same "
-      + "experiment, which is a real and useful question and a much weaker "
-      + "one than whether it agrees with somebody else's laboratory. Choupo "
-      + "is explicit about how little it can settle here: it checks the one "
-      + "mechanical question that is a fact — whether the same DOI or hash "
-      + "appears in both roles — and announces the rest for a human to judge. "
-      + "Both datasets on this page declare no DOI at all, and the run says "
-      + "so.",
+    body: "The fourteen points on this page come from one article, at one "
+      + "pressure, read through the NIST/TRC ThermoML archive. Every third "
+      + "point is held out, leaving ten and four, and that tests whether the "
+      + "model interpolates the same experiment, which is a real and useful "
+      + "question and a much weaker one than whether it agrees with somebody "
+      + "else's laboratory. Choupo is explicit about how little it can "
+      + "settle here: it checks the one mechanical question that is a fact "
+      + "— whether the same DOI or hash appears in both roles, which here "
+      + "it does, because both roles are rows of one file and the case "
+      + "declares so by naming the rows each role sets aside — and "
+      + "announces the rest for a human to judge. The methanol + water case "
+      + "(curate04) holds out a set from another laboratory.",
   },
   {
     id: "extrapolation",
@@ -585,12 +597,12 @@ export const LS_LIMITS: readonly LessonLimit[] = [
     body: "A fitted parameter is established over the range the evidence "
       + "covers, and nothing stops you using it outside that range. This very "
       + "run meets the problem on the way: it evaluates ethanol's vapour "
-      + "pressure at 372 K, outside the 273-369 K window that component's own "
+      + "pressure at 369.3 K, just outside the 273-369 K window that component's own "
       + "record declares, and says so at the site and again in the caveat "
       + "block at the end. It does not refuse, because extrapolating is a "
-      + "legitimate choice a reader may need to make. The held-out band "
-      + "covers compositions from 0.20 to 0.80 mole fraction, and says "
-      + "nothing whatever about the dilute ends.",
+      + "legitimate choice a reader may need to make. The held-out points "
+      + "cover mole fractions from 0.10 to 0.85, and say nothing whatever "
+      + "about the dilute ends or about other pressures.",
   },
   {
     id: "scope-of-the-verdict",
@@ -601,7 +613,7 @@ export const LS_LIMITS: readonly LessonLimit[] = [
       + "right for a vapour composition, for an enthalpy of mixing, for a "
       + "liquid-liquid split, or at ten bar. The curation dossier this run "
       + "writes scopes the verdict to `binaryVLE.T_bubble` for exactly that "
-      + "reason — and the same file records that the parameters are not "
+      + "reason — and the same file records whether the parameters are "
       + "individually identifiable, so both facts reach the reader together.",
   },
   {
@@ -610,8 +622,8 @@ export const LS_LIMITS: readonly LessonLimit[] = [
     body: "Levenberg-Marquardt is a local method: it walks downhill from "
       + "wherever it is put. The starting values are declared in the case, "
       + "and a different starting point may well land on a different set of "
-      + "coefficients — the more so here, where a whole valley of parameter "
-      + "combinations fits about equally well. Choupo does not multi-start "
+      + "coefficients — the more so here, where a freed a_ij and a_ji open a whole valley of parameter "
+      + "combinations that fit about equally well. Choupo does not multi-start "
       + "this operation, does not search globally, and does not report a "
       + "basin of attraction. Change the damping on the panel below and watch "
       + "the iteration count move a great deal while the answer barely does; "
