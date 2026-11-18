@@ -4664,6 +4664,61 @@ accepts today, and that is a policy call.
 > stale 10.03 m3; the ratchet's docstring; the Theory Guide entry for the
 > optional `initial`.
 
+> **C441 (Vitor, 2026-11-19: "haverá standards para escolhas de bombas
+> centrífugas, com selecção de curvas características, eficiência e NPSH? Ou
+> isto é completamente dependente dos fabricantes?"; then "Sim, põe no
+> backlog", having filed Gülich, Centrifugal Pumps, 4th ed., Springer 2020).**
+> RULED: two levels, both on the architecture closed on 11-18.  (1) A
+> GENERIC PUMP with no catalogue: from the duty point, the specific speed,
+> the efficiency to expect, an estimated NPSH required from the suction
+> specific speed, the NPSH margin against the available NPSH the flowsheet
+> computes, and whether the point lies in the preferred operating region --
+> every number marked `estimated`, every correlation read at its page in
+> Gülich (no number from memory); the pump's shaft power then follows from
+> that efficiency instead of a typed one, printed.  (2) A REAL PUMP: the
+> manufacturer's curve (head, efficiency and NPSH required against flow) is
+> a measured record of the case, like a filtration test or a flow curve;
+> the engine reads the operating point on it, the margin and the power, and
+> refuses a point outside its curve's range by name.  The standards that
+> fix the margins and the regions (the Hydraulic Institute's, API 610 /
+> ISO 13709, ISO 9906 for curve tolerances) are cited for what they rule,
+> without their numbers until a copy is in the folder.
+
+> **C440 (Vitor, 2026-11-19, on C238: "eu gostava de ver o dimensionamento
+> detalhado de todas as operações.  Por isso a C318 devia de vir primeiro, e
+> se calhar até os desenhos isométricos das condutas, com velocidades de
+> circulação recomendada, perdas de carga, etc., deviam de aparecer nas
+> folhas de especificação").**  RULED, weighed: (1) agreed -- C318 (the
+> drum's detailed sizing) moves to the head of the queue and is dispatched;
+> (2) agreed -- C207 (one specification sheet per line: diameter from the
+> recommended velocity of its service, the velocity, the pressure drop,
+> schedule and material) is second, because it is what a reviewer of a
+> plant's documents reads and the routed pipes already exist; (3) an AUDIT
+> follows: every unit of the reference plant against the detailed sizing it
+> has, so "all operations" is a list, not an impression; (4) isometric
+> drawings per line are kept as their own item, after (1)-(3): they are a
+> drawing deliverable on top of the routes, worth having, but the numbers on
+> the line sheet are the engineering and come first.
+
+> **C439 (Vitor, 2026-11-19: "os casos que estão na landing page foram
+> escolhidos logo no início ... Acho que falta um sobre criação de
+> componentes e binários").**  Measured: the four starter cards are the
+> adiabatic flash, the isothermal flash, reactor+flash and a Joback
+> component estimate -- a component card exists, a binary card does not.
+> RULED: the isothermal-flash card (a near repeat of the first, reachable
+> from it) gives its place to fitting a binary pair to measured data and
+> scoring it on held-out points (the curation witness curate02 or curate04),
+> made a first-path case with its README.
+
+> **C438 (architect, 2026-11-19, from C389's general).**  The lesson-citation
+> re-pointer does not manage every file that cites the engine by line:
+> `gui/src/ui/methods/plantRunMath.ts` and `plantCostMath.ts` (and the tests
+> that pin their prose) cite `EconomicsPass.cpp` lines it never checks, so an
+> engine edit left them stale while `repoint_lesson_citations.py --check`
+> said OK.  To build: the re-pointer's file set is derived from every
+> `file:line` citation in gui/ (not a hand list), and a citation it cannot
+> parse is a finding.
+
 > **C437 (architect, 2026-11-19, from C176's op E).**  With Labban et al.
 > 2017's own Table 5 parameters and X_d, Choupo's DSPM-DE misses the paper's
 > measured rejections by 8.7, 7.6 and 16.2 points at the three pressures
