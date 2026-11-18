@@ -99,7 +99,7 @@ export const LC_STEPS = [
     assumes: "The energy of a neighbourhood is the sum of independent "
       + "pairwise contributions, and the Boltzmann factor uses the same T "
       + "for all pairs.",
-    cites: "Wilson.cpp:271 · NRTL.cpp:376 · UNIQUAC.cpp:257 — each of the "
+    cites: "Wilson.cpp:271 · NRTL.cpp:386 · UNIQUAC.cpp:257 — each of the "
       + "three exponentials below is this factor, differently dressed",
   },
   {

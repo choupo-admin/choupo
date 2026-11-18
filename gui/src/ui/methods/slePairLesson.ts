@@ -32,10 +32,10 @@ export type { LessonStep, SymbolGloss };
 export interface EngineSource { file: string; line: number; contains: string; claim: string }
 
 export const SLE_ENGINE_SOURCES: readonly EngineSource[] = [
-  { file: "src/thermo/activityCoefficient/NRTL.cpp", line: 376,
+  { file: "src/thermo/activityCoefficient/NRTL.cpp", line: 386,
     contains: "scalar t = a(i,j) + b(i,j) / T;",
     claim: "the engine's NRTL builds tau_ij = a_ij + b_ij/T; this page uses a_ij = 0" },
-  { file: "src/thermo/activityCoefficient/NRTL.cpp", line: 415,
+  { file: "src/thermo/activityCoefficient/NRTL.cpp", line: 425,
     contains: "lnGamma[i] = termA + termB;",
     claim: "ln gamma_i is the sum of the two NRTL terms; slePairMath.ts transcribes the "
       + "loop and a test holds it to the engine's printed gamma to 1e-10" },

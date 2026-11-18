@@ -33,6 +33,7 @@ License
 #include "core/Origin.H"
 #include "core/ThermoResolution.H"
 #include "thermo/PairAudit.H"
+#include "thermo/PairSets.H"
 #include "thermo/Database.H"
 #include "thermo/RecordResolver.H"
 
@@ -169,9 +170,11 @@ NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
     auto recordResolution = [&](const std::string& ni, const std::string& nj,
                                 const std::string& status, const std::string& source,
                                 const std::string& provSource,
-                                const DictPtr& provDict = nullptr)
+                                const DictPtr& provDict = nullptr,
+                                const std::string& setName = "")
     {
         PairResolution r{ "NRTL", ni, nj, status, source, provSource };
+        r.set = setName;
         fillPairAudit(r, provDict, ni + "-" + nj, status == "standard");
         if (provDict)   // a record's declared span is guarded (C35 item 5)
             spanGuard_.add("NRTL", findIndex(names, ni), findIndex(names, nj),
@@ -185,7 +188,8 @@ NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
         {
             applyPair(p, "inline");
             const auto ps = pairSourceOf(p);   // a record file, else inline (SA-03)
-            recordResolution(p->lookupWord("i"), p->lookupWord("j"), ps.first, ps.second, ps.second);
+            recordResolution(p->lookupWord("i"), p->lookupWord("j"), ps.first, ps.second, ps.second,
+                             nullptr, p->lookupWordOrDefault("resolvedSet", ""));
         }
 
     // ---- Phase 2: file lookup (case-local then standards) for any pair
@@ -268,6 +272,11 @@ NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
             }
 
             auto fileDict = Dictionary::fromFile(file.string());
+            //  K3: a record of several named sets answers with its preferred
+            //  set; a single-block record is returned untouched (`default`).
+            bool setNamed = false;
+            std::string setUsed;
+            fileDict = pairsets::resolve(fileDict, "", file.string(), &setUsed, &setNamed);
 
             if (tier == "local")
             {
@@ -307,7 +316,8 @@ NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
                                  ->lookupWordOrDefault("source", "");
             recordResolution(names[i], names[j], tier, file.string(), provSource,
                              fileDict->found("provenance")
-                                 ? fileDict->subDict("provenance") : nullptr);
+                                 ? fileDict->subDict("provenance") : nullptr,
+                             setNamed ? setUsed : std::string());
         }
     // Diagonals stay at 0 (τ_ii = 0, G_ii = 1, α_ii = 0).
 

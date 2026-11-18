@@ -27,12 +27,32 @@ reach the author before the file is written.
   4. no single-valued ceremony field (the amplifier rule): a key whose only
      possible value is the one written is doctrine in the wrong place.
 
+  5. (ARM `pair-sets`, contract K3, Theory Guide sec:pair-sets) a pair record
+     of the activity models (NRTL, UNIQUAC, Wilson) holds its parameters in
+     ONE of two shapes: one unnamed `parameters` block (the set `default`) OR
+     `sets { <name> { parameters ... } }` with `preferred <name>;` (required
+     from two sets on) -- never both, never a set without `parameters`.
+     THE DEFECT IT WOULD HAVE CAUGHT: before K3 two legitimate
+     parametrisations of one pair (a partially miscible pair fitted to
+     bubble temperatures AND to tie lines) could live only as a case's
+     inline variation, so a case choosing the LLE set could not cite the
+     catalogue; once records may carry sets, a record that names no
+     preferred set, or keeps a stray top-level `parameters`, would make the
+     engine's choice of set ambiguous or refused at run time.  The same arm
+     runs the witness case's REFUSAL probe when a build is present: an
+     unknown `set` name must stop the run by name, listing the record's
+     sets; with no binary the probe is printed SKIPPED, never silent.
+
 Scope: data/standards/components/, plus every draft dict under
 docs/design/.  Sealed tutorial mirrors inherit from standards and are not
 scanned twice.
 """
+import os
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -145,6 +165,158 @@ if n_components < 40 or n_design < 5:
           f"more, so the scan surface has collapsed and a verdict over it "
           f"would describe nothing.")
     sys.exit(1)
+
+#  ---- arm pair-sets (K3) ---------------------------------------------------
+def top_level_has(t, key):
+    """`key` at brace depth 0 of the stripped record text."""
+    depth = 0
+    for line in t.splitlines():
+        if depth == 0 and re.match(rf'\s*{key}\b', line):
+            return True
+        depth += line.count('{') - line.count('}')
+    return False
+
+
+def named_sets(t):
+    """Names of the sub-blocks of the top-level `sets { ... }` block, or
+    None when the record has no `sets` block."""
+    m = re.search(r'^\s*sets\s*\{', t, re.M)
+    if not m:
+        return None
+    body, depth, names, cur = t[m.end():], 1, [], ''
+    for c in body:
+        if c == '{':
+            if depth == 1 and cur.split():
+                names.append(cur.split()[-1])
+            depth += 1
+            cur = ''
+        elif c == '}':
+            depth -= 1
+            if depth == 0:
+                break
+            cur = ''
+        elif depth == 1:
+            cur = '' if c == ';' else cur + c
+    return names
+
+
+n_pair_sets = 0
+pair_records = []
+for model in ("NRTL", "UNIQUAC", "Wilson"):
+    pair_records += sorted((ROOT / "data/standards/parameters" / model).glob("*.dat"))
+if True:
+    for p in pair_records:
+        t = strip(p.read_text())
+        names = named_sets(t)
+        if names is None:
+            continue
+        n_pair_sets += 1
+        label = str(p.relative_to(ROOT))
+        if top_level_has(t, "parameters"):
+            bad.append(f"{label}: a top-level `parameters` block BESIDE `sets` -- two homes for one fact")
+        if not names:
+            bad.append(f"{label}: `sets {{ }}` holds no set")
+        if len(set(names)) != len(names):
+            bad.append(f"{label}: a set name is used twice ({names})")
+        m = re.search(r'^\s*preferred\s+(\S+)\s*;', t, re.M)
+        if len(names) > 1 and not m:
+            bad.append(f"{label}: {len(names)} sets and no `preferred <name>;`")
+        if m and m.group(1) not in names:
+            bad.append(f"{label}: `preferred {m.group(1)};` names no set ({names})")
+
+#  THE WITNESS IS A PROBE, BUILT IN A TEMPORARY DIRECTORY (architect's ruling,
+#  2026-11-19: a shipped tutorial must not carry a parameter set made up for the
+#  occasion).  No honest second set of any catalogue pair exists yet, so this
+#  arm turns a COPY of the catalogue's nButanol-water record into two sets --
+#  `lle` = the record's own numbers, `probe_vle` = the tau numbers scaled by
+#  0.7, a PROBE and never a published set -- and runs a minimal props case.
+#  A missing binary FAILS (as check_activity_domain's behaviour arms do): a
+#  check that cannot run must not pass.
+PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
+PAIR_REC = ROOT / "data/standards/parameters/NRTL/nButanol-water.dat"
+
+
+def sets_probe():
+    """Returns (problems, note)."""
+    if not PROPS.exists():
+        return ([f"pair-sets probe: {PROPS.relative_to(ROOT)} is not built -- a "
+                 "check that cannot run must not pass"], "")
+    src = PAIR_REC.read_text()
+    m = re.search(r'\nparameters\s*\{(.*?)\n\}', src, re.S)
+    prov = re.search(r'\nprovenance\s*\{', src)
+    if not m or not prov:
+        return (["pair-sets probe: the catalogue record nButanol-water.dat no "
+                 "longer has a plain `parameters` block and a `provenance` block"], "")
+    body = m.group(1)
+
+    def scale(mm):
+        return f"{mm.group(1)}{float(mm.group(2)) * 0.7:.8f};"
+    probe_body = re.sub(r'(\b(?:a_ij|b_ij|a_ji|b_ji)\s+)(-?[\d.]+);', scale, body)
+    head = src[:m.start()]
+    rec = (head + "\npreferred lle;\nsets\n{\n"
+           "    lle { parameters {" + body + "\n} fittedTo lle; }\n"
+           "    probe_vle { parameters {" + probe_body + "\n} "
+           "provenance { origin assumed; method \"PROBE, scaled 0.7, never a published set\"; }"
+           " fittedTo vle; }\n}\n")
+    tmp = Path(tempfile.mkdtemp(prefix="rfpairsets."))
+    problems = []
+    try:
+        (tmp / "constant/parameters/NRTL").mkdir(parents=True)
+        (tmp / "system").mkdir()
+        (tmp / "constant/parameters/NRTL/pair-sets-probe.dat").write_text(rec)
+        (tmp / "system/controlDict").write_text(
+            'application  choupoProps;\ndescription  "check_record_form pair-sets probe";\nverbosity 2;\n')
+        (tmp / "system/propsDict").write_text(
+            "operations\n(\n    { name p; type propertyPoint; state { T 373.15 K; P 1 atm;"
+            " composition { nButanol 0.8; water 0.2; } } properties ( P_bubble ); }\n);\n")
+        base = ("recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
+                "components ( nButanol water );\nequilibrium\n{\n formulation gammaPhi;\n"
+                " liquid { activityModel { model NRTL; binaryParameters {\n"
+                "   nButanol-water { source \"%s\"; %s }\n } } standardState pureLiquid; }\n"
+                " vapour { fugacityModel idealGas; }\n}\n")
+        env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+
+        def run(source, setword):
+            (tmp / "constant/thermoPhysPropDict").write_text(base % (source, setword))
+            r = subprocess.run([str(PROPS), str(tmp)], capture_output=True, text=True,
+                               timeout=300, env=env, cwd=tmp)
+            out = r.stdout + r.stderr
+            pm = re.search(r'"P_bubble":\s*([0-9.eE+-]+)', out)
+            return r.returncode, out, (float(pm.group(1)) if pm else None)
+
+        rc0, o0, p_cat = run("data/standards/parameters/NRTL/nButanol-water.dat", "")
+        rc1, o1, p_def = run("constant/parameters/NRTL/pair-sets-probe.dat", "")
+        rc2, o2, p_lle = run("constant/parameters/NRTL/pair-sets-probe.dat", "set lle;")
+        rc3, o3, p_vle = run("constant/parameters/NRTL/pair-sets-probe.dat", "set probe_vle;")
+        rc4, o4, _ = run("constant/parameters/NRTL/pair-sets-probe.dat", "set no_such_set;")
+        if None in (p_cat, p_def, p_lle, p_vle):
+            problems.append("pair-sets probe: a run returned no P_bubble: "
+                            + (o0 + o1 + o2 + o3)[-300:])
+        else:
+            for tag, v in (("default", p_def), ("set lle", p_lle)):
+                if abs(v - p_cat) > 1e-9 * abs(p_cat):
+                    problems.append(f"pair-sets probe (a): {tag} gives P_bubble {v!r}, "
+                                    f"the catalogue record gives {p_cat!r}")
+            if abs(p_vle - p_cat) < 1e-6 * abs(p_cat):
+                problems.append("pair-sets probe (b): `set probe_vle;` gives the SAME "
+                                "P_bubble as the preferred set")
+            if "set lle" not in o2 or "set probe_vle" not in o3:
+                problems.append("pair-sets probe (b): the [builder] line does not name the set used")
+            if ", set probe_vle" not in o3 or ", set lle" not in o2:
+                problems.append("pair-sets probe (b): the resolved view does not name the set used")
+        if rc4 == 0 or "no_such_set" not in o4 or "probe_vle" not in o4 or "lle" not in o4:
+            problems.append("pair-sets probe (c): `set no_such_set;` did not refuse by name "
+                            "listing the record's sets")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    return (problems, "probe on a temporary copy of nButanol-water: default and set lle equal the "
+                      "catalogue record, probe_vle differs, set named in the builder line and the "
+                      "resolved view, an unknown set refused by name")
+
+
+_probs, probe_note = sets_probe()
+bad.extend(_probs)
+print(f"record-form gate arm pair-sets: {n_pair_sets} pair record(s) with sets checked; {probe_note}")
 
 if pending:
     print(f"record-form gate: {len(pending)} record(s) still carry `role` -- "

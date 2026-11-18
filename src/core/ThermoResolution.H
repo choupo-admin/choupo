@@ -85,6 +85,10 @@ struct PairResolution
     std::string                      methodVersion{};   // STABLE id, never a path
     ValidityDomain                   validity{};
     std::optional<PromotionOverride> promotedDespite{};
+    //  K3 (several named parameter sets per pair): the name of the set read,
+    //  set ONLY when the record holds a `sets` block; "" for a record of one
+    //  unnamed (`default`) set, so a legacy record prints exactly as before.
+    std::string                      set{};
 };
 
 // ---- Shared audit emission (forum #73-3): ONE implementation of the P1
@@ -98,6 +102,7 @@ inline std::string pairResolutionAuditJson(const PairResolution& p, Esc esc)
 {
     std::string out;
     out += ", \"origin\": " + esc(originToWord(p.origin));
+    if (!p.set.empty())           out += ", \"set\": " + esc(p.set);
     if (!p.method.empty())        out += ", \"method\": " + esc(p.method);
     if (!p.methodVersion.empty()) out += ", \"methodVersion\": " + esc(p.methodVersion);
     if (p.validity.any())

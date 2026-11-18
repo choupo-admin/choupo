@@ -223,6 +223,14 @@ unparseable entry REFUSES loudly, naming the entry to add, and each loaded
 pair is announced with its source (`[builder]` / `[henry]` lines).  The
 builder loads and assembles; it NEVER estimates.
 
+ONE PAIR MAY HOLD SEVERAL NAMED SETS (contract K3): a NRTL, UNIQUAC or Wilson
+pair record is one `parameters` block (the set `default`) or
+`sets { <name> {...} }` + `preferred <name>;`, each set with its own provenance,
+validity and `fittedTo vle | lle | vlle | calorimetry`.  The record is still ONE
+home per (species, model, convention); the sets are its named parametrisations
+and a case selects one with `set <name>;` beside `source` -- it never copies the
+numbers to vary them.
+
 ### THE MERGE SEMANTICS — block-by-block, NOT field-by-field
 
 The overlay merges **top-level-key-by-key**, NOT field-by-field inside a
