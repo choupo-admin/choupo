@@ -7,67 +7,40 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  curate02 -- THE FIT / HELD-OUT CONTRACT ON A BINARY PHASE EQUILIBRIUM.
+  curate02 -- FIT A BINARY PAIR TO MEASURED DATA, THEN TEST IT ON POINTS IT NEVER SAW.
 
-  The NRTL ethanol-water pair is regressed against eight measured bubble
-  temperatures at 101.325 kPa, and then asked to predict THREE it never saw.
+  REBUILT 2026-11-19 (C439, at Vitor's request: the first fit a newcomer meets
+  should be well posed, from a primary source, and should SHOW something).
+  The previous version fitted four coefficients to eleven points of a
+  compilation that cannot be a public value's origin; its parameters were not
+  identifiable (condition number 4e11).  Its numbers are superseded.
 
-  WHY THIS CASE EXISTS BESIDE curate01.  curate01 proves the machinery: its
-  two halves come from the same Antoine equation, so its held-out residual is
-  round-off and its acceptance band is a numerical criterion, which its own
-  `acceptance.origin` says out loud.  Here the evidence is MEASURED, so the
-  held-out residual is a statement about the MODEL -- the first place in the
-  corpus where a fitted binary pair is scored on real evidence it was never
-  handed.
+  THE EVIDENCE.  Fourteen measured ethanol-water bubble points at 101.3 kPa
+  (T and the vapour composition y), Lai, Lin & Tu, J. Chem. Thermodyn. 2014,
+  doi:10.1016/j.jct.2013.08.020, extracted from the NIST/TRC ThermoML archive
+  with bin/choupo-thermoml extract-vle (each file under constant/experiments/
+  carries the article, the archive block, the sha256 and the per-point
+  expanded uncertainty).  THE SPLIT, declared before the fit: every third
+  point (3, 6, 9, 12 by increasing x_ethanol) is held out -> 4 points; the
+  other 10 are fitted.  The azeotrope (x about 0.89) is in the fit set.
 
-  THE SPLIT IS DECLARED AND ARITHMETIC.  Every third point of the eleven-point
-  series (x1 = 0.20, 0.50, 0.80) is held out, spread across the composition
-  range rather than cut contiguously, because a model can interpolate well and
-  extrapolate badly and a contiguous cut tests only one of those.  The rule was
-  fixed before anything was fitted.
+  THE FIT.  NRTL with a_ij = a_ji = 0 and alpha = 0.30: TWO parameters, b_ij
+  and b_ji (in K).
+    * a_ij = a_ji = 0: over one isobar (351-373 K) the a and b of one
+      coefficient multiply almost the same function of T, so freeing both only
+      trades one for the other (the previous version showed it: correlation
+      0.9999).
+    * alpha = 0.30: the value Renon & Prausnitz recommend for mixtures of a
+      polar and a non-polar-ish component; one isobar cannot determine it.
+  THE START IS ZERO: b_ij = b_ji = 0 gives gamma = 1, Raoult's law.  The fit
+  moves the pair from ideal solution to NRTL, and the run shows both curves.
 
-  THE ACCEPTANCE BAND IS DECLARED BEFORE THE FIT, WITH ITS ORIGIN, AND IS NOT
-  ADJUSTED AFTERWARDS.  Whatever verdict falls out of it is the result.  A band
-  chosen after seeing the residual would make the whole contract decorative.
+  THE BAND, declared before the fit and not adjusted: see `acceptance` below.
 
-  Read the run's four sections in order: FIT QUALITY is what the model does on
-  what it saw; HELD-OUT EVIDENCE is what it did on what it did not.
-
-  TWO THINGS THIS CASE DOES NOT SHOW, BOTH VISIBLE IN ITS OWN GOLDEN.
-
-  (1) THE PARAMETERS ARE NOT IDENTIFIABLE.  `identifiable 0`, `cond_JtJ ~4e11`
-      and pairwise correlations of 0.9999 between each a/b pair: eight points
-      at ONE pressure cannot separate the entropic and enthalpic halves of an
-      NRTL parameter, because they only ever appear together over a narrow T
-      span.  The model PREDICTS well and the four numbers are individually
-      meaningless -- a validated prediction is not a determined parameter set,
-      and a student must be able to read both facts off the same run.  This is
-      why the verdict is scoped `binaryVLE.T_bubble` in the dossier and not to
-      the pair itself.
-
-  (2) THE HELD-OUT MARGIN IS NOT LARGE.  0.0737 % against a 0.1 % band is a
-      pass by a factor of 1.4, not by an order of magnitude.  The band was
-      declared before the fit and is not adjusted; the margin is reported
-      rather than described as comfortable.
-
-  The run also announces an extrapolation: ethanol's vapour pressure is
-  evaluated at 372 K, outside its declared Trange (273-369).  Announced, not
-  judged -- it rides the caveat surface like every other extrapolation.
-
-  WHAT THE STUDENT TAKES AWAY: `ethanol-water.proposal.dat`.
-
-  The console says all of the above and then scrolls.  The file is what
-  survives -- it is moved into `constant/parameters/NRTL/ethanol-water.dat`
-  and simulated with, months later, by someone who never saw this run.  So it
-  carries the whole qualification, not the numbers alone: the two datasets and
-  the role each was frozen in, the fingerprint of that declaration, the
-  held-out AAD over the three withheld points, the 0.1 % band with the reason
-  it was set at 0.1 %, the verdict, and -- in the header, above everything --
-  the fact that these four coefficients are NOT individually identifiable.
-
-  Both facts of (1) are readable off that one file: `verdict validated` beside
-  `identifiable false`.  A validated prediction is not a determined parameter
-  set, and the record says so in the artefact rather than only in a run log.
+  WHAT YOU SEE after Run: the T-x-y diagram of the two `experimental`
+  overlays: the Raoult curves, the fitted NRTL curves, the measured points (all 14;
+  the parity view of the fit marks the four held-out apart).  Then the held-out AAD
+  and the verdict in the log, and the proposal file.
 \*---------------------------------------------------------------------------*/
 
 operations
@@ -78,50 +51,35 @@ operations
 
         parameters
         (
-            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ij;  initial -0.8009;   min -15;    max 15;   }
-            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij;  initial  246.18;   min -5000;  max 5000; }
-            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ji;  initial  3.4578;   min -15;    max 15;   }
-            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji;  initial -586.0809; min -5000;  max 5000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij;  initial 0;  min -3000;  max 3000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji;  initial 0;  min -3000;  max 3000; }
         );
 
         evidence
         (
-            {
-                dataset  "constant/experiments/etoh-water-101kPa-fit.dat";
-                role     fit;
-            }
-            {
-                dataset  "constant/experiments/etoh-water-101kPa-heldout.dat";
-                role     validation;
-            }
+            //  ONE file, split here by row (the rule: every third point).
+            { dataset "constant/experiments/etoh-water-bubble-lai2014.dat"; role fit;        discard ( 3 6 9 12 ); }
+            { dataset "constant/experiments/etoh-water-bubble-lai2014.dat"; role validation; discard ( 1 2 4 5 7 8 10 11 13 14 ); }
         );
 
         acceptance
         {
-            maxAAD  0.1 percent;
-            //  0.1 % of a ~356 K bubble temperature is about 0.36 K, which is
-            //  a generous but defensible bound on the scatter of atmospheric
-            //  bubble-point measurements in the compilation these points were
-            //  transcribed from (classically quoted as a few tenths of a
-            //  kelvin).  It is an EXPERIMENTAL-UNCERTAINTY criterion, not an
-            //  engineering requirement and not a number chosen to be met.
-            origin  "experimental scatter of atmospheric bubble-T measurements in the source compilation (a few tenths of a kelvin), rounded to 0.1 % of T -- declared before the fit and not adjusted after";
+            maxAAD  0.061 percent;
+            origin  "declared before the fit, by the rule curate04 applies to its systems: the held-out set's largest stated expanded uncertainty (U95 = 0.18 K) plus the catalogue vapour-pressure models' own error at the pure endpoints of the series (water -0.033 K, ethanol -0.003 K; measured with no pair involved, from the Raoult scan at x = 0 and 1), as a percentage of the held-out mean T (354.28 K) = 0.0601 %, rounded UP to two significant figures";
         }
 
-        //  C280: pinned to the least-squares objective (this case's header and golden are a least-squares result).
         objective { method leastSquares; }
         residual
         {
             kind        T_bubble;
-            P           1.01325 bar;
             components  ( ethanol water );
         }
 
         options
         {
-            maxIter      60;
-            tolerance    1.0e-6;
-            fdStep       1.0e-3;
+            maxIter      80;
+            tolerance    1.0e-8;
+            fdStep       1.0e-4;
             lambda0      1.0e-3;
         }
 
@@ -129,17 +87,49 @@ operations
         {
             fit_log    fit_history.csv;
             parity     parity.csv;
-            //  THE PROMOTABLE RECORD.  `proposal` writes the fitted pair as a
-            //  `.dat` a reader can MOVE into `constant/parameters/NRTL/` and
-            //  simulate with -- so it must carry, in the file itself, every
-            //  qualification the console printed above it: the evidence it
-            //  rests on, the held-out result, the band declared before the
-            //  fit, the verdict, and the identifiability warning.
-            //
-            //  The path is EXPLICIT rather than `auto` so the artefact has a
-            //  stable name in the corpus; `auto` dates the filename, which is
-            //  right for a student's own run and wrong for a tracked witness.
+            //  EXPLICIT path (`auto` dates the filename: right for a student's
+            //  own run, wrong for a tracked witness).
             proposal   ethanol-water.proposal.dat;
         }
+    }
+    //  THE TWO CURVES THE DIAGRAM DRAWS, both over the whole composition range
+    //  at the dataset's pressure.  `txy_raoult` overrides the activity model
+    //  with the ideal solution (the fit's starting point); `txy_nrtl` uses the
+    //  case's own thermoPhysPropDict, whose b_ij and b_ji hold the converged
+    //  pair of the fit above (README, "What to change").
+    {
+        name        txy_raoult;
+        type        propertyScan1D;
+        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { ethanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model ideal; } } }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_raoult.csv; }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { ethanol 0.5;  water 0.5; } }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_nrtl.csv; }
+    }
+);
+
+experimental
+(
+    //  All 14 measured points on the diagram.  The overlay has no `discard`, so
+    //  it cannot draw the held-out four apart; the fit's own parity and
+    //  residual views mark them (C443 queues a view that can).
+    {
+        name      lai2014;
+        component ethanol;
+        kind      txy;
+        models    ( txy_raoult  txy_nrtl );
+        dataset   "constant/experiments/etoh-water-bubble-lai2014.dat";
+        source    "Lai, Lin & Tu 2014, doi 10.1016/j.jct.2013.08.020 (fit: 10 points; held out: rows 3, 6, 9, 12)";
     }
 );

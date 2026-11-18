@@ -30,37 +30,43 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ij  6.54044368342;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij  -2605.13542577;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ji  12.8132510014;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji  -3589.18515469;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij  -66.1593780164;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji  684.045431048;
     }
 
     evidence
     {
-        partitionFingerprint  "697a886d6caee2ac";   // frozen before the fit
+        partitionFingerprint  "076762932517cc0c";   // frozen before the fit
 
         datasets
         (
         {
             role      fit;
-            dataset   "constant/experiments/etoh-water-101kPa-fit.dat";
-            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            dataset   "constant/experiments/etoh-water-bubble-lai2014.dat";
+            doi       "10.1016/j.jct.2013.08.020";
+            sha256    "9ade859fa53eb443bb45a75f14e742056f0fb137bbfdf5fdc93dfa05d614a11a";
             provenance measured;
+            archiveFile "j.jct.2013.08.020.xml";
+            system    "ethanol + water";
+            pressure  "101300.000000 Pa";
         }
         {
             role      validation;
-            dataset   "constant/experiments/etoh-water-101kPa-heldout.dat";
-            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            dataset   "constant/experiments/etoh-water-bubble-lai2014.dat";
+            doi       "10.1016/j.jct.2013.08.020";
+            sha256    "9ade859fa53eb443bb45a75f14e742056f0fb137bbfdf5fdc93dfa05d614a11a";
             provenance measured;
+            archiveFile "j.jct.2013.08.020.xml";
+            system    "ethanol + water";
+            pressure  "101300.000000 Pa";
         }
         );
 
         domain
         {
             coordinate  x1;
-            fit         { min 0.05; max 0.95; n 8; }
-            validation  { min 0.2; max 0.8; n 3; }
+            fit         { min 0.015; max 0.949; n 10; }
+            validation  { min 0.1; max 0.848; n 4; }
         }
     }
 
@@ -68,9 +74,9 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.0729370366247;
-        acceptanceMaxAADPct 0.1;   // DECLARED BEFORE the fit; part of the fingerprint
-        acceptanceOrigin  "experimental scatter of atmospheric bubble-T measurements in the source compilation (a few tenths of a kelvin), rounded to 0.1 % of T -- declared before the fit and not adjusted after";
+        aadHeldOutPct     0.0362379363438;
+        acceptanceMaxAADPct 0.061;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit, by the rule curate04 applies to its systems: the held-out set's largest stated expanded uncertainty (U95 = 0.18 K) plus the catalogue vapour-pressure models' own error at the pure endpoints of the series (water -0.033 K, ethanol -0.003 K; measured with no pair involved, from the Raoult scan at x = 0 and 1), as a percentage of the held-out mean T (354.28 K) = 0.0601 %, rounded UP to two significant figures";
     }
 }
 

@@ -160,7 +160,7 @@ def main() -> int:
         d = pathlib.Path(td) / "probe"
         case_records.copytree(CASE, d)
         pd = d / "system/propsDict"
-        body = pd.read_text().replace("maxAAD  0.1 percent;",
+        body = pd.read_text().replace("maxAAD  0.061 percent;",
                                       "maxAAD  0.000001 percent;", 1)
         pd.write_text(body)
         rc_s, out_s = run(d)

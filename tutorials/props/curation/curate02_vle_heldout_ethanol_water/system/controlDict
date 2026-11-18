@@ -8,25 +8,24 @@
 \*-----------------------------------------------------------------------------*/
 /*  FIT A BINARY PAIR TO MEASURED DATA, THEN TEST IT ON DATA IT NEVER SAW.
 
-    `fitParameters` regresses the four NRTL coefficients of the ethanol-water
-    pair on EIGHT measured bubble temperatures at 101.325 kPa, then predicts
-    THREE further measured points that were frozen out of the fit before
-    anything was run (x1 = 0.20, 0.50, 0.80).  The band the held-out error
-    must meet (0.1 % of T) was declared before the fit and is not adjusted.
+    `fitParameters` regresses two NRTL coefficients (b_ij, b_ji) of the
+    ethanol-water pair, starting from zero (Raoult's law), on TEN measured
+    bubble points at 101.3 kPa, then predicts FOUR further measured points
+    frozen out of the fit before anything was run (every third point).  The
+    band the held-out error must meet was declared before the fit.
 
     What to read in the output, in order:
-      * FIT QUALITY       -- what the model does on the points it saw;
-      * HELD-OUT EVIDENCE -- what it does on the three it did not: the
-                             average absolute deviation and the verdict;
-      * identifiability   -- the four numbers are NOT individually determined
-                             by one isobar (the run says so), yet the pair
-                             predicts well: validated is not the same as
-                             determined.
+      * the T-x-y diagram -- Raoult, the fitted NRTL, the fit and held-out
+                             points drawn as separate series;
+      * HELD-OUT EVIDENCE -- the average absolute deviation on the four
+                             points the fit never saw, and the verdict;
+      * identifiability   -- with two parameters on one isobar the fit is
+                             well posed (the run reports the condition number).
 
     The run writes `ethanol-water.proposal.dat`, the fitted pair with its
-    evidence, its verdict and that warning in its own header, plus the fit
-    log and the parity table.  The full design is in system/propsDict. */
+    evidence, its verdict and its band, plus the fit log and the parity table.
+    The full design is in system/propsDict. */
 tier          tutorial;
 application   choupoProps;
-description     "A binary NRTL pair regressed on eight MEASURED bubble temperatures and scored on three it never saw -- the first held-out validation in the corpus against real evidence";
+description     "Fit an ethanol-water NRTL pair (two parameters, starting from Raoult) to ten measured bubble points at 101.3 kPa, test it on four held-out points, draw the T-x-y diagram";
 verbosity     3;

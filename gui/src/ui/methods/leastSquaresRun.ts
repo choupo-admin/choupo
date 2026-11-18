@@ -71,9 +71,9 @@ export const LS_PARITY = "parity.csv";
  *  is pinned against the witness's own dict in tests/leastSquaresRun.test.ts:
  *  a default here that drifted from the dict would mean the first render
  *  silently answered a different question from the case.  */
-export const LS_BAND_DEFAULT_PCT = 0.1;
+export const LS_BAND_DEFAULT_PCT = 0.061;
 export const LS_LAMBDA0_DEFAULT_EXP = -3;
-export const LS_MAXITER_DEFAULT = 60;
+export const LS_MAXITER_DEFAULT = 80;
 
 /** The damping knob turns an EXPONENT, not the number itself.
  *
