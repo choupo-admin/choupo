@@ -44,7 +44,7 @@ C43	DONE		Entalpia de reação conduz ao estado padrão (navegação EduTools)		
 C44	DONE		Amoníaco verde: dimensionar tudo, inventários, capital circulante		2026-10-07	L	cbe65a128	
 C45	DONE		Página inicial achada por "simulador de processos open source"		2026-10-07	S	1f983ba10	
 C46	DONE		Contar e mostrar o tamanho do Choupo		2026-10-07	S	ed4f3aad7	
-C47	OPEN	beyond	Contador visível de visitas e descargas	conta GoatCounter por criar (ato do Vítor); site/analytics.conf sem código; nada contado	2026-10-07	S		vitor
+C47	DROPPED		Contador visível de visitas e descargas	Vítor: "nesse caso não vale a pena" (precisa de uma conta dele)	2026-10-07	S		
 C48	DONE		Amoníaco verde: permutadores dimensionados em detalhe		2026-10-07	M	8666cf30c	
 C49	DONE		Painel converte diferenças de temperatura como diferenças		2026-10-07	S	1744381b6	
 C50	DONE		Unidade aberta corre a partir da corrida de onde veio		2026-10-07	S	7706e9e91	
@@ -387,7 +387,7 @@ C421	DONE		Lei de Gall: cada facto do motor num só sítio		2026-11-18	L	f03a165
 C422	OPEN	beyond	Lei de propriedade como rede neuronal ajustada	candidato classificado depois de C421 (7)	2026-11-18	M		
 C423	DONE		Estrutura final das propriedades explicada a revisor externo		2026-11-18	M	affb2b161	
 C424	PARTIAL	beyond	Revisão externa de C423 ponderada ponto a ponto	ions renomeados (Cl átomo), tipo obrigatório em experiments, caixa vs suporte e recusa em estado de tentativa por fazer	2026-11-18	M	0ef39f6b2	
-C425	PARTIAL	beyond	Componentes não convencionais (sólidos, carvão): lacuna da arquitetura	desenho do material (componente sem fórmula, base mássica) por decidir e construir; estudo feito	2026-11-18	L	b861057a1	vitor
+C425	PARTIAL	beyond	Componentes não convencionais (sólidos, carvão): lacuna da arquitetura	decidido 2026-11-19 (seguir a prática de referência: análises, rendimento, char como outro material); 1.º caso secador+caldeira de biomassa por construir	2026-11-18	L	b861057a1	
 C426	PARTIAL	beyond	Estudo de lacunas contra os manuais de referência (Pareto)	ranking feito e registos de amostra e curvas de fluxo aterrados; ~200 itens pequenos (politrópico, NPSH, curvas de bomba) por fazer	2026-11-18	L	239d26275	
 C427	DONE		Veredicto do spike das grandezas transportadas		2026-11-19	M	9ee282751	
 C428	PARTIAL	beyond	Lente Escolher um solvente (Hansen) no Explorer	lente "Escolher um solvente" no Explorer, estimativas Hansen e vista de solubilidade por fazer	2026-11-18	M	92e61c329	

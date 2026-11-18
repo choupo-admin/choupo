@@ -4664,6 +4664,28 @@ accepts today, and that is a policy call.
 > stale 10.03 m3; the ratchet's docstring; the Theory Guide entry for the
 > optional `initial`.
 
+> **C47 DROPPED by Vitor (2026-11-19: "nesse caso não vale a pena. Pensei que
+> fosse mais simples", on hearing it needs an account of his).**
+>
+> **C425 RULED (2026-11-19).**  Vitor, on the two points of section 5 of the
+> materials design: "segue o que [o simulador de referência] faz".  Measured
+> against the manuals already read (Studies 2026-11-18, notes on solids):
+> that simulator describes a nonconventional solid by its analyses
+> (proximate, ultimate, sulfur), prices its enthalpy from the heating value
+> and the analysis, and converts it by a YIELD reactor that decomposes it
+> into elements and ash, the rest then going to an equilibrium or a
+> combustion block; its char is a separate nonconventional component with
+> its own analysis.  So: (1) a converted solid is ANOTHER material, by a
+> declared yield conversion -- the same as M6/M7; (2) the analyses keep their
+> industry names (proximate, ultimate, sulfur) in the record grammar;
+> (3) the FIRST WITNESS is a biomass dryer feeding a combustor, built as a
+> decomposition to elements and ash followed by the existing Gibbs reactor,
+> the reference pattern; sewage sludge second.  ONE DEPARTURE, kept with its
+> reason: moisture is the COMPONENT water, not an attribute a dryer edits
+> (in that tool a dryer that changes the moisture attribute needs a
+> hand-written calculator block; here the dryer's own balance moves real
+> water, and the element balance stays closed by construction).
+
 > **C436 (Vitor, 2026-11-19 midday, MAXIMUM PRIORITY: "Podes fazer favor de
 > por como prioridade máxima a gestão dinâmica desta tabela
 > importantíssima?!"), after the architect showed him a CML table holding
