@@ -48,6 +48,10 @@ ALLOWED = {
     "src/unitOperations/membrane/RatedTestInversion.cpp": 1,   # the rated-test probe's feed density (C402)
     "src/unitOperations/electrochem/EDCell.cpp": 1,            # the electrodialysis channel's solution density (C421)
     "src/unitOperations/batch/BatchDiafilter.cpp": 1,          # the holdup's density, the make-up's too (C402)
+    "src/unitOperations/reactor/PFR.cpp": 1,                  # the liquid feed's molar volume, Q = F v (C421 door slice d)
+    "src/unitOperations/crystallisation/Crystalliser.cpp": 1,   # the magma liquor's density (C421 door slice d)
+    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp": 1,  # the saturated liquor's density (C421 door slice d)
+    "src/unitOperations/rotating/PressureExchanger.cpp": 1,     # the brine's density for the rotor flow (C421 door slice d)
     "src/propertyOps/PropertyEvaluator.cpp": 1,
     "src/applications/choupoProps/PropertyRouteBench.cpp": 4,   # the sweep, the address-reuse check, the domain-trial check (two calls)
 }

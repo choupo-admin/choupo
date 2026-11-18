@@ -2031,8 +2031,8 @@ largest pinned energy term of the ledger for \code{energy\_residual\_kJ}, never
 below $10^{-9}$.  \emph{A non-zero expected value is compared relatively
 whatever its magnitude} (C429): until 2026-11-18 a value at or below $10^{-9}$
 was compared absolutely at the relative tolerance, so an ion diffusivity of
-$7.568\times10^{-10}$ could publish $8.455\times10^{-10}$ and pass (999 rows in
-181 cases were blind that way).  A quantity that is round-off by its nature
+$7.568\times10^{-10}$ could publish $8.455\times10^{-10}$ and pass (the
+blind rows are listed in \code{docs/audits/2026-11-18-c429-blind-rows-census.tsv}).  A quantity that is round-off by its nature
 therefore declares its absolute band through its \emph{class}, written on disk
 as \code{abs:<v>} on any platform: the closure fractions
 (\code{mass\_closure\_rel}, \code{element\_*\_closure\_rel},
