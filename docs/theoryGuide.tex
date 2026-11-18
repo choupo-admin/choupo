@@ -24925,6 +24925,103 @@ it, with the solution-diffusion $B_s$ (NaCl $R_{\text{obs}}$ 49.7 against
 \file{tutorials/props/membrane/nanofiltran\_geraldesAlves2008}, the NanoFiltran paper's one case, whose propsDict \code{views} generate the paper's tables and figures.
 \end{tutoriallink}
 
+\subsection{Uncharged solutes: the pore of a membrane without a charge}\label{sec:dspmde-neutral}
+
+A molecule with no charge --- glucose, sucrose, glycerol, boric acid ---
+does not feel the Donnan potential, the Born term or the electroneutrality
+of the pore, so it decouples from every ion and from the rest of the
+solved pore.  Choupo takes it into the DSPM-DE law as a \emph{neutral
+solute} when the case declares its two transport facts in the law's own
+block,
+\begin{verbatim}
+transportParameters { neutralSolutes { glucose { radius 3.65e-10; D0 6.90e-10; } } }
+\end{verbatim}
+(the Stokes radius in m and the 25\,$^\circ$C free-solution diffusivity in
+m$^2$/s; $D_0$ is carried to the run temperature by the same
+Stokes--Einstein factor as the ions').  What remains of the extended
+Nernst--Planck equation \eqref{eq:dspmde-enp-zeta} for $z=0$ is
+$j = -K_d D\,A_k/\Delta x\;\mathrm{d}c/\mathrm{d}\zeta + K_c J_v c$ with the
+steric partition $\Phi=(1-\lambda)^2$, $\lambda=r_s/r_p$, at both faces,
+and its integral is closed (Bowen, Mohammad \& Hilal, J.~Membr.~Sci.~126
+(1997) 91, Eq.~28; Labban et al., J.~Membr.~Sci.~521 (2017) 18, Eqs.~28--29):
+\begin{equation}
+   R_{\text{real}} \;=\; 1-\frac{c_p}{c_w}
+   \;=\; 1-\frac{K_c\Phi}{1-\exp(-\mathrm{Pe})\,\bigl[1-\Phi K_c\bigr]},
+   \qquad
+   \mathrm{Pe}=\frac{K_c\,J_v}{K_d\,D\,A_k/\Delta x}.
+   \label{eq:dspmde-neutral-rejection}
+\end{equation}
+The film is the one-solute case of the Geraldes--Afonso interface balance
+(no migration term): $J_v c_p = -k^*(c_w-c_b)+J_vc_w$ with
+$k^*=k\,\Xi(J_v/k)$, which closes with the pore exactly,
+\begin{equation}
+   c_w=\frac{k^*\,c_b}{k^*-J_v R_{\text{real}}},\qquad
+   R_{\text{obs}}=1-\frac{(1-R_{\text{real}})\,k^*}{k^*-J_vR_{\text{real}}}.
+   \label{eq:dspmde-neutral-wall}
+\end{equation}
+A solute as large as the pore ($\lambda\ge1$) is excluded
+($R_{\text{real}}=1$).  Eqs.~\eqref{eq:dspmde-neutral-rejection} and
+\eqref{eq:dspmde-neutral-wall} are the whole law for a neutral; they are
+evaluated beside the ion pore in the same call and, for a feed of neutrals
+alone, no pore Newton is run.  \emph{Validity:} an \emph{imposed} permeate
+flux only (the props bench \code{poreTransport}, or a \code{Jv} column of
+a membrane fit) --- the osmotic pressure of a neutral is not in the
+station's water-flux closure, and a neutral under \code{dP} refuses by name;
+ideal activity, no hindrance of one solute by another.  \emph{Why it
+matters:} an uncharged solute is the one probe of the pore that does not
+mix size and charge, so it is how a laboratory gets $r_p$ and
+$A_k/\Delta x$ before the charge is fitted.  \emph{Verified:}
+\file{tutorials/props/membrane/labban2017\_dspmde\_validation} fits
+$r_p$ and $A_k/\Delta x$ on glycerol, glucose and sucrose and recovers the
+article's $r_p=0.5$\,nm to 1\,\% (0.495\,nm, $\pm0.029$ at 95\,\%).
+
+\subsection{Characterising a membrane from a laboratory record}\label{sec:dspmde-lab}
+
+A laboratory characterises its membrane in the order the article of
+Labban et al.\ (2017) did, and the order is the identifiability argument
+in practice: (1) $r_p$ and $A_k/\Delta x$ from an uncharged solute, whose
+rejection depends on sieving and convection alone; (2) the pore dielectric
+constant $\varepsilon_p$ declared --- from a single-salt run at the
+isoelectric pH, where $X_d=0$, or from the literature of the membrane class
+--- never fitted together with the charge; (3) $X_d$ \emph{per
+concentration}, because the charge of a real membrane is a function of the
+feed (adsorption of counter-ions, dissociation of groups), so the fitted
+values put against the concentration \emph{are} the charge isotherm
+($X_d=k\,c^n$ in the Freundlich form).  Each step is a
+\code{fitParameters} operation of residual kind \code{membrane}
+(Levenberg--Marquardt on the observed rejections; the parameters with their
+95\,\% half-widths $t_{\nu}\,\sigma_i$ from the Gauss--Newton
+$\mathbf{J}^{\mathsf T}\mathbf{J}$ at the optimum, the condition number of
+the scaled Jacobian and the parameter correlations) on \emph{one} record
+whose rows are the operating points; the rows an operation holds out are
+named by \code{discard (\,...\,)} in its evidence, so a held-out point is
+predicted by a fit that never saw it.  A cell written \code{nan} is an ion
+not analysed at that point: no term, never a zero.  The polarisation is
+declared with the data (a measured \code{k\_film}, or a correlation of the
+cell), because the observed rejection is the measurement and the wall
+concentration the model: a hidden film is a hidden parameter.
+
+\emph{What the validation says.}  On the data of Labban et al., the pore
+fitted on uncharged solutes alone ($r_p=0.495\pm0.029$\,nm) and on NaCl at
+its isoelectric point ($\varepsilon_p=53\pm9$; the article's 41.3) predicts
+NaCl+MgCl$_2$ (held-out 1.9 points of rejection) and NaCl+Na$_2$SO$_4$
+(3.4 points) with a charge fitted on their other two pressures, inside a
+band of 5 points declared before the first fit; for artificial seawater the
+same procedure misses (11.7 points) because $X_d$ is then
+unidentifiable ($-74\pm130$\,mol/m$^3$).  The effective thickness
+$\Delta x_e$ is the weakly determined one: the rejection data give
+$3.0\ \mu$m with a 95\,\% interval of 1.8--9.3, the article's
+pure-water-permeability route 1.2--1.33\,$\mu$m, and the two are
+reconciled only by the permeability.  \emph{Verified}, and said so: the
+article's own parameters (its Table~5 and $X_d$ of each feed) in this
+engine miss the measured rejections by 7.6--16 points, against the article's
+reported relative deviation of up to 12\,\%; the differences (the film
+coefficient of a hollow fibre, the temperature and density the article does
+not state) are listed in the case's README.
+\file{tutorials/props/membrane/dspmde02\_lab\_characterisation\_template}
+is the template a laboratory copies, shipped filled with that article's
+points.
+
 % ---------------------------------------------------------------------
 %  Engine: src/unitOperations/membrane/transport/SDEM.{H,cpp} (the law, its
 %  refusals, the banner, the numerics).  Numbers: the goldens of

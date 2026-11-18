@@ -391,6 +391,28 @@ EvidencePartition EvidencePartition::read(const DictPtr& opDict,
         {
             const char* what = nullptr;
             std::string which;
+            //  ONE FILE, TWO ROLES, DISJOINT ROWS (C177): a laboratory record is one file,
+            //  and the rows an operation holds out are named by `discard` on both entries.
+            //  That is NOT the same evidence in both roles as long as no row is kept by
+            //  both -- decided on the rows, which are a fact, so the guard stays
+            //  mechanical.  Identical rows (no discard on either, or overlapping kept
+            //  rows) still refuse below.
+            if (f.path == v.path && (!f.discard.empty() || !v.discard.empty()))
+            {
+                std::size_t N = 0;
+                try
+                {
+                    auto dd = Dictionary::fromFile(f.path);
+                    N = dd->lookupList("data").size() / dd->lookupDictList("columns").size();
+                }
+                catch (const std::exception&) { N = 0; }
+                bool shared = (N == 0);            // unreadable: keep the refusal
+                for (std::size_t r = 1; r <= N && !shared; ++r)
+                    if (!std::binary_search(f.discard.begin(), f.discard.end(), r)
+                        && !std::binary_search(v.discard.begin(), v.discard.end(), r))
+                        shared = true;
+                if (!shared) continue;
+            }
             if (f.path == v.path)                          { what = "dataset path"; which = f.path; }
             else if (!f.sha256.empty() && f.sha256 == v.sha256) { what = "sha256";  which = f.sha256; }
             else if (!f.doi.empty()    && f.doi    == v.doi)    { what = "doi";     which = f.doi; }
@@ -713,13 +735,28 @@ EvidencePartition::loadTable(const EvidenceDataset& ds, const std::string& opLab
                     + "' is declared twice.");
     }
     const std::size_t N = grid.size() / nc;
+    //  A declared `discard ( <row> ... );` is honoured by the TABLE reader too
+    //  (C177, 2026-11-19): until then only loadColumns skipped the rows, so a
+    //  membrane fit that declared one would have fitted the rows it had set
+    //  aside -- a declaration the reader ignored in silence.  It is how ONE
+    //  laboratory record (several concentrations in one file) is split into the
+    //  rows one operation fits and the rows it holds out.
+    for (const std::size_t r : ds.discard)
+        if (r > N)
+            throw std::runtime_error(where + ": `discard` names row "
+                + std::to_string(r) + " and the file lists " + std::to_string(N)
+                + " -- a discarded row must exist.");
     for (std::size_t r = 0; r < N; ++r)
     {
+        if (std::binary_search(ds.discard.begin(), ds.discard.end(), r + 1)) continue;
         sVector row(nc);
         for (std::size_t j = 0; j < nc; ++j)
             row[j] = convUnit(grid[r * nc + j], t.units[j], where);
         t.rows.push_back(std::move(row));
     }
+    if (t.rows.empty())
+        throw std::runtime_error(where + ": every row is discarded -- nothing is left"
+            " to read.");
     return t;
 }
 
