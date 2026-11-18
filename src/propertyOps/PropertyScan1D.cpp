@@ -245,6 +245,13 @@ int PropertyScan1D::run(const DictPtr& dict,
         std::cout << "\n";
     }
 
+    //  THE SCAN AS A PUBLISHED TABLE (DEV.md 4c C443): the numbers the CSV
+    //  carries, kept in memory beside it, so a view names `op <name>; table
+    //  scan; x <column>; y <column>;` instead of a second reader of the CSV.
+    //  A failed point is NaN here as it is `nan` there.
+    std::vector<std::vector<scalar>> scanRows;
+    scanRows.reserve(nPoints);
+
     std::size_t failures = 0;
     //  PER-CURVE, not just a total.  A scan where a few points drop at the
     //  edges of a range is a legitimate scan with holes; one where a curve
@@ -275,6 +282,7 @@ int PropertyScan1D::run(const DictPtr& dict,
         //  `2.82000000e+02` -- one column, two renderings, decided by whether
         //  a property had been written yet.
         csv << std::scientific << std::setprecision(8) << varVal;
+        std::vector<scalar> scanRow{ varVal };
         for (const auto& p : propWords)
         {
             // Resilient per-property eval (mirrors PropertyScan2D): a property
@@ -285,10 +293,12 @@ int PropertyScan1D::run(const DictPtr& dict,
             {
                 const scalar v = propertyOps::evaluateProperty(p, thermo, T, P_Pa, x);
                 csv << "," << std::scientific << std::setprecision(8) << v;
+                scanRow.push_back(v);
             }
             catch (const std::exception& e)
             {
                 csv << ",nan";
+                scanRow.push_back(std::nan(""));
                 ++failures;
                 ++failedPerProp[p];       // WHICH curve lost this point
                 const std::string msg = e.what();
@@ -299,8 +309,40 @@ int PropertyScan1D::run(const DictPtr& dict,
             }
         }
         csv << "\n";
+        scanRows.push_back(std::move(scanRow));
     }
     csv.close();
+
+    //  The table's columns: the swept variable (x[<comp>] is published as
+    //  x_<comp>, a word a view can name), then every property whose unit the
+    //  catalogue knows (propertyUnit; a keyword with no published unit is left
+    //  out of the TABLE, never given a guessed one -- its CSV column stays).
+    tables_.clear();
+    {
+        PublishedTable tab;
+        tab.name = "scan";
+        tab.description = "one row per scan point: the swept variable and the properties";
+        std::vector<std::size_t> keep{ 0 };
+        std::string xName = variable, xUnit = "-";
+        if      (variable == "T") xUnit = "K";
+        else if (variable == "P") xUnit = "Pa";
+        else xName = "x_" + variable.substr(2, variable.find(']') - 2);
+        tab.columns.push_back({ xName, xUnit });
+        for (std::size_t j = 0; j < propWords.size(); ++j)
+        {
+            const std::string u = propertyOps::propertyUnit(propWords[j]);
+            if (u.empty() || propWords[j] == xName) continue;
+            tab.columns.push_back({ propWords[j], u });
+            keep.push_back(j + 1);
+        }
+        for (const auto& r : scanRows)
+        {
+            std::vector<scalar> row;
+            for (const std::size_t c : keep) row.push_back(r[c]);
+            tab.rows.push_back(std::move(row));
+        }
+        tables_.push_back(std::move(tab));
+    }
 
     //  TWO OUTCOMES, AND THEY ARE NOT THE SAME THING.
     //

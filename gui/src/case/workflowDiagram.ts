@@ -374,9 +374,15 @@ export function workflowDiagram(input: DiagramInput): WorkflowDiagram {
   allSteps.forEach(({ step }, idx) => {
     const ids = step.ops.map((o) => `op:${o}`);
     const files = filesOf.get(step.id)!;
-    const roles = new Map<string, EvidenceRole>();
+    //  A file can be split by row between the two roles (curate02: every third
+    //  point held out), so a dataset keeps EVERY role it was given and the step
+    //  reads it once per role -- two arrows, FIT and HELD OUT (C443).
+    const roles = new Map<string, EvidenceRole[]>();
     for (const name of step.ops)
-      for (const e of fitEvidence(opDictOf(propsDict, name))) roles.set(e.dataset, e.role);
+      for (const e of fitEvidence(opDictOf(propsDict, name))) {
+        const had = roles.get(e.dataset) ?? [];
+        if (!had.includes(e.role)) roles.set(e.dataset, [...had, e.role]);
+      }
     const reads: StepRead[] = [];
     const seen = new Set<string>();
     const fileReads = files.filter((f) => f.dir === "read");
@@ -402,7 +408,7 @@ export function workflowDiagram(input: DiagramInput): WorkflowDiagram {
       if (!n || n.kind !== "data" || n.role === "inline") continue;
       const f = readFor(n);
       const path = n.member.target.kind === "case" ? n.member.target.path : undefined;
-      const role = roles.get(f?.value ?? "") ?? (path ? roles.get(path) : undefined);
+      const roleList = roles.get(f?.value ?? "") ?? (path ? roles.get(path) : undefined) ?? [undefined];
       const from = f ? earlierWriter(f) : undefined;
       seen.add(id);
       if (f) seen.add(`${f.key}|${f.value}`);
@@ -411,23 +417,24 @@ export function workflowDiagram(input: DiagramInput): WorkflowDiagram {
           carries: base(f.value), target: n.member.target, byProcess: true, value: f.value });
         continue;
       }
-      reads.push({ selectId: id, label: n.member.label,
-        detail: role ? `${ROLE_OF_DATA[n.role] ?? n.role} · ${ROLE_WORD[role]}` : (ROLE_OF_DATA[n.role] ?? n.role),
-        wire: n.role === "record" ? "record" : n.role === "experiment" ? "measured" : "file",
-        carries: role ? ROLE_WORD[role] : n.role === "record" ? "record" : n.role === "experiment" ? "data" : "numbers",
-        target: n.member.target, fromStep: from, role, value: f?.value });
+      for (const role of roleList)
+        reads.push({ selectId: id, label: n.member.label,
+          detail: role ? `${ROLE_OF_DATA[n.role] ?? n.role} · ${ROLE_WORD[role]}` : (ROLE_OF_DATA[n.role] ?? n.role),
+          wire: n.role === "record" ? "record" : n.role === "experiment" ? "measured" : "file",
+          carries: role ? ROLE_WORD[role] : n.role === "record" ? "record" : n.role === "experiment" ? "data" : "numbers",
+          target: n.member.target, fromStep: from, role, value: f?.value });
     }
     for (const f of fileReads) {
       if (seen.has(`${f.key}|${f.value}`)) continue;
       seen.add(`${f.key}|${f.value}`);
       const from = earlierWriter(f);
-      const role = roles.get(f.value);
-      reads.push({ selectId: f.kind === "membraneName" ? `record:${f.value}` : `wf:file:${f.value}`,
-        label: base(f.value), detail: f.byProcess ? "written by the Flowsheet run"
-          : f.kind === "membraneName" ? "record" : role ? `file · ${ROLE_WORD[role]}` : "file",
-        wire: f.byProcess ? "process" : f.kind === "membraneName" ? "record" : role ? "measured" : "file",
-        carries: f.byProcess ? base(f.value) : role ? ROLE_WORD[role] : f.kind === "membraneName" ? "record" : base(f.value),
-        fromStep: from, role, byProcess: f.byProcess, value: f.value });
+      for (const role of roles.get(f.value) ?? [undefined])
+        reads.push({ selectId: f.kind === "membraneName" ? `record:${f.value}` : `wf:file:${f.value}`,
+          label: base(f.value), detail: f.byProcess ? "written by the Flowsheet run"
+            : f.kind === "membraneName" ? "record" : role ? `file · ${ROLE_WORD[role]}` : "file",
+          wire: f.byProcess ? "process" : f.kind === "membraneName" ? "record" : role ? "measured" : "file",
+          carries: f.byProcess ? base(f.value) : role ? ROLE_WORD[role] : f.kind === "membraneName" ? "record" : base(f.value),
+          fromStep: from, role, byProcess: f.byProcess, value: f.value });
     }
     readsOf.set(step.id, reads);
   });
@@ -529,7 +536,7 @@ export function workflowDiagram(input: DiagramInput): WorkflowDiagram {
       const sid = nodeIdOfStep(step.id);
       for (const r of readsOf.get(step.id) ?? []) {
         if (r.fromStep) {
-          edges.push({ id: `e:${r.fromStep}->${step.id}:${r.value ?? r.selectId}`, from: nodeIdOfStep(r.fromStep),
+          edges.push({ id: `e:${r.fromStep}->${step.id}:${r.value ?? r.selectId}${r.role ? `:${r.role}` : ""}`, from: nodeIdOfStep(r.fromStep),
             to: sid, wire: r.wire === "process" ? "process" : "file", label: base(r.value ?? r.label) });
           continue;
         }
@@ -546,7 +553,7 @@ export function workflowDiagram(input: DiagramInput): WorkflowDiagram {
           feedNode.set(key, t);
           terms.push({ t, firstStep: step.id });
         }
-        edges.push({ id: `e:${t.id}->${step.id}:${r.value ?? r.selectId}`, from: t.id, to: sid, wire: r.wire,
+        edges.push({ id: `e:${t.id}->${step.id}:${r.value ?? r.selectId}${r.role ? `:${r.role}` : ""}`, from: t.id, to: sid, wire: r.wire,
           label: r.carries });
       }
       const later = consumed.get(step.id) ?? new Set<string>();

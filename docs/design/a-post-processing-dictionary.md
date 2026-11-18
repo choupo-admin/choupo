@@ -68,6 +68,27 @@ figures.  The parameter row's label is the op's (`diagnosticLabel`): a
 `fitParameters` bubble fit keys its parameters `fit.0`, `fit.1`, … and names
 them by the path it varied.
 
+### Two tables a declared view can name that were missing (DEV.md 4c C443)
+
+* **`propertyScan1D` publishes a table `scan`** -- the swept variable (`T` in K,
+  `P` in Pa, or `x_<comp>` for `x[<comp>]`, dimensionless) and every property
+  whose unit the catalogue knows (`propertyOps::propertyUnit`; a keyword with
+  no published unit stays in the CSV and is left out of the table, never given
+  a guessed unit).  A scanned curve is then a series like any other:
+  `{ op txy_nrtl; table scan; x x_ethanol; y T_bubble; style lines; }`, and the
+  vapour branch of a T-x-y is `x y_eq_ethanol; y T_bubble`.  A point that did
+  not evaluate is NaN, which no view draws.  The CSV is written from the same
+  numbers.
+* **A bubble-point fit's `fitPoints` table marks its held-out rows.**  When the
+  fit held evidence out (`role validation`), every row gains a `heldOut` column
+  (0 = fitted, 1 = held out) and the held-out points follow the fitted ones,
+  priced by the SAME routine on the fitted package.  A series filters with the
+  grammar that already existed, `select { heldOut 1; }`; the default parity and
+  residuals views split on it (section 3).  The column is `heldOut` (0/1), not a
+  word column `role`, because a published table holds numbers and the isotherm
+  and membrane fits already use `heldOut`.  A fit that held nothing out
+  publishes the table it always did.
+
 ## 4. The grammar (`views ( ... )` and `references ( ... )` in the propsDict)
 
 Both lists sit at the top level of the propsDict, after `operations`.
@@ -369,6 +390,14 @@ numbers they write that are neither a pinned diagnostic nor an input.
 
 **`isotherm02_fit_jaschik`** (four isotherm fits): the generic fit defaults and
 the isotherm, with nothing declared.
+
+**The binary starter case in one first view** (C443).
+`tutorials/props/curation/curate02_vle_heldout_ethanol_water` declares, FIRST,
+`txy_fit` (measured bubble points of the fit and the held-out four as two marker
+series, the Raoult and the fitted NRTL curves, each with its vapour branch, from
+the two scans' `scan` tables) and `parity_heldout` (the held-out points'
+predicted against measured T).  Its `experimental` overlay stays: the Property
+Explorer reads it, and its six `aad` golden rows pin the curves' deviations.
 
 ## 9. What is NOT done, said plainly
 

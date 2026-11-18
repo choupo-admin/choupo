@@ -759,6 +759,8 @@ Contract: src/propertyOps/EvidencePartition.H
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{nrtl\_etoh\_water\_heldout}\\[-1pt]{\tiny fitParameters}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{txy\_raoult}\\[-1pt]{\tiny propertyScan1D}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{txy\_nrtl}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{txy\_fit}\\[-1pt]{\tiny series}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{parity\_heldout}\\[-1pt]{\tiny parity}};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Fit an ethanol-water NRTL pair (two parameters, starting from Raoult) to ten measured bubble points at 101.3 kPa, test it on four held-out points, draw the T-x-y diagram}
@@ -773,7 +775,7 @@ THE FIT. NRTL with a\_ij = a\_ji = 0 and alpha = 0.30: TWO parameters, b\_ij and
 
 THE BAND, declared before the fit and not adjusted: see `acceptance` below.
 
-WHAT YOU SEE after Run: the T-x-y diagram of the two `experimental` overlays: the Raoult curves, the fitted NRTL curves, the measured points (all 14; the parity view of the fit marks the four held-out apart). Then the held-out AAD and the verdict in the log, and the proposal file.
+WHAT YOU SEE after Run, first the VIEWS this file declares (the `views` list at the end; docs/design/a-post-processing-dictionary.md): 1. txy\_fit the T-x-y diagram: the ten measured points the fit used, the four it never saw (a separate marker series), the Raoult curve (the start of the fit) and the fitted NRTL curve, and each curve's vapour branch (T against y). 2. parity\_heldout the four held-out points: the model's T against the measured T, on the line when the pair predicts. Then the held-out AAD and the verdict in the log, and the proposal file. The engine draws nothing and the GUI computes nothing: every point is a number the run published (the scans' `scan` tables, the fit's `fitPoints` table whose `heldOut` column marks the four). The `experimental` overlay below stays: it is what the Property Explorer overlays and what pins the curves' AAD rows.
 
 \end{tutnarrative}
 \tutreadme{Ethanol and water do not mix ideally: at 101.3 kPa the mixture boils at lower temperatures than Raoult's law says, and it forms an azeotrope near 89 mol \% ethanol that no ordinary distillation can cross. This case measures how much the NRTL activity model, with only two adjustable numbers (b\_ij and b\_ji), closes that gap. It starts from zero (Raoult's law, gamma = 1), fits the two numbers to ten measured bubble points, and then asks the fitted pair to predict four more measured points that were set aside before the fit ran. It runs under choupoProps (fitParameters, bubble-temperature residual).}

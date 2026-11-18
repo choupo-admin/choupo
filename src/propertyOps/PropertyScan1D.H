@@ -85,6 +85,7 @@ Description
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -104,7 +105,13 @@ public:
         return diag_;
     }
 
+    std::vector<PublishedTable> publishedTables() const override
+    {
+        return tables_;
+    }
+
 private:
+    std::vector<PublishedTable> tables_;
     inline static const std::string type_ = "propertyScan1D";
     std::map<std::string, scalar>   diag_;
 };

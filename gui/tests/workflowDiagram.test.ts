@@ -165,9 +165,9 @@ describe("(1)-(4) NanoFiltran: three studies, nine steps, the declared views as 
 describe("(2) curate02: a fit reads its evidence FIT and HELD OUT, and writes its proposal", () => {
   const { d } = diagramOf(CUR);
   it("the arrows carry the roles", () => {
-    expect(d.edges.filter((e) => e.wire === "measured").map((e) => e.label).sort()).toEqual(["HELD OUT"]);   // ONE file split by row: the arrow is per FILE, so it carries the last role (known limit, see C443)
+    expect(d.edges.filter((e) => e.wire === "measured").map((e) => e.label).sort()).toEqual(["FIT", "HELD OUT"]);   // ONE file split by row: one arrow per ROLE (C443 lifted the one-arrow-per-file limit)
     expect(d.terminals.filter((t) => t.side === "product").map((t) => t.label))
-      .toEqual(["fit_history.csv", "parity.csv", "ethanol-water.proposal.dat", "txy_raoult.csv", "txy_nrtl.csv"]);
+      .toEqual(["fit_history.csv", "parity.csv", "ethanol-water.proposal.dat", "txy_fit", "parity_heldout", "txy_raoult.csv", "txy_nrtl.csv"]);
     const box = d.steps[0]!.lines.map((l) => l.text).join(" | ");
     expect(box).toMatch(/etoh-water-bubble-lai2014\.dat/);
     expect(box).toMatch(/by LevenbergMarquardt/);

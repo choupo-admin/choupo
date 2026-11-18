@@ -3,7 +3,7 @@
   "$id": "https://choupo.org/schemas/operations/propertyScan1D.schema.json",
   "title": "propertyScan1D operation",
   "x-choupo": {"discipline": "Thermodynamics", "activity": "scan", "package": true},
-  "description": "One-dimensional property sweep: varies one state variable (T, P or a mole fraction) over n evenly-spaced points and evaluates the requested properties at each. Writes one CSV row per point.",
+  "description": "One-dimensional property sweep: varies one state variable (T, P or a mole fraction) over n evenly-spaced points and evaluates the requested properties at each. Writes one CSV row per point, and publishes the same numbers as a table named `scan` (columns: the swept variable, `x_<comp>` for a composition, then each property whose unit the catalogue knows) that a `views` series names: `op <name>; table scan; x <column>; y <column>;`.",
   "type": "object",
   "properties": {
     "vary": {

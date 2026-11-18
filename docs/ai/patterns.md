@@ -593,6 +593,15 @@ operations
 );
 ```
 
+A scan also publishes its numbers as a table named `scan` (columns: the swept
+variable -- `T`, `P` or `x_<comp>` -- and each property), so the picture can be
+a declared view instead of an overlay: `views ( { name txy; type series; series
+( { name nrtlL; op txy_nrtl; table scan; x x_methanol; y T_bubble; style lines; }
+{ name nrtlV; op txy_nrtl; table scan; x y_eq_methanol; y T_bubble; style lines; } ); } );`.
+A bubble-point fit that holds evidence out marks those rows in its `fitPoints`
+table (`heldOut` 0/1): `op myFit; table fitPoints; select { heldOut 1; } x x_1; y measured;`
+draws the held-out points as their own series (curate02 is the worked case).
+
 A scan may also evaluate AT DECLARED CONDITIONS instead of over a grid:
 `vary { variable x[methanol]; points ( 0.1 0.25 0.5 ); }` (the values in the
 order written, canonical SI -- K, Pa, or a mole fraction).  That is how a
