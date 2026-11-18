@@ -27,10 +27,9 @@ units
             pressureDrop        67.0 kPa;     // Example 24.2-4
             submergence         0.33;         // Example 24.2-4
             area                6.0 m2;       // DECLARED: t_c is the result
-            alpha0              4.37e9;       // Example 24.2-4, SI (m/kg/Pa^0.3)
-            compressibility     0.3;
-            mediumResistance    [0 -1 0 0 0] 1.0e10;   // illustrative
-            wetToDryCakeRatio   2.0;          // Example 24.2-4
+            //  The cake law and m (Example 24.2-4) and this case's ILLUSTRATIVE cloth
+            //  (R_m = 1.0e10 1/m) are the SAMPLE's: the medium is part of the test.
+            sample              caco3_geankoplis_ex24_2_4_illustrativeMedium;
             washing
             {
                 model       tabulated;

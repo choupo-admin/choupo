@@ -1,0 +1,102 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  A SAMPLE'S BEHAVIOUR: one constant-pressure filtration test, as measured
+  (docs/design/measured-facts-materials-and-flow-curves.md, R6; the service
+  is src/samples/SampleBehaviour.H).
+
+  Wakeman & Tarleton, Solid/Liquid Separation: Principles of Industrial
+  Filtration (Elsevier 2005), Example 4.1, pp. 121-123, from Hosseini (1977):
+  a calcium silicate suspension in a laboratory filter press at 69 kPa.
+  Table 4.8 (p. 122) gives the test's inputs and Table 4.9 its rows.  What is
+  stored is THE ROWS (t, V), as printed; the specific cake resistance and the
+  medium resistance are DERIVED from them at load, by the line of t/V against
+  V through the linear region, and are never stored:
+      the book's regression (first two points disregarded, p. 122):
+          t/V = 1.742e6 V + 0.5186e4,   alpha = 7.4e9 m/kg,
+          R = 1.54e10 1/m  (pp. 122-123).
+      this engine's least squares through rows 3 to 11 of the same table:
+          t/V = 1.7417e6 V + 5197 s/m3 (the book prints the intercept 5186
+          and rounds; the two results agree to 0.4 % and 0.1 %).
+  THE BOOK'S ROW t = 0, V = 0 is omitted: t/V is undefined there, and the
+  linear region is counted among the rows with V > 0 (the 11 below).
+  THE FILTRATE VISCOSITY (0.001 Pa s) and density (1000 kg/m3) are the TEST's
+  own conditions, used to reduce the rows to alpha and R; the unit that asks
+  for this sample prices its own filtrate through the property package.
+
+  WHAT THE CAKE RESISTANCE IS A PROPERTY OF (p. 111-112): the whole sample
+  state -- here a 6.5 um calcium silicate in water at the pH and ionic
+  strength the source does not state -- not of the solid.  "It is usually poor
+  practice to infer data from a different feed suspension": this record
+  stands over the one pressure it was measured at (no `authorised` domain
+  wider than the support is declared), and a unit that asks at another
+  pressure is refused.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    source       literature;
+    kind         measured;
+    basis        "Table 4.9: filtrate volume V against filtration time t of a constant-pressure test (Hosseini 1977), read as printed; Table 4.8: area 0.0429 m2, 69 kPa, filtrate viscosity 0.001 Pa s, filtrate density 1000 kg/m3, solids density 1950 kg/m3, s = 0.0495, m_av = 3.405";
+    citation     "Wakeman, R.J.; Tarleton, E.S. (2005) Solid/Liquid Separation: Principles of Industrial Filtration. Elsevier. Example 4.1, Tables 4.8 and 4.9, pp. 121-123 (after Hosseini 1977)";
+}
+
+property    filtrationTest;
+
+subject
+{
+    suspension  "calcium silicate in water, mean particle size 6.5 um";
+    medium      "the laboratory filter press of the test (Hosseini 1977); the medium is not described further in the source";
+}
+
+conditions
+{
+    meanParticleSize   6.5e-6 m;
+    solidsDensity      1950 kg/m3;
+    pH                 "not stated in the source";
+    flocculant         "not stated in the source";
+    age                "not stated in the source";
+}
+
+tests
+(
+    {
+        pressureDrop        69 kPa;
+        area                0.0429 m2;
+        solidsMassFraction  0.0495;           // s: kg solids / kg slurry
+        wetToDryRatio       3.405;            // m_av: kg wet cake / kg dry cake
+        filtrateViscosity   0.001 Pa.s;
+        filtrateDensity     1000 kg/m3;
+        linearRegion
+        {
+            fromRow  3;
+            toRow    11;
+            reason   "the first two points are disregarded (Example 4.1, p. 122: 'the first two data points have been disregarded')";
+        }
+        columns
+        (
+            { name t;  unit s;  }
+            { name V;  unit m3; }
+        );
+        data
+        (
+              9   0.001
+             19   0.002
+             31   0.003
+             50   0.004
+             70   0.005
+             93   0.006
+            120   0.007
+            152   0.008
+            187   0.009
+            227   0.010
+            270   0.011
+        );
+    }
+);

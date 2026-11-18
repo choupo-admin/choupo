@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  A SAMPLE'S BEHAVIOUR, ADOPTED: the CaCO3 slurry and filter cloth of the
+  laboratory test of Geankoplis, Hersel & Lepek (5th ed.), Example 24.2-1
+  (docs/design/measured-facts-materials-and-flow-curves.md, R6).
+
+  THE NUMBERS ARE THE BOOK'S PRINTED RESULTS, not rows: the example reduces
+  a laboratory t/V against V line (338 kPa) to alpha = 1.863e11 m/kg and
+  R_m = 10.63e10 1/m, and this record states those two.  The book's t-V rows
+  were not transcribed for this case, so nothing here is DERIVED: the kind is
+  `adopted`, the run prints it, and the values stand over the one pressure
+  the test was run at (an `authorised` domain of a point).  m = 2.0 is NOT
+  from Example 24.2-1 (which does not give the cake's moisture) but from
+  Example 24.2-4, which gives m = 2.0 for "a CaCO3 slurry as given in
+  Example 24.2-1".
+
+  Read by filter02 (a plate-and-frame press, through-washing) and filter04 (a
+  leaf filter): ONE slurry and one cloth, so the same file, byte for byte, in
+  both cases' constant/experiments/ (a case carries its own data).
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    source       literature;
+    kind         adopted;
+    basis        "alpha = 1.863e11 m/kg and R_m = 10.63e10 1/m, the results of the example's t/V against V line at 338 kN/m2 (Example 24.2-1); m = 2.0 kg wet cake / kg dry cake as Example 24.2-4 gives it for 'a CaCO3 slurry as given in Example 24.2-1'";
+    citation     "Geankoplis, C.J.; Hersel, A.A.; Lepek, D.H. Transport Processes and Separation Process Principles, 5th ed. Prentice Hall. Examples 24.2-1 (pp. 1083-1085) and 24.2-4 (pp. 1089-1090)";
+}
+
+property    filtrationTest;
+
+subject
+{
+    suspension  "CaCO3 in water, the slurry of the laboratory test of Example 24.2-1 (c_S = 23.47 kg solids per m3 of filtrate)";
+    medium      "the filter cloth of the laboratory test of Example 24.2-1";
+}
+
+conditions
+{
+    testPressureDrop   338 kPa;
+    pH                 "not stated in the source";
+    particleSize       "not stated in the source";
+}
+
+stated
+{
+    specificResistance  [-1 1 0 0 0] 1.863e11;     // m/kg, the cake's, at 338 kPa
+    mediumResistance    [0 -1 0 0 0] 10.63e10;     // 1/m, the cloth's, at 338 kPa
+    wetToDryRatio       2.0;                       // kg wet cake / kg dry cake
+}
+
+authorised
+{
+    pressureDrop  { min 338 kPa; max 338 kPa; }
+    reason        "the pressure drop of the test the values come from: a source value, stood over no other pressure";
+}

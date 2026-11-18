@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  filter05_calciumSilicate_measuredTest
+
+  A SAMPLE'S BEHAVIOUR FROM ITS RAW TEST ROWS, held to the printed worked
+  example of Wakeman & Tarleton, Solid/Liquid Separation: Principles of
+  Industrial Filtration (2005), Example 4.1, pp. 121-123 (after Hosseini
+  1977): a calcium silicate suspension in a laboratory filter press, 69 kPa,
+  0.0429 m2, s = 0.0495, m_av = 3.405, and the eleven t-V rows of Table 4.9.
+
+  WHERE THE NUMBERS LIVE (docs/design/measured-facts-materials-and-flow-
+  curves.md R6): the unit carries no resistance.  `sample` names
+  constant/experiments/calciumSilicate_hosseini1977_69kPa.dat, a record of
+  kind `measured` holding the ROWS; the service fits the line t/V against V
+  through the linear region (the first two points disregarded, as the book
+  does) and answers alpha and R_m at this pressure, with its method and its
+  support status, printed in the run.
+  THE BOOK'S ANSWERS (pp. 122-123): alpha = 7.4e9 m/kg, R_m = 1.54e10 1/m.
+  The least squares through the same rows gives 7.43e9 and 1.538e10 (the
+  book prints its regression's intercept rounded: 5186 against 5197 s/m3);
+  the anchors below carry the 1 % band that covers the book's rounding.
+  WHAT IS NOT THE BOOK'S: the cycle (the book's test has no cleaning time:
+  10 min is illustrative), the feed rate (set to about one press), the water's
+  viscosity and density (the package's: 8.89e-4 Pa s and 996.9 kg/m3, against
+  the test's 0.001 and 1000), and the solid: a case-local pseudo-solid of the
+  test's 1950 kg/m3 density (MW 100 is a BASIS, no result depends on it).
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A laboratory filter press on a calcium silicate suspension whose cake resistance is DERIVED from the raw t-V rows of a measured test (Wakeman & Tarleton Example 4.1): alpha and R_m, with the method and the support status printed.";
+verbosity     3;
+citations
+(
+    "Wakeman, R.J.; Tarleton, E.S. (2005) Solid/Liquid Separation: Principles of Industrial Filtration. Elsevier. Chapter 4, Example 4.1, Tables 4.8 and 4.9, pp. 121-123 (after Hosseini 1977)."
+);

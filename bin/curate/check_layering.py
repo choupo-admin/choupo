@@ -64,7 +64,7 @@ BANDS = [
     ["applications"],
     ["outerDriver", "postProcessing", "reporting", "dynamicDriver"],
     ["result", "io", "unitOperations", "propertyOps", "control"],
-    ["thermo", "streams", "materials", "solver"],
+    ["thermo", "streams", "materials", "samples", "solver"],
     ["core"],
 ]
 

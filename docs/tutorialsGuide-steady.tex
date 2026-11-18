@@ -13065,6 +13065,39 @@ One leaf filter (filter02's press, washed along the filtrate's path), two inlets
 \end{tutgolden}
 
 \clearpage
+\tutentry{filter05\_calciumSilicate\_measuredTest}{tutorials/steady/solids/filter05\_calciumSilicate\_measuredTest}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (press) at (0.0,-0.0) {\textbf{press}\\[-1pt]{\tiny cakeFilter}};
+  \draw[->] ($(press.west)+(-1.05,0.00)$) -- ($(press.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {slurry};
+  \draw[->] ($(press.east)+(0,-0.17)$) -- ($(press.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {cake};
+  \draw[->] ($(press.east)+(0,0.17)$) -- ($(press.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {filtrate};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A laboratory filter press on a calcium silicate suspension whose cake resistance is DERIVED from the raw t-V rows of a measured test (Wakeman \& Tarleton Example 4.1): alpha and R\_m, with the method and the support status printed.}
+\begin{tutnarrative}
+One laboratory-scale press on a sample whose behaviour is a MEASURED test: `sample calciumSilicate\_hosseini1977\_69kPa;` names the record of raw t-V rows, and the cake and medium resistance are DERIVED from them at the press's own pressure drop.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{press}{alpha\_m\_kg}{7.4e9}
+\goldrow{kpi}{press}{mediumResistance\_1\_m}{1.54e10}
+\goldrow{stream}{cake}{F}{7.17499306134e-05}
+\goldrow{stream}{cake}{T}{298.2}
+\goldrow{stream}{filtrate}{F}{0.000466186458276}
+\goldrow{stream}{filtrate}{T}{298.2}
+\goldrow{stream}{slurry}{F}{0.000537936388889}
+\goldrow{stream}{slurry}{T}{298.2}
+\goldrow{kpi}{press}{B\_s\_m3}{4619.10596981}
+\goldrow{kpi}{press}{Kp\_s\_m6}{3086793.67221}
+\goldrow{kpi}{press}{area\_m2}{0.0429}
+\goldrow{kpi}{press}{cS\_eq24\_2\_10\_kg\_m3}{59.3515601168}
+\goldrow{kpi}{press}{cS\_kg\_m3}{59.3515601168}
+\goldrow{kpi}{press}{cakeLiquor\_kg\_s}{0.0012025}
+\goldmore{20}
+\end{tutgolden}
+
+\clearpage
 \tutentry{hydrocyclone01\_quartz\_willsTable91}{tutorials/steady/solids/hydrocyclone01\_quartz\_willsTable91}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

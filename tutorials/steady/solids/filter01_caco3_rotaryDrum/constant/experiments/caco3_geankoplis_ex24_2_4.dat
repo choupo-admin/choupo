@@ -1,0 +1,61 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  A SAMPLE'S BEHAVIOUR, ADOPTED: the CaCO3 slurry of Geankoplis, Hersel &
+  Lepek (5th ed.), Example 24.2-4, pp. 1089-1090 (docs/design/measured-facts-
+  materials-and-flow-curves.md, R6).
+
+  THE BOOK PRINTS A LAW, NOT ROWS: "alpha = (4.37e9)(-dp)^0.3", dp in Pa and
+  alpha in m/kg, with m = 2.0 kg wet cake / kg dry cake, and "neglecting and
+  setting B = 0" (p. 1089): the medium is not part of the example.  This
+  record states those and nothing else, so nothing is derived (kind
+  `adopted`).  alpha0 is read in SI (its dimensions, m/kg/Pa^0.3, have no
+  integer form).  The law is the source's own and states no pressure range:
+  the record's authorised domain is the point the example works at, 67.0 kPa,
+  and the engine refuses another pressure rather than extrapolate the law
+  (widen `authorised`, with a reason, to run the drum elsewhere).
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    source       literature;
+    kind         adopted;
+    basis        "alpha = (4.37e9)(-dp)^0.3 with -dp in Pa and alpha in m/kg; m = 2.0 kg wet cake / kg dry cake; the medium neglected and B set to 0 ('neglecting and setting B = 0', p. 1089) -- the values the example uses";
+    citation     "Geankoplis, C.J.; Hersel, A.A.; Lepek, D.H. Transport Processes and Separation Process Principles, 5th ed. Prentice Hall. Example 24.2-4, pp. 1089-1090";
+}
+
+property    filtrationTest;
+
+subject
+{
+    suspension  "CaCO3 in water at 298.2 K, c_x = 0.191 kg solid per kg slurry (Example 24.2-4)";
+    medium      "none: the medium resistance is neglected in the example (B = 0)";
+}
+
+conditions
+{
+    temperature   298.2 K;
+    solidsMassFraction  0.191;
+    pH            "not stated in the source";
+    particleSize  "not stated in the source";
+}
+
+stated
+{
+    alpha0              4.37e9;                    // m/kg/Pa^s, SI
+    compressibility     0.3;                       // s in alpha = alpha0 dp^s (eq. 24.2-11)
+    mediumResistance    [0 -1 0 0 0] 0;            // 1/m: neglected, declared
+    wetToDryRatio       2.0;                       // kg wet cake / kg dry cake
+}
+
+authorised
+{
+    pressureDrop  { min 67.0 kPa; max 67.0 kPa; }
+    reason        "the pressure drop of Example 24.2-4; the source states no range for its law";
+}

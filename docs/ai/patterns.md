@@ -945,8 +945,7 @@ inputs    ( slurry washWater );
 outputs   ( cake filtrate spentWash );
 operation
 {
-    pressureDrop 338 kPa;   specificCakeResistance [-1 1 0 0 0] 1.863e11;
-    mediumResistance [0 -1 0 0 0] 10.63e10;   wetToDryCakeRatio 2.0;
+    pressureDrop 338 kPa;   sample caco3_geankoplis_ex24_2_1;   // alpha, R_m, m live in the record
     area 17.46 m2;   filtratePerCycle 3.37 m3;   cleaningTime 20 min;
     washFlowPath throughWashing;          // one quarter of the final rate
     washing { model displacement; }       // or tabulated, from the case's wash test
@@ -961,7 +960,7 @@ operation
 * `washing { }` is required with a wash inlet and refused without one; no washing
   law with constants is shipped (none is printed in the sources in hand): either
   ideal `displacement`, or the case's own measurement as `tabulated`.
-* The cake moisture is DECLARED (`wetToDryCakeRatio`), never predicted; give the
+* The cake moisture (`wetToDryRatio`) is the SAMPLE's record, never predicted; give the
   slurry a liquid viscosity model in the thermo dict (`transport { liquid {
   viscosity { model Vogel; } } }`) or the unit refuses.
 

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/cakeFilter.schema.json",
   "title": "cakeFilter operation",
-  "description": "A cake filter on a slurry, constant pressure, two-resistance law (Geankoplis, Hersel & Lepek 5th ed. section 24.2): t/V = K_p V/2 + B with K_p = mu alpha c_S/(A^2 dp), B = mu R_m/(A dp); a compressible cake alpha = alpha0 dp^s. Model rotaryDrum is continuous (declare cycleTime or area, the other is the result; eq. 24.2-26); batchPress is cyclic (declare area, filtratePerCycle and cleaningTime; the cycle time and the number of presses are results). The streams are cycle-averaged flows. Inlets (slurry [wash]), outlets (cake filtrate [spentWash]). The liquid viscosity is the package's and its model must be declared by the case.",
+  "description": "A cake filter on a slurry, constant pressure, two-resistance law (Geankoplis, Hersel & Lepek 5th ed. section 24.2): t/V = K_p V/2 + B with K_p = mu alpha c_S/(A^2 dp), B = mu R_m/(A dp); a compressible cake alpha = alpha0 dp^s. The cake law, the medium resistance and the wet-to-dry ratio are the SAMPLE's: `sample <name>;` names the record that holds them. Model rotaryDrum is continuous (declare cycleTime or area, the other is the result; eq. 24.2-26); batchPress is cyclic (declare area, filtratePerCycle and cleaningTime; the cycle time and the number of presses are results). The streams are cycle-averaged flows. Inlets (slurry [wash]), outlets (cake filtrate [spentWash]). The liquid viscosity is the package's and its model must be declared by the case.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -13,40 +13,10 @@
       "description": "-dp, constant over the cycle.",
       "unit": "Pa"
     },
-    "specificCakeResistance": {
-      "type": "number",
-      "exclusiveMinimum": 0,
-      "title": "Specific cake resistance alpha (incompressible cake)",
-      "description": "Use this OR alpha0 with compressibility, never both.",
-      "unit": "m/kg"
-    },
-    "alpha0": {
-      "type": "number",
-      "exclusiveMinimum": 0,
-      "title": "alpha0 of alpha = alpha0 dp^s",
-      "description": "Read in SI (m/kg with dp in Pa); its dimensions have no integer form. Give with compressibility.",
-      "unit": "SI"
-    },
-    "compressibility": {
-      "type": "number",
-      "minimum": 0,
-      "title": "Compressibility s",
-      "description": "The exponent s of alpha = alpha0 dp^s (Geankoplis eq. 24.2-11). Give with alpha0.",
-      "unit": "-"
-    },
-    "mediumResistance": {
-      "type": "number",
-      "minimum": 0,
-      "title": "Filter-medium resistance R_m",
-      "description": "0 is a declaration (the medium neglected).",
-      "unit": "1/m"
-    },
-    "wetToDryCakeRatio": {
-      "type": "number",
-      "exclusiveMinimum": 1,
-      "title": "Wet-to-dry cake ratio m",
-      "description": "kg wet cake per kg dry cake: the cake moisture, declared (Geankoplis eq. 24.2-10).",
-      "unit": "-"
+    "sample": {
+      "type": "string",
+      "title": "Sample record (filtrationTest)",
+      "description": "The name of the record in constant/experiments/<name>.dat that holds the cake law, the medium resistance and the wet-to-dry ratio m (kind measured, adopted or estimated); the unit asks it at its pressure drop. The numbers typed here are refused by name."
     },
     "submergence": {
       "type": "number",
@@ -133,7 +103,6 @@
   },
   "required": [
     "pressureDrop",
-    "mediumResistance",
-    "wetToDryCakeRatio"
+    "sample"
   ]
 }
