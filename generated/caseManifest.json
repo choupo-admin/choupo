@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1894,
+  "cases": 1895,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -22499,6 +22499,21 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/plant/line01_pumped_drum": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash",
+    "pump"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/plant/lithiumBrinePlant": {
    "application": "choupoSolve",
    "thermo": {
@@ -32039,6 +32054,7 @@
     "tutorials/plant/greenAmmonia03_basicDesign",
     "tutorials/plant/greenAmmoniaPEQ_baseCase",
     "tutorials/plant/hda",
+    "tutorials/plant/line01_pumped_drum",
     "tutorials/plant/lithiumBrinePlant",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/plant/swro01_campoDalias",
@@ -32866,6 +32882,7 @@
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
+    "tutorials/plant/line01_pumped_drum",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/absorption/absorption01_CO2_water",
     "tutorials/steady/absorption/extraction01_waterButanol",
@@ -33022,6 +33039,7 @@
    ],
    "pump": [
     "tutorials/plant/aceticAcid02_plant",
+    "tutorials/plant/line01_pumped_drum",
     "tutorials/plant/swro01_campoDalias",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane21_two_stage_nf_array",
@@ -34045,6 +34063,7 @@
     "data/curation/pairs/triethyleneGlycol-water",
     "data/curation/pairs/vinylAcetate-vinylPropionate",
     "tutorials/batch/still/still02_ethanol_water_azeo",
+    "tutorials/plant/line01_pumped_drum",
     "tutorials/props/compare/evidence01_methanol_water_points",
     "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/curation/curate03_thermoml_fixture_bubble",
