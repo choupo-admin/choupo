@@ -57,52 +57,169 @@ longer; the VALUES that did not move are identical to the digit.  Moved:
 
 `check_energy_closure`: the four cases leave KNOWN_OPEN (all close at 0.0000 %).
 
-## The ammonia family (measured, NOT re-recorded)
+## The ammonia family: 19 cases, 490 moved rows, EVERY ROW COVERED BY A NAMED CAUSE (re-recorded case by case)
 
-`bin/runTests --scope` on the 32 steady/plant cases that name ammonia (plus
-column14), with the term built and each manifest re-pinned: 14 of the 32
-(plus the gates) hold; 18 cases carry moved rows.  They are listed here with the
-count of moved rows and the one physical cause; no row was re-recorded, because
-a per-row explanation of ~370 rows, and of the cases outside this family that
-the term also reaches (below), is the architect's sweep to take, not a slice's.
+`bin/runTests --scope` on the 32 steady/plant cases that name ammonia (plus column14),
+with the term built (reference-equation route, backward second-order slope, see the
+slice report), gave 19 cases with moved rows, 490 rows in all.  Every row is
+assigned to ONE cause below by its key (a rule per key family); no row is left without one (0 unmatched).  The causes
+are physical, and a cause that repeats in 12 plants with the same row count is one cause:
+the let-down flash (K1) moves exactly 6 rows in each of the 12 plants that carry it.
+After this the goldens were re-recorded with `bin/runTests --record <case>`, one case at a
+time (the record guard refuses a mass, element or energy closure above tolerance).
+One consequence of K1 is not a moved row but a changed SHAPE: the let-down unit's duty was a
+heat demand met by `steamLP` and is now a cooling duty met by `refrigerationNH3`, so in 12
+plants the four `utility <unit> heating.steamLP.*` rows are DELETED from the golden (the
+run no longer publishes them; the scope run named them MISSING) and the four
+`utility <unit> cooling.refrigerationNH3.*` rows are APPENDED (`--record-append`).
 
-| case | rows moved | what moves, and why |
+| cause | rows | what it is |
 |---|---|---|
-| greenAmmoniaPEQ_baseCase | 103 | the reference plant: let-down flash, chiller, storage flash duties and the economics rows that read them |
-| greenAmmonia02_feasibility150bar / 50bar | 51 / 28 | same units |
-| letdown01_ammonia_flashing | 46 | the valve warms the compressed liquid: `LetdownGas.T`, `ThrottledHP.T` 253.014 -> 255.034 K (+2.02 K; the sign is the physical one, a liquid with alpha T < 1 warms when throttled); flash gas F 0.04073 -> 0.04738; K-values of the drum move with T |
-| economics03_startup_years, ammonia02_full_plant | 39 / 27 | `letdown.Q_kW` +13.80 -> -226.26 kW (the isothermal let-down flash changes sign; the review's prototype on the Rackett slope gave -225.06, ammonia's own reference equation -226.26, 0.5 % apart), `separator.Q_kW` -38345.6 -> -38081.9, so NPV 15.777 -> 15.937 M EUR (+1.0 %, the review's +1.02 %), IRR, payback; the `letdown.heating.steamLP` utility rows are MISSING (the unit no longer needs heating steam) |
-| ammoniaReactor01..04, ammonia01_synthesis_loop, ammonia03_quench_converter | 13 each (12 for the converter) | same let-down and separator duties (`letdown.Q_kW` +13.53 -> -222.91 kW in ammoniaReactor01) and their utilities |
-| column14_klemola_c4_splitter | 16 | reboiler 9766.9 -> 9761.1 kW (-0.06 %), condenser -10158.0 -> -10151.8; the compressed (6.6 bar) liquid carries the term; the n-butane minor key 8.112e-5 -> 8.148e-5 (+0.4 %); within the review's 4e-4..7e-4 |
-| column13, stripper01_sour_water, stripper02_sour_water_h2s | 6 / 5 / 5 | reboiler duty -0.012 % (stripper01: 75.4947 -> 75.4854 kW) |
-| absorber01_NH3_water, stripper01_NH3_water | 1 / 1 | `boundary.global.residual_kW` -27.9838 -> -27.9771 (band 0.0028): the liquid streams' term |
+| K1 | 72 | the isothermal let-down flash: the liquid warms on throttling, so the unit's duty changes sign (+13.8 to -226 kW) and its steam-heating utility disappears |
+| K2 | 44 | the valve itself and its drum: the compressed liquid leaves warmer (valve dT, T_out, densities, vapour fraction) and the flash K-values and splits follow the temperature |
+| K3 | 92 | the product separator / storage flash and the chiller: their inlet liquid and the let-down heat enter their duty, and the refrigeration / steam utility that serves them |
+| K4 | 194 | the loop and the plant boundary: the changed duties feed the tear and the heat exchangers' duties, sizes and the cooling-water use (water cooler, chiller, boundary Q, pinch, layout) |
+| K5 | 11 | the datum offset: every liquid above its own psat carries v (1 - alpha T) (P - psat), +1.6 J/mol for water at 1 bar, in the plant boundary enthalpies |
+| K6 | 50 | the economics that price those duties and equipment (utility cost, purchased and total module cost, NPV, IRR, payback, break-evens, sensitivities) |
+| K7 | 27 | columns and strippers at pressure: the compressed feed / reflux liquid carries the term, so the reboiler and condenser duties (and their utilities) and the minor key move in the fourth digit |
 
-`check_energy_closure` also flags three plants (ammonia02_full_plant,
-economics03_startup_years, ammonia03_quench_converter): their `waterCooler`
-publishes `H_closure_gap_kW` = -0.0001 / +0.0001 kW on a duty of 57 400 kW
-(2e-9 relative), just above the gate's 1e-4 kW threshold.  It is the heat
-exchanger's outlet-search tolerance meeting the (slightly) different enthalpy
-surface, not a model gap; NOT pinned, reported to the architect.
+### K1 (72 rows): the isothermal let-down flash: the liquid warms on throttling, so the unit's duty changes sign (+13.8 to -226 kW) and its steam-heating utility disappears
 
-## The reach beyond the ammonia family (measured on a sample, then stopped)
+- **ammonia01_synthesis_loop** (6): `kpi.letdown.Q`, `kpi.letdown.Q_kW`, `utility.letdown.heating.steamLP.T`, `utility.letdown.heating.steamLP.duty_kW`, `utility.letdown.heating.steamLP.eur_h`, `utility.letdown.heating.steamLP.kg_s`
+- **ammonia02_full_plant** (6): `kpi.letdown.Q`, `kpi.letdown.Q_kW`, `utility.letdown.heating.steamLP.T`, `utility.letdown.heating.steamLP.duty_kW`, `utility.letdown.heating.steamLP.eur_h`, `utility.letdown.heating.steamLP.kg_s`
+- **ammonia03_quench_converter** (6): `kpi.letdown.Q`, `kpi.letdown.Q_kW`, `utility.letdown.heating.steamLP.T`, `utility.letdown.heating.steamLP.duty_kW`, `utility.letdown.heating.steamLP.eur_h`, `utility.letdown.heating.steamLP.kg_s`
+- **ammoniaReactor01_fixedConversion** (6): `kpi.letdown.Q`, `kpi.letdown.Q_kW`, `utility.letdown.heating.steamLP.T`, `utility.letdown.heating.steamLP.duty_kW`, `utility.letdown.heating.steamLP.eur_h`, `utility.letdown.heating.steamLP.kg_s`
+- **ammoniaReactor02_equilibrium** (6): `kpi.letdown.Q`, `kpi.letdown.Q_kW`, `utility.letdown.heating.steamLP.T`, `utility.letdown.heating.steamLP.duty_kW`, `utility.letdown.heating.steamLP.eur_h`, `utility.letdown.heating.steamLP.kg_s`
+- **ammoniaReactor03_equilibriumApproach** (6): `kpi.letdown.Q`, `kpi.letdown.Q_kW`, `utility.letdown.heating.steamLP.T`, `utility.letdown.heating.steamLP.duty_kW`, `utility.letdown.heating.steamLP.eur_h`, `utility.letdown.heating.steamLP.kg_s`
+- **ammoniaReactor04_kineticSizing** (6): `kpi.letdown.Q`, `kpi.letdown.Q_kW`, `utility.letdown.heating.steamLP.T`, `utility.letdown.heating.steamLP.duty_kW`, `utility.letdown.heating.steamLP.eur_h`, `utility.letdown.heating.steamLP.kg_s`
+- **economics03_startup_years** (6): `kpi.letdown.Q`, `kpi.letdown.Q_kW`, `utility.letdown.heating.steamLP.T`, `utility.letdown.heating.steamLP.duty_kW`, `utility.letdown.heating.steamLP.eur_h`, `utility.letdown.heating.steamLP.kg_s`
+- **greenAmmonia02_feasibility150bar** (6): `kpi.LetdownHP.Q`, `kpi.LetdownHP.Q_kW`, `utility.LetdownHP.heating.steamLP.T`, `utility.LetdownHP.heating.steamLP.duty_kW`, `utility.LetdownHP.heating.steamLP.eur_h`, `utility.LetdownHP.heating.steamLP.kg_s`
+- **greenAmmonia02_feasibility50bar** (6): `kpi.LetdownHP.Q`, `kpi.LetdownHP.Q_kW`, `utility.LetdownHP.heating.steamLP.T`, `utility.LetdownHP.heating.steamLP.duty_kW`, `utility.LetdownHP.heating.steamLP.eur_h`, `utility.LetdownHP.heating.steamLP.kg_s`
+- **greenAmmonia03_basicDesign** (6): `kpi.LetdownHP.Q`, `kpi.LetdownHP.Q_kW`, `utility.LetdownHP.heating.steamLP.T`, `utility.LetdownHP.heating.steamLP.duty_kW`, `utility.LetdownHP.heating.steamLP.eur_h`, `utility.LetdownHP.heating.steamLP.kg_s`
+- **greenAmmoniaPEQ_baseCase** (6): `kpi.LetdownHP.Q`, `kpi.LetdownHP.Q_kW`, `utility.LetdownHP.heating.steamLP.T`, `utility.LetdownHP.heating.steamLP.duty_kW`, `utility.LetdownHP.heating.steamLP.eur_h`, `utility.LetdownHP.heating.steamLP.kg_s`
 
-Every liquid priced above its own `psat(T)` now carries the term, including a
-liquid at 1 bar (the 1.6 J/mol datum offset above), and the pricing asks the
-property kernel for the component's liquid volume, which consults every record
-in `parameters/Helmholtz/`.  A plain run of the first 87 non-props golden cases
-(sorted by path: batch, ctrl, plant, the first steady folders) measured:
-29 % announce the term, 41 % CONSUME a Helmholtz record their manifest does not
-pin (the run says `drifted`; under CHOUPO_PINS=refuse it refuses).  The reach is
-therefore a large part of the corpus (of 433 non-props golden cases, 346 steady, 161
-declare a pressure of 2 bar or more); every re-pin and every moved row of it
-belongs to a full sweep the architect decides.  This slice stopped at the
-measurement, as its brief said to.  What the sweep will meet beyond the rows:
+### K2 (44 rows): the valve itself and its drum: the compressed liquid leaves warmer (valve dT, T_out, densities, vapour fraction) and the flash K-values and splits follow the temperature
 
-- every manifest that pins the Helmholtz records needs the `Gao2023` line (78 do);
-  any case that newly consumes them needs `bin/choupo-import --pin <case>`;
-  recommended: pin the Helmholtz directory as a `relevant:` set like the Henry
-  directory, so that a new reference equation does not touch 500 manifests;
-- speed: letdown01 0.05 s -> 0.4-1 s, greenAmmonia03 about 2 min -> 7 min (the first
-  build of the term, before the grid, ran more than 80 minutes without finishing);
-  the reference-equation volume is interpolated on a 1 K grid per
-  (component, P), see `ThermoPackage::liquidPressureLeg`.
+- **letdown01_ammonia_flashing** (44): `kpi.DrumHP.F_beta`, `kpi.DrumHP.K_Ar`, `kpi.DrumHP.K_H2`, `kpi.DrumHP.K_N2`, `kpi.DrumHP.K_NH3`, `kpi.DrumHP.T`, `kpi.DrumHP.V_over_F`, `kpi.DrumLP.F_alpha`, `kpi.DrumLP.F_beta`, `kpi.DrumLP.K_Ar`, `kpi.DrumLP.K_H2`, `kpi.DrumLP.K_N2`, `kpi.DrumLP.K_NH3`, `kpi.DrumLP.T`, `kpi.DrumLP.V_over_F`, `kpi.ValveHP.Q_out`, `kpi.ValveHP.T_out`, `kpi.ValveHP.dT`, `kpi.ValveHP.rho_L_out`, `kpi.ValveHP.rho_V_out`, `kpi.ValveHP.rho_out`, `kpi.ValveHP.vf`, `kpi.ValveHP.volumeRatio`, `kpi.ValveHP.x_mass_out`, `kpi.ValveLP.Q_in`, `kpi.ValveLP.Q_out`, `kpi.ValveLP.T_in`, `kpi.ValveLP.T_out`, `kpi.ValveLP.dT`, `kpi.ValveLP.rho_V_out`, `kpi.ValveLP.rho_in`, `kpi.ValveLP.rho_out`, `kpi.ValveLP.vf`, `kpi.ValveLP.volumeRatio`, `kpi.ValveLP.x_mass_out`, `stream.FlashGas.F`, `stream.FlashGas.T`, `stream.LetdownGas.F`, `stream.LetdownGas.T`, `stream.LetdownLiquid.T`, `stream.ProductNH3.F`, `stream.ProductNH3.T`, `stream.ThrottledHP.T`, `stream.ThrottledLP.T`
+
+### K3 (92 rows): the product separator / storage flash and the chiller: their inlet liquid and the let-down heat enter their duty, and the refrigeration / steam utility that serves them
+
+- **ammonia01_synthesis_loop** (5): `kpi.separator.Q`, `kpi.separator.Q_kW`, `utility.separator.cooling.refrigerationNH3.duty_kW`, `utility.separator.cooling.refrigerationNH3.eur_h`, `utility.separator.cooling.refrigerationNH3.kg_s`
+- **ammonia02_full_plant** (5): `kpi.separator.Q`, `kpi.separator.Q_kW`, `utility.separator.cooling.refrigerationNH3.duty_kW`, `utility.separator.cooling.refrigerationNH3.eur_h`, `utility.separator.cooling.refrigerationNH3.kg_s`
+- **ammonia03_quench_converter** (5): `kpi.separator.Q`, `kpi.separator.Q_kW`, `utility.separator.cooling.refrigerationNH3.duty_kW`, `utility.separator.cooling.refrigerationNH3.eur_h`, `utility.separator.cooling.refrigerationNH3.kg_s`
+- **ammoniaReactor01_fixedConversion** (5): `kpi.separator.Q`, `kpi.separator.Q_kW`, `utility.separator.cooling.refrigerationNH3.duty_kW`, `utility.separator.cooling.refrigerationNH3.eur_h`, `utility.separator.cooling.refrigerationNH3.kg_s`
+- **ammoniaReactor02_equilibrium** (5): `kpi.separator.Q`, `kpi.separator.Q_kW`, `utility.separator.cooling.refrigerationNH3.duty_kW`, `utility.separator.cooling.refrigerationNH3.eur_h`, `utility.separator.cooling.refrigerationNH3.kg_s`
+- **ammoniaReactor03_equilibriumApproach** (5): `kpi.separator.Q`, `kpi.separator.Q_kW`, `utility.separator.cooling.refrigerationNH3.duty_kW`, `utility.separator.cooling.refrigerationNH3.eur_h`, `utility.separator.cooling.refrigerationNH3.kg_s`
+- **ammoniaReactor04_kineticSizing** (5): `kpi.separator.Q`, `kpi.separator.Q_kW`, `utility.separator.cooling.refrigerationNH3.duty_kW`, `utility.separator.cooling.refrigerationNH3.eur_h`, `utility.separator.cooling.refrigerationNH3.kg_s`
+- **economics03_startup_years** (5): `kpi.separator.Q`, `kpi.separator.Q_kW`, `utility.separator.cooling.refrigerationNH3.duty_kW`, `utility.separator.cooling.refrigerationNH3.eur_h`, `utility.separator.cooling.refrigerationNH3.kg_s`
+- **greenAmmonia02_feasibility150bar** (13): `kpi.Chiller.Q`, `kpi.Chiller.Q_kW`, `kpi.Chiller.Q_sensible_kW`, `kpi.Separator.Q`, `kpi.Separator.Q_kW`, `kpi.StorageFlash.Q`, `kpi.StorageFlash.Q_kW`, `utility.Chiller.cooling.refrigerationNH3.duty_kW`, `utility.Chiller.cooling.refrigerationNH3.eur_h`, `utility.Chiller.cooling.refrigerationNH3.kg_s`, `utility.Separator.heating.steamLP.duty_kW`, `utility.Separator.heating.steamLP.eur_h`, `utility.Separator.heating.steamLP.kg_s`
+- **greenAmmonia02_feasibility50bar** (13): `kpi.Chiller.Q`, `kpi.Chiller.Q_kW`, `kpi.Chiller.Q_sensible_kW`, `kpi.Separator.Q`, `kpi.Separator.Q_kW`, `kpi.StorageFlash.Q`, `kpi.StorageFlash.Q_kW`, `utility.Chiller.cooling.refrigerationNH3.duty_kW`, `utility.Chiller.cooling.refrigerationNH3.eur_h`, `utility.Chiller.cooling.refrigerationNH3.kg_s`, `utility.Separator.heating.steamLP.duty_kW`, `utility.Separator.heating.steamLP.eur_h`, `utility.Separator.heating.steamLP.kg_s`
+- **greenAmmonia03_basicDesign** (13): `kpi.Chiller.Q`, `kpi.Chiller.Q_kW`, `kpi.Chiller.Q_sensible_kW`, `kpi.Separator.Q`, `kpi.Separator.Q_kW`, `kpi.StorageFlash.Q`, `kpi.StorageFlash.Q_kW`, `utility.Chiller.cooling.refrigerationNH3.duty_kW`, `utility.Chiller.cooling.refrigerationNH3.eur_h`, `utility.Chiller.cooling.refrigerationNH3.kg_s`, `utility.Separator.heating.steamLP.duty_kW`, `utility.Separator.heating.steamLP.eur_h`, `utility.Separator.heating.steamLP.kg_s`
+- **greenAmmoniaPEQ_baseCase** (13): `kpi.Chiller.Q`, `kpi.Chiller.Q_kW`, `kpi.Chiller.Q_sensible_kW`, `kpi.Separator.Q`, `kpi.Separator.Q_kW`, `kpi.StorageFlash.Q`, `kpi.StorageFlash.Q_kW`, `utility.Chiller.cooling.refrigerationNH3.duty_kW`, `utility.Chiller.cooling.refrigerationNH3.eur_h`, `utility.Chiller.cooling.refrigerationNH3.kg_s`, `utility.Separator.heating.steamLP.duty_kW`, `utility.Separator.heating.steamLP.eur_h`, `utility.Separator.heating.steamLP.kg_s`
+
+### K4 (194 rows): the loop and the plant boundary: the changed duties feed the tear and the heat exchangers' duties, sizes and the cooling-water use (water cooler, chiller, boundary Q, pinch, layout)
+
+- **ammonia01_synthesis_loop** (1): `boundary.global.Q_boundary_kW`
+- **ammonia02_full_plant** (10): `boundary.global.Q_boundary_kW`, `kpi.pinch.Q_C_min_kW`, `kpi.pinch.Q_cold_total_kW`, `kpi.pinch.Q_cool_current_kW`, `kpi.pinch.Q_heat_current_kW`, `kpi.pinch.Q_hot_total_kW`, `kpi.pinch.Q_recovery_max_kW`, `kpi.pinch.candidates_admissible`, `kpi.pinch.candidates_total`, `kpi.pinch.violation_heat_below_pinch_kW`
+- **ammonia03_quench_converter** (1): `boundary.global.Q_boundary_kW`
+- **ammoniaReactor01_fixedConversion** (1): `boundary.global.Q_boundary_kW`
+- **ammoniaReactor02_equilibrium** (1): `boundary.global.Q_boundary_kW`
+- **ammoniaReactor03_equilibriumApproach** (1): `boundary.global.Q_boundary_kW`
+- **ammoniaReactor04_kineticSizing** (1): `boundary.global.Q_boundary_kW`
+- **column13_sour_water_stage_identity** (2): `boundary.global.Q_boundary_kW`, `kpi.restage.H_residual`
+- **column14_klemola_c4_splitter** (1): `boundary.global.Q_boundary_kW`
+- **economics03_startup_years** (1): `boundary.global.Q_boundary_kW`
+- **greenAmmonia02_feasibility150bar** (26): `equipment.Chiller.cost.bareModule`, `equipment.Chiller.cost.purchased`, `equipment.Chiller.cost.totalModule`, `equipment.Chiller.values.A`, `equipment.Chiller.values.Q_kW`, `equipment.Chiller.values.weight`, `equipment.WaterCooler.cost.bareModule`, `equipment.WaterCooler.cost.purchased`, `equipment.WaterCooler.cost.totalModule`, `equipment.WaterCooler.values.A`, `equipment.WaterCooler.values.Q_kW`, `equipment.WaterCooler.values.weight`, `kpi.WaterCooler.Q`, `kpi.WaterCooler.Q_kW`, `kpi.WaterCooler.Q_sensible_kW`, `kpi.pinch.Q_cold_total_kW`, `kpi.pinch.Q_cool_current_kW`, `kpi.pinch.Q_heat_current_kW`, `kpi.pinch.Q_hot_total_kW`, `kpi.pinch.Q_recovery_max_kW`, `kpi.pinch.candidates_admissible`, `kpi.pinch.candidates_total`, `kpi.pinch.violation_heat_below_pinch_kW`, `utility.WaterCooler.cooling.coolingWater.duty_kW`, `utility.WaterCooler.cooling.coolingWater.eur_h`, `utility.WaterCooler.cooling.coolingWater.kg_s`
+- **greenAmmonia02_feasibility50bar** (8): `equipment.Chiller.cost.bareModule`, `equipment.Chiller.cost.purchased`, `equipment.Chiller.cost.totalModule`, `equipment.Chiller.values.A`, `equipment.Chiller.values.Q_kW`, `equipment.Chiller.values.weight`, `kpi.pinch.candidates_admissible`, `kpi.pinch.candidates_total`
+- **greenAmmonia03_basicDesign** (61): `equipment.Chiller.basis`, `equipment.Chiller.cost.bareModule`, `equipment.Chiller.cost.purchased`, `equipment.Chiller.cost.totalModule`, `equipment.Chiller.values.A`, `equipment.Chiller.values.A_required`, `equipment.Chiller.values.Nu_tube`, `equipment.Chiller.values.Q_kW`, `equipment.Chiller.values.R_film_tube`, `equipment.Chiller.values.Re_tube`, `equipment.Chiller.values.U`, `equipment.Chiller.values.U_clean`, `equipment.Chiller.values.baffleSpacing`, `equipment.Chiller.values.dP_tube`, `equipment.Chiller.values.h_tube`, `equipment.Chiller.values.mdot_shell`, `equipment.Chiller.values.mdot_utility`, `equipment.Chiller.values.nTubes`, `equipment.Chiller.values.overdesign`, `equipment.Chiller.values.shellID`, `equipment.Chiller.values.tubesPerPass`, `equipment.Chiller.values.u_tube`, `equipment.Chiller.values.weight`, `equipment.WaterCooler.basis`, `equipment.WaterCooler.cost.bareModule`, `equipment.WaterCooler.cost.purchased`, `equipment.WaterCooler.cost.totalModule`, `equipment.WaterCooler.values.A`, `equipment.WaterCooler.values.A_required`, `equipment.WaterCooler.values.Nu_tube`, `equipment.WaterCooler.values.Q_kW`, `equipment.WaterCooler.values.R_film_tube`, `equipment.WaterCooler.values.Re_tube`, `equipment.WaterCooler.values.U`, `equipment.WaterCooler.values.U_clean`, `equipment.WaterCooler.values.baffleSpacing`, `equipment.WaterCooler.values.dP_shell`, `equipment.WaterCooler.values.dP_tube`, `equipment.WaterCooler.values.h_tube`, `equipment.WaterCooler.values.mdot_shell`, `equipment.WaterCooler.values.mdot_utility`, `equipment.WaterCooler.values.nTubes`, `equipment.WaterCooler.values.overdesign`, `equipment.WaterCooler.values.shellID`, `equipment.WaterCooler.values.tubesPerPass`, `equipment.WaterCooler.values.u_tube`, `equipment.WaterCooler.values.weight`, `kpi.WaterCooler.Q`, `kpi.WaterCooler.Q_kW`, `kpi.WaterCooler.Q_sensible_kW`, `kpi.pinch.Q_cold_total_kW`, `kpi.pinch.Q_cool_current_kW`, `kpi.pinch.Q_heat_current_kW`, `kpi.pinch.Q_hot_total_kW`, `kpi.pinch.Q_recovery_max_kW`, `kpi.pinch.candidates_admissible`, `kpi.pinch.candidates_total`, `kpi.pinch.violation_heat_below_pinch_kW`, `utility.WaterCooler.cooling.coolingWater.duty_kW`, `utility.WaterCooler.cooling.coolingWater.eur_h`, `utility.WaterCooler.cooling.coolingWater.kg_s`
+- **greenAmmoniaPEQ_baseCase** (77): `equipment.Chiller.basis`, `equipment.Chiller.cost.bareModule`, `equipment.Chiller.cost.purchased`, `equipment.Chiller.cost.totalModule`, `equipment.Chiller.values.A`, `equipment.Chiller.values.A_required`, `equipment.Chiller.values.Nu_tube`, `equipment.Chiller.values.Q_kW`, `equipment.Chiller.values.R_film_tube`, `equipment.Chiller.values.Re_tube`, `equipment.Chiller.values.U`, `equipment.Chiller.values.U_clean`, `equipment.Chiller.values.baffleSpacing`, `equipment.Chiller.values.dP_tube`, `equipment.Chiller.values.h_tube`, `equipment.Chiller.values.mdot_shell`, `equipment.Chiller.values.mdot_utility`, `equipment.Chiller.values.nTubes`, `equipment.Chiller.values.overdesign`, `equipment.Chiller.values.shellID`, `equipment.Chiller.values.tubesPerPass`, `equipment.Chiller.values.u_tube`, `equipment.Chiller.values.weight`, `equipment.WaterCooler.basis`, `equipment.WaterCooler.cost.bareModule`, `equipment.WaterCooler.cost.purchased`, `equipment.WaterCooler.cost.totalModule`, `equipment.WaterCooler.values.A`, `equipment.WaterCooler.values.A_required`, `equipment.WaterCooler.values.Nu_shell`, `equipment.WaterCooler.values.Nu_tube`, `equipment.WaterCooler.values.Q_kW`, `equipment.WaterCooler.values.R_film_shell`, `equipment.WaterCooler.values.R_film_tube`, `equipment.WaterCooler.values.Re_shell`, `equipment.WaterCooler.values.Re_tube`, `equipment.WaterCooler.values.U`, `equipment.WaterCooler.values.U_clean`, `equipment.WaterCooler.values.baffleSpacing`, `equipment.WaterCooler.values.dP_tube`, `equipment.WaterCooler.values.h_shell`, `equipment.WaterCooler.values.h_tube`, `equipment.WaterCooler.values.mdot_shell`, `equipment.WaterCooler.values.mdot_utility`, `equipment.WaterCooler.values.nTubes`, `equipment.WaterCooler.values.overdesign`, `equipment.WaterCooler.values.shellID`, `equipment.WaterCooler.values.tubesPerPass`, `equipment.WaterCooler.values.u_shell`, `equipment.WaterCooler.values.u_tube`, `equipment.WaterCooler.values.weight`, `kpi.WaterCooler.Q`, `kpi.WaterCooler.Q_kW`, `kpi.WaterCooler.Q_sensible_kW`, `kpi.pinch.Q_cold_total_kW`, `kpi.pinch.Q_cool_current_kW`, `kpi.pinch.Q_heat_current_kW`, `kpi.pinch.Q_hot_total_kW`, `kpi.pinch.Q_recovery_max_kW`, `kpi.pinch.candidates_admissible`, `kpi.pinch.candidates_total`, `kpi.pinch.violation_heat_below_pinch_kW`, `layout.Chiller.dy`, `layout.Chiller.dz`, `layout.WaterCooler.dy`, `layout.WaterCooler.dz`, `layout.access`, `layout.pipe`, `layout.utility`, `utility.WaterCooler.cooling.coolingWater.duty_kW`, `utility.WaterCooler.cooling.coolingWater.eur_h`, `utility.WaterCooler.cooling.coolingWater.kg_s`
+- **stripper01_sour_water** (1): `boundary.global.Q_boundary_kW`
+- **stripper02_sour_water_h2s** (1): `boundary.global.Q_boundary_kW`
+
+### K5 (11 rows): the datum offset: every liquid above its own psat carries v (1 - alpha T) (P - psat), +1.6 J/mol for water at 1 bar, in the plant boundary enthalpies
+
+- **absorber01_NH3_water** (1): `boundary.global.residual_kW`
+- **ammonia01_synthesis_loop** (1): `boundary.global.H_products_kW`
+- **ammoniaReactor01_fixedConversion** (1): `boundary.global.H_products_kW`
+- **ammoniaReactor02_equilibrium** (1): `boundary.global.H_products_kW`
+- **ammoniaReactor03_equilibriumApproach** (1): `boundary.global.H_products_kW`
+- **ammoniaReactor04_kineticSizing** (1): `boundary.global.H_products_kW`
+- **greenAmmonia03_basicDesign** (1): `boundary.global.residual_denom_kW`
+- **greenAmmoniaPEQ_baseCase** (1): `boundary.global.residual_denom_kW`
+- **letdown01_ammonia_flashing** (2): `boundary.global.H_feeds_kW`, `boundary.global.H_products_kW`
+- **stripper01_NH3_water** (1): `boundary.global.residual_kW`
+
+### K6 (50 rows): the economics that price those duties and equipment (utility cost, purchased and total module cost, NPV, IRR, payback, break-evens, sensitivities)
+
+- **ammonia02_full_plant** (6): `kpi.economics.COM_d`, `kpi.economics.C_UT`, `kpi.economics.IRR`, `kpi.economics.NPV`, `kpi.economics.grossMargin_RM_UT`, `kpi.economics.paybackYears`
+- **economics03_startup_years** (27): `kpi.economics.COM_d`, `kpi.economics.C_UT`, `kpi.economics.IRR`, `kpi.economics.NPV`, `kpi.economics.equity_IRR`, `kpi.economics.equity_NPV`, `kpi.economics.equity_paybackYears`, `kpi.economics.grossMargin_RM_UT`, `kpi.economics.paybackYears`, `kpi.economics.sens_financing_debtFraction_IRR_high`, `kpi.economics.sens_financing_debtFraction_IRR_low`, `kpi.economics.sens_financing_debtFraction_NPV_high`, `kpi.economics.sens_financing_debtFraction_NPV_low`, `kpi.economics.sens_financing_debtFraction_equityNPV_high`, `kpi.economics.sens_financing_debtFraction_equityNPV_low`, `kpi.economics.sens_financing_debtFraction_payback_high`, `kpi.economics.sens_financing_debtFraction_payback_low`, `kpi.economics.sens_financing_rate_IRR_high`, `kpi.economics.sens_financing_rate_IRR_low`, `kpi.economics.sens_financing_rate_NPV_high`, `kpi.economics.sens_financing_rate_NPV_low`, `kpi.economics.sens_financing_rate_equityNPV_high`, `kpi.economics.sens_financing_rate_equityNPV_low`, `kpi.economics.sens_financing_rate_payback_high`, `kpi.economics.sens_financing_rate_payback_low`, `kpi.economics.taxCreditOnLoss`, `kpi.economics.taxCreditOnLoss_NPV`
+- **greenAmmonia02_feasibility150bar** (6): `kpi.economics.C_UT`, `kpi.economics.FCI`, `kpi.economics.TCI`, `kpi.economics.WC_fractionRule`, `kpi.economics.sens_FCI_value_high`, `kpi.economics.sens_FCI_value_low`
+- **greenAmmonia02_feasibility50bar** (1): `kpi.economics.C_UT`
+- **greenAmmonia03_basicDesign** (4): `kpi.economics.C_UT`, `kpi.economics.FCI`, `kpi.economics.TCI`, `kpi.economics.WC_fractionRule`
+- **greenAmmoniaPEQ_baseCase** (6): `kpi.economics.C_UT`, `kpi.economics.FCI`, `kpi.economics.TCI`, `kpi.economics.WC_fractionRule`, `kpi.economics.breakEven_operating_fixed`, `kpi.economics.breakEven_price_H2Feed`
+
+### K7 (27 rows): columns and strippers at pressure: the compressed feed / reflux liquid carries the term, so the reboiler and condenser duties (and their utilities) and the minor key move in the fourth digit
+
+- **column13_sour_water_stage_identity** (4): `kpi.tower.Q_reboiler_kW`, `utility.tower.heating.steamLP.duty_kW`, `utility.tower.heating.steamLP.eur_h`, `utility.tower.heating.steamLP.kg_s`
+- **column14_klemola_c4_splitter** (15): `kpi.splitter.L_rect`, `kpi.splitter.L_strip`, `kpi.splitter.Q_condenser_kW`, `kpi.splitter.Q_reboiler_kW`, `kpi.splitter.Q_reboiler_ownEnvelope_kW`, `kpi.splitter.R_internal`, `kpi.splitter.V_rect`, `kpi.splitter.V_strip`, `stream.distillate.nButane`, `utility.splitter.cooling.coolingWater.duty_kW`, `utility.splitter.cooling.coolingWater.eur_h`, `utility.splitter.cooling.coolingWater.kg_s`, `utility.splitter.heating.steamLP.duty_kW`, `utility.splitter.heating.steamLP.eur_h`, `utility.splitter.heating.steamLP.kg_s`
+- **stripper01_sour_water** (4): `kpi.tower.Q_reboiler_kW`, `utility.tower.heating.steamLP.duty_kW`, `utility.tower.heating.steamLP.eur_h`, `utility.tower.heating.steamLP.kg_s`
+- **stripper02_sour_water_h2s** (4): `kpi.tower.Q_reboiler_kW`, `utility.tower.heating.steamLP.duty_kW`, `utility.tower.heating.steamLP.eur_h`, `utility.tower.heating.steamLP.kg_s`
+
+
+## The three steps behind the rows (architect's order 2026-11-19)
+
+1. **Pins.**  A reference equation (`parameters/Helmholtz/`) is CONSUMED when its `fluid`
+   is one of the case's components (by name or alias): `PinCheck.cpp consumed()`,
+   `noteLoadedAlias`.  The directory has NO set line (a set line would have put one line
+   into every manifest that scans it), so a new equation for another fluid touches no
+   manifest and a new one for one of the case's fluids is a consumed, unpinned record, a
+   drift said by name.  The Gao2023 lines added to the flash01, pump01, pump02 and
+   liquidDensity01/02 manifests were REVERTED (those cases consume no ammonia equation);
+   `check_pins_fresh`, `check_case_records` and `check_shadow_identity` pass with flash01's
+   manifest as it stands on main.  Only cases that consume the ammonia equation pin it
+   (the re-pinned manifests of the ammonia family, whose other four Helmholtz pins are
+   harmless extras: "not consumed" is not a drift).
+2. **Speed**, measured by profiling letdown01 (`CHOUPO_C390_TIMING=1`, kept as a
+   debugging aid): three findings.  (a) 244 of 280 leg evaluations were "unpriced" and
+   cost 0.13 s of the 0.32 s: the central difference `v(T + 0.5 K)` crossed the
+   saturation line next to the bubble point, the kernel refused ("pure NH3 is a
+   VAPOUR") and the TERM WAS SILENTLY DROPPED there, an exception per call.  A real
+   defect (it made the term vanish exactly where a flash lives), fixed with a BACKWARD
+   second-order slope (T, T-dT, T-2dT are liquid whenever P > psat(T)); the term is now
+   present at every liquid state above psat.  (b) a component with no saturation line or no
+   liquid volume is classified once, for good.  (c) for a fluid with a reference
+   equation (or a case's pure-fluid selection) the integral at fixed T IS the equation's
+   own `h(T, P) - h(T, p_low)` and `s(T, P) - s(T, p_low)`: no finite difference of the
+   volume, one saturation per T instead of three (the engine's psat below the equation's
+   own line is carried by the slope there).  The remaining cost is one saturation solve per
+   new T (1.4 ms for ammonia), and near the bubble point the 4 K Lagrange grid cannot be
+   used (a node above the bubble temperature has no term), so a flash AT its bubble point
+   pays it on every temperature the outlet search visits.  The interpolation error where
+   the grid is used was measured: 8 K spacing 8e-4 J/mol, 4 K 4e-5 J/mol (the grid is 4 K).
+   Wall-clock before (main) / after, one run each on a loaded machine, seconds:
+
+   | case | before | after | ratio |
+   |---|---|---|---|
+   | letdown01_ammonia_flashing | 0.053 | 0.153 | 2.9 |
+   | ammoniaReactor01_fixedConversion | 0.051 | 0.078 | 1.5 |
+   | ammonia01_synthesis_loop | 0.057 | 0.088 | 1.5 |
+   | absorber01_NH3_water | 0.043 | 0.226 | 5.3 |
+   | ammonia03_quench_converter | 0.377 | 0.759 | 2.0 |
+   | ammonia02_full_plant | 0.210 | 0.575 | 2.7 |
+   | column14_klemola_c4_splitter | 19.79 | 19.70 | 1.0 |
+   | pump01_water | 0.098 | 0.161 | 1.6 |
+
+   (the first build of the term: letdown01 7-20x, greenAmmonia03 more than 80 minutes
+   unfinished, then 7 min).  THE 1.3x TARGET IS NOT REACHED on the small cases: their
+   runtime is 40-100 ms, of which a single saturation solve of the reference equation per
+   new temperature is already a third; the floor is the saturation, not the leg.
+   Candidate (not built): a ln(psat) interpolation inside the Helmholtz model.
+3. **The `waterCooler` flag.**  `flashState::bisectIncreasing` stopped at a bracket of
+   1e-10 relative (1e-8 K at 300 K), which on a 57 400 kW duty leaves ~1e-4 kW in the
+   outlet enthalpy; it now stops at 1e-13 relative (3e-11 K, still 500 ulp), so
+   `H_closure_gap_kW` is below the gate's 1e-4 kW threshold.  `check_energy_closure` passes
+   on the 36 cases of the scope with nothing pinned.  The arithmetic of the search is
+   otherwise unchanged (same midpoint, same rule); it is shared with the heater.
+
+The pump goldens re-recorded in step 2 of the first commit were re-checked on the final
+build (reference-equation route for water, backward slope): they still pass within 1e-4.

@@ -10184,8 +10184,10 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/henrysLaw/HenrysLaw.H",
    "src/thermo/henrysLaw/HenrysLawRegistry.H",
+   "src/thermo/liquidProperty/DensityLeaf.H",
    "src/thermo/liquidProperty/DensityMethod.H",
    "src/thermo/liquidProperty/DensityResolver.H",
+   "src/thermo/liquidProperty/PureFluidLeaf.H",
    "src/thermo/phase/Phase.H",
    "src/thermo/phase/SaturatedVapour.H",
    "src/thermo/pureFluid/PureFluidModel.H",
@@ -26440,6 +26442,7 @@
   ],
   "src/thermo/liquidProperty/DensityLeaf.H": [
    "src/thermo/LiquidPropertyDoor.cpp",
+   "src/thermo/ThermoPackage.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
@@ -26505,6 +26508,7 @@
    "src/thermo/liquidProperty/Measured.cpp"
   ],
   "src/thermo/liquidProperty/PureFluidLeaf.H": [
+   "src/thermo/ThermoPackage.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp"
   ],

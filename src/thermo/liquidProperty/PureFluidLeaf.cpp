@@ -274,5 +274,10 @@ DensityAnswer PureFluidLeaf::evaluate(scalar T, scalar P, const sVector&) const
     return a;
 }
 
+const PureFluidModel& referenceFluidModel(const std::string& equation, scalar molarMass)
+{
+    return referenceModel(equation, molarMass);
+}
+
 } // namespace liquidProperty
 } // namespace Choupo

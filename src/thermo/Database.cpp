@@ -216,6 +216,7 @@ Component Database::loadComponent(const std::string& name) const
     Component c;
     lastLoad() = LastLoad{};
     c.readFromDict(componentDict(name));
+    for (const auto& a : c.aliases()) records::noteLoadedAlias(a);   // C390: a reference equation names its fluid by one
     c.setRecordHome(lastLoad().home);
     c.setPackageTag(recordLaws::currentPackageTag());   // the shared holder
     for (const auto& [property, entry] : lastLoad().deferred) c.deferProvenance(property, entry);

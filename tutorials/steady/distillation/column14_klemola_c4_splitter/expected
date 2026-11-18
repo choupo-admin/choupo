@@ -6,36 +6,36 @@ stream  distillate             F                0.0394509877778  1e-4
 stream  feed                   F                0.125753043611   1e-4
 kpi     splitter               B                0.0863020558333  1e-4
 kpi     splitter               D                0.0394509877778  1e-4
-kpi     splitter               L_rect           0.550120646375   1e-4
-kpi     splitter               L_strip          0.661541109845   1e-4
-kpi     splitter               Q_condenser_kW   -10158.0120479   1e-4
-kpi     splitter               Q_reboiler_kW    9766.9135714     1e-4
+kpi     splitter               L_rect           0.54980995056    1e-4
+kpi     splitter               L_strip          0.661230414031   1e-4
+kpi     splitter               Q_condenser_kW   -10151.7894499   1e-4
+kpi     splitter               Q_reboiler_kW    9761.07948961    1e-4
 kpi     splitter               R                11.440296        1e-4
-kpi     splitter               T_bottom         335.085474978    1e-4
-kpi     splitter               T_top            319.766595355    1e-4
-kpi     splitter               V_rect           0.589571634152   1e-4
-kpi     splitter               V_strip          0.575239054012   1e-4
+kpi     splitter               T_bottom         335.085472297    1e-4
+kpi     splitter               T_top            319.766597009    1e-4
+kpi     splitter               V_rect           0.589260938338   1e-4
+kpi     splitter               V_strip          0.574928358197   1e-4
 kpi     splitter               feedStage        37               1e-4
 kpi     splitter               murphreeEfficiency 1.191            1e-4
 kpi     splitter               nStages          75               1e-4
-kpi     splitter               x_B_HK           0.00116916875084 1e-4
-kpi     splitter               x_D_LK           0.062771445968   1e-4
-utility splitter               heating.steamLP.duty_kW 9766.9135714     1e-4
-utility splitter               heating.steamLP.T 335.085474978    1e-4
-utility splitter               heating.steamLP.kg_s 4.46793850476    1e-4
-utility splitter               heating.steamLP.eur_h 421.930666285    1e-4
-utility splitter               cooling.coolingWater.duty_kW -10158.0120479   1e-4
-utility splitter               cooling.coolingWater.T 319.766595355    1e-4
-utility splitter               cooling.coolingWater.kg_s 243.014642295    1e-4
-utility splitter               cooling.coolingWater.eur_h 14.627537349     1e-4
-stream  bottoms                T                335.085474978    1e-4
+kpi     splitter               x_B_HK           0.00116916875085 1e-4
+kpi     splitter               x_D_LK           0.0627714459664  1e-4
+utility splitter               heating.steamLP.duty_kW 9761.07948961    1e-4
+utility splitter               heating.steamLP.T 335.085472297    1e-4
+utility splitter               heating.steamLP.kg_s 4.46526966588    1e-4
+utility splitter               heating.steamLP.eur_h 421.678633951    1e-4
+utility splitter               cooling.coolingWater.duty_kW -10151.7894499   1e-4
+utility splitter               cooling.coolingWater.T 319.766597009    1e-4
+utility splitter               cooling.coolingWater.kg_s 242.865776313    1e-4
+utility splitter               cooling.coolingWater.eur_h 14.6185768078    1e-4
+stream  bottoms                T                335.085472297    1e-4
 stream  distillate             T                291.65           1e-4
 stream  feed                   T                329.5214         1e-4
-boundary global                 H_feeds_kW       -17636.4019558   1e-4
-boundary global                 Q_boundary_kW    -391.098476525   1e-4
-boundary global                 H_products_kW    -18027.5004323   1e-4
+boundary global                 H_feeds_kW       -17636.2763099   1e-4
+boundary global                 Q_boundary_kW    -390.709960279   1e-4
+boundary global                 H_products_kW    -18026.9862702   1e-4
 boundary global                 residual_kW      0                abs:0.1992
-kpi     splitter               Q_reboiler_ownEnvelope_kW 10455.7118367    1e-4
+kpi     splitter               Q_reboiler_ownEnvelope_kW 10450.0191611    1e-4
 
 # =============================================================================
 #  THE KLEMOLA ANCHORS (C239, 2026-11-08).  Measured plant: Klemola & Ilme,
@@ -87,9 +87,11 @@ stream  bottoms                nButane          0.979722         1e-2     anchor
 #       numbering direction (A0), the subcooled reflux (7), no stage energy
 #       balance (8), seven interim component records.
 #  Candidate next slice: a measured tray profile (Vogelpohl), not this paper.
-stream  distillate             nButane          8.11167821141e-05 1e-4
-stream  bottoms                isoButane        0.00412171357162 1e-4
-stream  distillate             isoButane        0.924399647526   1e-4
-stream  bottoms                nButane          0.982496589716   1e-4
-kpi     splitter               R_internal       13.9444074119    1e-4
-kpi     splitter               refluxSubcooling_K 26.4022625984    1e-4
+stream  distillate             nButane          8.14751868124e-05 1e-4
+stream  bottoms                isoButane        0.00412201475081 1e-4
+stream  distillate             isoButane        0.92439898865    1e-4
+stream  bottoms                nButane          0.982496425891   1e-4
+kpi     splitter               R_internal       13.936531923     1e-4
+kpi     splitter               refluxSubcooling_K 26.4022672225    1e-4
+boundary global                 noBoundary       false            exact
+boundary global                 residual_denom_kW 19912.8689395    1e-4

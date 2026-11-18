@@ -96,5 +96,11 @@ private:
     scalar                          Tc_ = 0.0;      // no liquid at or above
 };
 
+//  C390: the PureFluidModel of a reference equation (built once per process per
+//  (equation, molar mass)), for the pressure leg of the generic liquid enthalpy:
+//  there the integral of v (1 - alpha T) dP at fixed T is the equation's own
+//  h(T, P) - h(T, psat), with no finite difference of the volume.
+const PureFluidModel& referenceFluidModel(const std::string& equation, scalar molarMass);
+
 } // namespace liquidProperty
 } // namespace Choupo
