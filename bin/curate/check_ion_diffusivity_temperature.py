@@ -106,7 +106,17 @@ def copy_case(src, dst):
 
 def declare_viscosity(case):
     p = Path(case) / "constant/thermoPhysPropDict"
-    p.write_text(p.read_text() + "\ntransport\n{\n    liquid\n    {\n"
+    t = p.read_text()
+    if re.search(r"^transport\s*\{", t, re.M):
+        #  C435 (4): a case that already carries a `transport {}` block (the NanoFiltran case: measured
+        #  film viscosity + `ionDiffusivity { temperatureCorrection none; }`) has its liquid block
+        #  REPLACED, so the twin differs from it by the one thing this arm tests: a Vogel model declared and
+        #  the correction left to its default (on).
+        t = re.sub(r"^transport\s*\{.*?^\}\n", "transport\n{\n    liquid\n    {\n"
+                   "        viscosity { model Vogel; }\n    }\n}\n", t, count=1, flags=re.S | re.M)
+        p.write_text(t)
+        return
+    p.write_text(t + "\ntransport\n{\n    liquid\n    {\n"
                  "        viscosity { model Vogel; }\n    }\n}\n")
 
 

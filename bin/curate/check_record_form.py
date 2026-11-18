@@ -253,6 +253,9 @@ def sets_probe():
         return f"{mm.group(1)}{float(mm.group(2)) * 0.7:.8f};"
     probe_body = re.sub(r'(\b(?:a_ij|b_ij|a_ji|b_ji)\s+)(-?[\d.]+);', scale, body)
     head = src[:m.start()]
+    #  C413 (slice 3): a case's own pair record is a VARIATION of the catalogue's, under the pair's own
+    #  name, and the entry reads `nButanol-water { }` -- the probe is built that way.
+    head = re.sub(r"(\nrecordType[^\n]*\n)", lambda mm: mm.group(1) + 'variationOf nButanol-water;\nvariationReason "check_record_form pair-sets probe";\n', head, count=1)
     rec = (head + "\npreferred lle;\nsets\n{\n"
            "    lle { parameters {" + body + "\n} fittedTo lle; }\n"
            "    probe_vle { parameters {" + probe_body + "\n} "
@@ -263,7 +266,7 @@ def sets_probe():
     try:
         (tmp / "constant/parameters/NRTL").mkdir(parents=True)
         (tmp / "system").mkdir()
-        (tmp / "constant/parameters/NRTL/pair-sets-probe.dat").write_text(rec)
+        (tmp / "constant/parameters/NRTL/nButanol-water.dat").write_text(rec)
         (tmp / "system/controlDict").write_text(
             'application  choupoProps;\ndescription  "check_record_form pair-sets probe";\nverbosity 2;\n')
         (tmp / "system/propsDict").write_text(
@@ -272,12 +275,21 @@ def sets_probe():
         base = ("recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
                 "components ( nButanol water );\nequilibrium\n{\n formulation gammaPhi;\n"
                 " liquid { activityModel { model NRTL; binaryParameters {\n"
-                "   nButanol-water { source \"%s\"; %s }\n } } standardState pureLiquid; }\n"
+                "   nButanol-water { %s }\n } } standardState pureLiquid; }\n"
                 " vapour { fugacityModel idealGas; }\n}\n")
         env = dict(os.environ, CHOUPO_HOME=str(ROOT))
 
         def run(source, setword):
-            (tmp / "constant/thermoPhysPropDict").write_text(base % (source, setword))
+            #  `source` is now only the choice of home: the catalogue (the case's variation file
+            #  is hidden while it runs) or the case's own variation record
+            local = tmp / "constant/parameters/NRTL/nButanol-water.dat"
+            hidden = tmp / "nButanol-water.dat.hidden"
+            if source.startswith("data/standards"):
+                if local.exists():
+                    local.rename(hidden)
+            elif hidden.exists():
+                hidden.rename(local)
+            (tmp / "constant/thermoPhysPropDict").write_text(base % setword)
             r = subprocess.run([str(PROPS), str(tmp)], capture_output=True, text=True,
                                timeout=300, env=env, cwd=tmp)
             out = r.stdout + r.stderr

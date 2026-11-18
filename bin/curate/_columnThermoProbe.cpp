@@ -91,6 +91,7 @@ Description
 #include "unitOperations/flash/StreamEquilibrium.H"
 #include "unitOperations/saturation/BubblePoint.H"
 #include "unitOperations/saturation/DewPoint.H"
+#include "thermo/liquidProperty/DensityMethod.H"   // the liquid pressure leg asks the property kernel (C390): without its methods the probe priced NO leg and the gate compared two surfaces
 
 #include <cstdio>
 #include <cstdlib>
@@ -122,6 +123,7 @@ int main(int argc, char** argv)
         electrolyte::AqueousActivity::registerBuiltins();
         electrolyte::AqueousVolumetricModel::registerBuiltins();
         PureFluidModel::registerBuiltins();
+        liquidProperty::DensityMethod::registerBuiltins();
         EquationOfState::registerBuiltins();
         TransportModel::registerBuiltins();
         SurfaceTensionModel::registerBuiltins();

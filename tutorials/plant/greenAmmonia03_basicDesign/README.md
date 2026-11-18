@@ -371,12 +371,12 @@ The same plant at two stages: [`greenAmmonia02_feasibility150bar`](../greenAmmon
 | converter-feed heating bought, GWh/yr | 488.91 | 0.00 | -488.91 | As above. |
 | HP steam raised (credit), t/t NH₃ | 1.308 | 1.253 | -0.055 | The steam is the reaction heat less what heats the loop gas from the converter inlet to its outlet. The ammonia formed per pass is the same (2 927.7 / 2 927.3 kmol/h: the make-up fixes it), so the reaction heat is too; but the beds' gas is heated through 84.4 K against the Gibbs reactor's 80.0 K, and there is 4.1 % more of it, so more of the heat leaves with the effluent (to the FEHE) and less is raised — in the two interbed coolers, not inside the converter. *Reactor model.* |
 | HP steam raised, MW | 30.72 | 29.43 | -1.29 | As above. |
-| cooling water, kWh/t NH₃ | 1 642.7 | 390.7 | -1 252.0 | The effluent cooler's duty is gone into the FEHE, and the water cooler starts from the FEHE's hot outlet (65.6 °C) instead of the effluent cooler's declared 72.0 °C. *Heat recovery built.* |
-| cooling water circulated, t/t NH₃ | 141.5 | 33.7 | -107.8 | As above. |
-| refrigeration (−20 °C chiller), kWh/t NH₃ | 424.4 | 446.2 | +21.8 | More gas reaches the chiller (the larger recycle) carrying the same ammonia to condense. *Reactor model.* |
-| refrigeration, GWh/yr | 165.02 | 173.49 | +8.47 | As above. |
-| LP steam (drum heating), kWh/t NH₃ | 1.63 | 1.55 | -0.08 | Follows the separator's flows. |
-| duty no catalogue utility serves, kW | 789.6 (StorageFlash) | 789.4 (StorageFlash) | -0.2 | The product flash at −35 °C, below every catalogue refrigerant: unpriced in BOTH, so both utility bills are lower bounds. The same gap, not a difference. |
+| cooling water, kWh/t NH₃ | 1 642.4 | 390.5 | -1 251.9 | The effluent cooler's duty is gone into the FEHE, and the water cooler starts from the FEHE's hot outlet (65.6 °C) instead of the effluent cooler's declared 72.0 °C. *Heat recovery built.* |
+| cooling water circulated, t/t NH₃ | 141.5 | 33.6 | -107.8 | As above. |
+| refrigeration (−20 °C chiller), kWh/t NH₃ | 424.0 | 445.8 | +21.8 | More gas reaches the chiller (the larger recycle) carrying the same ammonia to condense. *Reactor model.* |
+| refrigeration, GWh/yr | 164.88 | 173.33 | +8.46 | As above. |
+| LP steam (drum heating), kWh/t NH₃ | 1.21 | 1.16 | -0.05 | Follows the separator's flows. |
+| duty no catalogue utility serves, kW | 810.7 (StorageFlash) | 810.5 (StorageFlash) | -0.2 | The product flash at −35 °C, below every catalogue refrigerant: unpriced in BOTH, so both utility bills are lower bounds. The same gap, not a difference. |
 
 ### The loop and the converter
 
@@ -401,37 +401,37 @@ Bare-module cost C_BM by equipment group, M EUR. FCI = 1.18 ΣC_BM + 0.50 ΣC_BM
 | catalyst charge | — | 2.33 | +2.33 | NOT COSTED at feasibility (the vessel carries no charge); here the solved volume × a declared bulk density × a declared price, both author-set. *Scope: a cost the earlier stage left out.* |
 | feed heating / effluent cooling exchangers | 2.18 | 2.13 | -0.05 | Feed heater + effluent cooler on assumed U (670 + 702 m²) → one FEHE designed by Kern (1 808 m², U 486 W/m²/K). *Heat recovery built.* |
 | interbed coolers | — | 0.82 | +0.82 | New equipment: the beds need their heat removed between them. *Reactor model.* |
-| the five other exchangers | 2.40 | 2.28 | -0.12 | Assumed U → Kern design (e.g. the aftercooler's U 500 → 642 W/m²/K); the chiller's duty grows with the recycle. *Exchanger model.* |
+| the five other exchangers | 2.39 | 2.27 | -0.12 | Assumed U → Kern design (e.g. the aftercooler's U 500 → 642 W/m²/K); the chiller's duty grows with the recycle. *Exchanger model.* |
 | separator and let-down drums (3) | 4.43 | 4.70 | +0.27 | The separator is sized on its gas flow, which the larger recycle raises (25.74 → 27.25 m³). *Reactor model, through the recycle.* |
 | NH3 storage tanks (2) | 2.76 | 2.76 | -0.00 | Sized on the product flow: no material difference. |
 | relief valves | — | not costed | — | Sized here (API 520) and NOT costed by rule (DEV.md 4c C62); none at feasibility. No cost difference — a scope difference. |
-| **ΣC_BM** | 28.04 | 42.45 | +14.41 | |
+| **ΣC_BM** | 28.03 | 42.44 | +14.41 | |
 
 | appraisal | feasibility | basic design | difference | why |
 |---|---|---|---|---|
-| FCI, M EUR | 42.06 | 60.50 | +18.45 | The equipment above, through the same Turton rule. |
+| FCI, M EUR | 42.05 | 60.49 | +18.44 | The equipment above, through the same Turton rule. |
 | working capital, M EUR | 48.87 | 45.88 | -2.99 | Built up from the same days: the product stock is valued at the cost of manufacture and the minimum cash is 15 days of it, so both fall with COM_d. |
-| TCI, M EUR | 90.93 | 106.39 | +15.46 | FCI + WC. |
+| TCI, M EUR | 90.92 | 106.37 | +15.45 | FCI + WC. |
 | revenue R, M EUR/yr | 206.09 | 206.07 | -0.03 | The production above, at the same price. |
 | raw materials C_RM, M EUR/yr | 566.43 | 566.43 | +0.00 | The same declared make-up at the same prices. |
-| utilities C_UT (net of the steam credit), M EUR/yr | 32.42 | 6.50 | -25.92 | Almost all of it the molten salt no longer bought; the split by service is in the decomposition below. |
+| utilities C_UT (net of the steam credit), M EUR/yr | 32.40 | 6.49 | -25.92 | Almost all of it the molten salt no longer bought; the split by service is in the decomposition below. |
 | operating labour C_OL, M EUR/yr | 1.114 | 1.156 | +0.042 | Turton's operator count from a DECLARED equipment count `N_np`: 12 (4 compressors, 7 exchangers, 1 reactor) → 15 (4, 8, 3 beds). The three beds share one shell; counting them as three is the author's choice. |
-| COM_d, M EUR/yr | 747.19 | 718.75 | -28.44 | 0.180 FCI + 2.73 C_OL + 1.23 (C_RM + C_UT): the utilities fall, the capital-driven term rises. |
-| R − C_RM − C_UT, M EUR/yr | -392.75 | -366.86 | +25.89 | An upper bound in both (the unpriced −35 °C duty). |
+| COM_d, M EUR/yr | 747.17 | 718.73 | -28.44 | 0.180 FCI + 2.73 C_OL + 1.23 (C_RM + C_UT): the utilities fall, the capital-driven term rises. |
+| R − C_RM − C_UT, M EUR/yr | -392.74 | -366.85 | +25.89 | An upper bound in both (the unpriced −35 °C duty). |
 | construction and start-up | 1 yr, all capital at start-up; full production from year 1 | 3 yr, capital ( 0.25 0.45 0.3 ); ramp-up ( 0.7 0.9 ); start-up cost 0.08 × FCI | — | **A changed ASSUMPTION** (author-set, DEV.md 4c C63), not a consequence of any model; its effect is measured below. |
 | discount rate, tax, life | 0.1, 0.21, 15 yr | 0.1, 0.21, 15 yr | — | The same; the script fails if any appraisal input it does not trace differs. |
-| NPV at 10 %, M EUR | -3 324.94 | -3 037.28 | +287.66 | Decomposed below. |
+| NPV at 10 %, M EUR | -3 324.81 | -3 037.14 | +287.67 | Decomposed below. |
 | IRR | not defined (NPV(i) has no sign change) | not defined (NPV(i) has no sign change) | — | The plant loses money in every operating year at these prices, in both. |
 | discounted payback | never within the project life | never within the project life | — | As IRR. |
 | estimate class (declared) | 4 (-30 / +50 %) | 4 (-30 / +50 %) | — | The author's statement of the project's definition. A design stage is not an AACE class: the cost method is Turton's equipment-factored estimate at both stages. |
 
 ### Where the NPV moved
 
-From -3 324.94 to -3 037.28 M EUR. The first step re-runs the feasibility case with the basic design's start-up years — a changed ASSUMPTION, measured by the engine. The remaining steps are the plant's differences at the basic design's timeline: the engine's cash-flow rule is linear in each of them, so they split exactly (this script reproduces the engine's NPV of all three runs before it prints a single row).
+From -3 324.81 to -3 037.14 M EUR. The first step re-runs the feasibility case with the basic design's start-up years — a changed ASSUMPTION, measured by the engine. The remaining steps are the plant's differences at the basic design's timeline: the engine's cash-flow rule is linear in each of them, so they split exactly (this script reproduces the engine's NPV of all three runs before it prints a single row).
 
 | step | NPV effect, M EUR | kind of change |
 |---|---|---|
-| feasibility, as published | -3 324.94 | |
+| feasibility, as published | -3 324.81 | |
 | the appraisal's start-up years (construction 1 → 3 yr, ramp-up, start-up cost), measured by re-running the feasibility case with them | +142.41 | **changed assumption** |
 | revenue: slightly less ammonia (the purge) | -0.15 | reactor model |
 | cooling water (the effluent cooler gone into the FEHE) | +4.94 | **heat recovery built** |
@@ -446,24 +446,24 @@ From -3 324.94 to -3 037.28 M EUR. The first step re-runs the feasibility case w
 | capital: catalyst charge | -8.22 | **scope** (not costed before) |
 | capital: feed heating / effluent cooling exchangers | +0.13 | **heat recovery built** |
 | capital: interbed coolers | -2.33 | reactor model |
-| capital: the five other exchangers | +0.39 | exchanger model |
+| capital: the five other exchangers | +0.40 | exchanger model |
 | capital: separator and let-down drums (3) | -0.68 | reactor model |
 | capital: NH3 storage tanks (2) | +0.00 | reactor model (production) |
 | working capital (follows COM_d) | +2.27 | follows the above |
-| **basic design, as published** | **-3 037.28** | |
+| **basic design, as published** | **-3 037.14** | |
 
 | by kind | NPV effect, M EUR |
 |---|---|
-| heat recovery built | +191.09 |
-| model fidelity | -39.20 |
+| heat recovery built | +191.08 |
+| model fidelity | -39.19 |
 | scope (not costed before) | -8.22 |
 | changed assumption | +142.41 |
 | count | -0.68 |
 | follows the above | +2.27 |
 
-**So:** building the heat recovery the feasibility flowsheet left out is worth +191.09 M EUR — more than the part of the difference the plant's own changes make (+145.25 M EUR, the difference less the start-up years). The model refinements together are worth -39.20 M EUR (the converter shell around a catalyst volume 2.8 times the space-velocity rule's, the interbed coolers, less steam, more refrigeration), costing the catalyst the feasibility left out -8.22, and the start-up years +142.41. A student who reads the +287.66 M EUR as "the better model found money" has it backwards: at feasibility the same exchanger was already visible in the pinch target, and the better models made the plant dearer.
+**So:** building the heat recovery the feasibility flowsheet left out is worth +191.08 M EUR — more than the part of the difference the plant's own changes make (+145.26 M EUR, the difference less the start-up years). The model refinements together are worth -39.19 M EUR (the converter shell around a catalyst volume 2.8 times the space-velocity rule's, the interbed coolers, less steam, more refrigeration), costing the catalyst the feasibility left out -8.22, and the start-up years +142.41. A student who reads the +287.67 M EUR as "the better model found money" has it backwards: at feasibility the same exchanger was already visible in the pinch target, and the better models made the plant dearer.
 
-**The start-up years are worth a different amount on each plant, and that is not a rounding matter.** On the feasibility plant (engine run) they move the NPV by +142.41 M EUR; on the basic-design plant by +130.61 M EUR (this one computed with this script's transcription of the cash-flow rule, which reproduced the engine's three NPVs — not an engine run). Two parts of the timeline scale with the plant and pull opposite ways: both plants lose money in every operating year at these prices, so the ramp-up (producing 70 % and 90 % in the first years) loses LESS, and gains more on the plant that loses more per year — the feasibility one; while the capital compounded over the construction years and the start-up cost weigh more on the plant with the larger FCI — the basic design. Taken in that other order — the plant first, at the feasibility's one-year timeline — the plant differences are worth +157.05 M EUR instead of +145.25.
+**The start-up years are worth a different amount on each plant, and that is not a rounding matter.** On the feasibility plant (engine run) they move the NPV by +142.41 M EUR; on the basic-design plant by +130.61 M EUR (this one computed with this script's transcription of the cash-flow rule, which reproduced the engine's three NPVs — not an engine run). Two parts of the timeline scale with the plant and pull opposite ways: both plants lose money in every operating year at these prices, so the ramp-up (producing 70 % and 90 % in the first years) loses LESS, and gains more on the plant that loses more per year — the feasibility one; while the capital compounded over the construction years and the start-up cost weigh more on the plant with the larger FCI — the basic design. Taken in that other order — the plant first, at the feasibility's one-year timeline — the plant differences are worth +157.06 M EUR instead of +145.26.
 
 **Not comparable, and said rather than adjusted:** the catalyst charge is costed only at the basic design; the 8 relief valves exist only at the basic design and are costed at neither; the interbed coolers' shells are counted twice at the basic design; the FEHE is costed at its designed 1 808 m² while the flowsheet converges on a declared 2 000 m²; and the start-up years were declared only for the basic design.
 <!-- END GENERATED: bin/curate/gen_ammonia_stage_comparison.py -->

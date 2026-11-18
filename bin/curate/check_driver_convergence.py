@@ -163,7 +163,14 @@ def make_loop(tmp: Path, tag: str, solver: str, valve: bool) -> Path:
         "valve": VALVE if valve else ""})
     (d / "system" / "solverDict").write_text(
         f"tearStreams ( recycle );\nrecycleSolver {solver};\n"
-        "recycleTol 1e-5;\nrecycleMaxIter 60;\n")
+        "recycleTol 1e-5;\nrecycleMaxIter 40;\n")
+    #  40, not 60 (C390 sweep, 2026-11-19): the loop loses ~0.049 bar a pass, so 60 passes would walk
+    #  it from 5 bar to about 2 bar, and at the 53rd the Wegstein slope -- which the package's pressure
+    #  term now moves by 3e-4 relative (the pipe's dP rises as P falls) instead of leaving it at exactly 1 --
+    #  extrapolates the tear to a NEGATIVE pressure, which the flowsheet refuses (correctly, but by the
+    #  unit's name and not by the tear's).  The behaviour this arm pins -- an unconverged pressure loop is
+    #  refused BY THE TEAR'S NAME -- is the same at 40 passes; the extrapolation near slope 1 is queued
+    #  as its own item, not added to this fix.
     names = ["feed", "recycle", "mixed", "downstream", "product"]
     if valve:
         names.append("piped")

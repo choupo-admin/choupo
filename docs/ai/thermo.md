@@ -402,7 +402,7 @@ Under `formulation phiPhi` one equation of state prices both phases: a vapour st
 LIQUID stream (and the liquid half of a two-phase stream) is `H_ig + H_R` at the liquid root, and `S` likewise
 (`EquationOfState::H_residualLiquid`, `S_residualLiquid`; SRK, PengRobinson, LeeKeslerPloecker and PCSAFT; routed by
 `ThermoPackage::H_stream_formation` / `S_stream_formation`).  The volume translation's `-P c` and an MHV1/MHV2 `H^E` enter at
-both roots.  A gammaPhi package keeps its formation-datum liquid (liquid Cp, latent heat) and adds the liquid pressure term `v (1 - alpha T) dP` from each component's own `psat(T)` to `P` (C390; volume and slope from the property kernel's pure-component volume, said once per component in the run; none above Tc, for a Henry solute or a salt), and so does a
+both roots.  A gammaPhi package keeps its formation-datum liquid (liquid Cp, latent heat) and adds the liquid pressure term `v (1 - alpha T) dP` from each component's fixed reference pressure `psat(T_ref)` (T_ref = min(298.15 K, 0.9 Tc), printed once per component in the run) to `P`, held at `psat(T)` below it (C390; volume and slope from the property kernel's pure-component volume, said once per component in the run; none above Tc, for a Henry solute or a salt), and so does a
 package with an electrolyte or a species without an ideal-gas leg.  Effect: latent heats of a phiPhi column or flash are
 the cubic's own (column08 reboiler +8.7 %, cavett01 flash duties +25 to +40 %); the moved rows are in
 `docs/audits/2026-11-17-c410-moved-goldens.md`.  Theory Guide `sec:cubic-liquid-root`.  Gate: `check_volume_translation`

@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1891,
+  "cases": 1893,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 35
+  "anchored": 36
  },
  "cases": {
   "data/curation/batches/henry_sander": {
@@ -23990,6 +23990,37 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/membrane/dspmde02_lab_characterisation_template": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "series"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/membrane/labban2017_dspmde_validation": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
   "tutorials/props/membrane/nanofiltran_geraldesAlves2008": {
    "application": "choupoProps",
    "ops": [
@@ -31886,6 +31917,8 @@
     "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/membrane/dspmde01_water_treatment_salts",
+    "tutorials/props/membrane/dspmde02_lab_characterisation_template",
+    "tutorials/props/membrane/labban2017_dspmde_validation",
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/membrane/shortlist01_class_to_modules",
@@ -35489,6 +35522,8 @@
     "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/membrane/dspmde01_water_treatment_salts",
+    "tutorials/props/membrane/dspmde02_lab_characterisation_template",
+    "tutorials/props/membrane/labban2017_dspmde_validation",
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/props/membrane/shortlist01_class_to_modules",
@@ -36791,6 +36826,8 @@
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/curation/curate13_synthetic_lle_butanol_water",
     "tutorials/props/curation/curate14_nrtl_butanol_water",
+    "tutorials/props/membrane/dspmde02_lab_characterisation_template",
+    "tutorials/props/membrane/labban2017_dspmde_validation",
     "tutorials/props/molecular/cosmoSAC03_ethanol_water_predictive",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
@@ -37852,6 +37889,7 @@
     "tutorials/props/thermoTest/model4_speciation_scaling"
    ],
    "series": [
+    "tutorials/props/membrane/dspmde02_lab_characterisation_template",
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1"
    ],

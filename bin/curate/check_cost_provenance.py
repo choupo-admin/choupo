@@ -386,6 +386,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import case_records as _case_records   # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
+
+#  Its walks (`glob` of w8/reports/economics/prices.csv) read the gate's OWN scratch copy, never the tree.
+SCAN_ROOTS = ()
+
 CASE = ROOT / "tutorials/steady/flash/flash01_benzene_toluene"
 BIN = ROOT / "choupoSolve"
 
