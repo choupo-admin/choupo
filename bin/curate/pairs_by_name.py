@@ -36,7 +36,6 @@ home (the entry's path is named by a `binaryParameters.<pair>.<key>` line in the
 case's system/ or curation/ files).  data/curation/ is the curation corpus (its
 fits' inputs); it is read, never rewritten, by this tool.
 """
-import json
 import re
 import shutil
 import sys
@@ -95,7 +94,25 @@ def block_name(t, open_pos):
 
 def entries(path):
     """Every pair entry of one dict: dict(kind, key, model, start, end, body, text)."""
-    raw = path.read_text()
+    return entries_of_text(path.read_text())
+
+
+def named_pair_subs(text):
+    """The standards-relative records a dict's BY-NAME pair entries read (the
+    importer's closure harvest, bin/choupo-import: a sealed copy must carry each).
+    `<i>-<j> { }` and `<i>-<j> { set <n>; }` only; typed numbers read no record."""
+    out = []
+    for e in entries_of_text(text):
+        if parse_params(e['body']) and set(parse_params(e['body'])) - {'set'}:
+            continue
+        if re.search(r'\bsource\b', e['body']) or not e['model']:
+            continue
+        for n in file_names(e['model'], e['key']):
+            out.append('parameters/%s/%s' % (e['model'], n))
+    return out
+
+
+def entries_of_text(raw):
     t = blank_comments(raw)
     out = []
     for m in re.finditer(r'\b(binaryParameters|binaryInteractions)\s*\{', t):
@@ -384,8 +401,7 @@ def problems():
 def main(argv):
     mode = argv[1] if len(argv) > 1 else '--report'
     rows = classify()
-    prov_path = Path(__file__).with_name('pairs_by_name_provenance.json')
-    prov = json.loads(prov_path.read_text()) if prov_path.is_file() else {}
+    from pairs_by_name_provenance import PROVENANCE as prov
     plan = plan_of(rows)
     if mode == '--report':
         from collections import Counter

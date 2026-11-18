@@ -58,6 +58,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent / "curate"))
 import utility_rows  # noqa: E402
 import case_records  # noqa: E402   (C413: the manifest reader of the pin form)
+import pairs_by_name  # noqa: E402   (C433: a pair is found by NAME; the closure harvests the names)
 import golden_bands  # noqa: E402   (the one comparison, through within_tol.awk)
 
 IMPORTER_VERSION = "3"
@@ -805,6 +806,30 @@ def closure_of(pp_path, caseDir, std, AQ):
         for m in re.finditer(r'source\s+"data/standards/([^"]+)"', fs_text):
             want(m.group(1))
 
+        #  C433: a pair is found BY NAME and its address is never written, so the
+        #  closure harvests the NAMES: every `<i>-<j> { }` entry of a
+        #  binaryParameters / binaryInteractions block (the model read from the
+        #  block that holds it), and every solute-solvent Henry pair of a
+        #  `solutes { components ( ... ); }` group, whose binaryParameters block
+        #  is optional.  Existence-guarded by want(), like every trace here.
+        def harvest_named_pairs(txt):
+            for sub in pairs_by_name.named_pair_subs(txt):
+                want(sub)
+            for sm in re.finditer(r'\bsolutes\s*\{', txt):
+                depth, k = 0, sm.end() - 1
+                while k < len(txt):
+                    depth += {'{': 1, '}': -1}.get(txt[k], 0)
+                    if depth == 0:
+                        break
+                    k += 1
+                sus = txt[sm.end():k]
+                cm = re.search(r'\bcomponents\s*\(([^)]*)\)', sus)
+                vm = list(re.finditer(r'\bsolvent\s*\{[^{}]*?\bcomponent\s+(\w+)\s*;', txt[:sm.start()]))
+                if cm and vm:
+                    for sol in cm.group(1).split():
+                        want("parameters/Henry/" + sol + "-" + vm[-1].group(1) + ".dat")
+        harvest_named_pairs(fs_text)
+
     # ---- UNIFAC group-contribution tables ------------------------------------
     # UNIFAC's R_k/Q_k (groups.dat) + a_mn (interactions.dat) are SINGLETON
     # tables, not per-pair records: the model reads them through the case-local
@@ -828,6 +853,7 @@ def closure_of(pp_path, caseDir, std, AQ):
         #  case-level dict inlines the fit's starting pair and so the trace
         #  above never looked.  Scoped to the OVERRIDES that carry no
         #  `binaryParameters`, and existence-guarded like every trace here.
+        harvest_named_pairs(pt)
         for m in re.finditer(r'\bthermo\s*\{', pt):
             depth, k = 0, m.end() - 1
             while k < len(pt):

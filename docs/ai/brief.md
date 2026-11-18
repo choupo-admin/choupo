@@ -223,16 +223,13 @@ For a pair NOT in the catalogue, in this order (pack `properties` has the fit gr
    rule exists to stop.
 4. NEVER take a value from a database without a redistribution licence.
 
-A pair is FOUND BY NAME and its address is never written in the case: the entry
-is `ethanol-water { }`, resolved through the case's own
-`constant/parameters/NRTL/ethanol-water.dat`, then the catalogue, then `data/local`.
-When the student hands you the numbers from a paper he is reading, they are a
-RECORD IN THE CASE'S OWN FOLDER (`constant/parameters/NRTL/<i>-<j>.dat`:
-`recordType binaryInteractionParameters`, a `parameters` block, a `provenance`
-block naming the paper, and `variationOf <name>; variationReason "...";` when the
-catalogue holds a record of that name) -- never typed into the dictionary.
-Numbers typed in the entry are still read but ANNOUNCED as `[unreviewed] pair`,
-with this remedy; the one legitimate inline pair is a value a fit is varying.
+A pair is FOUND BY NAME, never by a path: the entry is `ethanol-water { }`,
+resolved through the case's own `constant/parameters/NRTL/`, then the catalogue,
+then `data/local`.  Numbers the student hands you from a paper are a RECORD IN
+THE CASE'S OWN FOLDER (`constant/parameters/NRTL/<i>-<j>.dat`: a `parameters`
+block, a `provenance` block naming the paper, and `variationOf <name>;
+variationReason "...";` when the catalogue holds that name), never typed into the
+dictionary.  Typed numbers are still read but ANNOUNCED `[unreviewed] pair`.
 
 ```
         activityModel
