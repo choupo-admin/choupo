@@ -4664,6 +4664,26 @@ accepts today, and that is a policy call.
 > stale 10.03 m3; the ratchet's docstring; the Theory Guide entry for the
 > optional `initial`.
 
+> **C441 (Vitor, 2026-11-19: "haverá standards para escolhas de bombas
+> centrífugas, com selecção de curvas características, eficiência e NPSH? Ou
+> isto é completamente dependente dos fabricantes?"; then "Sim, põe no
+> backlog", having filed Gülich, Centrifugal Pumps, Springer 2008).**
+> RULED: two levels, both on the architecture closed on 11-18.  (1) A
+> GENERIC PUMP with no catalogue: from the duty point, the specific speed,
+> the efficiency to expect, an estimated NPSH required from the suction
+> specific speed, the NPSH margin against the available NPSH the flowsheet
+> computes, and whether the point lies in the preferred operating region --
+> every number marked `estimated`, every correlation read at its page in
+> Gülich (no number from memory); the pump's shaft power then follows from
+> that efficiency instead of a typed one, printed.  (2) A REAL PUMP: the
+> manufacturer's curve (head, efficiency and NPSH required against flow) is
+> a measured record of the case, like a filtration test or a flow curve;
+> the engine reads the operating point on it, the margin and the power, and
+> refuses a point outside its curve's range by name.  The standards that
+> fix the margins and the regions (the Hydraulic Institute's, API 610 /
+> ISO 13709, ISO 9906 for curve tolerances) are cited for what they rule,
+> without their numbers until a copy is in the folder.
+
 > **C440 (Vitor, 2026-11-19, on C238: "eu gostava de ver o dimensionamento
 > detalhado de todas as operações.  Por isso a C318 devia de vir primeiro, e
 > se calhar até os desenhos isométricos das condutas, com velocidades de
