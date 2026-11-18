@@ -263,6 +263,10 @@ ED07 = ROOT / "tutorials/steady/electrodialysis/ed07_feed_and_bleed"
 
 FARADAY = 96485.33212
 MW_WATER = 0.0180153
+#  Water at 25 C and the cases' 1.5 bar, from the handbook value at 0.1 MPa (997.047
+#  kg/m3) and the isothermal compressibility (4.524e-10 1/Pa) -- the gate's own,
+#  independent of the engine's IAPWS-95 call that the unit goes through.
+RHO_WATER = 997.047 * (1.0 + 4.524e-10 * 0.5e5)
 CLOSURE_MAX = 1.0e-12          # machine level, not a tolerance
 failures = []
 
@@ -403,7 +407,11 @@ def main():
     #  single-salt Eq. (16): i_lim = F k_c C / (t1 - z1 D1/(z1 D1 + |z2| D2)),
     #  with t1 = 1 (the co-ion number is null in this model).
     D_Na, D_Cl = 1.33e-9, 2.03e-9        # the curated 25 C values, at seFactor 1
-    C0 = mdil[0] * 1000.0                # mol/m3 on the dilute carrier
+    #  molarity from molality: the ions are mass without volume (declared), so
+    #  c = m x rho_water(25 C, 1.5 bar) -- NOT the 1000 kg/m3 dilute-carrier
+    #  constant the unit used to assume (C421); the door prices the solution at
+    #  rho_water (1 + w) and the (1 + w) cancels in c = m rho_solution / (1 + m M).
+    C0 = mdil[0] * RHO_WATER             # mol/m3
     denom = 1.0 - D_Na / (D_Na + D_Cl)
     want = FARADAY * k1["k_c_eff"] * C0 / denom
     if not close(want, k1["i_lim_initial"], 1e-6):
@@ -519,6 +527,39 @@ def main():
                         " could not be made")
     else:
         k3 = j3["kpis"]["edStack"]
+        #  THE TWO CASES DO NOT DECLARE THE SAME FLOW ANY MORE (C421).  ed03's
+        #  diluate stream carries 175 kg/h of WATER plus its 0.1 mol/kg of ions, and
+        #  the stack turns that mass into a volumetric flow through the property
+        #  door: solution mass / solution density.  With the ions declared as mass
+        #  without volume, rho_solution = rho_water (1 + w) and the (1 + w) cancels,
+        #  so Q = 175 kg/h / rho_water(25 C, 1.5 bar) = 175.5 L/h -- the 1000 kg/m3
+        #  constant the unit used to assume made it 175.000 and hid that the batch
+        #  rig's `diluateFlow 175 L/h` is a different flow.  So: (1) ed03's flow is
+        #  held to that physical value, stated from water's density (RHO_WATER;
+        #  1e-4 is far above the spread between tables of it), and
+        #  (2) the comparison below is made at THE SAME FLOW -- the batch rig re-run
+        #  at ed03's own flow, taken from its published superficial velocity -- which
+        #  is what "one call to predictiveLimitingCurrent" can be held to.
+        q_ratio = k3["u_superficial"] / k1["u_superficial"]
+        q_phys = 1000.0 / RHO_WATER
+        if abs(q_ratio - q_phys) > 1e-4 * q_phys:
+            failures.append(
+                "(g) ed03's diluate flow is %.6f x 175 L/h; 175 kg/h of water at the"
+                " door's density should give %.6f (water, %.4f kg/m3 at 25 C, 1.5 bar)"
+                % (q_ratio, q_phys, RHO_WATER))
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "edbatch01_at_ed03_flow"
+            copy_case(EB1, p)
+            f = p / "system/flowsheetDict"
+            t = f.read_text()
+            assert "diluateFlow    175 L/h;" in t
+            f.write_text(t.replace("diluateFlow    175 L/h;",
+                                   "diluateFlow    %.12g L/h;" % (175.0 * q_ratio)))
+            rcb, outb = run("choupoBatch", p)
+            jb = result_of(outb) if rcb == 0 else None
+        if jb is None:
+            failures.append("(g) the batch rig at ed03's flow did not run")
+        kb = jb["kpis"]["rig"] if jb is not None else {}
         #  D_eff is a function of the COMPOSITION alone, which the two cases
         #  declare identically, so it is held at machine level.  Everything
         #  else rides the FLOW, and the two cases declare that flow through
@@ -533,17 +574,17 @@ def main():
                                    ("u_superficial", "u_superficial", 1e-8),
                                    ("k_c_eff", "k_c_eff", 1e-8),
                                    ("Re", "Re", 1e-8), ("Sh", "Sh", 1e-8)):
-            if key not in k3 or batchKey not in k1:
+            if key not in k3 or batchKey not in kb:
                 failures.append("(g) missing KPI %s/%s" % (key, batchKey))
                 continue
-            if not close(k3[key], k1[batchKey], rel):
+            if not close(k3[key], kb[batchKey], rel):
                 failures.append(
                     "(g) ed03 publishes %s = %.12g where the batch rig's t = 0"
-                    " value is %.12g.  The same stack, the same 175 L/h and"
-                    " the same 0.1 mol/kg diluate cannot give two numbers --"
+                    " value, at the same flow, is %.12g.  The same stack, the same"
+                    " flow and the same 0.1 mol/kg diluate cannot give two numbers --"
                     " they come from ONE call to"
                     " edCell::predictiveLimitingCurrent, and two homes show up"
-                    " in the last digits." % (key, k3[key], k1[batchKey]))
+                    " in the last digits." % (key, k3[key], kb[batchKey]))
 
     # ---- (i) the network witnesses ---------------------------------------
     network()
@@ -702,6 +743,11 @@ def make_three_ion(p):
     f = p / "constant/thermoPhysPropDict"
     f.write_text(f.read_text().replace("components       ( water  Na  Cl );",
                                        "components       ( water  Na  Cl  Mg );"))
+    #  The door prices the solution density from the ions' volumes, and the
+    #  shipped ED cases declare the ions as mass without volume (ed04 does
+    #  so for Mg itself): the probe declares the same for its third ion.
+    f.write_text(f.read_text().replace(
+        "components      ( Na Cl );", "components      ( Na Cl Mg );"))
     f = p / "0/internalStates/rig"
     t = f.read_text()
     for a, b in (("        water    0.9964098754;",
