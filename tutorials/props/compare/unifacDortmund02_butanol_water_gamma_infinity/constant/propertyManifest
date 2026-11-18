@@ -24,7 +24,7 @@ propertyManifest
         "components/2Butanol.dat"  "42eddfbd4c0717f6be5628bb94a55ed1e5ceb23ae3b2f30826048fe0ee966e43";
         "components/2Methyl1Propanol.dat"  "6136d178bb4e2ee483ef4d7e2d7d71f28a1114c909f99932261ad519e240c598";
         "components/2Methyl2Propanol.dat"  "df0ed21b2fada807934d00ba8831c810825cce82ee8b524010a6c89dbf90a659";
-        "components/nButanol.dat"  "d1d94bcafcd69782996c564d7ed953d97b619228aa112a2ecac95bbac8b8471d";
+        "components/nButanol.dat"  "799cc80894744dd5cfcf45140a6c1101b27e9608a8c4a42f53537979bb8684d5";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:725cdac517a63ef3e32aef46b462b9bc4c684efb3ab74760f370988979b48762";
         "parameters/Henry/2Butanol-water.dat"  "e336e7291a0d11661309236fd6b3ff7a6e187de5a41caa1c0039d3ef75fe4603";

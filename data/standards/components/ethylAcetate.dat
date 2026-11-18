@@ -145,8 +145,28 @@ surfaceTension
     Tmax  313.15;
 }
 
+//  HANSEN solubility-parameter triple (DEV.md 4c C428 (b); a model's fact about
+//  the pure liquid, read by `hansenMixture` and the Explorer's solvent lens).
+//  Hansen 1967 thesis, Table 2.1 row 35 "Ethyl acetate", revised placements:
+//  delta_d = 7.44, delta_p = 2.6, delta_h = 4.5 (cal/cm3)^0.5, x sqrt(4.184e6) = 2045.4828.
+hansen
+{
+    dD    15218.4;        // Pa^0.5   = 7.44 (cal/cm3)^0.5, thesis Table 2.1 row 35
+    dP    5318.3;        // Pa^0.5   = 2.6
+    dH    9204.7;        // Pa^0.5   = 4.5
+    Tref  298.15 K;       // adopted: the thesis prints no temperature beside Table 2.1
+}
+
 provenance
 {
+    hansen
+    {
+        origin        literature;
+        method        "Hansen 1967 thesis, Table 2.1 row 35 (Ethyl acetate), revised placements; (cal/cm3)^0.5 x 2045.4828 -> Pa^0.5";
+        citation      "Hansen, C. M., The Three Dimensional Solubility Parameter and Solvent Diffusion Coefficient, doctoral dissertation, Danish Technical Press, Copenhagen (1967), Table 2.1 (pages 18-19), row 35; no DOI";
+        reviewStatus  interim;
+        notes         "transcribed from the page image 2026-10-21; Tref 298.15 K adopted, the thesis states no temperature beside the table";
+    }
     uniquac
     {
         origin        definition;

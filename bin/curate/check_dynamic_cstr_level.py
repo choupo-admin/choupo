@@ -339,7 +339,7 @@ def main():
             # the PROBE: give NaCl a molar volume (2.7e-5 m3/mol, the crystal's -- an ARITHMETIC probe,
             # not a claim about brine) and adopt the edited record so the seal does not object
             nacl = c10 / "constant" / "components" / "NaCl.dat"
-            edit(nacl, lambda t: re.sub(r"(?m)^(MW\s+[^;]+;)", r"\g<1>\nVliq        2.7e-5;", t, count=1)
+            edit(nacl, lambda t: re.sub(r"(?m)^(MW\s+[^;]+;)", r"\g<1>\nVliq        2.7e-5;", case_records.undeclare(t), count=1)
                  + '\nvariationOf NaCl;\nvariationReason "gate probe: an arithmetic molar volume";\n')   # read ALONE, as the sealed copy was (C413)
             #  (the edited NaCl is the case's own HELD copy, read alone: its changed hash is announced as a
             #  drifted pin, the run continues -- the pin form of "adopt the edited record so the seal does not object")

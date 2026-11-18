@@ -857,6 +857,7 @@ def main():
         for mf in (d / "constant/propertyManifest", d / "sectors/A/constant/propertyManifest",
                    d / "sectors/B/constant/propertyManifest"):   # the temporary copy's three seals
             mf.write_text(mf.read_text().replace("sealed             true;", "sealed             false;"))
+        case_records.declare_homonyms(d)      # the unsealed copy's own records say what they are
         edit(d / tp, "components ( water );", "components ( water methanol );")
         edit(d / "sectors/A" / tp, "    liquid\n    {\n",
              "    liquid\n    {\n        diffusivity\n        {\n            returns infiniteDilution;\n"

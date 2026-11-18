@@ -22,7 +22,7 @@ propertyManifest
     {
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
         "components/KCl.dat"  "5ec8b2dd794e7adf3c812bcb57e8563158f66907bf06769746bea61a9eb8b8de";
-        "components/ethanol.dat"  "9cfd836ade9dbe6f2a7b6fbd2836aa94e4ce3b7eefffc85d4693bd1466f4bc7c";
+        "components/ethanol.dat"  "93a2192d059b854c64f06948adbb5e0d13ef7e11c86e5d111d3d18e28f0fcc1c";
         "components/potassiumBitartrate.dat"  "f9187fd79668cb21ddfea2bda139120fb3fd36c1c9698034f92300e8903b2e50";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";

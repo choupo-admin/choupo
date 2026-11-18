@@ -129,7 +129,7 @@ def make(tmp, name, solvent, n_solvent, n_water, keep_sorption=False,
         #  from the same FSG atomic increments acetone's record states
         #  (C 15.9, H 2.31, O 6.11): C2H6O -> 2(15.9) + 6(2.31) + 6.11.
         rec += "\ndiffusionVolume  51.77;   // probe-local, FSG increments 2C+6H+O\n"
-    (work / "constant/components" / f"{solvent}.dat").write_text(rec)
+    (work / "constant/components" / f"{solvent}.dat").write_text(case_records.as_variation(solvent, rec))
     tp = work / "constant/thermoPhysPropDict"
     t = tp.read_text()
     old = "components ( water air sucrose );"

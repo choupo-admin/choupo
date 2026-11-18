@@ -21,7 +21,7 @@ propertyManifest
     pins
     {
         "components/CO2.dat"  "d3f0aed5182384187b60745f71f93cc3062a4ccc6c5542f6fe6d3d222b22eee0";
-        "components/ethanol.dat"  "9cfd836ade9dbe6f2a7b6fbd2836aa94e4ce3b7eefffc85d4693bd1466f4bc7c";
+        "components/ethanol.dat"  "93a2192d059b854c64f06948adbb5e0d13ef7e11c86e5d111d3d18e28f0fcc1c";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:d5b1083c2ce4f07483dcf6c5d780800f3a8eaaabcbaff027601bcf2f6b4e7f09";
         "parameters/Henry/CO2-water.dat"  "84d20cd1fc73ff097ce640d0f6b4b9ad5cc51c9aa11d0ab05af8c64743b6c9ff";

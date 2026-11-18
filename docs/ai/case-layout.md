@@ -371,6 +371,15 @@ propertyManifest
   `distinctFrom <name>;` (another species under the same name), each with a
   `variationReason "...";`.  The engine checks the claim against the formula
   (with charge), `charge` and `CAS`; see `components.md`.
+  THE THREE READ DIFFERENTLY (2026-11-19, the silent backfill closed): `overlayOf`
+  takes every key it LACKS from the catalogue record and says so once per key per
+  run (`[overlay] benzene.vaporPressure from data/standards/components/benzene.dat`),
+  the catalogue record's provenance travelling with the key; `variationOf` and
+  `distinctFrom` take NOTHING -- a key they lack is absent, and a consumer that needs
+  it is refused by name.  A local record with a catalogue homonym and NO declaration
+  is REFUSED (`shadows the catalogue record ... without declaring what it is`), in
+  every mode, with the three lines to choose from; an identical copy is deleted
+  instead (the case references the catalogue: `bin/choupo-import --pin <case>`).
 * A path the case's own run WRITES (`record "constant/..."`) may have no
   catalogue homonym.
 

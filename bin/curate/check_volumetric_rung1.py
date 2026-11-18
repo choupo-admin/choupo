@@ -142,6 +142,8 @@ def staged(density_line, mutate_records=None, unseal=False, do_import=True):
         mf = os.path.join(dst, "constant", "propertyManifest")
         if os.path.exists(mf):
             os.remove(mf)
+    if unseal:
+        case_records.declare_homonyms(dst)      # the unsealed copy's own records say what they are
     if mutate_records:
         mutate_records(os.path.join(dst, "constant", "species"))
     pr = subprocess.run([SOLVE], cwd=dst, env=ENV, capture_output=True,

@@ -581,8 +581,25 @@ DictPtr Database::componentDict(const std::string& name) const
             }
         }
         else
-            for (const auto& k : local->keys())
-                dict->insert(k, local->entryValue(k));   // full shadow/replacement
+            //  THE SILENT BACKFILL IS CLOSED (2026-11-19).  An undeclared
+            //  record was refused by records::checkLocalShadow above, and a
+            //  `variationOf` / `distinctFrom` record or a held copy is read
+            //  ALONE (readsAlone), so only an `overlayOf` delta reaches this
+            //  point -- the one kind that takes keys from the catalogue.
+            throw std::logic_error("Database: component '" + name
+                + "': a case-local record with a catalogue homonym reached the"
+                  " merge without an `overlayOf` declaration (checkLocalShadow"
+                  " should have refused it)");
+
+        //  `overlayOf` takes every key it LACKS from the catalogue record, and
+        //  says so, once per key per run, with where each came from; the
+        //  provenance block of the catalogue record travels with the keys.
+        if (thermoAnnounce())
+            for (const auto& k : dict->keys())
+                if (!local->found(k) && announceOnce("overlayKey:" + name + "." + k))
+                    std::cerr << "[overlay] " << name << "." << k << " from "
+                              << (hasStd ? "data/standards/components/" : "data/local/components/")
+                              << name << ".dat\n";
 
         //  `VliqT` is the temperature OF `Vliq` (C378): a local file that
         //  writes its own `Vliq` and no `VliqT` states a 25 C volume, and

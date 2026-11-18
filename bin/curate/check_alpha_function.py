@@ -170,7 +170,7 @@ def make_probe(tmp, name, comps, eos_extra, ops, records=None, model="SRK"):
     (d / "constant" / "components").mkdir(parents=True)
     for c in comps:
         src = (records or {}).get(c) or (COMPONENTS / (c + ".dat"))
-        shutil.copy(src, d / "constant" / "components" / (c + ".dat"))
+        case_records.copy_variation(src, d / "constant" / "components" / (c + ".dat"))
     (d / "system" / "controlDict").write_text("application choupoProps;\nverbosity 2;\n")
     (d / "constant" / "thermoPhysPropDict").write_text(PHIPHI % (" ".join(comps), model, eos_extra))
     (d / "system" / "propsDict").write_text("operations\n(\n" + ops + "\n);\n")

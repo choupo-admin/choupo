@@ -21,7 +21,7 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
-        "components/benzene.dat"  "d33a713d9e0ca4d840778e4a8abd11516ee4ed8ea2523f71ffab890eeec3c6d2";
+        "components/benzene.dat"  "4867cea9c30ce24e49103b01b75373a551f9161410b53b7a0bedd4947cfcd124";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:b3d220d66aa712a0efd31148200c2329f1f7102ee2438e13c32aad0e99a3c2c3";
         "parameters/Henry/benzene-water.dat"  "05e43d5e3c5519eb87d76a87f911fe82c098010afdf0dfed0d70fe7283e92846";

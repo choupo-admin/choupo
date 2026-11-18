@@ -47,6 +47,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 BASE = ROOT / "tutorials" / "steady" / "utilities" / "utility01_dowtherm_preheat"
@@ -180,6 +183,7 @@ def main() -> int:
         # ---- UNSEALED is not VERIFIED -------------------------------------
         case = make_case(tmp, "unsealed")
         (case / MAN).unlink()
+        case_records.declare_homonyms(case)     # the unsealed copy's own records say what they are
         rc, out = run(case)
         s = seal_of(out)
         if s and s.get("verdict") == "verified":

@@ -114,7 +114,11 @@ DIRS = {"benzene": (.90, .30, .20), "acetone": (.75, .55, .30),
         "ethanol": (.55, .35, .75), "water": (.40, .35, .85)}
 
 
-REAL_TRIPLE_IN_CATALOGUE = ("nHexane", "acetone", "nitromethane")   # DEV.md 4c C428: the catalogue records that carry a measured triple
+#  DEV.md 4c C428: the catalogue records that carry a measured triple -- READ from the catalogue,
+#  never listed (C428 (b) moved ten more there and a hand list had already gone stale once).
+REAL_TRIPLE_IN_CATALOGUE = tuple(sorted(
+    f.stem for f in STD.glob("*.dat")
+    if re.search(r"(?m)^hansen\s*\{", f.read_text())))
 
 
 def run(case: Path):
@@ -165,9 +169,9 @@ def build_probe(tmp: Path, mags: dict, break_unit=None, partial=None) -> Path:
         #  about the sum rule.
         body += "    Tref  298.15 K;\n"
         body += "}\n"
-        (case / "constant" / "components" / f"{nm}.dat").write_text(
-            re.sub(r"(?m)^hansen\n\{.*?^\}\n", "",
-                   (STD / f"{nm}.dat").read_text(), flags=re.S) + body)
+        (case / "constant" / "components" / f"{nm}.dat").write_text(case_records.as_variation(
+            nm, re.sub(r"(?m)^hansen\n\{.*?^\}\n", "",
+                       (STD / f"{nm}.dat").read_text(), flags=re.S) + body))
     #  C428: a catalogue record that now carries a REAL triple (n-hexane) would
     #  add a fifth, non-synthetic row to the probe's table; the probe is about
     #  its own constructed directions, so the real triple is stripped here.
@@ -180,6 +184,9 @@ def build_probe(tmp: Path, mags: dict, break_unit=None, partial=None) -> Path:
         if nm not in DIRS:
             txt = re.sub(r"(?m)^(components\s*\(.*?)\b" + nm + r"\b", r"\1", txt)
     tpp.write_text(txt)
+    #  the system changed, so the case's pins no longer describe the run: the probe is the unpinned
+    #  case it behaves as (its records are its own declared variations)
+    (case / "constant" / "propertyManifest").unlink(missing_ok=True)
     return case
 
 

@@ -295,6 +295,7 @@ def main() -> int:
         #  Prausnitz's correction, in the fixed form process simulators use).
         #  A case-local record OVERLAYS the standard entry field by field.
         (base / "constant/components/H2.dat").write_text(
+            "overlayOf H2;\nvariationReason \"gate probe: quantum-corrected effective constants\";\n"
             "name H2;\nformula H2;\nMW 2.016;\n"
             "Tc 41.67;\nPc 20.77;\nomega 0.0;\n")
         eff = aad_of(base)

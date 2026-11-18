@@ -152,7 +152,10 @@ def materialise(dst):
         tgt = const / sub
         if not tgt.exists() and (STD / sub).is_file():
             tgt.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy(STD / sub, tgt)
+            #  A copy of a catalogue record is a local homonym, and an undeclared homonym is
+            #  REFUSED (the silent backfill closed, 2026-11-19): the probe's copy declares
+            #  itself a full record read alone, which is exactly what it is.
+            tgt.write_text(as_variation(tgt.stem, (STD / sub).read_text(), "gate probe copy of the catalogue record"))
 
 
 def copytree(src, dst, *args, **kw):
@@ -160,6 +163,50 @@ def copytree(src, dst, *args, **kw):
     out = shutil.copytree(src, dst, *args, **kw)
     materialise(dst)
     return out
+
+
+def as_variation(name, text, why="gate probe: a full record read alone"):
+    """A probe's full local copy of a catalogue record, DECLARED (`variationOf`): an undeclared
+    homonym is refused (the silent backfill closed, 2026-11-19), and a variation is read ALONE,
+    so a line the probe deletes is truly absent -- no longer supplied again by the catalogue."""
+    if re.search(r"(?m)^\s*(overlayOf|variationOf|distinctFrom)\b", text):
+        return text                      # already declares what it is (a record copied from a case)
+    return 'variationOf %s;\nvariationReason "%s";\n' % (name, why) + text
+
+
+def undeclare(text):
+    """A record's text without its declaration lines, for a probe that writes its own (a copy made
+    by materialise() already declares itself; declaring twice is refused by the dictionary reader)."""
+    return re.sub(r'(?m)^(variationOf|overlayOf|distinctFrom)\s+\S+;[^\n]*\n|^variationReason\s[^\n]*\n', '', text)
+
+
+def declare_homonyms(case_dir, why="gate probe: the copy of a sealed case, unsealed"):
+    """Every local record under `case_dir` (any `constant/` of it, sectors included) whose name is a
+    catalogue record's and that declares nothing, declared a `variationOf`: a probe that UNSEALS a
+    sealed copy would otherwise leave undeclared homonyms, which are refused."""
+    for f in sorted(Path(case_dir).rglob("*.dat")):
+        parts = f.parts
+        if "constant" not in parts:
+            continue
+        k = len(parts) - 1 - parts[::-1].index("constant")
+        rel = "/".join(parts[k + 1:])
+        if (STD / rel).is_file():
+            txt = f.read_text()
+            if "variationOf" not in txt and "overlayOf" not in txt and "distinctFrom" not in txt:
+                def ident(s):
+                    fm = re.search(r"(?m)^formula\s+([^;]+);", s)
+                    ch = re.search(r"(?m)^charge\s+(-?\d+)\s*;", s)
+                    return (fm.group(1).strip() if fm else None, int(ch.group(1)) if ch else 0)
+                kind = "variationOf" if ident(txt) == ident((STD / rel).read_text()) else "distinctFrom"
+                f.write_text('%s %s;\nvariationReason "%s";\n' % (kind, f.stem, why) + txt)
+
+
+def copy_variation(src, dst, why="gate probe: a full record read alone"):
+    """shutil.copy of a catalogue record into a probe case, DECLARED (see as_variation)."""
+    dst = Path(dst)
+    if dst.is_dir():
+        dst = dst / Path(src).name
+    dst.write_text(as_variation(dst.stem, Path(src).read_text(), why))
 
 
 def unpin(case_copy):
@@ -177,7 +224,7 @@ def ensure_local(case_copy, sub):
     if not dst.exists():
         src = STD / sub
         dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy(src, dst)
+        shutil.copy(src, dst)        # PLAIN: every caller declares the record itself, after its edit
     return dst
 
 

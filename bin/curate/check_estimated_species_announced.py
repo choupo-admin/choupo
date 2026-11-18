@@ -121,8 +121,8 @@ def speciate_case(tmp, name, T, chem=None):
         "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"
         "components ( water );\naqueousProperties { activityCoefficients "
         "{ model Davies; referenceBasis aqueousMolality; } }\n")
-    shutil.copy(ROOT / "data/standards/components/water.dat",
-                d / "constant/components/water.dat")
+    case_records.copy_variation(ROOT / "data/standards/components/water.dat",
+                                d / "constant/components/water.dat")
     (d / "system/propsDict").write_text(
         "operations\n(\n    { name sp; type speciate; activityModel davies; "
         f"temperature {T}; analyticalTotals {{ H2Glut 0.03 mol/kg; }} "
@@ -131,7 +131,8 @@ def speciate_case(tmp, name, T, chem=None):
     if chem:
         (d / "constant/chemistry").mkdir(parents=True)
         for fn, text in chem.items():
-            (d / "constant/chemistry" / fn).write_text(text)
+            (d / "constant/chemistry" / fn).write_text(
+                case_records.as_variation(Path(fn).stem, text) if (ROOT / "data/standards/chemistry" / fn).exists() else text)
     return d
 
 

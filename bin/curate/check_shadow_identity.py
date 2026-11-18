@@ -20,8 +20,13 @@ shows the refusal is not crying wolf.
              different charge it is ACCEPTED (the declared ion over a radical).
   REASON     a declared variation without `variationReason` -- announced, and
              refused under strict.
-  UNDECLARED an identical copy beside a pin -- announced, refused under strict
-             (the copies may not come back).
+  UNDECLARED an identical copy beside a pin -- REFUSED always (since 2026-11-19),
+             naming overlayOf, variationOf and distinctFrom (the copies may not come back).
+  BACKFILL   THE SILENT BACKFILL's real defect: a local record lacking a key had it
+             filled from the catalogue in silence.  `overlayOf` takes the keys it
+             lacks and announces each once (`[overlay] benzene.vaporPressure from
+             data/standards/...`); `variationOf` takes nothing -- flash01 on a
+             record without a vapour pressure is refused, no `[overlay]` line.
   PIN SCOPE  on a copy of the catalogue: an UNRELATED Henry pair edited leaves
              flash01 `pinned`; a relevant pair (benzene-toluene) that ARRIVES is
              `drifted` (appeared) and refused under strict naming `--repin`; a
@@ -169,11 +174,41 @@ def main():
         refuses("REASON strict", rc, out, ["variationReason"])
 
         # ---- an identical, undeclared copy beside a pin ---------------------
+        #  Since the silent backfill closed (2026-11-19) an undeclared homonym is
+        #  refused ALWAYS, not only strict, naming all three declarations.
         rc, out = run(make_case(tmp, "copy", {"components/benzene.dat": benzene()}), False)
-        if rc != 0 or "[shadow]" not in out:
-            failures.append(f"UNDECLARED non-strict: expected exit 0 and a [shadow] line, got exit {rc}")
+        refuses("UNDECLARED", rc, out, ["without", "overlayOf", "variationOf", "distinctFrom", "--pin"])
         rc, out = run(make_case(tmp, "copy_s", {"components/benzene.dat": benzene()}), True)
         refuses("UNDECLARED strict", rc, out, ["without", "variationOf", "--pin"])
+
+        # ---- THE SILENT BACKFILL (2026-11-19) -------------------------------
+        #  The real defect: a local record that LACKED a key had it filled from
+        #  the catalogue record of the same name with no word said, so the
+        #  record's own file was not the record the run read (C428 (a) broke two
+        #  gates on it in one night).  Now: `overlayOf` takes the keys it lacks
+        #  and announces each once; `variationOf` takes NOTHING.
+        gap = re.sub(r"(?ms)^vaporPressure\s*\{.*?^\}\s*$", "", CAT_BENZENE.read_text(), count=1)
+        if gap == CAT_BENZENE.read_text():
+            failures.append("BACKFILL: the probe could not cut vaporPressure out of benzene.dat")
+        gap = re.sub(r"(?m)^provenance\s*\{", "provenanceCut {", gap, count=1)
+        rc, out = run(make_case(tmp, "ov_gap", {"components/benzene.dat":
+                      gap + "\noverlayOf benzene;\nvariationReason \"gate probe\";\n"}), False)
+        if rc != 0 or "[overlay] benzene.vaporPressure from data/standards/components/benzene.dat" not in out:
+            failures.append("BACKFILL overlayOf: a key the delta lacks must be taken from the"
+                            " catalogue and ANNOUNCED once as `[overlay] benzene.vaporPressure from"
+                            f" data/standards/...`; got exit {rc}")
+        elif out.count("[overlay] benzene.vaporPressure from") != 1:
+            failures.append("BACKFILL overlayOf: the key must be announced exactly once per run")
+        rc, out = run(make_case(tmp, "var_gap", {"components/benzene.dat":
+                      gap + "\nvariationOf benzene;\nvariationReason \"gate probe\";\n"}), False)
+        if "[overlay] benzene.vaporPressure" in out:
+            failures.append("BACKFILL variationOf: took vaporPressure from the catalogue -- a"
+                            " variation is read ALONE and a key it lacks is absent")
+        if rc == 0:
+            failures.append("BACKFILL variationOf: flash01 ran although the record lacks its"
+                            " vapour pressure -- a consumer that needs the key must be refused")
+        elif "vaporPressure" not in out and "vapour pressure" not in out.lower():
+            failures.append("BACKFILL variationOf: the refusal does not name the missing key")
 
         # ---- an unpinned read ---------------------------------------------
         def drop_pin(t):
@@ -213,9 +248,7 @@ def main():
         c = make_case(tmp, "unsealed_ion2", ion)
         (c / "constant" / "propertyManifest").unlink()
         rc, out = run(c, False)
-        if rc != 0 or "[shadow]" not in out:
-            failures.append(f"UNSEALED announce: a legacy unsealed case outside strict is ANNOUNCED"
-                            f" (exit 0, a [shadow] line); got exit {rc}")
+        refuses("UNSEALED, another charge, not strict", rc, out, ["DIFFERENT species", "distinctFrom"])
         ionfile = tmp / "ion_benzene.dat"
         ionfile.write_text(ion["components/benzene.dat"])
         h = subprocess.run([str(ROOT / "build" / "linux64Gcc" / "choupoProps"), "--canonical-hash",
@@ -322,7 +355,7 @@ def main():
           " another species; and on copies of the pinned witness: an undeclared"
           " homonym of another charge, a `variationOf` whose formula disagrees, a"
           " `distinctFrom` on the same species, a missing variationReason (strict),"
-          " an undeclared copy (strict), an unpinned read and a changed pin each REFUSE by"
+          " an undeclared copy (any mode), an unpinned read and a changed pin each REFUSE by"
           " name with their remedy (announced as `drifted` in the result when not strict);"
           " a declared distinctFrom on another charge and a faithful variationOf run;"
           " `pins` beside `sealed` refuses; a pin for a record read alone is named; Cl and"
