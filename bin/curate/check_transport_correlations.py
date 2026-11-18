@@ -74,7 +74,7 @@ WHAT IS CHECKED
       stripped -- exit != 0, and NO `tau_dry_constant` in any result.
   (h) THE SPRAY DRYER REFUSES A DECLARED LIQUID MODEL IT CANNOT PRICE, on a
       copy declaring `liquid { viscosity { model Andrade; } }` for a feed
-      whose sucrose carries no Andrade block: "will NOT substitute water".
+      whose sucrose carries no Andrade block: "does not substitute the viscosity of water".
   (i) THE MEMBRANE HOLDS NO LEGACY DEFAULT (C402; until then it announced
       "[legacy] mu_feed 1e-3 Pa.s ASSUMED"): membrane01 prints no [legacy]
       line and names the property kernel as the source of its feed density.
@@ -387,6 +387,28 @@ def strip_transport(text):
     return None
 
 
+def cut_block(text, name):
+    """Remove the first `<name> { ... }` block INSIDE the top-level
+    `transport { }` block (any indentation), by brace matching.  Returns the
+    whole text without it, or None when there is none."""
+    t0 = re.search(r"^transport\s*\{", text, re.M)
+    if not t0:
+        return None
+    m = re.compile(r"^[ \t]*%s\s*\{" % re.escape(name), re.M).search(text, t0.end())
+    if not m:
+        return None
+    depth, i = 0, m.end() - 1
+    while i < len(text):
+        if text[i] == "{":
+            depth += 1
+        elif text[i] == "}":
+            depth -= 1
+            if depth == 0:
+                return text[:m.start()] + text[i + 1:]
+        i += 1
+    return None
+
+
 def case_copy(src, ignore=("converged", "reports", "design", "log.*",
                            "expected")):
     tmp = Path(tempfile.mkdtemp(prefix="ctc_", dir=str(ROOT / "build")))
@@ -616,31 +638,43 @@ def main():
         d = dst / "constant/thermoPhysPropDict"
         d.write_text(mutate(d.read_text()))
         return tmp, dst
-    stripped = strip_transport((DRYER / "constant/thermoPhysPropDict").read_text())
+    #  Since the property door (C421) the syrup's viscosity is a measured table
+    #  in `transport.liquid`, and the atomiser reads it BEFORE the drying
+    #  kinetics read the gas: stripping the whole `transport` block is refused
+    #  first by the atomiser (a different, correct refusal).  The arm's subject
+    #  is the dryer with no GAS transport model, so the copy keeps the liquid
+    #  block and loses the vapour one.
+    stripped = cut_block((DRYER / "constant/thermoPhysPropDict").read_text(), "vapour")
     if stripped is None:
         fails.append("sprayDryer01 declares no transport block to strip -- arm (g) cannot run")
     else:
-        tmp, dst = dryer_copy(lambda t: strip_transport(t))
+        tmp, dst = dryer_copy(lambda t: cut_block(t, "vapour"))
         try:
             rc, o = run(SOLVE, dst)
             if rc == 0:
                 fails.append("the stripped copy did NOT refuse -- a dryer with no transport "
                              "model ran to exit 0")
-            if "declares no transport model" not in o:
+            #  The refusal is the package's own since the door (C398 SL-04): the atomiser
+            #  asks the gas viscosity first and the package says it has no model, with the
+            #  grammar to add.  (The unit's own `declares no transport model` text sits
+            #  behind it, unreachable on this copy.)
+            if "the vapour viscosity has no model" not in o:
                 fails.append("the no-transport refusal does not name its cause")
-            if "transport { vapour { viscosity { model Chung; }" not in o:
+            if "`transport { vapour { viscosity { model <word>; } } }`" not in o:
                 fails.append("the no-transport refusal does not carry the remedy")
             if "tau_dry_constant" in o and rc == 0:
                 fails.append("a drying time was published with no transport model")
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
-        tmp, dst = dryer_copy(lambda t: t.replace(
+        #  The measured table is replaced by a declared Andrade model, which cannot
+        #  price sucrose (no Andrade block): the refusal must not substitute water.
+        tmp, dst = dryer_copy(lambda t: cut_block(t, "liquid").replace(
             "transport\n{", "transport\n{\n    liquid { viscosity { model Andrade; } }", 1))
         try:
             rc, o = run(SOLVE, dst)
             if rc == 0:
                 fails.append("a declared Andrade model that cannot price sucrose did NOT refuse")
-            if "will NOT substitute water" not in o:
+            if "does not substitute the viscosity of water" not in o:
                 fails.append("the declared-liquid-model refusal does not say it will not "
                              "substitute water")
         finally:
