@@ -250,6 +250,12 @@ batch plan, sizing, clean utilities, costing and economics on top
   `constant/economics`, utilities from their records, labour, and the cost of
   manufacture; for a batch plant the year's flows come from the plan
   (`key:streamFactor` `fromBatchPlan`).
+* Prices print with their origin (C389): each priced stream and the labour
+  rate appear in the run's "Prices and where they came from" table, in
+  `reports/economics/prices.csv` and in the GUI Reports view, with the case's
+  `provenance { origin "..."; kind published|quote|assumption; }` (labour:
+  `labourProvenance { }`).  A stream price with no `origin` is refused by name;
+  an absent `kind` prints `undeclared`.  Theory Guide, `par:price-origin`.
 * Missing: waste treatment cost (it is zero in the cost of manufacture);
   a raw-material inlet you do not price is left out, so price every inlet.
 * Witness: `tutorials/batch/plant/apalutamide01_tablets`.

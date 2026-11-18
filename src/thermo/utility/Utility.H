@@ -82,6 +82,11 @@ struct Utility
     // Economics (indicative — refine per region / plant scale)
     scalar      cost      = 0.0;   // [€/GJ delivered (heating) or rejected (cooling)]
     int         costYear  = 0;
+    //  WHERE THE COST CAME FROM (C389, PR-07): an optional `costSource "...";`
+    //  in the record -- the citation of the `cost` figure.  Empty when the
+    //  record names none; the economics report then prints the price as
+    //  `undeclared`.
+    std::string costSource;
 
     // Electromechanical efficiency for the "power" tier (electric motor on
     // the consumer side, generator on the producer side).  1.0 for thermal

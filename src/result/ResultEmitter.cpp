@@ -1472,6 +1472,24 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             }
             os << "\n      ]\n    },\n";
         }
+        //  WHERE EACH PRICE CAME FROM (C389, PR-07): ONLY when the pass read
+        //  a price file; the origin text is the case's, verbatim.
+        if (!e.priceOrigins.empty())
+        {
+            os << "    \"priceOrigins\": [";
+            for (std::size_t i = 0; i < e.priceOrigins.size(); ++i)
+            {
+                const auto& b = e.priceOrigins[i];
+                os << (i ? ",\n" : "\n") << "      { \"name\": " << esc(b.name)
+                   << ", \"role\": " << esc(b.role)
+                   << ", \"price\": " << num(b.price)
+                   << ", \"unit\": " << esc(b.unit)
+                   << ", \"costYear\": " << esc(b.costYear)
+                   << ", \"kind\": " << esc(b.kind)
+                   << ", \"origin\": " << esc(b.origin) << " }";
+            }
+            os << "\n    ],\n";
+        }
         //  THE PRICE BREAK-EVENS (2026-11-13), ONLY when the case declared
         //  `breakEven { price ( ... ); }` -- every other case's JSON is
         //  byte-for-byte what it was.  Also `kpis.economics.breakEven_price_*`.

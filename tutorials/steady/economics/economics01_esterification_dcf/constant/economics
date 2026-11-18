@@ -32,6 +32,7 @@ products
         costYear    2024;
         provenance
         {
+            kind    published;
             origin  "ICIS / S&P Global ethyl acetate spot, W. Europe contract";
             method  "representative bulk contract price (teaching figure)";
         }
@@ -47,6 +48,7 @@ rawMaterials
         costYear    2024;
         provenance
         {
+            kind    published;
             origin  "ICIS ethanol + acetic acid bulk contract, W. Europe";
             method  "mass-weighted blend of the two feed contract prices (teaching figure)";
         }
@@ -58,6 +60,7 @@ labourRate      35.0;                 // EUR/h, loaded operating-labour rate
 labourRateYear  2024;
 labourProvenance
 {
+    kind    assumption;
     origin  "Eurostat chemical-sector labour cost (EU-27)";
     method  "fully-loaded hourly rate (teaching figure)";
 }

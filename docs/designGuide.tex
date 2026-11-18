@@ -3586,6 +3586,12 @@ Costing in Choupo is a \emph{post-processing pass}
 \texttt{EconomicsPass} (see \texttt{optim05\_reactor\_npv}). The numbers
 below are heuristics to be \emph{run and checked}, never final verdicts
 --- accuracy depends entirely on the AACE estimate class.
+Every price the pass uses is printed with its origin: each priced stream
+and the labour rate carry a \texttt{provenance} block with the citation
+(\texttt{origin}) and a \texttt{kind} (\texttt{published}, \texttt{quote} or
+\texttt{assumption}), the run lists them under ``Prices and where they came
+from'' and in \texttt{reports/economics/prices.csv}, and a stream price with no
+origin is refused (Theory Guide, \texttt{par:price-origin}).
 
 \textbf{Capital (CAPEX).} Two routes, increasing in effort:
 

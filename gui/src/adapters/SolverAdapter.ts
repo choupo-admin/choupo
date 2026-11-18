@@ -1332,6 +1332,10 @@ export interface Economics {
    *  price at which the engine's NPV is zero with every other price held.
    *  The engine's numbers; the GUI computes none of them. */
   breakEvenPrices?: EconomicBreakEvenPrice[];
+  /** WHERE EACH PRICE CAME FROM (C389, PR-07): every price the engine read
+   *  from constant/economics with the case's own citation and the kind of
+   *  number it is.  Absent from an older payload -- then no table is drawn. */
+  priceOrigins?: EconomicPriceOrigin[];
   /** THE ANNUAL BASIS the engine used (DEV.md 4c C264): every annual FLOW
    *  (raw materials, utilities, revenue) is its hourly figure x
    *  `operatingHours`; `operatingHoursFrom` says where those hours came from
@@ -1364,6 +1368,19 @@ export interface EconomicBreakEvenPrice {
   role: string;             // "product" | "rawMaterial"
   declared: number;         // the case's price, currency per kg
   breakEven: number;        // currency per kg at which NPV = 0
+}
+
+/** One price and its origin, as the engine read it (C389, PR-07).  `kind` is
+ *  "published" (a price a source publishes), "quote" (a quotation the case
+ *  declares), "assumption" (a figure the case states) or "undeclared". */
+export interface EconomicPriceOrigin {
+  name: string;
+  role: string;             // "product" | "rawMaterial" | "labour"
+  price: number;
+  unit: string;             // EUR/kg | EUR/h
+  costYear: string;         // "" when the case states none
+  kind: string;
+  origin: string;           // the case's citation, verbatim
 }
 
 /** The economic sensitivity as the engine published it: one row per declared

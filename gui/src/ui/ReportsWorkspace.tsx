@@ -680,6 +680,37 @@ function EconomicsBody({ econ }: { econ: NonNullable<RunResult["economics"]> }) 
           {breakEvenPriceLine(econ.currency, b)}
         </Text>
       ))}
+      {econ.priceOrigins && econ.priceOrigins.length > 0 && (
+        <div data-testid="priceOrigins" style={{ marginBottom: 8 }}>
+          <Text size="xs" fw={600} mb={2}>Prices and where they came from</Text>
+          <Text size="xs" c="dimmed" mb={4}>
+            published = a price a source publishes; quote = a quotation the case declares;
+            assumption = a figure the case states; undeclared = the case names no kind.
+          </Text>
+          <ScrollArea type="auto">
+            <Table withTableBorder fz="xs" miw={760}>
+              <Table.Thead><Table.Tr>
+                <Table.Th>Price</Table.Th>
+                <Table.Th ta="right">Value</Table.Th>
+                <Table.Th>Year</Table.Th>
+                <Table.Th>Kind</Table.Th>
+                <Table.Th>Origin (the case's citation)</Table.Th>
+              </Table.Tr></Table.Thead>
+              <Table.Tbody>
+                {econ.priceOrigins.map((p) => (
+                  <Table.Tr key={`${p.role}-${p.name}`} data-testid={`priceOrigin-${p.name}`}>
+                    <Table.Td ff="monospace">{p.name}</Table.Td>
+                    <Table.Td ta="right" ff="monospace">{p.price} {p.unit}</Table.Td>
+                    <Table.Td>{p.costYear || "—"}</Table.Td>
+                    <Table.Td>{p.kind}</Table.Td>
+                    <Table.Td style={{ whiteSpace: "normal" }}>{p.origin || "(no origin declared)"}</Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+          </ScrollArea>
+        </div>
+      )}
       {land && (
         <Text size="xs" c="dimmed" mb={6}>
           Land: {land.price} {econ.currency}/m² × {land.area.toFixed(0)} m²

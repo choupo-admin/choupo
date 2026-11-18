@@ -773,3 +773,19 @@ membrane module or an electrodialysis stack: 1000 kg/m3).  Read the
 liquid-properties table every run prints before quoting a volumetric flow, a
 head or a residence time, and say so when two units give one liquid two
 densities.  [thermophysical-properties.md](thermophysical-properties.md).
+
+## A price with no origin, or with a kind the report cannot print (C389, PR-07)
+
+Every `rawMaterials` and `products` entry of `constant/economics` needs
+`provenance { origin "..."; kind published|quote|assumption; }`: the citation
+(source, page, retrieval date, the conversion written out) and what KIND of
+number it is -- `published` (a price a source publishes), `quote` (a quotation
+the case declares) or `assumption` (a figure the case states without a source
+for the number).  A price with no `origin` is REFUSED by name; a `kind` outside
+the three words is refused; an absent `kind` prints `undeclared` with an
+advisory.  The labour rate reads the same words from an optional
+`labourProvenance { origin "..."; kind ...; }` block and prints `undeclared`
+without it.  A utility record may carry `costSource "...";` (its `cost` figure's
+citation); without it the utility prints `undeclared`.  The run prints all of
+them under "Prices and where they came from", in `reports/economics/prices.csv`
+and in the GUI Reports view.  Theory Guide, `par:price-origin`.

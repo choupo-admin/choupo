@@ -38,6 +38,7 @@ products
         costYear    2025;
         provenance
         {
+            kind    published;
             origin  "EU Commission Sugar Market Observatory -- EU average white-sugar price, Jan 2025 (557 EUR/t)";
             method  "EU-average regional price bulletin; representative teaching figure";
         }
@@ -56,6 +57,7 @@ rawMaterials
         costYear    2024;
         provenance
         {
+            kind    published;
             origin  "EU Commission / USDA FAS EU Sugar Annual 2024 -- sugar-beet farm-gate ~40 EUR/t";
             method  "derived: beet value pro-rated to the juice sucrose content (~6 mol%, ~18 wt% sugar carried) -> ~0.018 EUR/kg juice";
         }
@@ -66,6 +68,7 @@ rawMaterials
         costYear    2022;
         provenance
         {
+            kind    published;
             origin  "constant/utilities/steamLP.dat (= data/standards/utilities/steamLP.dat): cost 12 EUR/GJ delivered, costYear 2022; Sinnott & Towler 6th ed. 2022 Sec. 6.5.3";
             method  "the SAME utility record's price on its own dutyPerKg (latent heat 2186 kJ/kg at 2.5 bar): 12/1e9 x 2.186e6 = 0.026232 EUR/kg; no new number";
         }
@@ -76,6 +79,7 @@ rawMaterials
         costYear    2024;
         provenance
         {
+            kind    assumption;
             origin  "ambient air, drawn from the atmosphere, not purchased";
             method  "declared free; the fan/heating energy is a unit duty, not a purchase of the air";
         }
@@ -86,6 +90,7 @@ rawMaterials
         costYear    2024;
         provenance
         {
+            kind    assumption;
             origin  "ambient air, drawn from the atmosphere, not purchased";
             method  "declared free; the heating energy is a unit duty, not a purchase of the air";
         }
@@ -97,6 +102,7 @@ labourRate      35.0;                 // EUR/h, fully-loaded operating-labour ra
 labourRateYear  2024;
 labourProvenance
 {
+    kind    assumption;
     origin  "Eurostat chemical-sector labour cost (EU-27), 2024";
     method  "fully-loaded hourly rate (teaching figure); cross-check Turton 5th ed. Sec. 8 (~66 kUSD/yr/operator, 2018)";
 }
