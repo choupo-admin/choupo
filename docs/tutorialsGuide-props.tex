@@ -757,57 +757,46 @@ Contract: src/propertyOps/EvidencePartition.H
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{nrtl\_etoh\_water\_heldout}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{txy\_raoult}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{txy\_nrtl}\\[-1pt]{\tiny propertyScan1D}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{A binary NRTL pair regressed on eight MEASURED bubble temperatures and scored on three it never saw -- the first held-out validation in the corpus against real evidence}
+\tutwhat{Fit an ethanol-water NRTL pair (two parameters, starting from Raoult) to ten measured bubble points at 101.3 kPa, test it on four held-out points, draw the T-x-y diagram}
 \begin{tutnarrative}
-curate02 -- THE FIT / HELD-OUT CONTRACT ON A BINARY PHASE EQUILIBRIUM.
+curate02 -- FIT A BINARY PAIR TO MEASURED DATA, THEN TEST IT ON POINTS IT NEVER SAW.
 
-The NRTL ethanol-water pair is regressed against eight measured bubble temperatures at 101.325 kPa, and then asked to predict THREE it never saw.
+REBUILT 2026-11-19 (C439, at Vitor's request: the first fit a newcomer meets should be well posed, from a primary source, and should SHOW something). The previous version fitted four coefficients to eleven points of a compilation that cannot be a public value's origin; its parameters were not identifiable (condition number 4e11). Its numbers are superseded.
 
-WHY THIS CASE EXISTS BESIDE curate01. curate01 proves the machinery: its two halves come from the same Antoine equation, so its held-out residual is round-off and its acceptance band is a numerical criterion, which its own `acceptance.origin` says out loud. Here the evidence is MEASURED, so the held-out residual is a statement about the MODEL -- the first place in the corpus where a fitted binary pair is scored on real evidence it was never handed.
+THE EVIDENCE. Fourteen measured ethanol-water bubble points at 101.3 kPa (T and the vapour composition y), Lai, Lin \& Tu, J. Chem. Thermodyn. 2014, doi:10.1016/j.jct.2013.08.020, extracted from the NIST/TRC ThermoML archive with bin/choupo-thermoml extract-vle (each file under constant/experiments/ carries the article, the archive block, the sha256 and the per-point expanded uncertainty). THE SPLIT, declared before the fit: every third point (3, 6, 9, 12 by increasing x\_ethanol) is held out $\to$ 4 points; the other 10 are fitted. The azeotrope (x about 0.89) is in the fit set.
 
-THE SPLIT IS DECLARED AND ARITHMETIC. Every third point of the eleven-point series (x1 = 0.20, 0.50, 0.80) is held out, spread across the composition range rather than cut contiguously, because a model can interpolate well and extrapolate badly and a contiguous cut tests only one of those. The rule was fixed before anything was fitted.
+THE FIT. NRTL with a\_ij = a\_ji = 0 and alpha = 0.30: TWO parameters, b\_ij and b\_ji (in K). a\_ij = a\_ji = 0: over one isobar (351-373 K) the a and b of one coefficient multiply almost the same function of T, so freeing both only trades one for the other (the previous version showed it: correlation 0.9999). alpha = 0.30: the value Renon \& Prausnitz recommend for mixtures of a polar and a non-polar-ish component; one isobar cannot determine it. THE START IS ZERO: b\_ij = b\_ji = 0 gives gamma = 1, Raoult's law. The fit moves the pair from ideal solution to NRTL, and the run shows both curves.
 
-THE ACCEPTANCE BAND IS DECLARED BEFORE THE FIT, WITH ITS ORIGIN, AND IS NOT ADJUSTED AFTERWARDS. Whatever verdict falls out of it is the result. A band chosen after seeing the residual would make the whole contract decorative.
+THE BAND, declared before the fit and not adjusted: see `acceptance` below.
 
-Read the run's four sections in order: FIT QUALITY is what the model does on what it saw; HELD-OUT EVIDENCE is what it did on what it did not.
-
-TWO THINGS THIS CASE DOES NOT SHOW, BOTH VISIBLE IN ITS OWN GOLDEN.
-
-(1) THE PARAMETERS ARE NOT IDENTIFIABLE. `identifiable 0`, `cond\_JtJ \textasciitilde{}4e11` and pairwise correlations of 0.9999 between each a/b pair: eight points at ONE pressure cannot separate the entropic and enthalpic halves of an NRTL parameter, because they only ever appear together over a narrow T span. The model PREDICTS well and the four numbers are individually meaningless -- a validated prediction is not a determined parameter set, and a student must be able to read both facts off the same run. This is why the verdict is scoped `binaryVLE.T\_bubble` in the dossier and not to the pair itself.
-
-(2) THE HELD-OUT MARGIN IS NOT LARGE. 0.0737 \% against a 0.1 \% band is a pass by a factor of 1.4, not by an order of magnitude. The band was declared before the fit and is not adjusted; the margin is reported rather than described as comfortable.
-
-The run also announces an extrapolation: ethanol's vapour pressure is evaluated at 372 K, outside its declared Trange (273-369). Announced, not judged -- it rides the caveat surface like every other extrapolation.
-
-WHAT THE STUDENT TAKES AWAY: `ethanol-water.proposal.dat`.
-
-The console says all of the above and then scrolls. The file is what survives -- it is moved into `constant/parameters/NRTL/ethanol-water.dat` and simulated with, months later, by someone who never saw this run. So it carries the whole qualification, not the numbers alone: the two datasets and the role each was frozen in, the fingerprint of that declaration, the held-out AAD over the three withheld points, the 0.1 \% band with the reason it was set at 0.1 \%, the verdict, and -- in the header, above everything -- the fact that these four coefficients are NOT individually identifiable.
-
-Both facts of (1) are readable off that one file: `verdict validated` beside `identifiable false`. A validated prediction is not a determined parameter set, and the record says so in the artefact rather than only in a run log.
+WHAT YOU SEE after Run: the T-x-y diagram of the two `experimental` overlays: the Raoult curves, the fitted NRTL curves, the measured points (all 14; the parity view of the fit marks the four held-out apart). Then the held-out AAD and the verdict in the log, and the proposal file.
 
 \end{tutnarrative}
-\tutreadme{This case regresses the four NRTL coefficients of the ethanol-water pair on eight measured bubble temperatures at 101.325 kPa, then asks the fitted pair to predict three more measured points that were set aside before the fit ran (x\_ethanol = 0.20, 0.50, 0.80). It runs under choupoProps (fitParameters, bubble-temperature residual). The golden: held-out deviation 0.073 \% of T (0.26 K) against a band of 0.1 \% declared beforehand; verdict validated.}
-\tutreadme{1. Fit quality vs held-out evidence. The run prints them as two sections. The fit's RMS is 0.32 K; what matters is the second section, the error on points the model was never handed. A fit that only reproduces its own data proves nothing; this one is scored on evidence it did not see. 2. The band was declared first. acceptance in system/propsDict gives the 0.1 \% limit and its origin (scatter of atmospheric bubble-point measurements). The margin is a factor of 1.4, reported as such. 3. Validated is not determined. identifiable 0, a condition number near 4e11 and parameter correlations of 0.9999: one isobar cannot separate the four coefficients, so they are meaningless one by one although the pair predicts well. The run says so, and so does the proposal file's header. 4. The take-away file, ethanol-water.proposal.dat: the fitted pair with both datasets, the held-out result, the band and the verdict. Moving it into a case's constant/parameters/NRTL/ is how a fitted pair gets used.}
-\tutreadme{- In system/propsDict, tighten maxAAD to 0.05 percent and rerun: the verdict turns to not validated, with the same fit. - Move a point between the two files under constant/experiments/ and watch the held-out error change: the split is a modelling decision. - Compare with curate04\_nrtl\_methanol\_water, the same contract built from published measurements end to end.}
-\tutreadme{Eleven measured ethanol-water bubble temperatures at 101.325 kPa from a published vapour-liquid-equilibrium compilation (pedagogical subset), split by a fixed rule (every third point held out); the provenance block of each file under constant/experiments/ states it.}
+\tutreadme{Ethanol and water do not mix ideally: at 101.3 kPa the mixture boils at lower temperatures than Raoult's law says, and it forms an azeotrope near 89 mol \% ethanol that no ordinary distillation can cross. This case measures how much the NRTL activity model, with only two adjustable numbers (b\_ij and b\_ji), closes that gap. It starts from zero (Raoult's law, gamma = 1), fits the two numbers to ten measured bubble points, and then asks the fitted pair to predict four more measured points that were set aside before the fit ran. It runs under choupoProps (fitParameters, bubble-temperature residual).}
+\tutreadme{1. The T-x-y diagram first. Measured bubble points (ten used in the fit, four held out, drawn as separate series) against two curves: Raoult's law (the start of the fit) and the fitted NRTL (the end). The gap between the two curves is what the two numbers learned. Look at the azeotrope, where Raoult's curve cannot follow the data. 2. The held-out number second. The log's HELD-OUT EVIDENCE section gives the average error on the four points the fit never saw, in kelvin and as a percentage of T, against a band that was declared before the fit. The verdict (validated or not) is that comparison and nothing more. 3. Is the fit well posed? Two parameters on one isobar are identifiable: the run reports identifiable, the condition number and the correlation of b\_ij with b\_ji. (The earlier version of this case fitted four numbers to one isobar; they could not be told apart, and the run said so.) 4. The take-away file, ethanol-water.proposal.dat: the fitted pair with both datasets, the held-out result, the band and the verdict. Moving it into a case's constant/parameters/NRTL/ is how a fitted pair gets used.}
+\tutreadme{- In system/propsDict, tighten maxAAD and rerun: the same fit, a different verdict. The band is declared first on purpose; changing it after seeing the result is what the contract forbids. - Move a point from one file under constant/experiments/ to the other and watch the held-out error change: the split is a modelling decision. - Free a\_ij and a\_ji too (add them to parameters) and read identifiable and the correlations: one isobar cannot support four numbers. - After a refit, write the new b\_ij and b\_ji into constant/thermoPhysPropDict: that is the pair the NRTL curve in the diagram is drawn with. - Compare with curate04\_nrtl\_methanol\_water, the same contract over several isobars with a held-out set from another laboratory.}
+\tutreadme{- a\_ij = a\_ji = 0: over one isobar the a and b of a coefficient multiply almost the same function of T, so freeing both only trades one for the other. - alpha = 0.30: the usual value for a mixture of a polar and a less polar liquid; one isobar cannot determine it. - The fit is unweighted: every point has the same say (their stated uncertainties, 0.13-0.45 K, are in the data files and curate04 weights by them). - Split rule, declared before the fit: every third point by increasing x (3rd, 6th, 9th, 12th: x\_ethanol = 0.1000, 0.3940, 0.6310, 0.8480) is held out.}
+\tutreadme{Lai, H.-S.; Lin, Y.-F.; Tu, C.-H. (2014). Isobaric (vapor + liquid) equilibria for the ternary system of (ethanol + water + 1,3-propanediol) and three constituent binary systems at P = 101.3 kPa. J. Chem. Thermodyn. doi:10.1016/j.jct.2013.08.020 (the ethanol + water block), 14 interior points located through the NIST/TRC ThermoML Archive and extracted with bin/choupo-thermoml extract-vle; the provenance block of each file under constant/experiments/ records the archive file, block and sha256. The points are transcribed from the archive and not yet read back against the article (reviewStatus transcribedNotCheckedAgainstArticle).}
 \begin{tutgolden}
-\goldrow{diag}{nrtl\_etoh\_water\_heldout}{aad\_heldout\_pct}{0.0729370366247}
-\goldrow{diag}{nrtl\_etoh\_water\_heldout}{chi2}{0.811043497706}
-\goldrow{diag}{nrtl\_etoh\_water\_heldout}{chi2\_in\_sample}{0.811043497706}
-\goldrow{diag}{nrtl\_etoh\_water\_heldout}{chi2\_reduced}{0.202760874427}
-\goldrow{diag}{nrtl\_etoh\_water\_heldout}{cond\_JtJ}{396995377673}
+\goldrow{diag}{nrtl\_etoh\_water\_heldout}{aad\_heldout\_pct}{0.0362379363438}
+\goldrow{diag}{nrtl\_etoh\_water\_heldout}{chi2}{0.0246959160135}
+\goldrow{diag}{nrtl\_etoh\_water\_heldout}{chi2\_in\_sample}{0.0246959160135}
+\goldrow{diag}{nrtl\_etoh\_water\_heldout}{chi2\_reduced}{0.00308698950168}
+\goldrow{diag}{nrtl\_etoh\_water\_heldout}{cond\_JtJ}{31.9123590208}
 \goldrow{diag}{nrtl\_etoh\_water\_heldout}{converged}{1}
 \goldrow{diag}{nrtl\_etoh\_water\_heldout}{corr\_computed}{1}
-\goldrow{diag}{nrtl\_etoh\_water\_heldout}{dof}{4}
-\goldrow{diag}{nrtl\_etoh\_water\_heldout}{identifiable}{0}
+\goldrow{diag}{nrtl\_etoh\_water\_heldout}{dof}{8}
+\goldrow{diag}{nrtl\_etoh\_water\_heldout}{identifiable}{1}
 \goldrow{diag}{nrtl\_etoh\_water\_heldout}{invertible}{1}
-\goldrow{diag}{nrtl\_etoh\_water\_heldout}{iter}{39}
-\goldrow{diag}{nrtl\_etoh\_water\_heldout}{max\_abs\_corr}{0.999936039821}
-\goldrow{diag}{nrtl\_etoh\_water\_heldout}{max\_abs\_resid}{0.582297035374}
-\goldrow{diag}{nrtl\_etoh\_water\_heldout}{n\_data}{8}
-\goldmore{9}
+\goldrow{diag}{nrtl\_etoh\_water\_heldout}{iter}{11}
+\goldrow{diag}{nrtl\_etoh\_water\_heldout}{max\_abs\_corr}{0.940484275426}
+\goldrow{diag}{nrtl\_etoh\_water\_heldout}{max\_abs\_resid}{0.0894841402409}
+\goldrow{diag}{nrtl\_etoh\_water\_heldout}{n\_data}{10}
+\goldmore{28}
 \end{tutgolden}
 
 \clearpage

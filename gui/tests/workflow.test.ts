@@ -108,7 +108,7 @@ describe("(1) the outline: studies and their numbered steps", () => {
   it("a case with no declared study is ONE implicit study numbered 1, 2, 3; unclaimed operations follow the studies", () => {
     const flat = workflowOutline(propsDictOf("props/curation/curate02_vle_heldout_ethanol_water"));
     expect(flat.map((s) => [s.id, s.letter, s.declared])).toEqual([["study:", "", false]]);
-    expect(flat[0]!.steps.map((s) => s.number)).toEqual(["1"]);
+    expect(flat[0]!.steps.map((s) => s.number)).toEqual(["1", "2", "3"]);   // the fit, then the Raoult and the NRTL scans
     const pd: JsonDict = {
       studies: [{ name: "X", title: "X", purpose: "demonstration", ops: ["b"] }],
       operations: [{ name: "a", type: "speciate" }, { name: "b", type: "speciate" }],
