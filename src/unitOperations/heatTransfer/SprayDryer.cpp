@@ -1560,4 +1560,14 @@ int SprayDryer::solve(const DictPtr& dict,
     return rwb.converged ? 0 : 1;
 }
 
+UnitAcceptance SprayDryer::acceptance() const
+{
+    UnitAcceptance a;   // phases and components: not declared (accepts all)
+    a.carried.declared = true;
+    a.carried.kinds    = { "sizeDistribution" };
+    a.carried.sentence =
+        "CREATES the size distribution of the powder from its own atomiser and drying-time model (a Rosin-Rammler spread about the dried-droplet size) and REPLACES whatever distribution the feed carries: crystals suspended in the feed (the ChemicalPlantTutorial's magma, which arrives with its crystal size distribution) are dissolved in or enclosed by the droplets, so their size does not survive atomisation; the inlet's distribution is read by nothing and the outlet's is the unit's own";
+    return a;
+}
+
 } // namespace Choupo

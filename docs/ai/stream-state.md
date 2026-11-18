@@ -392,7 +392,7 @@ likewise appears only when some stream actually carries one.  A stream
 the topology does not know at all gets an EMPTY `sector` cell, never
 `(no sector)`: that phrase is a fact about a UNIT at the plant root.
 
-## Carried quantities (spike, C427)
+## Carried quantities (C427)
 
 A stream carries, beside its molar part, an ordered set of carried quantities of a CLOSED list of kinds; each kind owns its basis, its law of mixing, its law of division, its balance (whether a production term may exist) and its state-file form.  In a state file they are one top-level block; an old file without it reads as "none carried":
 
@@ -405,7 +405,7 @@ carried
 }
 ```
 
-Kinds: `materialMass`, `chainMoment` (order 0 or 2 only; the first moment is derived from the segments), and `sizeDistribution` (the existing `particleSizeDistribution`, unchanged).  Only the mixer and the splitter model carried quantities today; a unit that does not model a kind REFUSES a stream that carries it, naming the kind, the unit and the stream (before the solve), and the time-integrated drivers refuse any.  Nothing is ignored and nothing is copied through a unit.  Witness and checks: `bin/curate/check_carried_spike.py` (a spike probe, not a tutorial).
+Kinds: `materialMass`, `chainMoment` (order 0 or 2 only; the first moment is derived from the segments), and `sizeDistribution` (the existing `particleSizeDistribution`, unchanged).  The mixer and the splitter model every kind; the units that read or write a size distribution (mill, hydrocyclone, screen, classifier, sedimenting centrifuge, cyclone, bag filter, gas-solid splitter, cake filter, thickener, pneumatic conveyor, crystalliser, spray dryer) declare it in `UnitAcceptance::carried` with a sentence of what they do to it, and `choupoSolve --describe-units` prints every unit's declaration.  A unit that does not model a kind REFUSES a stream that carries it, naming the kind, the unit and the stream (before the solve) -- a heater fed a slurry with a size distribution is refused, not silently stripped of it; the time-integrated drivers and `choupoBatch` refuse any.  Nothing is ignored and nothing is copied through a unit.  A kind whose total is a mass (`materialMass`) is counted in the plant-boundary mass balance (a `carried.<name>` row in `massBalance.csv`).  A kind's own attributes (a distribution's diameters and class edges, a moment's order) live in a named block the kind validates; the stream's core type knows none.  Witness: `tutorials/steady/solids/splitter01_slurry_sizeDistribution`; gate: `bin/curate/check_carried_kinds.py`.
 
 ---
 

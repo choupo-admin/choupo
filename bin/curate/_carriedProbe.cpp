@@ -48,26 +48,119 @@ Description
 
 #include "streams/Carried.H"
 
+#include "reporting/MassBalanceReport.H"
+#include "result/SimulationResult.H"
+#include "streams/ProcessStream.H"
+#include "thermo/ThermoPackage.H"
+
 #include <cmath>
+#include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
 using namespace Choupo;
 
 static CarriedQuantity moment(const std::string& name, int order, scalar v)
 {
-    CarriedQuantity q;
-    q.kind = "chainMoment"; q.name = name; q.carrier = "PS"; q.order = order;
-    q.values = { v }; q.unit = "kmol/s";
-    return q;
+    return CarriedKind::New("chainMoment")
+        ->create(name, "PS", { v }, { { "order", { static_cast<scalar>(order) } } });
 }
 
-int main()
+//  THE MASS BALANCE WITH A MATERIAL (second slice, criterion 3).  The REAL
+//  report, run on a hand-built result: a splitter S1 takes `feed` (a material,
+//  4 kg/s of flour, no molar flow) and gives `sideA` and `sideB`.  With
+//  `dropB` the sideB outlet loses its material -- the sabotage lives HERE,
+//  in the probe, never in src -- and the report must stop closing.
+//  Returns the closure percentage the report wrote (the `closure_pct` row of
+//  massBalance.csv), and the text of the carried row.
+static double massBalanceClosure(const std::filesystem::path& dir, bool dropB,
+                                 std::string& carriedRow)
+{
+    SimulationResult res;
+    ThermoPackage    thermo;
+    auto stream = [&](const std::string& nm, scalar kgps)
+    {
+        ProcessStream s;
+        s.name = nm;
+        if (kgps >= 0.0)
+            s.carried.push_back(CarriedKind::New("materialMass")
+                                    ->create("flour", "wheatFlour", { kgps }));
+        res.streams[nm] = s;
+    };
+    stream("feed", 4.0);
+    stream("sideA", 1.2);
+    stream("sideB", dropB ? -1.0 : 2.8);
+    FlatUnit u; u.name = "S1"; u.type = "splitter";
+    u.ins = { "feed" }; u.outs = { "sideA", "sideB" };
+    res.topology.push_back(u);
+    auto fs = std::make_shared<Dictionary>("flowsheetDict");
+    std::filesystem::create_directories(dir);
+    ReportContext ctx{ res, thermo, fs, dir, 0 };
+    MassBalanceReport rep;
+    rep.run(nullptr, ctx);
+    std::ifstream in(dir / "balances" / "massBalance.csv");
+    std::string line; double closure = -1.0;
+    while (std::getline(in, line))
+    {
+        if (line.rfind("carried.flour", 0) == 0) carriedRow = line;
+        if (line.rfind("closure_pct", 0) == 0)
+            closure = std::stod(line.substr(line.rfind(',') + 1));
+    }
+    return closure;
+}
+
+//  A refusal the kind must make: the sentence, or "" when it accepted.
+template <class F>
+static std::string refusalOf(F f)
+{
+    try { f(); } catch (const std::exception& e) { return e.what(); }
+    return "";
+}
+
+int main(int argc, char** argv)
 {
     CarriedKind::registerBuiltins();
+    const std::filesystem::path tmp = (argc > 1) ? argv[1] : "carriedProbeTmp";
+    std::string rowKept, rowDropped;
+    const double closureKept    = massBalanceClosure(tmp / "kept",    false, rowKept);
+    const double closureDropped = massBalanceClosure(tmp / "dropped", true,  rowDropped);
+
+    //  Criterion 4: the kind validates its OWN attributes on construction,
+    //  read and write.  A chain moment handed a size distribution's `edges`,
+    //  a distribution handed an `order`, and a material handed any attribute
+    //  are refused by the kind, naming the quantity.
+    const std::string badMoment = refusalOf([&] {
+        CarriedKind::New("chainMoment")->create("m", "PS", { 1.0 },
+            { { "order", { 0.0 } }, { "edges", { 1.0, 2.0 } } }); });
+    const std::string badOrder = refusalOf([&] {
+        CarriedKind::New("chainMoment")->create("m", "PS", { 1.0 },
+            { { "order", { 1.0 } } }); });
+    const std::string badPsd = refusalOf([&] {
+        CarriedKind::New("sizeDistribution")->create("p", "solid", { 0.5, 0.5 },
+            { { "axis", { 1e-4, 2e-4 } }, { "order", { 0.0 } } }); });
+    const std::string badMaterial = refusalOf([&] {
+        CarriedKind::New("materialMass")->create("flour", "wheat", { 1.0 },
+            { { "weight", { 1.0 } } }); });
+    const std::string badEdges = refusalOf([&] {
+        CarriedKind::New("sizeDistribution")->create("p", "solid", { 0.5, 0.5 },
+            { { "axis", { 1e-4, 2e-4 } }, { "edges", { 1e-5, 1e-4 } } }); });
+    //  ... and on WRITE: a quantity whose attributes were corrupted after
+    //  construction is refused by writeState, not printed.
+    CarriedQuantity corrupt = CarriedKind::New("materialMass")
+        ->create("flour", "wheat", { 1.0 });
+    corrupt.attributes["order"] = { 2.0 };
+    std::ostringstream sink;
+    const std::string badWrite = refusalOf([&] {
+        CarriedKind::New("materialMass")->writeState(sink, corrupt, ""); });
+    const bool massIsMass = CarriedKind::New("materialMass")->totalIsMass()
+        && !CarriedKind::New("chainMoment")->totalIsMass()
+        && !CarriedKind::New("sizeDistribution")->totalIsMass();
+
     CarriedMixContext ctx;
 
-    //  Two inlets (the numbers of bin/curate/carried_spike/mixsplit/0/feedA, feedB).
+    //  Two inlets (the numbers of bin/curate/carried_kinds/mixsplit/0/feedA, feedB).
     const std::vector<CarriedQuantity> a = { moment("PS_mu0", 0, 0.002), moment("PS_mu2", 2, 8.5) };
     const std::vector<CarriedQuantity> b = { moment("PS_mu0", 0, 0.005), moment("PS_mu2", 2, 31.0) };
     auto mixed  = mixCarried({ { "feedA", a }, { "feedB", b } }, ctx);
@@ -104,9 +197,8 @@ int main()
     m0 = q0.values[0]; m2 = q2.values[0];
     //  The same reactor handed a MATERIAL: it has no rate for it, so a change
     //  is refused by name; an unchanged value is accepted.
-    CarriedQuantity flour;
-    flour.kind = "materialMass"; flour.name = "flour"; flour.carrier = "wheatFlour";
-    flour.values = { 1.0 };
+    const CarriedQuantity flour =
+        CarriedKind::New("materialMass")->create("flour", "wheatFlour", { 1.0 });
     int refused = 0; std::string refusal;
     try { CarriedKind::New("materialMass")->transform(flour, { 0.9 }, "probeReactor"); }
     catch (const std::exception& e) { refused = 1; refusal = e.what(); }
@@ -133,6 +225,22 @@ int main()
               << "  \"mu1_out\": " << mu1 << ",\n"
               << "  \"material_change_refused\": " << refused << ",\n"
               << "  \"material_unchanged_accepted\": " << (unchangedOk ? 1 : 0) << ",\n"
+              << "  \"closure_kept\": " << closureKept << ",\n"
+              << "  \"closure_dropped\": " << closureDropped << ",\n"
+              << "  \"carried_row_kept\": \"" << rowKept << "\",\n"
+              << "  \"carried_row_dropped\": \"" << rowDropped << "\",\n"
+              << "  \"mass_kinds_state_it\": " << (massIsMass ? 1 : 0) << ",\n"
+              << "  \"bad_moment_refused\": " << (badMoment.empty() ? 0 : 1) << ",\n"
+              << "  \"bad_order_refused\": " << (badOrder.empty() ? 0 : 1) << ",\n"
+              << "  \"bad_psd_refused\": " << (badPsd.empty() ? 0 : 1) << ",\n"
+              << "  \"bad_material_refused\": " << (badMaterial.empty() ? 0 : 1) << ",\n"
+              << "  \"bad_edges_refused\": " << (badEdges.empty() ? 0 : 1) << ",\n"
+              << "  \"bad_write_refused\": " << (badWrite.empty() ? 0 : 1) << ",\n"
+              << "  \"refusals_name_the_quantity\": "
+              << ((badMoment.find("'m'") != std::string::npos
+                   && badPsd.find("'p'") != std::string::npos
+                   && badMaterial.find("'flour'") != std::string::npos
+                   && badWrite.find("'flour'") != std::string::npos) ? 1 : 0) << ",\n"
               << "  \"material_refusal_names_kind\": "
               << ((refusal.find("materialMass") != std::string::npos
                    && refusal.find("probeReactor") != std::string::npos) ? 1 : 0) << "\n"

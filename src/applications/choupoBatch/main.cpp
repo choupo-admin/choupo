@@ -136,6 +136,12 @@ static void seedBatchUnitsFrom0(const std::vector<DictPtr>& unitList,
                                 int                          verbosity)
 {
     InternalStateIO::refuseRetiredDynamicShape("0", "choupoBatch");
+    //  THE BATCH PATH REFUSES A CARRIED QUANTITY (C427 second slice): no batch
+    //  vessel models a size distribution, a material's mass or a polymer's
+    //  moments, and a recipe transfer would drop it silently -- so one in the
+    //  state tree is refused by name, as choupoSolve and the time-integrated
+    //  driver refuse it at the unit that does not model it.
+    refuseCarriedInStateTree("0", "choupoBatch");
 
     std::map<std::string, InternalStateIO::HoldupUnit> decl;
     for (const auto& uDict : unitList)

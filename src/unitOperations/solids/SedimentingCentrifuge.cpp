@@ -266,4 +266,14 @@ int SedimentingCentrifuge::solve(const DictPtr& dict, const ThermoPackage& therm
     return 0;
 }
 
+UnitAcceptance SedimentingCentrifuge::acceptance() const
+{
+    UnitAcceptance a;   // phases and components: not declared (accepts all)
+    a.carried.declared = true;
+    a.carried.kinds    = { "sizeDistribution" };
+    a.carried.sentence =
+        "TRANSFORMS it by classification: the partition of the sedimenting bowl sends each size class to the cake or the centrate, each outlet carrying its own renormalised distribution";
+    return a;
+}
+
 } // namespace Choupo

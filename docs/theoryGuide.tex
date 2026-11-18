@@ -29000,21 +29000,26 @@ the disc stack's measured efficiency factor, the drive power.
 
 
 % ---------------------------------------------------------------------
-\subsection{Carried quantities on a stream (spike)}\label{sec:carried-quantities}
+\subsection{Carried quantities on a stream}\label{sec:carried-quantities}
 
 A stream carries its molar part (\code{F}, \code{z}, \code{vf}, the solid flows
 \code{s}) and, beside it, an \emph{ordered set of carried quantities}, each a
 number or a vector with a declared basis, attached to a carrier (a material, a
 polymer, the solid).  The kinds are a closed list registered by the explicit
-factory pattern; this section states what each kind owns.  Status: a SPIKE
-(C427), run on three kinds; no material analysis, polymer property or kinetics
-is built on it, and the unit blocks that use it are the mixer and the splitter.
+factory pattern; this section states what each kind owns.  Status: three kinds
+(C427); no material analysis, polymer property or kinetics is built on them.
+The stream's core type knows no kind: a kind's own attributes (a size
+distribution's diameters, class edges and weighing mass; a moment's order) live
+in a named block that only the kind reads, writes and validates.
 
 \paragraph{What a kind owns.}  (i) its \emph{basis} and unit; (ii) its law of
 \emph{mixing}; (iii) its law of \emph{division} without fractionation; (iv) its
 \emph{balance}: whether a production or destruction term may exist for it; (v)
 its state-file form (a \code{carried \{ ... \}} block of the stream file) and
-its report line.  A carried quantity is not thereby conserved: two particles
+its report line; and (vi) whether its total is a mass in kg/s, in which case the
+plant-boundary \emph{mass balance} adds it to the boundary streams' in and out
+(a printed row \code{carried.<name>} of \code{massBalance.csv}), because a
+material the report could not see would be mass outside the closure.  A carried quantity is not thereby conserved: two particles
 that merge keep their mass and halve their number.  A quantity changes only in
 a unit that solves its balance with a declared rate and hands the result to the
 kind, which refuses a change the kind does not allow and checks its invariants.
@@ -29044,11 +29049,20 @@ redistributes mass between classes and makes none, which the kind checks.
 \end{itemize}
 
 \paragraph{What the unit declares.}  \code{UnitAcceptance::carried} lists the
-kinds a unit models; any other kind on an inlet is refused by name before the
-solve (the flowsheet's pre-solve pass for authored inlets, the hand-over for
-produced ones, the time-integrated driver at its state).  The mixer and the
-splitter model every kind because their law is the kind's own.
-\code{sizeDistribution} is exempt until the units that model it are declared.
+kinds a unit models and says in one sentence what it does to them (passes,
+transforms by its breakage, classification or growth law, creates, or refuses
+because its outlet could not carry it); any other kind on an inlet is refused
+by name before the solve (the flowsheet's pre-solve pass for authored inlets,
+the hand-over for produced ones, the time-integrated driver at its state, the
+batch driver in its state tree).  The mixer and the splitter model every kind
+because their law is the kind's own.  No kind is exempt: every unit that reads
+or writes a size distribution (the mill, the classifiers, the cyclone and bag
+filter, the cake filter and thickener, the conveyor, the crystalliser, the
+spray dryer, the gas-solid splitter) declares it, and \code{--describe-units}
+prints each unit's declaration.  The gate \code{check\_carried\_kinds} holds it;
+the shipped witness \code{splitter01\_slurry\_sizeDistribution} divides a
+slurry's size distribution to two branches, which the splitter dropped on every
+branch until 2026-11-19.
 
 \section{Drying: spray dryer and solid dryer}\label{ch:drying-overview}
 

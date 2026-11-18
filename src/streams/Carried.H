@@ -63,10 +63,11 @@ Description
                           fractions of the solid, weighted by the solid mass);
                           its mixing law is the one the mixer carried by hand
                           (C361), MOVED here unchanged.  Its STORAGE stays the
-                          `psd` field the 14 solid units read; the kind reaches
-                          it through `carriedOfInlet` / `applyCarried`.
-                          `legacyUnchecked`: the units that model it are not
-                          yet declared, so none refuses it (criterion S1).
+                          `psd` field the solid units read; the kind reaches
+                          it through `carriedOfInlet` / `applyCarried`.  Every
+                          unit that reads or writes it DECLARES that in its
+                          acceptance (second slice, 2026-11-19): it is checked
+                          like any other kind, with no exemption.
         materialMass      the mass flow of a declared material [kg/s].
         chainMoment       order 0 or 2 of a declared polymer's chain-length
                           distribution [kmol/s of chains x length^order].
@@ -76,6 +77,7 @@ Description
 
 #include "core/Types.H"
 
+#include <filesystem>
 #include <functional>
 #include <map>
 #include <memory>
@@ -91,17 +93,33 @@ class Dictionary;
 struct ProcessStream;
 struct ParticleSizeDistribution;
 
+//  The core type KNOWS NO KIND.  What belongs to one kind (a size
+//  distribution's diameters, edges and weighing mass; a chain moment's order)
+//  lives in the named-attribute block, which ONLY the kind reads, writes and
+//  validates (`CarriedKind::validate`, called on construction, read and
+//  write): an attribute the kind does not name is refused by it.
 struct CarriedQuantity
 {
     std::string kind;       // registry key
     std::string name;       // the quantity's own name (unique on a stream)
     std::string carrier;    // the material, polymer or "solid" it belongs to
     std::string unit;       // declared unit, printed
-    int         order = -1; // chainMoment: 0 or 2
     std::vector<scalar> values;   // extensive kinds: one value; psd: massFrac
-    std::vector<scalar> axis;     // psd: representative diameters [m]
-    std::vector<scalar> edges;    // psd: class edges [m] (empty = unit's bins)
-    scalar              weight = 0.0;   // psd: the solid mass that weighs it
+    std::map<std::string, std::vector<scalar>> attributes;   // the kind's own
+
+    //  The named attribute, or an empty vector when the quantity has none.
+    const std::vector<scalar>& attribute(const std::string& n) const
+    {
+        static const std::vector<scalar> none;
+        const auto it = attributes.find(n);
+        return it == attributes.end() ? none : it->second;
+    }
+    //  The attribute's single number, or `dflt` (a one-valued attribute).
+    scalar attributeScalar(const std::string& n, scalar dflt) const
+    {
+        const auto& v = attribute(n);
+        return v.empty() ? dflt : v.front();
+    }
 };
 
 //  One inlet's copy of a quantity, for a mixing law.
@@ -132,9 +150,27 @@ public:
 
     virtual ~CarriedKind() = default;
     virtual std::string kindName() const = 0;
-    //  True for a kind whose consuming units are not yet declared (the size
-    //  distribution): the acceptance check does not refuse it.
-    virtual bool legacyUnchecked() const { return false; }
+    //  A new quantity of this kind, validated: `kind` and `unit` are filled
+    //  by the kind, the attributes are checked by `validate`.
+    CarriedQuantity create(const std::string& name, const std::string& carrier,
+                           const std::vector<scalar>& values,
+                           const std::map<std::string, std::vector<scalar>>&
+                               attributes = {}) const;
+    //  THE KIND'S OWN INVARIANTS on a quantity of its kind: the attribute
+    //  names it allows, their sizes and ranges.  Throws a sentence naming the
+    //  quantity.  Called by create, readState, writeState, transform, mix and
+    //  divide results -- a quantity that violates its kind cannot be built,
+    //  read or written.
+    virtual void validate(const CarriedQuantity& q) const = 0;
+    //  The unit the values are printed in.
+    virtual std::string unitOf(const CarriedQuantity& q) const = 0;
+    //  True for a kind whose STORAGE is still the stream's own `psd` field
+    //  (and the `solids {}` wire), not the `carried {}` block (registered for
+    //  its own slice).
+    virtual bool storedInStreamPsd() const { return false; }
+    //  True when the kind's `total` is a MASS FLOW in kg/s: the plant-boundary
+    //  mass balance adds it to the boundary streams' in and out.
+    virtual bool totalIsMass() const { return false; }
     //  Mixing: `parts` are the inlets that carry a quantity of this name.
     //  nullopt = nothing to publish.
     virtual std::optional<CarriedQuantity>
@@ -166,9 +202,6 @@ public:
     virtual void publishKpis(std::map<std::string, scalar>&,
                              const CarriedQuantity&) const {}
 };
-
-//  Is `kind` one the acceptance check never refuses (see legacyUnchecked)?
-bool carriedKindIsLegacyUnchecked(const std::string& kind);
 
 //  The wire form between the flowsheet and a unit: `carried { <name> {...} }`
 //  inside a unit's inlet dict.  (The size distribution keeps its existing
@@ -217,5 +250,19 @@ void publishCarriedKpis(std::map<std::string, scalar>& kpis,
 //  closure the probe prints): sum of `total()` of every quantity so named.
 scalar carriedTotal(const std::vector<const ProcessStream*>& streams,
                     const std::string& name);
+
+//  THE MASS-LIKE QUANTITIES OF A STREAM [kg/s], by quantity name: every
+//  carried quantity whose kind states `totalIsMass()`.  The plant-boundary
+//  mass balance adds these to its in and out (a material the report cannot
+//  see is mass outside the closure, CLAUDE.md rule 4b).  Empty for a stream
+//  that carries no mass-like quantity.
+std::map<std::string, scalar> carriedMassFlows(const ProcessStream& s);
+
+//  A driver whose units model NO carried quantity refuses a state tree that
+//  carries one: every file under `zeroDir` is scanned for a `carried {}`
+//  block or a size distribution, and the first is refused by name with
+//  `driver` and the file (a closed batch vessel's holdup has no home for it).
+void refuseCarriedInStateTree(const std::filesystem::path& zeroDir,
+                              const std::string&           driver);
 
 } // namespace Choupo

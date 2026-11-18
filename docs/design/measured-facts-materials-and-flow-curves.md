@@ -489,6 +489,87 @@ j. NOT DONE, DELIBERATELY: `--describe-units` does not yet print
    Guide and `docs/tutorials-catalogue.md` have no entry); the guide PDFs
    were rebuilt for the Theory Guide only.
 
+### 5d, second slice (2026-11-19, branch `build/last-carried-2`): the five conditions of the verdict, proven
+
+(1) NO EXEMPTION.  `CarriedKind::legacyUnchecked` and `carriedKindIsLegacyUnchecked`
+are deleted; the size distribution is checked like any kind, authored (the
+flowsheet's pre-solve pass) and produced (the hand-over), through
+`carriedOfStream`, which reads the stream's own `psd` field as a quantity.
+Sixteen unit types now declare `UnitAcceptance::carried` with a sentence (a new
+member `declared`, independent of the phase and component `declared`, so a unit
+with no acceptance contract at all -- the mill had none -- declares only this):
+mixer and splitter (every kind, by the kind's own law); THE KINDS' TRANSFORMERS,
+mill (breakage balance, through `transform`), hydrocyclone, screen, classifier,
+sedimenting centrifuge (partition curve), cyclone and bag filter (grade
+efficiency); THE PASSERS, pneumatic conveyor, gas-solid splitter, cake filter,
+thickener, solid dryer (the distribution rides with the solid, unchanged);
+THE CREATORS, spray dryer (creates the powder's own and REPLACES the feed's) and
+crystalliser (creates the magma's; an inlet distribution is refused, since the
+unit reads none).  `choupoSolve --describe-units` prints each unit's `carried`
+entry.  WHAT TODAY'S SHIPPED CASES FOUND: with the exemption gone, exactly two
+legitimate uses were refused and are the reason two units declare what they do:
+a crystalliser magma with its crystal size distribution feeding the spray dryer,
+and the spray dryer's powder feeding the solid dryer in
+`ChemicalPlantTutorial`.  The solid dryer built its dry solid with no
+distribution (the powder lost it silently, beside a mass balance that closed);
+it now hands the wet solid's distribution to the dry solid
+(`applyCarried(dry, carriedOfInlet(...))`), the one behaviour change of the
+slice, visible only in a stream's `psd` block, in no pinned row.  A heater fed a
+slurry with a distribution, authored or produced, is refused by kind, unit and
+stream (probe in the gate).  The convective and evaporative dryers have no
+shipped case that feeds them a distribution and declare nothing: a distribution
+on their inlet is refused, which is the safe side and the registered next unit.
+
+(2) THE BATCH PATH REFUSES.  `choupoBatch` scans its state tree before seeding
+the vessels (`refuseCarriedInStateTree`) and refuses a `carried` or
+`particleSizeDistribution` block in any file under `0/`, naming the driver and
+the file; no batch vessel models a carried quantity and a recipe transfer would
+drop it.  The time-integrated driver already refused (spike).  A batch PLANT
+(`tutorials/batch/plant`) runs under `choupoSolve` on the steady balance, so it
+is covered by (1).
+
+(3) A MASS-LIKE KIND ENTERS THE MASS BALANCE.  `CarriedKind::totalIsMass()`
+(true for `materialMass` only); `MassBalanceReport` adds the carried masses of
+the boundary streams to `in` and `out` of the TOTAL and PROCESS scopes and
+prints one row `carried.<name>` in `massBalance.csv` (kg/h), only when a stream
+carries one, so every file of every shipped case is unchanged.  The gate runs
+the REAL report on a hand-built result (a splitter, 4 kg/s of flour): closure
+100.000 % with the material counted; with sideB's material dropped (the
+sabotage is in the probe) 30.00 %, the row reading `14400 / 4320`.  The PER-UNIT
+balance and the ELEMENT balance still do not see a material (the element form
+waits for the material's analysis, as ruled).
+
+(4) THE CORE TYPE KNOWS NO KIND.  `CarriedQuantity` is `{ kind, name, carrier,
+unit, values, attributes }`; `order`, `axis`, `edges` and `weight` are
+attributes in a named block (`std::map<std::string, std::vector<scalar>>`) that
+only the kind reads; the kind lists the names it allows and refuses any other,
+checks sizes and ranges (`CarriedKind::validate`), and the entry points are the
+factory `create`, `readState`, `writeState` and `transform`.  The state-file
+text is byte-identical (the round-trip arm and 160 cases).
+
+(5) THE PROBE IS A GATE.  `check_carried_spike.py` is now
+`bin/curate/check_carried_kinds.py` (fixture `bin/curate/carried_kinds/`), a
+block in `bin/runTests` and a SERIAL line in `suite_lanes.txt` (it builds
+`carriedProbe` into the linked build), its header naming the splitter's lost
+distribution; 60 claims.  Witness
+`tutorials/steady/solids/splitter01_slurry_sizeDistribution` (README, golden,
+catalogue and Tutorials Guide entry).  Proof: `bin/runTests --scope` over 160 cases (99 cases that run a unit touching a distribution, a mixer or a splitter, name a size grid or distribution, or are a plant, the witness among them, plus the 61 other batch cases): 163 PASS, 0 FAIL, 3 EXPECTED-FAIL (the deliberate ones), every golden unmoved, mass, element and energy closures held.
+
+WHAT THE RECORD HAD WRONG, found by doing it: (a) the verdict said the 14 units
+that touch `.psd` declare; 16 types must, because two more touch the
+distribution through `carriedOfInlet`/`applyCarried` (the mixer and the
+splitter) and one only by being fed one (the solid dryer), and the unit that
+legitimately received a distribution it then dropped was found by the shipped
+corpus, not by the grep.  (b) `declared` cannot be the one flag of an
+acceptance: the mill is not a unit with a phase or component contract, and
+setting `declared` on it would have activated the combined-feed machinery, so
+the carried clause has its own.  (c) A weight (`weight` of a distribution) is
+not the kind's state but the carrier's mass supplied at the hand-over; it lives
+in the attribute block only while a unit holds the quantity, and a stream's own
+copy has none.  (d) The size distribution's storage is still the stream's `psd`
+field (registered for its own slice); the kind reaches it through
+`carriedOfStream` and `applyCarried`.
+
 ## 5c. The kinds of component (C427)
 
 Today a record says `role nonvolatile` or `role solute` (105 records) and

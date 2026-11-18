@@ -1,0 +1,14 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  splitter01_slurry_sizeDistribution / controlDict
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A splitter divides a limestone slurry 30/70 and BOTH branches keep the slurry's size distribution: the distribution is intensive (fractions of the solid), so a split changes the mass that weighs it and never the fractions. Before 2026-11-19 the splitter dropped it on every branch.";
+verbosity     3;

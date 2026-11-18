@@ -13352,6 +13352,37 @@ One screen, model `declared`: the case's Rosin-Rammler curve and bypass (illustr
 \end{tutgolden}
 
 \clearpage
+\tutentry{splitter01\_slurry\_sizeDistribution}{tutorials/steady/solids/splitter01\_slurry\_sizeDistribution}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (split) at (0.0,-0.0) {\textbf{split}\\[-1pt]{\tiny splitter}};
+  \draw[->] ($(split.west)+(-1.05,0.00)$) -- ($(split.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {slurry};
+  \draw[->] ($(split.east)+(0,-0.17)$) -- ($(split.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {branchA};
+  \draw[->] ($(split.east)+(0,0.17)$) -- ($(split.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {branchB};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A splitter divides a limestone slurry 30/70 and BOTH branches keep the slurry's size distribution: the distribution is intensive (fractions of the solid), so a split changes the mass that weighs it and never the fractions. Before 2026-11-19 the splitter dropped it on every branch.}
+\begin{tutnarrative}
+One splitter, one slurry. The slurry carries a size distribution; each branch must carry the SAME distribution (the kind's law of division) with its own solid mass. The splitter names no kind: it hands the quantity to the kind's own division law.
+
+\end{tutnarrative}
+\tutreadme{One splitter takes a limestone slurry (1.0 t/h of calcite in 4.0 t/h of water, with a measured sieve table on the edges 45 / 90 / 180 / 355 / 710 um) and sends 30 \% to branchA and 70 \% to branchB.}
+\tutreadme{A particle-size distribution is intensive: its numbers are the $\ast$fractions$\ast$ of the solid in each size class, and they are weighed by the solid mass that carries them. Dividing a stream divides the mass and leaves the fractions alone, so each branch carries the same four fractions (0.10 / 0.30 / 0.40 / 0.20) with its own solid mass (0.3 and 0.7 t/h of calcite). The splitter names no kind of quantity: it hands the distribution to the kind's own law of division (src/streams/Carried.cpp, SizeDistributionKind::divide).}
+\tutreadme{Until 2026-11-19 the splitter dropped the size distribution on every branch. The mass balance closed (a distribution is not a flow) and every golden pinned "unchanged", so nothing said so; the defect was found by putting a second kind of carried quantity on the same stream. This case pins the repaired behaviour: the golden holds the branches' flows and the distribution moments each branch publishes, and the gate bin/curate/check\_carried\_kinds.py reads the branches' state files and holds that both carry the feed's distribution class for class, and that splitting then mixing returns the feed's distribution to 1e-12.}
+\begin{tutgolden}
+\goldrow{stream}{branchA}{F}{0.0193357098333}
+\goldrow{stream}{branchA}{T}{298.15}
+\goldrow{stream}{branchB}{F}{0.0451166562778}
+\goldrow{stream}{branchB}{T}{298.15}
+\goldrow{stream}{slurry}{F}{0.0644523661111}
+\goldrow{stream}{slurry}{T}{298.15}
+\goldrow{boundary}{global}{H\_feeds\_kW}{-21015.9230891}
+\goldrow{boundary}{global}{Q\_boundary\_kW}{0}
+\goldrow{boundary}{global}{H\_products\_kW}{-21015.9230891}
+\goldrow{boundary}{global}{noBoundary}{false}
+\end{tutgolden}
+
+\clearpage
 \tutentry{thickener01\_settlingTest\_talmageFitch}{tutorials/steady/solids/thickener01\_settlingTest\_talmageFitch}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

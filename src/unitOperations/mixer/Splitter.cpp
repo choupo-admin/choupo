@@ -150,6 +150,7 @@ UnitAcceptance Splitter::acceptance() const
         "every component of the inlet, divided by ONE fraction per outlet: "
         "it separates nothing, so every outlet has the inlet's composition, "
         "temperature and pressure";
+    a.carried.declared = true;
     a.carried.allKinds = true;
     a.carried.sentence =
         "every carried quantity divided with its carrier by the law of its "

@@ -1,0 +1,13 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  branchA                F                0.0193357098333    1e-4
+stream  branchA                T                298.15             1e-4
+stream  branchB                F                0.0451166562778    1e-4
+stream  branchB                T                298.15             1e-4
+stream  slurry                 F                0.0644523661111    1e-4
+stream  slurry                 T                298.15             1e-4
+boundary global               H_feeds_kW       -21015.9230891     1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    -21015.9230891     1e-4
+boundary global               noBoundary       false              exact

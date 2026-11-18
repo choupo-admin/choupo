@@ -110,11 +110,14 @@ static void refuseUnmodelledCarried(const std::string&               utype,
     for (const auto& n : inNames)
     {
         const auto it = streams.find(n);
-        if (it == streams.end() || it->second.carried.empty()) continue;
+        if (it == streams.end()) continue;
+        //  EVERY quantity the stream carries, the size distribution included:
+        //  no kind is exempt (second slice).
+        const std::vector<CarriedQuantity> qs = carriedOfStream(it->second);
+        if (qs.empty()) continue;
         if (!unit) unit = UnitOperation::New(utype);
         for (auto& f : carriedFindings(unit->acceptance(), utype,
-                                       utype + " '" + uname + "'", n,
-                                       it->second.carried))
+                                       utype + " '" + uname + "'", n, qs))
             findings.push_back(std::move(f));
     }
     if (findings.empty()) return;

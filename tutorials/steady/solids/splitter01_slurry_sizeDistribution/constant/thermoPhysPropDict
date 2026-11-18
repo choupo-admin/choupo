@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  splitter01_slurry_sizeDistribution / thermoPhysPropDict
+
+  Calcite in water, ideal.  A splitter reads no property; the solid is the
+  carrier of the size distribution and nothing more.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+
+components ( CaCO3 water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal; standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}

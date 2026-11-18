@@ -203,10 +203,15 @@ struct UnitAcceptance
     //  rate for it.  The DEFAULT models none, so a unit that has not declared
     //  one refuses every kind, which is the safe side.  `allKinds` is for a
     //  unit whose law is the kind's own (the mixer adds, the splitter
-    //  divides); the size distribution is exempt for now (its units are not
-    //  declared yet; `CarriedKind::legacyUnchecked`).
+    //  divides).  NO KIND IS EXEMPT (second slice, 2026-11-19): every unit
+    //  that reads or writes a size distribution declares it here, with a
+    //  sentence saying what it does to the distribution, and the gate
+    //  `check_carried_kinds` holds that no such unit is left without one.
+    //  `declared` is true on a class that made the statement (independent of
+    //  the phase/component `declared` above, which a unit may not have).
     struct Carried
     {
+        bool                     declared = false;
         bool                     allKinds = false;
         std::vector<std::string> kinds;
         std::string              sentence;   // what the unit does with them

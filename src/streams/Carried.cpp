@@ -38,7 +38,9 @@ Description
 #include "streams/ProcessStream.H"
 
 #include <algorithm>
+#include <cctype>
 #include <cmath>
+#include <fstream>
 #include <iomanip>
 #include <map>
 #include <mutex>
@@ -57,10 +59,39 @@ std::map<std::string, CarriedKind::Factory>& registry()
 ParticleSizeDistribution psdOf(const CarriedQuantity& q)
 {
     ParticleSizeDistribution p;
-    p.diameter = q.axis;
+    p.diameter = q.attribute("axis");
     p.massFrac = q.values;
-    p.edges    = q.edges;
+    p.edges    = q.attribute("edges");
     return p;
+}
+
+//  A kind's attribute names are CLOSED: one it does not list is refused, by
+//  the kind, naming the quantity.
+void allowOnly(const CarriedQuantity& q,
+               const std::vector<std::string>& allowed)
+{
+    for (const auto& kv : q.attributes)
+        if (std::find(allowed.begin(), allowed.end(), kv.first) == allowed.end())
+        {
+            std::string list;
+            for (const auto& a : allowed) list += (list.empty() ? "" : ", ") + a;
+            throw std::runtime_error("carried quantity '" + q.name + "' ("
+                + q.kind + "): the attribute '" + kv.first + "' is not one of"
+                + " this kind's own ("
+                + (list.empty() ? std::string("it has none") : list) + ").");
+        }
+}
+
+std::string attributesText(const CarriedQuantity& q)
+{
+    if (q.attributes.empty()) return "none";
+    std::string s;
+    for (const auto& kv : q.attributes)
+    {
+        s += (s.empty() ? "" : ", ") + kv.first + " =";
+        for (const auto v : kv.second) s += " " + std::to_string(v);
+    }
+    return s;
 }
 
 // ---------------------------------------------------------------------------
@@ -79,12 +110,13 @@ public:
         scalar sum = 0.0;
         for (const auto& p : parts)
         {
-            if (p.q->carrier != out.carrier || p.q->order != out.order)
+            if (p.q->carrier != out.carrier || p.q->attributes != out.attributes)
                 throw std::runtime_error("carried quantity '" + out.name
                     + "': inlet '" + p.inlet + "' declares carrier '"
-                    + p.q->carrier + "' (order " + std::to_string(p.q->order)
-                    + ") where inlet '" + parts.front().inlet + "' declares '"
-                    + out.carrier + "' (order " + std::to_string(out.order)
+                    + p.q->carrier + "' (attributes "
+                    + attributesText(*p.q) + ") where inlet '"
+                    + parts.front().inlet + "' declares '"
+                    + out.carrier + "' (attributes " + attributesText(out)
                     + ").  One name is one quantity of one carrier; they"
                       " cannot be added.");
             sum += p.q->values.empty() ? 0.0 : p.q->values.front();
@@ -104,7 +136,11 @@ public:
         os << ind << q.name << "\n" << ind << "{\n"
            << ind << "    kind     " << q.kind << ";\n"
            << ind << "    carrier  " << q.carrier << ";\n";
-        if (q.order >= 0) os << ind << "    order    " << q.order << ";\n";
+        validate(q);
+        if (q.attributes.count("order"))
+            os << ind << "    order    "
+               << static_cast<int>(std::lround(q.attributeScalar("order", -1)))
+               << ";\n";
         const auto oldPrec = os.precision(17);
         os << ind << "    values   (";
         for (const auto v : q.values) os << " " << v;
@@ -118,21 +154,20 @@ public:
         q.kind    = kindName();
         q.name    = name;
         q.carrier = d.lookupWord("carrier");
-        q.order   = d.found("order")
-                  ? static_cast<int>(std::lround(d.lookupScalar("order"))) : -1;
+        if (d.found("order"))
+            q.attributes["order"] = { std::round(d.lookupScalar("order")) };
         q.values  = d.lookupList("values");
         q.unit    = unitOf(q);
-        if (q.values.size() != 1)
-            throw std::runtime_error("carried quantity '" + name + "' ("
-                + kindName() + "): `values` must hold ONE number, it holds "
-                + std::to_string(q.values.size()) + ".");
-        check(q);
+        validate(q);
         return q;
     }
     void report(std::ostream& os, const CarriedQuantity& q) const override
     {
         os << q.name << " [" << kindName() << ", carrier " << q.carrier
-           << (q.order >= 0 ? ", order " + std::to_string(q.order) : "")
+           << (q.attributes.count("order")
+                   ? ", order " + std::to_string(static_cast<int>(
+                         std::lround(q.attributeScalar("order", -1))))
+                   : std::string())
            << "] = " << q.values.front() << " " << q.unit;
     }
     scalar total(const CarriedQuantity& q) const override
@@ -155,12 +190,21 @@ public:
                   " (a rate), or refuse.");
         CarriedQuantity out = in;
         out.values = solved;
-        check(out);
+        validate(out);
         return out;
     }
 
-    virtual std::string unitOf(const CarriedQuantity&) const = 0;
-    virtual void check(const CarriedQuantity&) const {}
+    //  The invariants every extensive kind shares: ONE value; the kind adds
+    //  its own attributes and ranges in `check`.
+    void validate(const CarriedQuantity& q) const override
+    {
+        if (q.values.size() != 1)
+            throw std::runtime_error("carried quantity '" + q.name + "' ("
+                + kindName() + "): `values` must hold ONE number, it holds "
+                + std::to_string(q.values.size()) + ".");
+        check(q);
+    }
+    virtual void check(const CarriedQuantity&) const = 0;
 };
 
 class MaterialMassKind : public ExtensiveKind
@@ -168,9 +212,11 @@ class MaterialMassKind : public ExtensiveKind
 public:
     std::string kindName() const override { return "materialMass"; }
     bool allowsProduction() const override { return false; }
+    bool totalIsMass() const override { return true; }
     std::string unitOf(const CarriedQuantity&) const override { return "kg/s"; }
     void check(const CarriedQuantity& q) const override
     {
+        allowOnly(q, {});
         if (q.values.front() < 0.0)
             throw std::runtime_error("carried quantity '" + q.name
                 + "' (materialMass): a mass flow is not negative ("
@@ -190,10 +236,12 @@ public:
         //  Q5: the zeroth moment (the chain count) and the second (for the
         //  weight average); the first is DERIVED from the segments (Q4), so
         //  carrying it would be a second home for the polymer's mass.
-        if (q.order != 0 && q.order != 2)
+        allowOnly(q, { "order" });
+        const scalar order = q.attributeScalar("order", -1.0);
+        if (order != 0.0 && order != 2.0)
             throw std::runtime_error("carried quantity '" + q.name
                 + "' (chainMoment): `order` must be 0 or 2, it is "
-                + std::to_string(q.order) + ".  The first moment is never"
+                + std::to_string(static_cast<int>(order)) + ".  The first moment is never"
                   " carried: it is derived from the segment flows (design"
                   " record 5b, Q4/Q5).");
         if (q.values.front() < 0.0)
@@ -211,7 +259,32 @@ class SizeDistributionKind : public CarriedKind
 {
 public:
     std::string kindName() const override { return "sizeDistribution"; }
-    bool legacyUnchecked() const override { return true; }
+    bool storedInStreamPsd() const override { return true; }
+    std::string unitOf(const CarriedQuantity&) const override { return "-"; }
+    void validate(const CarriedQuantity& q) const override
+    {
+        allowOnly(q, { "axis", "edges", "weight" });
+        const auto& axis  = q.attribute("axis");
+        const auto& edges = q.attribute("edges");
+        if (q.attribute("weight").size() > 1)
+            throw std::runtime_error("carried quantity '" + q.name
+                + "' (sizeDistribution): `weight` is ONE number (the solid"
+                  " mass that weighs the fractions).");
+        if (q.attributeScalar("weight", 0.0) < 0.0)
+            throw std::runtime_error("carried quantity '" + q.name
+                + "' (sizeDistribution): `weight` is a mass, not negative.");
+        if (q.values.empty()) return;       // an inlet that carries solids but no distribution
+        if (axis.size() != q.values.size())
+            throw std::runtime_error("carried quantity '" + q.name
+                + "' (sizeDistribution): " + std::to_string(axis.size())
+                + " diameters for " + std::to_string(q.values.size())
+                + " mass fractions.");
+        if (!edges.empty() && edges.size() != q.values.size() + 1)
+            throw std::runtime_error("carried quantity '" + q.name
+                + "' (sizeDistribution): " + std::to_string(edges.size())
+                + " class edges for " + std::to_string(q.values.size())
+                + " classes (one more than the classes).");
+    }
     //  Breakage and growth move mass BETWEEN classes (a redistribution, with
     //  the unit's own rate); none makes solid mass, which the check holds.
     bool allowsProduction() const override { return true; }
@@ -235,6 +308,7 @@ public:
                   " redistribution between classes makes no solid mass.");
         CarriedQuantity out = in;
         out.values = solved;
+        validate(out);
         return out;
     }
 
@@ -257,19 +331,19 @@ public:
         //      done (every case written before the grid: unchanged).
         const CarriedPart* ref = nullptr;
         for (const auto& pi : parts)
-            if (!pi.q->edges.empty() && !pi.q->values.empty()) { ref = &pi; break; }
+            if (!pi.q->attribute("edges").empty() && !pi.q->values.empty()) { ref = &pi; break; }
         if (!ref) return std::nullopt;
 
         SizeGrid grid;
         if (ctx.unitDict && ctx.unitDict->found("sizeGrid"))
             grid = SizeGrid::fromDict(ctx.unitDict->subDict("sizeGrid"));
-        const std::vector<scalar>& E = ref->q->edges;
+        const std::vector<scalar>& E = ref->q->attribute("edges");
         std::vector<scalar> w(E.size() - 1, 0.0);
         scalar M = 0.0;
         for (const auto& pi : parts)
         {
             ParticleSizeDistribution p = psdOf(*pi.q);
-            const scalar mass = pi.q->weight;
+            const scalar mass = pi.q->attributeScalar("weight", 0.0);
             if (p.empty())
                 throw std::runtime_error("mixer: inlet '" + pi.inlet + "' "
                     "carries solids with NO size distribution while inlet '"
@@ -315,15 +389,10 @@ public:
         }
         if (!(M > 0.0)) return std::nullopt;
         for (auto& v : w) v /= M;
-        CarriedQuantity out;
-        out.kind    = kindName();
-        out.name    = ref->q->name;
-        out.carrier = ref->q->carrier;
-        out.edges   = E;
-        out.axis    = representativeSizes(E);
-        out.values  = w;
-        out.weight  = M;
-        return out;
+        return create(ref->q->name, ref->q->carrier, w,
+                      { { "axis",   representativeSizes(E) },
+                        { "edges",  E },
+                        { "weight", { M } } });
     }
 
     CarriedQuantity divide(const CarriedQuantity& q, scalar f) const override
@@ -331,24 +400,26 @@ public:
         //  Intensive: a split does not change the fractions, only the mass
         //  that weighs them.
         CarriedQuantity out = q;
-        out.weight *= f;
+        if (out.attributes.count("weight"))
+            out.attributes["weight"] = { q.attributeScalar("weight", 0.0) * f };
         return out;
     }
 
     void writeState(std::ostream& os, const CarriedQuantity& q,
                     const std::string& ind) const override
     {
+        validate(q);
         //  The text the state writer printed before the kinds existed.
         os << ind << "particleSizeDistribution\n" << ind << "{\n"
            << ind << "    diameter  (";
-        for (const auto d : q.axis) os << " " << d;
+        for (const auto d : q.attribute("axis")) os << " " << d;
         os << " );\n" << ind << "    massFrac  (";
         for (const auto m : q.values) os << " " << m;
         os << " );\n";
-        if (!q.edges.empty())
+        if (!q.attribute("edges").empty())
         {
             os << ind << "    edges     (";
-            for (const auto e : q.edges) os << " " << e;
+            for (const auto e : q.attribute("edges")) os << " " << e;
             os << " );\n";
         }
         os << ind << "}\n";
@@ -357,14 +428,10 @@ public:
     CarriedQuantity readState(const std::string& name,
                               const Dictionary& d) const override
     {
-        CarriedQuantity q;
-        q.kind    = kindName();
-        q.name    = name;
-        q.carrier = "solid";
-        q.axis    = d.lookupList("diameter");
-        q.values  = d.lookupList("massFrac");
-        if (d.found("edges")) q.edges = d.lookupList("edges");
-        return q;
+        std::map<std::string, std::vector<scalar>> at;
+        at["axis"] = d.lookupList("diameter");
+        if (d.found("edges")) at["edges"] = d.lookupList("edges");
+        return create(name, "solid", d.lookupList("massFrac"), at);
     }
 
     void publishKpis(std::map<std::string, scalar>& kpis,
@@ -430,15 +497,38 @@ void CarriedKind::registerBuiltins()
         [] { return std::make_unique<ChainMomentKind>(); });
 }
 
-bool carriedKindIsLegacyUnchecked(const std::string& kind)
+CarriedQuantity CarriedKind::create(const std::string& name,
+                                    const std::string& carrier,
+                                    const std::vector<scalar>& values,
+                                    const std::map<std::string,
+                                        std::vector<scalar>>& attributes) const
 {
-    return CarriedKind::New(kind)->legacyUnchecked();
+    CarriedQuantity q;
+    q.kind       = kindName();
+    q.name       = name;
+    q.carrier    = carrier;
+    q.values     = values;
+    q.attributes = attributes;
+    q.unit       = unitOf(q);
+    validate(q);
+    return q;
 }
 
 // ---------------------------------------------------------------------------
 //  Wire, stream, state file
 // ---------------------------------------------------------------------------
 static const char* const kPsdName = "particleSizeDistribution";
+
+//  A stream's own size distribution as a carried quantity (weight 0: a
+//  stream does not know the molar masses that would weigh it).
+static CarriedQuantity psdQuantity(const ParticleSizeDistribution& psd)
+{
+    std::map<std::string, std::vector<scalar>> at;
+    at["axis"] = psd.diameter;
+    if (!psd.edges.empty()) at["edges"] = psd.edges;
+    return CarriedKind::New("sizeDistribution")
+        ->create(kPsdName, "solid", psd.massFrac, at);
+}
 
 void carriedToDict(Dictionary& d, const ProcessStream& s)
 {
@@ -449,7 +539,8 @@ void carriedToDict(Dictionary& d, const ProcessStream& s)
         auto qd = std::make_shared<Dictionary>(q.name);
         qd->insert("kind", q.kind);
         qd->insert("carrier", q.carrier);
-        if (q.order >= 0) qd->insert("order", static_cast<scalar>(q.order));
+        if (q.attributes.count("order"))
+            qd->insert("order", q.attributeScalar("order", -1.0));
         qd->insert("values", q.values);
         cd->insert(q.name, qd);
     }
@@ -463,22 +554,21 @@ std::vector<CarriedQuantity> carriedOfInlet(const Dictionary& d, scalar solidMas
     {
         //  Solid-bearing: the psd quantity exists, EMPTY when the inlet has
         //  no distribution (the mixing law refuses that beside a gridded one).
-        CarriedQuantity q;
-        q.kind    = "sizeDistribution";
-        q.name    = kPsdName;
-        q.carrier = "solid";
-        q.weight  = solidMass;
+        std::vector<scalar> values;
+        std::map<std::string, std::vector<scalar>> at;
+        at["weight"] = { solidMass };
         if (d.found("solids"))
         {
             auto sol = d.subDict("solids");
             if (sol->found("diameters"))
             {
-                q.axis   = sol->lookupList("diameters");
-                q.values = sol->lookupList("massFractions");
-                if (sol->found("sizeEdges")) q.edges = sol->lookupList("sizeEdges");
+                at["axis"] = sol->lookupList("diameters");
+                values     = sol->lookupList("massFractions");
+                if (sol->found("sizeEdges")) at["edges"] = sol->lookupList("sizeEdges");
             }
         }
-        out.push_back(std::move(q));
+        out.push_back(CarriedKind::New("sizeDistribution")
+                          ->create(kPsdName, "solid", values, at));
     }
     if (d.found("carried"))
     {
@@ -498,10 +588,7 @@ std::vector<CarriedQuantity> carriedOfStream(const ProcessStream& s)
     std::vector<CarriedQuantity> out;
     if (!s.psd.empty())
     {
-        CarriedQuantity q;
-        q.kind = "sizeDistribution"; q.name = kPsdName; q.carrier = "solid";
-        q.axis = s.psd.diameter; q.values = s.psd.massFrac; q.edges = s.psd.edges;
-        out.push_back(std::move(q));
+        out.push_back(psdQuantity(s.psd));
     }
     for (const auto& q : s.carried) out.push_back(q);
     return out;
@@ -514,9 +601,9 @@ void applyCarried(ProcessStream& s, const std::vector<CarriedQuantity>& qs)
         if (q.kind == "sizeDistribution")
         {
             if (q.values.empty()) continue;
-            s.psd.diameter = q.axis;
+            s.psd.diameter = q.attribute("axis");
             s.psd.massFrac = q.values;
-            s.psd.edges    = q.edges;
+            s.psd.edges    = q.attribute("edges");
         }
         else
         {
@@ -586,7 +673,7 @@ void readCarriedBlock(const Dictionary& d, ProcessStream& s)
         auto qd = cd->subDict(key);
         const std::string kind = qd->lookupWord("kind");
         auto k = CarriedKind::New(kind);
-        if (k->legacyUnchecked())
+        if (k->storedInStreamPsd())
             throw std::runtime_error("carried quantity '" + key + "': kind '"
                 + kind + "' lives in the stream's own psd block, not in"
                   " `carried {}`.");
@@ -597,10 +684,7 @@ void readCarriedBlock(const Dictionary& d, ProcessStream& s)
 void writePsdState(std::ostream& os, const ParticleSizeDistribution& psd,
                    const std::string& indent)
 {
-    CarriedQuantity q;
-    q.kind = "sizeDistribution"; q.name = kPsdName; q.carrier = "solid";
-    q.axis = psd.diameter; q.values = psd.massFrac; q.edges = psd.edges;
-    CarriedKind::New("sizeDistribution")->writeState(os, q, indent);
+    CarriedKind::New("sizeDistribution")->writeState(os, psdQuantity(psd), indent);
 }
 
 void reportCarried(std::ostream& os, const ProcessStream& s,
@@ -628,6 +712,53 @@ scalar carriedTotal(const std::vector<const ProcessStream*>& streams,
         for (const auto& q : s->carried)
             if (q.name == name) t += CarriedKind::New(q.kind)->total(q);
     return t;
+}
+
+std::map<std::string, scalar> carriedMassFlows(const ProcessStream& s)
+{
+    std::map<std::string, scalar> out;
+    for (const auto& q : s.carried)
+    {
+        const auto k = CarriedKind::New(q.kind);
+        if (k->totalIsMass()) out[q.name] += k->total(q);
+    }
+    return out;
+}
+
+void refuseCarriedInStateTree(const std::filesystem::path& zeroDir,
+                              const std::string&           driver)
+{
+    namespace fs = std::filesystem;
+    if (!fs::exists(zeroDir)) return;
+    std::vector<fs::path> files;
+    for (const auto& e : fs::recursive_directory_iterator(zeroDir))
+        if (e.is_regular_file()) files.push_back(e.path());
+    std::sort(files.begin(), files.end());
+    for (const auto& f : files)
+    {
+        std::ifstream in(f);
+        std::string line;
+        while (std::getline(in, line))
+        {
+            const auto b = line.find_first_not_of(" \t");
+            if (b == std::string::npos || line.compare(b, 2, "//") == 0) continue;
+            for (const char* key : { "carried", "particleSizeDistribution" })
+            {
+                const std::size_t n = std::string(key).size();
+                if (line.compare(b, n, key) == 0
+                    && (b + n == line.size()
+                        || !(std::isalnum(static_cast<unsigned char>(line[b + n]))
+                             || line[b + n] == '_')))
+                    throw std::runtime_error(driver + ": the state file '"
+                        + f.string() + "' carries a `" + key + "` block, and"
+                        " no unit of " + driver + " models a carried quantity"
+                        " (a size distribution, a material's mass, a polymer's"
+                        " moments: design record 5b/5d).  It would be dropped"
+                        " at the first transfer, so it is refused here.  Take"
+                        " it off the file, or run the case in choupoSolve.");
+            }
+        }
+    }
 }
 
 } // namespace Choupo

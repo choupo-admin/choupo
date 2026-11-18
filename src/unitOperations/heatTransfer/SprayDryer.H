@@ -82,6 +82,7 @@ public:
 
     std::vector<ProcessStream>    producedStreams() const override { return produced_; }
     std::map<std::string, scalar> kpis()            const override { return kpis_; }
+    UnitAcceptance acceptance() const override;
     std::optional<UnitProfile>    profile()         const override { return profile_; }
 
 private:

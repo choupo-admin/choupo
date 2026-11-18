@@ -840,6 +840,7 @@ UnitAcceptance Mixer::acceptance() const
         "that closes the adiabatic balance or at the declared one (then the "
         "duty it implies is published and the outlet carries the dominant "
         "phase's label)";
+    a.carried.declared = true;
     a.carried.allKinds = true;
     a.carried.sentence =
         "every carried quantity of every inlet, blended by the law of its own "

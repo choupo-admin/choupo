@@ -512,4 +512,14 @@ int PneumaticConveyor::solve(const DictPtr& dict,
     return 0;
 }
 
+UnitAcceptance PneumaticConveyor::acceptance() const
+{
+    UnitAcceptance a;   // phases and components: not declared (accepts all)
+    a.carried.declared = true;
+    a.carried.kinds    = { "sizeDistribution" };
+    a.carried.sentence =
+        "READS the size distribution of the conveyed solid (it sets the terminal velocity and the solids friction) and PASSES it unchanged to the outlet: a conveyor does not change particle size";
+    return a;
+}
+
 } // namespace Choupo

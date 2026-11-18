@@ -532,4 +532,14 @@ int CakeFilter::solve(const DictPtr& dict, const ThermoPackage& thermo, int verb
     return 0;
 }
 
+UnitAcceptance CakeFilter::acceptance() const
+{
+    UnitAcceptance a;   // phases and components: not declared (accepts all)
+    a.carried.declared = true;
+    a.carried.kinds    = { "sizeDistribution" };
+    a.carried.sentence =
+        "PASSES it with the solid, unchanged, to every outlet that carries solid (cake, filtrate, spent wash): the filter separates liquid from solid by a cake balance and selects nothing by size";
+    return a;
+}
+
 } // namespace Choupo

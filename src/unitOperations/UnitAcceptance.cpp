@@ -547,7 +547,17 @@ void describeAcceptancesJson(
             os << (k ? ", " : "") << "{ \"id\": " << q(a.refusesAlso[k].id)
                << ", \"sentence\": " << q(a.refusesAlso[k].sentence)
                << ", \"remedy\": " << q(a.refusesAlso[k].remedy) << " }";
-        os << "]\n    }";
+        os << "]";
+        os << ",\n      \"carried\": { \"declared\": "
+           << (a.carried.declared ? "true" : "false")
+           << ", \"allKinds\": " << (a.carried.allKinds ? "true" : "false")
+           << ", \"kinds\": [";
+        for (std::size_t k = 0; k < a.carried.kinds.size(); ++k)
+            os << (k ? ", " : "") << q(a.carried.kinds[k]);
+        os << "]";
+        if (!a.carried.sentence.empty())
+            os << ", \"sentence\": " << q(a.carried.sentence);
+        os << " }\n    }";
     }
     os << "\n  ]\n}\n";
 }
@@ -574,7 +584,6 @@ std::vector<std::string> carriedFindings(const UnitAcceptance& acc,
     std::vector<std::string> out;
     for (const auto& q : carried)
     {
-        if (carriedKindIsLegacyUnchecked(q.kind)) continue;
         if (acc.carried.allKinds) continue;
         if (std::find(acc.carried.kinds.begin(), acc.carried.kinds.end(), q.kind)
             != acc.carried.kinds.end()) continue;

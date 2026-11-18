@@ -37,6 +37,8 @@ License
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <map>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 #include <vector>
@@ -84,10 +86,23 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     //  pair that does not conserve component-wise), so adding both would
     //  report twice the mass that was set aside.
     scalar utilityMass = 0.0;
+    //  THE CARRIED MASSES (second slice of C427, 2026-11-19): a carried
+    //  quantity whose kind states that its total is a mass (a declared
+    //  material's kg/s) crosses the boundary like any component, so it is
+    //  counted in `in` and `out` -- a material this report could not see
+    //  would be mass outside the closure (CLAUDE.md rule 4b).  Each is its
+    //  own row, by name, kg/h; nothing is added when no stream carries one.
+    std::map<std::string, scalar> carriedIn, carriedOut;
+    std::map<std::string, scalar> carriedInProc, carriedOutProc;
     for (const auto& name : topo.balanceFeeds)
     {
         auto it = ctx.result.streams.find(name);
         if (it == ctx.result.streams.end()) continue;
+        for (const auto& kv : carriedMassFlows(it->second))
+        {
+            carriedIn[kv.first] += kv.second * 3600.0;
+            if (!excluded.count(name)) carriedInProc[kv.first] += kv.second * 3600.0;
+        }
         const auto m = componentMassFlow(it->second, ctx.thermo);
         const bool util = excluded.count(name) > 0;
         for (std::size_t i = 0; i < n; ++i)
@@ -101,6 +116,11 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     {
         auto it = ctx.result.streams.find(name);
         if (it == ctx.result.streams.end()) continue;
+        for (const auto& kv : carriedMassFlows(it->second))
+        {
+            carriedOut[kv.first] += kv.second * 3600.0;
+            if (!excluded.count(name)) carriedOutProc[kv.first] += kv.second * 3600.0;
+        }
         const auto m = componentMassFlow(it->second, ctx.thermo);
         const bool util = excluded.count(name) > 0;
         for (std::size_t i = 0; i < n; ++i)
@@ -122,6 +142,21 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
             f << comps[i] << "," << std::fixed << std::setprecision(4)
               << in[i] << "," << out[i] << "," << (out[i] - in[i]) << "\n";
             totIn += in[i]; totOut += out[i];
+        }
+        //  One row per carried mass, then counted in the TOTAL below.
+        {
+            std::set<std::string> names;
+            for (const auto& kv : carriedIn)  names.insert(kv.first);
+            for (const auto& kv : carriedOut) names.insert(kv.first);
+            for (const auto& nm : names)
+            {
+                const scalar ci = carriedIn.count(nm)  ? carriedIn.at(nm)  : 0.0;
+                const scalar co = carriedOut.count(nm) ? carriedOut.at(nm) : 0.0;
+                f << "carried." << nm << "," << std::fixed
+                  << std::setprecision(4) << ci << "," << co << ","
+                  << (co - ci) << "\n";
+                totIn += ci; totOut += co;
+            }
         }
         f << "TOTAL," << std::fixed << std::setprecision(4)
           << totIn << "," << totOut << "," << (totOut - totIn) << "\n";
@@ -149,6 +184,8 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
             procIn  += inProc[i];
             procOut += outProc[i];
         }
+        for (const auto& kv : carriedInProc)  procIn  += kv.second;
+        for (const auto& kv : carriedOutProc) procOut += kv.second;
         const bool noProcBoundary = (procIn == 0.0 && procOut == 0.0);
         if (!circuits.empty())
         {

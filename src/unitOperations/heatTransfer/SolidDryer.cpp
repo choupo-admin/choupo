@@ -391,6 +391,11 @@ int SolidDryer::solve(const DictPtr& dict,
     dry.F = water_final;
     dry.z.assign(n, 0.0);  if (water_final > 0.0) dry.z[iSolv] = 1.0;
     dry.s = sW;                  // every solid of the wet feed
+    //  The solid keeps its size distribution (C427, second slice): drying
+    //  moves moisture, not particle size (shrinkage is not modelled), so the
+    //  wet solid's distribution is handed unchanged to the dry solid.  Before
+    //  this line the dry solid left with none.
+    applyCarried(dry, carriedOfInlet(*solidDict, solid_mass));
     produced_.push_back(dry);
 
     ProcessStream ex;
@@ -477,6 +482,18 @@ int SolidDryer::solve(const DictPtr& dict,
                   << "   [" << limit << "]\n"
                   << "==================================================================\n\n";
     return 0;
+}
+
+UnitAcceptance SolidDryer::acceptance() const
+{
+    UnitAcceptance a;   // phases and components: not declared (accepts all)
+    a.carried.declared = true;
+    a.carried.kinds    = { "sizeDistribution" };
+    a.carried.sentence =
+        "PASSES the wet solid's size distribution unchanged to the dry solid: "
+        "drying removes moisture and not particle size (shrinkage is not "
+        "modelled); the humid exhaust carries no solid and so no distribution";
+    return a;
 }
 
 } // namespace Choupo

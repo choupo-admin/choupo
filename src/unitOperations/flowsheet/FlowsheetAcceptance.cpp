@@ -96,7 +96,8 @@ void Flowsheet::checkAuthoredInletAcceptance(
         {
             const auto st = streams_.find(in);
             if (st == streams_.end() || !st->second.authoredInlet) continue;
-            for (auto& f : carriedFindings(acc, fu.type, locus, in, st->second.carried))
+            for (auto& f : carriedFindings(acc, fu.type, locus, in,
+                                             carriedOfStream(st->second)))
                 keep(std::move(f));
         }
         const bool declaresPassThrough = ud->second->found("passThrough");
