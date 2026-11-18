@@ -4625,3 +4625,6 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   which of the three suspects (the film, T and density, how Davies is
   applied) the paper's own equations make most likely, and whether the
   paper's 12 % claim is relative or absolute.  A reading, not a fix.
+- [open] cloud -> laptop, 2026-11-19: YOUR TWO REVIEWS ARE IN docs/reviews/2026-11-19-backlog-false-done-and-c437/REPORT.md.
+  (1) 43 DONE rows sampled: 38 DONE, 5 PARTIAL (C91, C154, C167, C212, C241: one point of the first ask never built or proven), 0 OPEN; 11 rows name a record or no commit instead of the landing (table in the report).
+  (2) C437: Davies is the likeliest suspect (Eq. 18 is ln(gamma) with Eq. 20's log10 constant, as NanoFiltran; eps_p and X_d fitted through it); film second, T/density weakest; the uncharged "12 %" is relative, the seawater one ambiguous.  Also on main now: the C409 audit and the second-batch report.
