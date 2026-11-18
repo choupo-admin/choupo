@@ -27632,6 +27632,90 @@ impeller record, the flow curve and the door; the shaft power as a Work item and
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{Sizing a gas--liquid separator drum}\label{sec:drum-sizing}
+
+The procedures are Wankat's (\S2.8, eqs.\ 2-59 to 2-64~\cite{Wankat2007}) and Towler and
+Sinnott's (\S10.9, eqs.\ 10.10--10.11, Fig.\ 10.51, examples 10.5 and 10.6~\cite{TowlerSinnott2008}),
+selected by \code{method}; the droplet check is Haider and Levenspiel's sphere correlation as
+Kunii and Levenspiel print it (eq.~34, p.~81~\cite{KuniiLevenspiel1991}); the nozzle velocities are
+Towler and Sinnott's typical pipe velocities (\S5).  Every page was read.
+
+\begin{whatyoulllearn}
+A drum is not a volume: it is a vapour area wide enough for droplets to fall, a liquid
+that must be held and surge-buffered, and clearances so the feed does not blow liquid up the outlet.
+This section gives each step, the number the source fixes, and the number the case must declare.
+\end{whatyoulllearn}
+
+\paragraph{Allowable vapour velocity (Souders--Brown).}  With the densities and flows of the two
+outlet streams ($\rho_V$, $\rho_L$, $\dot m_V$, $\dot m_L$ from the package, printed in the run),
+\begin{align}
+u_t &= K\sqrt{\frac{\rho_L-\rho_V}{\rho_V}} &&\text{(Towler 10.10; Wankat 2-59)}\\
+u &= u_t \ \text{(demister)},\qquad u=0.15\,u_t\ \text{(none, Towler)}\\
+K_{\mathrm{Towler}} &= 0.07\ \mathrm{m/s},\qquad
+K_{\mathrm{Wankat}} = \exp\!\big[A+B\ln F_{lv}+C\ln^2F_{lv}+D\ln^3F_{lv}+E\ln^4F_{lv}\big]\ \mathrm{ft/s}
+\end{align}
+with $F_{lv}=(\dot m_L/\dot m_V)\sqrt{\rho_V/\rho_L}$ and Blackwell's constants $A=-1.877478097$,
+$B=-0.8145804597$, $C=-0.1870744085$, $D=-0.0145228667$, $E=-0.0010148518$ (Wankat 2-60, a fit of
+Watkins' chart at 85\,\% of flood with no demister; $K$ is typically 0.1--0.35 ft/s).  A horizontal
+drum takes $K_h=1.25K_v$ (Wankat 2-64a).  A case may declare \code{K} (m/s) instead.
+
+\paragraph{Vertical drum.}  $D=\sqrt{4Q_V/(\pi u)}$ (Towler 10.11; Wankat 2-62), rounded up to the
+declared \code{diameterStep} (Wankat: the next 6-in.\ increment).  The levels above the bottom
+tangent line are
+\[
+\mathrm{LLL}=h_{low},\qquad
+\mathrm{NLL}=\mathrm{LLL}+\frac{Q_L\,t_{hold}}{A},\qquad
+\mathrm{HLL}=\mathrm{NLL}+\frac{Q_L\,t_{surge}}{A},\qquad A=\tfrac{\pi}{4}D^2 .
+\]
+The height is $H=\mathrm{HLL}+h_f+h_v+h_{pad}$.  Towler Fig.\ 10.51a gives $h_f=\max(D/2,0.6)$\,m
+from the liquid to the inlet, $h_v=\max(D,1.0)$\,m of disengagement above the inlet and $0.4$\,m for
+the pad (with a demister); Wankat gives $h_f=12\,\mathrm{in}+d_{feed}/2$ (18 in minimum) and
+$h_v=36\,\mathrm{in}+d_{feed}/2$ (48 in minimum), $d_{feed}$ the feed nozzle's diameter.  Wankat's
+window is $3\le H/D\le5$.
+
+\paragraph{Horizontal drum.}  Wankat: $A_c=Q_V/u_h$, $A_T=A_c/0.2$, $D=\sqrt{4A_T/\pi}$ (2-64b,c),
+$L=\max\!\big(3D,\ Q_L(t_{hold}+t_{surge})/(A_{liq}-A_{seg}(h_{low}))\big)$.  Towler (\S10.9.3,
+after Gerunda): liquid at $D/2$, $L/D=3,4,5$ for $P<20$, $20$--$35$, $>35$ bar; equating the droplet's
+fall time $(D/2)/u$ to the vapour's residence time $L/(Q_V/A_v)$ gives
+$D^2=4Q_V/(\pi\,(L/D)\,u)$, and $D$ is then increased until the liquid between $h_{low}$ and $D/2$ holds
+$Q_L(t_{hold}+t_{surge})$.  The levels come from the circular-segment area
+$A_{seg}(h)=R^2\arccos\frac{R-h}{R}-(R-h)\sqrt{2Rh-h^2}$.
+
+\paragraph{The choice.}  \code{orientation auto} takes the vertical drum unless $H/D>5$, where Wankat
+says to use a horizontal one (Towler: a horizontal drum where a long hold-up is needed).  The choice and
+its reason are printed; \code{orientation vertical} or \code{horizontal} overrides, and the plot plan
+(\code{layoutDict}) must stand the item the same way, or the layout refuses.
+
+\paragraph{The physical check.}  For a design droplet of diameter $d$ (declared, \code{dropDiameter}),
+\[
+d^*=d\Big[\tfrac{\rho_V(\rho_L-\rho_V)g}{\mu_V^2}\Big]^{1/3},\quad
+u^*=\Big[\tfrac{18}{d^{*2}}+\tfrac{0.591}{d^{*1/2}}\Big]^{-1},\quad
+u_t=u^*\Big[\tfrac{\mu_V(\rho_L-\rho_V)g}{\rho_V^2}\Big]^{1/3}
+\]
+(Kunii and Levenspiel eqs.\ 31, 34 and 32; the sphere, $\phi_s=1$).  A vertical drum settles the droplet
+when $u_t$ exceeds the rising vapour's velocity; a horizontal one when the fall through the free height
+takes no longer than the vapour's residence time.  $\mu_V$ is the package's gas viscosity (the case
+declares a vapour viscosity model; without one the check is skipped, by name).
+
+\paragraph{Nozzles.}  $d=\sqrt{4Q/(\pi u)}$ for the feed (the two phases' volumes added, at their
+mixture density), the vapour outlet and the liquid outlet, at the velocities the case declares (Towler
+\S5: liquids pumped 1--3\,m/s, gases and vapours 15--30\,m/s; outside the window the run says so).  The
+feed's $\rho v^2$ is printed, and checked against \code{feedRhoV2Max} where the case declares one (no
+limit is in the sources read, so none is built in).
+
+\paragraph{What is declared, not defaulted.}  \code{method}, \code{demister}, \code{holdupTime},
+\code{surgeTime}, \code{lowLevel} (Towler example 10.5 allows 10 minutes and 0.3\,m) and the three
+nozzle velocities; optionally \code{diameterStep}, \code{dropDiameter}, \code{K}, \code{orientation}.
+The shell is tangent to tangent (no heads); its wall, weight and cost follow from $D$ and $H$ as for any
+vessel.
+
+\begin{tutoriallink}
+\file{tutorials/steady/flash/flash22\_drum\_sizing\_benzene\_toluene} --- the whole procedure, with a
+hand calculation in its README; \file{tutorials/plant/greenAmmoniaPEQ\_baseCase} --- the three flash drums
+of the loop.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
 \section{Pneumatic conveying: carrying solids in a
 gas}\label{sec:pneumatic-conveying}
 
@@ -33389,6 +33473,11 @@ and activity-coefficient models. Chapters 6 (vapour pressure), 8
 \bibitem{Watson} Watson, K. M., ``Thermodynamics of the Liquid State'',
 \emph{Ind. Eng. Chem.}, 35, 398 (1943). The heat-of-vaporisation
 correlation.
+
+\bibitem{TowlerSinnott2008} Towler, G., \& Sinnott, R. (2008). \emph{Chemical Engineering Design:
+Principles, Practice and Economics of Plant and Process Design}, 1st ed., Butterworth-Heinemann
+(\S5 typical pipe velocities; \S10.9 gas--liquid separators, eqs.\ 10.10--10.11, Fig.\ 10.51,
+examples 10.5--10.6).
 
 \bibitem{ChhabraRichardson2008} Chhabra, R. P., \& Richardson, J. F. (2008).
 \emph{Non-Newtonian Flow and Applied Rheology: Engineering Applications}, 2nd ed.,

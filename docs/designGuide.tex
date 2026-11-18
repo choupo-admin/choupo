@@ -852,6 +852,18 @@ compressor suction drum at 5 bar has \textasciitilde5\(\times\) the \(\rho\)\_V 
 atmospheric, shrinking \texttt{v\_max} by \textasciitilde2.2\(\times\) and
 demanding more area than newcomers expect.
 
+\textbf{Sizing the drum in Choupo.}\label{sec:design-drum-detail} A \texttt{vessel} item with
+\texttt{designRules\ \{\ drum\ \{\ \ldots{}\ \}\ \}} is sized by the published procedures instead of a
+residence time: the K above is \emph{declared or taken from a source read at the page} (Towler \&
+Sinnott 0.07 m/s, or Wankat's fit of Watkins' chart), the diameter comes from the vapour area, the
+liquid levels (LLL, NLL, HLL) from a declared hold-up and surge time, the orientation is chosen by the
+H/D window and printed, a Haider--Levenspiel droplet is checked against the velocity, and the feed, vapour
+and liquid nozzles are sized at declared velocities. Every number the sources do not fix (hold-up, surge,
+low level, droplet, nozzle velocities) is the case's declaration, with its reason. The equations,
+symbols and sources are in the Theory Guide, \S\,\emph{Sizing a gas--liquid separator drum}
+(\texttt{sec:drum-sizing}); worked case
+\texttt{tutorials/steady/flash/flash22\_drum\_sizing\_benzene\_toluene}.
+
 \textbf{Vertical vs. horizontal.} Choose by vapour-to-liquid loading and
 footprint.
 

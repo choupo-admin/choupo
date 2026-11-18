@@ -1013,6 +1013,46 @@ included -- it means 15, 20 or 25 degC depending on the source) is refused
 naming the two accepted.  The run prints the conversion beside the volume.
 Worked case: `tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach`.
 
+**A SEPARATOR DRUM IS SIZED IN DETAIL BY `drum { ... }` (2026-11-19, DEV.md 4c C318).**
+`type vessel` with `designRules { drum { ... } }` replaces the three volume bases (declaring both is
+refused): the volume is a RESULT of the allowable vapour velocity, the liquid levels and the orientation,
+and the item is still one vessel (D, H, V_R) walled, weighed and costed as before.  Theory Guide
+`sec:drum-sizing`; sources read at the page: Wankat section 2.8, Towler & Sinnott section 10.9 and section 5,
+Kunii & Levenspiel eq. 34 (Haider-Levenspiel droplet).
+
+```
+{ unitName Separator;  type vessel;  material SS304;
+  designRules
+  {
+      pressureDesign 166;
+      drum
+      {
+          method         towler;        // REQUIRED: towler | wankat (the procedure)
+          demister       yes;           // REQUIRED: yes | no (Towler: x0.15 without a pad)
+          vapourStream   UnreactedGas;  // REQUIRED: the two outlets whose densities and flows size it
+          liquidStream   RawLiquid;
+          holdupTime     600;           // REQUIRED s: NLL - LLL;  Towler: 10 minutes typical
+          surgeTime      120;           // REQUIRED s: HLL - NLL
+          lowLevel       0.3;           // REQUIRED m: LLL above the bottom tangent line
+          nozzleVelocity { feed 15; vapour 20; liquid 1.5; }   // REQUIRED m/s (Towler s.5: liquid 1-3, vapour 15-30)
+          orientation    auto;          // auto | vertical | horizontal (auto: vertical unless H/D > 5)
+          diameterStep   0.1524;        // m, round D up (optional)
+          dropDiameter   150e-6;        // m, design droplet for the Haider-Levenspiel check (optional)
+          K              0.07;          // m/s, overrides the method's K (optional)
+          feedRhoV2Max   6000;          // Pa, a limit to check the feed's rho v^2 against (optional; none built in)
+      }
+  } }
+```
+
+The run prints a `[drum]` block (densities, K, u_t, the droplet check, D and H or L, L/D against the 3-5
+window, the three levels, the nozzles) and the sheet carries `K_SB`, `u_allowable`, `u_vapour`,
+`u_drop_terminal`, `LLL/NLL/HLL`, `Q_vapour/Q_liquid`, `d_nozzle_*`, `rhov2_feed`, `horizontal`.  The plot plan
+must stand the item the way it was sized: `layoutDict` `orientation alongX;` (or `alongY`) for a horizontal
+drum, `vertical` for a vertical one, or the layout refuses by name.  The gas viscosity of the droplet check
+comes from `transport { vapour { viscosity { model Chung; } } }`; without it the check is skipped and says
+so.  Worked cases: `tutorials/steady/flash/flash22_drum_sizing_benzene_toluene` (hand calculation in its
+README), `tutorials/plant/greenAmmoniaPEQ_baseCase` (three drums).
+
 **A SHELL-AND-TUBE EXCHANGER CAN BE DESIGNED, NOT ONLY ESTIMATED (2026-10-07).**
 `type shellTubeHX` has four routes, chosen by what `designRules` declares:
 `U` + `LMTD` (A = Q/(U LMTD), both typed); `U` + `utility <name>` (the LMTD

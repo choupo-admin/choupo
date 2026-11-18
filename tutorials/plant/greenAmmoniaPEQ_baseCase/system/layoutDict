@@ -243,10 +243,10 @@ items
     }
     {
         item        "Separator";        // D and H from its own sizing
-        x           62 m;
-        y           14 m;
+        x           74 m;
+        y           11 m;
         z           0 m;
-        orientation vertical;
+        orientation alongX;
         release
         {
             source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
@@ -256,10 +256,10 @@ items
     }
     {
         item        "LetdownHP";        // D and H from its own sizing
-        x           70 m;
-        y           14 m;
+        x           74 m;
+        y           18 m;
         z           0 m;
-        orientation vertical;
+        orientation alongX;
         release
         {
             source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
@@ -269,10 +269,10 @@ items
     }
     {
         item        "StorageFlash";     // D and H from its own sizing
-        x           78 m;
-        y           14 m;
+        x           74 m;
+        y           25 m;
         z           0 m;
-        orientation vertical;
+        orientation alongX;
         release
         {
             source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";
@@ -785,7 +785,7 @@ fence
 //      call.
 //    * loopKerb -- the loop's three liquid vessels (the separator, the
 //      let-down drum and the storage flash, whose liquid holdups the postDict
-//      declares) on a kerbed slab that drains to a REMOTE pit north of the
+//      declares) on a kerbed slab that drains to a REMOTE pit east of the
 //      loop: an IMPOUNDING area, so a leak runs away from the vessels.  Rule:
 //      100 % of the largest liquid holdup plus 50 mm of rain over the slab
 //      and the pit.
@@ -823,9 +823,9 @@ bunds
         name        "loopKerb";
         kind        impounding;
         items       ( "Separator" "LetdownHP" "StorageFlash" );
-        region      { xMin 58 m; xMax 82 m; yMin 10 m; yMax 18 m; }
+        region      { xMin 66 m; xMax 82 m; yMin 8.5 m; yMax 26.8 m; }
         wall        { height 0.2 m; }
-        pit         { x 70 m; y 24 m; length 4 m; width 3 m; depth 1.5 m; }
+        pit         { x 87 m; y 18 m; length 4 m; width 3 m; depth 3 m; }
         drain       sumpPump;
         capacityRule
         {
@@ -839,7 +839,7 @@ bunds
             reason  "a leak from the loop's liquid ammonia vessels is led away from them to the pit, which holds the largest holdup";
         }
         source      "author-set assumption for this exercise; not a civil design";
-        reason      "the loop's three liquid vessels stand on one kerbed slab, sloped to a pit 6 m north of it, outside the slab";
+        reason      "the loop's three liquid vessels stand on one kerbed slab, sloped to a pit 3 m east of it, outside the slab";
     }
 );
 

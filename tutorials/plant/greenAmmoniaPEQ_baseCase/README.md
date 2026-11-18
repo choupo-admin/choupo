@@ -139,7 +139,7 @@ its header says which basis each item rests on:
 | 5 coolers | a **Kern shell-and-tube design**: the tube bundle and the fouling declared, the number of tubes, the shell, both film coefficients, U, F, the area and both pressure drops computed — against a named utility (cooling water, or ammonia boiling at 1 atm for the chiller) |
 | `FEHE` | the same Kern design, both sides process gas, four 1-1 shells in series; the unit's own declared 2000 m² is published beside the designed area |
 | `Converter` | a catalyst vessel on an **assumed** space velocity — a Gibbs reactor has no volume of its own |
-| 3 drums | vapour residence time; for the two let-down drums, which are liquid drums, that volume is a **lower bound** |
+| 3 drums | **detailed** (C318): Souders-Brown allowable velocity, liquid levels from a 600 s hold-up and 120 s surge, the orientation chosen and printed (all three horizontal), a droplet check, the three nozzles; Theory Guide `sec:drum-sizing` |
 | `NH3Storage` | 21 days of production of `ProductNH3`, refrigerated at 1 atm, 90 % working level, at most 30 000 m³ per tank — two tanks |
 
 The design sheets land in `design/<unit>/` after a run (the two product
@@ -333,7 +333,7 @@ a subsidised auction (p. 26).
 
 At these prices **the plant loses money, and that is the finding**: the
 hydrogen alone costs 0.1803 kg H₂/kg NH₃ x 8.0 = 1.44 EUR per kg of ammonia,
-2.7 times what the ammonia sells for (0.530). NPV is −3 235 M EUR and there
+2.7 times what the ammonia sells for (0.530). NPV is −3 243 M EUR and there
 is no IRR. (The hydrogen price was an assumed 4.50 EUR/kg, the ammonia 1.00
 and the nitrogen 0.05 EUR/kg before 2026-11-13, giving NPV −405 M EUR; those
 figures had no source.)
@@ -346,10 +346,10 @@ of tax credited over the 15 years, undiscounted; the run announces it, with
 the KPIs `lossYears`, `taxCreditOnLoss` and `taxCreditOnLoss_NPV`). A
 stand-alone project has no such profit; declare `taxOnLoss none;` in the
 `economics` block for that reading, and the NPV falls by that amount, to
-−4 075.85 MEUR (a run of a scratch copy of this case with `taxOnLoss none;`
+−4 085.64 MEUR (a run of a scratch copy of this case with `taxOnLoss none;`
 added to the `economics` block: `choupoSolve` on it prints `NPV(i=0.100) =
--4075849101 EUR`, `taxCreditOnLoss` 0, the break-evens unchanged at 1.9291 and
-1.7853 EUR/kg). Neither reading carries a loss forward.
+-4085642704 EUR`, `taxCreditOnLoss` 0, the break-evens unchanged at 1.9326 and
+1.7700 EUR/kg). Neither reading carries a loss forward.
 
 **At what price does it pay?** "Never" teaches little, so the `economics`
 block declares `breakEven { price ( ProductNH3 H2Feed ); }` and the run
@@ -359,11 +359,11 @@ every other price held (found by pricing the same appraisal again). The
 conventional market price of 0.530 (KPI `breakEven_price_ProductNH3`): that
 is the premium a renewable-ammonia buyer would have to pay for the plant to
 break even at the cited hydrogen cost. The **highest price of hydrogen the
-plant can bear** is **1.785 EUR/kg**, 22 % of the cited 8.0 and below the
+plant can bear** is **1.770 EUR/kg**, 22 % of the cited 8.0 and below the
 bottom of ACER's 7-10 EUR/kg range (`breakEven_price_H2Feed`). The first is above the
-cost of making a kilogram (`productionCostPerKg` 1.862 EUR/kg, which is COM_d
+cost of making a kilogram (`productionCostPerKg` 1.864 EUR/kg, which is COM_d
 over the year's ammonia) because a price that only covered COM_d would leave
-nothing to recover the 145 MEUR of total capital: pre-tax, at the 10 %
+nothing to recover the 149 MEUR of total capital: pre-tax, at the 10 %
 discount rate over 15 years, that capital charge alone adds about 0.07
 EUR/kg. Both numbers inherit every assumption of the case (the other prices,
 the capital, the utility bill that is a lower bound) and say what the plant

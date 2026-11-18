@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flash22_drum_sizing_benzene_toluene -- meta-control
+\*---------------------------------------------------------------------------*/
+
+tier          tutorial;
+application   choupoSolve;
+description   "A benzene/toluene flash drum at 370 K, 1 bar, SIZED in detail: Souders-Brown velocity, levels, nozzles";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

@@ -23,8 +23,8 @@
                   (UnreactedGas).
     LetdownHP     half liquid (LetdownLiquid), half gas (LetdownGas).
     StorageFlash  half liquid (ProductNH3), half gas (FlashGas).
-  The two LET-DOWN drums' volumes are lower bounds (see below), so their
-  inventories are too.  The storage tanks hold their own working level --
+  The drums' volumes are now the detailed sizing's shell volumes (the two
+  let-down drums were lower bounds before C318).  The storage tanks hold their own working level --
   21 days of production -- and declare nothing more.  NOT DECLARED, and the
   run lists them by name rather than as zero: the compressors and the
   exchangers.  They hold gas, but no sizer here publishes the volume they
@@ -116,19 +116,25 @@
                       ASSUMED feasibility figure ammonia02 uses -- not a
                       datum for any catalyst.  A rate law sizes the beds
                       (ammoniaReactor04_kineticSizing); that is the groups' task 2.
-    drums       (3)   Separator LetdownHP StorageFlash, by VAPOUR residence
-                      time (V = Q_vapour * tau, ideal gas), the precedent
-                      ammonia02 sets.  READ THIS: the Separator is a
-                      knock-out drum and the basis fits it; the two LET-DOWN
-                      drums are LIQUID drums -- 99.6 % and 98.6 % of the moles
-                      entering them leave as liquid -- and their size is set
-                      by liquid holdup, which this basis does not contain.
-                      A liquid-holdup basis needs a liquid density, and the
-                      sizing pass has no route to one today; their volumes
-                      below are therefore LOWER BOUNDS (LetdownHP comes out
-                      below the vessel correlation's range, and the costing
-                      pass says so).  Named, not fixed: it is the
-                      per-equipment inventory slice's question too.
+    drums       (3)   Separator LetdownHP StorageFlash, DETAILED (C318): the
+                      Souders-Brown allowable vapour velocity (Towler & Sinnott
+                      10.9, K = 0.07 m/s, with a demister), the diameter from
+                      the vapour area, the liquid levels from a declared 600 s
+                      hold-up and 120 s surge above a 0.3 m low level, the
+                      orientation CHOSEN by the sizer (vertical unless H/D >
+                      5) and printed, a Haider-Levenspiel check of a 150 um
+                      droplet, and the three nozzles; Theory Guide
+                      `sec:drum-sizing`.  It used to be V = Q_vapour * tau
+                      on the ideal gas, which fitted the Separator and could
+                      not size the two LET-DOWN drums, which are LIQUID drums
+                      (99.6 % and 98.6 % of the moles entering leave as
+                      liquid) -- their volumes were lower bounds, said on
+                      every run; now the liquid density comes through the
+                      sizing pass's density door and the hold-up sets them.
+                      All three come out HORIZONTAL (the Separator's vertical
+                      H/D is 5.0, the others far above), and the plot plan
+                      stands them alongX (the layout refuses a mismatch).
+                      Every number the source does not fix is ASSUMED, below.
 
     storage     (1)   NH3Storage, attached to the boundary stream ProductNH3
                       (`storage ( ... )` below; Vitor ruled a tank a postDict
@@ -420,28 +426,43 @@ sizing
                                                   // bed voidage -- ASSUMED;
                                                   // the rest is catalyst
 
-        //  ---- the drums: vapour residence (see the header) --------------
-        { unitName Separator;    type vessel;  material SS304;                 // -20 C
-          designRules { residenceTime 45;           // s of vapour, a knock-out drum
-                        flowKey F_beta;  flowUnit kmol/s;
-                        L_over_D 3;  pressureDesign 166;
-                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+        //  ---- the three flash drums: DETAILED sizing (C318; see the header) --
+        //  Souders-Brown allowable velocity (Towler & Sinnott 10.9), levels from a
+        //  declared hold-up and surge, the orientation CHOSEN and printed, the
+        //  three nozzles.  Every number the source does not fix is ASSUMED here:
+        //  hold-up 600 s (Towler: 10 min typical), surge 120 s, low level 0.3 m
+        //  (Towler Example 10.5), droplet 150 um, nozzle velocities inside
+        //  Towler section 5's windows (liquid 1-3, vapour 15-30 m/s).
+        { unitName Separator;   type vessel;  material SS304;                 // -20 C
+          designRules { pressureDesign 166;                                   // the loop's
+                        corrosionAllow 0.003;  jointEfficiency 1.0;
+                        drum { method towler;  demister yes;
+                               vapourStream UnreactedGas;  liquidStream RawLiquid;
+                               holdupTime 600;  surgeTime 120;  lowLevel 0.3;
+                               diameterStep 0.1524;  dropDiameter 150e-6;
+                               nozzleVelocity { feed 15;  vapour 20;  liquid 1.5; } } }
           inventory { held ( { stream RawLiquid;     fraction 0.25; }     // liquid level -- ASSUMED
-                             { stream UnreactedGas;  fraction 0.75; } ); } }
-        { unitName LetdownHP;    type vessel;  material SS304;                 // -20 C
-          designRules { residenceTime 60;           // s of vapour -- a LOWER BOUND, see header
-                        flowKey F_beta;  flowUnit kmol/s;
-                        L_over_D 3;  pressureDesign 21;                        // 20 bar abs = 18.99 bar g; max(1.1 x, +1.7 bar) -> 21 bar g
-                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+                             { stream UnreactedGas;  fraction 0.75; } ); }  }
+        { unitName LetdownHP;   type vessel;  material SS304;                 // -20 C
+          designRules { pressureDesign 21;                                   // 20 bar abs = 18.99 bar g; max(1.1 x, +1.7 bar) -> 21 bar g
+                        corrosionAllow 0.003;  jointEfficiency 1.0;
+                        drum { method towler;  demister yes;
+                               vapourStream LetdownGas;  liquidStream LetdownLiquid;
+                               holdupTime 600;  surgeTime 120;  lowLevel 0.3;
+                               diameterStep 0.1524;  dropDiameter 150e-6;
+                               nozzleVelocity { feed 15;  vapour 20;  liquid 1.5; } } }
           inventory { held ( { stream LetdownLiquid; fraction 0.50; }     // liquid level -- ASSUMED
-                             { stream LetdownGas;    fraction 0.50; } ); } }
-        { unitName StorageFlash; type vessel;  material SS304;                 // -35 C
-          designRules { residenceTime 60;           // s of vapour -- a LOWER BOUND, see header
-                        flowKey F_beta;  flowUnit kmol/s;
-                        L_over_D 3;  pressureDesign 2;                         // 1.013 bar abs = 0 bar g; the +1.7 bar floor -> 2 bar g
-                        corrosionAllow 0.003;  jointEfficiency 1.0; }
+                             { stream LetdownGas;    fraction 0.50; } ); }  }
+        { unitName StorageFlash;type vessel;  material SS304;                 // -35 C
+          designRules { pressureDesign 2;                                   // 1.013 bar abs = 0 bar g; the +1.7 bar floor -> 2 bar g
+                        corrosionAllow 0.003;  jointEfficiency 1.0;
+                        drum { method towler;  demister yes;
+                               vapourStream FlashGas;  liquidStream ProductNH3;
+                               holdupTime 600;  surgeTime 120;  lowLevel 0.3;
+                               diameterStep 0.1524;  dropDiameter 150e-6;
+                               nozzleVelocity { feed 15;  vapour 20;  liquid 1.5; } } }
           inventory { held ( { stream ProductNH3;    fraction 0.50; }     // liquid level -- ASSUMED
-                             { stream FlashGas;      fraction 0.50; } ); } }
+                             { stream FlashGas;      fraction 0.50; } ); }  }
     );
 
     //  ---- storage: attached to a boundary stream (see the header) ----

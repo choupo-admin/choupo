@@ -5096,6 +5096,28 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
                 else
                 {
                     it.shape = "cylinder";
+                    //  A SEPARATOR DRUM SAYS WHICH WAY IT STANDS (C318): its
+                    //  sizing publishes `horizontal` 0/1 -- the orientation the
+                    //  sizer chose or the case declared.  The plan must draw
+                    //  what was sized, so the two words may not disagree.
+                    const auto hz = s->second.values.find("horizontal");
+                    if (hz != s->second.values.end())
+                    {
+                        const bool sizedHorizontal = hz->second > 0.5;
+                        if (sizedHorizontal && it.orientation == "vertical")
+                            refuse(where + " was sized as a HORIZONTAL drum"
+                                   " (its length " + num(f.L) + " m, diameter "
+                                   + num(f.D) + " m) and is placed standing:"
+                                   " declare `orientation alongX;` or"
+                                   " `orientation alongY;` here, or"
+                                   " `orientation vertical;` in its `drum {}`.");
+                        if (!sizedHorizontal && it.orientation != "vertical")
+                            refuse(where + " was sized as a VERTICAL drum and"
+                                   " is placed lying down: declare"
+                                   " `orientation vertical;` here, or"
+                                   " `orientation horizontal;` in its"
+                                   " `drum {}`.");
+                    }
                     setExtents(it, f.D, f.L, 0.0, where);
                 }
             }

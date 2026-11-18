@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flash22_drum_sizing_benzene_toluene -- flash01's separation at ten times the flow (1000 kmol/h of 40/60
+  benzene/toluene, 370 K, 1 bar, Raoult), then the DETAILED SIZE of the drum.
+  system/postDict sizes it: allowable vapour velocity by Souders-Brown,
+  diameter from the vapour area, liquid levels from a declared hold-up and
+  surge, the height from the levels plus disengagement, the orientation CHOSEN
+  and printed, and the three nozzles.  Read the `[drum]` block of the log, then
+  the hand calculation in the README, which repeats it with a calculator from
+  the densities and flows the run prints.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        drum;
+        type        isothermalFlash;
+        model       rachfordRice;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation   { T 370.0 K;  P 1.0 bar; }
+    }
+);
