@@ -4700,6 +4700,22 @@ accepts today, and that is a policy call.
 > drawing deliverable on top of the routes, worth having, but the numbers on
 > the line sheet are the engineering and come first.
 
+> **C390 RULING AMENDED (architect, 2026-11-19, on the batch sweep's
+> gate g1).**  The liquid pressure leg ran from psat(T), a lower limit that
+> moves with T, while the base surface is a fixed-pressure function (dh/dT
+> = cp_liq from one Kirchhoff datum); fixed-P, dH - T dS was off by
+> -sum x_i v_i dpsat_i/dT (7.2e-4 of Cp on water at 330 K) -- the entropy
+> was not the enthalpy's partner.  RULED: the leg runs from ONE pressure
+> per component, P_ref,i = psat_i(T_ref,i) at its own datum temperature,
+> printed; dH = T dS then holds exactly at fixed P, the gate keeps its
+> exact form, K-values do not move, and the saturated-liquid enthalpy and
+> the latent heat move by the leg from P_ref,i to psat_i(T), sized in the
+> audit.  Rejected: an amended gate that tolerates the term (a glass box
+> does not ship an H/S pair failing a Maxwell identity a student can
+> check).  Also from that sweep: 82 cases pinned the Helmholtz records the
+> term reads; the closed-form pump's Cp identity (PA-04b) retired with the
+> closed-form pump.
+
 > **C444 (Vitor, 2026-11-19: "nas folhas de especificação finais devem
 > ficar também as especificações das tubuladuras onde ligam os tubos de
 > entrada e de saída?").**  RULED, yes: every equipment sheet carries a
