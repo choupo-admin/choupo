@@ -52,7 +52,7 @@ operations
                 model NRTL;
                 binaryParameters
             {
-                ethanol-water { i ethanol; j water; a_ij -0.8009; b_ij 246.18; a_ji 3.4578; b_ji -586.0809; alpha 0.30; }
+                ethanol-water { }
             }
             } } }
         }
@@ -144,7 +144,7 @@ operations
                 model Wilson;
                 binaryParameters
             {
-                ethanol-water { i ethanol; j water; A_ij 1157.95; A_ji 4081.65; }
+                ethanol-water { }
             }
             } } }
         }

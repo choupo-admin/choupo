@@ -20,7 +20,7 @@ equilibrium
         solutes
         {
             components ( CO2 ); standardState infiniteDilution; solutionModel henryDilute;
-            binaryParameters { CO2-water { source "data/standards/parameters/Henry/CO2-water.dat"; } }
+            binaryParameters { CO2-water { } }
         }
     }
     vapour { fugacityModel idealGas; }

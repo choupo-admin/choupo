@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- compB + compC, the CASE'S OWN record
+  (C433: a pair is found by name; an exception to the catalogue is a record
+  in the case's own folder, declared).
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+components  ( compB  compC );
+model       NRTL;
+
+pair { i compB; j compC; }
+
+parameters
+{
+    i          compB;
+    j          compC;
+    a_ij       0.0;
+    b_ij       0.0;
+    a_ji       0.0;
+    b_ji       0.0;
+    alpha      0.30;
+}
+
+provenance
+{
+    origin        assumed;
+    citation      "ARTIFICIAL audit parameters: illustrative miscibility of three synthetic components compA/compB/compC, not a fitted system and not from a source.";
+    reviewStatus  interim;
+    reviewReason  "ARTIFICIAL audit parameters, not a real system";
+    notes         "Moved from the dictionary into the case's own record by C433; no number changed.";
+}

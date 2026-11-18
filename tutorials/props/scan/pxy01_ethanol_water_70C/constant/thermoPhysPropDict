@@ -28,7 +28,7 @@ equilibrium
             model NRTL;
             binaryParameters            // declared WHERE consumed
             {
-                ethanol-water { source "data/standards/parameters/NRTL/ethanol-water.dat"; }
+                ethanol-water { }
             }
         }
         standardState pureLiquid;       // gamma_i -> 1 as x_i -> 1 (Raoult datum)

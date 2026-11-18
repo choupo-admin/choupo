@@ -1,0 +1,31 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- benzene + carbonTetrachloride, the CASE'S OWN record
+  (C433: a pair is found by name; an exception to the catalogue is a record
+  in the case's own folder, declared).
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+components  ( benzene  carbonTetrachloride );
+model       NRTL;
+
+pair { i benzene; j carbonTetrachloride; }
+
+parameters
+{
+    i          benzene;
+    j          carbonTetrachloride;
+    a_ij       -0.51821;
+    b_ij       0;
+    a_ji       0.7338;
+    b_ji       0;
+    alpha      0.2;
+}
+
+provenance
+{
+    origin        literature;
+    citation      "Dimensionless NRTL parameters (alpha 0.2) of Renon et al. (1971) as printed in Kooijman & Taylor, Ind. Eng. Chem. Res. 30 (1991) 1217-1222, Table I p. 1218.  Stated for 25 C only (b_ij = 0).";
+    notes         "Moved from the dictionary into the case's own record by C433; no number changed.";
+}

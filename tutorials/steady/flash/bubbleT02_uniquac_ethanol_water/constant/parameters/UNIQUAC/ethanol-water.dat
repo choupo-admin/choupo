@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------*\
+  UNIQUAC binary interaction parameters --- ethanol + water, the CASE'S OWN record
+  (C433: a pair is found by name; an exception to the catalogue is a record
+  in the case's own folder, declared).
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+components  ( ethanol  water );
+model       UNIQUAC;
+
+pair { i ethanol; j water; }
+
+parameters
+{
+    i          ethanol;
+    j          water;
+    a_ij       -21.44;
+    a_ji       222.47;
+}
+
+provenance
+{
+    origin        assumed;
+    citation      "UNIQUAC energies of ethanol(1)/water(2) typed in this case (a_ij -21.44 K, a_ji 222.47 K); the case names no source.  The Theory Guide's worked UNIQUAC example computes gamma from them.";
+    reviewStatus  interim;
+    reviewReason  "typed in the case by its author; the case names no source";
+    notes         "Moved from the dictionary into the case's own record by C433 (a pair is found by name); no number changed.";
+}

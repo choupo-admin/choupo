@@ -29,15 +29,9 @@ equilibrium
         activityModel
         {
             model UNIQUAC;
-            binaryParameters   // the dict OWNS the numbers (inline form)
+            binaryParameters   // each pair is found by name: the case's own record, else the catalogue's
             {
-                ethanol-water
-                {
-                    i ethanol;
-                    j water;
-                    a_ij -21.44;
-                    a_ji 222.47;
-                }
+                ethanol-water { }
             }
         }
         standardState pureLiquid;

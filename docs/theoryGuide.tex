@@ -6014,11 +6014,15 @@ and \code{preferred <name>;} (the shape a component record uses for its laws).
 The identity of a set is (the species, the model and its convention profile,
 the set's name).  A record with one unnamed \code{parameters} block is read
 exactly as before: its set is named \code{default}.  A case chooses with
-\code{set <name>;} beside the pair's \code{source}
-(\code{nButanol-water \{ source "..."; set lle; \}}); a pair left to the
-catalogue lookup reads the record's \code{preferred} set.  An unknown name is
+\code{set <name>;} in the pair's entry
+(\code{nButanol-water \{ set lle; \}}); a pair named with no \code{set} reads
+the record's \code{preferred} set.  An unknown name is
 refused, naming the sets the record holds; \code{set} on an inline pair is
-refused (an inline pair is one set).  The run prints the set used on the
+refused (an inline pair is one set).  A pair is \emph{found by name} through one
+cascade --- the case's own \file{constant/parameters/<model>/<i>-<j>.dat}, then
+the catalogue, then \file{data/local/} --- and its address is never written in the
+case; an exception to the catalogue is a record in the case's own folder, declared
+\code{variationOf} (C433).  The run prints the set used on the
 \code{[builder] binary pair} line and in the resolved view
 (\code{pair i-j: ... , set <name>}); a record of one unnamed set prints
 nothing new.  The set's own \code{validity} is the span the guard of
@@ -6201,8 +6205,8 @@ double-well $\Gex$.
 \paragraph{Parameter sources.} Binary $(A_{ij},A_{ji})$ sets resolve
 from a case-local \file{constant/parameters/Wilson/<i>-<j>.dat}, then
 \file{data/standards/parameters/Wilson/} --- though the standard tree
-currently ships no Wilson pairs, so the tutorials declare theirs inline
-in the case's thermophysical system; a pair with no parameters anywhere
+currently ships no Wilson pairs, so the tutorials carry theirs as a record in
+the case's own \file{constant/parameters/Wilson/} folder; a pair with no parameters anywhere
 \emph{defaults to ideal} for that binary ($\Lambda=1$, no contribution)
 and the run announces it aloud rather than aborting --- the same
 no-silent-crutch hybrid used by NRTL. Literature values are tabulated in
@@ -6211,7 +6215,7 @@ own with the parameter-estimation driver of Chapter~\ref{ch:lm}.
 
 \begin{example}[Wilson $\gamma$ for ethanol(1)/water(2) at 350\,K, $x_1=0.20$]
 Parameters $A_{12}=1157.95$, $A_{21}=4081.65$\,J/mol (the values the
-\file{flash03\_wilson\_ethanol\_water} tutorial declares inline) and liquid molar volumes
+\file{flash03\_wilson\_ethanol\_water} tutorial carries in its own pair record) and liquid molar volumes
 $V_1^L=5.87\times10^{-5}$, $V_2^L=1.81\times10^{-5}$\,m$^3$/mol. With
 $\Rgas T = 8.314\times350 = 2910$\,J/mol:
 \[
@@ -10944,7 +10948,7 @@ equilibrium
         mixingRule vanDerWaalsOneFluid;
         binaryInteractions              // optional; k_ij = 0 announced
         {
-            N2-CH4 { source "data/standards/parameters/SRK/N2-CH4.dat"; }
+            N2-CH4 { }                  // found by name (case folder, then the catalogue)
         }
     }
 
@@ -11342,7 +11346,7 @@ equilibrium
             model NRTL;
             binaryParameters
             {
-                methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+                methanol-water { }      // found by name (case folder, then the catalogue)
             }
         }
     }

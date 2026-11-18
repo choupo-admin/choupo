@@ -66,24 +66,9 @@ equilibrium
             model NRTL;
             binaryParameters
             {
-                acetone-benzene
-                {
-                    i acetone;  j benzene;
-                    a_ij -0.46504;  b_ij 0;  a_ji 0.76432;  b_ji 0;
-                    alpha 0.2;
-                }
-                acetone-carbonTetrachloride
-                {
-                    i acetone;  j carbonTetrachloride;
-                    a_ij -0.42790;  b_ij 0;  a_ji 1.5931;  b_ji 0;
-                    alpha 0.2;
-                }
-                benzene-carbonTetrachloride
-                {
-                    i benzene;  j carbonTetrachloride;
-                    a_ij -0.51821;  b_ij 0;  a_ji 0.7338;  b_ji 0;
-                    alpha 0.2;
-                }
+                acetone-benzene { }
+                acetone-carbonTetrachloride { }
+                benzene-carbonTetrachloride { }
             }
         }
         standardState pureLiquid;

@@ -29,15 +29,9 @@ equilibrium
         activityModel
         {
             model Wilson;
-            binaryParameters   // the dict OWNS the numbers (inline form)
+            binaryParameters   // each pair is found by name: the case's own record, else the catalogue's
             {
-                ethanol-water
-                {
-                    i ethanol;
-                    j water;
-                    A_ij 1157.95;
-                    A_ji 4081.65;
-                }
+                ethanol-water { }
             }
         }
         standardState pureLiquid;

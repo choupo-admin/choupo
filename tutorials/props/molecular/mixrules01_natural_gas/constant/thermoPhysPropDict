@@ -25,7 +25,7 @@ equilibrium
         binaryInteractions
         {
             // Knapp et al., DECHEMA Chemistry Data Series VI (1982)
-            N2-CH4 { source "data/standards/parameters/SRK/N2-CH4.dat"; }
+            N2-CH4 { }
         }
     }
 

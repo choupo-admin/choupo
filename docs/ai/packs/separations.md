@@ -111,7 +111,7 @@ components ( NH3 N2 water );
 equilibrium { formulation diluteSolution;
   liquid { solvent { component water; standardState pureLiquid; }
            solutes { components ( NH3 ); standardState infiniteDilution; solutionModel henryDilute;
-                     binaryParameters { NH3-water { source "data/standards/parameters/Henry/NH3-water.dat"; } } } }
+                     binaryParameters { NH3-water { } } } }
   vapour { fugacityModel idealGas; } }
 ```
 Other gases (N2) are inert carriers that stay in the gas; the solvent never evaporates. Refused: a solute with no Henry pair, a vapour on the liquid port (or liquid on the gas port), a non-solute arriving in the liquid. Exactly two input streams.

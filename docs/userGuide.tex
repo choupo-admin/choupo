@@ -1067,18 +1067,24 @@ empty).  A pair absent from every tier is the announced ideal default
 activityModel
 {
     model NRTL;
-    binaryParameters                       // the dict OWNS the numbers,
-    {                                      //   or points at a catalogue
-        ethanol-water                      //   file via `source "...";`
-        {
-            i ethanol;  j water;
-            a_ij -0.8009;  b_ij  246.18;   // tau_ij = a_ij + b_ij/T
-            a_ji  3.4578;  b_ji -586.0809;
-            alpha 0.30;
-        }
+    binaryParameters                       // each pair is found BY NAME:
+    {                                      //   the case's own record, else
+        ethanol-water { }                  //   the catalogue's, else data/local
     }
 }
 \end{lstlisting}
+
+\noindent A pair is found by name, as a component is: its address is never
+written in the case.  \code{<i>-<j> \{ \}} is resolved through one cascade, nearest
+first --- the case's own \file{constant/parameters/<model>/<i>-<j>.dat} (and a
+sector's), then \file{data/standards/parameters/<model>/}, then
+\file{data/local/}; the \code{[builder]} line prints the file read and its level
+(\code{[case]}, \code{[catalogue]}, \code{[local]}).  An exception to the catalogue
+is a \emph{record in the case's own folder}, declared as a component overlay is
+(\code{variationOf <name>; variationReason "...";}); a \code{source "<path>"} is
+retired (redundant when it names the cascade's file, refused otherwise), and numbers
+typed in the entry are still read but announced \code{[unreviewed]}.  The one
+legitimate typed pair is a value a fit is varying.
 
 A local pair never shadows a standard pair.  Staged ChemSep pairs live in
 the private \file{data/local/parameters/} tier (not redistributed); they
@@ -1194,9 +1200,10 @@ A gas solute (CO$_2$, NH$_3$, O$_2$, H$_2$S, SO$_2$,~\dots\ in water)
 takes the infinite-dilution Henry reference.  WHO dissolves in WHAT is
 declared structurally, by the \code{diluteSolution} formulation's
 \code{solvent \{\}} and \code{solutes \{\}} groups (next subsection); the
-solutes' \code{binaryParameters} declare the Henry-pair files
-(\file{data/standards/parameters/Henry/<solute>-<solvent>.dat},
-van~'t~Hoff temperature dependence).  The absorber/stripper and the
+Henry pairs are found by name, each solute-solvent pair through the cascade of the
+previous subsection (\file{constant/parameters/Henry/<solute>-<solvent>.dat} in the
+case, then \file{data/standards/parameters/Henry/}, van~'t~Hoff temperature
+dependence); the solutes' \code{binaryParameters} block is optional.  The absorber/stripper and the
 dilute-solution flash world run on this.  Each engaged pair is announced
 with its constants and source (\code{[henry]} log lines).
 
@@ -1236,7 +1243,7 @@ equilibrium
             solutionModel henryDilute;
             binaryParameters
             {
-                CO2-water { source "data/standards/parameters/Henry/CO2-water.dat"; }
+                CO2-water { }          // found by name (optional block)
             }
         }
     }

@@ -92,15 +92,9 @@ equilibrium
         activityModel
         {
             model NRTL;
-            binaryParameters            // the dict OWNS the numbers (inline)
+            binaryParameters            // each pair is found by NAME
             {
-                ethanol-water
-                {
-                    i ethanol;  j water;
-                    a_ij -0.8009;  b_ij  246.18;
-                    a_ji  3.4578;  b_ji -586.0809;
-                    alpha 0.30;
-                }
+                ethanol-water { }       // the case's own record, else the catalogue's
             }
         }
         standardState pureLiquid;
@@ -110,15 +104,30 @@ equilibrium
 }
 ```
 
-A parameter block may instead point at a catalogue file:
+A PAIR IS FOUND BY NAME, as a component is -- its address is never written in the
+case (C433).  `<i>-<j> { }` is resolved by (model, i, j) through ONE cascade, nearest
+first: the case's own `constant/parameters/<Model>/<i>-<j>.dat` (and a sector's), then
+`data/standards/parameters/<Model>/`, then `data/local/parameters/<Model>/`.  The
+`[builder]` line prints the file read and its level (`[case]`, `[catalogue]`,
+`[local]`); a pair no level holds is refused naming the file looked for in each level.
+The same holds for a `solutes` group of a `diluteSolution` system, whose
+`binaryParameters` block is optional: each solute-solvent Henry pair is found by name
+(`CO2-water { }`, or no entry at all) and the run prints `[builder] Henry pair CO2-water
+--- data/standards/parameters/Henry/CO2-water.dat  [catalogue]`.
 
-```
-binaryParameters
-{
-    // Sander (2015) compilation, CC-BY
-    CO2-water { source "data/standards/parameters/Henry/CO2-water.dat"; }
-}
-```
+An EXCEPTION to the catalogue is a RECORD IN THE CASE'S OWN FOLDER, never a path to
+elsewhere: write `constant/parameters/NRTL/ethanol-water.dat` in the case (recordType
+`binaryInteractionParameters`, a `parameters` block, a `provenance` block naming the
+source) and declare it as a component overlay is declared when the catalogue holds a
+record of that name -- `variationOf ethanol-water; variationReason "...";` (a full
+record, read alone).  The entry stays `ethanol-water { }`; the run says the case-level
+file was read.  An undeclared homonym is refused (`records::checkLocalShadow`).
+
+`source "<path>"` is RETIRED: a `source` equal to the file the cascade finds is
+announced once as redundant (an old case runs); any other is refused by name with the
+line to write and where to put the record.  Numbers typed in the entry (an INLINE pair)
+stay readable and are announced `[unreviewed]` with this remedy; the one legitimate use
+is a value a fit varies (`fitParameters` mutates `binaryParameters.<pair>.<key>`).
 
 A pair record of the activity models (`NRTL`, `UNIQUAC`, `Wilson`) may hold
 SEVERAL NAMED PARAMETER SETS -- the same pair fitted for two purposes (a
@@ -138,14 +147,14 @@ sets
 }
 ```
 
-and a case picks one beside the pair's `source`:
+and a case picks one in the pair's entry:
 
 ```
-binaryParameters { A-B { source "data/standards/parameters/NRTL/<pair>.dat"; set vle; } }
+binaryParameters { A-B { set vle; } }
 ```
 
 No `set` = the record's `preferred`.  An unknown name is REFUSED, listing the
-record's sets; `set` without a `source` (an inline pair) is refused.  The run
+record's sets; `set` on an inline pair (numbers typed in the entry) is refused.  The run
 prints `[builder] binary pair A-B  --- <file>  set vle` and the resolved view
 line ends `, set vle`.  A curator adds a second set by moving the record's
 `parameters` and `provenance` into a named set, adding `preferred <name>;`
@@ -253,10 +262,10 @@ equilibrium
             components    ( CO2 );
             standardState infiniteDilution;    // the Henry rung
             solutionModel henryDilute;
-            binaryParameters
+            binaryParameters                   // optional: each pair is found by name
             {
-                // Sander (2015) compilation, CC-BY
-                CO2-water { source "data/standards/parameters/Henry/CO2-water.dat"; }
+                // Sander (2015) compilation, CC-BY (the catalogue record's own citation)
+                CO2-water { }
             }
         }
     }
@@ -281,8 +290,10 @@ equilibrium
         mixingRule vanDerWaalsOneFluid;
         binaryInteractions
         {
-            // Knapp et al., DECHEMA Chemistry Data Series VI (1982)
-            N2-CH4 { source "data/standards/parameters/SRK/N2-CH4.dat"; }
+            // a single-pair kij record is found BY NAME (case folder, then
+            // data/standards/parameters/SRK/, then data/local); the record's
+            // own provenance cites its source
+            N2-CH4 { }
             // a kij SET: every pair of a mixture, the PPR78 / E-PPR78 group
             // contribution evaluated ONCE at a declared T by the `ppr78Kij`
             // props op and written into the case (recordType
@@ -432,14 +443,14 @@ equationOfState
     activityModel                  // the block a gammaPhi liquid takes, INSIDE the cubic's block
     {
         model NRTL;
-        binaryParameters { methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; } }
+        binaryParameters { methanol-water { } }
 
     model LeeKeslerPloecker;
     binaryInteractions
     {
         // Ploecker, Knapp & Prausnitz 1978, Table I, p. 327 -- one record per pair
-        N2-CH4 { source "data/standards/parameters/LKP/CH4-N2.dat"; }
-        N2-Ar  { source "data/standards/parameters/LKP/Ar-N2.dat"; }
+        N2-CH4 { }      // found by name in parameters/LKP/ (CH4-N2.dat)
+        N2-Ar  { }
     }
 }
 ```
@@ -1213,9 +1224,11 @@ number require you to name the model?*).  See
    [`data-doctrine.md`](data-doctrine.md) §4.)
 3. **PAIR parameters (NRTL τ, Henry, Pitzer β, `k_ij`) → the parameter
    catalogue**, `data/standards/parameters/<MODEL>/<i>-<j>.dat`, referenced
-   from a `binaryParameters`/`binaryInteractions` block by `source`, loaded
-   and verified at assembly with a LOUD `[builder]` line — with the inline
-   numbers form staying first-class.
+   found BY NAME (`<i>-<j> { }` in a `binaryParameters`/`binaryInteractions`
+   block; the case's own `constant/parameters/<MODEL>/` first, then the
+   catalogue, then `data/local`), loaded and verified at assembly with a LOUD
+   `[builder]` line naming the file and its level.  The inline numbers form is
+   still READ (announced `[unreviewed]`) and is kept for a value a fit varies.
 
 ## The aqueous solution tier + the default-solvent rule
 

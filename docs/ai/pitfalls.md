@@ -259,9 +259,10 @@ Authorised, it runs — and every ideal-defaulted pair rides the result as a
   is indistinguishable from a curated one; an authorised ideal pair is visible
   forever.
 
-(Contrast a DECLARED pair: a `binaryParameters` entry whose `source` file is
-missing does not default at all — the builder REFUSES at assembly, naming the
-entry.)
+(Contrast a NAMED pair: a `binaryParameters` entry `<i>-<j> { }` that no level of
+the cascade holds (the case's `constant/parameters/<Model>/`, the catalogue, `data/local`)
+does not default at all — the builder REFUSES at assembly, naming the file it looked for
+in each level.)
 
 ### `model ideal` for a strongly non-ideal mixture
 Common mistake.  Ethanol/water at 1 atm has a 12% offset from Raoult
@@ -306,12 +307,14 @@ are two Gibbs surfaces pretending to be one VLE; the builder refuses at
 assembly (one Gibbs surface per phase, `K = φ_L/φ_V` from the one
 cubic's two roots).
 
-### A declared parameter file that is missing → REFUSED, not defaulted
+### A named pair that no level holds → REFUSED, not defaulted
 Unlike the NRTL ideal-default for an UNDECLARED pair (announced but
-tolerated), a `binaryParameters` / `binaryInteractions` entry whose
-`source` file is absent or unparseable REFUSES at assembly, naming the
-entry to add (declare → verify → refuse).  So does a `solutes{}` group
-with no matching pair entry.
+tolerated), a `binaryParameters` / `binaryInteractions` entry `<i>-<j> { }`
+that the cascade (case folder, catalogue, `data/local`) cannot find REFUSES at
+assembly, naming the file looked for in each level.  So does a `solutes{}` group
+whose solute-solvent Henry pair no level holds.  A `source "<path>"` is retired:
+equal to the cascade's file it is announced as redundant, otherwise it is refused
+with the line to write and where to put the record (`constant/parameters/<Model>/`).
 
 ### Omitting `kijPairs` on an EoS package → kij = 0 (announced)
 No `kijPairs` block is legal — the cubic runs predictive with

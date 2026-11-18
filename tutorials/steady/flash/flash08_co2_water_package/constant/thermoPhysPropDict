@@ -38,7 +38,7 @@ equilibrium
             binaryParameters
             {
                 // Sander (2015) compilation, CC-BY
-                CO2-water { source "data/standards/parameters/Henry/CO2-water.dat"; }
+                CO2-water { }
             }
         }
     }

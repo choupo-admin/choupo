@@ -45,8 +45,8 @@ equilibrium
             solutionModel henryDilute;
             binaryParameters
             {
-                CO2-water { source "data/standards/parameters/Henry/CO2-water.dat"; }
-                N2-water  { source "data/standards/parameters/Henry/N2-water.dat"; }   // C256
+                CO2-water { }
+                N2-water  { }   // C256
             }
         }
     }

@@ -1,0 +1,63 @@
+{
+  "tutorials/props/compare/compare_activity_etoh_water/system/propsDict::ethanol-water": {
+    "origin": "assumed", "interim": "typed in the case by its author; the case names no source",
+    "citation": "Wilson Lambda parameters typed in this case's propsDict thermo{} blocks (J/mol); the case names no source.  They are the numbers flash03_wilson_ethanol_water and the Theory Guide's worked Wilson example use.",
+    "notes": "Moved from the dictionary into the case's own record by C433 (a pair is found by name); no number changed."
+  },
+  "tutorials/props/compare/compare_vle_etoh_water/system/propsDict::ethanol-water": {
+    "origin": "assumed", "interim": "typed in the case by its author; the case names no source",
+    "citation": "Wilson Lambda parameters typed in this case's propsDict thermo{} blocks (J/mol); the case names no source.  They are the numbers flash03_wilson_ethanol_water and the Theory Guide's worked Wilson example use.",
+    "notes": "Moved from the dictionary into the case's own record by C433 (a pair is found by name); no number changed."
+  },
+  "tutorials/steady/flowsheets/esterification2sector/sectors/SEPARATION/system/propsDict::ethanol-water": {
+    "origin": "assumed", "interim": "typed in the case by its author; the case names no source",
+    "citation": "Wilson Lambda parameters typed in this sector's propsDict thermo{} block (J/mol); the case names no source.  They are the numbers flash03_wilson_ethanol_water and the Theory Guide's worked Wilson example use.",
+    "notes": "Moved from the dictionary into the sector's own record by C433 (a pair is found by name); no number changed."
+  },
+  "tutorials/steady/flash/flash03_wilson_ethanol_water/constant/thermoPhysPropDict::ethanol-water": {
+    "origin": "assumed", "interim": "typed in the case by its author; the case names no source",
+    "citation": "Wilson Lambda parameters of ethanol(1)/water(2) typed in this case (A_ij 1157.95, A_ji 4081.65 J/mol); the case names no source.  The Theory Guide's worked Wilson example computes gamma from them.",
+    "notes": "Moved from the dictionary into the case's own record by C433 (a pair is found by name); no number changed."
+  },
+  "tutorials/steady/flash/bubbleT02_uniquac_ethanol_water/constant/thermoPhysPropDict::ethanol-water": {
+    "origin": "assumed", "interim": "typed in the case by its author; the case names no source",
+    "citation": "UNIQUAC energies of ethanol(1)/water(2) typed in this case (a_ij -21.44 K, a_ji 222.47 K); the case names no source.  The Theory Guide's worked UNIQUAC example computes gamma from them.",
+    "notes": "Moved from the dictionary into the case's own record by C433 (a pair is found by name); no number changed."
+  },
+  "tutorials/props/scan/binary01_lle_water_nbutanol/constant/thermoPhysPropDict::nButanol-water": {
+    "origin": "literature",
+    "citation": "J.G.M. Winkelman, G.N. Kraai, H.J. Heeres, Fluid Phase Equilibria 284 (2009) 71-79, doi 10.1016/j.fluid.2009.06.013, Table 2 p. 73: 1-butanol(1)/water(3), valid 273-363 K; A_ij(T) = a + b*T + c*T^2 (Eq. 10), tau_ij = exp(-A_ij/T) (Eq. 7).",
+    "notes": "Moved from the dictionary into the case's own record by C433; no number changed."
+  },
+  "tutorials/steady/flash/vlle01_waterButanol/constant/thermoPhysPropDict::nButanol-water": {
+    "origin": "literature",
+    "citation": "J.G.M. Winkelman, G.N. Kraai, H.J. Heeres, Fluid Phase Equilibria 284 (2009) 71-79, doi 10.1016/j.fluid.2009.06.013, Table 2 p. 73: 1-butanol(1)/water(3), valid 273-363 K; A_ij(T) = a + b*T + c*T^2 (Eq. 10), tau_ij = exp(-A_ij/T) (Eq. 7).",
+    "notes": "Moved from the dictionary into the case's own record by C433; no number changed."
+  },
+  "tutorials/steady/absorption/extraction01_waterButanol/constant/thermoPhysPropDict::water-nButanol": {
+    "origin": "assumed", "interim": "typed in the case by its author; the case names no source",
+    "reason": "the case's own illustrative NRTL set (a 0, b 1200 K / 50 K, alpha 0.30) for the water/n-butanol liquid-liquid split; it is not the catalogue's pair",
+    "citation": "NRTL pair typed in this case; the case names no source (its README describes the miscibility gap, not the parameters).",
+    "notes": "Moved from the dictionary into the case's own record by C433; no number changed."
+  },
+  "tutorials/props/transport/liquidDiffusivity02_kooijmanTaylor_ternary/constant/thermoPhysPropDict::acetone-benzene": {
+    "origin": "literature",
+    "citation": "Dimensionless NRTL parameters (alpha 0.2) of Renon et al. (1971) as printed in Kooijman & Taylor, Ind. Eng. Chem. Res. 30 (1991) 1217-1222, Table I p. 1218; tau_21 = 0.76432 from Taylor & Krishna (1993), Example 3.3.1 p. 61 (the paper prints 0.74632, a transposition: see the case header).  Stated for 25 C only (b_ij = 0).",
+    "notes": "Moved from the dictionary into the case's own record by C433; no number changed."
+  },
+  "tutorials/props/transport/liquidDiffusivity02_kooijmanTaylor_ternary/constant/thermoPhysPropDict::acetone-carbonTetrachloride": {
+    "origin": "literature",
+    "citation": "Dimensionless NRTL parameters (alpha 0.2) of Renon et al. (1971) as printed in Kooijman & Taylor, Ind. Eng. Chem. Res. 30 (1991) 1217-1222, Table I p. 1218.  Stated for 25 C only (b_ij = 0).",
+    "notes": "Moved from the dictionary into the case's own record by C433; no number changed."
+  },
+  "tutorials/props/transport/liquidDiffusivity02_kooijmanTaylor_ternary/constant/thermoPhysPropDict::benzene-carbonTetrachloride": {
+    "origin": "literature",
+    "citation": "Dimensionless NRTL parameters (alpha 0.2) of Renon et al. (1971) as printed in Kooijman & Taylor, Ind. Eng. Chem. Res. 30 (1991) 1217-1222, Table I p. 1218.  Stated for 25 C only (b_ij = 0).",
+    "notes": "Moved from the dictionary into the case's own record by C433; no number changed."
+  },
+  "ARTIFICIAL": {
+    "origin": "assumed", "interim": "ARTIFICIAL audit parameters, not a real system",
+    "citation": "ARTIFICIAL audit parameters: illustrative miscibility of three synthetic components compA/compB/compC, not a fitted system and not from a source.",
+    "notes": "Moved from the dictionary into the case's own record by C433; no number changed."
+  }
+}

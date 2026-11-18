@@ -238,7 +238,7 @@ equationOfState
     mixingRule vanDerWaalsOneFluid;
     binaryInteractions
     {
-        N2-H2 { source "constant/parameters/SRK/N2-H2.dat"; }
+        N2-H2 { }      // the case's own constant/parameters/SRK/N2-H2.dat, found by name
     }
 }
 ```
