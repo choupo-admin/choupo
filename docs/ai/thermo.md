@@ -723,13 +723,17 @@ pureFluids
     // CO2   { method Helmholtz; equation SpanWagner1996; }
     // N2    { method Helmholtz; equation Span2000; }
     // methane { method Helmholtz; equation SetzmannWagner1991; }
+    // NH3   { method Helmholtz; equation Gao2023; }   // ammonia, with an associating term
 }
 ```
 
 The Helmholtz records live in `data/standards/parameters/Helmholtz/` and are
 checked against their publication's own values at every load.  h and s are
 on the publication's datum, valid only where the phase is effectively pure
-(x >= 0.999); a mixture refuses.  A SEALED case must carry the record in
+(x >= 0.999); a mixture refuses.  A record that names a fluid is also what the
+liquid-density door uses for that fluid, with its pressure dependence, without any
+`pureFluids` selection (ammonia: `Gao2023`, read from the authors' manuscript and held
+to the 17 states of its Table 7).  A SEALED case must carry the record in
 `constant/parameters/Helmholtz/`.  To evaluate one state or a saturation
 point without a flowsheet, use the props op `referenceEoS`.  Theory Guide:
 "Reference equations of state (Helmholtz energy)".

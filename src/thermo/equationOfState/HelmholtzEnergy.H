@@ -72,6 +72,7 @@ Description
         power           n delta^d tau^t
         exponential     n delta^d tau^t exp(-delta^c)
         gaussian        n delta^d tau^t exp(-alpha (delta-eps)^2 - beta (tau-gamma)^2)
+        associating     n delta^d tau^t exp(-eta (delta-eps)^2 + 1/(beta (tau-gamma)^2 + b))
         nonAnalytic     n Delta^b delta psi            (the critical-region
                         terms of IAPWS-95; Delta, theta, psi in the .cpp)
 

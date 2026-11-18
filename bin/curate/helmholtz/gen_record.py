@@ -85,12 +85,13 @@ def generate(src):
 
     def factor(u):
         return {"mol/dm3": M, "J/mol": 1000 / M if M else None,
+                "kJ/mol": 10 ** 6 / M if M else None,
                 "J/mol/K": 1000 / M if M else None}.get(u)
 
     def molar(numstr, u):
         f = factor(u)
         if f is None: return None, u
-        return Decimal(numstr) * f, {"mol/dm3": "kg/m3", "J/mol": "J/kg", "J/mol/K": "J/kg/K"}[u]
+        return Decimal(numstr) * f, {"mol/dm3": "kg/m3", "J/mol": "J/kg", "kJ/mol": "J/kg", "J/mol/K": "J/kg/K"}[u]
 
     def fmt(d):
         return format(d.normalize() if d == d.to_integral() else +d, ".20g")
@@ -164,11 +165,16 @@ def generate(src):
     rows = [r.split() for r in sec["ideal"]]
     lead = {"lead0": "0", "lead1": "0"}
     logtau, pw, pe = None, [], []
+    Tc_dec = Decimal(c["Tc"].split()[0])
     for r in rows:
         if r[0] in lead: lead[r[0]] = r[1]
         elif r[0] == "logTau": logtau = r[1]
         elif r[0] == "power": pw.append((r[1], r[2]))
         elif r[0] == "planckEinstein": pe.append((r[1], r[2]))
+        elif r[0] == "planckEinsteinT":
+            # n ln(1 - exp(-theta tau / Tc)): the paper prints the characteristic
+            # temperature theta in K; gamma = theta / Tc, exact decimal division.
+            pe.append((r[1], f"{Decimal(r[2]) / Tc_dec:.17g}"))
         elif r[0] == "planckEinsteinB": pe.append((r[1], r[2][1:] if r[2].startswith("-") else "-" + r[2]))
         else: raise SystemExit(f"{src}: unknown ideal kind {r[0]}")
     w(f"ideal                           // {head['ideal']}")
@@ -194,6 +200,7 @@ def generate(src):
     groups = [("residual-power", "power", ["n", "d", "t"]),
               ("residual-exponential", "exponential", ["n", "d", "t", "c"]),
               ("residual-gaussian", "gaussian", ["n", "d", "t", "alpha", "beta", "gamma", "epsilon"]),
+              ("residual-associating", "associating", ["n", "d", "t", "alpha", "beta", "gamma", "epsilon", "b"]),
               ("residual-nonAnalytic", "nonAnalytic", ["n", "a", "b", "beta", "A", "B", "C", "D"])]
     w("residual")
     w("{")
@@ -245,10 +252,24 @@ def generate(src):
             t = r.split()
             page = [x for x in t if x.startswith("page=")]
             t = [x for x in t if not x.startswith("page=")]
-            fixed = " ".join(f"{c} {t[cols.index(c)]} {UNIT[units[cols.index(c)]][1]};" for c in fixedcols)
+            def fx(c):
+                j = cols.index(c)
+                # THE ZERO-DENSITY STATE (the ideal-gas test point): ln(delta) and
+                # the divided derivatives have no value at delta = 0 in either
+                # kernel, so it is evaluated at 1e-9 mol/dm3.  The residual
+                # contribution there is of order delta (below 1e-8 relative),
+                # under the 7 digits the paper prints, so the row still holds
+                # alpha0 (cv, cp, w, h) to the printed precision.
+                if c == "rho" and float(t[j]) == 0.0:
+                    x, uu = molar("1e-9", units[j])
+                    return f"{c} {fmt(x)} {uu};"
+                x, uu = molar(t[j], units[j])
+                return f"{c} {fmt(x)} {uu};" if x is not None else f"{c} {t[j]} {UNIT[units[j]][1]};"
+            fixed = " ".join(fx(c) for c in fixedcols)
             vals = []
             for j, c in enumerate(cols):
                 if c in fixedcols: continue
+                if t[j] in ("Infinite", "-"): continue   # a printed non-value (ideal-gas entropy), or a pressure printed at zero density
                 x, uu = molar(t[j], units[j])
                 if x is not None:
                     vals.append((c, t[j], None, f"{fmt(x)} {uu}", fmt(factor(units[j]))))
@@ -263,6 +284,7 @@ def generate(src):
                 w(e)
         w("    );")
 
+    table("rhoState", "singlePhase", ["T", "rho"])
     table("saturation", "saturation", ["T"])
     table("singlePhase", "pTState", ["T", "p"])
     w("}")

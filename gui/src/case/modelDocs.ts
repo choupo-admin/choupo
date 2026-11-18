@@ -428,6 +428,7 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   IAPWS95:            { guide: "theory", dest: "sec:helmholtz-eos-fluids" },
   SpanWagner1996:     { guide: "theory", dest: "sec:helmholtz-eos-fluids" },
   Span2000:           { guide: "theory", dest: "sec:helmholtz-eos-fluids" },
+  Gao2023:            { guide: "theory", dest: "sec:helmholtz-eos-fluids" },
   SetzmannWagner1991: { guide: "theory", dest: "sec:helmholtz-eos-fluids" },
   // -- the mill's selection functions (MillModels.cpp; DEV.md 4c C361) ------
   //    unambiguous tokens; `austin` names TWO models and is resolved by its

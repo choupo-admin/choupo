@@ -189,6 +189,41 @@ Derivs TermGroup::term(std::size_t k, scalar delta, scalar tau) const
     }
 
     // -----------------------------------------------------------------------
+    //  RESIDUAL  associating (Gao, Wu, Bell, Harvey & Lemmon 2023, Eq. 30,
+    //  terms 19-20 of the ammonia equation): a Gaussian bell in delta whose
+    //  temperature factor is a reciprocal quadratic in the exponent,
+    //      X = n delta^d tau^t exp(E),
+    //      E = -eta (delta-eps)^2 + 1 / (beta (tau-gamma)^2 + b)
+    //  (eta is carried in the `alpha` column, as for the gaussian type)
+    //    w    = beta (tau-gamma)^2 + b
+    //    E_t  = -2 beta (tau-gamma) / w^2
+    //    E_tt = -2 beta / w^2 + 8 beta^2 (tau-gamma)^2 / w^3
+    //    fd   = d/delta - 2 eta (delta-eps),   ft = t/tau + E_t
+    //    a_d  = X fd                 a_dd = X (fd^2 - d/delta^2 - 2 eta)
+    //    a_t  = X ft                 a_tt = X (ft^2 - t/tau^2 + E_tt)
+    //    a_dt = X fd ft
+    // -----------------------------------------------------------------------
+    if (type == "associating")
+    {
+        const scalar al = alpha[k], be = beta[k], ga = gamma[k], ep = epsilon[k], bk = nb[k];
+        const scalar dt = tau - ga;
+        const scalar w  = be * dt * dt + bk;
+        const scalar X  = nk * std::pow(delta, dk) * std::pow(tau, tk)
+                        * std::exp(-al * (delta - ep) * (delta - ep) + 1.0 / w);
+        const scalar Et  = -2.0 * be * dt / (w * w);
+        const scalar Ett = -2.0 * be / (w * w) + 8.0 * be * be * dt * dt / (w * w * w);
+        const scalar fd = dk / delta - 2.0 * al * (delta - ep);
+        const scalar ft = tk / tau + Et;
+        r.a    = X;
+        r.a_d  = X * fd;
+        r.a_dd = X * (fd * fd - dk / (delta * delta) - 2.0 * al);
+        r.a_t  = X * ft;
+        r.a_tt = X * (ft * ft - tk / (tau * tau) + Ett);
+        r.a_dt = X * fd * ft;
+        return r;
+    }
+
+    // -----------------------------------------------------------------------
     //  RESIDUAL  nonAnalytic (the critical-region terms, IAPWS R6-95 Eq. 6,
     //  terms 55-56; derivatives as the release's Table 5):
     //      term  = n Delta^b delta psi
@@ -341,6 +376,7 @@ void ReducedHelmholtz::read(const DictPtr& ideal, const DictPtr& residual,
         { "power",       { "d", "t" } },
         { "exponential", { "d", "t", "c" } },
         { "gaussian",    { "d", "t", "alpha", "beta", "gamma", "epsilon" } },
+        { "associating", { "d", "t", "alpha", "beta", "gamma", "epsilon", "b" } },
         { "nonAnalytic", { "a", "b", "B", "C", "D", "A", "beta" } },
     };
     for (const std::string& key : residual->keys())
@@ -349,7 +385,7 @@ void ReducedHelmholtz::read(const DictPtr& ideal, const DictPtr& residual,
         const auto it = cols.find(key);
         if (it == cols.end())
             throw std::runtime_error(where + ": unknown residual term type '"
-                + key + "' -- known: power, exponential, gaussian, nonAnalytic");
+                + key + "' -- known: power, exponential, gaussian, associating, nonAnalytic");
         const DictPtr b = residual->subDict(key);
         TermGroup g;
         g.type = key;
