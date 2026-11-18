@@ -56,7 +56,7 @@
       C  held-out 3 bar, X_d fitted on 2 and 4 bar:   mean |R_model - R_measured|
          over every ion of the row <= 5 points of rejection.  Why 5: the
          article's own model, with X_d fitted on all three pressures, is said to
-         deviate by up to 12 % (a RELATIVE figure, p. 25 / 28) on rejections
+         deviate by up to 12 % (a RELATIVE figure, accepted manuscript p. 22 and 28) on rejections
          that run to 99 %; and the three table rows differ from each other by
          2-8 points per ion.  A pore that predicts the middle pressure to 5
          points has captured the trend, not noise.
@@ -355,7 +355,7 @@ operations
         parameters ( );
         evidence
         (
-            { dataset "constant/experimental/labban2017_mix1_fit.dat";     role validation; }
+            { dataset "constant/experimental/labban2017_mix1_fit.dat";     role fit; }     // scored, NOT tuned: no free parameter
             { dataset "constant/experimental/labban2017_mix1_heldout.dat"; role validation; }
         );
         acceptance
@@ -395,7 +395,7 @@ operations
         parameters ( );
         evidence
         (
-            { dataset "constant/experimental/labban2017_mix2_fit.dat";     role validation; }
+            { dataset "constant/experimental/labban2017_mix2_fit.dat";     role fit; }     // scored, NOT tuned: no free parameter
             { dataset "constant/experimental/labban2017_mix2_heldout.dat"; role validation; }
         );
         acceptance
@@ -435,7 +435,7 @@ operations
         parameters ( );
         evidence
         (
-            { dataset "constant/experimental/labban2017_sw_fit.dat";     role validation; }
+            { dataset "constant/experimental/labban2017_sw_fit.dat";     role fit; }     // scored, NOT tuned: no free parameter
             { dataset "constant/experimental/labban2017_sw_heldout.dat"; role validation; }
         );
         acceptance
@@ -475,7 +475,7 @@ operations
         parameters ( );
         evidence
         (
-            { dataset "constant/experimental/labban2017_mix1_fit.dat";     role validation; }
+            { dataset "constant/experimental/labban2017_mix1_fit.dat";     role fit; }     // scored, NOT tuned: no free parameter
             { dataset "constant/experimental/labban2017_mix1_heldout.dat"; role validation; }
         );
         residual
@@ -510,7 +510,7 @@ operations
         parameters ( );
         evidence
         (
-            { dataset "constant/experimental/labban2017_mix2_fit.dat";     role validation; }
+            { dataset "constant/experimental/labban2017_mix2_fit.dat";     role fit; }     // scored, NOT tuned: no free parameter
             { dataset "constant/experimental/labban2017_mix2_heldout.dat"; role validation; }
         );
         residual
@@ -545,7 +545,7 @@ operations
         parameters ( );
         evidence
         (
-            { dataset "constant/experimental/labban2017_sw_fit.dat";     role validation; }
+            { dataset "constant/experimental/labban2017_sw_fit.dat";     role fit; }     // scored, NOT tuned: no free parameter
             { dataset "constant/experimental/labban2017_sw_heldout.dat"; role validation; }
         );
         residual

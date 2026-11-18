@@ -1,0 +1,267 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  dspmde02_lab_characterisation_template (DEV.md 4c C177) -- A LABORATORY COPIES
+  THIS CASE, REPLACES THE NUMBERS OF ONE RECORD WITH ITS OWN, AND GETS THE
+  DSPM-DE PORE OF ITS MEMBRANE.  Read README.md first: it says, step by step,
+  what to measure and how to fill the record.
+
+  THE CHAIN
+    STEP 1  fit_pore_neutral   r_p and A_k/dx from the uncharged solutes
+                                (constant/experimental/lab_neutral_*.dat)
+    DECLARED                   the pore dielectric constant (constant/assets/Lab.dat)
+    STEP 2  fit_X_c1..c3       the charge X_d of each concentration level, from the
+                                nine rows of constant/experimental/lab_salts.dat; the
+                                ONE held-out point (row 5) is predicted by fit_X_c2
+    VIEW    charge_isotherm    X_d against concentration
+  Every fit prints its parameters with their 95 % intervals, the condition number
+  and the correlations; every operation writes computed-vs-measured rejection against
+  flux under postProcessing/<operation>/ (rejections, parity, residuals), which the GUI
+  draws.
+
+  PROVED ON LABBAN ET AL. (2017): the record ships filled with the points of that
+  article (Tables 3, 6-9), so the template is run, not promised; see
+  labban2017_dspmde_validation for how each number was read and for the article's
+  mixtures PREDICTED from simple feeds.  The article has three feeds of different
+  composition where a laboratory has three concentrations of one salt: the shape is
+  the same, the chemistry is not.
+
+  WHAT A ROW OF THE RECORD IS SPLIT BY: the evidence entries carry `discard ( ... )`,
+  the 1-based rows of the file set aside by NAME (announced at every run), so ONE file
+  serves every operation: fit_X_c2 fits rows 4 and 6 and holds out row 5.  Keep the row
+  order of the record (concentration level 1: rows 1-3, level 2: rows 4-6, level 3: 7-9)
+  or change the `discard` lists with it.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    //  STEP 1 -- the pore of YOUR membrane from an UNCHARGED solute: r_p and A_k/dx
+    //  (= 1 / the effective thickness).  One record per uncharged solute (glycerol, glucose,
+    //  sucrose here); a charged solute does not enter this step.  No uncharged solute?  See the
+    //  README, "without a neutral solute".
+    {
+        name      fit_pore_neutral;
+        type      fitParameters;
+        parameters
+        (
+            { path poreModel.poreRadius;             initial 6.0e-10; min 2.0e-10; max 3.0e-9; }
+            { path poreModel.porosityOverThickness;  initial 5.0e5;   min 1.0e4;   max 1.0e8; }
+        );
+        evidence
+        (
+            { dataset "constant/experimental/lab_neutral_glycerol.dat"; role fit; }
+            { dataset "constant/experimental/lab_neutral_glucose.dat";  role fit; }
+            { dataset "constant/experimental/lab_neutral_sucrose.dat";  role fit; }
+        );
+        residual
+        {
+            kind        membrane;
+            model       DSPM-DE;
+            membrane    Lab;
+            rejection   observed;           // what a laboratory measures: 1 - c_permeate / c_feed
+            weighting   absolute;
+            transportParameters
+            {
+                poreSolver { method finiteDifference; nodes 101; wallClosure porePermeate; }
+                hindrance  DechadilokDeen2006;
+                bulkDielectric 80.4;
+                neutralSolutes
+                {
+                    glycerol { radius 2.60e-10; D0 9.50e-10; }   // YOURS: the Stokes radius [m] and D0 [m2/s] of your uncharged solute
+                    glucose  { radius 3.65e-10; D0 6.90e-10; }
+                    sucrose  { radius 4.71e-10; D0 5.20e-10; }
+                }
+                }
+            //  THE POLARISATION, declared, never hidden.  Either the film coefficient you
+            //  measured:    k_film 2.5e-5;          // m/s
+            //  or a correlation of your cell (a stirred cell: model StirredCell; omega and
+            //  radius of the stirrer).  Below: Labban's hollow fibre, Sh = 1.62 Re^0.33 Sc^0.33
+            //  (d/L)^0.33 expressed through StirredCell (see labban2017_dspmde_validation).
+            massTransfer
+            {
+                model      StirredCell;
+                a 0.26194;  b 0.33;  c 0.33;
+                radius     1.0e-3;
+                omega      300.0;
+                viscosity  8.968737390077713e-4;   // Pa.s, water at the run temperature
+                density    997;                    // kg/m3
+            }
+            polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+        }
+        options { maxIter 60; tolerance 1.0e-10; fdStep 1.0e-4; lambda0 1.0e-2; }
+        output { record "constant/assets/Lab_pore.dat"; name Lab_pore; }
+    }
+    //  STEP 2, concentration level 1 -- the pore charge X_d of the rows 1, 2, 3 of the record
+    //  (the rows are the three pressures of one feed).  X_d is fitted PER concentration:
+    //  the values, put against the concentration, ARE the charge isotherm (the view
+    //  `charge_isotherm`).  Pore radius, thickness and dielectric constant are held.
+    {
+        name      fit_X_c1;
+        type      fitParameters;
+        parameters
+        (
+            { path poreModel.chargeDensity;  initial 1.0; min -400.0; max 400.0; }
+        );
+        evidence
+        (
+            { dataset "constant/experimental/lab_salts.dat"; role fit; discard ( 4 5 6 7 8 9 ); }
+        );
+        residual
+        {
+            kind        membrane;
+            model       DSPM-DE;
+            membrane    Lab_pore;
+            rejection   observed;           // what a laboratory measures: 1 - c_permeate / c_feed
+            weighting   absolute;
+            transportParameters
+            {
+                poreSolver { method finiteDifference; nodes 101; wallClosure porePermeate; }
+                hindrance  DechadilokDeen2006;
+                bulkDielectric 80.4;
+                }
+            //  THE POLARISATION, declared, never hidden.  Either the film coefficient you
+            //  measured:    k_film 2.5e-5;          // m/s
+            //  or a correlation of your cell (a stirred cell: model StirredCell; omega and
+            //  radius of the stirrer).  Below: Labban's hollow fibre, Sh = 1.62 Re^0.33 Sc^0.33
+            //  (d/L)^0.33 expressed through StirredCell (see labban2017_dspmde_validation).
+            massTransfer
+            {
+                model      StirredCell;
+                a 0.26194;  b 0.33;  c 0.33;
+                radius     1.0e-3;
+                omega      300.0;
+                viscosity  8.968737390077713e-4;   // Pa.s, water at the run temperature
+                density    997;                    // kg/m3
+            }
+            polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+        }
+        options { maxIter 60; tolerance 1.0e-10; fdStep 1.0e-4; lambda0 1.0e-2; }
+        output { record "constant/assets/Lab_X_c1.dat"; name Lab_X_c1; }
+    }
+    //  STEP 2, concentration level 2 -- the pore charge X_d of the rows 4, 6 of the record
+    //  (the rows are the three pressures of one feed).  X_d is fitted PER concentration:
+    //  the values, put against the concentration, ARE the charge isotherm (the view
+    //  `charge_isotherm`).  Pore radius, thickness and dielectric constant are held.
+    {
+        name      fit_X_c2;
+        type      fitParameters;
+        parameters
+        (
+            { path poreModel.chargeDensity;  initial 1.0; min -400.0; max 400.0; }
+        );
+        evidence
+        (
+            { dataset "constant/experimental/lab_salts.dat"; role fit; discard ( 1 2 3 5 7 8 9 ); }
+            { dataset "constant/experimental/lab_salts.dat"; role validation; discard ( 1 2 3 4 6 7 8 9 ); }   // the ONE point held out: row 5
+        );
+        acceptance
+        {
+            maxAAD  5 points;
+            origin  "the template's default, declared before the fit: the held-out point must be predicted to within 5 points of rejection averaged over its ions.  A laboratory states its own band, and why, BEFORE it runs the fit.";
+        }
+        residual
+        {
+            kind        membrane;
+            model       DSPM-DE;
+            membrane    Lab_pore;
+            rejection   observed;           // what a laboratory measures: 1 - c_permeate / c_feed
+            weighting   absolute;
+            transportParameters
+            {
+                poreSolver { method finiteDifference; nodes 101; wallClosure porePermeate; }
+                hindrance  DechadilokDeen2006;
+                bulkDielectric 80.4;
+                }
+            //  THE POLARISATION, declared, never hidden.  Either the film coefficient you
+            //  measured:    k_film 2.5e-5;          // m/s
+            //  or a correlation of your cell (a stirred cell: model StirredCell; omega and
+            //  radius of the stirrer).  Below: Labban's hollow fibre, Sh = 1.62 Re^0.33 Sc^0.33
+            //  (d/L)^0.33 expressed through StirredCell (see labban2017_dspmde_validation).
+            massTransfer
+            {
+                model      StirredCell;
+                a 0.26194;  b 0.33;  c 0.33;
+                radius     1.0e-3;
+                omega      300.0;
+                viscosity  8.968737390077713e-4;   // Pa.s, water at the run temperature
+                density    997;                    // kg/m3
+            }
+            polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+        }
+        options { maxIter 60; tolerance 1.0e-10; fdStep 1.0e-4; lambda0 1.0e-2; }
+        output { record "constant/assets/Lab_X_c2.dat"; name Lab_X_c2; }
+    }
+    //  STEP 2, concentration level 3 -- the pore charge X_d of the rows 7, 8, 9 of the record
+    //  (the rows are the three pressures of one feed).  X_d is fitted PER concentration:
+    //  the values, put against the concentration, ARE the charge isotherm (the view
+    //  `charge_isotherm`).  Pore radius, thickness and dielectric constant are held.
+    {
+        name      fit_X_c3;
+        type      fitParameters;
+        parameters
+        (
+            { path poreModel.chargeDensity;  initial 1.0; min -400.0; max 400.0; }
+        );
+        evidence
+        (
+            { dataset "constant/experimental/lab_salts.dat"; role fit; discard ( 1 2 3 4 5 6 ); }
+        );
+        residual
+        {
+            kind        membrane;
+            model       DSPM-DE;
+            membrane    Lab_pore;
+            rejection   observed;           // what a laboratory measures: 1 - c_permeate / c_feed
+            weighting   absolute;
+            transportParameters
+            {
+                poreSolver { method finiteDifference; nodes 101; wallClosure porePermeate; }
+                hindrance  DechadilokDeen2006;
+                bulkDielectric 80.4;
+                }
+            //  THE POLARISATION, declared, never hidden.  Either the film coefficient you
+            //  measured:    k_film 2.5e-5;          // m/s
+            //  or a correlation of your cell (a stirred cell: model StirredCell; omega and
+            //  radius of the stirrer).  Below: Labban's hollow fibre, Sh = 1.62 Re^0.33 Sc^0.33
+            //  (d/L)^0.33 expressed through StirredCell (see labban2017_dspmde_validation).
+            massTransfer
+            {
+                model      StirredCell;
+                a 0.26194;  b 0.33;  c 0.33;
+                radius     1.0e-3;
+                omega      300.0;
+                viscosity  8.968737390077713e-4;   // Pa.s, water at the run temperature
+                density    997;                    // kg/m3
+            }
+            polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+        }
+        options { maxIter 60; tolerance 1.0e-10; fdStep 1.0e-4; lambda0 1.0e-2; }
+        output { record "constant/assets/Lab_X_c3.dat"; name Lab_X_c3; }
+    }
+);
+
+//  THE CHARGE ISOTHERM: the fitted X_d of each concentration level against the feed's
+//  concentration (mean total molarity of its fit rows), the one plot a laboratory takes
+//  from this case beside the fit's own per-operation plots (computed vs measured rejection
+//  against flux, written for every operation under postProcessing/).
+views
+(
+    {
+        name    charge_isotherm;
+        type    series;
+        title   "The pore charge isotherm: fitted X_d against the feed concentration";
+        note    "One point per concentration level, each from its own fit (95 % half-widths are in the run log and in the record each fit writes).  A Freundlich form X_d = k c^n is read off this plot.";
+        xAxis   { label "feed concentration (mean total molarity of the fit rows)"; unit "mol/m3"; scale log; }
+        yAxis   { label "pore charge density X_d"; unit "mol/m3"; scale linear; }
+        series
+        (
+            { name Xd; label "X_d per concentration"; ops ( fit_X_c1 fit_X_c2 fit_X_c3 ); x feedC_mean_molm3; y fit.0.value; style linesMarkers; }
+        );
+    }
+);

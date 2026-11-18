@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: Lab -- the BASE record of the laboratory characterisation template.
+
+  It carries the DECLARED values; the fit operations write the records that carry the
+  fitted ones (Lab_pore, Lab_X_*).  What is declared here, and only here:
+    poreDielectric 53.47 the pore dielectric constant, DECLARED, not fitted.  53.47 is what
+                         labban2017_dspmde_validation (op B) fitted on single-salt NaCl at
+                         the isoelectric pH (+-8.8, 95 %); the article itself reports 41.3.
+                         Yours comes from such a run, or from the literature of your class.
+    chargeDensity 0      the start of the charge fit; X_d is fitted per concentration.
+  poreRadius and porosityOverThickness are only the start of the fit (the operation's
+  `initial` overrides them).  A_w is not read at an imposed flux.
+\*---------------------------------------------------------------------*/
+
+name           Lab;
+kind           NF;
+manufacturer   "none (a laboratory membrane)";
+
+A_w            1e-10;     // m/(s Pa), raw SI; not read at an imposed J_v
+
+poreModel
+{
+    poreRadius             5.0e-10;   // m, the fit's start
+    porosityOverThickness  7.5e5;     // 1/m, the fit's start
+    chargeDensity          0;         // mol/m3, signed
+    poreDielectric         53.47;     // -, DECLARED (see the note above)
+}

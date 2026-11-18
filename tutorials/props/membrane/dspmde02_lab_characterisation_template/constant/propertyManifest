@@ -1,0 +1,36 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- the case REFERENCES the catalogue
+  (DEV.md 4c C413; context: case root).  Written by
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and, per scanned registry directory, ONE
+  `"<dir>/"  "relevant:<hash>"` line: the hash of the sorted names that
+  EXIST there and are relevant to the case (a Henry or solution pair among
+  its components), so a relevant pair that arrives or leaves is a drift
+  and an unrelated edit is not.  A registry parses a whole directory;
+  only the names the case selects are pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
+  `held` (transitional): a local copy kept IN FORCE, read alone, verified
+  against its own hash -- debt that only shrinks (check_case_records).
+\*----------------------------------------------------------*/
+propertyManifest
+{
+    pins
+    {
+        "components/CaCl2.dat"  "a90e4f66ce68b02208f2862f69537530fdaa313804c9fa5074fc2a7576a1ba0a";
+        "components/MgCl2.dat"  "ab9fc26661eff1a6f5477b1945cc1f3cb7dabc9aaf14a0c48e77f7e0c71696e7";
+        "components/Na2SO4.dat"  "0c03010c27c0dc2dbeb12b111f928fcf9f637322ae39a6e5f668eb65292175a2";
+        "components/NaCl.dat"  "3d1ba703a92e85049fb8855689a78a3b17a3fca04d365b36bae0c31b9c233575";
+        "components/glucose.dat"  "db72cbe9d5a7e163c13152cb5e1bb33de8edf242703b689ac814fb5bdc0d432e";
+        "components/glycerol.dat"  "3e3cec148cabc43d771e5194baf86463882848e5d1d3697cedc1adc05d61eeab";
+        "components/sucrose.dat"  "0f672de68a751fafd5257f7c55a79aa9203ea02d8d641a03b44b506c12d96901";
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
+        "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+        "parameters/solution/"  "relevant:9b39ca1d81ecceb80b252303e4e19342c8089952c427ed725ec3f3e6a6253591";
+        "parameters/solution/NaCl-water.dat"  "e15ed02baf1dd90629885f257f5b85cff854ff009e2d5bf8fdc18e4b72e2124f";
+        "parameters/solution/sucrose-water.dat"  "11e8f9216989a7844edb9dc965d153f9cb672a6dc79b5561a6089d23d293640e";
+    }
+}

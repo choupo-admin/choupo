@@ -1,0 +1,68 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: Lab_pore -- WRITTEN BY A PROPERTIES-MODE FIT, not by hand.
+
+  Operation 'fit_pore_neutral' of case 'dspmde02_lab_characterisation_template' (fitParameters,
+  residual kind membrane, model DSPM-DE) fitted the values marked FITTED
+  below to the datasets named in fit {}; every other value is base record
+  Lab's.  Fitted values are rounded to 6 significant figures,
+  and the verdict was taken at the rounded values.
+
+  A Process-mode run checks the fingerprints in fit {} before it uses this
+  record and REFUSES it, naming what changed, when a dataset, the fit block
+  or the base record has moved since: re-run the case in Properties mode
+  (runCase <case> props) to re-fit it.  An edit here is overwritten by the
+  next Properties-mode run.
+\*---------------------------------------------------------------------------*/
+
+name           Lab_pore;
+kind           NF;
+manufacturer   "none (a laboratory membrane)";
+
+provenance     fittedToCase;
+fittedAgainst  dspmde02_lab_characterisation_template;
+
+A_w                   1e-10;   // m/(s Pa), raw SI, held at Lab's value
+
+poreModel
+{
+    poreRadius            4.94973e-10;   // m, FITTED
+    porosityOverThickness 331196;   // 1/m, FITTED
+    chargeDensity         0;   // mol/m3, signed, held at Lab's value
+    poreDielectric        53.47;   // -, held at Lab's value
+}
+
+fit
+{
+    origin            fitted;
+    method            "fitParameters, residual kind membrane, model DSPM-DE: Levenberg-Marquardt on observed rejections, weighting absolute";
+    fittedInCase      dspmde02_lab_characterisation_template;
+    operation         fit_pore_neutral;
+    propsDict         "system/propsDict";
+    fitBlockSha256    "0423cf21ec7c8cb2cf3640e41e01da9187d89cf7156448c2229b34b1a945a498";
+    baseRecord        Lab;
+    baseRecordSha256  "cb9a6080837c8ea479cb306efda6c675f411893d53f2b79bce21b314eb93dadb";
+    recordSha256      "32a722e323e4fe520a99ac874a2255b94c0afcddcc9f846d31e8f364b3228dbe";
+    datasets
+    (
+        { role fit; dataset "constant/experimental/lab_neutral_glycerol.dat"; sha256 "68314efb10c9ccef179136ef697fe48a788cc6ec32ca56e9162e85256ef6e086"; }
+        { role fit; dataset "constant/experimental/lab_neutral_glucose.dat"; sha256 "9bc6c2c434228974fb5a6b34ab2d721409ab6bcb0aced61b751fcc86fa45ffaa"; }
+        { role fit; dataset "constant/experimental/lab_neutral_sucrose.dat"; sha256 "96644270c16b1a58933916bef90234e220299a9fa0b0c490fd5a208e6166fda4"; }
+    );
+    verdict           validationRefused;
+    acceptance        none;   // no band was declared before the fit
+    heldOut           { measurements 0; AADPoints none; }
+    inSample          { measurements 12; AADPoints 4.06512; chi2Reduced 0.00255909; }
+    identifiability   { conditionNumber 24.2659; maxAbsCorrelation 0.879596; }
+    values            // the 95 % half-width is t(dof) x the standard error
+    {
+        poreModel
+        {
+            poreRadius  { origin fitted; stderr 1.30774e-11; ci95 2.91364e-11; unit "m"; }
+            porosityOverThickness  { origin fitted; stderr 100421; ci95 223738; unit "1/m"; }
+        }
+    }
+    correlation
+    (
+        { a poreModel.poreRadius; b poreModel.porosityOverThickness; r -0.879596; }
+    );
+}

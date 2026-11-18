@@ -18,7 +18,7 @@ membrane     LbLC;
 provenance
 {
     source       measured;
-    reviewStatus transcribedFromTableFluxDigitisedFromFigure;
+    reviewStatus digitisedFromFigure;
     citation     "O. Labban, C. Liu, T. H. Chong, J. H. Lienhard V, Fundamentals of low-pressure nanofiltration: Membrane characterization, modeling, and understanding the multi-ionic interactions in water softening, J. Membr. Sci. 521 (2017) 18-32, doi:10.1016/j.memsci.2016.08.062, Table 3 (rejections), Table 1 (MW), Fig. 8 (flux)";
     identity     "one series of the study cited above (accepted manuscript read page by page as images and the journal version for the tables); no doi identity of its own";
     licence      "facts: numbers transcribed from a published article (Elsevier copyright); the article and its figures are not in the tree";

@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoProps;
+description   "A laboratory template: fill ONE experiment record (3 concentrations x 3 pressures) and get the DSPM-DE pore of YOUR membrane -- r_p and the effective thickness from an uncharged solute, the charge X_d per concentration (its isotherm), every value with its 95 percent interval, one point held out and predicted.  Shipped filled with the points of Labban et al. (2017), which proves it";
+citations
+(
+    "Labban, O., Liu, C., Chong, T. H., & Lienhard V, J. H. (2017). Fundamentals of low-pressure nanofiltration: Membrane characterization, modeling, and understanding the multi-ionic interactions in water softening. J. Membr. Sci., 521, 18-32. doi:10.1016/j.memsci.2016.08.062"
+    "Bowen, W. R., Mohammad, A. W., & Hilal, N. (1997). Characterisation of nanofiltration membranes for predictive purposes -- use of salt, uncharged solutes and atomic force microscopy. J. Membr. Sci., 126, 91-105."
+    "Bowen, W. R., & Welfoot, J. S. (2002). Modelling the performance of membrane nanofiltration -- critical assessment and model development. Chem. Eng. Sci., 57, 1121-1137."
+    "Geraldes, V., & Afonso, M. D. (2007). Prediction of the concentration polarization in the nanofiltration/reverse osmosis of dilute multi-ionic solutions. J. Membr. Sci., 300, 20-27. doi:10.1016/j.memsci.2007.04.025"
+);
+verbosity     2;
