@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: LbLC_paper_sw -- the PARAMETERS THE ARTICLE REPORTS, written by hand.
+
+  Labban, Liu, Chong & Lienhard, J. Membr. Sci. 521 (2017) 18-32: Table 5
+  (r_p 0.5 nm, effective thickness Delta x_e 1.33 um, eps_p 41.3; accepted
+  manuscript p. 20) and, for the artificial-seawater feed, the membrane charge
+  density X_d = -27 mol/m3 (Section 4.1.4, p. 21).  porosityOverThickness is
+  A_k/dx = 1/Delta x_e = 1/1.33e-6 m = 7.5188e5 1/m.  Used with NO free
+  parameter: a prediction of this feed with the article's own numbers.
+\*---------------------------------------------------------------------*/
+
+name           LbLC_paper_sw;
+kind           NF;
+manufacturer   "none (Labban et al. 2017, Table 5 and Section 4.1.4)";
+
+A_w            1e-10;     // m/(s Pa), raw SI; not read at an imposed J_v
+
+poreModel
+{
+    poreRadius             5.0e-10;
+    porosityOverThickness  7.5188e5;
+    chargeDensity          -27;
+    poreDielectric         41.3;
+}

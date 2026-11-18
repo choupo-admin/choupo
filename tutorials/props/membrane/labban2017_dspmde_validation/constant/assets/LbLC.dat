@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: LbLC -- the BASE record of the Labban et al. (2017) validation
+  case: the LbL-C low-pressure NF hollow fibre (layer-by-layer polyelectrolyte
+  deposition with glutaraldehyde crosslinking, 1.0 / 1.4 mm hollow fibre).
+
+  THIS RECORD CARRIES NO FITTED NUMBER.  Its pore values are only the
+  starting point of the first fit (the operation's `initial` overrides them);
+  the fit operations write the records that carry the fitted values
+  (LbLC_pore, LbLC_eps, LbLC_X_*).  A_w is not read at an imposed J_v.
+  chargeDensity 0 and poreDielectric 80.4 (= the bulk) are the "uncharged,
+  no dielectric exclusion" start of the characterisation the article follows.
+\*---------------------------------------------------------------------*/
+
+name           LbLC;
+kind           NF;
+manufacturer   "none (a laboratory membrane: Labban et al. 2017, Section 3.2)";
+
+A_w            1e-10;     // m/(s Pa), raw SI; not read at an imposed J_v
+
+poreModel
+{
+    poreRadius             5.0e-10;   // m, the fit's start
+    porosityOverThickness  7.5e5;     // 1/m, the fit's start
+    chargeDensity          0;         // mol/m3, signed
+    poreDielectric         80.4;      // -
+}
