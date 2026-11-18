@@ -13,9 +13,12 @@ stream  retentate              T                298.15           1e-4
 kpi     NFunit                 mass_closure_rel 2.19886558047e-16 abs:1e-09
 kpi     NFunit                 Gamma_glucose_avg 1.35623921557    1e-4
 kpi     NFunit                 solute_closure_rel 3.67019291087e-16 abs:1e-09
-boundary global                 H_feeds_kW       -15965.9347526   1e-4
-boundary global                 Q_boundary_kW    0                1e-4
-boundary global                 H_products_kW    -15965.9347526   1e-4
+boundary global                 H_feeds_kW       -15965.0121168   1e-4
+boundary global                 Q_boundary_kW    -0.292181767833  1e-4
+boundary global                 H_products_kW    -15965.304299    1e-4
 source  NFunit                 liquidDensity    idealMixing[referenceEquation.IAPWS95+flatVliq] exact
 boundary global                 noBoundary       false            exact
 kpi     NFunit                 rho_feed         1001.21202835    1e-4
+kpi     NFunit                 Q_kW             -0.292181767833  1e-4
+boundary global                 residual_denom_kW 0.292181767833   1e-4
+utility NFunit                 cooling.-.unserved 1                1e-4

@@ -26,3 +26,4 @@ diag    fit_NF270_FdL2021      fit.0.ci95       3.40163093415e-11 1e-3
 diag    fit_NF270_FdL2021      fit.1.value      -10.5241          1e-5
 diag    fit_NF270_FdL2021      fit.1.ci95       4.09740785513    1e-3
 diag    fit_NF270_FdL2021      corr.0.1         -0.962078368382  1e-4
+diag    fit_NF270_FdL2021      feedC_mean_molm3 10               1e-4
