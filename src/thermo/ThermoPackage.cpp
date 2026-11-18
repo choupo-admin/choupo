@@ -74,7 +74,6 @@ License
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
-#include <chrono>
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
@@ -3925,8 +3924,7 @@ ThermoPackage::liquidPressureLeg(std::size_t i, scalar T, scalar P) const
         pressureLegExpensive_[i] = exp ? first.source : std::string();
         return first;
     }
-    static const scalar hGrid = []{ const char* e = std::getenv("CHOUPO_C390_GRID");
-                                    return e ? std::atof(e) : 4.0; }();   // K (4 K: error measured below)
+    constexpr scalar hGrid = 4.0;                    // K (interpolation error measured: 4e-5 J/mol)
     const long k = static_cast<long>(std::floor(T / hGrid));
     auto& col = pressureLegGrid_[{ i, P }];
     if (col.size() > 4000) col.clear();
@@ -3956,50 +3954,13 @@ ThermoPackage::liquidPressureLeg(std::size_t i, scalar T, scalar P) const
     for (int q = 0; q < 4; ++q) { leg.h += w[q] * hv[q]; leg.s += w[q] * sv[q]; }
     leg.source = known->second;
     leg.corrStates = false;
-    if (std::getenv("CHOUPO_C390_CHECK"))
-    {
-        static scalar worstH = 0.0, worstS = 0.0;
-        static struct Rep { ~Rep() { std::cerr << "[c390-check] worst interpolation error: h "
-                                     << worstH << " J/mol, s " << worstS << " J/mol/K\n"; } } rep;
-        const LiquidPressureLeg e = liquidPressureLegExact(i, T, P);
-        if (e.priced)
-        {
-            worstH = std::max(worstH, std::fabs(e.h - leg.h));
-            worstS = std::max(worstS, std::fabs(e.s - leg.s));
-        }
-    }
     return leg;
 }
-
-namespace {
-//  TEMPORARY profiling aid (C390 speed step): CHOUPO_C390_TIMING=1 prints the
-//  calls and seconds spent in the exact pressure leg at exit.
-struct LegTimer
-{
-    long n = 0, nWrap = 0; double sec = 0.0; long nCat[4] = {0,0,0,0}; double sCat[4] = {0,0,0,0};
-    ~LegTimer()
-    {
-        if (std::getenv("CHOUPO_C390_TIMING"))
-            std::cerr << "[c390-timing] exact legs " << n << ", " << sec
-                      << " s; wrapper calls " << nWrap << "\n"
-                      << "[c390-timing] by outcome: unpriced " << nCat[0] << " (" << sCat[0] << " s), below psat "
-                      << nCat[1] << " (" << sCat[1] << " s), computed " << nCat[2] << " (" << sCat[2] << " s)\n";
-    }
-};
-LegTimer& legTimer() { static LegTimer t; return t; }
-} // namespace
 
 ThermoPackage::LiquidPressureLeg
 ThermoPackage::liquidPressureLegExact(std::size_t i, scalar T, scalar P) const
 {
-    const auto t0 = std::chrono::steady_clock::now();
     LiquidPressureLeg leg;
-    struct Done { std::chrono::steady_clock::time_point t0; const LiquidPressureLeg* l;
-                  ~Done() { auto& lt = legTimer(); ++lt.n;
-                            const double d = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
-                            lt.sec += d;
-                            const int c = !l->priced ? 0 : (l->source.rfind("none", 0) == 0 ? 1 : 2);
-                            ++lt.nCat[c]; lt.sCat[c] += d; } } done{ t0, &leg };
     if (i >= n()) return leg;
     if (!hasSaturationCurve(i) || isHenrySolute(i)) { pressureLegExpensive_[i] = "\x01never"; return leg; }
     const Component& c = components_[i];
@@ -4121,9 +4082,6 @@ ThermoPackage::liquidPressureLegExact(std::size_t i, scalar T, scalar P) const
     }
     catch (const std::exception& ex)
     {
-        if (std::getenv("CHOUPO_C390_TIMING"))
-            std::cerr << "[c390-timing] unpriced " << components_[i].name() << " T=" << T << " P=" << P
-                      << ": " << ex.what() << "\n";
         return LiquidPressureLeg();
     }
     return leg;
