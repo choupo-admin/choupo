@@ -550,6 +550,57 @@ things a real plant has and this case does not compute: the refrigeration
 compressor's shaft power and the flare's emergency relief load (the flare is
 placed on the normal vent load only).
 
+## The line list (2026-11-19, DEV.md 4c C207, C440)
+
+The 24 process pipes the layout routes are sized by the `lineDesign {}` block at the end
+of `system/layoutDict` and listed, one row per line, in `reports/lines/lineList.csv`
+(the sheet of each line is `design/lines/<stream>`).  The rules are the case's, each with
+its book or the word `assumed`: velocity window by service (Towler and Sinnott 2008,
+section 5.6), the wall of ASME B31.3 Eq. 5.8, the nominal sizes and walls of Perry's
+Table 10-22, the fittings of Towler Table 5.3, and an ASSUMED 15000 Pa limit on rho v^2 (a screening value with no source in the folder)
+that no book in the folder gives.  `line01_pumped_drum` works one line by hand.
+
+| line | from -> to | service | NPS (in) | sch | v (m/s) | governed by | drop (kPa) |
+|---|---|---|---|---|---|---|---|
+| N2Feed | inlet -> N2Boost | gas | 10 | 40 | 24.9 | service window | 18.0 |
+| N2Compressed | N2Boost -> N2Cooler | gas | 8 | 40 | 16.7 | erosion rho v^2 | 20.5 |
+| N2Cooled | N2Cooler -> MakeupMix | gas | 6 | 40 | 19.0 | erosion rho v^2 | 27.0 |
+| H2Feed | inlet -> MakeupMix | gas | 10 | 40 | 21.2 | service window | 7.4 |
+| Makeup30 | MakeupMix -> MakeupComp1 | gas | 10 | 40 | 28.2 | service window | 13.3 |
+| Makeup67 | MakeupComp1 -> Intercooler | gas | 8 | 40 | 27.3 | service window | 43.6 |
+| Makeup67Cool | Intercooler -> MakeupComp2 | gas | 8 | 40 | 20.4 | erosion rho v^2 | 28.7 |
+| Makeup150 | MakeupComp2 -> Aftercooler | gas | 8 | 160 | 17.4 | erosion rho v^2 | 40.7 |
+| Makeup | Aftercooler -> LoopMix | gas | 8 | 160 | 12.9 | erosion rho v^2 | 20.6 |
+| Recycle | PurgeSplit -> RecycleComp | gas | 10 | 160 | 16.7 | erosion rho v^2 | 31.2 |
+| CompRecycle | RecycleComp -> LoopMix | gas | 10 | 160 | 16.0 | erosion rho v^2 | 36.8 |
+| Mixed | LoopMix -> FEHE | gas | 12 | 160 | 17.2 | erosion rho v^2 | 24.6 |
+| HotEffluent | Converter -> FEHE | gas | 16 | 160 | 23.6 | erosion rho v^2 | 34.0 |
+| CooledEffluent | FEHE -> WaterCooler | gas | 12 | 160 | 16.9 | erosion rho v^2 | 39.9 |
+| PreheatedFeed | FEHE -> Converter | gas | 16 | 160 | 24.7 | erosion rho v^2 | 34.5 |
+| WaterCooledEffluent | WaterCooler -> Chiller | two-phase | not sized | | | | |
+| ChilledEffluent | Chiller -> Separator | two-phase | not sized | | | | |
+| RawLiquid | Separator -> LetdownHP | liquid | 4 | 80 | 2.8 | service window | 40.3 |
+| UnreactedGas | Separator -> PurgeSplit | gas | 10 | 160 | 16.7 | erosion rho v^2 | 35.2 |
+| Purge | PurgeSplit -> outlet | gas | 0.25 | 80 | 11.2 | erosion rho v^2 | 867.1 |
+| LetdownLiquid | LetdownHP -> StorageFlash | liquid | 4 | 40 | 2.5 | service window | 45.1 |
+| LetdownGas | LetdownHP -> outlet | gas | 0.5 | 40 | 18.9 | service window | 168.9 |
+| ProductNH3 | StorageFlash -> outlet | liquid | 4 | 40 | 2.4 | service window | 158.0 |
+| FlashGas | StorageFlash -> outlet | gas | 3.5 | 40 | 26.7 | service window | 4.3 |
+
+What to read in it.  On the dense loop gas (40-50 kg/m3 at 150 bar) the 15-30 m/s window
+is not what sets the bore: the declared rho v^2 limit is, so those lines run at 16-17 m/s
+and are one or two sizes larger than the window alone would give.  Eleven lines carry the flag "design pressure above the material record's maxP" (the carbon
+steel record states 100 bar): Makeup150, Makeup, Recycle, CompRecycle, Mixed, HotEffluent,
+CooledEffluent, PreheatedFeed, RawLiquid, UnreactedGas and Purge.  The flag is left
+standing: the material of the 150 bar lines is a design decision (DEV.md 4c C440), not
+one the line list makes.  The line list does not repeat the record's temperature check (the sizing pass owns it; the
+733 K `HotEffluent` is above the record's 700 K), and the pipe schedule here is a teaching
+value on a record that its own header calls unsourced.  The two two-phase lines (the water cooler's and the chiller's outlets) are
+listed and NOT sized: no book in the folder gives a velocity rule for two-phase flow, and
+the Lockhart-Martinelli drop is not built.  The tiny `Purge` and `LetdownGas` lines sit at
+the bottom of the declared table (1/4 in and 1/2 in) and carry the "drop above the guide"
+flag, as does any line that is long for its size.
+
 ## Engine notes
 
 * The store is declared at −35 °C, not −33.4 °C: a pure liquid at its own

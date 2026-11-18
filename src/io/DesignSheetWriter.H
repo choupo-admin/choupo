@@ -146,6 +146,14 @@ std::size_t write(const std::string&                       caseRoot,
                   const ThermoPackage&                     thermo,
                   int                                      verbosity);
 
+//  THE LINE SHEETS (DEV.md 4c C207): `design/lines/<stream>` and the line list
+//  `reports/lines/lineList.csv` from `result.layout.lines`.  Call AFTER
+//  `write()`, which rebuilds `design/` whole.  A no-op, and the old tree
+//  removed, when the case declares no `lineDesign {}`.  Returns the sheets.
+std::size_t writeLineSheets(const std::string&      caseRoot,
+                            const SimulationResult& result,
+                            int                     verbosity);
+
 } // namespace DesignSheetWriter
 } // namespace Choupo
 

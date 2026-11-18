@@ -2340,7 +2340,7 @@ auto_generate_raw() {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)
                         printf "layout %-20s %-16s %-18s %s\n", id, W[i], s, "exact"
                     }
-                nn = split("x y z dx dy dz value limit placed unplaced internal findings length pipes notRouted pipeLength utilityFlow utilityLines utilityLength plotArea footprintArea pavedArea distance radius bays capacity area approach diameter turningDiameter wallHeight displacedVolume netVolume requiredVolume", N, " ")
+                nn = split("x y z dx dy dz value limit placed unplaced internal findings length pipes notRouted pipeLength utilityFlow utilityLines utilityLength plotArea footprintArea pavedArea distance radius bays capacity area approach diameter turningDiameter wallHeight displacedVolume netVolume requiredVolume lineBends lineNps lineSchedule lineOutsideDiameter lineWall lineWallRequired lineInsideDiameter lineDesignPressure lineScheduleNumber lineFlow lineDensity lineVelocity lineVelocityMax lineReynolds lineFriction lineEquivalentLength lineDropFriction lineDropStatic lineDrop lineRhoV2 lineCost", N, " ")
                 for (i = 1; i <= nn; i++)
                     if (match(line, "\"" N[i] "\": *-?[0-9][0-9.eE+-]*")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)

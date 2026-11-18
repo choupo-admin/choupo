@@ -628,6 +628,136 @@ std::size_t write(const std::string&                       caseRoot,
     return written;
 }
 
+//  THE LINE SHEETS (DEV.md 4c C207).  One dictionary per routed pipe,
+//  `design/lines/<stream>`, in the same form as an equipment sheet (a header,
+//  then blocks of `keyword value unit;`), and the line list
+//  `reports/lines/lineList.csv`, one row per line.  Both are REGENERATED
+//  WHOLE; `design/lines/` is written after `write()` has rebuilt `design/`.
+std::size_t writeLineSheets(const std::string&      caseRoot,
+                            const SimulationResult& result,
+                            int                     verbosity)
+{
+    const auto& lines = result.layout.lines;
+    std::error_code ec;
+    fs::remove_all(fs::path(caseRoot) / "reports" / "lines", ec);
+    fs::remove_all(fs::path(caseRoot) / "design" / "lines", ec);
+    if (lines.empty()) return 0;
+
+    const fs::path dir = fs::path(caseRoot) / "design" / "lines";
+    fs::create_directories(dir, ec);
+    fs::create_directories(fs::path(caseRoot) / "reports" / "lines", ec);
+
+    auto csvField = [](const std::string& t) {
+        if (t.find_first_of(",\"\n") == std::string::npos) return t;
+        std::string o = "\"";
+        for (char c : t) { if (c == '"') o += '"'; o += c; }
+        return o + "\"";
+    };
+    std::ofstream csv((fs::path(caseRoot) / "reports" / "lines" / "lineList.csv").string(),
+                      std::ios::out | std::ios::trunc);
+    csv << "line,from,to,service,state,length_m,bends,flow_kg_s,density_kg_m3,nominalSize_in,schedule,"
+           "insideDiameter_m,velocity_m_s,velocityMax_m_s,drop_Pa,dropPerMetre_Pa_m,rhoV2_Pa,"
+           "designPressure_Pa,governedBy,cost,flags\n";
+
+    std::size_t written = 0;
+    for (const LineSheet& q : lines)
+    {
+        std::string flagText;
+        for (const std::string& t : q.flags) flagText += (flagText.empty() ? "" : "; ") + t;
+        csv << csvField(q.stream) << "," << csvField(q.from) << "," << csvField(q.to) << ","
+            << q.service << "," << (q.sized ? "sized" : "notSized") << "," << num(q.length) << ","
+            << q.bends << ",";
+        if (q.sized)
+            csv << num(q.massFlow) << "," << num(q.density) << "," << num(q.nps) << "," << q.schedule << ","
+                << num(q.insideDiameter) << "," << num(q.velocity) << "," << num(q.velocityMax) << ","
+                << num(q.dropTotal) << "," << num(q.dropPerMetre) << "," << num(q.rhoV2) << ","
+                << num(q.designPressure) << "," << csvField(q.governedBy) << ","
+                << (q.costed ? num(q.cost) : std::string()) << "," << csvField(flagText) << "\n";
+        else
+            csv << ",,,,,,,,,,," << csvField(q.notSizedBecause) << "\n";
+
+        std::ostringstream o;
+        o << "/*--------------------------------*- Choupo -*-----------------"
+             "---------------*\\\n"
+             "  LINE SPECIFICATION SHEET -- WRITTEN BY THE RUN.\n"
+             "\n"
+             "  One routed pipe of the plant layout.  REGENERATED WHOLE on\n"
+             "  every run; do not edit it.  The rules it was sized by are the\n"
+             "  case's `lineDesign {}` in system/layoutDict; the route is the\n"
+             "  layout's.\n"
+             "\\*-----------------------------------------------------------"
+             "----------------*/\n\n";
+        o << "recordType  lineSheet;\n\n";
+        o << "line        \"" << q.pipeId << "\";\n";
+        o << "stream      \"" << q.stream << "\";\n";
+        o << "from        \"" << q.from << "\";\n";
+        o << "to          \"" << q.to << "\";\n";
+        o << "service     " << q.service << ";\n";
+        o << "serviceBy   \"" << q.serviceWhy << "\";\n";
+        o << "state       " << (q.sized ? "sized" : "notSized") << ";\n";
+        if (!q.sized)
+        {
+            o << "reason      \"" << q.notSizedBecause << "\";\n\n";
+            o << "routing\n{\n" << entry("length", q.length, "m") << entry("bends", q.bends, "-")
+              << "}\n";
+        }
+        else
+        {
+            o << "basis       \"" << q.basis << "\";\n\n";
+            o << "routing\n{\n"
+              << entry("length", q.length, "m") << entry("bends", q.bends, "-")
+              << entry("valves", q.valves, "-") << entry("equivalentLength", q.equivalentLength, "m")
+              << entry("elevationRise", q.elevationRise, "m") << "}\n\n";
+            o << "fluid\n{\n"
+              << entry("T", q.T, "K") << entry("P", q.P, "Pa")
+              << entry("mdot", q.massFlow, "kg/s") << entry("density", q.density, "kg/m3")
+              << entry("viscosity", q.viscosity, "Pa.s") << entry("volumeFlow", q.volumeFlow, "m3/s")
+              << "}\n\n";
+            o << "limits\n{\n";
+            if (q.velocityMin > 0) o << entry("velocityMin", q.velocityMin, "m/s");
+            o << entry("velocityMax", q.velocityMax, "m/s");
+            if (q.velocityErosion > 0) o << entry("velocityErosion", q.velocityErosion, "m/s");
+            if (q.velocitySonic > 0) o << entry("velocitySonic", q.velocitySonic, "m/s");
+            o << "    governedBy            \"" << q.governedBy << "\";\n";
+            if (q.rhoV2Limit > 0) o << entry("rhoV2Limit", q.rhoV2Limit, "Pa");
+            if (q.dropAllowable > 0) o << entry("allowableDropPerMetre", q.dropAllowable, "Pa/m");
+            o << "}\n\n";
+            o << "sizing\n{\n"
+              << entry("nominalSize", q.nps, "-")
+              << entry("schedule", q.schedule, "-")
+              << entry("outsideDiameter", q.outsideDiameter, "m")
+              << entry("wall", q.wall, "m") << entry("wallRequired", q.wallRequired, "m")
+              << entry("insideDiameter", q.insideDiameter, "m")
+              << entry("designPressure", q.designPressure, "Pa")
+              << entry("scheduleNumber", q.scheduleNumberRequired, "-")
+              << "}\n\n";
+            o << "hydraulics\n{\n"
+              << entry("velocity", q.velocity, "m/s") << entry("reynolds", q.reynolds, "-")
+              << entry("frictionFactor", q.frictionFactor, "-")
+              << entry("dropFriction", q.dropFriction, "Pa") << entry("dropStatic", q.dropStatic, "Pa")
+              << entry("dropTotal", q.dropTotal, "Pa") << entry("dropPerMetre", q.dropPerMetre, "Pa/m")
+              << entry("rhoV2", q.rhoV2, "Pa") << "}\n\n";
+            o << "flags\n{\n";
+            for (std::size_t k = 0; k < q.flags.size(); ++k)
+                o << "    flag" << k << "  \"" << q.flags[k] << "\";\n";
+            o << "}\n\n";
+            o << "cost\n{\n";
+            if (q.costed)
+                o << "    currency              " << q.currency << ";\n"
+                  << entry("pricePerMetre", q.pricePerMetre, "-") << entry("total", q.cost, "-");
+            o << "    note                  \"" << q.costNote << "\";\n}\n";
+        }
+        std::ofstream out((dir / q.stream).string(), std::ios::out | std::ios::trunc);
+        if (!out.is_open()) throw std::runtime_error("line sheet: cannot open " + (dir / q.stream).string());
+        out << o.str();
+        ++written;
+    }
+    if (verbosity >= 2)
+        std::cout << "  [lines] wrote " << written << " line sheets -> design/lines/ and the line list"
+                     " -> reports/lines/lineList.csv  (regenerated whole)\n";
+    return written;
+}
+
 } // namespace DesignSheetWriter
 } // namespace Choupo
 

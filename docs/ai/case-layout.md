@@ -1836,8 +1836,8 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   wall, is refused.  The router does not
   steer round items: a pipe that runs THROUGH a placed item (its plan path
   inside the footprint, below the item's top) is ANNOUNCED as `pipeClash`,
-  by name -- move the item or give the pipe waypoints.  No pressure drop and
-  no cost yet.
+  by name -- move the item or give the pipe waypoints.  Its size, pressure drop
+  and cost come from `lineDesign {}` (the line list, below), when declared.
 * UTILITY LINES (C268 slice 2): a utility is not a flowsheet stream, so the
   engine routes nothing for one; the case DECLARES each line in `utilityLines`
   (`name; service; from; to; [fromPort {}] [toPort {}]; [carries { unit; utility; }];
@@ -1857,6 +1857,37 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   `utilityCrossesRoad`, `utilityThroughBund`, `utilityNotRouted` (an end
   indoors).  Published under `layout.utilityLines`, beside the pipes, only when
   declared.  Witness: `tutorials/plant/greenAmmoniaPEQ_baseCase`.
+* THE LINE LIST (C207): a `lineDesign { ... }` block in `system/layoutDict`
+  sizes every routed PROCESS pipe (a header's branches excepted; utility lines
+  stay unsized).  Nothing is taken by default; every block carries `source` and
+  `reason` (`origin assumed` for a number no book gives):
+  `frictionModel <registered correlation>; material <record>;
+  roughness { value; source; reason; }`; `wall { qualityFactor; temperatureCoefficient;
+  allowance; millUndertolerance; designPressureFactor; source; reason; }` (ASME B31.3
+  Eq. 5.8 as Towler gives it; S is the material record's `sigma_y`);
+  `services { steamAbove <P>; liquidDischarge | liquidSuction | gas | steam |
+  twoPhase { [min] [max] [raseSlopePerMm; raseIntercept] [allowableDropPerMetre
+  [1 -2 -2 0 0] <Pa/m>] [allowableDropFraction] [sonicFraction] source; reason; } }`;
+  `erosion { rhoV2Max; source; reason; }`; `fittings { bendEquivalentDiameters;
+  valveEquivalentDiameters; valvesPerLine; source; reason; }`; `nominalSizes { sizes
+  ( { nominalSize <in>; outsideDiameter; schedules ( { schedule; wall; } ... ); } ... );
+  source; reason; }` (the case's table: Perry Table 10-22 in the shipped cases);
+  optional `cost { currency; source; reason; installationFactor;
+  installationPerMetre; perMetre ( { nominalSize; schedule; price; } ... ); }` and
+  `lines ( { stream; service; } )` to force a service.  The service is read from the
+  stream (liquid / vapour / two-phase; a liquid into a `pump` unit is suction).  A
+  line with no rule for its service, or a two-phase one, is LISTED NOT SIZED with the
+  reason.  The size is the smallest declared nominal size, at the schedule the
+  pressure needs, whose velocity is inside the window, Rase's form, the erosion
+  limit and the sonic fraction.  The drop is Darcy-Weisbach (f from the named
+  correlation) over the routed length plus equivalent lengths (one elbow per direction
+  change of the route, the declared valves) plus the static head of the route.  Out:
+  `design/lines/<stream>`, `reports/lines/lineList.csv`, `layout.lines` in the result
+  (golden rows `layout line:<stream> ...`).  The liquid viscosity needs
+  `transport { liquid { viscosity { } } }` (dissolved gases left out, announced), the
+  gas viscosity `transport { vapour { viscosity { model Chung; } } }`.  Witnesses:
+  `tutorials/plant/line01_pumped_drum` (hand calculation in its README),
+  `tutorials/plant/greenAmmoniaPEQ_baseCase`.
 * THE PLOT (C82): the engine publishes the plot area -- the axis-aligned
   envelope of every declared sector area, every placed footprint, every
   routed pipe and (C97) every room of a declared `building {}`, grown on

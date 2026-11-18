@@ -542,6 +542,55 @@ The stream names are the plant's, unchanged: the sector's inlet is the FEHE's pr
 \end{tutgolden}
 
 \clearpage
+\tutentry{line01\_pumped\_drum}{tutorials/plant/line01\_pumped\_drum}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (pump) at (0.0,-0.0) {\textbf{pump}\\[-1pt]{\tiny pump}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (drum) at (2.9,-0.0) {\textbf{drum}\\[-1pt]{\tiny isothermalFlash}};
+  \draw[->] ($(pump.west)+(-1.05,0.00)$) -- ($(pump.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (pump) -- (drum) node[midway, above, font=\tiny] {pumped};
+  \draw[->] ($(drum.east)+(0,-0.17)$) -- ($(drum.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {liquid};
+  \draw[->] ($(drum.east)+(0,0.17)$) -- ($(drum.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {vapor};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A pumped ethanol/water feed to a flash drum: the line list of a laid-out plant, one line worked by hand}
+\begin{tutnarrative}
+the SMALLEST plant that has a line list.
+
+A 40/60 mol \% ethanol/water liquid (2500 kmol/h, 298 K, 1 atm) is pumped to 6 bar and let down into a flash drum at 374 K and 2 bar, where it splits into a vapour and a liquid. Four streams, four routed lines:
+
+feed --(suction)-$\to$ pump --(discharge)-$\to$ drum -$\to$ vapor -$\to$ liquid
+
+The pump and the drum are the two placed items (system/layoutDict); the four pipes are routed by the layout and sized by `lineDesign \{\}` in the same file. README.md works ONE line (the discharge) by hand.
+
+The let-down from 6 bar to the drum's 2 bar is the flash's own pressure specification: no valve is drawn, so the discharge line is the one that carries the pump's 6 bar.
+
+\end{tutnarrative}
+\tutreadme{A 40/60 mol \% ethanol/water liquid (2500 kmol/h, 298 K, 1 atm; 20.3 kg/s) is pumped to 6 bar and let down into a flash drum at 374 K and 2 bar, where it splits into a vapour (12.9 kg/s) and a liquid (7.4 kg/s). The pump and the drum are the two placed items (system/layoutDict); the layout routes four pipes on the pipe rack, and lineDesign \{\} in the same file sizes each of them.}
+\tutreadme{$\ast$ design/lines/<stream> -- one specification sheet per line: the routing, the fluid, the limits the size was held to, the nominal size and schedule, the hydraulics, the flags and the cost; $\ast$ reports/lines/lineList.csv -- the line list, one row per line; $\ast$ the result's layout.lines, pinned by the golden (layout line:<stream> ...).}
+\tutreadme{The pumped and liquid lines are flagged: their drop per metre (638 and 1075 Pa/m) exceeds the 0.5 kPa/m guide for a pumped liquid. A flag is never a resize: the case chose the window, the guide is the book's, and the sheet shows both.}
+\tutreadme{Every number below is on design/lines/pumped; none is typed in the case.}
+\tutreadme{Service and flow. The stream is a liquid and its to end is not a pump, so it is a discharge line. m = 20.303 kg/s at rho = 853.73 kg/m3 (the package's liquid density at 298 K), so Q = m / rho = 0.023782 m3/s.}
+\tutreadme{Size. The window is 1-3 m/s (Towler and Sinnott 2008, section 5.6, p. 265), so D >= sqrt(4 Q / (pi 3)) = 0.1005 m. The declared sizes, smallest first: 3 in sch 40 has an inside diameter of 77.9 mm, v = 4.99 m/s, too fast; 4 in sch 40 has 102.26 mm (Perry, Table 10-22: outside 4.5 in, wall 0.237 in), so v = 4 Q / (pi D\textasciicircum{}2) = 4 x 0.023782 / (pi x 0.10226\textasciicircum{}2) = 2.896 m/s, inside the window. The erosion check: rho v\textasciicircum{}2 = 853.73 x 2.896\textasciicircum{}2 = 7158 Pa, below the 15000 Pa the case declares.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.694444444444}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{liquid}{F}{0.306359282109}
+\goldrow{stream}{liquid}{T}{374}
+\goldrow{stream}{pumped}{F}{0.694444444444}
+\goldrow{stream}{pumped}{T}{298.231111888}
+\goldrow{stream}{vapor}{F}{0.388085162335}
+\goldrow{stream}{vapor}{T}{374}
+\goldrow{kpi}{drum}{F\_alpha}{0.306359282109}
+\goldrow{kpi}{drum}{F\_beta}{0.388085162335}
+\goldrow{kpi}{drum}{F\_in}{0.694444444444}
+\goldrow{kpi}{drum}{K\_ethanol}{2.50057744148}
+\goldrow{kpi}{drum}{K\_water}{0.582763596486}
+\goldrow{kpi}{drum}{P}{200000}
+\goldmore{204}
+\end{tutgolden}
+
+\clearpage
 \tutentry{lithiumBrinePlant}{tutorials/plant/lithiumBrinePlant}
 \tutwhat{lithiumBrinePlant -- THE reference case: a SECTORED lithium-carbonate plant from salar brine, WIRED into one solver. Five SECTORS, each a thermo WORLD of its own -- BRINE (electrolyte/Pitzer), EXTRACTION (gamma-gamma NRTL LLE), CARBONATION (Li2CO3 retrograde solubility), HOTAIR (Gibbs combustion), FINISHING (drying + cyclone) -- connected sector to sector, each sector declaring its own propertyPackage (its world) on the global component set, with optional per-unit thermo overrides where a single unit needs a different world. The proof that a plant and its sectors run as one: sectors are composite boxes, streams flow between them, model boundaries audited.}
 \begin{tutnarrative}
