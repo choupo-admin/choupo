@@ -4641,6 +4641,26 @@ accepts today, and that is a policy call.
 > differ inside a category (water by IAPWS-95, a salt solution by ideal
 > mixing with ions, a measured table by interpolation).
 
+> **C436 (Vitor, 2026-11-19 midday, MAXIMUM PRIORITY: "Podes fazer favor de
+> por como prioridade máxima a gestão dinâmica desta tabela
+> importantíssima?!"), after the architect showed him a CML table holding
+> only the night's lane, then a heuristic census that called C247 (the
+> stack-dispersion EduTool, on main since the fourth batch, 2218998be)
+> open.**  THE DEFECT: the state of a commission had no home of its own --
+> it lived in prose scattered over 22 000 lines, so neither the plan nor the
+> page could be generated from it, and every summary was a fresh reading
+> that missed some.  RULED: `COMMISSIONS.tsv` at the root is the ONE home of
+> each commission's STATE (number, Portuguese title, state DONE / PARTIAL /
+> OPEN / DROPPED / NOT-A-COMMISSION, what is open, date asked, size, the
+> commit that closed it); DEV.md 4c keeps the narrative and the reasons.  A
+> gate holds it: every C number in 4c has one row and every row a number in
+> 4c; a DONE row names a commit that is on main; a DROPPED row names Vitor's
+> words.  PLAN.md's commissions view and the plan page are GENERATED from
+> it.  A landing that closes or advances a commission changes its row IN
+> THE SAME COMMIT (the rule BRAIN.md already applies to its rows).  The
+> first table is a reading of every entry, each checked against main's
+> history, and is shown to Vitor before anything else is done.
+
 > **C435 (Vitor, 2026-11-19 morning: an outside review of six shipped cases,
 > pasted for the architect to weigh).**  Its five points MEASURED before
 > ruling; all four factual ones hold.  (1) The Henry `source` lines: true,
