@@ -1,11 +1,11 @@
 item	status	horizon	title_pt	open_pt	asked	size	commit	waits_on
 C1	DONE		EduTool de estimação de parâmetros por mínimos quadrados		2026-09-15	M	92385aeeb	
 C2	DONE		Conversor de amoníaco: módulo de dimensionamento e custo		2026-09-21	L	6d1270c78	
-C3	OPEN	beyond	Auditoria de citação por equação do Theory Guide	auditoria ao nível da equação não feita; fontes por decidir por linha (espera pelo Vítor)	2026-09-22	M		vitor
+C3	PARTIAL	beyond	Auditoria de citação por equação do Theory Guide	35 equações do Guia de Teoria sem fonte: citar, marcar identidade ou apagar, linha a linha	2026-09-22	M	9f9ecb0d4	
 C4	DONE		Caso de eletrodiálise para vinho		2026-09-21	M	50a16ac3c	
 C5	NOT-AN-ITEM		Nota sobre o que o registo não consegue recuperar		2026-09-25	S		
-C6	PARTIAL	beyond	Caso de estudo amoníaco verde para artigo C&CE	conjunto muito feito por fatias (C44-C82); caso de estudo/artigo completo e paridade com ferramentas comerciais por fechar	2026-09-24	L		
-C7	PARTIAL	beyond	Nenhum concorrente nomeado no repositório	regra foi estreitada (C45); reescrita do histórico git e eventuais restos de nomes por decidir	2026-09-24	M	4f6acfeb2	vitor
+C6	PARTIAL	beyond	Caso de estudo amoníaco verde para artigo C&CE	artigo C&CE do caso de estudo não escrito; paridade com ferramentas comerciais não medida	2026-09-24	L	e1c610765	
+C7	DONE		Nenhum concorrente nomeado no repositório		2026-09-24	M	4f6acfeb2	
 C8	DONE		Sequência de projeto por fases e EduTool no amoníaco verde		2026-09-24	L	6d1270c78	
 C9	DONE		EduTool do reator de Gibbs e aproximação ao equilíbrio		2026-09-25	M		
 C10	DONE		EduTool do que o equilíbrio com ΔT de aproximação alcança		2026-09-27	M	550d7f539	
@@ -14,17 +14,17 @@ C12	DONE		Propriedades da água fiáveis em toda a gama usada		2026-09-27	L	082c
 C13	DONE		Explorador de propriedades não achava "oxygen" (aliases)		2026-09-27	S	807f8688d	
 C14	DONE		Carbono sólido como componente e formação em reformadores		2026-09-27	M	28c9c6457	
 C15	DONE		EduTool do método dos potenciais de elemento		2026-09-27	M	637becfd0	
-C16	PARTIAL	beyond	Mais misturas com dados binários rastreáveis (importar/ajustar ThermoML)	cadeia de ajuste ThermoML continua por ampliar; automatização (C226) e pares em falta	2026-09-27	L	e53d9de6c	
+C16	PARTIAL	beyond	Mais misturas com dados binários rastreáveis (importar/ajustar ThermoML)	campanha contínua: ajuste com restrição de estabilidade, séries por reler, pares seguintes (automatização em C226)	2026-09-27	L	e53d9de6c	
 C17	DONE		Página da temperatura: grandeza antes do instrumento		2026-09-28	S	ba5f0b9f0	
 C18	DONE		Página da entropia: balanço antes do livro-razão		2026-09-28	S	628026f53	
 C19	DONE		Página da exergia: ideia antes do programa		2026-09-28	S	df2f58162	
 C20	DONE		Aprofundamento do termómetro: quatro absolutos corrigidos		2026-09-28	S	a9e7bcc1d	
 C21	DONE		PC-SAFT derivado: três afirmações falsas corrigidas		2026-09-28	S	f539b2e4c	
-C22	PARTIAL	beyond	Revisão externa crítica de 44 EduTools	erros de texto restantes e itens de motor um a um (candidatos) não confirmados como fechados	2026-09-28	L	6187d7b16	
+C22	PARTIAL	beyond	Revisão externa crítica de 44 EduTools	itens de motor do triage por tratar um a um: corte silencioso de R_min, ActiveSetQP, Wegstein q_max, Herington	2026-09-28	L	6187d7b16	
 C23	DONE		EduTool da escada de reatores		2026-09-28	M	0283c24f1	
 C24	DONE		EduTool de heurísticas para triagem de vias de reação		2026-09-28	M	4c6f8733e	
 C25	NOT-AN-ITEM		Candidato: fase aquosa no minimizador de Gibbs (pergunta sacarose)		2026-09-29	L		
-C26	PARTIAL	beyond	Revisão da secagem: curva característica e seguintes	fatia 1 e 2 feitas; itens P3-P5 e P7 ficam reservados ao Vítor	2026-09-29	M	7336edefc	vitor
+C26	PARTIAL	beyond	Revisão da secagem: curva característica e seguintes	P3-P5 e P7 por tratar: secador na superfície de formação, aquecimento de taxa decrescente, RK4 n<1, EduTool do secador contínuo	2026-09-29	M	7336edefc	
 C27	DONE		Ultrafiltração em alimentação e purga		2026-09-29	L	62cc5b66e	
 C28	DONE		Casos dinâmicos adotam o layout de estado tipo OpenFOAM		2026-09-30	L	204dfa564	
 C29	DONE		EduTool diz porque três leitos Gibbs são um e heurísticas de aproximação		2026-10-02	S	439200dbb	
@@ -44,7 +44,7 @@ C43	DONE		Entalpia de reação conduz ao estado padrão (navegação EduTools)		
 C44	DONE		Amoníaco verde: dimensionar tudo, inventários, capital circulante		2026-10-07	L	cbe65a128	
 C45	DONE		Página inicial achada por "simulador de processos open source"		2026-10-07	S	1f983ba10	
 C46	DONE		Contar e mostrar o tamanho do Choupo		2026-10-07	S	ed4f3aad7	
-C47	OPEN	beyond	Contador visível de visitas e descargas	falta conta GoatCounter (ato do Vítor); nada contado	2026-10-07	S		vitor
+C47	OPEN	beyond	Contador visível de visitas e descargas	conta GoatCounter por criar (ato do Vítor); site/analytics.conf sem código; nada contado	2026-10-07	S		vitor
 C48	DONE		Amoníaco verde: permutadores dimensionados em detalhe		2026-10-07	M	8666cf30c	
 C49	DONE		Painel converte diferenças de temperatura como diferenças		2026-10-07	S	1744381b6	
 C50	DONE		Unidade aberta corre a partir da corrida de onde veio		2026-10-07	S	7706e9e91	
@@ -63,7 +63,7 @@ C62	DONE		Projeto básico amoníaco verde e válvulas de alívio		2026-10-11	M	6
 C63	DONE		DCF com anos de arranque e construção		2026-10-11	M	82c3158ae	
 C64	DONE		EduTool de grande redução de pressão (letdown)		2026-10-11	M	20b5f0022	
 C65	DONE		Dívidas encontradas pelos EduTools de segurança e letdown		2026-10-11	M	d67b7f036	
-C66	PARTIAL	beyond	Leitos do conversor dimensionados como projeto básico	Eq 39 recusa abaixo de 150 atm (decisão por tomar); item 4 parado no ramo claude/c66-item4-constants-wip	2026-10-12	M	ff36172b4	
+C66	PARTIAL	beyond	Leitos do conversor dimensionados como projeto básico	item 2: fator de efetividade Eq 39 não aplicado ao leito (recusa abaixo de 150 atm; ciclo a ~149 atm): decidir pressão ou aproximação declarada	2026-10-12	M	ff36172b4	
 C67	DONE		Caso traz a sua cinética: expressões no dicionário		2026-10-12	L	3a4534f42	
 C68	DONE		Uma só escada para os casos de amoníaco		2026-10-12	M	e5a3c966a	
 C69	DONE		PFR multitubular arrefecido e conversor multileito num só vaso		2026-10-12	L	10dfddb1d	
@@ -106,36 +106,36 @@ C106	DONE		Tutoriais batch ficam em batch/plant		2026-10-19	S	ccf5fc4d6
 C107	DONE		Abrir caso online a partir de um ficheiro comprimido		2026-10-19	S	66e34747a	
 C108	DONE		Ícone de ecrã inicial da app		2026-10-19	S	4abf67f2c	
 C109	DONE		EduTool do gás de síntese		2026-10-19	M	8dd166b11	
-C110	PARTIAL	beyond	Resolve tudo: atraso delegado em nove generais	onda 2 (fichas de salas/AVAC, água purificada RO+EDI, tarifas, extensões de layout) não confirmada	2026-10-20	L	73c88ffcf	
+C110	PARTIAL	beyond	Resolve tudo: atraso delegado em nove generais	água purificada por RO+EDI e extensões de layout (queda de pressão e custo de tubos, água de incêndio) por fazer	2026-10-20	L	73c88ffcf	
 C111	DONE		Spray dryer com vários solventes na alimentação		2026-10-20	M	f40936233	
-C112	PARTIAL	beyond	Auditoria externa científica e pedagógica dos EduTools	ondas A e B feitas; pontos restantes (ex. gibbs07 energia aberta, páginas sem números) por confirmar	2026-10-20	L	26f524773	
+C112	DONE		Auditoria externa científica e pedagógica dos EduTools		2026-10-20	L	26f524773	
 C113	DONE		Encontrar tutorial ou capítulo EduTool em segundos		2026-10-20	M	078e74379	
 C114	DONE		Visualizador de fluxograma tipo ParaView com cores T e P		2026-10-20	M	acd9866f8	
 C115	DONE		Unidade em cálculo pulsa quando a corrida é lenta		2026-10-20	S	c3b612cc8	
 C116	DONE		Explore e Property Surfaces numa só sala		2026-10-20	M	2cbb1d7d0	
-C117	PARTIAL	beyond	Fluxo de curadoria: LLM escreve, Explorer mostra, aluno decide	etapa 3 em aberto	2026-10-20	L	d4ed30e82	
+C117	DONE		Fluxo de curadoria: LLM escreve, Explorer mostra, aluno decide		2026-10-20	L	d4ed30e82	
 C118	DONE		Varrimento de separação de fases V/L1/L2/S e pH no Explorer		2026-10-20	M	8a3a47f15	
 C119	DONE		EduTool de porque as correlações são simples		2026-10-20	M	f31d62c6b	
 C120	NOT-AN-ITEM		Passagem de turno: o disco do contentor falhou		2026-10-20	S		
 C121	DONE		EduTool de reconciliação de dados e Bayes		2026-10-20	M	1adc2c9fd	
 C122	DONE		Ferramenta de integração e teste de fumo do site		2026-10-20	M	8aa4905df	
-C123	PARTIAL	beyond	Pasta de benchmarks: casos difíceis do simulador aberto de referência	defeitos encontrados (flash LL, etc.) e alguns benchmarks por fechar; não confirmado	2026-10-20	L	af25eaf4f	
-C124	PARTIAL	beyond	Permutadores da coluna dimensionados em detalhe	item 2 (permutadores laterais e pumparounds) espera pelo Vítor ver o item 1	2026-10-20	L	4be625029	vitor
+C123	PARTIAL	beyond	Pasta de benchmarks: casos difíceis do simulador aberto de referência	shortcutColumn publica produtos à T de bolha da alimentação e consola do pfr multi-reação: correção não confirmada	2026-10-20	L	af25eaf4f	
+C124	PARTIAL	beyond	Permutadores da coluna dimensionados em detalhe	item 2: permutadores laterais e pumparounds como funcionalidade da coluna por construir	2026-10-20	L	4be625029	
 C125	DONE		Porque o breakthrough é lento		2026-10-21	M	acf8b12d2	
-C126	PARTIAL	beyond	Livro branco no repositório	figuras GUI, publicação do rascunho e peças do artigo C&CE por confirmar	2026-10-21	L	de41c0d3e	
-C127	PARTIAL	beyond	Exemplo completo: da frase em linguagem natural à decisão	abrir pasta de dados sem caso ou largar ficheiros .dat na vista não construído	2026-10-21	M	2ff920b2d	
+C126	DONE		Livro branco no repositório		2026-10-21	L	4c9d4142f	
+C127	PARTIAL	beyond	Exemplo completo: da frase em linguagem natural à decisão	EduTool do exemplo completo (frase -> decisão), vista de evidência com modelo selecionado e resíduos por ponto, página 'com os teus dados'	2026-10-21	M	2ff920b2d	
 C128	DONE		Que solvente ou mistura de solventes para uma substância		2026-10-21	M	bd33ec60e	
-C129	OPEN	beyond	Fase de detalhe final do layout 3D: bombas, válvulas, bocas de visita	nada construído; detalhe final só desenha o que já existe	2026-10-21	L		
-C130	PARTIAL	3days	Fluxograma instrumentado: camada P&ID sobre o PFD	PDF do P&ID feito; camada de instrumentos declarada num caso estacionário por confirmar	2026-10-21	L	cc8d99355	
-C131	PARTIAL	beyond	Consolidar e rever tudo contra boas práticas e simulador de referência	fases feitas por partes; instrumentos e revisão completa por confirmar	2026-10-21	L	4b80e3263	
-C132	OPEN	beyond	EduTool de diagnóstico de falhas a partir de historiador	nada construído; espera consolidação e etiquetas (C130)	2026-10-21	L		
-C133	PARTIAL	3days	PFD com tabela de correntes e folhas de especificação em PDF	folha PFD feita; folhas A4 de especificação por item não confirmadas	2026-10-21	L	b9e0fa588	
+C129	OPEN	beyond	Fase de detalhe final do layout 3D: bombas, válvulas, bocas de visita	nada construído: sem bombas/válvulas em linha, bocas de visita, flanges nem fundações no 3D	2026-10-21	L		
+C130	OPEN	3days	Fluxograma instrumentado: camada P&ID sobre o PFD	nada construído: sem instrumentationDict, camada P&ID nem PDF de P&ID; só desenho em docs/design	2026-10-21	L	cc8d99355	
+C131	PARTIAL	beyond	Consolidar e rever tudo contra boas práticas e simulador de referência	famílias (d) reciclos, (e) dimensionamento/economia e (f) integração temporal por rever; (g) EduTools só via auditoria C259	2026-10-21	L	4b80e3263	
+C132	OPEN	beyond	EduTool de diagnóstico de falhas a partir de historiador	nada construído	2026-10-21	L		
+C133	PARTIAL	3days	PFD com tabela de correntes e folhas de especificação em PDF	folha A4 de especificação por item dimensionado, hierarquia reports/drawings e PDF único encadernado por fazer	2026-10-21	L	b9e0fa588	
 C134	DONE		Bacias de contenção no layout da fábrica		2026-10-21	M	7a35f9646	
-C135	OPEN	beyond	kij que varia com T, regredido e lido por unidade	nada construído (depois do rascunho do livro branco)	2026-10-21	L		
+C135	OPEN	beyond	kij que varia com T, regredido e lido por unidade	nada construído: sem forma kij(T) no registo do par nem regressão por unidade	2026-10-21	L		
 C136	DONE		EduTool de contenção secundária (bacias)		2026-10-21	M	f73536355	
 C137	DONE		EduTool de reconciliação com Bayes visível e central		2026-10-21	S	39e55b652	
 C138	DONE		Poro rígido resolvido como o NanoFiltran		2026-10-22	L	be3a51788	
-C139	OPEN	beyond	EduTool da economia da rede de químicos e parques industriais	trabalho futuro, não calendarizado	2026-10-24	L		
+C139	OPEN	beyond	EduTool da economia da rede de químicos e parques industriais	nada construído	2026-10-24	L		
 C140	DONE		EduTool de propriedade intelectual como estratégia		2026-10-24	M	3fd4a4e1b	
 C141	DONE		Corrigir K_d do DSPM-DE e solver do poro		2026-10-24	M	4fc1c7810	
 C142	DONE		Solver de poro melhor que o NanoFiltran		2026-10-24	L	840708ff3	
@@ -146,27 +146,27 @@ C146	DONE		Elementos espirais por tamanho e espaçador em série e paralelo		202
 C147	DONE		Dicionário de pós-processamento com gráficos pedidos pelo caso		2026-10-24	L	96770b99a	
 C149	DONE		Resultados do investigador: gráficos primeiro e ajuste de membrana		2026-10-24	L	1199f0d0b	
 C150	DONE		Segunda revisão externa dos EduTools R01-R28		2026-10-25	L	196107b7a	
-C151	PARTIAL	beyond	Caso props com estrutura: mapa de cálculo, árvore por disciplina, F1	fase 2 (pastas por disciplina) espera que o Vítor veja a fase 1	2026-10-25	M	139eef840	vitor
+C151	PARTIAL	beyond	Caso props com estrutura: mapa de cálculo, árvore por disciplina, F1	fase 2: reorganizar pastas de tutorials/props por disciplina	2026-10-25	M	139eef840	
 C152	DONE		Um caso, dois modos: simulação de processo e propriedades e dados		2026-10-25	L	a8edacdd0	
 C153	DONE		Ecrã props: painel redimensionável e bloco que responde ao clique		2026-10-25	M	16ebfc5ec	
 C154	DONE		Percurso de um utilizador no caso NanoFiltran no site		2026-10-25	M	4c2f3db7d	
 C155	DONE		A transição laminar-turbulenta não é uma curva		2026-10-25	S	aa9e9a0a3	
 C156	DONE		Página de gráficos também navega por unidade		2026-10-25	S	57f6dd15e	
-C157	PARTIAL	beyond	Choupo pronto para um investigador externo de membranas	defeitos GUI (C157b) e fatia de curadoria de espécies com Na2CO3/NH4Cl por fazer	2026-10-25	M	9a837334e	
-C158	PARTIAL	3days	Cada EduTool termina com um questionário de aprendizagem	amostra de 6 ferramentas feita; as outras 58 esperam quatro questões em aberto	2026-10-25	L	9a2d724b4	
-C159	OPEN	beyond	Do Explorer ao ajuste que fez um par, e ajuste do próprio aluno	registado, em fila depois da suite completa; nada construído	2026-10-25	L		
-C160	OPEN	beyond	Termodinâmica e cinética de topo: programa de paridade com biblioteca aberta	só fase 0 (documento); sem código até o Vítor decidir o âmbito	2026-10-25	L		
+C157	DONE		Choupo pronto para um investigador externo de membranas		2026-10-25	M	6fdace214	
+C158	PARTIAL	3days	Cada EduTool termina com um questionário de aprendizagem	quizzes em cerca de 16 de 90 ferramentas; restantes por fazer	2026-10-25	L	9a2d724b4	
+C159	OPEN	beyond	Do Explorer ao ajuste que fez um par, e ajuste do próprio aluno	nada construído	2026-10-25	L		
+C160	OPEN	beyond	Termodinâmica e cinética de topo: programa de paridade com biblioteca aberta	nem a fase 0 (documento de paridade) existe no repositório	2026-10-25	L		
 C162	DONE		Não volátil na perna de formação recusa		2026-10-25	S	0490f8581	
 C163	NOT-AN-ITEM		Questões abertas são decididas pelo comandante		2026-10-25	S		
 C164	DONE		GRI-Mech 3.0 não é usado diretamente		2026-10-25	M	0c860703d	
-C165	PARTIAL	beyond	Aluno de doutoramento aprende DSPM-DE com o caso NanoFiltran	fase 2: fluxo por nó com resíduo de fecho e "seguir um ião" por fazer	2026-10-25	M	fe1b0c6ec	
+C165	PARTIAL	beyond	Aluno de doutoramento aprende DSPM-DE com o caso NanoFiltran	fase 2: fluxo por nó com resíduo de fecho e 'seguir um ião' por fazer	2026-10-25	M	fe1b0c6ec	
 C166	DONE		NanoFiltran explicado para reimplementação por um doutorando		2026-10-25	M	caf445946	
-C167	PARTIAL	beyond	A suite usa todos os núcleos	fatia 3 (traços de leitura dos gates paralelos) registada, não começada	2026-10-25	M	73ea36014	
+C167	DONE		A suite usa todos os núcleos		2026-10-25	M	a445a2a50	
 C168	DONE		Auditoria de usabilidade e acessibilidade do GUI de resultados		2026-10-25	M	1b153ac5d	
 C169	DONE		A coluna resolve a termodinâmica que as suas correntes trazem		2026-10-26	L	bc00f94b8	
 C170	NOT-AN-ITEM		Auditoria: nada do que foi dito se perde		2026-10-26	S		
 C171	DONE		Ecrã props redesenhado e forma de citar		2026-10-26	M	4360ebdc0	
-C172	PARTIAL	beyond	Um GUI ou dois: simulação e propriedades e dados	renomear chave held-out (aad_heldout_pct vs heldOut_AAD_pct) não feito	2026-10-26	M	d436cec21	
+C172	DONE		Um GUI ou dois: simulação e propriedades e dados		2026-10-26	M	d436cec21	
 C173	DONE		Auditoria externa às rotas de Gibbs e fases		2026-10-26	M	8e042855d	
 C174	DONE		Nenhum fecho por construção conta como evidência		2026-10-26	M	a7540f1f0	
 C175	DONE		MESH completo reativo		2026-10-26	L	5a6b99ea9	
@@ -175,52 +175,52 @@ C177	OPEN	3days	Modelo de laboratório para ajuste de DSPM-DE	desenho fechado co
 C178	DONE		Revisão externa de código (falhas de solver)		2026-10-27	M	648660158	
 C179	DONE		Espécie neutra não é ião: massa molar de mineral		2026-10-27	S	3e43d55f8	
 C180	DONE		Precipitação em função da temperatura, figura nativa		2026-10-27	M	55d638999	
-C181	OPEN	beyond	Modelo de arrefecimento sequencial	a discutir arquitetura com o Vítor antes de código	2026-10-27	L		vitor
+C181	OPEN	beyond	Modelo de arrefecimento sequencial	nada construído; arquitetura do modelo sequencial por decidir	2026-10-27	L		
 C182	DONE		Eixo de temperatura em graus Celsius		2026-10-27	S	9088d47a0	
 C183	DONE		Resultados de uma corrida props na árvore do caso		2026-10-27	M	0ab032993	
-C184	PARTIAL	beyond	Robustez da destilação: fullMESH e Newton n-D	partes A e B feitas; inicialização/recuperação e fábrica completa de DME por confirmar	2026-10-27	L	126fc9b98	
+C184	PARTIAL	beyond	Robustez da destilação: fullMESH e Newton n-D	recuperação adaptativa MESH->fullMESH, diagnóstico de viabilidade A-D e fábrica DME completa por fazer	2026-10-27	L	126fc9b98	
 C185	DONE		Três defeitos de solver/cinética (revisão externa)		2026-10-27	M	d353ee7ed	
-C186	PARTIAL	day	Simulação falhada otimizada, pressão fora do teste do reciclo	mesmo defeito em DesignSpec, GridSweepDriver e SweepDriver ainda aberto	2026-10-27	M	d8a895955	
+C186	DONE		Simulação falhada otimizada, pressão fora do teste do reciclo		2026-10-27	M	0aae8f4e9	
 C187	NOT-AN-ITEM		Auditoria do que ficou por registar (24-31 outubro)		2026-10-31	S		
 C188	DONE		O que uma unidade aceita: modelado, aproximação declarada ou recusado		2026-10-31	L	f2e2e0dfb	
-C189	PARTIAL	beyond	RO/NF: membrana escolhida pelo que faz, depois módulo comercial	atalho (fatia 5) e leitura do nível local por fazer; monetização em aberto	2026-10-31	L	227ef4003	
+C189	DONE		RO/NF: membrana escolhida pelo que faz, depois módulo comercial		2026-10-31	L	2aa30a65d	
 C190	DONE		Os quinze pontos da auditoria externa		2026-10-31	L	ab25caab5	
-C191	PARTIAL	beyond	Árvore da química e reator de metanação	EduTool feito; reator de metanação (parte B) não encontrado; sem crédito de coproduto	2026-10-31	L	f03459392	
+C191	PARTIAL	beyond	Árvore da química e reator de metanação	EduTool do reator de metanação (parte B) por decidir e construir	2026-10-31	L	f03459392	
 C192	DONE		Permutador de pressão: unidade, folha de projeto e esquema		2026-11-01	L	e6f711157	
 C193	DONE		Plano CML de 1 hora, 1 dia, 3 dias, além de uma semana		2026-10-31	S	8b4db55ba	
 C194	DONE		Dessalinizadora de Campo de Dalias com layout completo		2026-11-01	L	3736c17e8	
-C195	PARTIAL	beyond	O que falta ao Choupo para os dois grupos farmacêuticos 2026-27	ar comprimido, efluentes, itens por sala e dados de compactação por fazer	2026-11-02	L	96e3d118d	
+C195	PARTIAL	beyond	O que falta ao Choupo para os dois grupos farmacêuticos 2026-27	uniformidade de mistura, via estéril, ar comprimido, itens por sala por fazer	2026-11-02	L	96e3d118d	
 C196	DONE		Custo de integrar muitos generais e verificação do site		2026-11-02	M	5ef3809f4	
 C197	DONE		Água pesada nos componentes padrão		2026-11-02	M	4d3cb4f9d	
 C198	DONE		Boro na água do mar em Pitzer		2026-11-02	L	c3f010e21	
-C199	PARTIAL	beyond	Dessalinização em trens e racks, não uma bomba gigante	alternativa de centro de pressão, curvas de bomba, dimensionamento de coletores e tubagens duplicadas	2026-11-02	M	191be6e8a	
-C200	PARTIAL	3days	Completar 0/ no browser e brief do assistente	guia do utilizador só documenta choupo-init0	2026-11-02	M	1b909f9c7	
-C201	OPEN	day	Ácido acético líquido: correção do datum e constante no ramo	ramos backup/c201-acetic-vapour e worktree 5bed50aeb nunca aterrados	2026-11-02	M		
-C202	PARTIAL	beyond	Revisão do kernel e phaseChanger que pára 119 K antes	pontos (2)-(4) da revisão do kernel não confirmados	2026-11-02	M	6f137cb68	
-C203	OPEN	beyond	Gémeo digital como última forma de um caso de planta	não começado; modelos dinâmicos por unidade primeiro	2026-11-02	L		
-C204	OPEN	beyond	EduTool sobre onde colocar malhas de controlo	não encontrado construído	2026-11-02	M		
-C205	PARTIAL	3days	Versões dinâmicas das unidades que não têm	flash drum e permutador dinâmicos (fatias 3-4) por construir	2026-11-02	L	7753441e4	
-C206	OPEN	beyond	EduTools de tratamento de efluentes líquidos e gasosos	não encontrado construído; âmbito pedagógico por pôr ao Vítor	2026-11-02	L		
-C207	PARTIAL	beyond	Folha de especificação por tubo de uma fábrica com layout	folha de linhas feita no conjunto documental; custo de tubagem em falta	2026-11-02	M	563d83b2c	
+C199	PARTIAL	beyond	Dessalinização em trens e racks, não uma bomba gigante	posições das portas dos vasos, caso de centro de pressão e curvas de bomba por fazer	2026-11-02	M	191be6e8a	
+C200	PARTIAL	3days	Completar 0/ no browser e brief do assistente	packs de calor, eletrólitos, membranas, sólidos, transiente por escrever; referência gerada (fase D) por fazer	2026-11-02	M	1b909f9c7	
+C201	PARTIAL	day	Ácido acético líquido: correção do datum e constante no ramo	runCase sem resposta/balanço no resumo (3), um só caminho start-here (4), READMEs com deveres antigos (5), limpeza (6)	2026-11-02	M		
+C202	DONE		Revisão do kernel e phaseChanger que pára 119 K antes		2026-11-02	M	5a525ddb4	
+C203	OPEN	beyond	Gémeo digital como última forma de um caso de planta	nada construído; modelos dinâmicos por unidade primeiro	2026-11-02	L		
+C204	OPEN	beyond	EduTool sobre onde colocar malhas de controlo	EduTool de colocação de malhas de controlo não construído	2026-11-02	M		
+C205	PARTIAL	3days	Versões dinâmicas das unidades que não têm	flash drum e permutador dinâmicos por construir	2026-11-02	L	7753441e4	
+C206	OPEN	beyond	EduTools de tratamento de efluentes líquidos e gasosos	nada construído; EduTools de efluentes líquidos e gasosos	2026-11-02	L		
+C207	OPEN	beyond	Folha de especificação por tubo de uma fábrica com layout	nada construído: sem folha de linhas, dimensionamento por tubo nem custo de tubagem	2026-11-02	M	563d83b2c	
 C208	DONE		Casos C208 validados para aterrar		2026-11-03	M	54142109f	
 C209	OPEN	beyond	Setor que diz quantas vezes se repete	não encontrado construído	2026-11-02	M		
-C210	PARTIAL	beyond	Direção: Choupo ferramenta útil ao projeto farmacêutico	longo prazo L1-L10, via estéril e AVAC completo por fazer	2026-11-02	L	563d83b2c	
+C210	PARTIAL	beyond	Direção: Choupo ferramenta útil ao projeto farmacêutico	L1-L10 de longo prazo (via estéril, AVAC completo) por fazer; E2-E8 feitos	2026-11-02	L	563d83b2c	
 C211	DONE		Índice de capacidades (pergunta de capacidade não é tarefa de projeto)		2026-11-03	S	7d1e9217d	
-C212	PARTIAL	beyond	Avaliação económica de uma fábrica como EduTools	E5 e linha de motor (custo prometido, break-even) por confirmar	2026-11-03	L	2cc075d35	
+C212	DONE		Avaliação económica de uma fábrica como EduTools		2026-11-03	L	2cc075d35	
 C213	DONE		Casos de estudo económicos documentados da literatura aberta		2026-11-03	M	29f5e2cd6	
-C214	PARTIAL	beyond	Kernel do Choupo comparado com o do simulador aberto de referência	achados abertos (ex. Serth Tabela 6.1 a1 0.498 vs 1.498) não decididos	2026-11-03	M	5ab7a4250	
-C215	OPEN	beyond	Classes de reação em EduTools, reações da biorrefinaria, brainstorm biotecnologia	não encontrado construído	2026-11-04	L		
-C217	PARTIAL	beyond	Fermentação fed-batch publicada com todos os parâmetros	nenhum estudo aberto completo achado; fica à espera de fonte CC BY	2026-11-04	M	b5a311d1d	
-C218	PARTIAL	beyond	EduTool de reversibilidade e extrator líquido-líquido (C218-C220)	eficiência de andar, diâmetro/inundação e extratores de pacote/discos/pulsados não feitos	2026-11-04	L	7c7bec54f	
-C219	PARTIAL	beyond	Extrator líquido-líquido validado contra Perry (fase 1)	eficiência de andar, inundação/diâmetro e extratores de pacote, discos, pulsados, misturador-decantador	2026-11-04	L	05b7cc2eb	
+C214	PARTIAL	beyond	Kernel do Choupo comparado com o do simulador aberto de referência	W5 (válvula de controlo com Cv) e W7 (eletrolisador de água) por construir; Serth 45 graus Re 10-100 recusa por nome	2026-11-03	M	5ab7a4250	
+C215	OPEN	beyond	Classes de reação em EduTools, reações da biorrefinaria, brainstorm biotecnologia	absorvido pelo C417 (vias reacionais com questionário), ainda por construir	2026-11-04	L		
+C217	PARTIAL	beyond	Fermentação fed-batch publicada com todos os parâmetros	fonte Mazzoleni 2015 (CC BY, Tabela 4) já achada; o caso fed-batch com expression por construir	2026-11-04	M	b5a311d1d	
+C218	PARTIAL	beyond	EduTool de reversibilidade e extrator líquido-líquido (C218-C220)	EduTool de reversibilidade/quench não feito (absorvido pelo C417); extrator: eficiência, inundação e colunas de pacote/discos/pulsados por fazer	2026-11-04	L	7c7bec54f	
+C219	PARTIAL	beyond	Extrator líquido-líquido validado contra Perry (fase 1)	eficiência de andar, inundação/diâmetro e extratores de pacote, discos, pulsados, misturador-decantador por fazer	2026-11-04	L	05b7cc2eb	
 C221	DONE		Biblioteca de EduTools reorganizada		2026-11-04	M	c961da62f	
 C222	OPEN	beyond	EduTool: porque se inventou a unidade de transferência	não encontrado construído; depois do extrator C219	2026-11-04	M		
-C223	PARTIAL	beyond	Mais componentes e pares do NIST e sensibilidade de parâmetros	sensibilidade e expansão de pares por confirmar	2026-11-04	L	283ff824e	
+C223	DONE		Mais componentes e pares do NIST e sensibilidade de parâmetros		2026-11-04	L	58046c77c	
 C224	DONE		Como o ChatGPT cria pares binários a partir do NIST		2026-11-04	M	d5c2028a3	
-C225	OPEN	beyond	Promoção automática de binários regredidos com cartão de verificação	por construir; ponto aberto sobre redistribuir séries medidas	2026-11-04	L		
-C226	PARTIAL	beyond	Automatizar a cadeia C16: nove propostas	primeira fatia feita; restantes propostas por fazer	2026-11-05	L	2cd9106f4	
-C227	PARTIAL	beyond	Uma chamada, um cartão de evidência para o assistente	índice de pares (fatia b) e restantes fatias por confirmar	2026-11-05	L	5aed97be1	
-C228	PARTIAL	beyond	Lacuna de petroquímica: caracterização de petróleo	itens 3-5 em aberto (kij por cadeia C16, caso de destilação, craqueamento)	2026-11-05	L	f2fd74ee9	
+C225	DONE		Promoção automática de binários regredidos com cartão de verificação		2026-11-04	L	58046c77c	
+C226	PARTIAL	beyond	Automatizar a cadeia C16: nove propostas	mapa de cobertura gerado e ponte CAS-InChIKey não achados; in-browser (C334) e ajuste Antoine/Cp parciais	2026-11-05	L	58046c77c	
+C227	PARTIAL	beyond	Uma chamada, um cartão de evidência para o assistente	fatia (c): brief reduzido a uma regra e Explorer a ler o cartão pairLookup por fazer	2026-11-05	L	5aed97be1	
+C228	PARTIAL	beyond	Lacuna de petroquímica: caracterização de petróleo	itens 3-5 por fazer: caso de destilação de crude, craqueamento cinético, kij SRK/PR de hidrocarbonetos (só N2-CH4)	2026-11-05	L	f468736fd	
 C229	DONE		Página 3D de alunos supera o layout: ligações de tubagem		2026-11-05	L	dcac1d7e2	
 C230	DONE		Curva de pinch do ammonia02 errada em dois sítios		2026-11-05	M	d426219bd	
 C231	DONE		Coluna reativa de MTBE com reação que muda moles		2026-11-05	L	6989b2585	
@@ -229,14 +229,14 @@ C234	DONE		Revisão UX do EduTool pinch-composite		2026-11-06	M	ca16f5217
 C235	DONE		Referência líquida do gama-phi e vapor ideal errado		2026-11-07	L	7e3ed90ef	
 C236	DONE		Top 10 dos casos mais lentos		2026-11-07	M	ee8c9e5ed	
 C237	DONE		Limpar o plano CML dos itens rápidos		2026-11-07	M	c4323a4e9	
-C238	PARTIAL	3days	Prazo 2026-11-30: simulador para impressionar os colegas	demonstração completa, planta de referência e ensaio no browser por concluir	2026-11-07	L	7cec264f0	
-C239	PARTIAL	beyond	Defeito do MTBE é uma família: validação não chega às colunas	casos de colunas com vapor ideal acima de 2.5 bar e restantes âncoras	2026-11-07	L	e42389669	
-C240	PARTIAL	3days	Layout da fábrica NH3 completa continua fraco	caso fino; só parte resolvida pela planta de referência	2026-11-07	M	56e20e970	
+C238	PARTIAL	3days	Prazo 2026-11-30: simulador para impressionar os colegas	prazo 2026-11-30: demonstração completa, planta de referência mais cheia e ensaio no browser por concluir	2026-11-07	L	7cec264f0	
+C239	PARTIAL	beyond	Defeito do MTBE é uma família: validação não chega às colunas	process05/recycle02 (5 bar) e column05 (dímero acético) ainda com vapor ideal; restantes cortes S5-S7 por confirmar	2026-11-07	L	4f4c7a416	
+C240	PARTIAL	3days	Layout da fábrica NH3 completa continua fraco	ammonia02 sem torre, refrigeração nem flare no layout; caso continua fino	2026-11-07	M	81b991d8e	
 C241	DONE		Pequeno modelo do Choupo (BRAIN.md)		2026-11-07	M	39daf7d27	
 C242	DONE		Sistema operativo do projeto		2026-11-07	M	cc0122b11	
 C243	DONE		Gráficos escolhidos pelo utilizador nos casos de controlo		2026-11-07	M	edb05278f	
-C244	PARTIAL	3days	Uma planta de referência por processo, variantes viram varrimentos	conversor e PFR arrefecido da greenAmmonia03 para a planta de referência	2026-11-07	L	3850956b2	
-C245	PARTIAL	beyond	Rever o kernel numérico todo	constantes do Rodas4 não verificadas; solubilidades de gases traço (C256)	2026-11-08	L	ea24fbfb3	
+C244	DONE		Uma planta de referência por processo, variantes viram varrimentos		2026-11-07	L	7db132d80	
+C245	PARTIAL	beyond	Rever o kernel numérico todo	fatias 5b, 6 (flash) e 7-10, 12 por fazer; constantes do Rodas4 não verificadas	2026-11-08	L	ea24fbfb3	
 C246	DONE		Fatores de sub-relaxação ajustáveis pelo utilizador		2026-11-08	M	4b6f82ebc	
 C247	DONE		EduTool de chaminés (dispersão gaussiana)		2026-11-08	M	2218998be	
 C248	DONE		Revisão do que falta para projetos de engenharia farmacêutica		2026-11-08	M	6efb39ca8	
@@ -244,102 +244,102 @@ C249	DONE		Fábrica multiproduto e spray drying em batelada		2026-11-08	M	4b6f82
 C250	DONE		Instruções para agentes simples e boas (mediadas pelo ChatGPT)		2026-11-08	M	4b6f82ebc	
 C251	DONE		EduTools: arranque e guiamento do aluno		2026-11-08	M	6efb39ca8	
 C252	DONE		Landing page diz o que o Choupo faz (pergunta de 8 nov)		2026-11-08	S	f745d334b	
-C253	PARTIAL	beyond	Prática de engenheiro responsável: CI no GitHub, WASM em cache	(a) e (c) feitos; restantes partes e primeiro ensaio noturno por ler	2026-11-09	M	9b55cde6f	
-C254	PARTIAL	3days	Aplicação alojada não aceita o que o assistente do aluno escreve	decisão tomada (abrir caso de texto colado); implementação não confirmada	2026-11-09	M	61e4a068d	
+C253	PARTIAL	beyond	Prática de engenheiro responsável: CI no GitHub, WASM em cache	proteção do ramo main e cobertura por fazer; primeiro ensaio noturno do CI por ler	2026-11-09	M	9b55cde6f	
+C254	OPEN	3days	Aplicação alojada não aceita o que o assistente do aluno escreve	decisão tomada (abrir caso de texto colado), implementação não iniciada	2026-11-09	M	61e4a068d	
 C255	DONE		Sete erros científicos em lições (segunda opinião)		2026-11-09	M	6ebe37979	
-C256	PARTIAL	beyond	Gás supercrítico com K pela pressão de vapor: 32 casos	segunda passagem (acetonePlant, gibbs09, família do amoníaco) por confirmar	2026-11-09	L	17f055900	
+C256	PARTIAL	beyond	Gás supercrítico com K pela pressão de vapor: 32 casos	defeitos de motor devidos: saturationT com componente supercrítico, teste de supersaturação do Gibbs, veredicto de fase do FEHE	2026-11-09	L	17f055900	
 C257	DONE		Choupo primeiro-IA: porta de entrada para assistentes		2026-11-09	M	cc63f0c93	
 C258	DONE		Suite verde nunca esconde balanço partido		2026-11-09	L	350b60dc7	
 C259	DONE		Revisão científica de todos os EduTools (Fable)		2026-11-09	L	eea569a68	
 C260	DONE		Revisão do EduTool de estratégia de PI por examinador		2026-11-09	M	eea569a68	
-C261	OPEN	beyond	Reconhecer créditos de colegas revisores (Reviews & Contributors)	só desenho; sem código; consentimento de nomes antes de publicar	2026-11-09	M		vitor
+C261	OPEN	beyond	Reconhecer créditos de colegas revisores (Reviews & Contributors)	registo de revisões e contributores só desenhado; sem código	2026-11-09	M		
 C262	OPEN	beyond	Depósito de casos de estudo autocontidos da comunidade	não construído antes de dezembro	2026-11-09	L		
-C263	OPEN	beyond	Folha de especificação de compressores de alta pressão	em fila depois da planta de referência; âmbito a pôr ao Vítor	2026-11-09	M		
+C263	OPEN	beyond	Folha de especificação de compressores de alta pressão	âmbito (tipo, andares, anti-surge, API 617/618) por construir; depois da planta de referência	2026-11-09	M		
 C264	DONE		Aluno obtém números mas tem dificuldades: seis achados no donepezil02		2026-11-09	M	c3fb7c170	
 C265	DONE		Utilizador escolhe gráficos e tabelas no dicionário de pós-processamento		2026-11-09	L	ed63951c5	
 C266	PARTIAL	beyond	Caminhada de aluno nos casos na aplicação em execução	fase farmacêutica feita; restantes casos e fases por percorrer	2026-11-09	L	43b951ddc	
-C267	PARTIAL	beyond	Gantt, depósitos e tabelas de lote da PIF	ajustes de alimentação e gráfico por confirmar	2026-11-09	M	eb3fd3808	
-C268	PARTIAL	3days	Planta de referência amoníaco verde PEQ	processo ocupa menos de um décimo do terreno; tubagens finas; variantes por decidir	2026-11-09	L	81b991d8e	
+C267	PARTIAL	beyond	Gantt, depósitos e tabelas de lote da PIF	armazém intermédio por dimensionar, tabela entrada/saída por lote e blocos carga/processo/limpeza no Gantt por fazer	2026-11-09	M	eb3fd3808	
+C268	PARTIAL	3days	Planta de referência amoníaco verde PEQ	processo ainda sob um décimo do terreno; variantes por decidir	2026-11-09	L	f9af88d4c	
 C269	DONE		Achados da caminhada corrigidos já		2026-11-09	M	478eb6690	
-C270	PARTIAL	beyond	Demo de aula PIF: máquina de comprimidos	plano de lote não retempo a prensa pela capacidade limitada por dwell	2026-11-09	M	edee1d101	
+C270	PARTIAL	beyond	Demo de aula PIF: máquina de comprimidos	plano de lote não retempo a prensa pela capacidade limitada por dwell; EduTool da prensa por fazer	2026-11-09	M	edee1d101	
 C271	DONE		Gráfico de comparação previsto vs medido no Klemola		2026-11-09	M	9ccc3c431	
-C272	PARTIAL	beyond	Trens de dessalinização: um trem em detalhe, outros esquemáticos	fatia 1 feita; detalhe do layout do trem típico por confirmar	2026-11-09	M	f4e5c027e	
-C273	DONE		Cores da casa de EduTools muito aborrecidas	feito pelo C374 (secções com cor própria)	2026-11-09	S	19048d299	
-C274	OPEN	beyond	Caso que use COSMO ou modelos mais sofisticados	só um caso COSMO-SAC no banco props; depois de C272	2026-11-09	M		
+C272	PARTIAL	beyond	Trens de dessalinização: um trem em detalhe, outros esquemáticos	a aplicação ainda não desenha os contornos dos trens repetidos (typicalOutlines)	2026-11-09	M	f4e5c027e	
+C273	DONE		Cores da casa de EduTools muito aborrecidas		2026-11-09	S	19048d299	
+C274	OPEN	beyond	Caso que use COSMO ou modelos mais sofisticados	só casos COSMO-SAC no banco props (3); nenhuma coluna com COSMO ou PC-SAFT	2026-11-09	M		
 C275	DONE		Temperatura de refluxo na coluna Wang-Henke		2026-11-09	M	c675891a1	
-C276	PARTIAL	beyond	Tornar o EduTool Thiele apelativo para o aluno	varrer todas as lições pelos mesmos padrões; desenho e corte de texto	2026-11-09	M	fcd55efd1	
-C277	PARTIAL	beyond	Rever todos os EduTools com calma	redesenhar página a página (thiele primeiro) e restos listados	2026-11-09	L	fcd55efd1	
-C278	PARTIAL	beyond	Colunas de Klemola: previsões de pureza melhores	alavanca do perfil de pressão e PC-SAFT em coluna de pressão por fazer	2026-11-10	M	4b43ec96a	
+C276	PARTIAL	beyond	Tornar o EduTool Thiele apelativo para o aluno	corte de texto em 'Why/Limits/In the engine' e figura redesenhada nas lições por fazer	2026-11-09	M	d9142f35c	
+C277	PARTIAL	beyond	Rever todos os EduTools com calma	reestruturar textos longos e redesenhar figuras; restos listados no DEV.md por tratar	2026-11-09	L	abbf62414	
+C278	PARTIAL	beyond	Colunas de Klemola: previsões de pureza melhores	perfil de pressão por andar e PC-SAFT em coluna de pressão por fazer	2026-11-10	M	4b43ec96a	
 C279	DONE		Auditoria dos componentes contra ThermoML do NIST		2026-11-10	M	36f554eaa	
 C280	DONE		Ajuste por mínimos quadrados/minimax e par butanol-água promovido		2026-11-10	M	e2178777e	
-C281	PARTIAL	beyond	Pressões de vapor Ambrose-Walton: dizer o que são e substituir	passo 2 (substituir por medidas) não despachado	2026-11-10	M	6164ce3de	
-C282	PARTIAL	beyond	Novos pares binários e componentes a partir do arquivo ThermoML	forma em lote (DOI+sha256) e salto de caso sem rede por decidir	2026-11-10	L	58046c77c	
+C281	DONE		Pressões de vapor Ambrose-Walton: dizer o que são e substituir		2026-11-10	M	e2526ce49	
+C282	DONE		Novos pares binários e componentes a partir do arquivo ThermoML		2026-11-10	L	58046c77c	
 C283	DONE		Critério de aceitação de ajustes: erro relativo 5%		2026-11-10	M	b5955f57a	
-C284	PARTIAL	beyond	Produzir componentes e binários depressa	431 na fila com um estudo utilizável cada; só parte produzida	2026-11-10	L	2ec1520f1	
+C284	DONE		Produzir componentes e binários depressa		2026-11-10	L	c9e14c820	
 C285	DONE		Pressões de vapor acima de 5% com avisos graduados		2026-11-10	S	e2d74e670	
 C286	DONE		Pares C284 graduados como as pressões de vapor		2026-11-10	M	31cdba40d	
 C287	DONE		Novos registos com propriedades de formação		2026-11-10	M	780bb82a2	
-C288	PARTIAL	beyond	Calor de reação declarado (fatia 1) e EduTool do calor de reação	âmbito do EduTool por pôr ao Vítor; fatias seguintes	2026-11-10	M	cbbf03767	
+C288	PARTIAL	beyond	Calor de reação declarado (fatia 1) e EduTool do calor de reação	âmbito do EduTool do calor de reação por pôr ao Vítor; fatias seguintes ao slice 1	2026-11-10	M	2633bd976	
 C289	OPEN	beyond	Explorer compara registo ajustado com medições do utilizador	não encontrado construído (dono: sessão do portátil, gui/)	2026-11-10	M		
 C291	DONE		Dois generais extra em caminhos disjuntos (PX-PA)		2026-11-10	M	26675191f	
 C292	DONE		Decisões sobre registos de componentes novos (Tb, IUPAC)		2026-11-10	M	8b7fa758e	
 C293	DONE		Braço (i) do gate de pares lê a pressão de vapor		2026-11-10	S	c3eccbacd	
-C294	PARTIAL	beyond	Todo par ajustado ganha os outros modelos de atividade	117 pares e lado GUI por confirmar	2026-11-10	L	98013f584	
+C294	DONE		Todo par ajustado ganha os outros modelos de atividade		2026-11-10	L	bf7e09e05	
 C295	DONE		Casos de curadoria gerados saem de tutorials/		2026-11-10	M	19fd819be	
-C296	PARTIAL	beyond	Uma pasta por composto com os binários e revisão	achados: nenhum NRTL humanReviewed, validações por rever; ordem por acordar	2026-11-10	L	2007d0447	
-C297	PARTIAL	beyond	Revisão por modelo e leitura de humanReviewed	lado componente sem caso e humanReviewed por ler como by human ou none	2026-11-10	M	5f8bc2df1	
-C298	PARTIAL	beyond	Trabalho de curadoria da nuvem continua no portátil	mudança em si não feita; passos (d)(e) por fechar	2026-11-10	M	c070a69c0	
+C296	PARTIAL	beyond	Uma pasta por composto com os binários e revisão	índice gerado por composto, livro-razão de revisões e ferramenta de mistura N-componentes por fazer	2026-11-10	L	c9e14c820	
+C297	DONE		Revisão por modelo e leitura de humanReviewed		2026-11-10	M	5f8bc2df1	
+C298	DONE		Trabalho de curadoria da nuvem continua no portátil		2026-11-10	M	bf7e09e05	
 C299	DONE		Mudar unidades na página Pinch		2026-11-10	S	6b8ad8d62	
 C300	DONE		Aceitação de pares ajustados apertada antes de gerar mais		2026-11-11	M	af3bfa09f	
 C301	DONE		Compósita grande do pinch intuitiva		2026-11-11	S	a991606c1	
-C302	PARTIAL	3days	Demasiadas fábricas de amoníaco e PEQ sem pinch	fundir 50/150 bar num caso com pressão como estudo; conversor publica segmento	2026-11-11	M	53472f914	
+C302	PARTIAL	3days	Demasiadas fábricas de amoníaco e PEQ sem pinch	fundir 50/150 bar num caso com pressão como estudo (por decidir); conversor publicar segmento T entrada/saída	2026-11-11	M	53472f914	
 C303	DONE		Registo local que herda chaves do catálogo em silêncio		2026-11-11	M	0dac82f62	
 C304	DONE		Relatório de pinch como relatório de engenharia		2026-11-11	M	73dce1019	
 C305	DONE		EduTool pinch: Compreender, Experimentar, Verificar		2026-11-11	M	ab89a76d6	
-C306	PARTIAL	beyond	Da lista de utilidades à energia integrada e tubagem de utilidades	coletores no rack feitos; balanço de vapor/condensado, rede de permutadores e P&ID por fazer	2026-11-11	L	356ff1aeb	
-C307	PARTIAL	day	Algarismos significativos e ordenação de tabelas	fatia 2 (streams, units, reports, datasheets) por confirmar	2026-11-11	M	ea9b6d285	
-C308	OPEN	beyond	Aplicar técnica de Duhem para consistência dos pares	não encontrado construído para os registos catalogados	2026-11-11	M		
-C309	PARTIAL	beyond	Máximo de compostos: séries IUPAC de propriedades críticas	campanha em curso no ramo c309-components	2026-11-11	L	dc314860f	
-C310	OPEN	beyond	COSMO-SAC nativo com perfis sigma LVPP	não encontrado construído	2026-11-11	L		
+C306	PARTIAL	beyond	Da lista de utilidades à energia integrada e tubagem de utilidades	balanço de vapor/condensado por coletor, rede de permutadores e P&ID por fazer; linhas de utilidades no rack já roteadas	2026-11-11	L	f9af88d4c	
+C307	PARTIAL	day	Algarismos significativos e ordenação de tabelas	tabelas de unidades, relatórios e fichas ainda sem ordenação partilhada e algarismos significativos	2026-11-11	M	ea9b6d285	
+C308	OPEN	beyond	Aplicar técnica de Duhem para consistência dos pares	teste de Gibbs-Duhem (van Ness) antes do ajuste de pares por fazer; vleConsistency sem uso nas ferramentas de pares	2026-11-11	M		
+C309	PARTIAL	beyond	Máximo de compostos: séries IUPAC de propriedades críticas	campanha aberta: novos lotes de componentes por Tc/Pc IUPAC e Cp Zabransky; 25Dimethylfuran retido	2026-11-11	L	03b2aa85d	
+C310	DONE		COSMO-SAC nativo com perfis sigma LVPP		2026-11-11	L	a218cfd0a	
 C311	DONE		Campanha de eNRTL e eletrólitos		2026-11-11	L	9c349eb92	
 C318	OPEN	3days	Dimensionamento detalhado de flash/tambor	só tempo de residência; velocidade terminal, Souders-Brown e demister por fazer	2026-11-11	L		
-C319	PARTIAL	beyond	Absorvedor/stripper com teoria do filme	absorvedor/stripper ainda por Kremser; depende do modelo interfacial C329	2026-11-11	L		
-C320	PARTIAL	beyond	Espécies aquosas do NBS e CODATA em vez de estimativas Joback	21 espécies feitas; restantes das 81 estimadas por substituir	2026-11-11	M	e31e450e3	
-C321	PARTIAL	beyond	Pares de Henry: água (Sander) e solventes orgânicos	loader de Henry não anuncia nota de ajuste; restantes pares por tratar	2026-11-11	M	168c75550	
+C319	OPEN	beyond	Absorvedor/stripper com teoria do filme	absorvedor/stripper ainda por Kremser; teoria do filme por construir (segue o modelo interfacial C329)	2026-11-11	L		
+C320	PARTIAL	beyond	Espécies aquosas do NBS e CODATA em vez de estimativas Joback	espécies com dHf ainda estimado (17 marcadas) por substituir por NBS/CODATA	2026-11-11	M	0bdd0e097	
+C321	PARTIAL	beyond	Pares de Henry: água (Sander) e solventes orgânicos	loader de Henry não anuncia fitGrade nem autoPromoted; restantes solventes e pares por tratar	2026-11-11	M	fb0f908ba	
 C322	DONE		EduTool de como encontrar propriedades		2026-11-11	M	c38216ac0	
 C323	OPEN	beyond	Sais fundidos como fluidos térmicos e diagramas de fases	parte 1 (sal solar, Hitec) e parte 2 não construídas	2026-11-11	L		
-C326	PARTIAL	beyond	WASM: memória inicial e pacote de dados partilhado	memória subida a 64 MiB; pacote de dados único por fazer	2026-11-11	M	b7b1c6fa8	
+C326	PARTIAL	beyond	WASM: memória inicial e pacote de dados partilhado	pacote de dados único partilhado por fazer (cada binário embebe os 19 MB)	2026-11-11	M	b7b1c6fa8	
 C327	DONE		Transporte: viscosidade e condutividade medidas		2026-11-11	M	05592d0b5	
 C328	DONE		Tensão superficial medida e StoredCorrelation		2026-11-11	M	526dd207b	
-C329	PARTIAL	3days	Colunas rate-based e unidade de crude atmosférica	fatias B1 e B2a feitas; B2b (solutos de água) e coluna de crude por fazer	2026-11-11	L	43109535c	
-C330	PARTIAL	day	Regras de mistura de melhor prática por defeito (Butler, Grunberg-Nissan)	mudança de defeito não regravada; decidir caso a caso	2026-11-11	L		
-C331	PARTIAL	day	Regras de mistura: validação e troca de defeito	defeito comutado sem regravar goldens	2026-11-11	M	6025d8fc1	
+C329	PARTIAL	3days	Colunas rate-based e unidade de crude atmosférica	B2b (solutos de água) e coluna de crude atmosférica por fazer	2026-11-11	L	f0a55423a	
+C330	DONE		Regras de mistura de melhor prática por defeito (Butler, Grunberg-Nissan)		2026-11-11	L	50cb8e576	
+C331	DONE		Regras de mistura: validação e troca de defeito		2026-11-11	M	50cb8e576	
 C332	DONE		Prateleira de EduTools Property data & parameters		2026-11-12	S	2ac3a65e8	
 C333	DONE		Equações de estado de alta precisão (Helmholtz)		2026-11-12	L	1392894dc	
 C334	DONE		Banda severa alargada por tipo de propriedade		2026-11-12	S	358e06e33	
-C335	PARTIAL	beyond	Dívidas de licença pagas antes de dezembro	passo 3 não aterrado; nox01, espelhos de acetato, 13 pares DECHEMA locais fora dos pins	2026-11-12	M	d7d5cebbb	
-C336	PARTIAL	beyond	Severo até 29 % por tipo de propriedade	uma só casa para as três tabelas de limites por fazer	2026-11-12	S	b7b43b70f	
+C335	PARTIAL	beyond	Dívidas de licença pagas antes de dezembro	NC_COMPILATION 7 e SOURCE_LICENCE 3 ainda fixados; nox01 N/NH, espelhos de acetato, pares DECHEMA locais fora dos pins	2026-11-12	M	43e5f2d0b	
+C336	PARTIAL	beyond	Severo até 29 % por tipo de propriedade	uma só casa para as três tabelas de limites por fazer (cada ferramenta tem a sua)	2026-11-12	S	b7b43b70f	
 C337	DONE		Folha detalhada de coluna de destilação		2026-11-12	M	08fb2c19d	
 C338	DONE		Documentar tudo nos guias (regra 4d)		2026-11-12	S	fba50b0fe	
-C339	OPEN	beyond	Cinética: pelotas (eta), biblioteca de cinéticas publicadas, ajuste	espera decisão do Vítor sobre onde vive D_eff; nada construído	2026-11-12	L		vitor
+C339	OPEN	beyond	Cinética: pelotas (eta), biblioteca de cinéticas publicadas, ajuste	pelotas (eta=1 anunciado), biblioteca de cinéticas publicadas e ajuste por construir; D_eff decidido pelo arquiteto	2026-11-12	L		
 C340	OPEN	beyond	Bioprocessos: célula como componente, O2, caso fermentativo, biorrefinaria	nada construído; só agenda e DOIs	2026-11-12	L		
-C361	PARTIAL	beyond	Programa de sólidos e modelos legíveis com fonte e janela	fatias 3-4 feitas; restantes fatias do programa por confirmar	2026-11-12	L	caf3a87bc	
+C361	DONE		Programa de sólidos e modelos legíveis com fonte e janela		2026-11-12	L	408232a35	
 C362	NOT-AN-ITEM		A nuvem consolida e prova, não alarga		2026-11-12	S		
 C363	NOT-AN-ITEM		Sessão da nuvem como validadora de componentes e binários		2026-11-12	S		
 C364	NOT-AN-ITEM		Uma só sessão a operar		2026-11-12	S		
-C365	PARTIAL	beyond	Reimportar o PEQ amoníaco move linhas não autorizadas	bandeira que só aceita linhas autorizadas a construir com a reimportação	2026-11-12	S	d7e79ac21	
+C365	PARTIAL	beyond	Reimportar o PEQ amoníaco move linhas não autorizadas	bandeira de choupo-import que só aceita linhas autorizadas por construir (o bund já foi corrigido)	2026-11-12	S	188143200	
 C366	DONE		EduTool de mapas de curvas de resíduo		2026-11-12	M	72877cda7	
 C367	DONE		Pontos de ebulição errados e janela de ajuste		2026-11-12	M	e58d49c7b	
 C368	DONE		Organizar a literatura em pastas com nomes intuitivos		2026-11-12	M	b923591c8	
-C369	PARTIAL	beyond	Literatura é do portátil; EduTools adicionais de adsorção e cromatografia	adsorção batch em tanque agitado e picos/resolução de cromatografia por fazer	2026-11-12	M	fb1602f31	
+C369	DONE		Literatura é do portátil; EduTools adicionais de adsorção e cromatografia		2026-11-12	M	356961c4c	
 C370	NOT-AN-ITEM		Três propostas da nuvem respondidas		2026-11-12	S		
-C371	PARTIAL	beyond	Painel de operador só de leitura (C371) e alarmes	fatia de motor do painel, escalas nas tendências e lacunas da grelha por fazer	2026-11-12	L	f9502d708	
-C372	PARTIAL	3days	Espécies dos ácidos orgânicos mais comuns (cítrico, málico, tartárico, láctico)	cítrico feito; restantes ácidos esperam fontes	2026-11-12	M	35bc3887a	
+C371	DONE		Painel de operador só de leitura (C371) e alarmes		2026-11-12	L	53af88077	
+C372	DONE		Espécies dos ácidos orgânicos mais comuns (cítrico, málico, tartárico, láctico)		2026-11-12	M	492a67270	
 C373	DONE		Máximo de iões das compilações avaliadas		2026-11-12	L	36ddc8ba3	
 C374	DONE		Página inicial de EduTools com mais cor e sem a linha		2026-11-12	S	404e2f62a	
 C375	DONE		Três achados do motor na página de cromatografia		2026-11-12	M	5a0689270	
 C376	DONE		Dados de formação das espécies novas		2026-11-12	L	648972dcd	
-C377	PARTIAL	beyond	Modelo NaOH-água e subida do ponto de ebulição	Cp líquido da água acima de 373 K no pacote de eletrólitos por fazer	2026-11-12	M	30f8ca38e	
+C377	PARTIAL	beyond	Modelo NaOH-água e subida do ponto de ebulição	Cp líquido da água acima de 373 K no pacote de eletrólitos por fazer (equação de referência)	2026-11-12	M	a2b744c46	
 C378	DONE		Porta única de propriedades termofísicas (slice 0 e piloto)		2026-11-12	L	e6c89fce9	
 C379	DONE		EduTool da estrutura do kernel de propriedades		2026-11-12	M	efa32a76e	
 C380	DONE		Segunda análise da organização do kernel de propriedades		2026-11-12	M	77aa40781	
@@ -351,33 +351,33 @@ C385	DONE		Ponto de equilíbrio em preço		2026-11-13	M
 C386	DONE		EduTool de rápido e lento com casos de estudo		2026-11-13	M	18c81e145	
 C387	DONE		Landing page com contagens atualizadas		2026-11-13	S		
 C388	DONE		EduTool de equilíbrio ou rate-based para dimensionar colunas		2026-11-13	M	ad2393915	
-C389	PARTIAL	3days	Preços revistos nas fontes	motor lê a origem do preço e não imprime nada (PR-07)	2026-11-13	M	3b6f7e004	
+C389	PARTIAL	3days	Preços revistos nas fontes	motor lê a origem do preço e não imprime nada (PR-07) por fazer	2026-11-13	M	e17dbedd5	
 C390	OPEN	day	Termo de pressão na entalpia líquida (bombas)	desenho decidido; por construir (pump01/02 energia aberta)	2026-11-13	M		
 C391	NOT-AN-ITEM		Discussão: gémeo digital interativo de um caso dinâmico		2026-11-13	S		
 C392	DONE		Laboratório virtual de fluidização com partículas a mexer		2026-11-13	M	ae0644d65	
 C393	DONE		Linha de titular e licença em todos os ficheiros de código		2026-11-14	M	a0b4c806f	
 C394	DONE		Economia da suite: reutilização por entrada		2026-11-14	M	aac2a4941	
-C395	OPEN	beyond	EduTool sobre a limitação do HETP	âmbito por aprovar pelo Vítor; nada construído	2026-11-14	M		
+C395	OPEN	beyond	EduTool sobre a limitação do HETP	secção HETP na página equilibrium-or-rate-based por construir (âmbito por aprovar)	2026-11-14	M		
 C396	DONE		Dimensionar coluna e desenhar internos como no permutador		2026-11-14	L	d653a65ff	
-C397	PARTIAL	day	Propriedades termofísicas declaradas num só dicionário do caso	propriedades da coluna ainda não lidas do dicionário; regra geral por fatias	2026-11-14	L	83384f58c	
+C397	DONE		Propriedades termofísicas declaradas num só dicionário do caso		2026-11-14	L	c2f0aa35a	
 C398	DONE		Gramática de propriedades (tabelas, difusividade declarada)		2026-11-14	L	5afafacac	
 C399	DONE		Estudo exaustivo do OpenFOAM para propriedades		2026-11-14	L	3bd47dae0	
 C400	DONE		Guias e EduTool da arquitetura de propriedades		2026-11-14	M	7ac69f9f6	
 C401	DONE		EduTool de unidades dos coeficientes de transferência de massa		2026-11-14	M	4df35af7a	
-C402	PARTIAL	day	Sem legado: todos os casos na arquitetura nova	propriedades da água (viscosidade, tensão, 1000 kg/m3) ainda por mover em spray dryers, ED e outros	2026-11-15	L	c2f0aa35a	
-C403	PARTIAL	beyond	Difusividades próprias para 54 iões e ácido bórico	permanganato, tiocianato, sulfito, aniões orgânicos e tampões Good por fazer	2026-11-15	M	0f4976421	
+C402	DONE		Sem legado: todos os casos na arquitetura nova		2026-11-15	L	2d2a0cdad	
+C403	PARTIAL	beyond	Difusividades próprias para 54 iões e ácido bórico	permanganato, tiocianato, sulfito, aniões orgânicos restantes e tampões Good (HEPES, MES) sem D0	2026-11-15	M	c8819a525	
 C404	DONE		Três correções de validação da sessão da nuvem		2026-11-15	M	2514f4012	
-C405	PARTIAL	beyond	Fontes das leis de tensão superficial revistas	gate que conta Brock-Bird em polar/associado como catraca por fazer	2026-11-15	M	f8ea0de90	
+C405	OPEN	beyond	Fontes das leis de tensão superficial revistas	revisão das 88 leis, leitura das em falta e gate Brock-Bird em polares por fazer	2026-11-15	M	f8ea0de90	
 C406	OPEN	beyond	Especiação hidroalcoólica para vinho surrogate	candidato aprovado; nada construído	2026-11-15	M		
-C407	PARTIAL	beyond	Translação de volume e regra de mistura EoS/GE	Wong-Sandler não confirmado; Peneloux e MHV feitos	2026-11-15	M	87bb62c5d	
-C408	PARTIAL	beyond	Atacar o que falta de propriedades hoje	Peneloux, alfa por componente, MHV, UNIFAC Dortmund feitos; o resto da lista por confirmar	2026-11-16	L	09bfa57f3	
-C409	PARTIAL	beyond	Auditoria à especiação de todo o Choupo	redirigida a outro documento; auditoria do corpus continua candidata	2026-11-16	M	a5ed48d0a	
+C407	DONE		Translação de volume e regra de mistura EoS/GE		2026-11-15	M	9ce478497	
+C408	PARTIAL	beyond	Atacar o que falta de propriedades hoje	Huron-Vidal, PSRK, Wong-Sandler, GERG-2008 e EduTool "o cúbico e as suas correções" por fazer	2026-11-16	L	09bfa57f3	
+C409	OPEN	beyond	Auditoria à especiação de todo o Choupo	auditoria à especiação do corpus continua candidata; documento externo revisto fora do repositório	2026-11-16	M	a5ed48d0a	
 C410	DONE		Entalpia líquida em phiPhi não é a do cúbico		2026-11-16	M	09bfa57f3	
-C411	PARTIAL	beyond	Defeitos da especiação abaixo de 0 C e em K(T)	sólidos, pares Pitzer abaixo de 0 C, pares de citrato/histidina/Tris, atividade de açúcares	2026-11-16	L	de9ad1a57	
+C411	OPEN	beyond	Defeitos da especiação abaixo de 0 C e em K(T)	seis defeitos de especiação abaixo de 0 C e em K(T) por corrigir	2026-11-16	L	de9ad1a57	
 C412	OPEN	beyond	Escolha de testes por assinatura de modelo	não construído; congelado depois do prazo	2026-11-16	L		
 C413	DONE		Caso referencia o catálogo em vez de copiar componentes		2026-11-16	L	cdf2b3f19	
-C414	PARTIAL	beyond	Congelamento de consolidação: gates em pool	check_both_bases precisa de converged/ deixado por outra corrida; itens depois do congelamento	2026-11-16	M	40e0311fb	
-C415	PARTIAL	beyond	Adotar a manutenção estilo OpenFOAM (Weller)	restantes passos da ordem adotada e áreas da C418 depois do mês	2026-11-16	L	e4707e664	
+C414	DONE		Congelamento de consolidação: gates em pool		2026-11-16	M	5f263be52	
+C415	PARTIAL	beyond	Adotar a manutenção estilo OpenFOAM (Weller)	citações por símbolo só no piloto (2 lições); DEV.md por dividir; CLAUDE.md ainda longo	2026-11-16	L	e4707e664	
 C416	OPEN	beyond	EduTool de controlo de qualidade	candidato depois do mês	2026-11-16	M		
 C417	OPEN	beyond	Vias reacionais orgânicas e inorgânicas em EduTools com questionários	depois do mês; livros por pedir	2026-11-16	L		
 C418	OPEN	beyond	Áreas ainda não cobertas: bioprocesso, lamas ativadas, LCA e outros	candidatos ordenados pelo arquiteto; depois do mês	2026-11-16	L		
@@ -386,11 +386,11 @@ C420	DONE		Reparar os gates num só sítio (kit, grupos de recusa)		2026-11-17	L
 C421	DONE		Lei de Gall: cada facto do motor num só sítio		2026-11-18	L	f03a16589	
 C422	OPEN	beyond	Lei de propriedade como rede neuronal ajustada	candidato classificado depois de C421 (7)	2026-11-18	M		
 C423	DONE		Estrutura final das propriedades explicada a revisor externo		2026-11-18	M	affb2b161	
-C424	PARTIAL	beyond	Revisão externa de C423 ponderada ponto a ponto	passos em fila depois dos slices da porta; confirmar	2026-11-18	M	687622508	
-C425	PARTIAL	beyond	Componentes não convencionais (sólidos, carvão): lacuna da arquitetura	estudo feito; implementação espera leitura do Vítor	2026-11-18	L	b861057a1	vitor
-C426	PARTIAL	beyond	Estudo de lacunas contra os manuais de referência (Pareto)	passo 1 (tabelas medidas) feito; restantes passos de Pareto por fazer	2026-11-18	L	239d26275	
+C424	PARTIAL	beyond	Revisão externa de C423 ponderada ponto a ponto	ions renomeados (Cl átomo), tipo obrigatório em experiments, caixa vs suporte e recusa em estado de tentativa por fazer	2026-11-18	M	0ef39f6b2	
+C425	PARTIAL	beyond	Componentes não convencionais (sólidos, carvão): lacuna da arquitetura	desenho do material (componente sem fórmula, base mássica) por decidir e construir; estudo feito	2026-11-18	L	b861057a1	vitor
+C426	PARTIAL	beyond	Estudo de lacunas contra os manuais de referência (Pareto)	ranking feito e registos de amostra e curvas de fluxo aterrados; ~200 itens pequenos (politrópico, NPSH, curvas de bomba) por fazer	2026-11-18	L	239d26275	
 C427	DONE		Veredicto do spike das grandezas transportadas		2026-11-19	M	9ee282751	
-C428	PARTIAL	beyond	Lente Escolher um solvente (Hansen) no Explorer	primeiros trios de Hansen; restantes componentes e a lente por confirmar	2026-11-18	M	eb9e83659	
+C428	PARTIAL	beyond	Lente Escolher um solvente (Hansen) no Explorer	lente "Escolher um solvente" no Explorer, estimativas Hansen e vista de solubilidade por fazer	2026-11-18	M	92e61c329	
 C429	DONE		Verificador de regressão cego abaixo de 1e-9		2026-11-18	M	580e5ae25	
 C430	DONE		Parar a varredura e construir a arquitetura final		2026-11-19	L	cf034baa0	
 C431	DONE		Segunda revisão externa ponderada (fechar K1-K4)		2026-11-19	L	a9642fe3b	
