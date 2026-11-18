@@ -4655,9 +4655,11 @@ accepts today, and that is a policy call.
 > Run on nothing, so a site whose engines ran no tutorial would have
 > published green.  The smoke now runs one case per WASM binary (five), and
 > the publication stops when one does not land.  `drive-app` prints the
-> console errors it counts.  OPEN: what Vitor's own Firefox showed (the case,
-> and whether a forced reload cures it) -- 18-25 s with no progress shown
-> may itself read as a freeze, which would be a screen to improve.
+> console errors it counts.  CLOSED the same morning: his screenshot showed the run stuck at
+> `Running...` on every case, private window included, while a clean Firefox
+> of the same version ran his exact URL; a Linux update was pending a
+> restart, and after the reboot the site runs.  The cause was the machine,
+> not the site; the two defects above were real and stay fixed.
 
 > **C433 (Vitor, 2026-11-19 04:50, on greenAmmoniaPEQ's Henry block: "porque
 > tens o link dos binários e não tens o link dos componentes?"; then, on the
