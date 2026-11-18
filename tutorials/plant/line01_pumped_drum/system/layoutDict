@@ -98,8 +98,8 @@ lineDesign
     erosion
     {
         rhoV2Max  15000;
-        source    "none in the literature folder";
-        reason    "a screening value for continuous clean service, set by the author because no book in the folder gives a rho v^2 limit; it matters for a dense gas, and bounds nothing on these lines";
+        source    "assumed screening value, no source in the folder (searched: Towler and Sinnott ch. 5, Perry sections 6 and 10, Peters and Timmerhaus, Haydary, Moulijn, Biegler)";
+        reason    "ASSUMED screening value, NO SOURCE in the literature folder: the author set it for continuous clean service because no book there gives a rho v^2 limit; it matters for a dense gas, and bounds nothing on these lines";
     }
 
     fittings

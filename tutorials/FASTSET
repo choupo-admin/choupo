@@ -74,7 +74,6 @@
 #  measured, and it is one of the two plants that DECLARE a utility circuit,
 #  so check_mass_closure's atom-scope arm has a witness IN this tier rather
 #  than reading whatever an earlier sweep left on disk.)
-# EXCLUDED  tutorials/plant/line01_pumped_drum  a layout case: the line list (C207) is exercised by the scope run over every layout case and by the full sweep; the family's cheaper plant witnesses are listed
 # EXCLUDED  tutorials/plant/acetonePlant  39.97 s -- over the 3 s per-case cap this list is built to; the tier is checked by the full sweep instead
 # EXCLUDED  tutorials/plant/greenAmmonia03_basicDesign  47.6 s measured on 2026-10-12 (one run) -- over the 3 s per-case cap, because it is the kinetic stage of the C57 ladder: three Dyson-Simon pfr beds with an Ergun drop whose volumes a 3x3 DesignSpec solves (C66; 3.03 s before it), and Kern on every exchanger.  Its two cheaper rungs (greenAmmonia02_feasibility150bar, ...50bar) are listed.  The full sweep meets it.  Re-measure before believing this line
 # NOTE  not listed, tutorials/steady/reactors/ammonia03_quench_converter (its family is represented by other lines)  5.7-5.8 s measured over three runs on 2026-09-21 -- over the 3 s per-case cap, and for a reason that is the case itself: three adiabatic gibbsReactor beds on a two-stream tear, each with its own outer Newton on temperature.  The full sweep meets it.  This line EXPIRES if the case ever comes in under the cap -- re-measure before believing it
@@ -132,6 +131,7 @@ tutorials/steady/reactors/ammoniaRoutes01_screening
 tutorials/steady/flowsheets/esterification2sector
 tutorials/plant/greenAmmonia02_feasibility150bar
 tutorials/plant/greenAmmonia02_feasibility50bar
+tutorials/plant/line01_pumped_drum
 tutorials/plant/greenAmmoniaPEQ_baseCase
 tutorials/plant/hda
 tutorials/plant/lithiumBrinePlant

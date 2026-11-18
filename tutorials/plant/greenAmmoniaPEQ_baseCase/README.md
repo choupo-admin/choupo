@@ -557,7 +557,7 @@ of `system/layoutDict` and listed, one row per line, in `reports/lines/lineList.
 (the sheet of each line is `design/lines/<stream>`).  The rules are the case's, each with
 its book or the word `assumed`: velocity window by service (Towler and Sinnott 2008,
 section 5.6), the wall of ASME B31.3 Eq. 5.8, the nominal sizes and walls of Perry's
-Table 10-22, the fittings of Towler Table 5.3, and a declared 15000 Pa limit on rho v^2
+Table 10-22, the fittings of Towler Table 5.3, and an ASSUMED 15000 Pa limit on rho v^2 (a screening value with no source in the folder)
 that no book in the folder gives.  `line01_pumped_drum` works one line by hand.
 
 | line | from -> to | service | NPS (in) | sch | v (m/s) | governed by | drop (kPa) |
@@ -589,9 +589,11 @@ that no book in the folder gives.  `line01_pumped_drum` works one line by hand.
 
 What to read in it.  On the dense loop gas (40-50 kg/m3 at 150 bar) the 15-30 m/s window
 is not what sets the bore: the declared rho v^2 limit is, so those lines run at 16-17 m/s
-and are one or two sizes larger than the window alone would give.  Every line at 150 bar
-carries the flag "design pressure above the material record's maxP" -- the carbon steel
-record states 100 bar -- and `HotEffluent` the flag "stream temperature above the record's
+and are one or two sizes larger than the window alone would give.  Eleven lines carry the flag "design pressure above the material record's maxP" (the carbon
+steel record states 100 bar): Makeup150, Makeup, Recycle, CompRecycle, Mixed, HotEffluent,
+CooledEffluent, PreheatedFeed, RawLiquid, UnreactedGas and Purge.  The flag is left
+standing: the material of the 150 bar lines is a design decision (DEV.md 4c C440), not
+one the line list makes.  `HotEffluent` also carries the flag "stream temperature above the record's
 maxT": the pipe schedule here is a teaching value on a record that its own header calls
 unsourced.  The two two-phase lines (the water cooler's and the chiller's outlets) are
 listed and NOT sized: no book in the folder gives a velocity rule for two-phase flow, and
