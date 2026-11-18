@@ -264,7 +264,7 @@ C269	DONE		Achados da caminhada corrigidos já		2026-11-09	M	478eb6690
 C270	PARTIAL	beyond	Demo de aula PIF: máquina de comprimidos	plano de lote não retempo a prensa pela capacidade limitada por dwell	2026-11-09	M	edee1d101	
 C271	DONE		Gráfico de comparação previsto vs medido no Klemola		2026-11-09	M	9ccc3c431	
 C272	PARTIAL	beyond	Trens de dessalinização: um trem em detalhe, outros esquemáticos	fatia 1 feita; detalhe do layout do trem típico por confirmar	2026-11-09	M	f4e5c027e	
-C273	OPEN	day	Cores da casa de EduTools muito aborrecidas	não feito; mostrar captura ao Vítor primeiro	2026-11-09	S		
+C273	DONE		Cores da casa de EduTools muito aborrecidas	feito pelo C374 (secções com cor própria)	2026-11-09	S	19048d299	
 C274	OPEN	beyond	Caso que use COSMO ou modelos mais sofisticados	só um caso COSMO-SAC no banco props; depois de C272	2026-11-09	M		
 C275	DONE		Temperatura de refluxo na coluna Wang-Henke		2026-11-09	M	c675891a1	
 C276	PARTIAL	beyond	Tornar o EduTool Thiele apelativo para o aluno	varrer todas as lições pelos mesmos padrões; desenho e corte de texto	2026-11-09	M	fcd55efd1	
@@ -336,7 +336,7 @@ C370	NOT-AN-ITEM		Três propostas da nuvem respondidas		2026-11-12	S
 C371	PARTIAL	beyond	Painel de operador só de leitura (C371) e alarmes	fatia de motor do painel, escalas nas tendências e lacunas da grelha por fazer	2026-11-12	L	f9502d708	
 C372	PARTIAL	3days	Espécies dos ácidos orgânicos mais comuns (cítrico, málico, tartárico, láctico)	cítrico feito; restantes ácidos esperam fontes	2026-11-12	M	35bc3887a	
 C373	DONE		Máximo de iões das compilações avaliadas		2026-11-12	L	36ddc8ba3	
-C374	PARTIAL	day	Página inicial de EduTools com mais cor e sem a linha	render ao Vítor e aterragem não confirmados	2026-11-12	S	19048d299	
+C374	DONE		Página inicial de EduTools com mais cor e sem a linha		2026-11-12	S	404e2f62a	
 C375	DONE		Três achados do motor na página de cromatografia		2026-11-12	M	5a0689270	
 C376	DONE		Dados de formação das espécies novas		2026-11-12	L	648972dcd	
 C377	PARTIAL	beyond	Modelo NaOH-água e subida do ponto de ebulição	Cp líquido da água acima de 373 K no pacote de eletrólitos por fazer	2026-11-12	M	30f8ca38e	
