@@ -4641,6 +4641,24 @@ accepts today, and that is a policy call.
 > differ inside a category (water by IAPWS-95, a salt solution by ideal
 > mixing with ions, a measured table by interpolation).
 
+> **C434 (Vitor, 2026-11-19 05:35, after the landing: "Os casos não correm no
+> Firefox! ... no site aquilo não corre! Faz freeze").**  MEASURED, not
+> reproduced: the live site (built from 9c4ce7c5f) driven in headless
+> Chromium runs all 43 tutorial-tier cases with no finding; driven in
+> headless Firefox 160 on a clean profile (a WebDriver-BiDi script in the
+> session's scratch) flash01 converges 18 s after Run and the PEQ plant 25 s
+> after (release 2608: 15 s).  Two real defects found on the way: (1) the
+> LOCAL browser engine under `gui/public/wasm/` dated from 11-13, six days and
+> every C413/C421 landing behind the cases it was asked to run -- the landing
+> checklist rebuilt the native binary and not the WASM one; it now does;
+> (2) THE SITE'S SMOKE NEVER RAN A CASE: it opens every EduTool and presses
+> Run on nothing, so a site whose engines ran no tutorial would have
+> published green.  The smoke now runs one case per WASM binary (five), and
+> the publication stops when one does not land.  `drive-app` prints the
+> console errors it counts.  OPEN: what Vitor's own Firefox showed (the case,
+> and whether a forced reload cures it) -- 18-25 s with no progress shown
+> may itself read as a freeze, which would be a screen to improve.
+
 > **C433 (Vitor, 2026-11-19 04:50, on greenAmmoniaPEQ's Henry block: "porque
 > tens o link dos binários e não tens o link dos componentes?"; then, on the
 > architect's first answer that kept `source` for an exception: "Se houver

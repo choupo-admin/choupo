@@ -39,6 +39,25 @@ runs:
         bin/drive-app --edutools --serve site/_dist --prefix /app/ --jobs 3 --screenshots
         echo "status=$?" >> "$GITHUB_OUTPUT"
 
+    #  ONE CASE PER BINARY IS RUN IN THE BUILT SITE (DEV.md 4c C434, 2026-11-19).
+    #  The EduTools smoke opens tools; it never pressed Run on a case, so a site
+    #  whose engines could not run a single tutorial would have been published
+    #  green.  Five cases, one per WASM binary: opened by their own URL, Run
+    #  pressed, the run must land and no view may throw.
+    - name: Run one case per binary in the built site
+      id: cases
+      shell: bash
+      run: |
+        set +e
+        export CHOUPO_CHROMIUM="${CHOUPO_CHROMIUM:-$(command -v google-chrome || command -v chromium || command -v chromium-browser)}"
+        bin/drive-app --serve site/_dist --prefix /app/ \
+          --case steady/flash/flash01_benzene_toluene \
+          --case batch/reactor/batch01_first_order \
+          --case ctrl/ctrl01_cstr_temp_control \
+          --case unsteady/unsteady01_startup_transient \
+          --case props/compare/compare_activity_etoh_water
+        echo "status=$?" >> "$GITHUB_OUTPUT"
+
     - name: Keep the smoke report
       uses: actions/upload-artifact@v4
       with:
@@ -54,4 +73,8 @@ runs:
           1) echo "::error::EduTools smoke FOUND defects -- see the per-tool lines above and the edutools-smoke artifact."; exit 1 ;;
           2) echo "::error::EduTools smoke REFUSED: it could not honestly look (see its message above).  Not a pass."; exit 1 ;;
           *) echo "::error::EduTools smoke ended with status '${{ steps.smoke.outputs.status }}'."; exit 1 ;;
+        esac
+        case "${{ steps.cases.outputs.status }}" in
+          0) echo "Case smoke: one case per binary opened, ran and drew its views." ;;
+          *) echo "::error::Case smoke: a case did not run in the built site (status '${{ steps.cases.outputs.status }}') -- see the lines above.  Not published."; exit 1 ;;
         esac

@@ -391,7 +391,7 @@ async function driveCase(browser, base, id, findings) {
   if (outside.length && !frozenCopy)
     log(`    ${outside.length} request(s) outside ${new URL(base).pathname} -- not a finding: this is not a /vYYMM/app/ frozen copy, whose assets alone must stay inside their prefix`);
   if (frozenCopy) for (const u of outside) findings.push(`${id}: request OUTSIDE the app prefix: ${u}`);
-  if (page.consoleErrors.length) log(`    console/worker errors: ${page.consoleErrors.length}`);
+  if (page.consoleErrors.length) { log(`    console/worker errors: ${page.consoleErrors.length}`); for (const e of page.consoleErrors.slice(0, 5)) log(`      [${e.kind}/${e.where}] ${String(e.text).slice(0, 400)}`); }
   await page.send("Target.closeTarget", { targetId: page.targetId }).catch(() => {});
 }
 
