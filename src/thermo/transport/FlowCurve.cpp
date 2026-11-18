@@ -24,6 +24,7 @@
 #include <cmath>
 #include <cstdio>
 #include <iostream>
+#include <map>
 #include <mutex>
 #include <numeric>
 #include <set>

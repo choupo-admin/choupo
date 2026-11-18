@@ -40,6 +40,7 @@ Description
 #include <algorithm>
 #include <cctype>
 #include <cmath>
+#include <memory>
 #include <fstream>
 #include <iomanip>
 #include <map>
