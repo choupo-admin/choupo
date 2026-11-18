@@ -138,9 +138,22 @@ def dataset_findings(path: Path):
     t = strip_comments(raw)
     keys = top_level_keys(t)
     found = set()
-    if "system" not in keys and "component" not in keys:
+    #  SAMPLE-BEHAVIOUR RECORDS (design record measured-facts-materials-and-flow-curves.md 7a (iii)):
+    #  a `property filtrationTest;` record states a law or carries `tests ( { ...rows... } )`, and
+    #  its subject is a `subject {}` block of the sample; a STATED or ADOPTED one has no rows by
+    #  design and no sha256 of a data block.  It still needs its provenance and citation, and a
+    #  subject, and `tests` or `stated`: nothing else of the grid shape applies.
+    sample = re.search(r"^\s*property\s+filtrationTest\s*;", t, re.M) is not None
+    if sample:
+        if "subject" not in keys:
+            found.add("subject")
+        if "tests" not in keys and "stated" not in keys:
+            found.add("grid")
+    elif "system" not in keys and "component" not in keys:
         found.add("subject")
-    if "columns" not in keys or "data" not in keys:
+    if sample:
+        pass
+    elif "columns" not in keys or "data" not in keys:
         found.add("grid")
     else:
         ncols = len(re.findall(r"\{\s*name\s+\S+?;\s*unit\s+\S+?;\s*\}", t))
@@ -154,7 +167,7 @@ def dataset_findings(path: Path):
     else:
         if not re.search(r"^\s*citation\s", prov.group(1), re.M):
             found.add("citation")
-        if not re.search(r"^\s*sha256\s", prov.group(1), re.M):
+        if not sample and not re.search(r"^\s*sha256\s", prov.group(1), re.M):
             found.add("sha256")
     if "role" in keys:
         found.add("role")

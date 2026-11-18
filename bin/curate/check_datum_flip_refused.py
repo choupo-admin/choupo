@@ -80,6 +80,9 @@ import case_records  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "choupoSolve"
 RANKINE = ROOT / "tutorials/steady/power/rankine02_water"
+#  Its walk (`(d / '0').rglob('*')` in plant()) reads the gate's OWN scratch copy, never the tree.
+SCAN_ROOTS = ()
+
 PLANT = ROOT / "tutorials/steady/flowsheets/plant01_two_sectors"
 fails = []
 

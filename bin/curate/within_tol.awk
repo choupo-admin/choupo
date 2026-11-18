@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # within_tol.awk -- the ONE golden comparison (C429, 2026-11-18).
 #
 # bin/runTests (within_tol) and bin/curate/check_golden_comparator.py both run

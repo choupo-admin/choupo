@@ -97,6 +97,11 @@ COVERED_BY_NOTHING = [
     (["bin/curate/fixtures/neutralMasterMineral/*"],
      "case dictionaries of a curation fixture (data records, out of this slice; "
      "they take comments but are not code)"),
+    (["bin/curate/carried_kinds/mixsplit/*", "bin/curate/carried_kinds/mixsplit/*/*"],
+     "case dictionaries of a curation fixture (the carried-kinds probes' source case; "
+     "data records, out of this slice)"),
+    (["bin/curate/datum_flip_who_governs.expected"],
+     "the pinned view text a gate compares line by line: a header would be a line of the comparison"),
 ]
 
 NO_COMMENT_EXT = (".json", ".png", ".tsv", ".xml", ".XLS", ".webmanifest",

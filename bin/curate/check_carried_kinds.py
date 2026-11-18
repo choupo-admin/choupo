@@ -91,6 +91,7 @@ def check(cond, ok, bad):
 
 def fresh(tmp, name, src=CASE):
     d = Path(tmp) / name
+    # C421 exception: the source is a fixture case under bin/curate (see debt_registry.OWN_CASE_COPY)
     shutil.copytree(src, d)
     return d
 

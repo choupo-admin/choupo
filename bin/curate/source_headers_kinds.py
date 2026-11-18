@@ -160,7 +160,8 @@ EXCLUSIONS = [
        "comment (or a comment would change the data)",
        patterns=["*.json", "*.png", "*.tsv", "*.xml", "*.XLS",
                  "*.webmanifest", "*.manifest", "bin/curate/helmholtz/*.txt",
-                 "bin/curate/svehla1962/*.txt", "bin/curate/fixtures/*"]),
+                 "bin/curate/svehla1962/*.txt", "bin/curate/fixtures/*",
+                 "bin/curate/carried_kinds/*", "bin/curate/*.expected"]),
     _e("not-a-code-kind-prose",
        "prose documentation (README, notes) inside a code root: not a code "
        "kind; the root NOTICE covers it",
@@ -313,7 +314,7 @@ def code_kind(path: str, first_line: str = ""):
         return "tool-cpp"
     if e == ".bat":
         return "batch"
-    if e in (".py", ".sh", ".yml", ".mk"):
+    if e in (".py", ".sh", ".yml", ".mk", ".awk"):
         return "script-hash"
     if path in ("Makefile", "etc/bashrc"):
         return "script-hash"

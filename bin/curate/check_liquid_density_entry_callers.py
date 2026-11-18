@@ -52,6 +52,7 @@ ALLOWED = {
     "src/unitOperations/crystallisation/Crystalliser.cpp": 1,   # the magma liquor's density (C421 door slice d)
     "src/unitOperations/crystallisation/CrystallisationSaturation.cpp": 1,  # the saturated liquor's density (C421 door slice d)
     "src/unitOperations/rotating/PressureExchanger.cpp": 1,     # the brine's density for the rotor flow (C421 door slice d)
+    "src/unitOperations/agitation/AgitatedVessel.cpp": 1,       # the vessel's liquid density for Re and the power number (flow curves, C421 (7))
     "src/propertyOps/PropertyEvaluator.cpp": 1,
     "src/applications/choupoProps/PropertyRouteBench.cpp": 4,   # the sweep, the address-reuse check, the domain-trial check (two calls)
 }

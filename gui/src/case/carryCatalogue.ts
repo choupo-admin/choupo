@@ -2,6 +2,7 @@
     Copyright (C) 2026 Vítor Geraldes
     Licence: GPL-3.0-or-later
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 /*  THE CASE A STUDENT TAKES AWAY RUNS ALONE (contract K4, docs/design/
  *  measured-facts-materials-and-flow-curves.md 7b).
  *

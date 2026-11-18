@@ -1038,4 +1038,5 @@ OWN_CASE_COPY = {
     "check_golden_bands.py": "the copy goes to a nested bin/runTests; through case_records.copytree 8 comparator arms failed (runTests exit 1), observed 2026-11-17",
     "check_gmp_layout.py": "the copy goes to a nested bin/runTests --record; through case_records.copytree arm (f) failed (nothing recorded), observed 2026-11-17",
     "check_batch_plan.py": "the copy goes to a nested bin/runTests --record; through case_records.copytree arms (g) and (l) failed (nothing recorded), observed 2026-11-17",
+    "check_carried_kinds.py": "not a catalogue case copy: the source is the fixture bin/curate/carried_kinds/mixsplit, a pinned case with no local record to declare",
 }
