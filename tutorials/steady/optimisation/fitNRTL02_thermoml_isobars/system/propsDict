@@ -72,11 +72,11 @@
   rather than adjudicating it.
 
   ITS NEIGHBOUR, AND WHAT IS DIFFERENT.  `tutorials/props/curation/
-  curate02_vle_heldout_ethanol_water` already holds out three of eleven
-  measured points on this same system, and already reports the same
-  identifiability finding -- it was the first place in the corpus where a
-  fitted binary pair met real evidence it had not been handed, and this case
-  does not claim that.  What is new here is the SHAPE of the test: curate02
+  curate02_vle_heldout_ethanol_water` already holds out four of fourteen
+  measured points on this same system (two coefficients, identifiable) --
+  it was the first place in the corpus where a fitted binary pair met real
+  evidence it had not been handed, and this case does not claim that.
+  What is new here is the SHAPE of the test: curate02
   withholds points from ONE series at ONE pressure, so it asks whether the
   model interpolates within a study.  This case withholds an ENTIRE
   INDEPENDENT STUDY at a pressure a decade away, which asks whether the model
