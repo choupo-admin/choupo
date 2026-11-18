@@ -267,7 +267,7 @@ C272	PARTIAL	beyond	Trens de dessalinização: um trem em detalhe, outros esquem
 C273	DONE		Cores da casa de EduTools muito aborrecidas		2026-11-09	S	19048d299	
 C274	OPEN	beyond	Caso que use COSMO ou modelos mais sofisticados	só casos COSMO-SAC no banco props (3); nenhuma coluna com COSMO ou PC-SAFT	2026-11-09	M		
 C275	DONE		Temperatura de refluxo na coluna Wang-Henke		2026-11-09	M	c675891a1	
-C276	PARTIAL	beyond	Tornar o EduTool Thiele apelativo para o aluno	corte de texto em 'Why/Limits/In the engine' e figura redesenhada nas lições por fazer	2026-11-09	M	d9142f35c	
+C276	DONE		Tornar o EduTool Thiele apelativo para o aluno	os cinco pontos fechados (fórmulas, figura em 2.º, notas num clique, avisos dobrados, sem maiúsculas); o redesenho das 60 lições é o C277	2026-11-09	M	d9142f35c	
 C277	PARTIAL	beyond	Rever todos os EduTools com calma	reestruturar textos longos e redesenhar figuras; restos listados no DEV.md por tratar	2026-11-09	L	abbf62414	
 C278	PARTIAL	beyond	Colunas de Klemola: previsões de pureza melhores	perfil de pressão por andar e PC-SAFT em coluna de pressão por fazer	2026-11-10	M	4b43ec96a	
 C279	DONE		Auditoria dos componentes contra ThermoML do NIST		2026-11-10	M	36f554eaa	
