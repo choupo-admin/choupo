@@ -697,6 +697,28 @@ on the publication's datum, valid only where the phase is effectively pure
 point without a flowsheet, use the props op `referenceEoS`.  Theory Guide:
 "Reference equations of state (Helmholtz energy)".
 
+**Who governs, and the datum contract (K1, K2; design record 7b).**  Beside an
+`equilibrium` block a `pureFluids` component is answered by two objects, and
+the resolved view prints which, before the solve, as the row "who governs a
+pure-fluid component":
+
+- the PHASE BOUNDARY (Psat, the K-value, the liquid reference fugacity) is the
+  method's own curve, whatever the composition, inside its saturation window
+  (IF97: 273.15-647.096 K); outside it the record's correlation answers,
+  announced once;
+- ENTHALPY, ENTROPY, DENSITY, vapour and liquid viscosity and thermal
+  conductivity, and surface tension are the method's when the phase is pure in
+  it (x >= 0.999, `pureFluidRoute`); absent (x <= 1e-12) the generic chain
+  answers; BETWEEN the two the call is REFUSED by name (the generic chain does
+  not answer in between); diffusivity is never supplied by the pure-fluid route;
+- the method's h and s sit on its own datum, not the elements datum.  A stream
+  that joins a package with `pureFluids` to one without (two sectors, or a unit
+  that selects a variant `thermo <name>;` adding `pureFluids`) is a DATUM FLIP,
+  refused by name in the model-boundary audit (stream, producer, consumer);
+  a closed single-package loop is not.  Gate `check_datum_flip_refused`.
+  The bridge between the datums is not built; it is the declared way to lift
+  the refusal.
+
 ## transport  (optional; for unit ops that need μ / k / D / σ)
 
 Which unit takes which liquid property from where -- the property kernel or

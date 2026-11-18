@@ -398,6 +398,43 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
         out.line("  components: " + comps + "   (always the system's: a variant never changes them)");
     }
 
+    //  ---- WHO GOVERNS a pure-fluid component (contract K2, design record
+    //  7b): beside an `equilibrium` block a `pureFluids` component is answered
+    //  by TWO objects, split by composition.  Every sentence below is read
+    //  from the call sites, not from the guides: Psat from
+    //  ThermoPackage::Psat -> saturationPressure (any composition, inside the
+    //  method's window); every other quantity from pureFluidRoute
+    //  (ThermoPackage.cpp), which routes at x >= 0.999 (isEffectivelyPure),
+    //  skips at x <= 1e-12 and THROWS between.
+    {
+        std::vector<std::string> d;
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            const PureFluidModel* m = pkg.pureFluidModel(i);
+            if (!m) continue;
+            const std::string nm = pkg.comp(i).name();
+            const auto w = m->saturationWindow();
+            const std::string meth = "pureFluids method " + m->type();
+            d.push_back(nm + ": phase boundary (Psat, the K-value, the liquid reference fugacity): " + meth
+                        + ", whatever the composition, inside its saturation window "
+                        + std::to_string(w.first) + "-" + std::to_string(w.second)
+                        + " K; outside it the record's vapour-pressure correlation answers (announced once)");
+            d.push_back(nm + ": enthalpy, entropy, density, vapour and liquid viscosity and thermal conductivity, surface tension: "
+                        + meth + " when the phase is pure in it (x >= 0.999: pureFluidRoute, ThermoPackage.cpp)");
+            d.push_back("  density formulation " + m->densityFormulation() + "; viscosity " + m->viscosityFormulation()
+                        + "; thermal conductivity " + m->conductivityFormulation()
+                        + "; surface tension " + m->surfaceTensionFormulation());
+            d.push_back("  absent from the phase (x <= 1e-12): the generic chain answers (formation datum, record laws, the equilibrium block's models)");
+            d.push_back("  0 < x < 0.999: REFUSED by name (the method has no mixture meaning); the generic chain does NOT answer in between");
+            d.push_back("  diffusivity: not supplied by the pure-fluid route; the generic chain's law answers");
+            d.push_back("  datum: the pure-fluid enthalpy and entropy sit on the method's own datum, never on the elements datum;"
+                        " a datum flip across a model boundary is refused by the model-boundary audit (check_datum_flip_refused)");
+        }
+        if (!d.empty())
+            out.row("who governs a pure-fluid component",
+                    chosen({ "pureFluids" }, choice.system + ": pureFluids"), d);
+    }
+
     //  ---- equilibrium ----------------------------------------------------
     const DictPtr eq = sub(R, "equilibrium");
     const std::string form = word(eq, "formulation");

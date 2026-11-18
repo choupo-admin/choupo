@@ -1,0 +1,20 @@
+## rankine02_water
+[properties]   who governs a pure-fluid component
+[properties]       CHOICE  system (constant/thermoPhysPropDict)
+[properties]       DATA    water: phase boundary (Psat, the K-value, the liquid reference fugacity): pureFluids method IF97, whatever the composition, inside its saturation window 273.150000-647.096000 K; outside it the record's vapour-pressure correlation answers (announced once)
+[properties]               water: enthalpy, entropy, density, vapour and liquid viscosity and thermal conductivity, surface tension: pureFluids method IF97 when the phase is pure in it (x >= 0.999: pureFluidRoute, ThermoPackage.cpp)
+[properties]                 density formulation IAPWS-IF97; viscosity IAPWS R12-08 (industrial, critical enhancement off) on the IF97 density; thermal conductivity IAPWS R15-11 (background, critical enhancement off) on the IF97 density; surface tension IAPWS R1-76 (saturation line)
+[properties]                 absent from the phase (x <= 1e-12): the generic chain answers (formation datum, record laws, the equilibrium block's models)
+[properties]                 0 < x < 0.999: REFUSED by name (the method has no mixture meaning); the generic chain does NOT answer in between
+[properties]                 diffusivity: not supplied by the pure-fluid route; the generic chain's law answers
+[properties]                 datum: the pure-fluid enthalpy and entropy sit on the method's own datum, never on the elements datum; a datum flip across a model boundary is refused by the model-boundary audit (check_datum_flip_refused)
+## heavyWater01_isotope_effect
+[properties]   who governs a pure-fluid component
+[properties]       CHOICE  system (constant/thermoPhysPropDict)
+[properties]       DATA    water: phase boundary (Psat, the K-value, the liquid reference fugacity): pureFluids method IF97, whatever the composition, inside its saturation window 273.150000-647.096000 K; outside it the record's vapour-pressure correlation answers (announced once)
+[properties]               water: enthalpy, entropy, density, vapour and liquid viscosity and thermal conductivity, surface tension: pureFluids method IF97 when the phase is pure in it (x >= 0.999: pureFluidRoute, ThermoPackage.cpp)
+[properties]                 density formulation IAPWS-IF97; viscosity IAPWS R12-08 (industrial, critical enhancement off) on the IF97 density; thermal conductivity IAPWS R15-11 (background, critical enhancement off) on the IF97 density; surface tension IAPWS R1-76 (saturation line)
+[properties]                 absent from the phase (x <= 1e-12): the generic chain answers (formation datum, record laws, the equilibrium block's models)
+[properties]                 0 < x < 0.999: REFUSED by name (the method has no mixture meaning); the generic chain does NOT answer in between
+[properties]                 diffusivity: not supplied by the pure-fluid route; the generic chain's law answers
+[properties]                 datum: the pure-fluid enthalpy and entropy sit on the method's own datum, never on the elements datum; a datum flip across a model boundary is refused by the model-boundary audit (check_datum_flip_refused)
