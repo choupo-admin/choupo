@@ -401,3 +401,4 @@ C435	PARTIAL	1	Cinco pontos da revisão externa de seis casos	(4) NanoFiltran: a
 C436	OPEN	0	Backlog com uma só casa (BACKLOG.tsv), verificado, e a vista gerada dele	gate check_backlog e a página gerada do backlog	em curso: gerar o PLAN.md do backlog	2026-11-19	M		
 C437	OPEN	49	DSPM-DE com os parâmetros do próprio Labban falha 8-16 pontos	testar primeiro a aplicação de Davies (o mais provável, pela leitura de fora 19-11), depois o filme de fibra oca; os 12 % do artigo são relativos	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-19	M		
 C438	OPEN	98	O re-apontador de citações das lições não vê todos os ficheiros	derivar o conjunto de ficheiros de todas as citações file:line do gui/	apanhou o C389: duas lições ficaram desatualizadas com o verificador a dizer OK	2026-11-19	S		
+C439	OPEN	0	Cartão de entrada: ajustar um par binário a dados medidos	general a construir: substituir o cartão do flash isotérmico	general a trabalhar	2026-11-19	S		

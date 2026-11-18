@@ -4664,6 +4664,16 @@ accepts today, and that is a policy call.
 > stale 10.03 m3; the ratchet's docstring; the Theory Guide entry for the
 > optional `initial`.
 
+> **C439 (Vitor, 2026-11-19: "os casos que estão na landing page foram
+> escolhidos logo no início ... Acho que falta um sobre criação de
+> componentes e binários").**  Measured: the four starter cards are the
+> adiabatic flash, the isothermal flash, reactor+flash and a Joback
+> component estimate -- a component card exists, a binary card does not.
+> RULED: the isothermal-flash card (a near repeat of the first, reachable
+> from it) gives its place to fitting a binary pair to measured data and
+> scoring it on held-out points (the curation witness curate02 or curate04),
+> made a first-path case with its README.
+
 > **C438 (architect, 2026-11-19, from C389's general).**  The lesson-citation
 > re-pointer does not manage every file that cites the engine by line:
 > `gui/src/ui/methods/plantRunMath.ts` and `plantCostMath.ts` (and the tests
