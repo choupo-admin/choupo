@@ -302,7 +302,7 @@ C308	OPEN	36	Aplicar técnica de Duhem para consistência dos pares	teste de Gib
 C309	PARTIAL	81	Máximo de compostos: séries IUPAC de propriedades críticas	restantes lotes de componentes (de ~647 bloqueados, só 41 novos + 17 atualizados) por Tc/Pc IUPAC e Cp Zabransky	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-11	L	03b2aa85d	
 C310	DONE		COSMO-SAC nativo com perfis sigma LVPP			2026-11-11	L	a218cfd0a	
 C311	DONE		Campanha de eNRTL e eletrólitos			2026-11-11	L	9c349eb92	
-C318	OPEN	0	Dimensionamento detalhado de flash/tambor	general a construir: Souders-Brown e velocidade terminal, orientação, níveis, demister, bocais e folha de especificação do tambor	general a trabalhar (pedido do Vítor: primeiro, para o C238)	2026-11-11	L		
+C318	OPEN	0	Dimensionamento detalhado de flash/tambor	construído (Souders-Brown e gota terminal, orientação, níveis, demister, bocais, folha; os três tambores da PEQ deitados; caso novo flash22 com conta à mão); aterra depois da suite completa do lote	construído, à espera de integrar	2026-11-11	L		
 C319	OPEN	82	Absorvedor/stripper com teoria do filme	absorvedor/stripper com teoria do filme (Billet-Schultes, Onda, Treybal) por construir	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-11	L		
 C320	PARTIAL	37	Espécies aquosas do NBS e CODATA em vez de estimativas Joback	17 espécies ainda com dHf estimado (B4O5OH4 e aniões orgânicos) por substituir por NBS/CODATA	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-11	M	0bdd0e097	
 C321	DONE		Pares de Henry: água (Sander) e solventes orgânicos			2026-11-11	M	fb0f908ba	
