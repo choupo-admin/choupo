@@ -4667,7 +4667,7 @@ accepts today, and that is a policy call.
 > **C441 (Vitor, 2026-11-19: "haverá standards para escolhas de bombas
 > centrífugas, com selecção de curvas características, eficiência e NPSH? Ou
 > isto é completamente dependente dos fabricantes?"; then "Sim, põe no
-> backlog", having filed Gülich, Centrifugal Pumps, Springer 2008).**
+> backlog", having filed Gülich, Centrifugal Pumps, 4th ed., Springer 2020).**
 > RULED: two levels, both on the architecture closed on 11-18.  (1) A
 > GENERIC PUMP with no catalogue: from the duty point, the specific speed,
 > the efficiency to expect, an estimated NPSH required from the suction

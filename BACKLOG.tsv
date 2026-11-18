@@ -403,4 +403,4 @@ C437	OPEN	49	DSPM-DE com os parâmetros do próprio Labban falha 8-16 pontos	tes
 C438	DONE		O re-apontador de citações das lições não vê todos os ficheiros			2026-11-19	S	5cde383452	
 C439	DONE		Cartão de entrada: ajustar um par binário a dados medidos			2026-11-19	S	7befe7ff5f	
 C440	OPEN	3	Dimensionamento detalhado de todas as operações da planta de referência	auditoria unidade a unidade do que cada uma já tem; depois os desenhos isométricos das linhas como item próprio	pedido do Vítor para o C238; a auditoria transforma "todas" numa lista	2026-11-19	M		
-C441	OPEN	4	Bombas centrífugas: bomba genérica (velocidade específica, rendimento, NPSH) e curva do fabricante como registo medido	tudo por construir; fonte Gülich 2008 na pasta	pedido do Vítor; encaixa no dimensionamento detalhado do C238/C440	2026-11-19	L		
+C441	OPEN	4	Bombas centrífugas: bomba genérica (velocidade específica, rendimento, NPSH) e curva do fabricante como registo medido	tudo por construir; fonte Gülich, 4.ª ed. 2020, na pasta	pedido do Vítor; encaixa no dimensionamento detalhado do C238/C440	2026-11-19	L		
