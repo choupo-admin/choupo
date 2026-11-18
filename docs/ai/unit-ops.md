@@ -3110,6 +3110,26 @@ KPIs: `deltaP`, `dP_friction`, `dP_fittings`, `dP_elevation`, `P_in`,
 `P_out`, `velocity`, `reynolds`, `frictionFactor`, `regime` (0 laminar /
 1 transition / 2 turbulent), `head_loss_m`, `density`, `viscosity`.
 
+**A NON-NEWTONIAN liquid (C421 (7); Theory Guide `sec:pipe-nonnewtonian`).**  When the
+property dictionary declares the liquid's flow curve (`transport { liquid { rheology {
+measured { <name> { use method; interpolation logLog; fit { model powerLaw; } } } } } }`,
+an experiment record of kind `flowCurve`; Newtonian by ABSENCE) the pipe takes the LAMINAR
+non-Newtonian path.  The wall stress `tau_w` that carries the flow is the root of the
+generalised Rabinowitsch-Mooney integral `V = (R/tau_w^3) * integral tau^2 f(tau) dtau`
+(eq. 3.46, `f` = the curve's inverse, 0 below a yield stress), found from the curve itself;
+`-dP/L = 4 tau_w / D`; the Metzner-Reed `Re_MR = rho V^(2-n') D^n' / (8^(n'-1) m')`
+(eq. 3.57) with `n' = d ln tau_w / d ln(8V/D)`; laminar `f_Fanning = 16/Re_MR`.  The door's
+form 3 is asked at the wall stress (state, time dependence and domain refused there).  The laminar line ends at `Re_MR = 2100`
+(book p. 133).  PAST IT THE PIPE REFUSES unless `operation { turbulent { method DodgeMetzner; } }`
+(eqs. 3.70-3.73, window `2900 <= Re_MR <= 36000`, `0.36 <= n' <= 1`; the book: methods differ by
++-50 %).  Fittings take the Newtonian K with a warning.  Extra KPIs: `wallShearStress`,
+`wallShearRate`, `nPrime`, `mPrime`, `viscosityApparentWall`, `tailShare` (the part of the flow
+standing on the chord below the lowest measured rate); `viscosity` is the effective `tau_w D/(8V)`,
+`reynolds` is `Re_MR`, `frictionFactor` stays the Darcy factor.  Witnesses:
+`tutorials/steady/hydraulics/pipe04_powerlaw_polymer_solution` (Example 3.1),
+`pipe05_herschelbulkley_clay_slurry` (Example 3.3).
+
+
 **Gas-liquid two-phase flow (Layer 1).**  When the feed flashes two-phase at
 `(T,P)` (i.e. `0 < V/F < 1` — the inlet vapour fraction the flowsheet resolves;
 a feed that DECLARES a single phase, `phase liquid;` / `phase gas;`, is not
@@ -3168,6 +3188,35 @@ contract a steady unit declares, and each declaring vessel's section below
 carries it, generated.  choupoBatch has no pre-solve pass, so a vessel that
 declares one judges its initial holdup in its own `initialise`, before any
 vessel takes a step.
+
+### `agitatedVessel`
+A stirred vessel whose SHAFT POWER is computed and enters the energy balance (C421 (7), R7-R10;
+Theory Guide `sec:agitated-vessel`).  One liquid in, one out, mixed; no reaction.  The power
+belongs to the UNIT (not the `stirredTank` sizer, which runs after the pass): it publishes
+`W_shaft_kW`, an energy item of kind Work exactly as a pump's, and leaves as heat in the
+contents (`thermalMode isothermal`, default: `T_out = T_in`, the jacket's duty `Q_kW = -W` is
+published; `adiabatic`: the outlet warms).  Who owns what: the FLUID's flow curve is the property
+dictionary's (Newtonian by absence); the impeller's `k_s` (with its stated uncertainty) and `K_p`
+(or `Po_t`) are an ASSET record of kind `impeller` (`constant/assets/` or
+`data/standards/assets/`); the speed and `D_T` are the unit's.  Metzner-Otto: `gamma_avg = k_s N`
+(eq. 8.9); `mu_app` from the door (form 3); `Re = rho N D^2 / mu_app`; laminar `Po Re = K_p`,
+`P = K_p mu_app N^2 D^3`; the laminar line ends at the record's `Re_cr` (eq. 8.24); above it the
+record's `Po_t` from `Re = 6370 Po_t^-1/3` (eq. 8.8), refused in between.  The printed power
+carries `k_s`'s uncertainty and `K_p`'s as `P_low_W .. P_high_W`.  REFUSED BY NAME: a yield stress
+(unyielded regions), a shear-thickening curve, a viscoelastic or time-dependent fluid, a
+transitional `Re`, a helical-ribbon geometry outside eq. 8.7's data unless
+`outsideCorrelationWindow { reason "..."; }`.  `cstr` takes no agitator in this slice.
+```
+{ name M1;  type agitatedVessel;  in feed;  outputs ( stirred );
+  operation {
+    vessel   { D_T 2.2 m; }
+    impeller { record helicalRibbonEx85;  tipSpeed 1.0 m/s; }   // or N 9.1 rpm;   D defaults to D_T/(1+clearanceRatio)
+    thermalMode isothermal;                                      // | adiabatic
+  } }
+```
+KPIs: `W_shaft`, `W_shaft_kW`, `Q_kW` (isothermal), `P_low_W`, `P_high_W`, `Re`, `Po`, `Kp`,
+`gamma_avg`, `mu_app`, `N`, `D`, `tipSpeed`, `k_s`, `T_out`, `density`.
+Witness: `tutorials/steady/hydraulics/agitation01_helical_ribbon_polymer_melt` (Example 8.5).
 
 ### `batchReactor`
 Closed vessel, RK4 in time.  `mode isothermal` (T held) or `adiabatic`

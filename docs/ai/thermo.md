@@ -906,6 +906,24 @@ caloric { liquidHeatCapacity { pin ( { component water; table crcWaterCp; interp
   (EXPECTED-FAIL lesson), `steady/flowsheets/table05_sector_table_pins` (two
   sectors, one pin text, one file each).  Gate `check_table_laws`.  Theory Guide `sec:record-law-table`.
 
+### A liquid's FLOW CURVE: the door's third form (C421 (7))
+A liquid whose viscosity depends on the shear is declared in the property dictionary,
+Newtonian BY ABSENCE: `transport { liquid { rheology { measured { <name> { use method;
+interpolation logLog | linear; reason "..."; [fit { model powerLaw | Bingham | HerschelBulkley; }] } } } } }`,
+citing `constant/experiments/<name>.dat`: `property flowCurve;`, `provenance { citation; kind
+measured|adopted|estimated; basis; }`, `system`/`solvent`, `conditions { instrument <word>; corrected ( ... );
+T ...; w { ... }; [viscoelastic yes|no; timeDependent yes|no;] }`, two columns of `gamma` (1/s), `tau` (Pa),
+`mu` (Pa s), an optional `yieldStress { value; how; }` (a DATUM, never read off a fit) and an optional
+`authorised { gamma (lo hi); T (lo hi); w[c] (lo hi); reason }`.  READINGS THAT DO NOT DECLARE THE
+INSTRUMENT AND ITS CORRECTIONS ARE REFUSED as a flow curve (capillary: RabinowitschMooney, endEffects,
+slipChecked, laminarOnly; ...; `instrument model` = rows generated from a stated equation, `kind adopted`).
+A `fit` is a DERIVED view (fitted at load, parameters and residuals printed, nothing stored); Bingham and
+HerschelBulkley need the yield stress datum.  Support = the rows' span; authorised = the record's wider
+domain (the end chord, excursion announced); outside it, and outside the T/composition box: refused.
+The unit supplies the shear; `liquidProperty::apparentViscosity(thermo, T, P, x, Shear::rate(g) | Shear::stress(t))`
+returns `mu_app = tau/gamma`.  The Newtonian question (`viscosityLiquid`) is REFUSED for such a liquid.
+Consumers: `pipe` (laminar, wall stress from the curve), `agitatedVessel` (`gamma_avg = k_s N`).  Guide: `sec:flow-curve`.
+
 ### A measured MIXTURE table: many rows over T and w (C421 slice (8))
 
 A liquid MIXTURE's viscosity, thermal conductivity or surface tension may be a
