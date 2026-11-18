@@ -103,3 +103,27 @@ sizing
                         jointEfficiency 1.0; } }
     );
 }
+
+/*---------------------------------------------------------------------------*\
+  THE VIEW THE LESSON OPENS ON (DEV.md 4c C443).
+
+  The lesson: a three-bed adiabatic converter with cold-shot quench between the beds: each bed heats the gas, the quench cools it, and the ammonia builds bed by bed.
+
+  The plot: the gas leaving each of the three beds: its ammonia mole fraction against its temperature, bed by bed.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    bed_by_bed;
+        type    series;
+        title   "Ammonia builds bed by bed while each bed's outlet temperature falls";
+        xAxis   { label "ammonia mole fraction at the bed outlet"; unit "-"; scale linear; }
+        yAxis   { label "bed outlet temperature"; unit "K"; scale linear; }
+        note    "Each marker is the gas leaving a bed (bed 1, 2 and 3 in order). Between beds the cold shot cools the gas, which is what lets the next bed react further toward a higher ammonia fraction; every bed runs to equilibrium at its own outlet temperature.";
+        series
+        (
+            { name beds; label "bed 1, 2, 3 outlets"; ops ( stream:bed1Out stream:bed2Out stream:hotEffluent ); x x_NH3; y T; style linesMarkers; }
+        );
+    }
+);

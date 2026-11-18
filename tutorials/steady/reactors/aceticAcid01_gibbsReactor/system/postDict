@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  aceticAcid01_gibbsReactor -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: what thermodynamics alone allows when CO and methanol meet at 460 K and 30 bar: one Gibbs reactor, six species, a 10 K approach to equilibrium, no kinetics and no catalyst.
+
+  The plot: the composition of the feed, the gas and the condensed liquid the reactor produces: acetic acid leaves almost entirely in the liquid.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    products_and_feed;
+        type    table;
+        title   "Feed, gas and liquid at equilibrium";
+        note    "Mole fractions of the reactor feed and of the two phases it returns at 460 K and 30 bar. The equilibrium is a ceiling: it says nothing about how fast it is reached or with what catalyst.";
+        columns
+        (
+            { name CO; label "CO mole fraction"; unit "-"; }
+            { name methanol; label "methanol mole fraction"; unit "-"; }
+            { name aceticAcid; label "acetic acid mole fraction"; unit "-"; }
+            { name methylAcetate; label "methyl acetate mole fraction"; unit "-"; }
+            { name dimethylEther; label "dimethyl ether mole fraction"; unit "-"; }
+            { name water; label "water mole fraction"; unit "-"; }
+        );
+        rows
+        (
+            { name feed; label "feed"; cells { CO { stream feed; key x_CO; } methanol { stream feed; key x_methanol; } aceticAcid { stream feed; key x_aceticAcid; } methylAcetate { stream feed; key x_methylAcetate; } dimethylEther { stream feed; key x_dimethylEther; } water { stream feed; key x_water; } } }
+            { name gas; label "gas"; cells { CO { stream gas; key x_CO; } methanol { stream gas; key x_methanol; } aceticAcid { stream gas; key x_aceticAcid; } methylAcetate { stream gas; key x_methylAcetate; } dimethylEther { stream gas; key x_dimethylEther; } water { stream gas; key x_water; } } }
+            { name liquid; label "liquid"; cells { CO { stream liquid; key x_CO; } methanol { stream liquid; key x_methanol; } aceticAcid { stream liquid; key x_aceticAcid; } methylAcetate { stream liquid; key x_methylAcetate; } dimethylEther { stream liquid; key x_dimethylEther; } water { stream liquid; key x_water; } } }
+        );
+    }
+);

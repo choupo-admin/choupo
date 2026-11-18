@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  adiabaticFlash01_benzene_toluene -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: with no heat added, the outlet temperature is the ANSWER of the energy balance, not an input.
+
+  The plot: the three streams on one temperature-composition plane: the sub-cooled feed at 380 K, and the liquid and vapour that leave together at the colder temperature the energy balance chose; the table beside it gives the numbers.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    T_against_benzene;
+        type    series;
+        title   "Where the energy balance put the temperature: both outlets leave together, colder than the feed";
+        xAxis   { label "benzene mole fraction"; unit "-"; scale linear; }
+        yAxis   { label "temperature"; unit "K"; scale linear; }
+        note    "One marker per stream. The sub-cooled feed sits at 380 K; the drum adds no heat, so the two outlets leave at the single temperature the energy balance returns, the vapour richer in benzene than the liquid.";
+        series
+        (
+            { name feed;   label "feed";   ops ( stream:feed );   x x_benzene; y T; style markers; }
+            { name liquid; label "liquid"; ops ( stream:liquid ); x x_benzene; y T; style markers; }
+            { name vapor;  label "vapour"; ops ( stream:vapor );  x x_benzene; y T; style markers; }
+        );
+    }
+    {
+        name    streams_before_after;
+        type    table;
+        title   "The feed and the two outlets, in numbers";
+        note    "The feed enters at 380 K and 3 bar; the drum is let down to 1 atm with no heat added. The vapour fraction column is the fraction of the molar flow that is vapour.";
+        columns
+        (
+            { name T; label "temperature"; unit "K"; }
+            { name P; label "pressure"; unit "bar"; }
+            { name vf; label "vapour fraction"; unit "-"; }
+            { name xB; label "benzene mole fraction"; unit "-"; }
+        );
+        rows
+        (
+            { name feed; label "feed"; cells { T { stream feed; key T; } P { stream feed; key P; } vf { stream feed; key vf; } xB { stream feed; key x_benzene; } } }
+            { name liquid; label "liquid"; cells { T { stream liquid; key T; } P { stream liquid; key P; } vf { stream liquid; key vf; } xB { stream liquid; key x_benzene; } } }
+            { name vapor; label "vapour"; cells { T { stream vapor; key T; } P { stream vapor; key P; } vf { stream vapor; key vf; } xB { stream vapor; key x_benzene; } } }
+        );
+    }
+);

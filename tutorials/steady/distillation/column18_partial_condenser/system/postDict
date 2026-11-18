@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column18_partial_condenser -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: the same column as column01 with a partial condenser: the first stage becomes a stage of separation and the distillate leaves as vapour.
+
+  The plot: the benzene mole fraction stage by stage, liquid and vapour: the profile the column built between its two ends.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    composition_by_stage;
+        type    profile;
+        title   "Benzene stage by stage with a partial condenser";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "benzene mole fraction"; unit "-"; scale linear; }
+        note    "Stage 1 is the condenser itself, an equilibrium stage: the distillate leaves as a saturated vapour. Both condenser types write the same material balance on stage 1, so this composition profile is the one column01 gives; what differs is the distillate phase and the condenser duty.";
+        series
+        (
+            { name liquid; label "liquid on the stage"; unitOp column18; table profile; x stage; y x_benzene; style linesMarkers; }
+            { name vapour; label "vapour leaving the stage"; unitOp column18; table profile; x stage; y y_benzene; style linesMarkers; }
+            { name feedStage; label "feed stage (8)"; unitOp column18; table profile; select { stage 8; } x stage; y x_benzene; style markers; }
+        );
+    }
+);

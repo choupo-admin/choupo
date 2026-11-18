@@ -57,3 +57,34 @@ operations
         output  { proposal auto; }
     }
 );
+
+/*---------------------------------------------------------------------------*\
+  THE VIEW THE LESSON OPENS ON (DEV.md 4c C443).
+
+  The lesson: build a pure component from its molecular groups (Joback: two CH3 and one ketone) and see the error: estimation, then trust.
+
+  The plot: what the group sum returned for acetone: the normal boiling point, the critical temperature and pressure and the acentric factor, the four numbers the case holds against reference values.
+
+  Declared over what the operations already publish; it computes nothing.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    estimated_properties;
+        type    table;
+        title   "What the Joback groups give for acetone";
+        note    "Compare these with the reference block of this case (NIST WebBook / Poling et al.: Tb 329.2 K, Tc 508.1 K, Pc 47.0 bar, omega 0.307): Joback lands about 2 % low on the boiling point and the critical temperature and 2 % high on the critical pressure. The acentric factor is not a group sum; it comes from the other three by the Lee-Kesler relation.";
+        columns
+        (
+            { name Tb; label "normal boiling point"; unit "K"; }
+            { name Tc; label "critical temperature"; unit "K"; }
+            { name Pc; label "critical pressure"; unit "bar"; }
+            { name omega; label "acentric factor"; unit "-"; }
+        );
+        rows
+        (
+            { name estimate; label "Joback estimate"; cells { Tb { op estimate_acetone; key Tb_K; } Tc { op estimate_acetone; key Tc_K; } Pc { op estimate_acetone; key Pc_bar; } omega { op estimate_acetone; key omega; } } }
+        );
+    }
+);

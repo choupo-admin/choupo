@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  acetonePlant -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: a published process (Luyben, acetone from 2-propanol) closed end to end, and its error against the published stream table accounted for, not tuned away.
+
+  The plot: the three product streams whose numbers differ most from the published table: the acetone product rate and purity, the isopropanol content of the recycle and the water product purity (Luyben: 32.25 kmol/h; 0.650; 0.999).
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    plant_products;
+        type    table;
+        title   "Where this plant differs from the published one";
+        note    "The acetone product flow is 85 % of the published 32.25 kmol/h, the isopropanol recycle carries less isopropanol than the published 0.650, and the water product is less pure than the published 0.999. The README traces each gap to a measured sibling case (the UNIFAC acetone-water azeotrope caps the first column); nothing was tuned to close them.";
+        columns
+        (
+            { name F; label "molar flow"; unit "kmol/h"; }
+            { name xAcetone; label "acetone mole fraction"; unit "-"; }
+            { name xIPA; label "isopropanol mole fraction"; unit "-"; }
+            { name xWater; label "water mole fraction"; unit "-"; }
+        );
+        rows
+        (
+            { name acetoneProduct; label "acetone product"; cells { F { stream acetoneProduct; key F; } xAcetone { stream acetoneProduct; key x_acetone; } xIPA { stream acetoneProduct; key x_isopropanol; } xWater { stream acetoneProduct; key x_water; } } }
+            { name ipaRecycle; label "isopropanol recycle"; cells { F { stream ipaRecycle; key F; } xAcetone { stream ipaRecycle; key x_acetone; } xIPA { stream ipaRecycle; key x_isopropanol; } xWater { stream ipaRecycle; key x_water; } } }
+            { name waterProduct; label "water product"; cells { F { stream waterProduct; key F; } xAcetone { stream waterProduct; key x_acetone; } xIPA { stream waterProduct; key x_isopropanol; } xWater { stream waterProduct; key x_water; } } }
+        );
+    }
+);

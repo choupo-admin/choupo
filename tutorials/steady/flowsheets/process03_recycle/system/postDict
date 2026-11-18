@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  process03_recycle -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: a stream that feeds back: sixty percent of the flash liquid returns to the reactor, the loop is cut at a declared tear stream and closed by iteration, and the reactor sees more flow than the fresh feed.
+
+  The plot: the streams around the loop with their molar flow: the fresh feed, the mixed stream the reactor sees, the recycle and the products.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    loop_flows;
+        type    table;
+        title   "What goes round the loop";
+        note    "The reactor inlet (mixed) is the fresh feed plus the recycle; the recycle is what the tear stream was iterated to. The conversion per pass rises because the reactor is larger and the recycle returns unreacted material.";
+        columns
+        (
+            { name F; label "molar flow"; unit "kmol/h"; }
+            { name T; label "temperature"; unit "K"; }
+            { name xEtOH; label "ethanol mole fraction"; unit "-"; }
+            { name xEA; label "ethyl acetate mole fraction"; unit "-"; }
+        );
+        rows
+        (
+            { name freshFeed; label "fresh feed"; cells { F { stream freshFeed; key F; } T { stream freshFeed; key T; } xEtOH { stream freshFeed; key x_ethanol; } xEA { stream freshFeed; key x_ethylAcetate; } } }
+            { name recycle; label "recycle (the tear stream)"; cells { F { stream recycle; key F; } T { stream recycle; key T; } xEtOH { stream recycle; key x_ethanol; } xEA { stream recycle; key x_ethylAcetate; } } }
+            { name mixed; label "reactor inlet"; cells { F { stream mixed; key F; } T { stream mixed; key T; } xEtOH { stream mixed; key x_ethanol; } xEA { stream mixed; key x_ethylAcetate; } } }
+            { name reactorOut; label "reactor outlet"; cells { F { stream reactorOut; key F; } T { stream reactorOut; key T; } xEtOH { stream reactorOut; key x_ethanol; } xEA { stream reactorOut; key x_ethylAcetate; } } }
+            { name vapProd; label "vapour product"; cells { F { stream vapProd; key F; } T { stream vapProd; key T; } xEtOH { stream vapProd; key x_ethanol; } xEA { stream vapProd; key x_ethylAcetate; } } }
+            { name liqProd; label "liquid product"; cells { F { stream liqProd; key F; } T { stream liqProd; key T; } xEtOH { stream liqProd; key x_ethanol; } xEA { stream liqProd; key x_ethylAcetate; } } }
+        );
+    }
+);

@@ -1,0 +1,54 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flash02_ethanol_water -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: the same flash as flash01, with the activity model switched on: the non-ideal ethanol-water mixture splits into an ethanol-rich vapour and a water-rich liquid.
+
+  The plot: the lever rule drawn from the run: the ethanol mole fraction of the liquid, the feed and the vapour against the vapour fraction of each stream (0, V/F, 1); the three points lie on one straight line.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    lever_rule;
+        type    series;
+        title   "Lever rule: ethanol in the liquid, the feed and the vapour, against vapour fraction";
+        xAxis   { label "vapour fraction of the stream"; unit "-"; scale linear; }
+        yAxis   { label "ethanol mole fraction"; unit "-"; scale linear; }
+        note    "The drum holds 355 K and 1 atm under NRTL. The liquid is at vapour fraction 0, the vapour at 1, and the feed at the flash's V/F; the three points are collinear because the flash only splits the feed.";
+        series
+        (
+            { name streams; label "liquid, feed, vapour"; ops ( stream:liquid stream:feed stream:vapor ); x vf; y x_ethanol; style linesMarkers; }
+        );
+    }
+    {
+        name    streams;
+        type    table;
+        title   "The three streams, in numbers";
+        note    "Mole fractions of the feed and of the two phases the drum separates it into.";
+        columns
+        (
+            { name vf; label "vapour fraction"; unit "-"; }
+            { name x; label "ethanol mole fraction"; unit "-"; }
+            { name T; label "temperature"; unit "K"; }
+        );
+        rows
+        (
+            { name feed; label "feed"; cells { vf { stream feed; key vf; } x { stream feed; key x_ethanol; } T { stream feed; key T; } } }
+            { name liquid; label "liquid"; cells { vf { stream liquid; key vf; } x { stream liquid; key x_ethanol; } T { stream liquid; key T; } } }
+            { name vapor; label "vapour"; cells { vf { stream vapor; key vf; } x { stream vapor; key x_ethanol; } T { stream vapor; key T; } } }
+        );
+    }
+);

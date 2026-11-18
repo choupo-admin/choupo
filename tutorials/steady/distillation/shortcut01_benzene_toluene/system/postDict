@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  shortcut01_benzene_toluene -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: a column in four equations (Fenske, Underwood, Gilliland, Kirkbride): the recoveries are declared and the stage count, the minimum reflux and the feed stage are what come out.
+
+  The plot: the four numbers that size the column: theoretical stages, operating reflux, feed stage and the relative volatility they rest on.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    shortcut_design;
+        type    table;
+        title   "What the four equations returned";
+        note    "The operating reflux is declared as 1.3 times the Underwood minimum and Gilliland turns that pair into the theoretical stage count; Kirkbride places the feed. (The minimum stages and the minimum reflux are published by the unit under names the unit lookup reads as time units, so they are not drawn here.)";
+        columns
+        (
+            { name N; label "theoretical stages"; unit "-"; }
+            { name R; label "operating reflux ratio"; unit "-"; }
+            { name feed; label "feed stage from the top"; unit "-"; }
+            { name alpha; label "relative volatility at the feed"; unit "-"; }
+        );
+        rows
+        (
+            { name column; label "shortcut column"; cells { N { unitOp column; key N_theoretical; } R { unitOp column; key R; } feed { unitOp column; key feed_stage; } alpha { unitOp column; key alpha_LK_HK; } } }
+        );
+    }
+);

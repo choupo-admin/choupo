@@ -79,3 +79,35 @@ operations
         );
     }
 );
+
+/*---------------------------------------------------------------------------*\
+  THE VIEW THE LESSON OPENS ON (DEV.md 4c C443).
+
+  The lesson: the ammonia synthesis rate law on the bench: the temperature of greatest net rate falls as the conversion rises, so a real converter must be cooled along its length.
+
+  The plot: the temperature of the maximum rate at each of the three conversions the locus was walked at.
+
+  Declared over what the operations already publish; it computes nothing.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    locus_of_maximum_rate;
+        type    table;
+        title   "The temperature of greatest rate descends with conversion";
+        note    "At a fixed pressure of 300 atm and three conversions of nitrogen, the sweep over temperature locates where the net rate peaks; the temperature falls as conversion rises (the case reports locusDescends). At the lowest conversion the maximum may lie on the upper edge of the window, which the bench flags.";
+        columns
+        (
+            { name xi; label "conversion of nitrogen"; unit "-"; }
+            { name Tmax; label "temperature of greatest rate"; unit "K"; }
+            { name Vmax; label "greatest rate"; unit "kmol/m3/h"; }
+        );
+        rows
+        (
+            { name locus1; label "locus 1"; cells { xi { op dysonSimon; key locus1_xi; } Tmax { op dysonSimon; key locus1_T_maxRate_K; } Vmax { op dysonSimon; key locus1_V3_max; } } }
+            { name locus2; label "locus 2"; cells { xi { op dysonSimon; key locus2_xi; } Tmax { op dysonSimon; key locus2_T_maxRate_K; } Vmax { op dysonSimon; key locus2_V3_max; } } }
+            { name locus3; label "locus 3"; cells { xi { op dysonSimon; key locus3_xi; } Tmax { op dysonSimon; key locus3_T_maxRate_K; } Vmax { op dysonSimon; key locus3_V3_max; } } }
+        );
+    }
+);

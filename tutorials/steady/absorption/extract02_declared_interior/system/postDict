@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  extract02_declared_interior -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: recovering ethanol from a dilute aqueous feed with benzene in five counter-current stages, started from a declared interior: the answer is the same, only where the iteration starts differs.
+
+  The plot: the ethanol mole fraction in the extract and in the raffinate stage by stage: the cascade the counter-current contact builds.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    ethanol_by_stage;
+        type    profile;
+        title   "Ethanol in the extract and the raffinate, stage by stage";
+        xAxis   { label "stage"; unit "-"; scale linear; }
+        yAxis   { label "ethanol mole fraction"; unit "-"; scale linear; }
+        note    "The interior profile of the five-stage cascade as the run converged it: the extract (benzene-rich) and the raffinate (water-rich) ethanol mole fractions at each stage.";
+        series
+        (
+            { name extract;   label "extract phase";   unitOp extractor01; table profile; x stage; y xE_ethanol; style linesMarkers; }
+            { name raffinate; label "raffinate phase"; unitOp extractor01; table profile; x stage; y xR_ethanol; style linesMarkers; }
+        );
+    }
+);

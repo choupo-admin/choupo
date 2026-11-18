@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  cstr04_adiabatic -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: take the jacket away and let T answer: the esterification is only mildly exothermic in the liquid, so the adiabatic reactor heats by a few kelvin.
+
+  The plot: the inlet and outlet temperature of the reactor with the extent that raised it.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    temperature_rise;
+        type    table;
+        title   "The adiabatic CSTR: the outlet temperature is the answer";
+        note    "No heat is removed (Q = 0), so the heat of reaction of the extent that formed goes into the contents. The rise is small because the liquid esterification is only mildly exothermic.";
+        columns
+        (
+            { name Tin; label "feed temperature"; unit "K"; }
+            { name Tout; label "outlet temperature"; unit "K"; }
+            { name rise; label "temperature rise"; unit "K"; }
+            { name Q; label "duty"; unit "kW"; }
+        );
+        rows
+        (
+            { name reactor; label "reactor"; cells { Tin { stream feed; key T; } Tout { stream reactorOut; key T; } rise { unitOp reactor; key dT_rise; } Q { unitOp reactor; key Q_kW; } } }
+        );
+    }
+);

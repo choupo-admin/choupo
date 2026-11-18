@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column16_declared_interior -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: the same column as column01 started from a declared interior profile: the converged answer is the same, only where the iteration starts differs.
+
+  The plot: the benzene mole fraction stage by stage, liquid and vapour: the profile the column built between its two ends.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    composition_by_stage;
+        type    profile;
+        title   "Benzene stage by stage, from a declared starting interior";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "benzene mole fraction"; unit "-"; scale linear; }
+        note    "The converged profile is the one column01 reaches; the case seeds the iteration from the interior declared in its state directory, which is why it needs far fewer passes.";
+        series
+        (
+            { name liquid; label "liquid on the stage"; unitOp column16; table profile; x stage; y x_benzene; style linesMarkers; }
+            { name vapour; label "vapour leaving the stage"; unitOp column16; table profile; x stage; y y_benzene; style linesMarkers; }
+            { name feedStage; label "feed stage (8)"; unitOp column16; table profile; select { stage 8; } x stage; y x_benzene; style markers; }
+        );
+    }
+);

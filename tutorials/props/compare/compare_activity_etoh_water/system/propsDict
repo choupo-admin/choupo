@@ -85,3 +85,31 @@ operations
         output      { file gamma_wilson.csv; }
     }
 );
+
+/*---------------------------------------------------------------------------*\
+  THE VIEW THE LESSON OPENS ON (DEV.md 4c C443).
+
+  The lesson: three activity models for ethanol in an equimolar ethanol-water mixture: ideal (gamma = 1), NRTL and Wilson; the ideal assumption is bad here and the two real models agree with each other far better than with it.
+
+  The plot: gamma of ethanol against temperature, the three models as three curves on one axis.
+
+  Declared over what the operations already publish; it computes nothing.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    gamma_ethanol_three_models;
+        type    series;
+        title   "The ideal assumption against NRTL and Wilson: gamma of ethanol against temperature";
+        xAxis   { label "temperature"; unit "K"; scale linear; }
+        yAxis   { label "activity coefficient of ethanol"; unit "-"; scale linear; }
+        note    "Equimolar ethanol-water at 1 bar from 280 K to 360 K. Ideal is gamma = 1 by definition; NRTL and Wilson are both well above it and close to each other, the gap widening at the cold end.";
+        series
+        (
+            { name ideal;  label "ideal";  op g_ideal;  table scan; x T; y gamma_ethanol; style lines; }
+            { name nrtl;   label "NRTL";   op g_nrtl;   table scan; x T; y gamma_ethanol; style lines; }
+            { name wilson; label "Wilson"; op g_wilson; table scan; x T; y gamma_ethanol; style lines; }
+        );
+    }
+);

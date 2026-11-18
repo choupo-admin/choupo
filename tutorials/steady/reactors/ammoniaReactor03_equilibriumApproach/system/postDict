@@ -149,3 +149,33 @@ costing
     cepci2001 397;
     usdToEur  0.92;
 }
+
+/*---------------------------------------------------------------------------*\
+  THE VIEW THE LESSON OPENS ON (DEV.md 4c C443).
+
+  The lesson: rung 3 of the ladder: the same converter held 5 K short of equilibrium, so the conversion falls below the thermodynamic ceiling of rung 2.
+
+  The plot: the converter inlet and outlet side by side: the ammonia fraction at an approach of 5 K to equilibrium.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    per_pass;
+        type    table;
+        title   "Ammonia made in one pass, 5 K short of equilibrium";
+        note    "The temperature approach is declared in the converter's operation; compare the outlet ammonia fraction with the full-equilibrium rung 2.";
+        columns
+        (
+            { name xNH3; label "ammonia mole fraction"; unit "-"; }
+            { name xN2; label "nitrogen mole fraction"; unit "-"; }
+            { name xH2; label "hydrogen mole fraction"; unit "-"; }
+            { name T; label "temperature"; unit "K"; }
+        );
+        rows
+        (
+            { name mixed; label "converter inlet (feed plus recycle)"; cells { xNH3 { stream mixed; key x_NH3; } xN2 { stream mixed; key x_N2; } xH2 { stream mixed; key x_H2; } T { stream mixed; key T; } } }
+            { name reacted; label "converter outlet"; cells { xNH3 { stream reacted; key x_NH3; } xN2 { stream reacted; key x_N2; } xH2 { stream reacted; key x_H2; } T { stream reacted; key T; } } }
+        );
+    }
+);

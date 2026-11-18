@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  composite01_two_flashes -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: two units, one graph, one solver problem: the root flowsheet holds no units, only sectors and connections, and the liquid of the first flash is the feed of the second.
+
+  The plot: the benzene mole fraction against the molar flow of the liquid stream through the two flashes, and of the vapours they make: the liquid is stripped of benzene as the flow falls.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    benzene_through_the_flashes;
+        type    series;
+        title   "Benzene in the liquid and in the vapours as the two flashes remove vapour";
+        xAxis   { label "molar flow of the stream"; unit "kmol/h"; scale linear; }
+        yAxis   { label "benzene mole fraction"; unit "-"; scale linear; }
+        note    "Each flash takes its feed to a higher temperature and splits it again. Moving from the feed to the first flash liquid to the final bottoms the flow falls and the liquid becomes poorer in benzene; each vapour is richer in benzene than the liquid it left.";
+        series
+        (
+            { name liquids; label "feed, flash 1 liquid, bottoms"; ops ( stream:feed stream:liquid1 stream:bottoms ); x F; y x_benzene; style linesMarkers; }
+            { name vapours; label "flash 1 vapour, flash 2 vapour"; ops ( stream:vapor1 stream:vapor2 ); x F; y x_benzene; style markers; }
+        );
+    }
+    {
+        name    streams;
+        type    table;
+        title   "The streams of the two-flash graph, in numbers";
+        note    "The liquid of flash 1 is the feed of flash 2; every stream carries its own flow and temperature.";
+        columns
+        (
+            { name F; label "molar flow"; unit "kmol/h"; }
+            { name T; label "temperature"; unit "K"; }
+            { name xB; label "benzene mole fraction"; unit "-"; }
+        );
+        rows
+        (
+            { name feed; label "feed"; cells { F { stream feed; key F; } T { stream feed; key T; } xB { stream feed; key x_benzene; } } }
+            { name vapor1; label "flash 1 vapour"; cells { F { stream vapor1; key F; } T { stream vapor1; key T; } xB { stream vapor1; key x_benzene; } } }
+            { name liquid1; label "flash 1 liquid"; cells { F { stream liquid1; key F; } T { stream liquid1; key T; } xB { stream liquid1; key x_benzene; } } }
+            { name vapor2; label "flash 2 vapour"; cells { F { stream vapor2; key F; } T { stream vapor2; key T; } xB { stream vapor2; key x_benzene; } } }
+            { name bottoms; label "bottoms"; cells { F { stream bottoms; key F; } T { stream bottoms; key T; } xB { stream bottoms; key x_benzene; } } }
+        );
+    }
+);
