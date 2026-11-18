@@ -248,6 +248,7 @@ PRE  | PAR    | bin/curate/check_duty_inversion.py                 | traced: wri
 PRE  | ISO    | bin/curate/check_marcilla_lls.py                   | ISO (private slot tree; measured: writes tutorials/steady/flash/marcilla01_lls_tie_triangle/converged (+13 more))
 PRE  | PAR    | bin/curate/check_convergence_residual.py           | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_case_tiers.py                     | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_readme_numbers.py                 | reads README.md and expected only; writes nothing
 PRE  | PAR    | bin/curate/check_way_in.py                             | merged (DEV.md 4c C419) from start_here, first_path_agrees; lane = the strictest of the former lanes (PAR, PAR)
 PRE  | SERIAL | bin/curate/check_gibbs_duhem.py                    | writes build/linux64Gcc/gdProbe
 PRE  | ISO    | bin/curate/check_gibbs_solid_phase.py              | ISO (private slot tree; measured: writes tutorials/steady/gibbs/gibbs02_steam_reforming/converged (+23 more))

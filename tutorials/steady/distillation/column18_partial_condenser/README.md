@@ -23,13 +23,13 @@ and is not counted.
 
 Both types write the same material balance on stage 1, so the two cases
 share their composition profile and their distillate composition exactly
-(**x_D = 0.9510** benzene, both).  What differs:
+(**x_D = 0.9510**<!--golden: kpi column18 x_D_LK--> benzene, both).  What differs:
 
 | | column01 (`total`) | column18 (`partial`) |
 |---|---|---|
-| distillate phase | liquid at its bubble point, **354.25 K** | vapour at T_1 = **355.69 K** |
-| condenser duty | −1291 kW: (R+1)·D condensed and cooled to that bubble point | **−870 kW**: the stage's own envelope, D leaves uncondensed |
-| reboiler duty | 655 kW | **673 kW**: the vapour distillate carries its latent heat out of the plant |
+| distillate phase | liquid at its bubble point, **354.25 K** | vapour at T_1 = **355.69 K**<!--golden: kpi column18 T_top--> |
+| condenser duty | −1315 kW<!--golden: @steady/distillation/column01_benzene_toluene kpi column01 Q_condenser_kW *-1-->: (R+1)·D condensed and cooled to that bubble point | **−889 kW**<!--golden: kpi column18 Q_condenser_kW *-1-->: the stage's own envelope, D leaves uncondensed |
+| reboiler duty | 680 kW<!--golden: @steady/distillation/column01_benzene_toluene kpi column01 Q_reboiler_kW--> | **691 kW**<!--golden: kpi column18 Q_reboiler_kW-->: the vapour distillate carries its latent heat out of the plant |
 | stage 1 in the hydraulics | the top tray, rated | not a tray (`V_1 = 0`), dropped |
 
 The condenser duty is the stage's own energy balance,

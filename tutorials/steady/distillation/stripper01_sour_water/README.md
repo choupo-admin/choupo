@@ -2,8 +2,8 @@
 
 Eight reactive trays over a sour water (2.5 mol% NH₃, 1 mol% CO₂), feed on
 tray 2, reflux 0.5, distillate 5 of 100 kmol/h.  Converges in 9 MESH Newton
-iterations; the overhead carries 33.4 mol% NH₃ at 355 K, the bottoms leave at
-99.1 % water.  This is S2 of the sour-water programme
+iterations; the overhead carries 33.0 mol%<!--golden: kpi tower x_D_LK *100--> NH₃ at 355 K<!--golden: kpi tower T_top-->, the bottoms leave at
+99.1 %<!--golden: kpi tower x_B_HK *100--> water.  This is S2 of the sour-water programme
 (`docs/design/sour-water-stripper-scope.md` §6d) — the case the effective
 stage K (`ThermoPackage::stageK`) was built *for*, after `column13` proved
 the machinery on an identity rig.

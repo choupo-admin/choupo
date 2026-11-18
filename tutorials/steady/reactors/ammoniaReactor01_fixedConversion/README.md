@@ -36,12 +36,12 @@ case's dictionary says so, and it would do the same at any temperature and
 any pressure, whether or not equilibrium allows it.  That is what a yield
 reactor *is*.
 
-**READ SECTION 4 BEFORE QUOTING ANY DUTY FROM THIS CASE.**  DEV.md's C8
-entry gives this stage exactly one claim — *"Claims a mass balance"* — and
-that wording is load-bearing rather than loose.  **This case cannot honestly
-claim a converged HEAT balance**, and the reason is the engine rather than
-the stage: its first law is out by 2 278.14 kW.  The engine announces it
-loudly on every run, and section 4 diagnoses it with a probe.
+**SECTION 4 IS A HISTORY.**  DEV.md's C8 entry gives this stage exactly one
+claim — *"Claims a mass balance"*.  This case used to be unable to claim a
+converged HEAT balance, because the conversion reactor priced its duty on a
+different enthalpy surface from its streams (the first law was out by
+2 278.14 kW); the outlet now means its own equilibrium (C72) and the global
+residual is **0.028 kW**<!--golden: boundary global residual_kW-->.  Section 4 keeps the diagnosis, as it was written.
 
 ## 1. Where this sits
 
@@ -66,13 +66,13 @@ one declared number.
 
 | quantity | value |
 |---|---|
-| converter inlet | 28 516.83 kmol/h, y(NH₃) = 0.011439 |
-| converter outlet | 25 084.32 kmol/h, y(NH₃) = 0.149843 |
-| per-pass N₂ conversion | **25.0000 %** — *declared*, and reproduced exactly |
-| recycle / makeup (molar) | 2.5646 |
-| product | 3 461.07 kmol/h at 98.6072 mol% NH₃ → 1 394.9 t/d NH₃ |
-| global mass closure | 99.9976 % |
-| **global first-law residual** | **−2 278.14 kW (−1.3316 %)** — see section 4 |
+| converter inlet | 29 585.37 kmol/h<!--golden: kpi converter F_in_kmol_h-->, y(NH₃) = 0.015901 |
+| converter outlet | 26 152.06 kmol/h<!--golden: kpi converter F_out_kmol_h-->, y(NH₃) = 0.149271 |
+| per-pass N₂ conversion | **25.0000 %**<!--golden: kpi converter conversion *100--> — *declared*, and reproduced exactly |
+| recycle / makeup (molar) | 2.6982 |
+| product | 3 409.19 kmol/h<!--golden: stream productNH3 F *3600--> at 99.9221 mol% NH₃ → 1 392.4 t/d NH₃ |
+| global mass closure | 99.998 % |
+| **global first-law residual** | **+0.028 kW**<!--golden: boundary global residual_kW--> — the loop closes; see section 4 for the defect it once had |
 
 ## 3. What this case REFUSES to claim — the load-bearing half
 
@@ -95,9 +95,11 @@ one declared number.
   bands there, never from prose.
 * **It does not claim the 25 % is right.**  See section 5.
 
-## 4. THE HEAT BALANCE DOES NOT CLOSE, AND IT IS NOT THE CASE'S FAULT
+## 4. THE HEAT BALANCE DID NOT CLOSE, AND IT WAS NOT THE CASE'S FAULT (HISTORY: closed by C72)
 
-The engine's own report says so, at verbosity 3, in the run banner, in the
+Everything below is the diagnosis as it stood when the defect was open; its
+numbers are that run's, not today's (today: 0.028 kW, section 2).  The engine's
+own report said so, at verbosity 3, in the run banner, in the
 end-of-run caveat block and in the result JSON:
 
 ```
@@ -167,24 +169,24 @@ ladder, and the verdict is recorded here as measured, whichever way it fell:
 
 | | per-pass N₂ conversion | converter outlet y(NH₃) | recycle / makeup | NH₃ product |
 |---|---|---|---|---|
-| **1 — the 25 % assumption** | **25.0000 %** | 0.149843 | **2.5646** | 1 394.9 t/d |
-| 2 — the ceiling | 47.9288 % | 0.310807 | 1.0257 | 1 525.9 t/d |
-| 3 — 5 K approach | 46.6023 % | 0.300194 | 1.0778 | 1 521.5 t/d |
+| **1 — the 25 % assumption** | **25.0000 %**<!--golden: kpi converter conversion *100--> | 0.149271 | **2.6982** | 1 392.4 t/d |
+| 2 — the ceiling | 45.5452 % | 0.274313<!--golden: @steady/reactors/ammoniaReactor02_equilibrium kpi converter y_NH3--> | 1.2705 | 1 516.8 t/d |
+| 3 — 5 K approach | 44.2715 % | 0.265937<!--golden: @steady/reactors/ammoniaReactor03_equilibriumApproach kpi converter y_NH3--> | 1.3249 | 1 512.1 t/d |
 
 **The screening assumption was PESSIMISTIC, and the price is visible.**  Stage
-Rung 1 recirculates 2.56 mol per mol of makeup where rung 3 needs 1.08 — 2.4
-times the recycle, which puts **1.72 times as much gas through the converter**
-(28 516.83 against 16 622.66 kmol/h).  Every unit on the loop is over-sized by
+Rung 1 recirculates 2.70 mol per mol of makeup where rung 3 needs 1.32 — 2.0
+times the recycle, which puts **1.59 times as much gas through the converter**
+(29 585.37 against 18 599.42 kmol/h).  Every unit on the loop is over-sized by
 that ratio, and so in a real plant would be the interchanger and the recycle
-compressor this flowsheet does not draw.  And it still makes **8.3 % less
+compressor this flowsheet does not draw.  And it still makes **7.9 % less
 ammonia than rung 3**, because the larger recycle carries more argon out
 through a larger purge.  **An assumption is not a lie; an assumption never
 checked is.**
 
-Be careful reading rung 1's outlet y(NH₃) = 0.1498 against the patent's
+Be careful reading rung 1's outlet y(NH₃) = 0.1493 against the patent's
 16.1 vol%.  They are close, and the closeness is a coincidence: the patent's
 converter starts from a three-times-richer inlet (3.5 mol% NH₃ against
-1.14 % here).  See rung 2's README, section 5, for why this loop's inlet is so lean.
+1.59 % here).  See rung 2's README, section 5, for why this loop's inlet is so lean.
 
 ## 6. Design choices this case makes, and where they are declared
 

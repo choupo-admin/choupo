@@ -6,9 +6,9 @@ C2 25 → 100 °C at CP 3 kW/K), each modelled as a heater or cooler with a
 declared duty, on a synthetic constant-Cp fluid (`hxFluid`, 100 J/mol K,
 case-local) so that CP = F·cp exactly.  With **ΔT_min = 20 K** the pinch
 pass finds the targets the whole subject is named after: **Q_H,min =
-107.5 kW**, **Q_C,min = 40 kW**, pinch at shifted T* = 353.15 K (hot
-363.15 K / cold 343.15 K).  Today's unintegrated flowsheet buys **487.5 kW**
-of heating and rejects **420 kW** — the gap is what integration could
+107.5 kW**<!--golden: kpi pinch Q_H_min_kW-->, **Q_C,min = 40 kW**<!--golden: kpi pinch Q_C_min_kW-->, pinch at shifted T* = 353.15 K<!--golden: kpi pinch T_pinch_K--> (hot
+363.15 K<!--golden: kpi pinch T_pinch_hot_K--> / cold 343.15 K<!--golden: kpi pinch T_pinch_cold_K-->).  Today's unintegrated flowsheet buys **487.5 kW**<!--golden: kpi pinch Q_heat_current_kW-->
+of heating and rejects **420 kW**<!--golden: kpi pinch Q_cool_current_kW--> — the gap is what integration could
 recover.
 
 ## The lesson

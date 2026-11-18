@@ -3,10 +3,10 @@
 An equimolar benzene/toluene feed (100 kmol/h at 365 K, 1 atm) is to be
 split 99 % / 1 %: 99 % of the benzene overhead, 1 % of the toluene with
 it.  Fenske–Underwood–Gilliland answers in one pass, no stages solved.
-The golden: **N_min = 10.07** (Fenske), **R_min = 1.294** (Underwood, θ =
-1.427), operating **R = 1.682** (declared as 1.3·R_min), **N = 21.6**
-theoretical stages with the feed at **10.8** from the top; α_LK/HK =
-2.491 at the feed bubble point; D = B = 50 kmol/h; x_D = x_B = 0.99.
+The golden: **N_min = 10.07**<!--golden: kpi column N_min--> (Fenske), **R_min = 1.294**<!--golden: kpi column R_min--> (Underwood, θ =
+1.427<!--golden: kpi column theta-->), operating **R = 1.682**<!--golden: kpi column R--> (declared as 1.3·R_min), **N = 21.6**<!--golden: kpi column N_theoretical-->
+theoretical stages with the feed at **10.8** from<!--golden: kpi column feed_stage--> the top; α_LK/HK =
+2.491<!--golden: kpi column alpha_LK_HK--> at the feed bubble point; D = B = 50 kmol/h; x_D = x_B = 0.99<!--golden: kpi column x_D_LK-->.
 
 ## The lesson
 
@@ -26,7 +26,7 @@ theoretical stages with the feed at **10.8** from the top; α_LK/HK =
    was a shortcut, so the record travels with the answer.
 4. **Now build the rigorous one.**  `column01_benzene_toluene` puts
    15 real stages with the feed on 8 at R = 2 — read that README and
-   compare N = 21.6 at 1.3·R_min with what 15 stages at a higher reflux
+   compare N = 21.6<!--golden: kpi column N_theoretical--> at 1.3·R_min with what 15 stages at a higher reflux
    actually deliver.
 
 ## What to try

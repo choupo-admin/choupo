@@ -5,9 +5,9 @@ rigorous column: **15 stages** (reboiler counted), feed on **stage 8**,
 **R = 2**, distillate **50 kmol/h**, Raoult VLE, solved by the Wang–Henke
 bubble-point method.  At 370 K and 1 atm the feed resolves to about
 70 % vapour (q = 0.30), so the reboiler does far less than the condenser.
-The golden: **x_D = 0.9510** benzene, **x_B = 0.9510** toluene, T_top
-**355.69 K**, T_bottom **381.51 K**, condenser **−1283 kW**, reboiler
-**647 kW**.
+The golden: **x_D = 0.9510**<!--golden: kpi column01 x_D_LK--> benzene, **x_B = 0.9510**<!--golden: kpi column01 x_B_HK--> toluene, T_top
+**355.69 K**<!--golden: kpi column01 T_top-->, T_bottom **381.51 K**<!--golden: kpi column01 T_bottom-->, condenser **−1315 kW**<!--golden: kpi column01 Q_condenser_kW *-1-->, reboiler
+**680 kW**<!--golden: kpi column01 Q_reboiler_kW-->.
 
 ## The lesson
 
@@ -26,13 +26,13 @@ The golden: **x_D = 0.9510** benzene, **x_B = 0.9510** toluene, T_top
    `column02_simultaneous` solves the identical column by a Newton on all
    the MESH equations in a handful of iterations — run both and count.
 3. **The profile is printed stage by stage.**  T and x for every tray,
-   the feed tray marked, the reboiler last: 355.69 K and 88.3 % benzene
+   the feed tray marked, the reboiler last: 355.69 K<!--golden: kpi column01 T_top--> and 88.3 % benzene
    in the liquid on tray 1 (the vapour leaving it, the distillate, is
-   95.1 %), 381.51 K and 95.1 % toluene in the reboiler.  That table is
+   95.1 %), 381.51 K<!--golden: kpi column01 T_bottom--> and 95.1 %<!--golden: kpi column01 x_B_HK *100--> toluene in the reboiler.  That table is
    the McCabe–Thiele diagram in numbers.
 4. **Two duties, two utilities, priced from the catalogue.**  The reboiler
-   is served by low-pressure steam (0.300 kg/s, 28.31 €/h at the catalogue
-   price) and the condenser by cooling water (30.89 kg/s, 1.86 €/h) — the
+   is served by low-pressure steam (0.311 kg/s<!--golden: utility column01 heating.steamLP.kg_s-->, 29.35 €/h<!--golden: utility column01 heating.steamLP.eur_h--> at the catalogue
+   price) and the condenser by cooling water (31.47 kg/s<!--golden: utility column01 cooling.coolingWater.kg_s-->, 1.89 €/h<!--golden: utility column01 cooling.coolingWater.eur_h-->) — the
    same picker every steady report uses, and the €/h is a catalogue
    number, not a market one.
 5. **Read the caveats.**  Both Antoine fits are asked slightly outside

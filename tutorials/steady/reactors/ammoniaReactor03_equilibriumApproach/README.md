@@ -148,21 +148,21 @@ approach.
 
 | quantity | value |
 |---|---|
-| converter inlet | 16 622.66 kmol/h, y(NH₃) = 0.008240 |
-| converter outlet | 12 890.09 kmol/h, **y(NH₃) = 0.300194** |
-| per-pass N₂ conversion | **46.6023 %** (ceiling 47.9288 %) |
-| recycle / makeup (molar) | 1.0778 (ceiling 1.0257) |
-| product | 3 783.09 kmol/h at 98.3987 mol% NH₃ → 1 521.5 t/d NH₃ |
-| global first-law residual | +0.0008 kW (9.8e-7 %) |
-| global mass closure | 99.9974 % |
+| converter inlet | 18 599.42 kmol/h<!--golden: kpi converter F_in_kmol_h-->, y(NH₃) = 0.013111 |
+| converter outlet | 14 884.85 kmol/h<!--golden: kpi converter F_out_kmol_h-->, **y(NH₃) = 0.265937**<!--golden: kpi converter y_NH3--> |
+| per-pass N₂ conversion | **44.2715 %** (ceiling 45.5452 %) |
+| recycle / makeup (molar) | 1.3249 (ceiling 1.2705) |
+| product | 3 702.68 kmol/h<!--golden: stream productNH3 F *3600--> at 99.9108 mol% NH₃ → 1 512.1 t/d NH₃ |
+| global first-law residual | +0.0022 kW<!--golden: boundary global residual_kW--> |
+| global mass closure | 99.997 % |
 
 Sizing and costing (`system/postDict`):
 
 | item | size | basis the engine recorded | C_BM | C_TM |
 |---|---|---|---|---|
-| converter | V_R = **20.8443 m³**, D 1.6415 m, H 9.8492 m, wall 147.69 mm, 60 011 kg | `catalyst V = Q_normal/SV; SV declared on NORMAL gas volume …` | 4 751 968 € | 5 607 322 € |
-| separator | V_R = 14.4948 m³ | `drum V = Q*tau` | 4 074 901 € | 4 808 383 € |
-| let-down drum | V_R = 0.4311 m³ | `drum V = Q*tau` | 19 642 € | 23 177 € |
+| converter | V_R = **20.8443 m³**<!--golden: equipment converter values.V_R-->, D 1.6415 m<!--golden: equipment converter values.D-->, H 9.8492 m<!--golden: equipment converter values.H-->, wall 147.69 mm<!--golden: equipment converter values.t_wall *1000-->, 60 011 kg<!--golden: equipment converter values.weight--> | `catalyst V = Q_normal/SV; SV declared on NORMAL gas volume …` | 4 751 968 €<!--golden: equipment converter cost.bareModule--> | 5 607 322 €<!--golden: equipment converter cost.totalModule--> |
+| separator | V_R = 14.4948 m³<!--golden: equipment separator values.V_R--> | `drum V = Q*tau` | 4 074 901 €<!--golden: equipment separator cost.bareModule--> | 4 808 383 €<!--golden: equipment separator cost.totalModule--> |
+| let-down drum | V_R = 0.4311 m³<!--golden: equipment letdown values.V_R--> | `drum V = Q*tau` | 19 642 €<!--golden: equipment letdown cost.bareModule--> | 23 177 €<!--golden: equipment letdown cost.totalModule--> |
 | **total** | | | **8 846 511 €** | **10 438 882 €** |
 
 **By METHODOLOGY this estimate sits in AACE 18R-97 Class 4** — the "study
@@ -316,14 +316,14 @@ of the range US 5,352,428 states:
 
 | approach | per-pass N₂ conversion | converter outlet y(NH₃) | recycle / makeup | converter inlet, mol/s |
 |---|---|---|---|---|
-| 0 K (rung 2, the ceiling) | 47.9288 % | 0.310807 | 1.0257 | 4 501.5 |
-| **5 K (this case)** | **46.6023 %** | **0.300194** | **1.0778** | **4 617.4** |
-| 10 K | 45.2867 % | 0.289846 | 1.1323 | 4 738.3 |
-| 30 K | 40.1644 % | 0.251177 | 1.3739 | 5 275.4 |
+| 0 K (rung 2, the ceiling) | 45.5452 % | 0.274313 | 1.2705 | 5 045.5<!--golden: @steady/reactors/ammoniaReactor02_equilibrium kpi converter N_in_mol_s--> |
+| **5 K (this case)** | **44.2715 %** | **0.265937** | **1.3249** | **5 166.5**<!--golden: kpi converter N_in_mol_s--> |
+| 10 K | 43.0097 % | 0.257730 | 1.3817 | 5 292.6 |
+| 30 K | 38.1084 % | 0.226670 | 1.6327 | 5 850.5 |
 
 The last column is the one that reaches the catalyst charge: at a fixed space
 velocity the bed volume is proportional to it.  The converter inlet is
-**2.6 % larger at a 5 K approach and 17.2 % larger at 30 K than the ceiling
+**2.4 % larger at a 5 K approach and 16.0 % larger at 30 K than the ceiling
 says it will be**, so a bed sized on rung 2's answer is short by that much —
 and every balance closes in all four runs.  That is what "sizing against a fiction"
 means in numbers.

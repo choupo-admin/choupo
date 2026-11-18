@@ -4,7 +4,7 @@ Physically this is `extract01_ethanol_water_benzene`: recover **ethanol** from
 a dilute aqueous feed with **benzene**, five theoretical stages,
 counter-current, UNIFAC for both liquid phases, each stage split by the shared
 Gibbs-minimisation LL flash. The answer is the same answer — ethanol recovery
-to the extract **44.2 %**, distribution **0.555**. What differs is where the
+to the extract **44.2 %**<!--golden: kpi extractor01 recovery_ethanol *100-->, distribution **0.555**<!--golden: kpi extractor01 distribution_ethanol-->. What differs is where the
 cascade **starts**.
 
 *Same to the digits above, not to every digit:* both runs stop inside the same

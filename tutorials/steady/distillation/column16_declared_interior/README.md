@@ -3,7 +3,7 @@
 Physically this is `column01_benzene_toluene`:
 equimolar benzene/toluene, Raoult VLE, **15 stages** (reboiler counted), feed
 on **stage 8**, **R = 2**, distillate **50 kmol/h**, Wang–Henke.  The answer is
-the same answer — **x_D = 0.9812** benzene, **x_B = 0.9812** toluene.  What
+the same answer — **x_D = 0.9510**<!--golden: kpi column16 x_D_LK--> benzene, **x_B = 0.9510**<!--golden: kpi column16 x_B_HK--> toluene.  What
 differs is where the iteration **starts**.
 
 ## A state directory is a restartable snapshot

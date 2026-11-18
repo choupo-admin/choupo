@@ -25,11 +25,11 @@ and read the `[drum]` block of the log.
 
 ## Hand calculation (a calculator and the densities and flows the run prints)
 
-From the run: vapour 303.98 kmol/h of M = 84.40 kg/kmol = 7.127 kg/s at rho_V = 2.744 kg/m3, so
-Q_V = 2.597 m3/s; liquid 696.02 kmol/h of M = 87.46 kg/kmol = 16.91 kg/s at rho_L = 794.4 kg/m3, so
-Q_L = 0.02128 m3/s.
+From the run: vapour 303.98 kmol/h<!--golden: kpi drum F_beta *3600--> of M = 84.40 kg/kmol = 7.127 kg/s at rho_V = 2.744 kg/m3<!--golden: equipment drum values.rho_vapour-->, so
+Q_V = 2.598 m3/s<!--golden: equipment drum values.Q_vapour-->; liquid 696.02 kmol/h of M = 87.46 kg/kmol = 16.91 kg/s at rho_L = 794.4 kg/m3<!--golden: equipment drum values.rho_liquid-->, so
+Q_L = 0.02128 m3/s<!--golden: equipment drum values.Q_liquid-->.
 
-1. **Souders-Brown (Towler 10.10).** u_t = 0.07 sqrt((794.4 - 2.744)/2.744) = **1.189 m/s**; with a
+1. **Souders-Brown (Towler 10.10).** u_t = 0.07 sqrt((794.4 - 2.744)/2.744) = **1.189 m/s**<!--golden: equipment drum values.u_allowable-->; with a
    demister u = u_t.
 2. **Vertical drum (10.11).** D = sqrt(4 x 2.597 / (pi x 1.189)) = 1.668 m, rounded up to the next 6 in.
    step: **1.676 m**. Its area is 2.207 m2, so the 600 s hold-up is 0.02128 x 600 / 2.207 = 5.79 m and the
@@ -41,7 +41,7 @@ Q_L = 0.02128 m3/s.
    (D/2)/u to the vapour's residence time L/u_v at half level gives D^2 = 4 Q_V / (pi (L/D) u) =
    4 x 2.597 / (pi x 3 x 1.189), D = 0.963 m. But the liquid between the low level and D/2 must hold
    0.02128 x 660 = 14.05 m3: with L = 3D, D = 2.286 m (rounded step) holds 11.89 m3 (too little) and
-   D = 2.438 m holds **14.67 m3**. So **D = 2.438 m, L = 7.315 m**, shell volume 34.16 m3.
+   D = 2.438 m holds **14.67 m3**. So **D = 2.438 m<!--golden: equipment drum values.D -->, L = 7.315 m<!--golden: equipment drum values.H-->**, shell volume 34.16 m3.
 4. **Levels (horizontal).** From the circular-segment area: LLL 0.300 m, NLL 1.112 m, HLL **1.184 m** above
    the bottom. The vapour then has A_v = 2.420 m2, u_v = 1.073 m/s, so it stays L/u_v = 6.82 s in the drum
    while a droplet needs (D - HLL)/u = 1.055 s to fall: satisfied.

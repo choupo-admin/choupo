@@ -8,8 +8,8 @@ Rachford-Rice in one unknown.  Everything that is different is in
 parameters `compare_activity_etoh_water` plotted — `a_ij -0.8009`,
 `b_ij 246.18`, `a_ji 3.4578`, `b_ji -586.0809`, `alpha 0.30`.
 
-The golden: **V/F = 0.7976** (79.76 kmol/h vapour, 20.24 kmol/h liquid),
-**K_ethanol = 2.2274**, **K_water = 0.5850**, and **Q_kW = 0**.
+The golden: **V/F = 0.7685**<!--golden: kpi flash02 V_over_F--> (76.85 kmol/h<!--golden: kpi flash02 F_beta *3600--> vapour, 23.15 kmol/h<!--golden: kpi flash02 F_alpha *3600--> liquid),
+**K_ethanol = 2.1621**<!--golden: kpi flash02 K_ethanol-->, **K_water = 0.5829**<!--golden: kpi flash02 K_water-->, and **Q_kW = 0**.
 
 ## The lesson
 
@@ -27,16 +27,16 @@ The golden: **V/F = 0.7976** (79.76 kmol/h vapour, 20.24 kmol/h liquid),
    equipment.
 3. **The gamma that acts here is not the gamma you plotted.**  Case 2 scanned
    an *equimolar* liquid; the liquid leaving this drum is not equimolar.
-   `K_ethanol 2.2274` is greater than 1 and `K_water 0.5850` is less than 1,
+   `K_ethanol 2.1621`<!--golden: kpi flash02 K_ethanol--> is greater than 1 and `K_water 0.5829`<!--golden: kpi flash02 K_water--> is less than 1,
    so ethanol concentrates in the vapour and the liquid left behind is
    water-rich — at a composition the previous case never evaluated.  A curve
    at fixed composition is a slice through a surface the flash walks across.
 4. **`Q_kW = 0`, for the same reason as `flash01`.**  The feed file declares
    only T = 355 K and P = 1.01325 bar — a mixture's (T, P) fix its split, so
    the engine resolves the feed at its own state and the stream table shows
-   `vf = 0.798` — and the drum holds that same T and P.  So the feed stream
+   `vf = 0.769`<!--golden: kpi flash02 V_over_F--> — and the drum holds that same T and P.  So the feed stream
    *already is* the two-phase mixture the drum separates, and the answer
-   `V/F = 0.797563408329` is the feed's own resolved fraction.  Enthalpy is a
+   `V/F = 0.768504749542`<!--golden: kpi flash02 V_over_F--> is the feed's own resolved fraction.  Enthalpy is a
    state function; nothing has to be added to hold a state you were already
    in.
 5. **Read the `flowsheetDict` header before you move anything.**  It records

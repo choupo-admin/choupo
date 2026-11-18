@@ -13,11 +13,11 @@ order.  This one cannot: `recycle` leaves the splitter and re-enters the
 mixer, so the mixer's inlet depends on an answer that is four units
 downstream of it.
 
-The golden: the converter reaches **y_NH3 = 0.3108** at equilibrium
-(y_H2 0.4998, y_N2 0.1632, y_Ar 0.0262); the separator condenses
-**V/F = 0.6931** with **K_NH3 = 0.01626**; the let-down boils off
-**V/F = 0.008021** with **K_NH3 = 0.09469**; the mixer leaves at
-**274.38 K**.
+The golden: the converter reaches **y_NH3 = 0.2743**<!--golden: kpi converter y_NH3--> at equilibrium
+(y_H2 0.4700<!--golden: kpi converter y_H2-->, y_N2 0.1543<!--golden: kpi converter y_N2-->, y_Ar 0.1014<!--golden: kpi converter y_Ar-->); the separator condenses
+**V/F = 0.7410**<!--golden: kpi separator V_over_F--> with **K_NH3 = 0.02327**<!--golden: kpi separator K_NH3-->; the let-down boils off
+**V/F = 0.006711**<!--golden: kpi letdown V_over_F--> with **K_NH3 = 0.09486**<!--golden: kpi letdown K_NH3-->; the mixer leaves at
+**271.52 K**<!--golden: kpi mixer T_out-->.
 
 ## The lesson
 
@@ -29,22 +29,22 @@ The golden: the converter reaches **y_NH3 = 0.3108** at equilibrium
    estimate and not a specification: the solver converges it and announces
    what it did.  Nothing about closing this loop happens behind your back.
 2. **The recycle is visible in the arithmetic of the pinned numbers.**  One
-   kmol/h of makeup enters, and the converter sees **2.02566484668 kmol/h**.
+   kmol/h of makeup enters, and the converter sees **2.27046417241 kmol/h**<!--golden: kpi converter F_in_kmol_h-->.
    The difference is the recycle, and it is what turns a per-pass equilibrium
-   of about 31 % ammonia into a loop that recovers far more of the makeup
+   of about 27 % ammonia into a loop that recovers far more of the makeup
    than any single pass could.  The reason the loop exists is a subtraction
    you can do in your head.
 3. **The converter is told elements, not a conversion.**  `gibbsReactor`
    takes `elements ( N H Ar )` and a species list with their atom counts, and
    minimises Gibbs energy: no rate constant, no declared extent, no
    conversion specification anywhere.  What comes back is
-   `y_NH3 0.310807360284` plus the element potentials `lambda_N`, `lambda_H`,
+   `y_NH3 0.274313364606`<!--golden: kpi converter y_NH3--> plus the element potentials `lambda_N`, `lambda_H`,
    `lambda_Ar` — the Lagrange multipliers of the atom balances, printed
    because they are the answer's own arithmetic.
 4. **Two flashes, one temperature, two pressures.**  The separator at 250 K
-   and 200 bar condenses ammonia out of the loop gas (`K_NH3 0.01626`); the
+   and 200 bar condenses ammonia out of the loop gas (`K_NH3 0.02327`<!--golden: kpi separator K_NH3-->); the
    let-down drum holds the same 250 K at 20 bar and boils dissolved light gas
-   back out of that liquid (`K_NH3 0.09469`, `V/F 0.008021`).  The liquid
+   back out of that liquid (`K_NH3 0.09486`<!--golden: kpi letdown K_NH3-->, `V/F 0.006711`<!--golden: kpi letdown V_over_F-->).  The liquid
    world is declared as a dilute solution — ammonia as the solvent on the
    pure-liquid rung, N2 and H2 as Henry solutes on the infinite-dilution rung
    with their own pair files in `constant/parameters/Henry/` — while the
