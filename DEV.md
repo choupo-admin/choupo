@@ -4641,6 +4641,29 @@ accepts today, and that is a policy call.
 > differ inside a category (water by IAPWS-95, a salt solution by ideal
 > mixing with ions, a measured table by interpolation).
 
+> **C435 (4) RULED (2026-11-19, on the general's finding).**  Moving the
+> NanoFiltran bench's typed viscosity and density into adopted records moved
+> 321 golden rows: declaring ANY liquid viscosity switches on the
+> Stokes-Einstein temperature correction of every ion's D0
+> (`src/thermo/transport/StokesEinstein.cpp:47`, factor 0.996084 at 298 K), which
+> the case announces as off.  That is a HIDDEN SWITCH -- a physical
+> correction keyed on the presence of an unrelated declaration -- and the
+> remedy is to make it a declared choice, not to re-record: the property
+> dictionary gains `ionDiffusivity { temperatureCorrection stokesEinstein |
+> none; reason "..."; }`, default unchanged for every existing case (on when
+> a viscosity is declared, off when not) but printed, and NanoFiltran
+> declares `none` with the reason (it reproduces the reference program's
+> hypothesis); then the bench's typed values move to adopted records with
+> every golden byte-identical.  A builder change, queued after C433 lands
+> (the same file).  Items (3) and (5) are built on build/c435-initial-props-
+> headers (56b8e1382): `initial` optional and defaulting to the case's value
+> (14 outerDicts cleaned; greenAmmonia03's stale starts were the 11-07
+> values the 11-17 re-solve left behind; from the case's own value it
+> converges in 0 iterations to the same answer); header history moved to
+> READMEs.  Loose ends to that branch: greenAmmonia03's README quotes the
+> stale 10.03 m3; the ratchet's docstring; the Theory Guide entry for the
+> optional `initial`.
+
 > **C436 (Vitor, 2026-11-19 midday, MAXIMUM PRIORITY: "Podes fazer favor de
 > por como prioridade máxima a gestão dinâmica desta tabela
 > importantíssima?!"), after the architect showed him a CML table holding
