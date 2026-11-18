@@ -33060,6 +33060,31 @@ Worked cases: \code{economics04\_building\_royalty\_breakeven} (the powder's
 minimum selling price) and \code{greenAmmoniaPEQ\_baseCase} (the minimum
 selling price of ammonia and the highest price of hydrogen).
 
+\paragraph{Where each price came from.}\label{par:price-origin}
+An appraisal is only as defensible as its prices, and a price is not one kind
+of number: a customs unit value, a regulator's modelled cost, a supplier's
+quotation and a round figure an author chose all print as ``\code{0.5300 EUR/kg}''.
+The economics pass therefore prints every price it used --- each priced stream
+of \code{constant/economics} and the labour rate --- beside the origin the case
+declares for it, in the console (section ``Prices and where they came from''),
+in \code{reports/economics/prices.csv} and in the result, where the GUI's
+Reports view draws it as a table.  The origin is the case's own
+\code{provenance \{ origin "\ldots"; kind \ldots; \}} block of that entry: the
+citation (source, table or page, retrieval date, the conversion written out), the
+\code{costYear} of the entry, and a \code{kind} that is one of
+\code{published} (a price a source publishes), \code{quote} (a quotation the
+case declares) or \code{assumption} (a figure the case states without a
+source for the number).  Nothing is computed: the engine reads the block and
+prints it, and no price moves.  A priced stream whose block carries no
+\code{origin} is refused by name (\code{refuseOnMissingPrice 0;} announces it
+instead), a \code{kind} outside the three words is refused by name, and an
+absent \code{kind} prints as \code{undeclared} with an advisory; the labour
+rate reads the same words from an optional \code{labourProvenance \{ \}}
+block and prints \code{undeclared} when there is none.  Utility prices are the
+\code{cost} and \code{costYear} of the utility record, and are not repeated in
+this table.  Worked case: \code{greenAmmoniaPEQ\_baseCase} (its three prices are
+published figures read at their sources, and its labour rate is an assumption).
+
 \paragraph{Operating labour and the cover of a shift position.}\label{par:operator-cover}
 The labour of the cost of manufacture is priced as $C_{OL} = n_{\mathrm{pos}}\,w\,h_{\mathrm{op}}$, with $w$ the loaded
 hourly rate, $h_{\mathrm{op}}$ the hours one person works in a year

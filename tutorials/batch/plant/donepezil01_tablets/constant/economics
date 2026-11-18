@@ -43,6 +43,7 @@ products
         costYear  2026;
         provenance
         {
+            kind    assumption;
             origin  "author-set assumption (DEV.md 4c C110), not a market price";
             method  "0.10 EUR per tablet ex-factory, a round figure; replace with a dated, cited price from the group's market study";
         }
@@ -51,52 +52,57 @@ products
 rawMaterials
 (
     { stream apiFeed;        price 500;    costYear 2026;
-      provenance { origin "author-set assumption (DEV.md 4c C110), not a market price";
+      provenance { kind assumption; origin "author-set assumption (DEV.md 4c C110), not a market price";
                    method "round figure for a generic API bought from an API manufacturer; replace with a supplier quotation"; } }
     { stream lactoseFeed;    price 3;      costYear 2026;
-      provenance { origin "author-set assumption (DEV.md 4c C110), not a market price";
+      provenance { kind assumption; origin "author-set assumption (DEV.md 4c C110), not a market price";
                    method "round figure for a pharmaceutical-grade filler"; } }
     { stream starchFeed;     price 2;      costYear 2026;
-      provenance { origin "author-set assumption (DEV.md 4c C110), not a market price";
+      provenance { kind assumption; origin "author-set assumption (DEV.md 4c C110), not a market price";
                    method "round figure for a pharmaceutical-grade starch"; } }
     { stream mccFeed;        price 5;      costYear 2026;
-      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+      provenance { kind assumption; origin "author-set assumption (DEV.md 4c C97), not a market price";
                    method "round figure for a pharmaceutical excipient (apalutamide01's)"; } }
     { stream hpcFeed;        price 25;     costYear 2026;
-      provenance { origin "author-set assumption (DEV.md 4c C110), not a market price";
+      provenance { kind assumption; origin "author-set assumption (DEV.md 4c C110), not a market price";
                    method "round figure for a pharmaceutical-grade binder polymer"; } }
     { stream granWater;      price 0.02;   costYear 2026;
-      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+      provenance { kind assumption; origin "author-set assumption (DEV.md 4c C97), not a market price";
                    method "round figure for purified water made on site (apalutamide01's)"; } }
     { stream mgstFeed;       price 8;      costYear 2026;
-      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+      provenance { kind assumption; origin "author-set assumption (DEV.md 4c C97), not a market price";
                    method "round figure for magnesium stearate (apalutamide01's)"; } }
     { stream coatWater;      price 0.02;   costYear 2026;
-      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+      provenance { kind assumption; origin "author-set assumption (DEV.md 4c C97), not a market price";
                    method "round figure for purified water made on site (apalutamide01's)"; } }
     { stream hpmcFeed;       price 20;     costYear 2026;
-      provenance { origin "author-set assumption (DEV.md 4c C110), not a market price";
+      provenance { kind assumption; origin "author-set assumption (DEV.md 4c C110), not a market price";
                    method "round figure; coats are often bought as a ready-mixed powder instead"; } }
     { stream pegFeed;        price 5;      costYear 2026;
-      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+      provenance { kind assumption; origin "author-set assumption (DEV.md 4c C97), not a market price";
                    method "round figure (apalutamide01's)"; } }
     { stream talcFeed;       price 3;      costYear 2026;
-      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+      provenance { kind assumption; origin "author-set assumption (DEV.md 4c C97), not a market price";
                    method "round figure (apalutamide01's)"; } }
     { stream tio2Feed;       price 6;      costYear 2026;
-      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+      provenance { kind assumption; origin "author-set assumption (DEV.md 4c C97), not a market price";
                    method "round figure (apalutamide01's)"; } }
     { stream feOxFeed;       price 20;     costYear 2026;
-      provenance { origin "author-set assumption (DEV.md 4c C97), not a market price";
+      provenance { kind assumption; origin "author-set assumption (DEV.md 4c C97), not a market price";
                    method "round figure (apalutamide01's)"; } }
     { stream fbdAirIn;       price 0;      costYear 2026;
-      provenance { origin "ambient air, free";
+      provenance { kind assumption; origin "ambient air, free";
                    method "the fluid bed draws it from outside; its filtration and heating are counted elsewhere (the heater's steam)"; } }
     { stream coatingAirIn;   price 0;      costYear 2026;
-      provenance { origin "ambient air, free";
+      provenance { kind assumption; origin "ambient air, free";
                    method "the coater draws it from outside; its filtration and heating are counted elsewhere (the heater's steam)"; } }
 );
 labourRate      42.0;                 // EUR/h loaded operating labour -- ASSUMED (apalutamide01's)
 labourRateYear  2026;
+labourProvenance
+{
+    kind    assumption;
+    origin  "author-set assumption: a loaded operating-labour rate the case states without a source for the number";
+}
 
 // ************************************************************************* //

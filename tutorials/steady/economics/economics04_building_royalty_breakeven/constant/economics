@@ -22,6 +22,7 @@ products
         costYear    2026;
         provenance
         {
+            kind    assumption;
             origin  "author-set teaching assumption";
             method  "a round price for a specialty spray-dried powder";
         }
@@ -36,6 +37,7 @@ rawMaterials
         costYear    2026;
         provenance
         {
+            kind    assumption;
             origin  "author-set teaching assumption";
             method  "a round price for the liquor feed";
         }
@@ -46,6 +48,7 @@ rawMaterials
         costYear    2026;
         provenance
         {
+            kind    assumption;
             origin  "author-set teaching assumption";
             method  "free ambient air; the heater duty is outside this plant's utilities";
         }
@@ -56,6 +59,7 @@ labourRate      30.0;                 // EUR/h, loaded
 labourRateYear  2026;
 labourProvenance
 {
+    kind    assumption;
     origin  "author-set teaching assumption";
     method  "a round loaded hourly rate";
 }
