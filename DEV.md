@@ -4591,6 +4591,22 @@ accepts today, and that is a policy call.
 > third-order scaling (the residence time fell 13 %, the chain length's
 > excess 42 %); the polyesterification cases do not land until a directed,
 > independent integration of the case's own rate law explains it.
+>
+> **C431, THE 41 % IS EXPLAINED (2026-11-19, an independent general, no
+> file changed; note in the private Studies folder).**  The case's rate law
+> is PSEUDO-FIRST-ORDER in the monomer (`order 1`; the others 0), and the
+> reactor takes Q once at the feed, so the concentration cancels: p = 1 -
+> exp(-Da), Da = k tau, and with Carothers Xn = exp(Da).  The 13.3 % fall of
+> tau is Delta Da = -0.53, a factor exp(-0.53) = 0.589 on Xn (observed
+> 0.5887).  An independent integration reproduces BOTH published
+> conversions to nine digits (old basis v = 1.235e-4 m3/mol, the stored 25 C
+> volume; new v = 1.42433e-4 from the door's 927.87 kg/m3 at 450 K).  The
+> architect's second- and third-order estimates assumed a concentration
+> dependence the case does not have.  The polymer cases land with the
+> batch.  REGISTERED, not this slice's: the reactor does not update Q along
+> its length although the moles double in this reaction (one monomer -> one
+> repeat unit + one water); the same on both bases, a modelling limit of the
+> liquid PFR to state or to lift.
 
 
 
