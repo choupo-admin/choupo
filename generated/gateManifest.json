@@ -1795,6 +1795,11 @@
       "exit": 0,
       "claim": "check_datum_flip_refused: OK -- a datum flip is refused by name and ends the run: (a) two sectors, secA on the elements datum and secB on IF97, joined by secA.liquid; (b) the variant route, three units selecting `thermo steamTables;` and the boiler not (first refusal: model boundary REFUSED on stream 'feedwater' (feedPump -> boiler)); both name the stream, its two ends and both datums; controls exit 0 with no refusal: rankine02_water as shipped, the same loop with all four units on the variant, and the two-sector plant with both sectors on pureFluids.  (e) the resolved view's row 'who governs a pure-fluid component' of rankine02_water and heavyWater01_isotope_effect equals its pinned text; NOT CHECKED: choupoBatch/choupoCtrl, a flip between two different pure-fluid methods, a reacting second package, the bridge between the datums (not built).",
       "seconds": 0.2
+    },
+    "check_backlog": {
+      "exit": 0,
+      "claim": "check_backlog: OK -- 400 items, every one headed in DEV.md 4c has its row (DONE 244, PARTIAL 101, OPEN 43, DROPPED 0, NOT-AN-ITEM 12); every open or partial item has a horizon; 330 named commits are in history.  NOT checked: that a status is true (a landing changes its row in the same commit).",
+      "seconds": 1.2
     }
   }
 }

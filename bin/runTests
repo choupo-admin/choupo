@@ -8426,6 +8426,18 @@ PYEOF
     fi
     rm -f /tmp/brainfresh.$$
 
+    # Backlog gate (C436): every item Vitor asked for has its row and status in
+    # BACKLOG.tsv, each open item a horizon; PLAN.md and the page are views of it.
+    if gate_exec "$ROOT/bin/curate/check_backlog.py" > /tmp/backlog.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "backlog-gate" "$(gate_claim check_backlog /tmp/backlog.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_backlog.py)\n" "backlog-gate"
+        cat /tmp/backlog.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/backlog.$$
+
     # Release-identity gate (2026-08-08, website audit).  The dev inventory
     # above answers for the CURRENT tree; this one answers for the IMMUTABLE
     # releases: each generated/releases/<tag>.json must record the commit its
