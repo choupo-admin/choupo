@@ -103,9 +103,9 @@ sizing
     units
     (
         { unitName makeupComp;  type compressor;  material SS316;
-          designRules { pressureDesign 250.0; } }
+          designRules { pressureDesign 250.0; design { } } }
         { unitName recycleComp; type compressor;  material SS316;
-          designRules { pressureDesign 205.0; } }
+          designRules { pressureDesign 205.0; design { } } }
         { unitName FEHE;        type shellTubeHX;  material SS316;
           designRules { U 550.0;  LMTD 150.0;  pressureDesign 220.0; } }
         { unitName waterCooler; type shellTubeHX;  material carbonSteel;

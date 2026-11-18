@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  compressor03_staged_design
+  ==========================
+  The flowsheet unit is ONE adiabatic compressor: air at 1 bar and 25 degC,
+  eta_isentropic 0.75, discharge DECLARED at 15 bar.  What the flowsheet cannot
+  say is what machine that is.  The postDict's `design {}` block asks the
+  detailed design (Brown, Compressors: Selection and Sizing, 3rd ed.): which
+  machine, how many stages, what the intercoolers take away, what the driver
+  must be.  See README.md for the hand calculation of one stage.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        compressor1;
+        type        compressor;
+        in          feed;
+        outputs     ( out );
+        operation
+        {
+            P_out     15.0  bar;         // discharge pressure the header needs
+            eta       0.75;              // isentropic efficiency of the SINGLE pass
+        }
+    }
+);

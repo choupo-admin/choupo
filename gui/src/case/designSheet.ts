@@ -120,6 +120,24 @@ export interface ExchangerSheet {
   fromRecord: string[];
 }
 
+/** The sheet's `compressor {}` block (DEV.md 4c C440 gap 4): the WORDS of the
+ *  detailed design -- machine, how it was chosen, what set the stage count,
+ *  which defaulted input came from which page.  Every number is in `sizing {}`
+ *  under `stageN_*` / `intercoolerN_*`. */
+export interface CompressorSheet {
+  machine: string;
+  machineBy: string;
+  selection: string;
+  driver: string;
+  stages: number;
+  intercoolers: number;
+  stagesBy: string;
+  limiting: string;
+  declared: string[];
+  sources: { key: string; source: string }[];
+  notes: string[];
+}
+
 /** The sheet's `cost {}` block, when a costing pass ran.  The three totals
  *  carry no unit word: their unit is `currency`, stated once. */
 export interface DesignCost {
@@ -165,6 +183,8 @@ export interface DesignSheet {
   /** Present only on a DESIGNED exchanger (the Kern route); null on every
    *  other sheet, including an exchanger sized by area alone. */
   exchanger: ExchangerSheet | null;
+  /** Present only on a compressor with a `design {}` block (C440). */
+  compressor: CompressorSheet | null;
   /** Present only when a costing pass priced this item. */
   cost: DesignCost | null;
 }
@@ -250,6 +270,30 @@ function readExchangerSide(raw: unknown): ExchangerSideSheet {
     correlation: word(p, "correlation"),
     Tin: kelvin(p["Tin"]),
     Tout: kelvin(p["Tout"]),
+  };
+}
+
+function readCompressor(raw: unknown): CompressorSheet | null {
+  if (!isDict(raw)) return null;
+  const n = (k: string): number => {
+    const s = splitValue(raw[k]);
+    return s ? s.value : 0;
+  };
+  const src = raw["sources"];
+  return {
+    machine: word(raw, "machine"),
+    machineBy: word(raw, "machineBy"),
+    selection: word(raw, "selection"),
+    driver: word(raw, "driver"),
+    stages: n("stages"),
+    intercoolers: n("intercoolers"),
+    stagesBy: word(raw, "stagesBy"),
+    limiting: word(raw, "limiting"),
+    declared: words(raw["declared"]),
+    sources: Array.isArray(src)
+      ? src.filter(isDict).map((d) => ({ key: word(d, "key"), source: word(d, "source") }))
+      : [],
+    notes: words(raw["notes"]),
   };
 }
 
@@ -347,6 +391,7 @@ export function parseDesignSheet(text: string): DesignSheet | null {
     inlets: readPorts(j["inlets"]),
     outlets: readPorts(j["outlets"]),
     exchanger: readExchanger(j["exchanger"]),
+    compressor: readCompressor(j["compressor"]),
     cost: readCost(j["cost"]),
   };
 }

@@ -505,6 +505,53 @@ std::size_t write(const std::string&                       caseRoot,
             o << "    );\n}\n";
         }
 
+        //  ---- WHAT A COMPRESSOR WAS DESIGNED AS (2026-11-19, DEV.md 4c C440
+        //  gap 4).  The WORDS: the machine, how it was chosen, what set the
+        //  stage count, which defaulted input came from which page, and the
+        //  limits of the method.  Every NUMBER is in `sizing {}` under
+        //  `stageN_` / `intercoolerN_` and the totals.  Written only for a
+        //  compressor with a `design {}` block, so every other sheet is
+        //  character-for-character what it was.
+        if (sz.compressor.present())
+        {
+            const auto& cp = sz.compressor;
+            o << "\n//  What the compressor was designed as.  Numbers per stage are the `sizing {}`"
+                 "\n//  keys `stageN_*` and `intercoolerN_*`; the words are here.\n"
+                 "compressor\n{\n";
+            o << "    machine         " << cp.machine << ";\n";
+            o << "    machineBy       " << cp.machineBy << ";\n";
+            o << "    selection       \"" << cp.selection << "\";\n";
+            o << "    driver          " << cp.driver << ";\n";
+            o << "    stages          " << cp.stages << ";\n";
+            o << "    intercoolers    " << cp.intercoolers << ";\n";
+            o << "    stagesBy        " << cp.stagesBy << ";\n";
+            o << "    limiting        \"" << cp.limiting << "\";\n";
+            if (!cp.declared.empty())
+            {
+                o << "    declared        (";
+                for (const auto& k : cp.declared) o << " " << k;
+                o << " );\n";
+            }
+            if (!cp.sources.empty())
+            {
+                o << "    //  inputs the case did not declare, and the page each was read at\n";
+                o << "    sources\n    (\n";
+                for (const auto& sr : cp.sources)
+                {
+                    o << "        {\n            key         " << sr.key << ";\n"
+                      << "            source      \"" << sr.text << "\";\n        }\n";
+                }
+                o << "    );\n";
+            }
+            if (!cp.notes.empty())
+            {
+                o << "    notes\n    (\n";
+                for (const auto& n : cp.notes) o << "        \"" << n << "\"\n";
+                o << "    );\n";
+            }
+            o << "}\n";
+        }
+
         //  ---- WHAT THE ITEM HOLDS (2026-10-07, DEV.md 4c C44 slice 3) --
         //  Written only for an item that declared an inventory, so every
         //  other sheet is character-for-character what it was.  `held` is a

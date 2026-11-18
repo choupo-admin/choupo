@@ -73,6 +73,7 @@ import { IconAlertTriangle, IconExternalLink, IconInfoCircle, IconX } from "@tab
 import { popOutFileHtml } from "./filePopOut.js";
 import { findRunStream, popOutSingleStream } from "./streamPopOut.js";
 import { HeatExchangerDatasheet } from "./HeatExchangerDatasheet.js";
+import { CompressorDatasheet } from "./CompressorDatasheet.js";
 import { findKernDesign } from "../case/hxDatasheet.js";
 import { ColumnDatasheet } from "./ColumnDatasheet.js";
 import { caseThermo, thermoSentence,
@@ -492,6 +493,10 @@ function UnitDetails({
            the column's OWN equipment, the shell and the tray stack, needed
            this.  The trigger renders nothing until the run has written the
            sheets it reads.  */}
+      {/*  THE COMPRESSOR'S DETAILED DESIGN (C440 gap 4): renders nothing unless
+           the run wrote a sheet carrying a `compressor {}` block.  */}
+      {unit.type === "compressor" && <CompressorDatasheet unit={unit} />}
+
       {unit.type === "distillationColumn" && kpis && (
         <ColumnDatasheet unit={unit} kpis={kpis} />
       )}

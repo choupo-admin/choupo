@@ -52,7 +52,8 @@ SIZER, not always the unit type.
 | `stirredTank` | `cstr` | takes the unit's `V_R`; `pressureDesign` required; `L_over_D`, `corrosionAllow`, `jointEfficiency` |
 | `shellTubeHX` | any exchanger/heater with a duty `Q_kW` | route 1 `U` + `LMTD`; route 2 `U` + `utility <name>` (LMTD from the unit's terminal T and the utility record); route 3 neither (a rated exchanger passes its own area); route 4 `design { ... }` (Kern bundle, tube count solved); `pressureDesign` |
 | `distillationColumn` | column | `trayMaterial` (REQUIRED to cost the trays), `traySpacing`, `refluxDrum`, `residenceTime`, `pressureDesign`; returns 5 items: shell, trays, condenser, reboiler, drum |
-| `evaporator` `crystalliser` `sprayDryer` `cyclone` `compressor` | the same-named units | `pressureDesign` + their own keys (read the sizer .cpp) |
+| `evaporator` `crystalliser` `sprayDryer` `cyclone` | the same-named units | `pressureDesign` + their own keys (read the sizer .cpp) |
+| `compressor` | compressor | `pressureDesign`; power only unless `design { }` is present: then machine, stages, intercoolers, driver (keys: unit-ops.md), sheet `design/<unit>/compressor` |
 | `pfr` | catalyst bed | passes the bed's `V_R`; catalyst charge costed from a DECLARED bulk density and unit price |
 | `ratedMachine` | a machine with a vendor rating | pack `batch-plant` (kinds `batchVolume massRate tabletPress packagingLine`); `kind volumeRate` rates a PUMP: `rating { maxFlowPerUnit 500 m3/h; origin literature|assumed; source; reason; [pressureRating] }`, `installed { count }`, `spare { count }`, `perTrain yes;` (no batch plan) |
 | `reliefValve` | protects a sized item | API 520 area for declared `blockedOutlet`/`fire` scenarios; NOT costed |
