@@ -21,10 +21,8 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
+        "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
     }
 }
