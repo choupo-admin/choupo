@@ -4700,6 +4700,24 @@ accepts today, and that is a policy call.
 > drawing deliverable on top of the routes, worth having, but the numbers on
 > the line sheet are the engineering and come first.
 
+> **C440 AUDIT DONE (2026-11-19, docs/audits/2026-11-19-c440-peq-sizing-audit.md,
+> read on origin/main).**  The reference plant's 17 units and two stores,
+> ranked by what a colleague reading its documents misses: (1) the 49 lines,
+> none sized (C207, in progress); (2) the three drums on a typed residence
+> or a lower bound (C318, in progress); (3) the CONVERTER, the dearest
+> process item, sized as a plain vessel on an assumed space velocity while
+> `CatalystBedSize` and `ConverterShellSize` exist and are not wired in --
+> RULED next after C207: wire them, beds from the kinetics, the shell at
+> 166 bar and 733 K; (4) the four compressors (14.7 MW) sized as a power
+> number only -- stages, intercooling, discharge temperature and driver need
+> a compressor monograph the folder lacks (Vitor asked for one); (5) the
+> exchangers carry three named simplifications (a typed boiling film, the
+> condensate film uncredited, dilute-gas properties at 150 bar); (6) a
+> datasheet for vessels, compressors, tanks and stores; (7) the NH3 tank
+> priced on an atmospheric row and the H2 buffer's charging compressor
+> unpriced; (8) `ReliefValveSize` unused, no valves or piping in the cost.
+> The plant has no pump, so C441 reaches it not.
+
 > **C439 (Vitor, 2026-11-19: "os casos que estão na landing page foram
 > escolhidos logo no início ... Acho que falta um sobre criação de
 > componentes e binários").**  Measured: the four starter cards are the
