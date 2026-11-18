@@ -11,8 +11,13 @@ counted, not listed.
 
     bin/curate/backlog_view.py OUT.html     (a page)
     bin/curate/backlog_view.py OUT.md       (a Markdown table, for a side panel)
+    bin/curate/backlog_view.py OUT.json     (the page's meta/ranks document, stamped)
+
+Every view carries the time it was made (Vitor, 2026-11-19: "no topo põe a
+data e hora para eu não estar sempre a perguntar").
 """
-import csv, html, sys
+import csv, html, json, sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -28,6 +33,14 @@ def main():
     open_.sort(key=lambda r: (int(r["rank"]), int(r["item"][1:])))
     count = {s: sum(1 for r in rows if r["status"] == s) for s in ("DONE", "PARTIAL", "OPEN", "DROPPED")}
     e = html.escape
+    now = datetime.now(timezone.utc)
+    stamp = now.astimezone().strftime("%d/%m/%Y %H:%M")
+    if sys.argv[1].endswith(".json"):
+        doc = {"ranks": {r["item"]: [r["rank"], r["why_pt"]] for r in open_},
+               "from": "BACKLOG.tsv", "updated": now.isoformat(timespec="seconds")}
+        Path(sys.argv[1]).write_text(json.dumps(doc, ensure_ascii=False))
+        print(f"backlog_view: wrote {sys.argv[1]} (stamped {stamp})")
+        return 0
 
     def row(r):
         sz, col = SIZE.get(r["size"], ("?", "#5d6a62"))
@@ -56,7 +69,7 @@ def main():
             if not lst: return ""
             return (f"\n### {title} ({len(lst)})\n\n| # | | Item | Estado |\n|---|---|---|---|\n"
                     + "\n".join(mdrow(r) for r in lst) + "\n")
-        md = (f"# Backlog do Choupo\n\nPor prioridade (valor contra tamanho). ▶ em curso · "
+        md = (f"# Backlog do Choupo\n\n**Atualizado: {stamp}**\n\nPor prioridade (valor contra tamanho). ▶ em curso · "
               f"🟢 horas · 🟡 um dia · 🔴 vários dias.  \nFeitos {count['DONE']} · parciais "
               f"{count['PARTIAL']} · abertos {count['OPEN']} · largados {count['DROPPED']}.\n"
               + mdtab("Em curso", now) + mdtab("Próximo lote", nxt) + mdtab("Depois", later))
@@ -75,7 +88,7 @@ td{{padding:6px 4px;border-bottom:1px solid #dde3dc;vertical-align:top}} td.k{{w
 .y{{color:#2f6b4f;font-size:12.5px}} .n{{opacity:.7;font-size:12.5px}} .p{{font-size:12px;font-weight:600;white-space:nowrap}} .s{{font-size:11.5px;opacity:.6}}
 </style></head><body>
 <h1>Backlog do Choupo</h1>
-<div class="c">Por prioridade: o valor contra o tamanho. ▶ em curso. Feitos {count['DONE']} · parciais {count['PARTIAL']} · abertos {count['OPEN']} · largados {count['DROPPED']}. Fonte: BACKLOG.tsv.</div>
+<div class="c"><b>Atualizado: {stamp}</b> · Por prioridade: o valor contra o tamanho. ▶ em curso. Feitos {count['DONE']} · parciais {count['PARTIAL']} · abertos {count['OPEN']} · largados {count['DROPPED']}. Fonte: BACKLOG.tsv.</div>
 {table("Em curso", now)}{table("Próximo lote", nxt)}{table("Depois", later)}
 </body></html>"""
     Path(sys.argv[1]).write_text(page)

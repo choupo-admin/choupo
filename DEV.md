@@ -4700,6 +4700,68 @@ accepts today, and that is a policy call.
 > drawing deliverable on top of the routes, worth having, but the numbers on
 > the line sheet are the engineering and come first.
 
+> **C444 EXTENDED (Vitor, 2026-11-18: "nos equipamentos em que isso é
+> preciso: as portas de homem?").**  RULED: yes, in the same nozzle
+> schedule -- manways and inspection openings are nozzles with a service
+> `manway`/`inspection`: vessels, drums, columns (one per section, the
+> spacing rule by tray count read in the folder's column-design sources),
+> storage tanks (shell and roof) and reactors; size and count from a rule
+> read at its page (Towler & Sinnott ch.13 on vessel openings; Kister or
+> Wankat for columns) or declared by the case with its reason; the flange
+> class follows the vessel's design pressure like any nozzle.  Where a unit
+> is too small for a person to enter, the rule says so and the sheet shows
+> an inspection opening instead.
+
+> **C447 (architect, 2026-11-18, from the C443 KPI-unit general).**  The
+> READMEs of first-path cases quote numbers the runs no longer print:
+> cstr01 52.59 % vs 50.75 %, pfr01 67.02 % vs 64.32 % (tau 310 -> 288 s
+> when the density door moved), flash02 V/F 0.7976 vs 0.7685, column16
+> 0.9812 vs 0.9510, column03, bubbleT01, the ammonia reactor ladder,
+> batch01; a heuristic scan finds ~190 candidates.  What a student reads
+> first is wrong and nothing catches it -- the golden pins the run, not the
+> prose.  RULED: (1) a README number that quotes a run is written with a
+> marker naming its golden row, and a gate compares the two (a moved row
+> then fails the README it feeds, and the re-record names it); (2) the
+> first-path READMEs are migrated first, then every README; (3) a README
+> number that is NOT a run's (a paper's value, a hand calculation) carries
+> no marker and is not checked.
+
+> **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
+> the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
+> clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
+> 2026-11-19 for everything since the night of 11-17/18 -- 25 lines of
+> DEV.md, 17 backlog rows, BRAIN.md, CLAUDE.md, SESSIONS.md, PLAN.md and 11
+> files NAMED 2026-11-19 under docs/audits and docs/reviews (44 tracked
+> files in all).  A date written from the conversation instead of read
+> from the clock.  RULED: from now every date is read from `date`, and the
+> backlog views stamp themselves from the clock; the correction is ONE
+> mechanical slice (text 2026-11-19 -> 2026-11-18 where it names today,
+> `git mv` of the eleven files and every reference to them) taken when the
+> branches in flight have landed, since four of them create files under
+> that wrong name.
+
+> **C445 (cloud review asked by Vitor, 2026-11-19,
+> docs/reviews/2026-11-19-architecture-growth/REPORT.md: "does the solver
+> grow organically?").**  Verdict: organic where designed (a model is one
+> place; unit bypasses 82 -> 0; carried kinds a factory); still spreading in
+> five places.  RULED, in this order: (1) the two DEFECTS first -- the
+> agitated vessel's W_shaft is never billed as electricity
+> (UtilityAllocationReport bills `pump`/`compressor` by NAME), and the
+> particulate list in EconomicsPass omits seven units that already declare
+> a size distribution: bill on the W_shaft energy item and derive the list
+> from `acceptance()`, never a type name (a gate refuses a new type-name
+> table in the reports); lands after the C389 batch, which edits
+> EconomicsPass; (2) ONE density door: `evaluate(density)` goes through the
+> resolver, so swro01's tanks and pumps price one water (98.9 % vs the NaCl
+> law today); the moved rows are the architect's to audit (C00), listed in
+> the commit; (3) liquid Cp as a door property with one missing-datum
+> policy, the 75.4 literal and direct `cpLiquid().Cp(` refused by the
+> ratchet; (4) the size distribution in one home (Carried), the seven
+> private `solids {}` readers removed; (5) lesson citations anchored to a
+> symbol or marker, not a line number -- this IS C415's pilot, now made the
+> rule for every lesson (the pedagogy is unchanged: the student still reads
+> the cited line; only how the tool finds it changes).
+
 > **C390 RULING AMENDED (architect, 2026-11-19, on the batch sweep's
 > gate g1).**  The liquid pressure leg ran from psat(T), a lower limit that
 > moves with T, while the base surface is a fixed-pressure function (dh/dT
