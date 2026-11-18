@@ -429,6 +429,52 @@ with its three conditions).
 Every step carries its guide section, its catalogue entry and its witness
 (CLAUDE.md rule 4d).
 
+## 7b. The closure contracts (2026-11-19, from the second outside review)
+
+Four behaviours must be defined and held by a witness before the scope of
+section 0 is called consolidated.  Each is a contract, not new physics.
+
+K1.  A DATUM FLIP IS REFUSED.  A pure-fluid equation's enthalpy is on its
+publication's datum, not the elements datum; the source already states the
+rule (`src/thermo/pureFluid/PureFluidModel.H`, "Datum": valid only for a
+phase effectively pure in the flagged component; a flip across a model
+boundary "is hard-refused by the model-boundary audit ... dH ill-posed").
+What is missing is the PROOF: a probe of two sectors, one on a pure-fluid
+water package and one on a reacting package, joined by a stream, must be
+refused by name, and a closed single-package loop must not be.  If the probe
+shows the refusal does not fire, that is a defect to fix before anything
+else.  A bridge between the two datums (the formation enthalpy of the pure
+fluid's reference state) is NOT built; it is the declared way to lift the
+refusal later.
+
+K2.  WHO GOVERNS IS PRINTED.  When `pureFluids` sits beside an `equilibrium`
+block, the resolved view says, per component and per quantity (phase
+boundary, enthalpy, entropy, density, transport), which object answers, and
+the composition threshold at which the pure-fluid route gives way.  A
+witness pins those lines.
+
+K3.  A PAIR MAY HOLD SEVERAL NAMED PARAMETER SETS.  The identity of a set is
+(the species, the model and its convention profile, the set's name); a pair
+record gains `sets { <name> { parameters ...; provenance ...; validity ...;
+fittedTo vle | lle | vlle | calorimetry; } }` and `preferred <name>;`, the
+shape a component record already uses for its laws.  A case that needs
+another set says `set <name>;` beside the pair's `source`; the run prints
+the set used.  A record with one unnamed set reads as today (the set's name
+is `default`), so no existing record or case changes.  The ion components
+that share an atom's name (33 `distinctFrom` declarations) are RENAMED to
+their species names in a slice of their own; `distinctFrom` stays only as
+the grammar of a real homonym.
+
+K4.  THE CASE A STUDENT TAKES AWAY RUNS ALONE.  The exported case (the
+sealed form: its records copied and hashed) runs on a build whose catalogue
+is hidden, to the same result, and says so; a gate does exactly that on one
+case per family.
+
+Declined for the closure, with its reason: a refusal at a solver's TRIAL
+state as a recoverable failed step.  Today's behaviour is defined and
+witnessed (the run ends, by name); making it recoverable is an improvement
+of the solvers, not a missing contract.
+
 ## 8. Rejected
 
 * A POLYMER AS ONE COMPONENT IN "APPARENT MOLES" with its true size in an
