@@ -228,7 +228,12 @@ def tagged(stderr, prefix):
         if l.startswith(prefix):
             m = re.match(re.escape(prefix) + r"#(\S+) (.*)$", l)
             if m:
-                calls.add((m.group(1), m.group(2)))
+                #  A law's CONTINUATION lines (a table's axes and box, C421 slices) are
+                #  printed indented under it, in the call trace and in the view alike;
+                #  views_by_package() stores the view's lines stripped, so the trace's
+                #  are stripped the same way.  Without it the first line of a table law
+                #  matched and its three indented lines read "called but not in the view".
+                calls.add((m.group(1), m.group(2).strip()))
     return calls
 
 
