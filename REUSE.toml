@@ -34,6 +34,7 @@ path = [
   "bin/curate/golden_bands.tsv",
   "bin/curate/liquid_property_ratchet_debt.tsv",
   "bin/curate/platform_divergence_debt.tsv",
+  "bin/curate/property_kernel_objects.tsv",
   "bin/curate/property_route_bench.manifest",
   "bin/curate/property_route_bench.sha256.tsv",
   "bin/curate/property_route_labels.sha256.tsv",

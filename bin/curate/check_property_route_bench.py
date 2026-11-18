@@ -52,7 +52,7 @@ by path, with the checkout replaced by `<root>`.
 
 C432 (2026-11-19): THE SEALED COPIES OF data/curation ARE BENCHED TOO.  The
 sweep's route-keyed reuse of a curation fit (bin/curate/suite_reuse.py,
-bin/curate/property_kernel_objects.txt) vouches for a fit only when the bench
+bin/curate/property_kernel_objects.tsv) vouches for a fit only when the bench
 has answered, byte for byte as before, every record the fit READS -- and a
 curation fit reads its own sealed components, never the catalogue's (the
 catalogue has moved since the import).  The real defect it answers: one

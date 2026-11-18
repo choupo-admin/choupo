@@ -175,7 +175,7 @@ is reached by all 1260 (the sweep of 2026-11-19 re-ran every one, about 10 800 s
 after a kernel edit the route bench had proved identical).  So a stored verdict
 whose key differs from the present one is taken in this order, and the plan says
 which rung and why on every case line (the section "C432" below holds the code):
-(d) THE ROUTE RULE -- only objects listed in property_kernel_objects.txt moved,
+(d) THE ROUTE RULE -- only objects listed in property_kernel_objects.tsv moved,
 everything else in the key is identical, and the bench's blocks for every record
 the fit reads are byte-identical then and now: REUSED, re-stored under the new
 key; (a) REPLAY -- bin/runTests runs the case once with the fits held at their
@@ -1813,7 +1813,7 @@ def _stored_case(c):
 #  printed with its reason:
 #
 #    (d) ROUTE-KEYED REUSE.  The stored verdict's key moved ONLY through engine
-#        objects the kernel declares (bin/curate/property_kernel_objects.txt),
+#        objects the kernel declares (bin/curate/property_kernel_objects.tsv),
 #        every other part of the key is identical (data, the case's files,
 #        harness, platform), the set of objects the case reaches is the same,
 #        AND the route bench (check_property_route_bench) answers byte for
@@ -1832,7 +1832,7 @@ def _stored_case(c):
 #  that reason) are outside it, and the list says so.
 # --------------------------------------------------------------------------
 
-KERNEL_FILE = ROOT / "bin" / "curate" / "property_kernel_objects.txt"
+KERNEL_FILE = ROOT / "bin" / "curate" / "property_kernel_objects.tsv"
 BENCH_OUT = STORE / "bench" / "bench.tsv"
 
 
@@ -2421,7 +2421,7 @@ def main(argv):
               "directories), its own files and cascade; see `case-plan DIR "
               "--explain`")
         print("  a fit whose key moved is asked, before it runs again (C432): "
-              "(d) did only the property kernel move (property_kernel_objects.txt) "
+              "(d) did only the property kernel move (property_kernel_objects.tsv) "
               "while the route bench answers the same on its records?  (a) does "
               "the fit held at its stored parameters reproduce the golden?")
         print("NOT KEYED:")

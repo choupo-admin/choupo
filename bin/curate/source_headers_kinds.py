@@ -173,7 +173,6 @@ EXCLUSIONS = [
                  "site/analytics.conf", "site/frozenApps.txt",
                  "bin/curate/recording_platform.txt",
                  "bin/curate/suite_lanes.txt",
-                 "bin/curate/property_kernel_objects.txt",
                  "bin/curate/refusal_probes/*.probes",
                  "bin/curate/migrate_thermoPhysProp.skipped.txt",
                  ".claude/settings.json"]),
