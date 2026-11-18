@@ -4269,6 +4269,26 @@ PYEOF
     fi
     rm -f /tmp/colthermo.$$
 
+    # carried-kinds gate (2026-11-19, DEV.md 4c C427, second slice).  The
+    # splitter dropped the size distribution of its feed on every branch, the
+    # mass balance closed (a distribution is not a flow) and every golden
+    # pinned "unchanged": a quantity a stream carries was a field two units
+    # had to remember to copy.  This gate holds the contract that makes that
+    # impossible for every kind: each unit that reads or writes a size
+    # distribution declares it (no exemption), a unit that does not model a
+    # kind refuses it by name, the batch driver refuses a carried quantity, a
+    # mass-like kind enters the plant-boundary mass balance (sabotage in the
+    # probe), and the stream's core type knows no kind.
+    if gate_exec "$ROOT/bin/curate/check_carried_kinds.py" > /tmp/carriedkinds.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "carried-kinds-gate" "$(gate_claim check_carried_kinds /tmp/carriedkinds.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_carried_kinds.py)\n" "carried-kinds-gate"
+        cat /tmp/carriedkinds.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/carriedkinds.$$
+
     # stage-K step gate (2026-11-08, DEV.md 4c C245 slice 3, audit H1).  A
     # reactive package's stageK has a KNOWN step in T where the two-phase
     # Newton's reach ends (0.507 on stripper01 tray 1, 0.0415 on tray 8); the

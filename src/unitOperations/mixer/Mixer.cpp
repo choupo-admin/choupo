@@ -138,9 +138,11 @@ int Mixer::solve(const DictPtr& dict,
     //  ONLY (below the inlet loop, DEV.md 4c C97); read by nothing else.
     struct SolidInlet { std::string name; scalar T = 0.0, P = 0.0; sVector s; };
     std::vector<SolidInlet> solidInlets;
-    //  Each inlet's size distribution and the solid mass that weighs it (C361).
-    struct PsdInlet { std::string name; scalar mass = 0.0; ParticleSizeDistribution psd; };
-    std::vector<PsdInlet> psdInlets;
+    //  Each inlet's CARRIED QUANTITIES (streams/Carried.H): the size
+    //  distribution weighed by the solid mass that carries it (C361), and
+    //  whatever else the stream carries.  The mixer knows no kind; the kinds'
+    //  own laws blend them below.
+    std::vector<std::pair<std::string, std::vector<CarriedQuantity>>> carriedInlets;
 
     auto hInlet = [&](scalar T, scalar P, scalar vf, const sVector& z) -> scalar
     {
@@ -220,27 +222,14 @@ int Mixer::solve(const DictPtr& dict,
                 }
             }
         }
-        //  The inlet's size distribution, weighed by its solid MASS (C361).
-        if (sd->found("solids"))
+        //  The inlet's carried quantities; the size distribution is weighed
+        //  by its solid MASS (C361).
         {
-            auto sol = sd->subDict("solids");
             scalar m = 0.0;
             for (std::size_t i = 0; i < n; ++i)
                 if (s_in[i] > 0.0) m += s_in[i] * thermo.comp(i).MW();
-            if (m > 0.0)
-            {
-                PsdInlet pi;
-                pi.name = inName;
-                pi.mass = m;
-                if (sol->found("diameters"))
-                {
-                    pi.psd.diameter = sol->lookupList("diameters");
-                    pi.psd.massFrac = sol->lookupList("massFractions");
-                    if (sol->found("sizeEdges"))
-                        pi.psd.edges = sol->lookupList("sizeEdges");
-                }
-                psdInlets.push_back(std::move(pi));
-            }
+            auto cq = carriedOfInlet(*sd, m);
+            if (!cq.empty()) carriedInlets.emplace_back(inName, std::move(cq));
         }
         solidInlets.push_back({ inName, T, P, s_in });
         {
@@ -281,99 +270,26 @@ int Mixer::solve(const DictPtr& dict,
         if (!haveFirst) { T_first = T; haveFirst = true; }
     }
 
-    //  THE SIZE DISTRIBUTION OF THE BLEND (DEV.md 4c C361).  On the case's
-    //  size grid a blend is EXACT: w_out,k = SUM_j m_j w_j,k / SUM_j m_j,
-    //  class by class, mass-weighted.  Decided in
-    //  docs/design/c361-solids-processing.md:
-    //    * every solid-bearing inlet on the SAME grid       -> exact blend;
-    //    * one on the grid, another on a unit's own bins (or none) -> the
-    //      other is RE-BINNED onto the grid (mass exact; its moments shift by
-    //      the within-class assumption) and that is ANNOUNCED;
-    //    * two DIFFERENT declared grids                     -> REFUSED: a
-    //      case has one grid, so two means a unit ignored it -- a defect to
-    //      fix at its source, not to interpolate away here;
-    //    * no inlet on a grid                               -> nothing is
-    //      done (every case written before the grid: unchanged).
-    ParticleSizeDistribution psdMix;
+    //  THE BLEND OF EVERY CARRIED QUANTITY (DEV.md 4c C361, C427).  Each
+    //  kind owns its law of mixing: the size distribution's (exact on the
+    //  case's grid, re-binned and announced otherwise, refused on two grids)
+    //  is in SizeDistributionKind::mix, moved there from this file unchanged;
+    //  a mass flow and a moment of a chain-length distribution simply add.
+    std::vector<CarriedQuantity> carriedMix;
     {
-        const PsdInlet* ref = nullptr;
-        for (const auto& pi : psdInlets)
-            if (pi.psd.onGrid() && !pi.psd.empty()) { ref = &pi; break; }
-        if (ref)
+        CarriedMixContext ctx;
+        ctx.unitDict  = dict.get();
+        ctx.verbosity = verbosity;
+        ctx.advise = [&](const std::string& inlet, const std::string& msg)
         {
-            SizeGrid grid;
-            if (dict->found("sizeGrid"))
-                grid = SizeGrid::fromDict(dict->subDict("sizeGrid"));
-            const std::vector<scalar>& E = ref->psd.edges;
-            std::vector<scalar> w(E.size() - 1, 0.0);
-            scalar M = 0.0;
-            for (const auto& pi : psdInlets)
-            {
-                ParticleSizeDistribution p = pi.psd;
-                if (p.empty())
-                    throw std::runtime_error("mixer: inlet '" + pi.name + "' "
-                        "carries solids with NO size distribution while inlet '"
-                        + ref->name + "' carries one on the case's size grid.  "
-                        "The blend's distribution would be undefined; declare a "
-                        "`particleSizeDistribution` on '" + pi.name + "'.");
-                if (p.onGrid() && p.edges.size() == E.size())
-                {
-                    bool same = true;
-                    for (std::size_t k = 0; k < E.size(); ++k)
-                        if (std::abs(p.edges[k] - E[k]) > 1e-9 * std::max(1e-30, E[k]))
-                        { same = false; break; }
-                    if (!same)
-                        throw std::runtime_error("mixer: inlets '" + ref->name
-                            + "' and '" + pi.name + "' carry size distributions "
-                            "on two DIFFERENT size grids.  A case declares one "
-                            "grid (`sizeGrid {}`), so a second one means a unit "
-                            "did not write on it -- that unit is the defect.");
-                }
-                else
-                {
-                    SizeGrid g = grid.empty()
-                        ? SizeGrid()          // fall through to the refusal
-                        : grid;
-                    if (g.empty())
-                        throw std::runtime_error("mixer: inlet '" + pi.name
-                            + "' is not on the size grid that '" + ref->name
-                            + "' carries, and no `sizeGrid` reached this unit "
-                            "to re-bin it onto.");
-                    const scalar before = psdMoments(p.edges, p.diameter, p.massFrac).d50;
-                    const std::string why = putPsdOnGrid(p, g);
-                    const scalar after = psdMoments(p.edges, p.diameter, p.massFrac).d50;
-                    const std::string msg = "inlet '" + pi.name + "' " + why
-                        + " before blending; its d50 moved from "
-                        + std::to_string(before * 1e6) + " to "
-                        + std::to_string(after * 1e6) + " um by the re-binning "
-                          "(mass is exact; the moments carry the within-class "
-                          "assumption)";
-                    AdvisoryLog::instance().add("mixer", "info",
-                        "mixer inlet '" + pi.name + "' re-binned", msg);
-                    if (verbosity >= 1) std::cout << "  [psd-grid] " << msg << "\n";
-                }
-                for (std::size_t k = 0; k < w.size(); ++k) w[k] += pi.mass * p.massFrac[k];
-                M += pi.mass;
-            }
-            if (M > 0.0)
-            {
-                for (auto& v : w) v /= M;
-                psdMix.edges    = E;
-                psdMix.diameter = representativeSizes(E);
-                psdMix.massFrac = w;
-            }
-        }
+            AdvisoryLog::instance().add("mixer", "info",
+                "mixer inlet '" + inlet + "' re-binned", msg);
+            if (verbosity >= 1) std::cout << "  [psd-grid] " << msg << "\n";
+        };
+        carriedMix = mixCarried(carriedInlets, ctx);
     }
-    //  The blend's moments from the one home, and the sum of its fractions
-    //  (the mass closure of the blending, 1 to round-off).
-    auto publishPsdBlend = [&](const ParticleSizeDistribution& p)
-    {
-        if (p.empty()) return;
-        publishPsdKpis(kpis_, "psd_", p);
-        scalar sw = 0.0;
-        for (auto v : p.massFrac) sw += v;
-        kpis_["psd_massFractionSum"] = sw;
-    };
+    auto publishPsdBlend = [&](const std::vector<CarriedQuantity>& qs)
+    { publishCarriedKpis(kpis_, qs); };
 
     //  THE UNSOLVED DECOMPOSITION, said at its site (DEV.md item 9, the
     //  lithium plant's emulsion; announcement authorised 2026-08-24, the
@@ -464,7 +380,7 @@ int Mixer::solve(const DictPtr& dict,
         out.z    = sVector(n, 0.0);
         out.vf   = 0.0;
         out.s    = s_out;
-        if (!psdMix.empty()) out.psd = psdMix;
+        applyCarried(out, carriedMix);
         produced_.push_back(out);
         kpis_.clear();
         kpis_["F_out"] = 0.0;
@@ -473,7 +389,7 @@ int Mixer::solve(const DictPtr& dict,
         kpis_["vf"]    = 0.0;
         kpis_["n_in"]  = static_cast<scalar>(inputs.size());
         if (isothermal) kpis_["Q_kW"] = Q_sol;
-        publishPsdBlend(psdMix);
+        publishPsdBlend(carriedMix);
         return 0;
     }
     if (F_out <= 0.0)
@@ -893,7 +809,7 @@ int Mixer::solve(const DictPtr& dict,
     out.z    = z_out;
     out.vf   = vf_out;
     out.s    = s_out;
-    if (!psdMix.empty()) out.psd = psdMix;
+    applyCarried(out, carriedMix);
     out.phasePinned = outletPinned;    // a pure fluid's quality, declared
     produced_.push_back(out);
 
@@ -906,7 +822,7 @@ int Mixer::solve(const DictPtr& dict,
     //  Only an ISOTHERMAL mixer has a duty, and only a priced one is
     //  published: an adiabatic mixer's row is byte-identical to before C74.
     if (isothermal && haveDuty) kpis_["Q_kW"] = Q_kW;
-    publishPsdBlend(psdMix);
+    publishPsdBlend(carriedMix);
 
     return converged ? 0 : 1;
 }
@@ -924,6 +840,12 @@ UnitAcceptance Mixer::acceptance() const
         "that closes the adiabatic balance or at the declared one (then the "
         "duty it implies is published and the outlet carries the dominant "
         "phase's label)";
+    a.carried.declared = true;
+    a.carried.allKinds = true;
+    a.carried.sentence =
+        "every carried quantity of every inlet, blended by the law of its own "
+        "kind (a mass flow and a chain moment add; a size distribution is "
+        "blended class by class, weighted by the solid mass)";
     return a;
 }
 

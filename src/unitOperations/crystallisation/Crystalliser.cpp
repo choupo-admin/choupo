@@ -201,6 +201,10 @@ UnitAcceptance Crystalliser::acceptance() const
     UnitAcceptance a;
     a.declared = true;
     a.appliesTo = UnitAcceptance::Scope::combinedFeed;
+    a.carried.declared = true;
+    a.carried.kinds    = {};
+    a.carried.sentence =
+        "CREATES the crystal size distribution of the magma from its own population balance (nucleation and growth); a distribution on an inlet is not read -- the inlet solute enters as mass -- so it is refused rather than dropped";
     a.refusesAlso.push_back({ "crystallisableSolute",
         "A crystalliser needs a solute whose saturation the package can"
         " compute: the package's electrolyte salt, or a component with a"

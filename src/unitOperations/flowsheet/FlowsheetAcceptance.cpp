@@ -89,6 +89,17 @@ void Flowsheet::checkAuthoredInletAcceptance(
         const auto ud = unitDictOf.find(fu.name);
         if (ud == unitDictOf.end()) continue;
         const std::string locus = fu.type + " '" + fu.name + "'";
+        //  THE CARRIED-QUANTITY CLAUSE (C427, S3), for every unit, declared or
+        //  not: an AUTHORED inlet that carries a kind the unit does not model
+        //  is refused before any unit runs (and so in `choupo-lint`).
+        for (const auto& in : fu.ins)
+        {
+            const auto st = streams_.find(in);
+            if (st == streams_.end() || !st->second.authoredInlet) continue;
+            for (auto& f : carriedFindings(acc, fu.type, locus, in,
+                                             carriedOfStream(st->second)))
+                keep(std::move(f));
+        }
         const bool declaresPassThrough = ud->second->found("passThrough");
         //  An unmigrated unit with no pass-through block accepts all, and is
         //  left before its world is built (building one announces things).

@@ -378,4 +378,14 @@ int Thickener::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbo
     return 0;
 }
 
+UnitAcceptance Thickener::acceptance() const
+{
+    UnitAcceptance a;   // phases and components: not declared (accepts all)
+    a.carried.declared = true;
+    a.carried.kinds    = { "sizeDistribution" };
+    a.carried.sentence =
+        "PASSES it with the solid, unchanged, to every outlet that carries solid (underflow and overflow): the thickener separates liquid from solid by a settling balance and selects nothing by size";
+    return a;
+}
+
 } // namespace Choupo

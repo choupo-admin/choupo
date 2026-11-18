@@ -180,4 +180,14 @@ int GasSolidSplitter::solve(const DictPtr& dict,
     return 0;
 }
 
+UnitAcceptance GasSolidSplitter::acceptance() const
+{
+    UnitAcceptance a;   // phases and components: not declared (accepts all)
+    a.carried.declared = true;
+    a.carried.kinds    = { "sizeDistribution" };
+    a.carried.sentence =
+        "PASSES it unchanged to both outlets: the splitter divides the solid by one declared efficiency, with no size selectivity, so each outlet keeps the inlet's distribution (a declared law is discretised onto the case's grid first)";
+    return a;
+}
+
 } // namespace Choupo

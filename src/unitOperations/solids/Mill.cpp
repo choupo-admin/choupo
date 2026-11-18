@@ -264,6 +264,17 @@ int Mill::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbosity)
 
     ParticleSizeDistribution feedPsd, prodPsd;
     feedPsd.edges = edges; feedPsd.diameter = xRep; feedPsd.massFrac = f;
+    //  THE TRANSFORMATION, through the carried kind (C427 spike, criterion
+    //  S1/3): the breakage balance above is this unit's own; the kind checks
+    //  that it moved mass between classes and made none, and hands back the
+    //  quantity.  The values are the ones solved, bit for bit.
+    {
+        const auto kind = CarriedKind::New("sizeDistribution");
+        const CarriedQuantity fq = kind->create(
+            "particleSizeDistribution", "solid", f,
+            { { "axis", xRep }, { "edges", edges }, { "weight", { mDot } } });
+        p = kind->transform(fq, p, "mill").values;
+    }
     prodPsd.edges = edges; prodPsd.diameter = xRep; prodPsd.massFrac = p;
     const PsdMoments mf = psdMoments(edges, xRep, f);
     const PsdMoments mp = psdMoments(edges, xRep, p);
@@ -430,6 +441,16 @@ int Mill::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbosity)
         std::cout << "==================================================================\n\n";
     }
     return 0;
+}
+
+UnitAcceptance Mill::acceptance() const
+{
+    UnitAcceptance a;   // phases and components: not declared (accepts all)
+    a.carried.declared = true;
+    a.carried.kinds    = { "sizeDistribution" };
+    a.carried.sentence =
+        "TRANSFORMS it by its breakage law: a population balance moves mass between size classes (a selection and a breakage function) and makes none -- the kind refuses a product whose fractions do not sum to the feed's";
+    return a;
 }
 
 } // namespace Choupo

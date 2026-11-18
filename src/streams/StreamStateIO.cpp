@@ -553,22 +553,8 @@ void writeStreamState(const ProcessStream&  s,
             //  phases{} block already carries the naming.)
             if (nestPsd && !s.psd.empty())
             {
-                out << "\n        particleSizeDistribution\n        {\n"
-                       "            diameter  (";
-                for (const auto d : s.psd.diameter) out << " " << d;
-                out << " );\n            massFrac  (";
-                for (const auto m : s.psd.massFrac) out << " " << m;
-                out << " );\n";
-                //  The class edges ride only on a distribution that lives
-                //  on the case's size grid (C361); a unit's own bins have
-                //  none, and nothing is written for them.
-                if (s.psd.onGrid())
-                {
-                    out << "            edges     (";
-                    for (const auto e : s.psd.edges) out << " " << e;
-                    out << " );\n";
-                }
-                out << "        }\n";
+                out << "\n";
+                writePsdState(out, s.psd, "        ");
             }
             out << "    }\n";
         };
@@ -973,19 +959,11 @@ void writeStreamState(const ProcessStream&  s,
     // in the old top-level form keep working -- the reader takes either.
     if (!s.psd.empty() && !anySolid)
     {
-        out << "\nparticleSizeDistribution\n{\n    diameter  (";
-        for (const auto d : s.psd.diameter) out << " " << d;
-        out << " );\n    massFrac  (";
-        for (const auto m : s.psd.massFrac) out << " " << m;
-        out << " );\n";
-        if (s.psd.onGrid())
-        {
-            out << "    edges     (";
-            for (const auto e : s.psd.edges) out << " " << e;
-            out << " );\n";
-        }
-        out << "}\n";
+        out << "\n";
+        writePsdState(out, s.psd, "");
     }
+    //  The OTHER carried quantities (C427): one block, nothing when none.
+    writeCarriedBlock(out, s);
 }
 
 void writeStateDir(const std::map<std::string, ProcessStream>& streams,
@@ -3428,6 +3406,9 @@ ProcessStream readStreamState(const fs::path&       file,
             }
         }
     }
+    //  The other carried quantities (C427); an old file without the block
+    //  reads as "none carried".
+    readCarriedBlock(*d, s);
     return s;
 }
 

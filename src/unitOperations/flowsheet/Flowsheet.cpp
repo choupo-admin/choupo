@@ -202,7 +202,7 @@ void printStream(const ProcessStream& s, const ThermoPackage& thermo)
     else if (solidMass > 0.0)
         std::cout << "      (mole fractions below are the FLUID phase only --"
                      " the solids ride their own channel, listed above)\n";
-    std::cout << "      " << std::setprecision(pComp);
+    reportCarried(std::cout, s, "      ");   std::cout << "      " << std::setprecision(pComp);
     if (mass)
     {
         const scalar mw_mix = MWmix(s.z, thermo);

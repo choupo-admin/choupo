@@ -278,4 +278,14 @@ int Cyclone::solve(const DictPtr& dict,
     return 0;
 }
 
+UnitAcceptance Cyclone::acceptance() const
+{
+    UnitAcceptance a;   // phases and components: not declared (accepts all)
+    a.carried.declared = true;
+    a.carried.kinds    = { "sizeDistribution" };
+    a.carried.sentence =
+        "TRANSFORMS it by classification: the grade-efficiency curve of the cyclone model splits every size class between the captured solid and the gas that escapes, each outlet carrying its own renormalised distribution";
+    return a;
+}
+
 } // namespace Choupo

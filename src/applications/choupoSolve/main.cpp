@@ -511,6 +511,7 @@ try
     //  Size distributions: tabular AND the continuous laws, explicit as
     //  every other model family here.
     SizeDistribution::registerBuiltins();
+    CarriedKind::registerBuiltins();   // the carried-quantity kinds (C427 spike)
     VaporPressureModel::registerBuiltins();
     solver::FixedPointAccelerator::registerBuiltins();   // recycle accelerators beside Wegstein
     ActivityModel   ::registerBuiltins();

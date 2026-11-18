@@ -334,6 +334,7 @@ PRE  | PAR    | bin/curate/check_reactive_mesh.py                  | traced 2026
 PRE  | PAR    | bin/curate/check_kinetic_mesh.py                   | traced 2026-11-16 (strace -f, alone, 97 s): 0 writes in the tree; writes only unique /tmp names (mkdtemp kinmesh.*, one tempfile); 15 choupoSolve runs on copies in that directory; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_fixed_bed_scheme.py               | traced 2026-11-16 (strace -f, alone, 105 s): 1590 writes, every one in a TemporaryDirectory copy of the case (relative to its cwd=copy) and none under the tree; 15 choupoBatch runs; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/check_column_thermo_consistency.py      | traced 2026-11-16 (strace -f, alone, 97 s): compiles and writes build/linux64Gcc/columnThermoProbe (g++, ld) and runs 58 choupoSolve cases IN PLACE (809 writes under tutorials/, 515 of them tutorials/steady/distillation, e.g. acetone06_luyben_column_C1/reports/streams/streamTable.csv); a probe build into the linked build/ is an escaped write for ISO
+PRE  | SERIAL | bin/curate/check_carried_kinds.py                | builds the carriedProbe into build/linux64Gcc (g++, ld): a probe build into the linked build/ is an escaped write for ISO; every case it runs is in a private copy under /tmp
 
 # ---- POST ----------------------------------------------------------------------
 POST | SERIAL | bin/curate/check_degenerate_limits.py              | has its own pool of workers: it runs alone, with the machine

@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI. ---*/
+
+//  A limestone slurry: 1.0 t/h of calcite (9.991318 kmol/h) in 4.0 t/h of
+//  water (222.0372 kmol/h).  Its particle-size distribution is a teaching
+//  sieve table on the edges 45 / 90 / 180 / 355 / 710 um.
+
+componentMolarFlows
+{
+    CaCO3       9.991318 kmol/h;
+    water       222.0372 kmol/h;
+}
+
+T               298.15 K;
+P               101325 Pa;
+
+phases
+{
+    liquid
+    {
+        componentMolarFlows
+        {
+            water       222.0372 kmol/h;
+        }
+    }
+    solid
+    {
+        componentMolarFlows
+        {
+            CaCO3       9.991318 kmol/h;
+        }
+        particleSizeDistribution
+        {
+            edges     ( 45e-6  90e-6  180e-6  355e-6  710e-6 );
+            diameter  ( 63.6396103068e-6  127.279220614e-6  252.784493195e-6  502.045814642e-6 );   // geometric means of the edges
+            massFrac  ( 0.10  0.30  0.40  0.20 );
+        }
+    }
+}

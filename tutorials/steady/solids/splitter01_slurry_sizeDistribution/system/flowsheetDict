@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  splitter01_slurry_sizeDistribution / flowsheetDict
+
+  One splitter, one slurry.  The slurry carries a size distribution; each
+  branch must carry the SAME distribution (the kind's law of division) with
+  its own solid mass.  The splitter names no kind: it hands the quantity to
+  the kind's own division law.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        split;
+        type        splitter;
+        in          slurry;
+        outputs     ( branchA branchB );
+        operation   { fractions ( 0.3 0.7 ); }
+    }
+);

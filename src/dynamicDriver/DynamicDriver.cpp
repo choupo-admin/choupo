@@ -264,6 +264,14 @@ static void seedDynamicUnitsFrom0(const std::vector<DictPtr>& unitList,
         std::string rel = w;
         std::replace(rel.begin(), rel.end(), '.', '/');
         state[w] = StreamStateIO::readStreamState(fs::path("0") / rel, w, thermo);
+        //  C427 spike, criterion S3: no unit of this driver models a carried
+        //  quantity, so one in the state is refused here, not dropped.
+        if (!state[w].carried.empty())
+            throw std::runtime_error("time-integrated driver: stream '" + w
+                + "' carries the " + state[w].carried.front().kind + " '"
+                + state[w].carried.front().name + "', and no unit of this driver"
+                  " models a carried quantity (design record 5b/5d).  Take it"
+                  " off the state file, or run the case in choupoSolve.");
         if (!consumed.count(w) && verbosity >= 2)
             std::cout << "  [state] 0/" << rel << ": a product -- nothing"
                          " consumes it, so its value at t = 0 is its"
@@ -380,6 +388,7 @@ try
     //  Size distributions: tabular AND the continuous laws, explicit as
     //  every other model family here.
     SizeDistribution::registerBuiltins();
+    CarriedKind::registerBuiltins();   // the carried-quantity kinds (C427 spike)
     VaporPressureModel::registerBuiltins();
     ActivityModel     ::registerBuiltins();
     electrolyte::AqueousActivity::registerBuiltins();   // aqueous per-ion gamma (Davies)

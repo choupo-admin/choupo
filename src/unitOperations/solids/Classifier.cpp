@@ -123,4 +123,14 @@ int Classifier::solve(const DictPtr& dict, const ThermoPackage& thermo, int verb
     return 0;
 }
 
+UnitAcceptance Classifier::acceptance() const
+{
+    UnitAcceptance a;   // phases and components: not declared (accepts all)
+    a.carried.declared = true;
+    a.carried.kinds    = { "sizeDistribution" };
+    a.carried.sentence =
+        "TRANSFORMS it by classification: the declared partition curve sends each size class to the coarse or the fine product, each outlet carrying its own renormalised distribution";
+    return a;
+}
+
 } // namespace Choupo

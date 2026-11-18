@@ -232,4 +232,14 @@ int BagFilter::solve(const DictPtr& dict,
     return 0;
 }
 
+UnitAcceptance BagFilter::acceptance() const
+{
+    UnitAcceptance a;   // phases and components: not declared (accepts all)
+    a.carried.declared = true;
+    a.carried.kinds    = { "sizeDistribution" };
+    a.carried.sentence =
+        "TRANSFORMS it by classification: the grade-efficiency of the filter splits every size class between the captured cake and the escaping gas, each outlet carrying its own renormalised distribution";
+    return a;
+}
+
 } // namespace Choupo

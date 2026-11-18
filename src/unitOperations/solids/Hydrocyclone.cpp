@@ -174,4 +174,14 @@ int Hydrocyclone::solve(const DictPtr& dict, const ThermoPackage& thermo, int ve
     return 0;
 }
 
+UnitAcceptance Hydrocyclone::acceptance() const
+{
+    UnitAcceptance a;   // phases and components: not declared (accepts all)
+    a.carried.declared = true;
+    a.carried.kinds    = { "sizeDistribution" };
+    a.carried.sentence =
+        "TRANSFORMS it by classification: the partition curve sends each size class to the coarse underflow or the fine overflow, each outlet carrying its own renormalised distribution";
+    return a;
+}
+
 } // namespace Choupo

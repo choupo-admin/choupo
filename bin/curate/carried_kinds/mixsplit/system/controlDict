@@ -1,0 +1,13 @@
+//  C427 PROBE (bin/curate/check_carried_kinds.py) -- not a tutorial.
+//  Two liquid feeds that carry a material's mass flow and a polymer's zeroth
+//  and second moments go through a mixer and a splitter.
+application   choupoSolve;
+description   "C427 spike probe: carried quantities through a mixer and a splitter";
+verbosity     3;
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    elementBalance { }
+    energyBalance  { }
+}
