@@ -332,8 +332,8 @@ try:
             os.remove(os.path.join(dst6, "system", f))
         except OSError:
             pass
-    shutil.copy(os.path.join(ROOT, "data", "standards", "components", "toluene.dat"),
-                os.path.join(dst6, "constant", "components", "toluene.dat"))
+    case_records.copy_variation(os.path.join(ROOT, "data", "standards", "components", "toluene.dat"),
+                                os.path.join(dst6, "constant", "components", "toluene.dat"))
     tp = os.path.join(dst6, "constant", "thermoPhysPropDict")
     t6 = open(tp).read().replace("components ( cyclohexane nHeptane );",
                                  "components ( cyclohexane nHeptane toluene );")
