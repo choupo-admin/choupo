@@ -176,6 +176,18 @@ def classify(kind, name, key):
     return None
 
 
+def within_tol(got, want, tol):
+    """The ONE Python reader of a golden's tolerance column (bin/runTests'
+    within_tol is its awk twin): `abs:<v>` is |got-want| <= v; a plain number
+    is relative |got-want|/|want| <= tol, absolute when want is exactly 0."""
+    diff = abs(float(got) - float(want))
+    t = str(tol)
+    if t.startswith("abs:"):
+        return diff <= float(t[4:])
+    w = abs(float(want))
+    return (diff / w if w > 0 else diff) <= float(t)
+
+
 def fmt(v):
     return f"{v:.4g}"
 

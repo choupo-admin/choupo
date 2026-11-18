@@ -57,6 +57,7 @@ from pathlib import Path
 #  The `utility` golden row's rule has ONE Python home (C37 item 2).
 sys.path.insert(0, str(Path(__file__).resolve().parent / "curate"))
 import utility_rows  # noqa: E402
+import golden_bands  # noqa: E402   (the one reader of a golden tolerance token)
 import case_records  # noqa: E402   (C413: the manifest reader of the pin form)
 
 IMPORTER_VERSION = "3"
@@ -1529,7 +1530,7 @@ def validate_staged_agrees(staged, out):
             skipped_kinds[kind] = skipped_kinds.get(kind, 0) + 1
             continue
         want = float(f[3])
-        tol = float(f[4]) if len(f) > 4 else 1e-4
+        tol = f[4] if len(f) > 4 else "1e-4"   # a number, or `abs:<v>` (golden_bands.within_tol)
         if kind == "diag":
             got = diags.get(name, {}).get(key)
         elif kind == "kpi":
@@ -1599,10 +1600,8 @@ def validate_staged_agrees(staged, out):
         #  passes and this refused).  Reading the same row under a different
         #  rule is not a stricter check, it is a different claim -- the same
         #  lesson the utility-name normalisation above was paid for.
-        diff = abs(float(got) - want)
-        rel = diff / abs(want) if abs(want) > 1e-9 else diff
-        if rel > tol:
-            bad.append("%s %s.%s: sealed %.6g vs golden %.6g (reltol %g)"
+        if not golden_bands.within_tol(got, want, tol):
+            bad.append("%s %s.%s: sealed %.6g vs golden %.6g (tolerance %s)"
                        % (kind, name, key, float(got), want, tol))
     if bad:
         die("validation FAILED: the staged sealed case RUNS but does not"
