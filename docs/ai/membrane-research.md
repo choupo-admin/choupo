@@ -65,6 +65,28 @@ after the fit, naming what changed: a stale fit is never used in silence.
   polarisation) or `observed` (then declare the film coefficient of your
   cell).
 
+* **Uncharged solutes (glucose, sucrose, glycerol, boric acid).**  A feed
+  component with no ion decomposition is a NEUTRAL solute when the DSPM-DE
+  law's block declares its two facts:
+  `transportParameters { neutralSolutes { glucose { radius 3.65e-10; D0 6.9e-10; } } }`
+  (Stokes radius in m, 25 C diffusivity in m2/s).  It needs an IMPOSED `Jv`
+  (a neutral under `dP` refuses by name).  It is how r_p and A_k/dx are fitted
+  before the charge: an uncharged solute does not mix size and charge.
+  Theory Guide, `sec:dspmde-neutral`.
+* **Laboratory records.**  A dataset is one file whose rows are the operating
+  points: `c_<salt>` columns (mol/m3) for the feed, `Jv` (m/s, the measured
+  flux), `R_<ion>` (the observed rejection, a fraction) and, beside an imposed
+  flux, `dP_applied` (Pa), CARRIED and never fitted.  A cell written `nan` is a
+  quantity not measured at that point (no term, never a zero).  Several
+  concentrations x several pressures live in ONE file; an operation selects its
+  rows with `discard ( <row> ... );` on its evidence entry (1-based, announced),
+  and the same file may appear as `role fit` and as `role validation` when no
+  row is kept by both.  The complete path, with a template filled with a
+  published dataset: `tutorials/props/membrane/dspmde02_lab_characterisation_template`
+  (README: what to measure, step by step).  A fit publishes `feedC_mean_molm3`,
+  the mean total feed concentration of its fit rows, so a view across the
+  operations can plot X_d against concentration (the charge isotherm).
+
 ## 3. What comes out
 
 * **From the fit:** each free parameter with its 95 % half-width, the
@@ -93,7 +115,11 @@ after the fit, naming what changed: a stale fit is never used in silence.
 | **SDEM** (Yaroshchuk, Bruening and Licon Bernal 2013) | solution-diffusion of each ion, coupled by the electric field that zero current imposes; NO fixed charge; constant permeances; ideal dilute solution | one permeance per ion -- calibratable from single-salt tests through the ambipolar salt permeance |
 | **solution-diffusion** | each solute crosses independently, J_s = B_s (c_wall - c_p); no coupling (an ion-declared feed then gives a charged permeate, and the run says so) | A_w and one B_s per solute |
 
-The DSPM-DE fit is witnessed on published data (membrane24); the SDEM,
+The DSPM-DE fit is witnessed on published data (membrane24, and
+`tutorials/props/membrane/labban2017_dspmde_validation`: parameters from
+uncharged solutes and single-salt NaCl, two mixtures and seawater
+PREDICTED against a band declared before the fit, the article's own
+parameters run in the engine beside it); the SDEM,
 solution-diffusion and constant-rejection fits run through the same machinery
 but have no real-data witness yet.
 
@@ -169,9 +195,11 @@ quoted without them is not comparable with another.
   membrane's own parameters do not depend on temperature (the run
   temperature reaches the solution side: viscosity, the D0 correction,
   osmotic and electrostatic terms).
-* DSPM-DE takes salts, ion by ion; in the polarisation film a neutral
-  solute (boric acid, silica) takes the unit's own diffusivity, not a
-  species record's.
+* DSPM-DE takes salts, ion by ion, and neutral solutes declared in
+  `neutralSolutes` (imposed `Jv` only; no osmotic pressure of a neutral in the
+  water-flux closure, no mutual hindrance); in the polarisation film of the
+  spiral-wound units a neutral solute (boric acid, silica) takes the unit's
+  own diffusivity, not a species record's.
 * The ion radii and D0 are not fingerprinted by the fit: change one and the
   record is not marked stale -- re-fit yourself.
 * In the browser the fit runs and reports its verdict, but the record it

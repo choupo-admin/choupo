@@ -1,0 +1,64 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: Lab_X_c3 -- WRITTEN BY A PROPERTIES-MODE FIT, not by hand.
+
+  Operation 'fit_X_c3' of case 'dspmde02_lab_characterisation_template' (fitParameters,
+  residual kind membrane, model DSPM-DE) fitted the values marked FITTED
+  below to the datasets named in fit {}; every other value is base record
+  Lab_pore's.  Fitted values are rounded to 6 significant figures,
+  and the verdict was taken at the rounded values.
+
+  A Process-mode run checks the fingerprints in fit {} before it uses this
+  record and REFUSES it, naming what changed, when a dataset, the fit block
+  or the base record has moved since: re-run the case in Properties mode
+  (runCase <case> props) to re-fit it.  An edit here is overwritten by the
+  next Properties-mode run.
+\*---------------------------------------------------------------------------*/
+
+name           Lab_X_c3;
+kind           NF;
+manufacturer   "none (a laboratory membrane)";
+
+provenance     fittedToCase;
+fittedAgainst  dspmde02_lab_characterisation_template;
+
+A_w                   1e-10;   // m/(s Pa), raw SI, held at Lab_pore's value
+
+poreModel
+{
+    poreRadius            4.94973e-10;   // m, held at Lab_pore's value
+    porosityOverThickness 331196;   // 1/m, held at Lab_pore's value
+    chargeDensity         -73.8395;   // mol/m3, signed, FITTED
+    poreDielectric        53.47;   // -, held at Lab_pore's value
+}
+
+fit
+{
+    origin            fitted;
+    method            "fitParameters, residual kind membrane, model DSPM-DE: Levenberg-Marquardt on observed rejections, weighting absolute";
+    fittedInCase      dspmde02_lab_characterisation_template;
+    operation         fit_X_c3;
+    propsDict         "system/propsDict";
+    fitBlockSha256    "06a15c6262d82f97161fe332fe74cdf65131790ced77877358a9265bb837f14e";
+    baseRecord        Lab_pore;
+    baseRecordSha256  "17a312330a316fbe48bc04ed25c11f8197a04b9a35899ad27723022685ecc0c6";
+    recordSha256      "35fadc55bdb0611f1d10a1c0c698a14801d0317d2624463ed3ac4357c48b2f89";
+    datasets
+    (
+        { role fit; dataset "constant/experimental/lab_salts.dat"; sha256 "19dda1092ca0c741bc2a6318ab4c26624070fccc2ac73e716a8d0359e347d6ea"; }
+    );
+    verdict           validationRefused;
+    acceptance        none;   // no band was declared before the fit
+    heldOut           { measurements 0; AADPoints none; }
+    inSample          { measurements 15; AADPoints 11.8455; chi2Reduced 0.0208705; }
+    identifiability   { conditionNumber 1; maxAbsCorrelation 0; }
+    values            // the 95 % half-width is t(dof) x the standard error
+    {
+        poreModel
+        {
+            chargeDensity  { origin fitted; stderr 44.4777; ci95 95.4047; unit "mol/m3"; }
+        }
+    }
+    correlation
+    (
+    );
+}

@@ -186,6 +186,36 @@ Description
         adaptive grid, `graded` with no grading, `gridTolerance` or
         `gridPasses` on a fixed grid.
 
+    NEUTRAL SOLUTES (C176/C177, 2026-11-19).  A feed component with no
+    `electrolyte { cation; anion; }` block -- glucose, sucrose, glycerol,
+    boric acid -- is a NEUTRAL solute when the case declares its transport
+    facts in the law's own block:
+
+        transportParameters
+        {
+            neutralSolutes { glucose { radius 3.65e-10; D0 6.90e-10; } }
+        }
+
+    (the Stokes radius [m] and the 25 C free-solution diffusivity [m2/s];
+    D0 is corrected to T by the same Stokes-Einstein factor as the ions').
+    A neutral carries no charge, so it does not enter the Donnan, Born or
+    electroneutrality terms and decouples from every ion: the ENP across the
+    pore, with the partition Phi_S = (1 - lambda)^2 at both faces and the
+    hindrance pair K_d, K_c, has the closed-form solution of Bowen, Mohammad
+    & Hilal (1997), Eq. 28 (Labban et al. 2017, Eq. 28-29),
+
+        c_p / c_w = Phi_S K_c / (1 - exp(-Pe) (1 - Phi_S K_c)),
+        Pe = K_c J_v / (K_d D A_k/dx),
+
+    and the film (Geraldes & Afonso, one neutral, no migration) closes it
+    exactly: c_w = k* c_b / (k* - J_v R_real), k* = k Xi(J_v/k).  A solute as
+    large as the pore (lambda >= 1) is excluded (R_real = 1).  A neutral
+    solute REQUIRES an imposed J_v (the props bench `poreTransport`, the
+    membrane residual of fitParameters with a `Jv` column): the osmotic
+    pressure of a neutral is not in the water-flux closure of the station.
+    The neutral is solved beside the ion pore in the same call (a feed of
+    neutrals alone has no pore Newton at all).
+
     The classic NF SIGNATURE the tutorials demonstrate falls out of (2)-(4):
     a divalent co-ion (e.g. SO4 against a negative X_d) is excluded far more
     strongly than a monovalent one, so MgSO4 / CaCl2 are rejected above NaCl
@@ -220,6 +250,8 @@ Description
 
 #include "TransportModel.H"
 #include "PoreNernstPlanck.H"
+
+#include <map>
 
 namespace Choupo {
 namespace membrane {
@@ -286,6 +318,11 @@ private:
     mutable bool continuationSaid_ = false;  // first continuation announced once
     mutable bool noFluxSaid_      = false;   // a station with no water flux, said once
     mutable bool excludedSaid_    = false;   // an ion the pore excludes, said once
+    //  The neutral solutes the case declared (`neutralSolutes {}`): the
+    //  Stokes radius [m] and the 25 C D0 [m2/s] of each.
+    struct NeutralSolute { scalar radius = 0.0; scalar D0 = 0.0; };
+    std::map<std::string, NeutralSolute> neutral_;
+    mutable bool neutralSaid_     = false;   // the neutral route, announced once
     // The previous station's converged state: the next station's start.
     mutable pore::PoreSolution lastPore_;
     mutable bool               haveLastPore_ = false;

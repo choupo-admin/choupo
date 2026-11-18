@@ -1,0 +1,43 @@
+/*--------------------------------------------------------------------------*\
+  LABBAN 2017 -- NaCl 1000 mg/kg at pH 7 through the LbL-C membrane
+
+  LbL-C hollow-fibre NF membrane, single salt NaCl 1000 mg/kg, pH 7.0 (the membrane's isoelectric
+  point, p. 19), observed rejection at 1, 2 and 3 bar.
+  REJECTION: Fig. 7 (manuscript p. 20, journal p. 25), the up-triangles (pH = 7.0), centroid of each
+  marker read from the figure at 400 dpi: 0.135, 0.196, 0.241.  At 1 bar the pH 7 and pH 8 symbols
+  overlap and are drawn as one star: the star's centre (0.135) is read for both.  DIGITISED,
+  reading uncertainty +-0.004 (marker centroid, triangle offset).
+  FEED: 1000 mg/kg / 58.44 g/mol (catalogue NaCl record) = 17.11 mol/m3.
+  FLUX: NOT reported for these points.  Taken from the pure-water line of Fig. 6 (manuscript p. 19),
+  digitised: slope 10.30 LMH/bar = 2.862e-6 m/s/bar, J_v = 2.862e-6 (dP - 0.077 bar) =
+  2.642e-6, 5.504e-6, 8.366e-6 m/s at 1, 2, 3 bar.  This IGNORES the osmotic back-pressure of the salt
+  (about 0.1 bar at 1 bar), so the flux is up to ~10 %% HIGH at 1 bar: an ASSUMPTION of this case.
+\*--------------------------------------------------------------------------*/
+
+property     membrane.rejection;
+membrane     LbLC;
+
+provenance
+{
+    source       measured;
+    reviewStatus digitisedFromFigure;
+    citation     "O. Labban, C. Liu, T. H. Chong, J. H. Lienhard V, Fundamentals of low-pressure nanofiltration: Membrane characterization, modeling, and understanding the multi-ionic interactions in water softening, J. Membr. Sci. 521 (2017) 18-32, doi:10.1016/j.memsci.2016.08.062, Figure 7 (rejection) and Figure 6 (flux)";
+    identity     "one series of the study cited above (accepted manuscript read page by page as images and the journal version for the tables); no doi identity of its own";
+    licence      "facts: numbers transcribed from a published article (Elsevier copyright); the article and its figures are not in the tree";
+}
+
+T            298.15 K;     // ASSUMED: the article states no temperature (see the case README)
+feed         { NaCl 17.1116 mol/m3; }
+
+columns
+(
+    { name Jv;  unit m/s; }
+    { name R_NaCl;  unit -; }
+);
+
+data
+(
+    2.642000e-06  0.1350
+    5.504000e-06  0.1960
+    8.366000e-06  0.2410
+);

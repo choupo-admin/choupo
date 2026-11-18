@@ -1,0 +1,41 @@
+/*--------------------------------------------------------------------------*\
+  LABBAN 2017 -- NaCl + Na2SO4, fit rows
+
+  LbL-C hollow-fibre NF membrane, NaCl + Na2SO4 mixture, observed ion rejections at 2, 4 bar -- the FIT (2 and 4 bar) rows.
+  REJECTIONS and FLUX: Table 8 (accepted manuscript p. 21, journal p. 26), read on the page image,
+  every value a TABLE value (rejection in % there, a fraction here; flux in LMH there, m/s here:
+  1 LMH = 1/3.6e6 m/s).  The ion rows are the OBSERVED rejections 1 - c_p/c_b of each ion.
+  FEED: Table 6, row NaCl + Na2SO4: Na 718.7, SO4 678.2, Cl 606 (mg/kg).  Salts from the measured cations and sulfate (the article
+  measured them by ICP-OES; chloride follows by electroneutrality), molar masses of the catalogue
+  species records, density 1 kg/L assumed.  Written as salts because DSPM-DE decomposes them.
+  The `fit` / `heldout` split of the three pressures is this case's: 2 and 4 bar fit, 3 bar held out.
+\*--------------------------------------------------------------------------*/
+
+property     membrane.rejection;
+membrane     LbLC;
+
+provenance
+{
+    source       measured;
+    reviewStatus checked;
+    citation     "O. Labban, C. Liu, T. H. Chong, J. H. Lienhard V, Fundamentals of low-pressure nanofiltration: Membrane characterization, modeling, and understanding the multi-ionic interactions in water softening, J. Membr. Sci. 521 (2017) 18-32, doi:10.1016/j.memsci.2016.08.062, Table 8 and Table 6";
+    identity     "one series of the study cited above (accepted manuscript read page by page as images and the journal version for the tables); no doi identity of its own";
+    licence      "facts: numbers transcribed from a published article (Elsevier copyright); the article and its figures are not in the tree";
+}
+
+T            298.15 K;     // ASSUMED: the article states no temperature (see the case README)
+feed         { Na2SO4 7.0602 mol/m3; NaCl 17.1411 mol/m3; }
+
+columns
+(
+    { name Jv;  unit m/s; }
+    { name R_Na;  unit -; }
+    { name R_SO4;  unit -; }
+    { name R_Cl;  unit -; }
+);
+
+data
+(
+    3.944444e-06  0.3780  0.9450  -0.0900
+    8.777778e-06  0.3940  0.9380  -0.0600
+);

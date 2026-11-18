@@ -474,6 +474,19 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
                 measCols.push_back(j);
                 continue;
             }
+            if (n == "dP_applied")
+            {
+                //  The pressure the laboratory read beside an IMPOSED flux: carried so
+                //  the record is the whole experiment, never fitted and never scored.
+                //  Named and announced (an ignored column is a measurement the author
+                //  would believe was fitted); refused beside an imposed `dP`.
+                if (cdP >= 0)
+                    throw std::runtime_error(where + ": `dP_applied` beside an imposed"
+                        " `dP` is the same number twice");
+                std::cout << "      [column] " << where << ": `dP_applied` is CARRIED, not"
+                             " fitted -- the flux column `Jv` is what the law is given\n";
+                continue;
+            }
             if (n.rfind("sigma_", 0) == 0)
             {
                 const int k = t.column(n.substr(6));
@@ -485,7 +498,7 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
             }
             throw std::runtime_error(where + ": column '" + n + "' is not one this residual"
                 " reads -- Accepted: Jv | dP, T, c_<component>, R_<component or ion>,"
-                " Jv_measured, sigma_<column>.  An ignored column is a measurement the author"
+                " Jv_measured, dP_applied (carried beside an imposed Jv), sigma_<column>.  An ignored column is a measurement the author"
                 " believes was fitted.");
         }
         if (measCols.empty())
@@ -510,11 +523,17 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
         std::vector<std::size_t> qIdx;
         for (std::size_t j : measCols)
         {
+            //  a column with no measured cell in this dataset is not one of its quantities
+            //  (the default views draw what a series HAS)
+            bool any = false;
+            for (const auto& rr : t.rows) any = any || std::isfinite(rr[j]);
+            if (!any) continue;
             auto it = std::find(memQuantities_.begin(), memQuantities_.end(), t.names[j]);
             if (it == memQuantities_.end()) { memQuantities_.push_back(t.names[j]); it = memQuantities_.end() - 1; }
             qIdx.push_back(std::size_t(it - memQuantities_.begin()));
         }
         memSetQuantities_.push_back(qIdx);
+        std::size_t blanks = 0;
         for (const auto& r : t.rows)
         {
             MemRow row;
@@ -535,6 +554,10 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
                 throw std::runtime_error(where + ": every imposed Jv / dP must be positive");
             for (std::size_t j : measCols)
             {
+                //  A cell written `nan` is a quantity NOT MEASURED at this point (an ion the
+                //  laboratory did not analyse in this feed): no term, counted and announced
+                //  per dataset below -- never a zero, which would be a measurement.
+                if (!std::isfinite(r[j])) { ++blanks; continue; }
                 MemMeas m;
                 m.column = t.names[j];
                 m.isFlux = (m.column == "Jv_measured");
@@ -547,8 +570,12 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
                     throw std::runtime_error(where + ": Jv_measured must be > 0");
                 row.meas.push_back(m);
             }
+            if (row.meas.empty()) continue;          // nothing measured at this point
             rows.push_back(std::move(row));
         }
+        if (blanks)
+            std::cout << "      [blank] " << where << ": " << blanks << " cell(s) written `nan` ="
+                         " NOT MEASURED: no term, no zero\n";
     }
     std::size_t nFitTerms = 0, nHeldTerms = 0;
     for (const auto& r : rows) (r.heldOut ? nHeldTerms : nFitTerms) += r.meas.size();
@@ -1064,6 +1091,21 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
             diag_[k + ".ci95"]   = tc * se[i];
         }
         diag_["sensitivity." + std::to_string(i)] = sens[i];
+    }
+    //  THE FEED CONCENTRATION THE FIT WAS TAKEN AT (C177): the mean over the FIT rows of
+    //  the total salt/solute molarity, so a view across operations can plot a fitted
+    //  parameter (X_d per concentration: the charge isotherm) against it.
+    {
+        scalar sum = 0.0; std::size_t n = 0;
+        for (const auto& r : rows)
+        {
+            if (r.heldOut) continue;
+            scalar c = 0.0;
+            for (const auto& f : r.feed) c += f.second;
+            sum += c * 1.0e3; ++n;                      // kmol/m3 -> mol/m3
+        }
+        if (n) diag_["feedC_mean_molm3"] = sum / scalar(n);
+        memUnits_["feedC_mean_molm3"] = "mol/m3";
     }
     headline_ = { "heldOut_AAD_pct", "chi2_reduced", "converged", "identifiable" };
     if (!nH) headline_.erase(headline_.begin());

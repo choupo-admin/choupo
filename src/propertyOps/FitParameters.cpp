@@ -3072,7 +3072,7 @@ std::string FitParameters::diagnosticUnit(const std::string& key) const
         //  rejections, % over fluxes, nothing over a mixture of the two
         if (key == "heldOut_AAD_pct")  return memHeldOutUnit_;
         if (key == "inSample_AAD_pct") return memInSampleUnit_;
-        return {};
+        return key == "feedC_mean_molm3" ? std::string("mol/m3") : std::string();   // C177: the isotherm's abscissa
     }
     //  A fitted pair parameter in the unit its MODEL declares (C172):
     //  fit.<i>.value / .stderr / .ci95, and the path-keyed readback.

@@ -1,0 +1,64 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: LbLC_eps -- WRITTEN BY A PROPERTIES-MODE FIT, not by hand.
+
+  Operation 'fit_eps_NaCl_pH7' of case 'labban2017_dspmde_validation' (fitParameters,
+  residual kind membrane, model DSPM-DE) fitted the values marked FITTED
+  below to the datasets named in fit {}; every other value is base record
+  LbLC_pore's.  Fitted values are rounded to 6 significant figures,
+  and the verdict was taken at the rounded values.
+
+  A Process-mode run checks the fingerprints in fit {} before it uses this
+  record and REFUSES it, naming what changed, when a dataset, the fit block
+  or the base record has moved since: re-run the case in Properties mode
+  (runCase <case> props) to re-fit it.  An edit here is overwritten by the
+  next Properties-mode run.
+\*---------------------------------------------------------------------------*/
+
+name           LbLC_eps;
+kind           NF;
+manufacturer   "none (a laboratory membrane: Labban et al. 2017, Section 3.2)";
+
+provenance     fittedToCase;
+fittedAgainst  labban2017_dspmde_validation;
+
+A_w                   1e-10;   // m/(s Pa), raw SI, held at LbLC_pore's value
+
+poreModel
+{
+    poreRadius            4.94973e-10;   // m, held at LbLC_pore's value
+    porosityOverThickness 331196;   // 1/m, held at LbLC_pore's value
+    chargeDensity         0;   // mol/m3, signed, held at LbLC_pore's value
+    poreDielectric        53.4675;   // -, FITTED
+}
+
+fit
+{
+    origin            fitted;
+    method            "fitParameters, residual kind membrane, model DSPM-DE: Levenberg-Marquardt on observed rejections, weighting absolute";
+    fittedInCase      labban2017_dspmde_validation;
+    operation         fit_eps_NaCl_pH7;
+    propsDict         "system/propsDict";
+    fitBlockSha256    "480b51bc70f9c913bd7485f0fa01746a661eced8ad957fb88737b3b0c0067b08";
+    baseRecord        LbLC_pore;
+    baseRecordSha256  "db4478483526f05acbc82185f73ffafe6c5b1c91971253a84f92782850c792a7";
+    recordSha256      "22e206c495dc299118c1507ce4c73af1c22c90bad443401407db6c9f4264ef61";
+    datasets
+    (
+        { role fit; dataset "constant/experimental/labban2017_NaCl_pH7.dat"; sha256 "220859cb25e7f218cda2a1d94d1e8000e79d8365be191c2f89c0d377fb35c3ce"; }
+    );
+    verdict           validationRefused;
+    acceptance        none;   // no band was declared before the fit
+    heldOut           { measurements 0; AADPoints none; }
+    inSample          { measurements 3; AADPoints 1.80337; chi2Reduced 0.000676648; }
+    identifiability   { conditionNumber 1; maxAbsCorrelation 0; }
+    values            // the 95 % half-width is t(dof) x the standard error
+    {
+        poreModel
+        {
+            poreDielectric  { origin fitted; stderr 2.0423; ci95 8.78802; unit "-"; }
+        }
+    }
+    correlation
+    (
+    );
+}

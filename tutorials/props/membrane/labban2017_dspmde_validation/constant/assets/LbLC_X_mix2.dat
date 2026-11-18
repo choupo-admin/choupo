@@ -1,0 +1,65 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: LbLC_X_mix2 -- WRITTEN BY A PROPERTIES-MODE FIT, not by hand.
+
+  Operation 'fit_X_mix2' of case 'labban2017_dspmde_validation' (fitParameters,
+  residual kind membrane, model DSPM-DE) fitted the values marked FITTED
+  below to the datasets named in fit {}; every other value is base record
+  LbLC_eps's.  Fitted values are rounded to 6 significant figures,
+  and the verdict was taken at the rounded values.
+
+  A Process-mode run checks the fingerprints in fit {} before it uses this
+  record and REFUSES it, naming what changed, when a dataset, the fit block
+  or the base record has moved since: re-run the case in Properties mode
+  (runCase <case> props) to re-fit it.  An edit here is overwritten by the
+  next Properties-mode run.
+\*---------------------------------------------------------------------------*/
+
+name           LbLC_X_mix2;
+kind           NF;
+manufacturer   "none (a laboratory membrane: Labban et al. 2017, Section 3.2)";
+
+provenance     fittedToCase;
+fittedAgainst  labban2017_dspmde_validation;
+
+A_w                   1e-10;   // m/(s Pa), raw SI, held at LbLC_eps's value
+
+poreModel
+{
+    poreRadius            4.94973e-10;   // m, held at LbLC_eps's value
+    porosityOverThickness 331196;   // 1/m, held at LbLC_eps's value
+    chargeDensity         -4.48159;   // mol/m3, signed, FITTED
+    poreDielectric        53.4675;   // -, held at LbLC_eps's value
+}
+
+fit
+{
+    origin            fitted;
+    method            "fitParameters, residual kind membrane, model DSPM-DE: Levenberg-Marquardt on observed rejections, weighting absolute";
+    fittedInCase      labban2017_dspmde_validation;
+    operation         fit_X_mix2;
+    propsDict         "system/propsDict";
+    fitBlockSha256    "6436b418ca705656d3aa9be0b60e654409b97f4009d98669cca56312ed57f5ee";
+    baseRecord        LbLC_eps;
+    baseRecordSha256  "f249c624fc2fbdaa26634dddf4b3147a8c839efa67b722caf2e259e844a2853f";
+    recordSha256      "dc9414975ca4c0c74e45646e709fa63e616071aa5af6b7545e07b5da7fd8115a";
+    datasets
+    (
+        { role fit; dataset "constant/experimental/labban2017_mix2_fit.dat"; sha256 "be4f280327df926ebc7490a2bbc9a1dba3b2a7fb122cf665e93ed1b9019d9e93"; }
+        { role validation; dataset "constant/experimental/labban2017_mix2_heldout.dat"; sha256 "465f62439b471cca61c946ce8e671b2bb07cf76584e9e217af4cb77e3a2eb86d"; }
+    );
+    verdict           validated;
+    acceptance        { maxAADPoints 5; origin "declared before any fit of this case was run: X_d fitted on the 2 and 4 bar rows of one feed must predict the 3 bar row to within 5 points of rejection averaged over its ions -- about half the 12 percent the article claims for its own all-pressure fit, on rejections that reach 99 percent; an engineering criterion, not a measurement uncertainty (the article publishes none)"; }
+    heldOut           { measurements 3; AADPoints 3.35688; }
+    inSample          { measurements 6; AADPoints 3.74532; chi2Reduced 0.00237823; }
+    identifiability   { conditionNumber 1; maxAbsCorrelation 0; }
+    values            // the 95 % half-width is t(dof) x the standard error
+    {
+        poreModel
+        {
+            chargeDensity  { origin fitted; stderr 1.8607; ci95 4.78386; unit "mol/m3"; }
+        }
+    }
+    correlation
+    (
+    );
+}

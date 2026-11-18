@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- the solutes of Labban et al. (2017).  The SALTS
+  (NaCl, MgCl2, Na2SO4, CaCl2) carry their ion stoichiometry, which the
+  DSPM-DE law decomposes; their ions' radii and D0 are this case's own
+  species records (constant/species/, the article's Table 2: Stokes radii).
+  The three UNCHARGED solutes (glycerol, glucose, sucrose) are plain
+  components: their radius and D0 are declared in the operations'
+  `transportParameters { neutralSolutes { ... } }` (the article's Table 1).
+  No phase equilibrium is computed; the run is at 298.15 K, where the
+  Stokes-Einstein correction of every D0 is exactly 1.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+
+components       ( water NaCl MgCl2 Na2SO4 CaCl2 glycerol glucose sucrose );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

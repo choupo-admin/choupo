@@ -1,0 +1,71 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Ca.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+
+  CASE-LOCAL VARIATION of the catalogue species/Ca.dat (Labban 2017 validation case): the body is
+  verbatim, EXCEPT the `transport` block (Stokes radius and D_inf of Labban et al. 2017, Table 2).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Ca;
+formula     "Ca+2";
+charge  +2;
+MW { value 40.078; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -542830; unit J/mol;}
+sAq  { value -53.1;  unit J/mol/K;}
+        // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+// T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+// cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+// 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+// only thing the engine consumes).
+cpAvg298
+{
+    model  crissCobble1964;
+    scale  crissCobbleAbsolute;
+    units  "cal/mol/K";
+    averageFrom298
+    (
+        { T 298.15; value 54; }
+        { T 333.15; value 45; }
+        { T 373.15; value 59; }
+        { T 423.15; value 60; }
+        { T 473.15; value 66; }
+    );
+    source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
+}
+}
+transport
+{
+    //  CASE-LOCAL (variationOf Ca): the Stokes radius r_i and the free-solution
+    //  diffusivity D_inf of Labban, Liu, Chong & Lienhard, J. Membr. Sci. 521
+    //  (2017) 18-32, Table 2 (accepted manuscript p. 16), the values their
+    //  DSPM-DE was run with.  A Stokes radius, NOT the catalogue's hydrated
+    //  (Nightingale) radius: a pore fitted on one convention cannot be read
+    //  with the other, and must not be copied back into the catalogue.
+    radius { value 3.090e-10; unit m; }      // 0.309 nm
+    D0     { value 7.920e-10; unit m2/s; }   // 0.792 x 1e-9 m2/s
+    provenance
+    {
+        radius { source "Labban et al., J. Membr. Sci. 521 (2017), Table 2: Ca, r_i = 0.309 nm (read on the page image)"; origin literature; reviewStatus interim; }
+        D0     { source "Labban et al., J. Membr. Sci. 521 (2017), Table 2: Ca, D_inf = 0.792 x 1e-9 m2/s (read on the page image)"; origin literature; reviewStatus interim; }
+    }
+}
+
+volumetric
+{
+    //  STANDARD-STATE (infinite-dilution) partial molar volume,
+    //  CONVENTIONAL scale V0(H+) = 0 (see the convention profile:
+    //  only electroneutral sums are physical).
+    V0          { value -17.85; unit cm3/mol; }
+    convention  MilleroConventional-v1;
+    Trange      ( 293 303 );   // 25 C table; +-5 K working band, extrapolation announced by the consumer's domain refusals
+    source      "Millero, Chem. Rev. 71 (1971) 147, Table III (Conventional Partial Molal Volumes of Ions in Water at 0, 25 and 50 degC), 25 degC block, p. 162 -- PRIMARY PAGE READ 2026-08-24 (delegated review, docs/design/interim-review-2026-08-24.md).  Millero states the table is itself taken from the compilation of his ref 81";
+}
+
+variationOf Ca;
+variationReason "Labban et al. 2017 (J. Membr. Sci. 521) Table 2 Stokes radius and D_inf replace the catalogue hydrated radius and Li-Gregory D0 for this validation case only: a pore fitted on one radius convention cannot be read with the other.";

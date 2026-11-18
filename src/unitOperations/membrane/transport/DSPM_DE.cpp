@@ -198,13 +198,13 @@ void DSPM_DE::readParameters(const DictPtr& params)
     if (!params) return;
     for (const auto& k : params->keys())
         if (k != "poreSolver" && k != "hindrance" && k != "activity"
-            && k != "bulkDielectric")
+            && k != "bulkDielectric" && k != "neutralSolutes")
             throw std::runtime_error(ctx + " declares `" + k + "`, which this"
                 " law does not read.  DSPM-DE reads `poreSolver { method"
                 " finiteDifference; nodes <n>; grid uniform | graded |"
                 " adaptive; wallClosure porePermeate | solutionDiffusion; }`,"
                 " `hindrance`,"
-                " `activity` and `bulkDielectric` there.");
+                " `activity`, `bulkDielectric` and `neutralSolutes` there.");
 
     //  The declared model choices (DSPM_DE.H, "DECLARED CHOICES").  Each
     //  word refuses an unknown spelling naming the accepted list.
@@ -241,6 +241,33 @@ void DSPM_DE::readParameters(const DictPtr& params)
         activity_ = (w == "ideal")              ? Activity::Ideal
                   : (w == "bulkOverPoreDavies") ? Activity::BulkOverPoreDavies
                                                 : Activity::WallDavies;
+    }
+    if (params->found("neutralSolutes"))
+    {
+        //  A NEUTRAL solute's transport facts, declared by the case (C176):
+        //  `neutralSolutes { <component> { radius <m>; D0 <m2/s>; } }`.
+        const auto ns = params->subDict("neutralSolutes");
+        for (const auto& nm : ns->keys())
+        {
+            const auto e = ns->subDict(nm);
+            for (const auto& k : e->keys())
+                if (k != "radius" && k != "D0")
+                    throw std::runtime_error(ctx + ".neutralSolutes." + nm
+                        + " declares `" + k + "`; a neutral solute has a"
+                          " `radius` (Stokes, m) and a `D0` (m2/s, 25 C).");
+            if (!e->found("radius") || !e->found("D0"))
+                throw std::runtime_error(ctx + ".neutralSolutes." + nm
+                    + " needs both `radius` (m) and `D0` (m2/s): the steric"
+                      " partition and the hindrance read the radius, the"
+                      " Peclet number the diffusivity.");
+            NeutralSolute n;
+            n.radius = e->lookupScalar("radius", Dims::length);
+            n.D0     = e->lookupScalar("D0");
+            if (!(n.radius > 0.0) || !(n.D0 > 0.0))
+                throw std::runtime_error(ctx + ".neutralSolutes." + nm
+                    + ": radius and D0 must be positive");
+            neutral_[nm] = n;
+        }
     }
     if (params->found("bulkDielectric"))
     {
@@ -543,15 +570,31 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     //  The unit's table says what this law did to the species records' D0
     //  (review DX-07), by the same decision the polarisation builder uses.
     stokesEinstein::recordIonD0(se);
+    std::vector<int>         neutralSlot(Ns, -1);
+    std::vector<std::size_t> neutrals;         // the solute slots that are neutral
     for (std::size_t s = 0; s < Ns; ++s)
     {
         const auto& comp = thermo.comp(soluteIdx[s]);
+        if (!comp.hasElectrolyteSpec() && neutral_.count(comp.name()))
+        {
+            if (!imposed)
+                throw std::runtime_error("transport DSPM-DE: '" + comp.name()
+                    + "' is declared a NEUTRAL solute, which needs an IMPOSED"
+                      " J_v (the props bench `poreTransport`, or a `Jv` column"
+                      " of a membrane fit): a neutral's osmotic pressure is"
+                      " not in the station's water-flux closure.");
+            neutralSlot[s] = int(neutrals.size());
+            neutrals.push_back(s);
+            continue;
+        }
         if (!comp.hasElectrolyteSpec())
             throw std::runtime_error("transport DSPM-DE: solute '" + comp.name()
                 + "' has no electrolyte{ cation; anion; } block -- DSPM-DE works "
                   "ion-by-ion and needs the salt's ion decomposition.  Add the "
                   "block to its component .dat, or use a salt that carries one "
-                  "(NaCl, CaCl2, MgSO4).");
+                  "(NaCl, CaCl2, MgSO4); a NEUTRAL solute is declared in"
+                  " `transportParameters { neutralSolutes { " + comp.name()
+                + " { radius <m>; D0 <m2/s>; } } }`.");
         // Declared FK from the component record (derived from dissociatesTo)
         // -- typed at the point of read, per the loader contract.
         const SpeciesId cat{comp.electrolyteCation()};
@@ -577,6 +620,73 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
         ions.push_back(ic); ions.push_back(ia);
     }
     const std::size_t Ni = ions.size();
+
+    // ---- The neutral solutes (C176): closed form, decoupled from the ions --
+    //  Bowen, Mohammad & Hilal (1997) Eq. 28 for the pore, the Geraldes &
+    //  Afonso interface balance for one neutral (no migration) for the wall:
+    //      c_p/c_w = Phi Kc / (1 - exp(-Pe)(1 - Phi Kc)),  Pe = Kc Jv/(Kd D A_k/dx)
+    //      c_w     = k* c_b / (k* - Jv R_real),            k* = k Xi(Jv/k)
+    //  The Stokes-Einstein factor of the ions scales the neutral's D0 too.
+    const auto fillNeutrals = [&](TransportSolution& o)
+    {
+        if (neutrals.empty()) return;
+        const scalar Jv  = ctx.imposedJv;
+        const scalar Akd = mem->porosityOverThickness();
+        for (const std::size_t s : neutrals)
+        {
+            const std::string nm = thermo.comp(soluteIdx[s]).name();
+            const NeutralSolute& ns = neutral_.at(nm);
+            const scalar D   = ns.D0 * se.value;
+            const scalar cb  = c_b[s] * 1.0e3;                 // mol/m3
+            const scalar k   = polar.kFilmForD(hyd, D);
+            const scalar kst = k * suctionFactor(polar.policy().suction, Jv / k);
+            const scalar lam = ns.radius / r_p;
+            scalar Rreal = 1.0, Kd = 0.0, Kc = 0.0, Phi = 0.0, Pe = 0.0;
+            if (lam < 1.0)
+            {
+                const HindranceFactors h = dechadilokDeenFactors(lam);
+                Kd = h.Kd; Kc = h.Kc; Phi = h.Phi;
+                Pe = Kc * Jv / (Kd * D * Akd);
+                const scalar PK = Phi * Kc;
+                Rreal = 1.0 - PK / (1.0 - std::exp(-Pe) * (1.0 - PK));
+            }
+            const scalar den = kst - Jv * Rreal;
+            if (!(den > 0.0))
+                throw std::runtime_error("transport DSPM-DE: neutral solute '"
+                    + nm + "': J_v R_real = " + std::to_string(Jv * Rreal)
+                    + " m/s is not below the film's k* = "
+                    + std::to_string(kst) + " m/s -- no positive wall"
+                      " concentration (the film cannot carry the rejected"
+                      " solute back).  Raise the film coefficient or lower J_v.");
+            const scalar cw = kst * cb / den;
+            const scalar cp = (1.0 - Rreal) * cw;
+            o.c_m[s] = cw * 1.0e-3;
+            o.c_p[s] = cp * 1.0e-3;
+            o.J_s[s] = Jv * o.c_p[s];
+            TransportSolution::IonState st;
+            st.name = nm; st.z = 0; st.c_bulk = cb; st.c_wall = cw; st.c_perm = cp;
+            st.hasPartition = true; st.excluded = !(lam < 1.0);
+            st.lambda = lam; st.Kd = Kd; st.Kc = Kc; st.steric = Phi;
+            st.peclet = Pe;
+            o.ions.push_back(st);
+        }
+        if (!neutralSaid_)
+        {
+            neutralSaid_ = true;
+            std::cout << "  [DSPM-DE] neutral solute(s) declared in"
+                         " transportParameters.neutralSolutes: closed-form pore"
+                         " (Bowen-Mohammad-Hilal 1997 Eq. 28, Phi_S = (1 -"
+                         " lambda)^2, K_d/K_c Dechadilok-Deen) and film, no"
+                         " Donnan or Born term, J_v imposed\n";
+        }
+    };
+    if (Ni == 0)
+    {
+        //  A feed of neutrals alone: no pore Newton (nothing couples).
+        out.J_w = ctx.imposedJv;
+        fillNeutrals(out);
+        return out;
+    }
 
     // Dechadilok-Deen hindrance + Born (in kT units) per ion -- geometry is
     // J_w independent.
@@ -1014,6 +1124,7 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
                 std::cout << "  [DSPM-DE] " << b << "\n";
         }
     }
+    fillNeutrals(out);
     if (pb.wall.coupled)
     {
         out.xi    = sol.xiPrime * constant::R * T / constant::F;   // V/m

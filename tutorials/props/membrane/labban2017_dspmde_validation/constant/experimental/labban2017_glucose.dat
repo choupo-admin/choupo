@@ -1,0 +1,42 @@
+/*--------------------------------------------------------------------------*\
+  LABBAN 2017 -- GLUCOSE through the LbL-C membrane (observed rejection vs flux)
+
+  LbL-C hollow-fibre NF membrane, glucose 200 mg/kg, observed rejection at 1-4 bar (cross-flow 0.3 m/s).
+  REJECTION: Table 3 (accepted manuscript p. 17, journal p. 24), read on the page image: glucose
+  rejection (%) at 1, 2, 3, 4 bar = 74.0, 77.0, 83.0, 83.0.  A TABLE value.
+  FEED: 200 mg/kg / 180 g/mol (Table 1, p. 15) = 1.1111 mol/m3 (density 1 kg/L assumed).
+  FLUX: the ABSCISSAS of the symbols of Fig. 8 (manuscript p. 22, journal p. 26), read from the
+  figure at 400 dpi (the centre of each error bar): J_v = 2.873, 5.984, 9.082, 12.18 x 1e-6 m/s
+  at 1, 2, 3, 4 bar.  DIGITISED, reading uncertainty +-0.02e-6 m/s.  The article tabulates no flux
+  for these points; Fig. 6's pure-water line (10.3 LMH/bar, digitised) is 8-10 % lower.
+  The article's own error bars on these rejections are 10 % of the permeate concentration.
+\*--------------------------------------------------------------------------*/
+
+property     membrane.rejection;
+membrane     LbLC;
+
+provenance
+{
+    source       measured;
+    reviewStatus digitisedFromFigure;
+    citation     "O. Labban, C. Liu, T. H. Chong, J. H. Lienhard V, Fundamentals of low-pressure nanofiltration: Membrane characterization, modeling, and understanding the multi-ionic interactions in water softening, J. Membr. Sci. 521 (2017) 18-32, doi:10.1016/j.memsci.2016.08.062, Table 3 (rejections), Table 1 (MW), Fig. 8 (flux)";
+    identity     "one series of the study cited above (accepted manuscript read page by page as images and the journal version for the tables); no doi identity of its own";
+    licence      "facts: numbers transcribed from a published article (Elsevier copyright); the article and its figures are not in the tree";
+}
+
+T            298.15 K;     // ASSUMED: the article states no temperature (see the case README)
+feed         { glucose 1.1111 mol/m3; }
+
+columns
+(
+    { name Jv;  unit m/s; }
+    { name R_glucose;  unit -; }
+);
+
+data
+(
+    2.873000e-06  0.7400
+    5.984000e-06  0.7700
+    9.082000e-06  0.8300
+    1.218000e-05  0.8300
+);

@@ -3960,6 +3960,108 @@ THE THREE OPERATIONS, each a `poreTransport` bench at an IMPOSED J\_v, ideal act
 \end{tutgolden}
 
 \clearpage
+\tutentry{dspmde02\_lab\_characterisation\_template}{tutorials/props/membrane/dspmde02\_lab\_characterisation\_template}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_pore\_neutral}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{fit\_X\_c1}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{fit\_X\_c2}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{fit\_X\_c3}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{charge\_isotherm}\\[-1pt]{\tiny series}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A laboratory template: fill ONE experiment record (3 concentrations x 3 pressures) and get the DSPM-DE pore of YOUR membrane -- r\_p and the effective thickness from an uncharged solute, the charge X\_d per concentration (its isotherm), every value with its 95 percent interval, one point held out and predicted. Shipped filled with the points of Labban et al. (2017), which proves it}
+\begin{tutnarrative}
+(DEV.md 4c C177) -- A LABORATORY COPIES THIS CASE, REPLACES THE NUMBERS OF ONE RECORD WITH ITS OWN, AND GETS THE DSPM-DE PORE OF ITS MEMBRANE. Read README.md first: it says, step by step, what to measure and how to fill the record.
+
+THE CHAIN STEP 1 fit\_pore\_neutral r\_p and A\_k/dx from the uncharged solutes (constant/experimental/lab\_neutral\_$\ast$.dat) DECLARED the pore dielectric constant (constant/assets/Lab.dat) STEP 2 fit\_X\_c1..c3 the charge X\_d of each concentration level, from the nine rows of constant/experimental/lab\_salts.dat; the ONE held-out point (row 5) is predicted by fit\_X\_c2 VIEW charge\_isotherm X\_d against concentration Every fit prints its parameters with their 95 \% intervals, the condition number and the correlations; every operation writes computed-vs-measured rejection against flux under postProcessing/<operation>/ (rejections, parity, residuals), which the GUI draws.
+
+PROVED ON LABBAN ET AL. (2017): the record ships filled with the points of that article (Tables 3, 6-9), so the template is run, not promised; see labban2017\_dspmde\_validation for how each number was read and for the article's mixtures PREDICTED from simple feeds. The article has three feeds of different composition where a laboratory has three concentrations of one salt: the shape is the same, the chemistry is not.
+
+WHAT A ROW OF THE RECORD IS SPLIT BY: the evidence entries carry `discard ( ... )`, the 1-based rows of the file set aside by NAME (announced at every run), so ONE file serves every operation: fit\_X\_c2 fits rows 4 and 6 and holds out row 5. Keep the row order of the record (concentration level 1: rows 1-3, level 2: rows 4-6, level 3: 7-9) or change the `discard` lists with it.
+
+\end{tutnarrative}
+\tutreadme{What you get. From one experiment record and a few uncharged-solute runs: the DSPM-DE pore of YOUR membrane -- r\_p and the effective thickness, the pore charge X\_d at each concentration (its isotherm), every number with its 95 \% interval, the computed rejection against the measured one as a function of flux for each concentration, and ONE point you held out and the pore predicted without seeing it.}
+\tutreadme{It ships filled with the points of Labban, Liu, Chong \& Lienhard (2017), so it is run, not promised (their NF membrane; how every number was read is in ../labban2017\_dspmde\_validation). Their data are three FEEDS of different composition rather than three concentrations of one salt: the shape of the record is the same, the chemistry is not. Replace the numbers, keep the columns.}
+\tutreadme{1. An uncharged solute, 3-4 pressures. Glucose, sucrose or glycerol at a low concentration (a few hundred mg/kg, so the osmotic pressure is nil), at the highest cross-flow your cell allows, 3 or 4 pressures. Write, for each, one file constant/experimental/lab\_neutral\_<name>.dat: the feed concentration (mol/m3), and per pressure the measured flux Jv (m/s) and the observed rejection R\_<name> = 1 - c\_permeate / c\_feed (a fraction). Two or three solutes of different size (the article used glycerol, glucose, sucrose) fix r\_p and the thickness; one solute leaves them correlated. Put the solute's Stokes radius and D\_inf in neutralSolutes \{\} of the propsDict (the article's Table 1 gives them for five solutes; a handbook or the Wilke-Chang/Stokes-Einstein value otherwise -- cite it). 2. A salt at 3 concentrations x 3 pressures at the pH you care about. Write ONE file, constant/experimental/lab\_salts.dat, nine rows, in this order: concentration 1 at pressures 1, 2, 3; concentration 2 at pressures 1, 2, 3; concentration 3 likewise. Columns: $\ast$ c\_<salt> -- the feed concentration of each salt, mol/m3 (0 where absent); $\ast$ dP\_applied -- the pressure you set, Pa (carried, never fitted); $\ast$ Jv -- the permeate flux you measured, m/s (1 LMH = 1/3.6e6 m/s); $\ast$ R\_<ion> -- the OBSERVED rejection of each ion, 1 - c\_p / c\_feed, a fraction (negative is fine and real); write nan for an ion you did not analyse at that point. Measure the multivalent ion: the charge is identified by it, and a record with only Na+ and Cl- leaves X\_d unidentifiable (a $\pm$33 mol/m3 interval in a trial of this very case). Say the temperature once (T in the file) and the pH in the header comment. Measure each point at a stable flux (several minutes), and a feed sample and a permeate sample for each ion at each point. 3. The pore dielectric constant is DECLARED, not fitted. Either run one salt (NaCl) at the pH where the rejection is lowest (the isoelectric point: the membrane is uncharged there) and fit it as op B of the validation case does, or take the literature value for your membrane class. Write it into constant/assets/Lab.dat (poreDielectric) and say where it came from. 4. The film. Concentration polarisation makes the wall richer than the bulk, and the observed rejection is not the pore's. Declare how you know it, in massTransfer \{\} of each operation: your cell's correlation (a stirred cell: model StirredCell; with its omega and radius), or the film coefficient you measured (k\_film <m/s>; instead of the block). Never leave it out: a missing film is a missing parameter.}
+\tutreadme{runCase <your copy> -- seconds. The log prints, per operation:}
+\tutreadme{$\ast$ the parameters with 95 \% half-widths, the condition number and the correlations (are the data able to tell the parameters apart?); $\ast$ the in-sample deviation (points of rejection) and, for the held-out point, the held-out deviation and the verdict against the band acceptance \{ maxAAD ... \} -- write your band before you run, with its reason (the template's 5 points is a default, not a rule); $\ast$ under postProcessing/<op>/: rejections (measured and computed rejection against flux, one curve per ion), parity and residuals; the GUI draws them; $\ast$ postProcessing/case/charge\_isotherm: the fitted X\_d of each concentration level against its concentration. Read the isotherm off it (a Freundlich form X\_d = k c\textasciicircum{}n is a straight line on log-log axes).}
+\tutreadme{Each X\_d operation writes a membrane record (Lab\_X\_c1, ...) with its values, their intervals and the verdict; the first writes Lab\_pore. The pore operation must run first (a copy in the order of the propsDict does).}
+\begin{tutgolden}
+\goldrow{diag}{fit\_pore\_neutral}{chi2}{0.0255908753784}
+\goldrow{diag}{fit\_pore\_neutral}{chi2\_reduced}{0.00255908753784}
+\goldrow{diag}{fit\_pore\_neutral}{cond\_scaled}{24.2658968831}
+\goldrow{diag}{fit\_pore\_neutral}{converged}{1}
+\goldrow{diag}{fit\_pore\_neutral}{dof}{10}
+\goldrow{diag}{fit\_pore\_neutral}{feedC\_mean\_molm3}{1.28993333333}
+\goldrow{diag}{fit\_pore\_neutral}{identifiable}{1}
+\goldrow{diag}{fit\_pore\_neutral}{inSample\_AAD\_pct}{4.06512366199}
+\goldrow{diag}{fit\_pore\_neutral}{iter}{15}
+\goldrow{diag}{fit\_pore\_neutral}{maxAbsCorr}{0.879596137558}
+\goldrow{diag}{fit\_pore\_neutral}{n\_fit}{12}
+\goldrow{diag}{fit\_pore\_neutral}{n\_heldOut}{0}
+\goldrow{diag}{fit\_pore\_neutral}{n\_params}{2}
+\goldrow{diag}{fit\_pore\_neutral}{n\_points}{12}
+\goldmore{62}
+\end{tutgolden}
+
+\clearpage
+\tutentry{labban2017\_dspmde\_validation}{tutorials/props/membrane/labban2017\_dspmde\_validation}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_pore\_uncharged}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{fit\_eps\_NaCl\_pH7}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{fit\_X\_mix1}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{fit\_X\_mix2}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{fit\_X\_sw}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{predict\_X0\_mix1}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{predict\_X0\_mix2}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{predict\_X0\_sw}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{paper\_mix1}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{paper\_mix2}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{paper\_sw}\\[-1pt]{\tiny fitParameters}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Labban, Liu, Chong \& Lienhard (2017): the DSPM-DE pore of a low-pressure NF hollow fibre FITTED on uncharged solutes and single-salt NaCl, then asked to PREDICT two salt mixtures and artificial seawater it never saw -- the acceptance band declared before the fit}
+\begin{tutnarrative}
+(DEV.md 4c C176) -- THE DSPM-DE PORE FITTED ON SIMPLE FEEDS AND ASKED TO PREDICT COMPLEX ONES, with the band declared BEFORE the fit.
+
+THE DATA. Labban, Liu, Chong \& Lienhard, "Fundamentals of low-pressure nanofiltration: membrane characterization, modeling, and understanding the multi-ionic interactions in water softening", J. Membr. Sci. 521 (2017) 18-32, doi:10.1016/j.memsci.2016.08.062: a layer-by-layer + crosslinked NF hollow fibre (1.0 / 1.4 mm), 0.3 m/s cross-flow, 1-4 bar, three modules averaged. Every number in constant/experimental/ was READ ON THE PAGE IMAGES (accepted manuscript and journal version) and cites its table or figure; a TABLE value is exact, a FIGURE value is digitised and carries its reading uncertainty in the file's header: Table 1, 2 solute radii and D\_inf (uncharged solutes; ions) Table 3 rejection of glycerol, glucose, sucrose at 1-4 bar Fig. 8 the flux of those points (digitised, +-0.02e-6 m/s) Fig. 7 NaCl 1000 mg/kg rejection at pH 7 (digitised, +-0.004) Fig. 6 the pure-water line, 10.3 LMH/bar (digitised) Tables 6-9 the feeds and the observed ion rejections of NaCl + MgCl2, NaCl + Na2SO4 and artificial seawater, with flux
+
+THE QUESTION. The article characterises its membrane in four steps (r\_p and the effective thickness from uncharged solutes and pure water, eps\_p from single-salt NaCl at the isoelectric point, X\_d feed by feed from the mixtures) and then runs the model. Here the SAME data answer a sharper question: parameters from the SIMPLE feeds, the COMPLEX feeds predicted. A fit\_pore\_uncharged r\_p and A\_k/dx (= 1/Delta x\_e) on glycerol, glucose, sucrose (Table 3 + Fig. 8): the neutral-solute route of the law (Bowen, Mohammad \& Hilal 1997, Eq. 28) B fit\_eps\_NaCl\_pH7 eps\_p on single-salt NaCl at pH 7 (Fig. 7), the isoelectric point: X\_d = 0 there by the article's own assumption (p. 19) C fit\_X\_<feed> X\_d of each mixture on its 2 and 4 bar rows, the 3 bar row HELD OUT: the charge is feed-specific by the article's own finding (p. 20), so it is the one parameter a mixture must be allowed D predict\_X0\_<feed> NO free parameter: the pore of A and B with X\_d = 0 (the isoelectric assumption carried to the mixtures) predicting all three pressures E paper\_<feed> NO free parameter: the article's own Table 5 and its X\_d of each feed in THIS engine -- is the engine's DSPM-DE the article's?
+
+THE BANDS, DECLARED BEFORE ANY FIT WAS RUN (committed first, in a commit of their own, before a number of this case had been computed): C held-out 3 bar, X\_d fitted on 2 and 4 bar: mean |R\_model - R\_measured| over every ion of the row <= 5 points of rejection. Why 5: the article's own model, with X\_d fitted on all three pressures, is said to deviate by up to 12 \% (a RELATIVE figure, accepted manuscript p. 22 and 28) on rejections that run to 99 \%; and the three table rows differ from each other by 2-8 points per ion. A pore that predicts the middle pressure to 5 points has captured the trend, not noise. D X\_d = 0, three pressures, no refit: <= 10 points. Why 10 and not 5: a charge the pore does not have is a knowing mis-specification, the article finds |X\_d| up to 27 mol/m3, and the band is the one the membrane24 case calls an engineering criterion for a teaching characterisation. The expectation written here, BEFORE the run, is that D passes for the two hard waters and fails for seawater. E no band: a code-to-paper comparison; its AAD is reported against the 12 \% the article claims, and what differs is explained. The bands are absolute (points of rejection), the statistic membrane24's.
+
+WHAT IS ASSUMED, because the article does not say (each said again where it enters): the temperature 298.15 K; the density 1 kg/L converting mg/kg to mol/m3; NaCl's flux in Fig. 7 equal to the pure-water line of Fig. 6 (it ignores the osmotic back-pressure, up to \textasciitilde{}10 \% at 1 bar); the neutral molecules' flux from Fig. 8's abscissas.
+
+THE MODEL, as the article ran it: DSPM-DE, the pore SOLVED (101 nodes), Dechadilok-Deen hindrance, bulk dielectric 80.4 (p. 17), Davies activities, the Geraldes \& Afonso (2007) polarisation with the suction correction and the electroneutral wall (the article's Eq. 9-12). The film coefficient is the article's Eq. 13, Sh = 1.62 Re\textasciicircum{}0.33 Sc\textasciicircum{}0.33 (d\_i/L)\textasciicircum{}0.33 for a hollow fibre (d\_i 1.0 mm, L 25 cm, 0.3 m/s), per solute on its own D. The engine carries no hollow-fibre correlation: the StirredCell model is Sh = a Re\textasciicircum{}b Sc\textasciicircum{}c, k = Sh D / r with Re = omega r\textasciicircum{}2 / nu, and with r = d\_i = 1 mm, omega = u/d\_i = 300 rad/s (so Re = u d\_i / nu, the fibre's) and a = 1.62 (d\_i/L)\textasciicircum{}0.33 = 0.26194 it IS Eq. 13, term by term -- an equivalence stated here, not a model of a stirred cell. The ions are Stokes-radius species (constant/species/, Table 2). The viscosity and density in the film block are water at 298.15 K, the values of the NanoFiltran comparison case.
+
+\end{tutnarrative}
+\tutreadme{The question. Can the DSPM-DE pore of a membrane be fitted on the SIMPLE feeds (uncharged solutes, one salt at its isoelectric point) and then PREDICT a salt mixture and seawater it never saw? The data are those of Labban, Liu, Chong \& Lienhard, $\ast$J. Membr. Sci.$\ast$ 521 (2017) 18-32, doi:10.1016/j.memsci.2016.08.062 (a low-pressure layer-by-layer NF hollow fibre, 0.3 m/s cross-flow, 1-4 bar). The acceptance bands were declared in the propsDict and committed BEFORE any fit of this case was run (git history: the commit "C176: Labban 2017 validation case -- data transcribed ... and the acceptance bands declared" precedes the first result).}
+\tutreadme{Everything below was READ ON THE PAGE IMAGES (the accepted manuscript for the figures, both versions for the tables; the tables agree). A table value is exact; a figure value is digitised from a 400 dpi render, centroid of each marker, with the reading uncertainty stated. Page numbers are the accepted manuscript's / the journal's.}
+\tutreadme{The pH-8 and the other pH symbols of Fig. 7 were read too and are not used. At 1 bar the pH-7 and pH-8 symbols overlap in one star: its centre (0.135) is read for pH 7.}
+\tutreadme{Not in the article, assumed here (each stated where it enters): the temperature (298.15 K); the density (1 kg/L, mg/kg $\to$ mol/m3); the salts of a feed from the measured cations and sulfate (the article measured them by ICP-OES; chloride follows by electroneutrality) with the catalogue species' molar masses; NaCl's flux in Fig. 7 equal to the pure-water line of Fig. 6, which ignores the salt's osmotic back-pressure (\textasciitilde{}0.1 bar at 1 bar, so the flux is up to \textasciitilde{}10 \% high there).}
+\tutreadme{The engine's verdict on D and E is on the 3-bar rows alone (the roles are mechanics: the 2 and 4 bar rows are role fit with no free parameter, so they are scored, not tuned); the three-pressure means above are computed from the run's in-sample and held-out numbers, weighted by their term counts.}
+\tutreadme{$\ast$ The pore radius is recovered. The three uncharged solutes alone give r\_p = 0.495 nm against the article's 0.5 (anchored in the golden at 2 \%). $\ast$ The effective thickness is NOT determined by rejection data: 3.0 um with a 95 \% interval of 1.8-9.3 um (correlation with r\_p -0.88). The article gets 1.33 um from the pure-water permeability through Hagen-Poiseuille, and with the fitted r\_p that route gives r\_p\textasciicircum{}2 / (8 mu Lp) = 1.2 um -- outside the rejection fit's interval. The two routes disagree by a factor 2.5 and the rejection rows cannot arbitrate; the flux is the information. $\ast$ eps\_p = 53.5 +- 8.8 against the article's 41.3: inside 1.4 sigma, from three digitised points whose flux is itself an assumption. $\ast$ The charge is the feed's, as the article says. X\_d of the two hard waters (+3.87, -4.48) has the sign and the size of the article's (+2.83, -1.92) and each is inside the other's interval; seawater's (-74 +- 130 against -27) is fitted but meaningless -- the interval spans the sign. $\ast$ Two mixtures are predicted inside the 5-point band with a charge fitted on two of three pressures; seawater is not, and no charge rescues it (X\_d = 0: 13.2; the fitted -74: 11.9; the article's -27: 16.2). At an ionic strength of about 0.7 mol/L the model's partition (Davies at the feed face only, a single dielectric constant) is the likely limit; this was not isolated. $\ast$ The article's own parameters do not reproduce the article's rejections in this engine (case E): Na+ in NaCl+MgCl2 comes out at +4.5 \% against the measured -7.6 \% and the article's modelled negative rejection; seawater's Ca2+ at 85 \% against 54.5 \% at 2 bar. The article reports up to 12 \% relative deviation for the multivalent ions. Candidate causes, none measured: the film (a hollow-fibre correlation expressed here through StirredCell, equal term by term to the article's Eq. 13 -- see the propsDict header), the temperature and density the article does not state, its Davies (b = 0.3) and the way it applies it on both faces, and the digitised flux of the neutral points. A code-to-code comparison against the article's own program would be needed to separate them; the article's source is not available here.}
+\begin{tutgolden}
+\goldrow{diag}{fit\_pore\_uncharged}{chi2}{0.0255908753784}
+\goldrow{diag}{fit\_pore\_uncharged}{chi2\_reduced}{0.00255908753784}
+\goldrow{diag}{fit\_pore\_uncharged}{cond\_scaled}{24.2658968831}
+\goldrow{diag}{fit\_pore\_uncharged}{converged}{1}
+\goldrow{diag}{fit\_pore\_uncharged}{dof}{10}
+\goldrow{diag}{fit\_pore\_uncharged}{feedC\_mean\_molm3}{1.28993333333}
+\goldrow{diag}{fit\_pore\_uncharged}{identifiable}{1}
+\goldrow{diag}{fit\_pore\_uncharged}{inSample\_AAD\_pct}{4.06512366199}
+\goldrow{diag}{fit\_pore\_uncharged}{iter}{15}
+\goldrow{diag}{fit\_pore\_uncharged}{maxAbsCorr}{0.879596137558}
+\goldrow{diag}{fit\_pore\_uncharged}{n\_fit}{12}
+\goldrow{diag}{fit\_pore\_uncharged}{n\_heldOut}{0}
+\goldrow{diag}{fit\_pore\_uncharged}{n\_params}{2}
+\goldrow{diag}{fit\_pore\_uncharged}{n\_points}{12}
+\goldmore{173}
+\end{tutgolden}
+
+\clearpage
 \tutentry{nanofiltran\_geraldesAlves2008}{tutorials/props/membrane/nanofiltran\_geraldesAlves2008}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

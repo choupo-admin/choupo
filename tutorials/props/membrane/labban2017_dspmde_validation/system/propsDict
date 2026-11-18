@@ -1,0 +1,576 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  labban2017_dspmde_validation (DEV.md 4c C176) -- THE DSPM-DE PORE FITTED ON
+  SIMPLE FEEDS AND ASKED TO PREDICT COMPLEX ONES, with the band declared
+  BEFORE the fit.
+
+  THE DATA.  Labban, Liu, Chong & Lienhard, "Fundamentals of low-pressure
+  nanofiltration: membrane characterization, modeling, and understanding the
+  multi-ionic interactions in water softening", J. Membr. Sci. 521 (2017)
+  18-32, doi:10.1016/j.memsci.2016.08.062: a layer-by-layer + crosslinked NF
+  hollow fibre (1.0 / 1.4 mm), 0.3 m/s cross-flow, 1-4 bar, three modules
+  averaged.  Every number in constant/experimental/ was READ ON THE PAGE
+  IMAGES (accepted manuscript and journal version) and cites its table or
+  figure; a TABLE value is exact, a FIGURE value is digitised and carries its
+  reading uncertainty in the file's header:
+      Table 1, 2     solute radii and D_inf (uncharged solutes; ions)
+      Table 3        rejection of glycerol, glucose, sucrose at 1-4 bar
+      Fig. 8         the flux of those points (digitised, +-0.02e-6 m/s)
+      Fig. 7         NaCl 1000 mg/kg rejection at pH 7 (digitised, +-0.004)
+      Fig. 6         the pure-water line, 10.3 LMH/bar (digitised)
+      Tables 6-9     the feeds and the observed ion rejections of NaCl +
+                     MgCl2, NaCl + Na2SO4 and artificial seawater, with flux
+
+  THE QUESTION.  The article characterises its membrane in four steps (r_p
+  and the effective thickness from uncharged solutes and pure water, eps_p
+  from single-salt NaCl at the isoelectric point, X_d feed by feed from the
+  mixtures) and then runs the model.  Here the SAME data answer a sharper
+  question: parameters from the SIMPLE feeds, the COMPLEX feeds predicted.
+      A  fit_pore_uncharged   r_p and A_k/dx (= 1/Delta x_e) on glycerol,
+                              glucose, sucrose (Table 3 + Fig. 8): the
+                              neutral-solute route of the law (Bowen,
+                              Mohammad & Hilal 1997, Eq. 28)
+      B  fit_eps_NaCl_pH7     eps_p on single-salt NaCl at pH 7 (Fig. 7), the
+                              isoelectric point: X_d = 0 there by the
+                              article's own assumption (p. 19)
+      C  fit_X_<feed>         X_d of each mixture on its 2 and 4 bar rows, the
+                              3 bar row HELD OUT: the charge is feed-specific
+                              by the article's own finding (p. 20), so it is
+                              the one parameter a mixture must be allowed
+      D  predict_X0_<feed>    NO free parameter: the pore of A and B with
+                              X_d = 0 (the isoelectric assumption carried to
+                              the mixtures) predicting all three pressures
+      E  paper_<feed>         NO free parameter: the article's own Table 5 and
+                              its X_d of each feed in THIS engine -- is the
+                              engine's DSPM-DE the article's?
+
+  THE BANDS, DECLARED BEFORE ANY FIT WAS RUN (committed first, in a commit of
+  their own, before a number of this case had been computed):
+      C  held-out 3 bar, X_d fitted on 2 and 4 bar:   mean |R_model - R_measured|
+         over every ion of the row <= 5 points of rejection.  Why 5: the
+         article's own model, with X_d fitted on all three pressures, is said to
+         deviate by up to 12 % (a RELATIVE figure, accepted manuscript p. 22 and 28) on rejections
+         that run to 99 %; and the three table rows differ from each other by
+         2-8 points per ion.  A pore that predicts the middle pressure to 5
+         points has captured the trend, not noise.
+      D  X_d = 0, three pressures, no refit:   <= 10 points.  Why 10 and not
+         5: a charge the pore does not have is a knowing mis-specification,
+         the article finds |X_d| up to 27 mol/m3, and the band is the one the
+         membrane24 case calls an engineering criterion for a teaching
+         characterisation.  The expectation written here, BEFORE the run, is
+         that D passes for the two hard waters and fails for seawater.
+      E  no band: a code-to-paper comparison; its AAD is reported against the
+         12 % the article claims, and what differs is explained.
+  The bands are absolute (points of rejection), the statistic membrane24's.
+
+  WHAT IS ASSUMED, because the article does not say (each said again where it
+  enters): the temperature 298.15 K; the density 1 kg/L converting mg/kg to
+  mol/m3; NaCl's flux in Fig. 7 equal to the pure-water line of Fig. 6 (it
+  ignores the osmotic back-pressure, up to ~10 % at 1 bar); the neutral
+  molecules' flux from Fig. 8's abscissas.
+
+  THE MODEL, as the article ran it: DSPM-DE, the pore SOLVED (101 nodes),
+  Dechadilok-Deen hindrance, bulk dielectric 80.4 (p. 17), Davies activities,
+  the Geraldes & Afonso (2007) polarisation with the suction correction and
+  the electroneutral wall (the article's Eq. 9-12).  The film coefficient is
+  the article's Eq. 13, Sh = 1.62 Re^0.33 Sc^0.33 (d_i/L)^0.33 for a hollow
+  fibre (d_i 1.0 mm, L 25 cm, 0.3 m/s), per solute on its own D.  The engine
+  carries no hollow-fibre correlation: the StirredCell model is
+  Sh = a Re^b Sc^c, k = Sh D / r with Re = omega r^2 / nu, and with r = d_i
+  = 1 mm, omega = u/d_i = 300 rad/s (so Re = u d_i / nu, the fibre's) and
+  a = 1.62 (d_i/L)^0.33 = 0.26194 it IS Eq. 13, term by term -- an
+  equivalence stated here, not a model of a stirred cell.  The ions are
+  Stokes-radius species (constant/species/, Table 2).  The viscosity and
+  density in the film block are water at 298.15 K, the values of the
+  NanoFiltran comparison case.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    //  A -- r_p and A_k/dx from the three UNCHARGED solutes (Table 3 + Fig. 8).
+    //  Free: the pore radius and the porosity over thickness (1/Delta x_e).
+    {
+        name      fit_pore_uncharged;
+        type      fitParameters;
+        parameters
+        (
+            { path poreModel.poreRadius;             initial 6.0e-10; min 2.0e-10; max 3.0e-9; }
+            { path poreModel.porosityOverThickness;  initial 5.0e5;   min 1.0e4;   max 1.0e8; }
+        );
+        evidence
+        (
+            { dataset "constant/experimental/labban2017_glycerol.dat"; role fit; }
+            { dataset "constant/experimental/labban2017_glucose.dat";  role fit; }
+            { dataset "constant/experimental/labban2017_sucrose.dat";  role fit; }
+        );
+        residual
+        {
+            kind        membrane;
+            model       DSPM-DE;
+            membrane    LbLC;
+            rejection   observed;
+            weighting   absolute;
+            transportParameters
+            {
+                poreSolver { method finiteDifference; nodes 101; wallClosure porePermeate; }
+                hindrance  DechadilokDeen2006;
+                bulkDielectric 80.4;           // p. 17: eps_b = 80.4
+                neutralSolutes
+            {
+                glycerol { radius 2.60e-10; D0 9.50e-10; }   // Table 1: r_i 0.260 nm, D_inf 0.950e-9
+                glucose  { radius 3.65e-10; D0 6.90e-10; }   // Table 1: 0.365 nm, 0.690e-9
+                sucrose  { radius 4.71e-10; D0 5.20e-10; }   // Table 1: 0.471 nm, 0.520e-9
+            }
+            }
+            massTransfer
+            {
+                model      StirredCell;        // = the article's Eq. 13 for a hollow fibre, see the header
+                a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
+                radius     1.0e-3;             // m: d_i, the fibre's inside diameter
+                omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
+                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
+                density    997;                // kg/m3
+            }
+            polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+        }
+        options
+        {
+            maxIter     60;
+            tolerance   1.0e-10;
+            fdStep      1.0e-4;
+            lambda0     1.0e-2;
+        }
+        output { record "constant/assets/LbLC_pore.dat"; name LbLC_pore; }
+    }
+    //  B -- eps_p from single-salt NaCl at the isoelectric point (Fig. 7, pH 7).
+    //  X_d = 0 there (the article's assumption).  Base: the record A wrote.
+    {
+        name      fit_eps_NaCl_pH7;
+        type      fitParameters;
+        parameters
+        (
+            { path poreModel.poreDielectric;  initial 50.0; min 5.0; max 80.0; }
+        );
+        evidence
+        (
+            { dataset "constant/experimental/labban2017_NaCl_pH7.dat"; role fit; }
+        );
+        residual
+        {
+            kind        membrane;
+            model       DSPM-DE;
+            membrane    LbLC_pore;
+            rejection   observed;
+            weighting   absolute;
+            transportParameters
+            {
+                poreSolver { method finiteDifference; nodes 101; wallClosure porePermeate; }
+                hindrance  DechadilokDeen2006;
+                bulkDielectric 80.4;           // p. 17: eps_b = 80.4
+                }
+            massTransfer
+            {
+                model      StirredCell;        // = the article's Eq. 13 for a hollow fibre, see the header
+                a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
+                radius     1.0e-3;             // m: d_i, the fibre's inside diameter
+                omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
+                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
+                density    997;                // kg/m3
+            }
+            polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+        }
+        options
+        {
+            maxIter     60;
+            tolerance   1.0e-10;
+            fdStep      1.0e-4;
+            lambda0     1.0e-2;
+        }
+        output { record "constant/assets/LbLC_eps.dat"; name LbLC_eps; }
+    }
+    //  C -- X_d of the NaCl + MgCl2 feed on its 2 and 4 bar rows (Table 7); the 3 bar row HELD OUT.
+    {
+        name      fit_X_mix1;
+        type      fitParameters;
+        parameters
+        (
+            { path poreModel.chargeDensity;  initial 1.0; min -400.0; max 400.0; }
+        );
+        evidence
+        (
+            { dataset "constant/experimental/labban2017_mix1_fit.dat";     role fit; }
+            { dataset "constant/experimental/labban2017_mix1_heldout.dat"; role validation; }
+        );
+        acceptance
+        {
+            maxAAD  5 points;
+            origin  "declared before any fit of this case was run: X_d fitted on the 2 and 4 bar rows of one feed must predict the 3 bar row to within 5 points of rejection averaged over its ions -- about half the 12 percent the article claims for its own all-pressure fit, on rejections that reach 99 percent; an engineering criterion, not a measurement uncertainty (the article publishes none)";
+        }
+        residual
+        {
+            kind        membrane;
+            model       DSPM-DE;
+            membrane    LbLC_eps;
+            rejection   observed;
+            weighting   absolute;
+            transportParameters
+            {
+                poreSolver { method finiteDifference; nodes 101; wallClosure porePermeate; }
+                hindrance  DechadilokDeen2006;
+                bulkDielectric 80.4;           // p. 17: eps_b = 80.4
+                }
+            massTransfer
+            {
+                model      StirredCell;        // = the article's Eq. 13 for a hollow fibre, see the header
+                a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
+                radius     1.0e-3;             // m: d_i, the fibre's inside diameter
+                omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
+                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
+                density    997;                // kg/m3
+            }
+            polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+        }
+        options
+        {
+            maxIter     60;
+            tolerance   1.0e-10;
+            fdStep      1.0e-4;
+            lambda0     1.0e-2;
+        }
+        output { record "constant/assets/LbLC_X_mix1.dat"; name LbLC_X_mix1; }
+    }
+    //  C -- X_d of the NaCl + Na2SO4 feed on its 2 and 4 bar rows (Table 8); the 3 bar row HELD OUT.
+    {
+        name      fit_X_mix2;
+        type      fitParameters;
+        parameters
+        (
+            { path poreModel.chargeDensity;  initial 1.0; min -400.0; max 400.0; }
+        );
+        evidence
+        (
+            { dataset "constant/experimental/labban2017_mix2_fit.dat";     role fit; }
+            { dataset "constant/experimental/labban2017_mix2_heldout.dat"; role validation; }
+        );
+        acceptance
+        {
+            maxAAD  5 points;
+            origin  "declared before any fit of this case was run: X_d fitted on the 2 and 4 bar rows of one feed must predict the 3 bar row to within 5 points of rejection averaged over its ions -- about half the 12 percent the article claims for its own all-pressure fit, on rejections that reach 99 percent; an engineering criterion, not a measurement uncertainty (the article publishes none)";
+        }
+        residual
+        {
+            kind        membrane;
+            model       DSPM-DE;
+            membrane    LbLC_eps;
+            rejection   observed;
+            weighting   absolute;
+            transportParameters
+            {
+                poreSolver { method finiteDifference; nodes 101; wallClosure porePermeate; }
+                hindrance  DechadilokDeen2006;
+                bulkDielectric 80.4;           // p. 17: eps_b = 80.4
+                }
+            massTransfer
+            {
+                model      StirredCell;        // = the article's Eq. 13 for a hollow fibre, see the header
+                a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
+                radius     1.0e-3;             // m: d_i, the fibre's inside diameter
+                omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
+                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
+                density    997;                // kg/m3
+            }
+            polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+        }
+        options
+        {
+            maxIter     60;
+            tolerance   1.0e-10;
+            fdStep      1.0e-4;
+            lambda0     1.0e-2;
+        }
+        output { record "constant/assets/LbLC_X_mix2.dat"; name LbLC_X_mix2; }
+    }
+    //  C -- X_d of the artificial seawater feed on its 2 and 4 bar rows (Table 9); the 3 bar row HELD OUT.
+    {
+        name      fit_X_sw;
+        type      fitParameters;
+        parameters
+        (
+            { path poreModel.chargeDensity;  initial 1.0; min -400.0; max 400.0; }
+        );
+        evidence
+        (
+            { dataset "constant/experimental/labban2017_sw_fit.dat";     role fit; }
+            { dataset "constant/experimental/labban2017_sw_heldout.dat"; role validation; }
+        );
+        acceptance
+        {
+            maxAAD  5 points;
+            origin  "declared before any fit of this case was run: X_d fitted on the 2 and 4 bar rows of one feed must predict the 3 bar row to within 5 points of rejection averaged over its ions -- about half the 12 percent the article claims for its own all-pressure fit, on rejections that reach 99 percent; an engineering criterion, not a measurement uncertainty (the article publishes none)";
+        }
+        residual
+        {
+            kind        membrane;
+            model       DSPM-DE;
+            membrane    LbLC_eps;
+            rejection   observed;
+            weighting   absolute;
+            transportParameters
+            {
+                poreSolver { method finiteDifference; nodes 101; wallClosure porePermeate; }
+                hindrance  DechadilokDeen2006;
+                bulkDielectric 80.4;           // p. 17: eps_b = 80.4
+                }
+            massTransfer
+            {
+                model      StirredCell;        // = the article's Eq. 13 for a hollow fibre, see the header
+                a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
+                radius     1.0e-3;             // m: d_i, the fibre's inside diameter
+                omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
+                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
+                density    997;                // kg/m3
+            }
+            polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+        }
+        options
+        {
+            maxIter     60;
+            tolerance   1.0e-10;
+            fdStep      1.0e-4;
+            lambda0     1.0e-2;
+        }
+        output { record "constant/assets/LbLC_X_sw.dat"; name LbLC_X_sw; }
+    }
+    //  D -- the NaCl + MgCl2 feed predicted with NO free parameter and X_d = 0 (record of B).
+    {
+        name      predict_X0_mix1;
+        type      fitParameters;
+        parameters ( );
+        evidence
+        (
+            { dataset "constant/experimental/labban2017_mix1_fit.dat";     role fit; }     // scored, NOT tuned: no free parameter
+            { dataset "constant/experimental/labban2017_mix1_heldout.dat"; role validation; }
+        );
+        acceptance
+        {
+            maxAAD  10 points;
+            origin  "declared before any fit of this case was run: the pore of the uncharged solutes and of NaCl at its isoelectric point, with the charge set to zero as there, predicts a mixture at all three pressures to within 10 points of rejection averaged over its ions; expected to hold for the two hard waters and to fail for seawater (the article finds X_d = -27 mol/m3 there)";
+        }
+        residual
+        {
+            kind        membrane;
+            model       DSPM-DE;
+            membrane    LbLC_eps;
+            rejection   observed;
+            weighting   absolute;
+            transportParameters
+            {
+                poreSolver { method finiteDifference; nodes 101; wallClosure porePermeate; }
+                hindrance  DechadilokDeen2006;
+                bulkDielectric 80.4;           // p. 17: eps_b = 80.4
+                }
+            massTransfer
+            {
+                model      StirredCell;        // = the article's Eq. 13 for a hollow fibre, see the header
+                a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
+                radius     1.0e-3;             // m: d_i, the fibre's inside diameter
+                omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
+                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
+                density    997;                // kg/m3
+            }
+            polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+        }
+    }
+    //  D -- the NaCl + Na2SO4 feed predicted with NO free parameter and X_d = 0 (record of B).
+    {
+        name      predict_X0_mix2;
+        type      fitParameters;
+        parameters ( );
+        evidence
+        (
+            { dataset "constant/experimental/labban2017_mix2_fit.dat";     role fit; }     // scored, NOT tuned: no free parameter
+            { dataset "constant/experimental/labban2017_mix2_heldout.dat"; role validation; }
+        );
+        acceptance
+        {
+            maxAAD  10 points;
+            origin  "declared before any fit of this case was run: the pore of the uncharged solutes and of NaCl at its isoelectric point, with the charge set to zero as there, predicts a mixture at all three pressures to within 10 points of rejection averaged over its ions; expected to hold for the two hard waters and to fail for seawater (the article finds X_d = -27 mol/m3 there)";
+        }
+        residual
+        {
+            kind        membrane;
+            model       DSPM-DE;
+            membrane    LbLC_eps;
+            rejection   observed;
+            weighting   absolute;
+            transportParameters
+            {
+                poreSolver { method finiteDifference; nodes 101; wallClosure porePermeate; }
+                hindrance  DechadilokDeen2006;
+                bulkDielectric 80.4;           // p. 17: eps_b = 80.4
+                }
+            massTransfer
+            {
+                model      StirredCell;        // = the article's Eq. 13 for a hollow fibre, see the header
+                a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
+                radius     1.0e-3;             // m: d_i, the fibre's inside diameter
+                omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
+                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
+                density    997;                // kg/m3
+            }
+            polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+        }
+    }
+    //  D -- the artificial seawater feed predicted with NO free parameter and X_d = 0 (record of B).
+    {
+        name      predict_X0_sw;
+        type      fitParameters;
+        parameters ( );
+        evidence
+        (
+            { dataset "constant/experimental/labban2017_sw_fit.dat";     role fit; }     // scored, NOT tuned: no free parameter
+            { dataset "constant/experimental/labban2017_sw_heldout.dat"; role validation; }
+        );
+        acceptance
+        {
+            maxAAD  10 points;
+            origin  "declared before any fit of this case was run: the pore of the uncharged solutes and of NaCl at its isoelectric point, with the charge set to zero as there, predicts a mixture at all three pressures to within 10 points of rejection averaged over its ions; expected to hold for the two hard waters and to fail for seawater (the article finds X_d = -27 mol/m3 there)";
+        }
+        residual
+        {
+            kind        membrane;
+            model       DSPM-DE;
+            membrane    LbLC_eps;
+            rejection   observed;
+            weighting   absolute;
+            transportParameters
+            {
+                poreSolver { method finiteDifference; nodes 101; wallClosure porePermeate; }
+                hindrance  DechadilokDeen2006;
+                bulkDielectric 80.4;           // p. 17: eps_b = 80.4
+                }
+            massTransfer
+            {
+                model      StirredCell;        // = the article's Eq. 13 for a hollow fibre, see the header
+                a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
+                radius     1.0e-3;             // m: d_i, the fibre's inside diameter
+                omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
+                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
+                density    997;                // kg/m3
+            }
+            polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+        }
+    }
+    //  E -- the NaCl + MgCl2 feed with the ARTICLE'S OWN parameters (Table 5 + its X_d), no free parameter.
+    {
+        name      paper_mix1;
+        type      fitParameters;
+        parameters ( );
+        evidence
+        (
+            { dataset "constant/experimental/labban2017_mix1_fit.dat";     role fit; }     // scored, NOT tuned: no free parameter
+            { dataset "constant/experimental/labban2017_mix1_heldout.dat"; role validation; }
+        );
+        residual
+        {
+            kind        membrane;
+            model       DSPM-DE;
+            membrane    LbLC_paper_mix1;
+            rejection   observed;
+            weighting   absolute;
+            transportParameters
+            {
+                poreSolver { method finiteDifference; nodes 101; wallClosure porePermeate; }
+                hindrance  DechadilokDeen2006;
+                bulkDielectric 80.4;           // p. 17: eps_b = 80.4
+                }
+            massTransfer
+            {
+                model      StirredCell;        // = the article's Eq. 13 for a hollow fibre, see the header
+                a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
+                radius     1.0e-3;             // m: d_i, the fibre's inside diameter
+                omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
+                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
+                density    997;                // kg/m3
+            }
+            polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+        }
+    }
+    //  E -- the NaCl + Na2SO4 feed with the ARTICLE'S OWN parameters (Table 5 + its X_d), no free parameter.
+    {
+        name      paper_mix2;
+        type      fitParameters;
+        parameters ( );
+        evidence
+        (
+            { dataset "constant/experimental/labban2017_mix2_fit.dat";     role fit; }     // scored, NOT tuned: no free parameter
+            { dataset "constant/experimental/labban2017_mix2_heldout.dat"; role validation; }
+        );
+        residual
+        {
+            kind        membrane;
+            model       DSPM-DE;
+            membrane    LbLC_paper_mix2;
+            rejection   observed;
+            weighting   absolute;
+            transportParameters
+            {
+                poreSolver { method finiteDifference; nodes 101; wallClosure porePermeate; }
+                hindrance  DechadilokDeen2006;
+                bulkDielectric 80.4;           // p. 17: eps_b = 80.4
+                }
+            massTransfer
+            {
+                model      StirredCell;        // = the article's Eq. 13 for a hollow fibre, see the header
+                a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
+                radius     1.0e-3;             // m: d_i, the fibre's inside diameter
+                omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
+                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
+                density    997;                // kg/m3
+            }
+            polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+        }
+    }
+    //  E -- the artificial seawater feed with the ARTICLE'S OWN parameters (Table 5 + its X_d), no free parameter.
+    {
+        name      paper_sw;
+        type      fitParameters;
+        parameters ( );
+        evidence
+        (
+            { dataset "constant/experimental/labban2017_sw_fit.dat";     role fit; }     // scored, NOT tuned: no free parameter
+            { dataset "constant/experimental/labban2017_sw_heldout.dat"; role validation; }
+        );
+        residual
+        {
+            kind        membrane;
+            model       DSPM-DE;
+            membrane    LbLC_paper_sw;
+            rejection   observed;
+            weighting   absolute;
+            transportParameters
+            {
+                poreSolver { method finiteDifference; nodes 101; wallClosure porePermeate; }
+                hindrance  DechadilokDeen2006;
+                bulkDielectric 80.4;           // p. 17: eps_b = 80.4
+                }
+            massTransfer
+            {
+                model      StirredCell;        // = the article's Eq. 13 for a hollow fibre, see the header
+                a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
+                radius     1.0e-3;             // m: d_i, the fibre's inside diameter
+                omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
+                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
+                density    997;                // kg/m3
+            }
+            polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
+        }
+    }
+);
