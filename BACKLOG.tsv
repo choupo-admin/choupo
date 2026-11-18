@@ -397,9 +397,9 @@ C431	DONE		Segunda revisão externa ponderada (fechar K1-K4)			2026-11-19	L	a964
 C432	OPEN	0	Reutilização por rota dos 1260 ajustes (provar o kernel uma vez por categoria)	construído; a validar na suite do lote	general a trabalhar	2026-11-19	M		
 C433	DONE		Ligações dos componentes e pares por modelo e conjunto nomeado			2026-11-19	M	cd2d3430e8	
 C434	DONE		Casos não correm no Firefox			2026-11-19	S	4e864ecf7	
-C435	PARTIAL	0	Cinco pontos da revisão externa de seis casos	(4) NanoFiltran: general a construir o interruptor declarado da correção de Stokes-Einstein	general a trabalhar	2026-11-19	M	cd2d3430e8	
+C435	PARTIAL	0	Cinco pontos da revisão externa de seis casos	(4) construído (interruptor declarado; NanoFiltran sem nenhuma linha mudada); aterra no lote com o C390, que mexe no mesmo ficheiro	general a trabalhar	2026-11-19	M	cd2d3430e8	
 C436	OPEN	0	Backlog com uma só casa (BACKLOG.tsv), verificado, e a vista gerada dele	gate check_backlog e a página gerada do backlog	em curso: gerar o PLAN.md do backlog	2026-11-19	M		
 C437	OPEN	48	DSPM-DE com os parâmetros do próprio Labban falha 8-16 pontos	testar primeiro a aplicação de Davies (o mais provável, pela leitura de fora 19-11), depois o filme de fibra oca; os 12 % do artigo são relativos	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-19	M		
-C438	OPEN	0	O re-apontador de citações das lições não vê todos os ficheiros	general a construir: o re-apontador passa a ver todos os ficheiros que citam linhas	general a trabalhar	2026-11-19	S		
+C438	DONE		O re-apontador de citações das lições não vê todos os ficheiros			2026-11-19	S	5cde383452	
 C439	DONE		Cartão de entrada: ajustar um par binário a dados medidos			2026-11-19	S	7befe7ff5f	
 C440	OPEN	3	Dimensionamento detalhado de todas as operações da planta de referência	auditoria unidade a unidade do que cada uma já tem; depois os desenhos isométricos das linhas como item próprio	pedido do Vítor para o C238; a auditoria transforma "todas" numa lista	2026-11-19	M		
