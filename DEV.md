@@ -4664,6 +4664,15 @@ accepts today, and that is a policy call.
 > stale 10.03 m3; the ratchet's docstring; the Theory Guide entry for the
 > optional `initial`.
 
+> **C438 (architect, 2026-11-19, from C389's general).**  The lesson-citation
+> re-pointer does not manage every file that cites the engine by line:
+> `gui/src/ui/methods/plantRunMath.ts` and `plantCostMath.ts` (and the tests
+> that pin their prose) cite `EconomicsPass.cpp` lines it never checks, so an
+> engine edit left them stale while `repoint_lesson_citations.py --check`
+> said OK.  To build: the re-pointer's file set is derived from every
+> `file:line` citation in gui/ (not a hand list), and a citation it cannot
+> parse is a finding.
+
 > **C437 (architect, 2026-11-19, from C176's op E).**  With Labban et al.
 > 2017's own Table 5 parameters and X_d, Choupo's DSPM-DE misses the paper's
 > measured rejections by 8.7, 7.6 and 16.2 points at the three pressures

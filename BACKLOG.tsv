@@ -351,8 +351,8 @@ C385	DONE		Ponto de equilíbrio em preço			2026-11-13	M	645e439a76
 C386	DONE		EduTool de rápido e lento com casos de estudo			2026-11-13	M	18c81e145	
 C387	DONE		Landing page com contagens atualizadas			2026-11-13	S	03653ad9ce	
 C388	DONE		EduTool de equilíbrio ou rate-based para dimensionar colunas			2026-11-13	M	ad2393915	
-C389	PARTIAL	0	Preços revistos nas fontes	construído (origem de cada preço na consola, CSV e interface; preço sem origem recusado); falta: preços das utilidades, verificador e guias	general a trabalhar	2026-11-13	M	e17dbedd5	
-C390	OPEN	0	Termo de pressão na entalpia líquida (bombas)	general a construir: termo de pressão v(1-αT)dP na entalpia do líquido, para fechar a energia das bombas	general a trabalhar	2026-11-13	M		
+C389	PARTIAL	0	Preços revistos nas fontes	construído (origem de cada preço, utilidades incluídas; preço sem origem recusado); a validar na suite do lote; falta costSource nos 10 registos de utilidades	general a trabalhar	2026-11-13	M	e17dbedd5	
+C390	OPEN	0	Termo de pressão na entalpia líquida (bombas)	construído (termo de pressão; 490 linhas do amoníaco explicadas por 7 causas; sem perda de velocidade nas fábricas); a validar na suite do lote	general a trabalhar	2026-11-13	M		
 C391	NOT-AN-ITEM		Discussão: gémeo digital interativo de um caso dinâmico			2026-11-13	S		
 C392	DONE		Laboratório virtual de fluidização com partículas a mexer			2026-11-13	M	ae0644d65	
 C393	DONE		Linha de titular e licença em todos os ficheiros de código			2026-11-14	M	a0b4c806f	
@@ -394,9 +394,10 @@ C428	PARTIAL	48	Lente Escolher um solvente (Hansen) no Explorer	lente 'Escolher 
 C429	DONE		Verificador de regressão cego abaixo de 1e-9			2026-11-18	M	580e5ae25	
 C430	DONE		Parar a varredura e construir a arquitetura final			2026-11-19	L	cf034baa0	
 C431	DONE		Segunda revisão externa ponderada (fechar K1-K4)			2026-11-19	L	a9642fe3b	
-C432	OPEN	0	Reutilização por rota dos 1260 ajustes (provar o kernel uma vez por categoria)	construído (reutiliza por escala e repete antes de reajustar; o caso de 17 min passa a 3 s); aterra com a próxima suite completa, que ele próprio exige	general a trabalhar	2026-11-19	M		
+C432	OPEN	0	Reutilização por rota dos 1260 ajustes (provar o kernel uma vez por categoria)	construído; a validar na suite do lote	general a trabalhar	2026-11-19	M		
 C433	DONE		Ligações dos componentes e pares por modelo e conjunto nomeado			2026-11-19	M	cd2d3430e8	
 C434	DONE		Casos não correm no Firefox			2026-11-19	S	4e864ecf7	
 C435	PARTIAL	1	Cinco pontos da revisão externa de seis casos	(4) NanoFiltran: as propriedades da bancada declaradas uma vez espera o interruptor declarado da correção de Stokes-Einstein	só falta a parte (4), já desenhada; pequena	2026-11-19	M	cd2d3430e8	
 C436	OPEN	0	Backlog com uma só casa (BACKLOG.tsv), verificado, e a vista gerada dele	gate check_backlog e a página gerada do backlog	em curso: gerar o PLAN.md do backlog	2026-11-19	M		
 C437	OPEN	49	DSPM-DE com os parâmetros do próprio Labban falha 8-16 pontos	testar primeiro a aplicação de Davies (o mais provável, pela leitura de fora 19-11), depois o filme de fibra oca; os 12 % do artigo são relativos	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-19	M		
+C438	OPEN	98	O re-apontador de citações das lições não vê todos os ficheiros	derivar o conjunto de ficheiros de todas as citações file:line do gui/	apanhou o C389: duas lições ficaram desatualizadas com o verificador a dizer OK	2026-11-19	S		
