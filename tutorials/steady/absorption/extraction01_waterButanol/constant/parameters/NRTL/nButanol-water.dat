@@ -1,0 +1,36 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- water + nButanol, the CASE'S OWN record
+  (C433: a pair is found by name; an exception to the catalogue is a record
+  in the case's own folder, declared).
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+variationOf nButanol-water;
+variationReason "the case's own illustrative NRTL set (a 0, b 1200 K / 50 K, alpha 0.30) for the water/n-butanol liquid-liquid split; it is not the catalogue's pair";
+
+components  ( water  nButanol );
+model       NRTL;
+
+pair { i water; j nButanol; }
+
+parameters
+{
+    i          water;
+    j          nButanol;
+    a_ij       0.0;
+    b_ij       1200;
+    a_ji       0.0;
+    b_ji       50;
+    alpha      0.30;
+}
+
+provenance
+{
+    origin        assumed;
+    citation      "NRTL pair typed in this case; the case names no source (its README describes the miscibility gap, not the parameters).";
+    reviewStatus  interim;
+    reviewReason  "typed in the case by its author; the case names no source";
+    notes         "Moved from the dictionary into the case's own record by C433; no number changed.";
+}

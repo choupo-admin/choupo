@@ -215,12 +215,14 @@ each phase slot with its `standardState` reference conventions, and the
 parameter files each model consumes — there is no shared package catalogue;
 every case is self-contained.
 
-The contract is **declare → verify → refuse**: the dict DECLARES its
-parameter files (`binaryParameters` / `binaryInteractions` entries whose
-`source` points into `parameters/<MODEL>/`), and the `ThermoPackageBuilder`
-VERIFIES every declared file at assembly — a declared-but-missing or
-unparseable entry REFUSES loudly, naming the entry to add, and each loaded
-pair is announced with its source (`[builder]` / `[henry]` lines).  The
+The contract is **name → find → refuse**: the dict NAMES its pairs
+(`binaryParameters` / `binaryInteractions` entries `<i>-<j> { }`; the address of a
+record is never written in a case, C433), the `ThermoPackageBuilder` FINDS each by
+(model, i, j) through one cascade (the case's own `constant/parameters/<MODEL>/`, then
+`data/standards/parameters/<MODEL>/`, then `data/local/`), and a pair no level holds
+REFUSES loudly, naming the file looked for in each level; each loaded pair is announced
+with the file read and its level (`[builder]` / `[henry]` lines).  An exception to the
+catalogue is a record in the case's own folder, declared (`variationOf` + reason).  The
 builder loads and assembles; it NEVER estimates.
 
 ONE PAIR MAY HOLD SEVERAL NAMED SETS (contract K3): a NRTL, UNIQUAC or Wilson
@@ -310,8 +312,8 @@ name the model?*
    catalogue**, `data/standards/parameters/SRK/<i>-<j>.dat` (siblings:
    `parameters/<MODEL>/` for activity pairs, `parameters/electrolyte/` for
    Pitzer/eNRTL), mirroring `parameters/NRTL/<i>-<j>.dat`, declared in the
-   thermoPhysPropDict (a `binaryInteractions { N2-CH4 { source "…"; } }`
-   entry) and announced
+   thermoPhysPropDict (a `binaryInteractions { N2-CH4 { } }`
+   entry, found by name) and announced
    at assembly (`[builder] kij(N2,CH4) = 0.0289 --- <file>`), with the
    always-permitted inline override in the package.
 

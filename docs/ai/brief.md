@@ -223,19 +223,19 @@ For a pair NOT in the catalogue, in this order (pack `properties` has the fit gr
    rule exists to stop.
 4. NEVER take a value from a database without a redistribution licence.
 
-The engine accepts coefficients typed in the case, but ANNOUNCES every such
-pair as `[unreviewed] pair` (values and source not reviewed by Choupo); only
-write one when the student hands you the numbers from a paper he is reading:
+A pair is FOUND BY NAME, never by a path: the entry is `ethanol-water { }`,
+resolved through the case's own `constant/parameters/NRTL/`, then the catalogue,
+then `data/local`.  Numbers the student hands you from a paper are a RECORD IN
+THE CASE'S OWN FOLDER (`constant/parameters/NRTL/<i>-<j>.dat`: a `parameters`
+block, a `provenance` block naming the paper, and `variationOf <name>;
+variationReason "...";` when the catalogue holds that name), never typed into the
+dictionary.  Typed numbers are still read but ANNOUNCED `[unreviewed] pair`.
 
 ```
         activityModel
         {
             model NRTL;
-            binaryParameters
-            {
-                ethanol-water { i ethanol; j water; a_ij -0.8009; b_ij 246.18;
-                                a_ji 3.4578; b_ji -586.0809; alpha 0.30; }
-            }
+            binaryParameters { ethanol-water { } }
         }
 ```
 
@@ -267,7 +267,7 @@ announces `kij = 0` for every pair.  A catalogued pair:
         model SRK;  mixingRule vanDerWaalsOneFluid;
         binaryInteractions
         {
-            N2-CH4 { source "data/standards/parameters/SRK/N2-CH4.dat"; }
+            N2-CH4 { }     // found by name: constant/parameters/SRK/, then the catalogue
         }
     }
 ```

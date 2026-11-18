@@ -1107,6 +1107,9 @@
   "HenrysLawRegistry": [
    "src/thermo/henrysLaw/HenrysLawRegistry.H"
   ],
+  "Hit": [
+   "src/thermo/PairByName.H"
+  ],
   "Holdup": [
    "src/io/InternalStateIO.H"
   ],
@@ -10281,6 +10284,7 @@
    "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PairAudit.H",
+   "src/thermo/PairByName.H",
    "src/thermo/PairSets.H",
    "src/thermo/PinCheck.H",
    "src/thermo/PropertyVariants.H",
@@ -23850,6 +23854,9 @@
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/separation/IonExchanger.cpp"
+  ],
+  "src/thermo/PairByName.H": [
+   "src/thermo/ThermoPackageBuilder.cpp"
   ],
   "src/thermo/PairSets.H": [
    "src/propertyOps/CatalogueLookup.cpp",

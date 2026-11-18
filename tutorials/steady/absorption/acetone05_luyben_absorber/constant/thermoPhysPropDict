@@ -47,8 +47,8 @@ equilibrium
             solutionModel henryDilute;
             binaryParameters
             {
-                acetone-water { source "data/standards/parameters/Henry/acetone-water.dat"; }
-                H2-water      { source "data/standards/parameters/Henry/H2-water.dat"; }   // C256
+                acetone-water { }
+                H2-water      { }   // C256
             }
         }
     }

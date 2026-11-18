@@ -29,7 +29,7 @@ equilibrium
             model NRTL;
             binaryParameters
             {
-                ethanol-water { source "data/standards/parameters/NRTL/ethanol-water.dat"; }
+                ethanol-water { }
             }
         }
         standardState pureLiquid;       // Raoult datum: gamma_i -> 1 as x_i -> 1

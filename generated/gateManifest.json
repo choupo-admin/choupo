@@ -1728,8 +1728,8 @@
     },
     "check_case_records": {
       "exit": 0,
-      "claim": "check_case_records: OK -- 539 referencing case(s): no local record equals the catalogue's, every homonym is declared with its reason (or held), 1982 held cop(ies) against a ceiling of 1982, no pin names a record read alone, and no path a case writes has a catalogue homonym (1878 cases read for it).  NOT CHECKED: that every case has a manifest (check_sealed_corpus), that a declared variation's numbers are right, or the sealed cases' copies (check_seal_drift).",
-      "seconds": 1.8
+      "claim": "check_case_records: OK -- 553 referencing case(s): no local record equals the catalogue's, every homonym is declared with its reason (or held), 0 held cop(ies) against a ceiling of 0, no pin names a record read alone, no pair is addressed by a path or typed inline outside a fit, and no path a case writes has a catalogue homonym (1891 cases read for it).  NOT CHECKED: that every case has a manifest (check_sealed_corpus), that a declared variation's numbers are right, or the sealed cases' copies (check_seal_drift).",
+      "seconds": 2.5
     },
     "check_shadow_identity": {
       "exit": 0,

@@ -46,7 +46,7 @@ equilibrium
             model NRTL;
             binaryParameters
             {
-                methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+                methanol-water { }
             }
         }
         standardState pureLiquid;
@@ -74,7 +74,7 @@ variants
                     model NRTL;
                     binaryParameters
                     {
-                        methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+                        methanol-water { }
                     }
                 }
             }
@@ -98,7 +98,7 @@ variants
                     model NRTL;
                     binaryParameters
                     {
-                        methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+                        methanol-water { }
                     }
                 }
             }
@@ -137,7 +137,7 @@ variants
                     model NRTL;
                     binaryParameters
                     {
-                        methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+                        methanol-water { }
                     }
                 }
             }
@@ -160,7 +160,7 @@ variants
                     model NRTL;
                     binaryParameters
                     {
-                        methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+                        methanol-water { }
                     }
                 }
             }

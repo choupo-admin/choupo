@@ -30,7 +30,7 @@ equilibrium
         model LeeKeslerPloecker;
         binaryInteractions
         {
-            LKreference-LKsimple { source "data/standards/parameters/LKP/LKreference-LKsimple.dat"; }
+            LKreference-LKsimple { }
         }
     }
 

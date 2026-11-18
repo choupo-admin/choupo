@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------*\
+  Wilson binary interaction parameters --- ethanol + water, the CASE'S OWN record
+  (C433: a pair is found by name; an exception to the catalogue is a record
+  in the case's own folder, declared).
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+components  ( ethanol  water );
+model       Wilson;
+
+pair { i ethanol; j water; }
+
+parameters
+{
+    i          ethanol;
+    j          water;
+    A_ij       1157.95;
+    A_ji       4081.65;
+}
+
+provenance
+{
+    origin        assumed;
+    citation      "Wilson Lambda parameters of ethanol(1)/water(2) typed in this case (A_ij 1157.95, A_ji 4081.65 J/mol); the case names no source.  The Theory Guide's worked Wilson example computes gamma from them.";
+    reviewStatus  interim;
+    reviewReason  "typed in the case by its author; the case names no source";
+    notes         "Moved from the dictionary into the case's own record by C433 (a pair is found by name); no number changed.";
+}

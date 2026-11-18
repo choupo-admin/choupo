@@ -50,9 +50,9 @@ equilibrium
             binaryParameters
             {
                 // Sander (2015) compilation, CC-BY
-                CO-water { source "data/standards/parameters/Henry/CO-water.dat"; }
-                CO2-water { source "data/standards/parameters/Henry/CO2-water.dat"; }
-                H2-water { source "data/standards/parameters/Henry/H2-water.dat"; }
+                CO-water { }
+                CO2-water { }
+                H2-water { }
             }
         }
     }

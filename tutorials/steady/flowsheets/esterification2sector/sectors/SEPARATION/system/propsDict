@@ -56,7 +56,7 @@ operations
             equilibrium { liquid { activityModel { model NRTL;
             binaryParameters
             {
-                ethanol-water { i ethanol; j water; a_ij -0.8009; b_ij 246.18; a_ji 3.4578; b_ji -586.0809; alpha 0.30; }
+                ethanol-water { }
             } } } }
         }
         properties  ( gamma_ethanol  gamma_water );  output { file gamma_etoh_water.csv; }
@@ -85,7 +85,7 @@ operations
             equilibrium { liquid { activityModel { model NRTL;
             binaryParameters
             {
-                ethanol-water { i ethanol; j water; a_ij -0.8009; b_ij 246.18; a_ji 3.4578; b_ji -586.0809; alpha 0.30; }
+                ethanol-water { }
             } } } }
         }
         properties  ( T_bubble  y_eq_ethanol );  output { file etoh_water_nrtl.csv; }
@@ -101,7 +101,7 @@ operations
             equilibrium { liquid { activityModel { model Wilson;
             binaryParameters
             {
-                ethanol-water { i ethanol; j water; A_ij 1157.95; A_ji 4081.65; }
+                ethanol-water { }
             } } } }
         }
         properties  ( T_bubble  y_eq_ethanol );  output { file etoh_water_wilson.csv; }

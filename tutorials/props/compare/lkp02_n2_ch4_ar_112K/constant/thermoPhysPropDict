@@ -34,9 +34,9 @@ equilibrium
         model LeeKeslerPloecker;
         binaryInteractions
         {
-            CH4-N2 { source "data/standards/parameters/LKP/CH4-N2.dat"; }
-            Ar-N2  { source "data/standards/parameters/LKP/Ar-N2.dat"; }
-            Ar-CH4 { source "data/standards/parameters/LKP/Ar-CH4.dat"; }
+            CH4-N2 { }
+            Ar-N2  { }
+            Ar-CH4 { }
         }
     }
 

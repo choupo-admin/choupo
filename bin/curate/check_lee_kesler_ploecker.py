@@ -901,7 +901,7 @@ def refusal_problems(wd):
     d = fresh("r2", point)
     pdir = d / "constant/parameters/LKP"
     pdir.mkdir(parents=True, exist_ok=True)
-    t = (RECS / "CH4-N2.dat").read_text().replace("kij  0.977;", "kij  -0.977;")
+    t = case_records.as_variation("CH4-N2", (RECS / "CH4-N2.dat").read_text().replace("kij  0.977;", "kij  -0.977;"))   # C433: a case-folder pair declares what it is
     (pdir / "CH4-N2.dat").write_text(t)
     rc, out = run_case_text(d)
     if rc == 0 or "MULTIPLIER" not in out:
@@ -910,7 +910,7 @@ def refusal_problems(wd):
     d = fresh("r3", point)
     pdir = d / "constant/parameters/LKP"
     pdir.mkdir(parents=True, exist_ok=True)
-    t = (RECS / "CH4-N2.dat").read_text().replace("eos  LeeKeslerPloecker;", "eos  SRK;")
+    t = case_records.as_variation("CH4-N2", (RECS / "CH4-N2.dat").read_text().replace("eos  LeeKeslerPloecker;", "eos  SRK;"))   # C433: a case-folder pair declares what it is
     (pdir / "CH4-N2.dat").write_text(t)
     rc, out = run_case_text(d)
     if rc == 0 or "regressed for eos SRK" not in out:
@@ -919,7 +919,7 @@ def refusal_problems(wd):
     d = fresh("r4", point)
     pdir = d / "constant/parameters/LKP"
     pdir.mkdir(parents=True, exist_ok=True)
-    t = (RECS / "CH4-N2.dat").read_text().replace("i    CH4;", "i    FOO;")
+    t = case_records.as_variation("CH4-N2", (RECS / "CH4-N2.dat").read_text().replace("i    CH4;", "i    FOO;"))   # C433: a case-folder pair declares what it is
     (pdir / "CH4-N2.dat").write_text(t)
     rc, out = run_case_text(d)
     if rc == 0 or "unknown component 'FOO'" not in out:
@@ -927,7 +927,7 @@ def refusal_problems(wd):
     # R5 an undeclared pair is announced BY NAME and shown in the resolved view
     d = fresh("r5", point)
     tp = (d / "constant/thermoPhysPropDict").read_text()
-    tp = tp.replace('            Ar-CH4 { source "data/standards/parameters/LKP/Ar-CH4.dat"; }\n', "")
+    tp = tp.replace('            Ar-CH4 { }\n', "")
     (d / "constant/thermoPhysPropDict").write_text(tp)
     rc, out = run_case_text(d)
     if rc != 0:

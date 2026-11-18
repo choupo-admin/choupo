@@ -18,6 +18,11 @@ For every case whose constant/propertyManifest holds `pins`:
   * a pin is not written for a record the case reads ALONE (a declared
     variation or a held copy): the case does not read the catalogue's, and a
     pin that says it does is a claim nothing checks;
+  * (C433) a pair's address is never written in a case: no `source "<path>"` in a
+    binaryParameters / binaryInteractions entry, no inline pair that is not a value a
+    fit varies (bin/curate/pairs_by_name.py --check; the real defect: flash02 retyped
+    the catalogue's five NRTL numbers and greenAmmoniaPEQ named its Henry records by
+    path -- a fact with two homes, one of which no gate compared with the other);
   * a path the case's own run WRITES (`record "constant/<sub>"` in a dict under
     system/) has no catalogue homonym -- otherwise deleting the product would
     silently resolve the catalogue's record (membrane24's NF270_FdL2021.dat).
@@ -147,6 +152,8 @@ def main():
         nCases += 1
         nHeld += len(mf["held"])
         problems += judge(m.parent.parent, ROOT)
+    import pairs_by_name  # noqa: E402  (the C433 arm: the corpus names its pairs, never addresses them)
+    problems += pairs_by_name.problems()
     if nHeld > HELD_CEILING:
         problems.append(f"{nHeld} held cop(ies) in the tree, the ceiling is {HELD_CEILING}"
                         f" -- `held` only shrinks.  Remedy: re-point a held copy"
@@ -159,7 +166,8 @@ def main():
         return 1
     print(f"check_case_records: OK -- {nCases} referencing case(s): no local record equals the"
           f" catalogue's, every homonym is declared with its reason (or held), {nHeld} held"
-          f" cop(ies) against a ceiling of {HELD_CEILING}, no pin names a record read alone, and no"
+          f" cop(ies) against a ceiling of {HELD_CEILING}, no pin names a record read alone, no"
+          f" pair is addressed by a path or typed inline outside a fit, and no"
           f" path a case writes has a catalogue homonym ({nWriters} cases read for it).  NOT CHECKED: that every case has a"
           f" manifest (check_sealed_corpus), that a declared variation's numbers are right, or the"
           f" sealed cases' copies (check_seal_drift).")

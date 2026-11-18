@@ -1,0 +1,32 @@
+/*---------------------------------------------------------------------------*\
+  UNIQUAC binary interaction parameters --- nButanol + water, the CASE'S OWN record
+  (C433: a pair is found by name; an exception to the catalogue is a record
+  in the case's own folder, declared).
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+components  ( nButanol  water );
+model       UNIQUAC;
+
+pair { i nButanol; j water; }
+
+parameters
+{
+    i          nButanol;
+    j          water;
+    a_ij       155.31;
+    b_ij       1.0822;
+    c_ij       -43.711e-4;
+    a_ji       -579.36;
+    b_ji       2.7517;
+    c_ji       -6.7700e-4;
+}
+
+provenance
+{
+    origin        literature;
+    citation      "J.G.M. Winkelman, G.N. Kraai, H.J. Heeres, Fluid Phase Equilibria 284 (2009) 71-79, doi 10.1016/j.fluid.2009.06.013, Table 2 p. 73: 1-butanol(1)/water(3), valid 273-363 K; A_ij(T) = a + b*T + c*T^2 (Eq. 10), tau_ij = exp(-A_ij/T) (Eq. 7).";
+    notes         "Moved from the dictionary into the case's own record by C433; no number changed.";
+}

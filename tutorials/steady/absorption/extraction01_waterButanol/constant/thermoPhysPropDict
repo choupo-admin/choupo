@@ -29,15 +29,7 @@ equilibrium
         {
             model NRTL;
             binaryParameters {
-                water-nButanol {
-                    i water;
-                    j nButanol;
-                    a_ij 0.0;
-                    b_ij 1200;
-                    a_ji 0.0;
-                    b_ji 50;
-                    alpha 0.30;
-                }
+                water-nButanol { }
             }
         }
     }

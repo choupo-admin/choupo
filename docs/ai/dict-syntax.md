@@ -618,11 +618,10 @@ equilibrium
         solvent { component water;   standardState pureLiquid; }
         solutes { components ( CO2 ); standardState infiniteDilution;
                   solutionModel henryDilute;
-                  binaryParameters                     // DECLARED files,
-                  {                                    //   verified at
-                      CO2-water                        //   assembly (refuse
-                      { source "data/standards/parameters/Henry/CO2-water.dat"; }
-                  } }                                  //   if missing)
+                  binaryParameters                     // optional: a pair is
+                  {                                    //   found BY NAME (case
+                      CO2-water { }                    //   folder, catalogue,
+                  } }                                  //   local); refused if none holds it
     }
     vapour { fugacityModel idealGas; }
 }

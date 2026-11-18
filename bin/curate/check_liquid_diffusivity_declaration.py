@@ -336,7 +336,8 @@ def kt_section(tmp, fails, notes):
     #  the paper's PRINTED tau_21 = 0.74632 gives the 0.002 residual: the discrepancy between the two sources
     #  is a measurement, not a sentence.
     _, _, dgp2 = kt_run(KT, tmp, "kt_printedtau",
-                        edits=[("constant/thermoPhysPropDict", "a_ji 0.76432;", "a_ji 0.74632;")])
+                        #  C433: the pair is the case's own RECORD (found by name), not a dict entry
+                        edits=[("constant/parameters/NRTL/acetone-benzene.dat", "a_ji       0.76432;", "a_ji       0.74632;")])
     try:
         dd, oo = [], []
         for pt, (x, E) in zip(("t1", "t2", "t3", "t4"), KT_TABLE_I):

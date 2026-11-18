@@ -29,18 +29,9 @@ equilibrium
         activityModel
         {
             model NRTL;
-            binaryParameters   // the dict OWNS the numbers (inline form)
+            binaryParameters   // each pair is found by name: the case's own record, else the catalogue's
             {
-                ethanol-water
-                {
-                    i ethanol;
-                    j water;
-                    a_ij -0.8009;
-                    b_ij 246.18;
-                    a_ji 3.4578;
-                    b_ji -586.0809;
-                    alpha 0.30;
-                }
+                ethanol-water { }
             }
         }
         standardState pureLiquid;

@@ -44,8 +44,8 @@ equilibrium
             solutionModel henryDilute;
             binaryParameters
             {
-                NH3-water { source "data/standards/parameters/Henry/NH3-water.dat"; }
-                N2-water  { source "data/standards/parameters/Henry/N2-water.dat"; }   // C256
+                NH3-water { }
+                N2-water  { }   // C256
             }
         }
     }

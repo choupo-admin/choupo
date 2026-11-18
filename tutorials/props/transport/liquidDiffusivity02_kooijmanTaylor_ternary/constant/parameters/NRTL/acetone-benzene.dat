@@ -1,0 +1,31 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- acetone + benzene, the CASE'S OWN record
+  (C433: a pair is found by name; an exception to the catalogue is a record
+  in the case's own folder, declared).
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+components  ( acetone  benzene );
+model       NRTL;
+
+pair { i acetone; j benzene; }
+
+parameters
+{
+    i          acetone;
+    j          benzene;
+    a_ij       -0.46504;
+    b_ij       0;
+    a_ji       0.76432;
+    b_ji       0;
+    alpha      0.2;
+}
+
+provenance
+{
+    origin        literature;
+    citation      "Dimensionless NRTL parameters (alpha 0.2) of Renon et al. (1971) as printed in Kooijman & Taylor, Ind. Eng. Chem. Res. 30 (1991) 1217-1222, Table I p. 1218; tau_21 = 0.76432 from Taylor & Krishna (1993), Example 3.3.1 p. 61 (the paper prints 0.74632, a transposition: see the case header).  Stated for 25 C only (b_ij = 0).";
+    notes         "Moved from the dictionary into the case's own record by C433; no number changed.";
+}

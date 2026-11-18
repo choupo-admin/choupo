@@ -9,6 +9,7 @@
 
 #include "thermo/Database.H"
 #include "thermo/PairSets.H"
+#include "thermo/PairByName.H"
 #include "thermo/Component.H"
 #include "thermo/RecordResolver.H"
 #include "thermo/ThermoAnnounce.H"   // [builder] lines: cout (pedagogy), gated at >= 2
@@ -89,6 +90,8 @@ static std::filesystem::path resolveDeclared(const std::filesystem::path& repoRo
 //  through the one channel (stderr + AdvisoryLog -> caveat block + result
 //  JSON), moving no number.  A pair read from a curated record stays silent:
 //  silence means "nothing was assumed".  ONE home for both inline readers.
+//  C433: the line carries the remedy -- the pair is found BY NAME, and a pair
+//  that is the case's own is a record in the case's folder.
 static void announceInlinePair(const std::string& model, const std::string& pr)
 {
     const std::string msg = model + " values and source typed in the case,"
@@ -98,7 +101,90 @@ static void announceInlinePair(const std::string& model, const std::string& pr)
             "provenance", "warning", "pair " + pr, msg))
         std::cerr << "[unreviewed] pair " << pr << ": " << msg
                   << ".  Check the numbers against the article, or fit them"
-                     " with `fitParameters`, before the result is cited.\n";
+                     " with `fitParameters`, before the result is cited."
+                     "  Remedy: write `" << pr << " { }` and the pair is found"
+                     " by name (the catalogue's, if it is the catalogue's);"
+                     " a pair of the case's own is a record in the case's"
+                     " folder, constant/parameters/" << model << "/, declared"
+                     " `variationOf <name>;` when the catalogue holds one of"
+                     " that name.\n";
+}
+
+//  C433: an entry that names a pair and nothing else -- `<i>-<j> { }` or
+//  `<i>-<j> { set <name>; }` -- is resolved BY NAME through the cascade
+//  (thermo/PairByName.H).  Any other key makes it an inline pair (numbers
+//  typed in the case) or a `source` form (retired).
+static bool pairIsByName(const DictPtr& pd)
+{
+    for (const auto& k : pd->keys())
+        if (k != "set") return false;
+    return true;
+}
+
+//  C433: the ONE place a declared pair becomes a record file.  `pd` is a
+//  `source` entry or a by-name entry.  A `source` equal to the file the
+//  cascade finds is REDUNDANT (announced once, so an old case runs); a
+//  `source` elsewhere is REFUSED by name with the line to write.
+static pairname::Hit resolvePairDecl(const std::string& who,
+                                     const std::string& model,
+                                     const std::string& key,
+                                     const DictPtr& pd,
+                                     const std::string& nodeBase,
+                                     const std::filesystem::path& repoRoot)
+{
+    namespace fs = std::filesystem;
+    if (!pairname::hasCatalogue(model) && !records::sealedStrict())
+        throw std::runtime_error(who + ": '" + key + "' names a " + model
+            + " pair, but " + model + " has no pair catalogue"
+              " (data/standards/parameters/" + model + "/) -- a pair is"
+              " found by name in that folder, or in the case's own"
+              " constant/parameters/" + model + "/.");
+    pairname::Hit hit;
+    std::vector<std::string> looked;
+    const bool found = pairname::find(model, key, nodeBase, hit, &looked);
+    const std::string stem = fs::path(pairname::fileNames(model, key)[0]).stem().string();
+    if (pd->found("source"))
+    {
+        const std::string src = pd->lookupWord("source");
+        std::error_code ec;
+        const fs::path declared = resolveDeclared(repoRoot, src);
+        const bool same = found && fs::exists(declared)
+            && fs::equivalent(declared, hit.file, ec) && !ec;
+        if (!same)
+        {
+            const auto n = pairname::fileNames(model, key);
+            throw std::runtime_error(who + ": " + model + " pair '" + key
+                + "' declares `source \"" + src + "\"`, which is not the"
+                  " record the cascade finds for that pair ("
+                + (found ? hit.shown : std::string("no record of that name"
+                                                   " at any level"))
+                + ").  A pair's address is never written in a case: write `"
+                + key + " { }` and the pair is found by name (case folder"
+                  " first, then the catalogue).  If this record is the case's"
+                  " own, put it in the case's folder as constant/parameters/"
+                + model + "/" + n[0] + " with `variationOf " + stem
+                + "; variationReason \"...\";` when the catalogue holds a"
+                  " record of that name, and the entry reads `" + key
+                + " { }`.");
+        }
+        if (AdvisoryLog::instance().addAnnouncedOnce(
+                "pairSource:" + model + ":" + key, "provenance", "info",
+                "pair " + key,
+                "`source \"" + src + "\"` is REDUNDANT -- the pair is found"
+                " by name at the same file; write `" + key + " { }`"))
+            std::cerr << "[pair] " << key << ": `source \"" << src
+                      << "\"` is redundant (the pair is found by name at the"
+                         " same file, " << hit.level << " level); write `"
+                      << key << " { }`.\n";
+    }
+    else if (!found)
+        throw std::runtime_error(pairname::refusalText(who, model, key, looked));
+    //  a case-level record that shadows a catalogue record of the same name
+    //  declares what it is, as a component overlay does
+    if (hit.level == "case")
+        records::checkLocalShadow("parameters/" + model + "/"
+                                  + hit.file.filename().string(), hit.file);
+    return hit;
 }
 
 namespace {
@@ -2322,12 +2408,16 @@ static DictPtr readActivityConfig(const DictPtr& v2, const DictPtr& holder,
             for (const auto& pr : bp->keys())
             {
                 auto pd = bp->subDict(pr);
-                if (pd->found("source"))
+                if (pd->found("source") || pairIsByName(pd))
                 {
                     anySource = true;
-                    const std::string src = pd->lookupWord("source");
-                    auto pairRec = loadRec(resolveDeclared(repoRoot, src),
-                                           "binary pair " + pr);
+                    const pairname::Hit hit = resolvePairDecl(
+                        "thermophysicalPropertySystem: binaryParameters",
+                        model, pr, pd,
+                        v2->lookupWordOrDefault("binaryPairsBase", ""),
+                        repoRoot);
+                    const std::string src = hit.shown;
+                    auto pairRec = loadRec(hit.file, "binary pair " + pr);
                     //  K3: the set the case names (`set <name>;`), else the
                     //  record's preferred one; unknown names refuse by name.
                     bool setNamed = false;
@@ -2337,15 +2427,18 @@ static DictPtr readActivityConfig(const DictPtr& v2, const DictPtr& holder,
                                   &setUsed, &setNamed);
                     if (thermoAnnounce())
                         std::cout << "[builder] binary pair " << pr
-                                  << "  --- " << src
+                                  << "  --- " << src << "  [" << hit.level << "]"
                                   << (setNamed ? "  set " + setUsed : std::string())
                                   << "\n";
                     auto pp = pairRec->subDict("parameters");
                     auto p = std::make_shared<Dictionary>(pr);
                     p->insert("i", pp->entryValue("i"));
                     p->insert("j", pp->entryValue("j"));
+                    //  (Wilson's pair is A_ij / A_ji: a by-name Wilson pair
+                    //  must carry them, as the inline form always did.)
                     for (const char* k : {"a_ij", "b_ij", "a_ji", "b_ji",
-                                          "c_ij", "c_ji", "alpha"})
+                                          "c_ij", "c_ji", "alpha",
+                                          "A_ij", "A_ji"})
                         if (pp->found(k)) p->insert(k, pp->entryValue(k));
                     // Honesty flag rides along (the H^E calorimetric gate).
                     if (pp->found("calorimetricFit"))
@@ -2494,28 +2587,34 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
             DictPtr coef = pd;
             bool pairSetNamed = false;
             std::string pairSetUsed;
-            if (pd->found("source"))
+            std::string srcShown;
+            const bool declared = pd->found("source") || pairIsByName(pd);
+            if (declared)
             {
-                const std::string src = pd->lookupWord("source");
-                coef = loadRec(resolveDeclared(repoRoot, src),
-                               "binary pair " + pr);
+                const pairname::Hit hit = resolvePairDecl(
+                    "thermophysicalPropertySystem: binaryParameters",
+                    am->lookupWord("model"), pr, pd,
+                    v2->lookupWordOrDefault("binaryPairsBase", ""), repoRoot);
+                const std::string src = hit.shown;
+                srcShown = src;
+                coef = loadRec(hit.file, "binary pair " + pr);
                 //  K3: the case's `set <name>;`, else the record's preferred.
                 coef = pairsets::resolve(coef, pd->lookupWordOrDefault("set", ""),
                                          src, &pairSetUsed, &pairSetNamed);
                 if (coef->found("parameters")) coef = coef->subDict("parameters");
                 if (thermoAnnounce())
                     std::cout << "[builder] binary pair " << pr
-                              << "  --- " << src
+                              << "  --- " << src << "  [" << hit.level << "]"
                               << (pairSetNamed ? "  set " + pairSetUsed : std::string())
                               << "\n";
             }
-            if (!pd->found("source") && pd->found("set"))
+            if (!declared && pd->found("set"))
                 throw std::runtime_error("thermophysicalPropertySystem:"
                     " binaryParameters entry '" + pr + "' names `set "
                     + pd->lookupWord("set") + ";` but declares no `source` --"
                     " a set is a part of a pair RECORD; an inline pair is one"
                     " set.");
-            if (!pd->found("source"))
+            if (!declared)
                 announceInlinePair(am->lookupWord("model"), pr);
             auto p = std::make_shared<Dictionary>(pr);
             for (const auto& k : coef->keys())
@@ -2528,8 +2627,8 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
             //  WHERE THE PAIR CAME FROM (review row SA-03): the record file it
             //  was loaded from, which the activity model records as the pair's
             //  source (an authored inline pair carries none and stays `inline`).
-            if (pd->found("source") && !p->found("resolvedFrom"))
-                p->insert("resolvedFrom", std::string(pd->lookupWord("source")));
+            if (declared && !p->found("resolvedFrom"))
+                p->insert("resolvedFrom", srcShown);
             if (pairSetNamed) p->insert("resolvedSet", pairSetUsed);
             pairDicts.push_back(p);
         }
@@ -2803,26 +2902,43 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
             throw std::runtime_error("thermophysicalPropertySystem:"
                 " diluteSolution declares no solutes.");
 
-        // A3: every declared solute pair -- declared record exists AND
-        // parses (fail-closed); the runtime registry re-reads it.
-        if (!sus->found("binaryParameters"))
-            throw std::runtime_error("thermophysicalPropertySystem:"
-                " diluteSolution solutes need binaryParameters { <solute>-"
-                + solvent + " { source \"...\"; } ... } -- the cited Henry"
-                " records.");
-        auto bp = sus->subDict("binaryParameters");
+        // A3 + C433: every declared solute pair is FOUND BY NAME -- the
+        // case's own constant/parameters/Henry/ first, then the catalogue,
+        // then data/local -- and the record parses (fail-closed); the runtime
+        // registry re-reads it.  `binaryParameters` is OPTIONAL: an entry may
+        // restate the pair as `<solute>-<solvent> { }` (a `source` equal to
+        // the cascade's file is announced as redundant, any other is refused),
+        // and a solute with no entry is resolved the same way.  A pair no
+        // level holds is refused naming the file looked for in each level.
+        DictPtr bp = sus->found("binaryParameters")
+                   ? sus->subDict("binaryParameters") : nullptr;
         for (const auto& su : solutes)
         {
             const std::string key = su + "-" + solvent;
-            if (!bp->found(key))
-                throw std::runtime_error("thermophysicalPropertySystem: solute '"
-                    + su + "' declared but binaryParameters has no '" + key
-                    + "' entry -- declare the pair file.");
-            const std::string src = bp->subDict(key)->lookupWord("source");
-            (void)loadRec(resolveDeclared(repoRoot, src), "Henry pair " + key);
+            DictPtr pd = (bp && bp->found(key)) ? bp->subDict(key) : nullptr;
+            if (pd && !pd->found("source") && !pairIsByName(pd))
+                throw std::runtime_error("thermophysicalPropertySystem: Henry"
+                    " pair '" + key + "' carries values in the case -- a Henry"
+                    " pair is a RECORD found by name; write `" + key
+                    + " { }` and put the record in the case's own"
+                      " constant/parameters/Henry/" + key + ".dat (declared"
+                      " `variationOf " + key + ";` when the catalogue holds"
+                      " one of that name).");
+            if (pd && pd->found("set"))
+                throw std::runtime_error("thermophysicalPropertySystem: Henry"
+                    " pair '" + key + "' names `set " + pd->lookupWord("set")
+                    + ";` -- a Henry record holds ONE set of constants (named"
+                      " parameter sets are a property of the activity-model"
+                      " pair records).");
+            if (!pd) pd = std::make_shared<Dictionary>(key);
+            const pairname::Hit hit = resolvePairDecl(
+                "thermophysicalPropertySystem: diluteSolution solutes",
+                "Henry", key, pd, v2->lookupWordOrDefault("binaryPairsBase", ""),
+                repoRoot);
+            (void)loadRec(hit.file, "Henry pair " + key);
             if (thermoAnnounce())
-                std::cout << "[builder] Henry pair " << key << "  --- " << src
-                          << "\n";
+                std::cout << "[builder] Henry pair " << key << "  --- "
+                          << hit.shown << "  [" << hit.level << "]\n";
         }
 
         // G5: a REAL vapour phi rides the same EoS wiring as gammaPhi.
@@ -3086,7 +3202,7 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
         for (const auto& key : bi->keys())
         {
             auto decl = bi->subDict(key);
-            if (!decl->found("source"))
+            if (!decl->found("source") && !pairIsByName(decl))
             {
                 const bool inlineForm = decl->found("i") && decl->found("j")
                                      && decl->found("kij");
@@ -3115,15 +3231,49 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                     std::cout << "[builder] " << msg << "\n";
                 continue;
             }
-            auto rec = loadRec(resolveDeclared(repoRoot, decl->lookupWord("source")),
-                               "kij pair " + key);
+            //  C433: a single-pair kij record is found BY NAME
+            //  (`<i>-<j> { }`: the case's constant/parameters/<Model>/, then
+            //  the catalogue, then data/local); a `source` equal to that file
+            //  is redundant and any other is refused.  A SET record
+            //  (eosBinaryInteractionSet: one mixture at one T, written into
+            //  the case by `ppr78Kij`) is a mixture, not a (model, i, j), and
+            //  keeps its `source` -- its own slice.
+            if (decl->found("set"))
+                throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
+                    " binaryInteractions." + key + " names `set`; a kij record"
+                    " holds one value.");
+            const std::string kijDir = model == "LeeKeslerPloecker" ? "LKP" : model;
+            std::string kijSrc;
+            DictPtr rec;
+            if (decl->found("source"))
+            {
+                kijSrc = decl->lookupWord("source");
+                rec = loadRec(resolveDeclared(repoRoot, kijSrc), "kij pair " + key);
+            }
+            if ((!rec || rec->lookupWordOrDefault("recordType", "")
+                         != "eosBinaryInteractionSet")
+                && (pairname::hasCatalogue(kijDir) || records::sealedStrict()))
+            {
+                const pairname::Hit hit = resolvePairDecl(
+                    "thermophysicalPropertySystem: phiPhi binaryInteractions",
+                    kijDir, key, decl,
+                    v2->lookupWordOrDefault("binaryPairsBase", ""), repoRoot);
+                kijSrc = hit.shown;
+                rec = loadRec(hit.file, "kij pair " + key);
+            }
+            else if (!rec)
+                throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
+                    " binaryInteractions." + key + ": no pair catalogue for '"
+                    + model + "' -- a kij record is found by name in"
+                      " data/standards/parameters/" + kijDir + "/ or the"
+                      " case's own constant/parameters/" + kijDir + "/.");
             const std::string recType = rec->lookupWordOrDefault("recordType", "");
             if (recType == "eosBinaryInteractionSet")
             {
                 verifyEos(rec, "kij set " + key);
                 if (!rec->found("T") || !rec->found("pairs"))
                     throw std::runtime_error("propertyPackage: kij set " + key
-                        + " (" + decl->lookupWord("source") + ") must carry"
+                        + " (" + kijSrc + ") must carry"
                           " `T <value> <unit>;` -- the ONE temperature every"
                           " kij of the set was evaluated at -- and a `pairs ("
                           " { i; j; kij; } ... )` list.");
@@ -3155,7 +3305,7 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                     << rec->lookupWordOrDefault("method", "a declared table")
                     << " evaluated ONCE at T = " << Tset << " K and held CONSTANT"
                        " in this package (a stated default: the cubic reads no"
-                       " kij(T)) --- " << decl->lookupWord("source");
+                       " kij(T)) --- " << kijSrc;
                 if (thermoAnnounce()
                     && AdvisoryLog::instance().add("thermo", "info",
                            "kij set " + key, msg.str()))
@@ -3183,7 +3333,7 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
             if (thermoAnnounce())
                 std::cout << "[builder] kij pair " << rec->lookupWord("i") << "-"
                           << rec->lookupWord("j")
-                          << "  --- " << decl->lookupWord("source") << "\n";
+                          << "  --- " << kijSrc << "\n";
             //  A REGRESSED PAIR CARRIES ITS OWN VERDICT, AND A RUN THAT USES
             //  IT SAYS WHICH (DEV.md 4c C123, "sim a tudo": a pair whose
             //  held-out test missed its band is still USED case-locally, and
@@ -3210,7 +3360,7 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                            << val->subDict("acceptance")->lookupScalar("maxAAD")
                            << " % declared before the fit)";
                     vm << " -- used as declared, not as a validated pair ("
-                       << decl->lookupWord("source") << ")";
+                       << kijSrc << ")";
                     if (thermoAnnounce()
                         && AdvisoryLog::instance().add("thermo", "warning",
                                "kij pair verdict " + key, vm.str()))
