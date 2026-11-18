@@ -8,5 +8,5 @@
 \*-----------------------------------------------------------------------------*/
 application   choupoSolve;
 tier          tutorial;
-description   "Air compressed from 1 bar to 15 bar, DESIGNED as a machine: the chart picks the type, the discharge limit sets the stages, the intercoolers and the motor follow";
+description   "Air compressed from 1 bar to 12 bar, DESIGNED as a machine: the chart picks the type, the discharge limit sets the stages, the intercoolers and the motor follow";
 verbosity     3;

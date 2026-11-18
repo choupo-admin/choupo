@@ -17,10 +17,10 @@
 
   The fixture is a TRANSCRIPTION of the sheet the engine writes for
   `tutorials/steady/rotating/compressor03_staged_design` (unit compressor1:
-  air, 1 -> 15 bar, centrifugal, three sections, two intercoolers), because
+  air, 1 -> 12 bar, centrifugal, three sections, two intercoolers), because
   `design/` is a run output and gitignored.  A transcription drifts in silence,
   so the figures asserted below are the ones the case's README works by hand
-  (stage 1: r 2.532, T out 423.7 K, head 95.67 kJ/kg, 469.7 kW).
+  (stage 1: r 2.357, T out 412.4 K, head 87.04 kJ/kg, 427.3 kW).
 \*---------------------------------------------------------------------------*/
 import { describe, expect, it } from "vitest";
 import { parseDesignSheet } from "../src/case/designSheet.js";
@@ -55,8 +55,8 @@ outlets
     {
         global      "out";
         bc          computed;
-        T           743.41102 K;
-        P           1500000 Pa;
+        T           694.78217 K;
+        P           1200000 Pa;
         F           0.12638889 kmol/s;
         mdot        3.6457181 kg/s;
         vapourFraction 1;
@@ -66,70 +66,70 @@ outlets
 sizing
 {
     MW                    28.845242 kg/kmol;
-    P_out                 1500000 Pa;
+    P_out                 1200000 Pa;
     Q_inlet               11279.254 m3/h;
-    Q_intercoolers        931.91127 kW;
+    Q_intercoolers        847.54166 kW;
     T_dischargeLimit      450 K;
-    T_dischargeMax        423.74244 K;
+    T_dischargeMax        412.44047 K;
     driverMargin          [0 0 0 0 0] 1.1;
-    driverRating          1550.0452 kW;
+    driverRating          1410.1168 kW;
     headPerImpeller       29983.186 J/kg;
-    intercooler1_Tin      423.74244 K;
+    intercooler1_Tin      412.44047 K;
     intercooler1_Tout     298.15 K;
     intercooler1_dP       0.137895 bar;
-    intercooler1_duty     465.95563 kW;
-    intercooler2_Tin      423.74244 K;
+    intercooler1_duty     423.77083 kW;
+    intercooler2_Tin      412.44047 K;
     intercooler2_Tout     298.15 K;
     intercooler2_dP       0.137895 bar;
-    intercooler2_duty     465.95563 kW;
+    intercooler2_duty     423.77083 kW;
     nCasings              [0 0 0 0 0] 3;
     nElements             [0 0 0 0 0] 9;
     nIntercoolers         [0 0 0 0 0] 2;
     nStages               [0 0 0 0 0] 3;
-    power                 1697.1887 kW;
-    powerGas              1395.1802 kW;
-    powerShaft            1409.132 kW;
-    powerUnitSinglePass   1697.1887 kW;
+    power                 1504.3186 kW;
+    powerGas              1269.2321 kW;
+    powerShaft            1281.9244 kW;
+    powerUnitSinglePass   1504.3186 kW;
     pressureDesign        17 bar;
-    rOverall              [0 0 0 0 0] 15;
-    rStage                [0 0 0 0 0] 2.5320264;
-    ratio                 [0 0 0 0 0] 15;
+    rOverall              [0 0 0 0 0] 12;
+    rStage                [0 0 0 0 0] 2.3568044;
+    ratio                 [0 0 0 0 0] 12;
     stage1_Pin            1 bar;
-    stage1_Pout           2.5320264 bar;
+    stage1_Pout           2.3568044 bar;
     stage1_Tin            298.15 K;
-    stage1_Tout           423.74244 K;
+    stage1_Tout           412.44047 K;
     stage1_Zavg           [0 0 0 0 0] 1;
-    stage1_dhCheck        [0 0 0 0 0] -0.0019219818;
+    stage1_dhCheck        [0 0 0 0 0] -0.0016364262;
     stage1_elements       [0 0 0 0 0] 3;
     stage1_etaPoly        [0 0 0 0 0] 0.75;
-    stage1_head           95672.527 J/kg;
-    stage1_n              [0 0 0 0 0] 1.6087181;
-    stage1_power          469.71068 kW;
-    stage1_ratio          [0 0 0 0 0] 2.5320264;
-    stage2_Pin            2.3941314 bar;
-    stage2_Pout           6.0620039 bar;
+    stage1_head           87035.809 J/kg;
+    stage1_n              [0 0 0 0 0] 1.6090244;
+    stage1_power          427.30813 kW;
+    stage1_ratio          [0 0 0 0 0] 2.3568044;
+    stage2_Pin            2.2189094 bar;
+    stage2_Pout           5.2295353 bar;
     stage2_Tin            298.15 K;
-    stage2_Tout           423.74244 K;
+    stage2_Tout           412.44047 K;
     stage2_Zavg           [0 0 0 0 0] 1;
-    stage2_dhCheck        [0 0 0 0 0] -0.0019219818;
+    stage2_dhCheck        [0 0 0 0 0] -0.0016364262;
     stage2_elements       [0 0 0 0 0] 3;
     stage2_etaPoly        [0 0 0 0 0] 0.75;
-    stage2_head           95672.527 J/kg;
-    stage2_n              [0 0 0 0 0] 1.6087181;
-    stage2_power          469.71068 kW;
-    stage2_ratio          [0 0 0 0 0] 2.5320264;
-    stage3_Pin            5.9241089 bar;
-    stage3_Pout           15 bar;
+    stage2_head           87035.809 J/kg;
+    stage2_n              [0 0 0 0 0] 1.6090244;
+    stage2_power          427.30813 kW;
+    stage2_ratio          [0 0 0 0 0] 2.3568044;
+    stage3_Pin            5.0916403 bar;
+    stage3_Pout           12 bar;
     stage3_Tin            298.15 K;
-    stage3_Tout           423.74244 K;
+    stage3_Tout           412.44047 K;
     stage3_Zavg           [0 0 0 0 0] 1;
-    stage3_dhCheck        [0 0 0 0 0] -0.0019219818;
+    stage3_dhCheck        [0 0 0 0 0] -0.0016364262;
     stage3_elements       [0 0 0 0 0] 3;
     stage3_etaPoly        [0 0 0 0 0] 0.75;
-    stage3_head           95672.527 J/kg;
-    stage3_n              [0 0 0 0 0] 1.6087181;
-    stage3_power          469.71068 kW;
-    stage3_ratio          [0 0 0 0 0] 2.5320264;
+    stage3_head           87035.809 J/kg;
+    stage3_n              [0 0 0 0 0] 1.6090244;
+    stage3_power          427.30813 kW;
+    stage3_ratio          [0 0 0 0 0] 2.3568044;
 }
 
 //  Inputs this sizer was not given and supplied itself.  Each was announced at
@@ -143,12 +143,12 @@ compressor
 {
     machine         centrifugal;
     machineBy       selected;
-    selection       "inlet 6639 cfm (1.128e+04 m3/h), overall ratio 15: inside the chart region 'Multistage / Single-Stage Centrif.' (Brown 2005, Fig 1-2, p.3)";
+    selection       "inlet 6639 cfm (1.128e+04 m3/h), overall ratio 12: inside the chart region 'Multistage / Single-Stage Centrif.' (Brown 2005, Fig 1-2, p.3)";
     driver          electricMotor;
     stages          3;
     intercoolers    2;
     stagesBy        limit;
-    limiting        "the fewest sections whose hottest discharge (423.7 K) is within the limit 450 K";
+    limiting        "the fewest sections whose hottest discharge (412.4 K) is within the limit 450 K";
     declared        ( maxDischargeT );
     //  inputs the case did not declare, and the page each was read at
     sources
@@ -167,7 +167,7 @@ compressor
         }
         {
             key         mechLossFraction;
-            source      "1 % mechanical loss for a centrifugal estimate (Brown 2005, p.199)";
+            source      "1 % mechanical loss for a centrifugal estimate (Brown 2005, p.199); Eq 2.78 adds the loss to the power and the book gives no basis for the 1 %, so it is taken as a fraction of the gas power";
         }
         {
             key         driverMargin;
@@ -176,7 +176,7 @@ compressor
     );
     notes
     (
-        "the intercoolers return the gas to the machine's inlet temperature, the basis of Brown 2005 Fig 2-2 and Example 2-4 (p.47-49); declare \`intercoolTemperature\` for the cooling water's own."
+        "the intercoolers return the gas to the machine's inlet temperature, the basis of Brown 2005 Fig 2-2 and Example 2-4 (p.47-50); declare \`intercoolTemperature\` for the cooling water's own."
         "impellers per section = polytropic head / head per impeller, rounded up (a fraction under 0.2 dropped), Brown 2005 p.196; at most eight per casing (p.197); a section is one casing at least."
         "no motor efficiency is declared, so the electrical input is not computed; Brown 2005 p.301-310 gives none as a number."
         "the flowsheet's unit is ONE adiabatic pass; \`powerUnitSinglePass\` is its \`W_shaft\` and is the size the costing reads, unchanged.  \`powerShaft\` is the staged, intercooled machine; the intercoolers are listed here, not placed as exchanger items of the plant."
@@ -197,9 +197,9 @@ describe("compressor datasheet", () => {
     expect(sheet?.compressor?.machineBy).toBe("selected");
     expect(view?.stages.length).toBe(3);
     expect(view?.intercoolers.length).toBe(2);
-    expect(view?.stages[0]?.ratio?.value).toBeCloseTo(2.5320264, 6);
-    expect(view?.stages[0]?.Tout?.value).toBeCloseTo(423.74244, 4);
-    expect(cell(view?.stages[0]?.power)).toBe("469.711 kW");
+    expect(view?.stages[0]?.ratio?.value).toBeCloseTo(2.3568044, 6);
+    expect(view?.stages[0]?.Tout?.value).toBeCloseTo(412.44047, 4);
+    expect(cell(view?.stages[0]?.power)).toBe("427.308 kW");
   });
 
   it("carries the totals, the driver and every defaulted input with its page", () => {

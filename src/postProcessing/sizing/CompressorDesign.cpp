@@ -44,18 +44,29 @@ struct Region
 {
     const char* name;
     scalar Qmin, Qmax;     // inlet actual flow [cfm]
-    scalar rMin, rMax;     // overall pressure ratio
+    scalar rMin;           // overall pressure ratio, lower edge
+    scalar rMaxLeft, rMaxRight;   // upper edge at Qmin and at Qmax; log-log straight between
     const char* cell;      // the figure's own label
 };
 //  The order IS the tie-break where several regions contain the point (the
 //  book gives none): dynamic machines first, then rotary, then reciprocating.
 const Region regions[] =
 {
-    { "centrifugal",   1.0e3, 1.0e4, 1.4, 16.4, "Multistage / Single-Stage Centrif." },
-    { "axial",         1.0e4, 1.0e6, 1.4, 12.6, "Multistage Axial" },
-    { "screw",         1.26e2, 2.15e3, 1.4, 12.6, "Rotary Compressors" },
-    { "reciprocating", 1.0e2, 1.0e3, 1.4, 105.0, "Single-Stage / Multistage Reciprocating" },
+    { "centrifugal",   1.0e3, 1.0e4, 1.4, 20.0, 13.8, "Multistage / Single-Stage Centrif." },
+    { "axial",         1.0e4, 1.0e6, 1.4, 16.4, 12.5, "Multistage Axial" },
+    { "screw",         1.26e2, 2.15e3, 1.4, 12.4, 12.4, "Rotary Compressors" },
+    { "reciprocating", 1.0e2, 1.0e3, 1.4, 101.0, 101.0, "Single-Stage / Multistage Reciprocating" },
 };
+
+//  The upper ratio edge at flow Q: the figure's top edge is a straight line on
+//  its log-log axes between the two corners (centrifugal: 20 at 1e3 cfm falling
+//  to 13.8 at 1e4 cfm, measured on the 300 dpi page image).
+scalar rMaxAt(const Region& r, scalar cfm)
+{
+    if (r.rMaxLeft == r.rMaxRight) return r.rMaxLeft;
+    const scalar t = std::log(cfm / r.Qmin) / std::log(r.Qmax / r.Qmin);
+    return r.rMaxLeft * std::pow(r.rMaxRight / r.rMaxLeft, t);
+}
 
 //  ---- RECIPROCATING EFFICIENCY: Brown 2005, Fig 3-6 (p.66) -----------------
 //  Read at the half-integer ratios, +-0.5 points.  The curve already includes
@@ -109,14 +120,15 @@ const Assumption centrifugalEta
   " (Brown 2005, p.196); the flow-coefficient chart of Fig 5-27 is not used" };
 const Assumption axialEta
 { "etaAdiabatic", 0.85, "-",
-  "the adiabatic efficiency the axial procedure recommends (Brown 2005, p.284-285)" };
+  "the adiabatic efficiency the axial procedure recommends (Brown 2005, p.278 and p.285)" };
 const Assumption screwEta
 { "etaAdiabatic", 0.75, "-",
   "the peak of the helical-lobe efficiency curves, which read 75-77 % (Brown 2005,"
   " Fig 4-7, p.135); the curve of a real machine depends on its built-in volume ratio" };
 const Assumption centrifugalMech
 { "mechLossFraction", 0.01, "-",
-  "1 % mechanical loss for a centrifugal estimate (Brown 2005, p.199)" };
+  "1 % mechanical loss for a centrifugal estimate (Brown 2005, p.199); Eq 2.78 adds the loss to the power"
+  " and the book gives no basis for the 1 %, so it is taken as a fraction of the gas power" };
 const Assumption axialMech
 { "mechLossFraction", 0.01, "-",
   "1 %, the centrifugal estimate of Brown 2005 p.199, borrowed: the axial book reads"
@@ -356,7 +368,7 @@ void apply(EquipmentSizing&         d,
           << num3(rTotal) << ": ";
         std::string pick;
         for (const auto& r : regions)
-            if (cfm >= r.Qmin && cfm <= r.Qmax && rTotal >= r.rMin && rTotal <= r.rMax)
+            if (cfm >= r.Qmin && cfm <= r.Qmax && rTotal >= r.rMin && rTotal <= rMaxAt(r, cfm))
             { pick = r.name; o << "inside the chart region '" << r.cell << "' (Brown 2005, Fig 1-2, p.3)"; break; }
         if (pick.empty() && rTotal < 1.4 && cfm >= 1.0e2 && cfm <= 1.0e6)
         {
@@ -410,7 +422,7 @@ void apply(EquipmentSizing&         d,
     scalar T_cool = T_in;
     if (declared("intercoolTemperature")) { T_cool = design->lookupScalar("intercoolTemperature"); cs.declared.push_back("intercoolTemperature"); }
     else cs.notes.push_back("the intercoolers return the gas to the machine's inlet temperature,"
-                            " the basis of Brown 2005 Fig 2-2 and Example 2-4 (p.47-49); declare"
+                            " the basis of Brown 2005 Fig 2-2 and Example 2-4 (p.47-50); declare"
                             " `intercoolTemperature` for the cooling water's own.");
 
     int etaKind = 0; scalar etaValue = 0.0;

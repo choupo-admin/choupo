@@ -10,7 +10,7 @@
   compressor03_staged_design
   ==========================
   The flowsheet unit is ONE adiabatic compressor: air at 1 bar and 25 degC,
-  eta_isentropic 0.75, discharge DECLARED at 15 bar.  What the flowsheet cannot
+  eta_isentropic 0.75, discharge DECLARED at 12 bar.  What the flowsheet cannot
   say is what machine that is.  The postDict's `design {}` block asks the
   detailed design (Brown, Compressors: Selection and Sizing, 3rd ed.): which
   machine, how many stages, what the intercoolers take away, what the driver
@@ -25,7 +25,7 @@ units
         outputs     ( out );
         operation
         {
-            P_out     15.0  bar;         // discharge pressure the header needs
+            P_out     12.0  bar;         // discharge pressure the header needs
             eta       0.75;              // isentropic efficiency of the SINGLE pass
         }
     }
