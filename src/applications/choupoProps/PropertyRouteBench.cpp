@@ -729,8 +729,15 @@ int run(const std::string& manifestPath, const std::string& outPath)
         //  grouped by content.
         std::map<std::string, std::pair<fs::path, int>> distinct;   // "<rec>@<sha12>" -> (first case root, copies)
         std::map<std::string, std::vector<std::string>> pathsOf;      // the same key -> every path (sealedCopies.tsv)
+        //  C432 (2026-11-19): the sealed copies of data/curation are benched too.  A
+        //  curation fit reads its OWN sealed components, never the catalogue's
+        //  (the catalogue has moved since the import), so the route-keyed reuse
+        //  of a fit (bin/curate/suite_reuse.py) can vouch for it only if the
+        //  bench has answered what ITS copies answer.
         const fs::path tut = fs::path(dataRoot).parent_path() / "tutorials";
-        if (fs::is_directory(tut))
+        const fs::path cur = fs::path(dataRoot).parent_path() / "data" / "curation";
+        for (const fs::path& scanRoot : { tut, cur })
+        if (fs::is_directory(scanRoot))
         {
             std::vector<fs::path> files;
             //  A SEALED copy is a record its case's propertyManifest CLAIMS
@@ -747,7 +754,7 @@ int run(const std::string& manifestPath, const std::string& outPath)
                 text << in.rdbuf();
                 return text.str().find("\"components/" + f.filename().string() + "\"") != std::string::npos;
             };
-            for (const auto& e : fs::recursive_directory_iterator(tut))
+            for (const auto& e : fs::recursive_directory_iterator(scanRoot))
                 if (e.is_regular_file() && e.path().extension() == ".dat"
                     && e.path().parent_path().filename() == "components"
                     && e.path().parent_path().parent_path().filename() == "constant"

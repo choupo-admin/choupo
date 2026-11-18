@@ -529,7 +529,7 @@ export const DS_STEPS: readonly LessonStep[] = [
     body: "A measurement carries its uncertainty; a fit carries its "
       + "deviation from points it never saw.  Choupo's pair fits report the "
       + "average absolute deviation on the held-out points "
-      + "(src/propertyOps/FitParameters.cpp:1538):",
+      + "(src/propertyOps/FitParameters.cpp:1545):",
     formula: String.raw`\mathrm{AAD} = \frac{100}{N}\sum_{k=1}^{N}\frac{\lvert T_{\mathrm{calc},k} - T_{\mathrm{meas},k}\rvert}{T_{\mathrm{meas},k}}`,
     where: [
       { sym: "\\mathrm{AAD}", means: "the average absolute deviation", unit: "%" },
@@ -681,7 +681,7 @@ export const DS_LIMITS: readonly LessonLimit[] = [
  *  to the repository root. */
 export const CITATIONS: readonly { file: string; line: number; contains: string }[] = [
   { file: "src/core/Origin.H", line: 51, contains: "enum class Origin" },
-  { file: "src/propertyOps/FitParameters.cpp", line: 1538, contains: "aadHeldOut   +=" },
+  { file: "src/propertyOps/FitParameters.cpp", line: 1545, contains: "aadHeldOut   +=" },
   { file: "src/thermo/PairAudit.H", line: 113, contains: "autoPromoted" },
   { file: "data/standards/parameters/NRTL/124Trimethylbenzene-2Pentanol.dat", line: 63, contains: "fitGrade" },
   { file: "data/standards/parameters/Henry/benzonitrile-water.dat", line: 10, contains: "CHANGES (indicated per CC-BY)" },
