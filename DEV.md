@@ -4546,6 +4546,51 @@ accepts today, and that is a policy call.
 > material's own door (form 2) rests on (1) of the spike and follows it.
 > Four generals launched at once from `integ/final-1118`, disjoint slices,
 > common rules in a written brief; then one `--nightly` over everything.
+>
+> **C431: THE SECOND OUTSIDE REVIEW, WEIGHED (2026-11-19; it read the letter
+> of C430's claim, not the code).**  It did NOT accept "architecture
+> finished", and on five points it is right.  (1) THE DEFINITION PROMISED
+> TOO MUCH ("never reopening the stream, the door or the record grammar"):
+> accepted in full; the claim is now CONSOLIDATED FOR A DECLARED SCOPE --
+> contracts implemented, supported combinations verified, unsupported ones
+> refused by name (design record, new section 0).  (2) FIVE OPEN ITEMS
+> BELONG INSIDE THE CLOSURE, each needing a defined, verifiable behaviour,
+> not full physics: (a) the enthalpy datum between packages: prove the
+> conversion or REFUSE the connection; (b) a pure-fluid equation beside an
+> equilibrium block: the run says which governs each property and the
+> equilibrium; (c) several parameter sets for one pair: identity and
+> selection ("this is architecture of the data": accepted); (d) the case a
+> student downloads runs in a clean environment with its records verified;
+> (e) a refusal at a solver's TRIAL state against a definitive one --
+> PARTLY DECLINED: today's behaviour is defined and witnessed (the run ends,
+> by name; `table03_trial_state_refused`), so it does not block closure; a
+> recoverable trial refusal stays a candidate.  (3) CARRIED QUANTITIES:
+> "extensive is not conserved" -- the architect's Q1 said "conserved" and
+> was wrong; the contract is now basis + mixing + division + a balance
+> equation with its production terms, and the spike must show mixing,
+> division AND transformation (sent to the general in flight).  Its remark
+> that a continuous conversion need not be "another material": accepted as
+> a declared limit of scope (element masses could be carried with rates).
+> (4) THE COMPARATOR deserves tests of its own, apart from physics (small,
+> large, zero, negative; a multiplicative change of a small value must
+> fail; NaN and infinities never pass; missing or uncompared rows are
+> detected), and "every non-zero value relatively" is not universal (a
+> trace below a solver tolerance needs a justified absolute band beside the
+> relative one): accepted; and the three moves attributed by timeline are
+> NOT resolved until isolated by a counter-run.  (5) DO NOT ENLARGE THE
+> BATCH BEFORE TESTING IT: right, and it reverses what the architect did an
+> hour earlier on Vitor's order -- judged again on the content: four deep
+> slices (one opens the stream) on top of an unproven batch would make a
+> red sweep unreadable.  The integrated batch (`integ/final-1118`) is being
+> swept NOW, at reduced width beside the four generals (a stated exception
+> to "a sweep runs alone", with any timing failure re-run alone), and lands
+> on its own proof; the four slices land after, on theirs.  ALSO RIGHT ON
+> THE 41 %: the architect's own check confirmed Carothers on the published
+> conversions (1/(1-0.98142) = 53.83; 1/(1-0.96845) = 31.69) but could NOT
+> reproduce the conversion's fall from the density change by a second- or
+> third-order scaling (the residence time fell 13 %, the chain length's
+> excess 42 %); the polyesterification cases do not land until a directed,
+> independent integration of the case's own rate law explains it.
 
 
 

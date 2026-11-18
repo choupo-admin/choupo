@@ -21,6 +21,16 @@ diretos"; and, on the reference manuals he filed: "acho que deve haver uma
 falha em componentes nao convencionais".  He was right on the last, and on
 the first he had asked before (DEV.md 4c C399).
 
+## 0. What "consolidated" means (2026-11-19, after an outside review)
+
+The architecture is CONSOLIDATED FOR A DECLARED SCOPE when: its contracts
+are implemented; the combinations it supports are verified by a witness;
+and every combination it does not support is REFUSED BY NAME, with the line
+to write or the reason.  It is not a promise that the stream, the door or
+the record grammar will never be opened again -- no set of examples can
+show that.  A combination with no defined, verifiable behaviour is the
+defect; an unsupported one that refuses is not.
+
 ## 1. What was measured before writing
 
 * The tree (2026-11-18): the property dictionary holds a mixture's measured
@@ -223,6 +233,10 @@ M7.  NO ATTRIBUTE THAT A UNIT EDITS.  Moisture is the COMPONENT water the
 solid holds, tied to the gas by the sample's sorption record; a converted
 solid (a char) is ANOTHER material with its own analysis.  The cost, stated:
 a solid whose composition changes continuously is a few lumped materials.
+(Amended 2026-11-19: with Q2's balance equation a material's element masses
+COULD be carried with declared rates, which is the honest form of a
+continuous conversion; it is out of the present scope and declared so, not
+ruled out.)
 PUT TO VITOR: is that the right picture for what he teaches?
 
 FIRST WITNESS proposed: a biomass dryer feeding a combustor, the first law
@@ -255,13 +269,19 @@ words that this route cannot give the weight average or the polydispersity.
 It prints no atom balance, and admits an energy inconsistency in one heat of
 reaction.
 
-Q1.  A CARRIED QUANTITY is extensive, conserved, attached to a CARRIER (a
-component or a declared set of components of the stream), of a kind in a
-closed list, in declared units.  The first kinds: the mass flow of a
+Q1.  A CARRIED QUANTITY is extensive, attached to a CARRIER (a component or
+a declared set of components of the stream), of a kind in a closed list, on
+a DECLARED BASIS and in declared units.  (First written "extensive,
+conserved": corrected 2026-11-19 -- extensive does not mean conserved; two
+particles that merge keep their mass and halve their number, and a
+distribution's moments change under reaction.)  The first kinds: the mass flow of a
 material; the size distribution of a particulate carrier (existing); a
 moment of a polymer's chain-length distribution.
 
-Q2.  ITS LAW IS PART OF ITS KIND, NOT OF THE CASE.  Carried quantities ADD
+Q2.  ITS LAW IS PART OF ITS KIND, NOT OF THE CASE: a rule of mixing, a rule
+of division, and a BALANCE EQUATION WITH THE PRODUCTION OR DESTRUCTION
+TERMS THAT APPLY to the kind (none for a mass; some for a number or a
+moment).  Carried quantities ADD
 when streams mix.  They DIVIDE WITH THEIR CARRIER when a unit divides a
 stream, unless the unit is a model of their fractionation and says so (a
 classifier for a size distribution).  They CHANGE only inside a unit that
@@ -351,6 +371,10 @@ S5  The cost is measured: the walk's wall clock on the 14 PSD cases within
     unchanged.
 S6  The design survives contact: anything the spike shows the record got
     wrong is written back into this section before any further slice.
+THREE BEHAVIOURS, each shown on at least two kinds: mixing; division
+without fractionation; TRANSFORMATION (the size distribution through a mill
+or a crystalliser, the chain moments through the reactor).  Transport and
+mixing alone leave the hard part unproven.
 OUT OF THE SPIKE: the material's analyses and enthalpy (M1-M4), any polymer
 property or kinetics, the GUI.  The spike's verdict is a page in this
 record: kept, changed, or abandoned, with the evidence.
