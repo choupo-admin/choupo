@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*120 of 120 registered operations carry a schema and are documented below.*
+*121 of 121 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -75,6 +75,17 @@ Adiabatic flash (Q = 0). The feed flashes to the outlet pressure; outlet tempera
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `P` | ✓ | number | Pa | Pressure at which the flash is solved. |
+
+## `agitatedVessel`  (agitatedVessel operation)
+
+A stirred vessel whose shaft power is computed from the Metzner-Otto average shear rate (Chhabra & Richardson, Ch. 8) and enters the energy balance as the Work item W_shaft_kW.  The liquid's flow curve is the property dictionary's (Newtonian by absence); the impeller's k_s and K_p are an asset record of kind impeller; the vessel and the speed are this block's.  Refused by name: a yield-stress, shear-thickening, viscoelastic or time-dependent fluid; a transitional Reynolds number.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `vessel` | ✓ | object | — |  |
+| `impeller` | ✓ | object | — | The impeller is an asset record (kind impeller) in constant/assets/ or data/standards/assets/.  Give ONE speed: N or tipSpeed. |
+| `thermalMode` |   | string | — | isothermal (default): the jacket removes the dissipated shaft power, T_out = T_in, the duty Q_kW = -W_shaft_kW is published.  adiabatic: … |
+| `outsideCorrelationWindow` |   | object | — | Declares, with a reason, that the impeller geometry is outside the data range of the correlation that gives K_p (eq. 8.7).  Without it su… |
 
 ## `bagFilter`  (bagFilter operation)
 
@@ -1033,6 +1044,7 @@ Pipe-segment pressure drop. Single-phase by default (Darcy-Weisbach with the fri
 | `geometry` | ✓ | object | — | The physical line. Diameter, length and roughness are required; elevation change and fittings are optional. |
 | `viscosity` |   | number | Pa.s | Use the declared liquid viscosity instead of the package's model. An explicit, announced aid for the case where a trace dissolved compone… |
 | `twoPhase` |   | object | — | Present = solve the segment as gas-liquid flow. Absent = single-phase. |
+| `turbulent` |   | object | — | For a liquid that declares a flow curve (transport.liquid.rheology): the method used past the laminar limit (Re_MR >= 2100, Chhabra & Ric… |
 
 ## `pitzerActivity`  (pitzerActivity operation)
 
