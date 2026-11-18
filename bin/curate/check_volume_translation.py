@@ -290,7 +290,7 @@ def main() -> int:
             (case / "constant" / "components").mkdir(parents=True)
             shutil.copytree(ROOT / "tutorials/steady/flash/flash09_n2ch4_stryjek/system", case / "system")
             prop = (ROOT / "data/standards/components/propane.dat").read_text()
-            (case / "constant/components/propane.dat").write_text(prop)
+            (case / "constant/components/propane.dat").write_text(case_records.as_variation("propane", prop))
             tr = prop.replace("name        propane;", "name        trace;").replace(
                 "dHf_298   -104700.0;", "referenceState pureLiquid;\n    dHf_298   -104700.0;")
             if tr == prop or "referenceState pureLiquid" not in tr:

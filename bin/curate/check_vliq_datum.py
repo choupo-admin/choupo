@@ -101,7 +101,7 @@ def probe_wrong_dimension():
         case_records.unpin(case)
         if not rec.exists():
             return f"arm (f) cannot run: {rec.relative_to(case)} is not in the probe case"
-        t = rec.read_text(encoding="utf-8")
+        t = case_records.undeclare(rec.read_text(encoding="utf-8"))
         #  a case-local copy of a catalogue record must declare what it is
         t = re.sub(r"^(name\s+CH4;[^\n]*\n)",
                    r'\1variationOf CH4;\nvariationReason "arm (f) probe: a wrong-dimension VliqT";\n',

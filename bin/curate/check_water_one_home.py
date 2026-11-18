@@ -38,6 +38,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "bin" / "curate"))
+import case_records  # noqa: E402
 PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
 import fit_water_vapour_equilibrium as fw  # noqa: E402
 
@@ -68,7 +69,7 @@ def main():
         (d / "system").mkdir(parents=True)
         (d / "constant" / "components").mkdir(parents=True)
         # the probe reads THIS tree's record, never a catalogue another checkout owns
-        (d / "constant" / "components" / "water.dat").write_text(t)
+        (d / "constant" / "components" / "water.dat").write_text(case_records.as_variation("water", t))
         (d / "system" / "controlDict").write_text("application choupoProps;\nverbosity 2;\n")
         (d / "constant" / "thermoPhysPropDict").write_text(
             "recordType thermophysicalPropertySystem;\nschemaVersion 1;\ncomponents ( water );\n"

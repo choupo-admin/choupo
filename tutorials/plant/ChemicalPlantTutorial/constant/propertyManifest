@@ -25,7 +25,7 @@ propertyManifest
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
         "components/CO2.dat"  "d3f0aed5182384187b60745f71f93cc3062a4ccc6c5542f6fe6d3d222b22eee0";
         "components/N2.dat"  "89834e7bdadc120e039062b0c02040531c9f6c65176c2091faa380e13db810ab";
-        "components/ethanol.dat"  "9cfd836ade9dbe6f2a7b6fbd2836aa94e4ce3b7eefffc85d4693bd1466f4bc7c";
+        "components/ethanol.dat"  "93a2192d059b854c64f06948adbb5e0d13ef7e11c86e5d111d3d18e28f0fcc1c";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
         "parameters/Helmholtz/SetzmannWagner1991.dat"  "2d75e1bff7b606847ff65b4854ca906f0f653cabb28036d87d7330109cf49b10";

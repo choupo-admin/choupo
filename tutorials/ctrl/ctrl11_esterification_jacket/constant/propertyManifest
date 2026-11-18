@@ -22,8 +22,8 @@ propertyManifest
     {
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
         "components/aceticAcid.dat"  "d7b882c31c2c0ed0135e15c61ed71815d4b9f15e42eddf71056f01d1d90b5a84";
-        "components/ethanol.dat"  "9cfd836ade9dbe6f2a7b6fbd2836aa94e4ce3b7eefffc85d4693bd1466f4bc7c";
-        "components/ethylAcetate.dat"  "bc72ebbb53e2e8c242561346cb2069e5cefafb4d9a663243d8b64caeb49a2095";
+        "components/ethanol.dat"  "93a2192d059b854c64f06948adbb5e0d13ef7e11c86e5d111d3d18e28f0fcc1c";
+        "components/ethylAcetate.dat"  "79f6d91b1bcb51998e5f41829494bb923622ae336ed2e2bc7eb3e35a9a8380fa";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:accfcdfd44d0e16856427d28f96572b098c5fcec4e31162f7f4db1a8a073711f";
         "parameters/Henry/aceticAcid-water.dat"  "2f8bd145544e6613d408306a238adc2980f185e6d805833a684381211c004cad";

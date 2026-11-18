@@ -120,8 +120,28 @@ surfaceTension
     Tmax  333.2;
 }
 
+//  HANSEN solubility-parameter triple (DEV.md 4c C428 (b); a model's fact about
+//  the pure liquid, read by `hansenMixture` and the Explorer's solvent lens).
+//  Hansen 1967 thesis, Table 2.1 row 5 "n-Butanol", revised placements:
+//  delta_d = 7.81, delta_p = 2.8, delta_h = 7.7 (cal/cm3)^0.5, x sqrt(4.184e6) = 2045.4828.
+hansen
+{
+    dD    15975.2;        // Pa^0.5   = 7.81 (cal/cm3)^0.5, thesis Table 2.1 row 5
+    dP    5727.4;        // Pa^0.5   = 2.8
+    dH    15750.2;        // Pa^0.5   = 7.7
+    Tref  298.15 K;       // adopted: the thesis prints no temperature beside Table 2.1
+}
+
 provenance
 {
+    hansen
+    {
+        origin        literature;
+        method        "Hansen 1967 thesis, Table 2.1 row 5 (n-Butanol), revised placements; (cal/cm3)^0.5 x 2045.4828 -> Pa^0.5";
+        citation      "Hansen, C. M., The Three Dimensional Solubility Parameter and Solvent Diffusion Coefficient, doctoral dissertation, Danish Technical Press, Copenhagen (1967), Table 2.1 (pages 18-19), row 5; no DOI";
+        reviewStatus  interim;
+        notes         "transcribed from the page image 2026-10-21; Tref 298.15 K adopted, the thesis states no temperature beside the table";
+    }
     surfaceTension
     {
         origin        fitted;

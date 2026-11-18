@@ -141,6 +141,8 @@ def main():
         overlay = _re.sub(r"(?m)^formula\s+[^;]+;",
                           "formula     aromaticCut;", std_toluene, count=1)
         assert "aromaticCut" in overlay
+        #  a full record with a formula the engine cannot read, read alone
+        overlay += '\nvariationOf toluene;\nvariationReason "gate fixture: a formula the engine cannot read";\n'
         case, r = run_case(tmp, "impossible", overlay=overlay)
         if r.returncode != 0:
             bad.append("impossible-formula case failed to run (the refusal"
@@ -184,6 +186,7 @@ def main():
                            (ROOT / "data" / "standards" / "components"
                             / "CH4.dat").read_text(), count=1)
         assert "CH3Cl" in overlay3
+        overlay3 += '\ndistinctFrom CH4;\nvariationReason "gate fixture: chloromethane under methane\'s name";\n'
         case, r = run_case(tmp, "outputOnly", overlay=overlay3,
                            overlay_name="CH4.dat")
         if r.returncode != 0:
@@ -225,6 +228,7 @@ def main():
             overlay4 = (overlay4[:pm.end()] + prov.split("{\n", 1)[1].rsplit("}\n", 1)[0]
                         + overlay4[pm.end():])
             prov = ""
+        overlay4 += ('\nvariationOf toluene;\nvariationReason "gate fixture: an ultimate analysis in place of a formula";\n')
         overlay4 += ("elementalComposition\n{\n    basis massFraction;\n"
                      "    massFractions { C 0.9078; H 0.0872; }\n"
                      "    unaccountedMassFraction 0.005;\n}\n" + prov)

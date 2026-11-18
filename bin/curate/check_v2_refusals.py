@@ -92,6 +92,8 @@
 # set.
 import json, re, subprocess, sys, tempfile, os
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
@@ -688,6 +690,7 @@ def advice_read_arm(tmp):
         p.write_text(s.replace(old,
                                "aqueousMapping ( { species H; nu -1; } );"))
         (case / "constant" / "propertyManifest").unlink()
+        case_records.declare_homonyms(case)     # the unsealed copy's own records say what they are
     rc, out = _solve_copy(tmp, "f09-mediators", F09, None, _mediators)
     if rc == 0:
         fails.append("mediator-bridge: a bridge onto H/OH alone was ACCEPTED")

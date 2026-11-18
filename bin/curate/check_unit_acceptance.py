@@ -242,6 +242,7 @@ def copy_case(base, dest):
         p = dest / sub
         if p.exists():
             p.unlink()
+    case_records.declare_homonyms(dest)     # the unsealed copy's own records say what they are
     return dest
 
 
@@ -895,7 +896,7 @@ def arm_n(tmp, fail, ok):
     air = ROOT / "data" / "standards" / "components" / "air.dat"
     (w / "constant" / "components").mkdir(exist_ok=True)
     (w / "constant" / "components" / "air.dat").write_text(
-        air.read_text() + "\nrole solute;\n")
+        case_records.as_variation("air", air.read_text()) + "\nrole solute;\n")
     good = sub1(w / "constant" / "thermoPhysPropDict",
                 r"components\s+\( NH3  N2  water \);",
                 "components       ( NH3  N2  air  water );")

@@ -705,38 +705,37 @@ void checkLocalShadow(const std::string& sub, const fs::path& local)
     }
     else
     {
-        //  Undeclared, or HELD (a held copy is a copy of the SAME species: it is
-        //  identity-checked like any other copy -- PN-06).
-        if (!diff.empty())
+        //  HELD: a held copy is a copy of the SAME species, identity-checked
+        //  like any other copy (PN-06) and read alone.
+        if (held)
         {
-            const std::string why = std::string(held ? "is HELD as a copy of the catalogue's record but is"
-                                                     : "is")
-                + " a DIFFERENT species under the catalogue's name (they"
-                  " disagree on " + diffText + "): " + both;
-            const std::string how = "declare `distinctFrom " + name + "; variationReason \"...\";`"
-                " in the record, or rename it.  Left undeclared, deleting"
-                " this record would make the name fall through to the"
-                " catalogue's species with exit 0.";
-            //  Refuses for a held copy, a case that REFERENCES the catalogue, and any
-            //  case run STRICT (CHOUPO_PINS=refuse); a legacy unsealed case outside
-            //  strict is announced, as before.
-            if (held || pinsActive() || strictEnv) refuse(why, how);
-            if (thermoAnnounceLevel() >= 1 && announceOnceKey("shadow:" + sub))
-                std::cerr << "[shadow] " << where << " " << why << "  " << how << "\n";
+            if (!diff.empty())
+                refuse("is HELD as a copy of the catalogue's record but is a"
+                       " DIFFERENT species under the catalogue's name (they"
+                       " disagree on " + diffText + "): " + both,
+                       "declare `distinctFrom " + name + "; variationReason"
+                       " \"...\";` in the record, or rename it.");
         }
-        if (!held)
+        else
         {
-            if (strictRule)
-                refuse("shadows the catalogue record of the same name without"
-                       " declaring it (CHOUPO_PINS=refuse).",
-                       "declare `variationOf " + name + ";` or `overlayOf " + name
-                       + ";` with a `variationReason \"...\";`, or delete the copy"
-                         " and run `bin/choupo-import --pin <case>`.");
-            if (thermoAnnounceLevel() >= 1 && announceOnceKey("shadow:" + sub))
-                std::cerr << "[shadow] " << where << " shadows the catalogue record"
-                             " of the same name without a declaration -- declare"
-                             " `variationOf " << name << ";` / `overlayOf " << name
-                          << ";` with a `variationReason`, or delete the copy.\n";
+            //  THE SILENT BACKFILL (2026-11-19).  A case-local record with a
+            //  catalogue homonym and NO declaration used to be merged over the
+            //  catalogue record key by key, so a key it lacked was filled from
+            //  the catalogue with no word said -- a fact with two homes, and
+            //  two gates broken by it in one night (C428 (a)).  It is refused,
+            //  always (not only STRICT), with the three lines to choose from.
+            refuse(std::string("shadows the catalogue record of the same name without"
+                   " declaring what it is.")
+                   + (diff.empty() ? std::string()
+                        : std::string("  (It is also a DIFFERENT species: it disagrees"
+                                      " on ") + diffText + ".  " + both),
+                   "declare ONE of: `overlayOf " + name + ";` (a delta: it takes"
+                   " every key it lacks from the catalogue, announced once per"
+                   " key); `variationOf " + name + ";` (a full record, read"
+                   " alone: a key it lacks is absent); `distinctFrom " + name
+                   + ";` (another species under the same name) -- each with a"
+                   " `variationReason \"...\";`.  Or delete the copy and run"
+                   " `bin/choupo-import --pin <case>`.");
         }
     }
 

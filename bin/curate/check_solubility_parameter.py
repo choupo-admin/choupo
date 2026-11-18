@@ -134,7 +134,8 @@ def main():
         txt = re.sub(r"^solubilityParameter\s+[^;]*;",
                      "solubilityParameter 0.0;", src.read_text(),
                      count=1, flags=re.M)
-        (noAnchor / f"constant/components/{name}.dat").write_text(txt)
+        (noAnchor / f"constant/components/{name}.dat").write_text(
+            case_records.as_variation(name, txt))
     _, js2 = run(noAnchor)
     d2 = diags(js2)
     moved = [n for n, v in deltas.items()
@@ -214,7 +215,8 @@ def _drop_field(d, comp, field):
     (d / "constant/components").mkdir(parents=True, exist_ok=True)
     txt = re.sub(rf"^{field}\s+[^;]*;", f"{field}  0.0;",
                  src.read_text(), count=1, flags=re.M)
-    (d / f"constant/components/{comp}.dat").write_text(txt)
+    (d / f"constant/components/{comp}.dat").write_text(
+        case_records.as_variation(comp, txt))
 
 
 def _probe_no_vliq(d):

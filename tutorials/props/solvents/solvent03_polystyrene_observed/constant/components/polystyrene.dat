@@ -14,6 +14,8 @@
   record beside this file): adopted 298.15 K, the thesis states none.
   reviewStatus interim: transcribed from the page image, not yet read back.
 \*---------------------------------------------------------------------------*/
+overlayOf     polystyrene;
+variationReason "a SAMPLE, not the commodity grade: Hansen's solute G (BASF Polystyrene LG) with the centre and radius of its own solubility volume (thesis Table 4.1 row G) -- a measured fact of this sample, so it stays in the case; the catalogue's commodity record supplies the rest";
 name          polystyrene;
 reviewStatus  interim;
 reviewReason  "Hansen 1967 Table 4.1 transcribed from the page image; a second reading pending";

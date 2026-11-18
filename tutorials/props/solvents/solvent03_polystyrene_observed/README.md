@@ -52,7 +52,9 @@ tabulates pure solvents only, and a measured point along a mixture line is
 what this corpus does not have.
 
 The package is `ideal` because no mixture is asked for.  Every parameter
-is a case-local overlay record with the thesis page and row beside the value,
+is a record with the thesis page and row beside the value -- each solvent's Hansen
+triple in its catalogue record (a fact of the molecule), the polystyrene sample in
+the case's own `overlayOf` record --
 `reviewStatus interim` (transcribed from the page images, not the OCR text,
 whose columns are scrambled; a second reading pending).
 

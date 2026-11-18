@@ -21,7 +21,7 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
-        "components/ethanol.dat"  "9cfd836ade9dbe6f2a7b6fbd2836aa94e4ce3b7eefffc85d4693bd1466f4bc7c";
+        "components/ethanol.dat"  "93a2192d059b854c64f06948adbb5e0d13ef7e11c86e5d111d3d18e28f0fcc1c";
         "components/propyleneGlycol30.dat"  "150f9ff75b2e53d09bcb3698c408228f3b270d724b3b8e3050150ac469681749";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";

@@ -28,6 +28,7 @@ refused when the component is READ, which they share, but no probe runs them);
 the equilibrium crystalliser (it does not use k_v).
 """
 import contextlib, os, re, shutil, sys
+import case_records
 import gatekit        # C420: the kit's probe copy (materialised, C413), binary and run
 
 ROOT = str(gatekit.repo)
@@ -70,14 +71,15 @@ def unseal(d):
     if os.path.exists(m):
         s = open(m).read()
         open(m, 'w').write(re.sub(r'(sealed\s+)true', r'\1false', s))
+        case_records.declare_homonyms(d)      # the unsealed copy's own records say what they are
 
 
 def add_graphite(d, flow='0.5 kmol/h'):
     """A second solid with NO particle density (the catalogue graphite)."""
     unseal(d)
     os.makedirs(os.path.join(d, 'constant/components'), exist_ok=True)
-    shutil.copy(os.path.join(ROOT, 'data/standards/components/graphite.dat'),
-                os.path.join(d, 'constant/components/graphite.dat'))
+    case_records.copy_variation(os.path.join(ROOT, 'data/standards/components/graphite.dat'),
+                                os.path.join(d, 'constant/components/graphite.dat'))
     rw(os.path.join(d, 'constant/thermoPhysPropDict'),
        lambda s: re.sub(r'components\s*\(([^)]*)\)',
                         lambda m: 'components (%s graphite )' % m.group(1), s, count=1))
@@ -107,7 +109,7 @@ def edit_record(d, comp, edit):
     p = os.path.join(d, 'constant/components/%s.dat' % comp)
     if not os.path.exists(p):
         os.makedirs(os.path.dirname(p), exist_ok=True)
-        shutil.copy(os.path.join(ROOT, 'data/standards/components/%s.dat' % comp), p)
+        case_records.copy_variation(os.path.join(ROOT, 'data/standards/components/%s.dat' % comp), p)
     rw(p, edit)
 
 

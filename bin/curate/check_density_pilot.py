@@ -118,7 +118,7 @@ def with_antoine_water(d):
     #  declared as the variation it is, and the copy's pins are dropped
     rec = case_records.ensure_local(d, "components/water.dat")
     case_records.unpin(d)
-    t = rec.read_text()
+    t = case_records.undeclare(rec.read_text())
     t = re.sub(r"(?m)^(name\s+water;[^\n]*\n)",
                r'\1variationOf water;\nvariationReason "probe: the old Antoine law put back to test the two-lines mechanism";\n',
                t, count=1)

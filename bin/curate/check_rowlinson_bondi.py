@@ -134,6 +134,9 @@ import re
 import shutil
 import subprocess
 import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records  # noqa: E402
 import tempfile
 from pathlib import Path
 
@@ -317,7 +320,7 @@ with tempfile.TemporaryDirectory() as td:
     else:
         cdir = tmp / "case" / "constant" / "components"
         cdir.mkdir(parents=True)
-        (cdir / "nDecane.dat").write_text(txt2)
+        (cdir / "nDecane.dat").write_text(case_records.as_variation("nDecane", txt2))
         (tmp / "case" / "system").mkdir(parents=True)
         (tmp / "case" / "constant" / "thermoPhysPropDict").write_text(
             "recordType thermophysicalPropertySystem;\nschemaVersion 1;\n"

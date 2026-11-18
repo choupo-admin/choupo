@@ -257,7 +257,7 @@ def main():
         ternary_rec = ROOT / "data" / "standards" / "components" / "mXylene.dat"
 
         def ternary(c):
-            shutil.copy(ternary_rec, c / "constant" / "components" / "mXylene.dat")
+            case_records.copy_variation(ternary_rec, c / "constant" / "components" / "mXylene.dat")
             edit(c, "constant/thermoPhysPropDict", "components ( pXylene oXylene );",
                  "components ( pXylene oXylene mXylene );")
             edit(c, "system/flowsheetDict", "oXylene    0.80;", "oXylene    0.79;\n                    mXylene    0.01;")
@@ -313,7 +313,8 @@ def main():
             rec = (ROOT / "data" / "standards" / "components" / "ethylBenzene.dat").read_text()
             if "\ndiffusionVolume" not in rec:
                 rec += "\ndiffusionVolume 132.0;   // Fuller: 8 C x 15.9 + 10 H x 2.31 - 18.3 aromatic ring\n"
-            (c / "constant" / "components" / "ethylBenzene.dat").write_text(rec)
+            (c / "constant" / "components" / "ethylBenzene.dat").write_text(
+                case_records.as_variation("ethylBenzene", rec))
             edit(c, "constant/thermoPhysPropDict", "components ( pXylene oXylene );",
                  "components ( pXylene ethylBenzene );")
             edit(c, "constant/thermoPhysPropDict", "activityModel ideal;", f"activityModel {model};")

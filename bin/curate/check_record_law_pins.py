@@ -150,7 +150,7 @@ def make_case(tmp, witness, comp, prop, mode, how="system"):
     rec = d / "constant" / "components" / f"{comp}.dat"
     if not rec.exists():
         rec.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy(ROOT / "data/standards/components" / f"{comp}.dat", rec)
+        case_records.copy_variation(ROOT / "data/standards/components" / f"{comp}.dat", rec)
     t = rec.read_text()
     a, b, c = block_span(t, prop)
     if how == "transport":
@@ -246,7 +246,7 @@ def batch_refusal_arm():
         sys.path.insert(0, str(Path(__file__).resolve().parent))
         import case_records
         rec = case_records.ensure_local(d, "components/ethanol.dat")
-        t = rec.read_text()
+        t = case_records.as_variation("ethanol", rec.read_text())
         a, b, c = block_span(t, "vaporPressure")
         rec.write_text(t[:c] + "    domain (250 600);\n" + t[c:])
         env = dict(os.environ, CHOUPO_HOME=str(ROOT))

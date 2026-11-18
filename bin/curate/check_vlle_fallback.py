@@ -388,7 +388,7 @@ def main() -> int:
             dat.write_text(re.sub(
                 r"(?m)^(name\s+%s;[^\n]*\n)" % nm,
                 r'\1variationOf %s;\nvariationReason "fixture: adds an invented formation datum";\n' % nm,
-                dat.read_text(), count=1))
+                case_records.undeclare(dat.read_text()), count=1))
             with dat.open("a") as f:
                 f.write("\n// FIXTURE (check_vlle_fallback arm (e2)): an "
                         "invented datum so the energy report can run.\n"
