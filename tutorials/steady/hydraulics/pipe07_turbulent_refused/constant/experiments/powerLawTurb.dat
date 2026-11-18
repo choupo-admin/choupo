@@ -9,6 +9,8 @@
 
 provenance
 {
+    //  sha256 is of the `data ( );` block of THIS file as written: it tells these rows from an edited copy.
+    sha256       "0c10cc54604f6b69cd187996a4ef9f34ac9577aa6f8e55e7b1711ac730664f5f";
     origin       literature;
     kind         adopted;
     basis        "a power law of the case's own (m = 0.05 Pa s^n, n = 0.7); rows generated from tau = m gamma^n";

@@ -9,6 +9,8 @@
 
 provenance
 {
+    //  sha256 is of the `data ( );` block of THIS file as written: it tells these rows from an edited copy.
+    sha256       "6a85f6e45d3a21bd187cd8972e0e77bf725917c2e76891693199b02a8bf3ac42";
     origin       literature;
     kind         adopted;
     basis        "the Herschel-Bulkley parameters printed in Example 3.3 (tau_0 = 17 Pa, m = 0.83 Pa s^n, n = 0.5); rows generated from tau = tau_0 + m gamma^n";

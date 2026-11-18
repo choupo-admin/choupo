@@ -158,6 +158,11 @@ public:
     }
 
 private:
+    //  The non-Newtonian path (a liquid that declares a flow curve): Pipe.cpp, `solveNonNewtonian`.
+    int solveNonNewtonian(const rheology::FlowCurve& fc, const DictPtr& dict, const DictPtr& operDict,
+                          const ThermoPackage& thermo, int verbosity, scalar F, scalar T, scalar Pin,
+                          const sVector& z, scalar D, scalar L, scalar dz, scalar sumK, scalar rho);
+
     inline static const std::string type_ = "pipe";
     std::vector<ProcessStream>      produced_;
     std::map<std::string, scalar>   kpis_;
