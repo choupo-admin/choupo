@@ -1798,8 +1798,8 @@
     },
     "check_backlog": {
       "exit": 0,
-      "claim": "check_backlog: OK -- 400 items, every one headed in DEV.md 4c has its row (DONE 244, PARTIAL 101, OPEN 43, DROPPED 0, NOT-AN-ITEM 12); every open or partial item has a horizon; 330 named commits are in history.  NOT checked: that a status is true (a landing changes its row in the same commit).",
-      "seconds": 1.2
+      "claim": "check_backlog: OK -- 401 items, every one headed in DEV.md 4c has its row (DONE 288, PARTIAL 55, OPEN 44, DROPPED 2, NOT-AN-ITEM 12); every open or partial item has a rank and a reason; 330 named commits are in history.  NOT checked: that a status is true (a landing changes its row in the same commit).",
+      "seconds": 1.0
     }
   }
 }
