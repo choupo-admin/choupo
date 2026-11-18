@@ -469,7 +469,7 @@ runs the SM loop:
 \end{enumerate}
 
 \subsection{The outer layer --- DesignSpec, SweepDriver,
-            OptimizationDriver}
+            OptimizationDriver}\label{sec:outer-layer}
 
 When a case has a \code{system/outerDict}, \code{main.cpp}
 instantiates an outer driver that \emph{wraps the simulator
@@ -483,7 +483,10 @@ functor}.  The driver:
         quantities are equal''),
   \item runs Newton-ND (or Nelder-Mead, or a sweep) over the
         manipulated variables, calling the simulator functor at
-        each evaluation,
+        each evaluation, starting from the value the case already
+        holds for each variable (an \code{initial} in the outerDict is
+        optional, and when written and different from the case's it
+        is printed beside it: one home for a starting point),
   \item ends with a final replay at the converged design point.
 \end{itemize}
 
