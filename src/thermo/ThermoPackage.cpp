@@ -3981,7 +3981,8 @@ ThermoPackage::liquidPressureLegExact(std::size_t i, scalar T, scalar P) const
     const Component& c = components_[i];
     if (c.Tc() > 0.0 && T >= c.Tc()) return leg;           // no saturation line at T
     scalar ps = 0.0;
-    try { ps = Psat(i, T); } catch (const std::exception&) { return leg; }
+    try { ps = Psat(i, T); }
+    catch (const std::exception& ex) { leg.unpricedWhy = std::string("the saturation pressure could not be evaluated: ") + ex.what(); return leg; }
     if (!(ps > 0.0) || !std::isfinite(ps)) return leg;
 
     auto refIt = pressureRef_.find(i);
@@ -4003,7 +4004,14 @@ ThermoPackage::liquidPressureLegExact(std::size_t i, scalar T, scalar P) const
     e[i] = 1.0;
     liquidProperty::DensityResolution res;
     try { res = liquidProperty::resolveDensity(*this, e); }
-    catch (const std::exception&) { pressureLegExpensive_[i] = "\x01never"; return leg; }   // no liquid volume: no term, for good
+    catch (const std::exception& ex)
+    {
+        //  No liquid volume: no term, for good -- but SAID, never swallowed (a probe that had not
+        //  registered the density methods landed here silently and hid 43 findings, C390).
+        pressureLegExpensive_[i] = "\x01never";
+        leg.unpricedWhy = std::string("no liquid volume could be resolved: ") + ex.what();
+        return leg;
+    }
     const auto method = liquidProperty::build(res, *this);
     const scalar M = c.MW() * 1.0e-3;                       // kg/mol
 
@@ -4120,9 +4128,11 @@ ThermoPackage::liquidPressureLegExact(std::size_t i, scalar T, scalar P) const
                       && source.find("pureFluid") == std::string::npos;
         leg.signChanged = (alphaT > 1.0);
     }
-    catch (const std::exception&)
+    catch (const std::exception& ex)
     {
-        return LiquidPressureLeg();
+        LiquidPressureLeg failed;
+        failed.unpricedWhy = std::string("the leg could not be priced: ") + ex.what();
+        return failed;
     }
     return leg;
 }
@@ -4134,7 +4144,17 @@ namespace {
 void announcePressureLeg(const std::string& comp,
                          const ThermoPackage::LiquidPressureLeg& l)
 {
-    if (!l.priced) return;
+    if (!l.priced)
+    {
+        if (!l.unpricedWhy.empty())
+        {
+            static std::set<std::string> saidNot;
+            if (saidNot.insert(comp).second)
+                std::cerr << "[thermo] liquid pressure term (" << comp << "): NOT PRICED, so this component's"
+                             " liquid enthalpy carries no pressure term -- " << l.unpricedWhy.substr(0, 300) << "\n";
+        }
+        return;
+    }
     //  SAID ONCE PER RUN ON stderr, NOT FILED AS AN ADVISORY: the term is the model, not a
     //  caveat, and a run whose only note is this line would otherwise stop printing
     //  "ASSUMPTIONS AND CAVEATS: none raised".  A term that changed sign (below) IS a caveat

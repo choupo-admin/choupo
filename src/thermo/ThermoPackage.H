@@ -417,6 +417,7 @@ public:
         std::string source;             // the volume method that gave v and its slope
         bool        corrStates = false; // the slope is the corresponding-states (Rackett) one
         bool        signChanged = false;// 1 - alpha T < 0 on that slope
+        std::string unpricedWhy;        // set when the leg COULD NOT be priced: said once per run, never swallowed
         scalar      Tref = 0.0;         // K, the component's reference temperature
         scalar      Pref = 0.0;         // Pa, psat(Tref): the ONE pressure the base surface lives at
         bool        clamped = false;    // P was at or below psat(T): the leg is held at psat(T)

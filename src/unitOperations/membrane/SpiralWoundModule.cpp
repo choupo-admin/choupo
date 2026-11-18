@@ -1957,6 +1957,31 @@ scalar h_ch = 0.7e-3, eps = 0.9, mu_feed = 0.0;
     const scalar recovery = (feed_vol > 0) ? Q_perm / feed_vol : 0.0;
     const scalar A_total  = nModulesReal * A_membrane;     // whole train
                             // (legacy: nModulesReal == nElements, identical)
+    //  THE HEAT THE MODULE EXCHANGES TO STAY ISOTHERMAL IS A NAMED ITEM (C390 sweep fix, rule 4b).
+    //  The module fixes T_out = T_in on both outlets while its permeate leaves at P_perm and its
+    //  retentate at P_b; with the liquid pressure term in the stream enthalpy that choice moves
+    //  H_out - H_in by roughly the hydraulic energy of the permeation (membrane18: 0.53 kW of
+    //  15 965 kW), which the plant's first law then showed as an unexplained residual.  The unit now
+    //  says so: Q_kW = sum(H_out) - H_in, heat ADDED to the streams (negative: removed -- the permeation's
+    //  dissipated hydraulic energy leaves with the thermostat that holds the module isothermal), priced
+    //  on the same surface the balance prices the streams.  A stream the package cannot price publishes
+    //  no item, and the report names the gap as it always did.
+    if (!dry)
+    {
+        try
+        {
+            scalar Hout = 0.0;
+            for (const auto& o : out_)
+                Hout += o.F * thermo.H_stream_formation(o.T, o.P, 0.0, o.z);
+            const scalar Hin = F_in * thermo.H_stream_formation(T_in, P_in, 0.0, z_in);
+            kpis_["Q_kW"] = Hout - Hin;       // kmol/s x J/mol = kW
+        }
+        catch (const std::exception& ex)
+        {
+            std::cerr << "[membrane] the isothermal duty Q_kW is NOT published (spiralWoundModule): "
+                      << ex.what() << "\n";
+        }
+    }
     kpis_["water_recovery"] = recovery;
     kpis_["J_w_avg"]        = (A_total > 0) ? Q_perm / A_total : 0.0;  // m/s
     kpis_["dP_feed"]        = P_in - P_b;
