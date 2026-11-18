@@ -11,7 +11,7 @@ C9	DONE		EduTool do reator de Gibbs e aproximação ao equilíbrio		2026-09-25	M
 C10	DONE		EduTool do que o equilíbrio com ΔT de aproximação alcança		2026-09-27	M	550d7f539	
 C11	DONE		Gibbs restrito a um subconjunto declarado de reações		2026-09-27	M	d39aa9653	
 C12	DONE		Propriedades da água fiáveis em toda a gama usada		2026-09-27	L	082c7efc8	
-C13	DONE		"Explorador de propriedades não achava ""oxygen"" (aliases)"		2026-09-27	S	807f8688d	
+C13	DONE		Explorador de propriedades não achava "oxygen" (aliases)		2026-09-27	S	807f8688d	
 C14	DONE		Carbono sólido como componente e formação em reformadores		2026-09-27	M	28c9c6457	
 C15	DONE		EduTool do método dos potenciais de elemento		2026-09-27	M	637becfd0	
 C16	PARTIAL	beyond	Mais misturas com dados binários rastreáveis (importar/ajustar ThermoML)	cadeia de ajuste ThermoML continua por ampliar; automatização (C226) e pares em falta	2026-09-27	L	e53d9de6c	
@@ -42,7 +42,7 @@ C41	DONE		Recirculações desenhadas como correntes normais		2026-10-07	S	a701d6
 C42	DONE		Motor publica o ciclo de cada recirculação		2026-10-07	M	e769ea7c3	
 C43	DONE		Entalpia de reação conduz ao estado padrão (navegação EduTools)		2026-10-07	S	881103264	
 C44	DONE		Amoníaco verde: dimensionar tudo, inventários, capital circulante		2026-10-07	L	cbe65a128	
-C45	DONE		"Página inicial achada por ""simulador de processos open source"""		2026-10-07	S	1f983ba10	
+C45	DONE		Página inicial achada por "simulador de processos open source"		2026-10-07	S	1f983ba10	
 C46	DONE		Contar e mostrar o tamanho do Choupo		2026-10-07	S	ed4f3aad7	
 C47	OPEN	beyond	Contador visível de visitas e descargas	falta conta GoatCounter (ato do Vítor); nada contado	2026-10-07	S		vitor
 C48	DONE		Amoníaco verde: permutadores dimensionados em detalhe		2026-10-07	M	8666cf30c	
@@ -53,7 +53,7 @@ C52	DONE		Utilidade de calor do conversor Gibbs		2026-10-07	M	aa37a7432
 C53	DONE		EduTool de como os dicionários montam um caso		2026-10-09	M	b3fc13ea6	
 C54	DONE		EduTool de como ler o log de uma corrida		2026-10-09	M	8f2ef3562	
 C55	DONE		Layout arrastado no fluxograma não é ficheiro rastreado		2026-10-07	S	5210e7f65	
-C56	DONE		"Palavra ""fractal"" sai das superfícies do projeto"		2026-10-09	S	0be87ade1	
+C56	DONE		Palavra "fractal" sai das superfícies do projeto		2026-10-09	S	0be87ade1	
 C57	DONE		Amoníaco verde por fases: margem bruta e leitos cinéticos		2026-10-10	L	ce9893c76	
 C58	DONE		EduTool de Front-End Loading		2026-10-10	M	fa51e73d0	
 C59	DONE		Layout automático do fluxograma legível		2026-10-10	M	58d9071cd	
@@ -159,7 +159,7 @@ C160	OPEN	beyond	Termodinâmica e cinética de topo: programa de paridade com bi
 C162	DONE		Não volátil na perna de formação recusa		2026-10-25	S	0490f8581	
 C163	NOT-AN-ITEM		Questões abertas são decididas pelo comandante		2026-10-25	S		
 C164	DONE		GRI-Mech 3.0 não é usado diretamente		2026-10-25	M	0c860703d	
-C165	PARTIAL	beyond	Aluno de doutoramento aprende DSPM-DE com o caso NanoFiltran	"fase 2: fluxo por nó com resíduo de fecho e ""seguir um ião"" por fazer"	2026-10-25	M	fe1b0c6ec	
+C165	PARTIAL	beyond	Aluno de doutoramento aprende DSPM-DE com o caso NanoFiltran	fase 2: fluxo por nó com resíduo de fecho e "seguir um ião" por fazer	2026-10-25	M	fe1b0c6ec	
 C166	DONE		NanoFiltran explicado para reimplementação por um doutorando		2026-10-25	M	caf445946	
 C167	PARTIAL	beyond	A suite usa todos os núcleos	fatia 3 (traços de leitura dos gates paralelos) registada, não começada	2026-10-25	M	73ea36014	
 C168	DONE		Auditoria de usabilidade e acessibilidade do GUI de resultados		2026-10-25	M	1b153ac5d	
@@ -170,8 +170,8 @@ C172	PARTIAL	beyond	Um GUI ou dois: simulação e propriedades e dados	renomear 
 C173	DONE		Auditoria externa às rotas de Gibbs e fases		2026-10-26	M	8e042855d	
 C174	DONE		Nenhum fecho por construção conta como evidência		2026-10-26	M	a7540f1f0	
 C175	DONE		MESH completo reativo		2026-10-26	L	5a6b99ea9	
-C176	OPEN	beyond	Conjunto de dados multi-ião de NF para testar DSPM-DE	espera PDFs do Vítor; nada construído	2026-10-26	M		vitor
-C177	OPEN	beyond	Modelo de laboratório para ajuste de DSPM-DE	em discussão; nada construído	2026-10-26	M		vitor
+C176	OPEN	beyond	Conjunto de dados multi-ião de NF para testar DSPM-DE	Labban et al. 2017 (NF270/NF90, Na/Mg/Ca/Cl/SO4) já está na pasta de literatura; caso por construir: ajustar em sais simples e prever as misturas	2026-10-26	M		
+C177	OPEN	beyond	Modelo de laboratório para ajuste de DSPM-DE	desenho proposto ao Vítor a 2026-11-19 (registo de ensaio, parâmetros, polarização, saídas); espera o seu acordo	2026-10-26	M		vitor
 C178	DONE		Revisão externa de código (falhas de solver)		2026-10-27	M	648660158	
 C179	DONE		Espécie neutra não é ião: massa molar de mineral		2026-10-27	S	3e43d55f8	
 C180	DONE		Precipitação em função da temperatura, figura nativa		2026-10-27	M	55d638999	
