@@ -963,6 +963,7 @@ def main() -> int:
         if man.exists():
             man.write_text(re.sub(r"sealed\s+true;", "sealed false;",
                                   man.read_text()))
+            case_records.declare_homonyms(pinned)   # unsealed: its local records are declared homonyms
         rc, log = run(pinned)
         if rc != 0:
             fail.append(f"the pinned copy did not run (rc={rc}) -- `phase "

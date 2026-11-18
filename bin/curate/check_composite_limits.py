@@ -58,6 +58,7 @@ def clone(tmp, name):
     dst = Path(tmp) / name
     case_records.copytree(BASE, dst)
     (dst / "constant/propertyManifest").unlink()      # unsealed probe
+    case_records.declare_homonyms(dst)                # its local records are homonyms of an unsealed case
     for d in ("converged", "reports"):
         shutil.rmtree(dst / d, ignore_errors=True)
     (dst / "expected").unlink(missing_ok=True)

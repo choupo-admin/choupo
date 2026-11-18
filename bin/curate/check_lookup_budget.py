@@ -316,6 +316,7 @@ def main():
         unsealed = Path(td) / "unsealed"
         case_records.copytree(PAIR, unsealed)
         (unsealed / "constant" / "propertyManifest").unlink()
+        case_records.declare_homonyms(unsealed)     # its local records are homonyms of an unsealed case
         (unsealed / "system" / "propsDict").write_text(
             "operations\n(\n    { name p_curated; type pairLookup; components ( ethanol water ); }\n);\n")
         uc = cards_of(unsealed).get("p_curated")

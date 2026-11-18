@@ -103,6 +103,8 @@ if chem.is_dir():
 #        support REFUSES, naming the form (two fixtures, two forms).
 # A check that cannot run must not pass: no binary is a FAIL, not a skip.
 import os, shutil, subprocess, tempfile
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import case_records
 
 TCF = re.compile(r"^tCorrelationForm\s+(\w+)\s*;", re.M)
 props_bin = repo / "choupoProps"
@@ -132,7 +134,9 @@ def _probe(work: Path, cation: str, anion: str, local_record: str = None):
     if local_record is not None:
         d = work / "constant/parameters/Pitzer/pairs"
         d.mkdir(parents=True)
-        (d / f"{cation}-{anion}.dat").write_text(local_record)
+        #  a case-local record with the catalogue's name declares what it is (undeclared: refused)
+        (d / f"{cation}-{anion}.dat").write_text(
+            case_records.as_variation(f"{cation}-{anion}", local_record))
     env = dict(os.environ, CHOUPO_HOME=str(repo))
     r = subprocess.run([str(props_bin), "."], cwd=work, env=env,
                        capture_output=True, text=True, timeout=120)

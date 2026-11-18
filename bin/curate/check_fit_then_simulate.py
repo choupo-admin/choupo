@@ -105,9 +105,13 @@ def fail(arm, msg):
     fails.append(f"({arm}) {msg}")
 
 
-def copy_case(tmp, name):
+def copy_case(tmp, name, plain=False):
+    """`plain`: the copy keeps referencing the catalogue exactly as the shipped case does (nothing
+    materialised).  A materialised base record carries a probe's `variationOf` declaration, which is
+    part of its canonical hash, so a fit recorded against the catalogue's record reads it as changed:
+    an arm that tests something OTHER than the base record's change must not make one."""
     d = Path(tmp) / name
-    case_records.copytree(CASE, d, ignore=shutil.ignore_patterns("converged", "postProcessing",
+    (shutil.copytree if plain else case_records.copytree)(CASE, d, ignore=shutil.ignore_patterns("converged", "postProcessing",
                                                            "reports", "log.*", "*.csv"))
     return d
 
@@ -264,7 +268,7 @@ def arm_d(tmp):
                      r"STALE FIT.*its base record NF270_dspmde"),
     }
     for label, (rel, pat, rep, want) in cases.items():
-        d = copy_case(tmp, "d_" + label)
+        d = copy_case(tmp, "d_" + label, plain=(label != "base"))
         p = d / rel
         t = p.read_text()
         t2, n = re.subn(pat, rep, t, count=1)
@@ -282,13 +286,13 @@ def arm_d(tmp):
             rc3, out3 = run(SOLVE, d)
             if rc2 != 0 or rc3 != 0 or "[fitted]" not in out3:
                 fail("d", f"the remedy did not work: Properties mode exit {rc2}, Process mode exit {rc3}")
-    d = copy_case(tmp, "d_comment")
+    d = copy_case(tmp, "d_comment", plain=True)
     p = d / "constant/experimental/fdl2021_NaCl.dat"
     p.write_text("// a comment: canonically the same dataset\n" + p.read_text())
     rc, out = run(SOLVE, d)
     if rc != 0 or "[fitted]" not in out:
         fail("d", f"a COMMENT in a dataset made the fit stale (exit {rc}) -- the fingerprint must be the canonical parse")
-    d = copy_case(tmp, "d_noprops")
+    d = copy_case(tmp, "d_noprops", plain=True)
     (d / "system/propsDict").unlink()
     rc, out = run(SOLVE, d)
     if rc == 0 or "carries no system/propsDict" not in out:

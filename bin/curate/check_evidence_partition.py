@@ -218,8 +218,9 @@ def main():
         #  arm noticed a difference, not that it would catch the actual leak.
         #  `reviewStatus interim;` is announced by name when a record is
         #  resolved, so its ABSENCE is the evidence.
-        poisoned = case_records.ensure_local(d, "components/water.dat").read_text() \
-                 + "\nreviewStatus interim;\n"
+        wl = case_records.ensure_local(d, "components/water.dat")
+        wl.write_text(case_records.as_variation("water", wl.read_text()))   # the case-local homonym declares itself
+        poisoned = wl.read_text() + "\nreviewStatus interim;\n"
         (d / "curation/components/water.dat").write_text(poisoned)
         rc_p, out_p = run(d)
         if rc_p != 0:

@@ -287,6 +287,9 @@ def copy_case(src, dst):
     case_records.copytree(src, dst, ignore=shutil.ignore_patterns("converged", "log.*", "expected",
                                                             "reports", "design",
                                                             "propertyManifest"))
+    #  the donor's manifest is gone, so its local copies of catalogue records are homonyms of an
+    #  UNSEALED case: each declares what it is (undeclared homonyms are refused)
+    case_records.declare_homonyms(dst)
 
 
 def balanced_block(text, key):

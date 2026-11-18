@@ -1,3 +1,5 @@
+overlayOf CO3-formation;
+variationReason "design-driver case: its own value differs from the catalogue record of the same name (README); it takes the keys it lacks from the catalogue, as it did before declarations were required";
 recordType aqueousSpeciation;
 schemaVersion 1;
 
