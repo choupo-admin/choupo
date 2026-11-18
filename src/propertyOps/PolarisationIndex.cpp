@@ -30,6 +30,7 @@ License
 
 #include "core/Dimensions.H"
 #include "thermo/ThermoPackage.H"
+#include "FilmProperties.H"
 #include "unitOperations/membrane/massTransfer/MassTransferModel.H"
 #include "unitOperations/membrane/massTransfer/Polarisation.H"
 #include "unitOperations/membrane/massTransfer/StirredCell.H"
@@ -87,15 +88,7 @@ int PolarisationIndex::run(const DictPtr& dict,
     MassTransferModel::registerBuiltins();          // idempotent
     std::unique_ptr<MassTransferModel> corr = MassTransferModel::New(mt->lookupWord("model"));
     corr->readParameters(mt);
-    if (!mt->found("viscosity") || !mt->found("density"))
-        throw std::runtime_error(site + ": massTransfer {} must declare"
-            " `viscosity` (Pa.s) and `density` (kg/m3) -- the bench prices"
-            " nothing from a package here, so nu = mu/rho is the case's own");
-    MassTransferContext hyd;
-    hyd.mu  = mt->lookupScalar("viscosity");
-    hyd.rho = mt->lookupScalar("density");
-    hyd.u   = mt->lookupScalarOrDefault("velocity", 0.0);
-    hyd.d_h = mt->lookupScalarOrDefault("hydraulicDiameter", 0.0, Dims::length);
+    MassTransferContext hyd;   // filled below, once the dataset's first row gives the feed
 
     // ---- the wall: ONE home, the same builder the module uses -------------
     //  The op dict plays the role of the unit's operation block: the
@@ -181,6 +174,16 @@ int PolarisationIndex::run(const DictPtr& dict,
             if (cbCol[s] < 0)
                 throw std::runtime_error(site + ": every ion needs columns"
                     " unless one is named by `closeBy`");
+
+    //  The film's mu and rho come from the package through the door (C435 (4)); typed ones are refused.
+    //  The state is the dataset's first row: its measured bulk concentrations in water.
+    {
+        std::vector<std::pair<std::size_t, scalar>> feed0;
+        for (std::size_t s = 0; s < n; ++s)
+            if (cbCol[s] >= 0 && flat[cbCol[s]] > 0.0)
+                feed0.push_back({ soluteIdx[s], flat[cbCol[s]] * 1.0e-3 });   // mol/m3 -> kmol/m3
+        filmProperties::read(mt, thermo, T, feed0, type(), opName, site, verbosity, hyd);
+    }
 
     // ---- announce what is what -------------------------------------------
     const auto& sol = polar.solutes();

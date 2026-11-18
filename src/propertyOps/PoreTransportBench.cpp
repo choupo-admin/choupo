@@ -32,6 +32,8 @@ License
 #include "core/Dimensions.H"
 #include "thermo/RecordResolver.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/LiquidPropertyDoor.H"
+#include "unitOperations/UnitTypedProperties.H"
 #include "thermo/membrane/Membrane.H"
 #include "thermo/membrane/MembraneRegistry.H"
 #include "unitOperations/membrane/massTransfer/MassTransferModel.H"
@@ -165,11 +167,37 @@ int PoreTransportBench::run(const DictPtr& dict,
         MassTransferModel::registerBuiltins();
         corr = MassTransferModel::New(mt->lookupWord("model"));
         corr->readParameters(mt);
-        if (!mt->found("viscosity") || !mt->found("density"))
-            throw std::runtime_error(site + ": massTransfer {} must declare"
-                " `viscosity` (Pa.s) and `density` (kg/m3)");
-        hyd.mu  = mt->lookupScalar("viscosity");
-        hyd.rho = mt->lookupScalar("density");
+        //  THE FILM'S VISCOSITY AND DENSITY come from the package through the one
+        //  door (DEV.md 4c C435 (4); C402 did the same for the membrane unit): a
+        //  value typed in this block is refused by name, with the line to write.
+        //  The state is the op's own T and the feed's composition (the salts of
+        //  `feedMolPerM3` in water, on the solvent's molar density at T).  The
+        //  reference program's hypothesis (a viscosity and a density of its own)
+        //  is the case's `measured` record of kind adopted, written ONCE.
+        unitTypedProperties::refuse(mt, site + ": ", "poreTransport massTransfer");
+        const std::size_t iW = thermo.aqueousSolventIndex();
+        const scalar P_door = 101325.0;   // the film is at the cell's ambient pressure; the records' boxes state theirs
+        sVector xw(thermo.n(), 0.0);
+        xw[iW] = 1.0;
+        const liquidProperty::Consumer whoFilm{ type(), opName };
+        const scalar rhoW = liquidProperty::evaluate(thermo, liquidProperty::Property::density,
+                                T, P_door, xw).value;                 // kg/m3, only to put the salts on a mole basis
+        const scalar cW = rhoW / thermo.comp(iW).MW();                // kmol/m3
+        scalar cSum = 0.0;
+        for (const scalar c : c_b) cSum += c;
+        sVector xf(thermo.n(), 0.0);
+        for (std::size_t s = 0; s < Ns; ++s) xf[soluteIdx[s]] = c_b[s] / (cW + cSum);
+        xf[iW] = cW / (cW + cSum);
+        liquidProperty::Request askRho;
+        askRho.thermo = &thermo; askRho.T = T; askRho.P = P_door; askRho.x = xf; askRho.who = &whoFilm;
+        hyd.rho = liquidProperty::density(askRho).value;
+        hyd.mu  = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity,
+                                T, P_door, xf, &whoFilm).value;
+        if (verbosity >= 1)
+            std::cout << "  [poreTransport] the film is priced on mu = " << std::setprecision(12)
+                      << hyd.mu << " Pa.s and rho = " << hyd.rho
+                      << " kg/m3, asked of the package through the door (the case's records;"
+                         " the lines above name each source)\n";
         hyd.u   = mt->lookupScalarOrDefault("velocity", 0.0);
         hyd.d_h = mt->lookupScalarOrDefault("hydraulicDiameter", 0.0, Dims::length);
     }

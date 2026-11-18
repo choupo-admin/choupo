@@ -135,8 +135,6 @@ operations
                 a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
                 radius     1.0e-3;             // m: d_i, the fibre's inside diameter
                 omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
-                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
-                density    997;                // kg/m3
             }
             polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
         }
@@ -181,8 +179,6 @@ operations
                 a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
                 radius     1.0e-3;             // m: d_i, the fibre's inside diameter
                 omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
-                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
-                density    997;                // kg/m3
             }
             polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
         }
@@ -232,8 +228,6 @@ operations
                 a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
                 radius     1.0e-3;             // m: d_i, the fibre's inside diameter
                 omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
-                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
-                density    997;                // kg/m3
             }
             polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
         }
@@ -283,8 +277,6 @@ operations
                 a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
                 radius     1.0e-3;             // m: d_i, the fibre's inside diameter
                 omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
-                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
-                density    997;                // kg/m3
             }
             polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
         }
@@ -334,8 +326,6 @@ operations
                 a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
                 radius     1.0e-3;             // m: d_i, the fibre's inside diameter
                 omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
-                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
-                density    997;                // kg/m3
             }
             polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
         }
@@ -382,8 +372,6 @@ operations
                 a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
                 radius     1.0e-3;             // m: d_i, the fibre's inside diameter
                 omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
-                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
-                density    997;                // kg/m3
             }
             polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
         }
@@ -422,8 +410,6 @@ operations
                 a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
                 radius     1.0e-3;             // m: d_i, the fibre's inside diameter
                 omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
-                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
-                density    997;                // kg/m3
             }
             polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
         }
@@ -462,8 +448,6 @@ operations
                 a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
                 radius     1.0e-3;             // m: d_i, the fibre's inside diameter
                 omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
-                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
-                density    997;                // kg/m3
             }
             polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
         }
@@ -497,8 +481,6 @@ operations
                 a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
                 radius     1.0e-3;             // m: d_i, the fibre's inside diameter
                 omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
-                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
-                density    997;                // kg/m3
             }
             polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
         }
@@ -532,8 +514,6 @@ operations
                 a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
                 radius     1.0e-3;             // m: d_i, the fibre's inside diameter
                 omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
-                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
-                density    997;                // kg/m3
             }
             polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
         }
@@ -567,8 +547,6 @@ operations
                 a 0.26194;  b 0.33;  c 0.33;   // a = 1.62 (d_i/L)^0.33, d_i 1.0 mm, L 25 cm
                 radius     1.0e-3;             // m: d_i, the fibre's inside diameter
                 omega      300.0;              // rad/s: u/d_i, u = 0.3 m/s
-                viscosity  8.968737390077713e-4;   // Pa.s: water 298.15 K (the NanoFiltran case's value)
-                density    997;                // kg/m3
             }
             polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
         }

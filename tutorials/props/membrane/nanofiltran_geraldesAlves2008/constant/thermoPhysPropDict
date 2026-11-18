@@ -31,3 +31,39 @@ equilibrium
         fugacityModel idealGas;
     }
 }
+
+//  THE FILM'S VISCOSITY AND DENSITY (DEV.md 4c C435): the stirred-cell film of the
+//  polarised ops (Part B's ten dye feeds at 298 K, the mixed op at 298.15 K) is priced on
+//  the REFERENCE PROGRAM's own water viscosity and density, a hypothesis of the
+//  comparison.  They are stated ONCE, as records of kind adopted in constant/experiments/
+//  (one per feed set and temperature, disjoint boxes), and the property operation asks
+//  the package; a viscosity or density typed in an op's `massTransfer {}` is refused.
+transport
+{
+    liquid
+    {
+        //  The reference program does not correct an ion's D0 for temperature; declaring a
+        //  viscosity below would otherwise switch the Stokes-Einstein correction on (C435 (4)).
+        ionDiffusivity { temperatureCorrection none; reason "reproduces the reference program, which does not correct D0 for temperature"; }
+        viscosity
+        {
+            measured
+            {
+                nanofiltranWater298K_dye_liquidViscosity     { use method; reason "the reference program's viscosity of water stood over the dilute feeds of Part B (NaCl below 1 wt %, the dye below 5 wt %, the record's box): the program's own hypothesis, which this comparison reproduces"; }
+                nanofiltranWater29815K_mixed_liquidViscosity { use method; reason "the reference program's viscosity of water stood over the dilute feed of the mixed polarised op (each solute below 1 wt %, the record's box): the program's own hypothesis, which this comparison reproduces"; }
+            }
+        }
+    }
+}
+
+volumetric
+{
+    liquid
+    {
+        measured
+        {
+            nanofiltranWater298K_dye_liquidDensity     { use method; reason "the reference program's constant density, 997 kg/m3, stood over the dilute feeds of Part B (NaCl below 1 wt %, the dye below 5 wt %, the record's box): the program's own hypothesis"; }
+            nanofiltranWater29815K_mixed_liquidDensity { use method; reason "the reference program's constant density, 997 kg/m3, stood over the dilute feed of the mixed polarised op (each solute below 1 wt %, the record's box): the program's own hypothesis"; }
+        }
+    }
+}

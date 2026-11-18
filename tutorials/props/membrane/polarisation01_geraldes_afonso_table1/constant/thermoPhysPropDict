@@ -34,3 +34,31 @@ equilibrium
         fugacityModel idealGas;
     }
 }
+
+//  THE FILM'S VISCOSITY AND DENSITY (DEV.md 4c C435 (4)): the Amicon 8200 cell of the source, Table 1.  Stated ONCE, as records of
+//  kind adopted in constant/experiments/ (one per constituent set of a feed); the bench asks the
+//  package, and a viscosity or density typed in an op's `massTransfer {}` is refused.
+transport
+{
+    liquid
+    {
+        viscosity
+        {
+            measured
+            {
+                geraldesAfonsoTable1_dyeCl_liquidViscosity { use method; reason "the film's viscosity, 8.97e-4 Pa.s at 298.15 K (the Amicon 8200 cell of the source, Table 1): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+            }
+        }
+    }
+}
+
+volumetric
+{
+    liquid
+    {
+        measured
+        {
+            geraldesAfonsoTable1_dyeCl_liquidDensity { use method; reason "the film's density, 1000 kg/m3 (the Amicon 8200 cell of the source, Table 1): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+        }
+    }
+}

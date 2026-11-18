@@ -38,9 +38,9 @@ fit
     fittedInCase      dspmde02_lab_characterisation_template;
     operation         fit_X_c1;
     propsDict         "system/propsDict";
-    fitBlockSha256    "854d61d8ab9eca5b960941e9d25dc08ccac2afa645ad87bc2d9663f704f7c04e";
+    fitBlockSha256    "adb06dc0e5943c2ddef57276c1dc9faa431fe2ad8eb69082e63b6233b4b2c396";
     baseRecord        Lab_pore;
-    baseRecordSha256  "17a312330a316fbe48bc04ed25c11f8197a04b9a35899ad27723022685ecc0c6";
+    baseRecordSha256  "32e4b807cb4ba58f90284e0777abd8f4f8e5af38345cb4d9f2e35cee1463d25d";
     recordSha256      "a0a08d230840cb38c4c6d07ea13ee1d6b5d5af84a3a32f8fa643c5e34758f63c";
     datasets
     (

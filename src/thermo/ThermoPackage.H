@@ -700,6 +700,10 @@ public:
     // diffusivityLiquid needs the solvent viscosity, so a liquidViscosity
     // model must be present alongside.  Each throws if its sub-block is absent.
     bool   hasLiquidViscosity()    const { return !liquidViscosityLaws_.empty(); }
+    //  C435 (4): the case's DECLARED temperature rule for the ions' D0 (`transport { liquid { ionDiffusivity { temperatureCorrection ...; reason "..."; } } }`);
+    //  "" when none is declared (the default rule: Stokes-Einstein when a liquid viscosity is declared, none otherwise).
+    const std::string& ionDiffusivityMode()   const { return ionDiffusivityMode_; }
+    const std::string& ionDiffusivityReason() const { return ionDiffusivityReason_; }
     scalar viscosityLiquid(scalar T_K, const sVector& x) const;
     bool   hasLiquidConductivity() const { return !liquidConductivityLaws_.empty(); }
     scalar thermalConductivityLiquid(scalar T_K, const sVector& x) const;
@@ -1042,6 +1046,8 @@ private:
     std::unique_ptr<LiquidConductivityModel>  liquidConductivity_;
     std::unique_ptr<LiquidDiffusivityModel>   liquidDiffusivity_;
     liquidTransport::DiffusivityDeclaration   liquidDiffusionDecl_;        // C398 slice (d)
+    std::string ionDiffusivityMode_;     // C435 (4): "", "stokesEinstein" or "none" (the case's declared choice)
+    std::string ionDiffusivityReason_;
     std::vector<liquidTransport::ViscosityMeasurement> liquidViscosityMeasured_;
     std::vector<rheology::FlowCurve> flowCurves_;                                   // C421 (7)
     scalar measuredOrCheckedViscosity(scalar T, const sVector& x, const scalar* computed) const;

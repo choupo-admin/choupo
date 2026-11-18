@@ -38,9 +38,9 @@ fit
     fittedInCase      labban2017_dspmde_validation;
     operation         fit_eps_NaCl_pH7;
     propsDict         "system/propsDict";
-    fitBlockSha256    "480b51bc70f9c913bd7485f0fa01746a661eced8ad957fb88737b3b0c0067b08";
+    fitBlockSha256    "19302e2b2a0503ba171a37b954fcd4d464bee7f528bacfcb03ad70a201f309ae";
     baseRecord        LbLC_pore;
-    baseRecordSha256  "db4478483526f05acbc82185f73ffafe6c5b1c91971253a84f92782850c792a7";
+    baseRecordSha256  "2e85f1f0cf82ec769d4d17e262cc08d8893a8ef8eef0303ead4b4118216f510f";
     recordSha256      "22e206c495dc299118c1507ce4c73af1c22c90bad443401407db6c9f4264ef61";
     datasets
     (

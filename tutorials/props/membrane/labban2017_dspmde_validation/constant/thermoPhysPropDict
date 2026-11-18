@@ -35,3 +35,43 @@ equilibrium
         fugacityModel idealGas;
     }
 }
+
+//  THE FILM'S VISCOSITY AND DENSITY (DEV.md 4c C435 (4)): water at 298.15 K, the NanoFiltran case's values.  Stated ONCE, as records of
+//  kind adopted in constant/experiments/ (one per constituent set of a feed); the bench asks the
+//  package, and a viscosity or density typed in an op's `massTransfer {}` is refused.
+transport
+{
+    liquid
+    {
+        viscosity
+        {
+            measured
+            {
+                labbanWater29815K_glycerol_liquidViscosity { use method; reason "the film's viscosity, 8.968737390077713e-4 Pa.s at 298.15 K (water at 298.15 K, the NanoFiltran case's values): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+                labbanWater29815K_glucose_liquidViscosity { use method; reason "the film's viscosity, 8.968737390077713e-4 Pa.s at 298.15 K (water at 298.15 K, the NanoFiltran case's values): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+                labbanWater29815K_sucrose_liquidViscosity { use method; reason "the film's viscosity, 8.968737390077713e-4 Pa.s at 298.15 K (water at 298.15 K, the NanoFiltran case's values): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+                labbanWater29815K_NaCl_liquidViscosity { use method; reason "the film's viscosity, 8.968737390077713e-4 Pa.s at 298.15 K (water at 298.15 K, the NanoFiltran case's values): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+                labbanWater29815K_NaClMgCl2_liquidViscosity { use method; reason "the film's viscosity, 8.968737390077713e-4 Pa.s at 298.15 K (water at 298.15 K, the NanoFiltran case's values): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+                labbanWater29815K_Na2SO4NaCl_liquidViscosity { use method; reason "the film's viscosity, 8.968737390077713e-4 Pa.s at 298.15 K (water at 298.15 K, the NanoFiltran case's values): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+                labbanWater29815K_NaClNa2SO4MgCl2CaCl2_liquidViscosity { use method; reason "the film's viscosity, 8.968737390077713e-4 Pa.s at 298.15 K (water at 298.15 K, the NanoFiltran case's values): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+            }
+        }
+    }
+}
+
+volumetric
+{
+    liquid
+    {
+        measured
+        {
+            labbanWater29815K_glycerol_liquidDensity { use method; replaces { method idealMixing; } reason "the film's density, 997 kg/m3 (water at 298.15 K, the NanoFiltran case's values): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+            labbanWater29815K_glucose_liquidDensity { use method; replaces { method idealMixing; } reason "the film's density, 997 kg/m3 (water at 298.15 K, the NanoFiltran case's values): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+            labbanWater29815K_sucrose_liquidDensity { use method; replaces { method idealMixing; } reason "the film's density, 997 kg/m3 (water at 298.15 K, the NanoFiltran case's values): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+            labbanWater29815K_NaCl_liquidDensity { use method; replaces { method solutionLaw; record NaCl-water; } reason "the film's density, 997 kg/m3 (water at 298.15 K, the NanoFiltran case's values): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+            labbanWater29815K_NaClMgCl2_liquidDensity { use method; reason "the film's density, 997 kg/m3 (water at 298.15 K, the NanoFiltran case's values): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+            labbanWater29815K_Na2SO4NaCl_liquidDensity { use method; reason "the film's density, 997 kg/m3 (water at 298.15 K, the NanoFiltran case's values): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+            labbanWater29815K_NaClNa2SO4MgCl2CaCl2_liquidDensity { use method; reason "the film's density, 997 kg/m3 (water at 298.15 K, the NanoFiltran case's values): the case's own hypothesis, stated once here and asked of the package by the bench"; }
+        }
+    }
+}

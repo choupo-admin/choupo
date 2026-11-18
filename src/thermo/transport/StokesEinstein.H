@@ -83,6 +83,12 @@ struct Factor
     scalar      mu     = 0.0;   // mu(T)  [Pa.s], the pure solvent
     scalar      muRef  = 0.0;   // mu(T0) [Pa.s]
     std::string solvent;        // the component the viscosity was asked for
+    //  C435 (4): WHICH RULE decided `priced`, and why.  "default" = the
+    //  package's own (Stokes-Einstein when a liquid viscosity is declared,
+    //  none when not); "declared" = the case's `ionDiffusivity {}`.
+    bool        declared = false;
+    std::string choice;         // "stokesEinstein" | "none"
+    std::string reason;         // the case's reason (declared), else ""
 };
 
 //- WHAT WAS DONE to an ion's 25 C D0, read from the factor that was applied
@@ -115,6 +121,10 @@ Factor factor(const ThermoPackage& thermo, scalar T_K);
 //- The same, for an explicit solvent component index (the electrodialysis
 //  stack, which already holds it).
 Factor factorFor(const ThermoPackage& thermo, std::size_t iSolvent, scalar T_K);
+
+//- C435 (4): `ionDiffusivity { temperatureCorrection stokesEinstein | none; }`
+//  declared by the case overrides the default rule; `stokesEinstein` with no
+//  liquid viscosity declared is refused by name.
 
 //- Announce the factor once per pass per (locus, T): at T0, nothing; priced,
 //  an info line naming the factor and both viscosities; NOT priced, a
