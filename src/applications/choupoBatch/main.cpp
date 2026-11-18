@@ -747,10 +747,15 @@ if (flowsheetDict->found("cycle"))
                 addCol(unit->name() + ".n_" + thermo.comp(i).name(), "kmol");
         for (const auto& unit : units)
             addCol(unit->name() + ".T", "K");
-        for (const auto& unit : units)
-            for (const auto& [k, v] : unit->trajectoryExtras())
-                addCol(unit->name() + "." + k, "");
+        //  The `trajectoryExtras()` columns are added at the FIRST snapshot,
+        //  from the same evaluation the CSV writes: a unit's extras may ask
+        //  the property door, and a second call made only because a panel is
+        //  declared changed the run's own liquid-properties table (its count
+        //  of evaluations), which the panel promises never to do (check_panel
+        //  arm (a); found 2026-11-19 when the door began counting the rig's
+        //  densities).
     }
+    bool panelExtrasLabelled = false;
 
     auto writeSnapshot = [&](scalar t)
     {
@@ -764,8 +769,18 @@ if (flowsheetDict->found("cycle"))
         //  A non-finite extra is a value the unit WITHHOLDS at this instant
         //  (CI-00: a closure ratio with no scale yet): an EMPTY cell, so the
         //  file stays rectangular and nobody reads a number that is not one.
+        //  ONE evaluation of each unit's extras per instant, shared by the CSV
+        //  and the panel's copy (see the note at the panel's columns).
+        std::vector<std::vector<std::pair<std::string, scalar>>> extras;
+        extras.reserve(units.size());
         for (const auto& unit : units)
-            for (const auto& [k, v] : unit->trajectoryExtras())
+        {
+            extras.emplace_back();
+            for (const auto& kv : unit->trajectoryExtras())
+                extras.back().emplace_back(kv.first, kv.second);
+        }
+        for (const auto& ex : extras)
+            for (const auto& [k, v] : ex)
             {
                 csv << ",";
                 if (std::isfinite(v)) csv << v;
@@ -786,8 +801,18 @@ if (flowsheetDict->found("cycle"))
             for (const auto& unit : units)
                 for (auto v : unit->state().n) keepRounded(v);
             for (const auto& unit : units) keepRounded(unit->state().T);
-            for (const auto& unit : units)
-                for (const auto& [k, v] : unit->trajectoryExtras()) keepRounded(v);
+            if (!panelExtrasLabelled)
+            {
+                for (std::size_t u = 0; u < units.size(); ++u)
+                    for (const auto& kv : extras[u])
+                    {
+                        panelSeries.labels.push_back(units[u]->name() + "." + kv.first);
+                        panelSeries.units.push_back("");
+                    }
+                panelExtrasLabelled = true;
+            }
+            for (const auto& ex : extras)
+                for (const auto& [k, v] : ex) keepRounded(v);
             panelSeries.rows.push_back(std::move(prow));
         }
 

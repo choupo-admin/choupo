@@ -487,7 +487,7 @@ describe("every file:line these pages cite into the engine resolves", () => {
     //  carry the string.  (Drift found 2026-09-16 by an unrelated slice --
     //  a pre-existing red that had nothing to do with it.)
     ["src/applications/choupoSolve/main.cpp", 319, "Mass balance (global)"],
-    ["src/streams/ProcessStream.H", 95, "kmol/s"],
+    ["src/streams/ProcessStream.H", 96, "kmol/s"],
     // --- tear streams: the plan contract
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 4974, "Flowsheet::validateSequentialPlan"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 5065, "MISSING TEAR"],

@@ -93,7 +93,8 @@
                              salinity up 1.8 %
       pump shaft powers      HP pump 9216 kW, booster 439 kW, second-pass
                              pump 1606 kW, intake 330 kW: 11 590 kW, i.e.
-                             2.82 kWh per m3 of product (shaft only: no
+                             2.82 kWh per m3 of product (2.80 since the
+                             door's density, 2026-11-18; shaft only: no
                              motor losses, no pretreatment or post-treatment
                              loads, no product delivery)
 

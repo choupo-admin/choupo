@@ -20,7 +20,10 @@ up to the fence -- NOT the real site.
 **The answer** (2026-11-15, after C402; `expected` is the authority).  Product 4111 m3/h
 = 98 664.7 m3/day; first pass 47.20 % in the document's bookkeeping (46.05 % mass
 recovery), second 86.6 %; 1.8 mg/L NaCl-equivalent and 0.042 mg/L boron in the
-product; 2.82 kWh/m3 of pump shaft work.
+product; 2.82 kWh/m3 of pump shaft work (2.80 since 2026-11-18, when the
+pressure exchanger and the pumps took the brine's density from the property door
+instead of a volume that gave the salt none: HP pump 9120 kW, booster 443 kW,
+second-pass pump 1607 kW, intake 330 kW, 11 500 kW; docs/audits, door slice d).
 
 **Boron (DEV.md 4c C198, Stage 1).**  Boron is carried as boric acid and borate,
 split by the pH against the acid's curated pKa through the package; each
