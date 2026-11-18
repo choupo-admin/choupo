@@ -60,7 +60,7 @@ export const OFMU_ENGINE_SCOPE = "The engine computes none of the numbers on thi
   + "its β_V = c_G k_G a_e A_T Δz/V_ref is k_y a times the segment's volume, made dimensionless by V_ref "
   + "(RateBasedSegment.cpp:468; β_L the same for the liquid, RateBasedSegment.cpp:469).  The Henry records store "
   + "a pressure (HenrysLaw.cpp:50) that is p/x, and a Henry solute's K-value is that pressure over the total "
-  + "pressure (ThermoPackage.cpp:1299): the slope m of step 3.";
+  + "pressure (ThermoPackage.cpp:1305): the slope m of step 3.";
 
 export const OFMU_STEPS: readonly LessonStep[] = [
   {
@@ -178,7 +178,7 @@ export const OFMU_STEPS: readonly LessonStep[] = [
       + "call it H_xp (data/standards/parameters/Henry/README.md); in Sander's notation that is K_H^px, while "
       + "Sander's own H^xp is its inverse, x/p.  The engine reads the stored value as a pressure "
       + "(HenrysLaw.cpp:50), carries it in temperature with van 't Hoff's form (HenrysLaw.cpp:163), and divides it "
-      + "by the total pressure to get the solute's K-value (ThermoPackage.cpp:1299).  Use the converter below with "
+      + "by the total pressure to get the solute's K-value (ThermoPackage.cpp:1305).  Use the converter below with "
       + "Sander's value for oxygen, and compare with Choupo's oxygen record.",
     derivation: [
       { step: "Sander's definitions (Eqs. 1, 2, 4, 14, 15, 16, pp. 4401-4403); the volatilities are the inverses of "
