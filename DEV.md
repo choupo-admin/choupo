@@ -4700,6 +4700,20 @@ accepts today, and that is a policy call.
 > drawing deliverable on top of the routes, worth having, but the numbers on
 > the line sheet are the engineering and come first.
 
+> **C444 (Vitor, 2026-11-19: "nas folhas de especificação finais devem
+> ficar também as especificações das tubuladuras onde ligam os tubos de
+> entrada e de saída?").**  RULED, yes: every equipment sheet carries a
+> NOZZLE SCHEDULE -- mark (N1, N2 ...), service, the stream and line it
+> connects, nominal size, flange pressure class and facing, orientation,
+> and its design pressure and temperature.  The nozzle is the end of a
+> line: its size comes from the line sheet (C207) unless the equipment's
+> own criterion asks more (the drum's rho v^2 limit of C318, an exchanger's
+> shell-side entrance), and a mismatch is printed as a reducer, never
+> silently resolved; the flange class is read from the pressure-temperature
+> rating of the flange material at the design P and T, the rating table
+> taken from a source in the folder (or declared by the case with its
+> reason until one is).  Built after C318 and C207 land, on both.
+
 > **C443 (Vitor, 2026-11-19: "até era bom ter um gráfico supostamente
 > especificado em pós-processamento, dicionários, para o aluno ver um dado
 > plot mais intuitivo").**  Measured: the mechanism EXISTS --
