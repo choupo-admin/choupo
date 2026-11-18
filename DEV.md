@@ -4664,6 +4664,22 @@ accepts today, and that is a policy call.
 > stale 10.03 m3; the ratchet's docstring; the Theory Guide entry for the
 > optional `initial`.
 
+> **C440 (Vitor, 2026-11-19, on C238: "eu gostava de ver o dimensionamento
+> detalhado de todas as operações.  Por isso a C318 devia de vir primeiro, e
+> se calhar até os desenhos isométricos das condutas, com velocidades de
+> circulação recomendada, perdas de carga, etc., deviam de aparecer nas
+> folhas de especificação").**  RULED, weighed: (1) agreed -- C318 (the
+> drum's detailed sizing) moves to the head of the queue and is dispatched;
+> (2) agreed -- C207 (one specification sheet per line: diameter from the
+> recommended velocity of its service, the velocity, the pressure drop,
+> schedule and material) is second, because it is what a reviewer of a
+> plant's documents reads and the routed pipes already exist; (3) an AUDIT
+> follows: every unit of the reference plant against the detailed sizing it
+> has, so "all operations" is a list, not an impression; (4) isometric
+> drawings per line are kept as their own item, after (1)-(3): they are a
+> drawing deliverable on top of the routes, worth having, but the numbers on
+> the line sheet are the engineering and come first.
+
 > **C439 (Vitor, 2026-11-19: "os casos que estão na landing page foram
 > escolhidos logo no início ... Acho que falta um sobre criação de
 > componentes e binários").**  Measured: the four starter cards are the
