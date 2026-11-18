@@ -80,6 +80,7 @@ Utility readUtilityFile(const fs::path& file)
     u.dutyPerKg = d->lookupScalarOrDefault("dutyPerKg", 0.0);
     u.cost      = d->lookupScalarOrDefault("cost",     0.0);
     u.costYear  = static_cast<int>(d->lookupScalarOrDefault("costYear", 0.0));
+    u.costSource = d->lookupWordOrDefault("costSource", "");
     u.driveEfficiency = d->lookupScalarOrDefault("driveEfficiency", 1.0);
 
     u.description = d->lookupWordOrDefault("description", "");

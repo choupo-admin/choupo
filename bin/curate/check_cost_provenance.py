@@ -1988,6 +1988,46 @@ def check_required_prices(fails):
                          "must run and be ANNOUNCED as left out of C_RM "
                          "(rc=%d).\n%s" % (rc, out[-500:]))
 
+        # ---- w6/w7/w8  THE ORIGIN OF EACH PRICE (C389, PR-07, 2026-11-19).
+        #  The defect these arms would have caught: `origin` DEFAULTED TO AN
+        #  EMPTY STRING (`lookupWordOrDefault("origin", "")`), so a price with
+        #  no origin ran, printed `0.5300 EUR/kg` and said nothing about what
+        #  kind of number it was.  Now a stream price with no origin is
+        #  refused by name, a `kind` outside published|quote|assumption is
+        #  refused by name, and the report prints every price with its kind.
+        def drop_origin(t):
+            return re.sub(r'(?s)(rawMaterials\s*\(.*?provenance\s*\{[^}]*?)origin\s+"[^"]*";',
+                          r"\1", t, count=1)
+        rc, out = _run(make("w6", drop_origin))
+        if rc == 0 or "the origin of the price of" not in out:
+            fails.append("(x6) a rawMaterials price with NO `origin` was not "
+                         "refused by name (rc=%d).\n%s" % (rc, out[-500:]))
+        rc, out = _run(make("w6b", drop_origin, lambda t: re.sub(
+            r"refuseOnMissingPrice\s+1;", "refuseOnMissingPrice 0;", t)))
+        if rc != 0 or "the origin of the price of" not in out:
+            fails.append("(x6) with refuseOnMissingPrice 0 the untraced price "
+                         "must run and be ANNOUNCED (rc=%d)." % rc)
+
+        def add_kind(k):
+            #  the FIRST price's own `kind` word (the shipped case declares one)
+            return lambda t: re.sub(r"(?s)(rawMaterials\s*\(.*?kind\s+)\w+;",
+                                    r"\g<1>%s;" % k, t, count=1)
+        rc, out = _run(make("w7", add_kind("bogus")))
+        if rc == 0 or "declares provenance { kind bogus; }" not in out:
+            fails.append("(x7) a `kind` outside published|quote|assumption "
+                         "was not refused by name (rc=%d).\n%s" % (rc, out[-400:]))
+
+        rc, out = _run(make("w8", add_kind("quote")))
+        if rc != 0 or "Prices and where they came from" not in out \
+                or not re.search(r"\[quote\]", out):
+            fails.append("(x8) the report does not print the prices section "
+                         "with the declared kind `[quote]` (rc=%d)." % rc)
+        else:
+            csv = list(Path(tmp).glob("w8/reports/economics/prices.csv"))
+            if not csv or "quote" not in csv[0].read_text():
+                fails.append("(x8) reports/economics/prices.csv is absent or "
+                             "lacks the declared kind.")
+
         # ---- w5  source
         main = strip_comments((ROOT / "src/applications/choupoSolve/main.cpp").read_text())
         if not re.search(r"PostProcessor::failsRunOn\s*\(", main):

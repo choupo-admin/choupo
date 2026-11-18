@@ -32,6 +32,7 @@ License
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
 #include "streams/UtilityCircuit.H"
+#include "thermo/utility/UtilityCatalogue.H"
 
 #include "core/Dictionary.H"
 #include "core/Dimensions.H"
@@ -3526,7 +3527,28 @@ int EconomicsPass::run(SimulationResult& result)
     }
     //  (5.0) EVERY PRICE NAMES ITS ORIGIN (C389, PR-07): a price nobody can
     //  trace is refused by name, and one with no declared kind is announced.
-    //  The streams first, the labour rate after them.
+    //  THE UTILITIES the run allocated (C389): each catalogue utility priced in
+    //  C_UT, with the record's own `cost` and `costYear`.  The kind is
+    //  `published` when the record carries a `costSource`, else `undeclared`.
+    {
+        std::set<std::string> seen;
+        for (const auto& a : result.utilityAllocation)
+        {
+            if (!a.allocated || !seen.insert(a.utility).second) continue;
+            if (!UtilityCatalogue::has(a.utility)) continue;
+            const Utility& u = UtilityCatalogue::byName(a.utility);
+            EconomicPriceOrigin o;
+            o.name = u.name; o.role = "utility"; o.price = u.cost; o.unit = "EUR/GJ";
+            o.costYear = u.costYear ? std::to_string(u.costYear) : "";
+            o.kind = u.costSource.empty() ? "undeclared" : "published";
+            o.origin = u.costSource.empty()
+                ? "utility record `" + u.name + "` of the catalogue: its `cost`; the record"
+                  " declares no `costSource`"
+                : u.costSource;
+            priceRows.push_back(o);
+        }
+    }
+    //  The streams first, the labour rate last.
     std::stable_partition(priceRows.begin(), priceRows.end(),
                           [](const EconomicPriceOrigin& r) { return r.role != "labour"; });
     {
@@ -3857,7 +3879,7 @@ int EconomicsPass::run(SimulationResult& result)
         std::cout << "\n  -- Prices and where they came from (constant/economics) ------\n"
                      "    kind: published = a price a source publishes; quote = a quotation the\n"
                      "    case declares; assumption = a figure the case states; undeclared = the\n"
-                     "    case names no kind.  Utility prices are the utility records' own `cost`.\n";
+                     "    case names no kind.  Utilities: the catalogue record's cost.\n";
         for (const auto& r : priceRows)
         {
             std::cout << "    " << std::left << std::setw(14) << r.name << std::right
