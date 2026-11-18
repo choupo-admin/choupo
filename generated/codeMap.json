@@ -5330,7 +5330,9 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
-   "src/thermo/transport/WilkeReduction.H"
+   "src/thermo/transport/WilkeReduction.H",
+   "src/thermo/utility/Utility.H",
+   "src/thermo/utility/UtilityCatalogue.H"
   ],
   "src/postProcessing/PinchPass.cpp": [
    "src/core/Advisory.H",
@@ -27781,6 +27783,7 @@
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
@@ -27793,6 +27796,7 @@
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
