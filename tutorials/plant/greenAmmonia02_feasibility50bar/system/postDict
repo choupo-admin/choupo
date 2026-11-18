@@ -37,10 +37,8 @@
                 NPV and IRR with each input moved alone to two declared
                 ends (`sensitivity {}`, the last block below).
 
-  THE U VALUES ARE AUTHOR-SET ASSUMPTIONS, none cited -- the same numbers the
-  base case declared before its exchangers were designed (git history of
-  tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict, C44 slice 1),
-  plus two new ones: the EffluentCooler takes the WaterCooler's 500, and the
+  THE U VALUES ARE AUTHOR-SET ASSUMPTIONS, none cited (their origin is in
+  README.md, "History"), plus two new ones: the EffluentCooler takes the WaterCooler's 500, and the
   FeedPreheater 400 W/m2/K (loop gas against hot oil: at 320 C the
   allocation picks dowthermA, not the salt).  An assumed U is
   what a feasibility estimate carries; the basic-design case replaces every

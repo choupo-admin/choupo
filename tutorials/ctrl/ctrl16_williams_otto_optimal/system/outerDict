@@ -31,16 +31,16 @@ method  nelderMead;
 
 variables
 (
-    { path controllers[0].schedule[0].value;  min 0.0;  max 1.5555556e-2;  initial 5.5555556e-3; }
-    { path controllers[0].schedule[1].value;  min 0.0;  max 1.5555556e-2;  initial 5.5555556e-3; }
-    { path controllers[0].schedule[2].value;  min 0.0;  max 1.5555556e-2;  initial 5.5555556e-3; }
-    { path controllers[0].schedule[3].value;  min 0.0;  max 1.5555556e-2;  initial 5.5555556e-3; }
-    { path controllers[0].schedule[4].value;  min 0.0;  max 1.5555556e-2;  initial 5.5555556e-3; }
-    { path controllers[1].schedule[0].value;  min 111.11;  max 444.44;  initial 322.2222; }
-    { path controllers[1].schedule[1].value;  min 111.11;  max 444.44;  initial 322.2222; }
-    { path controllers[1].schedule[2].value;  min 111.11;  max 444.44;  initial 322.2222; }
-    { path controllers[1].schedule[3].value;  min 111.11;  max 444.44;  initial 322.2222; }
-    { path controllers[1].schedule[4].value;  min 111.11;  max 444.44;  initial 322.2222; }
+    { path controllers[0].schedule[0].value;  min 0.0;  max 1.5555556e-2;  }
+    { path controllers[0].schedule[1].value;  min 0.0;  max 1.5555556e-2;  }
+    { path controllers[0].schedule[2].value;  min 0.0;  max 1.5555556e-2;  }
+    { path controllers[0].schedule[3].value;  min 0.0;  max 1.5555556e-2;  }
+    { path controllers[0].schedule[4].value;  min 0.0;  max 1.5555556e-2;  }
+    { path controllers[1].schedule[0].value;  min 111.11;  max 444.44;  }
+    { path controllers[1].schedule[1].value;  min 111.11;  max 444.44;  }
+    { path controllers[1].schedule[2].value;  min 111.11;  max 444.44;  }
+    { path controllers[1].schedule[3].value;  min 111.11;  max 444.44;  }
+    { path controllers[1].schedule[4].value;  min 111.11;  max 444.44;  }
 );
 
 objective

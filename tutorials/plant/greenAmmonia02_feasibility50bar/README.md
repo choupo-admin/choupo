@@ -175,3 +175,10 @@ any end.
   of the base case's, not a hydraulic calculation. A real low-pressure loop
   moves three times the gas volume per mole, and its pressure drop would be
   larger.
+
+## History
+
+* **The U values of system/postDict.** They are the same numbers the base case
+  declared for its exchangers before those were designed (git history of
+  `tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict`, DEV.md 4c C44
+  slice 1), plus two new ones (the EffluentCooler and the FeedPreheater).

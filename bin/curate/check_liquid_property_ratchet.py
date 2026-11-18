@@ -88,8 +88,11 @@ constant from another header spelled otherwise); a brine density outside
 997-1030 under a name that does not say sea, brine or saline; a conversion
 line that names neither a volume nor a flow; a guard written as an
 `if`/`else` rather than a ternary is COUNTED (none today).  thermo/ (the
-kernel itself) and propertyOps/ (the props bench reads records by design)
-are outside its roots.
+kernel itself) is outside its roots; src/propertyOps IS inside them (C402):
+the property layer and names that are not liquid properties are DECLARED
+EXCEPTIONS with their reasons, and the three membrane benches that read a
+film `viscosity`/`density` typed in an op (PoreTransportBench,
+PolarisationIndex, FitParametersMembrane) are pinned DEBT (C435 (4)).
 """
 import re
 import sys
@@ -215,13 +218,6 @@ DECLARED_EXCEPTIONS = {
         "the reference fluid's own density(T, p, branch): the subject of the op is the reference equation of state",
     ("src/propertyOps/SteamTables.cpp", "keyRead"):
         "`rho` is the independent variable of IAPWS-IF97 region 3 (T, rho): a state, not a typed liquid property",
-    ("src/propertyOps/FitParametersMembrane.cpp", "keyRead"):
-        "a fit to a dataset: the cell's viscosity and density are the experiment's own conditions, beside its J_v and"
-        " concentrations (the bench has no feed state to ask the door for); `diffusivity` is the neutral solute's fit input",
-    ("src/propertyOps/PoreTransportBench.cpp", "keyRead"):
-        "a pore-model check against a dataset: the cell's viscosity and density are the experiment's own conditions",
-    ("src/propertyOps/PolarisationIndex.cpp", "keyRead"):
-        "reproduces a paper's table: the stirred cell's viscosity and density are the paper's stated experimental conditions",
     ("src/propertyOps/LleResidual.cpp", "keyRead"):
         "`sigma` is a mole-fraction weight of a fit residual, not a surface tension",
     ("src/propertyOps/DataReconciliation.cpp", "keyRead"):

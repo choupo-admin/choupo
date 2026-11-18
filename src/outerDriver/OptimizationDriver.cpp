@@ -184,12 +184,18 @@ OptimizationDriver::OptimizationDriver(const DictPtr& d)
         var.hi    = v->lookupScalar("max");
         // An integer variable is ENUMERATED (every value runs), so it needs
         // no starting guess; a declared one is still validated.
+        //  C435: `initial` is OPTIONAL and defaults to the variable's value
+        //  in the case, read in run() through the path the driver then
+        //  writes.  A start is ONE fact; the outerDict restates it only to
+        //  differ from the case (and then both are printed).
+        var.hasX0 = var.isInt || v->found("initial");
         var.x0    = var.isInt ? v->lookupScalarOrDefault("initial", var.lo)
-                              : v->lookupScalar("initial");
+                              : (var.hasX0 ? v->lookupScalar("initial") : 0.0);
+        var.x0Source = v->found("initial") ? "outerDict initial" : "";
         if (var.lo >= var.hi)
             throw std::runtime_error("OptimizationDriver: variable '"
                 + var.path + "': min must be < max");
-        if (var.x0 < var.lo || var.x0 > var.hi)
+        if (var.hasX0 && (var.x0 < var.lo || var.x0 > var.hi))
             throw std::runtime_error("OptimizationDriver: variable '"
                 + var.path + "': initial value out of [min, max]");
         if (var.isInt
@@ -279,6 +285,46 @@ void OptimizationDriver::setInitialX(const std::vector<scalar>& x0)
                 + "' outside [" + std::to_string(vars_[i].lo) + ", "
                 + std::to_string(vars_[i].hi) + "]");
         vars_[i].x0 = x0[i];
+        vars_[i].hasX0 = true;
+        vars_[i].x0Source = "warm start from the previous point";
+    }
+}
+
+//  C435: complete every start that the outerDict did not state with the
+//  case's own value, and say, per variable, which start is used and where it
+//  came from; when both exist and differ, both are printed.
+void OptimizationDriver::resolveStarts()
+{
+    for (auto& v : vars_)
+    {
+        if (v.isInt) continue;                 // enumerated: no start
+        const bool channel = v.path.rfind("streams.", 0) == 0;
+        if (channel)
+        {
+            if (!v.hasX0)
+                throw std::runtime_error("OptimizationDriver: variable '"
+                    + v.path + "' is a stream-state channel, which has no"
+                    " value in the case's dictionaries to start from:"
+                    " declare `initial` for it.");
+            continue;
+        }
+        const scalar cv = flowsheetDict_->lookupScalarAtPath(v.path);
+        std::ostringstream o; o << std::scientific << std::setprecision(6);
+        if (!v.hasX0)
+        {
+            v.x0 = cv; v.hasX0 = true; v.x0Source = "case value";
+            if (v.x0 < v.lo || v.x0 > v.hi)
+                throw std::runtime_error("OptimizationDriver: variable '"
+                    + v.path + "': the case's value (" + std::to_string(cv)
+                    + ") is outside [min, max]; declare an `initial` inside"
+                    " it or move the case value.");
+        }
+        else if (std::abs(cv - v.x0)
+                 > 1e-12 * std::max(std::abs(cv), std::abs(v.x0)))
+        {
+            o << " (the case holds " << cv << ")";
+            v.x0Source += o.str();
+        }
     }
 }
 
@@ -304,6 +350,7 @@ int OptimizationDriver::run()
 
     for (const auto& v : vars_)
         if (v.isInt) return runIntegerEnumeration();
+    resolveStarts();
     return (method_ == Method::Sqp) ? runSqp() : runNelderMead();
 }
 
@@ -340,7 +387,8 @@ int OptimizationDriver::runNelderMead()
     for (const auto& v : vars_)
         std::cout << "    " << v.path
                   << "   range [" << v.lo << ", " << v.hi << "]"
-                  << "   initial " << v.x0 << "\n";
+                  << "   initial " << v.x0
+                  << "   start: " << v.x0Source << "\n";
     std::cout << "  objective:     ";
     switch (objKind_) {
         case Kind::Kpi:       std::cout << "kpi";       break;
@@ -624,7 +672,8 @@ int OptimizationDriver::runSqp()
     for (const auto& v : vars_)
         std::cout << "    " << v.path
                   << "   range [" << v.lo << ", " << v.hi << "]"
-                  << "   initial " << v.x0 << "\n";
+                  << "   initial " << v.x0
+                  << "   start: " << v.x0Source << "\n";
     std::cout << "  objective:     '" << objPath_ << "'   "
               << (objSense_ == Sense::Minimise ? "minimise" : "maximise") << "\n"
               << "  constraints:   " << constraints_.size()

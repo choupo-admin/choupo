@@ -33,13 +33,11 @@ variables
         path     variables.V_R;
         min      1.0;
         max      30.0;
-        initial  4.0;
     }
     {
         path     variables.T_feed;
         min      348.0 K;
         max      352.5 K;        // kept below the ~353 K cliff where the flash boils the bottoms dry
-        initial  350.0 K;
     }
 );
 

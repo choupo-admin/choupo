@@ -43,24 +43,21 @@
   from the standard its client specifies, and its wind from the site's
   measured wind rose.
 
-  THE REFERENCE PLANT RAISES NO FINDING (2026-11-09).  Until then this file
-  left two on purpose for the groups to resolve: the two ammonia tanks 12 m
-  apart against the 17 m declared between two tanks, and the electrical
-  substation 8 m from the axis of MakeupComp1's zone 2 (radius 9 m), an
-  ignition source inside a hazardous area.  This is the plant shown as the
-  course's reference, so both are resolved here, each the way a layout
-  answers it:
-    1. the tanks stand 18 m apart, shell to shell (tank2 moved east inside
+  THE REFERENCE PLANT RAISES NO FINDING (2026-11-09).  This is the plant
+  shown as the course's reference, so each layout question is answered here
+  the way a layout answers it:
+    1. the two ammonia tanks stand 18 m apart, shell to shell (tank2 inside
        the same bund), 1 m more than the declared 17 m;
-    2. the substation stands west of the compressor row, upwind of every
-       release source and outside every zone, and the separation table now
+    2. the electrical substation stands west of the compressor row, upwind of
+       every release source and outside every zone, and the separation table
        says which distance it needs (the substation rows below).
-  The checks still fire on any copy that breaks them: move tank2 back to
-  x 181 m, or the substation back to (16, -31) m, and the run ANNOUNCES the
-  shortfall and the ignition source in the zone (console, the caveat block,
-  the result JSON and Reports -> "Plant layout (3D)") rather than refusing:
-  a short distance is a layout a student must see and defend, while an
-  overlap is not a layout at all and is refused.
+  The checks still fire on any copy that breaks them: move tank2 to x 181 m,
+  or the substation to (16, -31) m, and the run ANNOUNCES the shortfall and
+  the ignition source in the zone (console, the caveat block, the result JSON
+  and Reports -> "Plant layout (3D)") rather than refusing: a short distance
+  is a layout a student must see and defend, while an overlap is not a layout
+  at all and is refused.  What this file used to leave open is in README.md,
+  "History".
 
   THE SITE (2026-11-09, the method of ammonia02_full_plant, DEV.md 4c C90,
   C93).  A ring road round the process block (main, east, north and west

@@ -170,7 +170,9 @@ private:
         std::string path;
         scalar      lo;
         scalar      hi;
-        scalar      x0;
+        scalar      x0 = 0;
+        bool        hasX0 = false;   // else the case's value (C435)
+        std::string x0Source;        // `case value` | `outerDict initial` ...
         bool        isInt = false;   // `integer;` -- enumerated, never relaxed
     };
 
@@ -221,6 +223,7 @@ private:
     std::string describePoint(const std::vector<scalar>& xUser) const;
 
     // The two solver back-ends.
+    void resolveStarts();
     int runNelderMead();
     int runSqp();
 };

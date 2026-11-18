@@ -52,18 +52,16 @@
   Each residual is scaled by its own `tol`, so `tolF 1` is "every target
   within its tolerance".
 
-  ONE starting point, not two: each `initial` below equals the value in
-  system/flowsheetDict's `variables {}`, and both are the design point this
-  Newton last converged to (with the Ergun pressure drop on, from the
-  constant-pressure design point 8.7238 / 18.2281 / 31.4450 m3, in two
-  Newton steps and fifteen evaluations; the hand-tuned 8.72 / 18.23 /
-  31.44 m3 the case carried before C66 had reached that one in one step; with
-  the fourth unknown, C69, from 8.8861 / 18.4225 / 31.7447 m3 and 2.26 m, in
-  two Newton steps and nineteen evaluations).  So a
-  run without this file RATES the designed beds, and a group that changes
-  anything upstream re-solves them by running the case.  The post-processing chain (sizing, relief valves,
-  costing, economics) runs once, on the replay at the design point --
-  `DesignSpec::postDictPolicy()`, said on the run header.
+  ONE starting point, and it is the case's own: the values in
+  system/flowsheetDict's `variables {}`, the design point this Newton last
+  converged to.  No `initial` is written below, so the run starts there and
+  prints `start: case value` for each variable (DEV.md 4c C435; the
+  convergence history of the point is in README.md, "History").  A run
+  without this file RATES the designed beds, and a group that changes
+  anything upstream re-solves them by running the case.  The post-processing
+  chain (sizing, relief valves, costing, economics) runs once, on the replay
+  at the design point -- `DesignSpec::postDictPolicy()`, said on the run
+  header.
 
   WHAT IS NOT SOLVED HERE, and stays a declared decision: the two interbed
   outlet temperatures (420 and 410 C) and the recycle compressor's power.  A
@@ -78,10 +76,10 @@ manipulate
     //  Bounds are advisory clips on the Newton step, not physics: below the
     //  lower bound a bed is so short its approach is hundreds of kelvin and
     //  the residual flat.
-    { variable V_Bed1;   initial 10.0321; min 2.0;   max  40.0; }   // m3 of catalyst bed
-    { variable V_Bed2;   initial 19.1578; min 4.0;   max  80.0; }
-    { variable V_Bed3;   initial 32.4468; min 6.0;   max 150.0; }
-    { variable D_converter; initial 2.2427; min 1.5; max  4.0; }   // m, the converter's one diameter
+    { variable V_Bed1;   min 2.0;   max  40.0; }   // m3 of catalyst bed
+    { variable V_Bed2;   min 4.0;   max  80.0; }
+    { variable V_Bed3;   min 6.0;   max 150.0; }
+    { variable D_converter; min 1.5; max  4.0; }   // m, the converter's one diameter
 );
 
 targets

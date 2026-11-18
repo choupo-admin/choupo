@@ -1,7 +1,8 @@
 # file	class	count -- the debt of check_liquid_property_ratchet (C378 slice 0);
 # it may only shrink: lower a count in the commit that removes a site
-# C421 slice E: src/propertyOps and the two sizing sites hold NO pin any more: each is either paid (SolubilityParameter, HansenMixture ask
-# thermo.liquidMolarVolumeOf) or a DECLARED EXCEPTION with its reason in DECLARED_EXCEPTIONS / FALSE_POSITIVES of the checker (the property
-# layer itself, the benches whose subject is a dataset's own experimental conditions, names that are not liquid properties).
-# C402 rest step 1: the detector's false positives (kW <-> W, kmol <-> mol, statistical weights, bounds) are exempt by
-# FALSE_POSITIVES in the checker, each with its reason; what is pinned below is real or undecided.
+# C421 slice E: src/propertyOps holds no pin for the property layer itself and for names that are not liquid properties (DECLARED_EXCEPTIONS / FALSE_POSITIVES of the checker, each with its reason).
+# C435 (4): the three MEMBRANE benches that read the film's `viscosity` and `density` TYPED in an op's massTransfer {} are DEBT, not exceptions (the ruling: the values keep their intent, get ONE declaration the operations select, and the ratchet counts the debt).  Paying them is blocked by one measured finding: declaring a liquid viscosity turns the ion D0 Stokes-Einstein correction on (announced OFF for a case that declares none), which moves the whole nanofiltran case (321 golden rows).
+# C402 rest step 1: the detector's false positives (kW <-> W, kmol <-> mol, statistical weights, bounds) are exempt by FALSE_POSITIVES in the checker, each with its reason; what is pinned below is real or undecided.
+src/propertyOps/FitParametersMembrane.cpp	keyRead	5
+src/propertyOps/PolarisationIndex.cpp	keyRead	4
+src/propertyOps/PoreTransportBench.cpp	keyRead	4

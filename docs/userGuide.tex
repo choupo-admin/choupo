@@ -3324,7 +3324,12 @@ options { maxIter 40;  tolF 1.0;  fdStep 1.0e-4; }
 report  { file designspec_history.csv; }
 \end{lstlisting}
 
-All knob entries carry units, converted on read; a \code{manipulate}
+All knob entries carry units, converted on read.  \code{initial} is
+optional: left out, the Newton starts at the value the case already holds
+for that variable (one home for a starting point), and the run prints
+\code{start: case value} or, when an \code{initial} differs from the case,
+both numbers.  A \code{streams.} knob has no case value and keeps its
+\code{initial}.  A \code{manipulate}
 variable may also be a stream field (as above --- the steam flow the
 plant must supply).  After convergence the simulator is replayed once
 at the design point so the case ends with full converged output.

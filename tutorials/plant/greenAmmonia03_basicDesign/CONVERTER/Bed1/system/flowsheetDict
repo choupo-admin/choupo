@@ -15,29 +15,18 @@
 //  `variables {}` (system/flowsheetDict) and SOLVED by the DesignSpec in
 //  system/outerDict (Bed1.T_out = 788.15 K, simultaneously with beds 2 and
 //  3).  A unit folder with no `variables {}` of its own resolves its
-//  `$references` against the plant's -- until DEV.md 4c C66 it did not, and
-//  this number was found by hand.  The run prints `T_out` and `approach_K`:
-//  read both.
+//  `$references` against the plant's (DEV.md 4c C66).  The run prints `T_out`
+//  and `approach_K`: read both.
 //
 //  THE BED HAS A CROSS-SECTION, AND THE GAS LOSES PRESSURE CROSSING IT
 //  (DEV.md 4c C66, C69).  The three beds sit in ONE pressure shell (the
 //  CONVERTER sector; system/postDict's `converterShell`), so they share ONE
-//  diameter, the shell's: `diameter $D_converter;`, a plant variable read by
-//  every bed -- in the FLOWSHEET, because a bed needs its cross-section
-//  DURING the solve (its Ergun drop is integrated along its length), and the
-//  sizing pass runs after it.  Each bed's length is then its volume over that
-//  cross-section, L = V_R / (pi D^2 / 4).  The DIAMETER IS SOLVED: the
-//  DesignSpec in system/outerDict widens or narrows it until the LARGEST of
-//  the three drops over allowable is exactly 1, which makes it the SMALLEST
-//  diameter at which every bed is within its allowable (each drop falls
-//  monotonically as the converter widens).  No bed is named in advance; the
-//  run names the one that binds (bed 3, the largest volume and so the
-//  longest at one diameter).  The converterShell sizer then brackets the
-//  same smallest diameter on the solved beds and says whether the
-//  converter's sits at it.
-//  Until C69 each bed took its OWN slenderness, L/D 1.5 (the paragraph below
-//  says why 1.5); three diameters cannot share one shell, and a one-shell
-//  converter built around the widest of them cost MORE than three vessels.
+//  diameter, `diameter $D_converter;`, a plant variable read by every bed in
+//  the FLOWSHEET because a bed needs its cross-section DURING the solve (its
+//  Ergun drop is integrated along its length).  Each bed's length is its
+//  volume over that cross-section, L = V_R / (pi D^2 / 4).  The diameter is
+//  SOLVED, as the smallest at which every bed is within its allowable drop:
+//  the rule, and the bed that binds, are in system/outerDict's header.
 //  Every number in the three lines below is AUTHOR-SET, none is a vendor's:
 //    * particleDiameter 8 mm -- the middle of the 6-10 mm window Dyson &
 //      Simon's Eq 39 was computed for, taken by Ergun as an EQUIVALENT-SPHERE
@@ -46,19 +35,13 @@
 //      (1-eps)/eps^3, so 0.36 instead would raise it by about half;
 //    * allowable 1 bar per bed -- a stated design budget with no source
 //      behind it; the run announces any bed above it.
-//  WHY NOT A SLENDER CONVERTER (the history, C66: at each bed's own L/D the
-//  case first carried the base case's converter ratio, 6).  Measured: at
-//  L/D 6 the first pass of the loop lost 35, 24 and 16 bar across the three
-//  beds, and the recycle did not converge (a later
-//  iterate consumed a bed's whole inlet pressure, refused by name).  The
-//  scaling below puts the converged L/D 6 drops near 11, 5 and 3 bar --
-//  three-quarters of the 20 bar between the loop and the separator, on a
-//  budget of 1 bar each.  At a fixed volume both
-//  the superficial velocity and the length go as (L/D)^(2/3), so the drop
-//  goes as (L/D)^2: at 1.5 the three beds lost 0.67, 0.31 and 0.17 bar.  A
-//  squat bed is the axial-flow answer; a bed the gas crosses RADIALLY
-//  (through its thickness, not its length) is the other, and this `pfr` does
-//  not model one.
+//  WHY A SQUAT BED.  At a fixed volume both the superficial velocity and the
+//  length go as (L/D)^(2/3), so the drop goes as (L/D)^2: at the 1.5 the
+//  shell is built to, the three beds lose 0.67, 0.31 and 0.17 bar.  A squat
+//  bed is the axial-flow answer; a bed the gas crosses RADIALLY (through its
+//  thickness, not its length) is the other, and this `pfr` does not model one.
+//  The slender alternative (the base case's converter ratio, 6) and what it
+//  measured are in README.md, "History".
 
 type      pfr;
 operation
