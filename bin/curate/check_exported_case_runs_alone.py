@@ -190,8 +190,15 @@ def main():
                 st, why = "FAIL", "now passes (%s): remove it from KNOWN_OPEN" % st
         print("%-5s %-60s %s" % (st, rel, why), flush=True)
         bad += st == "FAIL"
-    print("exported-case-runs-alone: %d case(s), %d FAIL" % (len(cases), bad))
-    return 1 if bad else 0
+    if bad:
+        print("check_exported_case_runs_alone: FAIL -- %d of %d case(s)" % (bad, len(cases)))
+        return 1
+    print("check_exported_case_runs_alone: OK -- %d FASTSET case(s): each exported by "
+          "`choupo-import --seal`, run outside the tree with no catalogue, and its result "
+          "equal to the in-tree run at the golden tolerance (%d known-open, by name).  "
+          "NOT checked: the GUI's download path in a browser (its records are unit-tested "
+          "in gui/tests/carryCatalogue.test.ts), cases outside the FASTSET." % (len(cases), len(KNOWN_OPEN)))
+    return 0
 
 
 if __name__ == "__main__":

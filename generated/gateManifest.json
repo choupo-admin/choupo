@@ -1289,7 +1289,7 @@
     "check_membrane_import": {
       "exit": 0,
       "claim": "check_membrane_import: OK -- bin/choupo-import-membranes on a SYNTHETIC catalogue (FixtureCo, built in a temporary directory): counts read back from the written records, a second run changes no byte and no mtime, a duplicate and a contradictory test pair are both written and reported (never merged), an unstated pressure basis is omitted and listed (gauge/absolute written only as the input says), both data/standards paths refuse naming records::refuseStandardsWrite, every written record loads in choupoSolve on a membrane15 copy with one `Rated test` line per test and the slice-1 inversion runs on an imported two-test element, a non-SI constant and an absent input refuse/report by name, the spacer opt-in is an announced estimate, nine rejection kinds and three not-written reasons listed, prose dropped, the derived sheet cross-checked.  NOT checked: any number against a manufacturer's sheet; the private Downloads file.",
-      "seconds": 1.7
+      "seconds": 1.3
     },
     "check_optimiser_converged": {
       "exit": 0,
@@ -1775,6 +1775,26 @@
       "exit": 0,
       "claim": "check_refusal_probes: OK -- 6 group(s): membrane-feed-scope, pid-refusals, pump-liquid-inlet, restricted-network, shortcut-column-refusals, solverdict-lint",
       "seconds": 0.7
+    },
+    "check_exported_case_runs_alone": {
+      "exit": 0,
+      "claim": "check_exported_case_runs_alone: OK -- 86 FASTSET case(s): each exported by `choupo-import --seal`, run outside the tree with no catalogue, and its result equal to the in-tree run at the golden tolerance (1 known-open, by name).  NOT checked: the GUI's download path in a browser (its records are unit-tested in gui/tests/carryCatalogue.test.ts), cases outside the FASTSET.",
+      "seconds": 102.0
+    },
+    "check_golden_comparator": {
+      "exit": 0,
+      "claim": "check_golden_comparator: OK -- bin/curate/within_tol.awk, the one file bin/runTests runs, gives the wanted verdict on 232 table rows: tiny, large and boundary values moved 1e-3 and 1e-6 relative, exact-zero expecteds, sign flips, NaN/inf/non-numbers in the actual (FAIL) and the expected (REFUSED), missing rows, malformed bands, and every class of golden_bands.tsv just inside and just outside its band.  NOT CHECKED: that a golden's band is the right one (check_golden_bands) or that a run's number is right.",
+      "seconds": 0.4
+    },
+    "check_carried_kinds": {
+      "exit": 0,
+      "claim": "check_carried_kinds: OK -- 60 claims held (K1 no exemption and every size-distribution unit declares, K2 batch refuses, K3 mass balance counts a material, K4 the core type knows no kind, K5 the spike's claims)",
+      "seconds": 2.9
+    },
+    "check_datum_flip_refused": {
+      "exit": 0,
+      "claim": "check_datum_flip_refused: OK -- a datum flip is refused by name and ends the run: (a) two sectors, secA on the elements datum and secB on IF97, joined by secA.liquid; (b) the variant route, three units selecting `thermo steamTables;` and the boiler not (first refusal: model boundary REFUSED on stream 'feedwater' (feedPump -> boiler)); both name the stream, its two ends and both datums; controls exit 0 with no refusal: rankine02_water as shipped, the same loop with all four units on the variant, and the two-sector plant with both sectors on pureFluids.  (e) the resolved view's row 'who governs a pure-fluid component' of rankine02_water and heavyWater01_isotope_effect equals its pinned text; NOT CHECKED: choupoBatch/choupoCtrl, a flip between two different pure-fluid methods, a reacting second package, the bridge between the datums (not built).",
+      "seconds": 0.2
     }
   }
 }

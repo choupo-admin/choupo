@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1881,
+  "cases": 1891,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 31
+  "anchored": 35
  },
  "cases": {
   "data/curation/batches/henry_sander": {
@@ -28143,6 +28143,54 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/hydraulics/agitation01_helical_ribbon_polymer_melt": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "agitatedVessel"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/hydraulics/agitation02_yield_stress_refused": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "agitatedVessel"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
+  },
+  "tutorials/steady/hydraulics/agitation03_shear_thickening_refused": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "agitatedVessel"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
+  },
   "tutorials/steady/hydraulics/letdown01_ammonia_flashing": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -28203,6 +28251,84 @@
    },
    "roles": [],
    "hasGolden": true
+  },
+  "tutorials/steady/hydraulics/pipe04_powerlaw_polymer_solution": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pipe"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/hydraulics/pipe05_herschelbulkley_clay_slurry": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pipe"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/hydraulics/pipe06_turbulent_dodge_metzner": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pipe"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/hydraulics/pipe07_turbulent_refused": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pipe"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
+  },
+  "tutorials/steady/hydraulics/pipe08_flowcurve_uncorrected_refused": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pipe"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
   },
   "tutorials/steady/hydraulics/pumpSystem01_operating_point": {
    "application": "choupoSolve",
@@ -29673,6 +29799,25 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/solids/filter05_calciumSilicate_measuredTest": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cakeFilter"
+   ],
+   "unitModels": [
+    "batchPress"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
   "tutorials/steady/solids/hydrocyclone01_quartz_willsTable91": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -29811,6 +29956,20 @@
    "unitModels": [
     "declared",
     "rosinRammler"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/solids/splitter01_slurry_sizeDistribution": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "splitter"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -32038,10 +32197,18 @@
     "tutorials/steady/heat/phasechange02_saturated_mixture",
     "tutorials/steady/heat/pinch01_four_stream_classic",
     "tutorials/steady/heat/reboiler_water_copper",
+    "tutorials/steady/hydraulics/agitation01_helical_ribbon_polymer_melt",
+    "tutorials/steady/hydraulics/agitation02_yield_stress_refused",
+    "tutorials/steady/hydraulics/agitation03_shear_thickening_refused",
     "tutorials/steady/hydraulics/letdown01_ammonia_flashing",
     "tutorials/steady/hydraulics/pipe01_water_line",
     "tutorials/steady/hydraulics/pipe02_airwater_twophase",
     "tutorials/steady/hydraulics/pipe03_sucrose_syrup_measured",
+    "tutorials/steady/hydraulics/pipe04_powerlaw_polymer_solution",
+    "tutorials/steady/hydraulics/pipe05_herschelbulkley_clay_slurry",
+    "tutorials/steady/hydraulics/pipe06_turbulent_dodge_metzner",
+    "tutorials/steady/hydraulics/pipe07_turbulent_refused",
+    "tutorials/steady/hydraulics/pipe08_flowcurve_uncorrected_refused",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",
@@ -32133,6 +32300,7 @@
     "tutorials/steady/solids/filter02_caco3_pressWashing",
     "tutorials/steady/solids/filter03_drum_area_medium_tabulatedWash",
     "tutorials/steady/solids/filter04_leafFilter_sameAsFiltrateWash",
+    "tutorials/steady/solids/filter05_calciumSilicate_measuredTest",
     "tutorials/steady/solids/hydrocyclone01_quartz_willsTable91",
     "tutorials/steady/solids/mill01_limestone_herbstFuerstenau",
     "tutorials/steady/solids/mill02_bond_crosscheck",
@@ -32142,6 +32310,7 @@
     "tutorials/steady/solids/psd01_grid_and_moments",
     "tutorials/steady/solids/screen01_dolomite_karra",
     "tutorials/steady/solids/screen02_declared_rosinRammler",
+    "tutorials/steady/solids/splitter01_slurry_sizeDistribution",
     "tutorials/steady/solids/thickener01_settlingTest_talmageFitch",
     "tutorials/steady/thermo/air01_heater_expand",
     "tutorials/steady/thermo/basis01_two_unit_chain",
@@ -32210,6 +32379,11 @@
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
     "tutorials/steady/flash/adiabaticFlash01_benzene_toluene"
+   ],
+   "agitatedVessel": [
+    "tutorials/steady/hydraulics/agitation01_helical_ribbon_polymer_melt",
+    "tutorials/steady/hydraulics/agitation02_yield_stress_refused",
+    "tutorials/steady/hydraulics/agitation03_shear_thickening_refused"
    ],
    "bagFilter": [
     "tutorials/steady/gas-solid/bagFilter01_dust"
@@ -32297,7 +32471,8 @@
     "tutorials/steady/solids/filter01_caco3_rotaryDrum",
     "tutorials/steady/solids/filter02_caco3_pressWashing",
     "tutorials/steady/solids/filter03_drum_area_medium_tabulatedWash",
-    "tutorials/steady/solids/filter04_leafFilter_sameAsFiltrateWash"
+    "tutorials/steady/solids/filter04_leafFilter_sameAsFiltrateWash",
+    "tutorials/steady/solids/filter05_calciumSilicate_measuredTest"
    ],
    "classifier": [
     "tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit",
@@ -32765,6 +32940,11 @@
     "tutorials/steady/hydraulics/pipe01_water_line",
     "tutorials/steady/hydraulics/pipe02_airwater_twophase",
     "tutorials/steady/hydraulics/pipe03_sucrose_syrup_measured",
+    "tutorials/steady/hydraulics/pipe04_powerlaw_polymer_solution",
+    "tutorials/steady/hydraulics/pipe05_herschelbulkley_clay_slurry",
+    "tutorials/steady/hydraulics/pipe06_turbulent_dodge_metzner",
+    "tutorials/steady/hydraulics/pipe07_turbulent_refused",
+    "tutorials/steady/hydraulics/pipe08_flowcurve_uncorrected_refused",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/thermo/variants01_ethanol_water_line"
    ],
@@ -32892,6 +33072,7 @@
     "tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/screen01_methanol_routes",
+    "tutorials/steady/solids/splitter01_slurry_sizeDistribution",
     "tutorials/steady/thermo/basis01_two_unit_chain",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
@@ -35478,8 +35659,16 @@
     "tutorials/steady/heat/phasechange02_saturated_mixture",
     "tutorials/steady/heat/pinch01_four_stream_classic",
     "tutorials/steady/heat/reboiler_water_copper",
+    "tutorials/steady/hydraulics/agitation01_helical_ribbon_polymer_melt",
+    "tutorials/steady/hydraulics/agitation02_yield_stress_refused",
+    "tutorials/steady/hydraulics/agitation03_shear_thickening_refused",
     "tutorials/steady/hydraulics/pipe01_water_line",
     "tutorials/steady/hydraulics/pipe03_sucrose_syrup_measured",
+    "tutorials/steady/hydraulics/pipe04_powerlaw_polymer_solution",
+    "tutorials/steady/hydraulics/pipe05_herschelbulkley_clay_slurry",
+    "tutorials/steady/hydraulics/pipe06_turbulent_dodge_metzner",
+    "tutorials/steady/hydraulics/pipe07_turbulent_refused",
+    "tutorials/steady/hydraulics/pipe08_flowcurve_uncorrected_refused",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",
@@ -35565,6 +35754,7 @@
     "tutorials/steady/solids/filter02_caco3_pressWashing",
     "tutorials/steady/solids/filter03_drum_area_medium_tabulatedWash",
     "tutorials/steady/solids/filter04_leafFilter_sameAsFiltrateWash",
+    "tutorials/steady/solids/filter05_calciumSilicate_measuredTest",
     "tutorials/steady/solids/hydrocyclone01_quartz_willsTable91",
     "tutorials/steady/solids/mill01_limestone_herbstFuerstenau",
     "tutorials/steady/solids/mill02_bond_crosscheck",
@@ -35574,6 +35764,7 @@
     "tutorials/steady/solids/psd01_grid_and_moments",
     "tutorials/steady/solids/screen01_dolomite_karra",
     "tutorials/steady/solids/screen02_declared_rosinRammler",
+    "tutorials/steady/solids/splitter01_slurry_sizeDistribution",
     "tutorials/steady/solids/thickener01_settlingTest_talmageFitch",
     "tutorials/steady/thermo/air01_heater_expand",
     "tutorials/steady/thermo/liquidDensity01_water",

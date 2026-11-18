@@ -218,6 +218,10 @@ def snapshot(out):
 def copy_case(src, dst):
     case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
         "converged", "log.*", "expected", "reports", "design", "propertyManifest"))
+    #  The copy drops the manifest, so it UNSEALS the case: its local records
+    #  must say what they are, or the loader refuses them as undeclared
+    #  homonyms (the silent backfill closed, 2026-11-19).
+    case_records.declare_homonyms(dst)
 
 
 def run_case(case):

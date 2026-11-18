@@ -57,8 +57,8 @@ from pathlib import Path
 #  The `utility` golden row's rule has ONE Python home (C37 item 2).
 sys.path.insert(0, str(Path(__file__).resolve().parent / "curate"))
 import utility_rows  # noqa: E402
-import golden_bands  # noqa: E402   (the one reader of a golden tolerance token)
 import case_records  # noqa: E402   (C413: the manifest reader of the pin form)
+import golden_bands  # noqa: E402   (the one comparison, through within_tol.awk)
 
 IMPORTER_VERSION = "3"
 
@@ -1909,7 +1909,51 @@ def cmd_seal_to(root, caseDir, dest):
     man = dest / "constant" / "propertyManifest"
     mf = case_records.read_manifest(man)
     if mf["sealed"] or mf["records"]:
-        die("%s is already a sealed case: copy it as it is." % caseDir)
+        #  ALREADY the exported form (copies + `sealed true`): the export IS the
+        #  copy just made.  It used to die here, so a sealed tutorial could not
+        #  be exported by the one command that names export (K4).
+        #  The copy is RE-SEALED, not shipped as it stands: the closure that
+        #  sealed it may predate a record home the engine reads since (the
+        #  utility lineup, the construction materials): lithiumBrinePlant and
+        #  esterification2sector, sealed before, lost both once the catalogue
+        #  was hidden.  A re-seal of the COPY adds what is missing and leaves
+        #  the tutorial in the tree as it is.
+        r = subprocess.run([sys.executable, str(Path(__file__).resolve()), str(dest)],
+                           text=True)
+        if r.returncode != 0:
+            #  Announced, never silent: the copy is exported as it stands, sealed
+            #  by the older closure (lithiumBrinePlant: the importer refuses its
+            #  `Pitzer` spelling on re-import).  check_exported_case_runs_alone
+            #  holds the result to the tree's.
+            shutil.rmtree(dest, ignore_errors=True)
+            shutil.copytree(caseDir, dest, ignore=_OUTPUTS, symlinks=True)
+            print("choupo-import --seal: WARNING %s is already sealed and its re-seal"
+                  " was REFUSED (see above); exported AS IT STANDS to %s" % (caseDir, dest))
+            return
+        print("choupo-import --seal: %s was already sealed; re-sealed the copy at %s"
+              % (caseDir, dest))
+        return
+    #  A pair the case's pins name and the importer's regex closure does not
+    #  know (the SOLUTION tier: heats of solution) is carried from the
+    #  catalogue by name, then adopted below like any local record -- K4: the
+    #  export lost it, and the engine read it nowhere once the catalogue was
+    #  hidden (SolutionRegistry now reads the case-local tier too).
+    for rel in sorted(mf["pins"]):
+        if rel.startswith("parameters/solution/") and rel.endswith(".dat"):
+            src, dst = root / "data" / "standards" / rel, dest / "constant" / rel
+            if src.is_file() and not dst.exists():
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src, dst)
+    #  The utility allocator picks from the WHOLE lineup (see the closure's own
+    #  comment on pickForDuty): a case that pins ANY utility carries them all,
+    #  or its allocation changes with the catalogue hidden (lithiumBrinePlant:
+    #  every duty unallocated).
+    if any(r.startswith("utilities/") for r in mf["pins"]):
+        for src in sorted((root / "data" / "standards" / "utilities").glob("*.dat")):
+            dst = dest / "constant" / "utilities" / src.name
+            if not dst.exists():
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src, dst)
     if man.exists():
         man.unlink()
     extra = []
@@ -2087,6 +2131,15 @@ def main():
                 r'|wall|resin|feedSpacer|record|from)'
                 r'\s+([A-Za-z0-9_-]+)\s*;', dtext):
             asset_names.add(m.group(1))
+    #  A SIZING PASS PICKS A DEFAULT MATERIAL NO DICT NAMES (K4).  A case with a
+    #  postDict sizes its units on the catalogue's construction materials even
+    #  when it writes `material` nowhere (esterification2sector): sealed without
+    #  them, the staged run "sized no equipment" and costed nothing -- at exit 0,
+    #  with the catalogue hidden only.  So a case with a postDict carries them.
+    if list(Path(caseDir).rglob("system/postDict")):
+        for f in sorted((std / "assets").glob("*.dat")):
+            if re.search(r'(?m)^\s*kind\s+constructionMaterial\s*;', read(f) or ""):
+                asset_names.add(f.stem)
 
     #  ONE asset may NAME another, and the seal must follow it.  A `kind
     #  edStack` record declares the `kind IEM` pair the stack is built with
@@ -2156,6 +2209,14 @@ def main():
     # utility golden rows failed a RE-seal (found by the batch01b witness).
     golden_txt = read(Path(caseDir) / "expected") or ""
     wants_utilities = bool(re.search(r'^\s*utility\s|\butility_\w+', golden_txt, re.M))
+    #  K4: a case that publishes an allocation WITHOUT a utility golden row
+    #  (lithiumBrinePlant: its `utilityAllocation` block, every duty "(no utility
+    #  catalogue loaded)" once the catalogue was hidden) was sealed without the
+    #  lineup.  A steady flowsheet allocates a utility to every heat duty it
+    #  has, whether or not a dict or golden names one, so it carries the lineup.
+    if not wants_utilities and re.search(
+            r'(?m)^\s*application\s+choupoSolve\s*;', read(Path(caseDir) / "system" / "controlDict") or ""):
+        wants_utilities = True
     if not wants_utilities:
         for sd_dict in Path(caseDir).rglob("system/*Dict"):
             if re.search(r'utilities', read(sd_dict) or ""):
