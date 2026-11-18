@@ -12,7 +12,10 @@ again only when one of them changes (DEV.md 4c C394, decision 1).
     bin/curate/suite_reuse.py store <gate> <key> <out>   keep a PASS verdict
     bin/curate/suite_reuse.py case-plan <root>           one line per curation
                                                          case: dir, key, the
-                                                         stored labels or -
+                                                         stored labels or -, the
+                                                         date, the mode (exact |
+                                                         route | replay | run),
+                                                         why, the replay file
     bin/curate/suite_reuse.py case-plan <root> --explain how each case is keyed:
                                                          narrow or whole
     bin/curate/suite_reuse.py migrate-keys [root] [--harness-from REV]
@@ -23,6 +26,8 @@ again only when one of them changes (DEV.md 4c C394, decision 1).
                                                          its reads to the key
     bin/curate/suite_reuse.py key <gate>                 print the key and the
                                                          inputs it covers
+    bin/curate/suite_reuse.py selftest                   the C432 rules on synthetic
+                                                         parts (no build needed)
     bin/curate/suite_reuse.py --list                     what is keyed, what is
                                                          not, and why
     bin/curate/suite_reuse.py tree-key                   the key of this tree
@@ -163,6 +168,22 @@ the real run.  A REUSED line prints the key, the date AND the commit of the
 run it reuses.  Never reused, ever: a FAIL, a SKIP (cannot run), a NO SUBJECT;
 anything in CI or a release (CHOUPO_NO_REUSE); and any run under --scope,
 --fast, --witnesses or a named case.
+
+A KEY THAT MOVED IS ASKED TWO MORE QUESTIONS BEFORE A FIT RE-RUNS (C432).  The
+exact key moves with ANY engine object the fit reaches, and the property kernel
+is reached by all 1260 (the sweep of 2026-11-19 re-ran every one, about 10 800 s,
+after a kernel edit the route bench had proved identical).  So a stored verdict
+whose key differs from the present one is taken in this order, and the plan says
+which rung and why on every case line (the section "C432" below holds the code):
+(d) THE ROUTE RULE -- only objects listed in property_kernel_objects.txt moved,
+everything else in the key is identical, and the bench's blocks for every record
+the fit reads are byte-identical then and now: REUSED, re-stored under the new
+key; (a) REPLAY -- bin/runTests runs the case once with the fits held at their
+stored parameters (CHOUPO_FIT_REPLAY, no search) and compares everything but the
+search's own rows with the golden: REUSED when it matches; otherwise REFIT.  The
+parts of each key are kept in <store>/.parts/ so the next plan can compare them.
+Run this tool with CHOUPO_HOME unset or the tree's own root (it reads the data
+from there: a stale CHOUPO_HOME pointing at another checkout keys THAT data).
 
 WHEN NOTHING IS REUSED.  CHOUPO_NO_REUSE=1 (or `bin/runTests --no-reuse`,
 which sets it): the hosted tiers (.github/workflows/ci.yml; sanitize.yml
@@ -1212,6 +1233,8 @@ DIRS_RULE_CASES = {
         ("components", "species", "assets"),
 }
 _SYM = {}
+ENGINE_MAPS = {}      # narrow-engine digest -> {object (or stamp): content sha}  (C432)
+PARTS = {}            # case -> the parts of its key, for the route-keyed reuse (C432)
 
 
 def _sym_cache_file():
@@ -1355,6 +1378,12 @@ def engine_objects_digest(objs):
     """The engine half over a set of build-relative objects: content hashes,
     the two objects that print the commit keyed on their sources instead, and
     the compiler / flag stamps."""
+    return digest(engine_objects_pairs(objs))
+
+
+def engine_objects_pairs(objs):
+    """The (name, sha) pairs the engine digest is made of: one per object (the
+    two that print the commit by `<object>< <source>`), one per flag stamp."""
     b = platform_build()
     pairs = []
     for rel in sorted(objs):
@@ -1373,7 +1402,7 @@ def engine_objects_digest(objs):
             pairs.append((rel, H.sha(o)))
     for s in sorted(b.glob(".stamp-*")):
         pairs.append(("stamp", s.name))
-    return digest(pairs)
+    return pairs
 
 
 def data_root():
@@ -1490,7 +1519,12 @@ def narrow_engine(case_rel):
     objs, why = reach(ops)
     if objs is None:
         return None, why, None
-    return engine_objects_digest(objs), len(objs), ops
+    pairs = engine_objects_pairs(objs)
+    d = digest(pairs)
+    #  kept for the route-keyed reuse (C432): what each object was, by name
+    ENGINE_MAPS[d] = {(a if a != "stamp" else "stamp:" + b): (b if a != "stamp" else "")
+                      for a, b in pairs}
+    return d, len(objs), ops
 
 
 def case_kind(case_rel):
@@ -1734,6 +1768,16 @@ def case_keys(root_rel, fmt=CURRENT_FORMAT, runtests_text=None):
              else f"engine=WHOLE ({nn})")
         rows.append((c, digest([("base", cbase)] + sorted(pairs) + (pp or [])),
                      dlabel, e))
+        if fmt == CURRENT_FORMAT and runtests_text is None:
+            #  THE PARTS OF THE KEY (C432): everything but the engine in one
+            #  digest, and the engine by the objects it is made of
+            PARTS[c] = {
+                "rest": digest([dpart, ("harness", har), ("platform", plat),
+                                ("keyFormat", KEY_FORMATS[fmt])]
+                               + sorted(pairs) + (pp or [])),
+                "narrow": bool(ne), "engine": ne or eng,
+                "ops": list(nops) if ne else None,
+                "pins": [x[0] for x in pp] if pp is not None else None}
     H.save()
     return rows, None
 
@@ -1756,24 +1800,428 @@ def _stored_case(c):
         return stored, []
 
 
+# --------------------------------------------------------------------------
+#  C432: ROUTE-KEYED REUSE, THEN REPLAY, THEN REFIT
+#
+#  The exact key (above) re-runs every curation fit when ANY object its
+#  operations reach changed, and the property kernel is reached by all of
+#  them: after one kernel edit the sweep of 2026-11-19 re-ran all 1260 fits,
+#  about 10 800 s, on a bench that had proved every (record, route) block of
+#  the kernel bit for bit (DEV.md 4c C432, Vitor 2026-11-19: "se se prova que
+#  funciona num, entao funciona nos restantes!" -- a function is proved once
+#  per INPUT ROUTE, not once per case).  Three rungs, in this order, each
+#  printed with its reason:
+#
+#    (d) ROUTE-KEYED REUSE.  The stored verdict's key moved ONLY through engine
+#        objects the kernel declares (bin/curate/property_kernel_objects.txt),
+#        every other part of the key is identical (data, the case's files,
+#        harness, platform), the set of objects the case reaches is the same,
+#        AND the route bench (check_property_route_bench) answers byte for
+#        byte the same on every record the fit reads, then and now.  The
+#        verdict is REUSED and stored under the new key.
+#    (a) REPLAY.  Otherwise a fit made only of fitParameters operations whose
+#        stored parameters are in its sealed records is run once WITHOUT a
+#        search (CHOUPO_FIT_REPLAY, src/propertyOps/FitParameters.cpp): the
+#        objective and the published statistics at the stored parameters must
+#        equal the golden to its own tolerances (bin/runTests, check_case).
+#    REFIT.  Anything else, and any replay that moved.
+#
+#  What the first rung does NOT claim: that a kernel edit which leaves the
+#  bench identical cannot change a fit -- states off the bench's grid, and
+#  everything in a mixed object (ThermoPackage is NOT in the kernel list for
+#  that reason) are outside it, and the list says so.
+# --------------------------------------------------------------------------
+
+KERNEL_FILE = ROOT / "bin" / "curate" / "property_kernel_objects.txt"
+BENCH_OUT = STORE / "bench" / "bench.tsv"
+
+
+def kernel_prefixes():
+    try:
+        return [l.strip() for l in KERNEL_FILE.read_text().splitlines()
+                if l.strip() and not l.lstrip().startswith("#")]
+    except OSError:
+        return []
+
+
+def is_kernel(name):
+    """Is a key of the engine map (`src/..../X.o`, `src/....o<source`, or
+    `stamp:<name>`) an object of the property kernel?"""
+    if name.startswith("stamp:"):
+        return False
+    return any(name.split("<", 1)[0].startswith(p) for p in kernel_prefixes())
+
+
+_BENCH = {}
+
+
+def bench_index():
+    """{record: [(route, hash)]} of the bench run NOW on this build, or None
+    (bench cannot run).  One run per plan; `choupoProps --property-route-bench`
+    is the gate's own call (check_property_route_bench.run_bench)."""
+    if "idx" in _BENCH:
+        return _BENCH["idx"]
+    _BENCH["idx"] = None
+    exe = ROOT / "choupoProps"
+    manifest = ROOT / "bin" / "curate" / "property_route_bench.manifest"
+    if not exe.exists() or not manifest.exists():
+        return None
+    BENCH_OUT.parent.mkdir(parents=True, exist_ok=True)
+    env = dict(os.environ, CHOUPO_HOME=str(ROOT), LC_ALL="C", OMP_NUM_THREADS="1")
+    t0 = time.time()
+    p = subprocess.run([str(exe), "--property-route-bench", str(manifest),
+                        str(BENCH_OUT)], cwd=ROOT, env=env,
+                       capture_output=True, text=True, timeout=1800)
+    if p.returncode != 0 or not BENCH_OUT.exists():
+        print(f"# route bench could not run (exit {p.returncode}): no route-keyed reuse",
+              file=sys.stderr)
+        return None
+    import check_property_route_bench as crb
+    got, _order = crb.blocks(BENCH_OUT)
+    idx = {}
+    for (rec, prop), h in got.items():
+        idx.setdefault(rec, []).append((prop, h))
+    _BENCH["idx"] = idx
+    _BENCH["secs"] = time.time() - t0
+    return idx
+
+
+def case_bench_records(c, pins):
+    """The bench records the fit of case `c` reads: its sealed components (the
+    bench names a sealed copy by record and the first 12 hex digits of its
+    sha256), or the catalogue components it pins.  None when the case reads
+    anything the bench does not answer (species, assets, a record it does not
+    claim, nothing at all)."""
+    const = ROOT / c / "constant"
+    for other in ("species", "assets", "chemistry"):
+        if (const / other).exists():
+            return None
+    names = []
+    comp = const / "components"
+    if comp.is_dir():
+        man = const / "propertyManifest"
+        text = man.read_text(errors="ignore") if man.is_file() else ""
+        for f in sorted(comp.glob("*.dat")):
+            if f'"components/{f.name}"' not in text:
+                return None
+            names.append("sealed:" + f.stem + "@" + H.sha(f)[:12])
+    for pin in pins or []:
+        m = re.match(r"pin:components/([^/]+)\.dat$", pin)
+        if m:
+            names.append(m.group(1))
+    return sorted(set(names)) or None
+
+
+def bench_fingerprint(c):
+    """Digest of the bench's blocks for every record case `c` reads (and the
+    route list), or None."""
+    idx = bench_index()
+    if idx is None:
+        return None
+    recs = case_bench_records(c, PARTS[c].get("pins"))
+    if recs is None:
+        return None
+    pairs = []
+    for r in ["@routes"] + recs:
+        if r not in idx:
+            return None
+        pairs += [(f"{r}\t{prop}", h) for prop, h in sorted(idx[r])]
+    return digest(pairs)
+
+
+def parts_dir():
+    return case_store() / ".parts"
+
+
+def _atomic(path, text):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(f".{os.getpid()}.tmp")
+    tmp.write_text(text)
+    os.replace(tmp, path)
+
+
+def write_parts(c, key):
+    """Keep what the key was made of, under the key (the next plan reads it
+    when this key's verdict is the stored one).  Returns the parts."""
+    pd = parts_dir()
+    f = pd / f"{key}.json"
+    p = dict(PARTS[c])
+    p["case"], p["key"] = c, key
+    p["bench"] = bench_fingerprint(c)
+    if p["narrow"] and p["engine"] in ENGINE_MAPS:
+        o = pd / f"objs-{p['engine']}.json"
+        if not o.exists():
+            _atomic(o, json.dumps(ENGINE_MAPS[p["engine"]]))
+    if not f.exists():
+        _atomic(f, json.dumps(p))
+    return p
+
+
+def load_parts(key):
+    try:
+        return json.loads((parts_dir() / f"{key}.json").read_text())
+    except (OSError, ValueError):
+        return None
+
+
+def load_objs(eng):
+    try:
+        return json.loads((parts_dir() / f"objs-{eng}.json").read_text())
+    except (OSError, ValueError):
+        return None
+
+
+def route_verdict(old_key, cur):
+    """-> (True, reason) when the verdict stored under old_key still describes
+    the case whose present parts are `cur`, by the route rule; (False, why
+    not) otherwise."""
+    old = load_parts(old_key)
+    if old is None:
+        return False, "no parts kept for the stored key (taken before route-keyed reuse existed)"
+    if not (old.get("narrow") and cur["narrow"]):
+        return False, "the engine is not keyed by reach for this case"
+    if old["rest"] != cur["rest"]:
+        return False, "something other than the engine moved (catalogue data, the case's files, the harness or the platform)"
+    oo, co = load_objs(old["engine"]), load_objs(cur["engine"])
+    if oo is None or co is None:
+        return False, "the object lists of the two engines are not kept"
+    if set(oo) != set(co):
+        return False, "the set of objects the case reaches changed"
+    moved = sorted(k for k in co if oo[k] != co[k])
+    if not moved:
+        return False, "no object moved (the key moved through something not kept)"
+    outside = [k for k in moved if not is_kernel(k)]
+    if outside:
+        return False, (f"{len(outside)} of {len(moved)} moved object(s) lie outside the property kernel, "
+                       f"e.g. {outside[0].split('<')[0]}")
+    if old.get("bench") is None or cur.get("bench") is None:
+        return False, "the route bench has no answer for every record the fit reads"
+    if old["bench"] != cur["bench"]:
+        return False, "the route bench answers differently for a record the fit reads"
+    return True, (f"{len(moved)} property-kernel object(s) moved, everything else in the key identical, "
+                  f"route bench fingerprint {cur['bench'][:12]} unchanged on the records it reads")
+
+
+# ---- replay -------------------------------------------------------------
+
+def _strip_comments(text):
+    return re.sub(r'("[^"\n]*")|/\*.*?\*/|//[^\n]*',
+                  lambda m: m.group(1) or "", text, flags=re.S)
+
+
+def _top_blocks(text, start):
+    """The top-level {...} blocks of the parenthesised list that opens at
+    text[start] == '('."""
+    out, depth, i, begin = [], 0, start + 1, None
+    while i < len(text):
+        ch = text[i]
+        if ch == "{":
+            if depth == 0:
+                begin = i
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0 and begin is not None:
+                out.append(text[begin:i + 1])
+        elif ch == ")" and depth == 0:
+            break
+        i += 1
+    return out
+
+
+def _record_values(path):
+    try:
+        t = _strip_comments(path.read_text(errors="ignore"))
+    except OSError:
+        return None
+    m = re.search(r"\bparameters\s*\{([^}]*)\}", t)
+    if not m:
+        return None
+    return {k: float(v) for k, v in
+            re.findall(r"(\w+)\s+([-+]?[0-9.]+(?:[eE][-+]?[0-9]+)?)\s*;", m.group(1))}
+
+
+def replay_spec(c):
+    """-> (text of the replay file, number of fit operations) or (None, why).
+    Replayable: every operation is a fitParameters fit whose parameters are
+    pair parameters found in the case's own sealed record of the model the
+    operation fits, an evaluate-mode fitParameters, or a propertyScan1D."""
+    cdir = ROOT / c
+    try:
+        props = _strip_comments((cdir / "system" / "propsDict").read_text(errors="ignore"))
+        thermo = _strip_comments((cdir / "constant" / "thermoPhysPropDict").read_text(errors="ignore"))
+    except OSError:
+        return None, "no propsDict or thermoPhysPropDict"
+    m = re.search(r"\boperations\s*\(", props)
+    if not m:
+        return None, "no operations list"
+    case_model = re.search(r"activityModel\s*\{\s*model\s+(\w+)", thermo)
+    lines, nfit = [], 0
+    for op in _top_blocks(props, m.end() - 1):
+        name = re.search(r"\bname\s+([^\s;]+)\s*;", op)
+        typ = re.search(r"\btype\s+(\w+)\s*;", op)
+        if not name or not typ:
+            return None, "an operation without a name or a type"
+        if typ.group(1) == "propertyScan1D":
+            continue
+        if typ.group(1) != "fitParameters":
+            return None, f"operation type {typ.group(1)} has no replay"
+        if re.search(r"\bmode\s+evaluate\s*;", op):
+            continue
+        om = re.search(r"activityModel\s*\{\s*model\s+(\w+)", op) or case_model
+        if not om:
+            return None, f"no activity model for {name.group(1)}"
+        paths = re.findall(r"\bpath\s+([^\s;]+)\s*;", op)
+        if not paths:
+            return None, f"{name.group(1)} declares no parameter path"
+        for pth in paths:
+            seg = pth.split(".")
+            if len(seg) < 3 or "binaryParameters" not in seg:
+                return None, f"{name.group(1)}: {pth} is not a pair parameter"
+            vals = _record_values(cdir / "constant" / "parameters" / om.group(1) / f"{seg[-2]}.dat")
+            if vals is None or seg[-1] not in vals:
+                return None, f"{name.group(1)}: no stored {om.group(1)} record value for {pth}"
+            lines.append(f"{name.group(1)}\t{pth}\t{vals[seg[-1]]!r}")
+        nfit += 1
+    if not nfit:
+        return None, "no fit operation to replay"
+    return "\n".join(lines) + "\n", nfit
+
+
+def selftest():
+    """`suite_reuse.py selftest` -- the C432 rules on synthetic parts, no build
+    needed: each rung says yes where it should and no where it must.  Exit 0 or 1."""
+    import tempfile
+    bad = []
+
+    def check(name, got, want):
+        if got != want:
+            bad.append(f"{name}: got {got!r}, wanted {want!r}")
+    check("kernel: a transport object", is_kernel("src/thermo/transport/Andrade.o"), True)
+    check("kernel: a source-keyed object", is_kernel("src/thermo/vaporPressure/Antoine.o<src/x.cpp"), True)
+    check("kernel: ThermoPackage is NOT (mixed object)", is_kernel("src/thermo/ThermoPackage.o"), False)
+    check("kernel: a flag stamp is NOT", is_kernel("stamp:.stamp-cxx-abc"), False)
+    check("kernel: an activity model is NOT", is_kernel("src/thermo/activityCoefficient/NRTL.o"), False)
+    with tempfile.TemporaryDirectory() as d:
+        os.environ["CHOUPO_REUSE_STORE"] = d
+        try:
+            kern, other = "src/thermo/vaporPressure/Antoine.o", "src/thermo/activityCoefficient/NRTL.o"
+            base = {"src/thermo/transport/Andrade.o": "a", kern: "k1", other: "n1", "stamp:.stamp-x": ""}
+
+            def put(key, eng, objs, rest="R", bench="B", narrow=True):
+                _atomic(parts_dir() / f"objs-{eng}.json", json.dumps(objs))
+                _atomic(parts_dir() / f"{key}.json", json.dumps(
+                    {"rest": rest, "narrow": narrow, "engine": eng, "bench": bench}))
+                return {"rest": rest, "narrow": narrow, "engine": eng, "bench": bench}
+            put("old", "E1", base)
+            cur = put("new", "E2", {**base, kern: "k2"})
+            check("route: only a kernel object moved, bench same", route_verdict("old", cur)[0], True)
+            cur = put("new", "E2", {**base, kern: "k2"}, bench="B2")
+            check("route: bench answers differently", route_verdict("old", cur)[0], False)
+            cur = put("new", "E2", {**base, kern: "k2"}, bench=None)
+            check("route: bench has no answer", route_verdict("old", cur)[0], False)
+            cur = put("new", "E2", {**base, other: "n2"})
+            check("route: a non-kernel object moved", route_verdict("old", cur)[0], False)
+            cur = put("new", "E2", {**base, kern: "k2", other: "n2"})
+            check("route: kernel AND non-kernel moved", route_verdict("old", cur)[0], False)
+            cur = put("new", "E2", {**base, kern: "k2"}, rest="R2")
+            check("route: the data or case moved", route_verdict("old", cur)[0], False)
+            cur = put("new", "E2", {**base, kern: "k2", "src/thermo/vaporPressure/New.o": "z"})
+            check("route: the reach changed", route_verdict("old", cur)[0], False)
+            cur = put("new", "E2", {**base, "stamp:.stamp-x": "", "stamp:.stamp-y": ""})
+            check("route: a flag stamp appeared", route_verdict("old", cur)[0], False)
+            check("route: no parts kept for the stored key", route_verdict("missing", cur)[0], False)
+        finally:
+            os.environ.pop("CHOUPO_REUSE_STORE", None)
+    t = _strip_comments('a /* x { */ b // y }\n"u//rl" c')
+    check("comments stripped, strings kept", "u//rl" in t and "{" not in t, True)
+    blocks = _top_blocks("operations ( { name a; } { name b; sub { x 1; } } );", 11)
+    check("top-level blocks", len(blocks), 2)
+    for b in bad:
+        print("suite_reuse selftest FAIL:", b)
+    if not bad:
+        print("suite_reuse selftest: OK -- the route rule says yes only when ONLY kernel objects "
+              "moved, nothing else in the key did and the bench is identical; every other case says no")
+    return 1 if bad else 0
+
+
+def prune_parts(keep_keys):
+    """Drop the parts of keys nothing stores or plans any more, and the object
+    lists no remaining parts name."""
+    pd = parts_dir()
+    if not pd.is_dir():
+        return
+    engines = set()
+    for f in pd.glob("*.json"):
+        if f.name.startswith("objs-"):
+            continue
+        if f.stem not in keep_keys:
+            f.unlink(missing_ok=True)
+            continue
+        try:
+            engines.add(json.loads(f.read_text()).get("engine"))
+        except (OSError, ValueError):
+            pass
+    for f in pd.glob("objs-*.json"):
+        if f.stem[len("objs-"):] not in engines:
+            f.unlink(missing_ok=True)
+
+
 def case_plan(root_rel, explain=False):
-    """One line per case under root_rel: <dir>\\t<key>\\t<labels|->\\t<date>
-    (or, with explain, <dir>\\t<engine>\\t<data>: how each case is keyed)."""
+    """One line per case under root_rel:
+    <dir> TAB <key> TAB <labels|-> TAB <date> TAB <mode> TAB <reason> TAB <replay file|->
+    where mode is `exact` (the stored verdict's key is this key), `route`
+    (the verdict stands by the route rule; it has been re-stored under this
+    key), `replay` (run once at the stored parameters, the file named in the
+    last field) or `run` (refit); with `explain`, <dir> TAB <engine> TAB <data>
+    instead: how each case is keyed."""
     if disabled():
         return 2
     rows, why = case_keys(root_rel)
     if rows is None:
         print(f"# not keyed: {why}", file=sys.stderr)
         return 1
-    for c, key, dlabel, e in rows:
-        if explain:
+    if explain:
+        for c, key, dlabel, e in rows:
             print(f"{c}\t{e}\t{dlabel}")
-            continue
-        _, lines = _stored_case(c)
-        labels, date = "-", "-"
-        if len(lines) >= 3 and lines[0] == key:
+        return 0
+    keep, n = set(), dict(exact=0, route=0, replay=0, run=0)
+    for c, key, dlabel, e in rows:
+        keep.add(key)
+        path, lines = _stored_case(c)
+        have = len(lines) >= 3
+        if have:
+            keep.add(lines[0])
+        cur = write_parts(c, key) if c in PARTS else None
+        mode, reason, rfile, labels, date = "run", "no stored verdict: first run under this key", "-", "-", "-"
+        if have and lines[0] == key:
+            mode, reason = "exact", "the key is unchanged"
             date, labels = lines[1], "\x1f".join(lines[2:])
-        print(f"{c}\t{key}\t{labels}\t{date}")
+        elif have:
+            ok, why_not = (route_verdict(lines[0], cur) if cur else (False, "no parts for this case"))
+            if ok:
+                mode, reason = "route", why_not
+                date, labels = lines[1], "\x1f".join(lines[2:])
+                lines[1] = (re.sub(r", route-keyed from key [0-9a-f]+", "", lines[1])
+                            + f", route-keyed from key {lines[0]}")
+                lines[0] = key
+                _atomic(path, "\n".join(lines) + "\n")
+            else:
+                spec, nfit = replay_spec(c)
+                if spec is None:
+                    mode, reason = "run", f"route rule: {why_not}; replay: {nfit}"
+                else:
+                    rf = STORE / "replay" / (c.replace("/", "__") + ".tsv")
+                    _atomic(rf, spec)
+                    mode, rfile = "replay", str(rf)
+                    reason = f"route rule: {why_not}; replay of {nfit} fit operation(s) at the stored parameters"
+                    date = lines[1]
+                    labels = "\x1f".join(lines[2:])
+        n[mode] += 1
+        print(f"{c}\t{key}\t{labels}\t{date}\t{mode}\t{reason}\t{rfile}")
+    prune_parts(keep)
+    print(f"# plan: {n['exact']} exact, {n['route']} route-keyed, {n['replay']} to replay, "
+          f"{n['run']} to refit", file=sys.stderr)
     return 0
 
 
@@ -1943,6 +2391,8 @@ def main(argv):
         return fast_stamp(argv[1:])
     if argv[:1] == ["store"] and len(argv) == 4:
         return store(argv[1], argv[2], argv[3])
+    if argv[:1] == ["selftest"]:
+        return selftest()
     if argv[:1] == ["verify-reads"]:
         return verify_reads(argv[1:])
     if argv[:1] == ["migrate-keys"]:
@@ -1970,6 +2420,10 @@ def main(argv):
               "(pairs, components; transport_c327: three catalogue "
               "directories), its own files and cascade; see `case-plan DIR "
               "--explain`")
+        print("  a fit whose key moved is asked, before it runs again (C432): "
+              "(d) did only the property kernel move (property_kernel_objects.txt) "
+              "while the route bench answers the same on its records?  (a) does "
+              "the fit held at its stored parameters reproduce the golden?")
         print("NOT KEYED:")
         for g, why in NOT_KEYED.items():
             print(f"  {g}: {why}")

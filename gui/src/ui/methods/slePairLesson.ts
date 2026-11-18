@@ -48,7 +48,7 @@ export const SLE_ENGINE_SOURCES: readonly EngineSource[] = [
   { file: "src/unitOperations/flash/IsothermalFlash.cpp", line: 111,
     contains: "FlashSolution solveSLE(",
     claim: "the flash has a liquid + crystallising-solid branch (used today for ice)" },
-  { file: "src/propertyOps/FitParameters.cpp", line: 406,
+  { file: "src/propertyOps/FitParameters.cpp", line: 412,
     contains: "kind != \"T_bubble\" && kind != \"P_bubble\"",
     claim: "the engine's pair fitter reads bubble-point and liquid-liquid evidence only: "
       + "no solubility of a solid" },

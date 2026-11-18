@@ -1,0 +1,39 @@
+# property_kernel_objects.txt -- THE ENGINE OBJECTS OF THE PROPERTY KERNEL
+# (DEV.md 4c C432 (d), 2026-11-19).  Read by bin/curate/suite_reuse.py.
+#
+# WHAT IT IS FOR.  A curation fit's reuse key holds the content of every engine
+# object its operations reach, and the pure-component law objects below are
+# reached by all of them, so one edit of any of them used to re-run all 1260
+# fits (about 10 800 s) although `check_property_route_bench` answers every
+# (record, route) block of the kernel bit for bit.  When the ONLY objects that
+# moved between a stored verdict and now are listed here, every other part of
+# the key is identical, and the bench's blocks for every record the fit reads
+# (its sealed copies, benched by content since C432) are identical, the verdict
+# is REUSED -- see the long comment above route_verdict() in suite_reuse.py.
+#
+# WHAT BELONGS HERE.  An object whose whole content is a pure-component law
+# or a liquid-property route the bench calls through the package's public
+# methods (density, viscosityLiquid, surfaceTension, diffusivityLiquid), the
+# vapour-pressure and heat-capacity law objects, the conductivity models.
+#
+# WHAT DOES NOT, and why each exclusion is the safe side:
+#   src/thermo/ThermoPackage.o   a MIXED object: the same file holds the K-value,
+#                                the flash and the activity-model hand-off, none
+#                                of which the bench answers ("activity-model
+#                                effects" are in its NOT CHECKED list).
+#   src/thermo/Component.o       record parsing: a change there can change which
+#                                number a record yields before any law sees it.
+#   src/thermo/activityCoefficient/, equationOfState/ (the cubics), phase/,
+#                                the flashes and every unit: not benched.
+# A prefix matches the start of the object's build-relative path.
+src/thermo/transport/
+src/thermo/SurfaceTensionModel
+src/thermo/pureFluid/
+src/thermo/iapws/
+src/thermo/equationOfState/ReferenceFluid
+src/thermo/equationOfState/ReferencePureFluid
+src/thermo/vaporPressure/
+src/thermo/heatCapacity/
+src/thermo/RecordLaws
+src/thermo/PricedDensity
+src/thermo/LiquidPropertyDoor

@@ -4080,6 +4080,13 @@ value by the declared rule), `D_L_effective_<c>`, `D_L_MS_<i>_<j>`, `Gamma_<i>_<
 `y_eq_<comp>`, `Cp_liquid_<comp>`, `Hvap_<comp>` are PER-COMPONENT (one value per named
 compound); the rest are mixture scalars at `state.composition`.
 
+`fitParameters` REPLAY (a test-suite facility, never authored in a case; C432):
+with `CHOUPO_FIT_REPLAY=<file>` set, an operation named in the file (lines
+`<operation> TAB <parameter path> TAB <value>`) starts at those values, runs no
+Levenberg-Marquardt step and no minimax stage, and publishes its statistics at
+them; an operation not named refuses.  `bin/curate/suite_reuse.py` uses it to ask
+"did the engine move THIS fit?" before refitting; the run prints a `REPLAY` line.
+
 # More steady units (choupoSolve)
 
 ### `multiStreamHX`  (alias: `MHeatX`)

@@ -31,6 +31,7 @@ License
 #include "EvidencePartition.H"
 #include "CurationDossier.H"
 #include "FitWeighting.H"
+#include "FitReplay.H"
 #include <memory>
 #include "core/Advisory.H"
 #include "core/Banner.H"
@@ -366,6 +367,11 @@ int FitParameters::run(const DictPtr& dict,
         }
         params.push_back(ps);
     }
+    //  REPLAY BEFORE REFIT (C432, src/propertyOps/FitReplay.H): the suite's question
+    //  "did the engine move THIS fit?" -- start at the stored values, run no search.
+    const auto replayValues = fitReplay::stored(dict->lookupWordOrDefault("name", "fitParameters"));
+    const bool replay = !evalMode && replayValues.has_value();
+    if (replay) fitReplay::apply(dict->lookupWordOrDefault("name", "fitParameters"), *replayValues, params);
     const std::size_t P = params.size();
 
     //  THE UNIT OF EACH FITTED PAIR PARAMETER (DEV.md 4c C172).  A path
@@ -671,6 +677,7 @@ int FitParameters::run(const DictPtr& dict,
         if (o->found("lambda0"))   lambda  = o->lookupScalar("lambda0");
     }
 
+    if (replay) maxIter = 0;
     // -- output files ------------------------------------------------------
     std::string fitLogPath, parityPath, proposalPath;
     if (dict->found("output"))
@@ -988,7 +995,7 @@ int FitParameters::run(const DictPtr& dict,
     };
     logIter(0);
 
-    bool converged = false;
+    bool converged = replay;     // a replay has no search to converge
     int iter = 0;
     for (iter = 1; iter <= maxIter; ++iter)
     {
@@ -1053,7 +1060,7 @@ int FitParameters::run(const DictPtr& dict,
     //  those qualifies what this operation publishes, so the frame must be
     //  closed before them -- and closed EXPLICITLY rather than left to the
     //  destructor, because the destructor runs after they do.
-    const std::vector<ParamSpec> paramsLS = params; fitobj::Outcome obj2; if (objSpec.runsMinimax()) { sVector x0, lo, hi; for (const auto& ps : params) { x0.push_back(ps.value); lo.push_back(ps.lo); hi.push_back(ps.hi); } auto scaledMax = [&, iF1 = iF1, iF2 = iF2](const sVector& v) { std::vector<ParamSpec> t = params; for (std::size_t j = 0; j < P; ++j) t[j].value = v[j]; ThermoPackage th = buildThermo(t); sVector r; computeResiduals(th, pExp, xExp, tExp, r, nullptr, iF1, iF2, wPtr); return fitobj::maxAbs(r); }; if (verbosity >= 2) std::cout << "  Stage 2:     minimising the largest scaled residual, max|r|, from the " << (objSpec.runsLeastSquares() ? "least-squares answer" : "declared start") << "\n"; obj2 = fitobj::minimise(scaledMax, x0, lo, hi, objSpec.maxEvaluations, verbosity); for (std::size_t j = 0; j < P; ++j) params[j].value = obj2.x[j]; thermo = buildThermo(params); chi2 = computeResiduals(thermo, pExp, xExp, tExp, r_curr, nullptr, iF1, iF2, wPtr); } search.close();
+    const std::vector<ParamSpec> paramsLS = params; fitobj::Outcome obj2; if (objSpec.runsMinimax() && !replay) { sVector x0, lo, hi; for (const auto& ps : params) { x0.push_back(ps.value); lo.push_back(ps.lo); hi.push_back(ps.hi); } auto scaledMax = [&, iF1 = iF1, iF2 = iF2](const sVector& v) { std::vector<ParamSpec> t = params; for (std::size_t j = 0; j < P; ++j) t[j].value = v[j]; ThermoPackage th = buildThermo(t); sVector r; computeResiduals(th, pExp, xExp, tExp, r, nullptr, iF1, iF2, wPtr); return fitobj::maxAbs(r); }; if (verbosity >= 2) std::cout << "  Stage 2:     minimising the largest scaled residual, max|r|, from the " << (objSpec.runsLeastSquares() ? "least-squares answer" : "declared start") << "\n"; obj2 = fitobj::minimise(scaledMax, x0, lo, hi, objSpec.maxEvaluations, verbosity); for (std::size_t j = 0; j < P; ++j) params[j].value = obj2.x[j]; thermo = buildThermo(params); chi2 = computeResiduals(thermo, pExp, xExp, tExp, r_curr, nullptr, iF1, iF2, wPtr); } search.close();
 
     // -- Parity CSV --------------------------------------------------------
     //  The NAMED pair's indices (iF1/iF2, resolved for the LM above), never

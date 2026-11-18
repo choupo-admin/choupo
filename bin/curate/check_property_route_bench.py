@@ -50,6 +50,17 @@ conductivity per registered model, and, for the sealed copies, the liquid
 viscosity and surface-tension routes.  A sealed copy's message names its case
 by path, with the checkout replaced by `<root>`.
 
+C432 (2026-11-19): THE SEALED COPIES OF data/curation ARE BENCHED TOO.  The
+sweep's route-keyed reuse of a curation fit (bin/curate/suite_reuse.py,
+bin/curate/property_kernel_objects.txt) vouches for a fit only when the bench
+has answered, byte for byte as before, every record the fit READS -- and a
+curation fit reads its own sealed components, never the catalogue's (the
+catalogue has moved since the import).  The real defect it answers: one
+kernel edit re-ran all 1260 fits (about 10 800 s) over a bench that had
+proved the kernel unmoved.  The sealed copies of data/curation join those of
+tutorials/ (distinct contents only, 278 more); 4432 blocks were added and
+no existing block moved.
+
 THE PLATFORM (C384, 2026-11-13).  A hexfloat pinned bit for bit is a claim about
 ONE platform: the libm a binary calls differs in the last bit between C
 libraries and CPUs, and on the CI runner 588 of 4975 blocks answered differently
@@ -70,7 +81,7 @@ bench that cannot run must not pass.  It does not rebuild.
     reads: src/thermo/equationOfState/ReferencePureFluid.cpp src/thermo/iapws/
     reads: data/standards/components/ data/standards/parameters/Helmholtz/
     reads: src/thermo/vaporPressure/ src/thermo/heatCapacity/ src/thermo/Component.cpp
-    reads: src/thermo/RecordLaws.cpp tutorials/
+    reads: src/thermo/RecordLaws.cpp tutorials/ data/curation/
 """
 import hashlib
 import os

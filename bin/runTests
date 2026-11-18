@@ -8780,7 +8780,17 @@ for case_dir in "$1"; do
         #  out ONCE with the same machine (marker and closing lines included) and
         #  the reader is handed that -- the lines it can see are the lines it
         #  saw, and the answer is unchanged.
-        eq_text="$out"; lay_text="$out"
+        eq_text="$out"; lay_text="$out"; diag_text="$out"
+        #  C432 (b): a `diag` row reads the one line of the run's JSON that holds its
+        #  operation's `"diagnostics":`, and get_diag used to scan the WHOLE log for
+        #  every row.  transport_c327 (92 operations, a 33 MB log, 276 diag rows) spent
+        #  its 758-1019 s in the sweep re-scanning that log 276 times (0.63 s a scan on
+        #  an idle machine; its own run takes 3 s).  The lines that can match are cut out
+        #  ONCE (92 lines, 16 KB); get_diag's own filter then runs on them, so the first
+        #  match is the same line and no number can move.
+        if [ -n "$(awk '$1=="diag"{print 1; exit}' "$exp_file")" ]; then
+            diag_text=$(printf '%s\n' "$out" | grep '"diagnostics":' || true)
+        fi
         if [ -n "$(awk '$1=="layout"{print 1; exit}' "$exp_file")" ]; then
             lay_text=$(printf '%s\n' "$out" | awk '/^  "(layout|building)": \{/ { inblk = 1; print; next } inblk { print } inblk && /^  \}/ { inblk = 0 }')
         fi
@@ -8791,8 +8801,14 @@ for case_dir in "$1"; do
             case "$line" in ''|\#*) continue;; esac
             read -r kind name key exp_v tol claim _ <<< "$line"
             [ -z "${tol:-}" ] && continue
+            #  A REPLAY (C432 (a)) runs no search, so the rows that describe the search
+            #  itself have nothing to compare: its length, its flag, the minimax stage.
+            if [ -n "${CHOUPO_FIT_REPLAY:-}" ] && [ "$kind" = diag ]; then
+                case "$key" in iter|converged|minimax_evaluations|minimax_max_scaled_start|minimax_max_scaled_final) continue;; esac
+            fi
             golden_rows=$((golden_rows+1))
             case "$kind" in
+                diag)      act=$(get_any "$diag_text" "$kind" "$name" "$key" "$case_dir") ;;
                 equipment) act=$(get_any "$eq_text" "$kind" "$name" "$key" "$case_dir") ;;
                 layout)    act=$(get_any "$lay_text" "$kind" "$name" "$key" "$case_dir") ;;
                 *)         act=$(get_any "$out" "$kind" "$name" "$key" "$case_dir") ;;
@@ -8878,29 +8894,94 @@ done
 #  the key and what it covers: bin/curate/suite_reuse.py case-plan); any other
 #  case is checked by check_case_body, and a curation fit whose every run
 #  PASSED is stored under the key taken before the walk.
-declare -A CASE_KEY=() CASE_REUSE=() CASE_REUSE_DATE=()
+declare -A CASE_KEY=() CASE_REUSE=() CASE_REUSE_DATE=() CASE_MODE=() CASE_WHY=() CASE_RFILE=()
+
+#  store_case_verdict <case_dir> <key> <note> -- keep the PASS labels of the walk
+#  just made (PASSED_LABELS) under the key, the date and the commit; <note> is
+#  appended to the date line (how the verdict was reached when it was not a
+#  plain run).
+store_case_verdict() {
+    local _d="$1" _k="$2" _n="${3:-}" _s
+    _s="${CHOUPO_REUSE_STORE:-$ROOT/build/reuse/cases}/$(printf '%s' "${_d#"$ROOT"/}" | sed 's#/#__#g').tsv"
+    mkdir -p "${CHOUPO_REUSE_STORE:-$ROOT/build/reuse/cases}"
+    { printf '%s\n' "$_k" "$(date -u '+%Y-%m-%d %H:%M UTC'), commit $(git -C "$ROOT" rev-parse --short=10 HEAD 2>/dev/null || echo unknown)${_n:+, $_n}"
+      printf '%s\n' "${PASSED_LABELS[@]}"; } > "$_s.$$" && mv -f "$_s.$$" "$_s"
+}
+
+#  check_case_replay <case_dir> -- C432 (a), REPLAY BEFORE REFIT.  The case's fits
+#  have not been touched since the stored PASS except through the engine, and
+#  the route rule could not vouch for them: run the case ONCE with the fits
+#  held at their stored parameters (CHOUPO_FIT_REPLAY, src/propertyOps/
+#  FitParameters.cpp: no search), and compare with the golden EXCEPT the rows
+#  that describe the search itself (iterations, convergence flag, the minimax
+#  stage's counts).  Returns 0 when it held (printed REUSED ... REPLAYED, the
+#  verdict stored under the new key) and 1 when anything moved or refused (its
+#  lines discarded; the caller refits).
+check_case_replay() {
+    local _d="$1" _k="${CASE_KEY[$1]:-}" _tmp _p0=$pass _f0=$fail _kb0=$known_broken _ef0=$expected_fail _l _first
+    _tmp=$(mktemp)
+    PASSED_LABELS=()
+    CHOUPO_FIT_REPLAY="${CASE_RFILE[$_d]}" check_case_body "$_d" > "$_tmp" 2>&1
+    if [ "$fail" -eq "$_f0" ] && [ "$known_broken" -eq "$_kb0" ] && [ "$expected_fail" -eq "$_ef0" ] \
+       && [ "$pass" -gt "$_p0" ] && [ "${#PASSED_LABELS[@]}" -eq $((pass - _p0)) ]; then
+        pass=$_p0
+        if [ -n "$SUITE_OUT_DIR" ]; then
+            local _rk="${_d#"$ROOT"/}"; rm -f "$SUITE_OUT_DIR/${_rk//\//__}.out"
+        fi
+        for _l in "${PASSED_LABELS[@]}"; do
+            printf "REUSED %-40s  (REPLAYED: the fit evaluated once at its stored parameters reproduces the golden; %s; key %s)\n" \
+                "$_l" "${CASE_WHY[$_d]:-engine moved}" "${_k:0:12}"
+            reused=$((reused+1))
+        done
+        store_case_verdict "$_d" "$_k" "replayed from the stored parameters"
+        rm -f "$_tmp"
+        return 0
+    fi
+    _first=$(grep -m4 -E "^FAIL|^    |MISSING|refus|ERROR" "$_tmp" | tr '\n' ' ' | cut -c1-400)
+    pass=$_p0; fail=$_f0; known_broken=$_kb0; expected_fail=$_ef0
+    printf "[reuse] REFIT %s: the replay did not reproduce the golden (%s)\n" "${_d#"$ROOT"/}" "${_first:-no result}"
+    rm -f "$_tmp"
+    return 1
+}
+
+#  check_case <case_dir> -- the one way a case is checked.  A curation fit is
+#  taken in this order, each rung printed with its reason (C432):
+#    exact key unchanged / ROUTE rule   -> printed REUSED, not run (C394, C432 (d); the
+#                                          key and what it covers: bin/curate/
+#                                          suite_reuse.py case-plan)
+#    REPLAY at the stored parameters    -> check_case_replay (C432 (a))
+#    REFIT                              -> check_case_body, and a fit whose every
+#                                          run PASSED is stored under the key taken
+#                                          before the walk.
+#  Any other case is checked by check_case_body.
 check_case() {
     local _d="$1" _k="${CASE_KEY[$1]:-}" _l
     if [ -n "${CASE_REUSE[$_d]:-}" ]; then
         while IFS= read -r _l; do
             [ -n "$_l" ] || continue
-            printf "REUSED %-40s  (PASS taken %s; its keyed inputs are unchanged, key %s: bin/curate/suite_reuse.py case-plan --explain)\n" \
-                "$_l" "${CASE_REUSE_DATE[$_d]}" "${_k:0:12}"
+            if [ "${CASE_MODE[$_d]:-exact}" = route ]; then
+                printf "REUSED %-40s  (PASS taken %s; ROUTE-KEYED: %s; key %s)\n" \
+                    "$_l" "${CASE_REUSE_DATE[$_d]}" "${CASE_WHY[$_d]}" "${_k:0:12}"
+            else
+                printf "REUSED %-40s  (PASS taken %s; its keyed inputs are unchanged, key %s: bin/curate/suite_reuse.py case-plan --explain)\n" \
+                    "$_l" "${CASE_REUSE_DATE[$_d]}" "${_k:0:12}"
+            fi
             reused=$((reused+1))
         done <<< "$(printf '%s' "${CASE_REUSE[$_d]}" | tr '\037' '\n')"
         return 0
     fi
+    if [ "${CASE_MODE[$_d]:-}" = replay ] && [ -n "${CASE_RFILE[$_d]:-}" ] && check_case_replay "$_d"; then
+        return 0
+    fi
+    [ -n "${CASE_WHY[$_d]:-}" ] && [ "${CASE_MODE[$_d]:-}" != replay ] \
+        && printf "[reuse] REFIT %s: %s\n" "${_d#"$ROOT"/}" "${CASE_WHY[$_d]}"
     local _p0=$pass _f0=$fail _kb0=$known_broken _ef0=$expected_fail
     PASSED_LABELS=()
     check_case_body "$_d"
     if [ -n "$_k" ] && [ "$fail" -eq "$_f0" ] && [ "$known_broken" -eq "$_kb0" ] \
        && [ "$expected_fail" -eq "$_ef0" ] && [ "$pass" -gt "$_p0" ] \
        && [ "${#PASSED_LABELS[@]}" -eq $((pass - _p0)) ]; then
-        local _s
-        _s="${CHOUPO_REUSE_STORE:-$ROOT/build/reuse/cases}/$(printf '%s' "${_d#"$ROOT"/}" | sed 's#/#__#g').tsv"
-        mkdir -p "${CHOUPO_REUSE_STORE:-$ROOT/build/reuse/cases}"
-        { printf '%s\n' "$_k" "$(date -u '+%Y-%m-%d %H:%M UTC'), commit $(git -C "$ROOT" rev-parse --short=10 HEAD 2>/dev/null || echo unknown)"
-          printf '%s\n' "${PASSED_LABELS[@]}"; } > "$_s.$$" && mv -f "$_s.$$" "$_s"
+        store_case_verdict "$_d" "$_k"
     fi
 }
 
@@ -8909,15 +8990,20 @@ check_case() {
 if [ -n "${REUSE_ON:-}" ] && [ -d "$CURATION_ROOT" ]; then
     _rp=$(mktemp)
     if python3 -I "$ROOT/bin/curate/suite_reuse.py" case-plan "$CURATION_ROOT" > "$_rp"; then
-        _nr=0; _nk=0
-        while IFS=$'\t' read -r _d _k _labels _date; do
+        _nr=0; _nk=0; _nro=0; _nrp=0
+        while IFS=$'\t' read -r _d _k _labels _date _mode _why _rfile; do
             [ -n "$_d" ] || continue
+            case "$_d" in '#'*) continue;; esac
             CASE_KEY["$_d"]="$_k"; _nk=$((_nk+1))
-            if [ "$_labels" != - ]; then
+            CASE_MODE["$_d"]="$_mode"; CASE_WHY["$_d"]="$_why"
+            [ "${_rfile:--}" != - ] && CASE_RFILE["$_d"]="$_rfile"
+            if [ "$_labels" != - ] && { [ "$_mode" = exact ] || [ "$_mode" = route ]; }; then
                 CASE_REUSE["$_d"]="$_labels"; CASE_REUSE_DATE["$_d"]="$_date"; _nr=$((_nr+1))
+                [ "$_mode" = route ] && _nro=$((_nro+1))
             fi
+            [ "$_mode" = replay ] && _nrp=$((_nrp+1))
         done < "$_rp"
-        echo "[reuse] curation fits: $_nk keyed, $_nr with an unchanged key (REUSED below), $((_nk-_nr)) to run"
+        echo "[reuse] curation fits: $_nk keyed; $((_nr-_nro)) with an unchanged key, $_nro by the ROUTE rule (REUSED below), $_nrp to REPLAY at their stored parameters, $((_nk-_nr-_nrp)) to refit"
     else
         echo "[reuse] curation fits: NOT keyed this run (suite_reuse.py case-plan failed) -- every one runs"
     fi
