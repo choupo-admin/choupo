@@ -115,6 +115,28 @@ operations
         output   { file Span2000_liquid100.csv; }
     }
 
+    // --- ammonia, Gao, Wu, Bell, Harvey & Lemmon (2023) ----------------------
+    //  generated from bin/curate/helmholtz/NH3/Gao2023.txt (molar basis; the
+    //  paper's M).  The equation carries an ASSOCIATING term (Eq. 30, terms
+    //  19-20) the other records do not.  Held at load to the 17 state points of
+    //  its Table 7; here a saturation state at 300 K and a compressed liquid
+    //  (300 K, 30 MPa), the states the ammonia plants' pumps and let-down
+    //  valves work in.
+    {
+        name     nh3Sat300;
+        type     referenceEoS;
+        equation Gao2023;
+        saturation { T 300 K; }
+        output   { file Gao2023_sat300.csv; }
+    }
+    {
+        name     nh3Liquid300;
+        type     referenceEoS;
+        equation Gao2023;
+        state    { T 300 K; p 30 MPa; }
+        output   { file Gao2023_liquid300.csv; }
+    }
+
     // --- methane, Setzmann & Wagner (1991) ----------------------------------
     //  generated from bin/curate/helmholtz/CH4/SetzmannWagner1991.txt; one
     //  saturation state (150 K, Table 39) and one dense gas (10 MPa, 200 K,

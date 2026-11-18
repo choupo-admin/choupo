@@ -23,14 +23,20 @@
       w_isen = eta * w_real          (the useful v*dP part)
       dP     = w_isen / v_molar
       P_out  = P_in + dP                                  (RESULT)
-      dT     = (1 - eta) * w_real / Cp_liq                (dissipation)
+      T_out  from H(T_out, P_out) = H(T_in, P_in) + w_real       (RESULT)
+             -- the stream balance on a liquid enthalpy that carries the
+             pressure term v (1 - alpha T) dP (C390), so the pump's first law
+             closes; of the 200 J/mol, about 120 J/mol is stored as pressure
+             and the rest heats the liquid
 
   Hand check (water: v ~ 1.8e-5 m3/mol, Cp_liq ~ 75 J/(mol*K)):
       F = 36 kmol/h = 10 mol/s
       w_real = 2000 W / 10 mol/s        = 200 J/mol
       w_isen = 0.65 * 200               = 130 J/mol
       dP     = 130 / 1.8e-5             ~ 7.2e6 Pa = 72 bar... (so P_out ~ 73 bar)
-      dT     = 0.35 * 200 / 75          ~ 0.9 K  (tiny --- pumps barely heat)
+      dT     ~ (200 - 120) / 75         ~ 1.07 K (tiny --- pumps barely heat;
+                                           the engine: 1.069 K, the IAPWS-95
+                                           balance: 1.071 K)
 
   "Pump to exactly 50 bar" is a DesignSpec on $W_shaft targeting
   pump.P_out (converges in one step --- the relation is linear).

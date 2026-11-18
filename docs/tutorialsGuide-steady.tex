@@ -12791,9 +12791,9 @@ An incompressible-liquid pump. Liquid water enters at 1 bar, 298 K; the pump sha
 
 Hardware (the only OP parameters): W\_shaft = 2 kW motor power delivered to the liquid eta = 0.65 pump efficiency
 
-Because the liquid is incompressible (v \textasciitilde{} const), the discharge is closed-form --- no EoS, no Newton: w\_real = W\_shaft / F\_mol\_s w\_isen = eta $\ast$ w\_real (the useful v$\ast$dP part) dP = w\_isen / v\_molar P\_out = P\_in + dP (RESULT) dT = (1 - eta) $\ast$ w\_real / Cp\_liq (dissipation)
+Because the liquid is incompressible (v \textasciitilde{} const), the discharge is closed-form --- no EoS, no Newton: w\_real = W\_shaft / F\_mol\_s w\_isen = eta $\ast$ w\_real (the useful v$\ast$dP part) dP = w\_isen / v\_molar P\_out = P\_in + dP (RESULT) T\_out from H(T\_out, P\_out) = H(T\_in, P\_in) + w\_real (RESULT) -- the stream balance on a liquid enthalpy that carries the pressure term v (1 - alpha T) dP (C390), so the pump's first law closes; of the 200 J/mol, about 120 J/mol is stored as pressure and the rest heats the liquid
 
-Hand check (water: v \textasciitilde{} 1.8e-5 m3/mol, Cp\_liq \textasciitilde{} 75 J/(mol$\ast$K)): F = 36 kmol/h = 10 mol/s w\_real = 2000 W / 10 mol/s = 200 J/mol w\_isen = 0.65 $\ast$ 200 = 130 J/mol dP = 130 / 1.8e-5 \textasciitilde{} 7.2e6 Pa = 72 bar... (so P\_out \textasciitilde{} 73 bar) dT = 0.35 $\ast$ 200 / 75 \textasciitilde{} 0.9 K (tiny --- pumps barely heat)
+Hand check (water: v \textasciitilde{} 1.8e-5 m3/mol, Cp\_liq \textasciitilde{} 75 J/(mol$\ast$K)): F = 36 kmol/h = 10 mol/s w\_real = 2000 W / 10 mol/s = 200 J/mol w\_isen = 0.65 $\ast$ 200 = 130 J/mol dP = 130 / 1.8e-5 \textasciitilde{} 7.2e6 Pa = 72 bar... (so P\_out \textasciitilde{} 73 bar) dT \textasciitilde{} (200 - 120) / 75 \textasciitilde{} 1.07 K (tiny --- pumps barely heat; the engine: 1.069 K, the IAPWS-95 balance: 1.071 K)
 
 "Pump to exactly 50 bar" is a DesignSpec on \$W\_shaft targeting pump.P\_out (converges in one step --- the relation is linear).
 
@@ -12805,15 +12805,15 @@ Hand check (water: v \textasciitilde{} 1.8e-5 m3/mol, Cp\_liq \textasciitilde{} 
 \goldrow{kpi}{pump01}{P\_in}{100000}
 \goldrow{kpi}{pump01}{P\_out}{7294899.53218}
 \goldrow{kpi}{pump01}{T\_in}{298.15}
-\goldrow{kpi}{pump01}{T\_out}{299.077152318}
+\goldrow{kpi}{pump01}{T\_out}{299.219102834}
 \goldrow{kpi}{pump01}{W\_hydraulic}{1300}
 \goldrow{kpi}{pump01}{W\_shaft}{2000}
 \goldrow{kpi}{pump01}{W\_shaft\_kW}{2}
 \goldrow{kpi}{pump01}{dP}{7194899.53218}
-\goldrow{kpi}{pump01}{dT}{0.927152317881}
+\goldrow{kpi}{pump01}{dT}{1.06910283373}
 \goldrow{kpi}{pump01}{eta}{0.65}
 \goldrow{kpi}{pump01}{head\_m}{735.848502288}
-\goldmore{13}
+\goldmore{15}
 \end{tutgolden}
 
 \clearpage
@@ -12847,15 +12847,15 @@ Hand check (water: v \textasciitilde{} 1.8e-5 m3/mol): F = 36 kmol/h = 10 mol/s 
 \goldrow{kpi}{pump02}{P\_in}{100000}
 \goldrow{kpi}{pump02}{P\_out}{3000000}
 \goldrow{kpi}{pump02}{T\_in}{298.15}
-\goldrow{kpi}{pump02}{T\_out}{298.523701079}
+\goldrow{kpi}{pump02}{T\_out}{298.578584734}
 \goldrow{kpi}{pump02}{W\_hydraulic}{523.982299285}
 \goldrow{kpi}{pump02}{W\_shaft}{806.126614285}
 \goldrow{kpi}{pump02}{W\_shaft\_kW}{0.806126614285}
 \goldrow{kpi}{pump02}{dP}{2900000}
-\goldrow{kpi}{pump02}{dT}{0.37370107947}
+\goldrow{kpi}{pump02}{dT}{0.428584734406}
 \goldrow{kpi}{pump02}{eta}{0.65}
 \goldrow{kpi}{pump02}{head\_m}{296.593530888}
-\goldmore{13}
+\goldmore{15}
 \end{tutgolden}
 
 \clearpage
@@ -13790,18 +13790,18 @@ The flowsheet of every liquid-density demonstration: feed (1 kg/s) $\to$ pump P1
 \goldrow{stream}{feed}{F}{0.0555092978074}
 \goldrow{stream}{feed}{T}{298.15}
 \goldrow{stream}{product}{F}{0.0555092978074}
-\goldrow{stream}{product}{T}{298.170512797}
+\goldrow{stream}{product}{T}{298.174193858}
 \goldrow{stream}{pumped}{F}{0.0555092978074}
-\goldrow{stream}{pumped}{T}{298.170512797}
+\goldrow{stream}{pumped}{T}{298.174193858}
 \goldrow{kpi}{P1}{F}{0.0555092978074}
 \goldrow{kpi}{P1}{P\_in}{100000}
 \goldrow{kpi}{P1}{P\_out}{300000}
 \goldrow{kpi}{P1}{T\_in}{298.15}
-\goldrow{kpi}{P1}{T\_out}{298.170512797}
+\goldrow{kpi}{P1}{T\_out}{298.174193858}
 \goldrow{kpi}{P1}{W\_hydraulic}{200.592341357}
 \goldrow{kpi}{P1}{W\_shaft}{286.560487653}
 \goldrow{kpi}{P1}{W\_shaft\_kW}{0.286560487653}
-\goldmore{27}
+\goldmore{29}
 \end{tutgolden}
 
 \clearpage
@@ -13826,18 +13826,18 @@ The flowsheet of every liquid-density demonstration: feed (1 kg/s) $\to$ pump P1
 \goldrow{stream}{feed}{F}{0.0399534705298}
 \goldrow{stream}{feed}{T}{298.15}
 \goldrow{stream}{product}{F}{0.0399534705298}
-\goldrow{stream}{product}{T}{298.178514303}
+\goldrow{stream}{product}{T}{298.196458381}
 \goldrow{stream}{pumped}{F}{0.0399534705298}
-\goldrow{stream}{pumped}{T}{298.178514303}
+\goldrow{stream}{pumped}{T}{298.196458381}
 \goldrow{kpi}{P1}{F}{0.0399534705298}
 \goldrow{kpi}{P1}{P\_in}{100000}
 \goldrow{kpi}{P1}{P\_out}{300000}
 \goldrow{kpi}{P1}{T\_in}{298.15}
-\goldrow{kpi}{P1}{T\_out}{298.178514303}
+\goldrow{kpi}{P1}{T\_out}{298.196458381}
 \goldrow{kpi}{P1}{W\_hydraulic}{225.15500557}
 \goldrow{kpi}{P1}{W\_shaft}{321.650007958}
 \goldrow{kpi}{P1}{W\_shaft\_kW}{0.321650007958}
-\goldmore{27}
+\goldmore{29}
 \end{tutgolden}
 
 \clearpage

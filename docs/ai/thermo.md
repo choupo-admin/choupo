@@ -402,7 +402,7 @@ Under `formulation phiPhi` one equation of state prices both phases: a vapour st
 LIQUID stream (and the liquid half of a two-phase stream) is `H_ig + H_R` at the liquid root, and `S` likewise
 (`EquationOfState::H_residualLiquid`, `S_residualLiquid`; SRK, PengRobinson, LeeKeslerPloecker and PCSAFT; routed by
 `ThermoPackage::H_stream_formation` / `S_stream_formation`).  The volume translation's `-P c` and an MHV1/MHV2 `H^E` enter at
-both roots.  A gammaPhi package keeps its formation-datum liquid (liquid Cp, latent heat, no pressure term), and so does a
+both roots.  A gammaPhi package keeps its formation-datum liquid (liquid Cp, latent heat) and adds the liquid pressure term `v (1 - alpha T) dP` from each component's own `psat(T)` to `P` (C390; volume and slope from the property kernel's pure-component volume, said once per component in the run; none above Tc, for a Henry solute or a salt), and so does a
 package with an electrolyte or a species without an ideal-gas leg.  Effect: latent heats of a phiPhi column or flash are
 the cubic's own (column08 reboiler +8.7 %, cavett01 flash duties +25 to +40 %); the moved rows are in
 `docs/audits/2026-11-17-c410-moved-goldens.md`.  Theory Guide `sec:cubic-liquid-root`.  Gate: `check_volume_translation`
@@ -734,13 +734,17 @@ pureFluids
     // CO2   { method Helmholtz; equation SpanWagner1996; }
     // N2    { method Helmholtz; equation Span2000; }
     // methane { method Helmholtz; equation SetzmannWagner1991; }
+    // NH3   { method Helmholtz; equation Gao2023; }   // ammonia, with an associating term
 }
 ```
 
 The Helmholtz records live in `data/standards/parameters/Helmholtz/` and are
 checked against their publication's own values at every load.  h and s are
 on the publication's datum, valid only where the phase is effectively pure
-(x >= 0.999); a mixture refuses.  A SEALED case must carry the record in
+(x >= 0.999); a mixture refuses.  A record that names a fluid is also what the
+liquid-density door uses for that fluid, with its pressure dependence, without any
+`pureFluids` selection (ammonia: `Gao2023`, read from the authors' manuscript and held
+to the 17 states of its Table 7).  A SEALED case must carry the record in
 `constant/parameters/Helmholtz/`.  To evaluate one state or a saturation
 point without a flowsheet, use the props op `referenceEoS`.  Theory Guide:
 "Reference equations of state (Helmholtz energy)".

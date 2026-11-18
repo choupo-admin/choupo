@@ -95,6 +95,9 @@ std::string pinHash(const std::string& path);
 //  registry's pair files are relevant to (a Henry pair `A-B` is consumed when A
 //  and B are both loaded components).
 void noteLoadedComponent(const std::string& name);
+//- ... and the friendly names (aliases) of each: a reference equation names its
+//  fluid by one of them (C390).
+void noteLoadedAlias(const std::string& name);
 
 //- What the finished run would PIN: sub -> computational hash, or "absent" for
 //  a name that does not exist but whose arrival could change a resolution.
