@@ -7244,6 +7244,7 @@
    "src/propertyOps/FitAlgebra.H",
    "src/propertyOps/FitObjective.H",
    "src/propertyOps/FitParameters.H",
+   "src/propertyOps/FitReplay.H",
    "src/propertyOps/FitWeighting.H",
    "src/propertyOps/LleResidual.H",
    "src/propertyOps/PropertyOperation.H",
@@ -21020,6 +21021,9 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/PropertyOperation.cpp"
+  ],
+  "src/propertyOps/FitReplay.H": [
+   "src/propertyOps/FitParameters.cpp"
   ],
   "src/propertyOps/FitWeighting.H": [
    "src/propertyOps/FitParameters.cpp",
