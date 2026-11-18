@@ -399,3 +399,4 @@ C433	OPEN	now	Ligações dos componentes e pares por modelo e conjunto nomeado	e
 C434	DONE		Casos não correm no Firefox		2026-11-19	S	4e864ecf7	
 C435	OPEN	now	Cinco pontos da revisão externa de seis casos	cópias de pares inline, initial opcional, propriedades tipadas das operações props, cabeçalhos	2026-11-19	M		
 C436	OPEN	now	Backlog com uma só casa (BACKLOG.tsv), verificado, e a vista gerada dele	gate check_backlog e a página gerada do backlog	2026-11-19	M		
+C437	OPEN	beyond	DSPM-DE com os parâmetros do próprio Labban falha 8-16 pontos	testar sozinho cada suspeito: filme de fibra oca, T e densidade, Davies	2026-11-19	M		
