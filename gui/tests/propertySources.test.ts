@@ -120,10 +120,11 @@ describe("propertySources: the green-ammonia plant (several units, grouped)", ()
   });
 
   it("a flowsheet unit finds the sizing rows that quote it, and only it", () => {
+    //  the drum's detailed sizing (C318) reads the liquid density through the door,
+    //  and so does its inventory: two rows, each naming its own asker.
     const sep = rowsOfUnit(ps, "Separator");
-    expect(sep).toHaveLength(1);
-    expect(sep[0]!.unit).toBe("inventory 'Separator'");
-    expect(sep[0]!.sourceClass).toBe("kernel");
+    expect(sep.map((r) => r.unit).sort()).toEqual(["drum 'Separator'", "inventory 'Separator'"]);
+    for (const r of sep) expect(r.sourceClass).toBe("kernel");
     expect(rowsOfUnit(ps, "Aftercooler").map((r) => r.property).sort())
       .toEqual(["liquidDensity", "liquidThermalConductivity", "liquidViscosity"]);
     expect(rowsOfUnit(ps, "Sep")).toHaveLength(0);          // a prefix is not the unit

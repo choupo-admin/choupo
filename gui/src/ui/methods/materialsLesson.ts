@@ -381,7 +381,7 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       + "testing below it; impact-tested carbon steels serve well below 0 "
       + "degrees C.  The green-ammonia base case shows the consequence of "
       + "a record that carries no such field: its postDict "
-      + "(tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict:179-183) "
+      + "(tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict:185-189) "
       + "puts SS304 on every item that goes below 0 degrees C, because "
       + "austenitic stainless keeps its toughness there and the generic "
       + "carbon-steel record states no minimum design temperature -- a "
@@ -589,7 +589,7 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       + "The green-ammonia base case says plainly that its records carry no "
       + "hydrogen-service limit and that whether carbon steel resists "
       + "hydrogen at its partial pressures and temperatures is not checked "
-      + "(tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict:183-187).",
+      + "(tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict:189-193).",
     formula: String.raw`\ce{Fe3C + 2H2 -> 3Fe + CH4}`,
   },
   {
@@ -773,7 +773,7 @@ export const MATERIALS_STEPS: readonly LessonStep[] = [
       + "A careful case applies the temperature rule itself: the "
       + "green-ammonia base case puts SS316 wherever the process side "
       + "exceeds the carbon-steel record's maxT "
-      + "(tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict:179-180) "
+      + "(tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict:185-186) "
       + "-- the author's rule, which the engine now checks and announces "
       + "when broken, and does not choose for anyone.  "
       + "And no record carries "
