@@ -7,8 +7,9 @@
         |        O ptimization  |
        /|\                      |
 -------------------------------------------------------------------------------
-License
-    This file is part of Choupo (GPL-3.0-or-later); see LICENSE.
+    SPDX-License-Identifier: GPL-3.0-or-later
+    Credit and attribution: see AUTHORS
+    Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
 #include "AgitatedVessel.H"

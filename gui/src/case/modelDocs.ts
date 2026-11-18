@@ -188,7 +188,7 @@ const THEORY_DEST: Record<string, string> = {
   // hydraulics: the dedicated Darcy-Weisbach chapter (mechanical-energy
   // balance, laminar 64/Re + Colebrook/Haaland/Churchill turbulent factor,
   // minor losses, static head) -- pressure drop is a computed RESULT.
-  pipe: "ch:hydraulics",
+  pipe: "ch:hydraulics-pressure",   // the pipe chapter (it pointed at the TRAY hydraulics chapter, ch:hydraulics); C421 (7) adds its non-Newtonian subsection
   agitatedVessel: "sec:agitated-vessel",   // power of a stirred vessel: Metzner-Otto shear rate, the door's form 3, shaft work (C421 (7))
   pneumaticConveyor: "sec:pneumatic-conveying",   // particle drag+Yang+saltation+bends
   // size reduction (DEV.md 4c C361): the breakage population balance on the
