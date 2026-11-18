@@ -1,0 +1,43 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feed                   F                0.0555092977778    1e-4
+stream  feed                   T                450                1e-4
+stream  stirred                F                0.0555092977778    1e-4
+stream  stirred                T                450                1e-4
+# ANCHOR (published): Ex. 8.5, p. 417: D = 2.095 m
+kpi     M1                     D                2.095            0.005   anchor
+kpi     M1                     F                0.0555092977778    1e-4
+# ANCHOR (published): Ex. 8.5, p. 418: K_p = 494 (eq. 8.7)
+kpi     M1                     Kp               494              0.005   anchor
+# ANCHOR (published): Ex. 8.5, p. 417: N = 0.152 Hz
+kpi     M1                     N                0.152            0.005   anchor
+kpi     M1                     P_high_W         13857.5424556      1e-4
+kpi     M1                     P_low_W          6966.40741565      1e-4
+kpi     M1                     Po               70.8648189048      1e-4
+kpi     M1                     Q_kW             -9.83272685656     1e-4
+# ANCHOR (published): Ex. 8.5, p. 418: Re = 6.98
+kpi     M1                     Re               6.98             0.005   anchor
+kpi     M1                     T_out            450                1e-4
+kpi     M1                     W_shaft          9832.72685656      1e-4
+# ANCHOR (published): Ex. 8.5, p. 418: P = 9.84 kW (9838 W)
+kpi     M1                     W_shaft_kW       9.84             0.01    anchor
+kpi     M1                     density          980.000163197      1e-4
+# ANCHOR (published): Ex. 8.5, p. 417: gamma_avg = 4.56 1/s
+kpi     M1                     gamma_avg        4.56             0.005   anchor
+kpi     M1                     k_s              30                 1e-4
+# ANCHOR (published): Ex. 8.5, p. 417: mu_avg = 93.7 Pa s
+kpi     M1                     mu_app           93.7             0.005   anchor
+kpi     M1                     tipSpeed         1                  1e-4
+boundary global               H_feeds_kW       -15229.8265253     1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    -15229.8265253     1e-4
+boundary global               noBoundary       false              exact
+boundary global               residual_denom_kW 19.6654537131      1e-4
+boundary global               W_shaft_kW       9.83272685656      1e-4
+utility M1                     cooling.coolingWater.duty_kW -9.83272685656     1e-4
+utility M1                     cooling.coolingWater.T 450                1e-4
+utility M1                     cooling.coolingWater.kg_s 0.235232699918     1e-4
+utility M1                     cooling.coolingWater.eur_h 0.0141591266734    1e-4
+source  M1                     liquidDensity    idealMixing[flatVliq] exact
+source  M1                     liquidViscosity  flowCurve.powerLawEx85 exact

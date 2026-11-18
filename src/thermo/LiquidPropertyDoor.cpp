@@ -14,11 +14,14 @@
 
 #include "LiquidPropertyDoor.H"
 
+#include "core/Advisory.H"
 #include "core/PropertySourceLog.H"
+#include "thermo/PropertyDomainError.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/liquidProperty/DensityLeaf.H"
 #include "thermo/pureFluid/PureFluidModel.H"
 
+#include <cmath>
 #include <stdexcept>
 #include <cstdio>
 #include <iostream>
@@ -374,6 +377,99 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
     return r;
 }
 } // namespace
+
+
+//  ===========================================================================
+//  FORM 3: the apparent viscosity at a shear the unit supplies (C421 (7), R7-R10)
+//  ===========================================================================
+ApparentViscosity apparentViscosity(const ThermoPackage& thermo, scalar T, scalar P,
+                                    const sVector& x, const Shear& shear, const Consumer* who)
+{
+    ApparentViscosity a;
+    const rheology::FlowCurve* c = thermo.flowCurveFor(x);
+    if (!c)
+    {
+        //  NEWTONIAN BY ABSENCE: the shear is irrelevant, form 1's viscosity answers.
+        const Result r = evaluate(thermo, Property::viscosity, T, P, x, who);
+        a.value = r.value; a.methodId = r.methodId; a.label = r.label; a.quality = r.quality;
+        if (shear.kind == Shear::Kind::rate) { a.shearRate = shear.value; a.shearStress = a.value * shear.value; }
+        else { a.shearStress = shear.value; a.shearRate = shear.value / a.value; }
+        a.index = 1.0; a.newtonian = true; a.domainWords = "Newtonian (no rheology declared)";
+        return a;
+    }
+    std::string type = who ? who->type : std::string(), unit = who ? who->unit : std::string();
+    const bool site = who ? true : PropertySourceLog::instance().current(type, unit);
+    const std::string asker = site ? type + " '" + unit + "'" : std::string("apparentViscosity");
+    std::string set;
+    for (const std::size_t i : c->set) set += (set.empty() ? "" : " + ") + thermo.comp(i).name();
+
+    //  R9: a time-dependent fluid has no general law.
+    if (c->timeDependent)
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+            asker + ": the flow curve " + c->name + " (" + c->where + ") declares `timeDependent yes` -- REFUSED (R9): the book states no"
+            " general law for a thixotropic or rheopectic fluid and its flow curve is valid only for the history it was taken at"
+            " (Chhabra & Richardson, p. 22); this engine does not model history.",
+            "a flow curve of the fluid at the history of interest, declared `timeDependent no` with that history in its `basis`");
+    //  The state (T, composition): inside the box or refused; away from the stated point, announced.
+    const auto w = liquidTransport::massFractionsOf(thermo.components(), c->set, x);
+    const std::string out = c->outsideBox(T, w);
+    if (!out.empty())
+        throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+            asker + ": the flow curve " + c->name + " of " + set + ": " + out + " is outside the box the record declares (" + c->where
+            + ").  A flow curve is the fluid at ITS temperature and composition (R4); it is never carried to another.",
+            "a state inside the box, a record at this state, or a wider `authorised { T (lo hi); ... reason \"...\"; }` (a hypothesis)");
+    const bool atPoint = c->atStatedPoint(T, w);
+    if (!atPoint)
+    {
+        char b[480];
+        std::snprintf(b, sizeof b, "the flow curve %s (taken at %.6g K) is stood over the case's authorised box and used at %.6g K: a constant-state"
+            " approximation, the curve's own temperature dependence (the book: m follows an Arrhenius law, p. 319) is not applied",
+            c->name.c_str(), static_cast<double>(c->T), static_cast<double>(T));
+        if (AdvisoryLog::instance().addAnnouncedOnce("flowCurveAway:" + c->name, "approximation", "warning", "flow curve " + c->name, b))
+            std::cout << "  [flow curve] " << b << "\n";
+    }
+    //  The shear.
+    scalar g = 0.0;
+    if (shear.kind == Shear::Kind::rate)
+    {
+        g = shear.value;
+        if (!(g > 0.0) || !std::isfinite(g))
+            throw PropertyDomainError(PropertyDomainError::Kind::invalidState, asker + ": a non-positive shear rate (" + std::to_string(g) + " 1/s).");
+    }
+    else
+    {
+        const scalar y0 = c->hasYield ? c->yield : 0.0;
+        if (!(shear.value > y0))
+            throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+                asker + ": the shear stress " + std::to_string(shear.value) + " Pa is not above the yield stress "
+                + std::to_string(y0) + " Pa of " + c->name + ": the fluid does not flow there (no apparent viscosity).",
+                "a stress above the yield stress");
+        g = c->rateAt(shear.value);
+    }
+    const rheology::Status st = c->admitRate(g, asker);
+    if (st.extended) c->announceExtension(g, asker);
+    const scalar tau = c->stressUnchecked(g);
+    a.value = tau / g; a.shearRate = g; a.shearStress = tau; a.index = c->index(g);
+    a.newtonian = false; a.curveName = c->name; a.domainWords = st.words;
+    a.yielded = true; a.yieldStress = c->hasYield ? c->yield : 0.0; a.viscoelastic = c->viscoelastic; a.curve = c;
+    a.methodId = "flowCurve." + c->name;
+    char gb[160];
+    std::snprintf(gb, sizeof gb, "%.6g 1/s (tau = %.6g Pa)", static_cast<double>(g), static_cast<double>(tau));
+    a.label = "property kernel: the case's flow curve " + c->name + " (" + c->where + "), kind " + c->kind + " (" + c->basis
+            + "); the APPARENT viscosity tau/gamma at the shear the unit supplies, " + gb + ", read from "
+            + (c->fit ? "the derived fit " + c->fit->words : std::string("the rows (") + c->interpolation + ")")
+            + "; " + st.words + (atPoint ? "" : "; away from the curve's stated state (assumed)");
+    a.quality.origin = c->kind == "estimated" ? "estimated"
+                     : (c->kind == "adopted" || !atPoint || st.extended) ? "assumed"
+                     : c->fit ? "regressed" : "literature";
+    a.quality.provenance = c->citation;
+    a.quality.domain = st.insideSupport ? "inside the rows' support (hard outside the authorised domain)" : "past the support, in the authorised domain";
+    a.quality.evidence = "not quantified";
+    if (site)
+        PropertySourceLog::instance().use(type, unit, name(Property::viscosity), a.methodId, a.label, "kernel",
+            "not applied", "", took(a.value, T, P > 0.0 ? P : std::numeric_limits<double>::quiet_NaN(), compositionKey(x)));
+    return a;
+}
 
 } // namespace liquidProperty
 

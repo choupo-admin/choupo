@@ -52,6 +52,7 @@ License
 #include "rotating/PressureExchanger.H"
 #include "rotating/Turbine.H"
 #include "hydraulics/Pipe.H"
+#include "agitation/AgitatedVessel.H"
 #include "hydraulics/PneumaticConveyor.H"
 #include "membrane/SpiralWoundModule.H"
 #include "membrane/massTransfer/MassTransferModel.H"
@@ -196,6 +197,7 @@ void UnitOperation::registerBuiltins()
     //  2026-09-08 so a plant can report the inventory its economics rest on.
     reg("storageTank",        []{ return std::make_unique<StorageTank>();        });
     reg("pipe",               []{ return std::make_unique<Pipe>();               });
+    reg("agitatedVessel",     []{ return std::make_unique<AgitatedVessel>();     });
     reg("pneumaticConveyor",  []{ return std::make_unique<PneumaticConveyor>();  });
     reg("distillationColumn", []{ return std::make_unique<DistillationColumn>(); });
     reg("column",             []{ return std::make_unique<DistillationColumn>(); });   // alias

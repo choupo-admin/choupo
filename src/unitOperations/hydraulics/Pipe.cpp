@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Pipe.H"
+#include "NonNewtonianPipe.H"
 #include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "unitOperations/UnitTypedProperties.H"   // a property typed in `operation` is refused by name (C421)
@@ -466,6 +467,173 @@ int Pipe::solve(const DictPtr& dict,
     const scalar rho = liquidProperty::evaluate(thermo, liquidProperty::Property::density, T, Pin, z).value;
     if (rho <= 0.0)
         throw std::runtime_error("Pipe: non-physical liquid density.");
+
+    // =====================================================================
+    //  A NON-NEWTONIAN LIQUID (DEV.md 4c C421 (7); R7, R9; Chhabra & Richardson Ch. 3).
+    //  The liquid declares `transport { liquid { rheology { measured { .. } } } }`:
+    //  it has no one viscosity, so the Newtonian path below (Re = rho v D / mu, the
+    //  friction-factor correlations) is NOT taken.  The flow curve is the fluid's
+    //  and lives in the property dictionary; the shear is the pipe's -- the wall
+    //  stress that carries this flow, found from the curve itself (eq. 3.46) --
+    //  and the pipe asks the door (form 3) at that wall stress.
+    // =====================================================================
+    if (const rheology::FlowCurve* fc = thermo.flowCurveFor(z))
+    {
+        const std::string unitName = dict->name().empty() ? type() : dict->name();
+        const std::string locus = "pipe '" + unitName + "'";
+        scalar MWm = 0.0;
+        for (std::size_t i = 0; i < n; ++i) MWm += z[i] * thermo.comp(i).MW();
+        const scalar massFlow = F * MWm;                        // kg/s
+        const scalar Qv       = massFlow / rho;                 // m^3/s
+        const scalar areaNN   = constant::pi * D * D / 4.0;
+        const scalar vNN      = Qv / areaNN;                    // m/s
+        const scalar ReCritical = 2100.0;                       // p. 133: "the widely accepted figure of 2100 can be used"
+
+        //  The laminar wall stress (eq. 3.46 inverted) and the share of the flow
+        //  the chord below the lowest measured rate carries.
+        const scalar tauLam = nonNewtonianPipe::wallStress(*fc, D, vNN);
+        scalar tailShare = 0.0;
+        nonNewtonianPipe::meanVelocity(*fc, D, tauLam, &tailShare);
+        const scalar nLam = nonNewtonianPipe::nPrime(*fc, D, vNN);
+        const scalar rateNominal = 8.0 * vNN / D;
+        scalar tauW = tauLam;
+        scalar Re_MR = 8.0 * rho * vNN * vNN / tauLam;          // = rho v D / mu_eff, eq. 3.58
+        scalar nP = nLam;
+        std::string regimeNN = "laminar";
+        int regimeCodeNN = 0;
+        std::string turbWords;
+        scalar fFanning = tauLam / (0.5 * rho * vNN * vNN);
+
+        if (fc->viscoelastic && Re_MR >= ReCritical)
+            throw std::runtime_error(locus + ": the flow curve " + fc->name + " is declared viscoelastic and Re_MR = "
+                + std::to_string(Re_MR) + " is past the laminar limit " + std::to_string(ReCritical)
+                + ": REFUSED (R9) -- the book gives no generalised turbulent relation for viscoelastic fluids (p. 137) and no quantitative"
+                  " laminar criterion for them (p. 133).");
+        if (Re_MR >= ReCritical)
+        {
+            //  TURBULENT NON-NEWTONIAN FLOW IS REFUSED UNLESS A METHOD IS DECLARED (R9).
+            std::string method;
+            if (operDict->found("turbulent"))
+            {
+                const DictPtr td = operDict->subDict("turbulent");
+                method = td->lookupWordOrDefault("method", "");
+            }
+            if (method.empty())
+                throw std::runtime_error(locus + ": the flow of " + fc->name + " is past the laminar limit: Re_MR = "
+                    + std::to_string(Re_MR) + " >= " + std::to_string(ReCritical) + " (Metzner-Reed Reynolds number, the book's figure for"
+                    " time-independent fluids, p. 133).  REFUSED (R9): turbulent non-Newtonian flow has no method until the case declares one --"
+                    " `operation { turbulent { method DodgeMetzner; } }` (eqs. 3.70-3.73, p. 138).  The book's warning: the published methods"
+                    " differ by up to +-50 % among themselves (p. 150-151), unlike Newtonian turbulent flow (+-5 %).");
+            if (method != "DodgeMetzner")
+                throw std::runtime_error(locus + ": `turbulent { method " + method + "; }` -- this build carries DodgeMetzner only"
+                    " (Chhabra & Richardson eqs. 3.70-3.73, p. 138).");
+            if (Re_MR < 2900.0)
+                throw std::runtime_error(locus + ": Re_MR = " + std::to_string(Re_MR) + " lies between the laminar limit 2100 and the 2900 where the"
+                    " Dodge-Metzner data begin (2900 <= Re_MR <= 36000, p. 138): the transition band, where no correlation predicts f.");
+            //  Metzner-Reed route: n', m' at the PREVAILING wall stress from the laminar relation (p. 151).
+            scalar tau = tauLam, nTurb = nLam, fF = fFanning, ReT = Re_MR;
+            for (int it = 0; it < 200; ++it)
+            {
+                const scalar gammaNeeded = fc->rateAt(tau);
+                fc->admitRate(gammaNeeded, locus + " (turbulent wall stress " + std::to_string(tau) + " Pa: the laminar relation is needed there)");
+                const scalar Vp = nonNewtonianPipe::meanVelocity(*fc, D, tau);
+                nTurb = nonNewtonianPipe::nPrime(*fc, D, Vp);
+                const scalar mP = tau / std::pow(8.0 * Vp / D, nTurb);
+                ReT = rho * std::pow(vNN, 2.0 - nTurb) * std::pow(D, nTurb) / (std::pow(8.0, nTurb - 1.0) * mP);
+                fF = nonNewtonianPipe::dodgeMetznerF(ReT, nTurb);
+                const scalar tauNew = fF * 0.5 * rho * vNN * vNN;
+                if (std::fabs(tauNew - tau) < 1.0e-10 * tau) { tau = tauNew; break; }
+                tau = 0.5 * (tau + tauNew);
+            }
+            if (ReT < 2900.0 || ReT > 36000.0 || nTurb < 0.36 || nTurb > 1.0)
+                throw std::runtime_error(locus + ": Dodge-Metzner is outside the data it was fitted to: Re_MR = " + std::to_string(ReT)
+                    + ", n' = " + std::to_string(nTurb) + " at the prevailing wall stress " + std::to_string(tau)
+                    + " Pa (2900 <= Re_MR <= 36000, 0.36 <= n' <= 1, p. 138).");
+            tauW = tau; nP = nTurb; Re_MR = ReT; fFanning = fF;
+            regimeNN = "turbulent (Dodge-Metzner)"; regimeCodeNN = 2;
+            turbWords = "turbulent: Dodge & Metzner 1959, eq. 3.73, with n' = " + std::to_string(nTurb)
+                + " and m' at the prevailing wall stress " + std::to_string(tau) + " Pa; the book: the methods differ by up to +-50 % (p. 150-151)";
+            AdvisoryLog::instance().addAnnouncedOnce("pipeNNTurbulent:" + unitName, "validity", "warning", locus, turbWords);
+        }
+
+        //  THE DOOR, FORM 3, at the wall stress (state, time dependence, domain: refused here).
+        liquidProperty::Consumer who{ "pipe", unitName };
+        const liquidProperty::ApparentViscosity av = liquidProperty::apparentViscosity(
+            thermo, T, Pin, z, liquidProperty::Shear::stress(tauW), &who);
+        const scalar gammaWall = av.shearRate;
+        const scalar muEff = tauW * D / (8.0 * vNN);            // eq. 3.58: the EFFECTIVE viscosity (not the point value)
+        const scalar mP = tauW / std::pow(8.0 * vNN / D, nP);
+
+        if (tailShare > 1.0e-3)
+        {
+            char b[420];
+            std::snprintf(b, sizeof b, "%.3g %% of the flow (eq. 3.46's integral) stands on shear rates below the lowest the record %s reaches (%.6g 1/s):"
+                " the integral needs the curve from zero stress and a table does not give it, so the chord of the first segment is taken there",
+                100.0 * tailShare, fc->name.c_str(), static_cast<double>(fc->gammaLoAuth));
+            AdvisoryLog::instance().addAnnouncedOnce("pipeNNTail:" + unitName, "approximation", "info", locus, b);
+        }
+        if (sumK > 0.0)
+            AdvisoryLog::instance().addAnnouncedOnce("pipeNNFittings:" + unitName, "validity", "warning", locus,
+                "the fittings' Newtonian loss coefficients K are applied to a non-Newtonian liquid: the book finds little reliable information,"
+                " Slatter found much larger losses for some clays and polymers, and in laminar flow K varies as 1/Re (p. 190); it is always"
+                " preferable to test the fluid");
+
+        const scalar velHeadN = 0.5 * rho * vNN * vNN;
+        const scalar dP_fric  = 4.0 * tauW * L / D;                     // eq. 3.2: -dP/L = 4 tau_w / D
+        const scalar dP_fit   = sumK * velHeadN;
+        const scalar dP_elev  = rho * g_standard * dz;
+        const scalar dPN      = dP_fric + dP_fit + dP_elev;
+        const scalar PoutN    = Pin - dPN;
+        const scalar fDarcy   = 4.0 * fFanning;
+        if (PoutN <= 0.0)
+            std::cerr << "WARNING: pipe outlet pressure is non-positive (" << (PoutN * 1.0e-5) << " bar).\n";
+
+        if (verbosity >= 2)
+        {
+            std::cout << "\n==============================  Pipe Result (non-Newtonian)  ==========\n"
+                      << "  Fluid:           rho = " << std::fixed << std::setprecision(2) << rho << " kg/m3,  flow curve " << fc->name
+                      << " (" << fc->where << ")\n"
+                      << "  Flow:            Q = " << std::scientific << std::setprecision(4) << Qv << " m3/s   v = " << std::fixed
+                      << std::setprecision(4) << vNN << " m/s   8V/D = " << std::setprecision(3) << rateNominal << " 1/s\n"
+                      << "  Regime:          " << regimeNN << "   Re_MR = " << std::setprecision(2) << Re_MR << "   n' = " << std::setprecision(4)
+                      << nP << "   m' = " << mP << " Pa s^n'\n"
+                      << "  Wall:            tau_w = " << std::setprecision(4) << tauW << " Pa   gamma_w = " << gammaWall
+                      << " 1/s (the true wall rate, Rabinowitsch-Mooney)   mu_eff = tau_w D/(8V) = " << std::scientific << std::setprecision(4) << muEff << " Pa s\n"
+                      << (fc->hasYield ? "  Plug:            R_p/R = tau_y/tau_w = " + std::to_string(fc->yield / tauW) + "   R_p = " + std::to_string(1000.0 * 0.5 * D * fc->yield / tauW) + " mm   V_plug = " + std::to_string(nonNewtonianPipe::plugVelocity(*fc, D, tauW)) + " m/s\n" : std::string())
+                      << "  Friction:        f_Fanning = " << std::fixed << std::setprecision(6) << fFanning << (regimeCodeNN == 0 ? "  (laminar 16/Re_MR = " + std::to_string(16.0 / Re_MR) + ")" : "  (" + regimeNN + ")") << "\n"
+                      << "  dP friction:     " << std::setprecision(4) << (dP_fric * 1.0e-5) << " bar  (4 tau_w L / D)\n"
+                      << "  dP fittings:     " << (dP_fit * 1.0e-5) << " bar\n"
+                      << "  dP elevation:    " << (dP_elev * 1.0e-5) << " bar\n"
+                      << "  dP (total):      " << (dPN * 1.0e-5) << " bar   <- RESULT   P_out = " << (PoutN * 1.0e-5) << " bar\n"
+                      << "  Door (form 3):   " << av.domainWords << "; apparent viscosity at the wall " << std::scientific << std::setprecision(4)
+                      << av.value << " Pa s\n"
+                      << "=====================================================================\n\n";
+        }
+
+        produced_.clear();
+        ProcessStream outNN;
+        outNN.name = "out";  outNN.F = F;  outNN.T = T;  outNN.P = PoutN;  outNN.z = z;  outNN.vf = 0.0;
+        produced_.push_back(outNN);
+        kpis_.clear();
+        kpis_["deltaP"] = dPN;            kpis_["dP_friction"] = dP_fric;   kpis_["dP_fittings"] = dP_fit;
+        kpis_["dP_elevation"] = dP_elev;  kpis_["P_in"] = Pin;              kpis_["P_out"] = PoutN;
+        kpis_["velocity"] = vNN;          kpis_["reynolds"] = Re_MR;        kpis_["frictionFactor"] = fDarcy;
+        kpis_["regime"] = static_cast<scalar>(regimeCodeNN);
+        kpis_["head_loss_m"] = (dP_fric + dP_fit) / (rho * g_standard);
+        kpis_["density"] = rho;           kpis_["viscosity"] = muEff;       kpis_["F"] = F;
+        kpis_["wallShearStress"] = tauW;  kpis_["wallShearRate"] = gammaWall;
+        kpis_["nominalShearRate"] = rateNominal;
+        kpis_["nPrime"] = nP;             kpis_["mPrime"] = mP;
+        kpis_["viscosityApparentWall"] = av.value;
+        kpis_["tailShare"] = tailShare < 1.0e-6 ? 0.0 : tailShare;   // below the quadrature's resolution: nothing stands on the chord
+        if (fc->hasYield)
+        {
+            kpis_["yieldRatio"]   = fc->yield / tauW;                       // phi = tau_y / tau_w = R_p / R (eq. 3.18)
+            kpis_["plugRadius"]   = 0.5 * D * fc->yield / tauW;             // m
+            kpis_["plugVelocity"] = nonNewtonianPipe::plugVelocity(*fc, D, tauW);   // m/s (eq. 3.40)
+        }
+        return 0;
+    }
 
     //   Viscosity: the property dictionary's (door).  Required for Re.
     scalar mu;

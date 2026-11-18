@@ -1,0 +1,47 @@
+/*---------------------------------------------------------------------------*\
+  constant/experiments/powerLawEx85.dat -- the flow curve of polymerMelt, as the case's experiment record
+
+  An experiment record of kind FLOW CURVE (docs/design/measured-facts-materials-and-flow-curves.md,
+  R1-R10).  These rows are NOT readings: the source prints the parameters of a constitutive
+  equation and no rows, so the rows are the equation evaluated at the shear rates below
+  (`instrument model`, `kind adopted`): the source's own numbers, nothing added.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    origin       literature;
+    kind         adopted;
+    basis        "the power-law parameters printed in Example 8.5 (m = 200 Pa s^n, n = 0.50); rows generated from tau = m gamma^n";
+    citation     "Chhabra, R. P. and Richardson, J. F. (2008). Non-Newtonian Flow and Applied Rheology, 2nd ed., Butterworth-Heinemann. Example 8.5, p. 417-418 (power law, eq. 1.12, p. 9)";
+}
+
+property    flowCurve;
+system      ( polymerMelt );
+
+conditions
+{
+    instrument   model;
+    model        "tau = m gamma^n, m = 200 Pa s^n, n = 0.50 (Chhabra & Richardson eq. 1.12; Example 8.5, p. 417)";
+    T            450 K;      // the source states no temperature: the case's nominal one
+}
+
+yieldStress
+{
+    value   10 Pa;
+    how     "a vane test (the case's own illustration): Chhabra & Richardson eqs. 2.50-2.55, p. 94-95";
+}
+
+columns
+(
+    { name gamma; unit 1/s; }
+    { name tau;   unit Pa;  }
+);
+data
+(
+    0.01       20
+    0.1        63.2455532
+    1          200
+    10         632.455532
+    100        2000
+    1000       6324.55532
+);

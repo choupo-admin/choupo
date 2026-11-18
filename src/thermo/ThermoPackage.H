@@ -729,6 +729,13 @@ public:
     const std::vector<liquidTransport::ViscosityMeasurement>& liquidViscosityMeasurements() const
     { return liquidViscosityMeasured_; }
     const liquidTransport::ViscosityMeasurement* liquidViscosityMeasurementFor(const sVector& x) const;
+    //  THE LIQUID'S FLOW CURVE (C421 (7), form 3 of the property door;
+    //  transport/FlowCurve.H): the `rheology { measured }` record whose constituent
+    //  set is x's, nullptr when the liquid is Newtonian (by absence).  A liquid
+    //  that has one is refused by `viscosityLiquid`: the question is the apparent
+    //  viscosity AT A SHEAR the unit supplies (liquidProperty::apparentViscosity).
+    const rheology::FlowCurve* flowCurveFor(const sVector& x) const;
+    const std::vector<rheology::FlowCurve>& flowCurves() const { return flowCurves_; }
     //  The same for the liquid thermal conductivity and the surface tension (C421 slice (8)),
     //  and the generic door: `property` is liquidViscosity, liquidThermalConductivity or
     //  surfaceTension.
@@ -1036,6 +1043,7 @@ private:
     std::unique_ptr<LiquidDiffusivityModel>   liquidDiffusivity_;
     liquidTransport::DiffusivityDeclaration   liquidDiffusionDecl_;        // C398 slice (d)
     std::vector<liquidTransport::ViscosityMeasurement> liquidViscosityMeasured_;
+    std::vector<rheology::FlowCurve> flowCurves_;                                   // C421 (7)
     scalar measuredOrCheckedViscosity(scalar T, const sVector& x, const scalar* computed) const;
     std::vector<liquidTransport::MixtureMeasurement> liquidConductivityMeasured_;   // C421 slice (8)
     std::vector<liquidTransport::MixtureMeasurement> surfaceTensionMeasured_;

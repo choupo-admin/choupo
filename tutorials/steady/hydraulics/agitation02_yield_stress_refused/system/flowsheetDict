@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  agitation02_yield_stress_refused
+
+  The agitation01 case with a yield stress added to the fluid's flow curve (a datum of its own,
+  R8).  The average-shear-rate concept needs ONE k_s, and with a yield stress there are unyielded
+  regions where the shear rate is zero (Chhabra & Richardson, p. 395-396): the vessel REFUSES by
+  name (R9; `.expect-nonconvergence`).  The cavern model (eq. 8.12) is not built.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        M1;
+        type        agitatedVessel;
+        in          feed;
+        outputs     ( stirred );
+
+        operation
+        {
+            vessel    { D_T 2.2 m; }
+            impeller  { record helicalRibbonEx85; tipSpeed 1.0 m/s; }
+            thermalMode isothermal;
+            outsideCorrelationWindow
+            {
+                reason "the book's own Example 8.5 takes H/D = 1.5, past the 0.88-1.30 of the 148 configurations eq. 8.7 was fitted to (p. 386, 417); reproduced as printed";
+            }
+        }
+    }
+);

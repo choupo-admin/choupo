@@ -1,0 +1,39 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  pipe08_flowcurve_uncorrected_refused
+
+  The pipe04 case with a flow-curve record that claims to be capillary-rheometer readings but
+  declares only two of the four corrections a capillary needs (Rabinowitsch-Mooney and the
+  laminar-only exclusion; NOT the Bagley end-effect correction and NOT the wall-slip test).
+  R8: such readings are REFUSED as a flow curve, naming the correction missing
+  (`.expect-nonconvergence`).  A raw rheometer reading is a flow curve only after the instrument's
+  corrections (Chhabra & Richardson, p. 36).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        L1;
+        type        pipe;
+        in          feed;
+        outputs     ( delivered );
+
+        operation
+        {
+            geometry
+            {
+                D          0.025  m;
+                L          10.0  m;
+                roughness  4.6e-5  m;
+                dz         0.0  m;
+            }
+        }
+    }
+);

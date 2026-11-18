@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Meta-control for tutorial pipe04_powerlaw_polymer_solution.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Laminar pressure drop of a power-law polymer solution (Chhabra & Richardson Example 3.1): 25 mm, 10 m, 2500 kg/h, m 3 Pa s^n, n 0.5 -- 110 kPa";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------*\
+  constant/components/claySlurry.dat -- a STAND-IN LIQUID for the clay slurry of Chhabra & Richardson Example 3.3 (p. 122)
+
+  The book gives this fluid's density and its flow curve and nothing else, so the
+  record carries exactly that: the density through the molar volume `Vliq`
+  (rho = MW/Vliq = 1500 kg/m3, the book's value) and a molar mass and formula
+  that are WATER'S, placeholders so the streams and the balances have a mole to
+  count.  The flow curve is not here: it is the property dictionary's
+  (transport { liquid { rheology { measured { ... } } } }).  The liquid
+  heat capacity and the formation datum are placeholders too; the unit is
+  isothermal at one pressure, so no result depends on them.
+\*---------------------------------------------------------------------------*/
+
+name           claySlurry;
+formula        H2O;
+role           nonvolatile;
+MW             18.015;
+dissociation   1;
+Vliq           1.201000e-05;       // m3/mol: rho = MW / Vliq = 1500 kg/m3 (the book's density)
+
+standardThermochemistry
+{
+    dHf_298    -285830.0;     // placeholder (water's), unused: no result depends on it
+    s_298      69.95;
+    referenceState      pureLiquid;
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (75.5);     // placeholder (water's)
+    Trange        (270  520);
+}

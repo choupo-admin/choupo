@@ -59,6 +59,9 @@ const std::map<std::string, std::vector<Row>>& table()
         { "storageTank",       { { "liquidDensity",     { "kernel" } } } },
         { "heatExchanger",     { { "liquidDensity",     { "kernel" } },
                                  { "liquidViscosity",   { "kernel" } } } },
+        //  C421 (7): the stirred vessel's power asks the door for the density and, form 3, the apparent viscosity
+        { "agitatedVessel",    { { "liquidDensity",     { "kernel" } },
+                                 { "liquidViscosity",   { "kernel" } } } },
         { "pipe",              { { "liquidDensity",     { "kernel" } },
                                  { "liquidViscosity",   { "kernel", "declared" } },
                                  { "surfaceTension",    { "kernel", "declared" } } } },

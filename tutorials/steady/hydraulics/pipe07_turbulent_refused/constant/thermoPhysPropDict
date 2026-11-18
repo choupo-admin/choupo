@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  pipe04 -- the property system: the liquid declares its flow curve (door form 3).  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+
+components ( polymerSolution );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid { activityModel { model ideal; } }
+    vapour { fugacityModel idealGas; }
+}
+
+transport
+{
+    liquid
+    {
+        rheology
+        {
+            measured
+            {
+                powerLawTurb
+                {
+                    use            method;
+                    interpolation  logLog;
+                    reason         "the flow curve IS this liquid's rheology; Newtonian by absence, declared here because it is not";
+                    fit            { model powerLaw; }
+                }
+            }
+        }
+    }
+}

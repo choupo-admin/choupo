@@ -1,0 +1,48 @@
+/*---------------------------------------------------------------------------*\
+  constant/experiments/herschelBulkleyEx33.dat -- the flow curve of claySlurry, as the case's experiment record
+
+  An experiment record of kind FLOW CURVE (docs/design/measured-facts-materials-and-flow-curves.md,
+  R1-R10).  These rows are NOT readings: the source prints the parameters of a constitutive
+  equation and no rows, so the rows are the equation evaluated at the shear rates below
+  (`instrument model`, `kind adopted`): the source's own numbers, nothing added.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    origin       literature;
+    kind         adopted;
+    basis        "the Herschel-Bulkley parameters printed in Example 3.3 (tau_0 = 17 Pa, m = 0.83 Pa s^n, n = 0.5); rows generated from tau = tau_0 + m gamma^n";
+    citation     "Chhabra, R. P. and Richardson, J. F. (2008). Non-Newtonian Flow and Applied Rheology, 2nd ed., Butterworth-Heinemann. Example 3.3, p. 122-123 (Herschel-Bulkley, eq. 1.18, p. 14)";
+}
+
+property    flowCurve;
+system      ( claySlurry );
+
+conditions
+{
+    instrument   model;
+    model        "tau = tau_0 + m gamma^n, tau_0 = 17 Pa, m = 0.83 Pa s^n, n = 0.5 (Chhabra & Richardson eq. 1.18; Example 3.3, p. 122)";
+    T            298.15 K;      // the source states no temperature: the case's nominal one
+}
+
+yieldStress
+{
+    value   17 Pa;
+    how     "the yield-stress parameter of Example 3.3 (Herschel-Bulkley, p. 122); for a measured fluid: a vane or a controlled-stress ramp (Chhabra & Richardson, p. 23, 91-96)";
+}
+
+columns
+(
+    { name gamma; unit 1/s; }
+    { name tau;   unit Pa;  }
+);
+data
+(
+    0.01       17.083
+    0.1        17.262469
+    1          17.83
+    10         19.6246905
+    100        25.3
+    1000       43.2469046
+    10000      100
+);

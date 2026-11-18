@@ -140,7 +140,7 @@ void stampWalk(const DictPtr& d, const std::string& dir, const std::string& pare
             //  stated mixture viscosity transport { liquid { viscosity {
             //  measured { <name> { ... } } } } } (C398 slice (d))
             if (parentKey == "measured" && (grandKey == "liquid" || grandKey == "viscosity"
-                                            || grandKey == "thermalConductivity" || grandKey == "surfaceTension")
+                                            || grandKey == "thermalConductivity" || grandKey == "surfaceTension" || grandKey == "rheology")
                 && !sub->found(experimentsDirKey()))
                 sub->insert(experimentsDirKey(), EntryValue(dir));
             stampWalk(sub, dir, k, parentKey);
