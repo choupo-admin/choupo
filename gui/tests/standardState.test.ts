@@ -137,7 +137,7 @@ describe("the lesson", () => {
   it("cites the engine where it prices the three terms", () => {
     const s = all(7);
     expect(s).toContain("src/thermo/Component.cpp:1689");
-    expect(s).toContain("src/thermo/ThermoPackage.cpp:1511");
+    expect(s).toContain("src/thermo/ThermoPackage.cpp:1517");
     expect(s).toContain("src/propertyOps/PropertyPoint.cpp:101");
     //  C259: the two line numbers had drifted (1554, 1393) after the
     //  2026-11 merges and nothing held them; the cited lines are now read
