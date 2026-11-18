@@ -136,7 +136,34 @@ def make(tmp, name, solvent, n_solvent, n_water, keep_sorption=False,
     if old not in t:
         fail(f"{name}: sprayDryer01's component list moved -- update the probe")
     extra = " binderX" if no_outlet else ""
-    tp.write_text(t.replace(old, f"components ( {solvent} water air sucrose{extra} );"))
+    t = t.replace(old, f"components ( {solvent} water air sucrose{extra} );")
+    #  The syrup's viscosity is a MEASURED table of water + sucrose (C421); a
+    #  stated value is never handed to a law, so a liquid that also holds the
+    #  probe's solvent is refused unless the declaration says the table ignores
+    #  it, with a bound and a reason.  The probe declares exactly that: the
+    #  atomiser's viscosity is not this gate's subject (the solvents' fate is),
+    #  and the probe's liquid holds at most ~0.3 of the solvent by mass.
+    iv = "interpolation  ( logReciprocal monotoneCubic );"
+    if iv not in t:
+        fail(f"{name}: sprayDryer01's viscosity declaration moved -- update the probe")
+    ign = [solvent] + (["binderX"] if no_outlet else [])
+    t = t.replace(iv, iv + f"\n                    ignores ( {' '.join(ign)} );"
+                  "\n                    ignoresReason \"probe: the gate is about the solvents' fate, not the syrup viscosity\";"
+                  "\n                    ignoresUpTo 0.5;", 1)
+    tp.write_text(t)
+    #  Splitting the feed's water between water and the solvent raises sucrose's
+    #  share of the water + sucrose pair above the table's 0.5 row; the probe
+    #  authorises a wider box in ITS copy of the experiments file (the
+    #  tutorial's own file is not touched), with the reason the grammar asks.
+    ex = work / "constant/experiments/swindellsSucroseWaterViscosity.dat"
+    et, k = re.subn(r"w\[sucrose\]  \( 0\.30 0\.50 \);",
+                    "w[sucrose]  ( 0.30 0.90 );\n"
+                    "    reason      \"probe: the feed's water is split with a solvent, so sucrose's share"
+                    " of water + sucrose rises; the atomiser's viscosity is not this gate's subject\";",
+                    ex.read_text())
+    if k != 1:
+        fail(f"{name}: the sucrose table's authorised box moved -- update the probe")
+    ex.write_text(et)
     if no_outlet:
         #  A dissolved component the dryer has no outlet for: sucrose's own
         #  record renamed and given `role radical;` -- the one role that is
