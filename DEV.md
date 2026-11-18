@@ -4529,6 +4529,23 @@ accepts today, and that is a policy call.
 > pinned -- 11 of its local solvent records (benzene, cyclohexane, ethanol,
 > toluene, ...) carry Hansen triples the catalogue lacks and declare no
 > variation; they are the next one-home step of C428 (a).
+>
+> **C430 (Vitor, 2026-11-19, ~01:45: "para a suite e faz essa merda! Eu quero
+> o this is it!").**  AN ORDER, and on the content he is right: the final
+> sweep of tonight's batch (five door families, C429, C428 (a)) was in its
+> interface phase (no destructive gate running) and was stopped in its
+> integration tree; that tree is pushed as `integ/final-1118` (9a52244dc,
+> not main), and ONE sweep will now prove the larger batch instead of two
+> sweeps proving its halves (the batch rule).  The cost, stated: main stays
+> at tonight's earlier landings until that sweep passes.  "THIS IS IT" was
+> defined to him in these terms: the architecture is decided and written;
+> it is BUILT when (1) the last known two-homes defect, the silent backfill,
+> is closed, and (2) the three openings the design draws are cut -- the
+> stream's carried quantities (spike 5d), the door's third form (flow
+> curves, R7-R10), and the home of a sample's measured behaviour (R6).  The
+> material's own door (form 2) rests on (1) of the spike and follows it.
+> Four generals launched at once from `integ/final-1118`, disjoint slices,
+> common rules in a written brief; then one `--nightly` over everything.
 
 
 
