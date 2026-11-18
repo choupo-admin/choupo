@@ -57,6 +57,19 @@ scalar HelmholtzPureFluid::h_molar(scalar T, scalar p) const
 scalar HelmholtzPureFluid::s_molar(scalar T, scalar p) const
 { return stateAt(T, p).s * mw_ / 1000.0; }
 
+//  The liquid ROOT of the equation at (T, p), stable or metastable; below T_c only.
+scalar HelmholtzPureFluid::h_molarLiquid(scalar T, scalar p) const
+{
+    if (T >= f().Tc()) return h_molar(T, p);
+    return f().at(T, f().densityOnBranch(T, p, true)).h * mw_ / 1000.0;
+}
+
+scalar HelmholtzPureFluid::s_molarLiquid(scalar T, scalar p) const
+{
+    if (T >= f().Tc()) return s_molar(T, p);
+    return f().at(T, f().densityOnBranch(T, p, true)).s * mw_ / 1000.0;
+}
+
 scalar HelmholtzPureFluid::v_molar(scalar T, scalar p) const
 { return mw_ / 1000.0 / f().density(T, p); }
 

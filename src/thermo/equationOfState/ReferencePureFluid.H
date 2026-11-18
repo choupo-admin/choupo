@@ -73,6 +73,8 @@ public:
 
     scalar h_molar (scalar T_K, scalar p_Pa) const override;
     scalar s_molar (scalar T_K, scalar p_Pa) const override;
+    scalar h_molarLiquid(scalar T_K, scalar p_Pa) const override;
+    scalar s_molarLiquid(scalar T_K, scalar p_Pa) const override;
     scalar v_molar (scalar T_K, scalar p_Pa) const override;
     scalar cp_molar(scalar T_K, scalar p_Pa) const override;
     scalar p_sat(scalar T_K) const override;

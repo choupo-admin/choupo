@@ -391,8 +391,14 @@ public:
     // price its liquid on the equation of state, the isothermal departure of
     // each component from its own saturated liquid at T:
     //
-    //   dh_i(T, P) = INT_{psat_i(T)}^{P} [ v_i - T (dv_i/dT) ] dP'
-    //   ds_i(T, P) = - INT_{psat_i(T)}^{P} (dv_i/dT) dP'
+    //   dh_i(T, P) = INT_{P_ref,i}^{P} [ v_i - T (dv_i/dT) ] dP'
+    //   ds_i(T, P) = - INT_{P_ref,i}^{P} (dv_i/dT) dP'
+    //   with P_ref,i = psat_i(T_ref,i), ONE pressure per component: T_ref,i the
+    //   Kirchhoff datum temperature (298.15 K, or 0.9 Tc under a lower critical
+    //   point).  The base surface is a fixed-pressure function, so with both limits
+    //   fixed (dh/dT)_P = T (ds/dT)_P exactly (the architect's ruling, 2026-11-19; a
+    //   lower limit psat(T) moved with T and added -v dpsat/dT to the isobaric Cp).
+    //   Below psat(T) the leg is held at psat(T).
     //
     // v_i is the pure-component liquid volume the property kernel returns,
     // dv_i/dT its own temperature derivative (a central difference of 0.5 K),
@@ -411,6 +417,9 @@ public:
         std::string source;             // the volume method that gave v and its slope
         bool        corrStates = false; // the slope is the corresponding-states (Rackett) one
         bool        signChanged = false;// 1 - alpha T < 0 on that slope
+        scalar      Tref = 0.0;         // K, the component's reference temperature
+        scalar      Pref = 0.0;         // Pa, psat(Tref): the ONE pressure the base surface lives at
+        bool        clamped = false;    // P was at or below psat(T): the leg is held at psat(T)
     };
     LiquidPressureLeg liquidPressureLeg(std::size_t i, scalar T_K, scalar P_Pa) const;
     //  The same, with no interpolation: the leg at exactly (T, P).
@@ -1153,6 +1162,7 @@ private:
     //  has no term, the exact leg is taken.
     struct PressureLegNode { bool ok = false; scalar h = 0.0, s = 0.0; };
     mutable std::map<std::pair<std::size_t, scalar>, std::map<long, PressureLegNode>> pressureLegGrid_;
+    mutable std::map<std::size_t, std::pair<scalar, scalar>> pressureRef_;   // i -> (Tref, Pref)
     mutable std::map<std::size_t, std::string> pressureLegExpensive_;   // "": cheap; else the volume method
     mutable bool        associationResolved_ = false;
     mutable std::size_t associationIndex_    = 0;      // n() when none
