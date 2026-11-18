@@ -154,7 +154,8 @@ refused.  The writers (choupoProps `fitParameters` proposals,
 `bin/curate` importers) keep writing the single-block form.  The Henry, Pitzer,
 eNRTL and EoS-kij records have their own record types and are not covered: each
 would need the same `sets` / `preferred` reader at ITS loader (the one place it
-reads `parameters`).
+reads `parameters`).  The contract is held by a probe in `bin/curate/check_record_form.py` (arm
+`pair-sets`) on a temporary copy of a catalogue record; no shipped tutorial carries a made-up set.
 
 Every declared file is loaded and verified at assembly — a
 declared-but-missing file REFUSES loudly, naming the entry to add.

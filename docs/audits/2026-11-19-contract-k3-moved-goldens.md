@@ -1,8 +1,7 @@
 # Contract K3 (several named parameter sets per pair): moved goldens
 
-No golden row moved, and none was re-recorded.  The only new golden is the
-witness case's own (`tutorials/props/molecular/pairSets01_butanol_water_two_sets`,
-recorded with `bin/runTests --record`, first record).
+No golden row moved, and none was re-recorded.  No golden was added either: the
+witness is a gate probe (`check_record_form`, arm pair-sets), not a shipped case.
 
 Why nothing can move: a pair record with one unnamed `parameters` block is
 returned by `pairsets::resolve` as the very same dictionary (the set `default`);

@@ -4829,37 +4829,6 @@ THIS CASE: SEALED, and its manifest names Choupo-2607 -- a legitimate old seal (
 \end{tutgolden}
 
 \clearpage
-\tutentry{pairSets01\_butanol\_water\_two\_sets}{tutorials/props/molecular/pairSets01\_butanol\_water\_two\_sets}
-\begin{tutscheme}
-\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{bubble\_preferred\_set}\\[-1pt]{\tiny propertyPoint}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{bubble\_probe\_set}\\[-1pt]{\tiny propertyPoint}};
-\end{tikzpicture}
-\end{tutscheme}
-\tutwhat{A pair record of two named NRTL sets (nButanol + water): the bubble pressure under the preferred set and under a second, case-selected set}
-\begin{tutnarrative}
-Two operations: the same state, the same liquid, one pair record -- the first reads the record's preferred set (lle, from the case's own system), the second the set `probe\_vle` (variant vleSet). The pressures differ because the sets' numbers differ; nothing else changes.
-
-\end{tutnarrative}
-\begin{tutgolden}
-\goldrow{diag}{bubble\_preferred\_set}{Cp\_ig}{111.216042312}
-\goldrow{diag}{bubble\_preferred\_set}{H\_R}{0}
-\goldrow{diag}{bubble\_preferred\_set}{H\_ig}{-260336.156659}
-\goldrow{diag}{bubble\_preferred\_set}{H\_real}{-260336.156659}
-\goldrow{diag}{bubble\_preferred\_set}{P}{101325}
-\goldrow{diag}{bubble\_preferred\_set}{P\_bubble}{93886.927228}
-\goldrow{diag}{bubble\_preferred\_set}{S\_R}{0}
-\goldrow{diag}{bubble\_preferred\_set}{S\_ig}{355.705908442}
-\goldrow{diag}{bubble\_preferred\_set}{S\_real}{355.705908442}
-\goldrow{diag}{bubble\_preferred\_set}{T}{373.15}
-\goldrow{diag}{bubble\_preferred\_set}{Z}{1}
-\goldrow{diag}{bubble\_preferred\_set}{gamma}{1.08080014556}
-\goldrow{diag}{bubble\_preferred\_set}{v\_molar}{0.0306197061525}
-\goldrow{diag}{bubble\_probe\_set}{Cp\_ig}{111.216042312}
-\goldmore{12}
-\end{tutgolden}
-
-\clearpage
 \tutentry{pcsaft01\_pure\_nhexane}{tutorials/props/molecular/pcsaft01\_pure\_nhexane}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
