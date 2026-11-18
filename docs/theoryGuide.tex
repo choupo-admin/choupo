@@ -23958,6 +23958,17 @@ charge $z_i$.  $D_i$ is the species record's $D_{i,0}$ at 25\,$^\circ$C,
 corrected to the run's temperature by Stokes--Einstein on the package's
 declared liquid viscosity, $D_i = D_{i,0}\,(T/298.15)\,\mu(298.15)/\mu(T)$;
 with no viscosity model declared the factor is~1, and the run says so.
+\label{sec:ion-d0-temperature}%
+This rule is a \emph{declared choice} (DEV.md 4c C435~(4)).  Its default
+is unchanged --- on when a liquid viscosity is declared, off when not ---
+but every run prints which rule applied and why, and a case may state it:
+\code{transport \{ liquid \{ ionDiffusivity \{ temperatureCorrection
+stokesEinstein | none; reason "\dots"; \} \} \}}.  \code{none} takes
+$D_i = D_{i,0}$ at every $T$ (a case that reproduces a reference program
+that does not correct $D_0$ for temperature, even though it declares the
+viscosity that program used); \code{stokesEinstein} needs a declared liquid
+viscosity and is refused by name without one.  Both keys are required, and
+a declared choice appears as a row of the resolved view.
 
 Throughout the chapter the electric potential is \textbf{dimensionless}:
 $\psi = F\phi/(\Rgas T)$, with $\phi$ the potential in volts, measured from

@@ -2328,6 +2328,16 @@ static DictPtr v2TransportDict(const DictPtr& v2)
             transportDict->insert(mrow.v1key, EntryValue(mb));
         }
 
+        //  C435 (4): the ions' D0 temperature rule, a declared choice with its reason.
+        if (tr->found("liquid") && tr->subDict("liquid")->found("ionDiffusivity"))
+        {
+            auto ib = std::make_shared<Dictionary>("ionDiffusivity");
+            const auto src = tr->subDict("liquid")->subDict("ionDiffusivity");
+            for (const char* k : { "temperatureCorrection", "reason" })
+                if (src->found(k)) ib->insert(k, src->entryValue(k));
+            transportDict->insert("ionDiffusivity", EntryValue(ib));
+        }
+
         //  A DECLARED TRANSPORT BLOCK THAT MAPS TO NOTHING IS REFUSED.
         //
         //  This loop walks a fixed table of (phase, property) pairs and

@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The liquid viscosity this case's film is priced on (water at the run temperature, the NanoFiltran case's values): 8.968737390077713e-4 Pa.s at 298.15 K.
+  It is the SOLVENT's value, stood over the dilute feed of the ops that name
+  this record (each solute below 0.1 as a mass fraction, the record's box).
+  A HYPOTHESIS of the comparison, stated ONCE here: until DEV.md 4c C435 (4)
+  the number was typed in the `massTransfer` block of each op, which now
+  refuses it; the bench asks the package, which answers with this record.
+  One record per constituent set of a feed, because the package matches a
+  record to the set of components present.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    origin       literature;
+    kind         adopted;
+    basis        "adopted: the reference program's own viscosity of water at 298.15 K (a Vogel fit inside NanoFiltran), taken for the dilute feeds of this case; the value of the SOLVENT, not a measurement of the solution";
+    citation     "Labban, O. et al. (2017), DSPM-DE validation case of this tutorial; the water properties are those of the NanoFiltran reference program (Geraldes & Brites Alves, J. Membr. Sci. 321 (2008) 172-182, doi:10.1016/j.memsci.2008.04.054): a Vogel fit for the viscosity, the constant 997 kg/m3";
+}
+
+property    liquidViscosity;
+system      ( water glycerol );
+solvent     water;
+
+columns
+(
+    { name T;           unit K;    }
+    { name mu;          unit Pa.s; }
+    { name w[glycerol]; unit -; }
+);
+data        ( 298.15 8.968737390077713e-4 0 );
+
+box
+{
+    T        ( 298.05 298.25 );
+    w[glycerol]  ( 0 0.1 );
+}

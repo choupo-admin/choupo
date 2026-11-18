@@ -277,8 +277,10 @@
   Vogel viscosity, and at the paper's 298 K (0.15 K below 25 C) that is
   0.38 % below the 25 C value.  Choupo's DSPM-DE corrects D0 to T by the
   same Stokes-Einstein ratio on the package's own liquid viscosity since
-  C148 -- and this case declares NO liquid-viscosity model, so it reads the
-  25 C D0 here, announced, and its anchors stay matched to it (with a Vogel
+  C148.  This case declares the film's viscosity as records (C435), so the
+  default rule would switch that correction on; it declares `ionDiffusivity {
+  temperatureCorrection none; }` instead, so it reads the 25 C D0 here,
+  announced with its reason, and its anchors stay matched to it (with a Vogel
   model declared Choupo meets NanoFiltran's own D(T) to 1.1e-3 on the trace
   Na+, the residual NanoFiltran's literal 0.897e-3 Pa s: the design record,
   section 13.1); the Born constant's fifth figure is +0.4 %.  The trace
@@ -453,8 +455,6 @@ operations
             model      StirredCell;            // Sh_i = a (omega r^2/nu)^b Sc_i^c, k = Sh D/r
             a 0.23;  b 0.567;  c 0.33;
             radius     0.024;                  // m: NanoFiltran's characteristic length
-            viscosity  8.968737390077713e-4;   // Pa.s: NanoFiltran's Vogel value at 298.15 K
-            density    997;                    // kg/m3: NanoFiltran's
             omega      3.1235154735309094;     // rad/s: Re = omega r^2/nu = 2000
         }
         polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
@@ -480,8 +480,6 @@ operations
             model      StirredCell;   // Sh = 0.23 Re^0.567 Sc^0.33 (Eq. 46), k = Sh D/r
             a 0.23;  b 0.567;  c 0.33;
             radius     0.024;         // m: the stirrer radius
-            viscosity  8.999621107104e-04;   // Pa.s: NanoFiltran's Vogel value at 298 K
-            density    997;           // kg/m3: NanoFiltran's
             omega      42.155948362639;   // rad/s: Re = omega r^2 rho/mu = 26900
         }
         polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
@@ -506,8 +504,6 @@ operations
             model      StirredCell;   // Sh = 0.23 Re^0.567 Sc^0.33 (Eq. 46), k = Sh D/r
             a 0.23;  b 0.567;  c 0.33;
             radius     0.024;         // m: the stirrer radius
-            viscosity  8.999621107104e-04;   // Pa.s: NanoFiltran's Vogel value at 298 K
-            density    997;           // kg/m3: NanoFiltran's
             omega      42.155948362639;   // rad/s: Re = omega r^2 rho/mu = 26900
         }
         polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
@@ -532,8 +528,6 @@ operations
             model      StirredCell;   // Sh = 0.23 Re^0.567 Sc^0.33 (Eq. 46), k = Sh D/r
             a 0.23;  b 0.567;  c 0.33;
             radius     0.024;         // m: the stirrer radius
-            viscosity  8.999621107104e-04;   // Pa.s: NanoFiltran's Vogel value at 298 K
-            density    997;           // kg/m3: NanoFiltran's
             omega      42.155948362639;   // rad/s: Re = omega r^2 rho/mu = 26900
         }
         polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
@@ -558,8 +552,6 @@ operations
             model      StirredCell;   // Sh = 0.23 Re^0.567 Sc^0.33 (Eq. 46), k = Sh D/r
             a 0.23;  b 0.567;  c 0.33;
             radius     0.024;         // m: the stirrer radius
-            viscosity  8.999621107104e-04;   // Pa.s: NanoFiltran's Vogel value at 298 K
-            density    997;           // kg/m3: NanoFiltran's
             omega      42.155948362639;   // rad/s: Re = omega r^2 rho/mu = 26900
         }
         polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
@@ -584,8 +576,6 @@ operations
             model      StirredCell;   // Sh = 0.23 Re^0.567 Sc^0.33 (Eq. 46), k = Sh D/r
             a 0.23;  b 0.567;  c 0.33;
             radius     0.024;         // m: the stirrer radius
-            viscosity  8.999621107104e-04;   // Pa.s: NanoFiltran's Vogel value at 298 K
-            density    997;           // kg/m3: NanoFiltran's
             omega      42.155948362639;   // rad/s: Re = omega r^2 rho/mu = 26900
         }
         polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
@@ -610,8 +600,6 @@ operations
             model      StirredCell;   // Sh = 0.23 Re^0.567 Sc^0.33 (Eq. 46), k = Sh D/r
             a 0.23;  b 0.567;  c 0.33;
             radius     0.024;         // m: the stirrer radius
-            viscosity  8.999621107104e-04;   // Pa.s: NanoFiltran's Vogel value at 298 K
-            density    997;           // kg/m3: NanoFiltran's
             omega      42.155948362639;   // rad/s: Re = omega r^2 rho/mu = 26900
         }
         polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
@@ -636,8 +624,6 @@ operations
             model      StirredCell;   // Sh = 0.23 Re^0.567 Sc^0.33 (Eq. 46), k = Sh D/r
             a 0.23;  b 0.567;  c 0.33;
             radius     0.024;         // m: the stirrer radius
-            viscosity  8.999621107104e-04;   // Pa.s: NanoFiltran's Vogel value at 298 K
-            density    997;           // kg/m3: NanoFiltran's
             omega      42.155948362639;   // rad/s: Re = omega r^2 rho/mu = 26900
         }
         polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
@@ -662,8 +648,6 @@ operations
             model      StirredCell;   // Sh = 0.23 Re^0.567 Sc^0.33 (Eq. 46), k = Sh D/r
             a 0.23;  b 0.567;  c 0.33;
             radius     0.024;         // m: the stirrer radius
-            viscosity  8.999621107104e-04;   // Pa.s: NanoFiltran's Vogel value at 298 K
-            density    997;           // kg/m3: NanoFiltran's
             omega      42.155948362639;   // rad/s: Re = omega r^2 rho/mu = 26900
         }
         polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
@@ -688,8 +672,6 @@ operations
             model      StirredCell;   // Sh = 0.23 Re^0.567 Sc^0.33 (Eq. 46), k = Sh D/r
             a 0.23;  b 0.567;  c 0.33;
             radius     0.024;         // m: the stirrer radius
-            viscosity  8.999621107104e-04;   // Pa.s: NanoFiltran's Vogel value at 298 K
-            density    997;           // kg/m3: NanoFiltran's
             omega      42.155948362639;   // rad/s: Re = omega r^2 rho/mu = 26900
         }
         polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
@@ -714,8 +696,6 @@ operations
             model      StirredCell;   // Sh = 0.23 Re^0.567 Sc^0.33 (Eq. 46), k = Sh D/r
             a 0.23;  b 0.567;  c 0.33;
             radius     0.024;         // m: the stirrer radius
-            viscosity  8.999621107104e-04;   // Pa.s: NanoFiltran's Vogel value at 298 K
-            density    997;           // kg/m3: NanoFiltran's
             omega      42.155948362639;   // rad/s: Re = omega r^2 rho/mu = 26900
         }
         polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }

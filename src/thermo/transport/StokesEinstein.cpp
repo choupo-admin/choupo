@@ -34,6 +34,7 @@ License
 
 #include <cstdio>
 #include <limits>
+#include <stdexcept>
 #include <iostream>
 
 namespace Choupo {
@@ -44,6 +45,16 @@ Factor factorFor(const ThermoPackage& thermo, std::size_t iSolvent, scalar T_K)
     Factor f;
     f.T = T_K;
     f.solvent = thermo.comp(iSolvent).name();
+    //  C435 (4): the case's declared choice overrides the default rule.
+    const std::string& mode = thermo.ionDiffusivityMode();
+    f.declared = !mode.empty();
+    f.reason   = thermo.ionDiffusivityReason();
+    if (mode == "none") { f.choice = "none"; return f; }
+    if (mode == "stokesEinstein" && !thermo.hasLiquidViscosity())
+        throw std::runtime_error("thermoPhysPropDict: `ionDiffusivity { temperatureCorrection"
+            " stokesEinstein; }` needs a liquid viscosity to price the correction -- declare"
+            " `transport { liquid { viscosity { ... } } }`, or write `temperatureCorrection none;`.");
+    f.choice = thermo.hasLiquidViscosity() ? "stokesEinstein" : "none";
     if (!thermo.hasLiquidViscosity()) return f;
     sVector xSolvent(thermo.n(), 0.0);
     xSolvent[iSolvent] = 1.0;
@@ -92,19 +103,36 @@ void announce(const Factor& f, const std::string& locus,
               const std::string& reader, int verbosity)
 {
     if (f.T == referenceTemperature) return;           // nothing to correct
+    //  C435 (4): which rule applied, and why, in every line.
+    const std::string rule = f.declared
+        ? " [rule: DECLARED `ionDiffusivity { temperatureCorrection " + f.choice
+            + "; }` -- " + f.reason + "]"
+        : f.priced
+            ? " [rule: the default -- a liquid viscosity is declared, so the correction is on;"
+              " `transport { liquid { ionDiffusivity { temperatureCorrection none; reason \"...\"; } } }` switches it off]"
+            : " [rule: the default -- no liquid viscosity is declared, so the correction is off]";
     char t[32];
     std::snprintf(t, sizeof(t), "%.2f", static_cast<double>(f.T));
     const std::string key = "stokesEinstein:" + locus + ":" + reader + ":" + t;
-    if (f.priced)
+    if (f.declared && !f.priced)
     {
-        char b[320];
-        std::snprintf(b, sizeof(b),
+        const std::string msg = reader + " at T = " + t + " K: the species records' 25 C D0, NOT"
+            " temperature-corrected" + rule;
+        if (AdvisoryLog::instance().addAnnouncedOnce(key, "model", "info", locus, msg)
+            && verbosity >= 2)
+            std::cout << "  [D(T)] " << msg << "\n";
+    }
+    else if (f.priced)
+    {
+        char bb[320];
+        std::snprintf(bb, sizeof(bb),
             "%s at T = %.2f K: D0(25 C) x Stokes-Einstein (T/T0)(mu(T0)/mu(T))"
             " = %.6f, on the package's liquid viscosity of %s (mu(T) = %.5g,"
             " mu(298.15 K) = %.5g Pa.s)",
             reader.c_str(), static_cast<double>(f.T),
             static_cast<double>(f.value), f.solvent.c_str(),
             static_cast<double>(f.mu), static_cast<double>(f.muRef));
+        const std::string b = std::string(bb) + rule;
         if (AdvisoryLog::instance().addAnnouncedOnce(key, "model", "info",
                                                      locus, b)
             && verbosity >= 2)
@@ -116,7 +144,7 @@ void announce(const Factor& f, const std::string& locus,
             " records' 25 C D0, NOT temperature-corrected -- the case declares"
             " no liquid-viscosity model.  Declare `transport { liquid {"
             " viscosity { model Vogel; } } }` in constant/thermoPhysPropDict"
-            " for Stokes-Einstein D(T) = D0 (T/298.15)(mu(298.15)/mu(T))";
+            " for Stokes-Einstein D(T) = D0 (T/298.15)(mu(298.15)/mu(T))" + rule;
         if (AdvisoryLog::instance().addAnnouncedOnce(key, "approximation",
                                                      "warning", locus, msg)
             && verbosity >= 1)

@@ -137,6 +137,7 @@ Description
 #include "core/DictCanonical.H"
 #include "core/Dimensions.H"
 #include "core/Sha256.H"
+#include "FilmProperties.H"
 #include "thermo/RecordResolver.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/membrane/FittedRecord.H"
@@ -629,13 +630,18 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
         MassTransferModel::registerBuiltins();
         corr = MassTransferModel::New(mt->lookupWord("model"));
         corr->readParameters(mt);
-        if (!mt->found("viscosity") || !mt->found("density"))
-            throw std::runtime_error(site + ": massTransfer {} must declare `viscosity`"
-                " (Pa.s) and `density` (kg/m3)");
-        hyd.mu  = mt->lookupScalar("viscosity");
-        hyd.rho = mt->lookupScalar("density");
-        hyd.u   = mt->lookupScalarOrDefault("velocity", 0.0);
-        hyd.d_h = mt->lookupScalarOrDefault("hydraulicDiameter", 0.0, Dims::length);
+        //  The film's mu and rho come from the package through the door (C435 (4)); typed ones are
+        //  refused.  The state is the data's own temperature (the first row; a record whose box
+        //  does not cover another row's T refuses by name there).
+        {
+            if (rows.empty())
+                throw std::runtime_error(site + ": massTransfer {} needs a data row to take the"
+                    " film's temperature from");
+            std::vector<std::pair<std::size_t, scalar>> feed0;
+            for (const auto& f : rows.front().feed)
+                if (f.second > 0.0) feed0.push_back({ thermo.indexOf(f.first), f.second });
+            filmProperties::read(mt, thermo, rows.front().T, feed0, "fitParameters", opName, site, verbosity, hyd);
+        }
     }
     else if (res->found("k_film"))
         kConst = res->lookupScalar("k_film");

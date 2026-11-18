@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The liquid density this case's film is priced on (water at the run temperature, the NanoFiltran case's values): 997 kg/m3 at 298.15 K.
+  A HYPOTHESIS of the comparison, not a measurement of the solution: the
+  box lets it stand over the dilute feed of the ops that name this record
+  (each solute below 0.1 as a mass fraction).  Until DEV.md 4c C435 (4) the
+  number was typed in the `massTransfer` block of each op, which now refuses
+  it; the bench asks the package, which answers with this record.
+\*---------------------------------------------------------------------------*/
+provenance
+{
+    origin       literature;
+    kind         adopted;
+    basis        "adopted: the reference program's own constant density of water, 997 kg/m3, taken for the dilute feeds of this case; a hypothesis of the program, not a measurement of the solution";
+    citation     "Labban, O. et al. (2017), DSPM-DE validation case of this tutorial; the water properties are those of the NanoFiltran reference program (Geraldes & Brites Alves, J. Membr. Sci. 321 (2008) 172-182, doi:10.1016/j.memsci.2008.04.054): a Vogel fit for the viscosity, the constant 997 kg/m3";
+}
+system      ( water NaCl MgCl2 );
+property    liquidDensity;
+solvent     water;
+columns     ( { name T; unit K; } { name P; unit kPa; } { name w[NaCl]; unit -; } { name w[MgCl2]; unit -; } { name rho; unit kg/m3; } );
+data        ( 298.15 101.325 0 0 997 );
+uncertainty 0.5;           // kg/m3: the rounding of the constant
+box         { T ( 298.05 298.25 ); P ( 50e3 1500e3 ); w[NaCl] ( 0 0.1 ); w[MgCl2] ( 0 0.1 ); }
