@@ -80,7 +80,7 @@ scalar blackwellK_ftps(scalar Flv)
 scalar haiderLevenspielTerminal(scalar d, scalar rho_g, scalar rho_L,
                                 scalar mu_g)
 {
-    //  Kunii & Levenspiel, Fluidization Engineering 2nd ed., p. 80-81:
+    //  Kunii & Levenspiel, 2nd ed., p. 80-81:
     //  d* = d [rho_g (rho_s - rho_g) g / mu^2]^(1/3)           (Eq. 31)
     //  u* = [18/d*^2 + 0.591/d*^0.5]^-1, sphere                (Eq. 34)
     //  u_t = u* [mu (rho_s - rho_g) g / rho_g^2]^(1/3)         (Eq. 32)

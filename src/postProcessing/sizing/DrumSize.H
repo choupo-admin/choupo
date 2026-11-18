@@ -36,8 +36,8 @@ Description
               clearances of Figure 10.51a, the horizontal drum at half level
               with L/D by pressure (3, 4, 5) and the settling-time balance.
     The terminal velocity of the design droplet is Haider & Levenspiel's
-    sphere correlation as printed in Kunii & Levenspiel, Fluidization
-    Engineering 2nd ed., Eq. 34, printed beside the allowable velocity as the
+    sphere correlation as printed in Kunii & Levenspiel,
+    2nd ed., p. 80-81 Eq. 34, printed beside the allowable velocity as the
     physical check.  The nozzle velocities are the typical pipe velocities of
     Towler & Sinnott section 5 (liquids pumped 1 to 3 m/s, gases and vapours
     15 to 30 m/s), DECLARED by the case, with the rho v^2 of the feed printed.
