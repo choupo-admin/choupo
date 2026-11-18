@@ -297,7 +297,7 @@ C303	DONE		Registo local que herda chaves do catálogo em silêncio			2026-11-11
 C304	DONE		Relatório de pinch como relatório de engenharia			2026-11-11	M	73dce1019	
 C305	DONE		EduTool pinch: Compreender, Experimentar, Verificar			2026-11-11	M	ab89a76d6	
 C306	PARTIAL	79	Da lista de utilidades à energia integrada e tubagem de utilidades	balanço de vapor/condensado por coletor, desenho da rede de permutadores e P&ID por fazer	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-11	L	f9af88d4c	
-C307	PARTIAL	0	Algarismos significativos e ordenação de tabelas	general a construir a fatia 2: algarismos significativos e ordenação nas correntes, unidades, relatórios e fichas	general a trabalhar	2026-11-11	M	ea9b6d285	
+C307	PARTIAL	97	Algarismos significativos e ordenação de tabelas	a tabela de correntes principal ainda tem ordenação própria; 5 tabelas menores (resumo, painel lateral, internos, props, plano de lote) sem a regra	o essencial aterrou (719aabaca2); restam pontas pequenas	2026-11-11	M	719aabaca2	
 C308	OPEN	35	Aplicar técnica de Duhem para consistência dos pares	teste de Gibbs-Duhem (van Ness) por laboratório antes do ajuste, 'não testável' sem y, diagnóstico dos 17 severos	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-11	M		
 C309	PARTIAL	80	Máximo de compostos: séries IUPAC de propriedades críticas	restantes lotes de componentes (de ~647 bloqueados, só 41 novos + 17 atualizados) por Tc/Pc IUPAC e Cp Zabransky	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-11	L	03b2aa85d	
 C310	DONE		COSMO-SAC nativo com perfis sigma LVPP			2026-11-11	L	a218cfd0a	
