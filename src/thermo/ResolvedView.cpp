@@ -468,7 +468,8 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
             for (const auto& e : pkg.activity().resolvedPairs())
                 d.push_back("pair " + e.i + "-" + e.j + ": " + e.status
                             + (e.source.empty() ? "" : " (" + e.source + ")")
-                            + (e.provSource.empty() ? "" : ", provenance " + e.provSource));
+                            + (e.provSource.empty() ? "" : ", provenance " + e.provSource)
+                            + (e.set.empty() ? "" : ", set " + e.set));
         //  THE HENRY PAIRS the package uses (review CV-21), whatever the formulation.
         for (std::size_t i = 0; i < n; ++i)
             if (pkg.isHenrySolute(i) && HenrysLawRegistry::has(pkg.comp(i).name(), pkg.solventName()))

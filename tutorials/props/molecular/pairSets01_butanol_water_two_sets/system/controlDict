@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  Two named parameter sets of one pair (contract K3).  The bubble pressure of
+    a butanol-rich liquid at 100 C under the record's preferred set (lle) and
+    under the second set (probe_vle, a PROBE).  The two answers differ by the
+    sets' numbers alone; the run prints the set each used in its [builder]
+    line and in the resolved view.  Run-only + KPI golden. */
+application   choupoProps;
+description   "A pair record of two named NRTL sets (nButanol + water): the bubble pressure under the preferred set and under a second, case-selected set";
+verbosity     2;

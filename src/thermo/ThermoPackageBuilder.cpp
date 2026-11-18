@@ -8,6 +8,7 @@
 #include "thermo/ResolvedView.H"
 
 #include "thermo/Database.H"
+#include "thermo/PairSets.H"
 #include "thermo/Component.H"
 #include "thermo/RecordResolver.H"
 #include "thermo/ThermoAnnounce.H"   // [builder] lines: cout (pedagogy), gated at >= 2
@@ -1807,7 +1808,8 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                         " record data/standards/" + rel + " (or the sealed"
                         " case-local constant/" + rel + ") does not exist --"
                         " curate the pair or drop the molecular model.");
-                DictPtr r = Dictionary::fromFile(rec.string());
+                DictPtr r = pairsets::resolve(Dictionary::fromFile(rec.string()),
+                                              "", rec.string());   // K3: preferred set
                 DictPtr coef = r->found("parameters") ? r->subDict("parameters")
                                                       : r;
                 auto p = std::make_shared<Dictionary>(a + "-" + b);
@@ -1879,7 +1881,8 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                         " sealed case-local constant/" + rel + ") does not"
                         " exist -- curate the pair or drop the molecular"
                         " model.");
-                DictPtr r = Dictionary::fromFile(rec.string());
+                DictPtr r = pairsets::resolve(Dictionary::fromFile(rec.string()),
+                                              "", rec.string());   // K3: preferred set
                 DictPtr coef = r->found("parameters") ? r->subDict("parameters")
                                                       : r;
                 auto p = std::make_shared<Dictionary>(a + "-" + b);
@@ -2324,9 +2327,18 @@ static DictPtr readActivityConfig(const DictPtr& v2, const DictPtr& holder,
                     const std::string src = pd->lookupWord("source");
                     auto pairRec = loadRec(resolveDeclared(repoRoot, src),
                                            "binary pair " + pr);
+                    //  K3: the set the case names (`set <name>;`), else the
+                    //  record's preferred one; unknown names refuse by name.
+                    bool setNamed = false;
+                    std::string setUsed;
+                    pairRec = pairsets::resolve(pairRec,
+                                  pd->lookupWordOrDefault("set", ""), src,
+                                  &setUsed, &setNamed);
                     if (thermoAnnounce())
                         std::cout << "[builder] binary pair " << pr
-                                  << "  --- " << src << "\n";
+                                  << "  --- " << src
+                                  << (setNamed ? "  set " + setUsed : std::string())
+                                  << "\n";
                     auto pp = pairRec->subDict("parameters");
                     auto p = std::make_shared<Dictionary>(pr);
                     p->insert("i", pp->entryValue("i"));
@@ -2344,11 +2356,18 @@ static DictPtr readActivityConfig(const DictPtr& v2, const DictPtr& holder,
                     //  The record file it came from (review row SA-03):
                     //  the activity model records it as the pair's source.
                     p->insert("resolvedFrom", std::string(src));
+                    if (setNamed) p->insert("resolvedSet", setUsed);
                     pairDicts.push_back(p);
                 }
                 else
                 {
                     anyInline = true;
+                    if (pd->found("set"))
+                        throw std::runtime_error("thermophysicalPropertySystem:"
+                            " binaryParameters entry '" + pr + "' names `set "
+                            + pd->lookupWord("set") + ";` but declares no"
+                            " `source` -- a set is a part of a pair RECORD; an"
+                            " inline pair is one set.");
                     announceInlinePair(model, pr);
                     auto p = std::make_shared<Dictionary>(pr);
                     for (const auto& k : pd->keys())
@@ -2472,16 +2491,29 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
         {
             auto pd = bp->subDict(pr);
             DictPtr coef = pd;
+            bool pairSetNamed = false;
+            std::string pairSetUsed;
             if (pd->found("source"))
             {
                 const std::string src = pd->lookupWord("source");
                 coef = loadRec(resolveDeclared(repoRoot, src),
                                "binary pair " + pr);
+                //  K3: the case's `set <name>;`, else the record's preferred.
+                coef = pairsets::resolve(coef, pd->lookupWordOrDefault("set", ""),
+                                         src, &pairSetUsed, &pairSetNamed);
                 if (coef->found("parameters")) coef = coef->subDict("parameters");
                 if (thermoAnnounce())
                     std::cout << "[builder] binary pair " << pr
-                              << "  --- " << src << "\n";
+                              << "  --- " << src
+                              << (pairSetNamed ? "  set " + pairSetUsed : std::string())
+                              << "\n";
             }
+            if (!pd->found("source") && pd->found("set"))
+                throw std::runtime_error("thermophysicalPropertySystem:"
+                    " binaryParameters entry '" + pr + "' names `set "
+                    + pd->lookupWord("set") + ";` but declares no `source` --"
+                    " a set is a part of a pair RECORD; an inline pair is one"
+                    " set.");
             if (!pd->found("source"))
                 announceInlinePair(am->lookupWord("model"), pr);
             auto p = std::make_shared<Dictionary>(pr);
@@ -2497,6 +2529,7 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
             //  source (an authored inline pair carries none and stays `inline`).
             if (pd->found("source") && !p->found("resolvedFrom"))
                 p->insert("resolvedFrom", std::string(pd->lookupWord("source")));
+            if (pairSetNamed) p->insert("resolvedSet", pairSetUsed);
             pairDicts.push_back(p);
         }
         if (!pairDicts.empty())

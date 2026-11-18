@@ -33,6 +33,7 @@ License
 #include "thermo/RecordResolver.H"
 #include "core/ThermoResolution.H"
 #include "thermo/PairAudit.H"
+#include "thermo/PairSets.H"
 
 #include <cmath>
 #include <filesystem>
@@ -163,6 +164,7 @@ UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
             applyPair(p, "inline");
             PairResolution r{ "UNIQUAC", p->lookupWord("i"), p->lookupWord("j"), pairSourceOf(p).first,
                               pairSourceOf(p).second, pairSourceOf(p).first == "inline" ? "" : pairSourceOf(p).second };
+            r.set = p->lookupWordOrDefault("resolvedSet", "");
             recordPair(std::move(r));
         }
 
@@ -187,6 +189,10 @@ UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
             }
 
             auto fd = Dictionary::fromFile(file.string());
+            //  K3: the record's preferred set (a single block reads untouched).
+            bool setNamed = false;
+            std::string setUsed;
+            fd = pairsets::resolve(fd, "", file.string(), &setUsed, &setNamed);
             const bool isProposed =
                 file.string().find("/local/parameters/") != std::string::npos;
             if (isProposed)
@@ -225,6 +231,7 @@ UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
                     ? "standard" : "caseLocal";
                 PairResolution r{ "UNIQUAC", names[i], names[j],
                                   tier, file.string(), provSource };
+                if (setNamed) r.set = setUsed;
                 fillPairAudit(r, provDict, names[i] + "-" + names[j],
                               tier == "standard");
                 if (provDict)   // a record's declared span is guarded (C35 item 5)

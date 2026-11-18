@@ -27,12 +27,31 @@ reach the author before the file is written.
   4. no single-valued ceremony field (the amplifier rule): a key whose only
      possible value is the one written is doctrine in the wrong place.
 
+  5. (ARM `pair-sets`, contract K3, Theory Guide sec:pair-sets) a pair record
+     of the activity models (NRTL, UNIQUAC, Wilson) holds its parameters in
+     ONE of two shapes: one unnamed `parameters` block (the set `default`) OR
+     `sets { <name> { parameters ... } }` with `preferred <name>;` (required
+     from two sets on) -- never both, never a set without `parameters`.
+     THE DEFECT IT WOULD HAVE CAUGHT: before K3 two legitimate
+     parametrisations of one pair (a partially miscible pair fitted to
+     bubble temperatures AND to tie lines) could live only as a case's
+     inline variation, so a case choosing the LLE set could not cite the
+     catalogue; once records may carry sets, a record that names no
+     preferred set, or keeps a stray top-level `parameters`, would make the
+     engine's choice of set ambiguous or refused at run time.  The same arm
+     runs the witness case's REFUSAL probe when a build is present: an
+     unknown `set` name must stop the run by name, listing the record's
+     sets; with no binary the probe is printed SKIPPED, never silent.
+
 Scope: data/standards/components/, plus every draft dict under
 docs/design/.  Sealed tutorial mirrors inherit from standards and are not
 scanned twice.
 """
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -145,6 +164,88 @@ if n_components < 40 or n_design < 5:
           f"more, so the scan surface has collapsed and a verdict over it "
           f"would describe nothing.")
     sys.exit(1)
+
+#  ---- arm pair-sets (K3) ---------------------------------------------------
+def top_level_has(t, key):
+    """`key` at brace depth 0 of the stripped record text."""
+    depth = 0
+    for line in t.splitlines():
+        if depth == 0 and re.match(rf'\s*{key}\b', line):
+            return True
+        depth += line.count('{') - line.count('}')
+    return False
+
+
+def named_sets(t):
+    """Names of the sub-blocks of the top-level `sets { ... }` block, or
+    None when the record has no `sets` block."""
+    m = re.search(r'^\s*sets\s*\{', t, re.M)
+    if not m:
+        return None
+    body, depth, names, cur = t[m.end():], 1, [], ''
+    for c in body:
+        if c == '{':
+            if depth == 1 and cur.split():
+                names.append(cur.split()[-1])
+            depth += 1
+            cur = ''
+        elif c == '}':
+            depth -= 1
+            if depth == 0:
+                break
+            cur = ''
+        elif depth == 1:
+            cur = '' if c == ';' else cur + c
+    return names
+
+
+n_pair_sets = 0
+pair_records = []
+for model in ("NRTL", "UNIQUAC", "Wilson"):
+    pair_records += sorted((ROOT / "data/standards/parameters" / model).glob("*.dat"))
+pair_records += sorted((ROOT / "tutorials/props/molecular/pairSets01_butanol_water_two_sets"
+                        / "constant/parameters/NRTL").glob("*.dat"))      # the witness record
+if True:
+    for p in pair_records:
+        t = strip(p.read_text())
+        names = named_sets(t)
+        if names is None:
+            continue
+        n_pair_sets += 1
+        label = str(p.relative_to(ROOT))
+        if top_level_has(t, "parameters"):
+            bad.append(f"{label}: a top-level `parameters` block BESIDE `sets` -- two homes for one fact")
+        if not names:
+            bad.append(f"{label}: `sets {{ }}` holds no set")
+        if len(set(names)) != len(names):
+            bad.append(f"{label}: a set name is used twice ({names})")
+        m = re.search(r'^\s*preferred\s+(\S+)\s*;', t, re.M)
+        if len(names) > 1 and not m:
+            bad.append(f"{label}: {len(names)} sets and no `preferred <name>;`")
+        if m and m.group(1) not in names:
+            bad.append(f"{label}: `preferred {m.group(1)};` names no set ({names})")
+
+witness = ROOT / "tutorials/props/molecular/pairSets01_butanol_water_two_sets"
+probe_note = "witness refusal probe: SKIPPED (no choupoProps binary in this tree)"
+binary = ROOT / "choupoProps"
+if witness.is_dir() and binary.exists():
+    tmp = Path(tempfile.mkdtemp(prefix="rfpairsets."))
+    try:
+        case = tmp / "case"
+        shutil.copytree(witness, case,
+                        ignore=shutil.ignore_patterns("expected", "results*", "log.*"))
+        tp = case / "constant" / "thermoPhysPropDict"
+        tp.write_text(tp.read_text().replace("set probe_vle;", "set no_such_set;"))
+        r = subprocess.run([str(binary), str(case)], capture_output=True, text=True,
+                           timeout=120, cwd=str(case))
+        out = r.stdout + r.stderr
+        if r.returncode == 0 or "no_such_set" not in out or "probe_vle" not in out:
+            bad.append("pair-sets witness: an unknown `set` name did NOT stop the run "
+                       "by name listing the record's sets")
+        probe_note = "witness refusal probe: unknown set refused by name, sets listed"
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+print(f"record-form gate arm pair-sets: {n_pair_sets} pair record(s) with sets checked; {probe_note}")
 
 if pending:
     print(f"record-form gate: {len(pending)} record(s) still carry `role` -- "

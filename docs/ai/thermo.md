@@ -120,6 +120,42 @@ binaryParameters
 }
 ```
 
+A pair record of the activity models (`NRTL`, `UNIQUAC`, `Wilson`) may hold
+SEVERAL NAMED PARAMETER SETS -- the same pair fitted for two purposes (a
+partially miscible pair: `fittedTo vle` and `fittedTo lle`).  A record with a
+plain `parameters { }` block has ONE set, named `default`, and reads as it
+always did.  A record with sets looks like
+
+```
+recordType binaryInteractionParameters;  model NRTL;  components ( A B );
+preferred lle;
+sets
+{
+    lle { parameters { i A; j B; a_ij ..; b_ij ..; a_ji ..; b_ji ..; alpha ..; }
+          provenance { origin fitted; ... }   validity { temperature { min 288 K; max 366 K; } }
+          fittedTo lle; }
+    vle { parameters { ... }  provenance { ... }  fittedTo vle; }
+}
+```
+
+and a case picks one beside the pair's `source`:
+
+```
+binaryParameters { A-B { source "data/standards/parameters/NRTL/<pair>.dat"; set vle; } }
+```
+
+No `set` = the record's `preferred`.  An unknown name is REFUSED, listing the
+record's sets; `set` without a `source` (an inline pair) is refused.  The run
+prints `[builder] binary pair A-B  --- <file>  set vle` and the resolved view
+line ends `, set vle`.  A curator adds a second set by moving the record's
+`parameters` and `provenance` into a named set, adding `preferred <name>;`
+(required once there are two), and a top-level `parameters` beside `sets` is
+refused.  The writers (choupoProps `fitParameters` proposals,
+`bin/curate` importers) keep writing the single-block form.  The Henry, Pitzer,
+eNRTL and EoS-kij records have their own record types and are not covered: each
+would need the same `sets` / `preferred` reader at ITS loader (the one place it
+reads `parameters`).
+
 Every declared file is loaded and verified at assembly — a
 declared-but-missing file REFUSES loudly, naming the entry to add.
 

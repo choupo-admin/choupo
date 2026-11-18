@@ -141,7 +141,7 @@ export const DP_STEPS: readonly LessonStep[] = [
       { sym: "G_{ij}", means: "the NRTL weighting factor" },
       { sym: "\\alpha", means: "the non-randomness parameter, fixed at 0.30" },
     ],
-    note: "The equation the engine evaluates: src/thermo/activityCoefficient/NRTL.cpp:113.",
+    note: "The equation the engine evaluates: src/thermo/activityCoefficient/NRTL.cpp:114.",
   },
   {
     n: 2,
@@ -253,7 +253,7 @@ export const DP_LIMITS: readonly LessonLimit[] = [
 // ---- citations, read back by the test -----------------------------------------
 
 export const CITATIONS: readonly { file: string; line: number; contains: string }[] = [
-  { file: "src/thermo/activityCoefficient/NRTL.cpp", line: 113, contains: "tau_ij = a_ij + b_ij / T" },
+  { file: "src/thermo/activityCoefficient/NRTL.cpp", line: 114, contains: "tau_ij = a_ij + b_ij / T" },
   { file: "bin/choupo-thermoml", line: 1046, contains: "NO CAS number" },
   { file: "bin/curate/pairs_c283.py", line: 434, contains: "does not join the archive by InChIKey" },
   { file: "bin/choupo-thermoml", line: 1803, contains: "REPORTS y BUT NO x" },

@@ -14,6 +14,7 @@ License
 
 #include "CatalogueLookup.H"
 #include "thermo/Database.H"
+#include "thermo/PairSets.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/RecordResolver.H"
 #include "core/Constants.H"
@@ -429,6 +430,9 @@ Cand readCand(const fs::path& f, const std::string& model, const std::string& re
     c.tier1local = isLocal;
     DictPtr d;
     try { d = Dictionary::fromFile(f.string()); }
+    catch (const std::exception&) { c.unreadable = true; c.tierClass = "curated"; return c; }
+    //  K3: a record of several named sets is described by its preferred set.
+    try { d = pairsets::resolve(d, "", f.string()); }
     catch (const std::exception&) { c.unreadable = true; c.tierClass = "curated"; return c; }
 
     if (d->found("model")) c.model = d->lookupWordOrDefault("model", model);

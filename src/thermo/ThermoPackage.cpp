@@ -3285,7 +3285,8 @@ std::string ThermoPackage::resolvedIdentity(const std::string& definition, const
     std::string in = definition + "|" + pairsBase;
     if (hasActivity())
         for (const auto& e : activity().resolvedPairs())
-            in += "|pair " + e.i + "-" + e.j + ":" + e.status + ":" + e.source + ":" + e.provSource;
+            in += "|pair " + e.i + "-" + e.j + ":" + e.status + ":" + e.source + ":" + e.provSource
+                  + (e.set.empty() ? std::string() : ":set " + e.set);
     for (std::size_t i = 0; i < n(); ++i)
     {
         const Component& c = components_[i];
@@ -3334,7 +3335,8 @@ void ThermoPackage::traceSelf() const
         for (const auto& e : activity().resolvedPairs())
             std::cerr << "[pair-call] #" << (tag.empty() ? std::string("?") : tag) << " pair " << e.i << "-"
                       << e.j << ": " << e.status << (e.source.empty() ? std::string() : " (" + e.source + ")")
-                      << (e.provSource.empty() ? std::string() : ", provenance " + e.provSource) << "\n";
+                      << (e.provSource.empty() ? std::string() : ", provenance " + e.provSource)
+                      << (e.set.empty() ? std::string() : ", set " + e.set) << "\n";
     auto orNone = [](const std::string& x, const char* none) { return x.empty() ? std::string(none) : x; };
     //  The activity model, where the formulation is one the view describes.
     if (hasActivity() && (formulation_ == "gammaPhi" || formulation_ == "gammaGamma"))

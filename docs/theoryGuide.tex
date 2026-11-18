@@ -5898,6 +5898,29 @@ declares \emph{no} span (three UNIQUAC records of P\"opken et al.\ at present)
 says so when it is used --- once per run, naming the record --- because silence
 there would read as ``inside the span''.
 
+\paragraph{Several parameter sets for one pair.}\label{sec:pair-sets}
+Two legitimate parametrisations of one pair --- the same two species, the same
+model, the same convention --- exist when the pair was regressed for two
+purposes: a partially miscible pair fitted to bubble temperatures reproduces
+the homogeneous vapour--liquid equilibrium, and the same pair fitted to tie
+lines reproduces the miscibility gap, and the two sets are not the same
+numbers.  A pair record therefore holds \emph{named sets}:
+\code{sets \{ <name> \{ parameters; provenance; validity; fittedTo vle|lle|vlle|calorimetry; \} \}}
+and \code{preferred <name>;} (the shape a component record uses for its laws).
+The identity of a set is (the species, the model and its convention profile,
+the set's name).  A record with one unnamed \code{parameters} block is read
+exactly as before: its set is named \code{default}.  A case chooses with
+\code{set <name>;} beside the pair's \code{source}
+(\code{nButanol-water \{ source "..."; set lle; \}}); a pair left to the
+catalogue lookup reads the record's \code{preferred} set.  An unknown name is
+refused, naming the sets the record holds; \code{set} on an inline pair is
+refused (an inline pair is one set).  The run prints the set used on the
+\code{[builder] binary pair} line and in the resolved view
+(\code{pair i-j: ... , set <name>}); a record of one unnamed set prints
+nothing new.  The set's own \code{validity} is the span the guard of
+Section~\ref{sec:pair-span} checks, and the record's \code{validation} belongs
+to the preferred set only.  The numbers of different sets are never mixed: a set is used whole.
+
 \subsection{Wilson (1964)}\label{sec:wilson}
 
 Simpler in form than NRTL, faster numerically (no $\alpha$, no nested
