@@ -4700,6 +4700,20 @@ accepts today, and that is a policy call.
 > drawing deliverable on top of the routes, worth having, but the numbers on
 > the line sheet are the engineering and come first.
 
+> **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
+> the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
+> clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
+> 2026-11-19 for everything since the night of 11-17/18 -- 25 lines of
+> DEV.md, 17 backlog rows, BRAIN.md, CLAUDE.md, SESSIONS.md, PLAN.md and 11
+> files NAMED 2026-11-19 under docs/audits and docs/reviews (44 tracked
+> files in all).  A date written from the conversation instead of read
+> from the clock.  RULED: from now every date is read from `date`, and the
+> backlog views stamp themselves from the clock; the correction is ONE
+> mechanical slice (text 2026-11-19 -> 2026-11-18 where it names today,
+> `git mv` of the eleven files and every reference to them) taken when the
+> branches in flight have landed, since four of them create files under
+> that wrong name.
+
 > **C445 (cloud review asked by Vitor, 2026-11-19,
 > docs/reviews/2026-11-19-architecture-growth/REPORT.md: "does the solver
 > grow organically?").**  Verdict: organic where designed (a model is one
