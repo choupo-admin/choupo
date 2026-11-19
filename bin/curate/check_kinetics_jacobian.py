@@ -25,14 +25,15 @@ WHAT THIS GATE CHECKS.
       dense forward difference at analytic Jacobians 1, 2, 4, 8, ... .  At least five audits,
       covering the PRE-IGNITION state (T < 1150 K), the RAMP (1150-3000 K) and the BURNED
       gas (T > 3000 K), each with the worst column difference at most GATE_TOL = 1e-5 of the
-      column's scale (the engine refuses above 1e-4; the measured difference is 1e-8 to
-      2e-7, the rounding of the difference itself -- see the ODEIntegrator.H header).
+      column's scale (the engine refuses above 1e-4; measured 7e-8 to 6.5e-7: the forward
+      difference of the analytic Jacobian's own T column against the audit's central one).
   (b) THE SAME ANSWER, CHEAPER.  ignition01_h2o2 (finite difference) and
       ignition01_h2o2_jac (analytic), both at solver verbosity 4 (the right-hand-side
       count): every KPI of ignition01_h2o2's golden is met by BOTH runs at the golden's
       tolerance, the two runs agree with each other to 1e-8 relative, and the analytic run
       spends at most half the right-hand sides of the finite-difference run (measured
-      8158 against 27668: n + 4 = 14 per step against 4).  The steps, rejected steps,
+      8252 against 27668: n + 4 = 14 per step against 4, plus 204 on the audits).  The
+      steps, rejected steps,
       right-hand sides and Jacobians of both are printed.
   (c) EVERY PATH, ON A CASE THAT ALREADY SHIPS.  Six batch tutorials, each run twice on
       Rosenbrock23 in a private copy -- finite difference, then `jacobian analytic;` --
@@ -60,12 +61,17 @@ right-hand side untouched.  OBSERVED, verbatim:
     tolerance 0.0001).  A term of the model is missing from, or wrong in, its
     derivative.  ...  Refusing; ...
 
-With the refusal disabled (tolerance 1e30) the audits of the sabotaged run read, from the
-first Jacobian to the ramp, 6.4e-5, 6.7e-5, 7.2e-5, 9.1e-5, 1.2e-4, 1.6e-4, 4.7e-4,
-5.8e-3, 0.11, 0.54 (Rosenbrock23) and up to 0.92 (Rodas4, which then took 3317 steps
-against 602): the omission is small where the radicals are few and O(1) at the ramp,
-and arm (a)'s GATE_TOL sits 6x under the first of those numbers and 50x over the
-correct Jacobian's worst.
+The suite under the same sabotage: this gate FAILS -- (a) both integrators refused (at
+analytic Jacobian #32 on Rosenbrock23, #8 on Rodas4: d(n_H)/d(n_N2) 1.05e-4 of the
+column's scale), (b) the analytic run refused.  With the refusal disabled (tolerance 1e30)
+the audits of the sabotaged run read, from the first Jacobian to the ramp, 6.4e-5,
+6.4e-5, 6.7e-5, 7.2e-5, 9.1e-5, 1.2e-4, 1.6e-4, 4.7e-4, 5.8e-3, 0.11, 0.54
+(Rosenbrock23, 1912 + 23 steps against 1939 + 23) and up to 0.92 (Rodas4: 3317 + 30 steps
+against 602 + 15 with the correct Jacobian), while every KPI of ignition01_h2o2's golden
+still passed (T_final 3.4e-9 and 1.1e-10 relative): the omission is small where the
+radicals are few and O(1) at the ramp.  Arm (a)'s GATE_TOL sits 6x under the first of
+those numbers; the correct Jacobian's worst over every audit of this gate is 1e-6 (the
+forward difference the reactor takes for an LHHW law and for the T column, by design).
 
 NOT CHECKED: that the rate laws themselves are right (ignition02_h2air_slack's Slack pin,
 check_elementary_rates); a power-law order below one at zero concentration (the reactor
