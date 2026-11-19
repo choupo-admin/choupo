@@ -673,7 +673,7 @@ export function exercises(): Exercise[] {
         `m = K_H^px/P = ${sig(h2.KHpx, 4)}/101325 = ${sig(m2, 4)}.`,
         `x = y/m = 0.21/${sig(m2, 4)} = ${sig(x2, 4)}; c = H^cp p = 1.3×10⁻⁵ × 0.21 × 101325 = ${sig(c2, 4)} mol/m³ = ${sig(mg2, 4)} mg/L.`,
         `Precision: the datum has two significant figures, so the answers do too.  Sander's oxygen rows spread from 1.2×10⁻⁵ to 1.3×10⁻⁵ mol/(m³ Pa) (Table 6, p. 4408), which alone moves the dissolved oxygen from ${sig(mgLow2, 2)} to ${sig(mg2, 2)} mg/L.`,
-        `Water vapour is neglected: over water at 25 °C the air is saturated, and the vapour pressure of water, ${sig(pw2, 3)} Pa (Choupo's water record, Antoine form), lowers p_O2 to 0.21 × (101325 − ${sig(pw2, 3)}) = ${sig(pHumid2, 4)} Pa, ${sig(100 * pw2 / ATM, 2)} % less: ${sig(mgHumid2, 2)} mg/L instead of ${sig(mg2, 2)}.`,
+        `Water vapour is neglected: over water at 25 °C the air is saturated, and the vapour pressure of water, ${sig(pw2, 3)} Pa (Choupo's water record, the Wagner form of IAPWS), lowers p_O2 to 0.21 × (101325 − ${sig(pw2, 3)}) = ${sig(pHumid2, 4)} Pa, ${sig(100 * pw2 / ATM, 2)} % less: ${sig(mgHumid2, 2)} mg/L instead of ${sig(mg2, 2)}.`,
       ],
       answer: `K_H^px = ${sig(h2.KHpx, 2)} Pa (${sig(h2.KHpx / ATM, 2)} atm); H^cc = ${sig(h2.Hcc, 2)}; m = ${sig(m2, 2)}; x = ${sig(x2, 2)}; ${sig(mg2, 2)} mg/L in dry air (${sig(mgHumid2, 2)} mg/L over saturated air).`,
       values: { Hxp: h2.Hxp, KHpx: h2.KHpx, KHpxAtm: h2.KHpx / ATM, Hcc: h2.Hcc, KHcc: h2.KHcc, m: m2, x: x2, c: c2, mg: mg2,

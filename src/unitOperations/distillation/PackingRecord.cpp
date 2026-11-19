@@ -29,6 +29,7 @@ License
 
 #include "PackingRecord.H"
 
+#include "core/Constants.H"
 #include "core/Dimensions.H"
 #include "core/RegistryRefusal.H"
 #include "core/RegistryScan.H"
@@ -187,7 +188,9 @@ void PackingRecord::read(const DictPtr& d, const std::string& sourcePath)
     for (const auto& f : packingRecord::geometryFields())
     {
         if (!d->found(f)) continue;
-        const scalar v = isLength(f) ? d->lookupScalar(f, Dims::length) : d->lookupScalar(f);
+        const scalar v = isLength(f) ? d->lookupScalar(f, Dims::length)
+                       : f == "corrugationAngle" ? packingRecord::angleDegrees(*d)
+                       : d->lookupScalar(f);
         requireInRange(locus, f, v);
         geometry_[f] = v;
     }
@@ -354,6 +357,21 @@ const PackingRecord& PackingRegistry::byName(const std::string& name,
 // ===========================================================================
 namespace packingRecord
 {
+
+scalar angleDegrees(const Dictionary& d, const std::string& key)
+{
+    scalar v = d.lookupScalar(key);
+    const std::string w = d.unitWordOf(key);
+    if (w == "deg" || w == "rad") v = v * 180.0 / constant::pi;   // parsed to rad
+    else if (!w.empty())
+        throw std::runtime_error("`" + key + "` is an angle: write a bare number"
+            " (degrees), `deg` or `rad`; read the unit `" + w + "`.");
+    if (!(v > 0.0 && v < 90.0))
+        throw std::runtime_error("`" + key + "` = " + std::to_string(v)
+            + " deg is outside (0, 90) deg (the corrugation angle from the horizontal).");
+    return v;
+}
+
 
 const std::vector<std::string>& geometryFields()
 {
@@ -658,7 +676,9 @@ void checkInlineRanges(const DictPtr& unitDict)
     for (const auto& f : geometryFields())
     {
         if (!pk->found(f)) continue;
-        const scalar v = isLength(f) ? pk->lookupScalar(f, Dims::length) : pk->lookupScalar(f);
+        const scalar v = isLength(f) ? pk->lookupScalar(f, Dims::length)
+                       : f == "corrugationAngle" ? angleDegrees(*pk)
+                       : pk->lookupScalar(f);
         requireInRange("DistillationColumn '" + unitDict->name() + "': packing", f, v);
     }
 }
