@@ -86,7 +86,7 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     //  pair that does not conserve component-wise), so adding both would
     //  report twice the mass that was set aside.
     scalar utilityMass = 0.0;
-    //  THE CARRIED MASSES (second slice of C427, 2026-11-19): a carried
+    //  THE CARRIED MASSES (second slice of C427, 2026-11-18): a carried
     //  quantity whose kind states that its total is a mass (a declared
     //  material's kg/s) crosses the boundary like any component, so it is
     //  counted in `in` and `out` -- a material this report could not see

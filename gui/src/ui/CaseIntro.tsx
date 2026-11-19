@@ -70,7 +70,7 @@ const APP_LABEL: { [k: string]: string } = {
 // AND NOW PINNED, because the claim above went false without anything
 // noticing.  Three rows of the adiabatic trace drifted -- 3.17088e+04 where
 // the engine prints 3.30212e+04, and 1.83628e+04 where it prints 1.90096e+04
-// (2026-11-19, C390: the whole trace moved again because the liquid enthalpy now carries its
+// (2026-11-18, C390: the whole trace moved again because the liquid enthalpy now carries its
 // pressure term -- the 3 bar feed -- and the engine converges in seven iterations; every row
 // below was re-read from the engine's own run.)
 // -- on THE SCREEN WHOSE WHOLE PURPOSE IS TO PROVE THE BOX IS GLASS.  A

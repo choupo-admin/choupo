@@ -13,7 +13,7 @@ counted, not listed.
     bin/curate/backlog_view.py OUT.md       (a Markdown table, for a side panel)
     bin/curate/backlog_view.py OUT.json     (the page's meta/ranks document, stamped)
 
-Every view carries the time it was made (Vitor, 2026-11-19: "no topo põe a
+Every view carries the time it was made (Vitor, 2026-11-18: "no topo põe a
 data e hora para eu não estar sempre a perguntar").
 """
 import csv, html, json, subprocess, sys

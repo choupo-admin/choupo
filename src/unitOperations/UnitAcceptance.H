@@ -203,7 +203,7 @@ struct UnitAcceptance
     //  rate for it.  The DEFAULT models none, so a unit that has not declared
     //  one refuses every kind, which is the safe side.  `allKinds` is for a
     //  unit whose law is the kind's own (the mixer adds, the splitter
-    //  divides).  NO KIND IS EXEMPT (second slice, 2026-11-19): every unit
+    //  divides).  NO KIND IS EXEMPT (second slice, 2026-11-18): every unit
     //  that reads or writes a size distribution declares it here, with a
     //  sentence saying what it does to the distribution, and the gate
     //  `check_carried_kinds` holds that no such unit is left without one.

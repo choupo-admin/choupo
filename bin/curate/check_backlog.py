@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """check_backlog: BACKLOG.tsv is the one home of every item's status, and it is whole.
 
-THE REAL DEFECT (DEV.md 4c C436, 2026-11-19): an item's status had no home of
+THE REAL DEFECT (DEV.md 4c C436, 2026-11-18): an item's status had no home of
 its own -- it lived in prose over 22 000 lines of DEV.md 4c, so the plan was a
-fresh reading each time, and on 2026-11-19 the plan shown to Vitor held only
+fresh reading each time, and on 2026-11-18 the plan shown to Vitor held only
 the night's lane while 143 of his items were open or partial, and a census
 called a landed EduTool (C247) open.
 

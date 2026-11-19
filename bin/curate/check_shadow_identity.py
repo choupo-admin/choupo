@@ -20,7 +20,7 @@ shows the refusal is not crying wolf.
              different charge it is ACCEPTED (the declared ion over a radical).
   REASON     a declared variation without `variationReason` -- announced, and
              refused under strict.
-  UNDECLARED an identical copy beside a pin -- REFUSED always (since 2026-11-19),
+  UNDECLARED an identical copy beside a pin -- REFUSED always (since 2026-11-18),
              naming overlayOf, variationOf and distinctFrom (the copies may not come back).
   BACKFILL   THE SILENT BACKFILL's real defect: a local record lacking a key had it
              filled from the catalogue in silence.  `overlayOf` takes the keys it
@@ -174,14 +174,14 @@ def main():
         refuses("REASON strict", rc, out, ["variationReason"])
 
         # ---- an identical, undeclared copy beside a pin ---------------------
-        #  Since the silent backfill closed (2026-11-19) an undeclared homonym is
+        #  Since the silent backfill closed (2026-11-18) an undeclared homonym is
         #  refused ALWAYS, not only strict, naming all three declarations.
         rc, out = run(make_case(tmp, "copy", {"components/benzene.dat": benzene()}), False)
         refuses("UNDECLARED", rc, out, ["without", "overlayOf", "variationOf", "distinctFrom", "--pin"])
         rc, out = run(make_case(tmp, "copy_s", {"components/benzene.dat": benzene()}), True)
         refuses("UNDECLARED strict", rc, out, ["without", "variationOf", "--pin"])
 
-        # ---- THE SILENT BACKFILL (2026-11-19) -------------------------------
+        # ---- THE SILENT BACKFILL (2026-11-18) -------------------------------
         #  The real defect: a local record that LACKED a key had it filled from
         #  the catalogue record of the same name with no word said, so the
         #  record's own file was not the record the run read (C428 (a) broke two

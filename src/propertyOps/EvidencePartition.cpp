@@ -736,7 +736,7 @@ EvidencePartition::loadTable(const EvidenceDataset& ds, const std::string& opLab
     }
     const std::size_t N = grid.size() / nc;
     //  A declared `discard ( <row> ... );` is honoured by the TABLE reader too
-    //  (C177, 2026-11-19): until then only loadColumns skipped the rows, so a
+    //  (C177, 2026-11-18): until then only loadColumns skipped the rows, so a
     //  membrane fit that declared one would have fitted the rows it had set
     //  aside -- a declaration the reader ignored in silence.  It is how ONE
     //  laboratory record (several concentrations in one file) is split into the

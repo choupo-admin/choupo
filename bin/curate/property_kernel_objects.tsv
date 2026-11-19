@@ -1,5 +1,5 @@
 # property_kernel_objects.tsv -- THE ENGINE OBJECTS OF THE PROPERTY KERNEL
-# (DEV.md 4c C432 (d), 2026-11-19).  Read by bin/curate/suite_reuse.py.
+# (DEV.md 4c C432 (d), 2026-11-18).  Read by bin/curate/suite_reuse.py.
 #
 # WHAT IT IS FOR.  A curation fit's reuse key holds the content of every engine
 # object its operations reach, and the pure-component law objects below are

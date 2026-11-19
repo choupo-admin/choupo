@@ -43,7 +43,7 @@ equilibrium
     }
 }
 
-//  TRANSPORT (2026-11-19, DEV.md 4c C207).  The line list needs the liquid's
+//  TRANSPORT (2026-11-18, DEV.md 4c C207).  The line list needs the liquid's
 //  and the vapour's viscosity for the Reynolds number of each line: the liquid
 //  from each constituent's record law (no word), the vapour from Chung's
 //  dilute-gas method.  No unit of the flowsheet reads either, so no number of

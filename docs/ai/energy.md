@@ -271,7 +271,7 @@ change to absorb.  Choupo therefore makes the honest choice:
   — e.g. an IF97 Rankine cycle — never triggers this: the constant offset
   cancels around the loop.  The refusal fires across a sector whose dictionary
   adds `pureFluids`, or a unit that selects a variant (`thermo <name>;`) that
-  adds or removes it, between adjacent units; it ENDS THE RUN (K1, 2026-11-19),
+  adds or removes it, between adjacent units; it ENDS THE RUN (K1, 2026-11-18),
   naming the stream, both ends and both datums, held by `check_datum_flip_refused`.
   The bridge between the datums is not built.)
 

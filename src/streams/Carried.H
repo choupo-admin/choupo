@@ -46,7 +46,7 @@ Description
         its REPORT form      (one line a student reads).
 
     A carried quantity is NOT thereby conserved (architect's correction,
-    2026-11-19): two particles that merge keep their mass and halve their
+    2026-11-18): two particles that merge keep their mass and halve their
     number; the moments of a distribution change under reaction.  A quantity
     changes only inside a unit that SOLVES ITS BALANCE and hands the result
     to `CarriedKind::transform`, which refuses a change the kind does not
@@ -66,7 +66,7 @@ Description
                           `psd` field the solid units read; the kind reaches
                           it through `carriedOfInlet` / `applyCarried`.  Every
                           unit that reads or writes it DECLARES that in its
-                          acceptance (second slice, 2026-11-19): it is checked
+                          acceptance (second slice, 2026-11-18): it is checked
                           like any other kind, with no exemption.
         materialMass      the mass flow of a declared material [kg/s].
         chainMoment       order 0 or 2 of a declared polymer's chain-length

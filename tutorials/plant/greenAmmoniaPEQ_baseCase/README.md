@@ -548,7 +548,7 @@ things a real plant has and this case does not compute: the refrigeration
 compressor's shaft power and the flare's emergency relief load (the flare is
 placed on the normal vent load only).
 
-## The line list (2026-11-19, DEV.md 4c C207, C440)
+## The line list (2026-11-18, DEV.md 4c C207, C440)
 
 The 24 process pipes the layout routes are sized by the `lineDesign {}` block at the end
 of `system/layoutDict` and listed, one row per line, in `reports/lines/lineList.csv`

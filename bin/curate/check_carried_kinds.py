@@ -5,7 +5,7 @@
 
     bin/curate/check_carried_kinds.py
 
-THE REAL DEFECT IT WOULD HAVE CAUGHT.  Until 2026-11-19 the splitter dropped
+THE REAL DEFECT IT WOULD HAVE CAUGHT.  Until 2026-11-18 the splitter dropped
 the size distribution of its feed on EVERY branch: a slurry that went in with
 a distribution came out of both branches with none, the mass balance closed
 (a distribution is not a flow), every golden pinned "unchanged", and nothing

@@ -210,7 +210,7 @@ struct ReliefService
     bool present() const { return !protects.empty(); }
 };
 
-//  WHAT A COMPRESSOR WAS DESIGNED AS (2026-11-19, DEV.md 4c C440 gap 4).  The
+//  WHAT A COMPRESSOR WAS DESIGNED AS (2026-11-18, DEV.md 4c C440 gap 4).  The
 //  `compressor` sizer's detailed route (a `design {}` block in the entry's
 //  designRules) selects a machine, splits the duty into stages with
 //  intercooling and sizes the driver.  Every NUMBER is a `values` entry under
@@ -439,7 +439,7 @@ struct EquipmentSizing
     //  `ReliefService` above).  Sheet-only.
     ReliefService                                relief;
 
-    //  WHAT A COMPRESSOR WAS DESIGNED AS (2026-11-19, DEV.md 4c C440 gap 4;
+    //  WHAT A COMPRESSOR WAS DESIGNED AS (2026-11-18, DEV.md 4c C440 gap 4;
     //  see `CompressorService` above).  Sheet-only.
     CompressorService                            compressor;
 
@@ -833,7 +833,7 @@ struct EconomicBreakEvenPrice
     scalar      breakEven = 0.0;    // currency per kg at which NPV = 0
 };
 
-// WHERE ONE PRICE CAME FROM (C389, PR-07, 2026-11-19): every price the
+// WHERE ONE PRICE CAME FROM (C389, PR-07, 2026-11-18): every price the
 // economics pass reads from constant/economics, beside its origin -- the
 // citation the case's `provenance { origin; }` carries, the year it is
 // priced in, and the KIND of number it is (`published`: a price a source

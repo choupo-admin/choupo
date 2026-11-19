@@ -220,7 +220,7 @@ def copy_case(src, dst):
         "converged", "log.*", "expected", "reports", "design", "propertyManifest"))
     #  The copy drops the manifest, so it UNSEALS the case: its local records
     #  must say what they are, or the loader refuses them as undeclared
-    #  homonyms (the silent backfill closed, 2026-11-19).
+    #  homonyms (the silent backfill closed, 2026-11-18).
     case_records.declare_homonyms(dst)
 
 

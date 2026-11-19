@@ -396,7 +396,7 @@ public:
     //   with P_ref,i = psat_i(T_ref,i), ONE pressure per component: T_ref,i the
     //   Kirchhoff datum temperature (298.15 K, or 0.9 Tc under a lower critical
     //   point).  The base surface is a fixed-pressure function, so with both limits
-    //   fixed (dh/dT)_P = T (ds/dT)_P exactly (the architect's ruling, 2026-11-19; a
+    //   fixed (dh/dT)_P = T (ds/dT)_P exactly (the architect's ruling, 2026-11-18; a
     //   lower limit psat(T) moved with T and added -v dpsat/dT to the isobaric Cp).
     //   Below psat(T) the leg is held at psat(T).
     //

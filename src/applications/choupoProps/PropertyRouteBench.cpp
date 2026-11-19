@@ -729,7 +729,7 @@ int run(const std::string& manifestPath, const std::string& outPath)
         //  grouped by content.
         std::map<std::string, std::pair<fs::path, int>> distinct;   // "<rec>@<sha12>" -> (first case root, copies)
         std::map<std::string, std::vector<std::string>> pathsOf;      // the same key -> every path (sealedCopies.tsv)
-        //  C432 (2026-11-19): the sealed copies of data/curation are benched too.  A
+        //  C432 (2026-11-18): the sealed copies of data/curation are benched too.  A
         //  curation fit reads its OWN sealed components, never the catalogue's
         //  (the catalogue has moved since the import), so the route-keyed reuse
         //  of a fit (bin/curate/suite_reuse.py) can vouch for it only if the
