@@ -317,7 +317,7 @@ C331	DONE		Regras de mistura: validação e troca de defeito			2026-11-11	M	50cb
 C332	DONE		Prateleira de EduTools Property data & parameters			2026-11-12	S	2ac3a65e8	
 C333	DONE		Equações de estado de alta precisão (Helmholtz)			2026-11-12	L	1392894dc	
 C334	DONE		Banda severa alargada por tipo de propriedade			2026-11-12	S	358e06e33	
-C335	PARTIAL	4	Dívidas de licença pagas antes de dezembro	Pagar os 7 registos NC_COMPILATION e os 3 SOURCE_LICENCE ainda fixados (ou fechar cada um com a sua razão).	arquitetura, tamanho M: primeiro a arquitetura, depois do mais fácil ao mais difícil (Vítor 19-11)	2026-11-12	M	43e5f2d0b	
+C335	PARTIAL	4	Dívidas de licença pagas antes de dezembro	Acetato de metilo do Poling (dívida paga); 6 radicais NC removidos (nenhum caso os lia); ficam C4H4 (lido por um par de Henry), o NRTL etanol-água e o SRK N2-CH4, cada um com a fonte que o libertaria.	arquitetura, tamanho M: primeiro a arquitetura, depois do mais fácil ao mais difícil (Vítor 19-11)	2026-11-12	M	43e5f2d0b	
 C336	DONE		Severo até 29 % por tipo de propriedade	Uma só casa para as classes de severidade (property_grades.py); transporte na classe B; casos re-fixados aos registos reclassificados; no main.	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-12	S	727f295341	
 C337	DONE		Folha detalhada de coluna de destilação			2026-11-12	M	08fb2c19d	
 C338	DONE		Documentar tudo nos guias (regra 4d)			2026-11-12	S	fba50b0fe	
