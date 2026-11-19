@@ -19,7 +19,6 @@ HeatCapacityModel	chemsepCp16	guide+catalogue
 HeatTransferCorrelation	DittusBoelter	guide
 IsothermModel	langmuir	guide+catalogue
 ODEIntegrator	EulerSI	guide+catalogue
-ODEIntegrator	Rosenbrock23	catalogue
 PhaseChangeHTC	NusseltFilm	guide
 PhaseChangeHTC	Rohsenow	guide
 PhaseChangeHTC	ZuberCHF	guide+catalogue
