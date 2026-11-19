@@ -1825,6 +1825,11 @@
       "exit": 0,
       "claim": "check_unit_convention: OK (a) every read of `Pc` (bar) and `pressureDesign` (bar) goes through lookupScalarIn; (b) flash09's V/F is 0.475737805121 with CH4's Pc bare and with it written `bar`, and 1 with the Pa number bare (the run sees Pc); (c) 27 published sizing numbers of flash22 are identical with pressureDesign bare and written `bar` (ten times the pressure moves them: the sheet sees it); (d) every read of the temperature differences temperatureApproach/superheat/subcool/dTmin/latentWidth/LMTD goes through lookupTemperatureDifference, and gibbs13 runs identically with `temperatureApproach 10 K;` and bare while `10 C;` is refused by name.  NOT checked: the other 15 trap families of C454.",
       "seconds": 0.6
+    },
+    "check_thermo_tables": {
+      "exit": 0,
+      "claim": "check_thermo_tables: OK  (a) 858 files = INDEX; (b) 858 records held to the report; (c) 858 records, one home vs components/; (d) witness reads the table only when declared, refuses it undeclared and an unknown table; (e) Database.cpp guard present.  Domain: the NASA-TP-2002-211556 home only; not that the report is right, not curator read-back.",
+      "seconds": 1.0
     }
   }
 }
