@@ -890,6 +890,9 @@ export interface PlantLayout {
    *  the process pipes and checked like them.  Absent when the case declares
    *  none; the GUI draws them and routes none. */
   utilityLines?: LayoutUtilityLine[];
+  /** THE LINE LIST (DEV.md 4c C207): one sheet per routed pipe, present only
+   *  when the case declares `lineDesign {}`.  `id` is `line:<stream>`. */
+  lines?: LayoutLineSheet[];
   /** The engine's own counts (DEV.md 4c C81 carries them to the exported
    *  page); absent on a result written before the engine published them. */
   summary?: LayoutSummary;
@@ -1201,6 +1204,18 @@ export interface LayoutPipeRack {
 
 /** An unsized mixer, splitter or valve, drawn as a node on the rack. */
 export interface LayoutJunction { unit: string; type: string; x: number; y: number; z: number }
+
+/** One line sheet (DEV.md 4c C207).  Sized lines carry the `line*` numbers
+ *  (NPS in inches, velocity m/s, drops Pa); an unsized one carries `reason`. */
+export interface LayoutLineSheet {
+  id: string; stream: string; from: string; to: string;
+  service: string; sizeState: string; length: number; lineBends?: number;
+  reason?: string;
+  lineNps?: number; lineSchedule?: number; lineInsideDiameter?: number;
+  lineVelocity?: number; lineVelocityMax?: number;
+  lineDropFriction?: number; lineDropStatic?: number; lineDrop?: number;
+  lineGovernedBy?: string; flags?: number; flagText?: string[];
+}
 
 /** One routed pipe.  `route` runs IN THE DIRECTION OF FLOW (plan x, plan y,
  *  elevation z, metres); `length` is the engine's own.  The stream's state

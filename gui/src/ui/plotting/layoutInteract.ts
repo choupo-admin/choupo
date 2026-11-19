@@ -104,9 +104,17 @@ export interface InteractionContext {
   raycast(nx: number, ny: number): T3.Object3D | null;
   /** Called by the renderer at the end of every frame it draws. */
   onFrame: Array<() => void>;
+  /** C91: told the id of a pipe the reader clicked in the view (null = cleared),
+   *  so a docked pipe register can follow the view. */
+  onPipePicked?: (id: string | null) => void;
 }
 
-export interface InteractionHandle { dispose(): void }
+export interface InteractionHandle {
+  dispose(): void;
+  /** C91: select the pipe `id` from OUTSIDE (a register row): the same
+   *  highlight and click card as a click in the view.  null clears. */
+  selectPipeById(id: string | null): void;
+}
 
 type El = HTMLElement;
 function h(tag: string, style: Partial<CSSStyleDeclaration> | null, text?: string,
@@ -332,14 +340,19 @@ export function mountInteraction(c: InteractionContext): InteractionHandle {
     const r = dom.getBoundingClientRect();
     const hit = ray(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     const pick = hit?.userData.pick as { kind: "item" | "pipe"; id: string } | undefined;
-    if (!pick) { select_(null); return; }
+    if (!pick) { select_(null); c.onPipePicked?.(null); return; }
     if (pick.kind === "item") {
       const s = scene.solids.find((x) => x.id === pick.id);
       if (s) select_(itemCard(s, facts), [s.id]);
     } else {
       const i = scene.pipes.findIndex((p) => p.id === pick.id);
-      if (i >= 0) select_(pipeCard(scene.pipes[i]!, facts), [], i);
+      if (i >= 0) { select_(pipeCard(scene.pipes[i]!, facts), [], i); c.onPipePicked?.(pick.id); }
     }
+  };
+  const selectPipeById = (id: string | null) => {
+    if (id === null) { select_(null); return; }
+    const i = scene.pipes.findIndex((p) => p.id === id);
+    if (i >= 0) select_(pipeCard(scene.pipes[i]!, facts), [], i);
   };
 
   //  ---- the tour --------------------------------------------------------
@@ -670,6 +683,7 @@ export function mountInteraction(c: InteractionContext): InteractionHandle {
   recolour();
 
   return {
+    selectPipeById,
     dispose() {
       if (raf) cancelAnimationFrame(raf);
       window.clearInterval(tourTimer);
