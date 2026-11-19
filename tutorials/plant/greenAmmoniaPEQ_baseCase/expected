@@ -348,7 +348,6 @@ equipment LetdownHP              basis            separator_drum,_towler:_horizo
 equipment LetdownHP              values.D         2.286            1e-4
 equipment LetdownHP              values.H         9.144            1e-4
 equipment LetdownHP              values.L_over_D  4                1e-4
-equipment LetdownHP              values.Q_gas     0.00371562093637 1e-4
 equipment LetdownHP              values.V_R       37.5299988298    1e-4
 equipment LetdownHP              values.pressureDesign 21               1e-4
 equipment LetdownHP              values.t_wall    0.0205537516455  1e-4
@@ -402,7 +401,6 @@ equipment Separator              basis            separator_drum,_towler:_horizo
 equipment Separator              values.D         2.1336           1e-4
 equipment Separator              values.H         10.668           1e-4
 equipment Separator              values.L_over_D  5                1e-4
-equipment Separator              values.Q_gas     0.572103117613   1e-4
 equipment Separator              values.V_R       38.1415988108    1e-4
 equipment Separator              values.pressureDesign 166              1e-4
 equipment Separator              values.t_wall    0.141307403936   1e-4
@@ -414,7 +412,6 @@ equipment StorageFlash           basis            separator_drum,_towler:_horizo
 equipment StorageFlash           values.D         2.4384           1e-4
 equipment StorageFlash           values.H         7.3152           1e-4
 equipment StorageFlash           values.L_over_D  3                1e-4
-equipment StorageFlash           values.Q_gas     0.172489357395   1e-4
 equipment StorageFlash           values.V_R       34.1606389349    1e-4
 equipment StorageFlash           values.pressureDesign 2                1e-4
 equipment StorageFlash           values.t_wall    0.00476849434291 1e-4
