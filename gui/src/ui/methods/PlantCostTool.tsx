@@ -301,9 +301,9 @@ export function PlantCostTool(): JSX.Element {
             right one, and the gap is the size of the uncertainty at this stage.
           </Text>
           <Text size="xs" c="dimmed" mt={4}>
-            Engine: <code>FCI = contingencyFee x sum C_BM + siteFactor x sum C_BM0</code> (<code>EconomicsPass.cpp:3079</code>),
+            Engine: <code>FCI = contingencyFee x sum C_BM + siteFactor x sum C_BM0</code> (<code>EconomicsPass.cpp:3080</code>),
             C_TM = 1.18 C_BM per item (<code>Turton.cpp:755</code>, <code>CostingModel.H:69</code>), siteFactor default
-            0.50 (<code>EconomicsPass.cpp:2927</code>).
+            0.50 (<code>EconomicsPass.cpp:2928</code>).
           </Text>
         </Box>
 
@@ -363,7 +363,7 @@ export function PlantCostTool(): JSX.Element {
             Spread (largest over smallest): <b>{f(wr.spread, 2)}</b>, from {f(wr.min, 2)} to {f(wr.max, 2)} M EUR.
           </Text>
           <Text size="xs" c="dimmed" mt={4}>
-            Engine: the itemised model <code>buildWorkingCapital</code> (<code>EconomicsPass.cpp:278</code>), a day is 1/365
+            Engine: the itemised model <code>buildWorkingCapital</code> (<code>EconomicsPass.cpp:279</code>), a day is 1/365
             of the annual figure (<code>:254</code>), receivables are days/365 of the revenue (<code>:403</code>), payables days/365 of the
             raw-material bill (<code>:409</code>), the fraction fallback is 0.15 of the FCI (<code>:2879</code>).  The Economics errors page,
             class 5, shows the same comparison on another plant.
@@ -416,7 +416,7 @@ export function PlantCostTool(): JSX.Element {
           </Text>
           <Text size="xs" c="dimmed" mt={4}>
             Engine: <code>reports/economics/financing.csv</code> when the case declares <code>financing {"{ }"}</code>
-            (<code>EconomicsPass.cpp:618</code>); draws at the end of each construction year (<code>:1984</code>), the interest on the balance
+            (<code>EconomicsPass.cpp:619</code>); draws at the end of each construction year (<code>:1984</code>), the interest on the balance
             drawn capitalised (<code>:1996</code>), interest paid on the opening balance in operation (<code>:2017</code>).  The page spreads the draws
             evenly; the engine follows the case&apos;s capital schedule.
           </Text>

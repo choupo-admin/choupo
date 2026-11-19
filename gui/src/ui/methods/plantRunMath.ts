@@ -49,77 +49,77 @@ export interface EngineFact {
 
 export const ENGINE_FACTS = {
   comD: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1867,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1868,
     needle: "const scalar COM_d = 0.180 * FCI",
     says: "the engine's cost of manufacture without depreciation is COM_d = 0.180 FCI + 2.73 C_OL + 1.23 (C_RM + C_UT + C_WT).",
   },
   wasteZero: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1866,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1867,
     needle: "const scalar C_WT = 0.0;",
     says: "waste treatment C_WT is set to zero: not costed, and the run says so.",
   },
   positions: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 3347,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 3363,
     needle: "scalar positionsPerOperatorPerShift = 4.5;",
     says: "about 4.5 shift-positions cover one operating position round the clock (the default; a case declares its own with `operatorCover`); the operators per shift come from Turton's N_OL or from a declared `operatingCrew`.",
   },
   operatorHours: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1786,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1787,
     needle: "scalar  operatorAnnualHours    = 1960.0;",
     says: "one operator is paid for 1960 h per year by default (49 weeks x 40 h); `operatorAnnualHours` overrides it.",
   },
   crew: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 3201,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 3202,
     needle: 'if (econDict_->found("operatingCrew"))',
     says: "a case may declare its own crew in `economics { operatingCrew { ... } }` in place of Turton's correlation.",
   },
   straightLine: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1891,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1892,
     needle: "const scalar d_annual = (in.depreciableLife > 0.0) ? (FCI / in.depreciableLife) : 0.0;",
     says: "depreciation is the fixed capital over ONE depreciable life, straight line; one life for the whole plant, no asset classes.",
   },
   otherDepreciation: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 3002,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 3003,
     needle: 'if (deprMethod != "straightLine")',
     says: "any other `depreciation` word is announced as not implemented and straight line is used.",
   },
   taxable: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1953,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1954,
     needle: "projectTaxable[at(t)] = revenueAt(t) - comAt(t) - royaltyAt(t) - startupAt(t) - d_t;",
     says: "taxable income is revenue less cost of manufacture less depreciation; the cash flow is taxable x (1 - rate) + depreciation -- in a loss year too, where the negative tax is a credit (the default `taxOnLoss credit`, announced when it bites); `taxOnLoss none` is the stand-alone reading, no tax and no credit in a loss year.",
   },
   wcSalvage: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1959,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1960,
     needle: "cashFlow[at(Nlife)] += WC + salvage * (1.0 - taxRate);",
     says: "in the last year the working capital comes back untaxed and the salvage comes back taxed.",
   },
   appraise: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1823,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1824,
     needle: "AppraisalOutcome appraise(const AppraisalInputs& in,",
     says: "`appraise` is the one home of the cash flow; the base case and every sensitivity bar call it.",
   },
   paybackDisc: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 2190,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 2191,
     needle: "auto discPaybackOf =",
     says: "the discounted payback is the year in which the cumulative discounted cash flow first reaches zero, interpolated within that year.",
   },
   irrWarning: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 2179,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 2180,
     needle: "is EXTREME (>200%)",
     says: "an IRR above 200 % is printed with a warning: the cash flow dwarfs the investment, which points to a scale error.",
   },
   breakEven: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 4477,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 4493,
     needle: "x = F / (R - V) = ",
     says: "with `breakEven {}` declared, the engine prints the operating break-even x = F/(R - V) (fixed: 0.180 FCI + 2.73 C_OL + depreciation; variable: 1.23 (C_RM + C_UT + C_WT)) and the NPV break-even, the production fraction at which `appraise` on a copy returns NPV = 0; the two are published separately.",
   },
   royalty: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 1576,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 1577,
     needle: "if (!d->found(\"expiry\"))",
     says: "with `royalty {}` declared, a royalty on sales or on the cost of manufacture is charged in operating years 1..expiry only; a royalty with no declared expiry year stops the run.",
   },
   sensitivity: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 2753,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 2754,
     needle: "Economic sensitivity (one input at a time)",
     says: "the `sensitivity {}` block (C68) moves one declared input at a time and prices the base appraisal again; it is not an uncertainty analysis.",
   },
