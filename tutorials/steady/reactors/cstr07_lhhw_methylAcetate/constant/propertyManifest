@@ -37,6 +37,6 @@ propertyManifest
         "parameters/UNIQUAC/methanol-methylAcetate.dat"  "a906e2f8b8b81986f6fff54ce3a31ceb6323eae32b7b805e10e6f8771d5baf19";
         "parameters/UNIQUAC/methylAcetate-water.dat"  "eeab569f3396a066943ae47757f69fa6fffe19d76bf6588629292e0f772fcec3";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-        "utilities/coolingWater.dat"  "a56494132642337e92cca25e5fcb943c8e7d6b3f48b630442da8613aca961798";
+        "utilities/coolingWater.dat"  "1a102e5d6af04d64dad773826b58c3ceb20d872d98c2cfb39be5641d0aa0f153";
     }
 }

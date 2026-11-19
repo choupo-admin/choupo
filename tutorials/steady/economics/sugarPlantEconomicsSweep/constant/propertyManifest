@@ -37,6 +37,6 @@ propertyManifest
         "parameters/Henry/ethanol-water.dat"  "8d6c542980e2dd37de73fd7fcc8d4e3b6538ccdaf208ec21180ba6dcbc7cf8d8";
         "parameters/solution/"  "relevant:a9ce5ad8d484e42a7994be6c8e226fb3bbe3026821df2e2094e01b3dc58f733a";
         "parameters/solution/sucrose-water.dat"  "11e8f9216989a7844edb9dc965d153f9cb672a6dc79b5561a6089d23d293640e";
-        "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
+        "utilities/steamLP.dat"  "f55087a7273dcc1026a7081a48460d476f940159d6d6c7febeb0eb704b05b56e";
     }
 }

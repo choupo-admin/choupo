@@ -28,6 +28,6 @@ propertyManifest
         "parameters/Henry/H2-NH3.dat"  "46602c525f2c5e776998e0d9c25b7ddadbb2ceaf56255f06eb5b422a6c83b68b";
         "parameters/Henry/N2-NH3.dat"  "2d63474030a5c3b5c0bdc8156e656e32f4391fd60341a162fc98c74dfa1c621c";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-        "utilities/coolingWater.dat"  "a56494132642337e92cca25e5fcb943c8e7d6b3f48b630442da8613aca961798";
+        "utilities/coolingWater.dat"  "1a102e5d6af04d64dad773826b58c3ceb20d872d98c2cfb39be5641d0aa0f153";
     }
 }

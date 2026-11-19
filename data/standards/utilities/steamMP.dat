@@ -25,4 +25,5 @@ dutyPerKg   1991000.0;                 // J/kg  (Hvap_water @ 11 bar, steam tabl
 
 cost        15.0;                      // €/GJ delivered
 costYear    2022;
+costSource  "assumption: an indicative figure written into the catalogue at its creation (v0.0.40, commit 77211e8795, 2026-05-28); the header names Sinnott & Towler 6th ed. (2022) section 6.5.3; Ulrich & Vasudevan 2004 as its context, but the number was not traced to a table or page of it, so it is NOT claimed as published; EUR/GJ, price year 2022";
 description "Medium-pressure saturated steam header (≈ 10 barg, T_sat ≈ 184 C)";

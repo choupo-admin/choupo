@@ -30,6 +30,6 @@ propertyManifest
         "parameters/solution/NaCl-water.dat"  "e15ed02baf1dd90629885f257f5b85cff854ff009e2d5bf8fdc18e4b72e2124f";
         "species/Cl.dat"  "77c9cffcfc3674c034800724ba22333a585a19fbc6a467df63876e68e73abae6";
         "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
-        "utilities/chilledWater.dat"  "dcab5f38dfc376a9bdff3dbc020d61718cd6c4a73c63a3737cfa35b580affa12";
+        "utilities/chilledWater.dat"  "e8f9634db77e4c631f421d743840f4e9e723b7ada3e580b9b0f45383c30b7cdb";
     }
 }

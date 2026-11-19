@@ -3556,7 +3556,12 @@ int EconomicsPass::run(SimulationResult& result)
             EconomicPriceOrigin o;
             o.name = u.name; o.role = "utility"; o.price = u.cost; o.unit = "EUR/GJ";
             o.costYear = u.costYear ? std::to_string(u.costYear) : "";
-            o.kind = u.costSource.empty() ? "undeclared" : "published";
+            //  A `costSource` that opens with the word `assumption:` is the
+            //  record saying the figure is the curator's, not a published
+            //  price; the row then prints `assumption`, never `published`.
+            o.kind = u.costSource.empty() ? "undeclared"
+                   : (u.costSource.rfind("assumption:", 0) == 0 ? "assumption"
+                                                                : "published");
             o.origin = u.costSource.empty()
                 ? "utility record `" + u.name + "` of the catalogue: its `cost`; the record"
                   " declares no `costSource`"

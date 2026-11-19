@@ -30,4 +30,5 @@ dutyPerKg   21000.0;                   // J/kg  (4200 × 5)
 
 cost        4.0;                       // €/GJ rejected
 costYear    2022;
+costSource  "assumption: an indicative figure written into the catalogue at its creation (v0.0.40, commit 77211e8795, 2026-05-28); the header names Sinnott & Towler 6th ed. (2022) section 6.5.3 as its context, but the number was not traced to a table or page of it, so it is NOT claimed as published; EUR/GJ, price year 2022";
 description "Chilled water from central chiller plant (7 -> 12 C)";

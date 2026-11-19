@@ -28,6 +28,6 @@ propertyManifest
         "parameters/Henry/H2-water.dat"  "4a3629c5a88f40b2e55f52bf4da05cff92e0c966331cc39b95712c2744fa8c7b";
         "parameters/Henry/acetone-water.dat"  "59eb9457c480a6eadb0f48caa20b3e74230c87d69806a000772e23797f7a0843";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-        "utilities/hitecSalt.dat"  "f6f8d56a490db4a73190d258c39d3a2deb4f27489d1a6fae7df9b3b66476c478";
+        "utilities/hitecSalt.dat"  "e684e2ff958cd7846cda3d0737b9f93864a19f872ac814e9a065b05de1ccc862";
     }
 }

@@ -786,6 +786,6 @@ the three words is refused; an absent `kind` prints `undeclared` with an
 advisory.  The labour rate reads the same words from an optional
 `labourProvenance { origin "..."; kind ...; }` block and prints `undeclared`
 without it.  A utility record may carry `costSource "...";` (its `cost` figure's
-citation); without it the utility prints `undeclared`.  The run prints all of
+citation; text opening `assumption:` prints `assumption`, any other `published`); without it the utility prints `undeclared`.  The run prints all of
 them under "Prices and where they came from", in `reports/economics/prices.csv`
 and in the GUI Reports view.  Theory Guide, `par:price-origin`.
