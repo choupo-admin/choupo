@@ -26,7 +26,7 @@ the fix on a copy of cavett01 (the corpus's smallest recycle case) with
 the SQP certified a KKT point on the same; the integer enumeration kept
 every value as "converged yes".
 
-ARM (e), C435 (2026-11-19): A STARTING POINT HAS ONE HOME.  The real defect it
+ARM (e), C435 (2026-11-18): A STARTING POINT HAS ONE HOME.  The real defect it
 would have caught: tutorials/plant/greenAmmonia03_basicDesign/system/outerDict
 said "each `initial` below equals the value in system/flowsheetDict's
 `variables {}`" while V_Bed1 read 10.0321 there and 10.2222726633 in the

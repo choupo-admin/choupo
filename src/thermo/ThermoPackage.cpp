@@ -3966,7 +3966,7 @@ ThermoPackage::liquidPressureLeg(std::size_t i, scalar T, scalar P) const
 ThermoPackage::LiquidPressureLeg
 ThermoPackage::liquidPressureLegExact(std::size_t i, scalar T, scalar P) const
 {
-    //  THE REFERENCE PRESSURE IS ONE PRESSURE (the architect's ruling, 2026-11-19, on
+    //  THE REFERENCE PRESSURE IS ONE PRESSURE (the architect's ruling, 2026-11-18, on
     //  the Maxwell identity dH = T dS at fixed P): the base liquid surface is a
     //  fixed-pressure function (dh/dT = cp_liq, anchored at the component's Kirchhoff
     //  datum), so it lives at P_ref,i = psat_i(T_ref,i), T_ref,i the datum temperature

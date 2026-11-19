@@ -1810,6 +1810,11 @@
       "exit": 0,
       "claim": "check_pressure_si: OK -- 419 files of src/unitOperations, src/dynamicDriver, src/applications, src/postProcessing: no pressure-named operand is multiplied by 1e5 and no pressure member is documented in bar; both rules caught all their probe lines.  NOT CHECKED: a rescaling by a named constant, a pressure under a name that does not start with P, and whether a number that is only compared is in the right unit.",
       "seconds": 0.4
+    },
+    "check_future_dates": {
+      "exit": 0,
+      "claim": "check_future_dates: OK -- 60600 files, no date after 2026-11-19 outside the 17 declared; the rule caught its probe lines.  NOT CHECKED: a wrong date that is not in the future, and a date not in ISO form.",
+      "seconds": 2.1
     }
   }
 }

@@ -186,7 +186,7 @@ Description
         adaptive grid, `graded` with no grading, `gridTolerance` or
         `gridPasses` on a fixed grid.
 
-    NEUTRAL SOLUTES (C176/C177, 2026-11-19).  A feed component with no
+    NEUTRAL SOLUTES (C176/C177, 2026-11-18).  A feed component with no
     `electrolyte { cation; anion; }` block -- glucose, sucrose, glycerol,
     boric acid -- is a NEUTRAL solute when the case declares its transport
     facts in the law's own block:

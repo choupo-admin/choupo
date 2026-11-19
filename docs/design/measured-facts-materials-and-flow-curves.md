@@ -21,7 +21,7 @@ diretos"; and, on the reference manuals he filed: "acho que deve haver uma
 falha em componentes nao convencionais".  He was right on the last, and on
 the first he had asked before (DEV.md 4c C399).
 
-## 0. What "consolidated" means (2026-11-19, after an outside review)
+## 0. What "consolidated" means (2026-11-18, after an outside review)
 
 The architecture is CONSOLIDATED FOR A DECLARED SCOPE when: its contracts
 are implemented; the combinations it supports are verified by a witness;
@@ -233,7 +233,7 @@ M7.  NO ATTRIBUTE THAT A UNIT EDITS.  Moisture is the COMPONENT water the
 solid holds, tied to the gas by the sample's sorption record; a converted
 solid (a char) is ANOTHER material with its own analysis.  The cost, stated:
 a solid whose composition changes continuously is a few lumped materials.
-(Amended 2026-11-19: with Q2's balance equation a material's element masses
+(Amended 2026-11-18: with Q2's balance equation a material's element masses
 COULD be carried with declared rates, which is the honest form of a
 continuous conversion; it is out of the present scope and declared so, not
 ruled out.)
@@ -272,7 +272,7 @@ reaction.
 Q1.  A CARRIED QUANTITY has a declared BASIS (what the number is, in which
 unit), is attached to a CARRIER (a component or a declared set of components
 of the stream), and is of a kind in a closed list.  EXTENSIVE DOES NOT MEAN
-CONSERVED (architect's correction, 2026-11-19, after an outside review): two
+CONSERVED (architect's correction, 2026-11-18, after an outside review): two
 particles that merge keep their mass and halve their number, and the moments
 of a distribution change under reaction.  The first kinds: the mass flow of a
 material (mass-like); the size distribution of a particulate carrier
@@ -382,7 +382,7 @@ OUT OF THE SPIKE: the material's analyses and enthalpy (M1-M4), any polymer
 property or kinetics, the GUI.  The spike's verdict is a page in this
 record: kept, changed, or abandoned, with the evidence.
 
-### 5d verdict (the spike was run 2026-11-19, branch `build/last-carried`): KEPT, with the changes below
+### 5d verdict (the spike was run 2026-11-18, branch `build/last-carried`): KEPT, with the changes below
 
 WHAT WAS BUILT.  `src/streams/Carried.{H,cpp}`: the closed list of kinds by
 the explicit factory (`CarriedKind::registerType/New/registerBuiltins`, called
@@ -507,7 +507,7 @@ j. NOT DONE, DELIBERATELY: `--describe-units` does not yet print
    Guide and `docs/tutorials-catalogue.md` have no entry); the guide PDFs
    were rebuilt for the Theory Guide only.
 
-### 5d, second slice (2026-11-19, branch `build/last-carried-2`): the five conditions of the verdict, proven
+### 5d, second slice (2026-11-18, branch `build/last-carried-2`): the five conditions of the verdict, proven
 
 (1) NO EXEMPTION.  `CarriedKind::legacyUnchecked` and `carriedKindIsLegacyUnchecked`
 are deleted; the size distribution is checked like any kind, authored (the
@@ -638,7 +638,7 @@ with its three conditions).
 Every step carries its guide section, its catalogue entry and its witness
 (CLAUDE.md rule 4d).
 
-## 7a. What the first sample-behaviour slice taught (2026-11-19)
+## 7a. What the first sample-behaviour slice taught (2026-11-18)
 
 Built: the filtration test as the first kind (`src/samples/`), the cake
 filter naming `sample <name>;`, Wakeman & Tarleton's Example 4.1 reproduced
@@ -660,7 +660,7 @@ folder, as table pins already do: to be done with the next kind.  For the
 next kinds the service gains declared state AXES (support as a hull, an
 interpolation per axis) and one reducer per kind by explicit factory.
 
-## 7b. The closure contracts (2026-11-19, from the second outside review)
+## 7b. The closure contracts (2026-11-18, from the second outside review)
 
 Four behaviours must be defined and held by a witness before the scope of
 section 0 is called consolidated.  Each is a contract, not new physics.

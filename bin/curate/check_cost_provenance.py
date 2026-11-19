@@ -1992,7 +1992,7 @@ def check_required_prices(fails):
                          "must run and be ANNOUNCED as left out of C_RM "
                          "(rc=%d).\n%s" % (rc, out[-500:]))
 
-        # ---- w6/w7/w8  THE ORIGIN OF EACH PRICE (C389, PR-07, 2026-11-19).
+        # ---- w6/w7/w8  THE ORIGIN OF EACH PRICE (C389, PR-07, 2026-11-18).
         #  The defect these arms would have caught: `origin` DEFAULTED TO AN
         #  EMPTY STRING (`lookupWordOrDefault("origin", "")`), so a price with
         #  no origin ran, printed `0.5300 EUR/kg` and said nothing about what

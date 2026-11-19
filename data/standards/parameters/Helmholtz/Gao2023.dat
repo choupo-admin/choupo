@@ -25,7 +25,7 @@ equation      Gao2023;
 fluid         NH3;
 citation      "K. Gao, J. Wu, I. H. Bell, A. H. Harvey and E. W. Lemmon, A Reference Equation of State with an Associating Term for the Thermodynamic Properties of Ammonia, J. Phys. Chem. Ref. Data 52 (2023) 013102";
 url           "https://doi.org/10.1063/5.0128269";
-read          "2026-11-19";
+read          "2026-11-18";
 licence       "published coefficients and tabulated values, cited to their primary; values read from the journal article (page images, and its text layer where it has one)";
 
 reducing                        // page=13 (Table 1, Physical constants and characteristic properties of ammonia)

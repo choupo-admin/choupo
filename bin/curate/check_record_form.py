@@ -225,7 +225,7 @@ if True:
             bad.append(f"{label}: `preferred {m.group(1)};` names no set ({names})")
 
 #  THE WITNESS IS A PROBE, BUILT IN A TEMPORARY DIRECTORY (architect's ruling,
-#  2026-11-19: a shipped tutorial must not carry a parameter set made up for the
+#  2026-11-18: a shipped tutorial must not carry a parameter set made up for the
 #  occasion).  No honest second set of any catalogue pair exists yet, so this
 #  arm turns a COPY of the catalogue's nButanol-water record into two sets --
 #  `lle` = the record's own numbers, `probe_vle` = the tau numbers scaled by

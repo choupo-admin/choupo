@@ -10,5 +10,5 @@
   splitter01_slurry_sizeDistribution / controlDict
 \*---------------------------------------------------------------------------*/
 application   choupoSolve;
-description   "A splitter divides a limestone slurry 30/70 and BOTH branches keep the slurry's size distribution: the distribution is intensive (fractions of the solid), so a split changes the mass that weighs it and never the fractions. Before 2026-11-19 the splitter dropped it on every branch.";
+description   "A splitter divides a limestone slurry 30/70 and BOTH branches keep the slurry's size distribution: the distribution is intensive (fractions of the solid), so a split changes the mass that weighs it and never the fractions. Before 2026-11-18 the splitter dropped it on every branch.";
 verbosity     3;

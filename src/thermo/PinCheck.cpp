@@ -761,7 +761,7 @@ void checkLocalShadow(const std::string& sub, const fs::path& local)
         }
         else
         {
-            //  THE SILENT BACKFILL (2026-11-19).  A case-local record with a
+            //  THE SILENT BACKFILL (2026-11-18).  A case-local record with a
             //  catalogue homonym and NO declaration used to be merged over the
             //  catalogue record key by key, so a key it lacked was filled from
             //  the catalogue with no word said -- a fact with two homes, and

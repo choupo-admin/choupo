@@ -207,10 +207,10 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    `BACKLOG.tsv` (every item Vítor asked for, one row each, its status; DEV.md 4c
    C436), AND ITS VIEW BY HORIZON, `PLAN.md`, READ AT THE START OF EVERY
    SESSION, ALWAYS IN ENGLISH** (the name "CML plan" is retired, Vítor
-   2026-11-19: "vamos esquecer o CML para evitar confusão! Eu agora sei o que
+   2026-11-18: "vamos esquecer o CML para evitar confusão! Eu agora sei o que
    é o backlog"; every OPEN or PARTIAL item has a RANK -- one ordered list by priority, value
    against size, with its reason in one line; rank 0 is in progress; no
-   horizons in days, Vítor 2026-11-19: "muda!") (Vítor, 2026-10-31: "qualquer sessão que eu inicie sabe esse
+   horizons in days, Vítor 2026-11-18: "muda!") (Vítor, 2026-10-31: "qualquer sessão que eu inicie sabe esse
    plano"; horizons, 2026-11-01: "1 h, 1 dia e 3 dias ou mais ... o que não
    couber pode ficar para > 1 semana").  It holds what is done in the next
    hour, the next day, the next three days and beyond a week, plus the

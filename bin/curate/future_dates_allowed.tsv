@@ -1,0 +1,18 @@
+# path TAB date TAB reason.  A deliberate date later than the clock; an entry whose date has passed fails (the list only shrinks).
+BACKLOG.tsv	2026-11-30	C238 deadline of the demonstration month
+BRAIN.md	2026-11-30	C238 deadline of the demonstration month
+PLAN.md	2026-11-30	C238 deadline of the demonstration month
+DEV.md	2026-11-30	C238 deadline of the demonstration month
+DEV.md	2026-11-21	the consolidation freeze's declared end (C414)
+gui/src/ui/methods/PatentExpiryTool.tsx	2035-12-03	example loss-of-exclusivity date shown to the student
+gui/src/ui/methods/patentExpiryMath.ts	2035-12-03	default loss-of-exclusivity date of the patent-expiry tool
+gui/tests/ipStrategy.test.ts	2026-11-30	date arithmetic test input
+gui/tests/ipStrategy.test.ts	2027-01-15	date arithmetic test expectation
+gui/tests/ipStrategy.test.ts	2027-02-28	date arithmetic test expectation
+gui/tests/ipStrategy.test.ts	2027-07-15	date arithmetic test expectation
+gui/tests/ipStrategy.test.ts	2046-01-15	date arithmetic test expectation
+gui/tests/patentExpiry.test.ts	2035-02-30	date arithmetic test: an invalid date refused
+gui/tests/patentExpiry.test.ts	2035-12-03	date arithmetic test input
+gui/tests/patentExpiry.test.ts	2036-01-31	date arithmetic test input
+gui/tests/patentExpiry.test.ts	2036-02-29	date arithmetic test expectation
+gui/tests/patentExpiry.test.ts	2036-07-03	date arithmetic test expectation

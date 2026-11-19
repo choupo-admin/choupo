@@ -752,7 +752,7 @@ if (flowsheetDict->found("cycle"))
         //  the property door, and a second call made only because a panel is
         //  declared changed the run's own liquid-properties table (its count
         //  of evaluations), which the panel promises never to do (check_panel
-        //  arm (a); found 2026-11-19 when the door began counting the rig's
+        //  arm (a); found 2026-11-18 when the door began counting the rig's
         //  densities).
     }
     bool panelExtrasLabelled = false;

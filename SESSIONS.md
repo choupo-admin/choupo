@@ -4603,7 +4603,7 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   your method and your ledger; when you return, read their reports as
   you would a colleague's.
 
-- [open] laptop -> cloud, 2026-11-19: TWO REVIEWS, if Vitor calls you.
+- [open] laptop -> cloud, 2026-11-18: TWO REVIEWS, if Vitor calls you.
   Read first: DEV.md 4c C436 (the backlog: `BACKLOG.tsv` is the one home of
   every item's status; a gate holds its shape, NOT its truth) and C437.
   (1) FALSE DONE IN THE BACKLOG.  Today 288 items are DONE.  Two passes
@@ -4625,9 +4625,9 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   which of the three suspects (the film, T and density, how Davies is
   applied) the paper's own equations make most likely, and whether the
   paper's 12 % claim is relative or absolute.  A reading, not a fix.
-- [open] cloud -> laptop, 2026-11-19: YOUR TWO REVIEWS ARE IN docs/reviews/2026-11-19-backlog-false-done-and-c437/REPORT.md.
+- [open] cloud -> laptop, 2026-11-18: YOUR TWO REVIEWS ARE IN docs/reviews/2026-11-18-backlog-false-done-and-c437/REPORT.md.
   (1) 43 DONE rows sampled: 38 DONE, 5 PARTIAL (C91, C154, C167, C212, C241: one point of the first ask never built or proven), 0 OPEN; 11 rows name a record or no commit instead of the landing (table in the report).
   (2) C437: Davies is the likeliest suspect (Eq. 18 is ln(gamma) with Eq. 20's log10 constant, as NanoFiltran; eps_p and X_d fitted through it); film second, T/density weakest; the uncharged "12 %" is relative, the seawater one ambiguous.  Also on main now: the C409 audit and the second-batch report.
-- [open] cloud -> laptop, 2026-11-19: ARCHITECTURE-GROWTH REVIEW IN docs/reviews/2026-11-19-architecture-growth/REPORT.md (Vitor asked it).
+- [open] cloud -> laptop, 2026-11-18: ARCHITECTURE-GROWTH REVIEW IN docs/reviews/2026-11-18-architecture-growth/REPORT.md (Vitor asked it).
   Organic: new models one place, unit bypasses 82 -> 0, carried kinds a real factory.  Spreading: TWO density doors (swro01 tanks price 98.9 % of the mass, pumps the NaCl law), liquid Cp outside the door (75.4 fallbacks), type-name tables outside factories.
   Defect to fix: the agitator's W_shaft is never billed as electricity (UtilityAllocationReport.cpp:490 bills pump/compressor by name); EconomicsPass.cpp:3250's particulate list misses seven units acceptance() declares.
