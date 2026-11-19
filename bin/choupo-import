@@ -8,6 +8,12 @@
 # constant/<sub>; there is no parallel machine-owned directory).
 #
 #   choupo-import <caseDir> [--adopt-local <rel>]... [--overwrite <rel>]...
+#                 [--authorise-rows <file>]
+#
+# `--authorise-rows <file>` (C365): an AUTHORISED re-record.  The file lists
+# the golden rows (`kind unit key`) that may move in this re-import; a moved
+# row that is listed is accepted and printed, every other moved or missing
+# row is refused by name and nothing is installed.  The golden is not edited.
 #
 # Ownership, provenance and integrity live in `constant/propertyManifest`
 # (one per context -- plant root + each sector that declares its own
@@ -1495,6 +1501,39 @@ def validate_closure_complete(root, staged, ledger):
     return []
 
 
+#  C365 (DEV.md 4c, 2026-11-12): an AUTHORISED re-record.  `--authorise-rows
+#  <file>` names the golden rows (`kind unit key`, one per line, the first
+#  three fields of a golden row; `#` comments) that the architect has ruled
+#  may move in THIS re-import.  The staged run is still compared with the
+#  whole golden; a row that moved and is listed is ACCEPTED and printed, a
+#  row that moved and is NOT listed (or is MISSING) is refused by name,
+#  every one of them -- the list is the authority, so the first twelve are
+#  not enough.  The importer never edits the golden: the re-record of the
+#  accepted rows is `bin/runTests --record`, a separate, written act.
+AUTHORISED_ROWS = None      # None = flag absent (every disagreement refuses)
+AUTHORISED_FILE = None
+
+
+def load_authorised_rows(path):
+    p = Path(path)
+    if not p.is_file():
+        die("--authorise-rows: no such file: " + str(path))
+    rows = set()
+    for n, line in enumerate(p.read_text().splitlines(), 1):
+        line = line.split("#")[0].strip()
+        if not line:
+            continue
+        f = line.split()
+        if len(f) < 3:
+            die("--authorise-rows %s:%d: a row is `kind unit key` (the first"
+                " three fields of a golden row), got: %s" % (path, n, line))
+        rows.add(tuple(f[:3]))
+    if not rows:
+        die("--authorise-rows %s lists no row: an empty authorisation is the"
+            " flag's absence, say so by not passing it." % path)
+    return rows
+
+
 def validate_staged_agrees(staged, out):
     """The sealed run must give the SAME ANSWER, not merely an answer.
 
@@ -1534,6 +1573,7 @@ def validate_staged_agrees(staged, out):
              for o in res.get("operationResults", [])}
     kpis = res.get("kpis", {}) or {}
     bad = []
+    moved_ok, moved_ok_keys = [], set()
     skipped = 0
     skipped_kinds = {}
     compared = 0
@@ -1634,8 +1674,30 @@ def validate_staged_agrees(staged, out):
         #  rule is not a stricter check, it is a different claim -- the same
         #  lesson the utility-name normalisation above was paid for.
         if not golden_bands.within_tol(got, want, tol):
-            bad.append("%s %s.%s: sealed %.6g vs golden %.6g (tolerance %s)"
-                       % (kind, name, key, float(got), want, tol))
+            msg = ("%s %s.%s: sealed %.6g vs golden %.6g (tolerance %s)"
+                   % (kind, name, key, float(got), want, tol))
+            if AUTHORISED_ROWS is not None and (kind, name, key) in AUTHORISED_ROWS:
+                moved_ok.append(msg)
+                moved_ok_keys.add((kind, name, key))
+            else:
+                bad.append(msg)
+    if AUTHORISED_ROWS is not None:
+        unused = sorted(AUTHORISED_ROWS - moved_ok_keys)
+        if unused:
+            print("  authorised rows that did NOT move (listed in %s, still"
+                  " agree with the golden): %d" % (AUTHORISED_FILE, len(unused)))
+            for r in unused[:12]:
+                print("    =", " ".join(r))
+        print("  authorised rows that moved and are ACCEPTED: %d (the golden is"
+              " NOT edited; re-record them with bin/runTests --record)"
+              % len(moved_ok))
+        for m in moved_ok:
+            print("    ~", m)
+    if bad and AUTHORISED_ROWS is not None:
+        die("validation FAILED: %d row(s) moved or are missing that"
+            " --authorise-rows %s does NOT authorise -- refused by name,"
+            " nothing was installed:\n  %s"
+            % (len(bad), AUTHORISED_FILE, "\n  ".join(bad)))
     if bad:
         die("validation FAILED: the staged sealed case RUNS but does not"
             " AGREE with its own `expected` golden -- the seal changed the"
@@ -1927,6 +1989,11 @@ def cmd_repin(root, rel):
               " read which goldens moved.")
 
 
+def _auth_args():
+    return (["--authorise-rows", str(Path(AUTHORISED_FILE).resolve())]
+            if AUTHORISED_ROWS is not None else [])
+
+
 def cmd_seal_to(root, caseDir, dest):
     dest = Path(dest).resolve()
     if dest.exists():
@@ -1944,8 +2011,8 @@ def cmd_seal_to(root, caseDir, dest):
         #  esterification2sector, sealed before, lost both once the catalogue
         #  was hidden.  A re-seal of the COPY adds what is missing and leaves
         #  the tutorial in the tree as it is.
-        r = subprocess.run([sys.executable, str(Path(__file__).resolve()), str(dest)],
-                           text=True)
+        r = subprocess.run([sys.executable, str(Path(__file__).resolve()), str(dest)]
+                           + _auth_args(), text=True)
         if r.returncode != 0:
             #  Announced, never silent: the copy is exported as it stands, sealed
             #  by the older closure (lithiumBrinePlant: the importer refuses its
@@ -1990,7 +2057,7 @@ def cmd_seal_to(root, caseDir, dest):
             ov = re.search(r'(?m)^\s*overlayOf\b', f.read_text(errors="replace"))
             extra += ["--merge-overlay" if ov else "--adopt-local", rel]
     r = subprocess.run([sys.executable, str(Path(__file__).resolve()), str(dest)]
-                       + extra, text=True)
+                       + extra + _auth_args(), text=True)
     if r.returncode != 0:
         shutil.rmtree(dest, ignore_errors=True)
         die("--seal --to: the sealing transaction REFUSED (see above); nothing"
@@ -2028,11 +2095,22 @@ def main():
         elif a == "--merge-overlay":
             i += 1
             merge_overlay.add(args[i])
+        elif a == "--authorise-rows":
+            i += 1
+            global AUTHORISED_ROWS, AUTHORISED_FILE
+            AUTHORISED_FILE = args[i]
+            AUTHORISED_ROWS = load_authorised_rows(args[i])
         elif a.startswith("--"):
             die("unknown option " + a)
         else:
             pos.append(a)
         i += 1
+    if AUTHORISED_ROWS is not None and (
+            "--pin" in c413 or "--repin" in c413):
+        die("--authorise-rows belongs to the sealing transaction (a bare"
+            " `choupo-import <case>` or `--seal <case> --to <dir>`), the only"
+            " place the importer compares a run with the golden; --pin and"
+            " --repin read no golden (re-pin, then read which rows moved).")
     if c413:
         root = find_root()
         if "--repin" in c413:
@@ -2054,7 +2132,8 @@ def main():
         die("--to / --from-sealed go with --seal / --pin")
     if len(pos) != 1:
         die("usage: choupo-import <caseDir> [--adopt-local <rel>]..."
-            " [--overwrite <rel>]... [--merge-overlay <rel>]...")
+            " [--overwrite <rel>]... [--merge-overlay <rel>]..."
+            " [--authorise-rows <file>]")
     caseDir = Path(pos[0]).resolve()
     if not caseDir.is_dir():
         die("not a directory: " + str(caseDir))
