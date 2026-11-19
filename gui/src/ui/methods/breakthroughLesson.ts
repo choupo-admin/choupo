@@ -167,7 +167,7 @@ t_\mathrm{st} &= \frac{L}{u}\, R_f
     ],
     note: "That identity is exact for the conservative scheme, and the engine "
       + "publishes both sides — integral_anchor beside t_stoichiometric — "
-      + "which is why they agree here to about ten digits.  It also says what "
+      + "which is why they agree here to about 7.6 digits (a relative gap of 2.5e-8: the trapezoid is truncated at the end time).  It also says what "
       + "the square wave means: the solute that leaks out before t_st and the "
       + "capacity still being filled after it are equal in area.  The real "
       + "curve and the ideal step carry the same total; only their timing "
@@ -232,8 +232,9 @@ b(T) &= b(T_\mathrm{ref}) \exp\!\left[ -\frac{\Delta H_\mathrm{ads}}{R} \left( \
     where: [
       { sym: "b",
         means: "the Langmuir affinity, the same quantity as b_i written without its "
-        + "component index when the temperature law is the subject",
-        unit: "1/Pa" },
+        + "component index when the temperature law is the subject; its pressure "
+        + "basis is the record's declared one (per bar for CO2 on 13X), as for b_i",
+        unit: "1/bar (declared)" },
       { sym: "q_\\mathrm{sat,i}",
         means: "the saturation loading of i — the monolayer "
         + "the Langmuir picture allows", unit: "mol/kg" },

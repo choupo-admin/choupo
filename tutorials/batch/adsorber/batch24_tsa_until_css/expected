@@ -2,7 +2,7 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 kpi     bed                    P_final          100029.449382    1e-4
-kpi     bed                    P_first_cell_Pa  100059.308732    1e-4
+kpi     bed                    P_first_cell_Pa  100062.639643    1e-4
 kpi     bed                    P_last_cell_Pa   100001.176121    1e-4
 kpi     bed                    P_mid_cell_Pa    100029.404542    1e-4
 kpi     bed                    P_out_boundary_Pa 100000           1e-4
@@ -13,7 +13,7 @@ kpi     bed                    T_min_final_K    297.290399767    1e-4
 kpi     bed                    T_out_final_K    310.560011256    1e-4
 kpi     bed                    carrier_fabricated_mol 1.42108547152e-11 abs:1e-09
 kpi     bed                    dT_adiabatic_CO2_K 125.813871501    1e-4
-kpi     bed                    deltaP_first_to_out_Pa 59.3087319557    1e-4
+kpi     bed                    deltaP_first_to_out_Pa 62.6396434308    1e-4
 kpi     bed                    gasInventory_mol 0.0748325309122  1e-4
 kpi     bed                    integral_anchor_CO2 1315.2302391     1e-4
 kpi     bed                    mass_closure_CO2 4.97433793918e-14 abs:1e-08
@@ -26,7 +26,7 @@ kpi     bed                    t_breakthrough_5pct_CO2 770.911263969    1e-4
 kpi     bed                    t_end            14400            1e-4
 kpi     bed                    t_stoichiometric_CO2 3042.04095537    1e-4
 kpi     bed                    totalMoles_final 7.48325309122e-05 1e-4
-kpi     bed                    u_thermal_wave_m_s 7.95840334733e-05 1e-4
+kpi     bed                    u_thermal_wave_m_s 7.13132890548e-05 1e-4
 kpi     campaign               css_converged    1                1e-4
 kpi     campaign               css_cycles_completed 2                1e-4
 kpi     campaign               css_cycles_run   2                1e-4

@@ -414,7 +414,7 @@ batch18's ergun-mode bed (15\% CO2/He, N = 25) with the energy balance DECLARED:
 
 What the engine announces BEFORE integrating (equilibrium theory):
 
-pure thermal-wave velocity u\_th = u c\_tot cpg / (eps c\_tot cpg + rho\_b cp\_s) and the time L/u\_th the heat needs to LEAVE the bed; the adiabatic LIMIT DT\_ad = q$\ast$(-dH\_ads)/(cp\_s + q$\ast$ cpg\_CO2 + eps c\_tot cpg/rho\_b) -- the all-heat-retained BOUND (the loaded solid carries the adsorbate's own Cp). Here u\_th < u\_sh: the heat LAGS the front, so the observed outlet-T rise sits well BELOW the bound (\textasciitilde{} +36 K vs the 126 K limit) while the WARM bed breaks through far earlier than batch18's isothermal front (t\_50 \textasciitilde{} 812 s vs 3042 s -- q$\ast$(T) falls via the van't Hoff b(T), the SAME datum the energy state carries; one dH\_ads, three readers).
+thermal-wave velocity of the LOADED bed u\_th = u c\_tot cpg / (eps c\_tot cpg + rho\_b (cp\_s + sum q$\ast$ cpg)) and the time L/u\_th the heat needs to LEAVE the bed; the adiabatic LIMIT DT\_ad = q$\ast$(-dH\_ads)/(cp\_s + q$\ast$ cpg\_CO2 + eps c\_tot cpg/rho\_b) -- the all-heat-retained BOUND (the loaded solid carries the adsorbate's own Cp). Here u\_th < u\_sh: the heat LAGS the front, so the observed outlet-T rise sits well BELOW the bound (\textasciitilde{} +36 K vs the 126 K limit) while the WARM bed breaks through far earlier than batch18's isothermal front (t\_50 \textasciitilde{} 812 s vs 3042 s -- q$\ast$(T) falls via the van't Hoff b(T), the SAME datum the energy state carries; one dH\_ads, three readers).
 
 The golden pins T\_out/T\_max, both anchors, the early crossings, and the campaign ENERGY closure -- claimed, adiabatically, on the vessel's internal energy against the boundary streams alone, and closed to round-off: the bed's energy rows are conservative finite volumes (each cell's internal energy U\_j, the faces carrying the enthalpy of the species fluxes; DEV.md 4c C258).
 
@@ -425,7 +425,7 @@ Adiabatic means NO energy record: nothing is exchanged with the environment; the
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{bed}{P\_final}{100050.550283}
-\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100097.15555}
+\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100101.622717}
 \goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100002.081511}
 \goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100051.159061}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
@@ -436,7 +436,7 @@ Adiabatic means NO energy record: nothing is exchanged with the environment; the
 \goldrow{kpi}{bed}{c\_out\_over\_cin\_final\_CO2}{0.823725183953}
 \goldrow{kpi}{bed}{carrier\_fabricated\_mol}{2.4897417461e-11}
 \goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{125.813871501}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{97.1555499367}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{101.622716824}
 \goldrow{kpi}{bed}{integral\_anchor\_CO2}{2839.09489826}
 \goldmore{44}
 \end{tutgolden}
@@ -465,7 +465,7 @@ Breakthrough crossings/integral freeze at the switch (they describe the load ste
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{bed}{P\_final}{100030.237558}
-\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100063.118446}
+\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100070.37249}
 \goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.142011}
 \goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100028.478818}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
@@ -475,7 +475,7 @@ Breakthrough crossings/integral freeze at the switch (they describe the load ste
 \goldrow{kpi}{bed}{T\_out\_final\_K}{306.831902423}
 \goldrow{kpi}{bed}{carrier\_fabricated\_mol}{-1.13686837722e-12}
 \goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{125.813871501}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{63.1184455619}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{70.3724897253}
 \goldrow{kpi}{bed}{integral\_anchor\_CO2}{1315.23023598}
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{4.72969836841e-15}
 \goldmore{53}
@@ -509,7 +509,7 @@ The LEDGER is the design point (docs/design/fixed-bed-thermal-a5.md section 6): 
 \goldrow{kpi}{bed}{E\_wallHeat\_seg0\_kJ}{-185.062633189}
 \goldrow{kpi}{bed}{E\_wallHeat\_total\_kJ}{-185.062633189}
 \goldrow{kpi}{bed}{P\_final}{100048.490853}
-\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100094.358494}
+\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100096.32317}
 \goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.949113}
 \goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100048.72665}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
@@ -547,7 +547,7 @@ TIME INTEGRATION: `solver \{ method rodas4; \}` selects the order-4 stiff integr
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{bed}{P\_final}{100029.977681}
-\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100060.020399}
+\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100063.941541}
 \goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.18892}
 \goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100030.107889}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
@@ -557,7 +557,7 @@ TIME INTEGRATION: `solver \{ method rodas4; \}` selects the order-4 stiff integr
 \goldrow{kpi}{bed}{T\_out\_final\_K}{314.928123967}
 \goldrow{kpi}{bed}{carrier\_fabricated\_mol}{-5.09885467181e-11}
 \goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{125.813871501}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{60.0203992802}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{63.9415407171}
 \goldrow{kpi}{bed}{integral\_anchor\_CO2}{1315.23082099}
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{6.95863667995e-14}
 \goldmore{58}
@@ -627,7 +627,7 @@ WHAT BUILDING IT FOUND, and it outlives the feature: the CSS norm and the loadin
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{bed}{P\_final}{100029.449382}
-\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100059.308732}
+\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100062.639643}
 \goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.176121}
 \goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100029.404542}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
@@ -638,7 +638,7 @@ WHAT BUILDING IT FOUND, and it outlives the feature: the CSS norm and the loadin
 \goldrow{kpi}{bed}{T\_out\_final\_K}{310.560011256}
 \goldrow{kpi}{bed}{carrier\_fabricated\_mol}{1.42108547152e-11}
 \goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{125.813871501}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{59.3087319557}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{62.6396434308}
 \goldrow{kpi}{bed}{gasInventory\_mol}{0.0748325309122}
 \goldmore{60}
 \end{tutgolden}
@@ -673,7 +673,7 @@ THE ANCHOR: T\_min\_final\_K sits BELOW the declared 298.15 K by a visible margi
 \goldrow{kpi}{bed}{T\_min\_final\_K}{294.887445096}
 \goldrow{kpi}{bed}{T\_out\_final\_K}{295.066441477}
 \goldrow{kpi}{bed}{carrier\_fabricated\_mol}{4.17443857259e-14}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{-0.000206758486456}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{-0.000205334486964}
 \goldrow{kpi}{bed}{gasInventory\_mol}{0.0407808424401}
 \goldrow{kpi}{bed}{n\_CO2\_final}{0}
 \goldmore{41}

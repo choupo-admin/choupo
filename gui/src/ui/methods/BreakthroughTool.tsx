@@ -686,7 +686,8 @@ export function BreakthroughTool(): JSX.Element {
             </Table.Tbody>
           </Table>
           <Text size="xs" c="dimmed" mt={4}>
-            retention_factor: how many hold-up times the front lags the carrier —
+            retention_factor R_f: the front arrives R_f times later than the superficial
+            transit time L/u, that is R_f/ε carrier hold-up times (ε L/u) —
             the bed&apos;s dynamic capacity for the component.{" "}
             qbar_final: bed-average adsorbed loading at t_end — the capacity the
             run actually used.{" "}

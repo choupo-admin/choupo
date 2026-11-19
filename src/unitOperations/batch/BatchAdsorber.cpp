@@ -284,7 +284,7 @@ void BatchAdsorber::initialise(const DictPtr&       unitDict,
                     + "': initial.initialLoading lists '" + sp + "' but it"
                     " is not a component of this case (constant/thermoPhysPropDict"
                     " components)");
-            const scalar q0v = ql->lookupScalar(sp);
+            const scalar q0v = lookupLoadingMolPerKg(ql, sp);
             if (q0v < 0.0)
             {
                 std::ostringstream os;

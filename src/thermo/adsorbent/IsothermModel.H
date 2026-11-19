@@ -79,6 +79,14 @@ Description
 
 namespace Choupo {
 
+// A loading read from a dictionary, returned in mol/kg of adsorbent (C451).
+// A BARE number is mol/kg (the convention of every record and case);
+// a number written with a unit (`5 mol/kg;`, `2 mmol/g` is not registered)
+// is converted through the canonical kmol/kg, so `5 mol/kg` equals a bare 5.
+// A value declared with a non-molality dimension is refused by name.
+scalar lookupLoadingMolPerKg(const DictPtr& d, const std::string& key);
+
+
 class IsothermModel
 {
 public:
