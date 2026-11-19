@@ -185,7 +185,7 @@ std::vector<EquipmentSizing> ColumnSize::size(const std::string& unitName,
             + "' has no sigma_y defined, so no wall thickness can be computed"
               " for column '" + unitName + "'");
 
-    const scalar pressureDesign = designRules->lookupScalar("pressureDesign"); // bar
+    const scalar pressureDesign = designRules->lookupScalarIn("pressureDesign", Dims::pressure, "bar"); // bar
 
     //  THE TRAY COUNT IS THE HYDRAULICS' OWN, NOT `nStages` ARITHMETIC.
     //  This sizer first computed `nStages - 2` -- "the condenser and the
@@ -451,7 +451,7 @@ std::vector<EquipmentSizing> ColumnSize::size(const std::string& unitName,
             drum.material      = material.name;
 
             const scalar tau  = sub->lookupScalar("residenceTime");        // s
-            const scalar pDes = sub->lookupScalar("pressureDesign");       // bar
+            const scalar pDes = sub->lookupScalarIn("pressureDesign", Dims::pressure, "bar");       // bar
             const scalar LoD  = designDefault::valueOr(
                 sub, designDefault::vesselLoverD,
                 "reflux drum of distillationColumn", unitName, drum);

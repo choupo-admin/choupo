@@ -71,7 +71,7 @@ std::vector<EquipmentSizing> CatalystBedSize::size(const std::string& unitName,
               " around a catalyst bed is a pressure vessel and its wall cannot"
               " be sized without one.  Declare `pressureDesign <bar>;` (the"
               " loop pressure plus your margin).");
-    const scalar pressureDesign = designRules->lookupScalar("pressureDesign");   // bar
+    const scalar pressureDesign = designRules->lookupScalarIn("pressureDesign", Dims::pressure, "bar");   // bar
     if (material.sigma_y <= 0.0)
         throw std::runtime_error("CatalystBed: material '" + material.name
             + "' has no sigma_y defined -- the shell wall cannot be sized");

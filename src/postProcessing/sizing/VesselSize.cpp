@@ -238,7 +238,7 @@ std::vector<EquipmentSizing> VesselSize::size(const std::string& unitName,
     //  is ever raised about a size that will not exist.  "the size below was
     //  computed with the built-in default 0.003 m" is false when the unit
     //  then refuses and there is no size below.
-    const scalar pressureDesign = designRules->lookupScalar("pressureDesign");   // bar
+    const scalar pressureDesign = designRules->lookupScalarIn("pressureDesign", Dims::pressure, "bar");   // bar
     if (material.sigma_y <= 0.0)
         throw std::runtime_error("Vessel: material '" + material.name
             + "' has no sigma_y defined");
