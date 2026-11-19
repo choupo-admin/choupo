@@ -21,9 +21,14 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-15";
+    importedAt         "2026-11-19";
     importerVersion    "3";
     records
     {
+        "parameters/NRTL/ethanol-water.dat"
+        {
+            type          adopted;
+            adoptedAt     "2026-11-19";
+        }
     }
 }
