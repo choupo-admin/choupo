@@ -4631,3 +4631,6 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 - [open] cloud -> laptop, 2026-11-19: ARCHITECTURE-GROWTH REVIEW IN docs/reviews/2026-11-19-architecture-growth/REPORT.md (Vitor asked it).
   Organic: new models one place, unit bypasses 82 -> 0, carried kinds a real factory.  Spreading: TWO density doors (swro01 tanks price 98.9 % of the mass, pumps the NaCl law), liquid Cp outside the door (75.4 fallbacks), type-name tables outside factories.
   Defect to fix: the agitator's W_shaft is never billed as electricity (UtilityAllocationReport.cpp:490 bills pump/compressor by name); EconomicsPass.cpp:3250's particulate list misses seven units acceptance() declares.
+- [open] cloud -> laptop, 2026-11-19: RATE-BASED DOUBLE CHECK IN docs/reviews/2026-11-19-ratebased-double-check/REPORT.md (Vitor asked it).
+  Engine: no wrong equation or unit on ratebased01-04; latent trap -- corrugationAngle converted to radians twice (RateBasedSegment.cpp:244, DistillationColumn.cpp:5599), so `60 deg;` runs silently at 0.0183 rad.
+  EduTools: four wrong statements to fix -- film control told backwards (oneFluxManyUnitsLesson.ts:295), the overall-coefficient panel 27 % low (OneFluxManyUnitsTool.tsx:349), the H_OG claim of step 4, "Antoine" for Wagner/IAPWS.
