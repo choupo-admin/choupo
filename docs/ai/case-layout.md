@@ -1888,6 +1888,27 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   gas viscosity `transport { vapour { viscosity { model Chung; } } }`.  Witnesses:
   `tutorials/plant/line01_pumped_drum` (hand calculation in its README),
   `tutorials/plant/greenAmmoniaPEQ_baseCase`.
+* THE NOZZLE SCHEDULE (C444): a `nozzleDesign { ... }` block in `system/layoutDict`,
+  beside `lineDesign` (it needs it: a nozzle's size is the end of its line), adds a
+  `nozzles {}` block to every placed item's equipment sheet (`design/<unit>/<tag>`):
+  mark (N1.. process, M1.. manway, H1.. inspection opening), service (the layout's
+  port word), stream, line, nominal size (the line's, or the item's own criterion
+  `d_nozzle_<port>` where larger, a difference printed as a reducer), flange class and
+  facing, orientation, design pressure (the item's `pressureDesign`, else the line's)
+  and temperature (hottest connected stream + margin).  Nothing is defaulted; each
+  block carries `source` and `reason`: `designTemperature { margin <K>; }`,
+  `facing { default RF; [ringJointFromClass <n>;] }`, `flangeRating { tables ( {
+  material <record>; group; source; minF -20; classes ( 150 300 ... ); rows ( { upToF
+  <F>; psig ( ... ); } ... ); } ... ); }` (one table per construction material: the
+  shipped cases read Perry 9th ed. Table 10-42a, c, d), `manway { entryMinDiameter;
+  diameter; nominalSize; inspection { nominalSize; } openings ( { equipment vessel |
+  columnShell | storageTank; where shell | roof; count; source; reason; } ... ); }`.  A
+  vessel under the entry limit gets an inspection opening instead of a manway; a
+  material with no table is listed NOT RATED.  Out: the sheet's `nozzles {}`,
+  `layout.nozzles` in the result (golden rows `layout nozzle:<item>:<mark> ...`).
+  Not modelled: reinforcement, minimum metal temperature, flange dimensions, bolting,
+  instrument and drain connections.  Witnesses: `tutorials/plant/line01_pumped_drum`,
+  `tutorials/plant/greenAmmoniaPEQ_baseCase`.
 * THE PLOT (C82): the engine publishes the plot area -- the axis-aligned
   envelope of every declared sector area, every placed footprint, every
   routed pipe and (C97) every room of a declared `building {}`, grown on

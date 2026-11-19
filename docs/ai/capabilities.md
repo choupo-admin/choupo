@@ -217,6 +217,14 @@ batch plan, sizing, clean utilities, costing and economics on top
   `reports/lines/lineList.csv`.  Every rule is a declared block with its
   `source` and `reason` (`origin assumed` where no book in the literature
   folder gives it); a two-phase line is listed not sized.
+* THE NOZZLE SCHEDULE (`key:nozzleDesign` in `system/layoutDict`, beside
+  `lineDesign`): every placed item's equipment sheet gains a `nozzles {}` block --
+  one row per line that ends on it (mark, service, stream, line, nominal size =
+  the line's or the item's own criterion with a reducer printed, flange class and
+  facing from the case's pressure-temperature table per material (Perry Table
+  10-42 in the shipped cases), orientation, design P and T) and the manways or
+  inspection openings by the case's rule per equipment kind (Towler and Sinnott
+  p. 714, p. 1062).  Nothing defaulted; a material with no table is NOT RATED.
 * Missing: utility-line sizing, the two-phase drop, nozzle entrance and exit
   losses, the pump a line needs, steam and nitrogen lines, structures; no
   spacing or zoning table is shipped (every distance is the case's).

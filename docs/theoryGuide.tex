@@ -27701,7 +27701,9 @@ declares a vapour viscosity model; without one the check is skipped, by name).
 mixture density), the vapour outlet and the liquid outlet, at the velocities the case declares (Towler
 \S5: liquids pumped 1--3\,m/s, gases and vapours 15--30\,m/s; outside the window the run says so).  The
 feed's $\rho v^2$ is printed, and checked against \code{feedRhoV2Max} where the case declares one (no
-limit is in the sources read, so none is built in).
+limit is in the sources read, so none is built in).  On a laid-out plant these diameters become the
+drum's nozzle schedule, with the line's size, the flange class and the manway
+(\S\ref{sec:nozzle-schedule}).
 
 \paragraph{What is declared, not defaulted.}  \code{method}, \code{demister}, \code{holdupTime},
 \code{surgeTime}, \code{lowLevel} (Towler example 10.5 allows 10 minutes and 0.3\,m) and the three
@@ -27713,6 +27715,78 @@ vessel.
 \file{tutorials/steady/flash/flash22\_drum\_sizing\_benzene\_toluene} --- the whole procedure, with a
 hand calculation in its README; \file{tutorials/plant/greenAmmoniaPEQ\_baseCase} --- the three flash drums
 of the loop.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
+\section{The nozzle schedule: where the lines end on the equipment}\label{sec:nozzle-schedule}
+
+Every equipment specification sheet of a case that declares \code{nozzleDesign \{\}} beside
+\code{lineDesign \{\}} (both in \file{system/layoutDict}) carries a \code{nozzles \{\}} block: the
+connections of the item and the openings people need.  The sources are Towler and
+Sinnott~\cite{TowlerSinnott2008} (\S13.4.2, \S13.10, \S11.12 and the worked column of chapter~13) and
+Perry's Handbook~\cite{Perry9} (Table~10-42); every page quoted below was read.
+
+\begin{whatyoulllearn}
+A nozzle is the end of a line.  Its size is the line's, its flange is the class that holds the design
+pressure at the design temperature, and the openings for entry are a rule of the equipment, not of
+the process.  The schedule shows each choice with the sentence that decided it, and what it could not
+decide it says and does not default.
+\end{whatyoulllearn}
+
+\paragraph{Process nozzles.}  One row per line that ends on the item (marks N1, N2, \dots, in the
+order the layout publishes the item's pipes), with the service (the layout's port word: feed, vapour,
+liquid, suction, discharge, \dots), the direction, the stream and the line sheet.  The nominal size is
+the line's (\S\ref{sec:line-list} of the Design Guide); where the item publishes a criterion of its own for
+that port (the separator drum's \code{d\_nozzle\_<port>}, from the $\rho v^2$ limit and clearances of
+\S\ref{sec:drum-sizing}) it is turned into a nominal size by the \emph{same} table of the case (the
+smallest size whose inside diameter, at its lightest declared schedule, is at least the diameter asked)
+and the nozzle is the larger of the two.  A nozzle that differs from its line is printed as a
+\emph{reducer} (``reducer 4 in line to 6 in nozzle''), never resolved silently.
+
+\paragraph{Flange class.}  Standard flanges are designated by class, which ``roughly correspond to the
+primary service (pressure) rating of a steel flange of those dimensions at room temperature''; the
+strength falls with temperature, so a higher class is taken (Towler \S13.10.5, p.~1028: a 10\,bar
+service takes class 150 below $300^\circ$C and class 300 at $300^\circ$C).  The engine carries no table:
+the case declares one per construction material, each with its page.  The shipped cases read Perry's
+Table~10-42a (carbon steel, group~1.1) and 10-42c (Type 304) on p.~10-95 and 10-42d (Type 316) on
+p.~10-96, which Perry states are extracted from ASME~B16.5-2013; Towler's Table~13.5 (p.~1030) prints
+the carbon-steel rows and agrees.  The rule is
+\begin{equation}
+\text{class} = \min\{\,c : p_{c}(T_\mathrm{row}) \ge P_\mathrm{design}\,\},\qquad
+T_\mathrm{row} = \text{first row with } T_\mathrm{row} \ge T_\mathrm{design},
+\end{equation}
+with $p_c$ the working pressure (psig) of class $c$ at the row's temperature and $P_\mathrm{design}$ the
+\emph{gauge} design pressure ($1\,\mathrm{bar} = 14.5038\,\mathrm{psi}$).  Taking the next row up is
+the safe side.  The design pressure is the item's \code{pressureDesign} where its sizing publishes one
+(vessels, drums, columns), else the line's design pressure; the design temperature is the hottest
+stream connected to the item plus the case's declared margin (Towler \S13.4.2, pp.~980--981, asks for
+``due allowance for any uncertainty'' and gives no number, so the margin is the case's, marked assumed).
+A material with no table is listed \emph{not rated}, with the reason; a design temperature below the
+table's $-20^\circ$F is flagged, because the low-temperature rating of the material is not in it.
+\emph{Facing}: raised face, ``probably the most commonly used type of flange face for process
+equipment'' (Towler \S13.10.3, p.~1025); a ring joint, which Towler says is used ``for high temperatures
+and high-pressure services'', from a class the case declares.
+
+\paragraph{Manways and inspection openings.}  Towler (\S11.12, p.~714) says the stacked-plate
+construction is used ``where the column diameter is too small for someone to enter \dots\ say less than
+1.2\,m''; the worked column of chapter~13 (p.~1062) has ``two 0.6\,m diameter access ports (manholes)''
+near the bottom and top.  The case declares that rule: an entry limit (1.2\,m), a clear opening (0.6\,m,
+NPS~24 as the nearest standard size) and, per equipment kind (\code{vessel}, \code{columnShell},
+\code{storageTank} with a shell and a roof opening), how many.  Where $D$ is below the limit nobody can
+enter and the row is an \emph{inspection opening} (mark H1, \dots) of a declared, smaller size instead of
+a manway (mark M1, \dots); it rates like any nozzle, on the vessel's design pressure.  The counts and the
+inspection size are marked assumed: no book in the literature folder gives them, and the column spacing
+by tray count (Kister) could not be read there (the scan has no text layer).
+
+\paragraph{Not modelled.}  Nozzle reinforcement (Towler \S13.6), the minimum metal temperature of a
+flange, the standard's flange dimensions and bolting, a nozzle's projection and elevation, the
+instrument and drain connections, a machine's own flange.  The schedule is a first specification for
+the purchasing sheet, not a mechanical design.
+
+\begin{tutoriallink}
+\file{tutorials/plant/line01\_pumped\_drum} --- a pump and a drum, the smallest schedule;
+\file{tutorials/plant/greenAmmoniaPEQ\_baseCase} --- the reference plant's items, the drums' criterion
+reducers and the 166\,bar loop's flange classes.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
