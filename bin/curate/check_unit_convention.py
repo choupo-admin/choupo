@@ -39,7 +39,12 @@ ARMS.
       with `temperatureApproach 10 K;` and bare while `10 C;` is REFUSED by
       name -- before, `10 C` ran as a 283.15 K approach at exit 0.
 
-WHAT IT DOES NOT CHECK.  The other 15 trap families of the sweep (they are
+  (e) YEARS (family 4): `yr` and `h` convert to SECONDS, so a bare-in-years
+      key read plainly would run `projectLife 10 yr;` as 3.15e8 years.
+      economics01's NPV must be the same with projectLife/depreciableLife
+      bare and written `yr`; twice the life must move it.
+
+WHAT IT DOES NOT CHECK.  The remaining trap families of the sweep (they are
 the rest of C454, one family per slice); whether `bar` is the RIGHT working
 unit (it is the corpus convention, kept so no golden moves).
 """
@@ -62,7 +67,9 @@ LABEL = "check_unit_convention"
 
 #  Configuration, not a waiver: the keys whose bare number is in a working
 #  unit, and that unit (docs/ai/dict-syntax.md lists the same keys).
-WORKING_UNIT_KEYS = {"Pc": "bar", "pressureDesign": "bar"}
+WORKING_UNIT_KEYS = {"Pc": "bar", "pressureDesign": "bar",
+                     "projectLife": "yr", "depreciableLife": "yr",
+                     "constructionPeriod": "yr", "operatorAnnualHours": "h"}
 
 #  Configuration: keys that are a temperature DIFFERENCE (family 2) -- read
 #  by Dictionary::lookupTemperatureDifference, which refuses an affine word.
@@ -71,6 +78,7 @@ TEMPERATURE_DIFFERENCE_KEYS = ("temperatureApproach", "superheat", "subcool",
 
 FLASH = ROOT / "tutorials" / "steady" / "flash" / "flash09_n2ch4_stryjek"
 SIZING = ROOT / "tutorials" / "steady" / "flash" / "flash22_drum_sizing_benzene_toluene"
+ECON = ROOT / "tutorials" / "steady" / "economics" / "economics01_esterification_dcf"
 APPROACH = ROOT / "tutorials" / "steady" / "gibbs" / "gibbs13_adiabatic_approach_direction"
 
 fails = []
@@ -107,21 +115,43 @@ def arm_a():
     return len(bad) == 0
 
 
-def run(case):
+def run(case, timeout=600):
+    """Run the engine on `case`.  A run past `timeout` is a FINDING, not a
+    crash: the trap this gate guards can hang a run (projectLife 10 yr read
+    as 3.15e8 years walks a cash flow of that many years)."""
     env = dict(os.environ, CHOUPO_HOME=str(ROOT))
-    p = subprocess.run([str(BIN)], cwd=str(case), capture_output=True,
-                       text=True, timeout=600, env=env)
+    try:
+        p = subprocess.run([str(BIN)], cwd=str(case), capture_output=True,
+                           text=True, timeout=timeout, env=env)
+    except subprocess.TimeoutExpired:
+        return -9, "the run did not finish in %d s" % timeout, None
     out = p.stdout + p.stderr
     m = re.search(r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>", out, re.S)
     js = json.loads(m.group(1)) if m else None
     return p.returncode, out, js
 
 
-def copy_unsealed(src, dst):
-    case_records.copytree(src, dst, ignore=shutil.ignore_patterns(
-        "converged", "reports", "iterations", "design", "economics"))
-    for man in dst.rglob("propertyManifest"):
-        man.unlink()
+def copy_unsealed(src, dst, keep_manifest=False):
+    """A probe copy; the manifest is dropped only when the probe edits a
+    RECORD (arm b) -- a probe that edits only system/ keeps the case's own
+    resolution (economics01 run unsealed meets a Trange refusal its sealed
+    records do not)."""
+    outputs = {"converged", "reports", "iterations", "design", "economics"}
+    top = str(Path(src).resolve())
+
+    def ign(dirpath, names):
+        #  Run outputs at the case root only: `constant/economics` is the
+        #  case's own price file, not an output.
+        return [n for n in names if n in outputs and str(Path(dirpath).resolve()) == top]
+    if keep_manifest:
+        #  A plain copy: materialising pinned records beside the manifest that
+        #  pins them is refused (a local copy equal to the catalogue's).
+        shutil.copytree(src, dst, ignore=ign)
+        return dst
+    case_records.copytree(src, dst, ignore=ign)
+    if not keep_manifest:
+        for man in dst.rglob("propertyManifest"):
+            man.unlink()
     return dst
 
 
@@ -250,6 +280,38 @@ def arm_d(td):
     return True
 
 
+def arm_e(td):
+    """projectLife / depreciableLife: `10 yr;` equals bare (yr converts to s)."""
+    npv = {}
+    for name in ("bare", "declared", "x2"):
+        d = copy_unsealed(ECON, Path(td) / ("ec_" + name), keep_manifest=True)
+        f = d / "system" / "postDict"
+        t = f.read_text()
+        for key in ("projectLife", "depreciableLife"):
+            m = re.search(r"(?m)^(\s*" + key + r"\s+)([0-9.]+)(\s*;)", t)
+            if not m:
+                fails.append("(e) economics01 has no bare `%s` line -- STALE fixture" % key)
+                return False
+            if name == "declared":
+                t = t[:m.start()] + m.group(1) + m.group(2) + " yr" + m.group(3) + t[m.end():]
+            elif name == "x2" and key == "projectLife":
+                t = t[:m.start()] + m.group(1) + repr(2 * float(m.group(2))) + m.group(3) + t[m.end():]
+        f.write_text(t)
+        rc, o, js = run(d, timeout=120)
+        if rc != 0 or js is None:
+            fails.append("(e) %s run failed (exit %d): %s" % (name, rc, o[-300:]))
+            return False
+        npv[name] = kpi(js, "economics", "NPV")
+    if abs(npv["bare"] - npv["declared"]) > 1e-12 * max(1.0, abs(npv["bare"])):
+        fails.append("(e) `projectLife 10 yr;` gives NPV %.15g, bare gives %.15g"
+                     % (npv["declared"], npv["bare"]))
+        return False
+    if abs(npv["bare"] - npv["x2"]) < 1e-6 * abs(npv["bare"]):
+        fails.append("(e) twice the project life moved no NPV -- the comparison proves nothing")
+        return False
+    return npv["bare"]
+
+
 def main():
     if not BIN.is_file():
         print("%s: FAILED -- no engine binary at %s (run `make all`); a check that "
@@ -260,6 +322,7 @@ def main():
         b = arm_b(td)
         c = arm_c(td)
         d = arm_d(td)
+        e = arm_e(td)
     if fails:
         for f in fails:
             print("  " + f)
@@ -272,8 +335,11 @@ def main():
           "flash22 are identical with pressureDesign bare and written `bar` (ten times the pressure moves them: the sheet sees it); (d) "
           "every read of the temperature differences %s goes through "
           "lookupTemperatureDifference, and gibbs13 runs identically with "
-          "`temperatureApproach 10 K;` and bare while `10 C;` is refused by name.  "
-          "NOT checked: the other 15 trap families of C454."
+          "`temperatureApproach 10 K;` and bare while `10 C;` is refused by name; (e) economics01's NPV "
+          "is the same with projectLife/depreciableLife bare and written `yr` (twice "
+          "the life moves it).  NOT checked: the other trap families of C454 "
+          "(units.md lists 18; Pc, pressureDesign, temperature differences, adsorbent "
+          "loadings and the economic years are done)."
           % (LABEL, " and ".join("`%s` (%s)" % kv for kv in WORKING_UNIT_KEYS.items()),
              v["bare"], v["pa"], c, "/".join(TEMPERATURE_DIFFERENCE_KEYS)))
     return 0
