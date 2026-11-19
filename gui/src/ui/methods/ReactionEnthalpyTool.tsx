@@ -186,7 +186,7 @@ export function ReactionEnthalpyTool(): JSX.Element {
               </PanelNote>
             </Stack>
             <Box style={{ minWidth: 0 }}>
-              <OriginMark of={["engine", "page"]} note="blue and red: the witness run in this browser (choupoProps); orange: Kirchhoff with your constant heat capacity, on this page" />
+              <OriginMark of={["engine", "page"]} note="blue: the witness run in this browser (choupoProps); red: the typed constant of the course base data (-46.1 kJ/mol NH3), not a run; orange: Kirchhoff with your constant heat capacity, on this page" />
               {run.busy && (
                 <Group gap="sm" mb={6}><Loader size="xs" />
                   <Text size="xs" c="dimmed">one property run — seconds</Text>

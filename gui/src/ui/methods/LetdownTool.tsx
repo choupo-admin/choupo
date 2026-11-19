@@ -497,7 +497,7 @@ function NoiseBench({ run, props }: { run: MethodRunState; props: MethodRunState
   return (
     <Box>
       <Title order={5}>The three valves, in decibels against each other</Title>
-      <OriginMark of={["engine", "page", "assumption"]} note="the noise relations, as the fluids library implements them, evaluated on this page on the engine's streams" />
+      <OriginMark of={["engine", "page", "assumption"]} note="no noise relation is run: this page computes Q dP, an ideal-expander work and 10 log10 on the engine's streams" />
       <PanTable>
         <Table.Thead>
           <Table.Tr><Table.Th>valve</Table.Th><Table.Th>mechanical power dissipated [kW]</Table.Th><Table.Th>dB against the first throttle, same fraction</Table.Th></Table.Tr>
@@ -514,7 +514,10 @@ function NoiseBench({ run, props }: { run: MethodRunState; props: MethodRunState
       <PanelNote>
         For the liquids the power is <TexText text={String.raw`\(Q_1 (P_1 - P_2)\)`} />; for the gas it is the work
         an ideal expander would have taken from the same drop (the bench
-        above).  The decibel column is an estimate of the ratio and nothing
+        above).  The gas row is therefore not like for like: its figure is the
+        isentropic expander work, smaller than the work a throttle actually
+        dissipates (isothermal integral of v dP, about 30 kW against 17.7 kW
+        here), so the gas row's dB is low by roughly 2 to 3 dB.  The decibel column is an estimate of the ratio and nothing
         more, labelled as one: it
         assumes the same fraction of each valve&apos;s dissipated power becomes
         sound, and that fraction -- which differs between a gas and a liquid,

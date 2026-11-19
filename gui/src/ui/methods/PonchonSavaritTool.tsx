@@ -133,7 +133,7 @@ function ConstructionPane(): JSX.Element {
   return (
     <Box>
       <Title order={5}>The construction, on the engine's own curves</Title>
-      <OriginMark of={["engine", "page", "assumption"]} note="the H-x-y curves are the engine's run in this browser (choupoProps); the difference points and the stage steps are this page's geometry on them, at the x_D and R you set" />
+      <OriginMark of={["engine", "page", "assumption"]} note="the H-x-y curves are the engine's run in this browser (choupoProps); the one difference point Δ_D and the condenser cut are this page's geometry on them, at the x_D and R you set; there is no second difference point and no stage staircase" />
       <Group gap={20} mt={8} align="flex-end" wrap="wrap">
         <Box style={{ minWidth: 210 }}>
           <Text size="xs" c={INK}>distillate composition <Tex mode="inline" src={"x_D"} /> = {xD.toFixed(2)}</Text>

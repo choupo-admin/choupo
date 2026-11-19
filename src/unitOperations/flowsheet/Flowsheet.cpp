@@ -3538,6 +3538,18 @@ int Flowsheet::solve(const DictPtr& dict,
                       << "  ----  -----------  ----------\n";
             const scalar qmin = recScalar("recycleWegsteinQmin", -1.0);
             const scalar qmax = recScalar("recycleWegsteinQmax",  0.0);
+            //  qmin > qmax would reach std::clamp(lo > hi), undefined behaviour:
+            //  refused by name.  A non-default bound is announced (C453).
+            if (qmin > qmax)
+                throw std::runtime_error(
+                    "recycleWegsteinQmin (" + std::to_string(qmin)
+                    + ") exceeds recycleWegsteinQmax (" + std::to_string(qmax)
+                    + "): the Wegstein factor q is clamped to [qmin, qmax], so"
+                    " qmin must not exceed qmax (defaults -1 and 0).");
+            if (recSolver == "Wegstein" && verbosity >= 1
+                && (qmin != -1.0 || qmax != 0.0))
+                std::cout << "  [aid] Wegstein q clamped to [" << qmin << ", " << qmax
+                          << "] (system/solverDict recycleWegsteinQmin/Qmax; default [-1, 0])\n";
             sVector x = packTears(tears, streams_);
             solver::Wegstein accel(x.size(), qmin, qmax);
             //  A tear's pressure entry (bar, the last of its [F, z.., T, P] block) cannot be

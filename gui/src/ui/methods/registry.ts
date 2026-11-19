@@ -1017,7 +1017,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "pinch-composite", blurb: "Find the pinch and the minimum hot and cold utility.", label: "Pinch composite curves",
     discipline: "Heat transfer & energy", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
-    teaches: "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the in-view cascade cross-checked against the engine's targets.",
+    teaches: "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the engine's targets and problem table (problemTable.csv) read back, not recomputed in the page.",
     theory: "ch:pinch",
   },
   {
@@ -1951,7 +1951,7 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "ammonia loop that converts less per pass, passes about four times "
       + "the volume of gas, carries about four times as much ammonia in the "
       + "recycle stream, and earns less, so that the engine cannot call it "
-      + "safer without sizing the equipment and the release scenarios.",
+      + "safer from the inventory it can compute (converter gas and separator liquid) without the pipes, the exchangers and the release scenarios.",
     theory: "ch:batch-adiabatic",
   },
   //  COMMISSIONED 2026-10-11 (DEV.md 4c C61): "E depois outro sobre design
@@ -1981,8 +1981,8 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "and fire-case equations worked on fluid properties the engine "
       + "computes, and where the liquid one stops holding -- an acetone drum "
       + "in a fire, and an ammonia loop whose 50 bar version, on the same "
-      + "declared blocked-outlet flow, needs a relief valve about four and a "
-      + "half times larger in the sizing arithmetic (a comparison under one "
+      + "loop circulation, needs a relief valve about four and a "
+      + "half times larger in the sizing arithmetic (about 1.7 from the larger flow and 3 from the lower pressure) (a comparison under one "
       + "teaching hypothesis, not of two real relief systems) -- where the "
       + "relief goes after the valve, and why a runaway vent is often "
       + "two-phase and, under a restricted energy estimate, must pass more "
@@ -2217,7 +2217,9 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "atom economy, the equilibrium limit at the catalyst's temperature, "
       + "the heat to remove, and whether the product is where the atoms go "
       + "when every species is allowed; that direct oxidation of methane "
-      + "wins the first four and fails the fifth, because the combustion "
+      + "passes the first four, though it removes the most heat (127 kJ/mol "
+      + "of methanol against 98 and 59) and only ties the best atom "
+      + "economy, and fails the fifth, because the combustion "
       + "products lie far below methanol in Gibbs energy; that the "
       + "remaining questions (Safety, Environmental, Legal, Economics, "
       + "Control, Throughput) need no rate constant; and that the rate law "

@@ -104,8 +104,8 @@ export const A_PHI_25 = 0.3915;
  *  (0.51), written there as 3 A_phi / ln 10 rounded. */
 export const A_DAVIES_25 = 0.51;
 /** Molar mass of water, kg/mol: the 18.015 g/mol the Pitzer kernel's water
- *  activity uses (src/thermo/electrolyte/PitzerSingleSalt.H:150) and the
- *  speciation solver's (src/thermo/electrolyte/SpeciationSolver.cpp:660). */
+ *  activity uses (src/thermo/electrolyte/PitzerSingleSalt.H:164) and the
+ *  speciation solver's (src/thermo/electrolyte/SpeciationSolver.cpp:677). */
 export const M_WATER = 18.015e-3;
 /** Molar volume of liquid water at 25 C, m3/mol: the engine's own anchor,
  *  src/thermo/electrolyte/SolventProperties.H:78 (vWater, 1.807e-5 at 25 C). */

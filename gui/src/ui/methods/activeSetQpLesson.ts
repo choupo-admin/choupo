@@ -238,8 +238,8 @@ p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{drop the 
   {
     n: 5,
     title: "Why it terminates, and what would make it fail",
-    body: "Every step of non-zero length strictly reduces the objective, "
-      + "because B is positive definite and the sub-problem over each "
+    body: "From a feasible start, every step of non-zero length strictly "
+      + "reduces the objective, because B is positive definite and the sub-problem over each "
       + "working set has a unique minimum. There are finitely many working "
       + "sets. So, provided no step is degenerate, the method finishes — in "
       + "exact arithmetic, in a finite number of steps, with no convergence "
@@ -247,6 +247,12 @@ p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{drop the 
       + "very point it starts from (α = 0): the working set changes and the "
       + "objective does not, and a run of such steps can cycle — which is "
       + "what the engine's cap on working-set changes is there to catch. "
+      + "Choupo's solver does not always start feasible (it starts at zero "
+      + "and may take an equality step first, as the reconciliation of step "
+      + "6 does), so there the objective can rise on those first steps; "
+      + "termination rests on the finite working sets and the unique "
+      + "sub-problem minima, not on a monotone objective from the very first "
+      + "step. "
       + "That is the payoff of strict "
       + "convexity, and it is why Choupo's SQP driver can afford to solve one "
       + "of these inside every outer iteration.",
@@ -271,15 +277,18 @@ p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{drop the 
     body: "A laboratory sends you a water analysis. The calcium, the "
       + "chloride, the alkalinity and the total hardness each came off a "
       + "different instrument with its own uncertainty, and they do not "
-      + "balance on charge — the sheet says the water carries about 0.78 % "
-      + "more positive than negative, which no solution does. You cannot feed "
+      + "balance on charge — the sheet's charge-balance error is about 0.78 % "
+      + "(the cations exceed the anions by 1.58 %, which is 0.78 % of "
+      + "their sum), and no solution carries a net charge. You cannot feed "
       + "that to an equilibrium calculation. So you must move the numbers, "
       + "and the question is which ones and by how much.",
     derivation: [
       { step: "Move each measurement as little as its own uncertainty says "
-          + "is cheap: a chi-squared in standard deviations, so a precise "
+          + "is cheap: a chi-squared in standard deviations (with the factor one half "
+          + "that makes the Hessian the identity, as the engine writes it, "
+          + "AnalysisReconciler.cpp:119-121), so a precise "
           + "analyte is expensive to move and a loose one is cheap.",
-        eq: String.raw`\min\ \sum_r \left( \frac{x_r - m_r}{\sigma_r} \right)^{\!2}`},
+        eq: String.raw`\min\ \tfrac{1}{2}\sum_r \left( \frac{x_r - m_r}{\sigma_r} \right)^{\!2}`},
       { step: "Subject to the laws the case declares it wants enforced: "
           + "charge balance, elemental conservation.",
         eq: String.raw`C x = t`},
@@ -291,7 +300,7 @@ p = 0 \ \text{ and some } \lambda_k < 0 \quad &\Rightarrow \quad \text{drop the 
           + "uses." },
     ],
     formula: String.raw`\begin{aligned}
-\min\ & \sum_r \left( \frac{x_r - m_r}{\sigma_r} \right)^{\!2}\\
+\min\ & \tfrac{1}{2}\sum_r \left( \frac{x_r - m_r}{\sigma_r} \right)^{\!2}\\
 \text{s.t.}\ & C x = t, \qquad x \ge 0
 \end{aligned}`,
     where: [

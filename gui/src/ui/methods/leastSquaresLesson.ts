@@ -98,7 +98,7 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "with a factor of one half in front. The minimiser is the same point "
       + "either way; only the number printed differs, by a factor of two.  "
       + "And despite the name, this `chi2` is not the dimensionless "
-      + "chi-square of statistics: it is unweighted and carries K², so its "
+      + "chi-square of statistics: here (`weighting equal`) it is unweighted and carries K², so its "
       + "size depends on the unit the temperatures are written in.  Only the "
       + "weighted sum of step 2, each residual divided by its own σ_i, is "
       + "dimensionless — and only when those σ_i are right can it be read "
@@ -117,25 +117,29 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "same variance. That is "
       + "a claim about the laboratory, not a law of mathematics. If some "
       + "points are more trustworthy than others you should weight them by "
-      + "their own uncertainty; Choupo's bubble-temperature residual is "
-      + "unweighted, so running it asserts that every point in the file "
-      + "deserves the same say. It also means one bad point costs the fit the "
+      + "their own uncertainty; Choupo's bubble-temperature residual can be "
+      + "(`residual { weighting uncertainty; }`, which reads each point's "
+      + "declared 1/U), but this page's case chooses `equal`, so running it "
+      + "asserts that every point in the file deserves the same say. It also means one bad point costs the fit the "
       + "square of its badness, which is why an outlier drags a least-squares "
       + "answer so hard.",
     derivation: [
       { step: "The weighted form, which is what you would write if each point "
           + "carried its own declared uncertainty. Choupo's `T_bubble` "
-          + "residual is this with every weight equal to one.",
+          + "residual is this, with the weights 1/U_k under `weighting "
+          + "uncertainty` and every weight equal to one under `equal` (this "
+          + "page's case).",
         eq: String.raw`\chi^2_w(p) = \sum_{i=1}^{N} \left(\frac{r_i(p)}{\sigma_i}\right)^2` },
     ],
     formula: String.raw`\chi^2_w(p) = \sum_{i=1}^{N} \left(\frac{r_i(p)}{\sigma_i}\right)^2
-\qquad \text{Choupo: } \sigma_i = 1 \ \text{for every } i`,
+\qquad \text{this page's case: } \sigma_i = 1 \ \text{for every } i`,
     where: [
       { sym: "\\chi_{w}", means: "the weighted sum of squares, each residual "
         + "measured in its own point's standard uncertainty" },
       { sym: "\\sigma_i", means: "the declared standard uncertainty of "
-        + "measurement i. Choupo's bubble-temperature fit does not read one, "
-        + "which is the same as declaring them all equal", unit: "K" },
+        + "measurement i. Choupo's bubble-temperature fit can read one (`weighting "
+        + "uncertainty`); this page's case chooses `equal`, which is the "
+        + "same as declaring them all equal", unit: "K" },
     ],
     note: "Choupo does carry a weighted least-squares solver, and you can "
       + "read it in the active-set QP lesson: a laboratory water analysis is "
@@ -316,8 +320,9 @@ export const LS_STEPS: readonly LessonStep[] = [
         eq: String.raw`J_{ij} \approx \frac{r_i(p + h\,e_j) - r_i(p)}{h}` },
       { step: "The step is relative where the parameter is large and absolute "
           + "where it is small, so one declared setting serves a coefficient "
-          + "searched over plus or minus 15 and one searched over plus or "
-          + "minus 5000 alike (FitParameters.cpp:1007).",
+          + "searched over plus or minus 15 (a dimensionless a_ij, if freed) "
+          + "and one searched over plus or minus 3000 (the b_ij of this "
+          + "page's case) alike (FitParameters.cpp:1007).",
         eq: String.raw`h = \mathrm{fdStep} \cdot \max\left( \lvert p_j \rvert, 1 \right)` },
       { step: "And the price of the shortcut: a forward difference carries a "
           + "truncation error that falls with h and a round-off error that "
@@ -331,7 +336,7 @@ export const LS_STEPS: readonly LessonStep[] = [
       { sym: "h", means: "the finite-difference step actually taken for "
         + "parameter j" },
       { sym: "\\mathrm{fdStep}", means: "the relative step the operation's "
-        + "dict declares (1e-3 on this page's case)" },
+        + "dict declares (1e-4 on this page's case)" },
       { sym: "p_j", means: "the j-th parameter, at its current value" },
       { sym: "e_j", means: "the unit vector that moves parameter j and leaves "
         + "the others alone" },
@@ -429,7 +434,7 @@ export const LS_STEPS: readonly LessonStep[] = [
       + "about 0.22 K, and the case states why in its own dict: the largest "
       + "stated uncertainty of the held-out points (0.18 K) plus the "
       + "catalogue's own boiling-point error at the two pure endpoints "
-      + "(0.03 K), as a percentage of the mean held-out temperature. A limit with no stated origin "
+      + "(0.036 K, i.e. 0.216 K in all), as a percentage of the mean held-out temperature. A limit with no stated origin "
       + "cannot be told apart from one chosen after the residuals were seen, "
       + "which is why Choupo makes the origin mandatory whenever a band "
       + "exists.",
@@ -471,7 +476,7 @@ export const LS_STEPS: readonly LessonStep[] = [
         unit: "%" },
     ],
     note: "One home for the rule: src/propertyOps/CurationDossier.cpp:59-72, "
-      + "five lines you can read end to end. The verdict is taken once in the "
+      + "one short function you can read end to end. The verdict is taken once in the "
       + "run (FitParameters.cpp:1582) and travels to every sink from there "
       + "through src/propertyOps/PropertyOperation.H:118, the channel that "
       + "carries the curation axis as words — "
@@ -568,7 +573,8 @@ export const LS_LIMITS: readonly LessonLimit[] = [
       + "answer when the measurement errors are independent, normally "
       + "distributed, zero-mean and all of the same size. Nothing in this run "
       + "tests any of those. The "
-      + "dataset declares no per-point uncertainty, so the fit treats a point "
+      + "dataset does declare a per-point uncertainty (0.13-0.45 K) but this "
+      + "case chooses `weighting equal`, so the fit treats a point "
       + "at the azeotrope and a point in the dilute corner as equally "
       + "trustworthy, which the underlying measurements almost certainly are "
       + "not. What follows is not that the answer is wrong — it is that the "

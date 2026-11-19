@@ -202,9 +202,11 @@ Q &= L\, \mathrm{cp}_L\, \text{range} &\qquad \text{range} &= T_\mathrm{water,in
       + "up towards the saturation curve; when it touches, the tower is "
       + "pinched.  In design mode the engine refuses by name and gives the "
       + "remedy — more air, or less water.  In rating mode, which is what "
-      + "this page's classroom run is, there is no such message: the Merkel "
-      + "integral simply diverges at the pinch and the bisection cannot cool "
-      + "the water past it.",
+      + "this page's classroom run is, the pinch message is not the one you meet: the Merkel "
+      + "integral diverges at the pinch and the bisection cannot cool "
+      + "the water past it.  When L/G is so high that even a vanishing range "
+      + "needs more packing than the declared Merkel number, rating mode "
+      + "refuses by name too, and tells you to check the spec.",
   },
   {
     n: 4,

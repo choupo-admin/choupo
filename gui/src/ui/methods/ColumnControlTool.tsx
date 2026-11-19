@@ -78,7 +78,8 @@ License
 
     * IT DOES NOT ANIMATE A LEVEL.  A level that moves is an accumulation term
       and needs a dynamic column; the engine has none — choupoCtrl's dynamic
-      tier is DynamicCSTR and the Williams-Otto plant, and no column anywhere in
+      tier is DynamicCSTR, DynamicTank (a level loop, ctrl21), QuasiSteadyUnit
+      and the Williams-Otto plant, and no column anywhere in
       the corpus is under control.  A fabricated transient would be exactly the
       falsely-sourced failure one layer up: a moving picture teaches a specific
       wrong thing with confidence.
@@ -265,7 +266,7 @@ export function sensitivityMetric(
 }
 
 /** WHICH STREAM LEAVING THE REFLUX DRUM IS THE LARGER ONE, from the column's
- *  own KPIs (`L_rect` and `D`, in the engine's units — only their RATIO is
+ *  own KPIs (`L_rect` and `D`, or `R` and `D` under `model simultaneous`, in the engine's units — only their RATIO is
  *  used, so the units cancel).
  *
  *  This is the one heuristic in the catalogue that has a number on this screen:
@@ -279,7 +280,14 @@ export function sensitivityMetric(
 export function drumStreams(
   kpis: KpiRow | undefined,
 ): { L: number; D: number; ratio: number; larger: "reflux" | "distillate" } | null {
-  const L = kpis?.["L_rect"], D = kpis?.["D"];
+  //  `L_rect` is published by the WangHenke branch only
+  //  (DistillationColumn.cpp:1993); `model simultaneous` — the witness —
+  //  publishes `R` = L/D and `D` (:4440-4441), and L = R*D is the definition
+  //  of the reflux ratio, so the same comparison is read from those.
+  const D = kpis?.["D"];
+  const Lk = kpis?.["L_rect"], Rk = kpis?.["R"];
+  const L = typeof Lk === "number" ? Lk
+    : (typeof Rk === "number" && typeof D === "number" ? Rk * D : undefined);
   if (typeof L !== "number" || typeof D !== "number") return null;
   if (!Number.isFinite(L) || !Number.isFinite(D) || L <= 0 || D <= 0)
     return null;
@@ -438,7 +446,9 @@ export function perturbedOverrides(
 export const HANDLE_TEXT: { [k in Handle]: { label: string; means: string } } = {
   reflux: {
     label: "reflux L",
-    means: "R is raised with D held: L rises and V rises with it (\\(V = L + D\\)), "
+    means: "R is raised with D held: L rises and the vapour to the condenser rises with it "
+      + "(\\(V_{top} = L + D\\), total condenser; the boilup equals it only "
+      + "under constant molar overflow with a saturated-liquid feed), "
       + "while D and B stay put — the internal-flow move that sharpens the "
       + "separation.  It is not LV's open-loop move, L at constant V, which "
       + "would lower D by as much as L rose.",
@@ -446,7 +456,7 @@ export const HANDLE_TEXT: { [k in Handle]: { label: string; means: string } } = 
   distillate: {
     label: "distillate D",
     means: "D is raised and R lowered together so that \\(L = R\\,D\\) is unchanged: "
-      + "V rises with D (\\(V = L + D\\)) and B falls (\\(B = F - D\\)) — the "
+      + "the vapour to the condenser rises with D (\\(V_{top} = L + D\\)) and B falls (\\(B = F - D\\)) — the "
       + "material-balance move that shifts the whole profile.  It is not "
       + "DV's open-loop move, D at constant V, which would lower L instead.",
   },
@@ -1279,7 +1289,7 @@ export function ColumnControlTool(): JSX.Element {
         <Tooltip withArrow multiline w={450}
           label={"Choupo's Design Guide says to hold a level with the larger "
             + "stream leaving that drum, and both streams are on this run's "
-            + "KPI row (L_rect and D), so the rule has a number here: "
+            + "KPI row (L_rect and D, or R and D), so the rule has a number here: "
             + `L/D = ${fmt(view0.drum.ratio, 4)}.  What the rule does not `
             + "ship is a threshold — the published forms disagree about "
             + "where 'larger' starts to matter, none could be pinned to a "

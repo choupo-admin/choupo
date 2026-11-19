@@ -315,7 +315,7 @@ export interface WcResult {
 }
 
 /** (i) itemised -- a "day" of an annual figure is 1/365 of it, as in the
- *  engine (EconomicsPass.cpp:255, :403-:409); (ii) a fraction of sales;
+ *  engine (EconomicsPass.cpp:255, :404-:410); (ii) a fraction of sales;
  *  (iii) a fraction of the fixed capital. */
 export function workingCapitals(w: WcInputs): WcResult {
   const rawStock = w.rawBill * w.daysRaw / 365;

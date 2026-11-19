@@ -50,7 +50,7 @@
 
 import type { DictOverride } from "../../case/methodRun.js";
 
-/** The witness: eight measured ethanol/water bubble temperatures fitted, three
+/** The witness: ten measured ethanol/water bubble temperatures fitted, four
  *  withheld, an acceptance band declared before the fit with its origin
  *  stated, and a verdict.  It is a `choupoProps` case and runs in the browser.
  */
@@ -187,7 +187,7 @@ const PARITY_HEADER = "x_1,P_Pa,T_exp,T_model,residual";
  *  It covers the FITTED subset only -- the held-out points are not in it,
  *  because the operation publishes their aggregate deviation and not a
  *  per-point prediction.  That absence is drawn on the page rather than
- *  filled in: the three compositions missing from this table ARE the three the
+ *  filled in: the four compositions missing from this table ARE the four the
  *  fitter never saw.
  *
  *  A row whose model temperature did not converge comes through as a NaN in

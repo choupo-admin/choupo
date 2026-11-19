@@ -66,3 +66,36 @@ name and announce non-default bounds.
   ln a_w = -nu m M_w phi.
 - Wegstein q = s/(s-1), its ranges and default clamps; w_opt = 1/(1-a).
 - The tear counts and the seven refusals.
+
+## Resolution (build/c453-gh, 2026-11-19)
+
+- **Engine:** `recycleWegsteinQmin > Qmax` is refused by name and a non-default
+  clamp is announced (`Flowsheet.cpp:3541-3552`); the four shipped cases that
+  declare the clamp (swro01, evaporator05, rankine02, membrane27) and
+  process03 run unchanged (`--scope` 9/0, no golden moved).  Theory Guide
+  sentence added to the relaxation section, PDF rebuilt.
+- **bjerrum:** the `one-family` limit now says boron is curated (H3BO3,
+  BOH4-formation, borate01_felmyWeare) and is simply not drawn here.
+- **electrolyteModels:** prose citations re-pointed to the held lines; the
+  test now holds every `File, line N` typed in the prose against
+  `EM_CITATIONS`; Pitzer provenance now says Appelo 2015 (the record's own
+  source); the Davies-band sentence now cites the engine's declared band; the
+  two stale code-comment citations in `electrolyteModels.ts` fixed.
+- **reactorLadder:** re-measured by running the witness at 550 K on the
+  current build: `X_limiting` 0.883502788958 against limit 0.883502911646, so
+  the bed reaches the limit.  Lesson, quiz (renamed `bed-vs-limit`), T-knob
+  text and header corrected; "liquid-basis PFR" reworded.
+- **tear:** the shared-graph blurb now says move the mixer to the end of the
+  order; a test pins that the reactor-above-mixer order gives three tears.
+  Stale `Flowsheet.cpp` line comments re-pointed; the false CLAUDE.md remark
+  removed.
+- **wegstein:** third guard disclosed, pressure unit glossed per vector,
+  default-accelerator claim softened, corpus counts re-taken (7 select
+  Wegstein, 4 declare the clamp), citations fixed, direct substitution noted
+  as a selectable method.
+- **relaxation:** step 8 is now true; `a < 1` domain added to the w_opt
+  equivalence; step 7 no longer claims every unit solves by Newton.
+- **Not changed (judgement):** saltMixing's KCl extrapolation note and
+  elementPotential's `GibbsMethod.cpp:66-74` citation are left for a slice of
+  their own; the `Wegstein.H:46-55` comment error and the `Reaction.cpp:106-107`
+  stale comment are engine-comment edits queued separately.

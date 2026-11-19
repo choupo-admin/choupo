@@ -151,12 +151,22 @@ describe("compression: the numbers the prose prints are the engine's", () => {
     const sh = air(), b = baseOf(sh);
     const r = [1, 2, 3, 4].map((N) => staged({ ...b, N }));
     const kw = (i: number): string => (r[i]!.Wshaft / 1000).toFixed(1);
-    has(`One section takes ${kw(0)} kW and discharges at ${r[0]!.Tmax.toFixed(1)} K`);
-    has(`Two take ${kw(1)} kW (${r[1]!.Tmax.toFixed(1)} K), three ${kw(2)} kW (${r[2]!.Tmax.toFixed(1)} K), four ${kw(3)} kW (${r[3]!.Tmax.toFixed(1)} K)`);
+    has(`one section takes ${kw(0)} kW`);
+    // the formula's drop-free numbers, the ones a student recomputes by hand
+    const mm = (b.n - 1) / b.n, w1 = r[0]!.Wshaft;
+    const ideal = [2, 3, 4].map((N) => (w1 * idealWorkFactor(12, mm, N) / idealWorkFactor(12, mm, 1) / 1000).toFixed(1));
+    has(`two take ${ideal[0]} kW, three ${ideal[1]} kW, four ${ideal[2]} kW`);
+    // ... and the engine's, with the cooler pressure drops
+    has(`${kw(1)} kW in two sections (${r[1]!.Tmax.toFixed(1)} K), ${kw(2)} kW in three (${r[2]!.Tmax.toFixed(1)} K) and ${kw(3)} kW in four (${r[3]!.Tmax.toFixed(1)} K)`);
+    expect(r[3]!.Wshaft / w1).toBeGreaterThan(0.71);
+    expect(r[3]!.Wshaft / w1).toBeLessThan(0.73);
     expect(kw(2)).toBe(sh.powerShaft.toFixed(1));
     has(`design takes ${sh.powerShaft.toFixed(1)} kW`);
-    // the fractions of the sentence
+    // the fractions of the sentence (with the drops: a fifth, 6 %, 2 %; drop-free 23, 8, 4 %)
     const w = r.map((x) => x.Wshaft);
+    const wi = [1, 2, 3].map((N) => idealWorkFactor(12, mm, N));
+    expect(Math.round(100 * (1 - wi[1]! / wi[0]!))).toBe(23);
+    expect(Math.round(100 * (1 - wi[2]! / wi[1]!))).toBe(8);
     expect(1 - w[1]! / w[0]!).toBeGreaterThan(0.2);
     expect(1 - w[1]! / w[0]!).toBeLessThan(0.23);
     expect(1 - w[2]! / w[1]!).toBeCloseTo(0.06, 2);
@@ -271,7 +281,7 @@ describe("compression: the lesson as data", () => {
       "src/postProcessing/sizing/CompressorDesign.cpp:218": "s.T2   = T1 * std::pow",
       "src/postProcessing/sizing/CompressorDesign.cpp:221": "Zavg",
       "src/postProcessing/sizing/CompressorDesign.cpp:223": "s.head",
-      "src/postProcessing/sizing/CompressorDesign.cpp:224": "s.Wgas",
+      "src/postProcessing/sizing/CompressorDesign.cpp:225": "s.Wshaft",
       "src/postProcessing/sizing/CompressorDesign.cpp:246": "auto finalP",
     };
     const cites = [...text.matchAll(/(src\/[A-Za-z0-9_/]+\.(?:H|cpp)):(\d+)/g)];

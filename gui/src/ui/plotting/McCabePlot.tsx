@@ -408,14 +408,14 @@ function SensitivityPlot(
     }
   }
 
-  const yTop = Math.max(...pts.map((p) => p.N), sweep.nMin) * 1.15 + 2;
+  const yTop = Math.max(...pts.map((p) => p.N).filter(Number.isFinite), Number.isFinite(sweep.nMin) ? sweep.nMin : 0) * 1.15 + 2;
   const shapes = [
     // R_min vertical asymptote
     { type: "line", x0: sweep.rMin, x1: sweep.rMin, y0: 0, y1: yTop,
       line: { color: "#ff5252", width: 1.5, dash: "dash" } },
     // N_min floor
-    { type: "line", x0: sweep.rMin, x1: pts.length ? pts[pts.length - 1]!.R : sweep.rMin, y0: sweep.nMin, y1: sweep.nMin,
-      line: { color: PLOT_COLORS.series[4], width: 1, dash: "dot" } },
+    ...(Number.isFinite(sweep.nMin) ? [{ type: "line", x0: sweep.rMin, x1: pts.length ? pts[pts.length - 1]!.R : sweep.rMin, y0: sweep.nMin, y1: sweep.nMin,
+      line: { color: PLOT_COLORS.series[4], width: 1, dash: "dot" } }] : []),
   ];
 
   return (
@@ -423,7 +423,7 @@ function SensitivityPlot(
       data={data}
       layout={{
         ...darkLayout,
-        title: { text: `N(R) — R_min = ${sweep.rMin.toFixed(3)} (red), N_min = ${sweep.nMin} (floor)`,
+        title: { text: `N(R) — R_min = ${sweep.rMin.toFixed(3)} (red), N_min = ${Number.isFinite(sweep.nMin) ? sweep.nMin : "∞"} (floor)`,
           font: { ...darkLayout.font, size: 14 } },
         xaxis: { ...darkLayout.xaxis, title: { text: "reflux ratio R" } },
         yaxis: { ...darkLayout.yaxis, title: { text: "equilibrium stages N" }, range: [0, yTop], autorange: false },
@@ -458,7 +458,7 @@ function ReadoutStrip({ res, effectiveR }: { res: MccabeResult; effectiveR: numb
       {!res.pinched && !res.azeotrope && (
         <Badge size="sm" variant="light" tt="none" color="grape">feed stage {res.feedStage}</Badge>
       )}
-      <Badge size="sm" variant="light" tt="none" color="orange">N_min = {res.nMin}</Badge>
+      <Badge size="sm" variant="light" tt="none" color="orange">N_min = {Number.isFinite(res.nMin) ? res.nMin : "∞ (azeotrope)"}</Badge>
       <Badge size="sm" variant="light" tt="none" color="red">R_min = {res.rMin.toFixed(3)}</Badge>
       {Number.isFinite(ratio) && (
         <Badge size="sm" variant="light" tt="none" color={ratio < 1.05 ? "red" : "blue"}>R/R_min = {ratio.toFixed(2)}</Badge>

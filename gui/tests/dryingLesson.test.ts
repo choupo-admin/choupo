@@ -246,7 +246,7 @@ describe("every limit survives, and each says something specific", () => {
     //  a latent load published rather than ledgered.
     expect(prose(limit("falling-rate-law").body)).toContain("case hardening");
     expect(prose(limit("falling-rate-law").body))
-      .toContain("no second falling-rate period");
+      .toContain("one falling-rate period");
     expect(prose(limit("solid-temperature").body))
       .toContain("cannot tell you the product temperature");
     expect(prose(limit("constant-air").body)).toContain("does not humidify");

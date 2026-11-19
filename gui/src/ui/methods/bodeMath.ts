@@ -40,7 +40,7 @@
   it — searched 2026-09-12 for bode / nyquist / transfer function / gain
   margin / phase margin / amplitude ratio across src/**, and EVERY hit is a
   COMMENT about the measurement above: src/control/signal/Signal.H:42 ("one
-  point of a Bode plot") and :94, src/dynamicDriver/DynamicDriver.cpp:1055,
+  point of a Bode plot") and :94, src/dynamicDriver/DynamicDriver.cpp:1084,
   and src/outerDriver/SweepDriver.H:92 (the linked-target mirror the Bode
   sweep case needs).  Not one of them computes anything.
 

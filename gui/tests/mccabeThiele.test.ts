@@ -133,6 +133,21 @@ describe("mccabeThiele — R_min detection + the pinch explosion", () => {
     expect(rMin).toBeCloseTo(rExpected, 2);
   });
 
+  it("R_min for a subcooled feed (q = 1.5) starts at the q-line pinch, not at xF", () => {
+    // Constant alpha = 2.5, xF = 0.5, xD = 0.95: the q = 1.5 line meets the curve at
+    // about (0.595, 0.786); R_min = (xD - y_p)/(y_p - x_p) = 0.858 (review 2026-11-19).
+    const xF = 0.5, xD = 0.95, xW = 0.05;
+    const { rMin, pinch } = minimumReflux(curve, xF, xD, 1.5);
+    expect(pinch!.x).toBeGreaterThan(0.58);
+    expect(pinch!.x).toBeLessThan(0.61);
+    expect(rMin).toBeCloseTo(0.858, 2);
+    expect(rMin).toBeLessThan(minimumReflux(curve, xF, xD, 1).rMin);
+    // R = 1.0 is above this R_min: the staircase is finite, not "pinched".
+    const res = buildMccabe(curve, defaultSpec({ xF, xD, xW, R: 1.0, q: 1.5 }));
+    expect(res.pinched).toBe(false);
+    expect(Number.isFinite(res.nStages)).toBe(true);
+  });
+
   it("R ≤ R_min(q) ⇒ pinched, infinite stages (no silent clamp)", () => {
     const xF = 0.5, xD = 0.95, xW = 0.05;
     const { rMin } = minimumReflux(curve, xF, xD, 1);
@@ -216,6 +231,8 @@ describe("mccabeThiele — azeotrope halt", () => {
     const res = buildMccabe(c, defaultSpec({ xF: 0.5, xD: 0.9, xW: 0.1, R: 3, q: 1 }));
     expect(res.azeotrope).not.toBeNull();
     expect(res.nStages).toBe(Infinity);
+    // N_min is infinite too (no total-reflux staircase crosses the azeotrope), never 0.
+    expect(res.nMin).toBe(Infinity);
   });
 });
 

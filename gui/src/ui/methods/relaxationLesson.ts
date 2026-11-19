@@ -180,7 +180,7 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
           + "zero or negative.",
         eq: String.raw`w_{\mathrm{opt}} = \frac{1}{1 - a}`},
     ],
-    formula: String.raw`w_{\mathrm{opt}} = \frac{1}{1 - a} \qquad\qquad w_{\mathrm{opt}} \le 1 \iff a \le 0`,
+    formula: String.raw`w_{\mathrm{opt}} = \frac{1}{1 - a} \qquad\qquad w_{\mathrm{opt}} \le 1 \iff a \le 0 \ (\text{for } a < 1)`,
     where: [
       { sym: "w_{\\mathrm{opt}}", means: "the optimal relaxation factor for a "
         + "linear loop: the one that makes the effective slope zero, so the "
@@ -203,8 +203,8 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
       + "(by default -1 to 0, i.e. w between 1 and 2), so Wegstein "
       + "never under-relaxes unless the case widens the clamp. Wegstein, "
       + "J. H. (1958), Comm. ACM 1(6), 9-13, is where it comes from, and "
-      + "it is the default recycle accelerator of every sequential-modular "
-      + "simulator.",
+      + "it is a classic recycle accelerator of sequential-modular "
+      + "simulators (Choupo's own default is Newton).",
     derivation: [
       { step: "Wegstein's update, in the engine's own symbols "
           + "(src/solver/Wegstein.cpp:49-92).",
@@ -250,11 +250,11 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
       + "fall enough (Armijo's rule), so the damping adapts to each "
       + "iterate. Choupo's Newton uses it "
       + "(src/solver/NewtonND.cpp:619, enabled for the tear loop at "
-      + "src/unitOperations/flowsheet/Flowsheet.cpp:3859). What a user "
+      + "src/unitOperations/flowsheet/Flowsheet.cpp:3871). What a user "
       + "may legitimately tune is a step cap: no unknown moves more than a "
       + "stated amount in one step, which limits damage without slowing "
       + "the good steps -- `recycleMaxStep` for the tear "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3861-3879).",
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3873-3891).",
     derivation: [
       { step: "Newton's step for the tear residual r(x) = G(x) - x, whose "
           + "slope is a - 1 on the toy.",
@@ -290,9 +290,10 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
       + "pressure and 0.7 for velocity, is the standard cure. A "
       + "sequential-modular flowsheet's tear loop is the same kind of "
       + "problem, and that is why Choupo now offers `recycleRelaxation` "
-      + "there. A unit's own equations, by contrast, are solved coupled by "
-      + "Newton with a line search, so a fixed factor on them would only "
-      + "slow it.",
+      + "there. A unit's own equations are, in the main, solved coupled by "
+      + "Newton with a line search (a few units use another solver, such "
+      + "as Rachford-Rice or the Wang-Henke bubble-point column), so a fixed "
+      + "factor on them would only slow it.",
     note: "So the three rungs on the tear loop read: relaxation (a factor "
       + "you set), Wegstein (a factor it works out), Newton (the whole "
       + "slope, with a line search).",
@@ -306,7 +307,9 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
       + "`recycleSolver Wegstein;` with `recycleWegsteinQmin/Qmax` clamps "
       + "the factor Wegstein chooses; the default `recycleSolver Newton;` "
       + "takes an optional `recycleMaxStep`. A declared value is "
-      + "announced in the run log; a value outside its range, or a "
+      + "announced in the run log (a non-default Wegstein clamp too); a value outside its range, a "
+      + "clamp with `recycleWegsteinQmin` above `recycleWegsteinQmax` "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3541-3552), or a "
       + "relaxation factor beside a solver that has none, is refused by "
       + "name (src/unitOperations/flowsheet/Flowsheet.cpp:3400-3418). The "
       + "fourth figure runs the real process03_recycle case under "
@@ -314,7 +317,7 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
       + "own tear mass imbalance per pass: the same fixed point, three "
       + "different paths to it.",
     note: "The relaxed update the engine applies is "
-      + "src/unitOperations/flowsheet/Flowsheet.cpp:3676-3681.",
+      + "src/unitOperations/flowsheet/Flowsheet.cpp:3688-3693.",
   },
 ];
 

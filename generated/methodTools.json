@@ -640,7 +640,7 @@
       "label": "Pinch composite curves",
       "blurb": "Find the pinch and the minimum hot and cold utility.",
       "discipline": "Heat transfer & energy",
-      "teaches": "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the in-view cascade cross-checked against the engine's targets.",
+      "teaches": "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the engine's targets and problem table (problemTable.csv) read back, not recomputed in the page.",
       "origins": [
         "engine",
         "page",
@@ -1189,7 +1189,7 @@
       "label": "Process safety: remove the hazard before you add a layer",
       "blurb": "Remove the hazard before you pile protective layers on it.",
       "discipline": "Process safety",
-      "teaches": "Why every protective layer is itself a system that can fail (Gall, a paediatrician, beside Kletz, a chemist: 'what you don't have, can't leak'), read through the Flixborough Court of Inquiry and the Bhopal protection that was out of service; Stoessel's cooling-failure scenario run by the engine on a reaction that is fictitious by declaration -- the accumulation, the MTSR with the dosed reactor's mass correction, the worst instant right after a dose, the class of one scenario against the class of the process, the margin to the reaction mass's bubble point along the run and an assumed T_D24 -- on a batch, the same reaction dosed, and a dosing vessel sized so that its whole content cannot take the reactor past its limits (a pump limits the rate, not the total); and a 50 bar ammonia loop that converts less per pass, passes about four times the volume of gas, carries about four times as much ammonia in the recycle stream, and earns less, so that the engine cannot call it safer without sizing the equipment and the release scenarios.",
+      "teaches": "Why every protective layer is itself a system that can fail (Gall, a paediatrician, beside Kletz, a chemist: 'what you don't have, can't leak'), read through the Flixborough Court of Inquiry and the Bhopal protection that was out of service; Stoessel's cooling-failure scenario run by the engine on a reaction that is fictitious by declaration -- the accumulation, the MTSR with the dosed reactor's mass correction, the worst instant right after a dose, the class of one scenario against the class of the process, the margin to the reaction mass's bubble point along the run and an assumed T_D24 -- on a batch, the same reaction dosed, and a dosing vessel sized so that its whole content cannot take the reactor past its limits (a pump limits the rate, not the total); and a 50 bar ammonia loop that converts less per pass, passes about four times the volume of gas, carries about four times as much ammonia in the recycle stream, and earns less, so that the engine cannot call it safer from the inventory it can compute (converter gas and separator liquid) without the pipes, the exchangers and the release scenarios.",
       "origins": [
         "engine",
         "page",
@@ -1203,7 +1203,7 @@
       "label": "Designing for overpressure: scenarios, devices and relief sizing",
       "blurb": "Pick the credible overpressure scenario that sizes a relief device.",
       "discipline": "Process safety",
-      "teaches": "Why a relief device is sized for the credible cause (blocked outlet, external fire, cooling or reflux failure, runaway, tube rupture, thermal expansion) that needs the largest required relief area, not the largest flow; operating, design pressure, MAWP and set pressure kept apart, and the allowed accumulation; the devices and the back pressure behind them; the published gas, liquid and fire-case equations worked on fluid properties the engine computes, and where the liquid one stops holding -- an acetone drum in a fire, and an ammonia loop whose 50 bar version, on the same declared blocked-outlet flow, needs a relief valve about four and a half times larger in the sizing arithmetic (a comparison under one teaching hypothesis, not of two real relief systems) -- where the relief goes after the valve, and why a runaway vent is often two-phase and, under a restricted energy estimate, must pass more mass.",
+      "teaches": "Why a relief device is sized for the credible cause (blocked outlet, external fire, cooling or reflux failure, runaway, tube rupture, thermal expansion) that needs the largest required relief area, not the largest flow; operating, design pressure, MAWP and set pressure kept apart, and the allowed accumulation; the devices and the back pressure behind them; the published gas, liquid and fire-case equations worked on fluid properties the engine computes, and where the liquid one stops holding -- an acetone drum in a fire, and an ammonia loop whose 50 bar version, on the same loop circulation, needs a relief valve about four and a half times larger in the sizing arithmetic (about 1.7 from the larger flow and 3 from the lower pressure) (a comparison under one teaching hypothesis, not of two real relief systems) -- where the relief goes after the valve, and why a runaway vent is often two-phase and, under a restricted energy estimate, must pass more mass.",
       "origins": [
         "engine",
         "page",
@@ -1293,7 +1293,7 @@
       "label": "Screening routes to a product (methanol)",
       "blurb": "Screen routes to a product cheapest filter first.",
       "discipline": "Process design & economics",
-      "teaches": "That routes to a product are screened on paper in order of cost, cheapest filter first: the stoichiometric gross margin, the atom economy, the equilibrium limit at the catalyst's temperature, the heat to remove, and whether the product is where the atoms go when every species is allowed; that direct oxidation of methane wins the first four and fails the fifth, because the combustion products lie far below methanol in Gibbs energy; that the remaining questions (Safety, Environmental, Legal, Economics, Control, Throughput) need no rate constant; and that the rate law is bought last, for the one route that survives.",
+      "teaches": "That routes to a product are screened on paper in order of cost, cheapest filter first: the stoichiometric gross margin, the atom economy, the equilibrium limit at the catalyst's temperature, the heat to remove, and whether the product is where the atoms go when every species is allowed; that direct oxidation of methane passes the first four, though it removes the most heat (127 kJ/mol of methanol against 98 and 59) and only ties the best atom economy, and fails the fifth, because the combustion products lie far below methanol in Gibbs energy; that the remaining questions (Safety, Environmental, Legal, Economics, Control, Throughput) need no rate constant; and that the rate law is bought last, for the one route that survives.",
       "origins": [
         "engine",
         "page",

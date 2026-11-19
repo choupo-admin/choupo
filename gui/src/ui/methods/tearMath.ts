@@ -20,16 +20,15 @@
   division of labour.  Choupo executes the flattened units IN DECLARED ORDER
   and never topologically sorts them, and
   `Flowsheet::validateSequentialPlan`
-  (src/unitOperations/flowsheet/Flowsheet.cpp:4986) validates that order
+  (src/unitOperations/flowsheet/Flowsheet.cpp:4999) validates that order
   against the declared tears after 0/ is seeded and before any unit is solved
   (called at src/unitOperations/flowsheet/Flowsheet.cpp:2681).  It DETECTS every material
   cycle, names the chain it found, and refuses SEVEN ways by name — MISSING
   TEAR, INVALID ORDER, FORWARD TEAR, OFF-CYCLE TEAR, INLET TEAR, UNKNOWN TEAR,
-  UNCONSUMED TEAR (src/unitOperations/flowsheet/Flowsheet.cpp:5078-5195) — and
+  UNCONSUMED TEAR (src/unitOperations/flowsheet/Flowsheet.cpp:5090-5207) — and
   where the problem is the order it prints a valid one to paste
-  (src/unitOperations/flowsheet/Flowsheet.cpp:5078-5109).  SEVEN and not six:
-  CLAUDE.md 6's own summary of this contract lists six and omits UNCONSUMED
-  TEAR, and the engine's own source is the authority.  What it will NOT do is CHOOSE the cut:
+  (src/unitOperations/flowsheet/Flowsheet.cpp:5090-5121).  SEVEN.
+  The engine's own source is the authority on the list.  What it will NOT do is CHOOSE the cut:
   `tearSelection auto` is named and deliberately deferred.  Cycle detection is
   the engine's job; tear choice is the author's.
 
@@ -39,7 +38,7 @@
   both halves of that: a backward edge left undeclared refuses (MISSING TEAR
   when it closes a cycle, INVALID ORDER when it does not), and a FORWARD edge
   declared as a tear refuses too, in those words, because a forward stream
-  needs no cut (:4477-4484).  So for a given order the admissible tear set is
+  needs no cut (:5141-5149).  So for a given order the admissible tear set is
   not a choice at all: IT IS EXACTLY THE SET OF BACKWARD EDGES.  Choosing the
   tear in Choupo means choosing the ORDER, and a graph's minimum tear set is
   reachable only if some order makes exactly those edges the backward ones.
@@ -102,7 +101,7 @@ export interface TeachGraph {
 /** An INTERNAL edge — one with a producer and a consumer — is the only kind
  *  that can be torn.  A domain inlet has no producer to disagree with and a
  *  domain outlet has no consumer waiting on it; the engine refuses both by
- *  name (INLET TEAR at :4457-4463, UNCONSUMED TEAR at :4468-4470). */
+ *  name (INLET TEAR at :5126-5130, UNCONSUMED TEAR at :5133-5136). */
 export const isInternal = (e: TeachEdge): boolean =>
   e.from !== null && e.to !== null;
 
@@ -140,8 +139,8 @@ export const TEACH_GRAPHS: readonly TeachGraph[] = [
       + "and that is not the best this flowsheet can do. Both cycles run "
       + "through the mixer's outlet, so ONE cut would open both; the reason "
       + "the declared order cannot use it is that the edge points FORWARD, "
-      + "and Choupo refuses a forward tear by name. Move the reactor above "
-      + "the mixer and watch the tear count fall to one.",
+      + "and Choupo refuses a forward tear by name. Move the mixer "
+      + "to the end of the order and watch the tear count fall to one.",
     nComponents: 3,
     units: [
       { name: "mixer01", kind: "mixer" },
@@ -251,7 +250,7 @@ export function cyclesOf(g: TeachGraph): Cycle[] {
  *  tear.  A backward edge on NO cycle is a declaration-order mistake — the
  *  producer simply runs too late — and declaring it a tear would compensate a
  *  mistake with an artificial iteration, which the engine refuses in those
- *  words (OFF-CYCLE TEAR, :4554-4559). */
+ *  words (OFF-CYCLE TEAR, :5200-5206). */
 export interface BackwardEdge {
   name: string;
   producer: string;
@@ -276,7 +275,7 @@ export interface PlanVerdict {
   /** Tear VARIABLES this plan costs, per solver.  Wegstein packs
    *  (F, z_1..z_Nc, T, P) per torn stream
    *  (src/unitOperations/flowsheet/Flowsheet.cpp:1844-1877) and Newton packs
-   *  (F_1..F_Nc, T, P) (src/unitOperations/flowsheet/Flowsheet.cpp:3741-3750):
+   *  (F_1..F_Nc, T, P) (src/unitOperations/flowsheet/Flowsheet.cpp:3753-3762):
    *  the pressure has been a tear variable since DEV.md 4c C186 (5). */
   variablesWegstein: number;
   variablesNewton: number;
@@ -305,7 +304,7 @@ export function judgePlan(
     const c = pos.get(e.to as number) ?? 0;
     //  `c <= p` and not `c < p`: a unit consuming its own output is a genuine
     //  one-unit cycle, and the engine counts it as backward for that reason
-    //  (src/unitOperations/flowsheet/Flowsheet.cpp:5126-5129).
+    //  (src/unitOperations/flowsheet/Flowsheet.cpp:5138-5141).
     if (c > p) continue;
     const cyc = cycles.find((y) => y.edges.includes(e.name)) ?? null;
     backward.push({
@@ -381,7 +380,7 @@ export function bestOrder(g: TeachGraph): BestOrder {
 
 /** The engine's own way of naming a cycle in a refusal, reproduced so the
  *  construction and the run beside it read in one vocabulary
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:4823-4832). */
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:5062-5071). */
 // ---- Judging a DECLARATION: an order, and the tears the reader chose --------
 
 /*  WHY THIS EXISTS BESIDE `judgePlan`, and why it is not the same function.
@@ -395,9 +394,9 @@ export function bestOrder(g: TeachGraph): BestOrder {
  *  page was the single button that withdraws the witness case's declaration.
  *
  *  So this is a TRANSCRIPTION of `Flowsheet::validateSequentialPlan`
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:4987-5195), in the same two
- *  passes and the same order: the ordered walk first (:4425-4457), then the
- *  declared-tear pass (:4459-4512).  It is the same posture `wegsteinStep`
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:4999-5207), in the same two
+ *  passes and the same order: the ordered walk first (:5074-5106), then the
+ *  declared-tear pass (:5110-5210).  It is the same posture `wegsteinStep`
  *  takes toward `Wegstein::step` -- the arithmetic is the engine's, the toy
  *  it runs on is this file's own, and neither invents a rule.
  *
@@ -414,7 +413,7 @@ export function bestOrder(g: TeachGraph): BestOrder {
  *  would be teaching a refusal the reader will never actually see.
  *
  *  ONE REFUSAL IS NOT REACHABLE HERE, and it is named rather than faked:
- *  UNKNOWN TEAR (:4473) fires on a name that is not a stream of the graph at
+ *  UNKNOWN TEAR (:5123-5125) fires on a name that is not a stream of the graph at
  *  all -- a spelling mistake in the dict.  Every name a reader can click on
  *  this page IS a stream, so the class is implemented (a declaration naming
  *  no edge still returns it) and simply has no button.  */
@@ -455,7 +454,7 @@ export function judgeDeclaration(
   const marks: { [stream: string]: StreamMark } = {};
   for (const e of g.edges) marks[e.name] = "forward";
 
-  //  PASS ONE -- the ordered walk (:4425-4457).  Every input that is not
+  //  PASS ONE -- the ordered walk (:5074-5106).  Every input that is not
   //  declared a tear must already have been produced by an earlier unit, or
   //  be a domain inlet.  Anything else is a backward edge nobody cut.
   const produced = new Set<string>();
@@ -487,7 +486,7 @@ export function judgeDeclaration(
     for (const e of g.edges) if (e.from === u) produced.add(e.name);
   }
 
-  //  PASS TWO -- the declared-tear pass (:4459-4512).  Each declared tear
+  //  PASS TWO -- the declared-tear pass (:5110-5210).  Each declared tear
   //  must be a backward edge lying on a real cycle; the four ways it can
   //  fail are four different mistakes with four different remedies.
   const accepted: string[] = [];
@@ -524,7 +523,7 @@ export function judgeDeclaration(
     const producer = g.units[edge.from]!.name;
     //  `<=` and not `<`: a unit consuming its own output is a genuine
     //  one-unit cycle, and the engine counts it backward for that reason
-    //  (:4488-4491).
+    //  (:5138-5140).
     const pProd = pos.get(edge.from) ?? 0;
     const backward = consumers.filter((c) => (pos.get(c.to!) ?? 0) <= pProd);
     if (backward.length === 0) {
@@ -583,8 +582,8 @@ export function withdrawTearOverrides(): DictOverride[] {
  *  Verbatim is the point: these sentences are the contract, they carry the
  *  cycle the engine found and the remedy it recommends, and paraphrasing them
  *  here would be a second home for a refusal message.  The prefixes are the
- *  engine's own words (src/unitOperations/flowsheet/Flowsheet.cpp:5078-5195)
- *  and the leading sentence is at :2752-2757. */
+ *  engine's own words (src/unitOperations/flowsheet/Flowsheet.cpp:5090-5207)
+ *  and the leading sentence is at :2684-2686. */
 const FINDING_WORDS = [
   "MISSING TEAR", "INVALID ORDER", "FORWARD TEAR", "OFF-CYCLE TEAR",
   "INLET TEAR", "UNKNOWN TEAR", "UNCONSUMED TEAR", "DUPLICATE unit name",
@@ -599,7 +598,7 @@ export function planFindings(log: string | null | undefined): string[] {
 
 /** The engine ANNOUNCING a valid plan: `[plan] material recycle: tear 'x'
  *  cuts A -> B --x--> A`, printed at verbosity 2 and above
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:5244-5245).  A valid recycle
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:5256-5257).  A valid recycle
  *  shows its cut; it is never implicit. */
 export function planAnnouncements(log: string | null | undefined): string[] {
   if (!log) return [];

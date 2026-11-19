@@ -91,8 +91,8 @@ function fmt(v: number, d: number): string {
 
 export function LimitingReactantTool(): JSX.Element {
   const nu = 3;                            // N2 + 3 H2 -> 2 NH3, A = N2
-  const [X, setX] = useState(0.355);
-  const [logP, setLogP] = useState(-2.7);   // p = 0.2 %
+  const [X, setX] = useState(0.350);
+  const [logP, setLogP] = useState(-2.7);   // p = 0.2 % (all the nitrogen the loop loses)
   const [epsPpm, setEpsPpm] = useState(100);   // parts per million
   const p = purgeFromSlider(logP);
   const eps = epsPpm * 1e-6;
@@ -123,7 +123,7 @@ export function LimitingReactantTool(): JSX.Element {
           <Text size="sm" mt={4}>
             The purge loop of step 3 with the ammonia stoichiometry (A = N₂,
             B = H₂, three moles of B per mole of A). Start where the green
-            ammonia case sits — a 0.2 % purge, 35.5 % conversion per pass,
+            ammonia case sits — a 0.2 % loss of unreacted gas (purge, let-down and flash gases together), 35.0 % conversion per pass,
             100 ppm of excess hydrogen in the fresh feed — then shrink the
             purge and watch what a fresh-feed error of one part in ten
             thousand does to the reactor inlet.
@@ -171,8 +171,8 @@ export function LimitingReactantTool(): JSX.Element {
                 <Alert color="red" variant="light"
                   title="No steady state at this conversion">
                   The fresh feed is so short of B that, with this purge, the
-                  reactor would need more B than reaches it. B accumulates as a
-                  deficit pass after pass: the loop cannot hold this
+                  reactor would need more B than reaches it. the surplus reactant A builds up
+                  pass after pass: the loop cannot hold this
                   conversion. Raise ε, raise the purge, or lower X — step 3's
                   bound.
                 </Alert>
