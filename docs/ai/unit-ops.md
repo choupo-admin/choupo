@@ -3367,6 +3367,31 @@ species with no elemental composition, a step that does not conserve the element
 Identity held by the gate: atoms in minus atoms out of species i = a_ei * net_i.
 Theory Guide `sec:path-flux`.
 
+**Analytic kinetics Jacobian (opt-in, `solver { jacobian analytic; }`).**
+```
+solver { integrator Rosenbrock23; jacobian analytic; }   // or Rodas4
+```
+The stiff Rosenbrock integrators then build `W = I - h d J` from the rate laws'
+own derivatives instead of differencing every state column (N + 1 right-hand
+sides per Jacobian): species columns `dn_i'/dn_k = sum_j nu_ij dr_j/dc_k`
+(mass action by the product of the other factors; third body `k0 eff_k`;
+Lindemann exactly; Troe by one central difference in [M]; the reverse leg with
+`Kc` once per reaction; LHHW / `expression` laws by a per-reaction difference over
+every species), the energy row by the chain rule (`gasConstantV` and `liquidDH`),
+the T column by ONE difference (zero, and free, when isothermal).  Words:
+`finiteDifference` (default) | `analytic`; anything else is refused by name, as
+is `analytic` beside an explicit `RK4`/`EulerSI` or on a fixed-step run whose
+integrator is the default RK4.  Under `timeStepping adaptive;` the sweep uses it
+when every ODE unit supplies one.  AUDITED: at analytic Jacobians 1, 2, 4, 8, ...
+it is compared with a central difference (on row sizes max(|n_k|, 1e-2 of the
+inventory)) and a column off by more than 1e-4 of its scale refuses the run,
+naming row and column; the audits print as `[jacobian] ... AUDITED` (the first at
+verbosity 1, all at 3), and solver verbosity 4 prints the right-hand-side count.
+Same answer, fewer evaluations: `ignition01_h2o2_jac` 8252 right-hand sides
+against 27668 for `ignition01_h2o2`, KPIs equal to 6e-12.  Gate
+`bin/curate/check_kinetics_jacobian.py`; Theory Guide
+`sec:batch-analytic-jacobian`.
+
 ### `fixedBedAdsorber`
 One-dimensional isothermal adsorption with conservative finite volumes,
 axial dispersion and declared LDF kinetics.  `flowModel ergun` activates the

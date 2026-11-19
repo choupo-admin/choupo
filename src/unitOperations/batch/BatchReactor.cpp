@@ -133,6 +133,30 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
         // the lesson; an explicit per-unit value overrides.
         verbosity_  = static_cast<int>(
             solverDict->lookupScalarOrDefault("verbosity", verbosity_));
+        //  The stiff integrators' Jacobian: `finiteDifference` (the default,
+        //  n + 1 right-hand sides per Jacobian) or `analytic` (odeJacobian,
+        //  AUDITED against the difference -- ODEAnalyticJacobian).  Only the
+        //  Rosenbrock methods read it; an explicit RK4 / EulerSI beside it is
+        //  a contradiction refused here, and the default RK4 of a fixed-step
+        //  run is refused at the first step (an adaptive run integrates every
+        //  ODE vessel with Rosenbrock23 and reads it there).
+        const std::string jac =
+            solverDict->lookupWordOrDefault("jacobian", "finiteDifference");
+        if (jac == "analytic")               jacobianAnalytic_ = true;
+        else if (jac == "finiteDifference")  jacobianAnalytic_ = false;
+        else
+            throw std::runtime_error("BatchReactor '" + name_ + "': solver"
+                " { jacobian " + jac + "; } -- "
+                + registryRefusal::message("jacobian", jac,
+                      { "finiteDifference", "analytic" }, "Accepted"));
+        if (jacobianAnalytic_ && solverDict->found("integrator")
+            && integrator_ != "Rosenbrock23" && integrator_ != "Rodas4")
+            throw std::runtime_error("BatchReactor '" + name_ + "': solver"
+                " { integrator " + integrator_ + "; jacobian analytic; } --"
+                " the analytic Jacobian is read by the Rosenbrock methods"
+                " only (Rosenbrock23, Rodas4); " + integrator_ + " would"
+                " leave it unread.  Choose a Rosenbrock integrator or drop"
+                " `jacobian analytic;`.");
     }
 
     // -----------------------------------------------------------------
@@ -913,6 +937,7 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
 // -----------------------------------------------------------------------
 sVector BatchReactor::derivatives_(const sVector& packed) const
 {
+    ++rhsEvals_;                 // a count for the glass box, nothing else
     const std::size_t n = packed.size() - 1;
     sVector n_vec(n);
     for (std::size_t i = 0; i < n; ++i) n_vec[i] = packed[i];
@@ -1415,13 +1440,21 @@ static scalar gasConstantVPressure(const BatchState& s)
     return s.V > 0.0 ? nTot * 1000.0 * constant::R * s.T / s.V : s.P;   // kmol -> mol
 }
 
-void BatchReactor::step(scalar /*t*/, scalar dt)
+void BatchReactor::step(scalar t, scalar dt)
 {
     // Pack state: (n[0..n-1], T).
     const std::size_t n = state_.n.size();
     sVector y0(n + 1);
     for (std::size_t i = 0; i < n; ++i) y0[i] = state_.n[i];
     y0[n] = state_.T;
+
+    if (jacobianAnalytic_ && integrator_ != "Rosenbrock23" && integrator_ != "Rodas4")
+        throw std::runtime_error("BatchReactor '" + name_ + "': `jacobian"
+            " analytic;` is declared but this fixed-step run integrates the"
+            " vessel with " + integrator_ + ", which builds no Jacobian --"
+            " the key would be read by nothing.  Declare `integrator"
+            " Rosenbrock23;` (or Rodas4), or `timeStepping adaptive;` in"
+            " controlDict, or drop the key.");
 
     if (integrator_ == "RK4")
     {
@@ -1459,7 +1492,32 @@ void BatchReactor::step(scalar /*t*/, scalar dt)
         ctrl.rtol      = 1.0e-7;
         ctrl.positiveRows.assign(n, true);  // mole numbers must stay >= 0 (T free)
         ctrl.verbosity = verbosity_;
+        //  The opt-in analytic Jacobian, its audit record kept on the vessel
+        //  across steps so the doubling schedule spans the whole run.
+        if (jacobianAnalytic_)
+        {
+            jacAudit_.jacobian = [this](scalar, const sVector& y,
+                                        const sVector& f0, const sVector& typ)
+            { return odeJacobian(y, f0, typ); };
+            jacAudit_.autonomous = true;           // derivatives_ ignores t
+            jacAudit_.owner = "batchReactor '" + name_ + "'";
+            jacAudit_.rowLabel = [this](std::size_t i) { return odeRowLabel(i); };
+            jacAudit_.auditScale = [this](const sVector& y) { return odeJacobianScale(y); };
+            ctrl.analytic = &jacAudit_;
+        }
         const auto st = integ->integrate(y0, 0.0, dt, f, ctrl);
+        if (jacobianAnalytic_) announceJacobianAudits_(t);
+        //  The cost, counted (verbosity >= 4): every right-hand side this
+        //  vessel has evaluated -- steps, Jacobians, audits -- so the two
+        //  Jacobians can be compared by what they spend, not by a claim.
+        if (verbosity_ >= 4)
+            std::cout << "  [ODE] batchReactor '" << name_ << "': right-hand"
+                         " sides so far " << rhsEvals_ << ", Jacobian "
+                      << (jacobianAnalytic_ ? "analytic (" + std::to_string(jacAudit_.jacobians)
+                              + " built, " + std::to_string(jacAudit_.auditEvals)
+                              + " right-hand sides spent on audits)"
+                                            : std::string("finite difference"))
+                      << "\n";
         //  The integrator REPORTS when it gave up (maxSteps / hMin / a
         //  positivity or finiteness violation on a fixed step) -- and until
         //  2026-08-22 this return value was DISCARDED, so an EulerSI ignition
@@ -1554,6 +1612,353 @@ void BatchReactor::setOdeState(const sVector& y)
     }
     state_.T = (mode_ == Mode::Isothermal) ? T_setpoint_ : y[n];
     if (energy_ == Energy::GasConstantV) state_.P = gasConstantVPressure(state_);
+}
+
+// -----------------------------------------------------------------------
+//  THE ANALYTIC JACOBIAN (opt-in: `solver { jacobian analytic; }`).
+//
+//  State y = (n_1..n_N, T); right-hand side (derivatives_)
+//      dn_i/dt = sum_j nu_ij r_j V,         c_k = n_k / V,  V constant
+//  so  d(dn_i/dt)/dn_k = sum_j nu_ij V (dr_j/dc_k)(1/V) = sum_j nu_ij dr_j/dc_k.
+//
+//  dr_j/dc_k is built by rateGradient_ from the SAME pieces rateOfReaction_
+//  multiplies, term by term (Theory Guide, sec:batch-analytic-jacobian):
+//    mass action   r_f = k * prod_s f_s,  f_s = c_s^order_s (clamped at 0
+//                  for a positive order, exactly as the rate is), and
+//                  d r_f / d c_k = k * sum_{s: species k} f_s' * prod_{s'!=s} f_s'
+//                  -- the product EXCLUDING the entry, never r_f / c_k
+//                  (which would divide by a zero radical);
+//    third body    k = k0(T) [M], [M] = sum_i eff_i c_i  =>  dk/dc_k = k0 eff_k;
+//    fall-off      k = F(kLow, kInf, [M], T): Lindemann exactly,
+//                  dk/d[M] = kLow / (1 + Pr)^2; Troe by a CENTRAL difference
+//                  of Reaction::falloffRate in [M] -- one scalar per
+//                  reaction, not a column, and it keeps the Troe formula in
+//                  its one home;
+//    reverse leg   k / Kc * prod_{products} c^nu, with Kc evaluated ONCE per
+//                  reaction at the T of the call (it does not depend on c);
+//    Factory laws  (LHHW, expression, a case's law) by a forward difference
+//                  of THAT reaction's rate over every species column: the
+//                  law receives the whole concentration and mole-fraction
+//                  vectors (an adsorption denominator may hold a species
+//                  outside its stoichiometry, x_i moves with every n_k), so
+//                  its own species would not be its whole reach.
+//  The energy row by the chain rule on the same species columns:
+//    gasConstantV  dT/dt = -sum_i u_i ndot_i / CvTot  =>
+//                  d/dn_k = -( sum_i u_i J_ik + Tdot Cv_k ) / CvTot
+//    liquidDH      dT/dt = -sum_j dH_j r_j V / CpTot  =>
+//                  d/dn_k = -( sum_j dH_j dr_j/dc_k + Tdot Cp_k ) / CpTot
+//  The T COLUMN is ONE directional difference of the whole right-hand side
+//  (one extra evaluation, the integrator's own step for that row): every
+//  rate constant, Kc, u_i and Cv_i depends on T, and differentiating each in
+//  closed form would duplicate the thermo in a second home.  Isothermal: the
+//  right-hand side reads T_setpoint, not y[N], so the column is exactly zero
+//  and no evaluation is spent.
+//
+//  The whole matrix is AUDITED by the integrator against the dense finite
+//  difference on a doubling schedule (ODEAnalyticJacobian) and the run is
+//  refused by name if a column disagrees.
+// -----------------------------------------------------------------------
+namespace
+{
+//  The forward-difference step the integrator's dense Jacobian takes for a
+//  column (solver/ODE/Jacobian.cpp, fdJacobianODE), reproduced so a column
+//  differenced here is the column the audit compares it with.
+scalar fdStep(scalar y, scalar typ)
+{
+    static const scalar kSqrtEps = std::sqrt(2.220446049250313e-16);
+    scalar eps = kSqrtEps * std::max(std::max(std::abs(y), std::abs(typ)), 1.0e-30);
+    if (eps == 0.0) eps = kSqrtEps;
+    return eps;
+}
+}
+
+void BatchReactor::rateGradientFD_(const ReactionSpec& rxn, scalar T,
+                                   const sVector& n, scalar V,
+                                   const sVector& typ, sVector& grad) const
+{
+    const scalar r0 = rateOfReaction_(rxn, T, n, V);
+    sVector np = n;
+    for (std::size_t k = 0; k < n.size(); ++k)
+    {
+        const scalar eps = fdStep(n[k], k < typ.size() ? typ[k] : 1.0);
+        np[k] = n[k] + eps;
+        const scalar rp = rateOfReaction_(rxn, T, np, V);
+        np[k] = n[k];
+        grad[k] += (rp - r0) / eps * V;          // dr/dc = V dr/dn
+    }
+}
+
+void BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
+                                 const sVector& n, scalar V,
+                                 const sVector& typ, sVector& grad) const
+{
+    if (rxn.form == RateForm::Factory)
+    { rateGradientFD_(rxn, T, n, V, typ, grad); return; }
+
+    const std::size_t nc = n.size();
+    // ---- k_eff and d k_eff / d c_k (dk[k]; empty when k reads no c) ------
+    scalar k = 0.0;
+    sVector dk;
+    switch (rxn.form)
+    {
+        case RateForm::Arrhenius:
+            k = Reaction::arrheniusRate(rxn.A_pre, rxn.Ea, T);
+            break;
+        case RateForm::ModArrhenius:
+            k = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
+            break;
+        case RateForm::Factory: break;           // handled above
+        case RateForm::ThirdBody:
+        case RateForm::Falloff:
+        {
+            sVector conc(nc);
+            for (std::size_t j = 0; j < nc; ++j) conc[j] = n[j] / V;
+            static const sVector kAll1;
+            const sVector& eff = rxn.tbEff.empty() ? kAll1 : rxn.tbEff;
+            const scalar M = Reaction::thirdBodyConcentration(conc, eff);
+            scalar dkdM = 0.0;
+            if (rxn.form == RateForm::ThirdBody)
+            {
+                const scalar k0 = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
+                k    = k0 * M;
+                dkdM = k0;
+            }
+            else
+            {
+                const scalar kInf = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
+                const scalar kLow = Reaction::modifiedArrheniusRate(rxn.A_low, rxn.b_low, rxn.Ea_low, T);
+                k = Reaction::falloffRate(kLow, kInf, M, T, rxn.troe);
+                if (kInf > 0.0)
+                {
+                    if (rxn.troe.size() < 3)
+                    {
+                        // Lindemann: k = kInf Pr/(1+Pr), Pr = kLow M / kInf.
+                        const scalar Pr = kLow * M / kInf;
+                        dkdM = kLow / ((1.0 + Pr) * (1.0 + Pr));
+                    }
+                    else if (M > 0.0)
+                    {
+                        // Troe: ONE scalar central difference in [M] of the
+                        // one home of the blend (h ~ cbrt(eps) M: error
+                        // O(h^2) ~ 1e-11 relative, far below the audit).
+                        const scalar h = 6.0555e-6 * M;
+                        dkdM = (Reaction::falloffRate(kLow, kInf, M + h, T, rxn.troe)
+                              - Reaction::falloffRate(kLow, kInf, M - h, T, rxn.troe))
+                             / (2.0 * h);
+                    }
+                }
+            }
+            dk.assign(nc, 0.0);
+            for (std::size_t j = 0; j < nc; ++j)
+                dk[j] = dkdM * ((j < eff.size()) ? eff[j] : 1.0);
+            break;
+        }
+    }
+    if (catalystLoading_ > 0.0)
+    {
+        k *= catalystLoading_;
+        for (scalar& v : dk) v *= catalystLoading_;
+    }
+
+    // ---- the factors f_s and their derivatives f_s' ----------------------
+    //  Mirrors rateOfReaction_: a positive order reads max(c, 0); a negative
+    //  order reads c (and powerLawFactor refuses c <= 0, as the rate does).
+    //  A power below one at c = 0 has an INFINITE one-sided derivative: that
+    //  reaction is differenced instead (rateGradientFD_), never inf into W.
+    const std::size_t m = rxn.comps.size();
+    const auto factor = [&](scalar c, scalar p, bool clamp,
+                            std::size_t s, scalar& f, scalar& df) -> bool
+    {
+        if (p == 0.0) { f = 1.0; df = 0.0; return true; }
+        const scalar cc = clamp ? std::max<scalar>(c, 0.0) : c;
+        f = clamp ? std::pow(cc, p)
+                  : Reaction::powerLawFactor(cc, p,
+                        thermo_->comp(rxn.comps[s]).name(),
+                        "batchReactor reaction '" + rxn.name + "'");
+        if (clamp && c < 0.0) { df = 0.0; return true; }     // flat clamp
+        if (cc == 0.0)
+        {
+            if (p == 1.0) { df = 1.0; return true; }
+            if (p > 1.0)  { df = 0.0; return true; }
+            return false;                                   // p < 1: infinite
+        }
+        df = p * std::pow(cc, p - 1.0);
+        return true;
+    };
+
+    sVector ff(m, 1.0), dff(m, 0.0);
+    for (std::size_t s = 0; s < m; ++s)
+    {
+        const scalar p = rxn.order[s];
+        if (p == 0.0) continue;
+        if (!factor(n[rxn.comps[s]] / V, p, p > 0.0, s, ff[s], dff[s]))
+        { rateGradientFD_(rxn, T, n, V, typ, grad); return; }
+    }
+    // Reverse factors (products only, clamped, exponent nu).
+    sVector fr(m, 1.0), dfr(m, 0.0);
+    if (rxn.reversible)
+        for (std::size_t s = 0; s < m; ++s)
+        {
+            if (rxn.nu[s] <= 0.0) continue;
+            // the rate uses std::pow(max(c,0), nu) -- the same function
+            if (!factor(n[rxn.comps[s]] / V, rxn.nu[s], true, s, fr[s], dfr[s]))
+            { rateGradientFD_(rxn, T, n, V, typ, grad); return; }
+        }
+
+    const auto productExcept = [m](const sVector& f, std::size_t skip)
+    {
+        scalar p = 1.0;
+        for (std::size_t s = 0; s < m; ++s) if (s != skip) p *= f[s];
+        return p;
+    };
+
+    // forward leg
+    const scalar Pf = productExcept(ff, m);           // the whole product
+    if (!dk.empty())
+        for (std::size_t j = 0; j < nc; ++j) grad[j] += dk[j] * Pf;
+    for (std::size_t s = 0; s < m; ++s)
+        if (dff[s] != 0.0)
+            grad[rxn.comps[s]] += k * dff[s] * productExcept(ff, s);
+    if (!rxn.reversible) return;
+
+    // reverse leg: k / Kc, Kc once per reaction at this T
+    const scalar Kc = Reaction::equilibriumKc(*thermo_, rxn.comps, rxn.nu, T);
+    const scalar Prev = productExcept(fr, m);
+    if (!dk.empty())
+        for (std::size_t j = 0; j < nc; ++j) grad[j] -= dk[j] / Kc * Prev;
+    for (std::size_t s = 0; s < m; ++s)
+        if (dfr[s] != 0.0)
+            grad[rxn.comps[s]] -= k / Kc * dfr[s] * productExcept(fr, s);
+}
+
+std::vector<sVector> BatchReactor::odeJacobian(const sVector& y,
+                                               const sVector& f0,
+                                               const sVector& typ) const
+{
+    const std::size_t n = state_.n.size();
+    const std::size_t N = n + 1;
+    std::vector<sVector> J(N, sVector(N, 0.0));
+    const sVector nv(y.begin(), y.begin() + n);
+    const scalar T = (mode_ == Mode::Isothermal) ? T_setpoint_ : y[n];
+    const scalar V = state_.V;
+
+    // ---- species columns: J_ik = sum_j nu_ij dr_j/dc_k -------------------
+    //  A reaction differenced here (a Factory law) steps on the AUDIT's row
+    //  sizes, not on the integrator's typ: sqrt(eps) * atol (~1e-23 kmol for
+    //  a product not yet formed) moves an LHHW denominator by less than the
+    //  rounding of r, and the column came out exactly 0 against -0.058
+    //  (batch07_lhhw_methylAcetate, measured 2026-11-19).
+    const sVector sc = odeJacobianScale(y);
+    sVector dHeat(n, 0.0);                   // sum_j dH_j dr_j/dc_k (liquidDH)
+    sVector grad(n);
+    for (const auto& rxn : reactions_)
+    {
+        std::fill(grad.begin(), grad.end(), 0.0);
+        rateGradient_(rxn, T, nv, V, sc, grad);
+        for (std::size_t s = 0; s < rxn.comps.size(); ++s)
+        {
+            sVector& row = J[rxn.comps[s]];
+            const scalar nu = rxn.nu[s];
+            for (std::size_t k = 0; k < n; ++k) row[k] += nu * grad[k];
+        }
+        for (std::size_t k = 0; k < n; ++k) dHeat[k] += rxn.dH * grad[k];
+    }
+
+    // ---- the energy row (chain rule on the species columns) --------------
+    const scalar Tdot = f0[n];
+    if (mode_ == Mode::Adiabatic && energy_ == Energy::LiquidDH)
+    {
+        scalar CpTot = 0.0;
+        sVector Cp(n);
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            Cp[i] = thermo_->comp(i).cpLiquid().Cp(T);
+            CpTot += nv[i] * Cp[i];
+        }
+        if (CpTot >= 1.0e-30)
+            for (std::size_t k = 0; k < n; ++k)
+                J[n][k] = -(dHeat[k] + Tdot * Cp[k]) / CpTot;
+    }
+    else if (mode_ == Mode::Adiabatic && energy_ == Energy::GasConstantV)
+    {
+        scalar CvTot = 0.0;
+        sVector u(n), Cv(n);
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            u[i]  = thermo_->comp(i).h_pure_ig(T) - constant::R * T;
+            Cv[i] = thermo_->comp(i).cpIdealGas().Cp(T) - constant::R;
+            CvTot += nv[i] * Cv[i];
+        }
+        if (CvTot >= 1.0e-30)
+            for (std::size_t k = 0; k < n; ++k)
+            {
+                scalar s = 0.0;
+                for (std::size_t i = 0; i < n; ++i) s += u[i] * J[i][k];
+                J[n][k] = -(s + Tdot * Cv[k]) / CvTot;
+            }
+    }
+
+    // ---- the T column: one directional difference (adiabatic only) -------
+    if (mode_ == Mode::Adiabatic)
+    {
+        const scalar eps = fdStep(y[n], n < typ.size() ? typ[n] : 1.0);
+        sVector yp = y;
+        yp[n] = y[n] + eps;
+        const sVector fp = derivatives_(yp);
+        const scalar inv = 1.0 / eps;
+        for (std::size_t i = 0; i < N; ++i) J[i][n] = (fp[i] - f0[i]) * inv;
+    }
+    return J;
+}
+
+//  The audit's row sizes: a species row is judged on max(|n_k|, 1e-2 of the
+//  vessel's inventory) -- the difference step is then sqrt(eps) of that,
+//  ~1.5e-10 of the inventory: far above the rounding of f (a sum of large
+//  terms that cancel), far below any concentration whose curvature could
+//  bias a forward difference -- and T on itself.  MEASURED on
+//  ignition01_h2o2_jac (2026-11-19): the worst column difference over the
+//  audits scales as 1/floor, i.e. it IS the difference's rounding --
+//  floor 1e-4: up to 3.0e-5; 1e-3: up to 2.2e-6; 1e-2: up to 3.3e-7 --
+//  and with the integrator's own step (sqrt(eps) * atol) the T row of the
+//  H2O2 column came out 1.55 of its scale WRONG in the difference, not in
+//  the analytic J.
+sVector BatchReactor::odeJacobianScale(const sVector& y) const
+{
+    const std::size_t n = state_.n.size();
+    scalar tot = 0.0;
+    for (std::size_t i = 0; i < n; ++i) tot += std::abs(y[i]);
+    sVector s(y.size());
+    for (std::size_t i = 0; i < n; ++i) s[i] = std::max(std::abs(y[i]), 1.0e-2 * tot);
+    s[n] = std::max(std::abs(y[n]), 1.0);
+    return s;
+}
+
+void BatchReactor::announceJacobianAudits_(scalar tRun)
+{
+    const auto& A = jacAudit_;
+    for (; jacAnnounced_ < A.audits.size(); ++jacAnnounced_)
+    {
+        const auto& a = A.audits[jacAnnounced_];
+        const bool first = (jacAnnounced_ == 0);
+        if (verbosity_ < (first ? 1 : 3)) continue;
+        std::ostringstream os;
+        os << "  [jacobian] batchReactor '" << name_ << "': analytic Jacobian #"
+           << a.jacobian << " AUDITED at t = " << std::scientific
+           << std::setprecision(4) << tRun + a.t << " s (T = "
+           << std::defaultfloat << std::setprecision(6)
+           << (a.y.empty() ? 0.0 : a.y.back()) << " K): worst column d("
+           << odeRowLabel(a.row) << ")/d(" << odeRowLabel(a.col) << ") "
+           << std::scientific << std::setprecision(3) << a.worst
+           << " of the column's scale from the finite difference (tolerance "
+           << A.tolerance << ")\n";
+        if (first)
+            os << "             the Jacobian is ANALYTIC (`jacobian analytic;`):"
+                  " species columns from the rate laws, the energy row by the"
+                  " chain rule, the T column by one difference; audited against"
+                  " the dense finite difference at analytic Jacobians 1, 2, 4,"
+                  " 8, ...; a column above the tolerance refuses the run\n";
+        std::cout << os.str();
+    }
 }
 
 std::string BatchReactor::odeRowLabel(std::size_t i) const
