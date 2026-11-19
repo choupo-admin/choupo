@@ -765,11 +765,16 @@ and the other doesn't, the case may have produced one but not the
 other (e.g. a propsDict case has KPIs from `propertyPoint` ops but no
 streams).
 
-## A unit's liquid density is not always the package's
+## A liquid has ONE density door (C445, 2026-11-19)
 
-Several units compute a liquid density themselves (a pump, a CSTR, a
-crystalliser: the 25 C molar volume, no temperature or pressure effect; a
-membrane module or an electrodialysis stack: 1000 kg/m3).  Read the
-liquid-properties table every run prints before quoting a volumetric flow, a
-head or a residence time, and say so when two units give one liquid two
-densities.  [thermophysical-properties.md](thermophysical-properties.md).
+Every unit asks `liquidProperty::evaluate(.., Property::density, ..)` and that
+is the resolver's one door (`liquidProperty::density`): the method is resolved
+once per constituent set (a measurement, a solution law, a reference equation,
+or the ideal mixing of the records' volumes, with `massWithoutVolume` where the
+case declares it) and every asker of the same stream gets the same number.  Two
+units can no longer give one liquid two densities (the swro01 pumps priced the
+seawater by the NaCl law and its tanks by ideal mixing with the salt left out).
+A component with no liquid volume that no method of the set covers (a gas above
+its critical temperature dissolved in the liquid) is left out and named in the
+table.  Read the liquid-properties table every run prints.
+[thermophysical-properties.md](thermophysical-properties.md).

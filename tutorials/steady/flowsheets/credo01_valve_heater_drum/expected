@@ -1,16 +1,16 @@
 # Reference KPIs (golden master).  kind  name  key  expected  reltol
 # Credo chain: heater (Q) -> valve (P drop, isenthalpic flash) -> drum (no
 # knobs, inherits T,P).  Deterministic; benzene/toluene Raoult.
-kpi     H1       T_out    413.08978161      1e-6
+kpi     H1                     T_out            413.089781612    1e-6
 kpi     V1                     T_out            369.263388422    1e-6
 kpi     V1                     vf               0.199748128548   1e-5
-kpi     V1       dP       900000            1e-9
+kpi     V1                     dP               900000           1e-9
 stream  liquid                 F                0.0222292186514  1e-6
 stream  vapour                 F                0.00554855912634 1e-6
-utility H1                     heating.steamMP.duty_kW 260                1e-4
-utility H1                     heating.steamMP.T 413.089781612      1e-4
-utility H1                     heating.steamMP.kg_s 0.1305876444       1e-4
-utility H1                     heating.steamMP.eur_h 14.04              1e-4
+utility H1                     heating.steamMP.duty_kW 260              1e-4
+utility H1                     heating.steamMP.T 413.089781612    1e-4
+utility H1                     heating.steamMP.kg_s 0.1305876444     1e-4
+utility H1                     heating.steamMP.eur_h 14.04            1e-4
 stream  feed                   F                0.0277777777778  1e-4
 stream  feed                   T                350              1e-4
 stream  heated                 F                0.0277777777778  1e-4
@@ -56,4 +56,6 @@ kpi     V1                     rho_in           746.670604379    1e-4
 kpi     V1                     rho_out          13.9106873884    1e-4
 kpi     V1                     volumeRatio      53.6760394028    1e-4
 kpi     V1                     x_mass_out       0.194046204136   1e-4
-source  V1                     liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  V1                     liquidDensity    idealMixing[anchoredRackett] exact
+boundary global                 noBoundary       false            exact
+boundary global                 residual_denom_kW 260              1e-4

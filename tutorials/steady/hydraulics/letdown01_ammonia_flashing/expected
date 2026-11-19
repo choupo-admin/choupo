@@ -99,6 +99,6 @@ boundary global                 H_feeds_kW       -56376.9754702   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -56376.9755474   1e-4
 boundary global                 residual_kW      7.71841732785e-05 abs:0.001
-source  ValveHP                liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
-source  ValveLP                liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  ValveHP                liquidDensity    idealMixing[anchoredRackett] exact
+source  ValveLP                liquidDensity    idealMixing[anchoredRackett] exact
 boundary global                 noBoundary       false            exact

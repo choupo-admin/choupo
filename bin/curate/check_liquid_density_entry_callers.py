@@ -54,6 +54,8 @@ ALLOWED = {
     "src/unitOperations/rotating/PressureExchanger.cpp": 1,     # the brine's density for the rotor flow (C421 door slice d)
     "src/unitOperations/agitation/AgitatedVessel.cpp": 1,       # the vessel's liquid density for Re and the power number (flow curves, C421 (7))
     "src/propertyOps/PropertyEvaluator.cpp": 1,
+    "src/thermo/LiquidPropertyDoor.cpp": 1,                     # `evaluate(density)` IS this entry: the one density door (C445 (2))
+    "src/thermo/PricedDensity.cpp": 3,                          # which components the ONE density door can price whole, asked of the door unrecorded (C445 (2); three asks: the set, the thinned set, the set without its traces)
     "src/applications/choupoProps/PropertyRouteBench.cpp": 4,   # the sweep, the address-reuse check, the domain-trial check (two calls)
 }
 CALL = re.compile(r"\bliquidProperty::density\s*\(")

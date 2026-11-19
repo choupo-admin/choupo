@@ -28,4 +28,4 @@ kpi     balance                mass_kg_initial  30               1e-4
 kpi     balance                mass_kg_out_cum  300              1e-4
 kpi     balance                mass_residual_kg -1.13331566354e-12 abs:1e-09
 kpi     balance                material_available 1                1e-4
-source  FAST                   liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  FAST                   liquidDensity    idealMixing[anchoredRackett] exact

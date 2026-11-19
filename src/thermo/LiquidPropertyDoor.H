@@ -147,10 +147,11 @@ Result evaluateUnrecorded(const ThermoPackage& thermo, Property p, scalar T_K,
 //  (thermo/liquidProperty/): the method is resolved per constituent set (the
 //  components with x > 0) at the set's first request and frozen for the run
 //  (thermo/liquidProperty/DensityResolver.H), and the answer carries the
-//  method's id and its own words.  MIGRATION SCAFFOLDING: only the pump and
-//  the CSTR call it (a gate counts its callers); `evaluate` above, the
-//  slice-0 wrapper, keeps serving every other consumer unchanged, and this
-//  entry is removed when the last consumer has moved.
+//  method's id and its own words.  THIS IS THE ONE DENSITY DOOR (DEV.md 4c
+//  C445 (2)): `evaluate(.., Property::density, ..)` above is this function
+//  with the arguments spelled differently, so every unit that asks the door
+//  for one stream's liquid density gets the same answer, by the same method
+//  (a gate holds it: check_liquid_property_ratchet, the "one density door" arm).
 struct Request
 {
     const ThermoPackage* thermo = nullptr;
@@ -158,6 +159,8 @@ struct Request
     scalar               P = 0.0;          // Pa
     sVector              x;                // the liquid's mole fractions, package components
     const Consumer*      who = nullptr;    // records the use when given
+    std::string          leftOut;          // components the CALLER left out of `x` (pricedDensity), for the table
+    bool                 record = true;    // false: no use is recorded and nothing is printed
 };
 Result density(const Request& r);
 

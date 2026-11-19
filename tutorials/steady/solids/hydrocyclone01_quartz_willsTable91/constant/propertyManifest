@@ -23,6 +23,10 @@ propertyManifest
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
         "components/silica.dat"  "fd56271b9d77d5ab62534d6324355e0571dcc4f74ec6ab1602f7842161fe70b4";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
+        "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+        "parameters/Helmholtz/SetzmannWagner1991.dat"  "2d75e1bff7b606847ff65b4854ca906f0f653cabb28036d87d7330109cf49b10";
+        "parameters/Helmholtz/Span2000.dat"  "ff57a1c162fb3e3d2b93332832d5472106b988a43db93d6537f5a1e8751dd032";
+        "parameters/Helmholtz/SpanWagner1996.dat"  "45e5b08168038ca401f0a99ec275378fa7fec8658671fc3c954dd201e1bff76a";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }

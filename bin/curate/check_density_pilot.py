@@ -46,6 +46,12 @@ WHAT IT CHECKS (each arm prints PASS or FAIL with its numbers):
      caustic cases have no pump: its discharge temperature needs NaOH's
      liquid heat capacity, which the record lacks -- outside the pilot; the
      pump's wiring is held by the W arms on water and water + ethanol.)
+  T  ONE DENSITY DOOR (DEV.md 4c C445 (2), 2026-11-19; the defect: swro01_campoDalias,
+     two waters -- its pumps priced the seawater by the NaCl-water solution law and
+     five tanks and filters by the ideal mixing of record volumes with the salt left
+     out, `densityPricedFraction 0.988868`): on one NaOH-water stream a CSTR and a
+     storage tank (which went to ThermoPackage::density) give the same density to 1e-9
+     and the tank prices the whole set.
   R3 the package's line decides the phase (ruling 3 at hand-back A): pure
      water with no `pureFluids` fed at the package's own saturation line at
      0.05 bar is pumped and the run announces the two lines; 5 % below it is
@@ -508,6 +514,43 @@ def main():
             #  REPORT (C378 pilot review, PA-01/PC-12).
             arm('D5', False, f"the section could not run ({type(e).__name__}: "
                 f"{str(e)[:200]}); its remaining arms were NOT run")
+
+        # ---- T: ONE DENSITY DOOR (C445 (2), 2026-11-19) --------------------
+        try:
+            door = (ROOT / "src/thermo/LiquidPropertyDoor.cpp").read_text()
+            arm("T static", "DensityPhase::Liquid" not in door and "thermo.density(" not in door,
+                "LiquidPropertyDoor.cpp never reaches ThermoPackage::density: the wrapper is the resolver")
+            dt = copy_case("liquidDensity03_NaOH", tmp, "t_door")
+            fs = dt / "system" / "flowsheetDict"
+            txt = fs.read_text()
+            tank = ("    {\n        name        T1;\n        type        storageTank;\n"
+                    "        in          product;\n        outputs     ( final );\n"
+                    "        operation   { residenceTime 1 h; fillFraction 0.9; }\n    }\n);")
+            i = txt.rindex(");")
+            fs.write_text(txt[:i] + tank + txt[i + 2:])
+            shutil.copy(dt / "0" / "product", dt / "0" / "final")
+            rc, res, o = solve(dt)
+            if res is None:
+                arm("T one door", False, "the two-unit case did not run (exit %d): " % rc
+                    + o.strip().splitlines()[-1][:300])
+            else:
+                kc = res["kpis"]["R1"]
+                rho_cstr = kc["tau_s"] * res["streams"]["feed"]["F_mass"] / kc["V_R"]
+                rho_tank = res["kpis"]["T1"]["density_kg_m3"]
+                frac = res["kpis"]["T1"].get("densityPricedFraction", 1.0)
+                #  the SAME stream (the CSTR converts nothing: absent reactant) priced by a
+                #  CSTR (feed) and by a storage tank (its outlet, ONE liquid): one number, by
+                #  one method.  Before C445 the tank went to ThermoPackage::density (the
+                #  ideal mixing of record volumes, the salt left out) while the CSTR priced
+                #  the solution law -- swro01_campoDalias, two waters.
+                src = re.findall(r"liquidDensity\s+(\S+)", o)
+                methods = {m for m in src}
+                arm("T one door", rel(rho_cstr, rho_tank) <= 1e-9 and abs(frac - 1.0) <= 1e-12,
+                    f"CSTR {rho_cstr:.10g} vs storage tank {rho_tank:.10g} kg/m3 on one NaOH-water stream "
+                    f"(rel {rel(rho_cstr, rho_tank):.1e}, limit 1e-9; the tank priced fraction {frac:.6f}, "
+                    f"the whole set); methods printed: {sorted(methods) or 'n/a'}")
+        except Exception as e:                                    # noqa: BLE001
+            arm("T one door", False, f"the section could not run ({type(e).__name__}: {str(e)[:200]})")
 
         # ---- R3: the package's line ----------------------------------------
         try:

@@ -13,13 +13,13 @@
 #  without it the same drum would turn in 203.92 s, not 197.33 s.
 #  NOT a validation: the area, R_m, the wash flow and the wash test are
 #  illustrative, and no book prints this drum.
-kpi     drum                   cycleTime_s      197.330866947      1e-6
-kpi     drum                   filtrationTime_s 65.1191860927      1e-6
-kpi     drum                   Kp_s_m6          13914.2215059      1e-6
-kpi     drum                   B_s_m3           22.1108448567      1e-6
-kpi     drum                   washTime_s       53.2990814119      1e-6
-kpi     drum                   washRatio        1.3458922137       1e-6
-kpi     drum                   soluteRemaining  0.177070127586     1e-6
+kpi     drum                   cycleTime_s      197.35634639     1e-6
+kpi     drum                   filtrationTime_s 65.1275943088    1e-6
+kpi     drum                   Kp_s_m6          13915.9600585    1e-6
+kpi     drum                   B_s_m3           22.1108448567    1e-6
+kpi     drum                   washTime_s       53.3060727812    1e-6
+kpi     drum                   washRatio        1.3458922137     1e-6
+kpi     drum                   soluteRemaining  0.177070127586   1e-6
 # =============================================================================
 stream  cake                   F                0.00973326044667 1e-4
 stream  cake                   T                298.2            1e-4
@@ -33,30 +33,31 @@ stream  washWater              F                0.011101687      1e-4
 stream  washWater              T                298.2            1e-4
 kpi     drum                   alpha_m_kg       122547336851     1e-4
 kpi     drum                   area_m2          6                1e-4
-kpi     drum                   cS_eq24_2_10_kg_m3 308.106562087    1e-4
-kpi     drum                   cS_kg_m3         308.106562087    1e-4
+kpi     drum                   cS_eq24_2_10_kg_m3 308.145059353    1e-4
+kpi     drum                   cS_kg_m3         308.145059353    1e-4
 kpi     drum                   cakeLiquor_kg_s  0.1485980001     1e-4
-kpi     drum                   cakePorosity     0.731067068546   1e-4
-kpi     drum                   cakeSolidsPerArea_kg_m2 4.88716203105    1e-4
-kpi     drum                   cakeThickness_mm 6.7056898295     1e-4
+kpi     drum                   cakePorosity     0.731042503615   1e-4
+kpi     drum                   cakeSolidsPerArea_kg_m2 4.88779306343    1e-4
+kpi     drum                   cakeThickness_mm 6.70594313519    1e-4
 kpi     drum                   componentMassClosure 0                1e-4
-kpi     drum                   filtratePerCycle_m3 0.0951715276288  1e-4
-kpi     drum                   filtrate_m3_s    0.000482294174759 1e-4
-kpi     drum                   filtrationFlux_m_s 8.03823624598e-05 1e-4
-kpi     drum                   formationTimeClosure 2.1822838349e-16 abs:1e-09
+kpi     drum                   filtratePerCycle_m3 0.0951719246842  1e-4
+kpi     drum                   filtrate_m3_s    0.000482233920646 1e-4
+kpi     drum                   filtrationFlux_m_s 8.03723201077e-05 1e-4
+kpi     drum                   formationTimeClosure 0                abs:1e-09
 kpi     drum                   liquidMassFlow_kg_s 0.629401999946   1e-4
 kpi     drum                   mediumResistance_1_m 10000000000      1e-4
 kpi     drum                   mu_liquid_Pa_s   0.00088885596324 1e-4
 kpi     drum                   pressureDrop_Pa  67000            1e-4
-kpi     drum                   rho_liquid       996.910236552    1e-4
+kpi     drum                   rho_liquid       997.034798385    1e-4
 kpi     drum                   rho_solid        2710             1e-4
 kpi     drum                   solidsMassFlow_kg_s 0.1485980001     1e-4
 kpi     drum                   solidsMassFraction 0.191000000117   1e-4
 kpi     drum                   submergence      0.33             1e-4
-kpi     drum                   washFractionOfCycle 0.27010007221    1e-4
-kpi     drum                   wash_m3_s        0.000200616749605 1e-4
+kpi     drum                   washFractionOfCycle 0.270100626386   1e-4
+kpi     drum                   wash_m3_s        0.000200591686097 1e-4
 boundary global                 H_feeds_kW       -14978.4745451   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -14978.4745451   1e-4
-source  drum                   liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  drum                   liquidDensity    referenceEquation.IAPWS95 exact
 source  drum                   liquidViscosity  Vogel/GrunbergNissan exact
+boundary global                 noBoundary       false            exact

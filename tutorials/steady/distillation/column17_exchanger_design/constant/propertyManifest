@@ -25,6 +25,10 @@ propertyManifest
         "components/benzene.dat"  "4867cea9c30ce24e49103b01b75373a551f9161410b53b7a0bedd4947cfcd124";
         "components/toluene.dat"  "235f87f78a1922f0cdec411061f6197c8b9ada98bedf38e10b284901e5f65b15";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
+        "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+        "parameters/Helmholtz/SetzmannWagner1991.dat"  "2d75e1bff7b606847ff65b4854ca906f0f653cabb28036d87d7330109cf49b10";
+        "parameters/Helmholtz/Span2000.dat"  "ff57a1c162fb3e3d2b93332832d5472106b988a43db93d6537f5a1e8751dd032";
+        "parameters/Helmholtz/SpanWagner1996.dat"  "45e5b08168038ca401f0a99ec275378fa7fec8658671fc3c954dd201e1bff76a";
         "parameters/Henry/"  "relevant:490160d6cdeb078537521154fc865fb712b43861a68d9554f64f70144dddfd1f";
         "parameters/Henry/benzene-water.dat"  "05e43d5e3c5519eb87d76a87f911fe82c098010afdf0dfed0d70fe7283e92846";
         "parameters/Henry/toluene-water.dat"  "88ca1cc08901abfb0205080b66e500647e2c5fea68e714e65cd5a7b069853433";

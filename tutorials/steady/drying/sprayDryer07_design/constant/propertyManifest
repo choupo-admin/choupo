@@ -27,6 +27,10 @@ propertyManifest
         "components/O2.dat"  "27e9c81dbbc53cf3a3cdbd7bbe1dbad0dc2292fb93a397f065ac5eec815e7656";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "mixtures/air.dat"  "64d8d3a97c4f33fb3eab19299ae566ffa3e22d643fc06aec3cb5f059b11eb420";
+        "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+        "parameters/Helmholtz/SetzmannWagner1991.dat"  "2d75e1bff7b606847ff65b4854ca906f0f653cabb28036d87d7330109cf49b10";
+        "parameters/Helmholtz/Span2000.dat"  "ff57a1c162fb3e3d2b93332832d5472106b988a43db93d6537f5a1e8751dd032";
+        "parameters/Helmholtz/SpanWagner1996.dat"  "45e5b08168038ca401f0a99ec275378fa7fec8658671fc3c954dd201e1bff76a";
         "parameters/Henry/"  "relevant:00f61ca9382cb0b54af0d2ef39dbf9e3288c7bebc105aacd1b755864d9bd0308";
         "parameters/Henry/Ar-water.dat"  "9592cfb34c30ff2b94c3b394bbfd70a38ce25b03d36876f3577e85e17041ff50";
         "parameters/Henry/N2-water.dat"  "6e597edbafb3f88076dac89a14cfa53d85b9bc2df19cc088d9b8171fdc5fd765";

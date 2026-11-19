@@ -12,7 +12,7 @@ kpi     L1                     dP_elevation     0                1e-4
 kpi     L1                     dP_fittings      0                1e-4
 kpi     L1                     dP_friction      110128.775973    1e-4
 # ANCHOR (published): Chhabra & Richardson Ex. 3.1, p. 115: -dp = 110 kPa
-kpi     L1                     deltaP           110000           0.002   anchor
+kpi     L1                     deltaP           110000           0.002    anchor
 kpi     L1                     density          1074.99997016    1e-4
 kpi     L1                     frictionFactor   0.295763139381   1e-4
 kpi     L1                     head_loss_m      10.446521069     1e-4
@@ -23,7 +23,7 @@ kpi     L1                     regime           0                1e-4
 kpi     L1                     reynolds         216.389372029    1e-4
 kpi     L1                     tailShare        0                1e-4
 # ANCHOR (published): Ex. 3.1, p. 115: V = 1.32 m/s
-kpi     L1                     velocity         1.32             0.005   anchor
+kpi     L1                     velocity         1.32             0.005    anchor
 kpi     L1                     viscosity        0.16344502007    1e-4
 kpi     L1                     viscosityApparentWall 0.130756016056   1e-4
 kpi     L1                     wallShearRate    526.40396258     1e-4
@@ -32,5 +32,5 @@ boundary global                 H_feeds_kW       -11018.2101718   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -11018.2101718   1e-4
 boundary global                 noBoundary       false            exact
-source  L1                     liquidDensity    liquidVolume.idealMix[flatVliq] exact
+source  L1                     liquidDensity    idealMixing[flatVliq] exact
 source  L1                     liquidViscosity  flowCurve.powerLawEx31 exact
