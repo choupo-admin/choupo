@@ -4877,8 +4877,8 @@ accepts today, and that is a policy call.
 > written there, to be weighed and sliced on the laptop's return (Saturday):
 > C456 an olefins line with seven primary articles and a gate each; C457 three
 > EduTools on its validated witnesses; C458 (ARCHITECTURE, decided by Vitor
-> with the three options) a new home data/standards/thermoTables/NASA-TP-
-> 2002-211556/, one species per file, the whole public-domain table
+> with the three options) a new home, a thermoTables folder under the standards tree
+> (the NASA TP-2002-211556 table), one species per file, the whole public-domain table
 > transcribed by bin/curate/nasa_tp2002_to_choupo.py, reviewStatus interim,
 > components/ staying flat; then mechanisms at scale (a CHEMKIN-format
 > mechanism read into a case's constant/ with its licence checked per
