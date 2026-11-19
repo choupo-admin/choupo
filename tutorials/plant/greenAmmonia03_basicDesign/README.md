@@ -44,11 +44,11 @@ is replaced by:
 
 | unit | what it is | its number, and why |
 |---|---|---|
-| `Bed1` | adiabatic `pfr`, Dyson & Simon (1968) rate law, iron catalyst | 10.22 m³, SOLVED so the bed **leaves at 515 °C**, 5 K under the 520 °C the base data give as the catalyst's limit; run to a 5 K approach it would leave above that |
+| `Bed1` | adiabatic `pfr`, Dyson & Simon (1968) rate law, iron catalyst | 15.92 m³<!--golden: kpi CONVERTER.Bed1 V_R-->, SOLVED so the bed **leaves at 515 °C**<!--golden: kpi CONVERTER.Bed1 T_out +-273.15-->, 5 K under the 520 °C the base data give as the catalyst's limit; run to a 5 K approach it would leave above that |
 | `InterbedCooler1` | `phaseChanger` to 420 °C, raising HP steam | 420 °C author-set |
-| `Bed2` | the same rate law | 19.28 m³, SOLVED so the effluent is **5 K short of equilibrium** (US 5,352,428's per bed approach, the base case's source) |
+| `Bed2` | the same rate law | 23.85 m³<!--golden: kpi CONVERTER.Bed2 V_R-->, SOLVED so the effluent is **5 K short of equilibrium** (US 5,352,428's per bed approach, the base case's source) |
 | `InterbedCooler2` | to 410 °C, raising HP steam | 410 °C author-set |
-| `Bed3` | the same rate law | 32.57 m³, the same 5 K criterion |
+| `Bed3` | the same rate law | 33.30 m³<!--golden: kpi CONVERTER.Bed3 V_R-->, the same 5 K criterion |
 
 **The five are ONE SECTOR, `CONVERTER`** (DEV.md 4c C69): five
 calculations, one piece of equipment.  Industrially a multibed converter
@@ -70,7 +70,7 @@ the case) — the same law
 [`ammoniaReactor04_kineticSizing`](../ammoniaReactor04_kineticSizing) writes, whose README is the
 reference for it; `bin/curate/check_ammonia_rate.py` holds the copies equal. The FEHE now preheats bed 1 against bed 3's effluent, an
 energy recycle through three kinetic beds (the second tear in
-`system/solverDict`, cut at `PreheatedFeed`). The recycle compressor's power was re-tuned to 908 kW
+`system/solverDict`, cut at `PreheatedFeed`). The recycle compressor's power was re-tuned to 908 kW<!--golden: kpi RecycleComp W_shaft_kW-->
 so the loop sits again at the base case's 150.9 bar.
 
 **The bed volumes are SOLVED, not typed** (DEV.md 4c C66). Each bed reads
@@ -99,9 +99,9 @@ authority on all of them.
 
 | bed | in | out | NH₃ out | approach | volume | D × L | pressure drop |
 |---|---|---|---|---|---|---|---|
-| 1 | 378.1 °C | 515.0 °C | 10.27 % | 28.5 K | 10.22 m³ | 2.25 × 2.58 m | 0.35 bar |
-| 2 | 420.0 °C | 490.8 °C | 15.10 % | 5.0 K | 19.28 m³ | 2.25 × 4.87 m | 0.63 bar |
-| 3 | 410.0 °C | 462.5 °C | 18.91 % | 5.0 K | 32.57 m³ | 2.25 × 8.23 m | 1.00 bar |
+| 1 | 378.0 °C<!--golden: kpi CONVERTER.Bed1 T +-273.15--> | 515.0 °C<!--golden: kpi CONVERTER.Bed1 T_out +-273.15--> | 10.27 %<!--golden: kpi CONVERTER.Bed1 y_NH3_out *100--> | 28.3 K<!--golden: kpi CONVERTER.Bed1 approach_K--> | 15.92 m³<!--golden: kpi CONVERTER.Bed1 V_R--> | 2.25<!--golden: kpi CONVERTER.Bed1 D_bed_m--> × 3.99 m<!--golden: kpi CONVERTER.Bed1 L_bed_m--> | 0.53 bar<!--golden: kpi CONVERTER.Bed1 dP_bed_bar--> |
+| 2 | 420.0 °C<!--golden: kpi CONVERTER.Bed2 T +-273.15--> | 490.6 °C<!--golden: kpi CONVERTER.Bed2 T_out +-273.15--> | 15.09 %<!--golden: kpi CONVERTER.Bed2 y_NH3_out *100--> | 5.0 K<!--golden: kpi CONVERTER.Bed2 approach_K--> | 23.85 m³<!--golden: kpi CONVERTER.Bed2 V_R--> | 2.25<!--golden: kpi CONVERTER.Bed2 D_bed_m--> × 5.97 m<!--golden: kpi CONVERTER.Bed2 L_bed_m--> | 0.76 bar<!--golden: kpi CONVERTER.Bed2 dP_bed_bar--> |
+| 3 | 410.0 °C<!--golden: kpi CONVERTER.Bed3 T +-273.15--> | 462.4 °C<!--golden: kpi CONVERTER.Bed3 T_out +-273.15--> | 18.90 %<!--golden: kpi CONVERTER.Bed3 y_NH3_out *100--> | 5.0 K<!--golden: kpi CONVERTER.Bed3 approach_K--> | 33.30 m³<!--golden: kpi CONVERTER.Bed3 V_R--> | 2.25<!--golden: kpi CONVERTER.Bed3 D_bed_m--> × 8.34 m<!--golden: kpi CONVERTER.Bed3 L_bed_m--> | 1.00 bar<!--golden: kpi CONVERTER.Bed3 dP_bed_bar--> |
 
 What changed against the feasibility case — production, every consumption, the loop, the
 converter, the investment and the NPV, each difference traced to what changed between the two
@@ -131,15 +131,15 @@ said in `CONVERTER/Bed1/system/flowsheetDict`.
 (a `largestOf` target), so no bed is named in advance as the binding one.
 At one diameter the gas velocity is nearly the same in the three beds and
 the drop grows with the bed's length, so the largest volume binds: bed 3
-loses exactly 1.00 bar, bed 1 0.31 and bed 2 0.62, and the converter is
-2.25 m across. The drop falls as D⁻⁴ (viscous) to D⁻⁶ (inertial; here the
+loses exactly 1.00 bar<!--golden: kpi CONVERTER.Bed3 dP_bed_bar-->, bed 1 0.53<!--golden: kpi CONVERTER.Bed1 dP_bed_bar--> and bed 2 0.76<!--golden: kpi CONVERTER.Bed2 dP_bed_bar-->, and the converter is
+2.25 m<!--golden: kpi CONVERTER.Bed1 D_bed_m--> across. The drop falls as D⁻⁴ (viscous) to D⁻⁶ (inertial; here the
 inertial term carries 99 % of it over each bed, superficial velocity
-0.51-0.55 m/s at the bed inlets, Re_p 6300-6500), so no narrower converter
+0.50-0.54 m/s at the bed inlets, Re_p 6200-6400), so no narrower converter
 would do -- the `converterShell` sizer brackets the same smallest diameter
 on the solved beds (each bed's drop scaled to another diameter by its own
 inertial share, the axial state held fixed), finds it at the converter's
 2.25 m with bed 3 binding, and says so on the run.  Started from 2.6 m, the
-DesignSpec comes back to 2.2451 m (2.2427 m before the 2026-11-17 re-solve, see History) in three Newton steps.
+DesignSpec comes back to 2.2547 m<!--golden: kpi CONVERTER.Bed1 D_bed_m--> (2.2451 m before the 2026-11-19 re-solve with xi, see History) in three Newton steps.
 
 C66 had given each bed its OWN slenderness, L/D 1.5 (at the L/D 6 the case
 carried before, the loop did not converge: its first pass lost 35, 24 and
@@ -149,13 +149,13 @@ them is as wide as the widest along its whole height, which is how the first
 one-shell version of this case came out MORE expensive than three separate
 vessels. A bed the gas crosses RADIALLY -- through its thickness, not its
 length -- is the other answer, and this `pfr` does not model one. The
-tables below this section were read off the run BEFORE C66's beds and C69's
-one diameter (sub-percent moves; the golden is the authority, and it moves
-with the list put to Vitor).
+tables of this section were re-read from the golden on 2026-11-19, after the
+effectiveness factor xi entered the beds (C66 item 2): the bed volumes grew by
+about 1.5 times and the diameter by 0.4 %.
 
 ### The gross margin, and what moved it
 
-The margin after the energy, R − C_RM − C_UT, is 26 M EUR/yr less negative than the feasibility case's (−366.7 against −392.8 M EUR/yr at the cited prices: it is negative in both, because the hydrogen alone costs 2.7 times the ammonia's price; the numbers, by utility service, are in the generated section below). The difference is the feed/effluent exchanger the feasibility case's pinch
+The margin after the energy, R − C_RM − C_UT, is 26 M EUR/yr less negative than the feasibility case's (-366.9<!--golden: kpi economics grossMargin_RM_UT *1e-6--> against −392.8 M EUR/yr at the cited prices: it is negative in both, because the hydrogen alone costs 2.7 times the ammonia's price; the numbers, by utility service, are in the generated section below). The difference is the feed/effluent exchanger the feasibility case's pinch
 targeted (minimum heating zero): built here, it carries the 64 MW the
 feasibility flowsheet bought as molten salt. Both margins are upper
 bounds for the same reason (the `StorageFlash`'s −35 °C duty, which no
@@ -172,14 +172,14 @@ not say.
 
 | | |
 |---|---|
-| minimum heating, Q_H,min | **0** (0.08 MW bought today, on the two cold flash drums) |
-| minimum cooling, Q_C,min | 71.42 MW (against 71.49 MW cooled today) |
+| minimum heating, Q_H,min | **0** (0.06<!--golden: kpi pinch Q_heat_current_kW *1e-3--> MW bought today, on the two cold flash drums) |
+| minimum cooling, Q_C,min | 71.43 MW<!--golden: kpi pinch Q_C_min_kW *1e-3--> (against 71.48 MW<!--golden: kpi pinch Q_cool_current_kW *1e-3--> cooled today) |
 | class | threshold problem, no hot utility, **no interior pinch** (top of the range at 783.15 K shifted) |
 
-With the feed/effluent exchanger built, the 64.3 MW of FEHE recovery is all but
-0.08 MW of the population's maximum recovery (64.39 MW), and the cooling the
+With the feed/effluent exchanger built, the 64.4<!--golden: kpi FEHE Q_kW *1e-3--> MW of FEHE recovery is all but
+0.06 MW of the population's maximum recovery (64.44 MW<!--golden: kpi pinch Q_recovery_max_kW *1e-3-->), and the cooling the
 plant buys is within 0.1 % of its target. The Q_C,min is larger than the
-feasibility case's 40.36 MW because the interbed coolers (29.5 MW) now cool
+feasibility case's 40.36 MW because the interbed coolers (29.4 MW<!--golden: kpi CONVERTER.InterbedCooler1 Q_kW & kpi CONVERTER.InterbedCooler2 Q_kW *-1e-3-->) now cool
 bed effluent that the feasibility case took out of the population; they are
 heat the design could sell as steam, which is what their boiling-water
 utility does, not heat the pinch asks the plant to recover.
@@ -192,19 +192,19 @@ area and both pressure drops computed. The two that are new here:
 
 | | InterbedCooler1 | InterbedCooler2 |
 |---|---|---|
-| duty | 15.82 MW | 13.81 MW |
-| steam raised at 41 bar | 9.23 kg/s | 8.06 kg/s |
-| area installed | 93.2 m² | 86.6 m² |
-| U (computed) | 802 W/m²/K | 810 W/m²/K |
-| tubes (1 pass, 10 ft) | 383 | 356 |
-| gas-side pressure drop | 21.2 kPa | 22.7 kPa |
+| duty | 16.01 MW<!--golden: kpi CONVERTER.InterbedCooler1 Q_kW *-1e-3--> | 13.41 MW<!--golden: kpi CONVERTER.InterbedCooler2 Q_kW *-1e-3--> |
+| steam raised at 41 bar | 9.34 kg/s<!--golden: equipment CONVERTER.InterbedCooler1 values.mdot_utility--> | 7.82 kg/s<!--golden: equipment CONVERTER.InterbedCooler2 values.mdot_utility--> |
+| area installed | 94.4 m²<!--golden: equipment CONVERTER.InterbedCooler1 values.A--> | 83.7 m²<!--golden: equipment CONVERTER.InterbedCooler2 values.A--> |
+| U (computed) | 801 W/m²/K<!--golden: equipment CONVERTER.InterbedCooler1 values.U--> | 819 W/m²/K<!--golden: equipment CONVERTER.InterbedCooler2 values.U--> |
+| tubes (1 pass, 10 ft) | 388<!--golden: equipment CONVERTER.InterbedCooler1 values.nTubes--> | 344<!--golden: equipment CONVERTER.InterbedCooler2 values.nTubes--> |
+| gas-side pressure drop | 21.2 kPa<!--golden: equipment CONVERTER.InterbedCooler1 values.dP_tube--> | 25.0 kPa<!--golden: equipment CONVERTER.InterbedCooler2 values.dP_tube--> |
 
 Their boiling-water film (5000 W/m²/K) is **typed**, as the base case
 types the chiller's boiling ammonia: no boiling correlation is wired into
 the design. With two passes of 20 ft tubes (the first trial) the gas lost
 ~13 bar in the tubes, so they are one pass of 10 ft — the sheet in
 `design/CONVERTER/InterbedCooler1/shellTubeHX` has the rest. The FEHE comes out at
-1817 m² at U 482 W/m²/K over four shells, against the 2000 m² at U 550 the
+1808 m²<!--golden: equipment FEHE values.A--> at U 486 W/m²/K<!--golden: equipment FEHE values.U--> over four shells, against the 2000 m² at U 550 the
 flowsheet declares and converges on; the designed area is costed.
 
 The beds are sized by the `pfr` sizer from their own volume: a shell (a
@@ -213,16 +213,16 @@ drop; inside the converter it is a basket, not costed) and a **catalyst
 charge** priced from two
 declared numbers, 2500 kg/m³ and 15 EUR/kg — **author-set assumptions**,
 the same round numbers `ammoniaReactor04_kineticSizing` declares, with no source
-behind either: 0.34, 0.69 and 1.19 M EUR for the three charges.
+behind either: 0.60<!--golden: equipment CONVERTER.Bed1/catalystCharge cost.purchased *1e-6-->, 0.89<!--golden: equipment CONVERTER.Bed2/catalystCharge cost.purchased *1e-6--> and 1.25<!--golden: equipment CONVERTER.Bed3/catalystCharge cost.purchased *1e-6--> M EUR for the three charges.
 
 **The converter is ONE pressure shell** (DEV.md 4c C69): `type
 converterShell` reads the CONVERTER sector's five units from the topology,
 takes the beds' ONE diameter (2.25 m) -- refusing a bed at its own
 slenderness, two diameters, a `D` of its own and a cooler too wide to fit
 (their Kern shells are 0.71 and 0.68 m) -- stacks the members into one
-straight cylinder as tall as their sum (2.30 + 4.72 + 8.13 m of bed and two
-3.05 m coolers: 21.24 m), and walls it at 166 bar g: 82.8 m³, 147 mm of wall,
-175 t, 16.79 M EUR total module.  The beds' own shells become internal
+straight cylinder as tall as their sum (3.99 + 5.97 + 8.34 m of bed and two
+3.05 m coolers: 24.40 m<!--golden: equipment CONVERTER/shell values.H-->), and walls it at 166 bar g: 97.4 m³<!--golden: equipment CONVERTER/shell values.V_R-->, 149<!--golden: equipment CONVERTER/shell values.t_wall *1e3--> mm of wall,
+206 t<!--golden: equipment CONVERTER/shell values.weight *1e-3-->, 19.55<!--golden: equipment CONVERTER/shell cost.totalModule *1e-6--> M EUR total module.  The beds' own shells become internal
 BASKETS -- sized and drawn, not costed.
 
 **What the shell's sheet says about its wall** (C440): `design/CONVERTER/shell`
@@ -235,8 +235,9 @@ and no hydrogen-service material table, so whether SS316 is the right metal at
 this hydrogen partial pressure and temperature is the designer's to confirm.
 The record's own `maxP` (100 bar) is below 166 bar, which the run announces.
 
-**What the one shell costs against three, AT THE SAME DIAMETER** (measured:
-the same design point with the `converterShell` entry removed, so each bed
+**What the one shell costs against three, AT THE SAME DIAMETER** (measured
+at the 2026-11-07 design point, 10.0 / 19.2 / 32.4 m³, and NOT re-measured at the
+xi design point of 2026-11-19; the same design point with the `converterShell` entry removed, so each bed
 keeps its own 166 bar g shell at 2.25 m): three shells 3.12 + 5.12 + 7.67 =
 15.90 M EUR, against the one shell's 16.79 M EUR -- the ONE shell is
 0.89 M EUR DEARER here, FCI 59.14 against 58.24 M EUR.  It is not the
@@ -256,7 +257,7 @@ to make were not at one diameter: three shells at their OWN L/D 1.5 (1.96,
 around the widest of them, 3.00 m, cost 31.44 M EUR -- both figures measure
 the diameters, not the grouping.
 
-The fixed capital at 59.1 M EUR was 61.0 M EUR before C69, with three separate bed shells at
+The fixed capital at 63.3<!--golden: kpi economics FCI *1e-6--> M EUR (59.1 M EUR at the 2026-11-07 design point) was 61.0 M EUR before C69, with three separate bed shells at
 their own L/D 1.5; how it and the NPV compare with the feasibility case, and why, is in the
 generated section below.
 
@@ -294,14 +295,14 @@ on every scenario and governed by the one needing the largest area:
 | N2Boost | 33 | discharge blocked | gas | 41 181 | 1741 |
 | MakeupComp1 | 73 | discharge blocked | gas | 50 071 | 1673 |
 | MakeupComp2 | 166 | discharge blocked | gas | 50 071 | 762 |
-| RecycleComp | 166 | discharge blocked | gas | 109 853 | 1387 |
-| CONVERTER/shell | 166 | outlet blocked | gas at 737 K | 159 923 | 3084 |
-| Separator | 166 | gas line, liquid line | gas line | 109 947 | 1368 |
-| LetdownHP | 21 | gas line, liquid line, fire | liquid line | 49 849 | 362 |
-| StorageFlash | 2 | gas line, liquid line, fire | liquid line | 49 172 | 1140 |
+| RecycleComp | 166 | discharge blocked | gas | 111 703<!--golden: equipment RecycleComp/psv values.blocked_CompRecycle_W--> | 1405<!--golden: equipment RecycleComp/psv values.A_relief--> |
+| CONVERTER/shell | 166 | outlet blocked | gas at 736 K<!--golden: equipment CONVERTER/psv values.blocked_CONVERTER_HotEffluent_T1--> | 161 773<!--golden: equipment CONVERTER/psv values.blocked_CONVERTER_HotEffluent_W--> | 3112<!--golden: equipment CONVERTER/psv values.A_relief--> |
+| Separator | 166 | gas line, liquid line | gas line | 111 798<!--golden: equipment Separator/psv values.blocked_UnreactedGas_W--> | 1385<!--golden: equipment Separator/psv values.A_relief--> |
+| LetdownHP | 21 | gas line, liquid line, fire | liquid line | 49 848<!--golden: equipment LetdownHP/psv values.blocked_LetdownLiquid_W--> | 385<!--golden: equipment LetdownHP/psv values.A_relief--> |
+| StorageFlash | 2 | gas line, liquid line, fire | liquid line | 49 316<!--golden: equipment StorageFlash/psv values.blocked_ProductNH3_W--> | 1216<!--golden: equipment StorageFlash/psv values.A_relief--> |
 
-The fire cases are much smaller (LetdownHP 48 kW of fire heat, 183 kg/h of
-vapour, 11 mm²; StorageFlash 447 kW, 1262 kg/h, 553 mm²): these drums are
+The fire cases are much smaller (LetdownHP 48<!--golden: equipment LetdownHP/psv values.fire_Q--> kW of fire heat, 187 kg/h<!--golden: equipment LetdownHP/psv values.fire_W--> of
+vapour, 12 mm²<!--golden: equipment LetdownHP/psv values.fire_A-->; StorageFlash 392 kW<!--golden: equipment StorageFlash/psv values.fire_Q-->, 1113 kg/h<!--golden: equipment StorageFlash/psv values.fire_W-->, 489 mm²<!--golden: equipment StorageFlash/psv values.fire_A-->): these drums are
 small and half full, so a blocked liquid line -- the level controller
 failing shut and the drum filling -- is what sizes them. Every number of
 every scenario is on its sheet and in the result JSON (pinned).  The
@@ -481,7 +482,7 @@ From -3 324.81 to -3 043.15 M EUR. The first step re-runs the feasibility case w
 ## Read before quoting it
 
 * **The rate law is for an iron catalyst at 150-300 atm**, and this loop
-  runs at 148.9 atm: the engine announces on every bed that the rate is
+  runs at 148.8 atm: the engine announces on every bed that the rate is
   extrapolated just below its window. The beds integrate Eq 40 = Eq 19 x the
   effectiveness factor xi of the paper's Eq 39 (a 8 mm particle, inside the
   6-10 mm it was fitted for); a bed sized on Eq 19 alone is undersized by
@@ -561,6 +562,12 @@ they got there is below.
   evaluations, ||F|| = 2.845893e-3, V = 10.222273 / 19.283144 / 32.572284 m3,
   D = 2.245110 m; from the case value, 0 iterations and 1 evaluation,
   ||F|| = 2.845856e-3, the same four numbers to the printed digits.
+* **2026-11-19 (DEV.md 4c C66 item 2, C440).** The beds took the effectiveness factor xi
+  and the design was re-solved: V_Bed1 10.2223 -> 15.9177 m3, V_Bed2 19.2831 -> 23.8477,
+  V_Bed3 32.5723 -> 33.2989, D_converter 2.2451 -> 2.2547 m (bed 3 still binding the
+  1 bar budget). Current-state numbers on this page are tied to the golden by
+  markers since this entry (check_readme_numbers); audit of the moved rows:
+  docs/audits/2026-11-18-c440-converter-moved-goldens.md.
 * **The recycle cut and its tolerance (system/solverDict, DEV.md 4c C69).** The
   energy-recycle cut was HotEffluent until the beds became the CONVERTER
   sector; the converged answer is the same to the recycle tolerance. The

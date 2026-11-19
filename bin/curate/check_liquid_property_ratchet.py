@@ -485,7 +485,7 @@ def main() -> int:
           "that says no property (a variable read under an unrelated key, a constant "
           "spelled otherwise in another header), a brine density outside 997-1030 under "
           "a name that says no sea/brine, a conversion line that names no volume or flow, "
-          "thermo/ and propertyOps/; a duty line that carries none of the exempt markers is counted although false (none today); the exemptions are listed in FALSE_POSITIVES; a phase-variable density call guarded by if/else rather than a ternary would "
+          "the kernel itself under src/thermo/ (propertyOps IS scanned since C402); a duty line that carries none of the exempt markers is counted although false (none today); the exemptions are listed in FALSE_POSITIVES; a phase-variable density call guarded by if/else rather than a ternary would "
           "be counted too (none today).")
     return 0
 
