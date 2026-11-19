@@ -377,12 +377,14 @@ SABOTAGES += [
         "gate": "check_liquid_property_ratchet.py",
         "kind": "detection",
         "file": "bin/curate/liquid_property_ratchet_debt.tsv",
-        "find": "src/unitOperations/heatTransfer/SprayDryer.cpp\tvliq\t4",
-        "replace": "src/unitOperations/heatTransfer/SprayDryer.cpp\tvliq\t3",
-        "why": "the ratchet must see a unit pricing a liquid property itself "
-               "beyond its pin (C378 slice 0).  Lowering the spray dryer's pin "
-               "below the four `.Vliq()` reads its source holds (six until C402 moved two to the door, 2026-11-17) is the same as one "
-               "new raw read: the gate must NAME the file, not pass.",
+        "find": "src/propertyOps/PolarisationIndex.cpp\tkeyRead\t4",
+        "replace": "src/propertyOps/PolarisationIndex.cpp\tkeyRead\t3",
+        "why": "the ratchet must see a reader pricing a liquid property itself "
+               "beyond its pin (C378 slice 0).  Lowering a pin below the reads "
+               "its source holds is the same as one new raw read: the gate must "
+               "NAME the file, not pass.  The target was the spray dryer's Vliq "
+               "row until the door migration paid it (C431, 2026-11-19); it is "
+               "now the polarisation-index bench's four typed reads (C435 (4)).",
     },
     {
         "gate": "check_liquid_property_ratchet.py",

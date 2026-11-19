@@ -90,6 +90,9 @@ def block(out, *where):
     #  where a record was READ is the one difference an export is meant to make:
     #  the catalogue's file in the tree, the case's own copy in the export
     out = out.replace("<root>/data/standards/", "<rec>/").replace("<case>/constant/", "<rec>/")
+    #  since C433 the pair cascade prints RELATIVE sources ("data/standards/..."
+    #  in the tree, "constant/..." in the export): the same one difference
+    out = out.replace('"data/standards/', '"<rec>/').replace('"constant/', '"<rec>/')
     m = re.search(r'<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>', out, re.S)
     if not m:
         return None
@@ -106,6 +109,10 @@ def diff(a, b, path="", out=None):
     if isinstance(a, dict) and isinstance(b, dict):
         for k in sorted(set(a) | set(b)):
             if IGNORE.search(k):
+                continue
+            #  the tier a record was found in (standard in the tree, caseRoot in
+            #  the export) is the export's purpose, not a result (model5_nrtl_flash)
+            if k == "status" and "thermoResolution" in path:
                 continue
             if k not in a or k not in b:
                 out.append("%s/%s present on one side only" % (path, k))
