@@ -40,6 +40,8 @@ License
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
 #include <sstream>
+#include <fstream>
+#include <iomanip>
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -374,6 +376,156 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
     }
 
     if (mode_ == Mode::Adiabatic) requireAdiabaticData_();
+
+    // -----------------------------------------------------------------
+    //  Optional rates-of-production report (opt-in; absent = nothing runs).
+    //      rateOfProduction { times ( t1 t2 ... ); top N; }
+    // -----------------------------------------------------------------
+    ropTimes_.clear();
+    ropNext_ = 0;
+    if (unitDict->found("rateOfProduction"))
+    {
+        const std::string who = "BatchReactor '" + name_ + "': rateOfProduction";
+        auto rop = unitDict->subDict("rateOfProduction");
+        for (const auto& k : rop->keys())
+            if (k != "times" && k != "top")
+                throw std::runtime_error(who + ": unknown key '" + k
+                    + "' (the block reads `times ( ... );` and `top N;`)");
+        if (!rop->found("times"))
+            throw std::runtime_error(who + ": `times ( t1 t2 ... );` is required"
+                " -- the instants [s] at which to report which reactions make and"
+                " destroy each species");
+        ropTimes_ = rop->lookupList("times");
+        if (ropTimes_.empty())
+            throw std::runtime_error(who + ": `times` is empty");
+        std::sort(ropTimes_.begin(), ropTimes_.end());
+        const scalar top = rop->lookupScalarOrDefault("top", 5.0);
+        if (!(top >= 1.0) || top != std::floor(top))
+            throw std::runtime_error(who + ": `top` must be a positive integer, got "
+                + std::to_string(top));
+        ropTop_ = static_cast<std::size_t>(top);
+    }
+}
+
+void BatchReactor::setRunWindow(scalar t0, scalar t1)
+{
+    for (scalar tr : ropTimes_)
+        if (tr < t0 || tr > t1)
+        {
+            std::ostringstream os;
+            os << "BatchReactor '" << name_ << "': rateOfProduction time " << tr
+               << " s is outside the run [startTime, endTime] = [" << t0 << ", "
+               << t1 << "] s";
+            throw std::runtime_error(os.str());
+        }
+}
+
+// -----------------------------------------------------------------------
+//  RATES OF PRODUCTION.  At the state (T, n, V) of the committed step:
+//
+//      r_j    = rateOfReaction_(reaction j)           [kmol/(m^3 s)]  net rate
+//      c_ij   = nu_ij * r_j * V                       [kmol/s]  what reaction j
+//                                                     does to species i
+//      net_i  = sum_j c_ij  ( = dn_i/dt, derivatives_ )
+//      P_i    = sum of the positive c_ij (gross production)
+//      D_i    = -sum of the negative c_ij (gross consumption)
+//      share  = c_ij / P_i  (a producer)  or  -c_ij / D_i  (a consumer)
+//
+//  r_j is the SAME rateOfReaction_ the integrator's right-hand side calls, so
+//  the third-body [M], the fall-off blend and the reverse leg are in it; the
+//  integrator's own dn_i/dt is written beside net_i so the identity is
+//  checkable from the output alone (bin/curate/check_rate_of_production.py).
+// -----------------------------------------------------------------------
+void BatchReactor::reportRatesOfProduction_(scalar tRequested, scalar t)
+{
+    const sVector y = odeState();
+    const std::size_t nc = state_.n.size();
+    const scalar V = state_.V;
+    const scalar T = (mode_ == Mode::Isothermal) ? T_setpoint_ : state_.T;
+    const sVector dndt = derivatives_(y);
+
+    const std::size_t nr = reactions_.size();
+    sVector r(nr, 0.0);
+    for (std::size_t j = 0; j < nr; ++j)
+        r[j] = rateOfReaction_(reactions_[j], T, state_.n, V);
+
+    // c[i][j]: dense species x reaction matrix [kmol/s] (a species may be
+    // listed once per reaction; repeated entries add).
+    std::vector<sVector> c(nc, sVector(nr, 0.0));
+    for (std::size_t j = 0; j < nr; ++j)
+        for (std::size_t s = 0; s < reactions_[j].comps.size(); ++s)
+            c[reactions_[j].comps[s]][j] += reactions_[j].nu[s] * r[j] * V;
+
+    // ---- the matrix, long format, appended -------------------------------
+    {
+        std::ofstream f("rateOfProduction.csv",
+                        ropFileStarted_ ? std::ios::app : std::ios::trunc);
+        if (!f) throw std::runtime_error("BatchReactor '" + name_
+            + "': cannot open rateOfProduction.csv for writing");
+        f << std::setprecision(17);
+        if (!ropFileStarted_)
+            f << "t_s,species,reaction,nu,rate_kmol_m3_s,contribution_kmol_s\n";
+        ropFileStarted_ = true;
+        for (std::size_t i = 0; i < nc; ++i)
+        {
+            scalar net = 0.0;
+            for (std::size_t j = 0; j < nr; ++j)
+            {
+                if (c[i][j] == 0.0) continue;
+                scalar nu = 0.0;
+                for (std::size_t s = 0; s < reactions_[j].comps.size(); ++s)
+                    if (reactions_[j].comps[s] == i) nu += reactions_[j].nu[s];
+                f << t << ',' << thermo_->comp(i).name() << ',' << reactions_[j].name
+                  << ',' << nu << ',' << r[j] << ',' << c[i][j] << '\n';
+                net += c[i][j];
+            }
+            f << t << ',' << thermo_->comp(i).name() << ",NET,,," << net << '\n';
+            f << t << ',' << thermo_->comp(i).name() << ",DNDT_ODE,,," << dndt[i] << '\n';
+        }
+    }
+
+    // ---- the table on stdout (own stream: leaves cout's flags alone) ------
+    std::ostringstream os;
+    os << std::defaultfloat << std::setprecision(6);
+    os << "\n=== Rates of production, unit '" << name_ << "' ===\n";
+    os << "  requested t = " << tRequested << " s; reported at the first committed"
+                 " step that reaches it, t = " << t << " s\n";
+    os << "  T = " << T << " K, V = " << V << " m3.  c_ij = nu_ij r_j V [kmol/s];"
+                 " share = c_ij / gross production (or consumption) of species i.\n";
+    os << std::scientific << std::setprecision(4);
+    for (std::size_t i = 0; i < nc; ++i)
+    {
+        scalar prod = 0.0, cons = 0.0;
+        for (std::size_t j = 0; j < nr; ++j)
+            (c[i][j] > 0.0 ? prod : cons) += (c[i][j] > 0.0 ? c[i][j] : -c[i][j]);
+        if (prod == 0.0 && cons == 0.0) continue;
+        scalar net = prod - cons;
+        os << "  " << thermo_->comp(i).name() << ":  net " << net
+                  << " kmol/s   (production " << prod << ", consumption " << cons
+                  << ";  integrator dn/dt " << dndt[i] << ")\n";
+        for (int side = 0; side < 2; ++side)
+        {
+            std::vector<std::size_t> idx;
+            for (std::size_t j = 0; j < nr; ++j)
+                if (side == 0 ? c[i][j] > 0.0 : c[i][j] < 0.0) idx.push_back(j);
+            std::sort(idx.begin(), idx.end(), [&](std::size_t a, std::size_t b)
+                      { return std::fabs(c[i][a]) > std::fabs(c[i][b]); });
+            const scalar gross = side == 0 ? prod : cons;
+            os << "      " << (side == 0 ? "made by:    " : "destroyed by:");
+            if (idx.empty()) os << " (none)";
+            const std::size_t m = std::min(idx.size(), ropTop_);
+            for (std::size_t k = 0; k < m; ++k)
+                os << (k ? ", " : " ") << reactions_[idx[k]].name << " "
+                          << std::fixed << std::setprecision(1)
+                          << 100.0 * std::fabs(c[i][idx[k]]) / gross << " %"
+                          << std::scientific << std::setprecision(4);
+            if (idx.size() > m) os << "  (+" << idx.size() - m << " more)";
+            os << "\n";
+        }
+    }
+    os << std::defaultfloat << std::setprecision(6);
+    os << "  Full matrix appended to rateOfProduction.csv\n";
+    std::cout << os.str();
 }
 
 // -----------------------------------------------------------------------
@@ -734,6 +886,9 @@ void BatchReactor::setOperationParameter(const std::string& key, scalar value)
 void BatchReactor::noteTimeAdvanced(scalar t)
 {
     lastTime_ = t;
+    while (ropNext_ < ropTimes_.size()
+           && t >= ropTimes_[ropNext_] * (1.0 - 1.0e-9) - 1.0e-18)
+        reportRatesOfProduction_(ropTimes_[ropNext_++], t);
     if (!timeSeen_)
     {
         timeSeen_ = true;

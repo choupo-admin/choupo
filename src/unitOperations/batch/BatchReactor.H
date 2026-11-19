@@ -114,6 +114,7 @@ public:
     //   re-bases on the post-transfer state.  Adiabatic mode exchanges
     //   nothing (records none).
     void noteTimeAdvanced(scalar t) override;
+    void setRunWindow(scalar t0, scalar t1) override;
     void notifyStateWillChange() override;
     void notifyStateChanged() override;
     std::vector<SimulationResult::EnergyRecord>
@@ -254,6 +255,18 @@ private:
     //                              dH_j*xi_j with the announced overrides.
     std::vector<std::string> dutyMissing_;
     bool                     dutyByStateDiff_ = false;
+
+    // ---- Rates of production (the glass box of a mechanism, opt-in) --------
+    //  `rateOfProduction { times (...); top N; }` on the unit.  At the first
+    //  committed step that reaches each requested time the reactor prints, per
+    //  species, which reactions make and destroy it, and appends the whole
+    //  matrix c_ij = nu_ij * r_j * V [kmol/s] to rateOfProduction.csv.  Absent
+    //  = nothing here runs and every existing case is byte-identical.
+    std::vector<scalar> ropTimes_;     // sorted ascending
+    std::size_t         ropNext_  = 0;
+    std::size_t         ropTop_   = 5;
+    bool                ropFileStarted_ = false;
+    void reportRatesOfProduction_(scalar tRequested, scalar t);
 
     void openSegment_(scalar t);
     void closeSegment_(scalar t);

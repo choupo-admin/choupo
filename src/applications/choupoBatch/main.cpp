@@ -1254,6 +1254,7 @@ if (flowsheetDict->found("cycle"))
     // Start every vessel's energy-ledger clock at startTime BEFORE the
     // initial events, so a t=0 recipe charge lands on an already-open
     // (empty) segment boundary instead of an unstamped one.
+    for (auto& unit : units) unit->setRunWindow(startTime, endTime);
     for (auto& unit : units) unit->noteTimeAdvanced(startTime);
 
     // ---- A6: per-cycle state snapshots + the CSS verdict ------------------
