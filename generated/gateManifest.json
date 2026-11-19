@@ -23,7 +23,7 @@
     },
     "check_advisory_attribution": {
       "exit": 0,
-      "claim": "check_advisory_attribution: OK -- column13's caveat block reports 31 advisory(ies) about its ANSWER (still naming Davies beyond its trust range on the published blocks) and attributes 97 to three named solver searches, where it used to print 103 indistinguishable lines; a molecular case that opens no frame prints no path section at all; status only ever moves toward the answer (checked against the sink in isolation, both directions); every advisory in the result JSON carries a status; and each frame has one home whose close sits below its last search.  NOT covered: which solvers OUGHT to be framed -- the recycle Wegstein, the Gibbs multi-start, Wang-Henke and both time integrators still report their paths as answers -- whether any given trial advisory is uninteresting, and the absence of the data race the same change closed (no test can demonstrate that).",
+      "claim": "check_advisory_attribution: OK -- column13's caveat block reports 32 advisory(ies) about its ANSWER (still naming Davies beyond its trust range on the published blocks) and attributes 97 to three named solver searches, where it used to print 103 indistinguishable lines; a molecular case that opens no frame prints no path section at all; status only ever moves toward the answer (checked against the sink in isolation, both directions); every advisory in the result JSON carries a status; and each frame has one home whose close sits below its last search.  NOT covered: which solvers OUGHT to be framed -- the recycle Wegstein, the Gibbs multi-start, Wang-Henke and both time integrators still report their paths as answers -- whether any given trial advisory is uninteresting, and the absence of the data race the same change closed (no test can demonstrate that).",
       "seconds": 0.7
     },
     "check_ammonia_rate": {
@@ -734,7 +734,7 @@
     "check_reference_rung": {
       "exit": 0,
       "claim": "check_reference_rung: OK -- the default (idealGas) rung evaluates, h(400 K) = -2212360.0 J/mol; an explicit `idealGas` is byte-identical to omitting it; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureLiquid` is refused by name, quoting the record's own key, with h_formation named as the remedy; the refusal explicitly warns AGAINST adding a gas Cp block, which was the old message's advice; s_pure_ig refuses the solid rung ON ITS OWN, not only through g_pure_ig; g = h - T*s refuses the solid rung and accepts the default; a second rung is accepted and both are reachable; a duplicate of the declared rung is refused as two homes for one datum; the derived liquid potential closes to +2.59 J/mol of CODATA while its legs are -572 J/mol and -1.93 J/(mol K) out -- the cancellation that makes a potential the right interface; the liquid esterification heat is -2.66 kJ/mol against -3.83 from the liquid formation enthalpies (acetic acid bridged to the datum's monomer, +0.24 kJ/mol out); pure acetic acid boils at 391.0085 K (bubble = dew = the record's Antoine root; record Tb 391.05) on the associated vapour, K = 1; latent heat at Tb 24.386 kJ/mol on the associated vapour (closed form 24.389; record HvapTb 24.39, -0.00; dimer heat in the vapour -22.84 kJ/mol); acetic acid/water T-x-y at 1 atm (UNIFAC + associated vapour) against Calvar et al. 2005: AAD T 0.965 K, y_water 0.0330 (monomer ideal gas: 3.486 K, 0.0355); the named remedy works: h_formation(400 K, \"solid\") = -2185360.0 J/mol; the named remedy works: h_formation(400 K, \"liquid\") = -2185360.0 J/mol",
-      "seconds": 3.2
+      "seconds": 3.1
     },
     "check_registry_scan": {
       "exit": 0,
@@ -1804,7 +1804,7 @@
     "check_readme_numbers": {
       "exit": 0,
       "claim": "check_readme_numbers: OK -- 350 marked README number(s) in 40 case(s) agree with their golden rows at the precision written",
-      "seconds": 0.3
+      "seconds": 0.4
     },
     "check_pressure_si": {
       "exit": 0,
