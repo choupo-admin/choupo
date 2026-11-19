@@ -62,7 +62,7 @@ const k = (id: string, label: string, min: number, max: number, step: number,
 export const KNOB_HS = k("hs", "physical stack height \\(h_s\\)", 0, 200, 1, "m",
   "Raise it and the whole plume rises with it: the exponent \\(H^2/2\\sigma_z^2\\) grows, so the ground sees less.");
 export const KNOB_U = k("u", "wind speed at 10 m, \\(u\\)", 1, 12, 0.5, "m/s",
-  "Wind dilutes and flattens the rise, both as \\(1/u\\); the class changes with it, through Turner's table.");
+  "Wind dilutes the plume as \\(1/u\\) and flattens its rise (as \\(1/u\\) in unstable and neutral air, only as \\(u^{-1/3}\\) in stable E and F); the class changes with it, through Turner's table.");
 export const KNOB_VS = k("vs", "exit velocity \\(v_s\\)", 1, 30, 0.5, "m/s");
 export const KNOB_D = k("d", "stack diameter \\(d\\)", 0.3, 5, 0.1, "m");
 export const KNOB_TS = k("Ts", "exit temperature \\(T_s\\)", 290, 700, 5, "K");

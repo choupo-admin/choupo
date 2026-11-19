@@ -297,7 +297,7 @@ function LoopBench(): JSX.Element {
             onChange={(v) => setDisc(v === "disc")} />
         </KnobField>
         <KnobNumber label="back pressure P2 [bar abs]" value={P2bar} min={1.01325}
-          max={150} step={0.5} decimals={3} onChange={setP2bar} />
+          max={40} step={0.5} decimals={3} onChange={setP2bar} />
       </Box>
       <Box mt={8}><Waiting runs={[run]} what="the engine is evaluating the loop gas at both relieving pressures" /></Box>
       <PanTable>
@@ -323,9 +323,11 @@ function LoopBench(): JSX.Element {
       <Text size="sm" mt={6}>
         {Number.isFinite(ratio)
           ? <>At 50 bar the valve needs {ratio.toFixed(2)} times the area it
-              needs at 150 bar, on the same declared blocked-outlet flow for
-              both: the lower-pressure loop circulates more gas, and every
-              kilogram passes the orifice at a third of the pressure.  In this
+              needs at 150 bar.  The two loops do not relieve the same flow (see
+              the W row above): the lower-pressure loop circulates more gas, so
+              the ratio is the product of a flow ratio and a pressure ratio, and
+              every kilogram also passes the orifice at a third of the
+              pressure.  In this
               exercise, lowering the pressure enlarged the required area --
               the same trade the Process-safety page found in the inventory.
               It is a comparison of the sizing arithmetic under one teaching
@@ -419,7 +421,7 @@ function FireBench({ mawpBarg, setMawp, onOutcome }: {
           max={30} step={0.5} decimals={2} onChange={setMawp} />
         <KnobNumber label="wetted area A_wet [m2]" value={A} min={1} max={500}
           step={5} decimals={1} onChange={setA} />
-        <KnobNumber label="environment factor F" value={F} min={0} max={1}
+        <KnobNumber label="environment factor F" value={F} min={0.05} max={1}
           step={0.05} decimals={3} onChange={setF} />
         <KnobField label="drainage and fire-fighting">
           <SegmentedControl size="xs" fullWidth value={adequate ? "yes" : "no"}

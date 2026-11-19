@@ -364,8 +364,8 @@ export function PlantCostTool(): JSX.Element {
           </Text>
           <Text size="xs" c="dimmed" mt={4}>
             Engine: the itemised model <code>buildWorkingCapital</code> (<code>EconomicsPass.cpp:279</code>), a day is 1/365
-            of the annual figure (<code>:254</code>), receivables are days/365 of the revenue (<code>:403</code>), payables days/365 of the
-            raw-material bill (<code>:409</code>), the fraction fallback is 0.15 of the FCI (<code>:2879</code>).  The Economics errors page,
+            of the annual figure (<code>:255</code>), receivables are days/365 of the revenue (<code>:404</code>), payables days/365 of the
+            raw-material bill (<code>:410</code>), the fraction fallback is 0.15 of the FCI (<code>:2880</code>).  The Economics errors page,
             class 5, shows the same comparison on another plant.
           </Text>
         </Box>

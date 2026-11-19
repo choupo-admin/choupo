@@ -205,7 +205,7 @@ function ParityPlot({ rows }: { rows: readonly ParityRow[] }): JSX.Element {
         style={{ maxWidth: VW, display: "block" }}
         role="img"
         aria-label={"Bubble temperature against ethanol mole fraction for the "
-          + "eight fitted points: the measurement and the model's answer"}>
+          + "ten fitted points: the measurement and the model's answer"}>
         <line x1={PAD} x2={VW - PAD} y1={VH - PAD} y2={VH - PAD}
           stroke={GRID} />
         <line x1={PAD} x2={PAD} y1={PAD} y2={VH - PAD} stroke={GRID} />
@@ -349,9 +349,9 @@ export function LeastSquaresTool(): JSX.Element {
             <Text span ff="monospace" size="xs">
               tutorials/{LS_WITNESS}
             </Text>
-            : eight measured ethanol/water bubble temperatures at atmospheric
-            pressure, four NRTL coefficients, and three more measurements the
-            fitter is never handed. The trace below is the engine&apos;s own{" "}
+            : ten measured ethanol/water bubble temperatures at atmospheric
+            pressure, two fitted NRTL coefficients, and four more measurements
+            the fitter is never handed. The trace below is the engine&apos;s own{" "}
             <Text span ff="monospace" size="xs">{LS_FIT_LOG}</Text>, one row
             per iteration — nothing on this page recomputes the optimiser.
           </Text>
@@ -454,9 +454,9 @@ export function LeastSquaresTool(): JSX.Element {
             <OriginMark of={["engine", "reference"]} note="the fitted model's answers are the engine's; the measured points are the dataset the witness cites" />
             <ParityPlot rows={parity.read} />
             <Text size="sm">
-              The eight points the fitter was handed, and where the finished
+              The ten points the fitter was handed, and where the finished
               model puts each of them. Look at the composition axis: there is
-              nothing at 0.20, nothing at 0.50, nothing at 0.80. Those three
+              nothing at 0.10, 0.39, 0.63 or 0.85. Those four
               compositions are not missing from the experiment — they were
               withheld from the fit before it started, and the next panel is
               what the model does on them.
@@ -505,7 +505,7 @@ export function LeastSquaresTool(): JSX.Element {
           </Title>
           <Text size="sm" mt={4}>
             The same run, asked the other question. The engine ran the finished
-            parameters over the three withheld measurements, compared the
+            parameters over the four withheld measurements, compared the
             deviation with the band the case declared, and published a word.
             The band knob below is here to make one point and it is a point
             about method, not about ethanol: turn it and the word changes while
@@ -563,7 +563,7 @@ export function LeastSquaresTool(): JSX.Element {
                   </Text>
                   , so the engine publishes{" "}
                   <Text span fw={700}>{cur["verdict"] ?? "—"}</Text>. The word
-                  comes from five lines of the engine
+                  comes from one short function of the engine
                   (src/propertyOps/CurationDossier.cpp:59-72) and every sink —
                   this page, the console, the curation dossier and the
                   promotable record — reads that one word rather than deciding
@@ -698,10 +698,11 @@ export function LeastSquaresTool(): JSX.Element {
             )}
             <Text size="sm">
               Read those two blocks together and then read the verdict again.
-              This model predicts measurements it never saw, and its four
-              coefficients are not separately determined by the evidence it was
-              given. Both are true, both come off the same run, and a reader
-              who takes either one for the other has misread it.
+              This model predicts measurements it never saw, and its two
+              coefficients are each separately determined by the evidence it
+              was given, though strongly correlated. Both are true, both come
+              off the same run, and a reader who takes either one for the
+              other has misread it.
             </Text>
           </Stack>
         )}

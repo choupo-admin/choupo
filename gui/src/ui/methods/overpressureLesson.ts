@@ -242,8 +242,9 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
       + "Design Guide uses.  F is an environment factor, 1 for a bare "
       + "vessel and lower when insulation that survives a fire protects "
       + "it; its values are in the standard and are not reproduced here.  "
-      + "Only wetted surface within the height a pool fire reaches above "
-      + "grade counts, and the standard says how high that is.  The "
+      + "The standard counts only wetted surface within the height a pool fire reaches above "
+      + "grade and says how high that is; this page's engine fire case takes the whole "
+      + "wetted area of the vessel, which is the larger and so the conservative figure.  The "
       + "exponent below 1 is the empirical admission that a big vessel is "
       + "not engulfed as evenly as a small one.",
     formula: String.raw`Q = C\, F\, A_\mathrm{wet}^{0.82}, \qquad W = \frac{Q}{\lambda}`,
@@ -594,8 +595,7 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
     title: "From an area to a valve",
     body: "The equations give the smallest effective area that passes the "
       + "flow.  A real valve is bought in standard orifice sizes, lettered "
-      + "D to T in API STD 526 (the largest, T, is 26 in2, about 16 800 "
-      + "mm2), and the designer takes the next size up.  Where the largest "
+      + "D to T in API STD 526 (its table is not reproduced here), and the designer takes the next size up.  Where the largest "
       + "is not enough, several valves share the load -- which is exactly "
       + "the multiple-device case of step 6, with its larger accumulation "
       + "and its staggered set pressures.  And the area is only the start: "
