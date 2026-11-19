@@ -42,10 +42,45 @@ WHAT THIS GATE CHECKS, on tutorials/batch/combustion/ignition01_h2o2_rop (3 inst
       rule of (a) by far more than 1e-10 (relative 1e-3 or more on H or HO2); otherwise
       the comparison could not have seen it.
 
+PHASE 2, THE ELEMENT PATH FLUX (`pathFlux ( H O );` in the same block).
+
+THE SECOND REAL DEFECT THIS WOULD HAVE CAUGHT.  A flux of H or O atoms from reactant A to
+product B built from the stoichiometry the vessel stores -- the NET nu per entry -- or
+without the normalisation by the atoms N_ej of the element on one side of the step,
+draws a diagram whose arrows are individually plausible (every flux has the right
+direction and order of magnitude) but move atoms that the reaction does not move: a
+species on both sides of a step cancels out of its net coefficient and its atoms vanish
+from the picture, and a missing 1/N_ej counts the atoms of a step with two atoms of the
+element twice.  The student reads "OH makes water" off an arrow that is wrong by a
+factor of two.  No golden sees it (it pins the printed wrong figure) and the species
+rates do not see it (they never read the flux).  The identity that holds it to account
+is the atom balance of each species, taken from the paths: what arrives at species i
+minus what leaves it is a_ei times its net rate, and that net rate is the OTHER
+output of the same run (rateOfProduction.csv).
+
+  (g) PATHS REBUILT.  The NET rows of pathFlux.csv equal the per-reaction rows summed with
+      the reverse legs subtracted (one direction per pair), to round-off.
+  (h) ATOM IDENTITY.  For every instant, element e and species i: sum_B F_{B->i} - sum_B
+      F_{i->B} = a_ei net_i, with net_i read from rateOfProduction.csv, to 1e-10 of the
+      gross flux through i.
+  (i) ONE REACTION AT A TIME.  The rows of reaction j sum to |r_j| V N_ej, with |r_j| V
+      taken from rateOfProduction.csv and N_ej counted by this gate from the reactions
+      file; every row runs from a reactant to a product when r_j > 0 and from a product
+      to a reactant when r_j < 0.
+  (j) THE DRAWING IS THE TABLE.  Each pathFlux_<element>_<t>.dot has balanced braces, every
+      edge's nodes declared, and as many edges as the CSV has NET pairs for that element
+      and instant.
+  (k) REFUSALS BY NAME: an element in no species, a stoichiometry entry with nu = 0
+      (the split is lost) and a reaction that does not conserve the element.
+  (l) TEETH.  The same rows with the 1/N_ej normalisation dropped (every flux times
+      N_ej) must FAIL (h) by far more than 1e-10; otherwise (h) could not have seen it.
+
 NOT CHECKED: that the mechanism's reaction rates are right (the Slack pin of
 ignition02_h2air_slack and the O Conaire table hold that); a mechanism with a Factory
 (LHHW / expression) law (the same rateOfReaction_ serves it; no witness here); the
-isothermal mode's T (derivatives_ pins it identically).
+isothermal mode's T (derivatives_ pins it identically); a step written with a
+species ONCE at its net coefficient although it is on both sides (the dictionary must
+list it as two entries; no witness has one); the Graphviz rendering itself.
 """
 import csv
 import json
@@ -63,7 +98,7 @@ BASE = "tutorials/batch/combustion/ignition01_h2o2"
 ROP = "tutorials/batch/combustion/ignition01_h2o2_rop"
 TIMES = [3.0e-6, 7.0e-6, 1.5e-5]
 TOL = 1.0e-10
-STRIP = ("expected", "latest", "solution.log", "trajectory.csv", "rateOfProduction.csv",
+STRIP = ("expected", "latest", "solution.log", "trajectory.csv", "rateOfProduction.csv", "pathFlux.csv",
          "constant/propertyManifest")
 THIRD_BODY = ("R5_", "R6_", "R7_", "R8_", "R9_", "R15_")
 
@@ -94,6 +129,60 @@ def load(path):
             else:
                 rec["c"][rx] = v
     return out
+
+
+def parse_reactions(text):
+    """-> {reaction name: [(component, nu), ...]} from a constant/reactions dictionary."""
+    out = {}
+    for m in re.finditer(r"^(\w+)\s*\{(.*?)^\}", text, re.S | re.M):
+        st = re.search(r"stoichiometry\s*\((.*?)\)\s*;", m.group(2), re.S)
+        if st:
+            out[m.group(1)] = [(c, float(n)) for c, n in
+                               re.findall(r"component\s+(\w+)\s*;\s*nu\s+([-+\d.eE]+)\s*;", st.group(1))]
+    return out
+
+
+def load_flux(path):
+    """-> (rows, net): rows = [(t, e, from, to, reaction, flux)] per reaction;
+    net = {(t, e): {(from, to): flux}} the NET rows."""
+    rows, net = [], defaultdict(dict)
+    with open(path) as f:
+        for row in csv.DictReader(f):
+            t, e, a, b, rx, v = (float(row["t_s"]), row["element"], row["from"], row["to"],
+                                 row["reaction"], float(row["flux_kmol_atoms_s"]))
+            if rx == "NET":
+                net[(t, e)][(a, b)] = v
+            else:
+                rows.append((t, e, a, b, rx, v))
+    return rows, net
+
+
+def nets_from_rows(rows, scale=None):
+    """Directed per-reaction rows -> {(t, e): {(A, B): F_AB > 0}} with self-loops dropped.
+    `scale(t, e, rx)` multiplies each row (the sabotage of (l))."""
+    acc = defaultdict(lambda: defaultdict(float))
+    for t, e, a, b, rx, v in rows:
+        if a == b:
+            continue
+        v *= scale(t, e, rx) if scale else 1.0
+        acc[(t, e)][(a, b)] += v
+        acc[(t, e)][(b, a)] -= v
+    return {k: {p: v for p, v in d.items() if v > 0.0} for k, d in acc.items()}
+
+
+def atom_identity(nets, a_of, data):
+    """worst |inflow - outflow - a_ei net_i| / gross flux through i, and where."""
+    worst, where = 0.0, ""
+    for (t, e), pairs in nets.items():
+        tk = min(data, key=lambda x: abs(x - t))
+        for sp in {x for p in pairs for x in p}:
+            inflow = sum(v for (a, b), v in pairs.items() if b == sp)
+            outflow = sum(v for (a, b), v in pairs.items() if a == sp)
+            gross = inflow + outflow
+            miss = abs(inflow - outflow - a_of[sp].get(e, 0) * data[tk][sp]["net"]) / gross
+            if miss > worst:
+                worst, where = miss, f"{sp}, element {e}, t={t:g}"
+    return worst, where
 
 
 def sum_rule(data, drop=()):
@@ -227,13 +316,123 @@ def main():
             failures.append(f"(f) deleting the third-body / fall-off contributions moved the sum rule by only "
                             f"{w_drop:.2e} -- the comparison cannot see that defect")
 
+        # ======================= phase 2: the element path flux =========================
+        flux_path = c1 / "pathFlux.csv"
+        n_pairs = n_dot = 0
+        worst_g = worst_h = worst_i = w_tooth = 0.0
+        if not flux_path.exists():
+            failures.append("ignition01_h2o2_rop wrote no pathFlux.csv")
+        else:
+            rows, wnet = load_flux(flux_path)
+            rxns = parse_reactions((c1 / "constant/reactions").read_text())
+            els = sorted({k[1] for k in wnet})
+            if els != ["H", "O"]:
+                failures.append(f"pathFlux.csv carries elements {els}, expected ['H', 'O']")
+            # |r_j| V per reaction and instant, from the rate matrix: c_ij / nu_ij
+            rv = defaultdict(dict)
+            with open(csv_path) as f:
+                for row in csv.DictReader(f):
+                    if row["nu"] != "" and float(row["nu"]) != 0.0:
+                        rv[(float(row["t_s"]), row["reaction"])][row["species"]] = (
+                            float(row["contribution_kmol_s"]) / float(row["nu"]))
+            tkey = lambda t: min(got, key=lambda x: abs(x - t))  # noqa: E731
+
+            def N_of(rx, e):
+                return sum(-nu * a_of[c].get(e, 0) for c, nu in rxns[rx] if nu < 0)
+
+            # (g) the NET rows are the rows rebuilt
+            rebuilt = nets_from_rows(rows)
+            for key in set(rebuilt) | set(wnet):
+                a, b = rebuilt.get(key, {}), wnet.get(key, {})
+                for pair in set(a) | set(b):
+                    sc = max(abs(a.get(pair, 0.0)), abs(b.get(pair, 0.0)))
+                    worst_g = max(worst_g, abs(a.get(pair, 0.0) - b.get(pair, 0.0)) / sc)
+            if worst_g > 1e-12:
+                failures.append(f"(g) the NET rows differ from the per-reaction rows rebuilt by {worst_g:.2e}")
+            # (h) the atom identity on the written NET rows
+            worst_h, where_h = atom_identity(wnet, a_of, data)
+            if worst_h > TOL:
+                failures.append(f"(h) inflow - outflow of atoms differs from a_ei net_i by {worst_h:.3e} of the gross "
+                                f"flux (> {TOL:g}), worst: {where_h}")
+            # (i) each reaction on its own
+            by_rx = defaultdict(float)
+            for t, e, a, b, rx, v in rows:
+                by_rx[(tkey(t), e, rx)] += v
+                nus = dict(rxns[rx])
+                if a not in nus or b not in nus:
+                    failures.append(f"(i) {rx}: a flux row names a species outside the reaction ({a} -> {b})")
+                    continue
+                # the sign of the rate: c_ij = nu r V, so r > 0 iff the first species' ratio is positive
+                r_sign = next(iter(rv[(tkey(t), rx)].values()))
+                donor_ok = (nus[a] < 0 and nus[b] > 0) if r_sign > 0 else (nus[a] > 0 and nus[b] < 0)
+                if not donor_ok:
+                    failures.append(f"(i) {rx} at t={t:g}: {a} -> {b} runs against the direction of the net rate")
+            for (t, e, rx), tot in by_rx.items():
+                rabs = abs(next(iter(rv[(t, rx)].values())))
+                want = rabs * N_of(rx, e)
+                worst_i = max(worst_i, abs(tot - want) / want)
+            if worst_i > TOL:
+                failures.append(f"(i) the fluxes of a reaction do not sum to |r_j| V N_ej: worst {worst_i:.3e} (> {TOL:g})")
+            # (j) the .dot files
+            for t in TIMES:
+                for e in els:
+                    dot = c1 / f"pathFlux_{e}_{t:.3e}.dot"
+                    if not dot.exists():
+                        failures.append(f"(j) {dot.name} was not written")
+                        continue
+                    txt = dot.read_text()
+                    if txt.count("{") != txt.count("}") or txt.count("{") != 1:
+                        failures.append(f"(j) {dot.name}: braces are not balanced")
+                    nodes = set(re.findall(r'^\s*"([^"]+)";\s*$', txt, re.M))
+                    edges = re.findall(r'^\s*"([^"]+)"\s*->\s*"([^"]+)"\s*\[', txt, re.M)
+                    for a, b in edges:
+                        if a not in nodes or b not in nodes:
+                            failures.append(f"(j) {dot.name}: edge {a} -> {b} uses an undeclared node")
+                    k = next(x for x in wnet if x[1] == e and abs(x[0] - t) < 1e-9 * t)
+                    nz = sum(1 for v in wnet[k].values() if v != 0.0)
+                    if len(edges) != nz:
+                        failures.append(f"(j) {dot.name}: {len(edges)} edges but {nz} nonzero NET pairs in the CSV")
+                    n_dot += 1
+                    n_pairs += nz
+            # (l) teeth: the same rows without the 1/N_ej normalisation
+            sab = nets_from_rows(rows, scale=lambda t, e, rx: N_of(rx, e))
+            w_tooth, _ = atom_identity(sab, a_of, data)
+            if w_tooth < 1e-3:
+                failures.append(f"(l) dropping the 1/N_ej normalisation moved the atom identity by only {w_tooth:.2e} "
+                                f"-- (h) cannot see that defect")
+
+        # (k) refusals by name
+        for label, path, old, new, words in (
+            ("an element in no species", "system/flowsheetDict", "pathFlux ( H O );", "pathFlux ( H Xx );", ("bomb", "Xx")),
+            ("a stoichiometry entry with nu = 0", "constant/reactions",
+             "{ component H;      nu -1;  order 1; }\n        { component O;      nu  1;  order 0; }",
+             "{ component H;      nu -1;  order 1; }\n        { component N2;     nu  0;  order 0; }\n"
+             "        { component O;      nu  1;  order 0; }",
+             ("bomb", "N2", "nu = 0")),
+            ("a reaction that does not conserve the element", "constant/reactions",
+             "{ component O;      nu  1;  order 0; }", "{ component O;      nu  2;  order 0; }",
+             ("bomb", "R1_H_O2_O_OH", "not conserved")),
+        ):
+            with gatekit.probe_copy(ROP, strip=STRIP) as c3:
+                try:
+                    gatekit.edit(c3 / path, old, new)
+                except gatekit.EditNotApplied as ex:
+                    failures.append(f"(k) {label}: {ex}")
+                    continue
+                rc, out = gatekit.run(batch, c3)
+                if rc == 0 or not all(w in out for w in words):
+                    failures.append(f"(k) {label} was not refused by name (exit {rc}; wanted {words} in the message)")
+
     return gatekit.verdict(
         "check_rate_of_production", failures,
         f"the rates of production of the O Conaire H2/O2 mechanism at {len(TIMES)} instants of the ignition equal "
         f"the integrator's own dn_i/dt term by term (worst {worst:.1e} of the largest term, tol {TOL:g}); atoms H, O, N "
         f"are conserved by the nets (worst {worst_el:.1e}); the key changes nothing when absent (trajectory byte-identical); "
         f"the printed table is the matrix; two misuses are refused by name; dropping the third-body columns is seen "
-        f"({w_drop:.1e})",
+        f"({w_drop:.1e}).  Element path flux of H and O: the NET rows are the per-reaction rows rebuilt ({worst_g:.0e}); "
+        f"inflow - outflow of atoms at every species equals a_ei net_i to {worst_h:.1e} of the gross flux; each reaction's "
+        f"fluxes sum to |r_j| V N_ej ({worst_i:.1e}); {n_dot} .dot files parse and carry the {n_pairs} NET pairs; three "
+        f"misuses are refused by name; dropping 1/N_ej is seen ({w_tooth:.1e})",
     )
 
 

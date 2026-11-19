@@ -127,6 +127,7 @@ tutorials/**/postProcessing/
 # second lock (gui/src/cases/tutorials.ts).
 tutorials/**/constant/archiveExtracts/
 tutorials/**/*.csv
+tutorials/**/pathFlux_*.dot
 tutorials/**/balanceTrajectory.meta
 !tutorials/**/constant/experimental/*.csv
 !tutorials/**/constant/reference/*.csv
