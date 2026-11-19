@@ -109,7 +109,12 @@ def run(case: Path, binary: str = "choupoSolve"):
 def probe(src: Path, dst: Path) -> Path:
     case_records.copytree(src, dst)
     for junk in ("converged", "reports", "design", "expected", "latest",
-                 "constant/propertyManifest"):
+                 "constant/propertyManifest",
+                 # a declared view (C443) is drawn over the lesson's own
+                 # configuration; a probe edits that configuration (an
+                 # isothermal twin publishes no dT_rise), so the view would
+                 # refuse the probe for a reason that is not the probe's.
+                 "system/postDict"):
         t = dst / junk
         if t.is_dir():
             shutil.rmtree(t)
