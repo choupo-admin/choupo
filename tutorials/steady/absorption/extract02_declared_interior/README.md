@@ -85,8 +85,8 @@ Read the `iterations` KPI here, then delete `0/internalStates/` and run again.
 
 | run | sweeps |
 |---|---|
-| from the declared (converged) interior | **1** |
-| from the seed the unit invents | **34** |
+| from the declared interior in `0/internalStates/` | **35** |
+| from the seed the unit invents | **73** |
 
 Both reach the same cascade; only one had to search for it.
 

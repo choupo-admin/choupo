@@ -47,10 +47,14 @@ The golden: **V/F = 0.7685**<!--golden: kpi flash02 V_over_F--> (76.85 kmol/h<!-
 
 ## What to try
 
-Set the liquid's `activityModel` back to `ideal` in
-`constant/thermoPhysPropDict` and run again.  The K's collapse to `Psat/P`,
-the split moves, and `Q_kW` stops being zero — because the feed's declared
-vapour fraction is no longer the answer at 355 K.  That difference is case 2's
-three curves, arriving in a unit.  Then open
+Set the liquid's `activityModel` to `ideal` in
+`constant/thermoPhysPropDict` (the one line `activityModel ideal;` in place
+of the block) and run again.  The K's collapse to `Psat/P` and the split moves
+a long way: V/F falls from 0.7685<!--golden: kpi flash02 V_over_F--> to **0** -- under Raoult's law the feed's
+bubble point lies above 355 K, so the unit reports a subcooled liquid, with no
+vapour at all.  `Q_kW` stays **0** in both runs: the feed already enters at
+355 K, so holding the unit at 355 K exchanges no heat whichever model prices
+the split.  Case 2's three curves, arriving in a unit: the activity model
+decides whether a vapour exists here.  Then open
 `column01_benzene_toluene`, where this same equilibrium is solved on fifteen
 stages at once.

@@ -27,11 +27,13 @@
           m/s; we hardcode the value here and explore the effect of
           changing it in tutorial membrane03).
 
-  Expected (with the SW30HR parameters):
-      water recovery       ≈ 18 %                 (single pass)
-      observed NaCl rej.   ≈ 99.5 %               (typical for SW30HR)
-      average water flux   ≈ 20–25 LMH
+  Result (the run; the golden `expected` pins these three):
+      water recovery       = 15.6 %               (single pass)
+      observed NaCl rej.   = 99.78 %
+      average water flux   = 1.285e-5 m/s = 46.3 LMH
       feed ΔP              =  2 bar (set linearly via dP_feed_total)
+  Check by hand: 15.6 % of ~10 m³/h is ~1.56 m³/h of permeate, through 35 m²
+  = ~45 LMH, consistent with the 46.3 LMH the run reports.
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

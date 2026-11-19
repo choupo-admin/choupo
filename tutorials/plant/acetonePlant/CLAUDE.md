@@ -28,28 +28,28 @@ Siblings, each isolating one unit on Luyben's OWN published inlet:
 not a measurement. This is a
   comparison with a published reference.
 
-### The converged plant, against Luyben's Figure 1 (2026-08-13)
+### The converged plant, against Luyben's Figure 1 (2026-08-13; numbers re-read from the golden and a run 2026-11-19)
 
-Wegstein on one tear, **3 iterations**, |r| 2.847 → 2.13e-2 → 1.785e-4.
+Wegstein on one tear, **4 iterations**, |r| 8.870 → 5.441e-2 → 5.137e-4 → 3.793e-7.
 Global mass closure 100.000 %, worst element closure 0.0000 %.
 
 | stream | Luyben | Choupo | |
 |---|---|---|---|
-| **acetone product**, kmol/h | **32.25** | **27.46** | **−14.9 %** |
-| acetone product, x_acetone | 0.999 | **0.9727** | fails spec |
-| acetone product, x_water | 0.001 | 0.0269 | 27× |
-| **water product**, kmol/h | 34.67 | 36.94 | +6.5 % |
-| water product, x_water | 0.999 | **0.9852** | −1.4 % |
-| water product, x_isopropanol | — | **0.0147** | raw material lost |
-| IPA recycle, x_isopropanol | 0.6500 | **0.4991** | −23 % |
-| IPA recycle, x_acetone | 0.0007 | **0.1395** | **199×** |
-| offgas acetone, kmol/h | 2.52 (7.2 % loss) | **7.18 (21 %)** | 2.8× |
+| **acetone product**, kmol/h | **32.25** | **27.41** | **−15.0 %** |
+| acetone product, x_acetone | 0.999 | **0.9725** | fails spec |
+| acetone product, x_water | 0.001 | 0.0264 | 26× |
+| **water product**, kmol/h | 34.67 | 36.90 | +6.4 % |
+| water product, x_water | 0.999 | **0.9860** | −1.3 % |
+| water product, x_isopropanol | — | **0.0138** | raw material lost |
+| IPA recycle, x_isopropanol | 0.6500 | **0.5044** | −22 % |
+| IPA recycle, x_acetone | 0.0007 | **0.1393** | **199×** |
+| offgas acetone, kmol/h | 2.52 (7.2 % loss) | **7.16 (21 %)** | 2.8× |
 | reactor in, kmol/h | 57.83 | 57.84 | (not independent) |
-| reactor out, kmol/h | 92.6 | 91.81 | −0.9 % |
-| C1 condenser, MW | 1.045 | 0.849 | −18.7 % |
-| C1 reboiler, MW | 1.217 | 0.849 | −30.3 % |
-| C2 condenser, MW | 0.1193 | 0.116 | −2.8 % |
-| C2 reboiler, MW | 0.1204 | 0.124 | +2.9 % |
+| reactor out, kmol/h | 92.6 | 91.84 | −0.8 % |
+| C1 condenser, MW | 1.045 | 0.989 | −5.4 % |
+| C1 reboiler, MW | 1.217 | 0.987 | −18.9 % |
+| C2 condenser, MW | 0.1193 | 0.119 | −0.2 % |
+| C2 reboiler, MW | 0.1204 | 0.127 | +5.6 % |
 
 **The plant makes 85 % of his acetone at a purity that misses his spec, and
 loses three times as much of it out of the top.** Nothing was tuned to get
@@ -62,7 +62,7 @@ it existed. That is why the plant is informative rather than merely wrong:
 
 1. **UNIFAC invents an acetone/water azeotrope at x 0.978** where Luyben's
    UNIQUAC has none (`acetone04`, measured before any column). It is 0.044 K
-   deep and it caps C1 at 0.9727 — a spurious feature costing purity the paper
+   deep and it caps C1 at 0.9725 — a spurious feature costing purity the paper
    does not lose.
 2. **UNIFAC misplaces the real IPA/water azeotrope**, 0.590 against 0.673
    (`acetone01`). It caps C2's overhead, so the recycle returns wetter.
