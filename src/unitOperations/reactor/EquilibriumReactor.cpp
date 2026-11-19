@@ -160,7 +160,7 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     };
     const bool   dTglobalDeclared = operDict->found("temperatureApproach");
     const scalar dTglobal = dTglobalDeclared
-                          ? operDict->lookupScalar("temperatureApproach") : 0.0;
+                          ? operDict->lookupTemperatureDifference("temperatureApproach") : 0.0;
     if (dTglobal < 0.0) refuseNegative("in operation{}", dTglobal);
     sVector           dTmag(R, dTglobal);
     std::vector<bool> dTonReaction(R, false);
@@ -169,7 +169,7 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
     {
         if (rxnList[j]->found("temperatureApproach"))
         {
-            dTmag[j] = rxnList[j]->lookupScalar("temperatureApproach");
+            dTmag[j] = rxnList[j]->lookupTemperatureDifference("temperatureApproach");
             dTonReaction[j] = true;
             if (dTmag[j] < 0.0)
                 refuseNegative("on reaction '" + rname[j] + "'", dTmag[j]);

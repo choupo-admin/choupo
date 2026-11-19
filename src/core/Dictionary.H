@@ -200,6 +200,17 @@ public:
                                    const Dimensions&  expectedDims,
                                    const std::string& workingUnit) const;
 
+    //  A TEMPERATURE DIFFERENCE (DEV.md 4c C454, family 2).  The parser
+    //  converts `10 C` AFFINELY, to 283.15 K -- right for a temperature,
+    //  wrong for a difference (an approach, a superheat, a dTmin, an LMTD),
+    //  which would run as 283.15 K at exit 0; and `Dims::temperature` cannot
+    //  tell the two apart.  This reader takes a bare number or `K` (one
+    //  kelvin is one degree Celsius of DIFFERENCE) and REFUSES an affine unit
+    //  word (C, degC, F, ...) by name, naming the remedy.
+    scalar lookupTemperatureDifference(const std::string& key) const;
+    scalar lookupTemperatureDifferenceOrDefault(const std::string& key,
+                                                scalar def) const;
+
     const std::string& name()       const { return name_;   }
     const std::string& sourceName() const { return source_; }
 

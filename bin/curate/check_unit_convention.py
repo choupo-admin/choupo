@@ -33,7 +33,13 @@ ARMS.
       must publish the same sizing numbers to 1e-12; ten times the number
       bare must move some (the sheet sees the pressure).
 
-WHAT IT DOES NOT CHECK.  The other 16 trap families of the sweep (they are
+  (d) TEMPERATURE DIFFERENCES (family 2): every read of a key in
+      TEMPERATURE_DIFFERENCE_KEYS goes through lookupTemperatureDifference
+      (source), and gibbs13_adiabatic_approach_direction runs identically
+      with `temperatureApproach 10 K;` and bare while `10 C;` is REFUSED by
+      name -- before, `10 C` ran as a 283.15 K approach at exit 0.
+
+WHAT IT DOES NOT CHECK.  The other 15 trap families of the sweep (they are
 the rest of C454, one family per slice); whether `bar` is the RIGHT working
 unit (it is the corpus convention, kept so no golden moves).
 """
@@ -58,8 +64,14 @@ LABEL = "check_unit_convention"
 #  unit, and that unit (docs/ai/dict-syntax.md lists the same keys).
 WORKING_UNIT_KEYS = {"Pc": "bar", "pressureDesign": "bar"}
 
+#  Configuration: keys that are a temperature DIFFERENCE (family 2) -- read
+#  by Dictionary::lookupTemperatureDifference, which refuses an affine word.
+TEMPERATURE_DIFFERENCE_KEYS = ("temperatureApproach", "superheat", "subcool",
+                               "dTmin", "latentWidth", "LMTD")
+
 FLASH = ROOT / "tutorials" / "steady" / "flash" / "flash09_n2ch4_stryjek"
 SIZING = ROOT / "tutorials" / "steady" / "flash" / "flash22_drum_sizing_benzene_toluene"
+APPROACH = ROOT / "tutorials" / "steady" / "gibbs" / "gibbs13_adiabatic_approach_direction"
 
 fails = []
 
@@ -79,6 +91,18 @@ def arm_a():
                 bad.append("%s:%d reads `%s` without lookupScalarIn (bare would be "
                            "%s, a declared unit SI)" % (p.relative_to(ROOT), i, m.group(1),
                                                        WORKING_UNIT_KEYS[m.group(1)]))
+    tpat = re.compile(r'lookupScalar\w*\(\s*"(' + "|".join(TEMPERATURE_DIFFERENCE_KEYS) + r')"')
+    for p in sorted((ROOT / "src").rglob("*")):
+        if p.suffix not in (".cpp", ".H"):
+            continue
+        for i, line in enumerate(p.read_text(errors="replace").split("\n"), 1):
+            if line.lstrip().startswith("//"):
+                continue
+            m = tpat.search(line)
+            if m:
+                bad.append("%s:%d reads the temperature DIFFERENCE `%s` without "
+                           "lookupTemperatureDifference (`10 C` would be 283.15 K)"
+                           % (p.relative_to(ROOT), i, m.group(1)))
     fails.extend(bad)
     return len(bad) == 0
 
@@ -192,6 +216,40 @@ def arm_c(td):
     return len(a)
 
 
+def arm_d(td):
+    """temperatureApproach: `10 K` equals bare; `10 C` is REFUSED by name."""
+    out = {}
+    for name, new in (("bare", None), ("kelvin", "temperatureApproach 10 K;"),
+                      ("celsius", "temperatureApproach 10 C;")):
+        d = copy_unsealed(APPROACH, Path(td) / ("dt_" + name))
+        f = d / "system" / "flowsheetDict"
+        t = f.read_text()
+        old = "temperatureApproach 10;"
+        if t.count(old) != 1:
+            fails.append("(d) gibbs13 no longer holds `%s` exactly once -- STALE fixture" % old)
+            return False
+        if new:
+            f.write_text(t.replace(old, new))
+        rc, o, js = run(d)
+        out[name] = (rc, o, js)
+    rb, _, jb = out["bare"]
+    rk, _, jk = out["kelvin"]
+    if rb != 0 or rk != 0 or jb is None or jk is None:
+        fails.append("(d) the bare or the K run failed (exit %d / %d)" % (rb, rk))
+        return False
+    a = kpi(jb, "bed3", "F_out_kmol_h")
+    b = kpi(jk, "bed3", "F_out_kmol_h")
+    if abs(a - b) > 1e-12 * max(1.0, abs(a)):
+        fails.append("(d) `temperatureApproach 10 K;` gives F_out %.15g, bare gives %.15g" % (b, a))
+        return False
+    rc, o, _ = out["celsius"]
+    if rc == 0 or "temperature DIFFERENCE" not in o:
+        fails.append("(d) `temperatureApproach 10 C;` was not refused by name (exit %d) -- "
+                     "an affine word would run as 283.15 K" % rc)
+        return False
+    return True
+
+
 def main():
     if not BIN.is_file():
         print("%s: FAILED -- no engine binary at %s (run `make all`); a check that "
@@ -201,6 +259,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="unitconv.") as td:
         b = arm_b(td)
         c = arm_c(td)
+        d = arm_d(td)
     if fails:
         for f in fails:
             print("  " + f)
@@ -210,10 +269,13 @@ def main():
     print("%s: OK (a) every read of %s goes through lookupScalarIn; (b) flash09's "
           "V/F is %.12g with CH4's Pc bare and with it written `bar`, and %.6g with "
           "the Pa number bare (the run sees Pc); (c) %d published sizing numbers of "
-          "flash22 are identical with pressureDesign bare and written `bar` (ten times the pressure moves them: the sheet sees it).  NOT "
-          "checked: the other 16 trap families of C454."
+          "flash22 are identical with pressureDesign bare and written `bar` (ten times the pressure moves them: the sheet sees it); (d) "
+          "every read of the temperature differences %s goes through "
+          "lookupTemperatureDifference, and gibbs13 runs identically with "
+          "`temperatureApproach 10 K;` and bare while `10 C;` is refused by name.  "
+          "NOT checked: the other 15 trap families of C454."
           % (LABEL, " and ".join("`%s` (%s)" % kv for kv in WORKING_UNIT_KEYS.items()),
-             v["bare"], v["pa"], c))
+             v["bare"], v["pa"], c, "/".join(TEMPERATURE_DIFFERENCE_KEYS)))
     return 0
 
 

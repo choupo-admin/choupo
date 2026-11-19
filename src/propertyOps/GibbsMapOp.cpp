@@ -132,7 +132,7 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
     //  negative value is an invalid magnitude, refused by name; the KPI
     //  suffix `_dT<n>` carries the DECLARED magnitude, and the CSV's
     //  `deltaT_K` column carries the SIGNED value each cell was solved with.
-    const scalar dTmagnitude = dict->lookupScalarOrDefault("temperatureApproach", 0.0);
+    const scalar dTmagnitude = dict->lookupTemperatureDifferenceOrDefault("temperatureApproach", 0.0);
     if (dTmagnitude < 0.0)
     {
         std::ostringstream m;

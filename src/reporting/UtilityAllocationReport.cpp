@@ -533,7 +533,7 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
 // ===========================================================================
 void UtilityAllocationReport::run(const DictPtr& dict, const ReportContext& ctx)
 {
-    const scalar dTmin = dict ? dict->lookupScalarOrDefault("dTmin", 10.0) : 10.0;
+    const scalar dTmin = dict ? dict->lookupTemperatureDifferenceOrDefault("dTmin", 10.0) : 10.0;
     const auto rows = allocateUtilities(ctx.result, ctx.flowsheetDict, dTmin);
 
     std::map<std::string, std::pair<scalar,scalar>> byUtil;   // util -> (kg/s, €/h)

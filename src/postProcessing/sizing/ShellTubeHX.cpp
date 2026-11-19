@@ -577,7 +577,7 @@ EquipmentSizing ShellTubeHX::sizeFromDuty(const std::string& unitName,
     const std::string&      equipmentTag)
 {
     const scalar U              = designRules->lookupScalar("U");        // W/(m²·K)
-    const scalar LMTD           = designRules->lookupScalar("LMTD");      // K
+    const scalar LMTD           = designRules->lookupTemperatureDifference("LMTD");      // K
     const scalar pressureDesign = designRules->lookupScalarIn("pressureDesign", Dims::pressure, "bar");
 
     return exchangerRecord(unitName, Q_kW, U, LMTD, areaFromDuty(Q_kW, U, LMTD),

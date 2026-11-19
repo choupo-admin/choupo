@@ -636,6 +636,29 @@ scalar Dictionary::lookupScalarInOrDefault(const std::string& key,
     return found(key) ? lookupScalarIn(key, expectedDims, workingUnit) : def;
 }
 
+//  A temperature DIFFERENCE: bare or K, never an affine word (header).
+scalar Dictionary::lookupTemperatureDifference(const std::string& key) const
+{
+    const std::string w = unitWordOf(key);
+    if (!w.empty())
+    {
+        const auto u = units::lookupUnit(w);
+        if (u && u->affine)
+            throw std::runtime_error("`" + key + "` is a temperature DIFFERENCE,"
+                " written `" + w + "`: an affine unit converts a TEMPERATURE"
+                " (10 " + w + " -> " + std::to_string(lookupScalar(key))
+                + " K), which is not a difference.  Write it in K (a kelvin is"
+                " a degree Celsius of difference: `" + key + " 10 K;`) or bare.");
+    }
+    return lookupScalar(key, Dims::temperature);
+}
+
+scalar Dictionary::lookupTemperatureDifferenceOrDefault(const std::string& key,
+                                                        scalar def) const
+{
+    return found(key) ? lookupTemperatureDifference(key) : def;
+}
+
 //  ONE place decides whether an entry is a `$reference` and, if so, which
 //  variable it names.  Three dimension accessors and the checked
 //  lookupScalar all ask THIS -- four transcriptions of one test is how the
