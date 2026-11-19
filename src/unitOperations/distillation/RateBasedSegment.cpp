@@ -241,7 +241,7 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     PackingDelft::Geometry dg;
     pg.ap    = pk->lookupScalar("specificArea");
     pg.eps   = pk->lookupScalar("voidFraction");
-    pg.theta = pk->lookupScalar("corrugationAngle") * constant::pi / 180.0;
+    pg.theta = packingRecord::angleDegrees(*pk) * constant::pi / 180.0;
     if (delft)
     {
         dg.ap = pg.ap; dg.eps = pg.eps; dg.alpha = pg.theta;
@@ -958,6 +958,13 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
             << std::setprecision(3) << phiMax << ").\n    RISK: no heat-transfer measurement in a packed"
                " bed checks the analogy; the interface temperature and the departure from equimolar"
                " transfer below rest on it, the composition profile much less\n";
+    if (!limitMode && delft)
+        rep << "  NOTE (Delft): the vapour film here is not a Sc^(1/3) power law (laminar and turbulent terms"
+               " added in quadrature), so the Chilton-Colburn analogy above is an approximation for it, not"
+               " an identity; it moves the interface temperature and the flux ratio, not the balances.\n"
+               "  NOTE (Delft): the Delft correlations carry no flooding criterion of their own;"
+               " dP_over_dPflood_max is the pressure drop over the Rocha-Bravo-Fair flooding drop ("
+            << pg.dPflood << " Pa/m, Rocha-Bravo-Fair 1993), a reference ratio, not Delft's own limit.\n";
     rep << "  " << M << " segments of " << std::setprecision(4) << dz << " m; " << nUnknowns
         << " unknowns (" << B << " per segment), block-tridiagonal: "
         << (auditedAt ? "VERIFIED on the first Newton of the " + std::to_string(auditedAt)

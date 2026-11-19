@@ -51,9 +51,9 @@ License
   that says what it holds, its height dragged at the view's lower edge (or
   with the arrow keys) and remembered; inside it each table is a section
   the reader folds.  The view's own toolbar carries Full screen.  The pipe
-  register is NOT docked beside the view on a wide screen: the contract has
-  no right edge, and a second docking rule for one tab would be a second
-  home for "where a panel goes".
+  register can ALSO be docked beside the view (the "Pipe register" button,
+  remembered per browser): sortable, a row selects its pipe in the view and
+  a pipe clicked in the view selects its row (PipeRegisterDock).
 
   THE BUILDING IS DRAWN HERE TOO, AND HAS A VIEW OF ITS OWN (DEV.md 4c
   C100).  The plot plan draws the case's GMP building exactly as Reports
@@ -72,7 +72,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useEffect, useMemo, useState } from "react";
-import { Alert, Box, Group, Text, Title } from "@mantine/core";
+import { Alert, Box, Button, Group, Text, Title } from "@mantine/core";
 import { IconClockExclamation } from "@tabler/icons-react";
 
 import type { PlantLayout } from "../adapters/SolverAdapter.js";
@@ -91,16 +91,23 @@ import {
 } from "./panelContract.js";
 import { ExportLayoutButton } from "./ExportLayoutButton.js";
 import { GmpBuildingSection, useBuildingOverlay } from "./GmpBuildingSection.js";
+import { PipeRegisterDock } from "./PipeRegisterDock.js";
 import { PlantLayout3D } from "./plotting/PlantLayout3D.js";
 import { LayoutSectionBox, PlantLayoutLegend, PlantLayoutTables } from "./PlantLayoutTables.js";
 
 /** The plot plan, with the building's interior drawn into it: the same
  *  overlay the Reports view uses (DEV.md 4c C100). */
-function PlotPlanView({ stash, scene }: { stash: LayoutPopOutStash; scene: LayoutScene }) {
+function PlotPlanView({ stash, scene, selectedPipe, onPipePicked }: {
+  stash: LayoutPopOutStash; scene: LayoutScene;
+  selectedPipe: string | null; onPipePicked: (id: string | null) => void;
+}) {
   const overlay = useBuildingOverlay(stash.building, scene);
   return <PlantLayout3D scene={overlay.shown} height="fill" extend={overlay.extend}
-    toolbarExtra={overlay.toggles} layout={stash.layout} />;
+    toolbarExtra={overlay.toggles} layout={stash.layout}
+    selectedPipe={selectedPipe} onPipePicked={onPipePicked} />;
 }
+
+const DOCK_KEY = "choupo.layout.pipeRegisterDock";
 
 function readNow(key: string | null) {
   if (!key) return null;
@@ -146,6 +153,17 @@ export function LayoutPopOutTab() {
     catch { return false; }
   }, []);
 
+  //  C91: the pipe register docked beside the view (the reader's choice,
+  //  remembered per browser) and the pipe it and the view have selected.
+  const [dock, setDock] = useState<boolean>(() => {
+    try { return window.localStorage.getItem(DOCK_KEY) === "1"; } catch { return false; }
+  });
+  const toggleDock = () => setDock((d) => {
+    try { window.localStorage.setItem(DOCK_KEY, d ? "0" : "1"); } catch { /* private window */ }
+    return !d;
+  });
+  const [pipe, setPipe] = useState<string | null>(null);
+
   if (!stash || !scene) return <ExpiredTabPanel kind="layout" />;
   if (!stashDrawsView(stash, view)) return <ExpiredTabPanel kind="building" />;
   const stale = layoutTabStaleness(stash);
@@ -175,6 +193,12 @@ export function LayoutPopOutTab() {
             </Text>
             {/* Export as page (DEV.md 4c C81): the stash this tab draws, saved
                 as one self-contained file; disabled while the run is stale. */}
+            {!building && (stash.layout.pipes?.length ?? 0) > 0 && (
+              <Button size="compact-xs" variant={dock ? "filled" : "light"} onClick={toggleDock}
+                data-pipe-dock-toggle aria-pressed={dock}>
+                Pipe register
+              </Button>
+            )}
             <ExportLayoutButton layout={stash.layout} stale={stale} getStash={() => stash} />
           </Group>
         </Group>
@@ -209,8 +233,17 @@ export function LayoutPopOutTab() {
       ) : (
       <Box className={stale.stale ? "choupo-stale-body" : undefined}
         style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-        <Box style={{ flex: "1 1 auto", minHeight: 240 }}>
-          <PlotPlanView stash={stash} scene={scene} />
+        <Box style={{ flex: "1 1 auto", minHeight: 240, display: "flex" }}>
+          <Box style={{ flex: "1 1 auto", minWidth: 0 }}>
+            <PlotPlanView stash={stash} scene={scene} selectedPipe={pipe} onPipePicked={setPipe} />
+          </Box>
+          {dock && (
+            <Box data-pipe-dock style={{ flex: "0 0 min(46%, 520px)", minWidth: 280,
+              overflow: "hidden",
+              borderLeft: "1px solid var(--mantine-color-default-border)" }}>
+              <PipeRegisterDock layout={stash.layout} selected={pipe} onSelect={setPipe} />
+            </Box>
+          )}
         </Box>
         <PanelResizeHandle panel={tables} />
         {tables.collapsed

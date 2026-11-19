@@ -642,7 +642,7 @@ def main():
                 arm("PA-04a density honours the list", abs(rho1 / rho0 - 1.0) > 1e-3 and used,
                     f"CSTR tau {rho0:.6g} s -> {rho1:.6g} s with ethanol declared (no volume); the "
                     f"[hypothesis] line names it: {used}")
-                #  PA-04b (rewritten 2026-11-19, DEV.md 4c C390).  It used to hold the pump's
+                #  PA-04b (rewritten 2026-11-18, DEV.md 4c C390).  It used to hold the pump's
                 #  closed-form heat capacity, Cp = (W_shaft - W_hydraulic) / (F dT), to the
                 #  same value with and without the list.  That identity belonged to the
                 #  closed-form pump, whose useful work was eta W_shaft; the pump now SOLVES the

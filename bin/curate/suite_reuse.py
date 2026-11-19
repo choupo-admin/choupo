@@ -171,7 +171,7 @@ anything in CI or a release (CHOUPO_NO_REUSE); and any run under --scope,
 
 A KEY THAT MOVED IS ASKED TWO MORE QUESTIONS BEFORE A FIT RE-RUNS (C432).  The
 exact key moves with ANY engine object the fit reaches, and the property kernel
-is reached by all 1260 (the sweep of 2026-11-19 re-ran every one, about 10 800 s,
+is reached by all 1260 (the sweep of 2026-11-18 re-ran every one, about 10 800 s,
 after a kernel edit the route bench had proved identical).  So a stored verdict
 whose key differs from the present one is taken in this order, and the plan says
 which rung and why on every case line (the section "C432" below holds the code):
@@ -1805,9 +1805,9 @@ def _stored_case(c):
 #
 #  The exact key (above) re-runs every curation fit when ANY object its
 #  operations reach changed, and the property kernel is reached by all of
-#  them: after one kernel edit the sweep of 2026-11-19 re-ran all 1260 fits,
+#  them: after one kernel edit the sweep of 2026-11-18 re-ran all 1260 fits,
 #  about 10 800 s, on a bench that had proved every (record, route) block of
-#  the kernel bit for bit (DEV.md 4c C432, Vitor 2026-11-19: "se se prova que
+#  the kernel bit for bit (DEV.md 4c C432, Vitor 2026-11-18: "se se prova que
 #  funciona num, entao funciona nos restantes!" -- a function is proved once
 #  per INPUT ROUTE, not once per case).  Three rungs, in this order, each
 #  printed with its reason:

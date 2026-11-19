@@ -260,6 +260,7 @@ PRE  | PAR    | bin/curate/check_seal_schema.py                    | traced: wri
 PRE  | ISO    | bin/curate/check_temporal_utilities.py             | ISO (private slot tree; measured: writes reports (+4 more))
 PRE  | SERIAL | bin/curate/check_pcsaft_association.py             | builds the gibbsAuditProbe into build/ (gibbs_audit_probe.py) -- caught by the leak scan in the 2026-11-16b sweep; was PAR: traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_doc_references.py                 | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_future_dates.py                   | reads tracked files through git; writes nothing; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/gen_tutorials_guide.py --check          | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/gen_sdem_validation.py --check          | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/gen_ammonia_stage_comparison.py --check | writes designspec_history.csv (+12 more)

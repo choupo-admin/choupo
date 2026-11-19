@@ -21,8 +21,8 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
-        "components/nDecane.dat"  "231641d2e5208c8b62b89650e88cd45ad8770aee4b02ed17bf4e7a6a1f255aac";
-        "components/nHexane.dat"  "ff9c08ff50aa6edde6b66eff8d6ce9a88948f503c34b085a6ca2d4017b7d92fa";
+        "components/nDecane.dat"  "174ff6e11d77c2337b83b853b30a3a4c817aeefc94bbf94467922d184aa1aed3";
+        "components/nHexane.dat"  "02c70e7841ee558e774dc77802f5513f8618e442caffe5ae2d316e53da18281b";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }

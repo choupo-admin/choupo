@@ -765,7 +765,7 @@ function StreamDetails({
               {runStream?.H !== undefined && (
                 <Table.Tr>
                   <Table.Td><Text size="sm" ff="monospace">H</Text></Table.Td>
-                  <Table.Td><Text size="sm" ff="monospace">{(runStream.H / 1000).toFixed(2)} kJ/mol</Text></Table.Td>
+                  <Table.Td><Text size="sm" ff="monospace">{formatSig(runStream.H / 1000)} kJ/mol</Text></Table.Td>
                 </Table.Tr>
               )}
               {runStream?.H_kW !== undefined && (
@@ -796,7 +796,7 @@ function StreamDetails({
             // Stream enthalpy at the elements/formation datum: H specific
             // [kJ/mol] and the flow rate Ḣ = F·H [kW] the energy balance reads.
             ...(runStream?.H !== undefined
-              ? [{ k: "H", v: `${(runStream.H / 1000).toFixed(2)} kJ/mol` }]
+              ? [{ k: "H", v: `${formatSig(runStream.H / 1000)} kJ/mol` }]
               : []),
             ...(runStream?.H_kW !== undefined
               ? [{ k: "Ḣ", v: `${formatDuty(runStream.H_kW, prefs.duty)} ${dutyLabel(prefs.duty)}` }]
@@ -810,7 +810,7 @@ function StreamDetails({
             ? <>model boundary {boundary.producer}→{boundary.consumer}: ΔH not carried across
                 {" "}— {boundary.reason ?? "the two models share no common enthalpy reference here"}</>
             : <>model boundary {boundary.producer}→{boundary.consumer}: ΔH{" "}
-                {boundary.dH_kJ_per_mol?.toFixed(3) ?? "—"} kJ/mol
+                {boundary.dH_kJ_per_mol === undefined ? "—" : formatSig(boundary.dH_kJ_per_mol)} kJ/mol
                 {" "}({boundary.dH_kW === undefined ? "—" : dutyText(boundary.dH_kW, 2, prefs)}), implied ΔT{" "}
                 {boundary.implied_dT_K === undefined ? "—" : dTText(boundary.implied_dT_K, 2, prefs)}</>}
         </Text>
@@ -834,7 +834,7 @@ function StreamDetails({
                   style={{ flex: 1 }}
                 />
                 <Text size="xs" ff="monospace" c="dimmed" style={{ minWidth: 56, textAlign: "right" }}>
-                  {isFinite(num) ? num.toFixed(4) : String(v)}
+                  {isFinite(num) ? formatSig(num) : String(v)}
                 </Text>
               </Group>
             );
@@ -864,8 +864,8 @@ function StreamDetails({
               <Text size="xs" ff="monospace" fw={600}>
                 {ph.name} —{" "}
                 {ph.unavailable
-                  ? `${Object.values(ph.massFlowsKg ?? {})
-                        .reduce((a, b) => a + b, 0).toPrecision(4)} kg/s (molar n/a)`
+                  ? `${formatSig(Object.values(ph.massFlowsKg ?? {})
+                        .reduce((a, b) => a + b, 0))} kg/s (molar n/a)`
                   : `${formatFlow(ph.total, phaseFlowUnit)} ${phaseFlowUnit}`}
               </Text>
               {/* A phase whose molar conversion failed stays VISIBLE in its
@@ -885,7 +885,7 @@ function StreamDetails({
                       <Table.Td>
                         <Text size="xs" ff="monospace" c="dimmed">
                           {ph.unavailable
-                            ? `${n.toPrecision(4)} kg/s`
+                            ? `${formatSig(n)} kg/s`
                             : `${formatFlow(n, phaseFlowUnit)} ${phaseFlowUnit}`}
                         </Text>
                       </Table.Td>
@@ -913,7 +913,7 @@ function StreamDetails({
             </Text>
             {runStream.speciation.pH !== undefined && (
               <Text size="xs" ff="monospace" c="dimmed">
-                pH {runStream.speciation.pH.toFixed(3)}
+                pH {formatSig(runStream.speciation.pH)}
               </Text>
             )}
           </Group>
@@ -951,7 +951,7 @@ function StreamDetails({
                       <Text size="xs" ff="monospace" c="dimmed">
                         {basis.unavailable
                           ? `${formatFlow(f, prefs.flow.includes("mol") ? prefs.flow : "kmol/h")} ${prefs.flow.includes("mol") ? prefs.flow : "kmol/h"}`
-                          : `${molality(f, basis).toPrecision(4)} mol/kg`}
+                          : `${formatSig(molality(f, basis))} mol/kg`}
                       </Text>
                     </Table.Td>
                   </Table.Tr>

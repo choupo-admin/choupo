@@ -1,7 +1,7 @@
 // Copyright (C) 2026 Vítor Geraldes
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
-//  REPLAY BEFORE REFIT (DEV.md 4c C432 (a), 2026-11-19).
+//  REPLAY BEFORE REFIT (DEV.md 4c C432 (a), 2026-11-18).
 //
 //  The test suite re-runs a curation fit only when the fit's inputs moved.  When
 //  the only thing that moved is the engine, bin/curate/suite_reuse.py first asks

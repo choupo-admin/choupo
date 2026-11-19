@@ -4810,7 +4810,7 @@ between the two pressures.  At or below $p^{\mathrm{sat}}(T)$ the upper limit is
 $p^{\mathrm{sat}}(T)$ (a liquid below its own saturation pressure gains no pressure
 effect), so the liquid leg is continuous with the vapour at the bubble point.
 
-\emph{The reference pressure is fixed (C390, 2026-11-19).}
+\emph{The reference pressure is fixed (C390, 2026-11-18).}
 $P_{\mathrm{ref},i} = p^{\mathrm{sat}}_i(T_{\mathrm{ref},i})$ with
 $T_{\mathrm{ref},i} = \min(298.15\,\mathrm{K},\,0.9\,T_{c,i})$, the
 component's own datum temperature; it does not depend on the stream's $T$.  An
@@ -30077,7 +30077,7 @@ spray dryer, the gas-solid splitter) declares it, and \code{--describe-units}
 prints each unit's declaration.  The gate \code{check\_carried\_kinds} holds it;
 the shipped witness \code{splitter01\_slurry\_sizeDistribution} divides a
 slurry's size distribution to two branches, which the splitter dropped on every
-branch until 2026-11-19.
+branch until 2026-11-18.
 
 \section{Drying: spray dryer and solid dryer}\label{ch:drying-overview}
 
@@ -33785,10 +33785,11 @@ absent \code{kind} prints as \code{undeclared} with an advisory; the labour
 rate reads the same words from an optional \code{labourProvenance \{ \}}
 block and prints \code{undeclared} when there is none.  Each utility the run allocated is listed with its
 catalogue record's \code{cost} (EUR/GJ) and \code{costYear}; its kind is
-\code{published} when the record carries a \code{costSource "\ldots";} and
-\code{undeclared} when it does not (the shipped records name their source in a
-header comment but carry no such key yet, since adding it changes their pinned
-hash).  Worked case: \code{greenAmmoniaPEQ\_baseCase} (its three prices are
+\code{published} when the record carries a \code{costSource "\ldots";},
+\code{assumption} when that text opens with the word \code{assumption:} (the
+ten shipped records all do: their figures are the catalogue's own indicative
+values, with the derivation or the unverified reference named), and
+\code{undeclared} when the record carries none.  Worked case: \code{greenAmmoniaPEQ\_baseCase} (its three prices are
 published figures read at their sources, and its labour rate is an assumption).
 
 \paragraph{Operating labour and the cover of a shift position.}\label{par:operator-cover}

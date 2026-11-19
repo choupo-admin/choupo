@@ -393,7 +393,7 @@ propertyManifest
   `distinctFrom <name>;` (another species under the same name), each with a
   `variationReason "...";`.  The engine checks the claim against the formula
   (with charge), `charge` and `CAS`; see `components.md`.
-  THE THREE READ DIFFERENTLY (2026-11-19, the silent backfill closed): `overlayOf`
+  THE THREE READ DIFFERENTLY (2026-11-18, the silent backfill closed): `overlayOf`
   takes every key it LACKS from the catalogue record and says so once per key per
   run (`[overlay] benzene.vaporPressure from data/standards/components/benzene.dat`),
   the catalogue record's provenance travelling with the key; `variationOf` and
@@ -1024,7 +1024,7 @@ included -- it means 15, 20 or 25 degC depending on the source) is refused
 naming the two accepted.  The run prints the conversion beside the volume.
 Worked case: `tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach`.
 
-**A SEPARATOR DRUM IS SIZED IN DETAIL BY `drum { ... }` (2026-11-19, DEV.md 4c C318).**
+**A SEPARATOR DRUM IS SIZED IN DETAIL BY `drum { ... }` (2026-11-18, DEV.md 4c C318).**
 `type vessel` with `designRules { drum { ... } }` replaces the three volume bases (declaring both is
 refused): the volume is a RESULT of the allowable vapour velocity, the liquid levels and the orientation,
 and the item is still one vessel (D, H, V_R) walled, weighed and costed as before.  Theory Guide

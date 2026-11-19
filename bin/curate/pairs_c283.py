@@ -64,6 +64,8 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "bin" / "curate"))
+import property_grades as pg  # noqa: E402  (C336: the ONE home of the grade limits)
 _loader = importlib.machinery.SourceFileLoader("choupo_curate", str(ROOT / "bin" / "choupo-curate"))
 _spec = importlib.util.spec_from_loader("choupo_curate", _loader)
 cc = importlib.util.module_from_spec(_spec)
@@ -89,8 +91,8 @@ GRADES = ("clean", "warning", "severe", "refused")
 #  4c C334 (second opinion): they do NOT widen -- a bubble P or T error goes
 #  straight into relative volatility and stage count.  A severe fit is promoted
 #  only if it BEATS THE IDEAL MIXTURE on its own kept points (C334 guard).
-GRADE_K = (1.0, 2.0, 4.0)
-GRADE_PCT = (5.0, 10.0, 20.0)
+GRADE_K = pg.CLASS_C_K        # class C (C336); the ONE home is property_grades.py
+GRADE_PCT = pg.CLASS_A_PCT    # class A (C336)
 GMARK = "THE GRADED ACCEPTANCE (DEV.md 4c C285, applied to pairs by C286)"
 RULE_GRADED = "DEV.md 4c C283 (amended) + C284, graded by C285 (C286)"
 GRADED_TEXT = (

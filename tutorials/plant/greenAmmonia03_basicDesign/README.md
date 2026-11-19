@@ -554,7 +554,7 @@ they got there is below.
   system/outerDict were not followed and kept the 2026-11-07 point (10.0321 /
   19.1578 / 32.4468 m3, 2.2427 m) beside a comment that said they equalled the
   flowsheet's: two homes for one starting point.
-* **2026-11-19 (DEV.md 4c C435).** `initial` became optional in the design-spec
+* **2026-11-18 (DEV.md 4c C435).** `initial` became optional in the design-spec
   and optimisation drivers and defaults to the case's own value; the four
   stale `initial` keys were dropped, so the flowsheet's design point is the one
   start, printed as `start: case value`. Run from either start the Newton

@@ -11,7 +11,7 @@ and, where the ThermoML archive cache is reachable, REFIT from the archive:
   * the stored A..E and Tmin/Tmax equal the dataset's parameters and window;
   * D = E = 0 for viscosity, A = E = 0 for conductivity as written;
   * provenance carries origin fitted, review { by none; }, fitGradeBasis
-    inSample, a fitGrade equal to the C285 limits (5/10/20 %) on the stated
+    inSample, a fitGrade equal to the C336 class B limits (10/20/30 %, property_grades.py) on the stated
     max relative error, the C300 cap words (singleTemperature /
     singleLaboratory) exactly when the evidence calls for them, Trange equal
     to the record window, and the stated max error equal to the dataset's;

@@ -122,7 +122,7 @@ async function loadLayoutModules(): Promise<LayoutModules> {
  *  it when the window is resized.  Either way three.js is imported only when
  *  a layout is first shown. */
 export function PlantLayout3D({ scene, height: declaredHeight = 520, extend, toolbarExtra,
-                                layout, facts }: {
+                                layout, facts, selectedPipe, onPipePicked }: {
   scene: LayoutScene; height?: number | "fill";
   /** The engine's layout block and the result's facts (DEV.md 4c C229): the
    *  guided tour, the click cards, the headline and the colour by
@@ -131,6 +131,10 @@ export function PlantLayout3D({ scene, height: declaredHeight = 520, extend, too
   layout?: PlantLayout; facts?: LayoutFacts | null;
   /** Another drawing in the same scene (the GMP interior, DEV.md 4c C97). */
   extend?: SceneExtension;
+  /** C91: the pipe a docked register has selected (engine id), and the
+   *  callback for a pipe clicked in the view. */
+  selectedPipe?: string | null;
+  onPipePicked?: (id: string | null) => void;
   /** Its controls, on the same toolbar. */
   toolbarExtra?: ReactNode;
 }) {
@@ -178,6 +182,11 @@ export function PlantLayout3D({ scene, height: declaredHeight = 520, extend, too
 
   useEffect(() => { api.current?.setToggles(toggles); }, [toggles]);
   useEffect(() => { api.current?.setQuality(quality); }, [quality]);
+  const selRef = useRef<string | null>(selectedPipe ?? null);
+  selRef.current = selectedPipe ?? null;
+  const pickRef = useRef(onPipePicked);
+  pickRef.current = onPipePicked;
+  useEffect(() => { api.current?.selectPipe(selectedPipe ?? null); }, [selectedPipe]);
 
   useEffect(() => {
     let disposed = false;
@@ -189,7 +198,9 @@ export function PlantLayout3D({ scene, height: declaredHeight = 520, extend, too
         api.current = mountLayoutScene(modules, el, scene,
           { height, toggles: togglesRef.current, view: viewRef.current,
             quality: qualityRef.current, ...(extend ? { extend } : {}),
-            ...(layout ? { layout } : {}), facts: facts ?? null });
+            ...(layout ? { layout } : {}), facts: facts ?? null,
+            onPipePicked: (id: string | null) => pickRef.current?.(id) });
+        if (selRef.current) api.current.selectPipe(selRef.current);
       } catch (e) {
         if (!disposed)
           setError(e instanceof Error ? e.message : String(e));

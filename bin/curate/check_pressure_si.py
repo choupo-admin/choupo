@@ -5,7 +5,7 @@
 
     bin/curate/check_pressure_si.py
 
-THE DEFECT THIS WOULD HAVE CAUGHT (DEV.md 4c C390, 2026-11-19).  The dictionary reader
+THE DEFECT THIS WOULD HAVE CAUGHT (DEV.md 4c C390, 2026-11-18).  The dictionary reader
 converts `P 1.013 bar;` to SI, so every pressure a unit or a state struct holds is in PASCAL.
 The batch vessel state documented its pressure as "bar" and FIVE ledger sites priced a
 package at `pkg.P * 1.0e5` -- a liquid at 1.0e10 Pa.  Nothing read the pressure of a liquid,

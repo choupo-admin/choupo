@@ -48,8 +48,8 @@ Nothing starts on opening: every run is behind a button.
 ### Demonstration 1 -- the efficiency against a trace specification
 
 Witness `steady/distillation/column11_murphree` (benzene/toluene, Wang-Henke,
-declared `murphreeEfficiency`, read at `DistillationColumn.cpp:1597`, folded
-into an effective K at `:1729`).  Two columns:
+declared `murphreeEfficiency`, read at `DistillationColumn.cpp:1600`, folded
+into an effective K at `:1732`).  Two columns:
 
 * **bulk**: the case as shipped (15 stages, feed 8, R = 2, D = 50 kmol/h);
 * **trace**: four declared numbers rewritten (30 stages, feed 20, R = 3,

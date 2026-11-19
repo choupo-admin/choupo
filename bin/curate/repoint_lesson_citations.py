@@ -19,7 +19,7 @@ ambiguous claim (two places) or a missing one (none) REFUSES BY NAME and is
 never guessed.  `--check` only reports (exit 1 if anything is stale or
 refused); without it the edits are written (exit 1 only if something refused).
 
-THE FILE SET IS DERIVED, NEVER LISTED (C438, 2026-11-19).  Every .ts/.tsx under
+THE FILE SET IS DERIVED, NEVER LISTED (C438, 2026-11-18).  Every .ts/.tsx under
 gui/src and gui/tests is scanned; no hand list.  The real defect this guards:
 plantRunMath.ts and plantCostMath.ts cited EconomicsPass.cpp lines as
 `{ file: "...", line: N, needle: "..." }`, a shape the tool did not read, so two
@@ -301,7 +301,7 @@ def scan(tree):
 # citation whose file does not exist or whose line is past the file's end, are
 # FINDINGS: a citation this tool cannot read is one it cannot keep (DEV.md 4c
 # C438: two economics lessons cited EconomicsPass.cpp lines in a shape the tool
-# did not know, so --check said OK while they were stale, 2026-11-19).
+# did not know, so --check said OK while they were stale, 2026-11-18).
 LOOSE_REC_RE = re.compile(r"""\bfile:\s*(?P<f>"[^"]+"|[A-Za-z_]\w*)\s*,\s*line:\s*(?P<n>\d+)\b""")
 
 

@@ -104,16 +104,16 @@ export function useSortable<T>(
 }
 
 /** A clickable header cell for column `k` of the sortable `s`. */
-export function SortTh<T>({ s, k, children }: {
-  s: Sortable<T>; k: string; children: ReactNode;
+export function SortTh<T>({ s, k, children, title, right }: {
+  s: Sortable<T>; k: string; children: ReactNode; title?: string; right?: boolean;
 }): JSX.Element {
   const on = s.sort?.key === k;
   const arrow = on ? (s.sort!.dir === "asc" ? " ▲" : " ▼") : "";
   return (
-    <Table.Th data-sortable={k}
+    <Table.Th data-sortable={k} ta={right ? "right" : undefined}
       aria-sort={on ? (s.sort!.dir === "asc" ? "ascending" : "descending") : "none"}>
       <UnstyledButton onClick={() => s.toggle(k)} fz="inherit" fw="inherit"
-        title="sort by this column (click again to reverse)"
+        title={title ?? "sort by this column (click again to reverse)"}
         style={{ whiteSpace: "normal", textAlign: "left" }}>
         {children}
         <span aria-hidden="true" style={{ opacity: on ? 1 : 0.35 }}>{on ? arrow : " ↕"}</span>

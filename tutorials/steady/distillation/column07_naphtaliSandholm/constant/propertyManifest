@@ -26,7 +26,7 @@ propertyManifest
         "components/nPentane.dat"  "f49faee42db9f7776129d0c3a8fa26b8d5b8eccf3f2088c41f94bfa407f9f7a8";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-        "utilities/refrigerationNH3.dat"  "5aa7fc4c2d2a59f291ef19c2522dc0f448d45eb7ad9fb70dda4d9a65847cead0";
-        "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
+        "utilities/refrigerationNH3.dat"  "5e9fa617e6cce5d10229ee73526a0e11bcb170ae7c9d8e53336f0db427cd0c78";
+        "utilities/steamLP.dat"  "f55087a7273dcc1026a7081a48460d476f940159d6d6c7febeb0eb704b05b56e";
     }
 }

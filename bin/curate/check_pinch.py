@@ -943,7 +943,7 @@ Exit 1 listing failures."""
                     if nseg != 5 or k.get("segments") != 5.0:
                         failures.append(f"RIGHT: {nseg} stream rows (expected 5:"
                                         " the water is not one)")
-                    #  95732.5 -> 95708.8 (moving reference) -> 95719.5 (fixed reference) on 2026-11-19 (DEV.md 4c C390): the liquid
+                    #  95732.5 -> 95708.8 (moving reference) -> 95719.5 (fixed reference) on 2026-11-18 (DEV.md 4c C390): the liquid
                     #  enthalpy carries v(1 - alpha T) dP now, so the ammonia let-down and
                     #  separator duties of the witness moved (separator -38345.6 -> -38081.9 kW);
                     #  the independent cascade above still equals the engine to 1e-6.

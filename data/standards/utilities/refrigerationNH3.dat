@@ -93,4 +93,5 @@ dutyPerKg   1369935.0;                 // J/kg  (23330 / 0.017030)
 //   place.  The status is prose because prose is where this form puts it.
 cost        15.84;                     // €/GJ removed -- DERIVED, see above
 costYear    2022;                      // inherited from its electricity input
+costSource  "assumption: derived in the open in this record's own COST comment, not a cited price: Carnot COP 3.5097 from this record's T_in (239.82 K) and coolingWater.dat T_out (308.15 K), times a DECLARED second-law efficiency 0.50, priced at electricity.dat 27.8 EUR/GJ (itself an assumption) = 15.84 EUR/GJ; a lower bound; price year 2022";
 description "Ammonia direct-expansion refrigeration (-33 C, atmospheric)";

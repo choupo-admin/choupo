@@ -16,7 +16,7 @@ the kind's own law of division (`src/streams/Carried.cpp`, `SizeDistributionKind
 
 ## Why it is a shipped case
 
-Until 2026-11-19 the splitter dropped the size distribution on **every**
+Until 2026-11-18 the splitter dropped the size distribution on **every**
 branch.  The mass balance closed (a distribution is not a flow) and every
 golden pinned "unchanged", so nothing said so; the defect was found by putting
 a second kind of carried quantity on the same stream.  This case pins the

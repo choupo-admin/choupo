@@ -2,7 +2,7 @@
 # Copyright (C) 2026 Vítor Geraldes
 # SPDX-License-Identifier: GPL-3.0-or-later
 """pairs_by_name -- a binary pair is found by NAME, never by a path written in a case
-(DEV.md 4c C433, Vitor 2026-11-19: "porque tens o link dos binarios e nao tens o
+(DEV.md 4c C433, Vitor 2026-11-18: "porque tens o link dos binarios e nao tens o
 link dos componentes?"; "Se houver excecao, os parametros tem de ficar na pasta em
 que isso acontece!").
 

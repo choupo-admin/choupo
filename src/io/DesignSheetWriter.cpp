@@ -563,7 +563,7 @@ std::size_t write(const std::string&                       caseRoot,
             o << "}\n";
         }
 
-        //  ---- WHAT A COMPRESSOR WAS DESIGNED AS (2026-11-19, DEV.md 4c C440
+        //  ---- WHAT A COMPRESSOR WAS DESIGNED AS (2026-11-18, DEV.md 4c C440
         //  gap 4).  The WORDS: the machine, how it was chosen, what set the
         //  stage count, which defaulted input came from which page, and the
         //  limits of the method.  Every NUMBER is in `sizing {}` under

@@ -259,7 +259,7 @@ describe("letdown: the numbers the prose states, recomputed from the goldens", (
   //  298 K plus the liquid and ideal-gas Cp legs plus the SRK departure --
   //  about 4 % below the record's HvapTb, which is the lambda this estimate
   //  divides by -- so the engine flashes about 4 % more than the estimate.
-  //  7 %, not 6 % (2026-11-19, C390): the liquid enthalpy carries v (1 - alpha T) dP
+  //  7 %, not 6 % (2026-11-18, C390): the liquid enthalpy carries v (1 - alpha T) dP
   //  now, so the compressed ammonia leaves the first valve 2 K warmer and flashes more
   //  than the pressure-free hand estimate says (6.9 %).
   //  7.5 %, not 7 % (2026-11-19, the merged tree): letdown01's golden vf moved (

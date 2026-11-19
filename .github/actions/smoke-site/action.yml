@@ -39,7 +39,7 @@ runs:
         bin/drive-app --edutools --serve site/_dist --prefix /app/ --jobs 3 --screenshots
         echo "status=$?" >> "$GITHUB_OUTPUT"
 
-    #  ONE CASE PER BINARY IS RUN IN THE BUILT SITE (DEV.md 4c C434, 2026-11-19).
+    #  ONE CASE PER BINARY IS RUN IN THE BUILT SITE (DEV.md 4c C434, 2026-11-18).
     #  The EduTools smoke opens tools; it never pressed Run on a case, so a site
     #  whose engines could not run a single tutorial would have been published
     #  green.  Five cases, one per WASM binary: opened by their own URL, Run

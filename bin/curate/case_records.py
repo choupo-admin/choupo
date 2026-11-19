@@ -153,7 +153,7 @@ def materialise(dst):
         if not tgt.exists() and (STD / sub).is_file():
             tgt.parent.mkdir(parents=True, exist_ok=True)
             #  A copy of a catalogue record is a local homonym, and an undeclared homonym is
-            #  REFUSED (the silent backfill closed, 2026-11-19): the probe's copy declares
+            #  REFUSED (the silent backfill closed, 2026-11-18): the probe's copy declares
             #  itself a full record read alone, which is exactly what it is.
             tgt.write_text(as_variation(tgt.stem, (STD / sub).read_text(), "gate probe copy of the catalogue record"))
 
@@ -167,7 +167,7 @@ def copytree(src, dst, *args, **kw):
 
 def as_variation(name, text, why="gate probe: a full record read alone"):
     """A probe's full local copy of a catalogue record, DECLARED (`variationOf`): an undeclared
-    homonym is refused (the silent backfill closed, 2026-11-19), and a variation is read ALONE,
+    homonym is refused (the silent backfill closed, 2026-11-18), and a variation is read ALONE,
     so a line the probe deletes is truly absent -- no longer supplied again by the catalogue."""
     if re.search(r"(?m)^\s*(overlayOf|variationOf|distinctFrom)\b", text):
         return text                      # already declares what it is (a record copied from a case)

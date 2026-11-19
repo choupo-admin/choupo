@@ -80,6 +80,8 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "bin" / "curate"))
+import property_grades as pg  # noqa: E402  (C336: the ONE home of the grade limits)
 COMP = ROOT / "data" / "standards" / "components"
 HENRY = ROOT / "data" / "standards" / "parameters" / "Henry"
 CASES = ROOT / "data" / "curation" / "henry"
@@ -92,7 +94,7 @@ OUTLIER = 0.20
 #  DEV.md 4c C336, property class (B) -- Henry constants, gamma-infinity,
 #  transport: laboratories disagree by 10-30 % on these.  Max relative error
 #  over the kept points, %: clean / warning / severe; above the last, refused.
-HENRY_CLASS_B_LIMITS = (10.0, 20.0, 30.0)
+HENRY_CLASS_B_LIMITS = pg.CLASS_B_PCT   # the ONE home is property_grades.py
 LIMITS = HENRY_CLASS_B_LIMITS
 NIST = "https://trc.nist.gov/ThermoML/"
 

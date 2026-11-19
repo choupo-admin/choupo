@@ -2513,6 +2513,18 @@ with a line list, with one line worked by hand in its README;
 \texttt{greenAmmoniaPEQ\_baseCase} lists its 24 process pipes (22 sized,
 the two two-phase ones listed not sized).
 
+\textbf{The register beside the 3D view.} In the full-window tab
+(Reports $\rightarrow$ Plant layout (3D), the pop-out), the button
+\emph{Pipe register} docks a table of the pipes to the right of the view
+(the choice is remembered in the browser). Each row is one routed pipe:
+its tag, its ends, its nominal size (NPS, in), its length, its velocity
+and its pressure drop, the last three read from that pipe's line sheet
+and left blank where the case declares no \texttt{lineDesign} or the
+line is listed not sized. Every column sorts on a click on its header
+(again to reverse; a blank value sorts last). Clicking a row highlights
+that pipe in the view and opens its card; clicking a pipe in the view
+selects its row.
+
 \hypertarget{tank-farms-and-the-choice-of-storage}{%
 \subsection{Tank farms and the choice of
 storage}\label{tank-farms-and-the-choice-of-storage}}

@@ -9,7 +9,7 @@
 /*---------------------------------------------------------------------------*\
   curate02 -- FIT A BINARY PAIR TO MEASURED DATA, THEN TEST IT ON POINTS IT NEVER SAW.
 
-  REBUILT 2026-11-19 (C439, at Vitor's request: the first fit a newcomer meets
+  REBUILT 2026-11-18 (C439, at Vitor's request: the first fit a newcomer meets
   should be well posed, from a primary source, and should SHOW something).
   The previous version fitted four coefficients to eleven points of a
   compilation that cannot be a public value's origin; its parameters were not

@@ -31,6 +31,6 @@ propertyManifest
         "parameters/solution/NaCl-water.dat"  "e15ed02baf1dd90629885f257f5b85cff854ff009e2d5bf8fdc18e4b72e2124f";
         "species/Cl.dat"  "77c9cffcfc3674c034800724ba22333a585a19fbc6a467df63876e68e73abae6";
         "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
-        "utilities/electricity.dat"  "05317a957413165722c1f4ab1fffc523c459c9354f2afb234c2cab3768fbb392";
+        "utilities/electricity.dat"  "a9370d7fd9c469a44e3c7abae696d68bdf305eeb8cb3db0292acc391bf45c36d";
     }
 }

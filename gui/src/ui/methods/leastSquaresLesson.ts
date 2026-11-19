@@ -34,7 +34,7 @@
 
   THE THIRD THING: `validated` and `individually identifiable` are two
   different questions and a student has to be able to read both off one run.
-  The witness (curate02) was rebuilt on 2026-11-19 (C439): its first version
+  The witness (curate02) was rebuilt on 2026-11-18 (C439): its first version
   fitted four coefficients to one isobar and was validated yet NOT
   identifiable; the present one frees two and is both.  The page says which
   it is by quoting the run, not by remembering the old one.

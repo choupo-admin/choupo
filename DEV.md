@@ -4530,7 +4530,7 @@ accepts today, and that is a policy call.
 > toluene, ...) carry Hansen triples the catalogue lacks and declare no
 > variation; they are the next one-home step of C428 (a).
 >
-> **C430 (Vitor, 2026-11-19, ~01:45: "para a suite e faz essa merda! Eu quero
+> **C430 (Vitor, 2026-11-18, ~01:45: "para a suite e faz essa merda! Eu quero
 > o this is it!").**  AN ORDER, and on the content he is right: the final
 > sweep of tonight's batch (five door families, C429, C428 (a)) was in its
 > interface phase (no destructive gate running) and was stopped in its
@@ -4547,7 +4547,7 @@ accepts today, and that is a policy call.
 > Four generals launched at once from `integ/final-1118`, disjoint slices,
 > common rules in a written brief; then one `--nightly` over everything.
 >
-> **C431: THE SECOND OUTSIDE REVIEW, WEIGHED (2026-11-19; it read the letter
+> **C431: THE SECOND OUTSIDE REVIEW, WEIGHED (2026-11-18; it read the letter
 > of C430's claim, not the code).**  It did NOT accept "architecture
 > finished", and on five points it is right.  (1) THE DEFINITION PROMISED
 > TOO MUCH ("never reopening the stream, the door or the record grammar"):
@@ -4592,7 +4592,7 @@ accepts today, and that is a policy call.
 > excess 42 %); the polyesterification cases do not land until a directed,
 > independent integration of the case's own rate law explains it.
 >
-> **C431, THE 41 % IS EXPLAINED (2026-11-19, an independent general, no
+> **C431, THE 41 % IS EXPLAINED (2026-11-18, an independent general, no
 > file changed; note in the private Studies folder).**  The case's rate law
 > is PSEUDO-FIRST-ORDER in the monomer (`order 1`; the others 0), and the
 > reactor takes Q once at the feed, so the concentration cancels: p = 1 -
@@ -4608,7 +4608,7 @@ accepts today, and that is a policy call.
 > repeat unit + one water); the same on both bases, a modelling limit of the
 > liquid PFR to state or to lift.
 >
-> **C432 (Vitor, 2026-11-19 04:30, during the final sweep: "eu nunca mais quero
+> **C432 (Vitor, 2026-11-18 04:30, during the final sweep: "eu nunca mais quero
 > calcular os 1260 casos outra vez! ... testar um por categoria! Se cada
 > categoria passa é desnecessário correr o resto!").**  MEASURED first: in the
 > last sweep the reuse key re-ran all 1260 curation fits (`1260 keyed, 0 with
@@ -4641,7 +4641,7 @@ accepts today, and that is a policy call.
 > differ inside a category (water by IAPWS-95, a salt solution by ideal
 > mixing with ions, a measured table by interpolation).
 
-> **C435 (4) RULED (2026-11-19, on the general's finding).**  Moving the
+> **C435 (4) RULED (2026-11-18, on the general's finding).**  Moving the
 > NanoFiltran bench's typed viscosity and density into adopted records moved
 > 321 golden rows: declaring ANY liquid viscosity switches on the
 > Stokes-Einstein temperature correction of every ion's D0
@@ -4664,7 +4664,7 @@ accepts today, and that is a policy call.
 > stale 10.03 m3; the ratchet's docstring; the Theory Guide entry for the
 > optional `initial`.
 
-> **C441 (Vitor, 2026-11-19: "haverá standards para escolhas de bombas
+> **C441 (Vitor, 2026-11-18: "haverá standards para escolhas de bombas
 > centrífugas, com selecção de curvas características, eficiência e NPSH? Ou
 > isto é completamente dependente dos fabricantes?"; then "Sim, põe no
 > backlog", having filed Gülich, Centrifugal Pumps, 4th ed., Springer 2020).**
@@ -4684,7 +4684,7 @@ accepts today, and that is a policy call.
 > ISO 13709, ISO 9906 for curve tolerances) are cited for what they rule,
 > without their numbers until a copy is in the folder.
 
-> **C440 (Vitor, 2026-11-19, on C238: "eu gostava de ver o dimensionamento
+> **C440 (Vitor, 2026-11-18, on C238: "eu gostava de ver o dimensionamento
 > detalhado de todas as operações.  Por isso a C318 devia de vir primeiro, e
 > se calhar até os desenhos isométricos das condutas, com velocidades de
 > circulação recomendada, perdas de carga, etc., deviam de aparecer nas
@@ -4739,22 +4739,41 @@ accepts today, and that is a policy call.
 > value from the formation enthalpies.  A slice of its own, not added to the
 > lote.
 
+> **C449 (architect, 2026-11-19, from the outside double check of the rate-based
+> column, docs/reviews/2026-11-19-ratebased-double-check/).**  Weighed: the four
+> WRONG lesson findings hold as written and are fixed in one slice -- (1) the
+> film-control picture in oneFluxManyUnitsLesson step 5 is inverted (with the
+> liquid film controlling, the interface sits near equilibrium with the bulk
+> GAS: the page's own solve gives x_i at ~98 % of the way to x*); (2) the
+> overall-coefficient panel writes y* = m x_b with Seader's chord slope, 27 %
+> below the page's own exercise 3 -- take y* from x*; (3) "the one place the
+> sum appears is the first guess" is false (RateBasedSegment publishes the
+> per-segment H_OG share); (4) exercise 2 labels water's vapour pressure
+> "Antoine" while the record is Wagner/IAPWS.  The SUSPECT symbol and
+> citation points (c overloaded, Hatta equation numbers, stale design-record
+> lines) are fixed with them.  Engine: the latent double degree-to-radian
+> conversion of `corrugationAngle` (a unit-bearing `60 deg;` becomes 1.05 deg
+> silently) is a real defect no shipped case reaches: the read refuses a
+> bare-or-unit ambiguity and converts once.  Delft judged on RBF's flooding
+> constant and the Chilton-Colburn label on Delft's film are stated in the
+> output, not changed.
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
-> 2026-11-19 for everything since the night of 11-17/18 -- 25 lines of
+> 2026-11-18 for everything since the night of 11-17/18 -- 25 lines of
 > DEV.md, 17 backlog rows, BRAIN.md, CLAUDE.md, SESSIONS.md, PLAN.md and 11
-> files NAMED 2026-11-19 under docs/audits and docs/reviews (44 tracked
+> files NAMED 2026-11-18 under docs/audits and docs/reviews (44 tracked
 > files in all).  A date written from the conversation instead of read
 > from the clock.  RULED: from now every date is read from `date`, and the
 > backlog views stamp themselves from the clock; the correction is ONE
-> mechanical slice (text 2026-11-19 -> 2026-11-18 where it names today,
+> mechanical slice (text 2026-11-18 -> 2026-11-18 where it names today,
 > `git mv` of the eleven files and every reference to them) taken when the
 > branches in flight have landed, since four of them create files under
 > that wrong name.
 
-> **C445 (cloud review asked by Vitor, 2026-11-19,
-> docs/reviews/2026-11-19-architecture-growth/REPORT.md: "does the solver
+> **C445 (cloud review asked by Vitor, 2026-11-18,
+> docs/reviews/2026-11-18-architecture-growth/REPORT.md: "does the solver
 > grow organically?").**  Verdict: organic where designed (a model is one
 > place; unit bypasses 82 -> 0; carried kinds a factory); still spreading in
 > five places.  RULED, in this order: (1) the two DEFECTS first -- the
@@ -4775,7 +4794,7 @@ accepts today, and that is a policy call.
 > rule for every lesson (the pedagogy is unchanged: the student still reads
 > the cited line; only how the tool finds it changes).
 
-> **C390 RULING AMENDED (architect, 2026-11-19, on the batch sweep's
+> **C390 RULING AMENDED (architect, 2026-11-18, on the batch sweep's
 > gate g1).**  The liquid pressure leg ran from psat(T), a lower limit that
 > moves with T, while the base surface is a fixed-pressure function (dh/dT
 > = cp_liq from one Kirchhoff datum); fixed-P, dH - T dS was off by
@@ -4791,7 +4810,7 @@ accepts today, and that is a policy call.
 > term reads; the closed-form pump's Cp identity (PA-04b) retired with the
 > closed-form pump.
 
-> **C444 (Vitor, 2026-11-19: "nas folhas de especificação finais devem
+> **C444 (Vitor, 2026-11-18: "nas folhas de especificação finais devem
 > ficar também as especificações das tubuladuras onde ligam os tubos de
 > entrada e de saída?").**  RULED, yes: every equipment sheet carries a
 > NOZZLE SCHEDULE -- mark (N1, N2 ...), service, the stream and line it
@@ -4805,7 +4824,7 @@ accepts today, and that is a policy call.
 > taken from a source in the folder (or declared by the case with its
 > reason until one is).  Built after C318 and C207 land, on both.
 
-> **C443 (Vitor, 2026-11-19: "até era bom ter um gráfico supostamente
+> **C443 (Vitor, 2026-11-18: "até era bom ter um gráfico supostamente
 > especificado em pós-processamento, dicionários, para o aluno ver um dado
 > plot mais intuitivo").**  Measured: the mechanism EXISTS --
 > `references ( ... )` + `views ( ... )` in a case's postDict or propsDict
@@ -4818,7 +4837,7 @@ accepts today, and that is a policy call.
 > opens on that plot; a view type a case needs and the engine lacks is
 > named and built, never drawn in the GUI.
 
-> **C442 (Vitor, 2026-11-19: "Parece que os EduTools precisam de um em
+> **C442 (Vitor, 2026-11-18: "Parece que os EduTools precisam de um em
 > compressores?").**  Measured: no lesson is about compression (there is a
 > pump-system tool; compressors appear only in passing in seven lessons).
 > RULED (the architect's, pedagogy included since C00): yes, one EduTool,
@@ -4832,7 +4851,7 @@ accepts today, and that is a policy call.
 > lesson cites the staged design the engine will then print, not today's
 > single power number.
 
-> **C440 AUDIT DONE (2026-11-19, docs/audits/2026-11-19-c440-peq-sizing-audit.md,
+> **C440 AUDIT DONE (2026-11-18, docs/audits/2026-11-18-c440-peq-sizing-audit.md,
 > read on origin/main).**  The reference plant's 17 units and two stores,
 > ranked by what a colleague reading its documents misses: (1) the 49 lines,
 > none sized (C207, in progress); (2) the three drums on a typed residence
@@ -4850,7 +4869,7 @@ accepts today, and that is a policy call.
 > unpriced; (8) `ReliefValveSize` unused, no valves or piping in the cost.
 > The plant has no pump, so C441 reaches it not.
 
-> **C439 (Vitor, 2026-11-19: "os casos que estão na landing page foram
+> **C439 (Vitor, 2026-11-18: "os casos que estão na landing page foram
 > escolhidos logo no início ... Acho que falta um sobre criação de
 > componentes e binários").**  Measured: the four starter cards are the
 > adiabatic flash, the isothermal flash, reactor+flash and a Joback
@@ -4860,7 +4879,7 @@ accepts today, and that is a policy call.
 > scoring it on held-out points (the curation witness curate02 or curate04),
 > made a first-path case with its README.
 
-> **C438 (architect, 2026-11-19, from C389's general).**  The lesson-citation
+> **C438 (architect, 2026-11-18, from C389's general).**  The lesson-citation
 > re-pointer does not manage every file that cites the engine by line:
 > `gui/src/ui/methods/plantRunMath.ts` and `plantCostMath.ts` (and the tests
 > that pin their prose) cite `EconomicsPass.cpp` lines it never checks, so an
@@ -4869,7 +4888,7 @@ accepts today, and that is a policy call.
 > `file:line` citation in gui/ (not a hand list), and a citation it cannot
 > parse is a finding.
 
-> **C437 (architect, 2026-11-19, from C176's op E).**  With Labban et al.
+> **C437 (architect, 2026-11-18, from C176's op E).**  With Labban et al.
 > 2017's own Table 5 parameters and X_d, Choupo's DSPM-DE misses the paper's
 > measured rejections by 8.7, 7.6 and 16.2 points at the three pressures
 > (the paper claims within 12 % relative; Na+ in NaCl+MgCl2 +4.5 % vs
@@ -4881,10 +4900,10 @@ accepts today, and that is a policy call.
 > validation case of C176, on the branch build/c176-c177-dspmde-lab until it
 > lands.
 
-> **C47 DROPPED by Vitor (2026-11-19: "nesse caso não vale a pena. Pensei que
+> **C47 DROPPED by Vitor (2026-11-18: "nesse caso não vale a pena. Pensei que
 > fosse mais simples", on hearing it needs an account of his).**
 >
-> **C425 RULED (2026-11-19).**  Vitor, on the two points of section 5 of the
+> **C425 RULED (2026-11-18).**  Vitor, on the two points of section 5 of the
 > materials design: "segue o que [o simulador de referência] faz".  Measured
 > against the manuals already read (Studies 2026-11-18, notes on solids):
 > that simulator describes a nonconventional solid by its analyses
@@ -4903,7 +4922,7 @@ accepts today, and that is a policy call.
 > hand-written calculator block; here the dryer's own balance moves real
 > water, and the element balance stays closed by construction).
 
-> **C436 (Vitor, 2026-11-19 midday, MAXIMUM PRIORITY: "Podes fazer favor de
+> **C436 (Vitor, 2026-11-18 midday, MAXIMUM PRIORITY: "Podes fazer favor de
 > por como prioridade máxima a gestão dinâmica desta tabela
 > importantíssima?!"), after the architect showed him a CML table holding
 > only the night's lane, then a heuristic census that called C247 (the
@@ -4931,7 +4950,7 @@ accepts today, and that is a policy call.
 > DEV.md 4c is the item's HISTORY (the narrative), never its status; PLAN.md
 > and the page are VIEWS of the backlog by horizon.
 
-> **C435 (Vitor, 2026-11-19 morning: an outside review of six shipped cases,
+> **C435 (Vitor, 2026-11-18 morning: an outside review of six shipped cases,
 > pasted for the architect to weigh).**  Its five points MEASURED before
 > ruling; all four factual ones hold.  (1) The Henry `source` lines: true,
 > and the builder REFUSES a `solutes` block without `binaryParameters`
@@ -4963,7 +4982,7 @@ accepts today, and that is a policy call.
 > value; done first on the reference plant family, no gate.  The structure
 > plant -> sector -> equipment the review praises is kept.
 
-> **C434 (Vitor, 2026-11-19 05:35, after the landing: "Os casos não correm no
+> **C434 (Vitor, 2026-11-18 05:35, after the landing: "Os casos não correm no
 > Firefox! ... no site aquilo não corre! Faz freeze").**  MEASURED, not
 > reproduced: the live site (built from 9c4ce7c5f) driven in headless
 > Chromium runs all 43 tutorial-tier cases with no finding; driven in
@@ -4983,7 +5002,7 @@ accepts today, and that is a policy call.
 > restart, and after the reboot the site runs.  The cause was the machine,
 > not the site; the two defects above were real and stay fixed.
 
-> **C433 (Vitor, 2026-11-19 04:50, on greenAmmoniaPEQ's Henry block: "porque
+> **C433 (Vitor, 2026-11-18 04:50, on greenAmmoniaPEQ's Henry block: "porque
 > tens o link dos binários e não tens o link dos componentes?"; then, on the
 > architect's first answer that kept `source` for an exception: "Se houver
 > exceção, os parâmetros têm de ficar na pasta em que isso acontece!").**
@@ -5000,7 +5019,7 @@ accepts today, and that is a policy call.
 > parameter set (C431 K3) is `<i>-<j> { set <name>; }`.  No number moves:
 > the file read is the same.  Queued after the landing of integ/all-1119.
 
-> **C427, THE SPIKE'S VERDICT (2026-11-19, the architect on Fable, having
+> **C427, THE SPIKE'S VERDICT (2026-11-18, the architect on Fable, having
 > read the kinds' interface on the branch `build/last-carried`): KEPT, WITH FIVE
 > CONDITIONS BEFORE IT IS CALLED THE MECHANISM.**  What holds: kinds by the
 > explicit factory, each owning its mixing, division, state form, report
@@ -13707,7 +13726,7 @@ accepts today, and that is a policy call.
 > fills in.  UNDER DISCUSSION -- nothing built until Vitor settles the
 > questions put to him that day.
 
-> **C176 + C177 RESUMED (Vitor, 2026-11-19: "avança", on the design below).**
+> **C176 + C177 RESUMED (Vitor, 2026-11-18: "avança", on the design below).**
 > C176 does not wait on Vitor: Labban, Liu, Chong & Lienhard (2017) is in
 > ~/Choupo-Literature (Articles/Membranes and ExperimentalValidation, the
 > journal version and the MIT accepted manuscript), with Fernandez de

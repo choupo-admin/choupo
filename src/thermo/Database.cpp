@@ -582,7 +582,7 @@ DictPtr Database::componentDict(const std::string& name) const
             }
         }
         else
-            //  THE SILENT BACKFILL IS CLOSED (2026-11-19).  An undeclared
+            //  THE SILENT BACKFILL IS CLOSED (2026-11-18).  An undeclared
             //  record was refused by records::checkLocalShadow above, and a
             //  `variationOf` / `distinctFrom` record or a held copy is read
             //  ALONE (readsAlone), so only an `overlayOf` delta reaches this

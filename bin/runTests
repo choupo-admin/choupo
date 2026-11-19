@@ -4269,7 +4269,7 @@ PYEOF
     fi
     rm -f /tmp/colthermo.$$
 
-    # carried-kinds gate (2026-11-19, DEV.md 4c C427, second slice).  The
+    # carried-kinds gate (2026-11-18, DEV.md 4c C427, second slice).  The
     # splitter dropped the size distribution of its feed on every branch, the
     # mass balance closed (a distribution is not a flow) and every golden
     # pinned "unchanged": a quantity a stream carries was a field two units
@@ -6789,7 +6789,7 @@ PYEOF
     fi
     rm -f /tmp/pfphase.$$
 
-    # Datum-flip gate (2026-11-19, design record 7b, contract K1).  An enthalpy
+    # Datum-flip gate (2026-11-18, design record 7b, contract K1).  An enthalpy
     # on one datum subtracted from an enthalpy on another has no physical
     # meaning: a stream joining a pure-fluid package to an elements-datum one
     # (two sectors, or a unit selecting a variant that adds pureFluids) is
@@ -7746,7 +7746,7 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/floorratchet.$$
-    # pressure-in-SI gate (2026-11-19, DEV.md 4c C390).  The reader returns every pressure in Pa; the batch vessel state was documented as bar and five ledger sites priced a package at `P * 1.0e5` (a liquid at 1e10 Pa), silent until the liquid enthalpy gained its pressure term (still01 reboiler +30 -> -468 kJ).  The gate refuses a pressure-named operand multiplied by 1e5 and a pressure member documented in bar, after catching its own probe lines.
+    # pressure-in-SI gate (2026-11-18, DEV.md 4c C390).  The reader returns every pressure in Pa; the batch vessel state was documented as bar and five ledger sites priced a package at `P * 1.0e5` (a liquid at 1e10 Pa), silent until the liquid enthalpy gained its pressure term (still01 reboiler +30 -> -468 kJ).  The gate refuses a pressure-named operand multiplied by 1e5 and a pressure member documented in bar, after catching its own probe lines.
     if gate_exec "$ROOT/bin/curate/check_pressure_si.py" > /tmp/pressuresi.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "pressure-si-gate" "$(head -1 /tmp/pressuresi.$$)"
         pass=$((pass+1))
@@ -7756,6 +7756,16 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/pressuresi.$$
+    # future-date gate (2026-11-19, DEV.md 4c C446).  Registers were stamped with the NEXT day for a day (115 lines, 61 files, 20 files named 2026-11-19-*) because the date came from the conversation, not from `date`.  The gate refuses any ISO date in tracked text or in a tracked file's name that is later than the clock (or HEAD's commit), unless bin/curate/future_dates_allowed.tsv declares it with a reason; two-sided, the list only shrinks.
+    if gate_exec "$ROOT/bin/curate/check_future_dates.py" > /tmp/futuredates.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "future-dates-gate" "$(head -1 /tmp/futuredates.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_future_dates.py)\n" "future-dates-gate"
+        cat /tmp/futuredates.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/futuredates.$$
     # liquid-volume datum gate (2026-11-13, DEV.md 4c C378, TR-12).  A record's `Vliq` belongs to `VliqT` (absent = 298.15 K); a temperature stated in the `Vliq` comment must agree with the key, a record with Tc < 330 K carrying `Vliq` must state its temperature, and the six unresolved records stay pinned by name in bin/curate/vliq_datum_debt.tsv (two-sided).
     if gate_exec "$ROOT/bin/curate/check_vliq_datum.py" > /tmp/vliqdatum.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "vliq-datum-gate" "$(head -1 /tmp/vliqdatum.$$)"

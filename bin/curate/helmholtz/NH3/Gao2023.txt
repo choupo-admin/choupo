@@ -4,7 +4,7 @@
 #   Properties of Ammonia", J. Phys. Chem. Ref. Data 52(1) (2023) 013102,
 #   doi 10.1063/5.0128269.
 # Source read: the AUTHORS' MANUSCRIPT served by NIST (tsapps.nist.gov/
-#   publication/get_pdf.cfm?pub_id=935147), read on 2026-11-19.  It is NOT the
+#   publication/get_pdf.cfm?pub_id=935147), read on 2026-11-18.  It is NOT the
 #   version of record; the journal PDF was not available.  The guard against a
 #   transcription or manuscript error is the paper's own Table 7 (17 state
 #   points, six properties each): the equation reproduces them at the printed
@@ -21,7 +21,7 @@ equation Gao2023
 fluid NH3
 citation K. Gao, J. Wu, I. H. Bell, A. H. Harvey and E. W. Lemmon, A Reference Equation of State with an Associating Term for the Thermodynamic Properties of Ammonia, J. Phys. Chem. Ref. Data 52 (2023) 013102
 url https://doi.org/10.1063/5.0128269
-read 2026-11-19
+read 2026-11-18
 basis molar
 M 17.03052 g/mol
 

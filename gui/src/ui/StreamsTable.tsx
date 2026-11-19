@@ -48,7 +48,6 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { IconExternalLink, IconFileSpreadsheet } from "@tabler/icons-react";
-import { useState } from "react";
 
 import { computePerStream } from "../case/streamComposition.js";
 import { streamNumberResolver } from "../case/streamNumbering.js";
@@ -65,6 +64,7 @@ import {
   temperatureLabel,
 } from "../state/displayUnits.js";
 import { useStore } from "../state/store.js";
+import { SortTh, useSortable, type SortAccessors } from "./SortableTable.js";
 import { popOutStreamsHtml } from "./streamsPopOut.js";
 
 const ROLE_COLORS = {
@@ -154,41 +154,27 @@ export function StreamsTable() {
   // (cyclone capturedSolids) reads F = 0 and an all-zero fluid composition.
   const perStream = computePerStream(result.streams, mws);
 
-  // Sortable columns: click a header to sort asc/desc; default = PFD # ascending
-  // (the sequence).  The table AND the .ods export use sortedStreams, so the
-  // spreadsheet matches exactly what is on screen.
-  const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" }>({ key: "#", dir: "asc" });
+  // Sortable columns: click a header to sort asc/desc (the shared SortableTable
+  // rule); default = PFD # ascending (the sequence).  The table AND the .ods
+  // export use sortedStreams, so the spreadsheet matches exactly what is on screen.
   const Fsi = (s: (typeof result.streams)[number]): number => {
     const ps = perStream[s.name];
     return massBasis ? (ps?.totMass ?? 0) : (ps?.totMol ?? s.F);
   };
-  const rowVal = (s: (typeof result.streams)[number], key: string): number | string => {
-    if (key === "#") return numberOf(s.name) ?? Number.POSITIVE_INFINITY;
-    if (key === "name") return s.name;
-    if (key === "label") return s.boundaryLabel ?? "";
-    if (key === "role") return s.role;
-    if (key === "F") return Fsi(s);
-    if (key === "T") return s.T;
-    if (key === "P") return s.P;
-    if (key === "vf") return s.vf ?? -1;
-    if (key === "pH") return s.speciation?.pH ?? -1;
-    if (key === "solids") return s.F_solid_mass ?? 0;
-    if (key.startsWith("x:")) {
-      const c = key.slice(2); const ps = perStream[s.name];
-      return (massBasis ? ps?.massFrac[c] : ps?.molFrac[c]) ?? -1;
-    }
-    return 0;
+  type StreamRow = (typeof result.streams)[number];
+  const accessors: SortAccessors<StreamRow> = {
+    "#": (s) => numberOf(s.name), name: (s) => s.name, label: (s) => s.boundaryLabel,
+    role: (s) => s.role, F: (s) => Fsi(s), T: (s) => s.T, P: (s) => s.P,
+    vf: (s) => s.vf, pH: (s) => s.speciation?.pH, solids: (s) => s.F_solid_mass ?? 0,
   };
-  const sortedStreams = [...result.streams].sort((a, b) => {
-    const va = rowVal(a, sort.key), vb = rowVal(b, sort.key);
-    const c = typeof va === "number" && typeof vb === "number"
-      ? va - vb : String(va).localeCompare(String(vb));
-    return sort.dir === "asc" ? c : -c;
-  });
-  const toggleSort = (key: string) =>
-    setSort((s) => s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" });
-  const arrow = (key: string) => (sort.key === key ? (sort.dir === "asc" ? " ▲" : " ▼") : "");
-  const thSort = { cursor: "pointer", userSelect: "none" as const };
+  for (const c of components) {
+    accessors[`x:${c}`] = (s) => {
+      const ps = perStream[s.name];
+      return massBasis ? ps?.massFrac[c] : ps?.molFrac[c];
+    };
+  }
+  const sorter = useSortable(result.streams, accessors, { key: "#", dir: "asc" });
+  const sortedStreams = sorter.rows;
 
   // .ods (LibreOffice Calc) export: NUMERIC values in the user's units, in the
   // current sort order, so it opens ready to sort / filter / compute.
@@ -233,48 +219,33 @@ export function StreamsTable() {
     >
         <Table.Thead>
           <Table.Tr>
-            <Table.Th style={{ textAlign: "right", ...thSort }} title="PFD stream number (matches the flowsheet) — click to sort" onClick={() => toggleSort("#")}>#{arrow("#")}</Table.Th>
-            <Table.Th style={thSort} onClick={() => toggleSort("name")}>Stream{arrow("name")}</Table.Th>
+            <SortTh s={sorter} k="#" right title="PFD stream number (matches the flowsheet) — click to sort">#</SortTh>
+            <SortTh s={sorter} k="name">Stream</SortTh>
             {hasLabel && (
-              <Table.Th
-                style={thSort}
-                title="the name the plant's own boundary gives this stream — blank when it never leaves the plant"
-                onClick={() => toggleSort("label")}
-              >
-                Plant label{arrow("label")}
-              </Table.Th>
+              <SortTh s={sorter} k="label"
+                title="the name the plant's own boundary gives this stream — blank when it never leaves the plant">
+                Plant label
+              </SortTh>
             )}
-            <Table.Th style={thSort} onClick={() => toggleSort("role")}>Role{arrow("role")}</Table.Th>
-            <Table.Th style={{ textAlign: "right", ...thSort }} onClick={() => toggleSort("F")}>F ({prefs.flow}){arrow("F")}</Table.Th>
-            <Table.Th style={{ textAlign: "right", ...thSort }} onClick={() => toggleSort("T")}>
-              T ({temperatureLabel(prefs.temperature)}){arrow("T")}
-            </Table.Th>
-            <Table.Th style={{ textAlign: "right", ...thSort }} onClick={() => toggleSort("P")}>
-              P ({prefs.pressure}){arrow("P")}
-            </Table.Th>
-            <Table.Th
-              style={{ textAlign: "right", ...thSort }}
-              title="vapour fraction (mole basis, 0 = liquid, 1 = vapour) — click to sort"
-              onClick={() => toggleSort("vf")}
-            >
-              vf{arrow("vf")}
-            </Table.Th>
+            <SortTh s={sorter} k="role">Role</SortTh>
+            <SortTh s={sorter} k="F" right>F ({prefs.flow})</SortTh>
+            <SortTh s={sorter} k="T" right>T ({temperatureLabel(prefs.temperature)})</SortTh>
+            <SortTh s={sorter} k="P" right>P ({prefs.pressure})</SortTh>
+            <SortTh s={sorter} k="vf" right
+              title="vapour fraction (mole basis, 0 = liquid, 1 = vapour) — click to sort">
+              vf
+            </SortTh>
             {hasSolids && (
-              <Table.Th style={{ textAlign: "right", ...thSort }} onClick={() => toggleSort("solids")}>solids (kg/h){arrow("solids")}</Table.Th>
+              <SortTh s={sorter} k="solids" right>solids (kg/h)</SortTh>
             )}
             {hasSpeciation && (
-              <Table.Th
-                style={{ textAlign: "right", ...thSort }}
-                title="pH of the aqueous phase, from the speciation the package solved — the per-species breakdown is in the Detail view"
-                onClick={() => toggleSort("pH")}
-              >
-                pH{arrow("pH")}
-              </Table.Th>
+              <SortTh s={sorter} k="pH" right
+                title="pH of the aqueous phase, from the speciation the package solved — the per-species breakdown is in the Detail view">
+                pH
+              </SortTh>
             )}
             {components.map((c) => (
-              <Table.Th key={c} style={{ textAlign: "right", ...thSort }} onClick={() => toggleSort(`x:${c}`)}>
-                {fracPrefix}_{c}{arrow(`x:${c}`)}
-              </Table.Th>
+              <SortTh key={c} s={sorter} k={`x:${c}`} right>{fracPrefix}_{c}</SortTh>
             ))}
           </Table.Tr>
         </Table.Thead>

@@ -3,7 +3,7 @@
     Part of Choupo (GPL-3.0-or-later); see NOTICE and AUTHORS.
 
     PairByName -- a binary pair is FOUND BY NAME, as a component is
-    (DEV.md 4c C433, Vitor 2026-11-19: "porque tens o link dos binarios e nao
+    (DEV.md 4c C433, Vitor 2026-11-18: "porque tens o link dos binarios e nao
     tens o link dos componentes?"; "Se houver excecao, os parametros tem de
     ficar na pasta em que isso acontece!").
 

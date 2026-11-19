@@ -94,6 +94,7 @@ CACHE = (Path(os.environ["CHOUPO_THERMOML_HOME"]) if os.environ.get("CHOUPO_THER
 STD = ROOT / "data" / "standards" / "components"
 JOBACK = ROOT / "data" / "standards" / "parameters" / "Joback.dat"
 sys.path.insert(0, str(ROOT / "bin" / "curate"))
+import property_grades as pg  # noqa: E402
 import curation_roots  # noqa: E402  (where a curation case lives: ONE home, DEV.md 4c C295)
 REPRO_CASE = f"{curation_roots.CURATION_REL}/batches/new_components"
 REPRO_CASE2 = f"{curation_roots.CURATION_REL}/batches/new_components_estimated"
@@ -676,7 +677,7 @@ WRITE_ESTIMATED_TB = False
 TB_IMPLAUSIBLE_K = 60.0
 OUTLIER_PCT = 15.0
 GRADES = ("clean", "warning", "severe", "refused")
-LIMITS = (5.0, 10.0, 20.0)
+LIMITS = pg.CLASS_A_PCT      # class A (C336): the ONE home is property_grades.py
 P_MAX_KPA = 200.0
 RACKETT_TREF = 298.15
 #  STATED DEFAULT (DEV.md 4c C287): omega is read off the fitted Antoine at

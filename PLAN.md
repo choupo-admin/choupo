@@ -1,6 +1,6 @@
 # PLAN -- the backlog's view by horizon: now, the next day, the next three days, beyond a week
 
-The view of `BACKLOG.tsv` by horizon (the name "CML plan" retired 2026-11-19, C436; his horizons,
+The view of `BACKLOG.tsv` by horizon (the name "CML plan" retired 2026-11-18, C436; his horizons,
 2026-11-01: "1 h, 1 dia e 3 dias ou mais ... o que não couber pode ficar para
 > 1 semana").  Months and years are `ROADMAP.md`, which feeds the last
 section.  Read at the start of every session (CLAUDE.md rule 8).  Each row

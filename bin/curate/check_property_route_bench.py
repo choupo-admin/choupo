@@ -50,7 +50,7 @@ conductivity per registered model, and, for the sealed copies, the liquid
 viscosity and surface-tension routes.  A sealed copy's message names its case
 by path, with the checkout replaced by `<root>`.
 
-C432 (2026-11-19): THE SEALED COPIES OF data/curation ARE BENCHED TOO.  The
+C432 (2026-11-18): THE SEALED COPIES OF data/curation ARE BENCHED TOO.  The
 sweep's route-keyed reuse of a curation fit (bin/curate/suite_reuse.py,
 bin/curate/property_kernel_objects.tsv) vouches for a fit only when the bench
 has answered, byte for byte as before, every record the fit READS -- and a

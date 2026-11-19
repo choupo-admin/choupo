@@ -137,19 +137,20 @@ export const OFMU_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "The flux of A is its diffusion flux plus its share of the total flux N_t (Taylor and Kooijman Eq. 3.8); "
           + "the low-flux coefficient k, a velocity, sets the diffusion flux (their Eq. 3.44):",
-        eq: String.raw`N_\mathrm{A} = J_\mathrm{A} + y_\mathrm{A}\,N_t, \qquad J_\mathrm{A} = c\,k\,\Delta y` },
+        eq: String.raw`N_\mathrm{A} = J_\mathrm{A} + y_\mathrm{A}\,N_t, \qquad J_\mathrm{A} = c_t\,k\,\Delta y` },
       { step: "If B does not cross (N_B = 0, so N_t = N_A), the film model gives Taylor and Kooijman's Eq. 3.82, here "
           + "with the bulk b and the interface i at the two faces of the gas film:",
-        eq: String.raw`N_\mathrm{A} = c\,k\,\ln\frac{1 - y_{\mathrm{A},i}}{1 - y_{\mathrm{A},b}}` },
+        eq: String.raw`N_\mathrm{A} = c_t\,k\,\ln\frac{1 - y_{\mathrm{A},i}}{1 - y_{\mathrm{A},b}}` },
       { step: "Multiply and divide by y_A,b − y_A,i.  What multiplies the driving force is c k over the log mean of "
           + "1 − y_A, the mole fraction of B:",
-        eq: String.raw`N_\mathrm{A} = \frac{c\,k}{y_\mathrm{B,LM}}\,(y_{\mathrm{A},b} - y_{\mathrm{A},i}), \qquad y_\mathrm{B,LM} = \frac{(1 - y_{\mathrm{A},i}) - (1 - y_{\mathrm{A},b})}{\ln\left[(1 - y_{\mathrm{A},i})/(1 - y_{\mathrm{A},b})\right]}` },
+        eq: String.raw`N_\mathrm{A} = \frac{c_t\,k}{y_\mathrm{B,LM}}\,(y_{\mathrm{A},b} - y_{\mathrm{A},i}), \qquad y_\mathrm{B,LM} = \frac{(1 - y_{\mathrm{A},i}) - (1 - y_{\mathrm{A},b})}{\ln\left[(1 - y_{\mathrm{A},i})/(1 - y_{\mathrm{A},b})\right]}` },
     ],
     formula: String.raw`k_y^\mathrm{s} = \frac{k_y}{y_\mathrm{B,LM}}, \qquad k_x^\mathrm{s} = \frac{k_x}{x_\mathrm{B,LM}}`,
     where: [
       { sym: "J_\\mathrm{A}", means: "diffusion flux of A, relative to the molar-average velocity", unit: "mol/(m² s)" },
       { sym: "y_\\mathrm{A}", means: "mole fraction of A in the gas" },
       { sym: "N_t", means: "total molar flux, the sum over the components", unit: "mol/(m² s)" },
+      { sym: "c_t", means: "total molar density of the phase the film is in (c_G in the gas film)", unit: "mol/m³" },
       { sym: "k", means: "low-flux film coefficient as a velocity (Taylor and Kooijman's k)", unit: "m/s" },
       { sym: "y_{\\mathrm{A},b}", means: "mole fraction of A in the bulk gas" },
       { sym: "y_{\\mathrm{A},i}", means: "mole fraction of A in the gas at the interface" },
@@ -239,8 +240,11 @@ export const OFMU_STEPS: readonly LessonStep[] = [
       + "Kooijman Eq. 3.68, p. 115).  Choupo's rate-based segment does NOT use an overall coefficient: it solves "
       + "both films with the interface compositions as unknowns, and the interface in equilibrium "
       + "(RateBasedSegment.cpp:585), except in the limit mode that checks it against the transfer-unit bed, where the "
-      + "interface equation is linearised about the bulk liquid with one slope m (RateBasedSegment.cpp:597).  The one place the sum appears is the first guess of the profile, "
-      + "1/(1/β_V + m/β_L) on the segment's own coefficients (RateBasedSegment.cpp:679).",
+      + "interface equation is linearised about the bulk liquid with one slope m (RateBasedSegment.cpp:597).  The sum is used as the first guess of the profile, "
+      + "1/(1/β_V + m/β_L) on the segment's own coefficients (RateBasedSegment.cpp:679; again at RateBasedSegment.cpp:690), and its HEIGHT form "
+      + "H_OG = H_G + λ H_L is evaluated on every segment (RateBasedSegment.cpp:471 and RateBasedSegment.cpp:854), where the liquid-film share "
+      + "m(V/L)H_L/H_OG is exactly this step's share; it is published as the profile column HOG (RateBasedSegment.cpp:886), "
+      + "as a diagnostic: the solution itself never uses it.",
     derivation: [
       { step: "Steady state: the flux through the gas film equals the flux through the liquid film (Treybal Eq. 5.1):",
         eq: String.raw`N_\mathrm{A} = k_y\,(y_b - y_i) = k_x\,(x_i - x_b)` },
@@ -291,8 +295,8 @@ export const OFMU_STEPS: readonly LessonStep[] = [
       + "fitted by y = 29.74 x + 6733 x² (his Eq. (1)).  The panel below solves the interface exactly for his data, "
       + "and sets beside it three overall coefficients built from three choices of slope: his average chord, his "
       + "local slope at x*, and the straight Henry line through the origin at the dilute slope 29.74.  The first two "
-      + "land within a percent of the exact flux, because the liquid film holds almost all the resistance and the "
-      + "interface sits close to the bulk liquid.  The straight line is wrong by more than 80 %: it misplaces x* "
+      + "land within a percent of the exact flux, because the liquid film holds almost all the resistance, so the "
+      + "interface sits close to equilibrium with the bulk GAS (x_i is within 2 % of x*, and the slope at x* is nearly the right one).  The straight line is wrong by more than 80 %: it misplaces x* "
       + "itself, the end of the driving force.  Weaken the gas film with the slider and watch the slope choices "
       + "drift apart as the interface moves along the curve.",
     derivation: [
@@ -321,7 +325,7 @@ export const OFMU_STEPS: readonly LessonStep[] = [
       + "one.  Missen et al. treat it on the same two-film model (Sect. 9.2.3, pp. 242-255).  The ENHANCEMENT FACTOR "
       + "E is the flux with reaction over the flux the liquid film would carry without it at the same interface "
       + "concentration (Eq. 9.2-26).  The HATTA NUMBER compares the fastest reaction the film can hold with the "
-      + "fastest transport through it (Eq. 9.2-55); its square is that ratio.  Missen's criterion (p. 253): with Ha "
+      + "fastest transport through it: Ha is defined by Eq. 9.2-40 for a first-order reaction and Eq. 9.2-54 for a second-order one, and its square is that ratio (Eq. 9.2-55; read in Missen's text).  Missen's criterion (p. 253): with Ha "
       + "above about 3 the reaction happens in the liquid film only; below about 0.1 it happens in the bulk liquid, "
       + "and the film carries A as if there were no reaction.  For a first-order or pseudo-first-order reaction "
       + "(B in excess, its concentration the same everywhere) the film equation solves exactly and E = Ha/tanh Ha "

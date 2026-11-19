@@ -396,7 +396,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             //  A duty and an enthalpy rise that are BOTH round-off against the unit's own
             //  enthalpy flow (an adiabatic unit whose outlet T is solved to the Newton
             //  tolerance leaves a few 1e-5 kW on 1e4..1e5 kW) agree: the ratio of two
-            //  noises is not a closure (C390, 2026-11-19: flash19 read -0.03 %).
+            //  noises is not a closure (C390, 2026-11-18: flash19 read -0.03 %).
             const scalar hScale = std::max(std::abs(e.hIn), std::abs(e.hOut));
             const scalar noise  = std::max(1.0e-9, 1.0e-8 * hScale);
             closure = (std::abs(supplied) > noise)
@@ -1078,7 +1078,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         //  The floor stays only to keep the division defined.
         const scalar scale    = std::max(globalExchanged, std::abs(Qext));
         //  NOISE IS RELATIVE TO THE PLANT'S OWN ENTHALPY FLOW, NOT ONLY ABSOLUTE (C390,
-        //  2026-11-19): an adiabatic scrubber whose outlet T is solved to the Newton
+        //  2026-11-18): an adiabatic scrubber whose outlet T is solved to the Newton
         //  tolerance left Q = -7.6e-6 kW on enthalpy flows of 4e5 kW (2e-11 of them),
         //  which passed the absolute 1e-6 kW floor and made the ratio 99.99 % of
         //  nothing.  A duty below 1e-9 of the larger stream enthalpy is round-off.
