@@ -115,7 +115,7 @@ public:
                             const ThermoPackage& thermo,
                             const std::string&   who);
 
-    // Net rate r = r_forward - r_reverse.  `conc` is in mol/m^3 and `x` are the
+    // Net rate r = r_forward - r_reverse.  `conc` is in the caller's amount unit (RateState::amountPerKmol) and `x` are the
     // mole fractions; the law uses whichever its basis asks for.  Units follow
     // the rate constants: mol/(m^3.s) volumetric, or mol/(g_cat.s) when the
     // reactor supplies a catalyst loading.

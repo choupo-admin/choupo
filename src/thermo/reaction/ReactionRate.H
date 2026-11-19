@@ -56,10 +56,11 @@ Description
     (`reactions ( ... );`) take EVERY law through `New`.  `batchReactor` and
     `dynamicCSTR` keep their own readers for the words they own -- the batch
     vessel's `Arrhenius` / `modifiedArrhenius` / `thirdBody` / `falloff`
-    carry CHEMKIN unit conversion and pressure fall-off that no law here
-    has, and the dynamic CSTR's `Arrhenius` is wired into its own energy
-    probe -- and send every OTHER word (`LHHW`, `expression`, a user law)
-    here.  The SINGLE-reaction paths of `cstr` and `pfr` (`reaction
+    are read by its own code (the three CHEMKIN words are ALSO a factory
+    law here, `ElementaryRate`, so a `cstr` / `pfr` runs them with the same
+    grammar and the same unit conversion, in the caller's amount unit), and
+    the dynamic CSTR's `Arrhenius` is wired into its own energy probe -- and
+    send every OTHER word (`LHHW`, `expression`, a user law) here.  The SINGLE-reaction paths of `cstr` and `pfr` (`reaction
     <name>;`) keep their closed-form Arrhenius reader (Damkohler number and
     the analytic first-order check are about THAT law) and refuse any other
     word naming the multi-reaction grammar.  The reactive distillation
