@@ -327,7 +327,7 @@ C361	DONE		Programa de sólidos e modelos legíveis com fonte e janela			2026-11
 C362	NOT-AN-ITEM		A nuvem consolida e prova, não alarga			2026-11-12	S		
 C363	NOT-AN-ITEM		Sessão da nuvem como validadora de componentes e binários			2026-11-12	S		
 C364	NOT-AN-ITEM		Uma só sessão a operar			2026-11-12	S		
-C365	PARTIAL	14	Reimportar o PEQ amoníaco move linhas não autorizadas	bandeira do choupo-import que só aceita as linhas autorizadas e recusa as outras; general a fechar o que falta (19-11).	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-12	S	188143200	
+C365	PARTIAL	14	Reimportar o PEQ amoníaco move linhas não autorizadas	Opção --authorise-rows do choupo-import no main (19-11): só aceita as linhas autorizadas e recusa as outras pelo nome. Falta a outra metade: alargar o bund da PEQ e reimportar com as linhas autorizadas.	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-12	S	188143200	
 C366	DONE		EduTool de mapas de curvas de resíduo			2026-11-12	M	72877cda7	
 C367	DONE		Pontos de ebulição errados e janela de ajuste			2026-11-12	M	34d81eaf1	
 C368	DONE		Organizar a literatura em pastas com nomes intuitivos			2026-11-12	M	b923591c8	
