@@ -35,6 +35,7 @@ Description
 
         omega  LeeKesler     -> closures::leeKeslerOmega(Tb, Tc, Pc_atm)
         Vliq   Rackett       -> closures::rackettVliq(T, Tc, Pc_Pa, omega)
+        Hvap   Watson        -> closures::watsonLatent(Href, Tref, T, Tc)
         Psat   AmbroseWalton -> AmbroseWalton::psat (already a registered
                                 VaporPressureModel: runtime and estimator
                                 share ONE implementation)
@@ -69,6 +70,19 @@ inline double rackettVliq(double T, double Tc, double Pc_Pa, double omega)
     const double Zra = 0.29056 - 0.08775 * omega;
     const double exponent = 1.0 + std::pow(1.0 - Tr, 2.0 / 7.0);
     return (R * Tc / Pc_Pa) * std::pow(Zra, exponent);
+}
+
+//  Watson's latent-heat scaling (exponent 0.38): the heat of vaporisation at
+//  T from a reference value Href at Tref, both below Tc; 0 at or above Tc.
+//  THE one home (DEV.md 4c C454): Component::Hvap_latent and the monomer
+//  datum bridge each wrote this line out (the 2026-11-19 correlation census).
+//  The 0.38 is Watson's exponent; its primary source was not re-read for
+//  this slice, so none is cited here (an invented citation is worse than
+//  none) -- the citation is the next step of the correlation-object work.
+inline double watsonLatent(double Href, double Tref, double T, double Tc)
+{
+    if (T >= Tc) return 0.0;
+    return Href * std::pow((Tc - T) / (Tc - Tref), 0.38);
 }
 
 } // namespace closures
