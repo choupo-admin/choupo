@@ -4726,6 +4726,19 @@ accepts today, and that is a policy call.
 > number that is NOT a run's (a paper's value, a hand calculation) carries
 > no marker and is not checked.
 
+> **C448 (architect, 2026-11-19, from the lote 11-19 sweep).**  batch04_reversible_wgs
+> runs the water-gas shift, a GAS reaction, in a batch vessel whose package
+> declares the phase `liquid` (ideal activity, pureLiquid standard state), so
+> its campaign heat ledger prices the reaction on liquid surfaces: -0.299 kJ
+> before C390 and +0.001 kJ after it, for an extent of 0.42 mol of an
+> exothermic reaction whose heat is of order tens of kJ/mol (to be computed
+> from the catalogue's formation enthalpies, not from memory).  Both numbers
+> are non-physical; C390 only made it visible.  RULED: the case is rebuilt on
+> a vapour phase (ideal gas) or refused by the vessel when a declared liquid
+> carries supercritical species at its T; the ledger is then held to the hand
+> value from the formation enthalpies.  A slice of its own, not added to the
+> lote.
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
