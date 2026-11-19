@@ -128,7 +128,7 @@
      "10.1021/je0340755"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 5.482525998840138,
     "nDois": 7,
     "nKept": 21,
@@ -259,7 +259,7 @@
       "val": 0.01278
      }
     ],
-    "grade": "severe",
+    "grade": "warning",
     "max": 10.043260888604166,
     "nDois": 18,
     "nKept": 116,
@@ -422,7 +422,7 @@
      "10.1021/je0340755"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 7.841661118854814,
     "nDois": 13,
     "nKept": 75,
@@ -605,7 +605,7 @@
      "n": 77,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 7.208151048986999,
     "nDois": 23,
     "nKept": 77,
@@ -839,7 +839,7 @@
      "10.1021/je901043q"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 5.828684429440711,
     "nDois": 20,
     "nKept": 86,
@@ -1530,7 +1530,7 @@
      "10.1021/je060179e"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 6.441415187304211,
     "n": 3.035940547104709,
     "nDois": 5,
@@ -1858,7 +1858,7 @@
      "n": 123,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 8.026885035111619,
     "nDois": 24,
     "nKept": 123,
@@ -2239,7 +2239,7 @@
      "n": 290,
      "origin": "literature"
     },
-    "grade": "severe",
+    "grade": "warning",
     "max": 13.628481726030072,
     "nDois": 70,
     "nKept": 290,
@@ -2710,7 +2710,7 @@
      "n": 71,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 8.03369962144962,
     "nDois": 15,
     "nKept": 71,
@@ -3230,7 +3230,7 @@
      "n": 197,
      "origin": "literature"
     },
-    "grade": "severe",
+    "grade": "warning",
     "max": 11.445791479304756,
     "nDois": 47,
     "nKept": 197,
@@ -3444,7 +3444,7 @@
      "10.1021/je1007197"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 6.431811755571348,
     "nDois": 2,
     "nKept": 16,
@@ -3604,7 +3604,7 @@
       "val": 0.0018277
      }
     ],
-    "grade": "warning",
+    "grade": "clean",
     "max": 5.87232062721077,
     "nDois": 9,
     "nKept": 58,
@@ -3797,7 +3797,7 @@
       "val": 0.000757
      }
     ],
-    "grade": "severe",
+    "grade": "warning",
     "max": 11.904769795329607,
     "nDois": 12,
     "nKept": 58,
@@ -3982,7 +3982,7 @@
      "n": 103,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 9.554932109165492,
     "nDois": 22,
     "nKept": 103,
@@ -4156,7 +4156,7 @@
      "n": 12,
      "origin": "literature"
     },
-    "grade": "severe",
+    "grade": "warning",
     "max": 14.795656547416469,
     "nDois": 4,
     "nKept": 12,
@@ -4550,7 +4550,7 @@
      "n": 93,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 8.511846641300469,
     "nDois": 19,
     "nKept": 93,
@@ -5086,7 +5086,7 @@
      "n": 40,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 5.947742496683461,
     "nDois": 6,
     "nKept": 40,
@@ -5208,7 +5208,7 @@
      "n": 10,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 5.6397249515643395,
     "nDois": 1,
     "nKept": 10,
@@ -5987,7 +5987,7 @@
      "n": 96,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 8.374384236453292,
     "nDois": 24,
     "nKept": 96,
@@ -6505,7 +6505,7 @@
      "n": 40,
      "origin": "literature"
     },
-    "grade": "severe",
+    "grade": "warning",
     "max": 12.839058504822686,
     "nDois": 15,
     "nKept": 40,
@@ -6967,7 +6967,7 @@
      "n": 15,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 7.836698839425349,
     "nDois": 2,
     "nKept": 15,
@@ -7207,7 +7207,7 @@
      "10.1021/acs.jced.9b00074"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 6.012194132024307,
     "nDois": 3,
     "nKept": 35,
@@ -7532,7 +7532,7 @@
      "n": 44,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 9.58671764963065,
     "nDois": 7,
     "nKept": 44,
@@ -7859,7 +7859,7 @@
      "n": 97,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 7.615430310971105,
     "nDois": 13,
     "nKept": 97,
@@ -8185,7 +8185,7 @@
      "n": 35,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 8.400683736799142,
     "nDois": 7,
     "nKept": 35,
@@ -8248,7 +8248,7 @@
      "10.1021/je900307z"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 8.609906783886622,
     "nDois": 11,
     "nKept": 55,
@@ -8565,7 +8565,7 @@
      "n": 155,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 8.615328100810205,
     "nDois": 37,
     "nKept": 155,
@@ -8783,7 +8783,7 @@
      "10.1016/j.jct.2017.03.002"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 7.647714665665228,
     "n": 1.1302051157970088,
     "nDois": 1,
@@ -9185,7 +9185,7 @@
      "n": 432,
      "origin": "literature"
     },
-    "grade": "severe",
+    "grade": "warning",
     "max": 10.622620633726143,
     "nDois": 110,
     "nKept": 432,
@@ -9739,7 +9739,7 @@
      "10.1021/je900525f"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 5.603985056039895,
     "nDois": 19,
     "nKept": 42,
@@ -9884,7 +9884,7 @@
      "10.1021/je800325d"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 7.633091622917165,
     "nDois": 16,
     "nKept": 62,
@@ -10261,7 +10261,7 @@
      "10.1021/je050389b"
     ],
     "dropped": [],
-    "grade": "severe",
+    "grade": "warning",
     "max": 13.218885204000053,
     "nDois": 4,
     "nKept": 26,
@@ -10868,7 +10868,7 @@
      "n": 166,
      "origin": "literature"
     },
-    "grade": "severe",
+    "grade": "warning",
     "max": 11.459614183380062,
     "nDois": 32,
     "nKept": 166,
@@ -11148,7 +11148,7 @@
       "val": 0.00013
      }
     ],
-    "grade": "severe",
+    "grade": "warning",
     "max": 11.285541345952188,
     "n": 1.0950753022232296,
     "nDois": 2,
@@ -11332,7 +11332,7 @@
       "val": 1.2
      }
     ],
-    "grade": "severe",
+    "grade": "warning",
     "max": 11.95947156742523,
     "nDois": 8,
     "nKept": 53,
@@ -11843,7 +11843,7 @@
      "n": 207,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 8.40297899842659,
     "nDois": 57,
     "nKept": 207,
@@ -12406,7 +12406,7 @@
      "n": 39,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 6.425861617035911,
     "nDois": 7,
     "nKept": 39,
@@ -12655,7 +12655,7 @@
      "n": 260,
      "origin": "literature"
     },
-    "grade": "severe",
+    "grade": "warning",
     "max": 10.031140904639946,
     "nDois": 69,
     "nKept": 260,
@@ -13191,7 +13191,7 @@
      "n": 78,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 5.745500606560983,
     "nDois": 16,
     "nKept": 78,
@@ -13370,7 +13370,7 @@
      "n": 60,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 7.157279021477403,
     "nDois": 21,
     "nKept": 60,
@@ -13776,7 +13776,7 @@
      "10.1021/je600552b"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 5.112921241396506,
     "nDois": 2,
     "nKept": 22,
@@ -13810,7 +13810,7 @@
      "10.1021/je600552b"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 8.011043478445966,
     "nDois": 2,
     "nKept": 26,
@@ -14159,7 +14159,7 @@
      "n": 22,
      "origin": "literature"
     },
-    "grade": "severe",
+    "grade": "warning",
     "max": 11.864406779661019,
     "nDois": 5,
     "nKept": 22,
@@ -14211,7 +14211,7 @@
      "10.1021/je200215d"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 5.465004793863848,
     "n": 1.6281809727866023,
     "nDois": 3,
@@ -14315,7 +14315,7 @@
      "n": 77,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 7.349121908900125,
     "nDois": 2,
     "nKept": 77,
@@ -14406,7 +14406,7 @@
      "n": 91,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 5.097625571088182,
     "nDois": 18,
     "nKept": 91,
@@ -14557,7 +14557,7 @@
      "n": 31,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 7.241429954049616,
     "nDois": 4,
     "nKept": 31,
@@ -14617,7 +14617,7 @@
      "n": 46,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 8.950047959861296,
     "nDois": 14,
     "nKept": 46,
@@ -14725,7 +14725,7 @@
      "n": 104,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 7.313448577265125,
     "nDois": 22,
     "nKept": 104,
@@ -14847,7 +14847,7 @@
      "n": 22,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 8.06584258100813,
     "nDois": 4,
     "nKept": 22,
@@ -14894,7 +14894,7 @@
      "n": 5,
      "origin": "literature"
     },
-    "grade": "severe",
+    "grade": "warning",
     "max": 10.49707245357009,
     "nDois": 1,
     "nKept": 5,
@@ -14942,7 +14942,7 @@
       "val": 3.6e-05
      }
     ],
-    "grade": "severe",
+    "grade": "warning",
     "max": 12.620877843180377,
     "n": 1.375380907237779,
     "nDois": 1,
@@ -15139,7 +15139,7 @@
       "val": 0.001098
      }
     ],
-    "grade": "severe",
+    "grade": "warning",
     "max": 10.571229536746829,
     "nDois": 72,
     "nKept": 316,
@@ -15806,7 +15806,7 @@
      "10.1021/je800925v"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 7.690580180068663,
     "nDois": 26,
     "nKept": 115,
@@ -16119,7 +16119,7 @@
       "val": 6.5e-05
      }
     ],
-    "grade": "severe",
+    "grade": "warning",
     "max": 10.19624588051692,
     "nDois": 23,
     "nKept": 199,
@@ -16387,7 +16387,7 @@
      "10.1021/je900969u"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 7.372407410074278,
     "nDois": 27,
     "nKept": 136,
@@ -16877,7 +16877,7 @@
       "val": 0.00036
      }
     ],
-    "grade": "warning",
+    "grade": "clean",
     "max": 6.280871929837295,
     "nDois": 25,
     "nKept": 82,
@@ -17282,7 +17282,7 @@
      "n": 175,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 8.43350392601183,
     "nDois": 42,
     "nKept": 175,
@@ -17675,7 +17675,7 @@
      "n": 361,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 5.810293368454456,
     "nDois": 1,
     "nKept": 361,
@@ -17840,7 +17840,7 @@
       "val": 5.34e-05
      }
     ],
-    "grade": "severe",
+    "grade": "warning",
     "max": 10.664704919135781,
     "nDois": 33,
     "nKept": 211,
@@ -19004,7 +19004,7 @@
      "n": 39,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 9.305204935215695,
     "nDois": 10,
     "nKept": 39,
@@ -19126,7 +19126,7 @@
      "10.1021/je900284z"
     ],
     "dropped": [],
-    "grade": "warning",
+    "grade": "clean",
     "max": 6.965192672974152,
     "nDois": 8,
     "nKept": 69,
@@ -19318,7 +19318,7 @@
      "n": 67,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 6.625542457477418,
     "nDois": 10,
     "nKept": 67,
@@ -19549,7 +19549,7 @@
      "n": 52,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 5.048749527676755,
     "nDois": 19,
     "nKept": 52,
@@ -19963,7 +19963,7 @@
      "n": 169,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 5.312272865077472,
     "nDois": 47,
     "nKept": 169,
@@ -20270,7 +20270,7 @@
      "n": 25,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 5.6466302367944365,
     "nDois": 6,
     "nKept": 25,
@@ -20499,7 +20499,7 @@
      "n": 101,
      "origin": "literature"
     },
-    "grade": "warning",
+    "grade": "clean",
     "max": 8.469407750734458,
     "nDois": 12,
     "nKept": 101,
@@ -21153,7 +21153,7 @@
      "n": 591,
      "origin": "literature"
     },
-    "grade": "severe",
+    "grade": "warning",
     "max": 13.473793399418,
     "nDois": 124,
     "nKept": 591,

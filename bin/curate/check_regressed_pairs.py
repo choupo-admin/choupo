@@ -905,8 +905,9 @@ VP_FLOOR = 16     # promoted under DEV.md 4c C285's graded acceptance (7 clean,
                   # under C283): a collapsed scan surface must not read as a
                   # clean catalogue
 VP_GRADES = ("clean", "warning", "severe", "refused")
-VP_LIMITS_P = (5.0, 10.0, 20.0)   # %, upper limits of clean / warning / severe (C285)
-VP_LIMITS_T = (1.0, 2.0, 4.0)     # K, the same factors (C285's stated default)
+import property_grades as _pg  # noqa: E402  (C336: the ONE home of the limits)
+VP_LIMITS_P = _pg.CLASS_A_PCT   # %, upper limits of clean / warning / severe, class A
+VP_LIMITS_T = _pg.CLASS_C_K     # K, class C
 
 
 def vp_grade(x, limits):
