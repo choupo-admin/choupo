@@ -201,7 +201,7 @@ export const DP_STEPS: readonly LessonStep[] = [
       + "pressure).  The grade is in-sample.  A clean on one temperature or "
       + "one laboratory is capped at warning, and severe fits are no longer "
       + "promoted.",
-    note: "bin/curate/pairs_c283.py:94, :153, :168.  The 17 severe records "
+    note: "The limits live in bin/curate/property_grades.py:26, :28 and pairs_c283 reads them at bin/curate/pairs_c283.py:94; the cap and the refusal to promote: bin/curate/pairs_c283.py:155, :170.  The 17 severe records "
       + "promoted before that rule are still in the catalogue: "
       + "docs/design/binary-pairs-from-open-measurements.md:1335.",
   },
@@ -262,6 +262,8 @@ export const CITATIONS: readonly { file: string; line: number; contains: string 
   { file: "bin/curate/pairs_c283.py", line: 469, contains: "uncertaintyDeclared" },
   { file: "docs/design/binary-pairs-from-open-measurements.md", line: 733, contains: "than they claim" },
   { file: "src/propertyOps/FitObjective.H", line: 50, contains: "`twoStage`" },
+  { file: "bin/curate/property_grades.py", line: 26, contains: "CLASS_A_PCT = (5.0, 10.0, 20.0)" },
+  { file: "bin/curate/property_grades.py", line: 28, contains: "CLASS_C_K = (1.0, 2.0, 4.0)" },
   { file: "bin/curate/pairs_c283.py", line: 94, contains: "GRADE_K" },
   { file: "bin/curate/pairs_c283.py", line: 155, contains: "def cap_grade" },
   { file: "bin/curate/pairs_c283.py", line: 170, contains: "NOT_PROMOTED_GRADES" },
