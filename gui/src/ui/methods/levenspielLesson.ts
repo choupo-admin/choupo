@@ -83,7 +83,10 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
       + "construction needs one condition to mean anything — that −r_A be a "
       + "function of X alone.  Both reactors on this page satisfy it the "
       + "simplest way: isothermal, one liquid phase, one reaction, and the "
-      + "volumetric flow held at its feed value.",
+      + "volumetric flow held at its feed value.  The T knob stops at 360 K for "
+      + "that reason: the 50/50 ethanol/acetic acid feed boils near 364 K at 1 atm "
+      + "and is all vapour near 376 K, where the reactors switch to vapour "
+      + "concentrations and the conversion would jump by phase change, not by kinetics.",
   },
   {
     n: 2,

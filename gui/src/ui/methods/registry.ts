@@ -1017,7 +1017,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "pinch-composite", blurb: "Find the pinch and the minimum hot and cold utility.", label: "Pinch composite curves",
     discipline: "Heat transfer & energy", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],
-    teaches: "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the in-view cascade cross-checked against the engine's targets.",
+    teaches: "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the engine's targets and problem table (problemTable.csv) read back, not recomputed in the page.",
     theory: "ch:pinch",
   },
   {

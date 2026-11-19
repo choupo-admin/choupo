@@ -259,11 +259,16 @@ export function strippingLine(feedInt: Pt, xW: number): Line {
 export function minimumReflux(curve: EqCurve, xF: number, xD: number, q: number): { rMin: number; pinch: Pt | null } {
   const qv = qLine(q, xF);
   const pinchQ = intersectQlineWithCurve(curve, qv, xF);
+  // The tangent scan starts at the q-line pinch, not at xF: for a subcooled feed
+  // (q > 1) that pinch sits to the RIGHT of xF, and on a concave curve the secant
+  // from (xD,xD) is steepest at the smallest x scanned, so starting at xF would
+  // always return the (wrong) point at xF.
+  const xScan = pinchQ ? pinchQ.x : xF;
   let rMinTangent = -Infinity;
   let pinchTangent: Pt | null = null;
   for (const p of curve.pts) {
     if (p.x >= xD - EPS) continue;
-    if (p.x < xF - 1e-6) continue;            // tangent pinch lives between xF and xD
+    if (p.x < xScan - 1e-6) continue;         // tangent pinch lives between the q-line pinch and xD
     const slope = (xD - p.y) / (xD - p.x);    // = R/(R+1)
     if (slope <= 0 || slope >= 1) continue;
     const r = slope / (1 - slope);
@@ -307,11 +312,11 @@ export function minimumStages(curve: EqCurve, xD: number, xW: number, partialReb
   while (x > xW + 1e-6 && n < STEP_CAP) {
     const y = x;                       // op-line is the 45° diagonal
     const xEq = xForY(curve, y);
-    if (xEq >= x - 1e-9) break;        // not advancing → pinched even at total reflux
+    if (xEq >= x - 1e-9) return Infinity; // not advancing → pinched even at total reflux (azeotrope): no finite N_min
     x = xEq;
     n++;
   }
-  if (!partialReboiler && n > 0) n -= 0; // a (rare) total reboiler is not a stage
+  void partialReboiler;                  // N_min counts equilibrium stages; the reboiler flag does not change it
   return n;
 }
 
