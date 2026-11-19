@@ -43,7 +43,7 @@ solubilityParameter 19350;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
 standardThermochemistry
 {
     dHf_298   -408800.0;       // J/mol  ideal-gas reference (Poling 5e App. A Sec. B)
-    s_298      321.27;         // J/(mol·K)  derived, see header
+    s_298      321.27;         // J/(mol·K)  DERIVED (not a table value): dS_f = (dHf - dGf)/298.15 from Poling App. A Sec. B, plus CODATA element entropies
 }
 
 vaporPressure

@@ -79,13 +79,13 @@ SOURCE_LICENCE = {
         "'Curated from DECHEMA by V. Geraldes' over the VLE-IG bank -- direct "
         "transcription, the form the protocol names.  The bulk of the pair "
         "catalogue already moved to data/local/ in the legal scrub; this one "
-        "survived and should follow.",
+        "survived and should follow.  What would discharge it: a published NRTL parameter set for ethanol+water in the engine's tau = a + b/T form covering 298-373 K (Voutsas 2011 Table 8 is quadratic in T and Kamihama 2012 Table 8 is 1 atm only, both in ~/Choupo-Literature), or a refit of the pair with its ~180 consumers re-recorded.",
     "data/standards/parameters/SRK/N2-CH4.dat":
         "BORDERLINE, awaiting a ruling: cites Knapp, Doering, Oellrich, "
         "Ploecker & Prausnitz (1982) -- named authors of a published monograph "
         "that happens to appear in the DECHEMA series.  A named monograph is "
         "arguably a primary publication, not a databank transcription.  Ruled "
-        "either way it should be explicit, not incidental.",
+        "either way it should be explicit, not incidental.  What would discharge it: a ruling that the named monograph is a primary, or a kij fitted by Choupo to a measured N2-CH4 VLE set (Stryjek, Chappelear & Kobayashi 1974 is in ~/Choupo-Literature) and cited as such.",
 }
 
 #  NC_COMPILATION -- values whose ORIGIN is a NonCommercially-licensed
@@ -156,25 +156,15 @@ SOURCE_LICENCE = {
 #  N2H2 held another isomer's value under their own name); C2O's is the
 #  report's (a JANAF-era dHf about 88 kJ/mol below modern determinations) and
 #  is kept, marked interim with that reason.  No shipped case reads any of the
-#  twenty, so no golden moved.  ATcT was NOT used: neither its site nor its
+#  twenty, so no golden moved.  2026-11-19 (C335): C3H5, C5H5, CH3O2, HSO, HSO3
+#  and N2H3 were REMOVED (no tutorial, curation batch, fixture or GUI test reads
+#  them); C4H4 stays because Henry/C4H4-water.dat reads it.  ATcT was NOT used: neither its site nor its
 #  OSTI dataset records (DOI 10.17038/CSE/3703591) state any licence, and the
 #  authors are contractor staff, so 17 U.S.C. 105 does not apply -- silence is
 #  not a grant (CLAUDE.md 6, the sigma-profile rule).  The seven left:
 NC_COMPILATION = {
-    "data/standards/components/C3H5.dat":
-        "the report has an allyl entry (`C3H5,allyl`), but its OWN source line for it is 'Burcat,2001 p58' -- the NonCommercial compiler's earlier report; taking the value through NASA would launder it (C335, 2026-11-12).  Remedy: a primary for allyl outside that compilation, or Vitor's ruling on whether a public-domain republication frees it.",
     "data/standards/components/C4H4.dat":
         "the record is VINYLACETYLENE; the report's only C4H4 entry is 1,3-cyclobutadiene, a different molecule (C335, 2026-11-12).  Remedy: a clean primary for vinylacetylene, or removal (no shipped case reads this record).",
-    "data/standards/components/C5H5.dat":
-        "the report has no C5H5 entry (C335, 2026-11-12).  Remedy: a clean primary for cyclopentadienyl, or removal (no shipped case reads this record).",
-    "data/standards/components/CH3O2.dat":
-        "the report has no CH3O2 (methylperoxy) entry, only CH3OOH (C335, 2026-11-12).  Remedy: a clean primary, or removal (no shipped case reads this record).",
-    "data/standards/components/HSO.dat":
-        "the report has no HSO entry (C335, 2026-11-12).  Remedy: a clean primary, or removal (no shipped case reads this record).",
-    "data/standards/components/HSO3.dat":
-        "the report has no HSO3 entry (C335, 2026-11-12).  Remedy: a clean primary, or removal (no shipped case reads this record).",
-    "data/standards/components/N2H3.dat":
-        "the report has no N2H3 entry (C335, 2026-11-12).  Remedy: a clean primary, or removal (no shipped case reads this record).",
 }
 
 #  basis01_two_unit_chain LEFT 2026-11-12 (C335): the importer's validator
