@@ -10,6 +10,7 @@
     SPDX-License-Identifier: GPL-3.0-or-later
     Credit and attribution: see AUTHORS
     Required legal notices:  see NOTICE
+\*---------------------------------------------------------------------------*/
 import { describe, expect, it } from "vitest";
 
 import { inactiveLines, unreadKeysFromLog } from "../src/case/inactiveKeys.js";

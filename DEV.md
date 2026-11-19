@@ -4835,7 +4835,8 @@ accepts today, and that is a policy call.
 
 > **C453 and C454 (architect, 2026-11-19, from the cloud's outside reviews Vitor
 > asked for: docs/reviews/2026-11-19-units-correlations-edutools/,
-> -edutools-batch-cd/, -edutools-batch-ef/, -edutools-batch-gh/).**  Weighed;
+> docs/reviews/2026-11-19-edutools-batch-cd/, docs/reviews/2026-11-19-edutools-batch-ef/,
+> docs/reviews/2026-11-19-edutools-batch-gh/).**  Weighed;
 > they hold as written.  C453 -- the WRONG statements in 32 EduTool lessons
 > (batch A/B: McCabe R_min for a subcooled feed, the azeotrope readout,
 > Ponchon's promise, ...; C/D: rayleigh, residueCurves, hunterNash, slePair,
@@ -4857,7 +4858,7 @@ accepts today, and that is a policy call.
 > correlation objects by reach (Rackett, Watson, Schock-Miquel, the
 > heat-transfer citation, one Ergun); no golden may move from the unit work.
 > **C453 EXTENDED and C455 (architect, 2026-11-19, from the cloud's batches I-P,
-> docs/reviews/2026-11-19-edutools-batch-{ij,kl,mn,op}/; all 75 lessons now
+> docs/reviews/2026-11-19-edutools-batch-ij/ (and -kl, -mn, -op); all 75 lessons now
 > reviewed, about 80 wrong statements, every one demonstrated).**  C453 takes
 > the four new batches as four more slices.  C455 (ARCHITECTURE): the five
 > classes the sweep found recurring become the machinery that stops them --
