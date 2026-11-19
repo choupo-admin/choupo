@@ -41,20 +41,34 @@ MOLECULES), `=` `<=>` `=>`, `+M`, `(+M)`, and the auxiliary lines: third-body
 efficiencies, LOW, TROE, SRI, PLOG, REV, DUPLICATE/DUP, FORD, RORD.  Comments
 are `!`.
 
-WHAT IS WRITTEN AS A REACTION.  Elementary mass action, b == 0, no third body,
-no falloff, no PLOG, no FORD/RORD, no DUPLICATE (the engine's `kinetics {}`
-holds ONE Arrhenius expression, src/thermo/reaction/RateLaw.cpp:55-86; a b != 0
-reaction would need a modified-Arrhenius law RateLaw does not read -- listed as
-refused).  `=`/`<=>` -> `reversible true` (detailed balance, RateLaw.cpp:86);
-`=>` -> irreversible; REV -> `A_rev`/`Ea_rev`.
-
-UNITS, READ FROM THE SOURCE (not assumed).  The engine's concentrations are
-mol/m^3 (RateLaw.H, netRate: `conc` is in mol/m^3) and the rate constant is
-A exp(-Ea/(R T)) with Ea in J/mol (Reaction.cpp arrheniusRate, R in J/(mol K)).
-CHEMKIN's A is in cm, mol, s: (cm^3/mol)^(n-1)/s; for a reaction of order n,
-A_SI = A (1e-6)^(n-1).  With MOLECULES, A is (cm^3/molecule)^(n-1)/s and the
-factor is (1e-6 N_A)^(n-1).  Ea is converted to J/mol from the header unit.
-n is the sum of the reactant coefficients (REV: of the products).
+WHAT IS WRITTEN AS A REACTION.  The engine's own CHEMKIN-native kinetics grammar
+(src/unitOperations/batch/BatchReactor.cpp:226-312): `kinetics { type; A; b; Ea;
+units { A "cm3/mol/s"; Ea "<unit>"; } }`.  A and Ea are written AS PRINTED; the
+engine converts A (cm-mol-s -> kmol-m3-s, ckA_) and Ea (ckEa_) itself, so this
+tool does no A conversion.  Mapping: plain -> modifiedArrhenius (b may be 0, as
+tutorials/batch/combustion/ignition01_h2o2); `+M` -> thirdBody with
+`thirdBody { species eff; }`; `(+M)` with LOW (+TROE) -> falloff (main A/b/Ea =
+kInf, `low {}`, `troe ( ... )`, efficiencies); `=`/`<=>` -> `reversible true`
+(detailed balance from the curated thermo), `=>` -> irreversible; DUPLICATE
+reactions are written as separate entries (the engine sums the rates of the
+entries a unit lists, as ignition01's 14a/14b and 19a/19b).  order = reactant
+coefficient (0 for products).  Ea units: cal/mol, kcal/mol, kJ/mol, J/mol are
+passed through for the engine; KELVINS (Ea = R * value, R = 8.314462618) and
+EVOLTS (Ea = F * value, F of src/core/Constants.H) are converted HERE to J/mol
+because the engine's Ea reader has no such word.
+REFUSED BY NAME (listed in mechanismImport.txt): SRI, PLOG, FORD/RORD, REV (the
+engine reads an explicit reverse only on `type Arrhenius` in SI and refuses it
+beside a units block), `(+M)` without LOW, `(+species)` colliders, MOLECULES
+(ckA_ has no Avogadro factor), species on both sides of a reversible reaction,
+non-integer molecularity, charged species.
+WHO READS THESE TYPES.  modifiedArrhenius / thirdBody / falloff are read by
+batchReactor ONLY (BatchReactor.cpp; ReactionRate.H:56-66 says cstr, pfr and
+dynamicCSTR read Arrhenius and the factory laws): written reactions are
+"runnable in batchReactor" and nowhere else.  A mechanism of b == 0 reactions
+only would also fit `type Arrhenius` elsewhere, but this tool writes the one
+grammar the CHEMKIN units block needs.
+`--reactions-only` writes constant/reactions and mechanismImport.txt without
+thermo or component records (the case keeps its own thermo).
 
 WHAT A SPECIES RECORD CARRIES.  MW from the composition with the engine's own
 table (src/thermo/AtomicWeights.cpp, read at run time -- one home); formula;
@@ -252,51 +266,75 @@ def parse_reactions(lines, header_words):
         if cur is None:
             continue
         up = s.upper()
+        nums = lambda t: [float(x.replace("D", "E").replace("d", "e"))
+                          for x in re.findall(r'[-+]?\d*\.?\d+(?:[eEdD][-+]?\d+)?', t)]
         if up in ("DUP", "DUPLICATE"):
             cur["tags"].add("DUPLICATE")
-        elif up.startswith(("LOW", "TROE", "SRI", "PLOG")):
+        elif up.startswith("LOW"):
+            cur["tags"].add("LOW")
+            cur["low"] = nums(s[3:].replace("/", " "))
+        elif up.startswith("TROE"):
+            cur["tags"].add("TROE")
+            cur["troe"] = nums(s[4:].replace("/", " "))
+        elif up.startswith(("SRI", "PLOG")):
             cur["tags"].add(re.match(r'[A-Z]+', up).group(0))
         elif up.startswith(("FORD", "RORD")):
             cur["tags"].add("FORD")
         elif up.startswith("REV"):
-            nums = re.findall(r'[-+0-9.eEdD]+', s[3:].replace("/", " "))
-            cur["rev"] = tuple(float(x.replace("D", "E")) for x in nums[:3])
+            cur["rev"] = tuple(nums(s[3:].replace("/", " "))[:3])
         elif "/" in s:
-            cur["tags"].add("EFF")           # third-body efficiencies
+            pat = r'(\S+?)\s*/\s*([-+0-9.eEdD]+)\s*/'
+            effs = re.findall(pat, s)
+            if effs and re.sub(pat, '', s).strip() == "":
+                cur["tags"].add("EFF")           # third-body efficiencies
+                cur.setdefault("eff", {}).update({k: float(v.replace("D", "E")) for k, v in effs})
+            else:
+                cur["tags"].add("AUX?")
         else:
             cur["tags"].add("AUX?")
     return rxns, ea_unit, molecules
 
 
-def classify(rx, species):
-    """-> (kind, reason); kind None = runnable.  Fills rx r, p, arrow."""
+def classify(rx, species, molecules=False):
+    """-> (kind, reason); kind None = runnable.  Fills rx r, p, arrow, tb, fo."""
     try:
         r, p, arrow, tb, fo = parse_equation(rx["eq"], species)
     except Refusal as e:
         return "unparsed", str(e)
-    rx.update(r=r, p=p, arrow=arrow)
+    rx.update(r=r, p=p, arrow=arrow, tb=tb, fo=fo)
     t = rx["tags"]
-    if fo is not None or {"LOW", "TROE", "SRI"} & t:
-        return "falloff", "pressure falloff, (+M) with LOW/TROE/SRI"
+    if molecules:
+        return "MOLECULES", "units MOLECULES: the engine's cm-mol-s reader has no Avogadro factor (BatchReactor::ckA_)"
+    if "SRI" in t:
+        return "SRI", "SRI falloff form is not read by the engine"
     if "PLOG" in t:
-        return "PLOG", "pressure-dependent PLOG rate"
-    if tb:
-        return "thirdBody", "third-body (+M) reaction"
+        return "PLOG", "pressure-dependent PLOG rate is not read by the engine"
     if "FORD" in t:
         return "FORD/RORD", "explicit reaction orders (FORD/RORD) are not read"
-    if "DUPLICATE" in t:
-        return "DUPLICATE", "duplicate rate expression: the engine holds one Arrhenius per reaction"
     if "AUX?" in t:
         return "unparsed", "unrecognised auxiliary line"
-    if rx["b"] != 0.0:
-        return "bNonZero", "temperature exponent b = %g != 0 (A T^b exp(-Ea/RT) is not run by RateLaw)" % rx["b"]
     if rx["rev"] is not None:
-        if arrow == "=>":
-            return "REV", "REV on an irreversible reaction"
-        if rx["rev"][1] != 0.0:
-            return "bNonZero", "REV exponent b_rev = %g != 0" % rx["rev"][1]
+        return "REV", ("explicit reverse (REV): the engine reads A_rev/Ea_rev only on `type Arrhenius` "
+                       "in SI and refuses it beside a units block (BatchReactor.cpp, explicitReverse)")
+    if fo is not None:
+        if fo != "M":
+            return "falloff", "(+%s): only a (+M) collider is read (per-species efficiencies)" % fo
+        if "LOW" not in t:
+            return "falloff", "(+M) without LOW: no low-pressure limit to blend"
+        if len(rx.get("low", [])) != 3:
+            return "falloff", "LOW does not carry three numbers"
+        if "TROE" in t and len(rx.get("troe", [])) not in (3, 4):
+            return "falloff", "TROE does not carry three or four numbers"
+    elif "LOW" in t or "TROE" in t:
+        return "falloff", "LOW/TROE without (+M)"
+    elif "EFF" in t and not tb:
+        return "unparsed", "third-body efficiencies on a reaction without M"
     if arrow == "<=>" and (set(r) & set(p)):
         return "bothSides", "species on both sides: order != |nu|, detailed balance refuses it"
+    if abs(sum(r.values()) - round(sum(r.values()))) > 1e-12:
+        return "molecularity", "non-integer molecularity: the engine refuses it for a cm unit"
+    if any(sp not in species for sp in rx.get("eff", {})):
+        return "unparsed", "third-body efficiency names an unknown species"
     return None, ""
 
 
@@ -398,30 +436,46 @@ provenance
        rec["Tlow"], rec["Tcommon"], rec["Thigh"], prov, blk, prov)
 
 
-def a_si(A, order, molecules):
-    f = 1e-6 * (N_A if molecules else 1.0)
-    return A * f ** (order - 1.0)
+EA_WORD = {"CAL/MOLE": ("cal/mol", 1.0), "KCAL/MOLE": ("kcal/mol", 1.0),
+           "JOULES/MOLE": ("J/mol", 1.0), "KJOULES/MOLE": ("kJ/mol", 1.0),
+           "KELVINS": ("J/mol", R_GAS), "EVOLTS": ("J/mol", EV_J_MOL)}
 
 
-def reaction_text(idx, rx, cname, unit, molecules):
+def reaction_text(idx, rx, cname, unit):
+    """One reaction in the engine's CHEMKIN-native grammar (BatchReactor.cpp
+    kinetics {type; A; b; Ea; units{}}).  A and Ea stay as PRINTED: the engine
+    converts them.  Only KELVINS (Ea = R * value) and EVOLTS (Ea = F * value,
+    src/core/Constants.H F) are converted here, because the engine's Ea reader
+    knows cal, kcal, kJ and J only."""
     nu = {}
     for s, n in rx["r"].items():
         nu[s] = nu.get(s, 0.0) - n
     for s, n in rx["p"].items():
         nu[s] = nu.get(s, 0.0) + n
-    st = " ".join("{component %s; nu %g; order %g;}" % (cname[s], v, rx["r"].get(s, 0.0))
-                  for s, v in nu.items())
+    st = "\n".join("        { component %s; nu %g; order %g; }" % (cname[s], v, rx["r"].get(s, 0.0))
+                   for s, v in nu.items())
     lim = cname[next(iter(rx["r"]))] if rx["r"] else cname[next(iter(rx["p"]))]
-    kin = "type Arrhenius; A %.8e; Ea %.8e;" % (
-        a_si(rx["A"], sum(rx["r"].values()), molecules), rx["Ea"] * EA_UNITS[unit])
-    extra = ""
-    if rx["rev"] is not None:
-        kin += " A_rev %.8e; Ea_rev %.8e;" % (
-            a_si(rx["rev"][0], sum(rx["p"].values()), molecules), rx["rev"][2] * EA_UNITS[unit])
-    elif rx["arrow"] == "<=>":
-        extra = " reversible true;"
-    return "// %s\nr%03d { limitingReactant %s; stoichiometry ( %s );%s kinetics { %s } }\n" % (
-        rx["eq"], idx, lim, st, extra, kin)
+    uw, f = EA_WORD[unit]
+    ea = lambda x: "%.10g" % (x * f)
+    un = 'units { A "cm3/mol/s"; Ea "%s"; }' % uw
+    tbl = lambda: "thirdBody { %s }" % " ".join("%s %.10g;" % (cname[s], v) for s, v in rx.get("eff", {}).items())
+    if rx["fo"] is not None:
+        lo = rx["low"]
+        k = ["type falloff;", "A %.10g;  b %.10g;  Ea %s;" % (rx["A"], rx["b"], ea(rx["Ea"])),
+             "low  { A %.10g;  b %.10g;  Ea %s;  %s }" % (lo[0], lo[1], ea(lo[2]), un)]
+        if "troe" in rx:
+            k.append("troe ( %s );" % " ".join("%.10g" % x for x in rx["troe"]))
+        if rx.get("eff"):
+            k.append(tbl())
+        k.append(un)
+    elif rx["tb"]:
+        k = ["type thirdBody;", "A %.10g;  b %.10g;  Ea %s;" % (rx["A"], rx["b"], ea(rx["Ea"])), tbl(), un]
+    else:
+        k = ["type modifiedArrhenius;", "A %.10g;  b %.10g;  Ea %s;" % (rx["A"], rx["b"], ea(rx["Ea"])), un]
+    rev = "    reversible        true;\n" if rx["arrow"] == "<=>" else ""
+    return ("// %s\nr%03d\n{\n%s    limitingReactant  %s;\n    stoichiometry\n    (\n%s\n    );\n"
+            "    kinetics\n    {\n%s\n    }\n}\n\n") % (
+        rx["eq"], idx, rev, lim, st, "\n".join("        " + x for x in k))
 
 
 def refuse_output(case):
@@ -432,7 +486,7 @@ def refuse_output(case):
                       "this tool writes a case's constant/ only")
 
 
-def convert(mech_path, thermo_path, case, licence):
+def convert(mech_path, thermo_path, case, licence, reactions_only=False):
     if not licence or not licence.strip():
         raise Refusal("--licence is required: the provenance of every record names it")
     refuse_output(case)
@@ -446,9 +500,11 @@ def convert(mech_path, thermo_path, case, licence):
     sec = split_sections(mtxt)
     species = [w for ln in sec.get("SPEC", [[], []])[1] for w in ln.split()]
     tsec = split_sections(ttxt) if ttxt else sec
-    if "THERMO" not in tsec:
+    if "THERMO" not in tsec and not reactions_only:
         raise Refusal("no THERMO section (give --thermo)")
-    thermo = parse_thermo(tsec["THERMO"][1], tsec["THERMO"][0])
+    thermo = {}
+    if "THERMO" in tsec and not reactions_only:
+        thermo = parse_thermo(tsec["THERMO"][1], tsec["THERMO"][0])
     aw = atomic_weights()
     cname, seen = {}, {}
     for s in species:
@@ -459,9 +515,15 @@ def convert(mech_path, thermo_path, case, licence):
         cname[s] = c
     source = os.path.basename(mech_path) + (" + " + os.path.basename(thermo_path) if thermo_path else "")
     cdir = os.path.join(case, "constant")
-    os.makedirs(os.path.join(cdir, "components"), exist_ok=True)
+    if not reactions_only:
+        os.makedirs(os.path.join(cdir, "components"), exist_ok=True)
+    else:
+        os.makedirs(cdir, exist_ok=True)
     written_sp, refused_sp = [], []
     for s in species:
+        if reactions_only:
+            written_sp.append(s)
+            continue
         if s not in thermo:
             refused_sp.append((s, "no THERMO record"))
             continue
@@ -478,7 +540,7 @@ def convert(mech_path, thermo_path, case, licence):
     ok, refused, counts = [], [], {}
     bad_sp = {s for s, _ in refused_sp}
     for r in rx:
-        kind, why = classify(r, set(species))
+        kind, why = classify(r, set(species), mol)
         used = (set(r.get("r", {})) | set(r.get("p", {}))) & bad_sp
         if kind is None and used:
             kind, why = "speciesRefused", "uses a species with no usable record: " + ", ".join(sorted(used))
@@ -488,14 +550,19 @@ def convert(mech_path, thermo_path, case, licence):
         else:
             ok.append(r)
     head = ("/*--- constant/reactions: imported by bin/curate/chemkin_to_choupo.py ---*/\n"
-            "// Mechanism: %s.  Licence: %s\n// Units converted: A cm3/mol/s -> m3/mol/s, Ea %s -> J/mol.\n"
-            "// Only elementary mass-action reactions with b = 0 are written; see mechanismImport.txt.\n"
-            % (source, licence.replace("\n", " "), unit))
+            "// Mechanism: %s.  Licence: %s\n"
+            "// CHEMKIN-native: A and Ea are written AS PRINTED (A cm3-mol-s, Ea %s) with a units{} block;\n"
+            "// the engine converts and announces (BatchReactor ckA_/ckEa_).  Runnable in batchReactor.\n"
+            "// Reactions not written: see mechanismImport.txt.\n"
+            % (source, licence.replace("\n", " "), EA_WORD[unit][0]))
     with open(os.path.join(cdir, "reactions"), "w", encoding="utf-8") as f:
-        f.write(head + "".join(reaction_text(i + 1, r, cname, unit, mol) for i, r in enumerate(ok)))
+        f.write(head + "".join(reaction_text(i + 1, r, cname, unit) for i, r in enumerate(ok)))
     lines = ["CHEMKIN import: %s" % source, "licence: %s" % licence,
              "species: %d, written %d, not written %d" % (len(species), len(written_sp), len(refused_sp)),
              "reactions: %d, written %d, not written %d" % (len(rx), len(ok), len(refused))]
+    lines += ["written reactions are runnable in batchReactor ONLY (kinetics types modifiedArrhenius, thirdBody,",
+              "  falloff are read by BatchReactor.cpp alone; cstr, pfr and dynamicCSTR read Arrhenius and the",
+              "  factory laws and refuse these words by name)"]
     lines += ["  not written, by kind: %s = %d" % kv for kv in sorted(counts.items())]
     lines += ["SPECIES NOT WRITTEN:"] + ["  %s: %s" % x for x in refused_sp]
     lines += ["REACTIONS NOT WRITTEN:"] + ["  %s   [%s] %s" % x for x in refused]
@@ -504,6 +571,169 @@ def convert(mech_path, thermo_path, case, licence):
         f.write(rep)
     sys.stdout.write(rep)
     return dict(ok=ok, refused=refused, counts=counts, species=written_sp, refused_sp=refused_sp)
+
+
+# ---------------------------------------------------------------- round trip
+def _block(txt, i):
+    """txt[i] == '{' -> index just past the matching '}'."""
+    d = 0
+    for j in range(i, len(txt)):
+        d += (txt[j] == "{") - (txt[j] == "}")
+        if d == 0:
+            return j + 1
+    raise Refusal("unbalanced braces")
+
+
+def read_choupo_reactions(path):
+    """Read a case's constant/reactions in the CHEMKIN-native grammar into plain
+    data (the tool's own reader, for the exporter and the equivalence check)."""
+    txt = re.sub(r'/\*.*?\*/', '', open(path, encoding="utf-8").read(), flags=re.S)
+    txt = re.sub(r'//[^\n]*', '', txt)
+    out = []
+    for m in re.finditer(r'^(\w+)\s*\{', txt, re.M):
+        if m.group(1) == "provenance":
+            continue
+        body = txt[m.end() - 1:_block(txt, m.end() - 1)]
+        num = lambda k, t: float(re.search(r'\b%s\s+([-+0-9.eE]+)\s*;' % k, t).group(1))
+        st = {c: (float(n), float(o)) for c, n, o in re.findall(
+            r'component\s+(\w+)\s*;\s*nu\s+([-+0-9.eE]+)\s*;\s*order\s+([-+0-9.eE]+)\s*;', body)}
+        ki = body.index("kinetics")
+        kin = body[ki:_block(body, body.index("{", ki))]
+        r = dict(name=m.group(1), reversible=bool(re.search(r'reversible\s+true', body)), st=st,
+                 limiting=re.search(r'limitingReactant\s+(\w+)', body).group(1))
+        r["type"] = re.search(r'type\s+(\w+)\s*;', kin).group(1)
+        low = None
+        r["low_units"] = ()
+        lm = re.search(r'\blow\s*\{', kin)
+        if lm:
+            lb = kin[lm.end() - 1:_block(kin, lm.end() - 1)]
+            low = (num("A", lb), num("b", lb), num("Ea", lb))
+            kin = kin.replace(lb, "")
+            r["low_units"] = tuple(re.findall(r'(?:A|Ea)\s+"([^"]*)"', lb))
+        r["low"] = low
+        r["A"] = num("A", kin)
+        r["b"] = num("b", kin) if re.search(r'\bb\s', kin) else 0.0
+        r["Ea"] = num("Ea", kin)
+        r["units"] = tuple(re.findall(r'(?:A|Ea)\s+"([^"]*)"', kin))
+        tm = re.search(r'troe\s*\(([^)]*)\)', kin)
+        r["troe"] = [float(x) for x in tm.group(1).split()] if tm else None
+        em = re.search(r'thirdBody\s*\{([^}]*)\}', kin)
+        r["eff"] = ({k: float(v) for k, v in re.findall(r'(\w+)\s+([-+0-9.eE]+)\s*;', em.group(1))}
+                    if em else None)
+        out.append(r)
+    return out
+
+
+def export_chemkin(rxns):
+    """Choupo reactions -> CHEMKIN REACTIONS text (KCAL/MOLE; cm3-mol-s), for the round trip."""
+    sp = []
+    for r in rxns:
+        for c in r["st"]:
+            if c not in sp:
+                sp.append(c)
+        if r["units"][1:2] != ("kcal/mol",) or (r["low"] and r["low_units"][1:2] != ("kcal/mol",)):
+            raise Refusal("the exporter reads Ea in kcal/mol only")
+    fulls = []
+    for r in rxns:
+        lhs = [("%g " % -n if -n != 1 else "") + c for c, (n, o) in r["st"].items() if n < 0]
+        rhs = [("%g " % n if n != 1 else "") + c for c, (n, o) in r["st"].items() if n > 0]
+        if r["type"] == "thirdBody":
+            lhs.append("M")
+            rhs.append("M")
+        lt, rt = " + ".join(lhs), " + ".join(rhs)
+        if r["type"] == "falloff":
+            lt, rt = lt + "(+M)", rt + "(+M)"
+        fulls.append("%s %s %s" % (lt, "<=>" if r["reversible"] else "=>", rt))
+    L = ["ELEMENTS H O N END", "SPECIES " + " ".join(sp) + " END", "REACTIONS KCAL/MOLE"]
+    for r, full in zip(rxns, fulls):
+        L.append("%-44s %.10g %.10g %.10g" % (full, r["A"], r["b"], r["Ea"]))
+        if r["low"]:
+            L.append("   LOW / %.10g %.10g %.10g /" % r["low"])
+        if r["troe"]:
+            L.append("   TROE / %s /" % " ".join("%.10g" % x for x in r["troe"]))
+        if r["eff"]:
+            L.append("   " + " ".join("%s/%.10g/" % kv for kv in r["eff"].items()))
+        if fulls.count(full) > 1:
+            L.append("   DUP")
+    return "\n".join(L + ["END", ""])
+
+
+def equivalent(a, b):
+    """-> list of differences between two read reaction lists (order-matched)."""
+    if len(a) != len(b):
+        return ["reaction count %d vs %d" % (len(a), len(b))]
+    d = []
+    close = lambda x, y: abs(x - y) <= 1e-9 * max(abs(x), abs(y), 1e-300)
+    for k, (x, y) in enumerate(zip(a, b)):
+        tag = "#%d %s" % (k + 1, x["name"])
+        for key in ("reversible", "type", "units", "low_units"):
+            if x.get(key) != y.get(key):
+                d.append("%s: %s %r vs %r" % (tag, key, x.get(key), y.get(key)))
+        if x["st"].keys() != y["st"].keys() or any(
+                not (close(x["st"][c][0], y["st"][c][0]) and close(x["st"][c][1], y["st"][c][1])) for c in x["st"]):
+            d.append("%s: stoichiometry (nu, order) differs" % tag)
+        for key in ("A", "b", "Ea"):
+            if not (close(x[key], y[key]) or x[key] == y[key]):
+                d.append("%s: %s %g vs %g" % (tag, key, x[key], y[key]))
+        if (x["low"] is None) != (y["low"] is None) or (x["low"] and not all(
+                close(u, v) or u == v for u, v in zip(x["low"], y["low"]))):
+            d.append("%s: low differs" % tag)
+        if (x["troe"] is None) != (y["troe"] is None) or (x["troe"] and (
+                len(x["troe"]) != len(y["troe"]) or not all(close(u, v) for u, v in zip(x["troe"], y["troe"])))):
+            d.append("%s: troe differs" % tag)
+        if (x["eff"] or {}) != (y["eff"] or {}):
+            d.append("%s: efficiencies %r vs %r" % (tag, x["eff"], y["eff"]))
+    return d
+
+
+def roundtrip_witness(check, tmp):
+    """ignition01_h2o2: export to CHEMKIN, import, prove equivalent, run both."""
+    import filecmp
+    import shutil
+    import subprocess
+    src = os.path.join(ROOT, "tutorials", "batch", "combustion", "ignition01_h2o2")
+    orig = read_choupo_reactions(os.path.join(src, "constant", "reactions"))
+    mech = os.path.join(tmp, "ignition01_export.inp")
+    with open(mech, "w") as f:
+        f.write(export_chemkin(orig))
+    case = os.path.join(tmp, "ignition01_imported")
+    shutil.copytree(src, case)
+    with contextlib.redirect_stdout(io.StringIO()):
+        res = convert(mech, None, case, "round trip of the tracked O Conaire 2004 case", reactions_only=True)
+    check(not res["refused"], "round trip: all %d exported reactions import, none refused" % len(orig))
+    back = read_choupo_reactions(os.path.join(case, "constant", "reactions"))
+    diffs = equivalent(orig, back)
+    check(len(back) == len(orig) and not diffs,
+          "round trip: %d reactions equivalent (nu, order, type, A, b, Ea, units, efficiencies, troe, low)%s" % (len(back), "" if not diffs else ": " + "; ".join(diffs[:3])))
+    fs = os.path.join(case, "system", "flowsheetDict")
+    t = open(fs).read()
+    t = re.sub(r'reactions\s*\([^)]*\)', lambda m: "reactions ( %s )" % " ".join(r["name"] for r in back), t, count=1)
+    open(fs, "w").write(t)
+    exe = os.path.join(ROOT, "choupoBatch")
+    if not os.path.exists(exe):
+        print("SKIP  engine run of the round trip: %s is not built" % exe)
+        return
+    ref = os.path.join(tmp, "ignition01_original")
+    shutil.copytree(src, ref)
+    outs = {}
+    for label, c in (("original", ref), ("imported", case)):
+        r = subprocess.run([exe, c], capture_output=True, text=True, cwd=ROOT)
+        outs[label] = (r.returncode, r.stdout.replace(c, "CASE"))
+    check(outs["original"][0] == 0 and outs["imported"][0] == 0, "engine run: both exit 0")
+    strip = lambda o: "\n".join(l for l in o.splitlines() if not re.search(r'\br\d{3}\b|\bR\d+[ab]?_', l))
+    check(strip(outs["original"][1]) == strip(outs["imported"][1]),
+          "engine run: stdout identical outside lines naming a reaction (%d lines)"
+          % len(strip(outs["original"][1]).splitlines()))
+    names = []
+    for root, _, fl in os.walk(ref):
+        for fn in fl:
+            rel = os.path.relpath(os.path.join(root, fn), ref)
+            if rel.split(os.sep)[0] not in ("constant", "system"):
+                names.append(rel)
+    bad = [n for n in names if not os.path.exists(os.path.join(case, n))
+           or not filecmp.cmp(os.path.join(ref, n), os.path.join(case, n), shallow=False)]
+    check(bool(names) and not bad, "engine run: %d result files byte-identical%s"
+          % (len(names), "" if not bad else ": " + ", ".join(bad[:3])))
 
 
 # ---------------------------------------------------------------------- selftest
@@ -593,26 +823,47 @@ def selftest():
     case = os.path.join(tmp, "case")
     with contextlib.redirect_stdout(io.StringIO()):
         res = convert(mech, None, case, "parser fixture, no data")
-    check(len(res["ok"]) == 3, "fixture: 3 written (reversible, irreversible, REV), got %d" % len(res["ok"]))
-    check(res["counts"] == {"bNonZero": 1, "thirdBody": 1, "falloff": 1, "PLOG": 1, "FORD/RORD": 1, "DUPLICATE": 2},
+    check(len(res["ok"]) == 7, "fixture: 7 written (reversible, irreversible, b != 0, third body, falloff, 2 DUP), got %d" % len(res["ok"]))
+    check(res["counts"] == {"REV": 1, "PLOG": 1, "FORD/RORD": 1},
           "fixture: not written by kind %s" % dict(sorted(res["counts"].items())))
     txt = open(os.path.join(case, "constant", "reactions")).read()
-    m = re.search(r'r001 .*?A ([0-9.e+]+); Ea ([0-9.e+]+);', txt)
-    check(bool(m) and abs(float(m.group(1)) - 1.0e7) < 1e-3 and abs(float(m.group(2)) - 41840) < 1e-6,
-          "A conversion: 1e13 cm3/mol/s at order 2 -> 1e7 m3/mol/s; Ea 10 kcal/mol -> 41840 J/mol")
-    r1, r2, r3 = txt.split("r001")[1].split("r002")[0], txt.split("r002")[1].split("r003")[0], txt.split("r003")[1]
-    check("reversible true" in r1, "`=`/`<=>` -> reversible true")
-    check("reversible" not in r2 and "A_rev" not in r2, "`=>` -> irreversible")
-    check("A_rev" in r3 and "Ea_rev 8.36800000e+04" in r3 and "reversible" not in r3,
-          "REV -> A_rev / Ea_rev only (20 kcal/mol = 83680 J/mol)")
+    m = re.search(r'r001\s.*?type modifiedArrhenius;\s*A 1e\+13;\s+b 0;\s+Ea 10;\s*units \{ A "cm3/mol/s"; Ea "kcal/mol"; \}', txt, re.S)
+    check(bool(m) and "1e+07" not in txt and "41840" not in txt,
+          "A and Ea written AS PRINTED with a units{} block (1e13 cm3/mol/s, 10 kcal/mol); no conversion by the tool")
+    blk = lambda n: re.search(r'\nr%03d\n.*?\n}\n' % n, txt, re.S).group(0)
+    check(re.search(r"reversible\s+true", blk(1)) is not None, "`=`/`<=>` -> reversible true")
+    check("reversible" not in blk(2), "`=>` -> irreversible")
+    check("type modifiedArrhenius" in blk(3) and "b 0.5" in blk(3), "b != 0 -> modifiedArrhenius with b")
+    check("type thirdBody" in blk(4) and "thirdBody { A 2.5; B 12; }" in blk(4), "+M -> thirdBody with efficiencies")
+    check("type falloff" in blk(5) and "low  { A 1e+16;" in blk(5) and "troe ( 0.5 100 1000 );" in blk(5),
+          "(+M) LOW TROE -> falloff with low{} and troe")
+    check("type modifiedArrhenius" in blk(6) and "type modifiedArrhenius" in blk(7), "DUPLICATE -> two separate entries")
+    with open(mech, "r") as f:
+        mt = f.read()
+    kcase = os.path.join(tmp, "kelvins")
+    mk = os.path.join(tmp, "kelvins.inp")
+    with open(mk, "w") as f:
+        f.write(mt.replace("REACTIONS KCAL/MOLE", "REACTIONS KELVINS"))
+    with contextlib.redirect_stdout(io.StringIO()):
+        convert(mk, None, kcase, "parser fixture, no data", reactions_only=True)
+    tk = open(os.path.join(kcase, "constant", "reactions")).read()
+    check("Ea 83.14462618" in tk and 'Ea "J/mol"' in tk, "KELVINS: Ea = R * 10 = 83.1446 J/mol written, units J/mol")
+    mm = os.path.join(tmp, "molecules.inp")
+    with open(mm, "w") as f:
+        f.write(mt.replace("REACTIONS KCAL/MOLE", "REACTIONS KCAL/MOLE MOLECULES"))
+    with contextlib.redirect_stdout(io.StringIO()):
+        resm = convert(mm, None, os.path.join(tmp, "molecules"), "parser fixture, no data", reactions_only=True)
+    check(len(resm["ok"]) == 0 and resm["counts"].get("MOLECULES") == 10, "MOLECULES: every reaction refused by name")
     rep = open(os.path.join(case, "constant", "mechanismImport.txt")).read()
-    check(all(s in rep for s in ("A+B+M=C+D+M", "A+B(+M)=C(+M)", "PLOG", "FORD", "DUPLICATE")),
+    check(all(s in rep for s in ("REV", "PLOG", "FORD")) and "runnable in batchReactor ONLY" in rep,
           "every reaction not written is listed by its equation, with its reason")
     comp = open(os.path.join(case, "constant", "components", "A.dat")).read()
     check("model    NASA7;" in comp and "MW          2.0160" in comp and "parser fixture, no data" in comp,
           "species record: NASA7 model, MW from the engine's table, licence in provenance")
     compB = open(os.path.join(case, "constant", "components", "B.dat")).read()
     check("Tcommon  1000;" in compB, "blank Tcommon takes the THERMO ALL default (1000 K)")
+
+    roundtrip_witness(check, tmp)
 
     # (c) refusals
     def refused(fn, label):
@@ -642,6 +893,8 @@ def main():
     ap.add_argument("--thermo", help="separate thermo file")
     ap.add_argument("--case", help="case directory; files go to CASE/constant/")
     ap.add_argument("--licence", help="licence/permission text, written in every provenance block")
+    ap.add_argument("--reactions-only", action="store_true",
+                    help="write constant/reactions and mechanismImport.txt only (no thermo, no components)")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args()
     if a.selftest:
@@ -649,7 +902,7 @@ def main():
     if not a.mechanism or not a.case:
         ap.error("mechanism and --case are required")
     try:
-        convert(a.mechanism, a.thermo, a.case, a.licence)
+        convert(a.mechanism, a.thermo, a.case, a.licence, a.reactions_only)
     except Refusal as e:
         print("REFUSED: %s" % e, file=sys.stderr)
         return 2
