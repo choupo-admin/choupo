@@ -32,7 +32,7 @@
     the two modes, and the ONE line
       that differs (Q_d)                  BatchDiafilter.cpp:398
     the mode words, and the refusal of
-      any third                           BatchDiafilter.cpp:209-217
+      any third                           BatchDiafilter.cpp:192-201
     the solute balance                    BatchDiafilter.cpp:442-450
     the solvent line, closed on the
       solution density                    BatchDiafilter.cpp:452-459
@@ -40,8 +40,10 @@
       not a re-quadrature                 BatchDiafilter.cpp:464,
                                           BatchDiafilter.H:261-269
     diavolumes = V_perm/V_0, counted
-      in constant-volume mode ONLY        BatchDiafilter.H:268-269
-    concentrationFactor = V_0/V           BatchDiafilter.cpp:601
+      in constant-volume mode, 0 in
+      concentration mode (published
+      in both)                            BatchDiafilter.H:269-270
+    concentrationFactor = V_0/V           BatchDiafilter.cpp:602
     R_0 taken from THIS run at t = 0      BatchDiafilter.cpp:289-291
     R_obs published at every instant      BatchDiafilter.cpp:587-590
     washoutActual_/washoutIdeal_,
@@ -51,7 +53,7 @@
     Hermia's laws; `standard`/`complete`
       refused rather than approximated    BatchDiafilter.cpp:161-182,
                                           BatchDiafilter.H:105-118
-    the `reason` is REQUIRED              BatchDiafilter.cpp:191-199
+    the `reason` is REQUIRED              BatchDiafilter.cpp:181-188
     the permeance in series                BatchDiafilter.cpp:341-358
     the flux residual J_w = A_w(dP - dpi) SolutionDiffusion.cpp:133
     dpi summed over the WALL and the
@@ -59,7 +61,7 @@
     the solute flux B_s (c_m - c_p)       SolutionDiffusion.cpp:181
     the wall has ONE home                 membrane/massTransfer/
                                             Polarisation.H:41-46
-    the pump work is NOT ledgered         BatchDiafilter.cpp:670-686
+    the pump work is NOT ledgered         BatchDiafilter.cpp:676-686
 
   SOURCES cited to the reader, each already carried in the tree at the line
   given:
@@ -128,7 +130,7 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       { sym: "J_w", means: "the water flux through the membrane, volume of "
         + "permeate per unit area per unit time.  The engine computes it in "
         + "m/s and publishes it as L/(m²·h), the unit a membrane rig is read "
-        + "in (BatchDiafilter.cpp:567)", unit: "L/(m²·h)" },
+        + "in (BatchDiafilter.cpp:575)", unit: "L/(m²·h)" },
       { sym: "R_i", means: "the observed rejection of solute i: how much of "
         + "what reaches the membrane it keeps back, measured against the "
         + "bulk.  Step 5 is about why it moves" },
@@ -158,7 +160,7 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "code the difference is a single line -- the diafiltrate rate is "
       + "either zero or the permeate rate (BatchDiafilter.cpp:398).  A word "
       + "the engine does not know is refused by name rather than defaulted "
-      + "(BatchDiafilter.cpp:209-217).",
+      + "(BatchDiafilter.cpp:192-201).",
     formula: String.raw`\begin{array}{ll}
 \text{solutes} & \dfrac{\mathrm{d}n_i}{\mathrm{d}t} = -J_\mathrm{s,i}\, A + Q_d\, c_\mathrm{d,i}\\[8pt]
 \text{solvent} & \text{the permeate's mass, closed on the same solution density } \rho\\
@@ -175,7 +177,7 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
         + "which solution-diffusion writes as B_s,i (c_m,i − c_p,i) "
         + "(SolutionDiffusion.cpp:181)", unit: "kmol/(m²·s)" },
       { sym: "A", means: "the membrane area the case declares "
-        + "(BatchDiafilter.cpp:118)", unit: "m²" },
+        + "(BatchDiafilter.cpp:121)", unit: "m²" },
       { sym: "Q_d", means: "the diafiltrate rate: clean solvent added to the "
         + "vessel.  This is the whole difference between the two modes",
         unit: "m³/s" },
@@ -218,9 +220,10 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "pushed through it, the diavolumes.  Both are dimensionless, both "
       + "start at their own natural origin, and both make runs at different "
       + "areas and pressures comparable, which seconds do not.  The engine "
-      + "publishes each of them, and publishes the diavolume count only in "
-      + "constant-volume mode, because outside it the number would be "
-      + "counting a wash that is not happening (BatchDiafilter.H:268-269).",
+      + "publishes each of them in both modes, and counts diavolumes only in "
+      + "constant-volume mode: in concentration mode the published count is "
+      + "0, because outside constant volume no wash is happening "
+      + "(BatchDiafilter.H:269-270, BatchDiafilter.cpp:577, 603).",
     formula: String.raw`\begin{aligned}
 \mathrm{VCF} &= \frac{V_0}{V} &\qquad& \text{the concentration clock}\\[4pt]
 N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
@@ -230,7 +233,7 @@ N &= \frac{\int Q_d\, \mathrm{d}t}{V_0} &\qquad& \text{the wash clock}
         means: "the volume concentration factor, how many times "
         + "smaller the vessel is than its charge.  VCF = 1 at the start; the "
         + "engine publishes it as `concentrationFactor` "
-        + "(BatchDiafilter.cpp:601)" },
+        + "(BatchDiafilter.cpp:602)" },
       { sym: "V_0", means: "the volume of the initial charge, published as "
         + "`V_initial_m3`", unit: "m³" },
       { sym: "V", means: "the volume in the vessel now", unit: "m³" },
@@ -407,7 +410,7 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
       + "in either direction.  In concentration mode the engine publishes no "
       + "ideal at all, deliberately -- the washout law is not the law of that "
       + "mode and quoting it there would be a category error "
-      + "(BatchDiafilter.cpp:658-655) -- so the power law on that branch is "
+      + "(BatchDiafilter.cpp:658-662) -- so the power law on that branch is "
       + "computed by this page, from the engine's own R_0 and VCF, and is "
       + "labelled as the tool's rather than the engine's.",
   },
@@ -460,7 +463,7 @@ c_m > c_b & \text{the wall is richer than the bulk}\\[8pt]
       + "blocking law asserts a mechanism -- cake says a layer was deposited, "
       + "intermediate says pores were covered -- and nothing in the engine "
       + "can tell which describes your feed, the `fouling {}` block will not "
-      + "run without a written `reason` (BatchDiafilter.cpp:191-199).  A "
+      + "run without a written `reason` (BatchDiafilter.cpp:181-188).  A "
       + "good fit does not settle it either: more than one blocking law can "
       + "follow the same flux decline over a limited range, so a law that "
       + "fits a curve is a hypothesis about the mechanism, to be backed by "
@@ -661,7 +664,7 @@ C_\mathrm{opt} \approx c_g/e & \text{the classical shortcut, and an approximatio
       + "been logged.  Call that sum the governing group.  Two consequences "
       + "follow immediately and both are design decisions.  First, VCF and N "
       + "are interchangeable as far as product yield is concerned: "
-      + "concentrating twenty-fold costs exactly what washing ln(20) = 3 "
+      + "concentrating twenty-fold costs exactly what washing ln(20) = 2.9957 "
       + "diavolumes costs, and a process may trade one against the other "
       + "freely without changing what it loses.  Second, a yield goal is a "
       + "ceiling on the group, so it can be met in three ways and only one "
@@ -817,7 +820,7 @@ export const BATCH_MEMBRANE_LIMITS: readonly LessonLimit[] = [
       + "is reserved and unimplemented.  The material and the vessel enthalpy "
       + "are priced, and the campaign energy balance reports unavailable "
       + "rather than closing with a term quietly set to zero "
-      + "(BatchDiafilter.cpp:670-686).",
+      + "(BatchDiafilter.cpp:676-686).",
   },
   {
     id: "isothermal-single-liquid",

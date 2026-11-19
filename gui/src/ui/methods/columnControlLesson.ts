@@ -286,8 +286,9 @@ export const COLUMN_CONTROL_LIMITS: readonly {
     id: "no-dynamics",
     title: "Nothing here is a transient.",
     body: "A level that moves is an accumulation term and needs a dynamic "
-      + "column; Choupo has none — its dynamic tier is a stirred tank and one "
-      + "reference plant, and no column anywhere in the corpus is under "
+      + "column; Choupo has none — its dynamic tier is stirred vessels (the "
+      + "reactor, a tank with a level loop, a quasi-steady wrapper) and a few "
+      + "reference plants, and no column anywhere in the corpus is under "
       + "control. So this page shows no response curve, no settling time and "
       + "no tuning. A fabricated animation would be worse than the still "
       + "drawing, because a moving picture is more persuasive and would teach "

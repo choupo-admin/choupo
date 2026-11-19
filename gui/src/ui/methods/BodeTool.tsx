@@ -503,10 +503,11 @@ export function BodeTool(): JSX.Element {
               </Group>
             )}
             <PanelNote>
-              Each run writes six declared scalars into the witness dicts and
+              Each run writes nine declared scalars into the witness dicts and
               nothing else: the drive frequency (twice — the carrier mirrors
               it), the end time, the time step, the cycles discarded and
-              fitted, and the tank&apos;s authored holdup for τ. The same five
+              fitted, and the tank&apos;s authored holdup for τ (the two mole
+              numbers and the volume, scaled together). The same nine
               edits by hand in the case directory give the same answer.
             </PanelNote>
             <PanelNote>
