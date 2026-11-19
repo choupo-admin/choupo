@@ -4739,6 +4739,25 @@ accepts today, and that is a policy call.
 > value from the formation enthalpies.  A slice of its own, not added to the
 > lote.
 
+> **C449 (architect, 2026-11-19, from the outside double check of the rate-based
+> column, docs/reviews/2026-11-19-ratebased-double-check/).**  Weighed: the four
+> WRONG lesson findings hold as written and are fixed in one slice -- (1) the
+> film-control picture in oneFluxManyUnitsLesson step 5 is inverted (with the
+> liquid film controlling, the interface sits near equilibrium with the bulk
+> GAS: the page's own solve gives x_i at ~98 % of the way to x*); (2) the
+> overall-coefficient panel writes y* = m x_b with Seader's chord slope, 27 %
+> below the page's own exercise 3 -- take y* from x*; (3) "the one place the
+> sum appears is the first guess" is false (RateBasedSegment publishes the
+> per-segment H_OG share); (4) exercise 2 labels water's vapour pressure
+> "Antoine" while the record is Wagner/IAPWS.  The SUSPECT symbol and
+> citation points (c overloaded, Hatta equation numbers, stale design-record
+> lines) are fixed with them.  Engine: the latent double degree-to-radian
+> conversion of `corrugationAngle` (a unit-bearing `60 deg;` becomes 1.05 deg
+> silently) is a real defect no shipped case reaches: the read refuses a
+> bare-or-unit ambiguity and converts once.  Delft judged on RBF's flooding
+> constant and the Chilton-Colburn label on Delft's film are stated in the
+> output, not changed.
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
