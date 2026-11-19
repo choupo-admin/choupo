@@ -1830,6 +1830,11 @@
       "exit": 0,
       "claim": "check_thermo_tables: OK  (a) 858 files = INDEX; (b) 858 records held to the report; (c) 858 records, one home vs components/; (d) witness reads the table only when declared, refuses it undeclared and an unknown table; (e) Database.cpp guard present.  Domain: the NASA-TP-2002-211556 home only; not that the report is right, not curator read-back.",
       "seconds": 1.0
+    },
+    "check_elementary_rates": {
+      "exit": 0,
+      "claim": "check_elementary_rates: OK -- the CHEMKIN laws modifiedArrhenius, thirdBody and falloff in a pfr equal the Arrhenius law they stand for (3 pairs, max relative outlet difference elementary01a 0.0e+00, elementary02a 0.0e+00, elementary03a 0.0e+00; tol 1e-09); a unit factor 10^3 off is seen",
+      "seconds": 0.4
     }
   }
 }
