@@ -490,7 +490,7 @@ Cand readCand(const fs::path& f, const std::string& model, const std::string& re
             if (h->found("aad_pct")) c.aad = num(h->lookupScalar("aad_pct"));
         }
         if (v->found("acceptance") && v->subDict("acceptance")->found("maxAAD"))
-            c.maxAAD = num(v->subDict("acceptance")->lookupScalar("maxAAD"));
+            c.maxAAD = num(v->subDict("acceptance")->lookupScalarIn("maxAAD", Dims::dimensionless, "percent"));   // bare = per cent (C454 family 17)
         c.hasValidation = !c.verdict.empty();
     }
     return c;
