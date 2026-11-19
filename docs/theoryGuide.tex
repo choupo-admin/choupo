@@ -27721,8 +27721,11 @@ of the loop.
 \section{The nozzle schedule: where the lines end on the equipment}\label{sec:nozzle-schedule}
 
 Every equipment specification sheet of a case that declares \code{nozzleDesign \{\}} beside
-\code{lineDesign \{\}} (both in \file{system/layoutDict}) carries a \code{nozzles \{\}} block: the
-connections of the item and the openings people need.  The sources are Towler and
+\code{lineDesign \{\}} (both in \file{system/layoutDict}; a case with no \code{lineDesign} declares its own
+\code{nominalSizes} and its nozzles are then sized by the items' criteria alone) carries a \code{nozzles \{\}} block: the
+connections of the item and the openings people need.  It is read on the item's own sheet
+(\file{design/<unit>/<tag>}, the drum's, the vessel's, the tank's), and its rows are pinned in the
+result's layout block; the GUI has no block of its own for it yet.  The sources are Towler and
 Sinnott~\cite{TowlerSinnott2008} (\S13.4.2, \S13.10, \S11.12 and the worked column of chapter~13) and
 Perry's Handbook~\cite{Perry9} (Table~10-42); every page quoted below was read.
 
@@ -27774,7 +27777,8 @@ near the bottom and top.  The case declares that rule: an entry limit (1.2\,m), 
 NPS~24 as the nearest standard size) and, per equipment kind (\code{vessel}, \code{columnShell},
 \code{storageTank} with a shell and a roof opening), how many.  Where $D$ is below the limit nobody can
 enter and the row is an \emph{inspection opening} (mark H1, \dots) of a declared, smaller size instead of
-a manway (mark M1, \dots); it rates like any nozzle, on the vessel's design pressure.  The counts and the
+a manway (mark M1, \dots); it rates like any nozzle, on the vessel's design pressure.  Where the sizing publishes no $D$ (a storage tank), the placed item's diameter is read
+(the smaller side of a box that stands for a round tank, said on the row).  The counts and the
 inspection size are marked assumed: no book in the literature folder gives them, and the column spacing
 by tray count (Kister) could not be read there (the scan has no text layer).
 
@@ -27785,6 +27789,7 @@ the purchasing sheet, not a mechanical design.
 
 \begin{tutoriallink}
 \file{tutorials/plant/line01\_pumped\_drum} --- a pump and a drum, the smallest schedule;
+\file{tutorials/plant/aceticAcid02\_plant} --- no line list, the inspection openings of small vessels and the tanks' manways;
 \file{tutorials/plant/greenAmmoniaPEQ\_baseCase} --- the reference plant's items, the drums' criterion
 reducers and the 166\,bar loop's flange classes.
 \end{tutoriallink}

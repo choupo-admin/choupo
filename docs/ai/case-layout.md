@@ -1889,7 +1889,7 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   `tutorials/plant/line01_pumped_drum` (hand calculation in its README),
   `tutorials/plant/greenAmmoniaPEQ_baseCase`.
 * THE NOZZLE SCHEDULE (C444): a `nozzleDesign { ... }` block in `system/layoutDict`,
-  beside `lineDesign` (it needs it: a nozzle's size is the end of its line), adds a
+  beside `lineDesign` (a nozzle's size is the end of its line; with no `lineDesign` declare `nominalSizes { sizes ( ... ); source; reason; }` in `nozzleDesign` and the nozzles are sized by the items' own criteria alone), adds a
   `nozzles {}` block to every placed item's equipment sheet (`design/<unit>/<tag>`):
   mark (N1.. process, M1.. manway, H1.. inspection opening), service (the layout's
   port word), stream, line, nominal size (the line's, or the item's own criterion
