@@ -580,6 +580,9 @@ public:
     // capacity of the saturated liquid from there to T.  nullopt = not
     // applicable (no window, T inside it, no reference equation, no liquid).
     std::optional<scalar> solventLiquidAboveWindow(std::size_t i, scalar T) const;
+    // The entropy on the same path (C377): s(Tcap) + INT cp_ref/T dT.
+    std::optional<scalar> solventLiquidEntropyAboveWindow(std::size_t i, scalar T) const;
+    std::optional<std::pair<scalar, scalar>> solventLiquidAboveWindowHS(std::size_t i, scalar T) const;
 
     // Electrolyte (ionic) activity model.  It is just the activity model when an
     // electrolyte one (pitzer) was selected -- recovered by an interface downcast

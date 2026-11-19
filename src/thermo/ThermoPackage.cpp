@@ -1865,6 +1865,26 @@ scalar ThermoPackage::speciesPhaseEnthalpy(std::size_t i, scalar T,
 //  lowest-pressure liquid state the equation carries at each T.
 std::optional<scalar> ThermoPackage::solventLiquidAboveWindow(std::size_t i, scalar T) const
 {
+    const auto hs = solventLiquidAboveWindowHS(i, T);
+    if (!hs) return std::nullopt;
+    return hs->first;
+}
+
+//  The entropy partner on the SAME path: s(Tcap) from the polynomial plus the
+//  integral of cp_ref/T' dT', so G = H - TS is the one surface.  The electrolyte
+//  liquid has no entropy the tree prices today (S_liquid_formation refuses it),
+//  so this has no consumer yet; it is here so the leg cannot be written on a
+//  different path later.
+std::optional<scalar> ThermoPackage::solventLiquidEntropyAboveWindow(std::size_t i, scalar T) const
+{
+    const auto hs = solventLiquidAboveWindowHS(i, T);
+    if (!hs) return std::nullopt;
+    return hs->second;
+}
+
+std::optional<std::pair<scalar, scalar>>
+ThermoPackage::solventLiquidAboveWindowHS(std::size_t i, scalar T) const
+{
     const Component& c = components_[i];
     const scalar Tcap = c.cpLiquid().windowTmax();
     if (!(Tcap > 0.0) || !(T > Tcap)) return std::nullopt;
@@ -1892,7 +1912,7 @@ std::optional<scalar> ThermoPackage::solventLiquidAboveWindow(std::size_t i, sca
     const PureFluidModel* pm = it->second;
     if (!pm) return std::nullopt;
 
-    scalar dh = 0.0;
+    scalar dh = 0.0, ds = 0.0;
     try
     {
         static const scalar xg[5] = { -0.9061798459386640, -0.5384693101056831, 0.0,
@@ -1907,12 +1927,14 @@ std::optional<scalar> ThermoPackage::solventLiquidAboveWindow(std::size_t i, sca
             for (int q = 0; q < 5; ++q)
             {
                 const scalar Tq = mid + 0.5 * dT * xg[q];
-                dh += 0.5 * dT * wg[q] * pm->cp_molar(Tq, pm->p_sat(Tq) * (1.0 + 1.0e-6));
+                const scalar cp = pm->cp_molar(Tq, pm->p_sat(Tq) * (1.0 + 1.0e-6));
+                dh += 0.5 * dT * wg[q] * cp;
+                ds += 0.5 * dT * wg[q] * cp / Tq;
             }
         }
     }
     catch (const std::exception&) { return std::nullopt; }
-    if (!std::isfinite(dh)) return std::nullopt;
+    if (!std::isfinite(dh) || !std::isfinite(ds)) return std::nullopt;
 
     if (AdvisoryLog::instance().add("thermo", "info", "solvent liquid Cp " + c.name(),
             "reference equation above the polynomial window"))
@@ -1920,7 +1942,8 @@ std::optional<scalar> ThermoPackage::solventLiquidAboveWindow(std::size_t i, sca
                   << " K (the end of its liquidHeatCapacity window) is the reference equation's"
                      " isobaric Cp of the saturated liquid, " << pm->type()
                   << "; h anchored on the polynomial at " << Tcap << " K (continuous; Cp steps there)\n";
-    return c.h_formation(Tcap, "liquid") + dh;
+    return std::make_pair(c.h_formation(Tcap, "liquid") + dh,
+                          c.s_formation(Tcap, "liquid") + ds);
 }
 
 //  THE LIQUID ON THE EQUATION OF STATE (C410).  See the header.  The route is

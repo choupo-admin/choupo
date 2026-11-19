@@ -10,47 +10,48 @@
 #   case RATES the book's design (its A, U and steam given): the pressure is the
 #   most sensitive answer (exponential in the rise), and the 1.5e-1 on it says so --
 #   the model's rise (42.4 K, measured vapour pressures) exceeds the chart's by 1.8 K.
-stream  concentrated           F                0.0198750914146  1e-4
-stream  concentrated           T                362.059758205    1e-4
+stream  concentrated           F                0.0198859740975  1e-4
+stream  concentrated           T                362.067642509    1e-4
 stream  condensate             F                0.0501888777778  1e-4
 stream  condensate             T                388.75           1e-4
 stream  feed                   F                0.0622529583333  1e-4
 stream  feed                   T                333.15           1e-4
 stream  steam                  F                0.0501888777778  1e-4
 stream  steam                  T                388.75           1e-4
-stream  vapour                 F                0.0423778669187  1e-4
-stream  vapour                 T                362.059758205    1e-4
+stream  vapour                 F                0.0423669842359  1e-4
+stream  vapour                 T                362.067642509    1e-4
 kpi     evap                   A                49.2             1e-4
 kpi     evap                   A_m2             49.2             1e-4
-kpi     evap                   BPE              40.6               6e-2    anchor
-kpi     evap                   F_conc           0.0198750914146  1e-4
-kpi     evap                   F_conc_kmol_h    71.5503290926    1e-4
-kpi     evap                   F_conc_mass      0.496546385856   1e-4
+kpi     evap                   BPE              40.6             6e-2     anchor
+kpi     evap                   F_conc           0.0198859740975  1e-4
+kpi     evap                   F_conc_kmol_h    71.5895067509    1e-4
+kpi     evap                   F_conc_mass      0.496742437388   1e-4
 kpi     evap                   F_cond           0.904152633167   1e-4
 kpi     evap                   F_cond_kg_h      3254.9494794     1e-4
 kpi     evap                   F_in             0.0622529583333  1e-4
 kpi     evap                   F_in_kmol_h      224.11065        1e-4
 kpi     evap                   F_steam          0.904152633167   1e-4
 kpi     evap                   F_steam_kg_h     3254.9494794     1e-4
-kpi     evap                   F_vap            0.0423778669187  1e-4
-kpi     evap                   F_vap_kmol_h     151.0943           2e-2    anchor
-kpi     evap                   F_vap_mass       0.763437272541   1e-4
-kpi     evap                   P                11700              1.5e-1  anchor
-kpi     evap                   Q_dilution_kW    165.281594619    1e-4
-kpi     evap                   T_boil           362.65             3e-3    anchor
-kpi     evap                   T_sat_pure       319.299051881    1e-4
+kpi     evap                   F_vap            0.0423669842359  1e-4
+kpi     evap                   F_vap_kmol_h     151.0943         2e-2     anchor
+kpi     evap                   F_vap_mass       0.763241221009   1e-4
+kpi     evap                   P                11700            1.5e-1   anchor
+kpi     evap                   Q_dilution_kW    165.18893494     1e-4
+kpi     evap                   T_boil           362.65           3e-3     anchor
+kpi     evap                   T_sat_pure       319.333002217    1e-4
 kpi     evap                   T_steam          388.75           1e-4
 kpi     evap                   U                1560             1e-4
 kpi     evap                   U_W_m2_K         1560             1e-4
-kpi     evap                   V_over_F         0.68073659555    1e-4
+kpi     evap                   V_over_F         0.680561781643   1e-4
 kpi     evap                   converged        1                1e-4
-kpi     evap                   dT               26.690241795     1e-4
-kpi     evap                   duty             2048529.43825    1e-4
-kpi     evap                   duty_kW          2048.52943825    1e-4
-kpi     evap                   economy          0.836              2e-2    anchor
-kpi     evap                   molality         25.7637749835    1e-4
-kpi     evap                   molality_salt    25.0018            4e-2    anchor
-boundary global                 H_feeds_kW       -30801.7979582   1e-4
+kpi     evap                   dT               26.6823574909    1e-4
+kpi     evap                   duty             2047924.30214    1e-4
+kpi     evap                   duty_kW          2047.92430214    1e-4
+kpi     evap                   economy          0.836            2e-2     anchor
+kpi     evap                   molality         25.7431369054    1e-4
+kpi     evap                   molality_salt    25.0018          4e-2     anchor
+boundary global                 H_feeds_kW       -30801.7148692   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
-boundary global                 H_products_kW    -30801.7979581   1e-4
-kpi     evap                   GibbsHelmholtz_gap_kJ_kg 5.24632982528    1e-4
+boundary global                 H_products_kW    -30801.7148692   1e-4
+kpi     evap                   GibbsHelmholtz_gap_kJ_kg 5.24869900603    1e-4
+boundary global                 noBoundary       false            exact
