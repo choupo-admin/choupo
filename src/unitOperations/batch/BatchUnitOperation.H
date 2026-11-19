@@ -448,6 +448,13 @@ protected:
     scalar packageEnthalpy_(const BatchState& pkg, bool& ok,
                             std::string& why) const;
 
+    // Vapour fraction at which packageEnthalpy_ prices the inventory: 0 =
+    // the liquid rung (default), 1 = the ideal-gas rung.  A vessel whose
+    // charge is a GAS (BatchReactor `energy gasConstantV`) returns 1, so
+    // its campaign vessel terms sit on the SAME surface as its duty record
+    // (DEV.md 4c C448).
+    virtual scalar pricingVapourFraction_() const { return 0.0; }
+
 private:
     static std::map<std::string, Factory>& registry();
 };

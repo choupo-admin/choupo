@@ -119,6 +119,8 @@ public:
     std::vector<SimulationResult::EnergyRecord>
          energyRecords(scalar tEnd) override;
     std::string energyLedgerGap() const override;
+    scalar pricingVapourFraction_() const override
+    { return energy_ == Energy::GasConstantV ? 1.0 : 0.0; }
 
 protected:
     BatchState& mutableState() override { return state_; }
