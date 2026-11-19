@@ -379,6 +379,29 @@ if [ $rc -eq 0 ]; then
         #  files the case wrote, so "done" always says WHAT happened and WHERE
         #  to look next.
         echo "  done.  ---- results ----------------------------------------------"
+        #  THE DIGEST (DEV.md 4c C201 item 3; newcomer review F1/K1).  The tail
+        #  below is the log's last lines -- caveats -- and shows neither the
+        #  answer nor whether the balances closed, which is what start-here.md
+        #  promises.  So three short blocks are lifted from the log first, each
+        #  only when the run printed it: the headline of the answer, the three
+        #  balance verdicts the report lines already state, and every input
+        #  WARNING (a unit-less `P 1.0;` exits 0 with a vacuum; the warning sat
+        #  a thousand lines above where this script looked).
+        digest=$(grep -E '^(  )?(Recycle converged|  Converged: +[a-z]|  V/F: |  T_bubble: |  T_dew: |  Conversion)' "$LOG" | head -6 | sed 's/^ */    /' || true)
+        if [ -n "$digest" ]; then
+            echo "  answer:"
+            echo "$digest"
+        fi
+        bal=$(grep -E '^ *\[report\] (massBalance|globalEnergyBoundary|elementBalance) ->' "$LOG" | sed -E 's/^ *\[report\] ([A-Za-z]+) -> [^ ]+ +/    \1  /' || true)
+        if [ -n "$bal" ]; then
+            echo "  balances:"
+            echo "$bal"
+        fi
+        warns=$(grep -E '^ *WARNING:' "$LOG" | sed 's/^ */    /' | cut -c1-170 | sort -u | head -5 || true)
+        if [ -n "$warns" ]; then
+            echo "  input warnings (exit is still 0):"
+            echo "$warns"
+        fi
         if grep -q '<<<Choupo:result-begin>>>' "$LOG"; then
             sed '/<<<Choupo:result-begin>>>/,$d' "$LOG" | grep -vE '^[[:space:]]*$' | tail -14 | sed 's/^/    /'
         else

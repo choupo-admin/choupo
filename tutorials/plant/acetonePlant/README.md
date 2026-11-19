@@ -30,7 +30,7 @@ below was predicted rather than discovered.  Nothing was tuned to close a gap.
 | separator duty, kW | 899.3 | 967.33<!--golden: kpi separator Q_kW *-1--> |
 
 That first row is **85 %** of his acetone, and the case's own `CLAUDE.md`
-records the product at 0.9727 mole fraction acetone against his 0.999 spec.
+records the product at 0.9725 mole fraction acetone against his 0.999 spec.
 
 ## The lesson
 

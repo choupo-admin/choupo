@@ -18,6 +18,6 @@ engine; HERE your job is this case.
   (the unit op reads it).  Say what you changed; the change is a visible dict diff.
 
 ## Intent (this case) -- keep this updated as the project develops
-- **Goal:** <what this case is for>
-- **Decisions + why:** <e.g. NRTL for ethanol-water because ideal misses the azeotrope>
-- **Pending / in curation:** <what is still open>
+- **Goal:** Sugar plant -- multi-sector proxy: a JuiceSplitter feeding three sectors (CONCENTRATION + DRYING + FERMENTATION)
+- **Decisions + why:** none recorded here; the case README and the dict headers carry the reasoning
+- **Pending / in curation:** nothing recorded

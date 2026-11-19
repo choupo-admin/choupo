@@ -80,9 +80,15 @@ for catdir in */; do
         # The binary column is READ from the case, never inferred from the
         # folder: `application <word>;` in system/controlDict.
         app=$(awk '/^[ \t]*application[ \t]/ { sub(/;.*$/, "", $2); print $2; exit }' "$cd")
-        desc=""
+        #  The label a case declares for itself is `controlDict.description`
+        #  (DEV.md 4c C201 item 6, newcomer review H1: the flowsheetDict's first
+        #  comment line gave 11 rows reading just "units" and 48 repeating the
+        #  case's own name).  The flowsheetDict comment stays the fallback.
+        desc=$(awk '/^[ \t]*description[ \t]+"/ {
+                        sub(/^[ \t]*description[ \t]+"/, ""); sub(/"[ \t]*;.*$/, "");
+                        print substr($0, 1, 110); exit }' "$cd")
         fd="$d/system/flowsheetDict"
-        if [ -f "$fd" ]; then
+        if [ -z "$desc" ] && [ -f "$fd" ]; then
             desc=$(awk '
                 /^\/\*/   {inblk=1; next}
                 inblk && /^\*\\/  {inblk=0; next}
