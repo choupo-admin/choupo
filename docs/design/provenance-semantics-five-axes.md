@@ -317,7 +317,9 @@ blocks nested one level deeper —
 value it derives, and the form the Explorer's component inspector was taught to
 read on 2026-09-03.  Recounted at both depths:
 
-**census: 2377 direct + 3831 per-value = 6208 across 3095 files**
+**census: 2377 direct + 6405 per-value = 8782 across 3953 files**
+
+(recounted 2026-11-19, the NASA species-table home `standards/thermoTables/NASA-TP-2002-211556/`: 858 records, one per species, each carrying three per-value entries (the coefficients, H and S at 298.15 K, all `literature` from NASA/TP-2002-211556, public domain): +0 direct, +2574 per-value, +858 files; and, before it,
 
 (recounted 2026-11-14, DEV.md 4c C398 slice (e): two packing records (`assets/SulzerBX.dat`, `assets/MontzB1-250.dat`) carry a `provenance {}` block whose entries are not origin words the census counts: +0 direct, +0 per-value, +2 files; and, before it,
 
