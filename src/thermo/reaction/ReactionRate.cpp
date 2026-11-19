@@ -33,6 +33,7 @@ License
 #include "RateLaw.H"
 #include "core/RegistryRefusal.H"
 #include "thermo/ThermoPackage.H"
+#include <cmath>
 #include <map>
 #include <stdexcept>
 #include <memory>
@@ -115,9 +116,31 @@ void ReactionRate::registerBuiltins()
     //  The CHEMKIN-style words: the batch vessel reads them natively, and
     //  (slice 3 of the CHEMKIN line) so do the cstr / pfr multi-reaction paths.
     auto elementary = [](const DictPtr& rxn, const ThermoPackage& thermo,
-                         const std::string& who, const RateOffer&)
+                         const std::string& who, const RateOffer& offer)
         -> std::unique_ptr<ReactionRate>
     {
+        //  Detailed balance uses the IDEAL-GAS Kc.  On a reactor that forms
+        //  its concentrations on a LIQUID basis that is wrong whenever the
+        //  reaction changes the number of moles -- the defect C131 refused for
+        //  Arrhenius/LHHW (Reaction::refuseLiquidBasisDetailedBalance, which
+        //  returns early for these words).  Found in the commander's review
+        //  of slice 3, 2026-11-19: refused here, where the basis is known.
+        if (rxn->lookupWordOrDefault("reversible", "false") == "true"
+            && offer.concentrationBasis.find("liquid basis") != std::string::npos)
+        {
+            scalar sumNu = 0.0;
+            for (const auto& s : rxn->lookupDictList("stoichiometry"))
+                sumNu += s->lookupScalar("nu");
+            if (std::abs(sumNu) > 1.0e-12)
+                throw std::runtime_error(who + ": `reversible true;` changes the"
+                    " number of moles (sum of nu = " + std::to_string(sumNu) + ") on a"
+                    " LIQUID concentration basis (" + offer.concentrationBasis + ").\n"
+                    "    The Kc this engine derives is the ideal-gas one in kmol/m3;"
+                    " the equilibrium the reverse leg would relax to is neither the"
+                    " gas's nor the liquid's.  Run the reaction in the gas phase, or"
+                    " write it irreversible (`=>`) with its reverse as a separate"
+                    " reaction.");
+        }
         return std::make_unique<ElementaryRate>(ElementaryRate::fromDict(rxn, thermo, who));
     };
     registerType("modifiedArrhenius", elementary);
