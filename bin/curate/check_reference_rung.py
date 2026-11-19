@@ -525,7 +525,12 @@ def arm_k():
                        f"the record's Antoine root; record Tb {Tb_rec}) on the "
                        "associated vapour, K = 1")
     lat = hv - hl
-    if abs(lat - latent_cf) > 1.0:
+    #  C390's liquid pressure leg: HL carries v (1 - alpha T) dP from
+    #  P_ref = psat(298.15 K) to P (~99 kPa here), which the closed form
+    #  omits.  Measured 2.8 J/mol (acetic acid, v = 57 cm3/mol, alpha T ~ 0.4):
+    #  the latent heat sits BELOW the closed form by that term, never above.
+    #  The window is one-sided and 5 J/mol wide, so a wrong surface (kJ) still fails.
+    if not (-5.0 < lat - latent_cf <= 1.0):
         fail.append(f"(k) latent heat at Tb priced {lat/1e3:.4f} kJ/mol, the "
                     f"closed form from the records gives {latent_cf/1e3:.4f}: "
                     "the vapour or the liquid is not on the surface this arm "
