@@ -4897,6 +4897,17 @@ accepts today, and that is a policy call.
 > catalogue record and the case that uses it.  The page's scope goes to Vitor
 > before dispatch.  Size M, "rest" group.
 
+> **C460 (Vitor, 2026-11-19: "E outra sobre heurísticas de selecção de secadores?
+> Também estilo Pareto e com os esquemas mais comuns pelos quais são
+> esquematicamente conhecidos").**  WEIGHED, agreed: the few dryer types that
+> do most industrial drying (spray, rotary, fluidised bed, tray, belt, drum,
+> freeze) with the selection heuristics (feed form, heat sensitivity, scale,
+> batch/continuous, final moisture) read from Mujumdar's Handbook of Industrial
+> Drying 3rd ed. (in the folder) and Perry's drying chapter, cited by page;
+> the schematics DRAWN ANEW for the page (no figure copied, copyright); each
+> type the engine models opens its case.  Scope to Vitor before dispatch.
+> Size M, "rest" group, beside C459.
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
