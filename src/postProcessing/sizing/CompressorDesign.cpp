@@ -22,6 +22,7 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
 #include <vector>
@@ -172,7 +173,7 @@ struct Ctx
 
     scalar Z(scalar T, scalar P) const
     {
-        const scalar rho = tp->density(T, P, y, ph);
+        const scalar rho = tp->density(T, P, y, DensityPhase::Vapour);
         return P * MW / (rho * R_kmol * T);
     }
 };
@@ -331,7 +332,7 @@ void apply(EquipmentSizing&         d,
     c.mdot = c.F * c.MW;
     const scalar T_in = in.T, P_in = in.P;
     const scalar rTotal = P_out / P_in;
-    const scalar rho1 = pkg->density(T_in, P_in, c.y, c.ph);
+    const scalar rho1 = pkg->density(T_in, P_in, c.y, DensityPhase::Vapour);
     const scalar Q1   = c.mdot / rho1;                       // m3/s
     const scalar cfm  = Q1 * cfm_per_m3s;
 
@@ -526,11 +527,11 @@ void apply(EquipmentSizing&         d,
     }
     else if (machine == "axial")
     {
-        const scalar mu = 0.29;                         // p.278
+        const scalar psiW = 0.29;                        // p.278
         const scalar um = 720.0 * 0.3048;               // 720 ft/s
         for (auto& s : best.stages)
         {
-            s.elements = std::max(1, int(std::lround(s.head / (mu * um * um)))); // Eq 6.15
+            s.elements = std::max(1, int(std::lround(s.head / (psiW * um * um)))); // Eq 6.15
             elementsTotal += s.elements;
         }
         casings = nSel;

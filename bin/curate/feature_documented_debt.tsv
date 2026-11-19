@@ -10,7 +10,6 @@ ConstantEstimator	RiaziDaubert	guide
 ConstantEstimator	VanKrevelen	guide+catalogue
 ConstantEstimator	Yang2020	guide+catalogue
 DynamicUnitOperation	williamsOttoPlant	guide+catalogue
-EquipmentSize	converterShell	guide
 EquipmentSize	pipeHeader	catalogue
 FrictionFactorCorrelation	Blasius	guide
 HeatCapacityModel	NASA7	catalogue
