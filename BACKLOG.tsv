@@ -88,7 +88,7 @@ C87	DONE		Tanques de entrada e saída no processo do ácido acético			2026-10-1
 C88	DONE		Layout 3D com aspeto de fábrica			2026-10-18	M	8d4e82f4a	
 C89	DONE		Tanques no PEQ do amoníaco e tampão de H2			2026-10-18	M	c1e194538	
 C90	DONE		Layout exportado a cores, estradas e edifícios			2026-10-18	M	96c76c8eb	
-C91	PARTIAL	87	Janela do layout dimensionada pelo leitor	registo de tubos acoplável ao lado da vista 3D (não construído)	revisão de fora 19-11: um ponto do pedido original nunca foi feito	2026-10-18	S	0ccd69330	
+C91	PARTIAL	87	Janela do layout dimensionada pelo leitor	Registo de tubos ordenável acoplado à vista 3D (pop-out do layout), seleção nos dois sentidos; no main. Falta vê-lo desenhado no browser.	revisão de fora 19-11: um ponto do pedido original nunca foi feito	2026-10-18	S	0ccd69330	
 C92	DONE		Tanques da fábrica completa dimensionados e colocados			2026-10-18	M	c920f6596	
 C93	DONE		Verificação de choque tubagem-pegada e vedação			2026-10-18	M	a64a86f18	
 C94	DONE		Guias de layout nos guias			2026-10-18	S	3f9da49c8	
@@ -297,7 +297,7 @@ C303	DONE		Registo local que herda chaves do catálogo em silêncio			2026-11-11
 C304	DONE		Relatório de pinch como relatório de engenharia			2026-11-11	M	73dce1019	
 C305	DONE		EduTool pinch: Compreender, Experimentar, Verificar			2026-11-11	M	ab89a76d6	
 C306	PARTIAL	75	Da lista de utilidades à energia integrada e tubagem de utilidades	balanço de vapor/condensado por coletor, desenho da rede de permutadores e P&ID por fazer	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-11	L	f9af88d4c	
-C307	PARTIAL	92	Algarismos significativos e ordenação de tabelas	a tabela de correntes principal ainda tem ordenação própria; 5 tabelas menores (resumo, painel lateral, internos, props, plano de lote) sem a regra	o essencial aterrou (719aabaca2); restam pontas pequenas	2026-11-11	M	719aabaca2	
+C307	DONE		Algarismos significativos e ordenação de tabelas	Tabela de correntes e as cinco tabelas menores na ordenação partilhada e com algarismos significativos; no main.	o essencial aterrou (719aabaca2); restam pontas pequenas	2026-11-11	M	3aa2b3cdfe	
 C308	OPEN	31	Aplicar técnica de Duhem para consistência dos pares	teste de Gibbs-Duhem (van Ness) por laboratório antes do ajuste, 'não testável' sem y, diagnóstico dos 17 severos	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-11	M		
 C309	PARTIAL	76	Máximo de compostos: séries IUPAC de propriedades críticas	restantes lotes de componentes (de ~647 bloqueados, só 41 novos + 17 atualizados) por Tc/Pc IUPAC e Cp Zabransky	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-11	L	03b2aa85d	
 C310	DONE		COSMO-SAC nativo com perfis sigma LVPP			2026-11-11	L	a218cfd0a	
