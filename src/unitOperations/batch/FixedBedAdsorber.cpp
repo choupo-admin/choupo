@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "FixedBedAdsorber.H"
+#include "unitOperations/hydraulics/packedBed/ErgunEquation.H"
 
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -1468,10 +1469,9 @@ scalar FixedBedAdsorber::ergunVelocity_(scalar pLeft, scalar pRight,
         mu = it->second;
     }
     const scalar de = sphericity_ * dParticle_;
-    const scalar a = 150.0 * std::pow(1.0 - eps_, 2) * mu
-                   / (std::pow(eps_, 3) * de * de);
-    const scalar b = 1.75 * (1.0 - eps_) * rho
-                   / (std::pow(eps_, 3) * de);
+    const ergun::Coefficients k = ergun::coefficients(eps_, de, mu, rho);   // one home
+    const scalar a = k.viscous;
+    const scalar b = k.inertial;
     const scalar g = std::abs(dP) / distance;
     const scalar root = std::sqrt(a * a + 4.0 * b * g);
     // 2g/(a+root) is algebraically the positive quadratic root without
