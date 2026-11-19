@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PFR.H"
+#include "unitOperations/hydraulics/packedBed/ErgunEquation.H"
 #include "thermo/PropertyDomainError.H"
 #include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
@@ -1727,12 +1728,10 @@ PFR::ErgunTerms PFR::ergunTerms(const BedHydraulics& h, const ThermoPackage& the
     const scalar rho = 1.0e-3 * MW / vmol;                          // kg/m3
     const scalar u   = Ftot * vmol / h.A;                           // m/s, superficial
     const scalar mu  = thermo.viscosityGas(T, z);                   // Pa s
-    const scalar e   = h.eps;
-    const scalar a = 150.0 * (1.0 - e) * (1.0 - e) * mu / (e * e * e * h.dp * h.dp);
-    const scalar b = 1.75 * (1.0 - e) * rho / (e * e * e * h.dp);
+    const ergun::Coefficients k = ergun::coefficients(h.eps, h.dp, mu, rho);   // one home
     ErgunTerms t;
-    t.viscous  = a * u;
-    t.inertial = b * u * u;
+    t.viscous  = k.viscous * u;
+    t.inertial = k.inertial * u * u;
     return t;
 }
 
@@ -1787,10 +1786,8 @@ void PFR::publishBedHydraulics(const BedHydraulics& h, const ThermoPackage& ther
         mu  = thermo.viscosityGas(T, z);
         u = F * vmol / h.A;
         Re = rho * u * h.dp / (mu * (1.0 - h.eps));
-        const scalar e = h.eps;
-        const scalar a = 150.0 * (1.0 - e) * (1.0 - e) * mu / (e * e * e * h.dp * h.dp);
-        const scalar b = 1.75 * (1.0 - e) * rho / (e * e * e * h.dp);
-        inertial = b * u * u / (a * u + b * u * u);
+        const ergun::Coefficients k = ergun::coefficients(h.eps, h.dp, mu, rho);
+        inertial = k.inertial * u * u / (k.viscous * u + k.inertial * u * u);
     };
     scalar u_in, Re_in, in_in, u_out, Re_out, in_out, rho_in, mu_in, rho_out, mu_out;
     regime(T_in, P_in, z_in, F_in_mols, u_in, Re_in, in_in, rho_in, mu_in);
