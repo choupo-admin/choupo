@@ -70,8 +70,8 @@ namespace Choupo {
 namespace nozzleSchedule {
 
 //  Reads `nozzleDesign {}` from the layout dictionary; absent, nothing is done
-//  and nothing is published.  Needs `lineDesign {}` (the nominal-size table and
-//  the line sheets).  Call AFTER lineSheets::evaluate.  Fills
+//  and nothing is published.  Uses `lineDesign {}` (the nominal-size table and
+//  the line sheets) where declared, else its own `nominalSizes {}`.  Call AFTER lineSheets::evaluate.  Fills
 //  `result.layout.nozzles`.  Throws, naming the key, when a declaration is
 //  missing.
 void evaluate(const Dictionary& layoutDict, SimulationResult& result,

@@ -81,18 +81,23 @@ void evaluate(const Dictionary& layoutDict, SimulationResult& result, int verbos
     if (!layoutDict.found("nozzleDesign")) return;
     PlantLayoutRecord& L = result.layout;
     if (!L.present()) return;
-    if (!layoutDict.found("lineDesign"))
-        throw std::runtime_error("nozzleDesign: a nozzle's size is the end of its"
-            " line, so the case must declare `lineDesign {}` (the nominal-size"
-            " table and the line sheets) beside `nozzleDesign {}`.");
-
     const DictPtr ND = layoutDict.subDict("nozzleDesign");
     const std::string W = "nozzleDesign.";
 
     // ---- the size table (the line list's own) --------------------------
     std::vector<Size> sizes;
     {
-        const DictPtr ns = layoutDict.subDict("lineDesign")->subDict("nominalSizes");
+        //  The size table is the line list's where the case declares one; a case
+        //  with no `lineDesign {}` declares its own `nozzleDesign.nominalSizes {}`
+        //  (same grammar) and its nozzles are then sized by the item's criterion
+        //  alone, a line having no sheet.
+        const DictPtr ns = layoutDict.found("lineDesign")
+            ? layoutDict.subDict("lineDesign")->subDict("nominalSizes")
+            : need(ND, "nominalSizes", W);
+        if (!layoutDict.found("lineDesign"))
+        {
+            needText(ns, "nominalSizes", "source"); needText(ns, "nominalSizes", "reason");
+        }
         for (const DictPtr& s : ns->lookupDictList("sizes"))
         {
             Size z;
@@ -350,6 +355,14 @@ void evaluate(const Dictionary& layoutDict, SimulationResult& result, int verbos
         if (kind == "vessel" && sz.equipmentTag == "shell") kind = "columnShell";
         scalar D = 0;
         { auto v = sz.values.find("D"); if (v != sz.values.end()) D = v->second; }
+        //  A storage tank's sizing publishes a volume, not a diameter: the diameter
+        //  of its placed cylinder (the layout's own footprint) is then the one read.
+        std::string dFrom = "the sizing's D";
+        if (!(D > 0) && li->dx > 0)
+        {
+            if (li->shape == "cylinder") { D = li->dx; dFrom = "the placed cylinder's diameter"; }
+            else if (li->dy > 0) { D = std::min(li->dx, li->dy); dFrom = "the smaller side of the placed footprint, which stands for the round tank"; }
+        }
         int nM = 0, nH = 0;
         bool anyRule = false;
         for (const ManwayRule& m : mrules)
@@ -358,7 +371,7 @@ void evaluate(const Dictionary& layoutDict, SimulationResult& result, int verbos
             anyRule = true;
             if (!(D > 0))
             {
-                S.notes.push_back("manway rule for " + kind + " not applied: the sizing publishes no D to compare with the entry limit");
+                S.notes.push_back("manway rule for " + kind + " not applied: neither the sizing nor the placed item gives a diameter to compare with the entry limit");
                 continue;
             }
             for (int k = 0; k < m.count; ++k)
@@ -376,9 +389,9 @@ void evaluate(const Dictionary& layoutDict, SimulationResult& result, int verbos
                 else { r.nps = nps; r.nominalSize = fmt(nps); }
                 r.basis = std::string(enter ? "manway " : "inspection opening ") + r.nominalSize + " in, "
                         + m.where + ": count " + std::to_string(m.count) + " for " + kind + " (" + m.source + "); "
-                        + (enter ? "D " + fmt(D) + " m is at least the entry limit " + fmt(entryMinD)
+                        + (enter ? "D " + fmt(D) + " m (" + dFrom + ") is at least the entry limit " + fmt(entryMinD)
                                    + " m (clear opening " + fmt(mwDiameter) + " m)"
-                                 : "D " + fmt(D) + " m is below the entry limit " + fmt(entryMinD)
+                                 : "D " + fmt(D) + " m (" + dFrom + ") is below the entry limit " + fmt(entryMinD)
                                    + " m: nobody can enter, so an inspection opening replaces the manway");
                 if (havePItem && Tdes > 0)
                 {
