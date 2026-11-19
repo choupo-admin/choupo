@@ -4758,6 +4758,19 @@ accepts today, and that is a policy call.
 > constant and the Chilton-Colburn label on Delft's film are stated in the
 > output, not changed.
 
+> **BACKLOG ORDER (Vitor, 2026-11-19 ~12:00: "Podes organizar o backlog
+> primeiro por itens que consolidem a arquitetura? Depois disso ordena do
+> mais fácil para o mais complicado e segue essa ordem.").**  RULED, agreed:
+> the open ranks are two groups.  (1) Items that CONSOLIDATE the
+> architecture -- one home per fact, a type table replaced by what units
+> declare, a duplicate path removed, the machinery that holds the tree
+> (suite width, test selection, the backlog's own home, the WASM data
+> package, the numeric kernel review, licence debt): C445, C436, C365, C167,
+> C241, C326, C335, C412, C415, C245, C256, C296, C425, C226, C131.  (2)
+> Everything else.  Inside each group, smaller first (S, M, L), older first
+> on a tie.  The size column is the measure of difficulty until a slice is
+> measured; rank 0 stays "in progress".  The dispatch follows that order.
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
