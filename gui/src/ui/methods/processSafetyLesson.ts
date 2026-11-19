@@ -620,7 +620,7 @@ export const SAFETY_STEPS: readonly LessonStep[] = [
       + "separator as liquid and three quarters as gas).  The converter "
       + "gas is 193 kg at 150 bar and 115 kg at 50 bar: 1.6 times the "
       + "volume at a third of the density holds less.  The separator's "
-      + "liquid ammonia is 4.3 t at 150 bar and 23.3 t at 50 bar, because a "
+      + "liquid ammonia is 4.3 t at 150 bar and 23.4 t at 50 bar, because a "
       + "drum sized on vapour residence at a third of the pressure is a much "
       + "larger drum.  So the lower-pressure loop holds less gas in the "
       + "converter and far more liquid ammonia in the separator: the "

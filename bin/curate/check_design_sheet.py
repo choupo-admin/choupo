@@ -2361,6 +2361,37 @@ def _anchored_rackett_rho(case: Path, comp: dict, T: float):
     return mbar / vmix, excl
 
 
+def _door_liquid_rho(case: Path, comp: dict, T: float, out: str, P=None):
+    """The liquid density the sizers READ, which since C445 is the one door's
+    (a reference equation where the record names one, e.g. NH3 on Gao2023,
+    ideal mixing otherwise), not the anchored Rackett of the old
+    `ThermoPackage::density`.  A reference equation cannot be recomputed
+    here, so the number is taken from the run's own property-source rows
+    (`"property": "liquidDensity"`, `valueMin`) at this temperature and pressure, and is
+    ACCEPTED ONLY when it lies within 2 % of the independent anchored-Rackett
+    recomputation above -- a door value that has drifted off the physics is
+    refused by falling back to the Rackett number, which the arm's check
+    against the sheet then fails.  Every figure downstream of rho (volumes,
+    masses, costs) is still recomputed here.  Returns (rho, excluded)."""
+    rack, excl = _anchored_rackett_rho(case, comp, T)
+    for l in out.splitlines():
+        if '"property": "liquidDensity"' not in l:
+            continue
+        mt = re.search(r'"TMin": *([-0-9.eE+]+), *"TMax": *([-0-9.eE+]+)', l)
+        mv = re.search(r'"valueMin": *([-0-9.eE+]+)', l)
+        if not (mt and mv):
+            continue
+        if P is not None:
+            mp = re.search(r'"PMin": *([-0-9.eE+]+)', l)
+            if not mp or abs(float(mp.group(1)) - P) > 1e-6 * P:
+                continue
+        if abs(float(mt.group(1)) - T) < 1e-6 and abs(float(mt.group(2)) - T) < 1e-6:
+            v = float(mv.group(1))
+            if abs(v - rack) / rack < 0.02:
+                return v, excl
+    return rack, excl
+
+
 def check_storage(problems, notes):
     """(q) A STORAGE TANK IS SIZED FROM ITS STREAM AND COSTED ON THE ROW THE
     PROGRAM CARRIES (2026-10-07, DEV.md 4c C44 slice 2).  On
@@ -2456,7 +2487,7 @@ def check_storage(problems, notes):
                         "JSON with F_mass, T and composition." % stream)
         return
     mdot, T = float(fm.group(1)), float(Tm.group(1))
-    rho, excl = _anchored_rackett_rho(case, comp, T)
+    rho, excl = _door_liquid_rho(case, comp, T, out)
 
     V_stored = t_day * 86400.0 * mdot / rho
     V_tanks = V_stored / fill
@@ -2943,7 +2974,7 @@ def check_inventory(problems, notes):
                                 "result." % stream)
                 continue
             if sj["vf"] <= 1e-9:
-                rho, _ = _anchored_rackett_rho(case, sj["comp"], sj["T"])
+                rho, _ = _door_liquid_rho(case, sj["comp"], sj["T"], out, sj["P"])
             else:
                 rho = _srk_vapour_rho(case, sj["comp"], sj["T"], sj["P"])
             m = vals["V_R"] * frac * rho
@@ -4536,7 +4567,7 @@ def check_pressure_store_link(problems, notes):
         problems.append("%s: T201's KPIs, its inlet's state or its store's "
                         "declarations are missing -- nothing to recompute." % tag)
         return
-    rho, _excl = _anchored_rackett_rho(case, sj2["comp"], T2)
+    rho, _excl = _door_liquid_rho(case, sj2["comp"], T2, out, sj2["P"])
     Vt2 = tau2 * mdot2 / (rho * fill)
     if not close(Vt2, vv, 1e-6):
         problems.append("%s: T201's store V_total %.9g m3 recomputed against the "
