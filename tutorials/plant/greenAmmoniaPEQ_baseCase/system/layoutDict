@@ -246,7 +246,7 @@ items
         x           74 m;
         y           11 m;
         z           0 m;
-        orientation alongX;
+        orientation vertical;
         release
         {
             source  "author-set assumption for the students to replace with their own site data; not taken from any hazardous-area standard";

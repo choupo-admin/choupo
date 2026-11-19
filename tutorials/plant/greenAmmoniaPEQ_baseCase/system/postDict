@@ -131,9 +131,13 @@
                       liquid) -- their volumes were lower bounds, said on
                       every run; now the liquid density comes through the
                       sizing pass's density door and the hold-up sets them.
-                      All three come out HORIZONTAL (the Separator's vertical
-                      H/D is 5.0, the others far above), and the plot plan
-                      stands them alongX (the layout refuses a mismatch).
+                      The two let-down drums come out HORIZONTAL (H/D far
+                      above 5) and the Separator VERTICAL (H/D 4.98, inside
+                      the 3-5 window; it sits on the edge, 5.02 with the old
+                      ideal-mixing density, 4.98 with the reference
+                      equation's), so the plot plan stands the Separator
+                      upright and the other two alongX (the layout refuses a
+                      mismatch).
                       Every number the source does not fix is ASSUMED, below.
 
     storage     (1)   NH3Storage, attached to the boundary stream ProductNH3
