@@ -3292,6 +3292,21 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/lpc.$$
 
+    #  Unit-convention gate (DEV.md 4c C454): a key whose bare number is in a
+    #  working unit (`Pc`, `pressureDesign`: bar) is read through
+    #  Dictionary::lookupScalarIn, and writing its unit gives the same answer
+    #  (flash09 for Pc, flash22's sizing for pressureDesign).  Runs the engine.
+    gate_exec "$ROOT/bin/curate/check_unit_convention.py" > /tmp/ucv.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "unit-convention-gate" "$(grep -m1 '^check_unit_convention: OK' /tmp/ucv.$$ | cut -c1-200)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_unit_convention.py)\n" "unit-convention-gate"
+        cat /tmp/ucv.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ucv.$$
+
     # Tree gate (Migration 6): retired data/standards homes must never come
     # back -- neither as src path-builders nor as resurrected directories.
     if gate_exec "$ROOT/bin/curate/check_tree_gate.py" > /tmp/treegate.$$ 2>&1; then

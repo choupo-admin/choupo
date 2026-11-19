@@ -1820,6 +1820,11 @@
       "exit": 0,
       "claim": "check_lesson_prose_citations: OK 455 unmanaged prose citation(s) in 83 file(s), each file at its pin (ratchet: may only fall); 428 managed citation(s) are kept by repoint_lesson_citations.  NOT checked here: whether a managed one is current (repoint --check) or true (the lesson tests).",
       "seconds": 1.7
+    },
+    "check_unit_convention": {
+      "exit": 0,
+      "claim": "check_unit_convention: OK (a) every read of `Pc` (bar) and `pressureDesign` (bar) goes through lookupScalarIn; (b) flash09's V/F is 0.475737805121 with CH4's Pc bare and with it written `bar`, and 1 with the Pa number bare (the run sees Pc); (c) 27 published sizing numbers of flash22 are identical with pressureDesign bare and written `bar` (ten times the pressure moves them: the sheet sees it).  NOT checked: the other 16 trap families of C454.",
+      "seconds": 0.5
     }
   }
 }
