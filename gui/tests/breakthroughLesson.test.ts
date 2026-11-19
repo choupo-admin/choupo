@@ -319,7 +319,9 @@ describe("the tool renders it as a scrolling lesson", () => {
     //  c_in is never invented; the caption says which anchor was used, and
     //  the table says what each engine number means.
     expect(SRC).toContain("{view.norm.caption}");
-    expect(SRC).toContain("retention_factor: how many hold-up times");
+    expect(SRC).toContain("retention_factor R_f: the front arrives R_f times later than the superficial");
+    expect(SRC).toContain("R_f/ε carrier hold-up times");
+    expect(SRC).not.toContain("how many hold-up times the front lags the carrier");
     expect(SRC).toContain("c_out/c_in final: the late plateau");
   });
 
@@ -387,5 +389,10 @@ describe("R_f is the RETENTION factor, everywhere (audited 2026-08-31)", () => {
     expect(b, "the b_i gloss left the lesson").toBeTruthy();
     expect(prose(b.means)).toContain("pressureBasis");
     expect(b.unit).not.toBe("1/Pa");
+    //  and the plain b of the temperature law carries the same declared basis
+    const bPlain = BREAKTHROUGH_STEPS
+      .flatMap((x) => x.where ?? [])
+      .find((w) => w.sym === "b")!;
+    expect(bPlain.unit).not.toBe("1/Pa");
   });
 });

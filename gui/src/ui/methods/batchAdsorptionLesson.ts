@@ -107,7 +107,11 @@ export const BATCH_STEPS: readonly LessonStep[] = [
       + "little, but the loading the adsorbent can reach -- q* at the FINAL concentration, "
       + "which is low -- falls towards zero.  Each kilogram of adsorbent does less, so the "
       + "dose climbs steeply.  For a linear isotherm M grows like R/(100 − R); for a "
-      + "favourable isotherm the climb starts later but is just as steep at the end.  "
+      + "favourable isotherm the climb depends on its shape.  Langmuir has a linear limit at "
+      + "low c, so its last decades are as steep as the linear case; Freundlich with n < 1 "
+      + "has no linear limit and climbs more gently (for K_F = 30, n = 0.3, V = 100 L, "
+      + "c_0 = 50 mg/L, going from 90 to 99 to 99.9 % removal takes 92, 203 and 409 g: "
+      + "about twice the adsorbent per decade, against ten times for a linear isotherm).  "
       + "A pre-loaded adsorbent adds a floor: it is already in equilibrium with c*(q_0), "
       + "and no dose takes the liquid below that.",
     derivation: [
@@ -147,8 +151,9 @@ export const BATCH_STEPS: readonly LessonStep[] = [
       + "back one tank each time.  Why staging helps: in one stage the WHOLE charge ends "
       + "in equilibrium with the final, low concentration, so it is loaded only to q* at "
       + "that low c.  In stages, part of the adsorbent finishes at a higher concentration "
-      + "and therefore carries more.  Countercurrent takes this furthest: the solid that "
-      + "leaves is in equilibrium with the FEED.",
+      + "and therefore carries more.  Countercurrent takes this furthest: with N stages "
+      + "the solid that leaves stage 1 is in equilibrium with the liquid leaving stage 1 "
+      + "(q*(c_1)), and it approaches equilibrium with the FEED only as N grows without limit.",
     derivation: [
       { step: "Crossflow: stage k receives the liquid from stage k − 1 and its own fresh "
           + "mass M_k; each stage is the single-stage problem of step 1:",
@@ -161,7 +166,7 @@ export const BATCH_STEPS: readonly LessonStep[] = [
           + "isotherm and two stages, with a = M K/V:",
         eq: String.raw`\frac{c_2}{c_0}\Big|_\mathrm{cross} = \frac{1}{(1 + a/2)^2}, \qquad \frac{c_2}{c_0}\Big|_\mathrm{counter} = \frac{1}{1 + a + a^2}` },
     ],
-    formula: String.raw`V c_0 = V c_N + \sum_{k=1}^{N} M_k\, q_k`,
+    formula: String.raw`\begin{aligned} \text{crossflow:}\quad V c_0 &= V c_N + \sum_{k=1}^{N} M_k\, q_k \\ \text{countercurrent:}\quad V c_0 &= V c_N + M\, q_1 \end{aligned}`,
     where: [
       { sym: "V", means: "volume of solution", unit: "L" },
       { sym: "c_0", means: "concentration of the feed", unit: "mg/L" },
@@ -172,9 +177,11 @@ export const BATCH_STEPS: readonly LessonStep[] = [
       { sym: "k", means: "which stage, counted in the direction the liquid moves" },
       { sym: "N", means: "number of stages" },
       { sym: "M", means: "total adsorbent mass", unit: "g" },
-      { sym: "M_k", means: "adsorbent mass in stage k (crossflow) or carried through it "
-        + "(countercurrent, M_k = M, and only the solid leaving stage 1 leaves the system)",
+      { sym: "M_k", means: "adsorbent mass in stage k (crossflow only: each stage holds its own share, and every share leaves the system "
+        + "loaded).  In countercurrent the same M passes through every stage and only the "
+        + "solid leaving stage 1 leaves the system, so the overall balance has M q_1, not a sum",
         unit: "g" },
+      { sym: "q_1", means: "loading on the adsorbent leaving stage 1 (countercurrent)", unit: "mg/g" },
       { sym: "q^{*}(c_k)", means: "the isotherm at the concentration leaving stage k", unit: "mg/g" },
       { sym: "q_k", means: "loading on the adsorbent leaving stage k", unit: "mg/g" },
       { sym: "q_{k+1}", means: "loading on the adsorbent entering stage k from stage k + 1",
@@ -217,7 +224,8 @@ export const BATCH_STEPS: readonly LessonStep[] = [
     ],
     formula: String.raw`\begin{aligned} t &= -\frac{1}{k_L a \beta}\,\ln\!\left(\frac{\beta\, c}{c_0} - \alpha\right) \\ k_L a &= \frac{6\,\mathrm{Sh}\, D_{AB}\, M}{\rho_p\, d^2\, V} \end{aligned}`,
     where: [
-      { sym: "V", means: "volume of solution", unit: "m³ in this step" },
+      { sym: "V", means: "volume of solution (litres: α = V/(M K) takes K in L/g; only the "
+        + "area a = 6M/(ρ_p d V) needs m³)", unit: "L" },
       { sym: "c", means: "concentration in the bulk liquid at time t", unit: "mg/L" },
       { sym: "\\mathrm{d}c/\\mathrm{d}t", means: "rate of change of the bulk concentration",
         unit: "mg/(L s)" },

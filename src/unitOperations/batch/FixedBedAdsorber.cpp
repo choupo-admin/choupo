@@ -213,6 +213,9 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     u_   = opDict->lookupScalar("u",    Dims::velocity);
     T_   = opDict->lookupScalar("T",    Dims::temperature);
     P_   = opDict->lookupScalar("P",    Dims::pressure);
+    //  Dax is on the BED (superficial) basis: Dax = eps * D_L, with D_L the
+    //  interstitial dispersion of the textbook correlations.  A D_L pasted
+    //  here overstates the dispersion by 1/eps (C451).
     Dax_ = opDict->lookupScalar("Dax",  Dims::diffusivity);
     const std::string flowModel =
         opDict->lookupWordOrDefault("flowModel", "constantVelocity");
@@ -514,7 +517,7 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
                     + "': initial.initialLoading lists '" + sp + "' but it"
                     " is not an integrated (isotherm + k) species -- an"
                     " inert cannot carry a loading");
-            const scalar q0v = ql->lookupScalar(sp);
+            const scalar q0v = lookupLoadingMolPerKg(ql, sp);
             if (q0v < 0.0)
                 throw std::runtime_error("fixedBedAdsorber '" + name_
                     + "': initial.initialLoading." + sp + " must be >= 0");
@@ -879,8 +882,16 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     //  silently rewrite them).
     if (thermal_)
     {
+        //  C451: the heat wave travels through the LOADED bed, so the
+        //  denominator carries the adsorbed phase's heat capacity
+        //  rho_b sum_a q*_a Cp_ig,a (the term the energy row and the
+        //  Delta T_ad announcement carry since C258).
+        scalar cpAds = 0.0;
+        for (std::size_t a = 0; a < nAds; ++a)
+            if (cIn_[a] > 0.0)
+                cpAds += qStarFeed_(a) * cpG_(adsIdx_[a], T_);
         uThAnn_ = u_ * cTot_ * cpgFeed_
-            / (eps_ * cTot_ * cpgFeed_ + rhoB_ * cpS_);
+            / (eps_ * cTot_ * cpgFeed_ + rhoB_ * (cpS_ + cpAds));
         dTadAnn_.assign(nAds, -1.0);
         for (std::size_t a = 0; a < nAds; ++a)
         {
@@ -1410,7 +1421,7 @@ scalar FixedBedAdsorber::pressureCell_(const sVector& y, std::size_t j) const
 }
 
 scalar FixedBedAdsorber::ergunVelocity_(scalar pLeft, scalar pRight,
-                                        scalar distance,
+                                        scalar distance, scalar Tface,
                                         const sVector& cLeft,
                                         const sVector& cRight) const
 {
@@ -1444,7 +1455,7 @@ scalar FixedBedAdsorber::ergunVelocity_(scalar pLeft, scalar pRight,
         //  last evaluation's composition bit for bit; the same inputs give
         //  the same viscosityGas, so the result is byte-identical.
         std::string key(sizeof(scalar) * (yMix.size() + 1), '\0');
-        std::memcpy(&key[0], &T_, sizeof(scalar));
+        std::memcpy(&key[0], &Tface, sizeof(scalar));
         std::memcpy(&key[sizeof(scalar)], yMix.data(),
                     sizeof(scalar) * yMix.size());
         auto it = muMemo_.find(key);
@@ -1452,7 +1463,7 @@ scalar FixedBedAdsorber::ergunVelocity_(scalar pLeft, scalar pRight,
         {
             if (muMemo_.size() >= 8192) muMemo_.clear();
             it = muMemo_.emplace(std::move(key),
-                                 thermo_->viscosityGas(T_, yMix)).first;
+                                 thermo_->viscosityGas(Tface, yMix)).first;
         }
         mu = it->second;
     }
@@ -1692,7 +1703,11 @@ sVector FixedBedAdsorber::rhs_(const sVector& y)
                 cL[i] = y[i * N_ + f - 1];
                 cR[i] = y[i * N_ + f];
             }
-            const scalar uf = ergunVelocity_(Pc[f - 1], Pc[f], dz_, cL, cR);
+            //  C451: the gas viscosity is taken at the FACE's own T (the
+            //  mean of its two cells; the declared T_ when isothermal).
+            const scalar uf = ergunVelocity_(Pc[f - 1], Pc[f], dz_,
+                                             0.5 * (Tc[f - 1] + Tc[f]),
+                                             cL, cR);
             uface[f] = uf;
             for (std::size_t i = 0; i < n; ++i)
             {
@@ -1706,7 +1721,7 @@ sVector FixedBedAdsorber::rhs_(const sVector& y)
         for (std::size_t i = 0; i < n; ++i)
             cL[i] = cR[i] = y[i * N_ + N_ - 1];
         const scalar uOut = ergunVelocity_(Pc[N_ - 1], Pout_,
-                                           0.5 * dz_, cL, cR);
+                                           0.5 * dz_, Tc[N_ - 1], cL, cR);
         uface[N_] = uOut;
         //  Backflow through the outlet face comes from the DOWNSTREAM
         //  reservoir: the feed composition at the feed T (the convention),

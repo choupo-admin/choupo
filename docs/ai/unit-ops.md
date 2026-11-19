@@ -3284,8 +3284,12 @@ axial dispersion and declared LDF kinetics.  `flowModel ergun` activates the
 A4 continuity contract: every gas component is an ODE state,
 `P_j = R T sum(c_ij)`, and signed superficial velocity is solved at each face
 from Ergun.  It requires `dParticle` (and optional `sphericity`) in the
-adsorbent identity, gas viscosity from the thermo transport model, and a
-declared downstream `P_out`.
+adsorbent identity, gas viscosity from the thermo transport model (taken at
+the face's own temperature when `energyBalance` is thermal, at `T` otherwise),
+and a declared downstream `P_out`.  The announced thermal-wave velocity
+`u_th` is that of the loaded bed (the adsorbed phase's heat capacity is in the
+denominator).  A loading written with a unit (`initialLoading`, `q_max`) is
+converted: `5 mol/kg` equals a bare `5`; `H_298` takes a bare number only.
 ```
 operation {
   adsorbent zeolite13X_A4; flowModel ergun;
@@ -3301,7 +3305,7 @@ operation {
 `convectionScheme upwind | vanLeer;` (in `operation`, beside `nCells`) picks
 the face value of the convective flux; absent, the stated default is
 `vanLeer`, and the run says so.  `upwind` is first order and adds a
-numerical dispersion `v dz/2` (v = u/eps) to `D_L = Dax/eps`; every run
+numerical dispersion `v dz/2` (v = u/eps) to `D_L = Dax/eps`.  `Dax` is on the BED (superficial) basis, `Dax = eps D_L`: a textbook interstitial D_L (Edwards-Richardson, Wakao-Funazkri) goes in as `eps D_L`, never as `Dax` itself (pasting it overstates the dispersion by 1/eps); every run
 announces it (header, advisory, KPIs `D_numerical`,
 `numerical_dispersion_ratio`, `nCells_numerical_ratio_0p1`; the ratio falls
 under 0.1 only for nCells > 5 Pe).  `vanLeer` is a MUSCL face value with the

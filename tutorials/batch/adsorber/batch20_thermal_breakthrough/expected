@@ -2,7 +2,7 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 kpi     bed                    P_final          100050.550283    1e-4
-kpi     bed                    P_first_cell_Pa  100097.15555     1e-4
+kpi     bed                    P_first_cell_Pa  100101.622717     1e-4
 kpi     bed                    P_last_cell_Pa   100002.081511    1e-4
 kpi     bed                    P_mid_cell_Pa    100051.159061    1e-4
 kpi     bed                    P_out_boundary_Pa 100000           1e-4
@@ -13,7 +13,7 @@ kpi     bed                    T_out_final_K    334.326452215    1e-4
 kpi     bed                    c_out_over_cin_final_CO2 0.823725183953   1e-4
 kpi     bed                    carrier_fabricated_mol 2.4897417461e-11 abs:1e-09
 kpi     bed                    dT_adiabatic_CO2_K 125.813871501    1e-4
-kpi     bed                    deltaP_first_to_out_Pa 97.1555499367    1e-4
+kpi     bed                    deltaP_first_to_out_Pa 101.622716824    1e-4
 kpi     bed                    integral_anchor_CO2 2839.09489826    1e-4
 kpi     bed                    mass_closure_CO2 3.70873589302e-14 abs:1e-08
 kpi     bed                    n_CO2_final      1.10377448439e-05 1e-4
@@ -26,7 +26,7 @@ kpi     bed                    t_breakthrough_5pct_CO2 770.911263752    1e-4
 kpi     bed                    t_end            12000            1e-4
 kpi     bed                    t_stoichiometric_CO2 3042.04095537    1e-4
 kpi     bed                    totalMoles_final 7.63330978511e-05 1e-4
-kpi     bed                    u_thermal_wave_m_s 7.95840334733e-05 1e-4
+kpi     bed                    u_thermal_wave_m_s 7.13132890548e-05 1e-4
 kpi     campaign               element_C_closure_rel 3.82249329343e-16 abs:1e-09
 kpi     campaign               element_He_closure_rel 4.04575926784e-16 abs:1e-09
 kpi     campaign               element_O_closure_rel 3.82249329343e-16 abs:1e-09

@@ -30,6 +30,7 @@ License
 
 #include "core/Advisory.H"
 #include "core/Constants.H"
+#include "core/Dimensions.H"
 
 #include <cmath>
 #include <iostream>
@@ -119,10 +120,21 @@ scalar IsothermModel::pInBasis(scalar p_Pa) const
 //  HenryIsotherm:  q = H(T) * p
 // ---------------------------------------------------------------------------
 
+scalar lookupLoadingMolPerKg(const DictPtr& d, const std::string& key)
+{
+    if (d->hasDimensions(key))
+        return d->lookupScalar(key, Dims::molality) * 1000.0;   // kmol/kg -> mol/kg
+    return d->lookupScalar(key);                                // bare = mol/kg
+}
+
 void HenryIsotherm::read(const DictPtr& record, const std::string& sourcePath)
 {
     readCommon(record, sourcePath);
     auto p = record->subDict("parameters");
+    if (p->hasDimensions("H_298"))
+        throw std::runtime_error("isotherm record " + sourcePath
+            + ": henry H_298 is mol/kg per declared pressure basis and has no"
+              " unit suffix -- write a bare number (C451).");
     H_298_  = p->lookupScalar("H_298");                  // mol/kg per declared-p
     dH_ads_ = p->lookupScalar("dH_ads");                 // J/mol (<0)
     if (H_298_ <= 0.0)
@@ -160,7 +172,7 @@ void LangmuirIsotherm::read(const DictPtr& record, const std::string& sourcePath
 {
     readCommon(record, sourcePath);
     auto p = record->subDict("parameters");
-    q_max_  = p->lookupScalar("q_max");                  // mol/kg
+    q_max_  = lookupLoadingMolPerKg(p, "q_max");                // mol/kg
     b_298_  = p->lookupScalar("b_298");                  // 1 per declared-p @tRef
     dH_ads_ = p->lookupScalar("dH_ads");                 // J/mol (<0)
     if (q_max_ <= 0.0 || b_298_ <= 0.0)

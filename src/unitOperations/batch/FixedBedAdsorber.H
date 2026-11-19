@@ -297,7 +297,7 @@ private:
     scalar uSegStart_ = 0.0;  // when the current u took effect [s]
     scalar T_    = 0.0;      // temperature [K], DECLARED constant (A4: energy)
     scalar P_    = 0.0;      // pressure [Pa], DECLARED constant (A4: Ergun)
-    scalar Dax_  = 0.0;      // axial dispersion [m2/s], DECLARED
+    scalar Dax_  = 0.0;      // axial dispersion [m2/s], DECLARED, BED (superficial) basis: Dax = eps D_L
     scalar rhoB_ = 0.0;      // bulk density [kg/m3] from the catalogue
     std::size_t N_ = 0;      // nCells (declared -- no silent default)
     scalar dz_   = 0.0;      // L/N [m]
@@ -511,6 +511,7 @@ private:
     scalar pressureCell_(const sVector& y, std::size_t j) const;
     mutable std::unordered_map<std::string, scalar> muMemo_;  // ergunVelocity_ gas-viscosity memo
     scalar ergunVelocity_(scalar pLeft, scalar pRight, scalar distance,
+                          scalar Tface,
                           const sVector& cLeft, const sVector& cRight) const;
 };
 

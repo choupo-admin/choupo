@@ -47,7 +47,9 @@ Description
         operation
         {
             resin     SAC_Na;      // resolved by name in constant/electrolyte/resins/
-            CEC       2.0 eq/L;     // capacity, overrides the resin .dat default
+            resinDose 2.0 L/kg;    // resin contacted per kg of water treated
+                                    // (the nameplate CEC lives in the resin .dat;
+                                    //  a `CEC` key here is REFUSED)
             bedVolume 1.5 m3;       // resin in service (optional)
             pH        solve;        // or a number (given)
         }

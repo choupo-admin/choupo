@@ -12,7 +12,7 @@
   Time control for the A5-T1 adiabatic breakthrough.  The isothermal
   batch18 saturates by 4200 s; the ADIABATIC front breaks through MUCH
   earlier (t_50 ~ 806 s vs 3042: the warm bed holds less), and the
-  THERMAL wave crawls (u_th = 7.96e-5 m/s, L/u_th ~ 6280 s).  The
+  THERMAL wave crawls (u_th = 7.13e-5 m/s, L/u_th ~ 7010 s).  The
   12000 s window shows the honest COUPLED story: outlet T rises to
   ~336 K (well below the announced 140 K BOUND -- the heat lags the
   front), then stays WARM long past L/u_th because the cooling

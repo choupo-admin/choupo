@@ -26629,7 +26629,10 @@ Section~\ref{sec:bed-convection-scheme}), dispersive fluxes
 $-D_{\mathrm{ax}} A\,\partial c/\partial z$ at the
 interior faces (no factor $\varepsilon$: the code divides the whole
 row by $\varepsilon$, so $D_{\mathrm{ax}}/\varepsilon$ is the dispersion
-coefficient of the interstitial fluid), and the LDF sink \eqref{eq:ldf} evaluated at the local
+coefficient of the interstitial fluid: $D_{\mathrm{ax}}$ is on the bed
+(superficial) basis, $D_{\mathrm{ax}}=\varepsilon D_L$, and a textbook
+interstitial $D_L$ pasted under \texttt{Dax} would overstate the
+dispersion by $1/\varepsilon$), and the LDF sink \eqref{eq:ldf} evaluated at the local
 $p_{ij}$.  Two boundary statements (Danckwerts): at the inlet the
 \emph{flux} is imposed --- the first face carries exactly
 $u\,c_{\mathrm{in}}$, so what enters is what you fed, dispersion
@@ -26869,8 +26872,14 @@ energy moved, at every step size --- so the engine refused that claim by
 name.  Now the cells' $U_j$ are integrated in the form
 \eqref{eq:bed-energy}, together with a ledger row for the outlet's
 enthalpy; \eqref{eq:bed-T} is kept as the working row that feeds $T$ to
-the isotherm and the Ergun law, and after every sampling chunk $T_j$ is
+the isotherm and the Ergun law (whose gas viscosity is evaluated at the
+face's own temperature, the mean of its two cells), and after every
+sampling chunk $T_j$ is
 projected back onto $U_j$ by Newton (unique, since $C_j>0$).  The
+announced thermal-wave velocity is that of the \emph{loaded} bed,
+$u_{\mathrm{th}} = u\,c\,\bar c_p / \bigl(\varepsilon\,c\,\bar c_p +
+\rho_b\,(c_{p,s} + \sum_i q_i^{*}\,c_{p,i})\bigr)$, the adsorbed phase
+carrying its gas's own heat capacity as in \eqref{eq:bed-energy}.  The
 raffinate leaves in packages that carry the enthalpy the ledger row
 integrated, at their mixing-cup temperature.  The campaign energy
 balance then closes to round-off: $10^{-15}$ of the energy moved on the
