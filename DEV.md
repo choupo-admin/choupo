@@ -4826,6 +4826,12 @@ accepts today, and that is a policy call.
 > line by line for what it is (modified Arrhenius, third body, fall-off, NASA
 > polynomials).  Built on what the engine already does; every number from the
 > cited mechanism's own paper.  Size M, ranked in the "rest" group.
+> AMENDED the same day, Vitor having filed both Sandia manuals (Chemkin-II
+> SAND89-8009, 1989; Chemkin-III SAND96-8216, 1996; Unlimited Release; in
+> ~/Choupo-Literature/SimulatorManuals): slice 1 holds the engine's
+> third-body and fall-off forms (Lindemann, Troe; src/thermo/reaction/Reaction.H
+> :89-96) and the modified Arrhenius to those manuals' equations, cited by
+> page in the code and the Theory Guide; the lesson is slice 2.
 
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
