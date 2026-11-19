@@ -38375,6 +38375,17 @@ which introduces a factor for every net mole produced:
     \qquad \Delta\nu = \sum_i \nu_i .\,}
     \label{eq:Kc}
 \end{equation}
+The $g_i^\circ(T)$ of \eqref{eq:Kp} are evaluated \emph{once per species
+per right-hand-side evaluation}, not once per reaction the species appears
+in: the reactor builds the vector $g_i^\circ(T)$ for the species of its
+reversible reactions at the evaluation's single temperature
+(\code{Reaction::gibbsVector}) and hands it down to every $K_c$ of that
+evaluation (\code{Reaction::equilibriumKc} with a $g$ argument).  The
+arithmetic and its order are those of the per-reaction form, so the result is
+bit-identical; only the repeated evaluation of the NASA-polynomial integrals is
+removed.  There is deliberately no cache keyed on $T$ inside the property
+layer: the vector is an argument, so the value a $K_c$ reads is visible at the
+call.
 
 \begin{pitfall}
 The $(P^\circ/\Rgas T)^{\Delta\nu}$ factor is \emph{mandatory} whenever

@@ -192,7 +192,9 @@ scalar ElementaryRate::netRate(const ThermoPackage& thermo, const RateState& s) 
     //  amount unit, so Kc scales by amountPerKmol^sum(nu).
     scalar sumNu = 0.0;
     for (std::size_t i = 0; i < n; ++i) sumNu += nu_[i];
-    const scalar Kc = Reaction::equilibriumKc(thermo, nu_, s.T) * std::pow(s.amountPerKmol, sumNu);
+    const scalar Kc = (s.gibbs ? Reaction::equilibriumKc(nu_, s.T, *s.gibbs)
+                               : Reaction::equilibriumKc(thermo, nu_, s.T))
+                    * std::pow(s.amountPerKmol, sumNu);
     scalar rr = (Kc > 0.0) ? k / Kc : 0.0;
     for (std::size_t i = 0; i < n; ++i)
         if (nu_[i] > 0.0) rr *= std::pow(std::max<scalar>(conc[i], 0.0), nu_[i]);

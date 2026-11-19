@@ -132,7 +132,8 @@ scalar RateLaw::kForward(scalar T) const
 
 
 scalar RateLaw::netRate(const ThermoPackage& thermo, scalar T,
-                        const sVector& conc, const sVector& x) const
+                        const sVector& conc, const sVector& x,
+                        const sVector* g) const
 {
     const std::size_t n = nu_.size();
     const scalar kf = Reaction::arrheniusRate(A_, Ea_, T);
@@ -148,7 +149,8 @@ scalar RateLaw::netRate(const ThermoPackage& thermo, scalar T,
         scalar rr = 0.0;
         if (revBalance_)
         {
-            const scalar Kc = Reaction::equilibriumKc(thermo, nu_, T);
+            const scalar Kc = g ? Reaction::equilibriumKc(nu_, T, *g)
+                            : Reaction::equilibriumKc(thermo, nu_, T);
             rr = (Kc > 0.0) ? kf / Kc : 0.0;
             for (std::size_t i = 0; i < n; ++i)
                 if (nu_[i] > 0.0) rr *= std::pow(conc[i], nu_[i]);
@@ -196,7 +198,8 @@ scalar RateLaw::netRate(const ThermoPackage& thermo, scalar T,
     }
     else if (revBalance_)
     {
-        const scalar Kc = Reaction::equilibriumKc(thermo, nu_, T);
+        const scalar Kc = g ? Reaction::equilibriumKc(nu_, T, *g)
+                            : Reaction::equilibriumKc(thermo, nu_, T);
         rr = (Kc > 0.0) ? kf / Kc : 0.0;
         for (std::size_t i = 0; i < n; ++i)
             if (nu_[i] > 0.0) rr *= std::pow(abar[i], nu_[i]);

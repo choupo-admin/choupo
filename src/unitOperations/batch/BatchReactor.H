@@ -212,10 +212,18 @@ private:
     int                         verbosity_  = 1;
 
     // Rate r [kmol/(m³·s)] of a single reaction at (T, n, V).
+    //  `g`, when non-null, is g_i(T) from gibbsAt_(T) for the SAME T: the
+    //  detailed-balance Kc reads it instead of rebuilding each g (bit-identical).
     scalar rateOfReaction_(const ReactionSpec& rxn,
                            scalar T,
                            const sVector& n,
-                           scalar V) const;
+                           scalar V,
+                           const sVector* g = nullptr) const;
+
+    //  g_i(T) = comp(i).g_pure_ig(T) for the species of every reversible
+    //  reaction, evaluated ONCE for one right-hand-side evaluation and passed
+    //  down by the caller (no cache keyed on T); empty when nothing is reversible.
+    sVector gibbsAt_(scalar T) const;
 
     // CHEMKIN unit helpers: convert a declared `units { A "cm3/mol/s"; Ea
     // "cal/mol"; }` to SI (kmol-m³-s, J/mol) on load, announcing the factor at
@@ -237,10 +245,12 @@ private:
     //  `typ` is the row sizes (odeJacobianScale) for the columns a Factory
     //  law (or a power below one at zero) differentiates by a difference.
     void rateGradient_(const ReactionSpec& rxn, scalar T, const sVector& n,
-                       scalar V, const sVector& typ, sVector& grad) const;
+                       scalar V, const sVector& typ, sVector& grad,
+                       const sVector* g = nullptr) const;
     //  The per-reaction difference: every species column of ONE reaction.
     void rateGradientFD_(const ReactionSpec& rxn, scalar T, const sVector& n,
-                         scalar V, const sVector& typ, sVector& grad) const;
+                         scalar V, const sVector& typ, sVector& grad,
+                         const sVector* g = nullptr) const;
     void announceJacobianAudits_(scalar tRun);
 
     // Combined derivatives for the packed state.

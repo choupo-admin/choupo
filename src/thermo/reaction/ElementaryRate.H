@@ -79,6 +79,8 @@ public:
                                    const std::string&   who);
 
     scalar netRate(const ThermoPackage& thermo, const RateState& s) const override;
+    const sVector* gibbsStoichiometry() const override
+    { return reversible_ ? &nu_ : nullptr; }
     bool   hasRateConstant() const override { return true; }
     scalar rateConstant(const ThermoPackage&, const RateState& s) const override
     { return kEff(s); }

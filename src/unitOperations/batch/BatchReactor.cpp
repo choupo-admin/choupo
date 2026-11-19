@@ -548,8 +548,9 @@ void BatchReactor::reportRatesOfProduction_(scalar tRequested, scalar t)
 
     const std::size_t nr = reactions_.size();
     sVector r(nr, 0.0);
+    const sVector gT = gibbsAt_(T);
     for (std::size_t j = 0; j < nr; ++j)
-        r[j] = rateOfReaction_(reactions_[j], T, state_.n, V);
+        r[j] = rateOfReaction_(reactions_[j], T, state_.n, V, &gT);
 
     // c[i][j]: dense species x reaction matrix [kmol/s] (a species may be
     // listed once per reaction; repeated entries add).
@@ -831,10 +832,33 @@ BatchReactor::thirdBodyEfficiencies_(const DictPtr& kin,
     return eff;
 }
 
+sVector BatchReactor::gibbsAt_(scalar T) const
+{
+    std::vector<char> want;
+    for (const auto& rxn : reactions_)
+    {
+        if (rxn.form == RateForm::Factory)
+        {
+            const sVector* nuLaw = rxn.law ? rxn.law->gibbsStoichiometry() : nullptr;
+            if (!nuLaw) continue;
+            if (want.empty()) want.assign(thermo_->n(), 0);
+            Reaction::markSpecies(want, *nuLaw);
+        }
+        else if (rxn.reversible)
+        {
+            if (want.empty()) want.assign(thermo_->n(), 0);
+            for (std::size_t c : rxn.comps) want[c] = 1;
+        }
+    }
+    if (want.empty()) return sVector();
+    return Reaction::gibbsVector(*thermo_, want, T);
+}
+
 scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
                                      scalar               T,
                                      const sVector&       n,
-                                     scalar               V) const
+                                     scalar               V,
+                                     const sVector*       g) const
 {
     // Forward rate constant k_eff(T, c), with third-body [M] and fall-off
     // blending folded in.  Concentration vector c_j = n_j/V (kmol/m³) is only
@@ -856,6 +880,7 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
         RateState rs;
         rs.T = T; rs.P = std::nan(""); rs.conc = &conc; rs.x = &x;
         rs.amountPerKmol = 1.0;                       // conc in kmol/m3
+        rs.gibbs = (g && !g->empty()) ? g : nullptr;
         return cf * rxn.law->netRate(*thermo_, rs);
     }
 
@@ -902,9 +927,10 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
     {
         if (rxn.order[s] == 0.0) continue;              // C190 item 10: a NEGATIVE order is honoured
         const scalar c_i = n[rxn.comps[s]] / V;
-        r *= Reaction::powerLawFactor(rxn.order[s] > 0.0 ? std::max<scalar>(c_i, 0.0) : c_i,
-                                      rxn.order[s], thermo_->comp(rxn.comps[s]).name(),
-                                      "batchReactor reaction '" + rxn.name + "'");
+        r *= Reaction::powerLawFactorLazy(rxn.order[s] > 0.0 ? std::max<scalar>(c_i, 0.0) : c_i,
+                                          rxn.order[s],
+                                          [&]() -> const std::string& { return thermo_->comp(rxn.comps[s]).name(); },
+                                          [&]() { return "batchReactor reaction '" + rxn.name + "'"; });
     }
     if (!rxn.reversible) return r;
 
@@ -913,7 +939,9 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
     // call so it tracks T in adiabatic mode.  For third-body/fall-off the same
     // k_eff carries [M]/the blend, which cancels at equilibrium (Kc is the
     // gas-species ratio), so this stays consistent.
-    const scalar K_eq  = Reaction::equilibriumKc(*thermo_, rxn.comps, rxn.nu, T);
+    const scalar K_eq  = (g && !g->empty())
+                       ? Reaction::equilibriumKc(rxn.comps, rxn.nu, T, *g)
+                       : Reaction::equilibriumKc(*thermo_, rxn.comps, rxn.nu, T);
     const scalar k_rev = k / K_eq;
 
     scalar r_rev = k_rev;
@@ -950,9 +978,10 @@ sVector BatchReactor::derivatives_(const sVector& packed) const
     // liquid-ΔH basis) the per-reaction heat release.
     scalar heatRate = 0.0;   // Σ r_r · V · ΔH_r  [J·kmol / (mol·s)]
                              // (the mol/kmol factor cancels in dT/dt --- see header)
+    const sVector gT = gibbsAt_(T);       // g_i(T) once per evaluation, not once per reaction
     for (const auto& rxn : reactions_)
     {
-        const scalar r_r = rateOfReaction_(rxn, T, n_vec, V);   // kmol/(m³·s)
+        const scalar r_r = rateOfReaction_(rxn, T, n_vec, V, &gT);   // kmol/(m³·s)
         for (std::size_t s = 0; s < rxn.comps.size(); ++s)
             dydt[rxn.comps[s]] += rxn.nu[s] * r_r * V;          // kmol/s
         heatRate += rxn.dH * r_r * V;                            // J·kmol/(mol·s)
@@ -1674,15 +1703,16 @@ scalar fdStep(scalar y, scalar typ)
 
 void BatchReactor::rateGradientFD_(const ReactionSpec& rxn, scalar T,
                                    const sVector& n, scalar V,
-                                   const sVector& typ, sVector& grad) const
+                                   const sVector& typ, sVector& grad,
+                                   const sVector* g) const
 {
-    const scalar r0 = rateOfReaction_(rxn, T, n, V);
+    const scalar r0 = rateOfReaction_(rxn, T, n, V, g);
     sVector np = n;
     for (std::size_t k = 0; k < n.size(); ++k)
     {
         const scalar eps = fdStep(n[k], k < typ.size() ? typ[k] : 1.0);
         np[k] = n[k] + eps;
-        const scalar rp = rateOfReaction_(rxn, T, np, V);
+        const scalar rp = rateOfReaction_(rxn, T, np, V, g);
         np[k] = n[k];
         grad[k] += (rp - r0) / eps * V;          // dr/dc = V dr/dn
     }
@@ -1690,10 +1720,11 @@ void BatchReactor::rateGradientFD_(const ReactionSpec& rxn, scalar T,
 
 void BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
                                  const sVector& n, scalar V,
-                                 const sVector& typ, sVector& grad) const
+                                 const sVector& typ, sVector& grad,
+                                 const sVector* g) const
 {
     if (rxn.form == RateForm::Factory)
-    { rateGradientFD_(rxn, T, n, V, typ, grad); return; }
+    { rateGradientFD_(rxn, T, n, V, typ, grad, g); return; }
 
     const std::size_t nc = n.size();
     // ---- k_eff and d k_eff / d c_k (dk[k]; empty when k reads no c) ------
@@ -1772,9 +1803,9 @@ void BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
         if (p == 0.0) { f = 1.0; df = 0.0; return true; }
         const scalar cc = clamp ? std::max<scalar>(c, 0.0) : c;
         f = clamp ? std::pow(cc, p)
-                  : Reaction::powerLawFactor(cc, p,
-                        thermo_->comp(rxn.comps[s]).name(),
-                        "batchReactor reaction '" + rxn.name + "'");
+                  : Reaction::powerLawFactorLazy(cc, p,
+                        [&]() -> const std::string& { return thermo_->comp(rxn.comps[s]).name(); },
+                        [&]() { return "batchReactor reaction '" + rxn.name + "'"; });
         if (clamp && c < 0.0) { df = 0.0; return true; }     // flat clamp
         if (cc == 0.0)
         {
@@ -1792,7 +1823,7 @@ void BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
         const scalar p = rxn.order[s];
         if (p == 0.0) continue;
         if (!factor(n[rxn.comps[s]] / V, p, p > 0.0, s, ff[s], dff[s]))
-        { rateGradientFD_(rxn, T, n, V, typ, grad); return; }
+        { rateGradientFD_(rxn, T, n, V, typ, grad, g); return; }
     }
     // Reverse factors (products only, clamped, exponent nu).
     sVector fr(m, 1.0), dfr(m, 0.0);
@@ -1802,7 +1833,7 @@ void BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
             if (rxn.nu[s] <= 0.0) continue;
             // the rate uses std::pow(max(c,0), nu) -- the same function
             if (!factor(n[rxn.comps[s]] / V, rxn.nu[s], true, s, fr[s], dfr[s]))
-            { rateGradientFD_(rxn, T, n, V, typ, grad); return; }
+            { rateGradientFD_(rxn, T, n, V, typ, grad, g); return; }
         }
 
     const auto productExcept = [m](const sVector& f, std::size_t skip)
@@ -1822,7 +1853,9 @@ void BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
     if (!rxn.reversible) return;
 
     // reverse leg: k / Kc, Kc once per reaction at this T
-    const scalar Kc = Reaction::equilibriumKc(*thermo_, rxn.comps, rxn.nu, T);
+    const scalar Kc = (g && !g->empty())
+                        ? Reaction::equilibriumKc(rxn.comps, rxn.nu, T, *g)
+                        : Reaction::equilibriumKc(*thermo_, rxn.comps, rxn.nu, T);
     const scalar Prev = productExcept(fr, m);
     if (!dk.empty())
         for (std::size_t j = 0; j < nc; ++j) grad[j] -= dk[j] / Kc * Prev;
@@ -1851,10 +1884,11 @@ std::vector<sVector> BatchReactor::odeJacobian(const sVector& y,
     const sVector sc = odeJacobianScale(y);
     sVector dHeat(n, 0.0);                   // sum_j dH_j dr_j/dc_k (liquidDH)
     sVector grad(n);
+    const sVector gT = gibbsAt_(T);          // once per Jacobian, not once per reaction
     for (const auto& rxn : reactions_)
     {
         std::fill(grad.begin(), grad.end(), 0.0);
-        rateGradient_(rxn, T, nv, V, sc, grad);
+        rateGradient_(rxn, T, nv, V, sc, grad, &gT);
         for (std::size_t s = 0; s < rxn.comps.size(); ++s)
         {
             sVector& row = J[rxn.comps[s]];

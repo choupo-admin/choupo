@@ -119,15 +119,21 @@ public:
     // mole fractions; the law uses whichever its basis asks for.  Units follow
     // the rate constants: mol/(m^3.s) volumetric, or mol/(g_cat.s) when the
     // reactor supplies a catalyst loading.
+    //  `g`, when given, is g_i(T) (Reaction::gibbsVector) for this T: the
+    //  detailed-balance Kc then reads it instead of re-evaluating each g;
+    //  the result is bit-identical.
     scalar netRate(const ThermoPackage& thermo, scalar T,
-                   const sVector& conc, const sVector& x) const;
+                   const sVector& conc, const sVector& x,
+                   const sVector* g = nullptr) const;
 
     // The forward rate constant alone, for reporting.
     scalar kForward(scalar T) const;
 
     // ---- ReactionRate ------------------------------------------------------
     scalar netRate(const ThermoPackage& thermo, const RateState& s) const override
-    { return netRate(thermo, s.T, *s.conc, *s.x); }
+    { return netRate(thermo, s.T, *s.conc, *s.x, s.gibbs); }
+    const sVector* gibbsStoichiometry() const override
+    { return revBalance_ ? &nu_ : nullptr; }
     bool   hasRateConstant() const override { return true; }
     scalar rateConstant(const ThermoPackage&, const RateState& s) const override
     { return kForward(s.T); }

@@ -804,8 +804,22 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     sVector lastGoodXi(R, 0.0);
     bool    haveGoodXi = false;
     bool maxStepAnnounced = false;
+    //  g_i(T) for the species of every law whose reverse leg is detailed
+    //  balance, evaluated ONCE per temperature: the extent solve calls the
+    //  residual many times at one Tk, and g does not depend on the extents.
+    //  Empty when no law reads it (the law then computes nothing extra).
+    std::vector<char> gWant;
+    for (std::size_t j = 0; j < R; ++j)
+        if (const sVector* nuLaw = law[j]->gibbsStoichiometry())
+        {
+            if (gWant.empty()) gWant.assign(n, 0);
+            Reaction::markSpecies(gWant, *nuLaw);
+        }
+    auto gibbsAtT = [&](scalar Tk) -> sVector
+    { return gWant.empty() ? sVector() : Reaction::gibbsVector(thermo, gWant, Tk); };
     auto extentsAt = [&](scalar Tk, bool& okOut)
     {
+        const sVector gT = gibbsAtT(Tk);
         auto res = [&](const sVector& xi) -> sVector
         {
             //  A TRIAL EXTENT THAT DRIVES AN OUTLET FLOW BELOW ZERO IS NOT A
@@ -840,6 +854,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
                 RateState rs;
                 rs.T = Tk; rs.P = P; rs.conc = &conc; rs.x = &xx;
                 rs.amountPerKmol = 1000.0;                  // conc in mol/m3
+                rs.gibbs = gT.empty() ? nullptr : &gT;
                 g[j] = xi[j] - catFactor * law[j]->netRate(thermo, rs) * V_R;
             }
             return g;
@@ -906,6 +921,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
             if (nu[0][i] > 0.0) xiLo = std::max(xiLo, -F_i_in[i] / nu[0][i]);
         }
         if (!std::isfinite(xiHi) || !std::isfinite(xiLo) || !(xiHi > xiLo)) return;
+        const sVector gT = gibbsAtT(Tk);
         auto g1 = [&](scalar x)
         {
             const sVector Fi = flowsOf(sVector(1, x));
@@ -916,6 +932,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
             RateState rs;
             rs.T = Tk; rs.P = P; rs.conc = &conc; rs.x = &xx;
             rs.amountPerKmol = 1000.0;
+            rs.gibbs = gT.empty() ? nullptr : &gT;
             return x - catFactor * law[0]->netRate(thermo, rs) * V_R;
         };
         const int    nGrid = 400;

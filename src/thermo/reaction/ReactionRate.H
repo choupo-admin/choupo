@@ -107,6 +107,10 @@ struct RateState
     const sVector* x    = nullptr;       // mole fractions of the reacting fluid
     scalar         amountPerKmol = 1000.0;   // 1000: conc in mol/m3; 1: in kmol/m3
     const sVector* act  = nullptr;       // activities gamma_i x_i (only the column supplies them)
+    //  g_i(T) = comp(i).g_pure_ig(T) at THIS state's T, for the species of every
+    //  law that asks `gibbsStoichiometry()`; null = the law computes it itself
+    //  (bit-identical either way).  Owned by the caller for one evaluation.
+    const sVector* gibbs = nullptr;
 };
 
 //- What a reactor can hand a law.
@@ -158,6 +162,11 @@ public:
     //- Whether the law reads concentrations at all (a gas bed whose law is in
     //  T, P and mole fractions never asks the reactor for a liquid basis).
     virtual bool needsConcentration() const { return true; }
+
+    //  Non-null when the law's reverse leg is built from detailed balance
+    //  (Kc from Gibbs energies): the full-length stoichiometry whose species'
+    //  g(T) a caller may hand in through RateState::gibbs.  Null otherwise.
+    virtual const sVector* gibbsStoichiometry() const { return nullptr; }
 
     //- The basis the law DECLARES: "reactorVolume", "catalystMass", or ""
     //  when the law does not declare one (Arrhenius / LHHW: the reactor's
