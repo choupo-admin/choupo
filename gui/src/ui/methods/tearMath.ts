@@ -22,7 +22,7 @@
   `Flowsheet::validateSequentialPlan`
   (src/unitOperations/flowsheet/Flowsheet.cpp:4986) validates that order
   against the declared tears after 0/ is seeded and before any unit is solved
-  (called at src/unitOperations/flowsheet/Flowsheet.cpp:2680).  It DETECTS every material
+  (called at src/unitOperations/flowsheet/Flowsheet.cpp:2681).  It DETECTS every material
   cycle, names the chain it found, and refuses SEVEN ways by name — MISSING
   TEAR, INVALID ORDER, FORWARD TEAR, OFF-CYCLE TEAR, INLET TEAR, UNKNOWN TEAR,
   UNCONSUMED TEAR (src/unitOperations/flowsheet/Flowsheet.cpp:5078-5195) — and

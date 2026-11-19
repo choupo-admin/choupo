@@ -308,7 +308,7 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
       + "takes an optional `recycleMaxStep`. A declared value is "
       + "announced in the run log; a value outside its range, or a "
       + "relaxation factor beside a solver that has none, is refused by "
-      + "name (src/unitOperations/flowsheet/Flowsheet.cpp:3399-3417). The "
+      + "name (src/unitOperations/flowsheet/Flowsheet.cpp:3400-3418). The "
       + "fourth figure runs the real process03_recycle case under "
       + "directSubstitution for three values of w and plots the engine's "
       + "own tear mass imbalance per pass: the same fixed point, three "

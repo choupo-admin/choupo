@@ -441,7 +441,7 @@ From -3 324.94 to -3 043.29 M EUR. The first step re-runs the feasibility case w
 
 | step | NPV effect, M EUR | kind of change |
 |---|---|---|
-| feasibility, as published | -3 324.94 | |
+| feasibility, as published | -3 324.81 | |
 | the appraisal's start-up years (construction 1 → 3 yr, ramp-up, start-up cost), measured by re-running the feasibility case with them | +142.41 | **changed assumption** |
 | revenue: slightly less ammonia (the purge) | -0.15 | reactor model |
 | cooling water (the effluent cooler gone into the FEHE) | +4.94 | **heat recovery built** |

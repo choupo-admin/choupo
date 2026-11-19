@@ -18,7 +18,7 @@
 
   PLANE A, THE MEASURED ONE, IS THE ENGINE'S.  `recycleSolver Wegstein;` in a
   case's `system/solverDict` puts the flowsheet's recycle on the accelerator
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3530), and the engine publishes
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3531), and the engine publishes
   the per-iteration PHYSICAL residuals — the recycle mass and energy imbalance
   as a fraction of what enters the plant — as convergence curves named
   "Mass balance (global)" and "Energy balance (global)"
@@ -68,8 +68,8 @@
   (src/unitOperations/flowsheet/Flowsheet.cpp:3639, the norm itself at
   src/unitOperations/flowsheet/Flowsheet.cpp:1949-1958) over the packed tear
   vector `[F, z_0..z_{nC-1}, T, P]`, P in bar
-  (src/unitOperations/flowsheet/Flowsheet.cpp:1844-1877, renormalised onto the
-  simplex on the way back at src/unitOperations/flowsheet/Flowsheet.cpp:1912)
+  (src/unitOperations/flowsheet/Flowsheet.cpp:1845-1878, renormalised onto the
+  simplex on the way back at src/unitOperations/flowsheet/Flowsheet.cpp:1913)
   — a plain Euclidean norm over a flow in kmol/s, mole fractions, a
   temperature in kelvin and a pressure in bar, with no per-variable scale.
   The Newton branch of the same function does NOT do this: it tears on
@@ -104,7 +104,7 @@ export const EPS_X = 1.0e-14;
 export const EPS_S = 1.0e-10;
 
 /** The engine's RECYCLE clamp defaults — read off the solverDict with these
- *  fallbacks at src/unitOperations/flowsheet/Flowsheet.cpp:3539-3540.
+ *  fallbacks at src/unitOperations/flowsheet/Flowsheet.cpp:3540-3541.
  *
  *  They are NOT the defaults of the `Wegstein` class, which are [-5, 0]
  *  (src/solver/Wegstein.H:74-75) and which the Theory Guide quotes as
@@ -453,7 +453,7 @@ export interface RecycleKnobs {
   /** `recycleTol` — the tear tolerance the outer loop converges on. */
   tol: number;
   /** `recycleMaxIter` — the cap; exceeding it is a FAILED solve, not a
-   *  warning (src/unitOperations/flowsheet/Flowsheet.cpp:3298-3303). */
+   *  warning (src/unitOperations/flowsheet/Flowsheet.cpp:3299-3304). */
   maxIter: number;
 }
 
@@ -467,7 +467,7 @@ export const RECYCLE_DEFAULTS: RecycleKnobs = {
  *
  *  WHAT IS NOT HERE, and it is the knob a reader reaches for first: the clamp.
  *  `recycleWegsteinQmin` / `Qmax` are read by the engine
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:3539-3540) but this witness
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:3540-3541) but this witness
  *  carries them COMMENTED OUT, and an override replaces a declared value — it
  *  does not add a key.  Measured on the corpus (2026-09-12): of the ten cases
  *  that select `recycleSolver Wegstein`, only two declare the clamp live, one
@@ -494,7 +494,7 @@ export const WITNESS_TEAR = "recycle";
  *  divided by a plant-inlet scale — which the engine computes precisely
  *  because the solvers' own `|Δtear|` mixes flows and temperatures into one
  *  dimensionless figure and it wanted two curves a student recognises
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:1964-1969).
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:1965-1970).
  *
  *  The engine already refuses to show a reader the mixed norm on this plot.
  *  Returning null rather than an empty array keeps "the run published no
