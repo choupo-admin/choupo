@@ -48,6 +48,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Fragment, useMemo, useState, type ReactNode } from "react";
+import { SortTh, useSortable } from "./SortableTable.js";
 import { Badge, Box, Button, Group, ScrollArea, Stack, Table, Text } from "@mantine/core";
 import { IconDownload } from "@tabler/icons-react";
 
@@ -87,6 +88,45 @@ function StepCell({ model, step, op }: { model: WorkflowModel; step: string; op:
       onClick={() => { model.select(`op:${op.replace(/ …$/, "")}`); }}>
       {step} {op}
     </Text>
+  );
+}
+
+type CurationRow = ReturnType<typeof curationRows>[number];
+
+function CurationTable({ curation, model }: { curation: CurationRow[]; model: WorkflowModel }) {
+  const s = useSortable(curation, {
+    step: (c) => c.step, verdict: (c) => c.verdict, identifiable: (c) => (c.identifiable === null ? null : c.identifiable ? "identifiable" : "not identifiable"),
+    band: (c) => c.band, heldOut: (c) => c.heldOut, inSample: (c) => c.inSample, fingerprint: (c) => c.fingerprint,
+  });
+  return (
+    <Table withTableBorder fz="xs" verticalSpacing={3} data-curation-table="" style={{ minWidth: 820 }}>
+      <Table.Thead>
+        <Table.Tr>
+          <SortTh s={s} k="step">step</SortTh><SortTh s={s} k="verdict">verdict</SortTh>
+          <SortTh s={s} k="identifiable">identifiability</SortTh>
+          <SortTh s={s} k="band">band (declared before the fit)</SortTh>
+          <SortTh s={s} k="heldOut">held out</SortTh>
+          <SortTh s={s} k="inSample">in sample</SortTh>
+          <SortTh s={s} k="fingerprint">evidence partition</SortTh>
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody>
+        {s.rows.map((c) => (
+          <Table.Tr key={c.op} data-curation-row={c.op}>
+            <Table.Td><StepCell model={model} step={c.step} op={c.op} /></Table.Td>
+            <Table.Td>{c.verdict
+              ? <Badge size="sm" variant="filled" color={CURATION_COLOUR[c.verdict] ?? "gray"} style={{ textTransform: "none" }}>{c.verdict}</Badge>
+              : <Text span size="xs" c="dimmed">none published</Text>}</Table.Td>
+            <Table.Td>{c.identifiable === null ? <Text span size="xs" c="dimmed">not published</Text>
+              : c.identifiable ? "identifiable" : <Text span size="xs" c="red.7" fw={700}>not identifiable</Text>}</Table.Td>
+            <Table.Td ff="monospace">{c.band || "--"}</Table.Td>
+            <Table.Td ff="monospace">{c.heldOut || "--"}</Table.Td>
+            <Table.Td ff="monospace">{c.inSample || "--"}</Table.Td>
+            <Table.Td ff="monospace" title={c.fingerprint}>{c.fingerprint ? `${c.fingerprint.slice(0, 16)}…` : "--"}</Table.Td>
+          </Table.Tr>
+        ))}
+      </Table.Tbody>
+    </Table>
   );
 }
 
@@ -131,31 +171,7 @@ export function PropsReports({ model, ledger, readiness, validation }: {
           ) : (
             <>
               <ScrollArea type="auto">
-                <Table withTableBorder fz="xs" verticalSpacing={3} data-curation-table="" style={{ minWidth: 820 }}>
-                  <Table.Thead>
-                    <Table.Tr>
-                      <Table.Th>step</Table.Th><Table.Th>verdict</Table.Th><Table.Th>identifiability</Table.Th>
-                      <Table.Th>band (declared before the fit)</Table.Th><Table.Th>held out</Table.Th>
-                      <Table.Th>in sample</Table.Th><Table.Th>evidence partition</Table.Th>
-                    </Table.Tr>
-                  </Table.Thead>
-                  <Table.Tbody>
-                    {curation.map((c) => (
-                      <Table.Tr key={c.op} data-curation-row={c.op}>
-                        <Table.Td><StepCell model={model} step={c.step} op={c.op} /></Table.Td>
-                        <Table.Td>{c.verdict
-                          ? <Badge size="sm" variant="filled" color={CURATION_COLOUR[c.verdict] ?? "gray"} style={{ textTransform: "none" }}>{c.verdict}</Badge>
-                          : <Text span size="xs" c="dimmed">none published</Text>}</Table.Td>
-                        <Table.Td>{c.identifiable === null ? <Text span size="xs" c="dimmed">not published</Text>
-                          : c.identifiable ? "identifiable" : <Text span size="xs" c="red.7" fw={700}>not identifiable</Text>}</Table.Td>
-                        <Table.Td ff="monospace">{c.band || "--"}</Table.Td>
-                        <Table.Td ff="monospace">{c.heldOut || "--"}</Table.Td>
-                        <Table.Td ff="monospace">{c.inSample || "--"}</Table.Td>
-                        <Table.Td ff="monospace" title={c.fingerprint}>{c.fingerprint ? `${c.fingerprint.slice(0, 16)}…` : "--"}</Table.Td>
-                      </Table.Tr>
-                    ))}
-                  </Table.Tbody>
-                </Table>
+                <CurationTable curation={curation} model={model} />
               </ScrollArea>
               <Button size="compact-sm" variant="subtle" mt={4} leftSection={<IconDownload size={13} />}
                 onClick={() => downloadTextFile(curationCsv(curation), "curationVerdicts.csv", "text/csv")}>

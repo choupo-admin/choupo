@@ -61,6 +61,8 @@ import { downloadTextFile } from "../case/saveCase.js";
 import type { MachineRow } from "../case/machineUtilisation.js";
 import { MachineUtilisationTable } from "./MachineUtilisationTable.js";
 import { BatchBasesTable, DosageFormTable } from "./BatchBasesTable.js";
+import { SortTh, useSortable } from "./SortableTable.js";
+import { formatSig } from "../state/displayUnits.js";
 import { useNarrowViewport } from "./methods/methodsChrome.js";
 
 //  Paper and ink: a drawing is read on white, in the app and on paper.
@@ -71,8 +73,10 @@ const GRID = "#dee2e6";
 const BAND = "#f8f9fa";
 const LIMIT = "#c92a2a";
 
-const fmt = (v: number, d = 2) => (Number.isFinite(v) ? v.toFixed(d) : "—");
-const pct = (v: number, d = 1) => (Number.isFinite(v) ? `${(v * 100).toFixed(d)} %` : "—");
+// significant figures per the Units-menu preference (C307); `d` is kept for
+// the call sites but no longer fixes decimals
+const fmt = (v: number, _d = 2) => formatSig(v);
+const pct = (v: number, _d = 1) => (Number.isFinite(v) ? `${formatSig(v * 100)} %` : "—");
 const cnt = (v: number) => (Number.isFinite(v) ? String(v) : "—");
 const leafOf = (s: string) => s.slice(s.lastIndexOf("/") + 1) || s;
 const safe = (s: string) => s.replace(/[^A-Za-z0-9._-]+/g, "_");
@@ -317,21 +321,24 @@ export function BatchGanttSvg({ plan, fig, caseName, svgRef }: {
   );
 }
 
-function SingleTables({ plan }: { plan: SingleProductPlan }) {
+function TrainsTable({ plan }: { plan: SingleProductPlan }) {
+  const s = useSortable(plan.trains, { train: (r) => r.name, limitingStage: (r) => r.limitingStage, cycleTime: (r) => r.cycleTime, lotsPerCampaign: (r) => r.lotsPerCampaign, campaigns: (r) => r.campaigns, campaignSpan: (r) => r.campaignSpan, changeover: (r) => r.changeover, requiredTime: (r) => r.requiredTime, availableTime: (r) => r.availableTime, occupancy: (r) => r.occupancy });
   return (
-    <>
-      <Text size="sm" fw={600} mt="md" mb={4}>Trains</Text>
-      <ScrollArea type="auto">
         <Table striped withTableBorder fz="xs" ff="monospace" miw={760}>
           <Table.Thead><Table.Tr>
-            <Table.Th>train</Table.Th><Table.Th>limiting stage</Table.Th>
-            <Table.Th ta="right">T_L (h)</Table.Th><Table.Th ta="right">lots / campaign</Table.Th>
-            <Table.Th ta="right">campaigns / yr</Table.Th><Table.Th ta="right">span (h)</Table.Th>
-            <Table.Th ta="right">changeover (h)</Table.Th><Table.Th ta="right">required (h/yr)</Table.Th>
-            <Table.Th ta="right">available (h/yr)</Table.Th><Table.Th ta="right">occupancy</Table.Th>
+            <SortTh s={s} k="train">train</SortTh>
+            <SortTh s={s} k="limitingStage">limiting stage</SortTh>
+            <SortTh s={s} k="cycleTime" right>T_L (h)</SortTh>
+            <SortTh s={s} k="lotsPerCampaign" right>lots / campaign</SortTh>
+            <SortTh s={s} k="campaigns" right>campaigns / yr</SortTh>
+            <SortTh s={s} k="campaignSpan" right>span (h)</SortTh>
+            <SortTh s={s} k="changeover" right>changeover (h)</SortTh>
+            <SortTh s={s} k="requiredTime" right>required (h/yr)</SortTh>
+            <SortTh s={s} k="availableTime" right>available (h/yr)</SortTh>
+            <SortTh s={s} k="occupancy" right>occupancy</SortTh>
           </Table.Tr></Table.Thead>
           <Table.Tbody>
-            {plan.trains.map((t) => (
+            {s.rows.map((t) => (
               <Table.Tr key={t.name}>
                 <Table.Td>{t.name}</Table.Td><Table.Td>{t.limitingStage}</Table.Td>
                 <Table.Td ta="right">{fmt(t.cycleTime)}</Table.Td>
@@ -346,22 +353,30 @@ function SingleTables({ plan }: { plan: SingleProductPlan }) {
             ))}
           </Table.Tbody>
         </Table>
-      </ScrollArea>
+  );
+}
 
-      <Text size="sm" fw={600} mt="md" mb={4}>Stages</Text>
-      <ScrollArea type="auto">
+function StagesTable({ plan }: { plan: SingleProductPlan }) {
+  const s = useSortable(plan.stages, { name: (r) => r.name, train: (r) => r.train, type: (r) => r.type, unitsInstalled: (r) => r.unitsInstalled, chargeTime: (r) => r.chargeTime, processTime: (r) => r.processTime, dischargeTime: (r) => r.dischargeTime, cleanTime: (r) => r.cleanTime, cycleTime: (r) => r.cycleTime, offset: (r) => r.offset, utilisation: (r) => r.utilisation, busyHours: (r) => r.busyHours, occupancy: (r) => r.occupancy });
+  return (
         <Table striped withTableBorder fz="xs" ff="monospace" miw={1000}>
           <Table.Thead><Table.Tr>
-            <Table.Th>stage</Table.Th><Table.Th>train</Table.Th><Table.Th>type</Table.Th>
-            <Table.Th ta="right">units</Table.Th>
-            <Table.Th ta="right">charge</Table.Th><Table.Th ta="right">process</Table.Th>
-            <Table.Th ta="right">discharge</Table.Th><Table.Th ta="right">clean</Table.Th>
-            <Table.Th ta="right">cycle (h)</Table.Th><Table.Th ta="right">start (h)</Table.Th>
-            <Table.Th ta="right">utilisation</Table.Th><Table.Th ta="right">busy (h/yr)</Table.Th>
-            <Table.Th ta="right">occupancy</Table.Th>
+            <SortTh s={s} k="name">stage</SortTh>
+            <SortTh s={s} k="train">train</SortTh>
+            <SortTh s={s} k="type">type</SortTh>
+            <SortTh s={s} k="unitsInstalled" right>units</SortTh>
+            <SortTh s={s} k="chargeTime" right>charge</SortTh>
+            <SortTh s={s} k="processTime" right>process</SortTh>
+            <SortTh s={s} k="dischargeTime" right>discharge</SortTh>
+            <SortTh s={s} k="cleanTime" right>clean</SortTh>
+            <SortTh s={s} k="cycleTime" right>cycle (h)</SortTh>
+            <SortTh s={s} k="offset" right>start (h)</SortTh>
+            <SortTh s={s} k="utilisation" right>utilisation</SortTh>
+            <SortTh s={s} k="busyHours" right>busy (h/yr)</SortTh>
+            <SortTh s={s} k="occupancy" right>occupancy</SortTh>
           </Table.Tr></Table.Thead>
           <Table.Tbody>
-            {plan.stages.map((st) => (
+            {s.rows.map((st) => (
               <Table.Tr key={st.name}>
                 <Table.Td fw={st.limiting ? 700 : undefined}>
                   {st.name}{st.limiting ? " ◆" : ""}
@@ -382,6 +397,20 @@ function SingleTables({ plan }: { plan: SingleProductPlan }) {
             ))}
           </Table.Tbody>
         </Table>
+  );
+}
+
+function SingleTables({ plan }: { plan: SingleProductPlan }) {
+  return (
+    <>
+      <Text size="sm" fw={600} mt="md" mb={4}>Trains</Text>
+      <ScrollArea type="auto">
+        <TrainsTable plan={plan} />
+      </ScrollArea>
+
+      <Text size="sm" fw={600} mt="md" mb={4}>Stages</Text>
+      <ScrollArea type="auto">
+        <StagesTable plan={plan} />
       </ScrollArea>
       <Text size="xs" c="dimmed" mt={2}>
         ◆ limiting stage (sets T_L): the stage whose cycle sets its train's lot interval.

@@ -58,6 +58,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useState, type ReactNode } from "react";
+import { formatSig } from "../state/displayUnits.js";
+import { SortTh, useSortable, type SortAccessors } from "./SortableTable.js";
 import { Anchor, Badge, Box, Button, Group, ScrollArea, Stack, Table, Text } from "@mantine/core";
 import { IconFileCode, IconHelp } from "@tabler/icons-react";
 
@@ -193,8 +195,14 @@ export function PointTableViews({ r }: { r: OperationResult }) {
 
 function PointTableView({ decl, r }: { decl: PointTableDecl | undefined; r: OperationResult }) {
   const t = pointTable(decl, r);
+  const nCells = t ? t.columns.length : 0;
+  const acc: SortAccessors<{ point: number; ion?: string; cells: (number | null)[] }> = {
+    point: (row) => row.point, ion: (row) => row.ion,
+  };
+  for (let i = 0; i < nCells; i++) acc[`c${i}`] = (row) => row.cells[i];
+  const s = useSortable(t ? t.rows : [], acc);
   if (!t) return null;
-  const fmt = (v: number | null) => (v === null ? "" : Number(v.toPrecision(6)).toString());
+  const fmt = (v: number | null) => (v === null ? "" : formatSig(v));
   const head = (c: { label: string; unit: string }) => (c.unit && c.unit !== "-" ? `${c.label} [${c.unit}]` : c.label);
   return (
     <Box data-review="point-table">
@@ -204,16 +212,16 @@ function PointTableView({ decl, r }: { decl: PointTableDecl | undefined; r: Oper
         <Table fz="xs" verticalSpacing={1} withTableBorder withColumnBorders striped style={{ minWidth: 560 }}>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th>point</Table.Th>
+              <SortTh s={s} k="point">point</SortTh>
               {t.columns.slice(0, t.nPerPoint).map((c, i) =>
-                <Table.Th key={`p${i}`} style={{ whiteSpace: "nowrap" }}>{head(c)}</Table.Th>)}
-              {t.perIon && <Table.Th>ion</Table.Th>}
+                <SortTh key={`p${i}`} s={s} k={`c${i}`} right>{head(c)}</SortTh>)}
+              {t.perIon && <SortTh s={s} k="ion">ion</SortTh>}
               {t.columns.slice(t.nPerPoint).map((c, i) =>
-                <Table.Th key={`i${i}`} style={{ whiteSpace: "nowrap" }}>{head(c)}</Table.Th>)}
+                <SortTh key={`i${i}`} s={s} k={`c${t.nPerPoint + i}`} right>{head(c)}</SortTh>)}
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {t.rows.map((row) => (
+            {s.rows.map((row) => (
               <Table.Tr key={`${row.point}:${row.ion}`}>
                 <Table.Td ff="monospace">{row.point}</Table.Td>
                 {row.cells.slice(0, t.nPerPoint).map((v, i) =>
@@ -245,7 +253,7 @@ export function Diagnostics({ r, folded }: { r: OperationResult; folded?: boolea
             {shown.map((k) => (
               <Table.Tr key={k}>
                 <Table.Td ff="monospace" fw={head.includes(k) ? 700 : 400}>{k}</Table.Td>
-                <Table.Td ff="monospace" ta="right">{Number(r.diagnostics[k]).toPrecision(6)}</Table.Td>
+                <Table.Td ff="monospace" ta="right">{formatSig(Number(r.diagnostics[k]))}</Table.Td>
                 {(() => {
                   const u = unitCell(r, k);
                   return u.published
@@ -430,11 +438,11 @@ export function BandBlock({ op, r }: { op: JsonDict | null; r: OperationResult |
         <Text size="xs">band: AAD ≤ {declared}, declared before the fit (acceptance.maxAAD)</Text>
       ) : null}
       {held && (
-        <Text size="xs" data-held-out-statistic={held.key}>held out: <b>{Number(held.value.toPrecision(4))}{unitOf(held.unit, held.published)}</b>
+        <Text size="xs" data-held-out-statistic={held.key}>held out: <b>{formatSig(held.value)}{unitOf(held.unit, held.published)}</b>
           <Text span c="dimmed"> ({held.key}{held.published ? "" : ", no unit published"})</Text></Text>
       )}
       {inS && (
-        <Text size="xs">in sample: {Number(inS.value.toPrecision(4))}{unitOf(inS.unit, inS.published)}
+        <Text size="xs">in sample: {formatSig(inS.value)}{unitOf(inS.unit, inS.published)}
           <Text span c="dimmed"> ({inS.key})</Text></Text>
       )}
       {cur["heldOutStatistic"] && <Text size="xs" c="dimmed">the statistic: {cur["heldOutStatistic"]}</Text>}
