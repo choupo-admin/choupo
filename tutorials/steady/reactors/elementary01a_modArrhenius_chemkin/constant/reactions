@@ -1,0 +1,39 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  elementary01 (CHEMKIN side) -- a CHEMKIN modified-Arrhenius law in a PFR, against
+  the plain Arrhenius law it equals at ONE temperature.  nButane => isoButane
+  (no mole change), gas, isothermal 900 K, isobaric 3 bar, ideal gas: the
+  concentration c = P/(R T) = 40.0907850149809 mol/m3 is constant along the bed.
+
+  The law is SECOND order in nButane (order 2 declared: the order is the
+  mechanism's, not the stoichiometry's), so the CHEMKIN A in cm3/mol/s is
+  converted to m3/mol/s with ONE factor 1e-6 ((1e-6)^(2-1)) in this mol/m3 reactor.
+    chemkin side:  A = 1.2e7 cm3/mol/s, b = 1.5, Ea = 30 kcal/mol (x4184 = 125520 J/mol)
+    hand value  :  A_eq = 1.2e7 * 1e-6 * 900^1.5 = 324000.0 m3/mol/s,  Ea = 125520 J/mol
+    k = 0.016814971049578225 m3/mol/s;  r = k c^2.
+  The two cases' outlets must agree to 1e-9 (bin/curate/check_elementary_rates.py).
+\*---------------------------------------------------------------------------*/
+
+isom
+{
+    stoichiometry
+    (
+        { component nButane;    nu -1;  order 2; }
+        { component isoButane;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type   modifiedArrhenius;
+        A      1.2e7;
+        b      1.5;
+        Ea     30.0;
+        units  { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}

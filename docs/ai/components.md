@@ -58,8 +58,11 @@ tool does no A conversion.  Types written: `modifiedArrhenius` (b may be 0),
 `thirdBody` (+M, with `thirdBody { species eff; }`), `falloff` ((+M) with LOW,
 optional TROE, `low {}`), `reversible true` for `=`/`<=>`, DUPLICATE as
 separate entries.  KELVINS and EVOLTS Ea are converted by the tool to J/mol (the
-engine's Ea reader has no such word).  These types are read by `batchReactor`
-ONLY: the mechanism is runnable there and nowhere else.  Refused by name and
+engine's Ea reader has no such word).  These types are read by `batchReactor` AND by
+the multi-reaction paths of `cstr` and `pfr` (`reactions ( ... );`; class
+`ElementaryRate`, same grammar; the A conversion follows the reactor's amount
+unit: 1e-6 per order in mol/m3, 1e-3 in kmol/m3).  The single-reaction `reaction
+<name>;` path of `cstr`/`pfr` and a `distillationColumn` do not read them.  Refused by name and
 listed by equation, with the reason, in `constant/mechanismImport.txt`: SRI,
 PLOG, FORD/RORD, REV, `(+M)` without LOW, `(+species)` colliders, MOLECULES
 units, species on both sides of a reversible reaction.  It refuses the GRI-Mech

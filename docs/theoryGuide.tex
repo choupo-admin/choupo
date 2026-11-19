@@ -38061,6 +38061,64 @@ broadening factor $F(P_r, T)$ from three or four tabulated parameters.
 This is why a gas-phase rate can depend on pressure even though
 \eqref{eq:arrhenius} contains only temperature.
 
+\subsection{The CHEMKIN laws in a continuous reactor (\code{ElementaryRate})}\label{sec:elementary-rate}
+
+The batch vessel reads the three CHEMKIN words \code{modifiedArrhenius},
+\code{thirdBody} and \code{falloff} natively; since the third slice of the
+CHEMKIN line the multi-reaction paths of \code{cstr} and \code{pfr}
+(\code{reactions ( \dots );}) run them too, through the
+\code{ReactionRate} factory (class \code{ElementaryRate}), with the same
+dictionary grammar, so one \file{constant/reactions} file runs in both.
+With $c_i$ the concentration the reactor forms, the net extent rate is
+\begin{align}
+    r &= k_{\mathrm{eff}}\prod_i c_i^{\,m_i}
+        \;-\;\frac{k_{\mathrm{eff}}}{K_c}\prod_{\nu_i>0} c_i^{\,\nu_i}
+        && \text{(second term only for \code{reversible true})}, \\
+    k_{\mathrm{eff}} &=
+    \begin{cases}
+        A\,T^{b}\,e^{-E_a/\Rgas T} & \text{\code{modifiedArrhenius}},\\[2pt]
+        A\,T^{b}\,e^{-E_a/\Rgas T}\,[\mathrm{M}] & \text{\code{thirdBody}},\\[2pt]
+        k_\infty\,\dfrac{P_r}{1+P_r}\,F,\quad P_r=\dfrac{k_0[\mathrm{M}]}{k_\infty}
+            & \text{\code{falloff}},
+    \end{cases}
+    \label{eq:elementary-rate}
+\end{align}
+with $[\mathrm{M}]=\sum_j\varepsilon_j c_j$ (\eqref{eq:third-body}, unlisted
+species $\varepsilon=1$), $k_0$ the \code{low \{ \}} block and $F=1$
+(Lindemann) unless a \code{troe ( $\alpha$ $T_3$ $T_1$ [$T_2$] )} list is
+given (Gilbert, Luther and Troe 1983; \eqref{eq:falloff}).  The orders $m_i$
+are the \code{order} entries of the stoichiometry, as for \code{Arrhenius};
+$K_c$ is the ideal-gas equilibrium constant on the concentration basis
+(\eqref{eq:k-rev}), rescaled to the caller's amount unit.  The reverse leg
+keeps the mass-action refusal of the other laws (a declared order that is not
+the stoichiometric one is refused by name).
+
+\paragraph{Units.}  With \code{units \{ A "cm3/mol/s"; Ea "kcal/mol"; \}} the
+constant is converted at evaluation to the CALLER's amount unit.  The
+molecularity $n$ is the sum of the declared orders, plus one for
+\code{thirdBody} and for the \code{low} block; each order beyond the first
+multiplies $A$ by $10^{-6}\cdot 1000/a$, where $a$ is the number of mol in
+the reactor's amount unit ($a=1000$ in a reactor that works in mol/m$^3$, the
+\code{cstr} and \code{pfr}: factor $10^{-6}$; $a=1$ in the batch vessel's
+kmol/m$^3$: factor $10^{-3}$):
+\begin{equation}
+    A_{\mathrm{caller}} \;=\; A_{\mathrm{cm\text{-}mol\text{-}s}}
+        \,\bigl(10^{-6}\cdot 1000/a\bigr)^{\,n-1}.
+    \label{eq:chemkin-a-conversion}
+\end{equation}
+Activation energies: kcal/mol $\times4184$, cal/mol $\times4.184$, kJ/mol
+$\times1000$, J/mol unchanged.  Without a \code{units} block the values are
+taken as already in the caller's amount unit, exactly as for \code{Arrhenius}.
+Adsorption terms, \code{basis activity} and an explicit
+\code{A\_rev}/\code{Ea\_rev} pair are refused by name (they belong to
+\code{LHHW} and \code{Arrhenius}).  Validity: ideal-gas mass action; the Troe
+form is empirical.  A conversion error is the defect the three witness pairs
+\code{elementary01}--\code{elementary03} are built to expose.  They are the
+CHEMKIN law against the plain Arrhenius law it equals at one temperature
+(isothermal, isobaric, no mole change, so $[\mathrm{M}]=P/\Rgas T$ is constant), and
+\code{bin/curate/check\_elementary\_rates.py} holds each pair's outlets to
+$10^{-9}$.
+
 \subsection{Reversible reactions: the reverse rate from thermodynamics}
 
 A reversible reaction must relax to chemical equilibrium, so its

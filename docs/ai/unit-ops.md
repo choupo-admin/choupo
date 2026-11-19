@@ -266,6 +266,12 @@ correction; the PFR on the same reaction reaches +6.6 K) · `cstr05_multiplicity
 counts the steady states in KPI `steadyStates`; the shipped nearly thermoneutral case has
 ONE, 300.04 K — a case with three needs a genuinely exothermic reaction, planned) · `cstr06_jacketed` (`Q_kW` equals `UA (T_coolant − T_out)` to the digit).
 
+**CHEMKIN laws in the MULTI path (C-CHEMKIN slice 3).**  `kinetics { type modifiedArrhenius | thirdBody | falloff; ... }`
+(`ElementaryRate`) is read here with the SAME grammar as `batchReactor` (`A`, `b`, `Ea`, `units { A "cm3/mol/s"; Ea "kcal/mol"; }`,
+`thirdBody { species eff; }`, `low { }`, `troe ( ... )`, `reversible true`), so one `reactions` file runs in both.  A is converted to
+the reactor's amount unit (mol/m3 here: 1e-6 per order beyond the first; the batch vessel's kmol/m3: 1e-3).  Refused by name:
+`adsorption`, `basis activity`, `A_rev`/`Ea_rev`.  Witnesses: `elementary01..03` (a pair each, CHEMKIN law vs the Arrhenius law it equals).
+
 ### `pfr`
 Plug-flow reactor.  Manual RK4 along the axial coordinate; supports reversible
 reactions.  **One or many reactions** — with many it marches
@@ -421,6 +427,12 @@ of 4 of the ammonia reactor-model ladder: the engine SOLVES the bed volume),
 `greenAmmonia03_basicDesign`, and with Eq 39 in the props bench
 `tutorials/props/kinetics/ammoniaRate01_dyson_simon` (`rateLawBench`).
 The single-reaction paths (`reaction <name>;`) of `cstr` and `pfr` read `Arrhenius` only.
+
+**CHEMKIN laws in the MULTI path (C-CHEMKIN slice 3).**  `kinetics { type modifiedArrhenius | thirdBody | falloff; ... }`
+(`ElementaryRate`) is read here with the SAME grammar as `batchReactor` (`A`, `b`, `Ea`, `units { A "cm3/mol/s"; Ea "kcal/mol"; }`,
+`thirdBody { species eff; }`, `low { }`, `troe ( ... )`, `reversible true`), so one `reactions` file runs in both.  A is converted to
+the reactor's amount unit (mol/m3 here: 1e-6 per order beyond the first; the batch vessel's kmol/m3: 1e-3).  Refused by name:
+`adsorption`, `basis activity`, `A_rev`/`Ea_rev`.  Witnesses: `elementary01..03` (a pair each, CHEMKIN law vs the Arrhenius law it equals).
 
 ### `conversionReactor`
 Stoichiometric reactor: you **specify the per-pass conversion** of the

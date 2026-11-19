@@ -28,6 +28,7 @@ License
 
 #include "ReactionRate.H"
 
+#include "ElementaryRate.H"
 #include "ExpressionRate.H"
 #include "RateLaw.H"
 #include "core/RegistryRefusal.H"
@@ -111,6 +112,17 @@ void ReactionRate::registerBuiltins()
     };
     registerType("Arrhenius", powerLaw);
     registerType("LHHW",      powerLaw);
+    //  The CHEMKIN-style words: the batch vessel reads them natively, and
+    //  (slice 3 of the CHEMKIN line) so do the cstr / pfr multi-reaction paths.
+    auto elementary = [](const DictPtr& rxn, const ThermoPackage& thermo,
+                         const std::string& who, const RateOffer&)
+        -> std::unique_ptr<ReactionRate>
+    {
+        return std::make_unique<ElementaryRate>(ElementaryRate::fromDict(rxn, thermo, who));
+    };
+    registerType("modifiedArrhenius", elementary);
+    registerType("thirdBody",         elementary);
+    registerType("falloff",           elementary);
     registerType("expression",
         [](const DictPtr& rxn, const ThermoPackage& thermo,
            const std::string& who, const RateOffer& offer)
