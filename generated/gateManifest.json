@@ -1835,6 +1835,11 @@
       "exit": 0,
       "claim": "check_elementary_rates: OK -- the CHEMKIN laws modifiedArrhenius, thirdBody and falloff in a pfr equal the Arrhenius law they stand for (3 pairs, max relative outlet difference elementary01a 0.0e+00, elementary02a 0.0e+00, elementary03a 0.0e+00; tol 1e-09); a unit factor 10^3 off is seen",
       "seconds": 0.4
+    },
+    "check_rate_of_production": {
+      "exit": 0,
+      "claim": "check_rate_of_production: OK -- the rates of production of the O Conaire H2/O2 mechanism at 3 instants of the ignition equal the integrator's own dn_i/dt term by term (worst 0.0e+00 of the largest term, tol 1e-10); atoms H, O, N are conserved by the nets (worst 5.4e-17); the key changes nothing when absent (trajectory byte-identical); the printed table is the matrix; two misuses are refused by name; dropping the third-body columns is seen (1.3e+00)",
+      "seconds": 1.2
     }
   }
 }
