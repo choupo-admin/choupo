@@ -414,35 +414,35 @@ Bare-module cost C_BM by equipment group, M EUR. FCI = 1.18 ΣC_BM + 0.50 ΣC_BM
 | interbed coolers | — | 0.82 | +0.82 | New equipment: the beds need their heat removed between them. *Reactor model.* |
 | the five other exchangers | 2.39 | 2.27 | -0.12 | Assumed U → Kern design (e.g. the aftercooler's U 500 → 642 W/m²/K); the chiller's duty grows with the recycle. *Exchanger model.* |
 | separator and let-down drums (3) | 4.43 | 4.70 | +0.27 | The separator is sized on its gas flow, which the larger recycle raises (25.74 → 27.28 m³). *Reactor model, through the recycle.* |
-| NH3 storage tanks (2) | 2.76 | 2.76 | -0.00 | Sized on the product flow: no material difference. |
+| NH3 storage tanks (2) | 2.75 | 2.75 | -0.00 | Sized on the product flow: no material difference. |
 | relief valves | — | not costed | — | Sized here (API 520) and NOT costed by rule (DEV.md 4c C62); none at feasibility. No cost difference — a scope difference. |
-| **ΣC_BM** | 28.03 | 44.59 | +16.56 | |
+| **ΣC_BM** | 28.02 | 44.58 | +16.56 | |
 
 | appraisal | feasibility | basic design | difference | why |
 |---|---|---|---|---|
-| FCI, M EUR | 42.05 | 63.26 | +21.21 | The equipment above, through the same Turton rule. |
+| FCI, M EUR | 42.03 | 63.24 | +21.21 | The equipment above, through the same Turton rule. |
 | working capital, M EUR | 48.87 | 45.94 | -2.93 | Built up from the same days: the product stock is valued at the cost of manufacture and the minimum cash is 15 days of it, so both fall with COM_d. |
-| TCI, M EUR | 90.92 | 109.19 | +18.27 | FCI + WC. |
+| TCI, M EUR | 90.90 | 109.18 | +18.27 | FCI + WC. |
 | revenue R, M EUR/yr | 206.09 | 206.07 | -0.03 | The production above, at the same price. |
 | raw materials C_RM, M EUR/yr | 566.43 | 566.43 | +0.00 | The same declared make-up at the same prices. |
 | utilities C_UT (net of the steam credit), M EUR/yr | 32.40 | 6.51 | -25.89 | Almost all of it the molten salt no longer bought; the split by service is in the decomposition below. |
 | operating labour C_OL, M EUR/yr | 1.114 | 1.156 | +0.042 | Turton's operator count from a DECLARED equipment count `N_np`: 12 (4 compressors, 7 exchangers, 1 reactor) → 15 (4, 8, 3 beds). The three beds share one shell; counting them as three is the author's choice. |
-| COM_d, M EUR/yr | 747.17 | 719.26 | -27.92 | 0.180 FCI + 2.73 C_OL + 1.23 (C_RM + C_UT): the utilities fall, the capital-driven term rises. |
+| COM_d, M EUR/yr | 747.17 | 719.25 | -27.92 | 0.180 FCI + 2.73 C_OL + 1.23 (C_RM + C_UT): the utilities fall, the capital-driven term rises. |
 | R − C_RM − C_UT, M EUR/yr | -392.74 | -366.87 | +25.87 | An upper bound in both (the unpriced −35 °C duty). |
 | construction and start-up | 1 yr, all capital at start-up; full production from year 1 | 3 yr, capital ( 0.25 0.45 0.3 ); ramp-up ( 0.7 0.9 ); start-up cost 0.08 × FCI | — | **A changed ASSUMPTION** (author-set, DEV.md 4c C63), not a consequence of any model; its effect is measured below. |
 | discount rate, tax, life | 0.1, 0.21, 15 yr | 0.1, 0.21, 15 yr | — | The same; the script fails if any appraisal input it does not trace differs. |
-| NPV at 10 %, M EUR | -3 324.81 | -3 043.15 | +281.66 | Decomposed below. |
+| NPV at 10 %, M EUR | -3 324.78 | -3 043.12 | +281.66 | Decomposed below. |
 | IRR | not defined (NPV(i) has no sign change) | not defined (NPV(i) has no sign change) | — | The plant loses money in every operating year at these prices, in both. |
 | discounted payback | never within the project life | never within the project life | — | As IRR. |
 | estimate class (declared) | 4 (-30 / +50 %) | 4 (-30 / +50 %) | — | The author's statement of the project's definition. A design stage is not an AACE class: the cost method is Turton's equipment-factored estimate at both stages. |
 
 ### Where the NPV moved
 
-From -3 324.81 to -3 043.15 M EUR. The first step re-runs the feasibility case with the basic design's start-up years — a changed ASSUMPTION, measured by the engine. The remaining steps are the plant's differences at the basic design's timeline: the engine's cash-flow rule is linear in each of them, so they split exactly (this script reproduces the engine's NPV of all three runs before it prints a single row).
+From -3 324.78 to -3 043.12 M EUR. The first step re-runs the feasibility case with the basic design's start-up years — a changed ASSUMPTION, measured by the engine. The remaining steps are the plant's differences at the basic design's timeline: the engine's cash-flow rule is linear in each of them, so they split exactly (this script reproduces the engine's NPV of all three runs before it prints a single row).
 
 | step | NPV effect, M EUR | kind of change |
 |---|---|---|
-| feasibility, as published | -3 324.81 | |
+| feasibility, as published | -3 324.78 | |
 | the appraisal's start-up years (construction 1 → 3 yr, ramp-up, start-up cost), measured by re-running the feasibility case with them | +142.41 | **changed assumption** |
 | revenue: slightly less ammonia (the purge) | -0.15 | reactor model |
 | cooling water (the effluent cooler gone into the FEHE) | +4.94 | **heat recovery built** |
@@ -461,7 +461,7 @@ From -3 324.81 to -3 043.15 M EUR. The first step re-runs the feasibility case w
 | capital: separator and let-down drums (3) | -0.69 | reactor model |
 | capital: NH3 storage tanks (2) | +0.00 | reactor model (production) |
 | working capital (follows COM_d) | +2.23 | follows the above |
-| **basic design, as published** | **-3 043.15** | |
+| **basic design, as published** | **-3 043.12** | |
 
 | by kind | NPV effect, M EUR |
 |---|---|

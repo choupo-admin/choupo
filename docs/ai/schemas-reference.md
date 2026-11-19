@@ -1218,9 +1218,13 @@ Incompressible-liquid pump. Given the shaft power and efficiency, the discharge 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `W_shaft` |   | number | W | Mechanical power delivered to the liquid (positive). One of W_shaft / P_out / dP fixes the duty. It may also arrive over an ENERGY WIRE i… |
-| `eta` | ✓ | number | - | Hydraulic and mechanical efficiency, useful v·dP work / shaft work (0 < eta <= 1). The (1-eta) fraction heats the liquid. |
+| `eta` |   | number | - | Hydraulic and mechanical efficiency, useful v·dP work / shaft work (0 < eta <= 1). The (1-eta) fraction heats the liquid. |
 | `P_out` |   | number | Pa | Specify the outlet pressure instead of the power; the shaft work follows from v·dP/eta. |
 | `dP` |   | number | Pa | Specify the rise instead of the outlet pressure or the power. |
+| `efficiency` |   | string | — | Instead of `eta`: the efficiency of a well-designed single-stage radial pump of this duty, Gulich Eq. T3.9.1 (p. 163). Needs `selection` … |
+| `selection` |   | object | — | speed (rpm); EXACTLY ONE of impeller <class> (Table D6.1, p. 320: standardAxialInlet, suctionImpellerAxial, betweenBearings, highPressure… |
+| `suction` |   | object | — | staticHead (z_e, level above the pump axis, negative for a lift), lineLoss (H_v,s), inletVelocity (c_e); each defaults to zero and the ru… |
+| `curve` |   | string | — | Name of constant/experiments/<name>.dat, a record of property pumpCurve with columns Q, H, eta, NPSHr. The pump sits on its curve (head, … |
 
 ## `purePhaseDiagram`  (purePhaseDiagram operation)
 

@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1896,
+  "cases": 1898,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -29669,6 +29669,34 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/rotating/pump03_generic_selection": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pump"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/rotating/pump04_manufacturer_curve": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pump"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/rotating/turbine01_air": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -32377,6 +32405,8 @@
     "tutorials/steady/rotating/compressorTurbine01_turbo_booster",
     "tutorials/steady/rotating/pump01_water",
     "tutorials/steady/rotating/pump02_pressure_spec",
+    "tutorials/steady/rotating/pump03_generic_selection",
+    "tutorials/steady/rotating/pump04_manufacturer_curve",
     "tutorials/steady/rotating/turbine01_air",
     "tutorials/steady/separation/psa01_h2_psa",
     "tutorials/steady/separation/tsa01_co2_twin_bed",
@@ -33069,6 +33099,8 @@
     "tutorials/steady/power/rankine02_water",
     "tutorials/steady/rotating/pump01_water",
     "tutorials/steady/rotating/pump02_pressure_spec",
+    "tutorials/steady/rotating/pump03_generic_selection",
+    "tutorials/steady/rotating/pump04_manufacturer_curve",
     "tutorials/steady/thermo/liquidDensity01_water",
     "tutorials/steady/thermo/liquidDensity02_waterEthanol",
     "tutorials/steady/thermo/liquidDensity05_CO2water",
@@ -35841,6 +35873,8 @@
     "tutorials/steady/rotating/compressorTurbine01_turbo_booster",
     "tutorials/steady/rotating/pump01_water",
     "tutorials/steady/rotating/pump02_pressure_spec",
+    "tutorials/steady/rotating/pump03_generic_selection",
+    "tutorials/steady/rotating/pump04_manufacturer_curve",
     "tutorials/steady/rotating/turbine01_air",
     "tutorials/steady/separation/psa01_h2_psa",
     "tutorials/steady/separation/tsa01_co2_twin_bed",

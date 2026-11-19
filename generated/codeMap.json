@@ -554,6 +554,9 @@
   "CurationDossier": [
    "src/propertyOps/CurationDossier.H"
   ],
+  "Curve": [
+   "src/unitOperations/rotating/PumpSelection.H"
+  ],
   "Cyclone": [
    "src/unitOperations/separation/Cyclone.H"
   ],
@@ -10152,11 +10155,13 @@
    "src/core/Identifiers.H",
    "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
    "src/core/ReadLog.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PinCheck.H",
    "src/thermo/PricedDensity.H",
@@ -10168,6 +10173,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/StokesEinstein.H",
    "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/PropertyTable.cpp": [
@@ -13150,6 +13156,7 @@
    "src/unitOperations/distillation/PackingRBF.H"
   ],
   "src/unitOperations/distillation/PackingRecord.cpp": [
+   "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -15695,7 +15702,16 @@
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
-   "src/unitOperations/rotating/Pump.H"
+   "src/unitOperations/rotating/Pump.H",
+   "src/unitOperations/rotating/PumpSelection.H"
+  ],
+  "src/unitOperations/rotating/PumpSelection.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/core/Units.H",
+   "src/thermo/liquidProperty/ExperimentsFile.H",
+   "src/unitOperations/rotating/PumpSelection.H"
   ],
   "src/unitOperations/rotating/Turbine.cpp": [
    "src/core/Advisory.H",
@@ -17350,6 +17366,7 @@
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/PackingDelft.cpp",
    "src/unitOperations/distillation/PackingRBF.cpp",
+   "src/unitOperations/distillation/PackingRecord.cpp",
    "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/distillation/TrayEfficiency.cpp",
@@ -17863,6 +17880,7 @@
    "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/PressureExchanger.cpp",
    "src/unitOperations/rotating/Pump.cpp",
+   "src/unitOperations/rotating/PumpSelection.cpp",
    "src/unitOperations/rotating/Turbine.cpp",
    "src/unitOperations/saturation/BubblePoint.cpp",
    "src/unitOperations/saturation/DewPoint.cpp",
@@ -18303,6 +18321,7 @@
    "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/PressureExchanger.cpp",
    "src/unitOperations/rotating/Pump.cpp",
+   "src/unitOperations/rotating/PumpSelection.cpp",
    "src/unitOperations/rotating/Turbine.cpp",
    "src/unitOperations/saturation/BubblePoint.cpp",
    "src/unitOperations/saturation/DewPoint.cpp",
@@ -19466,6 +19485,7 @@
    "src/result/ResultEmitter.cpp",
    "src/streams/StreamStateIO.cpp",
    "src/thermo/LiquidPropertyDoor.cpp",
+   "src/thermo/PricedDensity.cpp",
    "src/thermo/ResolvedView.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
@@ -20654,6 +20674,7 @@
    "src/unitOperations/rotating/IsentropicCore.cpp",
    "src/unitOperations/rotating/PressureExchanger.cpp",
    "src/unitOperations/rotating/Pump.cpp",
+   "src/unitOperations/rotating/PumpSelection.cpp",
    "src/unitOperations/rotating/Turbine.cpp",
    "src/unitOperations/saturation/BubblePoint.cpp",
    "src/unitOperations/saturation/DewPoint.cpp",
@@ -20723,7 +20744,8 @@
    "src/thermo/vaporPressure/Antoine.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
-   "src/unitOperations/reactor/PFR.cpp"
+   "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/rotating/PumpSelection.cpp"
   ],
   "src/core/distribution/LogNormalSize.H": [
    "src/core/distribution/LogNormalSize.cpp",
@@ -23730,6 +23752,7 @@
    "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/thermo/LiquidPropertyDoor.cpp",
+   "src/thermo/PricedDensity.cpp",
    "src/thermo/ResolvedView.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
@@ -26851,7 +26874,8 @@
    "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/transport/FlowCurve.cpp",
    "src/thermo/transport/LiquidTransportDeclarations.cpp",
-   "src/unitOperations/flowsheet/Flowsheet.cpp"
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/rotating/PumpSelection.cpp"
   ],
   "src/thermo/liquidProperty/IdealMixing.H": [
    "src/thermo/liquidProperty/DensityMethod.cpp",
@@ -27812,6 +27836,7 @@
    "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/thermo/LiquidPropertyDoor.cpp",
+   "src/thermo/PricedDensity.cpp",
    "src/thermo/ResolvedView.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
@@ -29250,6 +29275,10 @@
   "src/unitOperations/rotating/Pump.H": [
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/rotating/Pump.cpp"
+  ],
+  "src/unitOperations/rotating/PumpSelection.H": [
+   "src/unitOperations/rotating/Pump.cpp",
+   "src/unitOperations/rotating/PumpSelection.cpp"
   ],
   "src/unitOperations/rotating/Turbine.H": [
    "src/unitOperations/UnitOperation.cpp",

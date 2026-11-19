@@ -858,18 +858,18 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \goldrow{kpi}{postflame}{P\_final}{101325}
 \goldrow{kpi}{postflame}{T\_final}{2125}
 \goldrow{kpi}{postflame}{n\_H2O2\_final}{1.0369853342e-12}
-\goldrow{kpi}{postflame}{n\_H2\_final}{4.8469712404e-09}
+\goldrow{kpi}{postflame}{n\_H2\_final}{4.84698059975e-09}
 \goldrow{kpi}{postflame}{n\_HO2\_final}{1.63158546297e-11}
 \goldrow{kpi}{postflame}{n\_H\_final}{6.02497983071e-10}
 \goldrow{kpi}{postflame}{n\_N2O\_final}{1.37920927884e-12}
-\goldrow{kpi}{postflame}{n\_N2\_final}{3.72505182272e-06}
+\goldrow{kpi}{postflame}{n\_N2\_final}{3.72502026938e-06}
 \goldrow{kpi}{postflame}{n\_NH\_final}{2.49316863832e-15}
-\goldrow{kpi}{postflame}{n\_NO\_final}{2.95156157086e-08}
+\goldrow{kpi}{postflame}{n\_NO\_final}{2.95155572717e-08}
 \goldrow{kpi}{postflame}{n\_N\_final}{2.26202033201e-14}
-\goldrow{kpi}{postflame}{n\_O2\_final}{3.06817214048e-07}
-\goldrow{kpi}{postflame}{n\_OH\_final}{2.0389175016e-08}
-\goldrow{kpi}{postflame}{n\_O\_final}{2.17476316467e-09}
-\goldmore{24}
+\goldrow{kpi}{postflame}{n\_O2\_final}{3.06816002144e-07}
+\goldrow{kpi}{postflame}{n\_OH\_final}{2.03894930621e-08}
+\goldrow{kpi}{postflame}{n\_O\_final}{2.17476316564e-09}
+\goldmore{29}
 \end{tutgolden}
 
 \subsection{crystallisation}
@@ -1672,7 +1672,7 @@ The simulator integrates dn\_A/dt = -k $\cdot$ (n\_A / V) $\cdot$ V = -k n\_A wi
 
 \end{tutnarrative}
 \tutreadme{18.5 mol of an equimolar ethanol / acetic-acid charge (about a litre) is held at 350 K in a closed vessel for 600 s and the Fischer esterification runs --- the kinetics of cstr01, now integrated in time by RK4 at 1 s steps. The golden: ethanol falls from 9.25 mol to 1.083 mol (X = 88.3 \%), 8.167 mol of ethyl acetate made, and the jacket has removed only 17.18 kJ to hold the temperature --- exactly -2.10 kJ/mol of reaction at 350 K, the elements-datum heat every reactor in Choupo prices on. The liquid esterification is only mildly exothermic (calorimetry: about -3 to -4 kJ/mol), so the jacket duty here is small, not the cooling load an exotherm of tens of kJ/mol would need.}
-\tutreadme{1. choupoBatch, not choupoSolve. A batch vessel has no steady state; the case declares endTime 600; deltaT 1.0; writeInterval 30; in controlDict and the engine integrates dn/dt = $\nu$ r V. The Log tab prints a snapshot every 30 s: four inventories and T. 2. First order means an exponential, and you can check it. With k = 3.575e-3 s?$^1$ at 350 K (the same Arrhenius pair as cstr01), n(600 s) = 9.25$\cdot$e\textasciicircum{}(-2.145) = 1.083 mol. The table is that curve, sampled. 3. The campaign ledger closes at machine precision. [campaign] mass balance ? closure 4.5e-16, energy balance: dH\_vessels = -17.18 kJ ? = Q\_ledger -17.18 kJ, closure 0 --- every joule the jacket took is a state difference on the charge, never a quadrature, which is why the closure is zero and not merely small. 4. A CSTR at the same $\tau$ does worse. 600 s here gives 88 \%; the continuous reactor at $\tau$ = 310 s gave 53 \% and a PFR 67 \%. Three reactors, one rate law, three answers --- the batch one is the upper envelope, because nothing leaves early.}
+\tutreadme{1. choupoBatch, not choupoSolve. A batch vessel has no steady state; the case declares endTime 600; deltaT 1.0; writeInterval 30; in controlDict and the engine integrates dn/dt = $\nu$ r V. The Log tab prints a snapshot every 30 s: four inventories and T. 2. First order means an exponential, and you can check it. With k = 3.575e-3 s?$^1$ at 350 K (the same Arrhenius pair as cstr01), n(600 s) = 9.25$\cdot$e\textasciicircum{}(-2.145) = 1.083 mol. The table is that curve, sampled. 3. The campaign ledger closes at machine precision. [campaign] mass balance ? closure 4.5e-16, energy balance: dH\_vessels = -17.18 kJ ? = Q\_ledger -17.18 kJ, closure 0 --- every joule the jacket took is a state difference on the charge, never a quadrature, which is why the closure is zero and not merely small. 4. A CSTR at the same $\tau$ does worse. 600 s here gives 88 \%; the continuous reactor at $\tau$ = 288 s gave 51 \% and a PFR 64 \%. Three reactors, one rate law, three answers --- the batch one is the upper envelope, because nothing leaves early.}
 \tutreadme{Set T\_setpoint 370 K;: k roughly triples, the exponential steepens, and the ledger's Q follows the extent (small, because the reaction is only mildly exothermic). Then batch02\_adiabatic removes the jacket, and T becomes one more state on the trajectory.}
 \begin{tutgolden}
 \goldrow{kpi}{campaign}{element\_C\_closure\_rel}{3.75075346157e-16}
@@ -1824,6 +1824,12 @@ Equimolar CO + H2O charged at 600 K. The forward Arrhenius rate drives conversio
 The forward A is the illustrative value tuned for stable RK4 (see constant/reactions); the equilibrium X\_eq is A-independent.
 
 \end{tutnarrative}
+\tutreadme{CO + H2O <$\to$ CO2 + H2, equimolar charge, 600 K, 10 bar, 1 litre, isothermal, reversible Arrhenius kinetics (k\_rev = k\_fwd / K\_eq from the species' ideal-gas Gibbs functions). The conversion relaxes onto the thermodynamic ceiling X\_eq \textasciitilde{} 0.84 (n\_CO 5e-4 $\to$ 7.93e-5 kmol) and stays there.}
+\tutreadme{At 600 K and 10 bar all four species are vapours (water's saturation pressure at 600 K is above 10 bar; CO, CO2 and H2 are far above their critical temperatures). The vessel therefore declares energy gasConstantV;, which puts its heat of reaction, its jacket-duty record, its campaign vessel enthalpies and its impulse pricing on the ideal-gas enthalpy surface. Before C448 the case ran without it, and the campaign heat ledger was priced on liquid surfaces for gases (a "liquid" CO or H2 at 600 K), giving -0.299 kJ and then +0.001 kJ for an extent of 0.42 mol of a reaction whose heat is tens of kJ/mol: non-physical both times.}
+\tutreadme{dH\_rxn(T) = dH\_rxn(298.15 K) + integral from 298.15 K to T of dCp dT, from the catalogue's own records (data/standards/components):}
+\tutreadme{$\ast$ formation enthalpies (J/mol): CO -110530, H2O(g) -241826, CO2 -393520, H2 0, so dH\_rxn(298.15 K) = -393520 - (-110530 - 241826) = -41164 J/mol. $\ast$ ideal-gas Cp polynomials a + bT + cT\textasciicircum{}2 + dT\textasciicircum{}3 (J/mol/K); dCp = Cp(CO2) + Cp(H2) - Cp(CO) - Cp(H2O) has a = -16.173, b = 0.09364, c = -1.08275e-4, d = 4.1111e-8. $\ast$ integrating to 600 K: dH\_rxn(600 K) = -38941.07 J/mol. $\ast$ extent = n\_CO(0) - n\_CO(end) = 0.5 mol - 0.0792842 mol = 0.4207158 mol (from the trajectory below).}
+\tutreadme{Q = extent x dH\_rxn(600 K) = 0.4207158 x (-38.94107) = -16.38312 kJ (heat removed by the jacket; the reaction is exothermic).}
+\tutreadme{The engine's campaign ledger (energy\_Q\_ledger\_kJ, E\_reaction\_total\_kJ) prints -16.3831222515 kJ: the hand value to the digits above.}
 \begin{tutgolden}
 \goldrow{kpi}{reactor}{P\_final}{1000000}
 \goldrow{kpi}{reactor}{T\_final}{600}
@@ -1838,8 +1844,8 @@ The forward A is the illustrative value tuned for stable RK4 (see constant/react
 \goldrow{kpi}{campaign}{element\_O\_closure\_rel}{1.95156391047e-15}
 \goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{1.95156391047e-15}
 \goldrow{kpi}{campaign}{energy\_H\_external\_kJ}{0}
-\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{0.00108337949496}
-\goldmore{31}
+\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{-16.3831222515}
+\goldmore{26}
 \end{tutgolden}
 
 \clearpage
@@ -2521,7 +2527,7 @@ ln(L / L\_0) = (1 / (alpha - 1)) [ ln(x / x\_0) + alpha $\ast$ ln((1 - x\_0) / (
 where x = x\_benzene in the still pot. Plotting (L/L\_0) vs x\_pot from trajectory.csv should track this analytical curve to RK4 precision.
 
 \end{tutnarrative}
-\tutreadme{One mole of 50/50 benzene/toluene in a pot at 1.013 bar, boiled off for 600 s with the vapour taken away as it forms --- no reflux, no trays: the Rayleigh equation integrated in time. The pot starts at its bubble point, 365.00 K, and ends at 380.04 K with 0.1 mol left in it at 91.8 \% toluene; 0.9 mol (0.0760 kg) has left as distillate. The reboiler supplied 30.33 kJ, the condenser took 29.39 kJ away.}
+\tutreadme{One mole of 50/50 benzene/toluene in a pot at 1.013 bar, boiled off for 600 s with the vapour taken away as it forms --- no reflux, no trays: the Rayleigh equation integrated in time. The pot starts at its bubble point, 365.00 K, and ends at 380.04 K with 0.1 mol left in it at 91.8 \% toluene; 0.9 mol (0.0760 kg) has left as distillate. The reboiler supplied 30.32 kJ, the condenser took 29.38 kJ away.}
 \tutreadme{1. The residue gets heavier, and hotter, because the light one leaves first. The Log tab prints the pot every 20 s: benzene falls faster than toluene, T climbs from 365 to 380 K as the pot approaches toluene's boiling point. That is the Rayleigh curve as numbers. 2. The whole campaign is a ledger. [campaign] mass balance: m0 = 0.0851 kg = mF 0.0091 + external 0.0760 kg, closure 0 --- what left the domain is counted, not lost. The energy side closes at 4.6e-16 with two records, reboiler and condenser, each priced at its own service temperature (380.0 K and 365.3 K). 3. The thermodynamics is Raoult, and the caveats say where it is stretched. Benzene's Antoine window ends at 354 K and the pot starts at 365 K; toluene's ends at 380 K and the pot ends at 380.04. Both extrapolations are announced at the moment they happen, on the console, inside the table. 4. Utilities are scheduled in time. reports/utilities/ utilityDemand.csv carries the staircase of steam and cooling-water demand across the 600 s --- a peak, not just a total, which is what a batch plant is actually sized on.}
 \tutreadme{Halve endTime: the pot is still half full and barely enriched --- most of the separation happens late, when there is little left. Then still04\_rectifier\_benzene\_toluene puts three stages and a reflux over the same pot, and the distillate purity that a Rayleigh still cannot reach appears.}
 \begin{tutgolden}
