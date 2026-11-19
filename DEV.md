@@ -4871,6 +4871,20 @@ accepts today, and that is a policy call.
 > declares.  Each with the real defect it would have caught named in its
 > header (rule 4e).
 
+> **C456, C457, C458 (Vitor, 2026-11-19, through the cloud session's board;
+> SESSIONS.md, the three notes "an olefins line", "the olefins commission,
+> part 2" and "A HOME FOR THOUSANDS OF GAS-PHASE SPECIES").**  Registered as
+> written there, to be weighed and sliced on the laptop's return (Saturday):
+> C456 an olefins line with seven primary articles and a gate each; C457 three
+> EduTools on its validated witnesses; C458 (ARCHITECTURE, decided by Vitor
+> with the three options) a new home data/standards/thermoTables/NASA-TP-
+> 2002-211556/, one species per file, the whole public-domain table
+> transcribed by bin/curate/nasa_tp2002_to_choupo.py, reviewStatus interim,
+> components/ staying flat; then mechanisms at scale (a CHEMKIN-format
+> mechanism read into a case's constant/ with its licence checked per
+> mechanism, an implicit sparse integrator).  Related: C452 (the EduTool on
+> mechanisms) and the two Chemkin manuals filed today.
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
