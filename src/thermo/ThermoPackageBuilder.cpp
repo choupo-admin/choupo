@@ -3383,7 +3383,7 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                         vm << std::fixed << std::setprecision(2) << " (held-out AAD "
                            << val->subDict("heldOut")->lookupScalar("aad_pct")
                            << " % against a band of "
-                           << val->subDict("acceptance")->lookupScalar("maxAAD")
+                           << val->subDict("acceptance")->lookupScalarIn("maxAAD", Dims::dimensionless, "percent")
                            << " % declared before the fit)";
                     vm << " -- used as declared, not as a validated pair ("
                        << kijSrc << ")";

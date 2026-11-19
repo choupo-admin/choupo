@@ -66,7 +66,7 @@ void Membrane::readFromDict(const DictPtr& d)
     }
 
     A_w_      = d->lookupScalar       ("A_w", Dims::permeabilityWater);   // required
-    P_max_    = d->lookupScalarOrDefault("P_max",    0.0);
+    P_max_    = d->lookupScalarInOrDefault("P_max", 0.0, Dims::pressure, "bar");   // bare = bar (C454 family 7)
     T_max_    = d->lookupScalarOrDefault("T_max",    0.0);
     pH_min_   = d->lookupScalarOrDefault("pH_min",   0.0);
     pH_max_   = d->lookupScalarOrDefault("pH_max",   0.0);
@@ -126,7 +126,7 @@ void Membrane::readFromDict(const DictPtr& d)
         // X_d: signed fixed charge density [mol/m^3].  Absent => 0 (steric only).
         if (pm->found("chargeDensity"))
         {
-            X_d_   = pm->lookupScalar("chargeDensity");   // [mol/m^3], signed
+            X_d_   = pm->lookupScalarIn("chargeDensity", Dims::concentration, "mol/m3");   // bare = mol/m^3 (C454 family 5), signed
             hasXd_ = true;
         }
         // eps_p: pore dielectric [-].  Absent => 0 => DSPM_DE uses epsWater(T)

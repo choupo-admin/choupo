@@ -159,7 +159,7 @@ std::vector<EquipmentSizing> VesselSize::size(const std::string& unitName,
         //  a declared word and REFUSES when there is none, quoting the ratio
         //  at THIS unit's own conditions so the size of the trap is in the
         //  message, not in a reader's head.
-        const scalar SV = designRules->lookupScalar("spaceVelocity");   // 1/h
+        const scalar SV = designRules->lookupScalarIn("spaceVelocity", Dims::inverseTime, "1/h");   // bare = 1/h (C454 family 10)
         const scalar Q_normal_m3s =
             N_mol_s * constant::R * constant::T_normal / constant::P_normal;
         const scalar ratio = Q_normal_m3s / Q_m3s;     // = T_n P / (P_n T)
