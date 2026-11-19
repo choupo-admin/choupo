@@ -24,7 +24,7 @@ propertyManifest
         "components/benzene.dat"  "4867cea9c30ce24e49103b01b75373a551f9161410b53b7a0bedd4947cfcd124";
         "components/cyclohexane.dat"  "0d27d3c3ffb2a76c0aff41e092f81b326608a008c813dad6cd5844bc8b138747";
         "components/ethanol.dat"  "93a2192d059b854c64f06948adbb5e0d13ef7e11c86e5d111d3d18e28f0fcc1c";
-        "components/nHexane.dat"  "ff9c08ff50aa6edde6b66eff8d6ce9a88948f503c34b085a6ca2d4017b7d92fa";
+        "components/nHexane.dat"  "02c70e7841ee558e774dc77802f5513f8618e442caffe5ae2d316e53da18281b";
         "components/toluene.dat"  "235f87f78a1922f0cdec411061f6197c8b9ada98bedf38e10b284901e5f65b15";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:1c881f4ef9fe29386cb8760335d6506a772610e85f6a9b7e135fd5f4dec14f34";

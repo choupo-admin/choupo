@@ -22,7 +22,7 @@ propertyManifest
     {
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
         "components/benzene.dat"  "4867cea9c30ce24e49103b01b75373a551f9161410b53b7a0bedd4947cfcd124";
-        "components/nHexane.dat"  "ff9c08ff50aa6edde6b66eff8d6ce9a88948f503c34b085a6ca2d4017b7d92fa";
+        "components/nHexane.dat"  "02c70e7841ee558e774dc77802f5513f8618e442caffe5ae2d316e53da18281b";
         "components/toluene.dat"  "235f87f78a1922f0cdec411061f6197c8b9ada98bedf38e10b284901e5f65b15";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
