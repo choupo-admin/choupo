@@ -32,6 +32,7 @@ License
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
 #include "streams/UtilityCircuit.H"
+#include "unitOperations/UnitOperation.H"
 #include "thermo/utility/UtilityCatalogue.H"
 
 #include "core/Dictionary.H"
@@ -3301,21 +3302,36 @@ int EconomicsPass::run(SimulationResult& result)
     }
     else
     {
-        //  The registered unit types whose model handles particulate solids
-        //  (UnitOperation.cpp registerBuiltins; each class's own header says
-        //  so): the dryers (SprayDryer.H, SolidDryer.H, ConvectiveDryer.H,
-        //  EvaporativeDryer.H), the crystalliser (Crystalliser.H -- it MAKES
-        //  the particles), pneumatic conveying (PneumaticConveyor.H), and
-        //  the gas-solid separators (Cyclone.H, BagFilter.H,
-        //  GasSolidSplitter.H).  A `mixer` or `splitter` carrying solids is
-        //  NOT listed: they are generic, and a fluid plant has dozens.
-        static const std::set<std::string> particulateUnitTypes = {
-            "sprayDryer", "solidDryer", "convectiveDryer", "evaporativeDryer",
-            "crystalliser", "pneumaticConveyor",
-            "cyclone", "bagFilter", "gasSolidSplitter" };
+        //  The unit types whose model handles particulate solids, READ FROM
+        //  EACH CLASS'S OWN DECLARATION (C445 (1b)): `acceptance()` names a
+        //  size distribution among the carried kinds it models, or sets
+        //  `particulateSolids` (the dryers that carry none, the crystalliser
+        //  that makes the particles).  This was a hand list of nine types and
+        //  had fallen seven behind (mill, classifier, screen, hydrocyclone,
+        //  thickener, cake filter, sedimenting centrifuge).  A `mixer` or
+        //  `splitter` carrying solids is NOT counted: their acceptance models
+        //  EVERY kind (`allKinds`), they are generic, and a fluid plant has
+        //  dozens.
+        std::map<std::string, bool> particulateByType;
+        auto isParticulate = [&](const std::string& type)
+        {
+            auto it = particulateByType.find(type);
+            if (it != particulateByType.end()) return it->second;
+            bool yes = false;
+            try
+            {
+                const UnitAcceptance a = UnitOperation::New(type)->acceptance();
+                yes = a.particulateSolids
+                    || (!a.carried.allKinds
+                        && std::find(a.carried.kinds.begin(), a.carried.kinds.end(),
+                                     "sizeDistribution") != a.carried.kinds.end());
+            }
+            catch (const std::exception&) { yes = false; }   // not a steady unit type
+            return particulateByType[type] = yes;
+        };
         std::string seen;
         for (const auto& fu : result.topology)
-            if (particulateUnitTypes.count(fu.type))
+            if (isParticulate(fu.type))
                 seen += (seen.empty() ? "" : ", ") + fu.name + " (" + fu.type + ")";
         //  With a DECLARED crew, P drives only the printed comparison, and the
         //  comparison line itself says P was not declared -- so the zero is

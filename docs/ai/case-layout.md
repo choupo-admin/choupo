@@ -1512,9 +1512,11 @@ particulateSteps
 ```
 
 Absent, `P = 0` -- and where the flowsheet holds a unit whose type handles
-particulate solids (`sprayDryer`, `solidDryer`, `convectiveDryer`,
-`evaporativeDryer`, `crystalliser`, `pneumaticConveyor`, `cyclone`,
-`bagFilter`, `gasSolidSplitter`) the run ANNOUNCES the undeclared zero (its
+particulate solids -- read from each unit's own declaration (it carries a size
+distribution, or states `particulateSolids`: the dryers, `crystalliser`,
+`pneumaticConveyor`, `cyclone`, `bagFilter`, `gasSolidSplitter`, `mill`,
+`classifier`, `screen`, `hydrocyclone`, `thickener`, `cakeFilter`,
+`sedimentingCentrifuge`; not the generic `mixer`/`splitter`) -- the run ANNOUNCES the undeclared zero (its
 site, the caveat block, the result JSON's advisories), naming those units.
 A declared count announces nothing.  The console line prints the P term
 either way.  A flat `particulateSteps 6;`, a fractional or negative count,

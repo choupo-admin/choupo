@@ -118,8 +118,10 @@ dowthermA, hitecSalt, refrigerationPG).
 
 **Electricity is the third tier (`power`).**  Shaft work is not free: the same
 report tallies the plant's electrical bill alongside the steam and cooling-water
-bills.  A pump or compressor MOTOR draws grid electricity
-(`W_shaft / driveEfficiency`); a turbine GENERATOR (an `electricLoad`) feeds it
+bills.  A MOTOR draws grid electricity
+(`W_shaft / driveEfficiency`) -- billed on the published positive `W_shaft`, not on the
+unit type, so a pump, a compressor and an `agitatedVessel` are all billed (a turbine
+publishes it negative and is not); a turbine GENERATOR (an `electricLoad`) feeds it
 back (`W_electric`, a credit).  Shaft work supplied by a **wire** (turbine →
 compressor) is mechanical, not grid, and is skipped — so a combined cycle that
 exports power shows a negative €/h.  The `electricity` utility carries the

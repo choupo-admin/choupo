@@ -216,6 +216,16 @@ struct UnitAcceptance
         std::vector<std::string> kinds;
         std::string              sentence;   // what the unit does with them
     } carried;
+
+    //  THE UNIT'S WORKING MATERIAL IS A PARTICULATE SOLID (C445 (1b)).  True
+    //  on a unit that handles particles -- it carries a size distribution
+    //  (`carried.kinds` names one) or it dries / makes / moves a granular
+    //  solid without carrying one (the convective and evaporative dryers, the
+    //  crystalliser).  Read by the economics pass, which counts these units
+    //  toward Turton's P (particulate-solids processing steps) -- the list
+    //  used to be a hand copy in EconomicsPass.cpp that had fallen seven
+    //  units behind.  Independent of `declared`.
+    bool particulateSolids = false;
 };
 
 //  The word a ModelsRule / Capability / Scope is printed as (JSON, messages).

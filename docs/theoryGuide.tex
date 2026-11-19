@@ -27755,6 +27755,14 @@ $\mathrm{Re}=6.98$, $K_p=494$, $P=9838$\,W, $\mathrm{Re}_{cr}=44$ (laminar).  No
 $H/D=1.5$ lies past the 1.30 of eq.~8.7's data: the case runs it as a declared hypothesis.
 \end{example}
 
+\paragraph{The power bill.}  The utility report bills electricity on what a unit
+\emph{publishes}, not on its type name: every unit that publishes a positive
+\code{W\_shaft} (work added to the fluid) is a motor load drawing
+$P_{el}=W_{shaft}/\eta_{drive}$ from the grid at the \code{electricity} tariff, so the
+stirred vessel is billed exactly as a pump or a compressor.  A turbine publishes
+\code{W\_shaft} negative (work extracted) and is never billed as a consumer; a shaft
+coupled to another unit by a work wire is mechanical and is skipped.
+
 \begin{tutoriallink}
 \file{tutorials/steady/hydraulics/agitation01\_helical\_ribbon\_polymer\_melt} --- Example~8.5 from the
 impeller record, the flow curve and the door; the shaft power as a Work item and the jacket's duty.
