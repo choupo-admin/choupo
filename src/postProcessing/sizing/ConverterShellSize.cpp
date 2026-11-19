@@ -91,7 +91,7 @@ std::vector<EquipmentSizing> ConverterShellSize::size(const std::string& unitNam
         throw std::runtime_error(who + ": no `pressureDesign` in its designRules"
             " -- the converter's shell is THE pressure vessel and its wall"
             " cannot be sized without one.  Declare `pressureDesign <bar>;`.");
-    const scalar pressureDesign = designRules->lookupScalar("pressureDesign");   // bar g
+    const scalar pressureDesign = designRules->lookupScalarIn("pressureDesign", Dims::pressure, "bar");   // bar g
     if (material.sigma_y <= 0.0)
         throw std::runtime_error(who + ": material '" + material.name
             + "' has no sigma_y defined -- the shell wall cannot be sized");

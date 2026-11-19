@@ -104,11 +104,12 @@ std::vector<EquipmentSizing> PressureExchangerSize::size(
 
     //  THE DESIGN PRESSURE: declared, or the high-pressure inlet read from the
     //  unit (a fact of the run, not an assumption; the basis says which).
-    //  Declared WITH its unit (`pressureDesign 70 bar;`): read in Pa and
-    //  published in bar, the unit every other sheet's `pressureDesign` is in.
+    //  Read as every other sizer reads it (DEV.md 4c C454): bare in bar, a
+    //  declared unit converted -- it used to read a bare number as Pa, one
+    //  key with two conventions in one postDict (no case declared it bare).
     const bool pDeclared = designRules->found("pressureDesign");
     const scalar P_des = pDeclared
-        ? designRules->lookupScalar("pressureDesign", Dims::pressure) / 1.0e5
+        ? designRules->lookupScalarIn("pressureDesign", Dims::pressure, "bar")
         : P_HPin;
 
     //  THE MAKER'S PRESSURE LIMIT AND FLOW WINDOW (C199), both optional and

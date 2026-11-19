@@ -76,7 +76,7 @@ std::vector<EquipmentSizing> StirredTank::size(const std::string& unitName,
     //  which is the very failure `AdvisoryLog`'s trial/accepted stamp exists
     //  to keep out of the caveat block.  No corpus case is affected: all of
     //  them declare `pressureDesign`.
-    const scalar pressureDesign = designRules->lookupScalar("pressureDesign");  // bar
+    const scalar pressureDesign = designRules->lookupScalarIn("pressureDesign", Dims::pressure, "bar");  // bar
 
     if (material.sigma_y <= 0.0)
         throw std::runtime_error("StirredTank: material '" + material.name

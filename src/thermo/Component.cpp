@@ -322,7 +322,9 @@ void Component::readFromDict(const DictPtr& d)
 
     MW_      = d->lookupScalar       ("MW");
     Tc_      = d->lookupScalarOrDefault("Tc",      0.0);
-    Pc_      = d->lookupScalarOrDefault("Pc",      0.0);
+    //  `Pc` is in BAR in every record (the catalogue convention, bare); a
+    //  declared unit is converted, never read as bar (DEV.md 4c C454).
+    Pc_      = d->lookupScalarInOrDefault("Pc", 0.0, Dims::pressure, "bar");
     omega_   = d->lookupScalarOrDefault("omega",   0.0);
     Tb_      = d->lookupScalarOrDefault("Tb",      0.0);
     Hvap_Tb_ = d->lookupScalarOrDefault("HvapTb",  0.0);

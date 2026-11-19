@@ -243,6 +243,19 @@ If the caller later does a dim-checked lookup, an inconsistency is
 caught.  Avoid this form for clarity; named units are pedagogically
 better.
 
+**A few keys are NOT raw SI when bare** -- they were written in a working
+unit before the parser converted units, and their bare meaning is kept so no
+record moves (DEV.md 4c C454).  For these, writing the unit is accepted and
+converted; the bare number is read in the working unit:
+
+| key | where | bare means |
+|---|---|---|
+| `Pc` | component records, a `vaporPressure {}` block, an estimate's `reference {}` | bar |
+| `pressureDesign` | every `designRules {}` in `system/postDict` | bar (gauge) |
+
+So `Pc 220.64;` and `Pc 220.64 bar;` are the same value, and
+`pressureDesign 2;` and `pressureDesign 2 bar;` are too.
+
 ### Dim-checked lookup error message
 
 When a downstream `lookupScalar(key, expectedDims)` sees a mismatch,

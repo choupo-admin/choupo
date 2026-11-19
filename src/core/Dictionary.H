@@ -179,6 +179,27 @@ public:
     //  words with `units::sameUnit`, never as strings.
     std::string unitWordOf(const std::string& key) const;
 
+    //  A KEY WHOSE BARE NUMBER IS NOT SI (DEV.md 4c C454).  Some record keys
+    //  were written bare in a WORKING unit long before the parser converted
+    //  units -- a component's `Pc` is in bar -- and the code reads them
+    //  bare and converts by hand.  Read through `lookupScalar(key)`, such a
+    //  key is a trap: `Pc 220.64 bar;` is parsed to 2.2064e7 (SI) and then
+    //  read as 2.2064e7 BAR, at exit 0.  This is the one reader for them:
+    //    * no unit declared  -> the bare number, in `workingUnit` (the
+    //      legacy meaning, unchanged, so no record and no golden moves);
+    //    * a unit declared   -> the parsed SI value, its dimensions checked
+    //      against `expectedDims`, expressed in `workingUnit`.
+    //  `workingUnit` must be a registered unit word whose dimensions are
+    //  `expectedDims` (checked: a mismatch is a programming error, refused).
+    //  The bracket form (`[..] v`) is SI and is converted the same way.
+    scalar lookupScalarIn(const std::string& key,
+                          const Dimensions&  expectedDims,
+                          const std::string& workingUnit) const;
+    scalar lookupScalarInOrDefault(const std::string& key,
+                                   scalar             def,
+                                   const Dimensions&  expectedDims,
+                                   const std::string& workingUnit) const;
+
     const std::string& name()       const { return name_;   }
     const std::string& sourceName() const { return source_; }
 
