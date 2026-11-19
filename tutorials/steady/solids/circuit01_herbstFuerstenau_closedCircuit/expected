@@ -145,3 +145,15 @@ boundary global                 Q_boundary_kW    637              1e-4
 boundary global                 H_products_kW    -303408.865282   1e-4
 boundary global                 residual_kW      3.81201971322e-07 abs:0.00637
 boundary global                 W_shaft_kW       637              1e-4
+kpi     millFirstHalf          W_shaft          318500           1e-4
+kpi     millSecondHalf         W_shaft          318500           1e-4
+boundary global                 noBoundary       false            exact
+boundary global                 residual_denom_kW 637              1e-4
+utility millFirstHalf          power.electricity.duty_kW 335.263157895    1e-4
+utility millFirstHalf          power.electricity.T -1               1e-4
+utility millFirstHalf          power.electricity.kg_s 0                1e-4
+utility millFirstHalf          power.electricity.eur_h 33.5531368421    1e-4
+utility millSecondHalf         power.electricity.duty_kW 335.263157895    1e-4
+utility millSecondHalf         power.electricity.T -1               1e-4
+utility millSecondHalf         power.electricity.kg_s 0                1e-4
+utility millSecondHalf         power.electricity.eur_h 33.5531368421    1e-4
