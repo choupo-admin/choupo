@@ -445,7 +445,7 @@ F_L^2 &= \frac{P_1 - P_2}{P_1 - P_\mathrm{vc}}\\
       + "20 - 18.99/0.81 = -3.44 bar: an extrapolation past the point "
       + "where the liquid vaporises, and nonphysical.  Long before that the "
       + "vaporising vena contracta chokes the flow: with the engine's P_v "
-      + "of 2.067 bar and the record's P_c, F_F P_v = 0.9222 × 2.067 = "
+      + "of 2.066 bar and the record's P_c, F_F P_v = 0.9222 × 2.066 = "
       + "1.91 bar, so the largest drop is 0.81 (20 - 1.91) = 14.66 bar and "
       + "the flow chokes once the outlet falls below about 5.34 bar.  The "
       + "bench computes these on your F_L and storage pressure, and draws "

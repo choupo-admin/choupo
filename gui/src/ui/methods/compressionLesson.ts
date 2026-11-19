@@ -51,9 +51,9 @@ export const COMPRESSION_STEPS: readonly LessonStep[] = [
       + "is a more expensive gas to compress, which is the whole reason for cooling it "
       + "between stages), and it grows with the pressure ratio only as \\(r^{(n-1)/n}\\), "
       + "not as \\(r\\).  The engine evaluates exactly this at "
-      + "src/postProcessing/sizing/CompressorDesign.cpp:222, the shaft power at "
-      + "src/postProcessing/sizing/CompressorDesign.cpp:223, and the specific gas constant "
-      + "from R = 8314.462618 J/(kmol K) (src/postProcessing/sizing/CompressorDesign.cpp:34).  "
+      + "src/postProcessing/sizing/CompressorDesign.cpp:223, the shaft power at "
+      + "src/postProcessing/sizing/CompressorDesign.cpp:224, and the specific gas constant "
+      + "from R = 8314.462618 J/(kmol K) (src/postProcessing/sizing/CompressorDesign.cpp:35).  "
       + "Worked on the witness (air, 455 kmol/h, 1 bar and 25 degC, one section of "
       + "ratio 2.3568, \\(n\\) = 1.6090244 as printed on the sheet, \\(Z\\) = 1): "
       + "the discharge is 412.44 K, the head 87036 J/kg and the shaft power 427.31 kW, "
@@ -118,9 +118,9 @@ W_\mathrm{shaft}=\frac{\dot m\,H_\mathrm{p}}{\eta_p}\,(1+f_\mathrm{m})`,
       + "isentropic 0.75 over ratio 12, takes 1504.3 kW, less than the 1740.5 kW of one "
       + "section at a polytropic 0.75 over the same ratio.  The sheet says so in its own "
       + "notes: the two powers are not expected to agree.  The exponent \\(a\\) itself is "
-      + "read from the package: src/postProcessing/sizing/CompressorDesign.cpp:206 prices the "
+      + "read from the package: src/postProcessing/sizing/CompressorDesign.cpp:207 prices the "
       + "isentropic discharge temperature at constant entropy and takes its logarithm "
-      + "(Brown Eq 2.76, p.38), and src/postProcessing/sizing/CompressorDesign.cpp:215 forms "
+      + "(Brown Eq 2.76, p.38), and src/postProcessing/sizing/CompressorDesign.cpp:216 forms "
       + "the isentropic efficiency of the section from it.",
     derivation: [
       { step: "The isentropic head, with the path exponent a = (k-1)/k of the reversible "
@@ -161,7 +161,7 @@ a=\frac{k-1}{k}=\frac{\ln\left(T_{2s}/T_1\right)}{\ln r}`,
     n: 3,
     title: "The discharge temperature, and why it limits one stage",
     body: "The gas leaves a section at \\(T_2 = T_1\\,r^{(n-1)/n}\\) (Brown Eq 5.16, p.196; "
-      + "src/postProcessing/sizing/CompressorDesign.cpp:217), and nothing in the "
+      + "src/postProcessing/sizing/CompressorDesign.cpp:218), and nothing in the "
       + "compression removes that heat.  Brown calls out the temperature a centrifugal "
       + "estimate should not exceed when nothing else limits it, 475 degF, about 519 K, "
       + "and in the same sentence calls the limit arbitrary: machines are built above it "
@@ -211,7 +211,7 @@ r_\mathrm{max}=\left(\frac{T_\mathrm{lim}}{T_1}\right)^{n/(n-1)},
       + "symmetric one: equal ratios, each \\(R^{1/N}\\) (Brown Eq 3.17, p.65; the book "
       + "derives it for two sections as Eq 3.14, \\(P_i=\\sqrt{P_1P_2}\\), p.64).  Here it is "
       + "from first principles for any N and any exponent.  The engine does this in "
-      + "src/postProcessing/sizing/CompressorDesign.cpp:245, "
+      + "src/postProcessing/sizing/CompressorDesign.cpp:246, "
       + "and adds the pressure the intercoolers lose: 2 % of the pressure at the cooler's "
       + "entrance, never less than 2 psi (Brown p.200), which is why its section ratio "
       + "2.3568 is a little above \\(12^{1/3}=2.2894\\).",
@@ -303,7 +303,7 @@ c=\frac{\dot m\,Z\,R_s\,T_1\,(1+f_\mathrm{m})}{m\,\eta_p},\quad m=\frac{n-1}{n}`
       + "ammonia02_full_plant, unit makeupComp) is not.  Brown's real-gas rule is the one "
       + "the engine uses: average the compressibility between the inlet and the discharge, "
       + "taking the discharge temperature from the polytropic equation "
-      + "(Eq 2.68 and p.196; src/postProcessing/sizing/CompressorDesign.cpp:220), and read "
+      + "(Eq 2.68 and p.196; src/postProcessing/sizing/CompressorDesign.cpp:221), and read "
       + "the exponent from the gas's own isentropic path rather than from a handbook "
       + "(Eq 2.76, p.38).  Because the head is linear in Z, the real gas needs "
       + "\\(Z_\\mathrm{avg}\\) times the ideal-gas head at the same exponent: 2.3 % more in "

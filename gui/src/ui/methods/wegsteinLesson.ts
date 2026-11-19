@@ -425,7 +425,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
           + "divides each residual by a characteristic scale — the tear's "
           + "own total flow for a flow entry, the temperature itself for the "
           + "temperature entry, the pressure itself for the pressure entry "
-          + "(Flowsheet.cpp:3805-3824, applied at Flowsheet.cpp:3846).",
+          + "(Flowsheet.cpp:3805-3824, applied at Flowsheet.cpp:3847).",
         eq: String.raw`r_i = \frac{g_i(x) - x_i}{\mathrm{scale}_i}`},
       { step: "The engine's own comment on that scaling names what its "
           + "absence costs, in those words: the latent under-convergence the "

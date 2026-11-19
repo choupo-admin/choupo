@@ -265,14 +265,14 @@ describe("compression: the lesson as data", () => {
   });
   it("every engine citation lands on the line it names", () => {
     const expectAt: { [cite: string]: string } = {
-      "src/postProcessing/sizing/CompressorDesign.cpp:34": "R_kmol",
-      "src/postProcessing/sizing/CompressorDesign.cpp:206": "s.a = std::log(T2s / T1)",
-      "src/postProcessing/sizing/CompressorDesign.cpp:215": "s.etaA =",
-      "src/postProcessing/sizing/CompressorDesign.cpp:217": "s.T2   = T1 * std::pow",
-      "src/postProcessing/sizing/CompressorDesign.cpp:220": "Zavg",
-      "src/postProcessing/sizing/CompressorDesign.cpp:222": "s.head",
-      "src/postProcessing/sizing/CompressorDesign.cpp:223": "s.Wgas",
-      "src/postProcessing/sizing/CompressorDesign.cpp:245": "auto finalP",
+      "src/postProcessing/sizing/CompressorDesign.cpp:35": "R_kmol",
+      "src/postProcessing/sizing/CompressorDesign.cpp:207": "s.a = std::log(T2s / T1)",
+      "src/postProcessing/sizing/CompressorDesign.cpp:216": "s.etaA =",
+      "src/postProcessing/sizing/CompressorDesign.cpp:218": "s.T2   = T1 * std::pow",
+      "src/postProcessing/sizing/CompressorDesign.cpp:221": "Zavg",
+      "src/postProcessing/sizing/CompressorDesign.cpp:223": "s.head",
+      "src/postProcessing/sizing/CompressorDesign.cpp:224": "s.Wgas",
+      "src/postProcessing/sizing/CompressorDesign.cpp:246": "auto finalP",
     };
     const cites = [...text.matchAll(/(src\/[A-Za-z0-9_/]+\.(?:H|cpp)):(\d+)/g)];
     expect(cites.length).toBeGreaterThanOrEqual(8);

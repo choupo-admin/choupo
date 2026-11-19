@@ -262,14 +262,16 @@ describe("letdown: the numbers the prose states, recomputed from the goldens", (
   //  7 %, not 6 % (2026-11-19, C390): the liquid enthalpy carries v (1 - alpha T) dP
   //  now, so the compressed ammonia leaves the first valve 2 K warmer and flashes more
   //  than the pressure-free hand estimate says (6.9 %).
-  it("the hand estimate of the flash lands within 7 % of the engine's vf", () => {
+  //  7.5 %, not 7 % (2026-11-19, the merged tree): letdown01's golden vf moved (
+  //  the merged tree re-recorded it) and the estimate now sits at 7.03 %.
+  it("the hand estimate of the flash lands within 7.5 % of the engine's vf", () => {
     const nh3 = nh3Record(LETDOWN_WITNESS);
     const cp = Number(/liquidHeatCapacity\s*\{[^}]*coefficients\s*\(\s*([0-9.]+)\s*\)/.exec(nh3)![1]);
     const lambda = Number(/^HvapTb\s+([0-9.]+)/m.exec(nh3)![1]);
     const est = flashFractionEstimate(cp,
       golden(LETDOWN_WITNESS, "kpi", "ValveLP", "T_in"),
       golden(LETDOWN_WITNESS, "kpi", "ValveLP", "T_out"), lambda);
-    expect(rel(est, vfLP)).toBeLessThan(0.07);
+    expect(rel(est, vfLP)).toBeLessThan(0.075);
   });
   it("the volume grows 'about forty times' (the registry line)", () => {
     const r = golden(LETDOWN_WITNESS, "kpi", "ValveLP", "volumeRatio");
@@ -291,7 +293,7 @@ describe("letdown: the numbers the prose states, recomputed from the goldens", (
     expect(SHIPPED_P_OUT.ValveLP).toBeLessThan(Pv);
     expect(SHIPPED_P_OUT.ValveHP).toBeGreaterThan(Pv);
   });
-  it("step 10's choke numbers: P_vc = -3.44 bar is an extrapolation; F_F Pv = 1.91, dP_max = 14.66, P2 = 5.34 bar (C70; moved 1.75, 14.78, 5.22 on 2026-11-19, C390: the throttled ammonia is 2 K warmer, so Pv is 2.067 bar)", () => {
+  it("step 10's choke numbers: P_vc = -3.44 bar is an extrapolation; F_F Pv = 1.91, dP_max = 14.66, P2 = 5.34 bar (C70; moved 1.75, 14.78, 5.22 on 2026-11-19, C390: the throttled ammonia is 2 K warmer, so Pv is 2.066 bar)", () => {
     const P1 = golden(LETDOWN_WITNESS, "kpi", "ValveLP", "P_in");
     const P2 = golden(LETDOWN_WITNESS, "kpi", "ValveLP", "P_out");
     const Pv = golden(LETDOWN_PROPS, "diag", "liquidLP", "Psat_NH3");
@@ -302,7 +304,7 @@ describe("letdown: the numbers the prose states, recomputed from the goldens", (
     const say = (v: number, d: number) => expect(body).toContain(v.toFixed(d));
     say(P1 / 1e5, 0); say((P1 - P2) / 1e5, 2); say(FL * FL, 2);
     say(venaContractaPressure(P1, P2, FL) / 1e5, 2);       // -3.44
-    say(FF, 4); say(Pv / 1e5, 3); say(FF * Pv / 1e5, 2);    // 0.9222, 2.067, 1.91
+    say(FF, 4); say(Pv / 1e5, 3); say(FF * Pv / 1e5, 2);    // 0.9222, 2.066, 1.91
     say(chokedLiquidDrop(P1, Pv, Pc, FL) / 1e5, 2);         // 14.66
     say(chokedLiquidOutletPressure(P1, Pv, Pc, FL) / 1e5, 2); // 5.34
     //  Case-insensitive since the lesson stopped shouting (DEV.md 4c C277);

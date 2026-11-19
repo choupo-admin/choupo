@@ -22,7 +22,7 @@
   the per-iteration PHYSICAL residuals — the recycle mass and energy imbalance
   as a fraction of what enters the plant — as convergence curves named
   "Mass balance (global)" and "Energy balance (global)"
-  (src/applications/choupoSolve/main.cpp:317-320).  This module contributes
+  (src/applications/choupoSolve/main.cpp:318-321).  This module contributes
   NOTHING to that plane but the dict overrides that ask for it and arithmetic
   on the engine's own published numbers.  It evaluates no physics.
 
@@ -77,7 +77,7 @@
   (src/unitOperations/flowsheet/Flowsheet.cpp:3741-3750) and divides each
   residual by a characteristic scale
   (src/unitOperations/flowsheet/Flowsheet.cpp:3805-3824, applied at
-  src/unitOperations/flowsheet/Flowsheet.cpp:3846), and its own comment names
+  src/unitOperations/flowsheet/Flowsheet.cpp:3847), and its own comment names
   what the absence of that scaling costs — "the latent under-convergence the
   old Wegstein default also had"
   (src/unitOperations/flowsheet/Flowsheet.cpp:3805-3809).

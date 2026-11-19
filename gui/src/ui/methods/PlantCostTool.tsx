@@ -193,7 +193,7 @@ export function PlantCostTool(): JSX.Element {
             <Text size="xs" c="dimmed" mt={4} data-example-note="">{EXAMPLES[exId].note}</Text>
           ) : null}
           <Text size="xs" c="dimmed" mt={4}>
-            Choupo prints this as its Lang cross-check (default K = 3.63, <code>EconomicsPass.cpp:3086-3087</code>),
+            Choupo prints this as its Lang cross-check (default K = 3.63, <code>EconomicsPass.cpp:3087-3088</code>),
             a reconciliation line that is never fed into its fixed capital.
           </Text>
         </Box>
@@ -416,8 +416,8 @@ export function PlantCostTool(): JSX.Element {
           </Text>
           <Text size="xs" c="dimmed" mt={4}>
             Engine: <code>reports/economics/financing.csv</code> when the case declares <code>financing {"{ }"}</code>
-            (<code>EconomicsPass.cpp:619</code>); draws at the end of each construction year (<code>:1984</code>), the interest on the balance
-            drawn capitalised (<code>:1996</code>), interest paid on the opening balance in operation (<code>:2017</code>).  The page spreads the draws
+            (<code>EconomicsPass.cpp:619</code>); draws at the end of each construction year (<code>:1985</code>), the interest on the balance
+            drawn capitalised (<code>:1997</code>), interest paid on the opening balance in operation (<code>:2018</code>).  The page spreads the draws
             evenly; the engine follows the case&apos;s capital schedule.
           </Text>
         </Box>

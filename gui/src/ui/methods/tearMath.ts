@@ -599,7 +599,7 @@ export function planFindings(log: string | null | undefined): string[] {
 
 /** The engine ANNOUNCING a valid plan: `[plan] material recycle: tear 'x'
  *  cuts A -> B --x--> A`, printed at verbosity 2 and above
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:5243-5244).  A valid recycle
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:5244-5245).  A valid recycle
  *  shows its cut; it is never implicit. */
 export function planAnnouncements(log: string | null | undefined): string[] {
   if (!log) return [];

@@ -160,7 +160,10 @@ describe("the two witnesses — bundled, and one system", () => {
     // The pins that matter to the claim: the components and the activity
     // model's parameters; the column additionally pins the chemistry file
     // its (unused here) aqueous block names.
-    const same = (x: string) => !x.startsWith("chemistry/");
+    //  The reference equations (parameters/Helmholtz/) are pinned by the
+    //  column only: since C390 its liquid enthalpy reads water's IAPWS-95 for
+    //  the v (1 - alpha T) dP leg, an enthalpy the map (a binodal) never asks.
+    const same = (x: string) => !x.startsWith("chemistry/") && !x.startsWith("parameters/Helmholtz/");
     expect(keys.filter(same)).toEqual(pins(col).filter(same));
     expect(records(map)).toEqual(records(col));
     for (const k of records(map))

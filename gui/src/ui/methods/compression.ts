@@ -48,7 +48,7 @@ export const COMPRESSION_UNIT = "compressor1";
 export const COMPRESSION_REAL_WITNESS = "plant/ammonia02_full_plant";
 export const COMPRESSION_REAL_UNIT = "makeupComp";
 
-/** J/(kmol K), the engine's value: src/postProcessing/sizing/CompressorDesign.cpp:34. */
+/** J/(kmol K), the engine's value: src/postProcessing/sizing/CompressorDesign.cpp:35. */
 export const R_KMOL = 8314.462618;
 
 /** The intercooler pressure drop of Brown 2005 p.200: 2 % of the absolute

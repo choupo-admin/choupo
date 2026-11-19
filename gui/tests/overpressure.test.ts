@@ -504,7 +504,7 @@ describe("overpressure (C112 point 3): a liquid chokes at the vena contracta, as
     expect(5e5).toBeGreaterThan(Pv);
     expect(liquidRegime(P1, 5e5, Pv, 0.9)).toBe("cavitation");
   });
-  it("the flow chokes with the outlet still above the vapour pressure: 5.34 against 2.067 bar", () => {
+  it("the flow chokes with the outlet still above the vapour pressure: 5.34 against 2.066 bar", () => {
     const P2ch = chokedLiquidOutletPressure(P1, Pv, Pc, 0.9);
     expect(P2ch).toBeGreaterThan(Pv);
     const t = stepText(10);
