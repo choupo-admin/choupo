@@ -104,6 +104,11 @@ public:
               int verbosity) override;
 
     std::vector<ProcessStream>    producedStreams() const override { return produced_; }
+    //  Only the particulate flag is stated (C445): the unit dries a granular
+    //  solid but carries no size distribution, so its acceptance stays
+    //  undeclared in every other respect.
+    UnitAcceptance acceptance() const override
+    { UnitAcceptance a; a.particulateSolids = true; return a; }
     std::map<std::string, scalar> kpis()            const override { return kpis_; }
     std::optional<UnitProfile>    profile()         const override { return profile_; }
 

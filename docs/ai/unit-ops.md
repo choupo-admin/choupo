@@ -3216,7 +3216,7 @@ vessel takes a step.
 A stirred vessel whose SHAFT POWER is computed and enters the energy balance (C421 (7), R7-R10;
 Theory Guide `sec:agitated-vessel`).  One liquid in, one out, mixed; no reaction.  The power
 belongs to the UNIT (not the `stirredTank` sizer, which runs after the pass): it publishes
-`W_shaft_kW`, an energy item of kind Work exactly as a pump's, and leaves as heat in the
+`W_shaft_kW`, an energy item of kind Work exactly as a pump's (and, as a pump's, BILLED as grid electricity in the utility report, C445), and leaves as heat in the
 contents (`thermalMode isothermal`, default: `T_out = T_in`, the jacket's duty `Q_kW = -W` is
 published; `adiabatic`: the outlet warms).  Who owns what: the FLUID's flow curve is the property
 dictionary's (Newtonian by absence); the impeller's `k_s` (with its stated uncertainty) and `K_p`

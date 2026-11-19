@@ -200,6 +200,7 @@ UnitAcceptance Crystalliser::acceptance() const
 {
     UnitAcceptance a;
     a.declared = true;
+    a.particulateSolids = true;     // it MAKES the particles
     a.appliesTo = UnitAcceptance::Scope::combinedFeed;
     a.carried.declared = true;
     a.carried.kinds    = {};

@@ -487,7 +487,15 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
             auto kf = [&kmap](const char* key) -> const scalar* {
                 auto it = kmap.find(key); return it == kmap.end() ? nullptr : &it->second; };
 
-            if (ty == "pump" || ty == "compressor")        // electric-motor consumer
+            //  BILLED ON WHAT THE UNIT PUBLISHES, NOT ON ITS TYPE NAME (C445
+            //  (1a)): any unit that publishes a positive `W_shaft` -- an
+            //  energy item of kind Work, work ADDED to the fluid (reporting/
+            //  EnergyItems.H) -- is a motor load: pump, compressor, agitated
+            //  vessel.  A turbine publishes it NEGATIVE (work extracted), so
+            //  the `> 1 W` test below is what keeps it off the bill; it is
+            //  a generator's business (`electricLoad`), credited further down.
+            const scalar* wShaft = kf("W_shaft");
+            if (wShaft && *wShaft > 1.0)                    // electric-motor consumer
             {
                 if (workCoupled.count(unit)) continue;      // mechanically wire-coupled
                 auto w = kf("W_shaft");
