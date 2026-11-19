@@ -3347,6 +3347,26 @@ absent, nothing changes.  Witness `ignition01_h2o2_rop`
 (`bin/curate/check_rate_of_production.py`); Theory Guide, "Rates of production
 of a reaction mechanism".
 
+**Element path flux (`pathFlux`, phase 2, same block).**
+```
+rateOfProduction { times ( 3.0e-6 7.0e-6 1.5e-5 ); top 5; pathFlux ( H O ); }
+```
+At each reported instant, for each listed element and reaction, the atoms of the
+element go from each reactant A to each product B at
+`f_AB = |r_j| V (nu' a)_A (nu'' a)_B / N_ej` [kmol atoms/s], `N_ej` the atoms of the
+element on one side of the step; a reverse-dominated step (`r_j < 0`) runs from
+products to reactants.  Summed over reactions and netted per pair, the run prints
+per element the `top` largest net paths (from -> to, value, share of the element's
+throughput, leading reaction), appends `pathFlux.csv` (`t_s, element, from, to,
+reaction, flux_kmol_atoms_s`; per-reaction rows plus a `NET` row per pair) and writes
+`pathFlux_<element>_<t>.dot` (Graphviz, plain text, `dot -Tpng` renders it).  The
+split is read from the stoichiometry entries: `nu < 0` reactant, `nu > 0` product; a
+species on both sides of one step must be listed as two entries (one entry carries
+only its net).  Refused by name: an element in no species, an entry with `nu = 0`, a
+species with no elemental composition, a step that does not conserve the element.
+Identity held by the gate: atoms in minus atoms out of species i = a_ei * net_i.
+Theory Guide `sec:path-flux`.
+
 ### `fixedBedAdsorber`
 One-dimensional isothermal adsorption with conservative finite volumes,
 axial dispersion and declared LDF kinetics.  `flowModel ergun` activates the

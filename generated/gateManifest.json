@@ -1838,8 +1838,8 @@
     },
     "check_rate_of_production": {
       "exit": 0,
-      "claim": "check_rate_of_production: OK -- the rates of production of the O Conaire H2/O2 mechanism at 3 instants of the ignition equal the integrator's own dn_i/dt term by term (worst 0.0e+00 of the largest term, tol 1e-10); atoms H, O, N are conserved by the nets (worst 5.4e-17); the key changes nothing when absent (trajectory byte-identical); the printed table is the matrix; two misuses are refused by name; dropping the third-body columns is seen (1.3e+00)",
-      "seconds": 1.2
+      "claim": "check_rate_of_production: OK -- the rates of production of the O Conaire H2/O2 mechanism at 3 instants of the ignition equal the integrator's own dn_i/dt term by term (worst 0.0e+00 of the largest term, tol 1e-10); atoms H, O, N are conserved by the nets (worst 5.4e-17); the key changes nothing when absent (trajectory byte-identical); the printed table is the matrix; two misuses are refused by name; dropping the third-body columns is seen (1.3e+00).  Element path flux of H and O: the NET rows are the per-reaction rows rebuilt (0e+00); inflow - outflow of atoms at every species equals a_ei net_i to 2.9e-16 of the gross flux; each reaction's fluxes sum to |r_j| V N_ej (1.7e-16); 6 .dot files parse and carry the 75 NET pairs; three misuses are refused by name; dropping 1/N_ej is seen (6.8e-01)",
+      "seconds": 3.1
     }
   }
 }

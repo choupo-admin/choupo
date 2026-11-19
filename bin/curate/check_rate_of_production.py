@@ -403,7 +403,7 @@ def main():
 
         # (k) refusals by name
         for label, path, old, new, words in (
-            ("an element in no species", "system/flowsheetDict", "pathFlux ( H O );", "pathFlux ( H Xx );", ("bomb", "Xx")),
+            ("an element in no species", "system/flowsheetDict", "pathFlux ( H O );                    //", "pathFlux ( H Xx );                   //", ("bomb", "Xx")),
             ("a stoichiometry entry with nu = 0", "constant/reactions",
              "{ component H;      nu -1;  order 1; }\n        { component O;      nu  1;  order 0; }",
              "{ component H;      nu -1;  order 1; }\n        { component N2;     nu  0;  order 0; }\n"

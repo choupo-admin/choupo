@@ -35850,11 +35850,92 @@ key in the block are refused by name.  The report reads the state and does not
 change it: a case without the block runs byte-identically.  It applies to the
 vessel's own reactions --- power-law, CHEMKIN and factory laws alike, since all
 go through the one rate function.  It is a snapshot per instant, not a time
-integral; path fluxes and sensitivities are separate tools.  The quantities are
+integral; element path fluxes are the next subsection, sensitivities a separate tool.  The quantities are
 plain kinetic bookkeeping of the species balance (no correlation, no fitted
 parameter, so no in-sample statement applies); the implementation is
 \texttt{BatchReactor::reportRatesOfProduction\_}.  Witness:
 \texttt{ignition01\_h2o2\_rop}.
+
+\subsection{Element path flux}\label{sec:path-flux}
+
+The rates of production say which reactions make a species; they do not say where
+an atom \emph{goes}.  The question a kineticist asks next --- ``the H in the water
+at the end, which species carried it, and through which steps?'' --- is answered by
+following one element through the mechanism.  The definition below is the one
+Choupo uses; it is derived from atom conservation alone and needs nothing beyond
+the stoichiometry and the rates of Section~\ref{sec:rates-of-production}.  The
+\texttt{batchReactor} reports it when the block lists the elements,
+
+\begin{verbatim}
+rateOfProduction { times ( 3.0e-6 7.0e-6 1.5e-5 ); top 5; pathFlux ( H O ); }
+\end{verbatim}
+
+\paragraph{Definition.}  Write reaction $j$ with reactant coefficients
+$\nu'_{Aj}>0$ and product coefficients $\nu''_{Bj}>0$ ($\nu_{ij}=\nu''_{ij}-\nu'_{ij}$,
+the dictionary's signed entry: $\nu<0$ is a reactant, $\nu>0$ a product), and let
+$a_{eA}$ be the atoms of element $e$ in species $A$.  One turnover of the step moves
+\begin{equation}\label{eq:pf-N}
+N_{ej} \;=\; \sum_{A\in\text{reactants}} \nu'_{Aj}\,a_{eA}
+        \;=\; \sum_{B\in\text{products}} \nu''_{Bj}\,a_{eB}
+\end{equation}
+atoms of $e$ from the reactant side to the product side (equal, because every
+reaction is atom-balanced; a reaction for which the two sums differ is refused by
+name, since $N_{ej}$ would not be defined).  Each atom leaving $A$ is taken to land
+on a product in proportion to the atoms of $e$ that product takes, so the flux from
+reactant $A$ to product $B$ is
+\begin{equation}\label{eq:pf-flux}
+f^{(e,j)}_{AB} \;=\; |r_j|\,V\,\frac{\nu'_{Aj}\,a_{eA}\;\nu''_{Bj}\,a_{eB}}{N_{ej}}
+\qquad [\mathrm{kmol\ atoms\,s^{-1}}] .
+\end{equation}
+A reaction running backwards ($r_j<0$) is the same step with the roles of the sides
+exchanged: the products are the donors and the reactants the sinks, with the same
+magnitude, so the arrow runs from $B$ to $A$.  Summing over reactions, the net
+species-to-species flux is
+\begin{equation}\label{eq:pf-net}
+F^{e}_{AB} \;=\; \sum_j \bigl(f^{(e,j)}_{A\to B} - f^{(e,j)}_{B\to A}\bigr),
+\end{equation}
+where $f_{A\to B}$ is the flux of Eq.~\eqref{eq:pf-flux} directed by the sign of
+$r_j$; the report keeps the direction in which $F^e_{AB}>0$.  A species that stands
+on both sides of a step has its two halves as separate dictionary entries and the
+flux between them (a self-loop) moves no atom between species; it is written to the
+per-reaction rows and left out of the net.
+
+\paragraph{The identity that holds it.}  Summing Eq.~\eqref{eq:pf-flux} over the
+products gives $\sum_B f_{AB}^{(e,j)}=|r_j|V\nu'_{Aj}a_{eA}$, what the step takes
+out of $A$, and over the reactants $\sum_A f_{AB}^{(e,j)}=|r_j|V\nu''_{Bj}a_{eB}$,
+what it puts into $B$ (Eq.~\eqref{eq:pf-N} cancels $N_{ej}$).  Therefore, for every
+species $i$ and element $e$,
+\begin{equation}\label{eq:pf-identity}
+\sum_B F^e_{B\to i} - \sum_B F^e_{i\to B} \;=\; a_{ei}\sum_j \nu_{ij}\,r_j V
+\;=\; a_{ei}\,\frac{\mathrm{d}n_i}{\mathrm{d}t},
+\end{equation}
+the atoms arriving at $i$ minus the atoms leaving it equal the atoms its net
+production adds.  It is checked from the two outputs of the same run, the paths and
+the rate matrix, to round-off on the scale of the gross flux through $i$
+(\texttt{bin/curate/check\_rate\_of\_production.py}, which also holds each
+reaction's fluxes to $\sum_{AB}f_{AB}^{(e,j)}=|r_j|VN_{ej}$ and shows that a flux
+without the $1/N_{ej}$ fails it).  A flux built on the \emph{net} stoichiometry
+fails for the reason the dictionary rule above exists: a species that is both
+consumed and produced by one step cancels in $\nu_{ij}$ and its atoms vanish from
+the picture.
+
+\paragraph{Output and validity.}  Per instant and element the run prints the
+\texttt{top} largest net fluxes (from $\to$ to, value, share of the element's total
+net throughput $\sum F^e_{AB}$, and the reaction contributing most to that
+direction) and appends to \texttt{pathFlux.csv} (columns \texttt{t\_s, element,
+from, to, reaction, flux\_kmol\_atoms\_s}) one row per reaction and directed pair
+plus a row with reaction \texttt{NET} per net pair.  One Graphviz file
+\texttt{pathFlux\_<element>\_<t>.dot} per element and instant draws the net paths
+(nodes the species, edge width $\propto 1+\tfrac{4}{6}\log_{10}(F/F_{\max})$, floored,
+label the value and leading reaction); it is plain text, rendered by any Graphviz
+(\texttt{dot -Tpng}).  The proportional split of Eq.~\eqref{eq:pf-flux} is a
+definition, not a measurement of which bond breaks: for a step with several products
+carrying the element it states where atoms go \emph{on average}, which is the
+standard reading of reaction-path diagrams and the only one atom conservation fixes.
+No correlation or fitted parameter enters (no in-sample statement applies), and a
+case without \texttt{pathFlux} runs byte-identically.  Implementation:
+\texttt{BatchReactor::pathSplit\_}, \texttt{BatchReactor::reportPathFlux\_}.
+Witness: \texttt{ignition01\_h2o2\_rop}.
 
 \section{Rayleigh batch distillation}\label{ch:rayleigh}
 
