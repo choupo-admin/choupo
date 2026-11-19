@@ -12765,6 +12765,44 @@ Converges to W\_shaft \textasciitilde{} 9.36 kW (slightly below compressor01's 1
 \end{tutgolden}
 
 \clearpage
+\tutentry{compressor03\_staged\_design}{tutorials/steady/rotating/compressor03\_staged\_design}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (compressor1) at (0.0,-0.0) {\textbf{compressor1}\\[-1pt]{\tiny compressor}};
+  \draw[->] ($(compressor1.west)+(-1.05,0.00)$) -- ($(compressor1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(compressor1.east)+(0,0.00)$) -- ($(compressor1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {out};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Air compressed from 1 bar to 12 bar, DESIGNED as a machine: the chart picks the type, the discharge limit sets the stages, the intercoolers and the motor follow}
+\begin{tutnarrative}
+The flowsheet unit is ONE adiabatic compressor: air at 1 bar and 25 degC, eta\_isentropic 0.75, discharge DECLARED at 12 bar. What the flowsheet cannot say is what machine that is. The postDict's `design \{\}` block asks the detailed design (Brown, Compressors: Selection and Sizing, 3rd ed.): which machine, how many stages, what the intercoolers take away, what the driver must be. See README.md for the hand calculation of one stage.
+
+\end{tutnarrative}
+\tutreadme{Air, 1 bar and 25 degC, 455 kmol/h (11 279 m3/h, 6 639 cfm), to a 12 bar header. The flowsheet unit is one adiabatic pass (eta\_isentropic 0.75): it needs 1 504 kW. The design \{\} block of the postDict asks what machine that really is, following Brown, $\ast$Compressors: Selection and Sizing$\ast$, 3rd ed. (2005).}
+\tutreadme{maxDischargeT 450 K is the case's own limit (the book's 475 F is called arbitrary on p.197): with the book's limit two sections would do. Every other input was not declared and is announced with its page in the run log and on design/compressor1/compressor.}
+\tutreadme{Pressure chain with the cooler drops (2 psi = 0.1379 bar, larger than 2 \% of the cooler inlet pressure): 1 $\to$ 2.3568 bar, cooler to 2.2189; $\to$ 5.2295, cooler to 5.0916; $\to$ 12.000. So r = 2.3568 in every stage.}
+\tutreadme{Constant-gamma air, k = 1.40, so (k-1)/k = 0.2857; eta\_p = 0.75:}
+\tutreadme{(n-1)/n = 0.2857 / 0.75 = 0.38095 (Eq 2.71) T2 = 298.15 $\ast$ 2.3568\textasciicircum{}0.38095 = 298.15 $\ast$ 1.38624 = 413.3 K (Eq 5.16) R\_s = 8314.46 / 28.845 = 288.25 J/(kg K), Z = 1 (ideal-gas package) Hp = 288.25 $\ast$ 298.15 $\ast$ (1/0.38095) $\ast$ (1.38624 - 1) = 87 132 J/kg (Eq 2.73) W\_gas = 3.6457 kg/s $\ast$ 87 132 / 0.75 = 423.5 kW (Eq 2.78) W\_shaft = 423.5 $\ast$ 1.01 = 427.8 kW}
+\tutreadme{The engine prints 412.44 K, 87 036 J/kg and 427.31 kW: it is 0.2 \% lower in temperature and 0.1 \% lower in head and power, because the air's Cp rises with temperature, which the engine's package carries and the constant k = 1.40 does not (stage1\_dhCheck, -0.16 \%, is the same number measured against the package's own enthalpy rise).}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.126388888889}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{out}{F}{0.126388888889}
+\goldrow{stream}{out}{T}{694.782172301}
+\goldrow{kpi}{compressor1}{F}{0.126388888889}
+\goldrow{kpi}{compressor1}{P\_in}{100000}
+\goldrow{kpi}{compressor1}{P\_out}{1200000}
+\goldrow{kpi}{compressor1}{T\_in}{298.15}
+\goldrow{kpi}{compressor1}{T\_out}{694.782172301}
+\goldrow{kpi}{compressor1}{T\_out\_isen}{598.37408103}
+\goldrow{kpi}{compressor1}{W\_isen}{1128238.93054}
+\goldrow{kpi}{compressor1}{W\_isen\_kW}{1128.23893054}
+\goldrow{kpi}{compressor1}{W\_shaft}{1504318.57405}
+\goldrow{kpi}{compressor1}{W\_shaft\_kW}{1504.31857405}
+\goldmore{82}
+\end{tutgolden}
+
+\clearpage
 \tutentry{compressorTurbine01\_turbo\_booster}{tutorials/steady/rotating/compressorTurbine01\_turbo\_booster}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

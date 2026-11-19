@@ -576,6 +576,7 @@ starters to compare against when answering "write me a case for X":
 | Stripper | `stripper01_NH3_water` |
 | Heat exchanger (eps-NTU) | `heatExchanger01_water_water` |
 | Compressor | `compressor01_air` |
+| Compressor, staged and intercooled design | `compressor03_staged_design` |
 | DesignSpec (size area) | `designSpec01_triple_equal_areas` |
 | Triple-effect evaporator | `evaporator02_triple_effect_sugar` |
 | Counter-current evaporator | `evaporator05_counter_current` |

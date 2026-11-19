@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- the compressor's DETAILED DESIGN (DEV.md 4c C440).
+
+  `design {}` switches the power-only sizing to the staged design.  Everything
+  it needs that is not declared here is READ FROM THE SOURCE and announced
+  with its page (Brown 2005): the machine from the application chart (Fig 1-2,
+  p.3), the polytropic efficiency 0.75 and the 1 % mechanical loss of a
+  centrifugal estimate (p.196, p.199), the 2 % / 2 psi intercooler pressure drop
+  (p.200), the motor at 110 % of the greatest power (p.307).
+
+  DECLARED, because the source's limit does not know this process:
+    maxDischargeT 450 K   the plant's own limit on the hot gas after a stage
+                          (the book's 475 F is "arbitrary", p.197); 450 K is
+                          what this teaching case asks, so the design needs three
+                          sections where the book's limit would need two.
+\*---------------------------------------------------------------------------*/
+sizing
+{
+    units
+    (
+        { unitName compressor1;  type compressor;  material SS316;
+          designRules
+          {
+              pressureDesign 17.0;
+              design { maxDischargeT 450.0 K; }
+          } }
+    );
+}

@@ -210,6 +210,38 @@ struct ReliefService
     bool present() const { return !protects.empty(); }
 };
 
+//  WHAT A COMPRESSOR WAS DESIGNED AS (2026-11-19, DEV.md 4c C440 gap 4).  The
+//  `compressor` sizer's detailed route (a `design {}` block in the entry's
+//  designRules) selects a machine, splits the duty into stages with
+//  intercooling and sizes the driver.  Every NUMBER is a `values` entry under
+//  the prefixes below (so the golden `equipment` kind pins it); what is here
+//  are the WORDS a number cannot carry -- which machine, chosen how, by which
+//  chart cell, and which defaulted input came from which page.  Sheet-only,
+//  like `ReliefService`: not emitted in the result JSON.  EMPTY (`present()`
+//  false) on every compressor sized by the power-only route, which is every
+//  compressor that existed before this record.
+struct CompressorService
+{
+    std::string              machine;        // centrifugal | axial | reciprocating | screw
+    std::string              machineBy;      // selected | declared
+    std::string              selection;      // the chart cell, or the declaration, in words
+    std::string              driver;         // electricMotor
+    int                      stages = 0;     // compression stages (sections between intercoolers)
+    int                      intercoolers = 0;
+    std::string              stagesBy;       // limit | declared
+    std::string              limiting;       // what set the stage count
+    //  A defaulted input and the page it was read at, one per input the case
+    //  did not declare.
+    struct Source { std::string key; std::string text; };
+    std::vector<Source>      sources;
+    //  Declared inputs, as KEYS (the `declared` rule of ExchangerService).
+    std::vector<std::string> declared;
+    //  Limits of the method that apply to THIS design, said once.
+    std::vector<std::string> notes;
+
+    bool present() const { return !machine.empty(); }
+};
+
 // Geometric / mechanical sizing of a single piece of equipment, as
 // produced by the SizingPass (vessel diameter, height, wall thickness,
 // heat exchanger area, etc.).  Named `EquipmentSizing` rather than
@@ -406,6 +438,10 @@ struct EquipmentSizing
     //  WHAT A RELIEF DEVICE WAS SIZED FOR (2026-10-11, DEV.md 4c C62; see
     //  `ReliefService` above).  Sheet-only.
     ReliefService                                relief;
+
+    //  WHAT A COMPRESSOR WAS DESIGNED AS (2026-11-19, DEV.md 4c C440 gap 4;
+    //  see `CompressorService` above).  Sheet-only.
+    CompressorService                            compressor;
 
     //  AN ITEM OUTSIDE THE COSTING SCOPE, AND WHY (2026-10-11, DEV.md 4c C62).
     //  EMPTY on every item the costing pass prices -- which is every item

@@ -14,6 +14,7 @@
 
 #include "CompressorSize.H"
 #include "MaterialLimits.H"
+#include "CompressorDesign.H"
 #include <stdexcept>
 
 namespace Choupo {
@@ -48,6 +49,11 @@ std::vector<EquipmentSizing> CompressorSize::size(const std::string& unitName,
     //  A published design pressure is compared with the casing material's
     //  rating like every other one (DEV.md 4c C86).
     materialLimits::pressure("compressor '" + d.itemId() + "'", material, P_des);
+    //  THE DETAILED DESIGN (DEV.md 4c C440 gap 4), only when the entry asks for
+    //  it with a `design {}` block: machine, stages with intercooling, driver.
+    //  Without the block this sizer is what it always was.
+    if (designRules->found("design"))
+        compressorDesign::apply(d, unitName, result, designRules->subDict("design"));
     //  ONE ITEM: this unit realises a single piece of equipment, so the
     //  tag is left empty and `itemId()` stays the unit's own name.
     return { d };

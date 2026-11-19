@@ -27266,6 +27266,99 @@ beside the thermodynamic minimum, and the exchanger's specification sheet
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{Compressor design: machine, stages, intercooling, driver}\label{sec:compressor-design}
+
+\begin{whatyoulllearn}
+The flowsheet's \texttt{compressor} is one adiabatic pass.  A machine that
+has to be bought is something else: a type (centrifugal, axial,
+reciprocating, screw), a number of stages with the gas cooled between them,
+a discharge temperature each stage must respect, and a motor.  This section
+is the design the \texttt{sizing} pass makes when the entry carries a
+\texttt{design \{\}} block.  Every correlation is read from Brown,
+\emph{Compressors: Selection and Sizing}, 3rd ed.\ (2005), at the page named;
+a value the book does not give is declared by the case
+\cite{Brown2005}.
+\end{whatyoulllearn}
+
+\subsection{Equations as implemented}
+
+Per stage, from suction state $(T_1,P_1)$ to $P_2$, ratio $r=P_2/P_1$, on the
+case's own package ($\mathrm{MW}$ the mean molecular weight, $R_s=R/\mathrm{MW}$):
+\begin{align}
+a &= \frac{g-1}{g} = \frac{\ln(T_{2s}/T_1)}{\ln r}
+  && \text{Brown Eq.\ 2.76, $T_{2s}$ from the package's entropy solve}\\
+\frac{n-1}{n} &= \frac{a}{\eta_p}
+  && \text{Eq.\ 2.71 (with $g$ for $k$)}\\
+T_2 &= T_1\,r^{(n-1)/n}
+  && \text{Eq.\ 5.16}\\
+H_p &= Z_{\text{avg}}R_sT_1\,\frac{n}{n-1}\left(r^{(n-1)/n}-1\right)
+  && \text{Eq.\ 2.73, } Z_{\text{avg}}=\tfrac12(Z_1+Z_2)\ \text{(Eq.\ 2.68)}\\
+\dot W_{\text{gas}} &= \dot m\,H_p/\eta_p, \qquad
+\dot W_{\text{shaft}} = \dot W_{\text{gas}}\,(1+f_{\text{mech}})
+  && \text{Eq.\ 2.78; the book adds the loss, here $f_{\text{mech}}$ is a fraction of the gas power}
+\end{align}
+$Z=P\,\mathrm{MW}/(\rho R T)$ with $\rho$ the package's vapour density: no
+second property route.  A source that states an \emph{adiabatic} efficiency
+$\eta_a$ (reciprocating, axial, screw) is converted to $\eta_p$ by solving
+$\eta_a=(r^{a}-1)/(r^{a/\eta_p}-1)$, which follows from Eqs.\ 2.66 and 2.73.
+Each stage prints \texttt{dhCheck}, the gas power of Eq.\ 2.78 against the
+package's own enthalpy rise for the same stage, so the averaged-$Z$
+arithmetic is checked, not trusted.
+
+\paragraph{Stages and intercooling.}  Stages have equal ratios (Eq.\ 3.17,
+$r_{\text{stage}}=r_{\text{overall}}^{1/n}$) corrected for the intercooler
+pressure drop, $\max(2\,\%P,\ 2\ \text{psi})$ at the cooler entrance
+(p.~200); the gas returns to the machine's inlet temperature (Fig.\ 2-2 and
+Example 2-4, p.~47--50) unless \texttt{intercoolTemperature} is declared.  The
+number of stages is the smallest $n$ whose hottest discharge is within
+\texttt{maxDischargeT} and whose ratio is within \texttt{maxRatioPerStage}.
+The intercooler duty is
+$F\,[H(T_{2},P_e)-H(T_{\text{cool}},P_e-\Delta P)]$.
+
+\paragraph{The machine.}  Brown's Fig.\ 1-2 (p.~3) gives the application range
+of each type in inlet volume flow (cfm) and overall pressure ratio.  The
+regions were read off the figure to about $\pm3\,\%$ of each edge: centrifugal
+$10^3$--$10^4$ cfm with the upper ratio edge sloping from 20 to 13.8 (straight on the log axes); axial $10^4$--$10^6$ cfm, $r\le16.4$ falling to 12.5; rotary
+(screw) 126--2150 cfm, $r\le12.4$; reciprocating 100--1000 cfm, $r\le101$.
+Where several contain the point the order is centrifugal, axial, screw,
+reciprocating (a tie-break the book does not give); a point outside every
+region takes the reciprocating machine (p.~5) and says so.  \texttt{machine}
+overrides the choice.
+
+\begin{center}\small
+\begin{tabular}{llll}
+\hline
+machine & default efficiency & discharge limit & source\\
+\hline
+centrifugal & $\eta_p=0.75$, 1\,\% mech.\ loss & 475\,F (519.3 K) & p.~196--197, 199\\
+reciprocating & $\eta_a(r)$ curve, 73--85\,\% & 300\,F (422.0 K) & Fig.\ 3-6 p.~66; p.~71\\
+axial & $\eta_a=0.85$ & declared & p.~278, 285\\
+screw & $\eta_a=0.75$; $r\le4.06$ per stage & declared & Fig.\ 4-7 p.~135; p.~8\\
+\hline
+\end{tabular}
+\end{center}
+Centrifugal sections carry $H_p/H_{\text{imp}}$ impellers, $H_{\text{imp}}=10\,000$
+ft\,lbf/lb at molecular weight 29, 100 less per unit above and 200 more per
+unit below (p.~196), at most eight per casing (p.~197); axial sections carry
+$z=H_p/(\mu u_m^2)$ blade rows with $\mu=0.29$, $u_m=720$ ft/s (Eq.\ 6.15).
+
+\paragraph{The driver.}  An electric motor at $1.10\times$ the greatest shaft
+power (API, Brown p.~307), \texttt{driverRating}; the electrical input only if
+\texttt{motorEfficiency} is declared.
+
+\subsection{Validity and what is not done}
+The compressor unit of the flowsheet is ONE adiabatic pass; its $W_{\text{shaft}}$
+(\texttt{powerUnitSinglePass}) stays the size the costing reads, and the staged
+power is printed beside it.  The intercoolers are listed with their duties and
+are not separate exchanger items of the plant.  The gas is priced as a vapour at
+every stage (no condensation between stages is tested).  Not done: the
+centrifugal efficiency-versus-flow-coefficient chart (Fig.\ 5-27), frame and
+speed selection, the axial hub/tip check, the reciprocating gas-gravity and
+low-pressure multipliers (Tables 3-1, 3-2), standard motor sizes, surge and
+turndown.  The witness is \file{tutorials/steady/rotating/compressor03\_staged\_design},
+whose README repeats one stage by hand.
+
+% ---------------------------------------------------------------------
 \section{Pipe pressure drop: Darcy--Weisbach and the friction
 factor}\label{ch:hydraulics-pressure}
 
@@ -34537,6 +34630,12 @@ causes of nonideality in chromatography'', \emph{Chem.\ Eng.\ Sci.}\
 chromatogram employing two liquid phases'', \emph{Biochem.\ J.}\ \textbf{35}
 (1941) 1358--1368, doi:10.1042/bj0351358: the plate theory, Eq.~(1) and the
 tail areas at $t=1,2,3$ (pp.~1360--1362).
+
+\bibitem{Brown2005} Brown, R. N., \emph{Compressors: Selection and Sizing},
+3rd ed., Gulf Professional Publishing, 2005.  Chapter~2 (Eqs.\ 2.64--2.78: head,
+polytropic exponent, real-gas exponent), Fig.~1-2 (machine ranges), the
+centrifugal procedure of Chapter~5 and the axial one of Chapter~6, and the
+motor margin of Chapter~7, read at the pages named in the section.
 
 \bibitem{Weisbach1845} Weisbach, J., \emph{Lehrbuch der Ingenieur- und
 Maschinen-Mechanik}, Vol.~1, Braunschweig, 1845; and Darcy, H.,
