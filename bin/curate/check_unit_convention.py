@@ -44,9 +44,22 @@ ARMS.
       economics01's NPV must be the same with projectLife/depreciableLife
       bare and written `yr`; twice the life must move it.
 
-WHAT IT DOES NOT CHECK.  The remaining trap families of the sweep (they are
-the rest of C454, one family per slice); whether `bar` is the RIGHT working
-unit (it is the corpus convention, kept so no golden moves).
+  (f) THE SECOND SLICE (families 5, 8, 9, 10, 11, 12, 13): seven real cases
+      (PROBES) run with the key bare, written in its working unit's word, and
+      bare with another number.  Bare and declared give every number of the
+      result to 1e-12; the other number must move one.  `TminC 273.15 K;` is
+      `TminC 0;` (degC) -- the affine `0 C` of the old read was 273.15 degC.
+  (g) gibbsReactor `Q` (family 18): a POWER (`Q 5 kW;`) is refused by its
+      dimensions; it ran as 5 J/mol.
+  Source arm (a) also holds FILE_SCOPED_KEYS (names too common to hold
+  tree-wide: `m`, `from`, `to`, `Q`, `maxAAD`) and the degC bounds.
+
+WHAT IT DOES NOT CHECK.  Whether `bar` is the RIGHT working unit (it is the
+corpus convention, kept so no golden moves); keys read in the files this table
+does not name (a new reader of `m` elsewhere is not seen); family 17 and the
+bare conventions of P_max/phiL/wtAlcohol/fromMolality/maxAAD have no behaviour
+probe (no shipped case writes them where a result number reads them), only the
+source arm.
 """
 import json
 import os
@@ -63,13 +76,38 @@ import case_records                                      # noqa: E402
 
 ROOT = HERE.parents[1]
 BIN = ROOT / "build" / "linux64Gcc" / "choupoSolve"
+BIN_PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
 LABEL = "check_unit_convention"
 
 #  Configuration, not a waiver: the keys whose bare number is in a working
 #  unit, and that unit (docs/ai/dict-syntax.md lists the same keys).
 WORKING_UNIT_KEYS = {"Pc": "bar", "pressureDesign": "bar",
                      "projectLife": "yr", "depreciableLife": "yr",
-                     "constructionPeriod": "yr", "operatorAnnualHours": "h"}
+                     "constructionPeriod": "yr", "operatorAnnualHours": "h",
+                     #  the families of the second C454 slice (units.md 5, 7-15)
+                     "chargeDensity": "mol/m3", "P_max": "bar",
+                     "wheelSpeed": "rpm", "totalMolality": "mol/kg",
+                     "fromMolality": "mol/kg", "toMolality": "mol/kg",
+                     "phiL": "cal/mol", "spaceVelocity": "1/h",
+                     "baffleCutPercent": "percent", "targetSize": "um",
+                     "wtAlcohol": "percent"}
+
+#  A key whose NAME is too common to hold tree-wide (`m` is also UNIFAC's group
+#  count, `Q` its surface area, `from`/`to` a range in a dozen ops): held in
+#  the files that read it as the working unit, and only there.
+FILE_SCOPED_KEYS = {
+    "src/propertyOps/PitzerActivity.cpp":      {"m": "mol/kg", "from": "mol/kg", "to": "mol/kg"},
+    "src/propertyOps/FreezingPoint.cpp":       {"m": "mol/kg", "from": "mol/kg", "to": "mol/kg"},
+    "src/propertyOps/ENRTLMixedSolventOp.cpp": {"m": "mol/kg"},
+    "src/thermo/ThermoPackageBuilder.cpp":     {"maxAAD": "percent"},
+    "src/propertyOps/CatalogueLookup.cpp":     {"maxAAD": "percent"},
+    #  family 18: a WRONG DIMENSION was accepted (`Q -500 kW;` ran as -500 J/mol)
+    "src/unitOperations/reactor/GibbsReactor.cpp": {"Q": "kJ/kmol"},
+}
+
+#  `TminC`/`TmaxC` are degC, an AFFINE working unit lookupScalarIn refuses:
+#  they are read by the one named helper `readCelsius` (family 13).
+CELSIUS_KEYS = ("TminC", "TmaxC")
 
 #  Configuration: keys that are a temperature DIFFERENCE (family 2) -- read
 #  by Dictionary::lookupTemperatureDifference, which refuses an affine word.
@@ -99,6 +137,25 @@ def arm_a():
                 bad.append("%s:%d reads `%s` without lookupScalarIn (bare would be "
                            "%s, a declared unit SI)" % (p.relative_to(ROOT), i, m.group(1),
                                                        WORKING_UNIT_KEYS[m.group(1)]))
+    for rel, keyset in FILE_SCOPED_KEYS.items():
+        p = ROOT / rel
+        if not p.is_file():
+            bad.append("%s: a FILE_SCOPED_KEYS file is gone -- update the table" % rel)
+            continue
+        spat = re.compile(r'lookupScalar(?!In)\w*\(\s*"(' + "|".join(map(re.escape, keyset)) + r')"')
+        for i, line in enumerate(p.read_text(errors="replace").split("\n"), 1):
+            if line.lstrip().startswith("//"):
+                continue
+            m = spat.search(line)
+            if m:
+                bad.append("%s:%d reads `%s` without lookupScalarIn (bare would be %s, "
+                           "a declared unit SI)" % (rel, i, m.group(1), keyset[m.group(1)]))
+    cpat = re.compile(r'lookupScalar\w*\(\s*"(' + "|".join(CELSIUS_KEYS) + r')"')
+    for p in sorted((ROOT / "src").rglob("*.cpp")):
+        for i, line in enumerate(p.read_text(errors="replace").split("\n"), 1):
+            if not line.lstrip().startswith("//") and cpat.search(line):
+                bad.append("%s:%d reads a degC bound without readCelsius (`0 C` would "
+                           "be 273.15 degC)" % (p.relative_to(ROOT), i))
     tpat = re.compile(r'lookupScalar\w*\(\s*"(' + "|".join(TEMPERATURE_DIFFERENCE_KEYS) + r')"')
     for p in sorted((ROOT / "src").rglob("*")):
         if p.suffix not in (".cpp", ".H"):
@@ -115,13 +172,13 @@ def arm_a():
     return len(bad) == 0
 
 
-def run(case, timeout=600):
+def run(case, timeout=600, binary=None):
     """Run the engine on `case`.  A run past `timeout` is a FINDING, not a
     crash: the trap this gate guards can hang a run (projectLife 10 yr read
     as 3.15e8 years walks a cash flow of that many years)."""
     env = dict(os.environ, CHOUPO_HOME=str(ROOT))
     try:
-        p = subprocess.run([str(BIN)], cwd=str(case), capture_output=True,
+        p = subprocess.run([str(binary or BIN)], cwd=str(case), capture_output=True,
                            text=True, timeout=timeout, env=env)
     except subprocess.TimeoutExpired:
         return -9, "the run did not finish in %d s" % timeout, None
@@ -312,6 +369,112 @@ def arm_e(td):
     return npv["bare"]
 
 
+#  The second slice's families (units.md 5, 8, 10, 11, 12, 13, 9): each probe
+#  runs a real case with the key written bare, written in its working unit's
+#  word, and (a sensitivity) bare with another number.  bare == declared to
+#  1e-12 on every number the result carries; the other number must move one.
+#  (case, file, old text, declared text, other text, binary, edits-a-record)
+PROBES = [
+    ("wheelSpeed (family 8)", ROOT / "tutorials/steady/drying/sprayDryer07_design",
+     "system/flowsheetDict", "wheelSpeed       20000;", "wheelSpeed       20000 rpm;",
+     "wheelSpeed       10000;", BIN, False),
+    ("targetSize (family 12)", ROOT / "tutorials/steady/drying/sprayDryer07_design",
+     "system/postDict", "targetSize       40;", "targetSize       40 um;",
+     "targetSize       20;", BIN, False),
+    ("baffleCutPercent (family 11)",
+     ROOT / "tutorials/steady/heat/heatExchanger04_bell_delaware_rating",
+     "system/flowsheetDict", "baffleCutPercent     25;", "baffleCutPercent     25 percent;",
+     "baffleCutPercent     35;", BIN, False),
+    ("spaceVelocity (family 10)",
+     ROOT / "tutorials/steady/economics/economics03_startup_years",
+     "system/postDict", "spaceVelocity 20000;", "spaceVelocity 20000 1/h;",
+     "spaceVelocity 10000;", BIN, False),
+    ("TminC (family 13)", ROOT / "tutorials/props/heat/psychro01_n2_water",
+     "system/propsDict", "TminC            0;", "TminC            273.15 K;",
+     "TminC            10;", BIN_PROPS, False),
+    ("totalMolality (family 9)",
+     ROOT / "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl",
+     "system/propsDict", "totalMolality 4.0;", "totalMolality 4.0 mol/kg;",
+     "totalMolality 3.0;", BIN_PROPS, False),
+    ("chargeDensity (family 5)",
+     ROOT / "tutorials/steady/membranes/membrane10_dspmde_divalent",
+     "constant/assets/NF270_dspmde.dat", "chargeDensity          -5;",
+     "chargeDensity          -5 mol/m3;", "chargeDensity          -10;", BIN, True),
+]
+
+
+def numbers(js, prefix=""):
+    """Every number a result carries, flattened (the whole result, not one KPI)."""
+    out = {}
+    if isinstance(js, dict):
+        for k, v in js.items():
+            out.update(numbers(v, prefix + "/" + str(k)))
+    elif isinstance(js, list):
+        for i, v in enumerate(js):
+            out.update(numbers(v, prefix + "[%d]" % i))
+    elif isinstance(js, (int, float)) and not isinstance(js, bool):
+        out[prefix] = js
+    return out
+
+
+def arm_f(td):
+    done = []
+    for label, case, rel, old, decl, other, binary, record in PROBES:
+        res = {}
+        for name, new in (("bare", None), ("declared", decl), ("other", other)):
+            d = copy_unsealed(case, Path(td) / ("f_%s_%s" % (label.split()[0], name)),
+                              keep_manifest=not record)
+            if record:
+                #  the manifest was dropped to edit a record: the case's held
+                #  copies of catalogue records become undeclared homonyms
+                case_records.declare_homonyms(d)
+            f = d / rel
+            t = f.read_text()
+            if t.count(old) < 1:
+                fails.append("(f) %s: `%s` not in %s -- STALE fixture" % (label, old, rel))
+                break
+            if new:
+                f.write_text(t.replace(old, new))
+            rc, o, js = run(d, timeout=300, binary=binary)
+            if rc != 0 or js is None:
+                fails.append("(f) %s: the %s run failed (exit %d): %s" % (label, name, rc, o[-300:]))
+                break
+            res[name] = numbers(js)
+        else:
+            a, b, c = res["bare"], res["declared"], res["other"]
+            if not a:
+                fails.append("(f) %s: the result carries no numbers -- STALE fixture" % label)
+                continue
+            bad = [k for k in a if k not in b or abs(a[k] - b[k]) > 1e-12 * max(1.0, abs(a[k]))]
+            if bad:
+                fails.append("(f) %s: the declared word moved %d number(s), e.g. %s: %r -> %r"
+                             % (label, len(bad), bad[0], a[bad[0]], b.get(bad[0])))
+                continue
+            if all(k in c and abs(a[k] - c[k]) <= 1e-12 * max(1.0, abs(a[k])) for k in a):
+                fails.append("(f) %s: another number moved nothing -- the comparison proves "
+                             "nothing; choose another witness" % label)
+                continue
+            done.append(label.split()[0])
+    return done
+
+
+def arm_g(td):
+    """gibbsReactor Q (family 18): a POWER is refused by its dimensions."""
+    d = copy_unsealed(APPROACH, Path(td) / "q_kw", keep_manifest=True)
+    f = d / "system" / "flowsheetDict"
+    t = f.read_text()
+    old = "temperatureApproach 10;"
+    if t.count(old) != 1:
+        fails.append("(g) gibbs13 no longer holds `%s` exactly once -- STALE fixture" % old)
+        return False
+    f.write_text(t.replace(old, old + "  Q 5 kW;"))
+    rc, o, _ = run(d)
+    if rc == 0 or "dimension" not in o.lower():
+        fails.append("(g) `Q 5 kW;` on a gibbsReactor was not refused by its dimensions (exit %d)" % rc)
+        return False
+    return True
+
+
 def main():
     if not BIN.is_file():
         print("%s: FAILED -- no engine binary at %s (run `make all`); a check that "
@@ -323,6 +486,8 @@ def main():
         c = arm_c(td)
         d = arm_d(td)
         e = arm_e(td)
+        f = arm_f(td)
+        g = arm_g(td)
     if fails:
         for f in fails:
             print("  " + f)
@@ -337,11 +502,12 @@ def main():
           "lookupTemperatureDifference, and gibbs13 runs identically with "
           "`temperatureApproach 10 K;` and bare while `10 C;` is refused by name; (e) economics01's NPV "
           "is the same with projectLife/depreciableLife bare and written `yr` (twice "
-          "the life moves it).  NOT checked: the other trap families of C454 "
-          "(units.md lists 18; Pc, pressureDesign, temperature differences, adsorbent "
-          "loadings and the economic years are done)."
+          "the life moves it); (f) probes %s run identically bare and written in the "
+          "working unit's word (another number moves them); (g) `Q 5 kW;` on a gibbsReactor "
+          "is refused by its dimensions.  NOT checked: P_max, phiL, wtAlcohol, fromMolality, "
+          "maxAAD have the source arm only (no probe)."
           % (LABEL, " and ".join("`%s` (%s)" % kv for kv in WORKING_UNIT_KEYS.items()),
-             v["bare"], v["pa"], c, "/".join(TEMPERATURE_DIFFERENCE_KEYS)))
+             v["bare"], v["pa"], c, "/".join(TEMPERATURE_DIFFERENCE_KEYS), ", ".join(f)))
     return 0
 
 
