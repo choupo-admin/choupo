@@ -214,7 +214,7 @@ Spec readSpec(const DictPtr& g, const DictPtr& bd, bool benchOverrides)
                 " triangular, rotatedSquare (the rotated-triangular Sm"
                 " equation, Hewitt Eq 6.12, is unreadable in the scan).");
 
-    s.baffleCutPct = bd->lookupScalar("baffleCutPercent");
+    s.baffleCutPct = bd->lookupScalarIn("baffleCutPercent", Dims::dimensionless, "percent");   // bare = per cent (C454 family 11)
     s.bundleShellClearance = bd->lookupScalar("bundleShellClearance", Dims::length);
     s.tubeBaffleClearance  = bd->lookupScalar("tubeBaffleClearance", Dims::length);
     s.shellBaffleClearance = bd->lookupScalar("shellBaffleClearance", Dims::length);
