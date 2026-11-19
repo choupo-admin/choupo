@@ -4782,7 +4782,11 @@ and take away: the curation verdicts, the records and proposals it wrote,
 the comparison with measured data, the decisions it took, every file it
 wrote (to download or draw), the thermo readiness, and one download of
 all of it.  The case's one \textbf{Run workflow} is in the top bar (and
-\code{Ctrl+Enter}); \textbf{F1} opens the theory of what is selected.  A
+\code{Ctrl+Enter}); \textbf{F1} opens the theory of what is selected; in the
+Case tab, F1 on a line of \code{constant/thermoPhysPropDict} opens the Theory
+Guide section of the model or property family that line selects, and a key of
+a \code{propsDict} operation that the engine reported as written but never
+read by the run is drawn struck through (it had no effect on that run).  A
 case that carries both dicts (a fit, then a flowsheet that reads the
 fitted record) opens on its \code{controlDict.application} and switches
 home from the top bar; the record such a fit writes says which unit of

@@ -41,6 +41,7 @@ import {
   patentStart, rankOf, scoresWithWeight, stageProblem, stagesStart, weightedScores,
   leaderAtMultiple, type Criterion, type PatentExample, type Stage, type StageKind,
 } from "./siteProcessPriceMath.js";
+import { rangeLabel, type FactorId } from "./siteProcessPriceRanges.js";
 import { OriginMark } from "./origin.js";
 
 const step = lessonStepper(SITE_PROCESS_PRICE_STEPS);
@@ -52,13 +53,21 @@ const INK = "var(--mantine-color-dimmed)";
 const TEXTC = "var(--mantine-color-text)";
 const COLOURS = ["#1971c2", "#e8590c", "#2f9e44", "#9c36b5", "#f08c00", "#0c8599"];
 
-function Num({ label, value, onChange, unit, step: st = 1, min = 0, w = 120 }: {
+function Num({ label, value, onChange, unit, step: st = 1, min = 0, w = 120, factor }: {
   label: string; value: number; onChange: (v: number) => void; unit?: string;
-  step?: number; min?: number; w?: number;
+  step?: number; min?: number; w?: number; factor?: FactorId;
 }): JSX.Element {
-  return (
+  const input = (
     <NumberInput size="xs" label={label} description={unit} value={value} min={min} step={st} w={w}
       onChange={(v) => { if (typeof v === "number" && Number.isFinite(v)) onChange(v); }} />
+  );
+  if (!factor) return input;
+  //  C212: the cited range of the factor, or the plain statement that none is.
+  return (
+    <Box data-factor={factor}>
+      {input}
+      <Text size="10px" c="dimmed" data-range="">{rangeLabel(factor)}</Text>
+    </Box>
   );
 }
 
@@ -200,9 +209,9 @@ export function SiteProcessPriceTool(): JSX.Element {
                   <Table.Td>
                     <TextInput size="xs" value={c.name} w={230} onChange={(e) => setCrit(j, { name: e.currentTarget.value })} />
                   </Table.Td>
-                  <Table.Td><Num label="" value={c.weight} step={0.5} w={80} onChange={(v) => setCrit(j, { weight: v })} /></Table.Td>
+                  <Table.Td><Num label="" value={c.weight} step={0.5} w={80} factor="siteWeight" onChange={(v) => setCrit(j, { weight: v })} /></Table.Td>
                   {sites.map((_, i) => (
-                    <Table.Td key={i}><Num label="" value={c.scores[i] ?? 0} step={1} w={80} onChange={(v) => setScore(j, i, Math.min(10, v))} /></Table.Td>
+                    <Table.Td key={i}><Num label="" value={c.scores[i] ?? 0} step={1} w={80} factor="siteScore" onChange={(v) => setScore(j, i, Math.min(10, v))} /></Table.Td>
                   ))}
                 </Table.Tr>
               ))}
@@ -306,9 +315,9 @@ export function SiteProcessPriceTool(): JSX.Element {
             </Table.Tbody>
           </PanTable>
           <Group mt={6} gap="md" align="flex-end" wrap="wrap">
-            <Num label="Isolated product" unit="kg" value={ex.productKg} step={0.5} onChange={(v) => setEx((e) => ({ ...e, productKg: v }))} />
-            <Num label="Limiting reactant charged" unit="mol" value={ex.limitingMol} step={1} w={170} onChange={(v) => setEx((e) => ({ ...e, limitingMol: v }))} />
-            <Num label="Molar mass of product" unit="kg per mol" value={ex.productMw} step={0.01} w={170} onChange={(v) => setEx((e) => ({ ...e, productMw: v }))} />
+            <Num label="Isolated product" factor="productKg" unit="kg" value={ex.productKg}step={0.5} onChange={(v) => setEx((e) => ({ ...e, productKg: v }))} />
+            <Num label="Limiting reactant charged" factor="limitingMol"unit="mol" value={ex.limitingMol} step={1} w={170} onChange={(v) => setEx((e) => ({ ...e, limitingMol: v }))} />
+            <Num label="Molar mass of product" factor="productMw"unit="kg per mol" value={ex.productMw} step={0.01} w={170} onChange={(v) => setEx((e) => ({ ...e, productMw: v }))} />
           </Group>
           {basis && (
             <Text size="sm" mt={6} data-basis="">
@@ -324,10 +333,10 @@ export function SiteProcessPriceTool(): JSX.Element {
         <Box data-section="patent-cycle">
           <OriginMark of={["page", "assumption"]} note="times are the example's reaction time and your declared work-up and cleaning; a bookkeeping scale-up" />
           <Group mt={6} gap="md" align="flex-end" wrap="wrap">
-            <Num label="Reaction time" unit="hour" value={ex.reactionH} step={0.5} onChange={(v) => setEx((e) => ({ ...e, reactionH: v }))} />
-            <Num label="Work-up time" unit="hour" value={ex.workupH} step={0.5} onChange={(v) => setEx((e) => ({ ...e, workupH: v }))} />
-            <Num label="Cleaning / turnaround" unit="hour" value={ex.cleaningH} step={0.5} w={160} onChange={(v) => setEx((e) => ({ ...e, cleaningH: v }))} />
-            <Num label="Target batch of product" unit="kg" value={ex.targetKg} step={10} w={170} onChange={(v) => setEx((e) => ({ ...e, targetKg: v }))} />
+            <Num label="Reaction time" factor="reactionH"unit="hour" value={ex.reactionH} step={0.5} onChange={(v) => setEx((e) => ({ ...e, reactionH: v }))} />
+            <Num label="Work-up time" factor="workupH"unit="hour" value={ex.workupH} step={0.5} onChange={(v) => setEx((e) => ({ ...e, workupH: v }))} />
+            <Num label="Cleaning / turnaround" factor="cleaningH"unit="hour" value={ex.cleaningH} step={0.5} w={160} onChange={(v) => setEx((e) => ({ ...e, cleaningH: v }))} />
+            <Num label="Target batch of product" factor="targetKg"unit="kg" value={ex.targetKg} step={10} w={170} onChange={(v) => setEx((e) => ({ ...e, targetKg: v }))} />
           </Group>
           {basis && (
             <Box data-cycle="">
@@ -362,7 +371,7 @@ export function SiteProcessPriceTool(): JSX.Element {
                   <Table.Td><TextInput size="xs" w={190} value={s.name} onChange={(e) => setStage(k, { name: e.currentTarget.value })} /></Table.Td>
                   <Table.Td><NativeSelect size="xs" w={250} value={s.kind} data={KIND_LABELS}
                     onChange={(e) => setStage(k, { kind: e.currentTarget.value as StageKind })} /></Table.Td>
-                  <Table.Td><Num label="" value={s.value} step={s.kind === "fixed" ? 0.1 : 0.01} min={-1e9} w={100} onChange={(v) => setStage(k, { value: v })} /></Table.Td>
+                  <Table.Td><Num label="" value={s.value} step={s.kind === "fixed" ? 0.1 : 0.01} min={-1e9} w={100} factor="stageValue" onChange={(v) => setStage(k, { value: v })} /></Table.Td>
                   <Table.Td>{problems[k] ? <Badge color="red" variant="light">{problems[k]}</Badge> : <Text size="xs" c="dimmed">{s.kind === "fixed" ? "currency per pack" : "as a fraction, 0.2 = 20 %"}</Text>}</Table.Td>
                 </Table.Tr>
               ))}
@@ -375,7 +384,7 @@ export function SiteProcessPriceTool(): JSX.Element {
               onClick={() => setStages((a) => a.slice(0, -1))}>Remove last stage</Button>
           </Group>
           <Group mt={6} gap="md" align="flex-end">
-            <Num label="Shelf price" unit="currency per pack" value={shelf} step={0.5} w={170} onChange={setShelf} />
+            <Num label="Shelf price" factor="shelfPrice"unit="currency per pack" value={shelf} step={0.5} w={170} onChange={setShelf} />
           </Group>
           <PanTable>
             <Table.Thead><Table.Tr><Table.Th>Stage</Table.Th><Table.Th ta="right">Price above, per pack</Table.Th><Table.Th ta="right">Takes, per pack</Table.Th><Table.Th ta="right">Price below, per pack</Table.Th></Table.Tr></Table.Thead>
@@ -400,7 +409,7 @@ export function SiteProcessPriceTool(): JSX.Element {
             against the {f(shelf, 4)} you started from (difference {Math.abs(up.shelf - shelf).toExponential(1)}).
           </Text>
           <Group mt={6} gap="md" align="flex-end">
-            <Num label="Ex-factory price the plant needs" unit="currency per pack" value={exNeed} step={0.5} w={220} onChange={setExNeed} />
+            <Num label="Ex-factory price the plant needs" factor="exNeed"unit="currency per pack" value={exNeed} step={0.5} w={220} onChange={setExNeed} />
           </Group>
           <PanTable>
             <Table.Thead><Table.Tr><Table.Th>Stage (from the plant gate up)</Table.Th><Table.Th ta="right">Price below, per pack</Table.Th><Table.Th ta="right">Adds, per pack</Table.Th><Table.Th ta="right">Price above, per pack</Table.Th></Table.Tr></Table.Thead>
