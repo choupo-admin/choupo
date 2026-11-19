@@ -1321,8 +1321,9 @@ function PsychroTool({ catalogue, componentFiles }: {
             saturation ceiling, the relative-humidity family, the
             adiabatic-saturation lines and, where the transport data allow it,
             the true wet-bulb lines beside them.  Changing the pair is part of
-            the lesson: nitrogen with water gives you the chart you have seen
-            printed, and a pair whose Lewis number is far from one pulls the
+            the lesson: nitrogen with water gives a chart of the printed shape
+            with every humidity ratio about 3.4 % above a printed air chart
+            (pick air to land on it), and a pair whose Lewis number is far from one pulls the
             two families — dashed and dotted — visibly apart.
           </Text>
           {/*  THE NUMBER THAT SEPARATES THE TWO FAMILIES, on screen.  The
@@ -1336,10 +1337,11 @@ function PsychroTool({ catalogue, componentFiles }: {
               For the pair on the chart right now, the engine reports{" "}
               <Text span ff="monospace">Le = {diags["Lewis_last"]!.toFixed(4)}
               </Text>.  Read it against the “Le ≈ 1” of the textbooks: at{" "}
-              {diags["Lewis_last"]!.toFixed(2)} the approximation is worth
-              about {Math.abs(1 - diags["Lewis_last"]!) * 100 < 1
+              {diags["Lewis_last"]!.toFixed(2)} the engine scales the wet-bulb
+              slope by Le^(2/3) (Chilton-Colburn), so the two slopes differ by
+              about {Math.abs(1 - Math.pow(diags["Lewis_last"]!, 2 / 3)) * 100 < 1
                 ? "less than a per cent"
-                : `${(Math.abs(1 - diags["Lewis_last"]!) * 100).toFixed(0)} %`}
+                : `${(Math.abs(1 - Math.pow(diags["Lewis_last"]!, 2 / 3)) * 100).toFixed(1)} %`}
               {" "}— which is the whole distance between the adiabatic-saturation
               family and the true wet-bulb family you are looking at.
             </Text>

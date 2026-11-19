@@ -640,7 +640,7 @@
       "label": "Pinch composite curves",
       "blurb": "Find the pinch and the minimum hot and cold utility.",
       "discipline": "Heat transfer & energy",
-      "teaches": "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the in-view cascade cross-checked against the engine's targets.",
+      "teaches": "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the engine's targets and problem table (problemTable.csv) read back, not recomputed in the page.",
       "origins": [
         "engine",
         "page",
