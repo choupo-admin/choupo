@@ -16,13 +16,30 @@ counted, not listed.
 Every view carries the time it was made (Vitor, 2026-11-19: "no topo põe a
 data e hora para eu não estar sempre a perguntar").
 """
-import csv, html, json, sys
+import csv, html, json, subprocess, sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCAN_ROOTS = ("BACKLOG.tsv",)
 SIZE = {"S": ("horas", "#2f6b4f"), "M": ("um dia", "#9a5b00"), "L": ("vários dias", "#a3332b")}
+
+
+def day_balance(rows, today):
+    """Items closed and opened today, against BACKLOG.tsv as it stood at the
+    last commit before today began (Vitor, 2026-11-18: the backlog must show
+    whether each day closes more than it opens)."""
+    base = subprocess.run(["git", "-C", str(ROOT), "rev-list", "-1", "--before", today + " 00:00",
+                           "HEAD", "--", "BACKLOG.tsv"], capture_output=True, text=True).stdout.strip()
+    if not base:
+        return "hoje: sem registo anterior"
+    old = subprocess.run(["git", "-C", str(ROOT), "show", base + ":BACKLOG.tsv"],
+                         capture_output=True, text=True).stdout.splitlines()
+    before = {r["item"]: r["status"] for r in csv.DictReader(old, delimiter="\t")}
+    live = ("OPEN", "PARTIAL")
+    closed = sum(1 for r in rows if r["status"] not in live and before.get(r["item"]) in live)
+    opened = sum(1 for r in rows if r["status"] in live and before.get(r["item"]) not in live)
+    return f"hoje: {closed} fechados, {opened} abertos"
 
 
 def main():
@@ -35,9 +52,10 @@ def main():
     e = html.escape
     now = datetime.now(timezone.utc)
     stamp = now.astimezone().strftime("%d/%m/%Y %H:%M")
+    day = day_balance(rows, now.astimezone().strftime("%Y-%m-%d"))
     if sys.argv[1].endswith(".json"):
         doc = {"ranks": {r["item"]: [r["rank"], r["why_pt"]] for r in open_},
-               "from": "BACKLOG.tsv", "updated": now.isoformat(timespec="seconds")}
+               "from": "BACKLOG.tsv", "updated": now.isoformat(timespec="seconds"), "day": day}
         Path(sys.argv[1]).write_text(json.dumps(doc, ensure_ascii=False))
         print(f"backlog_view: wrote {sys.argv[1]} (stamped {stamp})")
         return 0
@@ -69,7 +87,7 @@ def main():
             if not lst: return ""
             return (f"\n### {title} ({len(lst)})\n\n| # | | Item | Estado |\n|---|---|---|---|\n"
                     + "\n".join(mdrow(r) for r in lst) + "\n")
-        md = (f"# Backlog do Choupo\n\n**Atualizado: {stamp}**\n\nPor prioridade (valor contra tamanho). ▶ em curso · "
+        md = (f"# Backlog do Choupo\n\n**Atualizado: {stamp}** · {day}\n\nPor prioridade (valor contra tamanho). ▶ em curso · "
               f"🟢 horas · 🟡 um dia · 🔴 vários dias.  \nFeitos {count['DONE']} · parciais "
               f"{count['PARTIAL']} · abertos {count['OPEN']} · largados {count['DROPPED']}.\n"
               + mdtab("Em curso", now) + mdtab("Próximo lote", nxt) + mdtab("Depois", later))
@@ -88,7 +106,7 @@ td{{padding:6px 4px;border-bottom:1px solid #dde3dc;vertical-align:top}} td.k{{w
 .y{{color:#2f6b4f;font-size:12.5px}} .n{{opacity:.7;font-size:12.5px}} .p{{font-size:12px;font-weight:600;white-space:nowrap}} .s{{font-size:11.5px;opacity:.6}}
 </style></head><body>
 <h1>Backlog do Choupo</h1>
-<div class="c"><b>Atualizado: {stamp}</b> · Por prioridade: o valor contra o tamanho. ▶ em curso. Feitos {count['DONE']} · parciais {count['PARTIAL']} · abertos {count['OPEN']} · largados {count['DROPPED']}. Fonte: BACKLOG.tsv.</div>
+<div class="c"><b>Atualizado: {stamp}</b> · {day} · Por prioridade: o valor contra o tamanho. ▶ em curso. Feitos {count['DONE']} · parciais {count['PARTIAL']} · abertos {count['OPEN']} · largados {count['DROPPED']}. Fonte: BACKLOG.tsv.</div>
 {table("Em curso", now)}{table("Próximo lote", nxt)}{table("Depois", later)}
 </body></html>"""
     Path(sys.argv[1]).write_text(page)
