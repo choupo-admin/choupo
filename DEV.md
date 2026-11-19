@@ -4856,6 +4856,19 @@ accepts today, and that is a policy call.
 > each trap family and a Dims kind for temperature differences, then the
 > correlation objects by reach (Rackett, Watson, Schock-Miquel, the
 > heat-transfer citation, one Ergun); no golden may move from the unit work.
+> **C453 EXTENDED and C455 (architect, 2026-11-19, from the cloud's batches I-P,
+> docs/reviews/2026-11-19-edutools-batch-{ij,kl,mn,op}/; all 75 lessons now
+> reviewed, about 80 wrong statements, every one demonstrated).**  C453 takes
+> the four new batches as four more slices.  C455 (ARCHITECTURE): the five
+> classes the sweep found recurring become the machinery that stops them --
+> (1) a gate resolving every file:line citation in lesson PROSE and Tool text
+> against a needle string (EM_CITATIONS generalised); (2) an absence-phrase
+> check a capability commit runs over gui/src/ui/methods (the BURY THE
+> ABSENCE rule at the lesson layer); (3) ban-tests that scan Lesson AND Tool;
+> (4) lesson numbers taken from a witness read from its expected or pinned by
+> a test that reads it; (5) knob ranges from the validity the engine
+> declares.  Each with the real defect it would have caught named in its
+> header (rule 4e).
 
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
