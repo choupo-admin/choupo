@@ -57,7 +57,7 @@ level up.)
 <!-- AUTO-GENERATED below this line by bin/regen-llm-docs. -->
 <!-- Edit the .dat files in data/standards/components/, then re-run. -->
 
-## Components (696 entries)
+## Components (690 entries)
 
 ### Volatile (curated for VLE)
 
@@ -633,11 +633,9 @@ level up.)
 | `C2H5` | 29.062 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `C2O` | 40.021 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `C3H3` | 39.057 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `C3H5` | 41.073 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `C3H7` | 43.089 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `C4H2` | 50.06 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `C4H4` | 52.076 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `C5H5` | 65.095 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `C6H5` | 77.106 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `CaCl2` | 110.98 | nonvolatile | — | — | — | — | — | — | — | — | ν=3 |
 | `calciumNitrate` | 164.086 | nonvolatile | — | — | — | — | — | — | — | — |   |
@@ -647,7 +645,6 @@ level up.)
 | `CH3` | 15.0345 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `CH3CO` | 43.045 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `CH3O` | 31.034 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `CH3O2` | 47.033 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `Cl` | 35.45 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `ClO` | 51.449 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `CN` | 26.018 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
@@ -666,8 +663,6 @@ level up.)
 | `HO2` | 33.0067 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `HOCl` | 52.457 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `HONO` | 47.013 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `HSO` | 49.067 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `HSO3` | 81.065 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `KBr` | 119.002 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `KNO3` | 101.102 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `lacticAcid` | 90.078 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
@@ -676,7 +671,6 @@ level up.)
 | `MgSO4` | 120.37 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `N` | 14.007 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `N2H2` | 30.03 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `N2H3` | 31.038 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `N2H4` | 32.046 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `NaBr` | 102.894 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `NaCl` | 58.44 | nonvolatile | — | — | — | — | — | ✓ | — | — | ν=2 |
