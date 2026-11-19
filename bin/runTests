@@ -3307,6 +3307,19 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/ucv.$$
 
+    # Species-table home gate: the thermoTables home is complete, is what the
+    # report prints, has one home per species, is read only when declared.
+    gate_exec "$ROOT/bin/curate/check_thermo_tables.py" > /tmp/ttg.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "thermo-tables-gate" "$(grep -m1 '^check_thermo_tables: OK' /tmp/ttg.$$ | cut -c1-200)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_thermo_tables.py)\n" "thermo-tables-gate"
+        cat /tmp/ttg.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ttg.$$
+
     # Tree gate (Migration 6): retired data/standards homes must never come
     # back -- neither as src path-builders nor as resurrected directories.
     if gate_exec "$ROOT/bin/curate/check_tree_gate.py" > /tmp/treegate.$$ 2>&1; then
