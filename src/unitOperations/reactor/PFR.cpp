@@ -722,6 +722,15 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     for (std::size_t i = 0; i < n; ++i) F_i[i] = z_in[i] * F_in;
     bool anyConcLaw = false;
     for (std::size_t j = 0; j < R; ++j) if (law[j]->needsConcentration()) anyConcLaw = true;
+    //  The species whose g(T) a detailed-balance law reads: evaluated once per
+    //  right-hand side (all reactions share one Tk) instead of once per law.
+    std::vector<char> gWant;
+    for (std::size_t j = 0; j < R; ++j)
+        if (const sVector* nuLaw = law[j]->gibbsStoichiometry())
+        {
+            if (gWant.empty()) gWant.assign(n, 0);
+            Reaction::markSpecies(gWant, *nuLaw);
+        }
     const scalar V_mol_in = anyConcLaw
         ? feedMolarVolume(thermo, T, P, z_in, vf_in, unitNameOf(dict)) : 0.0;
     const scalar Q   = anyConcLaw ? F_in * V_mol_in : 0.0;
@@ -949,6 +958,8 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
         RateState rs;
         rs.T = Tk; rs.P = Pk; rs.conc = &conc; rs.x = &zz;
         rs.amountPerKmol = 1000.0;                   // the march is in mol
+        const sVector gT = gWant.empty() ? sVector() : Reaction::gibbsVector(thermo, gWant, Tk);
+        rs.gibbs = gT.empty() ? nullptr : &gT;
         for (std::size_t j = 0; j < R; ++j)
         {
             const scalar rj = catFactor * law[j]->netRate(thermo, rs);         // mol/(m^3.s)

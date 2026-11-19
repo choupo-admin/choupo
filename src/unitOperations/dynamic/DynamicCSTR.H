@@ -295,10 +295,14 @@ private:
     void     checkAccepted_(scalar t) const;
 
     // ---- Helpers ----------------------------------------------------
+    //  `g` (optional): g_i(T) from gibbsAt_(T) for the same T, handed to a
+    //  detailed-balance law so each g is evaluated once per evaluation.
     scalar rateOfReaction_(const ReactionSpec& rxn,
                            scalar T,
                            const sVector& n,
-                           scalar V) const;
+                           scalar V,
+                           const sVector* g = nullptr) const;
+    sVector gibbsAt_(scalar T) const;     // empty when no law reads detailed balance
 
     //- Pure-component liquid enthalpy on the ELEMENTS datum [kJ/kmol == J/mol].
     //  The canonical per-species phase leg, so the vessel's stored H, its

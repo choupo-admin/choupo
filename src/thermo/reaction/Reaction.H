@@ -57,6 +57,7 @@ Class
 
 #include "core/Types.H"
 
+#include <cmath>
 #include <cstddef>
 #include <string>
 #include <vector>
@@ -113,6 +114,27 @@ public:
                                 const sVector&       nu,
                                 scalar               T);
 
+    //    (c) the same two, handed g[i] = thermo.comp(i).g_pure_ig(T) already
+    //        evaluated for the call's T (`gibbsVector`).  The arithmetic and its
+    //        order are those of (a) and (b), so the result is bit-identical;
+    //        what changes is that a species' g(T) is evaluated once per
+    //        right-hand-side evaluation instead of once per reaction it
+    //        appears in.  `g` is indexed by GLOBAL component in both forms.
+    static scalar equilibriumKc(const std::vector<std::size_t>& comps,
+                                const sVector&                  nu,
+                                scalar                          T,
+                                const sVector&                  g);
+    static scalar equilibriumKc(const sVector& nu, scalar T, const sVector& g);
+
+    //- g_i(T) for every component with want[i] != 0 (others left 0, never
+    //  read).  The caller owns the vector for one evaluation at ONE T: there
+    //  is deliberately no cache keyed on T inside the package.
+    static sVector gibbsVector(const ThermoPackage&    thermo,
+                               const std::vector<char>& want,
+                               scalar                   T);
+    //- Mark the species a stoichiometry vector (full length) touches.
+    static void markSpecies(std::vector<char>& want, const sVector& nu);
+
     // -- Detailed balance on a LIQUID-basis reactor, refused for sum(nu) != 0
     //    (C131 reactors review, 2026-10-25).  `equilibriumKc` is the IDEAL-GAS
     //    Kc = Kp (P°/R_u T)^Σν in kmol/m3.  The `cstr` and `pfr` form their
@@ -153,6 +175,8 @@ public:
     static Equilibrium equilibrium(const ThermoPackage& thermo,
                                    const sVector&       nu,
                                    scalar               T);
+    //  ... and with g(T) handed in (see (c) above); bit-identical.
+    static Equilibrium equilibrium(const sVector& nu, scalar T, const sVector& g);
 
     // -- The FORWARD reaction order of one stoichiometry entry -------------
     //
@@ -204,6 +228,20 @@ public:
                                  scalar             order,
                                  const std::string& species,
                                  const std::string& who);
+
+    //- The same factor, the two names built ONLY on the refusal path (a hot
+    //  right-hand side must not build a std::string per factor per call).
+    //  `species` and `who` are callables returning the text powerLawFactor
+    //  takes; the arithmetic and the refusal are powerLawFactor's own.
+    template <class SpeciesFn, class WhoFn>
+    static scalar powerLawFactorLazy(scalar c, scalar order,
+                                     SpeciesFn species, WhoFn who)
+    {
+        if (order == 0.0) return 1.0;
+        if (order < 0.0 && !(c > 0.0))
+            return powerLawFactor(c, order, species(), who());   // throws
+        return std::pow(c, order);
+    }
 
     // -- The molecularity a CHEMKIN A is reported for ------------------------
     //
