@@ -200,7 +200,7 @@ Two things a group should read before quoting the tanks:
   factor is invented to close the gap; the run says LOWER BOUND on every
   tank.
 * **The density is the engine's own liquid-property door.** The run prices
-  liquid ammonia at 238 K at 681 kg/m³<!--golden: equipment NH3Storage/tank1 inventory.ProductNH3.rho--> (the tanks'
+  liquid ammonia at 238 K at 684 kg/m³<!--golden: equipment NH3Storage/tank1 inventory.ProductNH3.rho--> (the tanks'
   stored mass divided by their liquid volume). Until the door took over
   (DEV.md 4c C378) the tanks were sized on ~769 kg/m³, about 12 % high against
   the ~684 kg/m³ the literature gives near 238 K, and so about 12 % small;
@@ -255,7 +255,7 @@ Three things to read before quoting the buffer:
   as an *extrapolated comparison*: its pressure factor grows with the wall,
   and a 200 mm wall on a 5.36 m shell (t/R ≈ 0.075) gives F_P ≈ 32 and about
   30 M€ per vessel — nine times the steel. It enters no total. The buffer
-  still more than doubles the fixed capital (41.3 → 102.1<!--golden: kpi economics FCI *1e-6--> M€); the price per
+  still more than doubles the fixed capital (41.3 → 99.5<!--golden: kpi economics FCI *1e-6--> M€); the price per
   kg, the hours, the pressures and the vessel size are the levers.
 * **It is a lower bound.** The *charging compressor* that takes the
   hydrogen from 30 bar to 100 bar is not in the flowsheet: neither it nor
@@ -286,10 +286,10 @@ The storage tanks hold their working level, 21 days of production.
 | item | held | kg |
 |---|---|---|
 | `NH3Storage` (2 tanks) | liquid ammonia | ~24.9<!--golden: equipment NH3Storage/tank1 inventory.mass.total & equipment NH3Storage/tank2 inventory.mass.total *1e-6--> × 10⁶ |
-| `Separator` | liquid + loop gas | ~7 689<!--golden: equipment Separator inventory.mass.total--> |
-| `StorageFlash` | liquid + flash gas | ~11 647<!--golden: equipment StorageFlash inventory.mass.total--> |
+| `Separator` | liquid + loop gas | ~4 878<!--golden: equipment Separator inventory.mass.total--> |
+| `StorageFlash` | liquid + flash gas | ~11 693<!--golden: equipment StorageFlash inventory.mass.total--> |
 | `Converter` | loop gas in the bed voids | ~193<!--golden: equipment Converter inventory.mass.total--> |
-| `LetdownHP` | liquid + let-down gas | ~12 616<!--golden: equipment LetdownHP inventory.mass.total--> |
+| `LetdownHP` | liquid + let-down gas | ~12 676<!--golden: equipment LetdownHP inventory.mass.total--> |
 
 The run prints this table, writes it to `reports/inventory/inventory.csv`
 and puts each item's block on its design sheet. The compressors and the
@@ -330,7 +330,7 @@ a subsidised auction (p. 26).
 
 At these prices **the plant loses money, and that is the finding**: the
 hydrogen alone costs 0.1803 kg H₂/kg NH₃ x 8.0 = 1.44 EUR per kg of ammonia,
-2.7 times what the ammonia sells for (0.530). NPV is -3 243<!--golden: kpi economics NPV *1e-6--> M EUR and there
+2.7 times what the ammonia sells for (0.530). NPV is -3 238<!--golden: kpi economics NPV *1e-6--> M EUR and there
 is no IRR. (The hydrogen price was an assumed 4.50 EUR/kg, the ammonia 1.00
 and the nitrogen 0.05 EUR/kg before 2026-11-13, giving NPV −405 M EUR; those
 figures had no source.)
@@ -338,12 +338,12 @@ figures had no source.)
 **Which tax reading this NPV is.** The plant loses money in every one of its
 15 operating years, and by default the cash flow treats each year's negative
 tax as a credit: it assumes the owner has other taxable profit to set the
-loss against. That credit is worth about **842 MEUR<!--golden: kpi economics taxCreditOnLoss_NPV *1e-6--> of the NPV** (1 656 MEUR<!--golden: kpi economics taxCreditOnLoss *1e-6-->
+loss against. That credit is worth about **841 MEUR<!--golden: kpi economics taxCreditOnLoss_NPV *1e-6--> of the NPV** (1 654 MEUR<!--golden: kpi economics taxCreditOnLoss *1e-6-->
 of tax credited over the 15 years, undiscounted; the run announces it, with
 the KPIs `lossYears`, `taxCreditOnLoss` and `taxCreditOnLoss_NPV`). A
 stand-alone project has no such profit; declare `taxOnLoss none;` in the
 `economics` block for that reading, and the NPV falls by that amount, to
--4 085.5 MEUR<!--golden: kpi economics NPV &- kpi economics taxCreditOnLoss_NPV *1e-6--> (the difference of the two numbers above; a run of a scratch copy of
+-4 079.1 MEUR<!--golden: kpi economics NPV &- kpi economics taxCreditOnLoss_NPV *1e-6--> (the difference of the two numbers above; a run of a scratch copy of
 this case with `taxOnLoss none;` added to the `economics` block printed
 `NPV(i=0.100) = -4085642704 EUR`, `taxCreditOnLoss` 0 and the break-evens
 unchanged, but it was taken BEFORE the 2026-11-19 lote moved this plant and
@@ -353,15 +353,15 @@ has not been repeated). Neither reading carries a loss forward.
 block declares `breakEven { price ( ProductNH3 H2Feed ); }` and the run
 prints, beside the NPV, the price of one stream at which the NPV is zero with
 every other price held (found by pricing the same appraisal again). The
-**minimum selling price of ammonia** is **1.933 EUR/kg<!--golden: kpi economics breakEven_price_ProductNH3-->**, **3.6 times** the
+**minimum selling price of ammonia** is **1.930 EUR/kg<!--golden: kpi economics breakEven_price_ProductNH3-->**, **3.6 times** the
 conventional market price of 0.530 (KPI `breakEven_price_ProductNH3`): that
 is the premium a renewable-ammonia buyer would have to pay for the plant to
 break even at the cited hydrogen cost. The **highest price of hydrogen the
-plant can bear** is **1.770 EUR/kg<!--golden: kpi economics breakEven_price_H2Feed-->**, 22 % of the cited 8.0 and below the
+plant can bear** is **1.780 EUR/kg<!--golden: kpi economics breakEven_price_H2Feed-->**, 22 % of the cited 8.0 and below the
 bottom of ACER's 7-10 EUR/kg range (`breakEven_price_H2Feed`). The first is above the
-cost of making a kilogram (`productionCostPerKg` 1.864<!--golden: kpi economics productionCostPerKg--> EUR/kg, which is COM_d
+cost of making a kilogram (`productionCostPerKg` 1.863<!--golden: kpi economics productionCostPerKg--> EUR/kg, which is COM_d
 over the year's ammonia) because a price that only covered COM_d would leave
-nothing to recover the 149 MEUR<!--golden: kpi economics TCI *1e-6--> of total capital: pre-tax, at the 10 %
+nothing to recover the 146 MEUR<!--golden: kpi economics TCI *1e-6--> of total capital: pre-tax, at the 10 %
 discount rate over 15 years, that capital charge alone adds about 0.07
 EUR/kg. Both numbers inherit every assumption of the case (the other prices,
 the capital, the utility bill that is a lower bound) and say what the plant

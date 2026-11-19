@@ -257,7 +257,7 @@ to make were not at one diameter: three shells at their OWN L/D 1.5 (1.96,
 around the widest of them, 3.00 m, cost 31.44 M EUR -- both figures measure
 the diameters, not the grouping.
 
-The fixed capital at 63.3<!--golden: kpi economics FCI *1e-6--> M EUR (59.1 M EUR at the 2026-11-07 design point) was 61.0 M EUR before C69, with three separate bed shells at
+The fixed capital at 63.2<!--golden: kpi economics FCI *1e-6--> M EUR (59.1 M EUR at the 2026-11-07 design point) was 61.0 M EUR before C69, with three separate bed shells at
 their own L/D 1.5; how it and the NPV compare with the feasibility case, and why, is in the
 generated section below.
 
@@ -298,8 +298,8 @@ on every scenario and governed by the one needing the largest area:
 | RecycleComp | 166 | discharge blocked | gas | 111 703<!--golden: equipment RecycleComp/psv values.blocked_CompRecycle_W--> | 1405<!--golden: equipment RecycleComp/psv values.A_relief--> |
 | CONVERTER/shell | 166 | outlet blocked | gas at 736 K<!--golden: equipment CONVERTER/psv values.blocked_CONVERTER_HotEffluent_T1--> | 161 773<!--golden: equipment CONVERTER/psv values.blocked_CONVERTER_HotEffluent_W--> | 3112<!--golden: equipment CONVERTER/psv values.A_relief--> |
 | Separator | 166 | gas line, liquid line | gas line | 111 798<!--golden: equipment Separator/psv values.blocked_UnreactedGas_W--> | 1385<!--golden: equipment Separator/psv values.A_relief--> |
-| LetdownHP | 21 | gas line, liquid line, fire | liquid line | 49 848<!--golden: equipment LetdownHP/psv values.blocked_LetdownLiquid_W--> | 385<!--golden: equipment LetdownHP/psv values.A_relief--> |
-| StorageFlash | 2 | gas line, liquid line, fire | liquid line | 49 316<!--golden: equipment StorageFlash/psv values.blocked_ProductNH3_W--> | 1216<!--golden: equipment StorageFlash/psv values.A_relief--> |
+| LetdownHP | 21 | gas line, liquid line, fire | liquid line | 49 848<!--golden: equipment LetdownHP/psv values.blocked_LetdownLiquid_W--> | 384<!--golden: equipment LetdownHP/psv values.A_relief--> |
+| StorageFlash | 2 | gas line, liquid line, fire | liquid line | 49 316<!--golden: equipment StorageFlash/psv values.blocked_ProductNH3_W--> | 1213<!--golden: equipment StorageFlash/psv values.A_relief--> |
 
 The fire cases are much smaller (LetdownHP 48<!--golden: equipment LetdownHP/psv values.fire_Q--> kW of fire heat, 187 kg/h<!--golden: equipment LetdownHP/psv values.fire_W--> of
 vapour, 12 mm²<!--golden: equipment LetdownHP/psv values.fire_A-->; StorageFlash 392 kW<!--golden: equipment StorageFlash/psv values.fire_Q-->, 1113 kg/h<!--golden: equipment StorageFlash/psv values.fire_W-->, 489 mm²<!--golden: equipment StorageFlash/psv values.fire_A-->): these drums are
