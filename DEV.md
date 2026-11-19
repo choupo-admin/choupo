@@ -4771,6 +4771,33 @@ accepts today, and that is a policy call.
 > on a tie.  The size column is the measure of difficulty until a slice is
 > measured; rank 0 stays "in progress".  The dispatch follows that order.
 
+> **C450 (Vitor, 2026-11-19, through the cloud session's board, SESSIONS.md:4640:
+> dispersion and film correlations for the fixed-bed adsorber; he put the
+> articles in ~/Choupo-Literature).**  RULED, agreed as written there: axial
+> dispersion (Wakao & Funazkri 1978, Edwards & Richardson 1968, Chung & Wen
+> 1968 for liquids, optionally Gunn 1987), the external film k_f (Wakao &
+> Funazkri 1978, Wilson & Geankoplis 1966) and k_LDF from resistances in
+> series (film + macropore + micropore; Glueckauf 1955, Ruthven 1984), each
+> a correlation OBJECT on the FrictionFactorCorrelation pattern (window,
+> citation, verify anchor), each number read at the article's page.  A
+> declared Dax keeps winning; a correlation fills it only when chosen and is
+> announced as an estimate; the stored basis (Dax = eps D_L) is said where
+> it is declared; the per-term shares of the resistances are published; the
+> breakthrough EduTool gains the comparison.  Built AFTER C451, which fixes
+> the unit traps in the same family.
+> **C451 (architect, 2026-11-19, from the cloud's adsorption double check,
+> docs/reviews/2026-11-19-adsorption-double-check/).**  Weighed, all hold:
+> engine -- loadings read with no dimension (initialLoading, q_max, H_298:
+> `q_max 5 mol/kg;` would run 1000x small), IonExchanger.H documents a CEC
+> unit the code refuses, Dax's superficial basis unstated, Ergun's gas
+> viscosity at the declared T instead of the cell T, the announced
+> thermal-wave velocity omits the adsorbed phase's heat capacity; EduTools --
+> seven wrong statements (counter-current balance counting the solid of
+> every stage, "the solid leaves in equilibrium with the FEED", the
+> Freundlich steepness claim, Langmuir b in two units, the retention-factor
+> caption off by 1/eps with a test pinning it, "about ten digits", V in m3
+> where alpha needs litres).  One slice, before C450.
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
