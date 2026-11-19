@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1893,
+  "cases": 1896,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -22499,6 +22499,21 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/plant/line01_pumped_drum": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash",
+    "pump"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/plant/lithiumBrinePlant": {
    "application": "choupoSolve",
    "thermo": {
@@ -22671,7 +22686,8 @@
   "tutorials/props/compare/compare_activity_etoh_water": {
    "application": "choupoProps",
    "ops": [
-    "propertyScan1D"
+    "propertyScan1D",
+    "series"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -22886,12 +22902,16 @@
   "tutorials/props/curation/curate02_vle_heldout_ethanol_water": {
    "application": "choupoProps",
    "ops": [
-    "fitParameters"
+    "fitParameters",
+    "parity",
+    "propertyScan1D",
+    "series"
    ],
    "thermo": {
     "formulation": "gammaPhi",
     "activityModels": [
-     "NRTL"
+     "NRTL",
+     "ideal"
     ]
    },
    "roles": [],
@@ -23542,7 +23562,8 @@
   "tutorials/props/estimate/estimate_acetone": {
    "application": "choupoProps",
    "ops": [
-    "estimateComponent"
+    "estimateComponent",
+    "table"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -23951,7 +23972,8 @@
   "tutorials/props/kinetics/ammoniaRate01_dyson_simon": {
    "application": "choupoProps",
    "ops": [
-    "rateLawBench"
+    "rateLawBench",
+    "table"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -27067,6 +27089,23 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/flash/flash22_drum_sizing_benzene_toluene": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "unitModels": [
+    "rachfordRice"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/flash/flash_polymer_devolatilisation": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -29573,6 +29612,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/rotating/compressor03_staged_design": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "compressor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/rotating/compressorTurbine01_turbo_booster": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -32020,6 +32073,7 @@
     "tutorials/plant/greenAmmonia03_basicDesign",
     "tutorials/plant/greenAmmoniaPEQ_baseCase",
     "tutorials/plant/hda",
+    "tutorials/plant/line01_pumped_drum",
     "tutorials/plant/lithiumBrinePlant",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/plant/swro01_campoDalias",
@@ -32155,6 +32209,7 @@
     "tutorials/steady/flash/flash20_ethanol_water_pcsaft",
     "tutorials/steady/flash/flash21_brine_co2_pitzer",
     "tutorials/steady/flash/flash21_freeze_concentration",
+    "tutorials/steady/flash/flash22_drum_sizing_benzene_toluene",
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
     "tutorials/steady/flash/leaf01_flash",
@@ -32318,6 +32373,7 @@
     "tutorials/steady/reactors/screen01_methanol_routes",
     "tutorials/steady/rotating/compressor01_air",
     "tutorials/steady/rotating/compressor02_designspec_pout",
+    "tutorials/steady/rotating/compressor03_staged_design",
     "tutorials/steady/rotating/compressorTurbine01_turbo_booster",
     "tutorials/steady/rotating/pump01_water",
     "tutorials/steady/rotating/pump02_pressure_spec",
@@ -32520,6 +32576,7 @@
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
     "tutorials/steady/rotating/compressor01_air",
     "tutorials/steady/rotating/compressor02_designspec_pout",
+    "tutorials/steady/rotating/compressor03_staged_design",
     "tutorials/steady/rotating/compressorTurbine01_turbo_booster"
    ],
    "condenser": [
@@ -32846,6 +32903,7 @@
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
+    "tutorials/plant/line01_pumped_drum",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/absorption/absorption01_CO2_water",
     "tutorials/steady/absorption/extraction01_waterButanol",
@@ -32877,6 +32935,7 @@
     "tutorials/steady/flash/flash20_ethanol_water_pcsaft",
     "tutorials/steady/flash/flash21_brine_co2_pitzer",
     "tutorials/steady/flash/flash21_freeze_concentration",
+    "tutorials/steady/flash/flash22_drum_sizing_benzene_toluene",
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
     "tutorials/steady/flash/leaf01_flash",
@@ -33001,6 +33060,7 @@
    ],
    "pump": [
     "tutorials/plant/aceticAcid02_plant",
+    "tutorials/plant/line01_pumped_drum",
     "tutorials/plant/swro01_campoDalias",
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane21_two_stage_nf_array",
@@ -34024,6 +34084,7 @@
     "data/curation/pairs/triethyleneGlycol-water",
     "data/curation/pairs/vinylAcetate-vinylPropionate",
     "tutorials/batch/still/still02_ethanol_water_azeo",
+    "tutorials/plant/line01_pumped_drum",
     "tutorials/props/compare/evidence01_methanol_water_points",
     "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/curation/curate03_thermoml_fixture_bubble",
@@ -35473,6 +35534,7 @@
     "tutorials/props/compare/evidence01_methanol_water_points",
     "tutorials/props/compare/extractionShortcut01_perry_example15_1",
     "tutorials/props/curation/curate01_water_evidence_partition",
+    "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/curation/curate04_nrtl_methanol_water",
     "tutorials/props/curation/curate05_nrtl_acetone_methanol",
     "tutorials/props/curation/curate06_nrtl_isopropanol_water",
@@ -35636,6 +35698,7 @@
     "tutorials/steady/flash/flash05_ternary_massFlows",
     "tutorials/steady/flash/flash06_sweep_T",
     "tutorials/steady/flash/flash07_gridsweep_TP",
+    "tutorials/steady/flash/flash22_drum_sizing_benzene_toluene",
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
     "tutorials/steady/flash/leaf01_flash",
@@ -35774,6 +35837,7 @@
     "tutorials/steady/reactors/screen01_methanol_routes",
     "tutorials/steady/rotating/compressor01_air",
     "tutorials/steady/rotating/compressor02_designspec_pout",
+    "tutorials/steady/rotating/compressor03_staged_design",
     "tutorials/steady/rotating/compressorTurbine01_turbo_booster",
     "tutorials/steady/rotating/pump01_water",
     "tutorials/steady/rotating/pump02_pressure_spec",
@@ -36889,6 +36953,9 @@
    "mixingRules": [
     "tutorials/props/molecular/mixrules01_natural_gas"
    ],
+   "parity": [
+    "tutorials/props/curation/curate02_vle_heldout_ethanol_water"
+   ],
    "petroleumCuts": [
     "tutorials/props/estimate/petroleumCuts01_riazi_table36_tbp"
    ],
@@ -37827,6 +37894,7 @@
     "tutorials/props/compare/evidence01_methanol_water_points",
     "tutorials/props/compare/lkp02_n2_ch4_ar_112K",
     "tutorials/props/compare/unifacDortmund01_ethanol_water_reduced_pressure",
+    "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/curation/curate04_nrtl_methanol_water",
     "tutorials/props/curation/curate05_nrtl_acetone_methanol",
     "tutorials/props/curation/curate06_nrtl_isopropanol_water",
@@ -37889,6 +37957,8 @@
     "tutorials/props/thermoTest/model4_speciation_scaling"
    ],
    "series": [
+    "tutorials/props/compare/compare_activity_etoh_water",
+    "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/membrane/dspmde02_lab_characterisation_template",
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1"
@@ -37916,6 +37986,8 @@
     "tutorials/props/steam/steam03_if97_region3"
    ],
    "table": [
+    "tutorials/props/estimate/estimate_acetone",
+    "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
     "tutorials/props/membrane/nanofiltran_geraldesAlves2008"
    ],
    "thielePellet": [
