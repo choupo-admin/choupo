@@ -90,9 +90,11 @@ line that names neither a volume nor a flow; a guard written as an
 `if`/`else` rather than a ternary is COUNTED (none today).  thermo/ (the
 kernel itself) is outside its roots; src/propertyOps IS inside them (C402):
 the property layer and names that are not liquid properties are DECLARED
-EXCEPTIONS with their reasons, and the three membrane benches that read a
-film `viscosity`/`density` typed in an op (PoreTransportBench,
-PolarisationIndex, FitParametersMembrane) are pinned DEBT (C435 (4)).
+EXCEPTIONS with their reasons.  The three membrane benches (PoreTransportBench,
+PolarisationIndex, FitParametersMembrane) no longer read a film `viscosity` /
+`density` typed in an op: they ask the door and refuse typed ones (C435 (4),
+paid).  What stays pinned there is FitParametersMembrane's one read of a typed
+neutral-solute `diffusivity` (keyRead 1).
 """
 import re
 import sys
