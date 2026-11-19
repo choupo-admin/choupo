@@ -4798,6 +4798,22 @@ accepts today, and that is a policy call.
 > caption off by 1/eps with a test pinning it, "about ten digits", V in m3
 > where alpha needs litres).  One slice, before C450.
 
+> **AFTER THE BACKLOG AUDIT (architect, 2026-11-19, Vitor: "decide como geres
+> isso tu").**  The four read-only audits found most partial items had landed a
+> first phase and never a second.  RULED, per item, on whether the remainder
+> is worth its cost: CLOSED, remainder not pursued -- C165 (phase 1 answers
+> the request: the student sees why the pore held each ion back; a per-node
+> flux view is a research visualisation no course needs now), C151 (phase 2
+> would re-folder tutorials/props by discipline: churn through ALIASES and
+> dozens of gates for a navigation the Browse tree already gives), C201 (the
+> v0.xx labels left are inside hash-pinned records and built guides, where
+> rewording costs a re-pin of hundreds of cases for no reader).  LANDED: C160
+> phase 0 (the parity study, stranded on a branch since 10-25) -- its later
+> phases stay as the item.  DISPATCHED as small slices: C154 (inactive
+> properties marked, F1 on thermoPhysPropDict keys), C212 (the cited range
+> beside each EduTool factor), C272 (the GUI draws the typical outlines the
+> engine already publishes).  Everything else keeps its rewritten "missing".
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say

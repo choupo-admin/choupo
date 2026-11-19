@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 260 records already exist
+## 1. Why an index, when 261 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 260 design records, **182 state a rejected alternative and 78 do not** —
+- Of 261 design records, **183 state a rejected alternative and 78 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -67,6 +67,7 @@ direction is an error.
 
 | record | kind | alt | status |
 |---|---|---|---|
+| [`parity-with-an-open-reaction-library.md`](../design/parity-with-an-open-reaction-library.md) | STUDY | yes | **STUDY + PROPOSAL, AWAITING Vítor's scope ruling -- 2026-10-25 (DEV.md 4c C160, phase 0; no engine code).**  The inventory of Choupo's thermodynamics, kinetics, reactors and transport measured in the code with `file:line`, a parity matrix against the 3.2 documentation and the 68-example gallery of an open-source (BSD-3) reaction library used ONLY as a curation-time oracle, twelve confirmed gaps, a recommended scope, an architecture with no second home, nine landable phases, and oracle tolerances per problem class with the three error classes (implementation / numerical method / legitimate formulation difference) kept apart.  Headline finding: the CHEMKIN-style rate forms and the stiff integrator live ONLY inside `batchReactor` (constant volume, pressure never computed), so `cstr`/`pfr` cannot reach them -- phase 1 is that extraction.  Rejected: linking the library at run time, vendoring its or GRI-Mech's files, comparing against the library's own data, refitting Choupo polynomials for the comparison, a skip-when-absent oracle gate, 1-D flames.  RESERVED: the scope; the GRI-Mech 3.0 licence reading (its H/O subset ships verbatim in three tutorials) |
 | [`adsorption-isotherms-from-laboratory-data.md`](../design/adsorption-isotherms-from-laboratory-data.md) | ADR | no | **PAGE BUILT AND SOURCE-CHECKED 2026-11-12** -- the `adsorption-isotherms` EduTool fits the linear, Langmuir and Freundlich isotherms to laboratory (c, q) points in TypeScript (a declared departure from the GUI credo's zero-physics rule, badge `page`) because the engine has `henry` and `langmuir` in gas partial pressure only and no Freundlich; section 7 is the source-check table (18 rows, one correction: the Freundlich exponent is written n as the course text writes it); the engine-side liquid-phase isotherm is a proposal, not built |
 | [`batch-adsorption-in-a-stirred-tank.md`](../design/batch-adsorption-in-a-stirred-tank.md) | ADR | no | **PAGE BUILT AND SOURCE-CHECKED 2026-11-12** -- the `batch-adsorption` EduTool answers dose, stages and contact time for a stirred tank on a known isotherm in TypeScript (badge `page`; the engine's batch adsorber is a gas vessel in partial pressure and has no liquid phase and no Freundlich model); section 7 is the source-check table (21 rows against Geankoplis, Seader, Treybal and Ruthven: 14 match, 2 corrected, 3 derived, 2 not from a source), section 8 judges Sh = 2 a poor default for a stirred tank (times one to two orders of magnitude too long) and proposes Treybal's Eq. 11.29, section 9 holds the two derivations; no engine, data or case file changed |
 | [`chromatography-peaks-and-resolution.md`](../design/chromatography-peaks-and-resolution.md) | ADR | no | **PAGE BUILT AND SOURCE-CHECKED 2026-11-12** -- the `chromatography` EduTool: the engine (`choupoBatch`, `fixedBedAdsorber`) runs the linear two-solute pulse of a gas bed, the page carries the closed forms (retention, moments, plate model, van Deemter, resolution, cuts) and its own second-order integration of the overloaded competitive-Langmuir column (liquid chromatography has no engine route); section 7 is the source-check table (30 rows against Wankat, Schmidt-Traub, Nicoud, Ruthven, Seader and the 1941 and 1956 papers: 20 match, 4 differ, 3 derived, 2 not found in hand, 1 engine fact), section 4 measures the engine at 100, 200 and 400 cells and fits the first-order-upwind grid's share of the variance (29 to 33 % at the default), section 6 records three engine findings, reported and not fixed; no engine, data or case file changed |
@@ -414,7 +415,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**78 of 260 records state no rejected alternative.**  For a FORUM or a STUDY
+**78 of 261 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
