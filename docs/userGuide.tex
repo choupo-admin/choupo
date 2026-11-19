@@ -1438,6 +1438,18 @@ announced \code{[held]}, verified against its own hash.
 manifest that pins the record: a catalogue edit is committed with its re-pin,
 and the goldens say which cases moved.
 
+\paragraph{An authorised re-record.}
+\code{bin/choupo-import <case> --authorise-rows <file>} (and
+\code{--seal <case> --to <dir> --authorise-rows <file>}) takes the list of golden
+rows that a ruling lets move in this re-import, one \code{kind unit key} per line
+(the first three fields of a golden row; \code{\#} starts a comment).  The
+sealing transaction still compares the staged run with the whole golden: a row
+that moved and is listed is accepted and printed; every other moved row, and
+every row missing from the run, is refused by name and nothing is installed.
+The importer never edits the golden; the accepted rows are re-recorded by
+\code{bin/runTests --record} as a separate act.  The flag is refused with
+\code{--pin} and \code{--repin}, which read no golden.
+
 \paragraph{What a run does.}
 At start every pin is hashed against the catalogue (\code{changed},
 \code{vanished}, \code{unparseable}); at the end what the run consumed, and the
