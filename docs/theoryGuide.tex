@@ -19214,6 +19214,96 @@ verifies is the numerics against the closed form, not the catalyst.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{The ammonia converter: beds sized on a kinetic rate, one pressure shell}\label{sec:converter-shell}
+
+\begin{whatyoulllearn}
+A converter is sized in two steps that the engine keeps apart.  Each catalyst bed
+gets the volume at which its \emph{kinetic} rate, corrected for diffusion inside
+the pellet, reaches the criterion the designer states; then the beds, with the
+interbed coolers, are stacked into \emph{one} pressure shell at one diameter, and
+the shell's wall is sized once.  This section gives the rate the beds integrate
+(Dyson and Simon's Eq.~19 with the effectiveness factor of their Eq.~39, and the
+one place where the loop's pressure falls outside the paper's table), and says
+what the shell's wall does and does not account for.
+\end{whatyoulllearn}
+
+\subsection{The rate: Eq.~40 is Eq.~19 times the effectiveness factor}
+
+Dyson and Simon \cite{DysonSimon1968} give
+the rate of formation of ammonia on an industrial iron catalyst, per cubic metre
+of catalyst bed, as their Eq.~19: $r_{19}=k_{19}(T)\,[\,K_a^2\,a_{N_2}a_{H_2}^{3/2}/a_{NH_3}
+-a_{NH_3}/a_{H_2}^{3/2}\,]$, with activities on the fugacity coefficients of their
+Eqs.~6--8, $K_a$ from their Eq.~2 and $k_{19}=k_{0}\exp(-E/RT)$.  That is the
+\emph{intrinsic} rate.  The particles of an industrial converter are 6--10~mm and
+the reactant does not reach their centre at full strength; the paper computes the
+effectiveness factor $\xi$ by integrating the pellet balance (the problem of
+Section~\ref{ch:thiele}) and summarises it as a cubic in $T$ and in the conversion
+of nitrogen $\eta$ measured from a reference mixture (3:1 H$_2$/N$_2$, 12.7~\%
+inerts):
+\begin{equation}
+  \xi \;=\; b_0 + b_1 T + b_2 \eta + b_3 T^2 + b_4 \eta^2 + b_5 T^3 + b_6 \eta^3 ,
+  \qquad r_{40} \;=\; \xi\, r_{19},
+  \label{eq:dysonsimon-xi}
+\end{equation}
+their Eq.~39 and the rate they use for converter design.  The constants $b_i$ are
+their Table~I at three pressures (150, 225 and 300~atm), $T$ in kelvin.  Choupo
+writes the law in the case's \texttt{constant/reactions} (\texttt{type expression}),
+every number beside its equation number; both the forward and the reverse leg
+carry $\xi$, so the law's own equilibrium, where they are equal, is Eq.~19's.
+
+\paragraph{Between the tabulated pressures} the table is interpolated linearly and
+the run announces it (a rule of Choupo's, not the paper's).
+
+\paragraph{Below 150~atm.} The green-ammonia loop runs at about 148.9~atm, 1.1~atm
+under Table~I's lowest column, and a declared table is never extrapolated.  The
+paper says (p.~609): ``The effect of pressure on the effectiveness factor is such
+that a higher pressure will cause a lower effectiveness factor.''  So the true
+$\xi$ just below 150~atm is a little \emph{higher} than the 150~atm column.  The
+case therefore reads Table~I at $\max(P,\,150\ \mathrm{atm})$: the 150~atm column
+unchanged, a clamp written in the case (\texttt{Pxi}), announced by the rate law's
+pressure window on every pass.  It under-states $\xi$, hence the rate, and the bed
+sized on it errs on the larger side; by how much is not known, because the paper
+tabulates nothing below 150~atm.  Above 300~atm the table still refuses.
+
+\paragraph{What the correction does not cover.} The bed is a fresh, clean, fully
+reduced bed (the authors say so themselves); $\xi$ was computed for a 3:1 mixture
+whose inerts differ from the loop's, which the authors judged negligible for
+converter design; $\xi$ outside $(0,1]$ is announced and never clamped; and a
+particle outside 6--10~mm is refused.  The law's equilibrium temperature is
+searched only over 500--1000~K, where $\xi>0$ at the beds' conversions, so that
+the sign of forward minus reverse is Eq.~19's.
+
+\subsection{The beds: volume from the criterion}
+
+Each \texttt{pfr} bed integrates $r_{40}$ along its axis with an Ergun pressure
+drop on the declared cross-section; a design specification solves the volumes: bed~1
+to its catalyst-limit outlet temperature, beds~2 and~3 to a 5~K approach to the
+law's own equilibrium, and the converter's one diameter to the smallest at which
+every bed's drop is within its allowable.  A bed sized on the intrinsic rate
+($\xi=1$) is undersized by roughly $1/\xi$; with Eq.~\eqref{eq:dysonsimon-xi} the
+volumes rise accordingly.
+
+\subsection{The shell: one wall, and what it leaves out}
+
+The \texttt{converterShell} sizer stacks the beds and the interbed exchangers of the
+sector into one vertical cylinder at the beds' diameter and walls it once at the
+design pressure with the thin-wall relation of Eq.~\eqref{eq:asme-thickness} on the
+material record's single allowable stress \cite{Turton}.  Three things the sheet states rather
+than hides: the wall is \emph{not} de-rated for the service temperature (the sheet
+publishes \texttt{T\_service}, the hottest state any member's port carries, a lower
+bound on the metal temperature); the material record's own pressure and temperature
+limits are announced when exceeded; and hydrogen attack and nitriding are
+\emph{not} checked, because the engine ships no Nelson curve and no
+hydrogen-service material table, so the suitability of the metal at this hydrogen
+partial pressure and temperature is the designer's to confirm.
+
+\begin{tutoriallink}
+\file{tutorials/plant/greenAmmonia03\_basicDesign} (the beds, the shell and its
+sheet) and \file{tutorials/props/kinetics/ammoniaRate01\_dyson\_simon} (Eq.~39 and
+Table~I on the rate-law bench, with the 148.9~atm point).
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
 \section{Single-effect evaporator: the credo case study}\label{ch:evap-mode2}
 
 \begin{whatyoulllearn}
@@ -34661,6 +34751,9 @@ evaluation of two predictive models'', \emph{Ind.\ Eng.\ Chem.\ Res.}\
 under deep vacuum distillation conditions'', \emph{Chem.\ Eng.\ Trans.}\
 \textbf{69} (2018) 763--768.
 
+\bibitem{DysonSimon1968} Dyson, D. C., \& Simon, J. M., ``A Kinetic Expression with Diffusion
+  Correction for Ammonia Synthesis on Industrial Catalyst,'' \emph{Ind. Eng.
+  Chem. Fundam.} \textbf{7}(4) (1968) 605--610.
 \bibitem{Turton} Turton, R., Bailie, R. C., Whiting, W. B., \& Shaeiwitz,
 J. A., \emph{Analysis, Synthesis, and Design of Chemical Processes},
 4th ed., Prentice Hall, 2012. Source of the Guthrie-style cost
