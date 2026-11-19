@@ -315,3 +315,16 @@ which has no default -- 365 days of methanol (39 724 m³ of tank) at a
 of 762 m³.  The sizer announces no ceiling of its own; a `costing {}` pass
 announces any tank outside 90 to 30 000 m³ as EXTRAPOLATED (half a day of
 methanol, 54 m³, is).
+
+## 9. The nozzle schedule (DEV.md 4c C444)
+
+`nozzleDesign {}` at the end of `system/layoutDict` (this case declares no `lineDesign {}`, so
+it carries its own `nominalSizes`, Perry's Table 10-22) adds a `nozzles {}` block to the ten
+sheets of the placed items.  Process nozzles are sized by the item's own criterion where it
+publishes one, and the rest are listed with the reason (no sized line, no criterion); the
+flange class comes from the SS316 table of Perry's Table 10-42d (p. 10-96) at the item's
+`pressureDesign`.  The vessels and the column shell here are all under the 1.2 m entry limit
+of Towler p. 714 (the lights column shell is 0.34 m), so each shows an inspection opening
+(H1, 4 in, an assumed size) in place of a manway, two on the column shell; each storage tank
+shows a shell and a roof manway of 24 in, its diameter read from the placed footprint, and no
+class, because a tank has no `pressureDesign`.

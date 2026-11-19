@@ -80,6 +80,7 @@ Description
 #include "postProcessing/layout/PlantLayout.H"
 #include "postProcessing/layout/BuildingLayout.H"
 #include "postProcessing/layout/LineSheets.H"
+#include "postProcessing/layout/NozzleSchedule.H"
 #include "io/InternalStateIO.H"
 #include "postProcessing/PostProcessor.H"
 #include "postProcessing/views/RunPublications.H"
@@ -880,6 +881,10 @@ try
         //  THE LINE LIST (DEV.md 4c C207): one sized specification per routed pipe;
         //  absent `lineDesign {}`, nothing is computed and nothing is published.
         lineSheets::evaluate(*layoutDict, res, verbosity);
+        //  THE NOZZLE SCHEDULES (DEV.md 4c C444): the ends of those lines on the
+        //  items, with the flange class and the manways; absent `nozzleDesign {}`,
+        //  nothing is computed and nothing is published.
+        nozzleSchedule::evaluate(*layoutDict, res, verbosity);
         //  THE GMP INTERIOR (DEV.md 4c C97): `building {}`, checked against
         //  the plot plan just checked; absent, an empty record and no output.
         res.building = buildingLayout::evaluate(*layoutDict, res.layout, verbosity);

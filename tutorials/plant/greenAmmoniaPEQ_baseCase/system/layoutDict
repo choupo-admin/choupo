@@ -1136,3 +1136,164 @@ lineDesign
         );
     }
 }
+
+
+/*---------------------------------------------------------------------------*\
+  nozzleDesign -- THE NOZZLE SCHEDULE OF EVERY SIZED ITEM (DEV.md 4c C444).
+  Each item's equipment sheet (design/<unit>/<tag>) gains a `nozzles {}`
+  block: one row per line that ends on the item (N1, N2 ...: service, stream,
+  line, nominal size, flange class and facing, orientation, design pressure and
+  temperature) and one per manway (M1 ..) or inspection opening (H1 ..).  The
+  rows also ride the result's layout block (`nozzle:<item>:<mark>`).
+
+  WHAT IS READ FROM A BOOK AND WHAT IS ASSUMED.  The engine carries no table:
+    * the size is the LINE's (lineDesign above), or the item's own criterion
+      where that asks more (a separator drum's rho v^2 and clearance limits of
+      C318, turned into a nominal size by the same size table); a nozzle that
+      differs from its line is printed as a REDUCER;
+    * the flange class comes from the pressure-temperature table below, read
+      from Perry's Chemical Engineers' Handbook, 9th ed., Table 10-42a (carbon
+      steel, group 1.1) and 10-42c (Type 304) on p. 10-95, and 10-42d (Type
+      316) on p. 10-96, which Perry says it extracted from ASME B16.5-2013 with
+      the publisher's permission; Towler and Sinnott Table 13.5, p. 1030, prints
+      the carbon-steel rows (classes 150 to 1500 identical).  Only classes 150
+      to 1500 are transcribed.  A material with no table here is listed NOT
+      RATED;
+    * the manway rule is Towler and Sinnott's: p. 714 (a column "too small for
+      someone to enter ... say less than 1.2 m"), p. 1062 (the worked column's
+      two 0.6 m access ports); the counts and the inspection-opening size are
+      `assumed`, no book in the folder gives them.
+  NOT MODELLED: nozzle reinforcement (Towler s13.6), the minimum metal
+  temperature of a flange, the standard's flange dimensions, bolting,
+  projection, instrument and drain connections.
+\*---------------------------------------------------------------------------*/
+
+nozzleDesign
+{
+    designTemperature
+    {
+        margin  25;
+        source  "assumed; Towler and Sinnott 2008, section 13.4.2, pp. 980-981, says only 'with due allowance for any uncertainty'";
+        reason  "ASSUMED: no book in the folder gives a number; the nozzle's design temperature is the hottest stream connected to the item plus 25 K (kelvin)";
+    }
+
+    facing
+    {
+        default             RF;
+        ringJointFromClass  1500;
+        source  "Towler and Sinnott 2008, section 13.10.3, p. 1025: the raised-face flange is probably the most commonly used for process equipment; ring-joint flanges for high temperature and high pressure; the class from which a ring joint is taken is assumed";
+        reason  "raised face throughout, a ring joint only at class 1500 or above (ASSUMED threshold: no book in the folder gives one)";
+    }
+
+    flangeRating
+    {
+        source  "Perry's Chemical Engineers' Handbook 9th ed., Table 10-42a, 10-42c (p. 10-95) and 10-42d (p. 10-96), working pressures by classes in psig, extracted from ASME B16.5-2013; carbon steel agrees with Towler and Sinnott Table 13.5, p. 1030";
+        reason  "the pressure-temperature rating of a flange is what fixes its class; the engine carries no table, the case declares the three it needs (carbon steel, Type 304, Type 316); the class is the first column whose working pressure at the first temperature row at or above the design temperature holds the design pressure";
+        tables
+        (
+            {
+                material carbonSteel;  group "group 1.1 (carbon steel, A105 / A350 LF2 / A516 Gr 70)";
+                source "Perry 9th ed., Table 10-42a, p. 10-95";
+                minF -20;
+                classes ( 150 300 600 900 1500 );
+                rows
+                (
+                    { upToF 100;  psig ( 285 740 1480 2220 3705 ); }
+                    { upToF 200;  psig ( 260 680 1360 2035 3395 ); }
+                    { upToF 300;  psig ( 230 655 1310 1965 3270 ); }
+                    { upToF 400;  psig ( 200 635 1265 1900 3170 ); }
+                    { upToF 500;  psig ( 170 605 1205 1810 3015 ); }
+                    { upToF 600;  psig ( 140 570 1135 1705 2840 ); }
+                    { upToF 650;  psig ( 125 550 1100 1650 2745 ); }
+                    { upToF 700;  psig ( 110 530 1060 1590 2655 ); }
+                    { upToF 750;  psig (  95 505 1015 1520 2535 ); }
+                    { upToF 800;  psig (  80 410  825 1235 2055 ); }
+                );
+            }
+            {
+                material SS304;  group "group 2.1 (Type 304 stainless steel)";
+                source "Perry 9th ed., Table 10-42c, p. 10-95";
+                minF -20;
+                classes ( 150 300 600 900 1500 );
+                rows
+                (
+                    { upToF 100;  psig ( 275 720 1440 2160 3600 ); }
+                    { upToF 200;  psig ( 230 600 1200 1800 3000 ); }
+                    { upToF 300;  psig ( 205 540 1075 1615 2690 ); }
+                    { upToF 400;  psig ( 190 495  995 1490 2485 ); }
+                    { upToF 500;  psig ( 170 465  930 1395 2330 ); }
+                    { upToF 600;  psig ( 140 440  885 1325 2210 ); }
+                    { upToF 650;  psig ( 125 430  865 1295 2160 ); }
+                    { upToF 700;  psig ( 110 420  845 1265 2110 ); }
+                    { upToF 750;  psig (  95 415  825 1240 2065 ); }
+                    { upToF 800;  psig (  80 405  810 1215 2030 ); }
+                    { upToF 850;  psig (  65 395  790 1190 1980 ); }
+                    { upToF 900;  psig (  50 390  780 1165 1945 ); }
+                    { upToF 950;  psig (  35 380  765 1145 1910 ); }
+                    { upToF 1000; psig (  20 355  710 1065 1770 ); }
+                );
+            }
+            {
+                material SS316;  group "group 2.2 (Type 316 stainless steel)";
+                source "Perry 9th ed., Table 10-42d, p. 10-96";
+                minF -20;
+                classes ( 150 300 600 900 1500 );
+                rows
+                (
+                    { upToF 100;  psig ( 275 720 1440 2160 3600 ); }
+                    { upToF 200;  psig ( 235 620 1240 1860 3095 ); }
+                    { upToF 300;  psig ( 215 560 1120 1680 2795 ); }
+                    { upToF 400;  psig ( 195 515 1025 1540 2570 ); }
+                    { upToF 500;  psig ( 170 480  955 1435 2390 ); }
+                    { upToF 600;  psig ( 140 450  900 1355 2255 ); }
+                    { upToF 650;  psig ( 125 440  885 1325 2210 ); }
+                    { upToF 700;  psig ( 110 435  870 1305 2170 ); }
+                    { upToF 750;  psig (  95 425  855 1280 2135 ); }
+                    { upToF 800;  psig (  80 420  845 1265 2110 ); }
+                    { upToF 850;  psig (  65 420  835 1250 2090 ); }
+                    { upToF 900;  psig (  50 415  830 1245 2075 ); }
+                    { upToF 950;  psig (  35 385  775 1160 1930 ); }
+                    { upToF 1000; psig (  20 365  725 1090 1820 ); }
+                );
+            }
+        );
+    }
+
+    manway
+    {
+        entryMinDiameter  1.2 m;
+        diameter          0.6 m;
+        nominalSize       24;
+        source  "Towler and Sinnott 2008, section 11.12, p. 714 (a column too small for someone to enter, 'say less than 1.2 m'); p. 1062 (the worked column's access ports, 0.6 m diameter, read as the manway; NPS 24 is the nearest standard size)";
+        reason  "a vessel of 1.2 m or more has a 0.6 m manway so a person can enter; a smaller vessel gets an inspection opening instead";
+        inspection
+        {
+            nominalSize  4;
+            source  "assumed; no book in the folder gives the size of an inspection opening";
+            reason  "ASSUMED: a 4 in opening for a vessel too small to enter, large enough for a lamp and a camera";
+        }
+        openings
+        (
+            {
+                equipment vessel;  where shell;  count 1;
+                source "assumed; Towler p. 1062 gives two for a tall column, none for a drum";
+                reason "ASSUMED: one access opening per vessel, the least that lets the inside be reached";
+            }
+            {
+                equipment storageTank;  where shell;  count 1;
+                source "assumed";
+                reason "ASSUMED: one shell manway low on the tank";
+            }
+            {
+                equipment storageTank;  where roof;  count 1;
+                source "assumed";
+                reason "ASSUMED: one roof manway for entry from above";
+            }
+            {
+                equipment columnShell;  where shell;  count 2;
+                source "Towler and Sinnott 2008, p. 1062: two 0.6 m access ports, one near the bottom and one near the top of the worked column";
+                reason "a column shell gets the worked example's two; a spacing by tray count is not read from a book in the folder (Kister's text has no text layer)";
+            }
+        );
+    }
+}

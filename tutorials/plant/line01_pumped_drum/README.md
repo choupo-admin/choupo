@@ -81,3 +81,14 @@ stress (140 MPa) is, by its own header, an unsourced teaching value; g = 0.4 and
 12.5 % mill under-tolerance are the code's usual values, which no book in the folder
 prints, so the case declares them `assumed`.  The 15000 Pa limit on rho v^2 is likewise
 the author's screening value.
+
+## The nozzle schedule (DEV.md 4c C444)
+
+`nozzleDesign {}` in the same file adds a `nozzles {}` block to the sheets of the pump and
+the drum (`design/pump/ratedMachine`, `design/drum/vessel`).  The drum's three process
+nozzles are the ends of the `pumped`, `liquid` and `vapor` lines (4, 2.5 and 24 in, the
+lines' own sizes), all class 150 raised face at the drum's 3 bar gauge and 399 K (the
+hottest stream, 374 K, plus an assumed 25 K): carbon steel at 399 K = 318 F, in the 400 F
+row of Perry's Table 10-42a, p. 10-95, holds 200 psig at class 150, and 3 bar is 43.5 psig.
+The drum (D 1.85 m, above the 1.2 m entry limit of Towler p. 714) has one 24 in manway.
+Every row prints the sentence that decided it.
