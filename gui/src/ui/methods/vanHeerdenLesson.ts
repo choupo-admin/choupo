@@ -50,9 +50,9 @@ export const VAN_HEERDEN_STEPS: readonly LessonStep[] = [
       + "feed and lands on the monotone law's one root; for a one-reaction "
       + "set the engine also scans the extent equation at the reported "
       + "temperature and announces every root it holds, with its stability "
-      + "(CSTR.cpp:784–795), and the single-reaction path checks "
+      + "(the root audit, CSTR.cpp:898), and the single-reaction path checks "
       + "the declared orders and refuses a law that breaks it "
-      + "(CSTR.cpp:404–415).  Eliminate it, and what is left is one equation in "
+      + "(CSTR.cpp:424–438).  Eliminate it, and what is left is one equation in "
       + "the temperature alone.  Choupo scans that equation and bisects every root it finds.  "
       + "The Van Heerden picture is the same equation split in two, by adding "
       + "and subtracting the outlet's enthalpy at the feed temperature: what "
@@ -279,10 +279,14 @@ R(T) &= F c_p (T - T_\mathrm{in}) + \mathrm{UA}\,(T - T_\mathrm{coolant})
       + "the handles are visible.  Coolant temperature enters the intercept "
       + "only — it slides the line sideways without tilting it.  UA and the "
       + "total flow enter the slope: more area, a better coefficient or a "
-      + "higher throughput all tilt the line steeper, and a steeper line cuts "
-      + "the sigmoid fewer times, which is why a well-cooled reactor can have "
-      + "one steady state where the adiabatic version of the same chemistry "
-      + "has three.",
+      + "higher throughput all tilt the line steeper.  Slope alone does not decide the count: a "
+      + "nearly flat line through the feed point cuts the sigmoid once (hot), "
+      + "a medium one can cut it three times, and a steep one cuts it once "
+      + "(cold), so steepening a flat line can ADD crossings before it "
+      + "removes them.  A strongly cooled reactor can therefore have one "
+      + "steady state where the adiabatic version of the same chemistry has "
+      + "three, but the count cannot be read off the slope alone — read it "
+      + "off the intersections.",
     formula: String.raw`\begin{aligned}
 R(T) &= (F c_p + \mathrm{UA})\, T - (F c_p T_\mathrm{in} + \mathrm{UA}\, T_\mathrm{coolant})\\[6pt]
 \text{slope} &= F c_p + \mathrm{UA} && \text{flow and cooling tilt it}\\
@@ -302,7 +306,8 @@ R(T) &= (F c_p + \mathrm{UA})\, T - (F c_p T_\mathrm{in} + \mathrm{UA}\, T_\math
       + "the engine's ΔT_ad is 57.8 K and T_in is 284.3 K, so B = 6.5 against "
       + "a bound of 4.6.  The esterification the corpus's other CSTRs run is "
       + "nearly thermoneutral (an adiabatic rise of about 11 K), B is about "
-      + "1.5, and no setting of any knob gives it a second crossing: "
+      + "1.5 (cstr05; cstr06, with Ea 70 kJ/mol and T_in 350 K, gives about "
+      + "0.8), and no setting of any knob gives it a second crossing: "
       + "tutorials/steady/reactors/cstr06_jacketed, which declares "
       + "thermalMode heatExchange with UA and T_coolant, shows you a removal "
       + "line with a jacket in it (run it and switch the source to "

@@ -480,9 +480,9 @@ describe("the Hunter-Nash construction over the recorded cascade", () => {
     const c = buildFromRecorded();
     const worst = worstResidual(c);
     expect(worst).not.toBeNull();
-    // Triangle-edge units.  The cascade itself stops at a column closure of
-    // 1e-4, so the residual is that tolerance showing through — the recorded
-    // value is 1.2e-4.  The bound is deliberately loose enough not to pin the
+    // Triangle-edge units.  The fixture was recorded BEFORE C123 tightened the
+    // cascade stop from 1e-4 to 1e-8, so its residual (1.2e-4) is the old
+    // tolerance showing through; a fresh recording should sit far lower.  The bound is deliberately loose enough not to pin the
     // solver's noise floor and tight enough that a broken construction cannot
     // pass it (the sabotage below lands two orders of magnitude above it).
     expect(worst!).toBeLessThan(1e-3);

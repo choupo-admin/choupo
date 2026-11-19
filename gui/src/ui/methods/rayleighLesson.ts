@@ -68,9 +68,9 @@ export const RAYLEIGH_STEPS: readonly LessonStep[] = [
       + "engine's own holdups — two routes to one number.  On this witness "
       + "both routes model the same still (one stage, the vapour leaving at "
       + "y*(x) of the pot, the same declared chemistry), so the gap between "
-      + "them is numerical: the trapezoid grid and the trajectory's write "
-      + "interval on the graphical side, the time integration on the "
-      + "engine's.  That is argued from what the two routes declare; no "
+      + "them is numerical: the trapezoid grid on the graphical side, the "
+      + "time step of the integration on the engine's.  Both sides read "
+      + "the same first and last rows, so the write interval adds nothing.  That is argued from what the two routes declare; no "
       + "refinement study here separates the parts.",
   },
   {

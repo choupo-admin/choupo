@@ -69,7 +69,7 @@ License
   the same declared chemistry (ideal Raoult, the vapour leaving at y*(x) of
   the pot), so the gap between the graphical area and the engine's rigorous
   ln(W_0/W) measures the graphical method's finite resolution — the curve's
-  trapezoid grid and the trajectory's write interval — not different physics.
+  trapezoid grid and the engine's time step — not different physics.
 
   The construction pane is inline SVG (the Merkel / EpsilonNtu precedent);
   the pot trajectory (W and x_W vs t) rides the existing TrajectoryPlot
@@ -350,6 +350,8 @@ export function buildConstruction(
  *  there are stages to draw.  still01 has none, and a construction with no
  *  stages cannot show the thing this section exists for. */
 export const RECTIFIER_WITNESS = "batch/still/still04_rectifier_benzene_toluene";
+/** still04 declares P 1.013 bar (flowsheetDict:47); the page runs it with no overrides. */
+export const RECTIFIER_P_BAR = 1.013;
 
 /** Ideal stages ABOVE the pot, as still04 declares them.  Read here rather
  *  than assumed: the staircase walks this many plus one, and the extra step
@@ -732,6 +734,23 @@ export function RayleighTool(): JSX.Element {
     () => (curveCsv ? eqCurveFromTxyCsv(curveCsv, WITNESS_LIGHT) : null),
     [curveCsv]);
 
+  // The staircase belongs to the rectifier witness, which always runs at its
+  // own declared pressure (no overrides), so its equilibrium curve is taken
+  // at THAT pressure, never at the page's P knob.
+  const rectSpec = useMemo<ExploreSpec | null>(
+    () => (src === "classroom"
+      ? binaryVleSpec({
+          pair: [WITNESS_LIGHT, WITNESS_HEAVY], catalogue: CATALOGUE,
+          kind: "mccabe", activity: "ideal", eos: "idealGas",
+          P: RECTIFIER_P_BAR * 1.0e5, n: CURVE_POINTS, localUnifac: {},
+        })
+      : null),
+    [src]);
+  const { csv: rectCurveCsv } = useExploreCsv(rectSpec);
+  const rectCurve = useMemo(
+    () => (rectCurveCsv ? eqCurveFromTxyCsv(rectCurveCsv, WITNESS_LIGHT) : null),
+    [rectCurveCsv]);
+
   /*  THE STAGES, ASKED FOR BY NAME.  A batch still with trays is a McCabe
    *  construction that MOVES: the pot depletes, the distillate gets leaner,
    *  and the whole staircase slides down the curve.  That is what a column
@@ -969,7 +988,7 @@ export function RayleighTool(): JSX.Element {
               + "y*(x) of the pot, and the sweep declares the same package "
               + "at the same P — so this gap measures the graphical "
               + "method's finite resolution (the curve's trapezoid grid and "
-              + "the trajectory's write interval), not different physics."}>
+              + "the engine's RK4 time step), not different physics."}>
             <Badge variant="light"
               color={relDev < 0.02 ? "teal" : "yellow"} tt="none"
               styles={{ root: { cursor: "help" } }}>
@@ -1049,7 +1068,7 @@ export function RayleighTool(): JSX.Element {
 
       {/*  THE STAGES, MOVING.  A second witness (still04) with a real
           rectifier, scrubbed in time -- what a column diagram cannot show. */}
-      {src === "classroom" && curve && (
+      {src === "classroom" && rectCurve && (
         <Box>
           <Title order={5}>Drag the clock and watch the stages slide</Title>
           <OriginMark of={["engine", "page"]} note="x_D, R and the pot at each instant are the rectifier campaign run in this browser; the staircase is this page's geometry on them" />
@@ -1071,7 +1090,8 @@ export function RayleighTool(): JSX.Element {
             <>
               <Text size="sm" mt={4}>
                 The same still with a {RECTIFIER_TRAYS}-tray column above the
-                pot, run at constant reflux.  Every value on the diagram —
+                pot, run at constant reflux and at its own {RECTIFIER_P_BAR} bar
+                (the pressure knob above does not move this diagram).  Every value on the diagram —
                 x_D, R and the pot — is this instant of the engine’s own
                 campaign; the staircase is geometry on them.
               </Text>
@@ -1082,7 +1102,7 @@ export function RayleighTool(): JSX.Element {
                   onChange={setTIdx} label={null} />
               </Box>
               <Box mt={10} style={{ maxWidth: 640 }}>
-                <BatchStaircasePlot curve={curve} at={at}
+                <BatchStaircasePlot curve={rectCurve} at={at}
                   trays={RECTIFIER_TRAYS} light={WITNESS_LIGHT} />
               </Box>
             </>

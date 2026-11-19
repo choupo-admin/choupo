@@ -176,8 +176,8 @@ export const SLE_STEPS: readonly LessonStep[] = [
       { sym: "G_{21}", means: "exp(−α τ₂₁)." },
       { sym: "G_{ij}", means: "Either of the two weights." },
       { sym: "\\tau_{ij}", means: "Either of the two interaction parameters." },
-      { sym: "b_{12}", means: "The fitted interaction energy over R, solvent around solute.", unit: "K" },
-      { sym: "b_{21}", means: "The fitted interaction energy over R, solute around solvent.", unit: "K" },
+      { sym: "b_{12}", means: "The fitted interaction energy over R, solute around solvent (τ₁₂: a molecule 1 around a central molecule 2).", unit: "K" },
+      { sym: "b_{21}", means: "The fitted interaction energy over R, solvent around solute (τ₂₁: a molecule 2 around a central molecule 1).", unit: "K" },
       { sym: "\\alpha", means: "The NRTL non-randomness, held at 0.3 (the page lets you change it)." },
       { sym: "\\gamma_{1,k}", means: "The activity coefficient extracted from measurement k (step 5)." },
       { sym: "\\gamma_{1,k}^\\mathrm{NRTL}", means: "The model's value at the same T and x₁." },
@@ -193,7 +193,7 @@ export const SLE_STEPS: readonly LessonStep[] = [
       + "the acid-rich end.  Two pairs that agree on every measurement can disagree there by "
       + "orders of magnitude: the pair fitted to the cold half of the acetone data reproduces "
       + "that half, and predicts \\(\\gamma_2^\\infty\\) at 320 K about 190 000 times "
-      + "larger than the pair fitted to all of it.  An SLE-only pair describes the "
+      + "larger than the pair fitted to the training points (the held-out ones excluded).  An SLE-only pair describes the "
       + "solvent-rich side it was measured on, and is a guess at the other end.",
     formula: String.raw`\gamma_2^\infty = \lim_{x_1 \to 1} \gamma_2`,
     where: [

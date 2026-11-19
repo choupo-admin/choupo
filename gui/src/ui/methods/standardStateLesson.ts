@@ -280,8 +280,11 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
   {
     n: 7,
     title: "What Choupo does — and what any simulator's convention must declare",
-    body: "Choupo prices every stream on the elements datum, and the formula "
-      + "below is the whole of it: the species' standard formation enthalpy at "
+    body: "Choupo prices every stream on the elements datum.  For a gas, or a "
+      + "fluid priced through the equation of state, the formula below is the "
+      + "whole of it (a solid record such as glucose, a liquid or an "
+      + "electrolyte takes another route, ThermoPackage.cpp:1697-1740, and is "
+      + "not covered here): the species' standard formation enthalpy at "
       + "298.15 K, plus the ideal-gas enthalpy rise from 298.15 K to the "
       + "stream's temperature, plus the equation of state's residual at the "
       + "stream's temperature and pressure.  In the source, the first two terms "
@@ -307,7 +310,7 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
       { sym: "h_i^{\\mathrm{R}}", means: "residual enthalpy of species i at the "
         + "stream's T and P", unit: "kJ/mol" },
     ],
-    note: "Why nothing is subtracted at the reference: each record's "
+    note: "Why nothing is subtracted at the reference: each gas record's "
       + "formation enthalpy is the ideal gas's — the hypothetical ideal gas at "
       + "298.15 K — and `h_pure_ig` refuses a record whose reference state is "
       + "not the gas.  The residual is measured from that same ideal gas at "
@@ -376,9 +379,9 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
     formula: String.raw`H = U + P V, \qquad A = U - T S, \qquad G = H - T S`,
     where: [
       { sym: "U", means: "internal energy", unit: "kJ/mol" },
-      { sym: "H", means: "enthalpy (total, not molar, when the system is the whole "
-        + "reactor)", unit: "kJ/mol" },
-      { sym: "V", means: "volume", unit: "m³/mol" },
+      { sym: "H", means: "enthalpy (an amount per mole of the system in the "
+        + "table; the whole system's total is this times its moles)", unit: "kJ/mol" },
+      { sym: "V", means: "volume (per mole in the table)", unit: "m³/mol" },
       { sym: "A", means: "Helmholtz energy", unit: "kJ/mol" },
       { sym: "S", means: "entropy", unit: "kJ/(mol·K)" },
       { sym: "G", means: "Gibbs energy", unit: "kJ/mol" },
@@ -398,7 +401,7 @@ export const STANDARD_STATE_STEPS: readonly LessonStep[] = [
           + "minus the heat the system receives, and at constant pressure with "
           + "expansion work only that heat is the system's enthalpy change:",
         eq: String.raw`\Delta S_{\mathrm{surr}} = -\frac{\Delta H}{T}` },
-      { step: "Substitute and multiply by −T (positive):",
+      { step: "Substitute and multiply by −T (negative, which is why the inequality flips):",
         eq: String.raw`\Delta S_{\mathrm{total}} = \Delta S - \frac{\Delta H}{T} = -\frac{\Delta G}{T} \;\Rightarrow\; \Delta G \le 0` },
       { step: "Equality is equilibrium: no further change at fixed T and P can "
           + "lower G.  G itself is whatever the datum makes it.  What is zero, "
