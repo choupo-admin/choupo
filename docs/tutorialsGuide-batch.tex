@@ -780,6 +780,50 @@ WITNESS for the EulerSI integrator (semi-implicit Euler) -- an EXPECTED FAILURE:
 \tutreadme{Same as the sibling: the ? Conaire et al. (2004) H$_2$/O$_2$ mechanism (constant/reactions, shared with ignition02\_h2air\_slack) and NASA-9 heat capacities from NASA/TP-2002-211556 for H$_2$, O$_2$, N$_2$ and water. Until 2026-10-25 it ran a GRI-Mech 3.0 subset, replaced because GRI-Mech grants no redistribution (DEV.md ?4c C164); the failure it teaches did not change.}
 
 \clearpage
+\tutentry{ignition01\_h2o2\_jac}{tutorials/batch/combustion/ignition01\_h2o2\_jac}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bomb) at (0.0,-0.0) {\textbf{bomb}\\[-1pt]{\tiny batchReactor}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Adiabatic constant-V H2/O2 ignition at 1100 K on the ANALYTIC kinetics Jacobian, audited against the finite difference (O Conaire 2004 H2/O2 kinetics, NASA-9 thermo); Rosenbrock23 stiff solver; reports ignition delay}
+\begin{tutnarrative}
+ignition01\_h2o2 integrated on the ANALYTIC Jacobian.
+
+The case is ignition01\_h2o2 unchanged (closed rigid vessel, stoichiometric H2/O2 in N2 at 1100 K, the O Conaire 2004 mechanism: modifiedArrhenius, thirdBody, falloff with Troe, every reaction reversible by detailed balance) with ONE added key in the vessel's solver block, `jacobian analytic;`. Rosenbrock23 then builds W = I - h d J from the rate laws' own derivatives (the species columns), the chain rule (the energy row) and one difference (the T column) instead of differencing all ten columns. The Jacobian is AUDITED against the finite difference at analytic Jacobians 1, 2, 4, 8, ... and the run refuses by name if a column disagrees: Rosenbrock23 is not a W-method, and a wrong J would only make it silently slower or less accurate. The answer is the same as ignition01\_h2o2's within its golden's tolerances.
+
+H2 : O2 : N2 = 2 : 1 : 4 (stoichiometric H2 + 1/2 O2 $\to$ H2O, 57\% N2)
+
+mode adiabatic + energy gasConstantV: the first law dU = 0 in a fixed volume, with the heat release coming from the species FORMATION enthalpies (curated thermo) -- no per-reaction $\Delta$H is supplied. Temperature, and the radicals H/O/OH/HO2, are integrated by the stiff solver until branching runs away.
+
+solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 (see the ignition01\_h2o2\_rk4 sibling) and the same step blows up.
+
+\end{tutnarrative}
+\tutreadme{The same H$_2$/O$_2$ ignition as ignition01\_h2o2 (closed rigid vessel, 1100 K, 5 bar, O Conaire 2004 mechanism, Rosenbrock23), with one added key in the vessel's solver block:}
+\tutreadme{A Rosenbrock method solves, at every step, a linear system with the matrix W = I - h$\cdot$d$\cdot$J, where J = $\partial$f/$\partial$y is the Jacobian of the right-hand side over the state y = (n\_1 ... n\_9, T). By default the integrator builds J by finite differences: it perturbs each of the ten state entries in turn and evaluates the whole right-hand side again --- eleven evaluations per Jacobian, every one of them recomputing 21 rate constants and 21 equilibrium constants.}
+\tutreadme{With jacobian analytic; the reactor builds J from the rate laws themselves:}
+\tutreadme{- species columns: $\partial$(dn\_i/dt)/$\partial$n\_k = $\Sigma$\_j $\nu$\_ij $\partial$r\_j/$\partial$c\_k, from the derivative of each mass-action leg (the product of the other factors --- never r\_j/c\_k, which would divide by a zero radical), the third-body term k0$\cdot$eff\_k of R5--R9 and R15, the fall-off blend of R9 and R15 (Troe, differentiated in [M] alone), and the reverse leg k/K\_c with K\_c computed once per reaction; - the energy row by the chain rule on those columns (dT/dt = -$\Sigma$ u\_i (dn\_i/dt) / $\Sigma$ n\_i C\_v,i); - the T column by one difference of the whole right-hand side.}
+\tutreadme{Rosenbrock23 is not a W-method: its order conditions assume the $\ast$true$\ast$ Jacobian. A Jacobian with a missing term does not crash anything --- the steps still pass the error test, just smaller, or less accurate --- so nobody would see it. The run therefore measures its claim: at analytic Jacobians 1, 2, 4, 8, ... it also builds a central finite-difference one at the same state, and prints}
+\tutreadme{A column that differs by more than 1e-4 of its own scale refuses the run by name (row, column, both numbers).}
+\begin{tutgolden}
+\goldrow{kpi}{bomb}{P\_final}{500000}
+\goldrow{kpi}{bomb}{T\_final}{3076.31278179}
+\goldrow{kpi}{bomb}{n\_H2O2\_final}{9.60661475471e-11}
+\goldrow{kpi}{bomb}{n\_H2\_final}{1.67497420779e-06}
+\goldrow{kpi}{bomb}{n\_HO2\_final}{9.12802450492e-10}
+\goldrow{kpi}{bomb}{n\_H\_final}{5.08698565685e-07}
+\goldrow{kpi}{bomb}{n\_N2\_final}{2.857145e-05}
+\goldrow{kpi}{bomb}{n\_O2\_final}{6.5975872805e-07}
+\goldrow{kpi}{bomb}{n\_OH\_final}{7.52547147841e-07}
+\goldrow{kpi}{bomb}{n\_O\_final}{2.34567190793e-07}
+\goldrow{kpi}{bomb}{n\_water\_final}{1.19770504681e-05}
+\goldrow{kpi}{bomb}{t\_end}{0.0002}
+\goldrow{kpi}{bomb}{totalMoles\_final}{4.43800551768e-05}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.42326584618e-15}
+\goldmore{17}
+\end{tutgolden}
+
+\clearpage
 \tutentry{ignition01\_h2o2\_rk4}{tutorials/batch/combustion/ignition01\_h2o2\_rk4}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

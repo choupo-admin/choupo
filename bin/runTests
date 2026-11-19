@@ -6273,6 +6273,25 @@ PYEOF
     fi
     rm -f /tmp/rateprod.$$
 
+    # kinetics-jacobian gate (2026-11-19).  `solver { jacobian analytic; }` on a
+    # batchReactor hands Rosenbrock23 / Rodas4 the rate laws' own derivatives.
+    # The defect it would have caught: a Rosenbrock method is not a W-method,
+    # so an analytic Jacobian with a term missing (the third-body k0 eff_k,
+    # dropped by sabotage) only makes the run silently slower or less accurate
+    # -- Rodas4 took 3317 steps instead of 602 and every golden KPI still
+    # passed.  The engine's own audits along the ignition (pre-ignition, ramp,
+    # burned), the same answer at half the right-hand sides, every path on six
+    # shipped cases, and the refusals by name.
+    if gate_exec "$ROOT/bin/curate/check_kinetics_jacobian.py" > /tmp/kinjac.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "kinetics-jacobian-gate" "$(head -1 /tmp/kinjac.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_kinetics_jacobian.py)\n" "kinetics-jacobian-gate"
+        cat /tmp/kinjac.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/kinjac.$$
+
     # cubic-mixing-rule gate (2026-11-16, DEV.md 4c C408 (b)).  The mixing rule
     # of a cubic is an object (CubicMixingRule): the van der Waals one-fluid
     # arithmetic moved intact, and MHV1 / MHV2 (Michelsen 1990 Eq. 12; Dahl &

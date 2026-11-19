@@ -152,6 +152,22 @@ public:
     // stopped ("n_compA").  Default: the index.
     virtual std::string odeRowLabel(std::size_t i) const
     { return "row " + std::to_string(i); }
+    // OPT-IN analytic Jacobian of odeDerivative: J[i][k] = d f_i / d y_k at
+    // y, given f0 = odeDerivative(y) and the integrator's per-row scales
+    // `typ` (for any column the unit chooses to difference).  Default: none
+    // (hasOdeJacobian() false, an empty matrix), so the stiff integrators
+    // build their finite-difference Jacobian exactly as before.  A unit that
+    // supplies one is AUDITED against that difference (solver/ODE/
+    // ODEIntegrator.H, ODEAnalyticJacobian) and refused if it is false.
+    virtual bool hasOdeJacobian() const { return false; }
+    virtual std::vector<sVector> odeJacobian(const sVector& /*y*/,
+                                             const sVector& /*f0*/,
+                                             const sVector& /*typ*/) const
+    { return {}; }
+    // The size of each packed row for the AUDIT of that Jacobian (its own
+    // difference step sqrt(eps) * s_i, and its row scaling).  Empty =>
+    // the integrator's scale max(|y_i|, atol).
+    virtual sVector odeJacobianScale(const sVector& /*y*/) const { return {}; }
 
     // Inspect current state (for trajectory writeout).
     virtual const BatchState& state() const = 0;

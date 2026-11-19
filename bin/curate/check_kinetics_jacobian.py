@@ -1,0 +1,336 @@
+#!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
+"""Gate: the batch reactor's analytic kinetics Jacobian is the derivative, and it pays.
+
+    bin/curate/check_kinetics_jacobian.py
+
+THE REAL DEFECT THIS WOULD HAVE CAUGHT.  An analytic Jacobian with a term missing --
+the third-body efficiency term k0 eff_k of a `+M` reaction, a fall-off blend
+differentiated as if [M] were constant, a reverse leg left out -- does not crash a
+Rosenbrock method.  Rosenbrock23 and Rodas4 are NOT W-methods: their order conditions
+hold only with the true Jacobian in W = I - h d J, but the embedded error estimate still
+accepts or rejects each step, so a wrong J only makes the run silently SLOWER or LESS
+ACCURATE.  Measured by sabotage on ignition01_h2o2_jac (below): with the third-body term
+dropped, Rodas4 took 3317 accepted steps instead of 602 and every KPI of the golden still
+passed (T_final 1.1e-10 relative) -- no golden, no closure and no step counter in any
+existing gate would have said a word.  The only place the omission is visible is a
+comparison of the claimed Jacobian with the derivative it claims to be; the engine makes
+that comparison on a doubling schedule (ODEAnalyticJacobian) and this gate holds it.
+
+WHAT THIS GATE CHECKS.
+
+  (a) THE CLAIM, ALONG THE TRAJECTORY.  ignition01_h2o2_jac (Rosenbrock23, as shipped) and
+      the same case on Rodas4 print the engine's audits: the analytic Jacobian against the
+      dense forward difference at analytic Jacobians 1, 2, 4, 8, ... .  At least five audits,
+      covering the PRE-IGNITION state (T < 1150 K), the RAMP (1150-3000 K) and the BURNED
+      gas (T > 3000 K), each with the worst column difference at most GATE_TOL = 1e-5 of the
+      column's scale (the engine refuses above 1e-4; measured 7e-8 to 6.5e-7: the forward
+      difference of the analytic Jacobian's own T column against the audit's central one).
+  (b) THE SAME ANSWER, CHEAPER.  ignition01_h2o2 (finite difference) and
+      ignition01_h2o2_jac (analytic), both at solver verbosity 4 (the right-hand-side
+      count): every KPI of ignition01_h2o2's golden is met by BOTH runs at the golden's
+      tolerance, the two runs agree with each other to 1e-8 relative, and the analytic run
+      spends at most half the right-hand sides of the finite-difference run (measured
+      8252 against 27668: n + 4 = 14 per step against 4, plus 204 on the audits).  The
+      steps, rejected steps,
+      right-hand sides and Jacobians of both are printed.
+  (c) EVERY PATH, ON A CASE THAT ALREADY SHIPS.  Six batch tutorials, each run twice on
+      Rosenbrock23 in a private copy -- finite difference, then `jacobian analytic;` --
+      with every audit within GATE_TOL and the KPIs of the two runs equal to 1e-6
+      relative (abs 1e-12 near zero): batch02_adiabatic (liquidDH energy row),
+      batch04_reversible_wgs (isothermal, reversible Arrhenius: the T column exactly zero),
+      batch07_lhhw_methylAcetate (a Factory LHHW law, by its own difference),
+      nox01_zeldovich_postflame (isothermal fall-off and third body), and through the
+      ADAPTIVE sweep (the analytic Jacobian handed to it block by block)
+      batch06_adaptive_runaway (adiabatic liquidDH) and batch31_fast_equilibrium_reduced
+      (a `type expression` law).
+  (d) REFUSALS BY NAME.  `jacobian exact;` (an unknown word), `integrator RK4;` beside
+      `jacobian analytic;` (a contradiction), and `jacobian analytic;` on a fixed-step run
+      that integrates with the default RK4 (a key nothing would read) each exit non-zero
+      with the word in the message.
+
+SABOTAGE-VERIFIED 2026-11-19 (by hand, then restored and rebuilt; not runnable per
+commit without a rebuild).  In BatchReactor::rateGradient_ the third-body arm's
+`dkdM = k0;` replaced by `dkdM = 0.0;` -- the term dropped from the Jacobian ONLY, the
+right-hand side untouched.  OBSERVED, verbatim:
+
+    ERROR: batchReactor 'bomb': the ANALYTIC Jacobian is FALSE at analytic Jacobian #32
+    (t = 0.000000 s into the interval): d(n_H)/d(n_N2) is -88.0541 against the
+    finite-difference -88.1057 (relative difference 0.000117 on the column's scale,
+    tolerance 0.0001).  A term of the model is missing from, or wrong in, its
+    derivative.  ...  Refusing; ...
+
+The suite under the same sabotage: this gate FAILS -- (a) both integrators refused (at
+analytic Jacobian #32 on Rosenbrock23, #8 on Rodas4: d(n_H)/d(n_N2) 1.05e-4 of the
+column's scale), (b) the analytic run refused.  With the refusal disabled (tolerance 1e30)
+the audits of the sabotaged run read, from the first Jacobian to the ramp, 6.4e-5,
+6.4e-5, 6.7e-5, 7.2e-5, 9.1e-5, 1.2e-4, 1.6e-4, 4.7e-4, 5.8e-3, 0.11, 0.54
+(Rosenbrock23, 1912 + 23 steps against 1939 + 23) and up to 0.92 (Rodas4: 3317 + 30 steps
+against 602 + 15 with the correct Jacobian), while every KPI of ignition01_h2o2's golden
+still passed (T_final 3.4e-9 and 1.1e-10 relative): the omission is small where the
+radicals are few and O(1) at the ramp.  Arm (a)'s GATE_TOL sits 6x under the first of
+those numbers; the correct Jacobian's worst over every audit of this gate is 1e-6 (the
+forward difference the reactor takes for an LHHW law and for the T column, by design).
+
+NOT CHECKED: that the rate laws themselves are right (ignition02_h2air_slack's Slack pin,
+check_elementary_rates); a power-law order below one at zero concentration (the reactor
+differences such a reaction instead; no witness has one); the T column's accuracy beyond
+the audit (it is one forward difference, as the dense Jacobian's own); wall time (machine-
+dependent: the right-hand-side count is the deterministic proxy); a sweep that mixes a
+unit with an analytic Jacobian and one without (it falls back to the difference by
+construction; no witness has two ODE units).
+"""
+import json
+import re
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import gatekit  # noqa: E402
+
+FD = "tutorials/batch/combustion/ignition01_h2o2"
+JAC = "tutorials/batch/combustion/ignition01_h2o2_jac"
+STRIP = ("expected", "latest", "solution.log", "trajectory.csv")
+GATE_TOL = 1.0e-5
+PATHS = [   # (case, what it exercises)
+    ("tutorials/batch/reactor/batch02_adiabatic", "liquidDH energy row, fixed step"),
+    ("tutorials/batch/reactor/batch04_reversible_wgs", "isothermal reversible Arrhenius"),
+    ("tutorials/batch/reactor/batch07_lhhw_methylAcetate", "Factory LHHW law"),
+    ("tutorials/batch/combustion/nox01_zeldovich_postflame", "isothermal fall-off + third body"),
+    ("tutorials/batch/reactor/batch06_adaptive_runaway", "adaptive sweep, adiabatic liquidDH"),
+    ("tutorials/batch/reactor/batch31_fast_equilibrium_reduced", "adaptive sweep, expression law"),
+]
+AUDIT = re.compile(r"\[jacobian\] (?:batchReactor '[^']*'|adaptive sweep): analytic Jacobian #(\d+) AUDITED "
+                   r"at t = (\S+) s(?: \(T = (\S+) K\))?: worst column d\((.*?)\)/d\((.*?)\) (\S+) of the column")
+
+
+def result(out):
+    m = re.search(r"<<<Choupo:result-begin>>>\s*(\{.*?\})\s*<<<Choupo:result-end>>>", out, re.S)
+    return json.loads(m.group(1)) if m else None
+
+
+def audits(out):
+    return [(int(m.group(1)), float(m.group(2)), float(m.group(3)) if m.group(3) else None,
+             m.group(4), m.group(5), float(m.group(6))) for m in AUDIT.finditer(out)]
+
+
+def set_solver(case, jacobian, integrator=None, verbosity=None):
+    """Write `jacobian`/`integrator`/`verbosity` into the (first) batchReactor's solver block,
+    creating the block after `type batchReactor;` when there is none."""
+    p = case / "system/flowsheetDict"
+    s = p.read_text()
+    s = re.sub(r"\n[ \t]*jacobian[ \t]+\w+;[^\n]*", "", s)
+    unit = re.search(r"\n[ \t]*type[ \t]+batchReactor;[^\n]*\n", s)   # past the header comment
+    if not unit:
+        raise gatekit.GateRefusal(f"{case}: no batchReactor in flowsheetDict")
+    blk = re.compile(r"\n([ \t]*)solver\s*\{").search(s, unit.end())
+    keys = []
+    if integrator:
+        keys.append(f"integrator {integrator};")
+    if verbosity is not None:
+        keys.append(f"verbosity {verbosity};")
+    if jacobian:
+        keys.append(f"jacobian {jacobian};")
+    if blk:
+        body_start = blk.end()
+        body_end = s.index("}", body_start)
+        body = s[body_start:body_end]
+        if integrator:
+            body = re.sub(r"\n[ \t]*integrator[ \t]+\w+;", "", body)
+        if verbosity is not None:
+            body = re.sub(r"\n[ \t]*verbosity[ \t]+\d+;", "", body)
+        s = s[:body_start] + body + "".join("\n            " + k for k in keys) + "\n        " + s[body_end:]
+    else:
+        s = s[:unit.end()] + "        solver { " + " ".join(keys) + " }\n" + s[unit.end():]
+    p.write_text(s)
+
+
+def kpis(out):
+    j = result(out)
+    return j["kpis"] if j else None
+
+
+def flat(k):
+    out = {}
+    for unit, d in (k or {}).items():
+        if isinstance(d, dict):
+            for key, v in d.items():
+                if isinstance(v, (int, float)) and not isinstance(v, bool):
+                    out[(unit, key)] = float(v)
+    return out
+
+
+def kpi_diff(a, b, rel=1e-6, abs_floor=1e-12):
+    """-> (worst relative difference, where, keys missing on either side)."""
+    fa, fb = flat(a), flat(b)
+    worst, where = 0.0, ""
+    missing = sorted(set(fa) ^ set(fb))
+    for k in set(fa) & set(fb):
+        x, y = fa[k], fb[k]
+        d = abs(x - y)
+        if d <= abs_floor:
+            continue
+        r = d / max(abs(x), abs(y))
+        if r > worst:
+            worst, where = r, f"{k[0]}.{k[1]} {x:.12g} vs {y:.12g}"
+    return worst, where, missing
+
+
+def golden(path):
+    rows = []
+    for line in Path(path).read_text().splitlines():
+        if line.startswith("#") or not line.strip():
+            continue
+        kind, unit, key, val, tol = line.split()
+        rows.append((unit, key, float(val), tol))
+    return rows
+
+
+def meets_golden(k, rows):
+    bad = []
+    f = flat(k)
+    for unit, key, val, tol in rows:
+        g = f.get((unit, key))
+        if g is None:
+            bad.append(f"{unit}.{key} missing")
+            continue
+        if tol.startswith("abs:"):
+            ok = abs(g - val) <= float(tol[4:])
+        else:
+            ok = abs(g - val) <= float(tol) * max(abs(val), 1e-300)
+        if not ok:
+            bad.append(f"{unit}.{key} {g:.10g} vs golden {val:.10g} ({tol})")
+    return bad
+
+
+def cost(out):
+    rhs = re.findall(r"right-hand sides so far (\d+)", out)
+    acc = sum(int(x) for x in re.findall(r"steps:\s*(\d+) accepted", out))
+    rej = sum(int(x) for x in re.findall(r"accepted,\s*(\d+) rejected", out))
+    nj = re.findall(r"Jacobian analytic \((\d+) built, (\d+) right-hand sides spent on audits", out)
+    return (int(rhs[-1]) if rhs else None, acc, rej, (int(nj[-1][0]), int(nj[-1][1])) if nj else None)
+
+
+def main():
+    failures, notes = [], []
+    batch = gatekit.binary("choupoBatch")
+
+    # ---- (a) the claim along the trajectory, Rosenbrock23 and Rodas4 ------------------
+    all_audits = []
+    for integ in ("Rosenbrock23", "Rodas4"):
+        with gatekit.probe_copy(JAC, strip=STRIP) as c:
+            if integ != "Rosenbrock23":
+                set_solver(c, "analytic", integrator=integ)
+            rc, out = gatekit.run(batch, c)
+            if rc != 0:
+                failures.append(f"(a) ignition01_h2o2_jac on {integ} exited {rc}: "
+                                + " | ".join(out.strip().splitlines()[-2:])[:600])
+                continue
+            a = audits(out)
+            if not a:
+                failures.append(f"(a) ignition01_h2o2_jac on {integ} printed no audit line")
+            all_audits += [(integ,) + x for x in a]
+    pre = [x for x in all_audits if x[3] is not None and x[3] < 1150.0]
+    ramp = [x for x in all_audits if x[3] is not None and 1150.0 <= x[3] <= 3000.0]
+    burned = [x for x in all_audits if x[3] is not None and x[3] > 3000.0]
+    if len(all_audits) < 5 or not pre or not ramp or not burned:
+        failures.append(f"(a) the audits do not cover the trajectory: {len(all_audits)} audits, "
+                        f"{len(pre)} pre-ignition, {len(ramp)} ramp, {len(burned)} burned")
+    worst_a = max(all_audits, key=lambda x: x[6]) if all_audits else None
+    for integ, jn, t, T, row, col, d in all_audits:
+        if not d <= GATE_TOL:
+            failures.append(f"(a) {integ} analytic Jacobian #{jn} at t={t:g} s, T={T} K: "
+                            f"d({row})/d({col}) differs by {d:.3e} of the column's scale (> {GATE_TOL:g})")
+    for label, grp in (("pre-ignition", pre), ("ramp", ramp), ("burned", burned)):
+        if grp:
+            w = max(grp, key=lambda x: x[6])
+            notes.append(f"{label} {len(grp)} audits, worst {w[6]:.1e}")
+
+    # ---- (b) the same answer, cheaper --------------------------------------------------
+    rows = golden(gatekit.base_case(FD) / "expected")
+    runs = {}
+    for name, base, jac in (("finite difference", FD, None), ("analytic", JAC, "analytic")):
+        with gatekit.probe_copy(base, strip=STRIP) as c:
+            set_solver(c, jac, verbosity=4)
+            rc, out = gatekit.run(batch, c)
+            if rc != 0:
+                failures.append(f"(b) the {name} run exited {rc}: "
+                                + " | ".join(out.strip().splitlines()[-2:])[:600])
+                continue
+            runs[name] = (kpis(out), cost(out))
+            for b in meets_golden(runs[name][0], rows):
+                failures.append(f"(b) {name} run misses ignition01_h2o2's golden: {b}")
+    if len(runs) == 2:
+        (kf, cf), (ka, ca) = runs["finite difference"], runs["analytic"]
+        w, where, missing = kpi_diff(kf, ka, rel=1e-8)
+        if missing:
+            failures.append(f"(b) KPI keys differ between the runs: {missing[:5]}")
+        if w > 1e-8:
+            failures.append(f"(b) the analytic run differs from the finite-difference run by {w:.2e} "
+                            f"relative (> 1e-8): {where}")
+        if cf[0] is None or ca[0] is None or ca[3] is None:
+            failures.append("(b) the right-hand-side count was not printed (verbosity 4)")
+        elif not ca[0] <= 0.5 * cf[0]:
+            failures.append(f"(b) the analytic run spent {ca[0]} right-hand sides against {cf[0]} "
+                            "for the finite difference: not the saving the Jacobian exists for")
+        else:
+            notes.append(f"FD {cf[1]}+{cf[2]} steps {cf[0]} RHS; analytic {ca[1]}+{ca[2]} steps "
+                         f"{ca[0]} RHS ({ca[3][0]} Jacobians, {ca[3][1]} RHS on audits); KPIs {w:.0e}")
+
+    # ---- (c) every path, on cases that already ship ------------------------------------
+    for case, what in PATHS:
+        adaptive = "adaptive" in what
+        got = {}
+        for jac in (None, "analytic"):
+            with gatekit.probe_copy(case, strip=STRIP) as c:
+                set_solver(c, jac, integrator=None if adaptive else "Rosenbrock23")
+                rc, out = gatekit.run(batch, c)
+                if rc != 0:
+                    failures.append(f"(c) {Path(case).name} ({what}) with jacobian "
+                                    f"{jac or 'finiteDifference'} exited {rc}: "
+                                    + " | ".join(out.strip().splitlines()[-2:])[:500])
+                    continue
+                got[jac] = (kpis(out), audits(out))
+        if len(got) != 2:
+            continue
+        a = got["analytic"][1]
+        if not a:
+            failures.append(f"(c) {Path(case).name} ({what}): no audit printed -- the analytic "
+                            "Jacobian was not used")
+            continue
+        wa = max(x[5] for x in a)
+        if not wa <= GATE_TOL:
+            failures.append(f"(c) {Path(case).name} ({what}): an audit differs by {wa:.3e} (> {GATE_TOL:g})")
+        w, where, missing = kpi_diff(got[None][0], got["analytic"][0])
+        if missing or w > 1e-6:
+            failures.append(f"(c) {Path(case).name} ({what}): the KPIs of the two Jacobians differ by "
+                            f"{w:.2e} ({where}){' missing ' + str(missing[:3]) if missing else ''}")
+        notes.append(f"{Path(case).name} {len(a)} audits <= {wa:.0e}")
+
+    # ---- (d) refusals by name ----------------------------------------------------------
+    probes = [
+        ("exact", None, "jacobian exact"),
+        ("analytic", "RK4", "integrator RK4; jacobian analytic"),
+    ]
+    for jac, integ, word in probes:
+        with gatekit.probe_copy(JAC, strip=STRIP) as c:
+            set_solver(c, jac, integrator=integ)
+            rc, out = gatekit.run(batch, c)
+            if rc == 0 or ("jacobian" not in out or "bomb" not in out
+                           or (jac == "exact" and "exact" not in out)
+                           or (integ and "RK4" not in out)):
+                failures.append(f"(d) `{word};` was not refused by name (exit {rc})")
+    with gatekit.probe_copy("tutorials/batch/reactor/batch01_first_order", strip=STRIP) as c:
+        set_solver(c, "analytic")
+        rc, out = gatekit.run(batch, c)
+        if rc == 0 or "jacobian" not in out or "RK4" not in out:
+            failures.append(f"(d) `jacobian analytic;` on a default-RK4 fixed-step run was not refused (exit {rc})")
+
+    ok = (f"{len(all_audits)} audits on ignition01 (worst {worst_a[6]:.1e}); " if worst_a else "") \
+        + "; ".join(notes)
+    return gatekit.verdict("check_kinetics_jacobian", failures, ok)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

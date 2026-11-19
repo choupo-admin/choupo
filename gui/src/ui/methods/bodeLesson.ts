@@ -433,7 +433,7 @@ export const BODE_LIMITS: readonly LessonLimit[] = [
       + "phase margin.  What the engine has is a time integrator and the "
       + "`frequencyResponse {}` experiment, which measures one point of a "
       + "Bode diagram per run "
-      + "(src/dynamicDriver/DynamicDriver.cpp:2006-2053).  The measured "
+      + "(src/dynamicDriver/DynamicDriver.cpp:2007-2054).  The measured "
       + "curve on this page is that experiment, swept.  The constructed "
       + "curve, the elements and both margins are classical arithmetic "
       + "drawn in the browser and are not an engine answer.",

@@ -280,10 +280,10 @@ describe("every file:line this page cites into the engine resolves", () => {
    *  long enough" and "the claim is where I said it is". */
   const ANCHORS: [string, number, string][] = [
     // the measurement: the sin/cos fit and what it publishes
-    ["src/dynamicDriver/DynamicDriver.cpp", 2029, "std::hypot(abc[1], abc[2])"],
-    ["src/dynamicDriver/DynamicDriver.cpp", 2031, "std::atan2(abc[2], abc[1])"],
-    ["src/dynamicDriver/DynamicDriver.cpp", 2043, "out_phase_rad"],
-    ["src/dynamicDriver/DynamicDriver.cpp", 2048, "fit_residual_rel"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 2030, "std::hypot(abc[1], abc[2])"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 2032, "std::atan2(abc[2], abc[1])"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 2044, "out_phase_rad"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 2049, "fit_residual_rel"],
     // the drive
     ["src/control/signal/Signals.H", 124, "amplitude*sin"],
     // the half-step lag: the drive is held across the step (C22 slice 2)
