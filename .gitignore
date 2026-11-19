@@ -29,7 +29,7 @@ src/**/*.d
 # ------ Run-time artifacts inside cases --------------------------------
 **/log.*
 **/*.log
-# reports/ is generated output (controlDict reports{} block, v0.41+)
+# reports/ is generated output (controlDict reports{} block)
 tutorials/*/*/reports/
 # sectored plants nest sectors/units arbitrarily deep -> ignore reports/ at any depth
 tutorials/**/reports/

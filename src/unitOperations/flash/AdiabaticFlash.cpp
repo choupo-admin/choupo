@@ -346,7 +346,7 @@ int AdiabaticFlash::solve(const DictPtr& dict,
 
     // Outlet streams (liquid + vapor) at the converged T_out and the outlet P.
     // The products ARE the point of a flash -- emit them so the flowsheet
-    // summary shows them (was the empty `outputs ( )` / "v0.7" gap).
+    // summary shows them (was the empty `outputs ( )` gap).
     produced_.clear();
     {
         ProcessStream liq;

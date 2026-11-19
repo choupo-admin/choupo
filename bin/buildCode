@@ -30,7 +30,7 @@
 # =============================================================================
 #  buildCode  --  COMPILE a case's own unit operations (does NOT run it)
 #
-#  Build-time user code (v0.42+).  A case may ship C++ under `code/`
+#  Build-time user code.  A case may ship C++ under `code/`
 #  defining new unit-op types --- the high point of the course: the
 #  student stops being a user and becomes an author.  This script
 #  compiles that code against libchoupo.a + the choupoSolve entry

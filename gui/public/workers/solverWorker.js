@@ -1,7 +1,7 @@
 // Copyright (C) 2026 Vítor Geraldes
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*---------------------------------------------------------------------------*\
-  Choupo -- Web Worker host for the WebAssembly solvers (v0.25+).
+  Choupo -- Web Worker host for the WebAssembly solvers.
 
   The worker hosts FIVE possible WASM modules, one per binary:
 
@@ -9,13 +9,13 @@
       choupoBatch   (batch + recipes)
       choupoCtrl    (dynamic + control)
       choupoSemiContinuous  (transient flowsheet, no control loop)
-      choupoProps   (properties + LM fitting,   v0.38+)
+      choupoProps   (properties + LM fitting)
 
   The host (WasmAdapter) reads each case's `application` field from
   controlDict and sends it in the run message; the worker fetches the
   matching glue + .wasm and invokes `run_case` on the chosen factory.
 
-  Loading strategy (unchanged from v0.24)
+  Loading strategy
   ----------------
   Vite intercepts dynamic imports of public/ files in subtle ways even
   inside workers, and the apt-installed Emscripten emits UMD glue (no

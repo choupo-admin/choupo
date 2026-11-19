@@ -14,8 +14,8 @@
 #      choupoSolve   --  steady-state simulation,  F(x) = 0
 #      choupoBatch   --  batch / time-dependent recipe simulation
 #      choupoSemiContinuous  --  transient flowsheet, NO control loop (2026-09-20)
-#      choupoCtrl    --  dynamic continuous + control loops (v0.24+)
-#      choupoProps   --  physical-property service + parameter fitting (v0.36+)
+#      choupoCtrl    --  dynamic continuous + control loops
+#      choupoProps   --  physical-property service + parameter fitting
 # =============================================================================
 
 # `make` with no target must build the NATIVE binaries.  Without this line the

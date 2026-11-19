@@ -1,7 +1,7 @@
 # Copyright (C) 2026 Vítor Geraldes
 # SPDX-License-Identifier: GPL-3.0-or-later
 # =============================================================================
-#  Choupo  --  WebAssembly build (v0.25+; incremental objects 2026-07-19)
+#  Choupo  --  WebAssembly build (incremental objects 2026-07-19)
 #
 #  Compiles the five Choupo binaries to WebAssembly via Emscripten,
 #  one .wasm per binary so each can be loaded independently by the
@@ -29,7 +29,7 @@
 #      choupoBatch.{js,wasm}    batch + recipe solver
 #      choupoCtrl.{js,wasm}     dynamic + control solver
 #      choupoSemiContinuous.{js,wasm}  transient flowsheet, no control loop
-#      choupoProps.{js,wasm}    property service + LM fit (v0.38+)
+#      choupoProps.{js,wasm}    property service + LM fit
 #
 #  Usage:
 #      make wasm                    # all five, release (-O2)

@@ -10,6 +10,14 @@ followed a published industrial process from a single equilibrium calculation
 to a closed flowsheet with a recycle — and, more to the point, you will be able
 to say where its errors come from.
 
+This file is the ONE home of the first path.  The app's *Browse tutorials*
+folder "start here: the first path" holds every case named below (and more:
+a set, not a sequence), and the four cards on the app's welcome screen are a
+hand-picked entrance that lies inside that folder; both are held to this file
+by `check_first_path_agrees` and `gui/tests/firstPath.test.ts`.  The AI-facing
+routing table in [`docs/ai/start-here.md`](ai/start-here.md) answers a different
+question (which document an assistant reads for which task), not this one.
+
 Every case here is verified on every run of the test suite, so none of them is
 going to fail on you for a reason that is not yours.
 

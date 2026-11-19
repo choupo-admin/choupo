@@ -29,7 +29,7 @@ License
 /*---------------------------------------------------------------------------*\
   The selection card reads stream.composition.  A feed authored with
   `molarComposition` (or massComposition / molarFlows) must map to it -- else
-  the panel shows an EMPTY composition (the freshCO bug, fixed v0.0.132).
+  the panel shows an EMPTY composition (the freshCO bug).
 \*---------------------------------------------------------------------------*/
 import { describe, it, expect } from "vitest";
 import { normaliseStreamSpec } from "../src/ui/PropertyPanel.js";

@@ -305,7 +305,9 @@ name or marks — the code is open; the name is a trademark of
 
 ## Roadmap
 
-**Choupo-2608.**  Four binaries, three-layer architecture
+**Choupo-dev (latest release Choupo-2608).**  Five binaries
+(`choupoSolve`, `choupoBatch`, `choupoCtrl`, `choupoSemiContinuous`,
+`choupoProps`), three-layer architecture
 (outer driver / simulator / post-processor); the runnable-case tally is
 generated (`generated/releaseInventory.json`), never written here.  Thermo:
 ideal / NRTL / Wilson activity, SRK + Peng-Robinson cubic EoS,
