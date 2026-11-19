@@ -46,18 +46,28 @@ Tc, Pc, omega and Tb plus a PREDICTIVE (Ambrose-Walton) vapour pressure, and
 leaves Cp, formation thermochemistry, transport and group data absent — good
 enough to screen a flash, not good enough for an energy or reaction balance.
 
-**A CHEMKIN mechanism into a case (slice 1, a curation tool).**
-`bin/curate/chemkin_to_choupo.py mech.inp [--thermo t.dat] --case DIR --licence "<text>"`
+**A CHEMKIN mechanism into a case (a curation tool, slice 2).**
+`bin/curate/chemkin_to_choupo.py mech.inp [--thermo t.dat] --case DIR --licence "<text>" [--reactions-only]`
 writes `DIR/constant/components/<name>.dat` (NASA-7 records: MW from the
 engine's atomic-weight table, `dHf_298`/`s_298` derived from the coefficients,
-licence in every provenance block) and `DIR/constant/reactions` with ONLY
-what the engine runs today (elementary mass action, b = 0, A converted from
-cm3/mol/s to m3/mol/s and Ea to J/mol).  Third-body, falloff, PLOG, FORD/RORD,
-duplicate and b != 0 reactions are NOT written and are listed by equation, with
-the reason, in `constant/mechanismImport.txt`.  It refuses the GRI-Mech family
-by name, a missing `--licence`, and any output under `data/standards`.
-`--selftest` runs offline.  Role, Tc, Pc, vapour pressure are not in a
-mechanism and are not written.
+licence in every provenance block) and `DIR/constant/reactions` in the engine's
+own CHEMKIN-native grammar (`BatchReactor.cpp`): `kinetics { type; A; b; Ea;
+units { A "cm3/mol/s"; Ea "kcal/mol"; } }`.  A and Ea are written AS PRINTED and
+the ENGINE converts them (cm-mol-s to kmol-m3-s, cal/kcal/kJ to J/mol); the
+tool does no A conversion.  Types written: `modifiedArrhenius` (b may be 0),
+`thirdBody` (+M, with `thirdBody { species eff; }`), `falloff` ((+M) with LOW,
+optional TROE, `low {}`), `reversible true` for `=`/`<=>`, DUPLICATE as
+separate entries.  KELVINS and EVOLTS Ea are converted by the tool to J/mol (the
+engine's Ea reader has no such word).  These types are read by `batchReactor`
+ONLY: the mechanism is runnable there and nowhere else.  Refused by name and
+listed by equation, with the reason, in `constant/mechanismImport.txt`: SRI,
+PLOG, FORD/RORD, REV, `(+M)` without LOW, `(+species)` colliders, MOLECULES
+units, species on both sides of a reversible reaction.  It refuses the GRI-Mech
+family by name, a missing `--licence`, and any output under `data/standards`.
+`--reactions-only` keeps the case's own thermo.  `--selftest` runs offline and
+exports `tutorials/batch/combustion/ignition01_h2o2` to CHEMKIN text, imports
+it back and, when `./choupoBatch` is built, runs both and compares the results.
+Role, Tc, Pc, vapour pressure are not in a mechanism and are not written.
 
 The component COUNT is not written here: this whole section below
 `AUTO-GENERATED` is produced by `bin/regen-llm-docs` from the `.dat` files
