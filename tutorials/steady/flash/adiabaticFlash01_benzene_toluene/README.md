@@ -3,8 +3,8 @@
 A benzene/toluene liquid (40/60 mol, 100 kmol/h) at 380 K and 3 bar is let
 down to 1 atm across a drum with **no heat added**.  Nothing tells the drum
 what temperature to settle at.  The energy balance does: the outlet comes out
-at **368.66 K**<!--golden: kpi flashAdiab T_out-->, an 11.34 K<!--golden: kpi flashAdiab T_drop--> drop, with **5.19 %**<!--golden: kpi flashAdiab V_over_F *100--> of the feed flashed to
-vapour (5.19 kmol/h<!--golden: kpi flashAdiab F_vapor *3600--> vapour, 94.81 kmol/h<!--golden: kpi flashAdiab F_liquid *3600--> liquid).  Every number here is the
+at **368.66 K**<!--golden: kpi flashAdiab T_out-->, an 11.34 K<!--golden: kpi flashAdiab T_drop--> drop, with **5.22 %**<!--golden: kpi flashAdiab V_over_F *100--> of the feed flashed to
+vapour (5.22 kmol/h<!--golden: kpi flashAdiab F_vapor *3600--> vapour, 94.78 kmol/h<!--golden: kpi flashAdiab F_liquid *3600--> liquid).  Every number here is the
 case's own golden (`expected`), which `bin/runTests` re-checks.
 
 ## The lesson

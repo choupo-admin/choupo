@@ -44,7 +44,7 @@ Measured from this run:
 | **per-pass N₂ conversion** | **45.5452 %** |
 | recycle / makeup (molar) | 1.2705 |
 | product | 3 714.29 kmol/h<!--golden: stream productNH3 F *3600--> at 99.9100 mol% NH₃ → 1 516.8 t/d NH₃ |
-| global first-law residual | +0.0020 kW<!--golden: boundary global residual_kW--> |
+| global first-law residual | +0.0019 kW<!--golden: boundary global residual_kW--> |
 | global mass closure | 99.997 % |
 
 It also claims a **converged heat and material balance**, and here that claim
@@ -124,8 +124,8 @@ bound of every vessel cost correlation the engine carries, so rung 3 could not
 honestly cost it.
 
 **The scale-up changes no intensive answer, and that is checked rather than
-asserted**: this case's converter reports y(NH₃) = 0.274313364862<!--golden: kpi converter y_NH3--> against
-`ammonia01`'s own golden value of 0.274313364606<!--golden: @steady/flowsheets/ammonia01_synthesis_loop kpi converter y_NH3-->, and both cases close their
+asserted**: this case's converter reports y(NH₃) = 0.274313364995<!--golden: kpi converter y_NH3--> against
+`ammonia01`'s own golden value of 0.274313364666<!--golden: @steady/flowsheets/ammonia01_synthesis_loop kpi converter y_NH3-->, and both cases close their
 mass balance at 99.997 %.
 
 ## 7. Running it

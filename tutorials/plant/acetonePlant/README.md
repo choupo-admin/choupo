@@ -26,8 +26,8 @@ below was predicted rather than discovered.  Nothing was tuned to close a gap.
 | isopropanol recycle, x_isopropanol | 0.650 | 0.5044<!--golden: kpi C2 x_D_LK--> |
 | water product, x_water | 0.999 | 0.9860<!--golden: kpi C2 x_B_HK--> |
 | reactor inlet, kmol/h | 57.83 | 57.84<!--golden: kpi reactor F_in_kmol_h--> |
-| vaporiser duty, kW | 757.7 | 763.11<!--golden: kpi vaporiser Q_kW--> |
-| separator duty, kW | 899.3 | 967.36<!--golden: kpi separator Q_kW *-1--> |
+| vaporiser duty, kW | 757.7 | 763.08<!--golden: kpi vaporiser Q_kW--> |
+| separator duty, kW | 899.3 | 967.33<!--golden: kpi separator Q_kW *-1--> |
 
 That first row is **85 %** of his acetone, and the case's own `CLAUDE.md`
 records the product at 0.9727 mole fraction acetone against his 0.999 spec.
@@ -40,7 +40,7 @@ records the product at 0.9727 mole fraction acetone against his 0.999 spec.
    isopropanol/water azeotrope at x 0.590 against 0.673 (`acetone01`), which
    caps C2.  Both ceilings were measured on isolated units before either
    column was built, and the golden shows them arriving: `C2 x_D_LK` is
-   **0.504407565527**<!--golden: kpi C2 x_D_LK-->, and a wetter recycle carries less isopropanol, which
+   **0.504407565576**<!--golden: kpi C2 x_D_LK-->, and a wetter recycle carries less isopropanol, which
    makes less acetone, which is the production figure in the table.  A plant
    whose disagreement you can name unit by unit is worth more than one that
    agrees for reasons nobody checked.
@@ -86,12 +86,12 @@ records the product at 0.9727 mole fraction acetone against his 0.999 spec.
    every turn of the loop: a rate that is feasible on the first pass is
    infeasible on the third, and the flowsheet would then fail on arithmetic
    instead of physics.  The golden confirms the spec was met —
-   `C1 recovery_acetone 0.96999999286`<!--golden: kpi C1 recovery_acetone--> — in three outer searches.  C2 keeps
+   `C1 recovery_acetone 0.96999999255`<!--golden: kpi C1 recovery_acetone--> — in three outer searches.  C2 keeps
    his rate, because its feed is not starved the same way.
 6. **The plant still closes.**  Global mass closure at 100 %, and the
-   plant-boundary first law pinned at `H_feeds_kW` **−5862.58875482**<!--golden: boundary global H_feeds_kW *-1-->,
-   `Q_boundary_kW` **637.187274627**<!--golden: boundary global Q_boundary_kW-->, `H_products_kW` **−5236.59370383**<!--golden: boundary global H_products_kW *-1-->, a
-   residual of **11.2056595931 kW**<!--golden: boundary global residual_kW--> (6.57 kW in the earlier state of this page; the figure is the run's, and `check_energy_closure` is the gate that holds its size).  A disagreement with a paper and a
+   plant-boundary first law pinned at `H_feeds_kW` **−5862.46655892**<!--golden: boundary global H_feeds_kW *-1-->,
+   `Q_boundary_kW` **637.089763638**<!--golden: boundary global Q_boundary_kW-->, `H_products_kW` **−5236.55642561**<!--golden: boundary global H_products_kW *-1-->, a
+   residual of **11.1796303326 kW**<!--golden: boundary global residual_kW--> (6.57 kW in the earlier state of this page; the figure is the run's, and `check_energy_closure` is the gate that holds its size).  A disagreement with a paper and a
    violation of conservation are different things, and this case is careful to
    be only the first.
 

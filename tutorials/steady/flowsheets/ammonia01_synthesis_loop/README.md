@@ -29,7 +29,7 @@ The golden: the converter reaches **y_NH3 = 0.2743**<!--golden: kpi converter y_
    estimate and not a specification: the solver converges it and announces
    what it did.  Nothing about closing this loop happens behind your back.
 2. **The recycle is visible in the arithmetic of the pinned numbers.**  One
-   kmol/h of makeup enters, and the converter sees **2.27046417241 kmol/h**<!--golden: kpi converter F_in_kmol_h-->.
+   kmol/h of makeup enters, and the converter sees **2.27046417180 kmol/h**<!--golden: kpi converter F_in_kmol_h-->.
    The difference is the recycle, and it is what turns a per-pass equilibrium
    of about 27 % ammonia into a loop that recovers far more of the makeup
    than any single pass could.  The reason the loop exists is a subtraction
@@ -38,7 +38,7 @@ The golden: the converter reaches **y_NH3 = 0.2743**<!--golden: kpi converter y_
    takes `elements ( N H Ar )` and a species list with their atom counts, and
    minimises Gibbs energy: no rate constant, no declared extent, no
    conversion specification anywhere.  What comes back is
-   `y_NH3 0.274313364606`<!--golden: kpi converter y_NH3--> plus the element potentials `lambda_N`, `lambda_H`,
+   `y_NH3 0.274313364666`<!--golden: kpi converter y_NH3--> plus the element potentials `lambda_N`, `lambda_H`,
    `lambda_Ar` — the Lagrange multipliers of the atom balances, printed
    because they are the answer's own arithmetic.
 4. **Two flashes, one temperature, two pressures.**  The separator at 250 K

@@ -42,7 +42,7 @@ the energy report refuses to price it (found while writing this case).
 | acetic acid | 97.5 kmol/h<!--golden: kpi reactor F_condensate_kmol_h--> liquid + 2.5 kmol/h in the gas ~ 99.98 kmol/h per 100 fed |
 | gas outlet | 12.5 kmol/h<!--golden: kpi reactor F_out_kmol_h-->: CO 80.1 %<!--golden: kpi reactor y_CO *100-->, acetic acid 19.8 %<!--golden: kpi reactor y_aceticAcid *100-->, methyl acetate 0.075 %<!--golden: kpi reactor y_methylAcetate *100--> and water 0.075 %<!--golden: kpi reactor y_water *100--> |
 | dimethyl ether | ~2e-8<!--golden: kpi reactor y_dimethylEther--> mole fraction — nil |
-| reactor duty | **-4578 kW**<!--golden: kpi reactor Q_kW--> (the reactor must be COOLED: reaction heat plus condensing the acid; it read -3927 before the liquid acid was bridged to the ideal-gas monomer datum, because the condensation of the acid is now priced with the dimer heat in the liquid-to-monomer bridge) |
+| reactor duty | **-4577 kW**<!--golden: kpi reactor Q_kW--> (the reactor must be COOLED: reaction heat plus condensing the acid; it read -3927 before the liquid acid was bridged to the ideal-gas monomer datum, because the condensation of the acid is now priced with the dimer heat in the liquid-to-monomer bridge) |
 
 **The lesson is that the by-products vanish.**  Carbonylation is so
 favourable (K ~ 2e5 bar^-1 at 470 K, from the formation data) that methanol is

@@ -153,7 +153,7 @@ approach.
 | per-pass N₂ conversion | **44.2715 %** (ceiling 45.5452 %) |
 | recycle / makeup (molar) | 1.3249 (ceiling 1.2705) |
 | product | 3 702.68 kmol/h<!--golden: stream productNH3 F *3600--> at 99.9108 mol% NH₃ → 1 512.1 t/d NH₃ |
-| global first-law residual | +0.0022 kW<!--golden: boundary global residual_kW--> |
+| global first-law residual | +0.0021 kW<!--golden: boundary global residual_kW--> |
 | global mass closure | 99.997 % |
 
 Sizing and costing (`system/postDict`):

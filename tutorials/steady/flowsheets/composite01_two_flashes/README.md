@@ -9,9 +9,9 @@ and a `connections {}` block.  Each child is a folder with its own
 `system/flowsheetDict`.
 
 The golden: flash1 splits **V/F = 0.7638**<!--golden: kpi flash1 V_over_F--> (76.38 kmol/h<!--golden: kpi flash1 F_beta *3600--> vapour, 23.62
-kmol/h<!--golden: kpi flash1 F_alpha *3600--> liquid) taking **686.96 kW**<!--golden: kpi flash1 Q_kW-->; flash2 splits that liquid
+kmol/h<!--golden: kpi flash1 F_alpha *3600--> liquid) taking **686.84 kW**<!--golden: kpi flash1 Q_kW-->; flash2 splits that liquid
 **V/F = 0.4359**<!--golden: kpi flash2 V_over_F--> into 10.30 kmol/h<!--golden: kpi flash2 F_beta *3600--> of vapour and 13.33 kmol/h<!--golden: kpi flash2 F_alpha *3600--> of `bottoms`,
-taking **97.36 kW**<!--golden: kpi flash2 Q_kW-->.
+taking **97.34 kW**<!--golden: kpi flash2 Q_kW-->.
 
 ## The lesson
 
@@ -38,12 +38,12 @@ taking **97.36 kW**<!--golden: kpi flash2 Q_kW-->.
    balance.
 4. **The feed's state does not move the split, but it pays for the duty.**
    `flash01`'s feed is already at 370 K and reports `Q_kW = 0`; this feed
-   arrives at 365 K and flash1 charges **686.96 kW**<!--golden: kpi flash1 Q_kW--> to get it there.  Same
+   arrives at 365 K and flash1 charges **686.84 kW**<!--golden: kpi flash1 Q_kW--> to get it there.  Same
    K's, same V/F logic, different heat bill.
 5. **The boundary closes over both boxes at once.**  The plant-level
-   `Q_boundary_kW` is **784.320784601**<!--golden: boundary global Q_boundary_kW-->, which is exactly flash1's
-   686.964038241<!--golden: utility flash1 heating.steamLP.duty_kW--> plus flash2's 97.3567463602<!--golden: utility flash2 heating.steamLP.duty_kW-->; add it to `H_feeds_kW`
-   1154.14146199<!--golden: boundary global H_feeds_kW--> and you get `H_products_kW` 1938.46221389<!--golden: boundary global H_products_kW-->.  The first law is
+   `Q_boundary_kW` is **784.179201403**<!--golden: boundary global Q_boundary_kW-->, which is exactly flash1's
+   686.840480938<!--golden: utility flash1 heating.steamLP.duty_kW--> plus flash2's 97.3387204646<!--golden: utility flash2 heating.steamLP.duty_kW-->; add it to `H_feeds_kW`
+   1154.30613424<!--golden: boundary global H_feeds_kW--> and you get `H_products_kW` 1938.48530295<!--golden: boundary global H_products_kW-->.  The first law is
    drawn across the composite, not per box — check that sum by hand, it is
    two additions.
 

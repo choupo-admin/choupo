@@ -6,8 +6,8 @@ costing**.  The chain runs from `system/postDict`; `reports { design {}
 economics {} }` in the controlDict *serialise* what it produced into
 `reports/design/sizing.csv` and `reports/economics/costs.csv`.
 
-The golden (process side): heater 0.4 kW → **361.96 K**<!--golden: kpi heater T_out-->; reactor
-X = 0.508<!--golden: kpi reactor X_limiting-->; flash at 361.96 K<!--golden: kpi separator T--> with V/F 0 -- below this liquid's bubble
+The golden (process side): heater 0.4 kW → **361.95 K**<!--golden: kpi heater T_out-->; reactor
+X = 0.508<!--golden: kpi reactor X_limiting-->; flash at 361.95 K<!--golden: kpi separator T--> with V/F 0 -- below this liquid's bubble
 point, so nothing vaporises (acetic acid's vapour is associated, which
 lowers the volatility an ideal monomer vapour would give it).  The design side, from the
 run: reactor **V_R = 0.005 m³**<!--golden: equipment reactor values.V_R-->, wall 3.15 mm<!--golden: equipment reactor values.t_wall *1000-->, 3.7 kg<!--golden: equipment reactor values.weight--> of SS316; heater

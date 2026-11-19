@@ -3,8 +3,8 @@
 Hot water (100 kmol/h, 360 K) against cold water (120 kmol/h, 300 K) in a
 counter-current exchanger of **10 m²** at **U = 500 W/m²K**.  Nothing
 about the outlet temperatures is declared; the ε-NTU method finds them.
-The golden: **Q = 93.79 kW**<!--golden: kpi hx Q_kW-->, hot out **315.28 K**<!--golden: kpi hx T_hot_out-->, cold out
-**337.27 K**<!--golden: kpi hx T_cold_out-->, NTU 2.384<!--golden: kpi hx NTU-->, C_r 0.833<!--golden: kpi hx C_r-->, **ε = 0.745**<!--golden: kpi hx effectiveness-->, LMTD 18.76 K<!--golden: kpi hx LMTD-->.
+The golden: **Q = 93.79 kW**<!--golden: kpi hx Q_kW-->, hot out **315.27 K**<!--golden: kpi hx T_hot_out-->, cold out
+**337.27 K**<!--golden: kpi hx T_cold_out-->, NTU 2.384<!--golden: kpi hx NTU-->, C_r 0.833<!--golden: kpi hx C_r-->, **ε = 0.745**<!--golden: kpi hx effectiveness-->, LMTD 18.75 K<!--golden: kpi hx LMTD-->.
 
 ## The lesson
 

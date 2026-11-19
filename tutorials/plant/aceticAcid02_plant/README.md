@@ -60,7 +60,7 @@ is **not** stored: it arrives by pipeline at the plant pressure.
 | `acidProduct` | **98.06 kmol/h**<!--golden: stream acidProduct F *3600-->, 99.87 mol % acetic acid (methyl acetate 0.06 %, water 0.07 %) |
 | acid lost | `lightsOut` 0.92, `offgas` 0.98, `purge` 0.025 kmol/h; the rest is accounted for |
 | yield on methanol | ~97.9 % to product |
-| first-law residual of the plant | +3.40 kW<!--golden: boundary global residual_kW-->, 0.05 % of the energy exchanged -- 3.28 kW of it is the methanol pump's (section 3), 0.10 kW the mixer M1's and 0.02 kW the degasser's; the lights column and the product cooler close to 1e-4 kW |
+| first-law residual of the plant | +0.12 kW<!--golden: boundary global residual_kW-->, 0.002 % of the energy exchanged -- the methanol pump no longer contributes (its useful work v·dP is now in the liquid enthalpy, section 3); what is left is the mixer M1's (0.10 kW) and the degasser's (0.02 kW); the lights column and the product cooler close to 1e-4 kW |
 | product cooler | 305.0 kW<!--golden: kpi acidCooler Q_kW *-1--> to cooling water, 404.14 K<!--golden: kpi acidCooler T_in--> -> 313.15 K |
 | inventory held in the two tanks | 1077 t<!--golden: kpi methanolTank holdupMass_kg *0.001--> of methanol + 989 t<!--golden: kpi acidTank holdupMass_kg *0.001--> of acid stream (section 8) |
 
@@ -99,15 +99,14 @@ is **not** stored: it arrives by pipeline at the plant pressure.
   heat is SHARED between `M1` and the `preheater`; the plant's total heat
   does not depend on it, the utility bill does.  An exercise: put an
   isothermal flash after `M1` and see where the duty goes.
-* **The pump's own energy balance is announced as FAILED on every run**
-  (dH 1.76 kW against 5.04 kW of shaft work, 35 % = 1 - eta).  It is the
-  engine's, not the case's: the liquid enthalpy of this package carries no
-  pressure term (measured here -- moving `0/freshMethanol` from 30 bar to
-  1 atm left the plant's feed enthalpy unchanged to the last digit), so the
-  3.28 kW of useful work v·dP the pump puts into the liquid is invisible to
-  the energy report, and only its 1.76 kW of dissipation shows as a
-  temperature rise.  `tutorials/steady/rotating/pump01_water` shows the same
-  65 % gap.
+* **The pump's own energy balance closes.**  The liquid enthalpy of this
+  package carries the pressure term v (1 - alpha T) dP from the reference
+  pressure (C390), so the 3.29 kW of useful work v·dP the pump puts into the
+  liquid (5.06 kW of shaft work at eta = 0.65) shows in the outlet enthalpy
+  as well as the 1.44 K temperature rise that is the dissipation.  Before
+  that leg the 3.28 kW was invisible to the energy report and the plant's
+  first-law residual was 3.40 kW instead of the 0.12 kW above.
+  `tutorials/steady/rotating/pump01_water` is the same lesson on one pump.
 * **Data:** dimethyl ether is `reviewStatus interim` with a Joback formation
   enthalpy (see rung 1); it is nil in every stream here.
 * Antoine ranges are exceeded at 460 K (dozens of announcements per run) and

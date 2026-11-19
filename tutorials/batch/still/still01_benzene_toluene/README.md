@@ -5,7 +5,7 @@ One mole of 50/50 benzene/toluene in a pot at 1.013 bar, boiled off for
 Rayleigh equation integrated in time.  The pot starts at its bubble
 point, **365.00 K**, and ends at **380.04 K**<!--golden: kpi still T_final--> with **0.1 mol**<!--golden: kpi still totalMoles_final *1000--> left in it
 at **91.8 % toluene**<!--golden: kpi still n_toluene_final *1e6-->; 0.9 mol<!--golden: kpi campaign moles_kmol_external_out *1000--> (0.0760 kg<!--golden: kpi campaign mass_kg_external_out-->) has left as distillate.  The
-reboiler supplied **30.33 kJ**<!--golden: kpi still E_reboiler_total_kJ-->, the condenser took **29.39 kJ**<!--golden: kpi still E_condenser_total_kJ *-1--> away.
+reboiler supplied **30.32 kJ**<!--golden: kpi still E_reboiler_total_kJ-->, the condenser took **29.38 kJ**<!--golden: kpi still E_condenser_total_kJ *-1--> away.
 
 ## The lesson
 
