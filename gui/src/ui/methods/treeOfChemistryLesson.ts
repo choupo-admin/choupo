@@ -155,9 +155,13 @@ export const TREE_STEPS: readonly LessonStep[] = [
       + "you choose one, and the page shows which alternatives exist; "
       + "where two branches ask for the same raw material their needs add. "
       + "The walk stops at a root member or at a feedstock no route in the "
-      + "graph makes, and it stops on a loop: the balanced vinyl chloride "
-      + "plant feeds the HCl its cracker releases back to the oxychlorination "
-      + "step, and the record marks that route as a declared cycle.",
+      + "graph makes, and it stops on a loop, but only for a substance "
+      + "already on the path to itself.  A recycle through a co-product is "
+      + "not seen: in the balanced vinyl chloride plant the HCl its cracker "
+      + "releases feeds the oxychlorination step, and the record marks that "
+      + "route as a declared cycle; the walk does not close it, so picking "
+      + "oxychlorination expands HCl through its own route and charges fresh "
+      + "chlorine and hydrogen for HCl the plant makes itself.",
     formula: String.raw`m_\mathrm{raw}=\sum_{\text{branches}}\ \prod_{k\in\text{path}}\frac{b_k}{y_k}`,
     where: [
       { sym: "m_\\mathrm{raw}", means: "kilograms of a raw material (a root member or feedstock) per kilogram of the picked product", unit: "kg/kg" },

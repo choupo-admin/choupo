@@ -438,7 +438,7 @@ export const BUND_STEPS: readonly LessonStep[] = [
       + "and 2 m above), or a low wall far from a tall one, which a jet from "
       + "a hole high in the shell can clear; a drain "
       + "trusted to be closed.  The table after this step holds one volume "
-      + "with three walls.",
+      + "with four walls.",
     formula: String.raw`F = \frac{\rho\,g\,h_\mathrm{w}^2}{2}, \qquad M = \frac{\rho\,g\,h_\mathrm{w}^3}{6}`,
     where: [
       { sym: "F", means: "the thrust of the liquid on one metre of wall, the bund full", unit: "N/m" },
@@ -527,8 +527,9 @@ export const BUND_STEPS: readonly LessonStep[] = [
     n: 15,
     title: "Exercise 1: three tanks, one bund",
     body: "Three tanks of 20, 15 and 10 m3 stand in one bund.  Choose the "
-      + "rule; the bench below computes what it requires (the largest tank, "
-      + "or a quarter of the total, the larger), and the wall height at "
+      + "rule; the bench below computes what it requires (the larger of "
+      + "110 % of the largest tank and a quarter of the total, 22 m3 here, or "
+      + "100 % of the largest, 20 m3), and the wall height at "
       + "which Choupo's layout check, with every footprint deducted, is just "
       + "met.  Then enter your own wall height, area and freeboard: the "
       + "bench gives your bund's geometric, net and useful capacities, "

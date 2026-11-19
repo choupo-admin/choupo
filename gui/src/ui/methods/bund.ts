@@ -520,7 +520,7 @@ export function scenarioDefaults(b: Bund, tanks: readonly Tank[], tank: string):
   };
 }
 
-// ---- Geometry decides: one volume, three walls -------------------------------------
+// ---- Geometry decides: one volume, four walls -------------------------------------
 
 /** The hydrostatic thrust on a metre of wall holding liquid of density rho to
  *  height h, and its overturning moment about the wall's foot:

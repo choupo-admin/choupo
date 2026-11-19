@@ -510,7 +510,7 @@ export function DatabaseToParametersTool(): JSX.Element {
               <li>{COUNTS.oneArticle} of the {COUNTS.nrtl} NRTL pairs cite ONE article.</li>
               <li>{COUNTS.heldOutNone} held nothing out: every grade is in-sample.</li>
               <li>{COUNTS.capped} carry a cap: a clean on one temperature or one laboratory.</li>
-              <li>{COUNTS.severe} severe pairs are still there, promoted before severe stopped being promoted.</li>
+              <li>{COUNTS.severe} carried fitGrade severe at that commit; a severe fit is promoted and voiced severe, only a refused one is discarded.</li>
               <li>{COUNTS.reviewedByPerson} have been reviewed by a person.</li>
             </ul>
           </Text>
