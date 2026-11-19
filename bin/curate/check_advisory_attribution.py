@@ -186,7 +186,11 @@ DAVIES = "beyond its ~0.5 mol/kg trust range"
 #  rest are the path.  These bounds are deliberately loose -- they pin the
 #  SHAPE (a small accepted band, a large trial band), not a recorded count
 #  that would have to be re-recorded on every numerical nudge.
-MAX_ACCEPTED = 30
+#  30 -> 35 (2026-11-19, lote): C390's liquid pressure leg adds two
+#  advisories that are genuinely about the ANSWER ("liquid pressure term sign
+#  NH3: 1 - alpha T < 0" at the converged state, and the sealed case's missing
+#  IAPWS95 copy for water's liquid density); the flood this bounds was 68.
+MAX_ACCEPTED = 35
 MIN_TRIAL = 40
 
 
