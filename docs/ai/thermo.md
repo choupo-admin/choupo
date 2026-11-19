@@ -1422,3 +1422,18 @@ Do NOT invent parameter values to get past the refusal.  A fabricated pair
 looks exactly like a curated one and no gate can tell them apart; an
 authorised ideal pair is visible forever.
 
+
+## One liquid-density door (C445, 2026-11-19)
+
+`liquidProperty::evaluate(thermo, Property::density, ..)` and the resolver's
+`liquidProperty::density(Request)` are ONE door: the method (a `measured` point,
+a solution law, a reference equation, the ideal mixing of record volumes, with
+`massWithoutVolume` where the case declares it) is resolved once per constituent
+set and every unit asking for that stream's liquid density gets the same number
+by the same method.  The old second door (`ThermoPackage::density`, ideal mixing
+only) is no longer reached from a unit.  A tank, a pipe or a sizing pass on
+seawater therefore prices the salt by the case's NaCl-water law, as the pump
+does; `densityPricedFraction` is 1 there.  A component no method of the set
+covers (a gas above its critical temperature dissolved in the liquid) is still
+left out and named in the liquid-properties table.  Theory Guide
+`sec:liquid-density-methods`; gate `check_density_pilot` arm T.

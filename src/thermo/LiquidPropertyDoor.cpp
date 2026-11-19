@@ -35,20 +35,6 @@
 namespace Choupo {
 namespace liquidProperty {
 
-namespace {
-
-using Route = ThermoPackage::LiquidVolumeRoute;
-
-//  The route words have ONE home, the record-volume leaves of the kernel
-//  (liquidProperty/DensityLeaf.H); the slice-0 description of
-//  `ThermoPackage::density` reads them there.
-const char* routeId(Route r) { return recordRouteId(static_cast<int>(r)); }
-std::string routeLabel(Route r, const std::vector<std::string>& statedAt = {})
-{ return recordRouteWords(static_cast<int>(r), statedAt); }
-const char* routeOrigin(Route r) { return recordRouteOrigin(static_cast<int>(r)); }
-
-} // namespace
-
 std::vector<std::string> statedDatumTemperatures(const ThermoPackage& thermo, const sVector& x)
 {
     std::vector<std::string> out;
@@ -137,13 +123,26 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
                     const sVector& x, const Consumer* who, const std::string& leftOut,
                     bool record, long component)
 {
+    //  THE ONE DENSITY DOOR (DEV.md 4c C445 (2)).  A liquid's density is
+    //  priced by the property kernel's methods -- measured, solution law,
+    //  reference equation, record volumes, resolved once per constituent set
+    //  (thermo/liquidProperty/DensityResolver) -- for EVERY asker.  It used to
+    //  go from here to `ThermoPackage::density`, which knows only the ideal
+    //  mixing of record volumes, so a pump and a tank on one seawater priced
+    //  it by two methods (swro01_campoDalias: 996.9 against 1018 kg/m3).
+    if (p == Property::density)
+    {
+        Request q;
+        q.thermo = &thermo; q.T = T; q.P = P; q.x = x;
+        q.who = who; q.leftOut = leftOut; q.record = record;
+        return density(q);
+    }
     Result r;
     //  THE VALUE FIRST, through the package's own method: the same double,
     //  and its refusal unchanged.
     switch (p)
     {
-        case Property::density:
-            r.value = thermo.density(T, P, x, DensityPhase::Liquid);       break;
+        case Property::density:                                            break;   // answered above
         case Property::viscosity:
             r.value = thermo.viscosityLiquid(T, x);                         break;
         case Property::surfaceTension:
@@ -271,22 +270,6 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
         r.leaves.push_back({ thermo.comp(*i).name(), r.methodId, 1.0 });
         r.quality.origin     = "regressed";
         r.quality.provenance = "the case's pureFluids selection (" + m + ")";
-        if (p == Property::density)
-        {
-            //  The words follow the one phase decision the package took
-            //  (pureFluidPhaseState, C378 pilot defect 1).
-            const bool line = pureFluidPhaseState(*model, T, P, true).branch
-                           != PureFluidPhaseBranch::oneFluid;
-            r.label = "property kernel: the pure-fluid formulation "
-                    + model->densityFormulation()
-                    + (line ? ", liquid branch at the temperature and pressure; at or"
-                              " below the saturation pressure, the saturated liquid at T"
-                            : " at the temperature and pressure (no saturation line"
-                              " at this temperature: one fluid)");
-            r.pressureApplied = true;
-            pressure = "applied";
-        }
-        else
         {
             //  The formulation that gives THIS property, named by the model
             //  that computed it (DR-01): IF97 gives no viscosity and no
@@ -299,45 +282,6 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
                     + (sat ? ", at saturation" : "");
             pressure = sat ? "not applied (saturated liquid)" : "";
         }
-    }
-    else if (p == Property::density)
-    {
-        scalar zs = 0.0;
-        for (std::size_t k = 0; k < x.size(); ++k) if (x[k] > 0.0) zs += x[k];
-        std::set<Route> routes;
-        //  The datum temperature of every component on a route that reads
-        //  `Vliq`; handed to routeLabel only when one of them states `VliqT`,
-        //  so a request at 25 C keeps its words byte for byte.
-        std::map<Route, std::vector<std::string>> datumT;
-        std::set<Route> stated;
-        for (std::size_t k = 0; k < x.size() && k < thermo.n(); ++k)
-            if (x[k] > 0.0)
-            {
-                const Route rt = thermo.liquidVolumeRouteOf(k);
-                routes.insert(rt);
-                const Component& ck = thermo.comp(k);
-                if (rt == Route::anchoredRackett || rt == Route::flatVliq)
-                {
-                    datumT[rt].push_back(datumOf(ck));
-                    if (ck.hasVliqT()) stated.insert(rt);
-                }
-                r.leaves.push_back({ thermo.comp(k).name(),
-                                     std::string("liquidVolume.") + routeId(rt),
-                                     zs > 0.0 ? x[k] / zs : 0.0 });
-            }
-        r.methodId = "liquidVolume.idealMix[";
-        r.label    = "property kernel: ideal mixing of liquid volumes, ";
-        bool first = true;
-        for (const Route rt : routes)
-        {
-            r.methodId += std::string(first ? "" : "+") + routeId(rt);
-            r.label    += std::string(first ? "" : "; ") + routeLabel(rt, stated.count(rt) ? datumT[rt] : std::vector<std::string>{});
-            if (r.quality.origin.empty() || std::string(routeOrigin(rt)) == "estimated")
-                r.quality.origin = routeOrigin(rt);
-            first = false;
-        }
-        r.methodId += "]";
-        r.quality.provenance = "the component records' Vliq, Tc, Pc, omega";
     }
     else
     {

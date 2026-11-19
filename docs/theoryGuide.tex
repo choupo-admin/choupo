@@ -3901,12 +3901,22 @@ request --- the density of a set of constituents at $(T,P)$ with the phase's
 own mole fractions --- and returns, with the number, its identifier, the
 words a student reads (written by the method that computed, never by the
 consumer), its leaves and the share each carries, whether pressure entered,
-and the three statements of quality.  The entry is migration scaffolding:
-only the pump and the CSTR call it, and \code{liquidProperty::evaluate}
-keeps serving every other consumer unchanged.  In particular the
-time-integrated units (the dynamic tank's holdup) still price water by the
-record's volume carried by Rackett while a steady pump prices the same water
-by its reference equation: they were left out of the pilot by decision.
+and the three statements of quality.  Since 2026-11-19 (DEV.md 4c C445 (2)) this entry is
+\emph{the one density door}: \code{liquidProperty::evaluate} with
+\code{Property::density} is the same function with the arguments spelled
+differently, so every unit that asks for one stream's liquid density ---
+pump, tank, pipe, exchanger, column, sizing pass, dynamic holdup --- gets the
+same number by the same method.  Before, \code{evaluate} went to the package's
+ideal mixing of the records' volumes and the entry to the resolver, and in
+one seawater plant the pumps priced the water by the NaCl--water solution law
+while five tanks and filters priced it by ideal mixing with the salt left
+out (98.9 \% of the stream priced, about 997 against about 1018 kg/m$^3$).  A
+component the method cannot price alone (a gas above its critical temperature
+dissolved in the liquid) is still left out of the volume and named in the
+table, but only when the method cannot price the \emph{whole} set: a salt
+that a solution law or a declared \code{massWithoutVolume} covers is priced.
+The gate \code{check\_density\_pilot} (arm T) runs a case in which a unit
+of each kind asks for one stream and fails if the two answers differ.
 
 \paragraph{Leaves and set methods.}  A \emph{leaf} is bound to one
 component and answers its liquid molar volume $v_i$; a \emph{set method}

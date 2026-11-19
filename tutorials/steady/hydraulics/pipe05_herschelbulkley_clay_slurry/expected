@@ -1,42 +1,42 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-stream  delivered              F                0.0523162805556    1e-4
-stream  delivered              T                298.15             1e-4
-stream  feed                   F                0.0523162805556    1e-4
-stream  feed                   T                298.15             1e-4
-kpi     L1                     F                0.0523162805556    1e-4
-kpi     L1                     P_in             2500000            1e-4
-kpi     L1                     P_out            1033205.26145      1e-4
-kpi     L1                     dP_elevation     0                  1e-4
-kpi     L1                     dP_fittings      0                  1e-4
-kpi     L1                     dP_friction      1466794.73855      1e-4
+stream  delivered              F                0.0523162805556  1e-4
+stream  delivered              T                298.15           1e-4
+stream  feed                   F                0.0523162805556  1e-4
+stream  feed                   T                298.15           1e-4
+kpi     L1                     F                0.0523162805556  1e-4
+kpi     L1                     P_in             2500000          1e-4
+kpi     L1                     P_out            1033205.26145    1e-4
+kpi     L1                     dP_elevation     0                1e-4
+kpi     L1                     dP_fittings      0                1e-4
+kpi     L1                     dP_friction      1466794.73855    1e-4
 # ANCHOR (published): Ex. 3.3, p. 123: -dp = 1.46e6 Pa
-kpi     L1                     deltaP           1.46e+06         0.01    anchor
-kpi     L1                     density          1500               1e-4
-kpi     L1                     frictionFactor   0.625832424262     1e-4
-kpi     L1                     head_loss_m      99.7142917339      1e-4
-kpi     L1                     mPrime           13.3257210807      1e-4
-kpi     L1                     nPrime           0.171354310208     1e-4
-kpi     L1                     nominalShearRate 99.9999998017      1e-4
+kpi     L1                     deltaP           1.46e+06         0.01     anchor
+kpi     L1                     density          1500             1e-4
+kpi     L1                     frictionFactor   0.625832424262   1e-4
+kpi     L1                     head_loss_m      99.7142917339    1e-4
+kpi     L1                     mPrime           13.3257210807    1e-4
+kpi     L1                     nPrime           0.171354310208   1e-4
+kpi     L1                     nominalShearRate 99.9999998017    1e-4
 # ANCHOR (published): Ex. 3.3, p. 123: R_p = 11.6 mm
-kpi     L1                     plugRadius       0.0116           0.01    anchor
+kpi     L1                     plugRadius       0.0116           0.01     anchor
 # ANCHOR (published): Ex. 3.3, p. 123: V_zp = 0.62 m/s
-kpi     L1                     plugVelocity     0.62             0.01    anchor
-kpi     L1                     regime           0                  1e-4
-kpi     L1                     reynolds         102.263797015      1e-4
-kpi     L1                     tailShare        0                  1e-4
-kpi     L1                     velocity         0.499999999009     1e-4
-kpi     L1                     viscosity        0.293358948291     1e-4
-kpi     L1                     viscosityApparentWall 0.132804934507     1e-4
-kpi     L1                     wallShearRate    220.894614194      1e-4
+kpi     L1                     plugVelocity     0.62             0.01     anchor
+kpi     L1                     regime           0                1e-4
+kpi     L1                     reynolds         102.263797015    1e-4
+kpi     L1                     tailShare        0                1e-4
+kpi     L1                     velocity         0.499999999009   1e-4
+kpi     L1                     viscosity        0.293358948291   1e-4
+kpi     L1                     viscosityApparentWall 0.132804934507   1e-4
+kpi     L1                     wallShearRate    220.894614194    1e-4
 # ANCHOR (published): Ex. 3.3, p. 122-123: tau_w = 29.31 Pa
-kpi     L1                     wallShearStress  29.31            0.002   anchor
+kpi     L1                     wallShearStress  29.31            0.002    anchor
 # ANCHOR (published): Ex. 3.3, p. 122: phi = 0.58
-kpi     L1                     yieldRatio       0.58             0.01    anchor
-boundary global               H_feeds_kW       -14953.5624712     1e-4
-boundary global               Q_boundary_kW    0                  1e-4
-boundary global               H_products_kW    -14953.5624712     1e-4
-boundary global               noBoundary       false              exact
-source  L1                     liquidDensity    liquidVolume.idealMix[flatVliq] exact
+kpi     L1                     yieldRatio       0.58             0.01     anchor
+boundary global                 H_feeds_kW       -14953.5624712   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -14953.5624712   1e-4
+boundary global                 noBoundary       false            exact
+source  L1                     liquidDensity    idealMixing[flatVliq] exact
 source  L1                     liquidViscosity  flowCurve.herschelBulkleyEx33 exact

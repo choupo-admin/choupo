@@ -56,6 +56,8 @@ ALLOWED = {
     "src/propertyOps/FilmProperties.H": 1,                     # the film's density at its own composition, the mole basis aside (C435 slice 4: the membrane benches ask the door)
     "src/propertyOps/PoreTransportBench.cpp": 1,               # the pore bench's film density, same Request form (C435 slice 4)
     "src/propertyOps/PropertyEvaluator.cpp": 1,
+    "src/thermo/LiquidPropertyDoor.cpp": 1,                     # `evaluate(density)` IS this entry: the one density door (C445 (2))
+    "src/thermo/PricedDensity.cpp": 3,                          # which components the ONE density door can price whole, asked of the door unrecorded (C445 (2); three asks: the set, the thinned set, the set without its traces)
     "src/applications/choupoProps/PropertyRouteBench.cpp": 4,   # the sweep, the address-reuse check, the domain-trial check (two calls)
 }
 CALL = re.compile(r"\bliquidProperty::density\s*\(")

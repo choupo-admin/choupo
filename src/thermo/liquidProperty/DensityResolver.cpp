@@ -605,6 +605,7 @@ Result density(const Request& q)
     r.leaves          = a.leaves;
     r.pressureApplied = a.pressureApplied;
     r.quality         = a.quality;
+    if (!q.record) return r;                          // an unrecorded ask prints and records nothing
 
     std::string type, unit;
     const bool site = q.who ? (type = q.who->type, unit = q.who->unit, true)
@@ -689,7 +690,7 @@ Result density(const Request& q)
     PropertySourceLog::instance().use(type, unit, name(Property::density),
         r.methodId, r.label, "kernel",
         !a.pressureWords.empty() ? a.pressureWords
-                                 : (r.pressureApplied ? std::string("applied") : std::string("not applied")), "",
+                                 : (r.pressureApplied ? std::string("applied") : std::string("not applied")), q.leftOut,
         took(r.value, q.T, q.P > 0.0 ? q.P : std::numeric_limits<double>::quiet_NaN(),
              compositionKey(q.x)));
     return r;
