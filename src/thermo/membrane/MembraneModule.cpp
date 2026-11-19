@@ -288,7 +288,7 @@ void MembraneModule::readFromDict(const DictPtr& d, const std::string& sourcePat
     if (d->found("limits"))
     {
         auto l = d->subDict("limits");
-        if (l->found("P_max"))        { limits_.hasP_max = true;        limits_.P_max        = l->lookupScalar("P_max", Dims::pressure); }
+        if (l->found("P_max"))        { limits_.hasP_max = true;        limits_.P_max        = l->lookupScalarIn("P_max", Dims::pressure, "bar") * 1.0e5; }   // bare = bar, as a class record reads it (C454 family 7); stored in Pa
         if (l->found("T_max"))        { limits_.hasT_max = true;        limits_.T_max        = l->lookupScalar("T_max", Dims::temperature); }
         if (l->found("dP_max"))       { limits_.hasDP_max = true;       limits_.dP_max       = l->lookupScalar("dP_max", Dims::pressure); }
         if (l->found("feedFlow_max")) { limits_.hasFeedFlow_max = true; limits_.feedFlow_max = l->lookupScalar("feedFlow_max", Dims::volumetricFlow); }
