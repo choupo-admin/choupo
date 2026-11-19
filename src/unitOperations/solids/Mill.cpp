@@ -332,6 +332,11 @@ int Mill::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbosity)
 
     // ---- KPIs -----------------------------------------------------------
     kpis_.clear();
+    //  The motor's shaft power in W, the item every rotating unit declares
+    //  (C445): the utility report bills electricity on it.  It is NOT an
+    //  energy item (EnergyItems.H lists W_shaft_kW), so the balance counts
+    //  the mill's work once.
+    kpis_["W_shaft"]             = W;
     kpis_["W_shaft_kW"]          = W / 1000.0;
     kpis_["specificEnergy_kWh_t"] = E / 3600.0;
     kpis_["solidsMassFlow_kg_s"] = mDot;

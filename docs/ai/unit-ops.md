@@ -2358,7 +2358,7 @@ unit's `model` word) and fragments distributed by the BREAKAGE function;
 `residence plugFlow` (p = exp(M) f, Austin eq. 49) or `perfectlyMixed` (eq. 44a).
 Mass is conserved class by class by construction (`sizeMassClosure` ~1e-16);
 the chemistry passes through.  Exactly ONE of `W_shaft` / `specificEnergy`;
-adiabatic, T_out from H(out) = H(in) + W, published `W_shaft_kW`.  Only
+adiabatic, T_out from H(out) = H(in) + W, published `W_shaft_kW` (and `W_shaft` in W, the item the utility report bills as grid electricity, C445).  Only
 `herbstFuerstenau` lets the energy break particles; for the rate laws it is
 priced as heat, and the run says so.  Bond's third theory is printed BESIDE it
 (`bond { workIndex ...; }`), never instead.
