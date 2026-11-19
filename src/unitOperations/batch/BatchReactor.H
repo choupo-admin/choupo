@@ -64,6 +64,7 @@ Description
 #pragma once
 
 #include "thermo/reaction/ReactionRate.H"
+#include "solver/ODE/ODEIntegrator.H"
 
 #include <memory>
 
@@ -93,6 +94,18 @@ public:
     sVector odeDerivative(const sVector& y) const override { return derivatives_(y); }
     std::size_t odeNPositive() const override { return state_.n.size(); }
     std::string odeRowLabel(std::size_t i) const override;
+    //  The ANALYTIC Jacobian (opt-in, `solver { jacobian analytic; }`):
+    //  the species columns from the rate laws' own derivatives, the energy
+    //  row by the chain rule, the T column by one directional difference.
+    //  See odeJacobian in BatchReactor.cpp and the Theory Guide section
+    //  sec:batch-analytic-jacobian.  Absent the key: none (the default).
+    bool hasOdeJacobian() const override { return jacobianAnalytic_; }
+    std::vector<sVector> odeJacobian(const sVector& y, const sVector& f0,
+                                     const sVector& typ) const override;
+    //  The audit of the analytic Jacobian in the ADAPTIVE sweep is kept by
+    //  the stepper; this one serves the fixed-deltaT stiff path (step()).
+    const solver::ODEAnalyticJacobian& jacobianAudit() const { return jacAudit_; }
+    sVector odeJacobianScale(const sVector& y) const override;
 
     const BatchState& state() const override { return state_; }
     //- The reactor's whole integrated state IS its holdup (the inventory
@@ -213,6 +226,22 @@ private:
     // sub-dict (unlisted species => 1.0).
     sVector thirdBodyEfficiencies_(const DictPtr& kin,
                                    const ThermoPackage& thermo) const;
+
+    // ---- The analytic Jacobian (opt-in) --------------------------------
+    bool jacobianAnalytic_ = false;         // `solver { jacobian analytic; }`
+    solver::ODEAnalyticJacobian jacAudit_;  // the step() path's audit record
+    std::size_t jacAnnounced_ = 0;          // audits already printed
+    mutable long rhsEvals_ = 0;             // derivatives_ calls (a count only)
+    //  d r / d c_k [kmol/(m3 s) per kmol/m3] of one reaction, accumulated
+    //  into `grad` (full length), mirroring rateOfReaction_ term by term.
+    //  `typ` is the integrator's per-row scale for the columns a Factory
+    //  law (or a power below one at zero) differentiates by a difference.
+    void rateGradient_(const ReactionSpec& rxn, scalar T, const sVector& n,
+                       scalar V, const sVector& typ, sVector& grad) const;
+    //  The per-reaction difference: every species column of ONE reaction.
+    void rateGradientFD_(const ReactionSpec& rxn, scalar T, const sVector& n,
+                         scalar V, const sVector& typ, sVector& grad) const;
+    void announceJacobianAudits_(scalar tRun);
 
     // Combined derivatives for the packed state.
     //   packed[0..n-1] = mole numbers (kmol)
