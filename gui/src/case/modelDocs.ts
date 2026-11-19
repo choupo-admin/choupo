@@ -165,7 +165,7 @@ const THEORY_DEST: Record<string, string> = {
   // rotating + electrical
   compressor: "ch:rotating",
   turbine: "ch:rotating",
-  pump: "ch:rotating",
+  pump: "sec:pump-selection",   // choosing a pump: the generic estimates and the maker's curve (C441); the unit's chapter is ch:rotating
   pressureExchanger: "sec:pressure-exchanger",
   electricLoad: "ch:simple-ops",
   // solids

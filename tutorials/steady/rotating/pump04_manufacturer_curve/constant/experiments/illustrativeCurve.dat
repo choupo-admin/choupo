@@ -1,0 +1,50 @@
+/*---------------------------------------------------------------------------*\
+  constant/experiments/illustrativeCurve.dat -- ILLUSTRATIVE pump characteristic curve
+
+  *** NOT A MANUFACTURER'S CURVE. ***  Constructed for the tutorial
+  pump04_manufacturer_curve to have the shape of a small single-stage radial
+  pump's curve (a falling head, an efficiency peak near the middle of the
+  range, an NPSH required rising with flow).  No pump was measured; no data
+  sheet was copied.  Do not size a real pump with it.
+
+  An experiment record of kind PUMP CURVE (DEV.md 4c C441, level 2).  A real
+  record carries `kind measured`, the data sheet as `citation`, the test the
+  maker ran (ISO 9906 fixes the acceptance tolerances) and the NPSH3 column.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    origin       assumed;
+    kind         illustrative;
+    basis        "constructed for the tutorial: H, eta and NPSH3 against Q with the shape of a small single-stage radial pump; no manufacturer's data";
+    citation     "Illustrative record constructed for Choupo tutorial pump04_manufacturer_curve (not a manufacturer's curve; the shape is that described for centrifugal pump characteristics in Gulich, Centrifugal Pumps, 4th ed., Springer 2020, Ch. 4)";
+    sha256       "11228c28acadc1d4a1ed958ba9b30db253d84c11186dc0ce5fee16cb73dfecf1";   // of the data ( ... ); block as written
+}
+
+property    pumpCurve;
+system      ( water );
+
+conditions
+{
+    speed          2900 rpm;
+    fluid          "water, 20 degC (the liquid of a maker's test)";
+    npshCriterion  NPSH3;          // NPSHr is the NPSH of the 3 % head drop
+}
+
+columns
+(
+    { name Q;     unit m3/h; }
+    { name H;     unit m;    }
+    { name eta;   unit -;    }
+    { name NPSHr; unit m;    }
+);
+data
+(
+    10    72.0   0.38   1.6
+    20    71.0   0.55   1.9
+    30    69.5   0.66   2.3
+    40    67.0   0.72   2.9
+    50    63.0   0.74   3.7
+    60    57.5   0.72   4.8
+    70    50.0   0.66   6.2
+);

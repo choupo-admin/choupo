@@ -33,10 +33,33 @@
       "title": "Pressure rise",
       "description": "Specify the rise instead of the outlet pressure or the power.",
       "unit": "Pa"
+    },
+    "efficiency": {
+      "type": "string",
+      "enum": ["estimated"],
+      "title": "Estimated efficiency (generic pump, C441)",
+      "description": "Instead of `eta`: the efficiency of a well-designed single-stage radial pump of this duty, Gulich Eq. T3.9.1 (p. 163). Needs `selection` and P_out or dP; every number is printed `estimated`."
+    },
+    "selection": {
+      "type": "object",
+      "title": "Generic pump selection (C441)",
+      "description": "speed (rpm); EXACTLY ONE of impeller <class> (Table D6.1, p. 320: standardAxialInlet, suctionImpellerAxial, betweenBearings, highPressure, inducer) or suctionSpecificSpeed <nss>; optional Qbep (best-efficiency flow) and preferredRange ( low high ) of Q/Qbep. The run prints nq, the efficiency, NPSH3, NPSHA, the margin and the operating region, each marked estimated."
+    },
+    "suction": {
+      "type": "object",
+      "title": "Suction conditions for the NPSH available (C441)",
+      "description": "staticHead (z_e, level above the pump axis, negative for a lift), lineLoss (H_v,s), inletVelocity (c_e); each defaults to zero and the run prints the value used (Gulich Eq. T2.2.8, p. 52)."
+    },
+    "curve": {
+      "type": "string",
+      "title": "The maker's pump curve (C441, level 2)",
+      "description": "Name of constant/experiments/<name>.dat, a record of property pumpCurve with columns Q, H, eta, NPSHr. The pump sits on its curve (head, efficiency and NPSHr read at the feed's flow); W_shaft, P_out, dP and eta are refused beside it; a flow outside the curve is refused by name."
     }
   },
-  "required": [
-    "eta"
+  "anyOf": [
+    { "required": ["eta"] },
+    { "required": ["efficiency", "selection"] },
+    { "required": ["curve"] }
   ],
   "additionalProperties": false
 }

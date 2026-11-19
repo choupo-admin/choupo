@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Pump.H"
+#include "PumpSelection.H"
 #include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "solver/NewtonRaphson.H"
@@ -37,7 +38,10 @@ License
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -80,12 +84,38 @@ int Pump::solve(const DictPtr& dict,
                         acceptance()), thermo, locus);
     }
 
-    // ---- Efficiency (always required) -----------------------------------
-    const scalar eta = operDict->lookupScalar("eta");
-    if (eta <= 0.0 || eta > 1.0)
-        throw std::runtime_error(
-            "Pump: eta must satisfy 0 < eta <= 1 (got "
-            + std::to_string(eta) + ")");
+    // ---- Efficiency: typed (the default), ESTIMATED, or read off a CURVE ---
+    //  DEV.md 4c C441, two levels of choosing a pump (PumpSelection.H).
+    //  `efficiency estimated;` + `selection {}` -> Gulich Eq. (T3.9.1);
+    //  `curve <name>;` -> the maker's record.  Neither key present: the typed
+    //  `eta`, exactly as before (no existing case moves).
+    const std::string who = dict->name().empty() ? type() : dict->name();
+    const bool hasSel   = operDict->found("selection");
+    const bool hasCurve = operDict->found("curve");
+    const bool estEta   = operDict->found("efficiency");
+    if (estEta && operDict->lookupWord("efficiency") != "estimated")
+        throw std::runtime_error("pump '" + who + "': `efficiency " + operDict->lookupWord("efficiency")
+            + ";` -- the only word is `estimated` (Gulich Eq. T3.9.1 from the duty and the speed; needs a"
+              " `selection { speed ...; }` block).  A typed efficiency is `eta <value>;`.");
+    if (estEta && operDict->found("eta"))
+        throw std::runtime_error("pump '" + who + "': both `eta` and `efficiency estimated;` -- one"
+            " efficiency: type it, or have it estimated.");
+    if (estEta && !hasSel)
+        throw std::runtime_error("pump '" + who + "': `efficiency estimated;` needs `selection { speed <n> rpm;"
+            " impeller <class> | suctionSpecificSpeed <nss>; }` -- the correlation is a function of the specific"
+            " speed, which needs the speed.");
+    if (hasCurve && (hasSel || estEta || operDict->found("eta")))
+        throw std::runtime_error("pump '" + who + "': a `curve` carries the head AND the efficiency AND the NPSH"
+            " required; `eta`, `efficiency` and `selection` are the GENERIC level and are refused beside it.");
+    scalar eta = 0.0;
+    if (!estEta && !hasCurve)
+    {
+        eta = operDict->lookupScalar("eta");
+        if (eta <= 0.0 || eta > 1.0)
+            throw std::runtime_error(
+                "Pump: eta must satisfy 0 < eta <= 1 (got "
+                + std::to_string(eta) + ")");
+    }
 
     // ---- Liquid density (incompressible): THE PROPERTY KERNEL ------------
     //   rho at the INLET state from the kernel's methods (C378 pilot,
@@ -147,7 +177,16 @@ int Pump::solve(const DictPtr& dict,
     const bool hasP  = operDict->found("P_out");
     const bool hasDP = operDict->found("dP");
     const int  nSpec = (hasW ? 1 : 0) + (hasP ? 1 : 0) + (hasDP ? 1 : 0);
-    if (nSpec != 1)
+    if (hasCurve && nSpec != 0)
+        throw std::runtime_error("pump '" + who + "': a pump on a declared `curve` sets its OWN head -- the"
+            " pressure rise is the curve's H(Q) at the feed's flow, so `W_shaft`, `P_out` and `dP` are"
+            " refused beside it (an over-specification).  Remove the spec; the discharge pressure and the"
+            " shaft power are results.");
+    if (estEta && hasW)
+        throw std::runtime_error("pump '" + who + "': `efficiency estimated;` needs the pressure rise (`P_out` or"
+            " `dP`): the efficiency is a function of the head, and with `W_shaft` given the head is itself a"
+            " function of the efficiency.");
+    if (!hasCurve && nSpec != 1)
         throw std::runtime_error(
             "Pump: specify EXACTLY ONE of 'W_shaft', 'P_out', or 'dP' in "
             "operation (got " + std::to_string(nSpec) + ").  W_shaft -> the "
@@ -157,7 +196,77 @@ int Pump::solve(const DictPtr& dict,
 
     scalar W_shaft = 0.0, dP = 0.0;
     std::string specMode;
-    if (hasW)                                           // power given -> dP result
+
+    //  ---- LEVEL 1 inputs (the generic pump) and LEVEL 2 (the curve) ------
+    //  Every number the selection prints is an ESTIMATE of Gulich's; each
+    //  reading is announced.  Read here so the efficiency is known before
+    //  the shaft power is.
+    scalar n_rpm = 0.0, Qbep = Q_vol, nss = 0.0, porLo = pumpSelection::porLowDefault,
+           porHi = pumpSelection::porHighDefault;
+    std::string nssBasis, QbepBasis;
+    scalar z_e = 0.0, c_e = 0.0, Hv_s = 0.0;
+    pumpSelection::Curve curve;
+    if (hasSel)
+    {
+        const DictPtr sel = operDict->subDict("selection");
+        n_rpm = sel->lookupScalar("speed", Dims::inverseTime) * 60.0;
+        if (!(n_rpm > 0.0))
+            throw std::runtime_error("pump '" + who + "': selection { speed } must be positive.");
+        if (sel->found("suctionSpecificSpeed") == sel->found("impeller"))
+            throw std::runtime_error("pump '" + who + "': selection needs EXACTLY ONE of `impeller <class>;` (the"
+                " lower limit of the Table D6.1 row, Gulich p. 320: the conservative end, a larger NPSH3) or"
+                " `suctionSpecificSpeed <nss>;` (a maker's value).");
+        if (sel->found("impeller"))
+        {
+            scalar lo = 0.0, hi = 0.0; std::string row;
+            pumpSelection::suctionSpecificSpeedClass(sel->lookupWord("impeller"), lo, hi, row);
+            nss = lo;
+            char b[300];
+            std::snprintf(b, sizeof b, "Table D6.1 (Gulich p. 320): %s: nss %.0f to %.0f, the lower limit taken",
+                          row.c_str(), static_cast<double>(lo), static_cast<double>(hi));
+            nssBasis = b;
+        }
+        else
+        {
+            nss = sel->lookupScalar("suctionSpecificSpeed");
+            nssBasis = "declared by the case";
+        }
+        if (!(nss > 0.0))
+            throw std::runtime_error("pump '" + who + "': the suction specific speed must be positive.");
+        if (sel->found("Qbep"))
+        {
+            Qbep = sel->lookupScalar("Qbep", Dims::volumetricFlow);
+            QbepBasis = "declared: the best-efficiency flow of the pump chosen";
+        }
+        else QbepBasis = "assumed equal to the duty flow (the pump is taken as chosen with its BEP at the duty)";
+        if (sel->found("preferredRange"))
+        {
+            const auto r = sel->lookupList("preferredRange");
+            if (r.size() != 2 || !(r[0] > 0.0 && r[1] > r[0]))
+                throw std::runtime_error("pump '" + who + "': selection { preferredRange ( low high ); } -- two"
+                    " ratios of Q/Qbep, 0 < low < high.");
+            porLo = r[0]; porHi = r[1];
+        }
+    }
+    if (operDict->found("suction"))
+    {
+        const DictPtr su = operDict->subDict("suction");
+        z_e  = su->lookupScalarOrDefault("staticHead", 0.0);
+        c_e  = su->lookupScalarOrDefault("inletVelocity", 0.0);
+        Hv_s = su->lookupScalarOrDefault("lineLoss", 0.0);
+    }
+    if (hasCurve)
+        curve = pumpSelection::readCurve(operDict->lookupWord("curve"), "pump '" + who + "'");
+
+    if (hasCurve)                                       // the maker's head -> dP, eta from the curve
+    {
+        const auto pt = curve.at(Q_vol, "pump '" + who + "'");
+        eta = pt.eta;
+        dP  = rho * pumpSelection::g * pt.H;
+        W_shaft = Q_vol * dP / eta;
+        specMode = "curve `" + curve.name + "` (H, eta at the feed's flow) -> P_out, W_shaft (results)";
+    }
+    else if (hasW)                                      // power given -> dP result
     {
         W_shaft = operDict->lookupScalar("W_shaft", Dims::power);
         if (W_shaft <= 0.0)
@@ -175,8 +284,19 @@ int Pump::solve(const DictPtr& dict,
                 "Pump: the discharge pressure must EXCEED the inlet (a pump "
                 "raises pressure).  Got dP = " + std::to_string(dP / 1.0e5)
                 + " bar.  For a pressure let-down, use a 'valve'.");
+        if (estEta)
+        {
+            //  Gulich Eq. (T3.9.1) at the duty: the head the pump must give
+            //  fixes nq, nq and Q fix the efficiency; refused outside its window.
+            const scalar H_duty = dP / (rho * pumpSelection::g);
+            const scalar nqe = pumpSelection::specificSpeed(n_rpm, Qbep, H_duty);
+            const std::string why = pumpSelection::efficiencyWindowRefusal(Qbep, nqe);
+            if (!why.empty()) throw std::runtime_error("pump '" + who + "': " + why + ".");
+            eta = pumpSelection::etaOptimum(Qbep, nqe);
+        }
         W_shaft  = Q_vol * dP / eta;
-        specMode = std::string(hasP ? "P_out" : "dP") + " (given) -> W_shaft (result)";
+        specMode = std::string(hasP ? "P_out" : "dP") + " (given) -> W_shaft (result)"
+                 + (estEta ? "; eta ESTIMATED (Gulich Eq. T3.9.1)" : "");
     }
 
     // ---- Closed-form discharge ------------------------------------------
@@ -424,6 +544,116 @@ int Pump::solve(const DictPtr& dict,
     // Pump head h = dP / (rho g), rho the kernel's (above).
     const scalar head_m = dP / (rho * 9.80665);
 
+    // ---- THE SELECTION (C441): generic estimates, or the maker's curve ----
+    //  NPSHA is the flowsheet's own: the inlet stream's pressure and
+    //  temperature against the liquid's vapour pressure (Gulich Eq. T2.2.8,
+    //  p. 52).  p_v is the Raoult bubble pressure sum x_i Psat_i(T_in), from
+    //  the one door to the saturation curve; a dissolved ion with no curve is
+    //  non-volatile.  An ESTIMATE for a non-ideal mixture, said so below.
+    std::map<std::string, scalar> sel;
+    std::vector<std::string> selLines;
+    if (hasSel || hasCurve)
+    {
+        auto fmt = [](const char* f, double a, double b = 0.0, double c = 0.0, double d = 0.0)
+        {
+            char buf[420]; std::snprintf(buf, sizeof buf, f, a, b, c, d); return std::string(buf);
+        };
+        scalar p_v = 0.0;
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            if (x[i] <= 0.0) continue;
+            if (thermo.hasSaturationCurve(i)) p_v += x[i] * thermo.Psat(i, T_in);
+            else if (!thermo.comp(i).hasAqueousMapping())
+                throw std::runtime_error("pump '" + who + "': no saturation curve for '" + thermo.comp(i).name()
+                    + "', so the NPSH available cannot be formed (Gulich Eq. T2.2.8 needs p_v).");
+        }
+        const scalar npsha = pumpSelection::npshAvailable(P_in, p_v, rho, z_e, c_e, Hv_s);
+        scalar npshReq = 0.0, qStar = 1.0;
+        std::string tag;
+        if (hasSel)
+        {
+            tag = "estimated";
+            const scalar nq = pumpSelection::specificSpeed(n_rpm, Qbep, head_m);
+            const std::string why = pumpSelection::efficiencyWindowRefusal(Qbep, nq);
+            scalar etaOpt = 0.0;
+            if (why.empty()) etaOpt = pumpSelection::etaOptimum(Qbep, nq);
+            else if (estEta) throw std::runtime_error("pump '" + who + "': " + why + ".");
+            npshReq = pumpSelection::npsh3FromNss(n_rpm, Qbep, nss);
+            qStar = Q_vol / Qbep;
+            selLines.push_back(fmt("  Duty:            Q = %.5g m3/h   H = %.4g m   speed = %.5g rpm", Q_vol * 3600.0, head_m, n_rpm));
+            selLines.push_back("  Qbep:            " + fmt("%.5g m3/h", Qbep * 3600.0) + "   (" + QbepBasis + ")");
+            selLines.push_back(fmt("  Specific speed:  nq = %.4g   [estimated: Gulich Eq. T3.4.15, p. 154; n sqrt(Q)/H^0.75, rpm, m3/s, m]", nq));
+            if (why.empty())
+            {
+                const scalar band = pumpSelection::etaUncertainty(etaOpt);
+                selLines.push_back(fmt("  Efficiency:      eta_opt = %.4f  +- %.3f   [estimated: Gulich Eq. T3.9.1 p. 163; band Eq. T3.9.10]", etaOpt, band)
+                                   + (estEta ? "  -> USED for the shaft power" : "  (typed eta " + fmt("%.4f", eta) + " is the one used)"));
+                sel["eta_estimated"] = etaOpt;
+                sel["eta_uncertainty"] = band;
+                if (std::fabs(qStar - 1.0) > 1.0e-9)
+                    selLines.push_back("                   (the BEP value: the part-load / overload efficiency is not estimated)");
+            }
+            else selLines.push_back("  Efficiency:      not estimated -- " + why);
+            selLines.push_back(fmt("  NPSH3 (BEP):     %.4g m   [estimated: nss = %.0f from ", npshReq, nss) + nssBasis
+                               + "; Gulich Eq. 6.7 p. 320 inverted]");
+            selLines.push_back("                   (at part load or overload the true NPSH3 is higher than the BEP value)");
+            sel["nq"] = nq;
+            sel["npsh3_m"] = npshReq;
+            sel["suction_specific_speed"] = nss;
+        }
+        else
+        {
+            tag = "curve";
+            const auto pt = curve.at(Q_vol, "pump '" + who + "'");
+            npshReq = pt.NPSHr;
+            selLines.push_back("  Curve:           `" + curve.name + "`  (" + curve.where + ", kind " + curve.kind + ")");
+            if (curve.kind == "illustrative")
+                selLines.push_back("                   ILLUSTRATIVE RECORD: constructed to teach, NOT a manufacturer's curve");
+            selLines.push_back("                   source: " + curve.citation);
+            selLines.push_back(fmt("  Curve range:     Q = %.5g .. %.5g m3/h  (taken at %.5g rpm, ", curve.Q.front() * 3600.0, curve.Q.back() * 3600.0, curve.speed_rpm)
+                               + curve.fluid + "; no extrapolation)");
+            selLines.push_back(fmt("  At the duty:     Q = %.5g m3/h   H = %.4g m   eta = %.4f   NPSHr = %.4g m   [read off the curve, linear between rows]", Q_vol * 3600.0, pt.H, pt.eta, pt.NPSHr));
+            selLines.push_back("                   no viscosity or speed correction: head in metres is used as read (Gulich Ch. 13 not applied)");
+            sel["npsh3_m"] = npshReq;
+        }
+        const scalar npshaMin = pumpSelection::npshaMinimum(npshReq);
+        const scalar F_npsh = npsha / npshReq;
+        selLines.push_back(fmt("  NPSHA:           %.4g m   [Gulich Eq. T2.2.8 p. 52: (P_in %.4g bar - p_v %.4g bar)/(rho g) + z_e + c_e^2/2g - H_v,s;", npsha, P_in / 1.0e5, p_v / 1.0e5)
+                           + fmt(" z_e %.3g m, c_e %.3g m/s, H_v,s %.3g m; p_v the Raoult bubble pressure at T_in]", z_e, c_e, Hv_s));
+        selLines.push_back(fmt("  NPSH margin:     F_NPSH = NPSHA/NPSH3 = %.3f;  minimum NPSHA = %.4g m (max of 1.25 NPSH3 and NPSH3 + 0.6 m, Gulich Table 6.2 p. 379)", F_npsh, npshaMin));
+        selLines.push_back(npsha >= npshaMin ? "                   -> margin ADEQUATE for the Table 6.2 minimum (criterion C1; the u1-based rule needs the impeller, not asked)"
+                                             : "                   -> margin BELOW the Table 6.2 minimum: raise the suction pressure, lower the line loss or the liquid temperature, or choose a pump of lower NPSH");
+        if (hasSel)
+        {
+            const bool inPOR = qStar > porLo && qStar < porHi;
+            selLines.push_back(fmt("  Operating region: q* = Q/Qbep = %.3f; preferred operation range %.2f < q* < %.2f ", qStar, porLo, porHi)
+                               + (inPOR ? "-> INSIDE" : "-> OUTSIDE")
+                               + "  [Gulich Sect. 10.9 p. 806: 0.85..1.1 is the contract example; the standards (API 610 / ISO 13709, Hydraulic Institute) fix their own]");
+            sel["q_star"] = qStar;
+            sel["in_preferred_range"] = inPOR ? 1.0 : 0.0;
+        }
+        else
+        {
+            sel["q_star"] = 0.0;
+        }
+        sel["npsha_m"] = npsha;
+        sel["npsh_min_m"] = npshaMin;
+        sel["npsh_margin"] = F_npsh;
+        sel["p_vapour"] = p_v;
+        sel["npsh_adequate"] = npsha >= npshaMin ? 1.0 : 0.0;
+        if (hasCurve) sel.erase("q_star");
+        const std::string msg = hasSel
+            ? "pump selection ESTIMATED from Gulich (specific speed, efficiency, NPSH3 from the suction specific speed)"
+              " -- a generic pump with no catalogue; every number marked `estimated` is a statistical value"
+            : "pump on the case's declared curve `" + curve.name + "` (" + curve.kind + " record)";
+        AdvisoryLog::instance().add("model", "info", "pump '" + who + "'", msg);
+        if (verbosity >= 2)
+        {
+            std::cout << "\n---- Pump selection (" << (hasSel ? "generic, ESTIMATED" : "manufacturer's curve") << ") ----\n";
+            for (const auto& l : selLines) std::cout << l << "\n";
+        }
+    }
+
     if (verbosity >= 2)
     {
         std::cout << "\n==============================  Pump Result  ========================\n"
@@ -475,6 +705,7 @@ int Pump::solve(const DictPtr& dict,
     kpis_["dT"]           = T_out - T_in;
     kpis_["v_molar_liq"]  = v_mix;
     kpis_["F"]            = F;
+    for (const auto& kv : sel) kpis_[kv.first] = kv.second;   // the selection block, only when asked
 
     return 0;
 }

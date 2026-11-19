@@ -1,0 +1,64 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  pump04_manufacturer_curve
+  =========================
+
+  A REAL PUMP: the maker's characteristic curve is a measured RECORD of the
+  case (DEV.md 4c C441, level 2).  The pump does not guess an efficiency and
+  is not given a pressure: it sits on its curve.  At the flow the feed
+  carries (about 45 m3/h) the engine reads, off constant/experiments/
+  illustrativeCurve.dat,
+      H(Q)      the head the pump delivers  -> P_out = P_in + rho g H
+      eta(Q)    the efficiency              -> W_shaft = Q dP / eta
+      NPSHr(Q)  the NPSH required (NPSH3)   -> the margin against the NPSHA
+  and prints them.  A flow outside the curve's range is REFUSED by name (the
+  engine never extrapolates a maker's curve).
+
+  THE CURVE IN THIS CASE IS ILLUSTRATIVE.  It was constructed for this
+  tutorial to have the shape of a small single-stage pump's curve; it is
+  NOT a manufacturer's curve and must not be used to size a real pump.  The
+  record says so (`kind illustrative`) and the run prints it.  A real record
+  has `kind measured` and cites the data sheet (and the test standard the
+  curve was taken to, ISO 9906).  Replace the file's rows with a data
+  sheet's and the case becomes that pump's.
+
+  The margin rule is Gulich, Centrifugal Pumps, 4th ed., Table 6.2, p. 379:
+  NPSHA >= max(1.25 NPSH3, NPSH3 + 0.6 m); the NPSHA is Eq. T2.2.8, p. 52,
+  the same as in the generic level (pump03_generic_selection).
+
+  Not applied: speed and impeller-trim corrections, and the correction of the
+  curve for a viscous liquid (Gulich Ch. 13); the head in metres is used as
+  read, for a liquid of water's viscosity.  Hand check at 45 m3/h: the rows
+  at 40 and 50 m3/h give H = (67+63)/2 = 65 m, eta = (0.72+0.74)/2 = 0.73,
+  NPSHr = (2.9+3.7)/2 = 3.3 m; dP = 997*9.80665*65 = 6.36 bar.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        pump04;
+        type        pump;
+        in          feed;
+        outputs     ( out );
+
+        operation
+        {
+            curve       illustrativeCurve;   // constant/experiments/illustrativeCurve.dat
+
+            suction
+            {
+                staticHead  -2 m;            // z_e: the pump is 2 m ABOVE the liquid level (a lift)
+                lineLoss    0.5 m;           // H_v,s: loss in the suction line
+            }
+        }
+    }
+);

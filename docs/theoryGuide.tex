@@ -27180,6 +27180,112 @@ its discharge pressure ($P_{\text{out}}=30$\,bar); the shaft power is the
 result --- the exact inverse of pump01.
 \end{tutoriallink}
 
+\subsection{Choosing a centrifugal pump: the generic pump and the maker's
+curve}\label{sec:pump-selection}
+
+\emph{Is there a standard for choosing a centrifugal pump --- its
+characteristic curve, efficiency and NPSH --- or is it all the
+manufacturer's?}  Both, and Choupo carries both levels.  The
+\emph{numbers} of a real pump are its maker's (a measured curve); what is
+common to all pumps, and can be estimated before any catalogue is opened, is
+published statistics of their hydraulics.  The source of every correlation
+below is Gülich, \emph{Centrifugal Pumps}, 4th ed., Springer 2020, read at the
+page printed beside it.  The standards that fix the margins and the preferred
+regions (the Hydraulic Institute's, API~610\,/\,ISO~13709, ISO~9906 for the
+tolerances of a curve) are cited for \emph{what they rule}; their numbers are
+not in Choupo.
+
+\paragraph{Level 1: the generic pump (every number \code{estimated}).}
+With \code{efficiency estimated;} and a \code{selection \{\ldots\}} block the
+pump takes the duty $Q$ (the feed's volumetric flow), the head
+$H=\Delta P/(\rho g)$ (from \code{P\_out} or \code{dP}; $\rho$ the property
+kernel's) and the speed $n$, and estimates, at the best-efficiency point (BEP):
+\begin{align}
+  n_q &= n\,\frac{\sqrt{Q}}{H^{0.75}}
+        &&\text{(Table~3.4, Eq.~T3.4.15, p.~154)}\label{eq:pump-nq}\\
+  \eta_{\mathrm{opt}} &= 1-0.095\left(\tfrac{Q_{\mathrm{Ref}}}{Q}\right)^{m}
+        -0.3\left\{0.35-\log_{10}\tfrac{n_q}{23}\right\}^{2}
+        \left(\tfrac{Q_{\mathrm{Ref}}}{Q}\right)^{0.05}
+        &&\text{(Table~3.9, Eq.~T3.9.1, p.~163)}\label{eq:pump-eta}\\
+  m &= 0.1\,a\left(\tfrac{Q_{\mathrm{Ref}}}{Q}\right)^{0.15}
+        \left(\tfrac{45}{n_q}\right)^{0.06},\quad Q_{\mathrm{Ref}}=1\ \text{m}^3/\text{s},\;
+        a=\begin{cases}1&Q\le1\ \text{m}^3/\text{s}\\0.5&Q>1\ \text{m}^3/\text{s}\end{cases}
+        &&\text{(same table)}\nonumber\\
+  \Delta\eta &= \pm0.2\,(1-\eta_{\mathrm{opt}})
+        &&\text{(Eq.~T3.9.10, p.~163)}\label{eq:pump-eta-band}\\
+  n_{ss} &= n\,\frac{\sqrt{Q}}{\mathrm{NPSH}_3^{0.75}}
+        \;\Rightarrow\; \mathrm{NPSH}_3=\left(\frac{n\sqrt{Q}}{n_{ss}}\right)^{4/3}
+        &&\text{(Eq.~6.7, p.~320; Table~3.4 Eq.~T3.4.17, p.~154)}\label{eq:pump-npsh3}
+\end{align}
+Symbols: $n$ in rpm, $Q$ in m$^3$/s and $H$ in m in these formulas;
+$n_q$ specific speed, $\eta_{\mathrm{opt}}$ the overall efficiency at
+the BEP of a single-stage, single-entry radial pump, $n_{ss}$ the suction
+specific speed.  Equation~\ref{eq:pump-eta} is Gülich's fit to many pumps and
+is valid for $Q\ge0.005$\,m$^3$/s and $n_q\le100$ (Table~3.9 header); Choupo
+applies it for $10\le n_q\le100$, the span of his Fig.~3.26 (p.~132), and
+\emph{refuses by name} outside it --- a smaller or semi-axial pump is not
+covered (Eq.~T3.9.3 is not built).  The value of $n_{ss}$ is read from the
+class of impeller (\code{impeller <class>;}), the lower limit of the range of
+Table~D6.1 (p.~320) --- standard axial-inlet impellers 160--220, axial-inlet
+suction impellers 220--280, between-bearing 180--240, high-pressure 160--190,
+inducers 400--700 --- the conservative end, which gives the larger $\mathrm{NPSH}_3$;
+or a maker's number is declared (\code{suctionSpecificSpeed}).
+
+The NPSH \emph{available} is the flowsheet's, from the inlet stream:
+\begin{equation}
+  \mathrm{NPSH}_A=\frac{p_{e}-p_v}{\rho g}+z_e+\frac{c_e^{2}}{2g}-H_{v,s}
+  \qquad\text{(Table~2.2, Eq.~T2.2.8, p.~52)}\label{eq:pump-npsha}
+\end{equation}
+with $p_e$ the inlet stream's absolute pressure, $p_v=\sum_i x_i\,p^{\mathrm{sat}}_i(T)$
+the Raoult bubble pressure at the stream's temperature (an estimate for a non-ideal
+mixture; exact for a pure liquid), $z_e$ the declared height of the liquid
+level above the pump axis (\code{suction \{ staticHead \}}, negative for a lift),
+$c_e$ the declared inlet velocity and $H_{v,s}$ the declared suction-line loss; each
+defaults to zero and the run prints the value used.  The margin is judged by
+Gülich's minimum (Table~6.2, p.~379):
+$\mathrm{NPSH}_A\ge\max(1.25\,\mathrm{NPSH}_3,\ \mathrm{NPSH}_3+0.6\ \text{m})$,
+and the run prints $F_{\mathrm{NPSH}}=\mathrm{NPSH}_A/\mathrm{NPSH}_3$.  The rule that
+depends on the tip speed $u_1$ of the same table needs the impeller and is not
+asked.  Finally $q^*=Q/Q_{\mathrm{opt}}$ is compared with the preferred operation
+range, $0.85<q^*<1.1$ (Gülich Sect.~10.9, p.~806, an \emph{example} of what a
+contract fixes; \code{preferredRange ( lo hi )} overrides it; the standards fix
+their own).  \code{Qbep} declares the best-efficiency flow of the pump chosen;
+absent, the pump is taken as chosen with its BEP at the duty and
+$q^*=1$.  Off the BEP the efficiency printed is the BEP value and the
+$\mathrm{NPSH}_3$ is the BEP's --- the part-load and overload dependences are not
+estimated, and the run says so.  The shaft power then follows from the estimated
+efficiency, $W_{\mathrm{shaft}}=Q\,\Delta P/\eta$.  With a \emph{typed}
+\code{eta} the selection block is a report only and the typed efficiency is
+used: no existing case moves.
+
+\paragraph{Level 2: the maker's curve (a record of the case).}
+\code{curve <name>;} reads \code{constant/experiments/<name>.dat}, a record of
+kind \code{pumpCurve} with the columns $Q$, $H$, $\eta$ and $\mathrm{NPSH}_r$, its
+\code{provenance} (a \code{kind} of \code{measured}, \code{adopted} or
+\code{illustrative}, the citation, the sha256), and the test conditions (speed,
+liquid, and \code{npshCriterion NPSH3}, the 3\,\% head drop ISO~9906 defines).  The
+pump no longer takes a pressure: it sits on its curve.  At the feed's flow,
+\begin{equation}
+  \Delta P=\rho g\,H(Q),\qquad W_{\mathrm{shaft}}=\frac{Q\,\Delta P}{\eta(Q)},\qquad
+  \mathrm{NPSH}_r=\mathrm{NPSH}_r(Q),
+\end{equation}
+each read by linear interpolation between the rows; $W_{\text{shaft}}$,
+\code{P\_out} and \code{dP} are refused beside a curve (an over-specification).
+The margin is judged as above on the curve's $\mathrm{NPSH}_r$.  A flow below the
+curve's first row or beyond its last is \emph{refused by name}: the engine does not
+extrapolate a maker's curve.  Not applied: a speed or trim correction, and the
+correction of a curve for a viscous liquid (Gülich Ch.~13); the head in metres is
+used as read.
+
+\begin{tutoriallink}
+\file{tutorials/steady/rotating/pump03\_generic\_selection} --- level 1: $n_q\approx16$,
+the estimated efficiency with its band, $\mathrm{NPSH}_3$ from the suction specific speed, the margin
+against Table~6.2.\\
+\file{tutorials/steady/rotating/pump04\_manufacturer\_curve} --- level 2 on an
+\emph{illustrative} curve (constructed for the tutorial, labelled so, not a manufacturer's):
+head, efficiency and $\mathrm{NPSH}_r$ read at the flow, the shaft power, the margin.
+\end{tutoriallink}
+
 \subsection{The pressure exchanger: pressure moved from one liquid to
 another}\label{sec:pressure-exchanger}
 
