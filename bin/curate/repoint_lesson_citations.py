@@ -468,19 +468,19 @@ def apply(tree, items, tmap, shifts):
     return sorted(edits)
 
 
-def inventory(tree, items, problems):
-    print("citation shapes managed (count per file):")
-    per = defaultdict(lambda: defaultdict(int))
-    for it in items:
-        per[it.where][it.shape] += 1
-    for rel in sorted(per):
-        print("  %-52s %s" % (rel, " ".join("%s=%d" % kv for kv in sorted(per[rel].items()))))
+def unmanaged_tokens(tree, items):
+    """Every prose `X.cpp:N` token no managed claim covers, as (file, token).
+
+    THE ONE HOME of "unmanaged" (DEV.md 4c C455): `--inventory` counts it and
+    check_lesson_prose_citations ratchets it, so the two can never disagree
+    about which citations no claim keeps.  A token is managed when a CLAIMS
+    key names the same file and range, or an ANCHORS line falls inside it."""
     managed = {(it.target, fmt(it.a, it.b)) for it in items if it.shape == "C"}
     cover = defaultdict(list)
     for it in items:
         if it.shape == "T":
             cover[it.target].append(it.a)
-    un = defaultdict(int)
+    out = []
     for rel in tree.ts_files:
         with open(os.path.join(tree.root, rel), encoding="utf-8") as fh:
             t = fh.read()
@@ -489,9 +489,22 @@ def inventory(tree, items, problems):
             b = int(m.group("b") or a)
             tgt = tree.resolve(m.group("f"))
             if not isinstance(tgt, str):
-                un[rel] += 1
+                out.append((rel, "%s:%s" % (m.group("f"), fmt(a, b))))
             elif (tgt, fmt(a, b)) not in managed and not any(a <= n <= b for n in cover[tgt]):
-                un[rel] += 1
+                out.append((rel, "%s:%s" % (m.group("f"), fmt(a, b))))
+    return out
+
+
+def inventory(tree, items, problems):
+    print("citation shapes managed (count per file):")
+    per = defaultdict(lambda: defaultdict(int))
+    for it in items:
+        per[it.where][it.shape] += 1
+    for rel in sorted(per):
+        print("  %-52s %s" % (rel, " ".join("%s=%d" % kv for kv in sorted(per[rel].items()))))
+    un = defaultdict(int)
+    for rel, tok in unmanaged_tokens(tree, items):
+        un[rel] += 1
     print("unmanaged tokens (prose citations no managed claim covers):")
     for rel in sorted(un):
         print("  %-52s %d" % (rel, un[rel]))
