@@ -1805,6 +1805,11 @@
       "exit": 0,
       "claim": "check_readme_numbers: OK -- 350 marked README number(s) in 40 case(s) agree with their golden rows at the precision written",
       "seconds": 0.1
+    },
+    "check_pressure_si": {
+      "exit": 0,
+      "claim": "check_pressure_si: OK -- 419 files of src/unitOperations, src/dynamicDriver, src/applications, src/postProcessing: no pressure-named operand is multiplied by 1e5 and no pressure member is documented in bar; both rules caught all their probe lines.  NOT CHECKED: a rescaling by a named constant, a pressure under a name that does not start with P, and whether a number that is only compared is in the right unit.",
+      "seconds": 0.4
     }
   }
 }
