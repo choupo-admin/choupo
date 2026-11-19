@@ -207,6 +207,12 @@ public:
     // time argument of their own.  Default: ignore.
     virtual void noteTimeAdvanced(scalar t) { (void) t; }
 
+    // The run's declared window [startTime, endTime], told to every vessel by
+    // choupoBatch before the first clock call, so a vessel that carries a time
+    // the case names (the reactor's `rateOfProduction { times (...) }`) can
+    // refuse one outside the run by name.  Default: ignore.
+    virtual void setRunWindow(scalar t0, scalar t1) { (void) t0; (void) t1; }
+
     // Total enthalpy [kJ] of the vessel's CURRENT all-phase inventory on
     // the elements datum, each phase priced on ITS OWN reference rung.
     // The campaign energy balance reads its dH_vessel terms through this
