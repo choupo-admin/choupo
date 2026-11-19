@@ -1,0 +1,37 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feed                   F                0.691666666667     1e-4
+stream  feed                   T                298.15             1e-4
+stream  out                    F                0.691666666667     1e-4
+stream  out                    T                298.218002937      1e-4
+kpi     pump04                 F                0.691666666667     1e-4
+kpi     pump04                 P_in             100000             1e-4
+kpi     pump04                 P_out            735588.249099      1e-4
+kpi     pump04                 T_in             298.15             1e-4
+kpi     pump04                 T_out            298.218002937      1e-4
+kpi     pump04                 W_hydraulic      7943.12366363      1e-4
+kpi     pump04                 W_shaft          10881.2833463      1e-4
+kpi     pump04                 W_shaft_kW       10.8812833463      1e-4
+kpi     pump04                 dP               635588.249099      1e-4
+kpi     pump04                 dT               0.0680029374274    1e-4
+kpi     pump04                 eta              0.729980408636     1e-4
+kpi     pump04                 head_m           65.0039182728      1e-4
+kpi     pump04                 npsh3_m          3.29921634543      1e-4
+kpi     pump04                 npsh_adequate    1                  1e-4
+kpi     pump04                 npsh_margin      2.24391882739      1e-4
+kpi     pump04                 npsh_min_m       4.12402043179      1e-4
+kpi     pump04                 npsha_m          7.40317367314      1e-4
+kpi     pump04                 p_vapour         3169.82448631      1e-4
+kpi     pump04                 v_molar_liq      1.80683551478e-05  1e-4
+boundary global               H_feeds_kW       -198093.316953     1e-4
+boundary global               Q_boundary_kW    10.8812833463      1e-4
+boundary global               H_products_kW    -198082.435669     1e-4
+boundary global               noBoundary       false              exact
+boundary global               residual_denom_kW 10.8812833463      1e-4
+boundary global               W_shaft_kW       10.8812833463      1e-4
+utility pump04                 power.electricity.duty_kW 11.4539824698      1e-4
+utility pump04                 power.electricity.T -1                 1e-4
+utility pump04                 power.electricity.kg_s 0                  1e-4
+utility pump04                 power.electricity.eur_h 1.14631456558      1e-4
+source  pump04                 liquidDensity    referenceEquation.IAPWS95 exact

@@ -342,7 +342,7 @@ export const PUMP_STEPS: readonly LessonStep[] = [
         unit: "m" },
     ],
     note: "Choupo computes none of this, and the page will not pretend "
-      + "otherwise: no unit in the engine publishes an NPSH of either kind, "
+      + "otherwise: this diagram's pump (typed efficiency) publishes no NPSH -- the pump unit's opt-in `selection` or `curve`, C441, does -- "
       + "the pump model carries no suction geometry, and it never checks its "
       + "inlet against the liquid's vapour pressure.  The lines above are a "
       + "question you have to answer somewhere else, with the pump's own "
@@ -368,7 +368,7 @@ export const PUMP_LIMITS: readonly { id: string; title: string; body: string }[]
     id: "no-npsh",
     title: "No NPSH, no cavitation check, anywhere in the engine.",
     body: "Neither NPSH available nor NPSH required is computed or "
-      + "published by any unit. The pump model has no suction geometry and "
+      + "published by this diagram's pump (the pump unit's opt-in selection, C441, does). The pump model has no suction geometry and "
       + "never compares its inlet pressure with the liquid's vapour "
       + "pressure. A crossing on this diagram is silent about whether the "
       + "pump can actually run there.",

@@ -1,0 +1,83 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  pump03_generic_selection
+  ========================
+
+  CHOOSING A CENTRIFUGAL PUMP WITH NO CATALOGUE (DEV.md 4c C441, level 1).
+  Water at 25 degC, 50 m3/h, from a tank at 1.2 bar absolute (liquid 1 m
+  above the pump axis, 0.8 m of suction-line loss) to a header at 7 bar.
+  The shaft power is NOT typed with an efficiency: the pump asks Gulich's
+  statistics what efficiency a well-designed single-stage radial pump of
+  this duty has, and the run prints every number it estimated.
+
+  Source of EVERY correlation: Gulich, Centrifugal Pumps, 4th ed.,
+  Springer 2020.  Pages are printed in the run beside each number.
+      specific speed   nq = n sqrt(Q) / H^0.75            Eq. T3.4.15, p. 154
+      efficiency       eta_opt(Q, nq)                      Eq. T3.9.1,  p. 163
+                       uncertainty +- 0.2 (1 - eta_opt)    Eq. T3.9.10, p. 163
+      NPSH3 (BEP)      nss = n sqrt(Q) / NPSH3^0.75        Eq. 6.7,     p. 320
+                       nss from the impeller class         Table D6.1,  p. 320
+      NPSH available   (P_in - p_v)/(rho g) + z_e + ...    Eq. T2.2.8,  p. 52
+      margin           NPSHA >= max(1.25 NPSH3, NPSH3+0.6) Table 6.2,   p. 379
+      preferred range  0.85 < Q/Qbep < 1.1                 Sect. 10.9,  p. 806
+
+  WHAT TO READ IN THE RUN.  The "Pump selection" block: nq (about 16, a low
+  specific speed, a narrow radial impeller), the efficiency Gulich expects
+  and its band, the NPSH3 the suction specific speed implies, the NPSHA the
+  flowsheet computes from the inlet stream, the margin against the Table 6.2
+  minimum, and whether the duty lies in the preferred operation range.
+  Every one is marked `estimated`: they are statistics of many pumps, with
+  the band Gulich gives, not a promise of any maker.
+
+  Hand check (nq): n = 2900 rpm, Q = 50/3600 = 0.01389 m3/s,
+  H = dP/(rho g) = 5.8e5/(997*9.80665) = 59.3 m ->
+  nq = 2900*sqrt(0.01389)/59.3^0.75 = 2900*0.1179/21.4 = 16.0.
+
+  WHAT THE LEVEL IS NOT: it knows nothing of a particular pump, of the
+  part-load or overload efficiency (the BEP value is used and said so), of
+  viscosity, or of the impeller's tip speed (the NPSHA rule of Table 6.2
+  that depends on u1 is not asked, only its minimum).  Use level 2 (case
+  pump04_manufacturer_curve) when a maker's curve exists.
+
+  The standards that fix the margins and the preferred regions (the Hydraulic
+  Institute's, API 610 / ISO 13709, ISO 9906 for curve tolerances) are cited
+  for WHAT they rule; their numbers are not in Choupo until a copy is in the
+  project's folder.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        pump03;
+        type        pump;
+        in          feed;
+        outputs     ( out );
+
+        operation
+        {
+            P_out       7 bar;               // the header the pump must reach
+            efficiency  estimated;           // Gulich Eq. T3.9.1, NOT a typed number
+
+            selection
+            {
+                speed       2900 rpm;        // a 2-pole motor at 50 Hz
+                impeller    standardAxialInlet;   // Table D6.1: nss 160 to 220, the lower limit
+            }
+
+            suction
+            {
+                staticHead  1 m;             // z_e: the liquid level above the pump axis
+                lineLoss    0.8 m;           // H_v,s: loss in the suction line
+            }
+        }
+    }
+);

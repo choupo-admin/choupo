@@ -371,6 +371,10 @@ describe("the honest half", () => {
         const p = join(dir, e);
         if (statSync(p).isDirectory()) { walk(p); continue; }
         if (!/\.(H|cpp)$/.test(e)) continue;
+        //  C441 (2026-11-19): the pump unit's OPT-IN selection (Gulich Eq. T2.2.8,
+        //  Table 6.2) is the one allowed NPSH home; this lesson's pump is the
+        //  typed-eta one and still computes none.
+        if (/rotating\/Pump(Selection)?\.(H|cpp)$/.test(p)) continue;
         if (/NPSH|cavitat/i.test(readFileSync(p, "utf-8"))) hits.push(p);
       }
     };
@@ -385,8 +389,9 @@ describe("the honest half", () => {
     //  The model's specification is exactly one of these three, and none of
     //  them is a speed or an impeller diameter.
     expect(pump).toContain("EXACTLY ONE of 'W_shaft', 'P_out', or 'dP'");
-    expect(pump).not.toMatch(/\brpm\b/i);
-    expect(pump).not.toMatch(/impeller/i);
+    //  C441: a speed appears only in the opt-in `selection` block, which
+    //  estimates and never scales a curve: no affinity law is evaluated.
+    expect(pump).not.toMatch(/affinity/i);
   });
 
   it("the static-head claim is TRUE of the pipe: elevation, and nothing else", () => {
