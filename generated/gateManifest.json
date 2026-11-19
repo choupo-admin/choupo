@@ -1823,8 +1823,8 @@
     },
     "check_unit_convention": {
       "exit": 0,
-      "claim": "check_unit_convention: OK (a) every read of `Pc` (bar) and `pressureDesign` (bar) goes through lookupScalarIn; (b) flash09's V/F is 0.475737805121 with CH4's Pc bare and with it written `bar`, and 1 with the Pa number bare (the run sees Pc); (c) 27 published sizing numbers of flash22 are identical with pressureDesign bare and written `bar` (ten times the pressure moves them: the sheet sees it).  NOT checked: the other 16 trap families of C454.",
-      "seconds": 0.5
+      "claim": "check_unit_convention: OK (a) every read of `Pc` (bar) and `pressureDesign` (bar) goes through lookupScalarIn; (b) flash09's V/F is 0.475737805121 with CH4's Pc bare and with it written `bar`, and 1 with the Pa number bare (the run sees Pc); (c) 27 published sizing numbers of flash22 are identical with pressureDesign bare and written `bar` (ten times the pressure moves them: the sheet sees it); (d) every read of the temperature differences temperatureApproach/superheat/subcool/dTmin/latentWidth/LMTD goes through lookupTemperatureDifference, and gibbs13 runs identically with `temperatureApproach 10 K;` and bare while `10 C;` is refused by name.  NOT checked: the other 15 trap families of C454.",
+      "seconds": 0.6
     }
   }
 }
