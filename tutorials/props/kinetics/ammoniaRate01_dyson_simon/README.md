@@ -82,9 +82,9 @@ Measured, at 300 atm, sweeping 600–900 K:
 
 | η (N₂ conversion) | T of maximum rate | V₃ [kmol NH₃ / m³ bed / h] | V₃ [lb-mol/ft³/h] | ξ (8 mm) |
 |---|---|---|---|---|
-| 0.05 | **900 K** (on the window edge) | 9449.9 | 589.9 | **−0.0942** |
-| 0.15 | **867 K** | 1275.6 | 79.6 | 0.234 |
-| 0.25 | **794 K** | 274.1 | 17.1 | 0.532 |
+| 0.05 | **900 K**<!--golden: diag dysonSimon locus1_T_maxRate_K--> (on the window edge) | 9449.9<!--golden: diag dysonSimon locus1_V3_max--> | 589.9 | **−0.0942**<!--golden: diag dysonSimon locus1_xi *-1--> |
+| 0.15 | **867 K**<!--golden: diag dysonSimon locus2_T_maxRate_K--> | 1275.6<!--golden: diag dysonSimon locus2_V3_max--> | 79.6 | 0.234<!--golden: diag dysonSimon locus2_xi--> |
+| 0.25 | **794 K**<!--golden: diag dysonSimon locus3_T_maxRate_K--> | 274.1<!--golden: diag dysonSimon locus3_V3_max--> | 17.1 | 0.532<!--golden: diag dysonSimon locus3_xi--> |
 
 Three things in that table are worth as much as the locus itself.
 
@@ -111,24 +111,24 @@ ammonia03's converged answer**:
 
 | state | T | V₃ [kmol/m³/h] | ξ (8 mm, interpolated) | Eq 40 |
 |---|---|---|---|---|
-| bed 1 inlet | 680.83 K | **703.99** | 0.375 | 264.25 |
-| bed 1 outlet | 837.93 K | **8.561** | 0.511 | 4.38 |
-| bed 3 outlet (converter exit) | 775.23 K | **0.8732** | 0.782 | 0.68 |
+| bed 1 inlet | 665.01 K | **386.71**<!--golden: diag dysonSimon bed1Inlet_V3--> | 0.430<!--golden: diag dysonSimon bed1Inlet_xi--> | 166.46<!--golden: diag dysonSimon bed1Inlet_Eq40--> |
+| bed 1 outlet | 820.54 K | **5.340**<!--golden: diag dysonSimon bed1Outlet_V3--> | 0.539<!--golden: diag dysonSimon bed1Outlet_xi--> | 2.876<!--golden: diag dysonSimon bed1Outlet_Eq40--> |
+| bed 3 outlet (converter exit) | 760.46 K | **0.4662**<!--golden: diag dysonSimon bed3Outlet_V3--> | 0.804<!--golden: diag dysonSimon bed3Outlet_xi--> | 0.3749<!--golden: diag dysonSimon bed3Outlet_Eq40--> |
 
-**The rate falls by a factor of 82.2 across bed 1 and 806 across the whole
+**The rate falls by a factor of 72.4 across bed 1 and 829 across the whole
 converter.**  That single column is the quantitative answer to a question
 ammonia03 could only ask: a bed that reaches equilibrium is doing almost all
 of its work in its first few centimetres, and the last of it takes a length no
 one would build.
 
 **And bed 1's outlet should have a rate of ZERO, because the flowsheet solved
-it as an equilibrium — it has 8.561.**  That is not an error in either place:
+it as an equilibrium — it has 5.340.**  That is not an error in either place:
 it is **two independent equilibria disagreeing**.  Choupo reaches equilibrium
 by minimising Gibbs energy with SRK fugacities and its own formation data;
 Dyson & Simon use Gillespie & Beattie's 1930 Ka with the fugacity coefficients
 of Eqs 6–8.  Solved out, at 841.28 K and 200 bar from bed 1's own feed (the
 figures of this comparison were taken at ammonia03's PREVIOUS converged state and
-are NOT recomputed for the one the bench now carries -- 837.93 K, V3 and the
+are NOT recomputed for the one the bench now carries -- 820.54 K, V3 and the
 rate table above are):
 
 * Dyson & Simon: **x(NH₃) = 0.106761**
@@ -138,8 +138,8 @@ rate table above are):
 That is the first independent check in this corpus of the ammonia equilibrium
 every one of its plant cases rests on, and it is a cross-check between two
 sources rather than a model checking itself.  It is also why the residual rate
-is 8.561 and not zero: it is 1.01 % of the inlet rate, which is what 0.635 % in
-composition buys you this close to equilibrium.
+is 5.340 and not zero: it is 1.38 % of the inlet rate (at the earlier state the comparison above was taken at: 1.01 %, which is what 0.635 % in
+composition buys you this close to equilibrium).
 
 Those three gases are a **second home** for somebody else's numbers, so
 `check_ammonia_rate` runs ammonia03 and holds them to its converged result.
@@ -182,8 +182,8 @@ This is a rate law, not a reactor.  `pfr` integrates the same law along an
 adiabatic bed — written in `tutorials/steady/reactors/ammoniaReactor04_kineticSizing`'s
 own `constant/reactions` (Eq 19 alone, its legs declared so the bed's
 approach to the law's own equilibrium can be reported), and that case sizes
-the bed from the effluent's approach (6.99 m³ at 5 K, on a loop whose earlier
-stage assumed 18.63 m³ from a space velocity).  `ammonia03`'s beds still reach
+the bed from the effluent's approach (8.20 m³<!--golden: @steady/reactors/ammoniaReactor04_kineticSizing kpi converter V_R--> at 5 K, on a loop whose earlier
+stage assumed 20.84 m³<!--golden: @steady/reactors/ammoniaReactor03_equilibriumApproach equipment converter values.V_R--> from a space velocity).  `ammonia03`'s beds still reach
 equilibrium — that case was not rebuilt.  What a bed still does not carry:
 catalyst ageing, and a pellet whose effectiveness factor is MODELLED rather
 than read off Table I; neither may be invented, and rung 4 of the

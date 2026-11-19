@@ -1,7 +1,7 @@
 # compare_activity_etoh_water — three models, one mixture, no equipment
 
 An equimolar ethanol/water liquid, held at **1 bar**, scanned from **280 K to
-360 K in 41 points**, and asked for exactly one property: `gamma_ethanol`.
+360 K in 41 points**<!--golden: diag g_nrtl n_points-->, and asked for exactly one property: `gamma_ethanol`.
 The same scan is run **three times** — `g_ideal`, `g_nrtl`, `g_wilson` — and
 the only thing that changes between them is the activity model.  There is no
 unit operation here on purpose: this is the thermodynamics that every unit in

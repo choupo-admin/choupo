@@ -4,9 +4,9 @@ A 1-litre continuous stirred reactor with a first-order A → B reaction
 (two stand-in components, both MW 30 — the pseudo-reaction says so by
 name rather than inventing atoms), fed at 320 K, with a jacket whose
 temperature a **PID controller** sets to hold the reactor at **350 K**.
-150 s of transient, 1 s steps.  The golden: PV ends at **348.47 K**, the
-jacket (MV) at **348.54 K**, mass in = out = 0.225 kg over the run and
-the material balance closes at 1.8e-15.
+150 s of transient, 1 s steps.  The golden: PV ends at **348.47 K**<!--golden: kpi TC1 PV_final-->, the
+jacket (MV) at **348.54 K**<!--golden: kpi TC1 MV_final-->, mass in = out = 0.225 kg<!--golden: kpi balance mass_kg_in_cum--> over the run and
+the material balance closes at 1.8e-15<!--golden: kpi balance mass_closure_rel-->.
 
 ## The lesson
 

@@ -21,7 +21,7 @@ fills the same reactor from a heel with no controller.
    and the level is back on 0.50 m at the end (< 2e-6 m).
 2. **The temperature loop holds 340 K** against a colder, larger feed:
    T dips about 2 K after the step and returns; the jacket temperature
-   (`TC1.MV`) rises from about 367 K to about 387 K.
+   (`TC1.MV`) rises from about 367 K to about 387 K<!--golden: kpi TC1 MV_final-->.
 3. **The loops are coupled through the vessel.**  The declared UA = 300 W/K
    is the value with the vessel FULL; the engine scales it with the wetted
    wall, UA(h) = UA·A_w(h)/A_w(H), A_w = πDh + πD²/4 (166.7 W/K at the

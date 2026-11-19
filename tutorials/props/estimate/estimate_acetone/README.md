@@ -3,9 +3,9 @@
 Acetone is `2 × CH3 + 1 × ketone`.  This case runs under `choupoProps`
 and asks Joback's group-contribution method to **create** a property set
 from those three groups, then lays the estimate beside the reference
-values the case itself declares.  The golden: Tb **322.11 K**, Tc
-**500.56 K**, Pc **48.02 bar**, ω **0.30**, Vc 209.5 cm³/mol, ΔHf
-**−217.83 kJ/mol**.
+values the case itself declares.  The golden: Tb **322.11 K**<!--golden: diag estimate_acetone Tb_K-->, Tc
+**500.56 K**<!--golden: diag estimate_acetone Tc_K-->, Pc **48.02 bar**<!--golden: diag estimate_acetone Pc_bar-->, ω **0.30**<!--golden: diag estimate_acetone omega-->, Vc 209.5 cm³/mol<!--golden: diag estimate_acetone Vc_cm3mol-->, ΔHf
+**−217.83 kJ/mol**<!--golden: diag estimate_acetone dHf_kJmol *-1-->.
 
 ## The lesson
 

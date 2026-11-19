@@ -1,7 +1,7 @@
 # stripper01_sour_water — the separation and the speciation are one problem
 
 Eight reactive trays over a sour water (2.5 mol% NH₃, 1 mol% CO₂), feed on
-tray 2, reflux 0.5, distillate 5 of 100 kmol/h.  Converges in 9 MESH Newton
+tray 2, reflux 0.5, distillate 5 of 100 kmol/h.  Converges in 6 MESH Newton
 iterations; the overhead carries 33.0 mol%<!--golden: kpi tower x_D_LK *100--> NH₃ at 355 K<!--golden: kpi tower T_top-->, the bottoms leave at
 99.1 %<!--golden: kpi tower x_B_HK *100--> water.  This is S2 of the sour-water programme
 (`docs/design/sour-water-stripper-scope.md` §6d) — the case the effective
@@ -19,7 +19,7 @@ is set by a chemistry the column itself moves:
 2. **The falling carbonate frees the ammonia.**  The CO₂ a liquid still
    carries is what holds its ammonia protonated as NH₄⁺; as it leaves, the
    pH climbs (8.46 → 8.80 below the top tray) and the free-ammonia fraction
-   rises 0.802 → 0.947 — strictly, with no exception, on every tray.
+   rises 0.801 → 0.946 — strictly, with no exception, on every tray.
 3. **The freed ammonia then strips.**  The whole cascade is visible in
    `reports/unitOperations/tower/profile.csv`: per-tray pH, ionic strength
    and every species molality, engine-owned.
@@ -27,8 +27,8 @@ is set by a chemistry the column itself moves:
 **The surge — the mechanism's own signature.**  Free ammonia is not merely
 stripped; it is *produced* by the deprotonation the falling carbonate
 allows.  Just below the feed the production outruns the stripping:
-`m_NH3aq` **rises** from 1.316 (tray 2, the feed tray) to 1.424 (tray 3)
-and only then falls strictly to the reboiler (0.464).  A first instinct
+`m_NH3aq` **rises** from 1.312 (tray 2, the feed tray) to 1.422 (tray 3)
+and only then falls strictly to the reboiler (0.475).  A first instinct
 would be to exempt this from the "everything is stripped downward" check;
 instead it is pinned as its own claim (`check_tray_chemistry` T5), because
 hiding a mechanism's signature to make a monotonicity check pass would be

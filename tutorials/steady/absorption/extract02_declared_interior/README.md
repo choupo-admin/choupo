@@ -9,7 +9,7 @@ cascade **starts**.
 
 *Same to the digits above, not to every digit:* both runs stop inside the same
 1e-4 mass-closure target, and they stop at slightly different points inside it
-(recovery 0.44157 here against 0.44176 unseeded). That is what a restart from
+(recovery 0.442046204<!--golden: kpi extractor01 recovery_ethanol--> here against 0.442046200<!--golden: @steady/absorption/extract01_ethanol_water_benzene kpi extractor01 recovery_ethanol--> unseeded). That is what a restart from
 an answer looks like — it is not obliged to take the same path back — which is
 why this case carries its own golden rather than sharing `extract01`'s.
 

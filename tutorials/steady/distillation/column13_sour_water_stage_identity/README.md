@@ -11,15 +11,15 @@ the thermodynamic package differs.
 ## The column
 
 Four stages, sour water (NH₃ + CO₂ in water), 1 atm, R = 2, D = 3 kmol/h.
-It converges in **7 Newton iterations to ‖F‖ ≈ 8e-10**, and the profile is
+It converges in **7 Newton iterations to ‖F‖ ≈ 3e-10**, and the profile is
 the physics:
 
 | stage | T [K] | x(NH₃) | x(CO₂) | y(NH₃) | y(CO₂) |
 |---|---|---|---|---|---|
-| 1 (top)      | 354.63 | 0.0459 | 0.0097 | 0.3028 | 0.2367 |
-| 2            | 367.34 | 0.0132 | 0.0022 | 0.1316 | 0.0854 |
-| 3 (feed)     | 368.14 | 0.0110 | 0.0018 | 0.1109 | 0.0806 |
-| 4 (reboiler) | 371.48 | 0.0054 | 0.0005 | 0.0656 | 0.0152 |
+| 1 (top)      | 354.39<!--golden: kpi tower T_top--> | 0.0459 | 0.0098 | 0.3000 | 0.2361 |
+| 2            | 366.88 | 0.0133 | 0.0022 | 0.1306 | 0.0852 |
+| 3 (feed)     | 367.67 | 0.0111 | 0.0019 | 0.1100 | 0.0804 |
+| 4 (reboiler) | 370.94<!--golden: kpi tower T_bottom--> | 0.0055 | 0.0005 | 0.0656 | 0.0154 |
 
 No `gammaPhi` column can produce that profile, because in a molecular world
 ammonia's volatility does not depend on how much carbon dioxide has left
@@ -57,10 +57,10 @@ speciates each tray liquid once after convergence and writes `pH`,
 
 | stage | T [K] | pH | I [mol/kg] | free-NH₃ fraction | carbonate loading |
 |---|---|---|---|---|---|
-| 1 (top)      | 354.63 | 8.485 | 0.636 | 0.7767 | 0.2120 |
-| 2            | 367.34 | 8.361 | 0.130 | 0.8319 | 0.1627 |
-| 3            | 368.14 | 8.328 | 0.110 | 0.8283 | 0.1670 |
-| 4 (reboiler) | 371.48 | 8.532 | 0.029 | 0.9091 | 0.0872 |
+| 1 (top)      | 354.39 | 8.486 | 0.639 | 0.7755 | 0.2132 |
+| 2            | 366.88 | 8.365 | 0.133 | 0.8300 | 0.1644 |
+| 3            | 367.67 | 8.333 | 0.112 | 0.8264 | 0.1688 |
+| 4 (reboiler) | 370.94 | 8.535 | 0.030 | 0.9075 | 0.0887 |
 
 It costs one reactive flash per stage, **once** — not one per residual.
 
@@ -69,7 +69,7 @@ It costs one reactive flash per stage, **once** — not one per residual.
 The scope asked for a physics-direction check: *stripping CO₂ must raise
 the liquid pH, and the free-NH₃ fraction must rise with it.*  The first
 half of that is **not true here**, and the table shows why it looked true:
-pH runs 8.485 → 8.361 → 8.328 → 8.532, which is not monotone in either
+pH runs 8.486 → 8.365 → 8.333 → 8.535, which is not monotone in either
 direction.
 
 The reason is worth more than the check would have been.  Ionic strength
@@ -125,14 +125,14 @@ temperature there is a *result* of an energy balance.  This case now does
 the same.  It could not at first: the adiabatic flash's outer Newton had no
 strategy for a trial temperature the reactive package cannot answer, and
 its very first trial is the mixer's fictitious dominant-phase readout
-(483 K on a 367 K stage — the carried enthalpy is exact, the temperature is
+(483 K<!--golden: kpi recombine T_out--> on a 367 K stage — the carried enthalpy is exact, the temperature is
 not), where the ReactiveVLE has no liquid to speciate and refuses
-(`|r|max = 4.74 after 21 outer iterations`).  The flash now treats an
+(`|r|max = 4.83 after 20 outer iterations`).  The flash now treats an
 unanswerable trial as **above** the answer (H rises with T; the reactive
 path loses its liquid on the high side), announces every such trial, and
-re-seeds by bisection.  Watch the log: 483.33 K refused, re-seeded at
-341.66 K, one more refusal at the dew-point edge (372.16 K), then a clean
-Newton to 367.3398 K — the column's own stage-2 temperature, recovered as a
+re-seeds by bisection.  Watch the log: 483.02 K refused, re-seeded by
+bisection, further refusals at the dew-point edge (371.51 K and 372.01 K), then a clean
+Newton to 366.8775 K<!--golden: kpi restage T_out--> — the column's own stage-2 temperature, recovered as a
 result.  So:
 
 * the **equilibrium** half of the identity is claimed here (R1: the ion
