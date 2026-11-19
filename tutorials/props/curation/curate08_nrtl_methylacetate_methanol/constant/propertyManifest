@@ -22,7 +22,7 @@ propertyManifest
     {
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
         "components/methanol.dat"  "c0f57fdd6d14b567146f8fb8f54a3d8f5d9ac6b67560cfe4b15c461399d16a03";
-        "components/methylAcetate.dat"  "ac6884a5f63cf720c4718c836407d1ca937f5e1bdabe26e5aa0d79896931c1ac";
+        "components/methylAcetate.dat"  "e1e582da247cf2ac7eecfc6925ea678cca393b822f566896ef97405904ef96b4";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/NRTL/methanol-methylAcetate.dat"  "fc35c6eaad568944c12e56346f17f5342e21f4555e54efc2d86cff5214371ab3";
         "parameters/UNIFAC/groups.dat"  "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";

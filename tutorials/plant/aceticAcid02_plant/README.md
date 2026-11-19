@@ -57,11 +57,11 @@ is **not** stored: it arrives by pipeline at the plant pressure.
 | | |
 |---|---|
 | feeds | 100 kmol/h methanol, 105 kmol/h CO |
-| `acidProduct` | **98.06 kmol/h**<!--golden: stream acidProduct F *3600-->, 99.87 mol % acetic acid (methyl acetate 0.06 %, water 0.07 %) |
+| `acidProduct` | **98.07 kmol/h**<!--golden: stream acidProduct F *3600-->, 99.87 mol % acetic acid (methyl acetate 0.06 %, water 0.07 %) |
 | acid lost | `lightsOut` 0.92, `offgas` 0.98, `purge` 0.025 kmol/h; the rest is accounted for |
 | yield on methanol | ~97.9 % to product |
 | first-law residual of the plant | +0.12 kW<!--golden: boundary global residual_kW-->, 0.002 % of the energy exchanged -- the methanol pump no longer contributes (its useful work v·dP is now in the liquid enthalpy, section 3); what is left is the mixer M1's (0.10 kW) and the degasser's (0.02 kW); the lights column and the product cooler close to 1e-4 kW |
-| product cooler | 305.0 kW<!--golden: kpi acidCooler Q_kW *-1--> to cooling water, 404.14 K<!--golden: kpi acidCooler T_in--> -> 313.15 K |
+| product cooler | 305.3 kW<!--golden: kpi acidCooler Q_kW *-1--> to cooling water, 404.21 K<!--golden: kpi acidCooler T_in--> -> 313.15 K |
 | inventory held in the two tanks | 1077 t<!--golden: kpi methanolTank holdupMass_kg *0.001--> of methanol + 989 t<!--golden: kpi acidTank holdupMass_kg *0.001--> of acid stream (section 8) |
 
 ## 3. What is modelled, and what is not
@@ -138,7 +138,7 @@ methanol cost minus utilities (the condenser, degasser and column duties are in
 described in `docs/ai/outer-drivers.md`; this case ships without an `outerDict`
 on purpose.
 
-**Measured sensitivities on this base case** (one variable moved at a time; measured before the vapour was made associated on 2026-11-03 and NOT re-measured since -- the base case now gives 98.06 kmol/h<!--golden: stream acidProduct F *3600--> at 99.87 mol %):
+**Measured sensitivities on this base case** (one variable moved at a time; measured before the vapour was made associated on 2026-11-03 and NOT re-measured since -- the base case now gives 98.07 kmol/h<!--golden: stream acidProduct F *3600--> at 99.87 mol %):
 
 | change | acid product | purity |
 |---|---|---|
@@ -169,7 +169,7 @@ rests on. After a run the sheets land in `design/`, one folder per unit.
 | unit | sized as | basis |
 |---|---|---|
 | `preheater` | shell-and-tube | A = Q/(U·LMTD): the LMTD computed from the unit's own 320 → 460 K against HP steam, U **assumed** |
-| `acidCooler` | shell-and-tube | A = Q/(U·LMTD): the LMTD computed from the unit's own 404.14 → 313.15 K against cooling water (298.15 → 308.15 K), 43.6 K<!--golden: equipment acidCooler values.LMTD-->; U = 500 W/m²/K **assumed**; 14.0 m²<!--golden: equipment acidCooler values.A--> |
+| `acidCooler` | shell-and-tube | A = Q/(U·LMTD): the LMTD computed from the unit's own 404.14 → 313.15 K against cooling water (298.15 → 308.15 K), 43.7 K<!--golden: equipment acidCooler values.LMTD-->; U = 500 W/m²/K **assumed**; 14.0 m²<!--golden: equipment acidCooler values.A--> |
 | `reactor` | vessel | a **declared volume** (3 m³), a hand calculation written out in the postDict — an equilibrium reactor has no volume of its own, and this one does not follow the run |
 | `condenser` | vessel (the knock-out drum) | vapour residence time |
 | `degasser` | vessel | vapour residence time — a liquid drum, so the volume is a **lower bound** |
@@ -265,7 +265,7 @@ Now:
 | tank | holds | stored state | liquid | tank volume | mass |
 |---|---|---|---|---|---|
 | `methanolTank` | 14 days of `freshMethanol` | 300 K, 1 atm, 785 kg/m³<!--golden: kpi methanolTank density_kg_m3--> | 1371 m³<!--golden: kpi methanolTank holdupVolume_m3--> | 1524 m³<!--golden: kpi methanolTank vesselVolume_m3--> | **1077 t**<!--golden: kpi methanolTank holdupMass_kg *0.001--> of methanol |
-| `acidTank` | 7 days of `coldAcid` | 313.15 K, 1.5 bar, 1026 kg/m³<!--golden: kpi acidTank density_kg_m3--> | 963 m³<!--golden: kpi acidTank holdupVolume_m3--> | 1071 m³<!--golden: kpi acidTank vesselVolume_m3--> | **989 t**<!--golden: kpi acidTank holdupMass_kg *0.001--> (988.0 t<!--golden: kpi acidTank holdupMass_aceticAcid_kg *0.001--> acetic acid, 0.7 t methyl acetate, 0.2 t water) |
+| `acidTank` | 7 days of `coldAcid` | 313.15 K, 1.5 bar, 1026 kg/m³<!--golden: kpi acidTank density_kg_m3--> | 964 m³<!--golden: kpi acidTank holdupVolume_m3--> | 1071 m³<!--golden: kpi acidTank vesselVolume_m3--> | **989 t**<!--golden: kpi acidTank holdupMass_kg *0.001--> (988.7 t<!--golden: kpi acidTank holdupMass_aceticAcid_kg *0.001--> acetic acid, 0.7 t methyl acetate, 0.2 t water) |
 
 The numbers are the run's own: each `storageTank` unit publishes its holdup
 (KPIs `holdupVolume_m3`, `holdupMass_kg` and the mass per component), and the
