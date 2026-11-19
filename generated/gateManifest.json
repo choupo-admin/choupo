@@ -1800,6 +1800,11 @@
       "exit": 0,
       "claim": "check_backlog: OK -- 401 items, every one headed in DEV.md 4c has its row (DONE 288, PARTIAL 55, OPEN 44, DROPPED 2, NOT-AN-ITEM 12); every open or partial item has a rank and a reason; 330 named commits are in history.  NOT checked: that a status is true (a landing changes its row in the same commit).",
       "seconds": 1.0
+    },
+    "check_readme_numbers": {
+      "exit": 0,
+      "claim": "check_readme_numbers: OK -- 350 marked README number(s) in 40 case(s) agree with their golden rows at the precision written",
+      "seconds": 0.1
     }
   }
 }
