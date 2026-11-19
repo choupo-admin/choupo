@@ -408,6 +408,8 @@ the cubic's own (column08 reboiler +8.7 %, cavett01 flash duties +25 to +40 %); 
 `docs/audits/2026-11-17-c410-moved-goldens.md`.  Theory Guide `sec:cubic-liquid-root`.  Gate: `check_volume_translation`
 holds G = H - T S on both roots and the stream routing of the shipped phiPhi packages.
 
+**Electrolyte solvent above its liquid-Cp window (C377).**  In a package with an electrolyte, the solvent's liquid enthalpy above the top of its `liquidHeatCapacity` window (water: 373 K) is the polynomial's value there plus the integral of the component's reference equation's isobaric Cp of the saturated liquid (IAPWS-95 for water; found as the density leaf finds it: a case `pureFluids` selection, else a Helmholtz record naming the component).  Continuous in h, a step in Cp, announced once (`[thermo] water: liquid Cp above 373 K ...`); molecular packages and solvents without a reference equation keep the polynomial.  Code: `ThermoPackage::solventLiquidAboveWindow` (and the entropy partner `solventLiquidEntropyAboveWindow`, same path; no consumer yet because an electrolyte liquid entropy is refused by `S_liquid_formation`).  Witness: `tutorials/steady/evaporation/evaporator08_naoh_dilution_heat` (condensate at 401.6 K).  Theory Guide: `sec:evap-dilution-window`, paragraph Water above 373 K.
+
 #### Cubic mixing rules: `vanDerWaalsOneFluid` (default), `MHV1`, `MHV2` — a cubic fed a low-pressure G^E model
 
 `mixingRule` is a key of `equationOfState` (phiPhi).  `vanDerWaalsOneFluid` is
