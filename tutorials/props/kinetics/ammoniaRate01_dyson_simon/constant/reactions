@@ -31,7 +31,9 @@
                150, 225 and 300 atm.  Linear between them -- Choupo's rule,
                not the paper's, and the run announces every interpolation --
                and REFUSED outside them: a table has no form beyond its
-               points.
+               points.  Eq 39 is therefore read at `Pxi = max(P, 150 atm)`:
+               below 150 atm the 150 atm column is used UNCHANGED, declared
+               here (DEV.md 4c C66 item 2, C440), never a table extrapolation.
     xi         Eq 39, the cubic in T and eta on Table I's constants.
     V3, Eq40   Eq 19 (intrinsic) and Eq 40 = Eq 19 x xi.
 
@@ -75,6 +77,7 @@ ammoniaSynthesis
             atmosphere  1         atm;         // ... and P in atmospheres
             refInert    0.127     -;           // Eq 39's reference mixture: 12.7 % inerts, 3:1 H2/N2
             dp          8         mm;          // the particle the bed is packed with
+            Pfloor      150       atm;         // Table I's lowest pressure: Eq 39 is read at max(P, Pfloor) -- see Pxi
         }
 
         tables
@@ -124,7 +127,20 @@ ammoniaSynthesis
             refN2     "(1 - refInert)/4";
             eta       "x[NH3] / (2*refN2*(1 + x[NH3]))";
             ratioH2N2 "x[H2] / x[N2]";
-            xi        "b0(P) + b1(P)*TK + b2(P)*eta + b3(P)*TK*TK + b4(P)*eta*eta + b5(P)*TK*TK*TK + b6(P)*eta*eta*eta";
+            //  THE PRESSURE Eq 39 IS READ AT.  Table I stops at 150 atm and a
+            //  table is never extrapolated, yet a loop at 148.9 atm sits 1.1
+            //  atm (0.7 %) below it.  The paper's own words: "The effect of
+            //  pressure on the effectiveness factor is such that a higher
+            //  pressure will cause a lower effectiveness factor" (p. 609) --
+            //  so the true xi just below 150 atm is a little HIGHER than the
+            //  150 atm column gives: the clamp UNDER-states xi, the rate and
+            //  so the bed sized on it errs on the larger side.
+            //  Below 150 atm the 150 atm column is therefore used UNCHANGED
+            //  (a clamp, declared here and not hidden in the engine), and the
+            //  `P` window above ANNOUNCES the pressure on every pass.  Above
+            //  150 atm Pxi = P and nothing changes.
+            Pxi       "max(P, Pfloor)";
+            xi        "b0(Pxi) + b1(Pxi)*TK + b2(Pxi)*eta + b3(Pxi)*TK*TK + b4(Pxi)*eta*eta + b5(Pxi)*TK*TK*TK + b6(Pxi)*eta*eta*eta";
 
             //  Eq 19 (intrinsic) and Eq 40
             V3    "k19*(fwd - rev)";
@@ -154,6 +170,7 @@ ammoniaSynthesis
 
         caveats
         (
+            "Eq 39 is read at max(P, 150 atm): below Table I's lowest pressure the 150 atm column is used unchanged (a declared clamp, not an extrapolation). The paper states that a higher pressure gives a lower xi, so the clamp under-states xi just below 150 atm and a bed sized on it errs on the larger side; how much it errs is NOT known -- the paper tabulates nothing below 150 atm."
             "Equation 40 carries NO correction for the effect of particle size on catalyst reduction, on poisoning or on ageing -- the authors say so themselves. A bed sized from this rate is a FRESH, CLEAN, FULLY REDUCED bed, and a working converter is none of those for most of its life."
         );
     }

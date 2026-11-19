@@ -225,6 +225,16 @@ straight cylinder as tall as their sum (2.30 + 4.72 + 8.13 m of bed and two
 175 t, 16.79 M EUR total module.  The beds' own shells become internal
 BASKETS -- sized and drawn, not costed.
 
+**What the shell's sheet says about its wall** (C440): `design/CONVERTER/shell`
+publishes `T_service`, the hottest state any of the five units' ports holds
+(a lower bound on what the metal sees: a bed's hot spot is not a port), beside
+the 166 bar g it is walled at, and its basis says that the wall is ONE thin-wall
+ASME thickness on SS316's single sigma_y, NOT de-rated for temperature, and that
+HYDROGEN ATTACK AND NITRIDING ARE NOT CHECKED: the engine ships no Nelson curve
+and no hydrogen-service material table, so whether SS316 is the right metal at
+this hydrogen partial pressure and temperature is the designer's to confirm.
+The record's own `maxP` (100 bar) is below 166 bar, which the run announces.
+
 **What the one shell costs against three, AT THE SAME DIAMETER** (measured:
 the same design point with the `converterShell` entry removed, so each bed
 keeps its own 166 bar g shell at 2.25 m): three shells 3.12 + 5.12 + 7.67 =
@@ -475,7 +485,12 @@ From -3 324.94 to -3 037.28 M EUR. The first step re-runs the feasibility case w
   extrapolated just below its window. The effectiveness factor is taken
   as 1 (the declared law is Eq 19 alone), and the law's own `caveats` say
   that is unpriced on every run: a real charge with diffusion-limited
-  pellets is larger.
+  pellets is larger.  Eq 39 CAN be read at this pressure: the props bench
+  `ammoniaRate01_dyson_simon` reads Table I's 150 atm column unchanged below
+  150 atm (a declared clamp the paper's own monotone trend supports) and gives
+  xi = 0.478 at bed 1's inlet at 148.9 atm.  It is not applied to these beds:
+  xi multiplies the rate, so applying it would move every bed volume and the
+  plant's numbers, which is a decision of its own (DEV.md 4c C66 item 2).
 * **Bed 1's 515 °C is a criterion, not a result of optimisation**; the two
   interbed temperatures are author-set; no bed has been optimised against
   catalyst cost.

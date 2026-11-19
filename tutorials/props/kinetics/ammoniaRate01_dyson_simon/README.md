@@ -163,11 +163,21 @@ And on pressure:
 |---|---|---|
 | one of 150 / 225 / 300 atm | evaluated | Table I's own column, no interpolation |
 | between them | evaluated | **linearly interpolated, announced** — Choupo's rule for every declared table, not the paper's; it is linear because three points do not justify anything more |
-| outside 150–300 atm | **announced**, still returned | **REFUSED** — a declared table is never extrapolated |
+| above 300 atm | **announced**, still returned | **REFUSED** — a declared table is never extrapolated |
+| below 150 atm | **announced**, still returned | read at the **150 atm column, unchanged** — a CLAMP the case declares (`Pxi "max(P, Pfloor)"`, `Pfloor 150 atm`), announced by the `P` window on every point |
 
-The asymmetry in the last row is the point: Eq 19 is a closed expression in T,
-P and composition that degrades smoothly, and Eq 39 is *three columns of a
-table*.  There is nothing to extrapolate through three points, so it refuses.
+The asymmetry is the point: Eq 19 is a closed expression in T, P and
+composition that degrades smoothly, and Eq 39 is *three columns of a table*.
+There is nothing to extrapolate through three points, so the table itself
+refuses.  The one case that needs a pressure under 150 atm is the green-ammonia
+loop, which runs at 148.9 atm (the bench's last point, `bed1Inlet_148p9atm`,
+reads bed 1's inlet there: ξ = 0.478 against 0.430 at the 197 atm of the other
+points).  The decision rests on the paper's own sentence, "a higher pressure
+will cause a lower effectiveness factor" (Dyson & Simon 1968, p. 609): the true
+ξ just under 150 atm is a little higher than the 150 atm column, so the clamp
+under-states ξ and a bed sized on it errs on the larger side.  By how much is
+NOT known: the paper tabulates nothing below 150 atm.  The clamp is written in
+the case, never in the engine, and it is not applied to any bed here.
 
 The ξ = 1 below 6 mm needs saying carefully, because it sounds exactly like
 something else the engine already says.  The four reactors that read
