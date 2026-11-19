@@ -52,7 +52,7 @@ export const COMPRESSION_STEPS: readonly LessonStep[] = [
       + "between stages), and it grows with the pressure ratio only as \\(r^{(n-1)/n}\\), "
       + "not as \\(r\\).  The engine evaluates exactly this at "
       + "src/postProcessing/sizing/CompressorDesign.cpp:223, the shaft power at "
-      + "src/postProcessing/sizing/CompressorDesign.cpp:224, and the specific gas constant "
+      + "src/postProcessing/sizing/CompressorDesign.cpp:225, and the specific gas constant "
       + "from R = 8314.462618 J/(kmol K) (src/postProcessing/sizing/CompressorDesign.cpp:35).  "
       + "Worked on the witness (air, 455 kmol/h, 1 bar and 25 degC, one section of "
       + "ratio 2.3568, \\(n\\) = 1.6090244 as printed on the sheet, \\(Z\\) = 1): "
@@ -268,27 +268,36 @@ c=\frac{\dot m\,Z\,R_s\,T_1\,(1+f_\mathrm{m})}{m\,\eta_p},\quad m=\frac{n-1}{n}`
     n: 5,
     title: "What staging saves, and what it costs",
     body: "Put numbers on step 4 for the witness: air, ratio 12, polytropic 0.75, every "
-      + "section cooled back to 298.15 K.  One section takes 1740.5 kW and discharges at "
-      + "763.7 K.  Two take 1365.6 kW (480.8 K), three 1281.9 kW (412.4 K), four 1255.6 kW "
-      + "(382.1 K).  So the first intercooler saves a fifth of the work, the second a "
-      + "further 6 % of what is left, the third 2 %; the saving has a limit, "
+      + "section cooled back to 298.15 K.  The formula below is the drop-free ideal of "
+      + "step 4 (no pressure lost in the coolers): with \\(m\\) = 0.3785 and \\(c\\) = 1114.8 kW "
+      + "one section takes 1740.5 kW and two take 1338.6 kW, three 1231.4 kW, four 1182.0 kW.  "
+      + "So the first intercooler saves 23 % of the work, the second a further 8 % of what "
+      + "is left, the third 4 %; the saving has a limit, "
       + "\\(m\\ln R\\) in units of c, which is the work of an infinite number of "
       + "infinitesimal sections cooled continuously (isothermal-like), 60 % of one "
-      + "section's.  The engine's three-section "
-      + "design takes 1281.9 kW, the page's total at N = 3, as the test below holds.  "
+      + "section's.  The engine's design does not match that ideal exactly, because every "
+      + "intercooler loses pressure (0.1379 bar each, the 2 psi floor of Brown p.200) and "
+      + "the next section must recover it: with those drops the same witness takes "
+      + "1365.6 kW in two sections (480.8 K), 1281.9 kW in three (412.4 K) and 1255.6 kW in "
+      + "four (382.1 K), which saves a fifth, 6 % and 2 % at each step, and four sections "
+      + "already sit at 72 % of one.  The engine's three-section "
+      + "design takes 1281.9 kW, the page's total at N = 3 with the drops, as the test below holds.  "
       + "Staging is not free: the engine lists two intercoolers of 423.77 kW each, which "
       + "the cooling water and the exchanger area must supply, and each costs "
-      + "0.1379 bar of pressure (the 2 psi floor of Brown p.200), a second casing, "
+      + "its pressure drop, a second casing, "
       + "the piping between them.  Below, move the number of sections and the "
       + "temperature to which the intercoolers return the gas, and read the total power, "
-      + "the hottest discharge against the limit, and the work saved against one section.",
+      + "the hottest discharge against the limit, and the work saved against one section "
+      + "(the tool includes the drops, so it reads like the second set of numbers).",
     formula: String.raw`\frac{W_N}{W_1}=\frac{N\left(R^{m/N}-1\right)}{R^{m}-1},\qquad
 \lim_{N\to\infty}\frac{W_N}{W_1}=\frac{m\ln R}{R^{m}-1}`,
     where: [
       { sym: "W_1", means: "The work of one section over the whole ratio, c times "
         + "\\(R^m-1\\).", unit: "W" },
     ],
-    note: "The intercooler temperature enters as \\(T_1\\) of every section after the first: "
+    note: "The formula is the drop-free ideal; the page's total and the engine's include the "
+      + "cooler pressure drops, so they sit a few percent above it for N > 1.  "
+      + "The intercooler temperature enters as \\(T_1\\) of every section after the first: "
       + "a warmer return gas raises c and the later discharges with it.  The page keeps "
       + "the exponent of the engine's first section for every section and for every N, "
       + "which is exact at the engine's own choice and a constant-exponent estimate "
@@ -313,8 +322,10 @@ c=\frac{\dot m\,Z\,R_s\,T_1\,(1+f_\mathrm{m})}{m\,\eta_p},\quad m=\frac{n-1}{n}`
       + "0.2891, an equivalent k of 1.405 and 1.407, close to the 1.4 of a handbook for "
       + "a diatomic gas and not equal to it.  The sheet also prints the engine's own check "
       + "of the arithmetic, stageN_dhCheck: the polytropic gas power against the package's "
-      + "enthalpy rise for the same section, -0.04 % and +0.66 % here.  A real-gas "
-      + "departure large enough to break that closure raises a warning in the run.",
+      + "enthalpy rise for the same section, -0.04 % and +0.66 % here.  When the "
+      + "first section's closure is worse than 5 % the run prints a warning line to its "
+      + "text output (only the first section is tested, and the warning is not an advisory "
+      + "of the result).",
     formula: String.raw`\frac{H_\mathrm{p}^\mathrm{real}}{H_\mathrm{p}^{Z=1}}=Z_\mathrm{avg}=\frac{Z_1+Z_2}{2},
 \qquad a=\frac{\ln\left(T_{2s}/T_1\right)}{\ln r},\qquad
 k_\mathrm{eff}=\frac{1}{1-a}`,
