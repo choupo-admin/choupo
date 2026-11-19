@@ -1404,6 +1404,17 @@ void BatchReactor::closeSegment_(scalar t)
     energyLog_.push_back(std::move(er));
 }
 
+//  The pressure of a closed constant-volume ideal gas, P = n R T / V [Pa].  A vessel in
+//  `energy gasConstantV` has no other pressure: the one declared under `initial` is its
+//  START, and every reader of the vessel's state (KPI P_final, the state table) must see
+//  the pressure of the state it reads (it used to see the initial one for ever).
+static scalar gasConstantVPressure(const BatchState& s)
+{
+    scalar nTot = 0.0;
+    for (scalar v : s.n) nTot += v;
+    return s.V > 0.0 ? nTot * 1000.0 * constant::R * s.T / s.V : s.P;   // kmol -> mol
+}
+
 void BatchReactor::step(scalar /*t*/, scalar dt)
 {
     // Pack state: (n[0..n-1], T).
@@ -1493,6 +1504,7 @@ void BatchReactor::step(scalar /*t*/, scalar dt)
         state_.n[i] = std::max<scalar>(y0[i], 0.0);
     }
     state_.T = (mode_ == Mode::Isothermal) ? T_setpoint_ : y0[n];
+    if (energy_ == Energy::GasConstantV) state_.P = gasConstantVPressure(state_);
     //  An ACCEPTED state must be physical: a finite but negative or zero
     //  absolute temperature is not an extrapolation, it is a blown
     //  integration, and it used to sail into the thermo (which dutifully
@@ -1541,6 +1553,7 @@ void BatchReactor::setOdeState(const sVector& y)
         state_.n[i] = y[i];
     }
     state_.T = (mode_ == Mode::Isothermal) ? T_setpoint_ : y[n];
+    if (energy_ == Energy::GasConstantV) state_.P = gasConstantVPressure(state_);
 }
 
 std::string BatchReactor::odeRowLabel(std::size_t i) const
