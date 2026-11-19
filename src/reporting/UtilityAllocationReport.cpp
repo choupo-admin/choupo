@@ -495,7 +495,10 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
             //  the `> 1 W` test below is what keeps it off the bill; it is
             //  a generator's business (`electricLoad`), credited further down.
             const scalar* wShaft = kf("W_shaft");
-            if (wShaft && *wShaft > 1.0)                    // electric-motor consumer
+            //  A generator (`electricLoad`) ALSO publishes a positive `W_shaft`
+            //  (the shaft work it receives), but it is a SOURCE: it is credited
+            //  in the branch below and never billed as a consumer.
+            if (ty != "electricLoad" && wShaft && *wShaft > 1.0)   // electric-motor consumer
             {
                 if (workCoupled.count(unit)) continue;      // mechanically wire-coupled
                 auto w = kf("W_shaft");
