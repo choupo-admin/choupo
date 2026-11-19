@@ -3171,6 +3171,19 @@
           }
         }
       ]
+    },
+    "compression": {
+      "references": [
+        {
+          "text": "Brown, R. N. (2005). Compressors: Selection and Sizing, 3rd ed. Gulf Professional Publishing (Elsevier). ISBN 0-7506-7545-4.",
+          "note": "The head and exponent relations the page uses: adiabatic and polytropic head with the mean compressibility, Eqs. 2.66-2.73, pp. 36-37; the real-gas path exponent, Eqs. 2.74-2.76, p. 38; polytropic shaft work, Eq. 2.78, p. 40; the balanced division of the pressure ratio among sections, Eqs. 3.13-3.17, pp. 64-65; the discharge-temperature equation, the 475 degF estimating limit and the 75 % stage-efficiency start, Eq. 5.16, pp. 196-197; the intercooler pressure drop, p. 200; the 1 % mechanical loss, p. 199.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/brown-compressors-selection-sizing-3ed.pdf: authors, title, edition, publisher, copyright 2005 and ISBN 0-7506-7545-4 read in the text layer; PDF pp. 57-61, 85-86 and 217-221 read in the text layer (printed page = PDF page - 21) (compression, C442)",
+            "date": "2026-11-19"
+          }
+        }
+      ]
     }
   }
 }

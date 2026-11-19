@@ -82,7 +82,7 @@ export type MethodToolId =
   | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves"
   | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
-  | "one-flux-many-units";
+  | "one-flux-many-units" | "compression";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1033,6 +1033,26 @@ export const METHOD_TOOLS: MethodTool[] = [
     origins: ["engine", "page", "assumption"],
     teaches: "The operating point is an intersection: the pump model's rise falling with flow (a constant-power model, not a centrifugal pump's measured curve, and no basis for selecting one) against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
     theory: "ch:rotating",
+  },
+  //  COMMISSIONED 2026-11-19 (DEV.md 4c C442), Vitor: "Parece que os EduTools
+  //  precisam de um em compressores?" -- measured: no lesson was about
+  //  compression.  Built AFTER the staged compressor design of C440 so it
+  //  cites the sheet the engine prints (sections, discharge temperatures,
+  //  intercooler duties) and not a single power number.  On the pump's shelf:
+  //  rotating equipment moving a fluid against a pressure.  `theory` is the
+  //  Theory Guide's compressor-design section.
+  {
+    id: "compression", blurb: "Compress a gas in stages: work, discharge temperature, intercooling, real gas.",
+    label: "Compressing a gas: work, discharge temperature and staging",
+    discipline: "Hydraulics & control", kind: "construction", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
+    teaches: "Isentropic and polytropic work and efficiency; why the discharge temperature "
+      + "limits one stage; why N sections with intercooling take equal pressure ratios "
+      + "(derived) and how much work that saves against one stage; and the real-gas "
+      + "correction, the mean compressibility and the exponent from the package -- on the "
+      + "engine's staged design of an air compressor (1 to 12 bar, three sections) and of the "
+      + "reference plant's make-up compressor, each formula read at its page in Brown (2005).",
+    theory: "sec:compressor-design",
   },
   //  COMMISSIONED 2026-10-20 (DEV.md 4c C119), Vitor: the Pi theorem only
   //  reduces the number of variables, and the real gain -- few groups AND a

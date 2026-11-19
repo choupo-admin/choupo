@@ -482,6 +482,23 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["designSheetCorpus.test.ts"],
     dir: true,
   },
+  //  THE COMPRESSION EDUTOOL (C442): the staged design's own sheet of ONE unit
+  //  of each witness, read through the same `readCompressionSheet` the page
+  //  uses.  Named as a SUB-directory of `design/` on purpose: the corpus sweep
+  //  of designSheetCorpus.test.ts reads the entries whose `file` is exactly
+  //  "design", and these two are not part of that sweep.
+  {
+    caseDir: "tutorials/steady/rotating/compressor03_staged_design",
+    file: "design/compressor1",
+    readBy: ["compression.test.ts"],
+    dir: true,
+  },
+  {
+    caseDir: "tutorials/plant/ammonia02_full_plant",
+    file: "design/makeupComp",
+    readBy: ["compression.test.ts"],
+    dir: true,
+  },
   //  THE STREAM CARD AGAINST THE STREAMS TABLE on a solid-carrying case
   //  (C266 S1 / C269): the canvas card added the solid part to an F that
   //  already held it.  solidDryer01's result block (`drySolid` is sugar and
