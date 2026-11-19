@@ -437,8 +437,16 @@ const ThermoPackage::SoluteVolumeAtTb& ThermoPackage::soluteVolumeAtTb(std::size
         {
             sVector e(n(), 0.0);
             e[i] = 1.0;
+            //  The liquid AT its normal boiling point is the saturated liquid.  The
+            //  record's Tb is a rounded number (water 373.15 K, the Helmholtz line
+            //  boils at 373.124 K), so at exactly 1 atm the reference equation can
+            //  call the point a vapour by 0.1 %: the pressure is the larger of 1 atm
+            //  and the package's own saturation pressure at Tb.
+            scalar Pb = 101325.0;
+            try { Pb = std::max(Pb, PsatLiquidReference(i, v.Tb) * (1.0 + 1.0e-6)); }
+            catch (const std::exception&) {}
             const auto r = liquidProperty::evaluateUnrecorded(*this, liquidProperty::Property::density,
-                                                              v.Tb, 101325.0, e);
+                                                              v.Tb, Pb, e);
             if (!(r.value > 0.0)) throw std::runtime_error("non-positive density");
             v.rho   = r.value;
             v.V_m3  = (c.MW() / 1000.0) / r.value;
