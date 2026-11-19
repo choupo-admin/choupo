@@ -71,12 +71,10 @@ SPECIES_WITHOUT_CITATION = {
 #  are now NASA/TP-2002-211556 Table B2's (public domain; -1284.488 kJ/mol,
 #  0.09 kJ/mol from the CRC number it held), with Wagman et al. 1982's
 #  -1279.0 kept as a cross-check that enters no value.  No case reads it.
+#  methylAcetate.dat LEFT 2026-11-19 (DEV.md 4c C335): re-sourced from Poling 5e
+#  Appendix A row 91 (Tb, Tc, Pc, dHf, Hvap, Vliq, Antoine); omega computed from
+#  its Antoine, s_298 derived from its dHf/dGf and CODATA element entropies.
 SOURCE_LICENCE = {
-    "data/standards/components/methylAcetate.dat":
-        "calls NIST WebBook / DIPPR-class compilations 'Primary data' -- the "
-        "aggregator AS the authority, and no primary is named for Tc/Pc/omega/"
-        "Tb/Hvap/dHf_298.  Either re-source from primaries or demote the "
-        "record to data/local/.",
     "data/standards/parameters/NRTL/ethanol-water.dat":
         "'Curated from DECHEMA by V. Geraldes' over the VLE-IG bank -- direct "
         "transcription, the form the protocol names.  The bulk of the pair "
