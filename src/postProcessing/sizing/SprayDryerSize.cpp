@@ -88,7 +88,7 @@ std::vector<EquipmentSizing> SprayDryerSize::size(const std::string& unitName,
 
         const scalar d32_rated = k.count("d_droplet_micron") ? k.at("d_droplet_micron") : 0.0;
         const scalar N_rated   = k.count("wheelSpeed")       ? k.at("wheelSpeed")       : 0.0;
-        const scalar d32_tgt   = dg->lookupScalarOrDefault("targetSize", 0.0);   // um
+        const scalar d32_tgt   = dg->lookupScalarInOrDefault("targetSize", 0.0, Dims::length, "um");   // bare = um (C454 family 12)
         if (d32_rated > 0.0 && N_rated > 0.0 && d32_tgt > 0.0)
         {
             // Friedman d32 ~ N^-0.6  ->  N_req = N_rated (d32_rated/d32_tgt)^(1/0.6)
