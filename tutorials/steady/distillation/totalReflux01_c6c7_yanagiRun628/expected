@@ -30,7 +30,7 @@ kpi     column                 x_reboiler_LK    0.284            1e-4
 kpi     column                 x_reflux_LK      0.997948482342   1e-4
 kpi     column                 x_topTray_LK     0.996045344627   1e-4
 boundary global                 H_feeds_kW       0                1e-4
-boundary global                 Q_boundary_kW    -2.27373675443e-13 1e-4
+boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    0                1e-4
 boundary global                 noBoundary       false            exact
 boundary global                 residual_denom_kW 1282.99297228    1e-4

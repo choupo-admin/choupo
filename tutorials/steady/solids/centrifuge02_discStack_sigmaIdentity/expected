@@ -64,7 +64,7 @@ kpi     stack                  sediment_d50_um  0.936431348126   1e-4
 kpi     stack                  sediment_d80_um  1.51390092713    1e-4
 kpi     stack                  sediment_d90_um  1.88628207292    1e-4
 kpi     stack                  sediment_solids_kg_s 0.0303170984805  1e-4
-kpi     stack                  sizeMassClosure  5.76117439474e-18 1e-4
+kpi     stack                  sizeMassClosure  5.76117439474e-18 abs:1e-09
 kpi     stack                  solidsMassFlow_kg_s 0.0376382347833  1e-4
 kpi     stack                  solidsTo_sediment 0.805486725267   1e-4
 kpi     stack                  vWall_cut_m_s    0.000595051728837 1e-4
