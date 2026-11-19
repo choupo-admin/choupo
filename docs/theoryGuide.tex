@@ -14215,7 +14215,11 @@ In \file{system/solverDict}: \code{recycleSolver directSubstitution;} with
 \code{recycleSolver Wegstein;} with \code{recycleWegsteinQmin}/\code{Qmax};
 and, for the default Newton on the tears, an optional
 \code{recycleMaxStep}.  Every declared value is announced, and a value out of
-range is refused by name.  The \emph{relaxation} EduTool draws all of the
+range is refused by name; this includes a Wegstein clamp with
+\code{recycleWegsteinQmin} above \code{recycleWegsteinQmax}, which would
+make the clamp $q = \operatorname{clamp}(s/(s-1), q_{\min}, q_{\max})$
+undefined (a non-default clamp is announced in the run log, default
+$[-1, 0]$).  The \emph{relaxation} EduTool draws all of the
 above with draggable figures and runs \code{process03\_recycle} under three
 factors.
 

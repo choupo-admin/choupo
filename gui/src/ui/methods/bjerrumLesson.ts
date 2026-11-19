@@ -323,9 +323,9 @@ export const BJERRUM_LIMITS: readonly LessonLimit[] = [
     body: "Carbonate is two steps and three forms, the smallest system that "
       + "shows two crossovers and a middle species rising and falling between "
       + "them.  Boron would be simpler — one step, two curves crossing once "
-      + "— and it is not "
-      + "available: the species record for borate exists but there is no "
-      + "boric-acid species and no formation reaction, which is a curation "
-      + "act and not a code change.",
+      + "(pK 9.24) — and the catalogue carries it (the H3BO3 species and the "
+      + "BOH4-formation reaction; tutorials/props/electrolyte/borate01_felmyWeare "
+      + "speciates it), but this page's witness and its sliders are the "
+      + "carbonate case, so boron is not drawn here.",
   },
 ];
