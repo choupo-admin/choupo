@@ -1815,6 +1815,11 @@
       "exit": 0,
       "claim": "check_future_dates: OK -- 60600 files, no date after 2026-11-19 outside the 17 declared; the rule caught its probe lines.  NOT CHECKED: a wrong date that is not in the future, and a date not in ISO form.",
       "seconds": 2.1
+    },
+    "check_lesson_prose_citations": {
+      "exit": 0,
+      "claim": "check_lesson_prose_citations: OK 455 unmanaged prose citation(s) in 83 file(s), each file at its pin (ratchet: may only fall); 428 managed citation(s) are kept by repoint_lesson_citations.  NOT checked here: whether a managed one is current (repoint --check) or true (the lesson tests).",
+      "seconds": 1.7
     }
   }
 }

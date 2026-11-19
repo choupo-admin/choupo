@@ -3277,6 +3277,21 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/crp.$$
 
+    #  Lesson prose citations gate (DEV.md 4c C455 class 1): a prose
+    #  `File.cpp:N` in gui/ that no claim keeps may not be added; the
+    #  per-file count of such tokens is a ratchet in debt_registry.  Pure
+    #  file reading, so it cannot SKIP.
+    gate_exec "$ROOT/bin/curate/check_lesson_prose_citations.py" > /tmp/lpc.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "lesson-prose-citations-gate" "$(grep -m1 '^check_lesson_prose_citations: OK' /tmp/lpc.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_lesson_prose_citations.py)\n" "lesson-prose-citations-gate"
+        cat /tmp/lpc.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lpc.$$
+
     # Tree gate (Migration 6): retired data/standards homes must never come
     # back -- neither as src path-builders nor as resurrected directories.
     if gate_exec "$ROOT/bin/curate/check_tree_gate.py" > /tmp/treegate.$$ 2>&1; then
