@@ -1851,6 +1851,39 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             os << "\n    ]";
             os << ",\n    \"lineBasis\": " << esc(L.lineBasis);
         }
+        //  THE NOZZLE SCHEDULES (DEV.md 4c C444): one record per nozzle, written
+        //  only when the case declares `nozzleDesign {}`.  One line per record
+        //  with an `"id"` (`nozzle:<item>:<mark>`), so the golden `layout` kind
+        //  pins the words and numbers below.
+        if (!L.nozzles.empty())
+        {
+            os << ",\n    \"nozzles\": [";
+            bool firstN = true;
+            for (const NozzleSchedule& S : L.nozzles)
+                for (const NozzleRow& r : S.rows)
+                {
+                    os << (firstN ? "\n" : ",\n") << "      { \"id\": "
+                       << esc("nozzle:" + S.item + ":" + r.mark)
+                       << ", \"item\": " << esc(S.item)
+                       << ", \"kind\": " << esc(r.kind)
+                       << ", \"nozzleService\": " << esc(r.service)
+                       << ", \"nozzleStream\": " << esc(r.stream)
+                       << ", \"nozzleSizeFrom\": " << esc(r.sizeFrom);
+                    //  An empty word is not published (a golden row would be blank).
+                    if (!r.line.empty())        os << ", \"nozzleLine\": " << esc(r.line);
+                    if (!r.nominalSize.empty()) os << ", \"nozzleSize\": " << esc(r.nominalSize);
+                    if (!r.flangeClass.empty()) os << ", \"nozzleClass\": " << esc(r.flangeClass);
+                    if (!r.facing.empty())      os << ", \"nozzleFacing\": " << esc(r.facing);
+                    os << ", \"nozzleDesignP\": " << num(r.designP)
+                       << ", \"nozzleDesignT\": " << num(r.designT);
+                    if (!r.reducer.empty())     os << ", \"nozzleReducer\": " << esc(r.reducer);
+                    if (!r.why.empty())         os << ", \"why\": " << esc(r.why);
+                    os << " }";
+                    firstN = false;
+                }
+            os << "\n    ]";
+            os << ",\n    \"nozzleBasis\": " << esc(L.nozzleBasis);
+        }
         if (!L.portConvention.empty())
             os << ",\n    \"portConvention\": " << esc(L.portConvention);
         os << ",\n    \"notRouted\": [";

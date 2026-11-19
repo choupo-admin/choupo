@@ -505,6 +505,64 @@ std::size_t write(const std::string&                       caseRoot,
             o << "    );\n}\n";
         }
 
+        //  ---- THE NOZZLE SCHEDULE (2026-11-19, DEV.md 4c C444) ---------------
+        //  Where the item's lines end on it, and the openings people need.
+        //  Written only for an item the layout's `nozzleDesign {}` scheduled,
+        //  so every other sheet is character-for-character what it was.  Every
+        //  row carries the sentence it was decided by, and what it could not
+        //  decide, said and never defaulted.
+        for (const NozzleSchedule& ns : result.layout.nozzles)
+        {
+            if (ns.item != itemKey) continue;
+            o << "\n//  THE NOZZLE SCHEDULE.  A process nozzle is the end of a line (its size is the"
+                 " line's,\n//  or the item's own criterion where that asks more, and a difference is"
+                 " a reducer);\n//  the flange class is read from the case's pressure-temperature"
+                 " table; manways and\n//  inspection openings follow the case's rule for this kind of"
+                 " equipment.\nnozzles\n{\n";
+            o << "    basis       \"" << result.layout.nozzleBasis << "\";\n";
+            o << "    schedule\n    (\n";
+            for (const NozzleRow& r : ns.rows)
+            {
+                o << "        {\n";
+                o << "            mark                " << r.mark << ";\n";
+                o << "            kind                " << r.kind << ";\n";
+                o << "            service             " << r.service << ";\n";
+                o << "            direction           " << r.direction << ";\n";
+                if (!r.stream.empty())
+                    o << "            stream              \"" << r.stream << "\";\n";
+                if (!r.line.empty())
+                    o << "            line                \"" << r.line << "\";\n";
+                o << "            orientation         " << r.orientation << ";\n";
+                o << "            sizeFrom            " << r.sizeFrom << ";\n";
+                if (!r.nominalSize.empty())
+                    o << "            nominalSize         " << r.nominalSize << " in;\n";
+                if (!r.lineSize.empty())
+                    o << "            lineSize            " << r.lineSize << " in;\n";
+                if (!r.equipmentSize.empty())
+                    o << "            equipmentSize       " << r.equipmentSize << " in;\n";
+                if (!r.reducer.empty())
+                    o << "            reducer             \"" << r.reducer << "\";\n";
+                if (!r.flangeClass.empty())
+                {
+                    o << "            flangeClass         " << r.flangeClass << ";\n";
+                    o << "            facing              " << r.facing << ";\n";
+                }
+                if (r.designT > 0)
+                {
+                    o << "            designPressureGauge " << num(r.designP / 1.0e5) << " bar;\n";
+                    o << "            designTemperature   " << num(r.designT) << " K;\n";
+                }
+                o << "            basis               \"" << r.basis << "\";\n";
+                if (!r.why.empty())
+                    o << "            notDecided          \"" << r.why << "\";\n";
+                o << "        }\n";
+            }
+            o << "    );\n";
+            for (const auto& n : ns.notes)
+                o << "    //  " << n << "\n";
+            o << "}\n";
+        }
+
         //  ---- WHAT THE ITEM HOLDS (2026-10-07, DEV.md 4c C44 slice 3) --
         //  Written only for an item that declared an inventory, so every
         //  other sheet is character-for-character what it was.  `held` is a

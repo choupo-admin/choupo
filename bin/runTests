@@ -2334,13 +2334,13 @@ auto_generate_raw() {
                 sub(/"release": \{.*/, "", line)
                 sub(/"message": .*/, "", line)
                 if (id == "wind" || id ~ /^area:/) next
-                nw = split("shape orientation footprintFrom room from to side verdict turn containment service sizeState", W, " ")
+                nw = split("shape orientation footprintFrom room from to side verdict turn containment service sizeState nozzleService nozzleStream nozzleLine nozzleSizeFrom nozzleSize nozzleClass nozzleFacing", W, " ")
                 for (i = 1; i <= nw; i++)
                     if (match(line, "\"" W[i] "\": \"[^\"]*\"")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": "/, "", s); sub(/"$/, "", s)
                         printf "layout %-20s %-16s %-18s %s\n", id, W[i], s, "exact"
                     }
-                nn = split("x y z dx dy dz value limit placed unplaced internal findings length pipes notRouted pipeLength utilityFlow utilityLines utilityLength plotArea footprintArea pavedArea distance radius bays capacity area approach diameter turningDiameter wallHeight displacedVolume netVolume requiredVolume lineBends lineNps lineSchedule lineOutsideDiameter lineWall lineWallRequired lineInsideDiameter lineDesignPressure lineScheduleNumber lineFlow lineDensity lineVelocity lineVelocityMax lineReynolds lineFriction lineEquivalentLength lineDropFriction lineDropStatic lineDrop lineRhoV2 lineCost", N, " ")
+                nn = split("x y z dx dy dz value limit placed unplaced internal findings length pipes notRouted pipeLength utilityFlow utilityLines utilityLength plotArea footprintArea pavedArea distance radius bays capacity area approach diameter turningDiameter wallHeight displacedVolume netVolume requiredVolume lineBends lineNps lineSchedule lineOutsideDiameter lineWall lineWallRequired lineInsideDiameter lineDesignPressure lineScheduleNumber lineFlow lineDensity lineVelocity lineVelocityMax lineReynolds lineFriction lineEquivalentLength lineDropFriction lineDropStatic lineDrop lineRhoV2 lineCost nozzleDesignP nozzleDesignT", N, " ")
                 for (i = 1; i <= nn; i++)
                     if (match(line, "\"" N[i] "\": *-?[0-9][0-9.eE+-]*")) {
                         s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)

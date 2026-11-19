@@ -1560,6 +1560,40 @@ struct LineSheet
     std::string id() const { return "line:" + pipeId.substr(5); }
 };
 
+//  ONE ROW OF AN ITEM'S NOZZLE SCHEDULE (DEV.md 4c C444).  A nozzle is the
+//  end of a line on an item (a process connection) or an opening the item
+//  needs for people (`manway`, `inspection`).  Every number carries the rule
+//  it came from in `basis`; a value the case's declarations could not give is
+//  left empty / zero and `why` says so, never a default.
+struct NozzleRow
+{
+    std::string mark;          // N1.. process, M1.. manway, H1.. inspection opening
+    std::string kind;          // process | manway | inspection
+    std::string service;       // the port word (feed, vapour, liquid, suction ...) or manway / inspection
+    std::string direction;     // in | out | -
+    std::string stream, line;  // the stream; the line sheet's id ("" = none)
+    std::string orientation;   // top | bottom | side | -
+    std::string sizeFrom;      // line | equipment | line+equipment | declared | none
+    std::string nominalSize;   // inch, as the case's table names it ("" = not sized)
+    scalar      nps = 0;
+    std::string lineSize;      // the line's nominal size ("" = no line sheet)
+    std::string equipmentSize; // the item's own criterion, as a nominal size ("" = none)
+    std::string reducer;       // "" or the sentence, e.g. "reducer 4 in line to 6 in nozzle"
+    std::string flangeClass;   // "150" ... or "" (not rated)
+    std::string facing;        // RF | RTJ | ""
+    scalar      designP = 0;   // [Pa gauge]
+    scalar      designT = 0;   // [K]
+    std::string basis;         // the sentence a reader checks the row by
+    std::string why;           // what could not be decided, if anything
+};
+
+struct NozzleSchedule
+{
+    std::string item;                  // LayoutItem::id / EquipmentSizing::itemId()
+    std::vector<NozzleRow> rows;
+    std::vector<std::string> notes;
+};
+
 struct PlantLayoutRecord
 {
     std::vector<LayoutItem>            items;
@@ -1579,6 +1613,10 @@ struct PlantLayoutRecord
     //  C207: the line list (empty unless the case declares `lineDesign {}`).
     std::vector<LineSheet>             lines;
     std::string                        lineBasis;   // the declared rules, in words
+    //  C444: the nozzle schedules (empty unless the case declares
+    //  `nozzleDesign {}` beside `lineDesign {}`).
+    std::vector<NozzleSchedule>        nozzles;
+    std::string                        nozzleBasis;
     //  C268 slice 2: the declared utility lines (empty when the case declares
     //  none, and then nothing is published).  `lanesUsed` is how many rack
     //  lanes the process pipes took: the utility lines number on from it.
