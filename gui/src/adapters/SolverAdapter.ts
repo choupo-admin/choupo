@@ -842,6 +842,11 @@ export interface LayoutItem {
   /** The room of the declared GMP building it stands in (DEV.md 4c C100):
    *  its base `z` is that room's floor.  Absent for an item in the open. */
   room?: string;
+  /** DEV.md 4c C272: an item of a typical train carries its group, its train
+   *  index and, for a repeat (trains 2..N), the train-1 item it repeats. */
+  typical?: string;
+  trainIndex?: number;
+  repeatOf?: string;
   /** A `membraneBank` item's vessel geometry, ATTACHED BY THE GUI from the
    *  item's own design sheet (`case/withBanks.ts`); the engine's layout block
    *  carries only the envelope.  Absent when the sheet could not be read. */
@@ -869,6 +874,10 @@ export interface LayoutWind {
 
 export interface PlantLayout {
   items: LayoutItem[];
+  /** DEV.md 4c C272: one plan box per repeated train and room, published
+   *  apart from `items` (which stays complete).  Absent when the case
+   *  declares no `typicals`. */
+  typicalOutlines?: LayoutItem[];
   areas: LayoutArea[];
   separation: { source: string; reason: string; measure: string;
                 rules: { a: string; b: string; distance: number }[] }[];

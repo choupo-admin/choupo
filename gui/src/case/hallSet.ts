@@ -112,7 +112,7 @@ export function hallSet(designFiles: { [relPath: string]: string } | undefined,
   return {
     trains, bankIds: ids, pick: { train: k, bankId, rack }, racks: nRacks,
     train: trainSchematicSvg(mine, sheets),
-    plan: hallPlanSvg({ items: layout?.items ?? [], ...(building ? { building } : {}), banks }),
+    plan: hallPlanSvg({ items: layout?.items ?? [], ...(layout?.typicalOutlines ? { outlines: layout.typicalOutlines } : {}), ...(building ? { building } : {}), banks }),
     section: rackSectionSvg(read, rack, roofFor(building, layout, bankId)),
     elevation: rackElevationSvg(read, rack, read.ok ? headersOf(sheets, read.bank) : undefined),
   };

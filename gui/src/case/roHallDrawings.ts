@@ -422,6 +422,9 @@ export interface HallPlanInput {
   items: readonly LayoutItem[];
   building?: GmpBuilding;
   banks: ReadonlyMap<string, BankRead>;
+  /** The engine's `typicalOutlines` (C272): when present, the repeated trains
+   *  are drawn as outlines "typical of train 1" and only train 1 in detail. */
+  outlines?: readonly LayoutItem[];
 }
 
 /** The room of a building that lists an item. */
@@ -433,7 +436,11 @@ export function roomOf(building: GmpBuilding | undefined, itemId: string): Build
  *  clearances hatched), the pumps and exchanger arrays as the boxes the case
  *  declared, and the cut line of the section. */
 export function hallPlanSvg(input: HallPlanInput): Drawing | null {
-  const { items, building, banks } = input;
+  const { building, banks } = input;
+  const outlines = input.outlines ?? [];
+  //  C272: with outlines published, a repeated train's items are not drawn
+  //  one by one -- its outline stands for them.
+  const items = outlines.length > 0 ? input.items.filter((it) => it.repeatOf === undefined) : input.items;
   const inRoom = new Set((building?.rooms ?? []).flatMap((r) => r.equipment));
   const shown = items.filter((it) => inRoom.has(it.id) || it.kind === "membraneBank");
   if (shown.length === 0) return null;
@@ -445,6 +452,7 @@ export function hallPlanSvg(input: HallPlanInput): Drawing | null {
   };
   for (const r of building?.rooms ?? []) grow(r.xMin, r.xMax, r.yMin, r.yMax);
   for (const it of shown) grow(it.x - it.dx / 2, it.x + it.dx / 2, it.y - it.dy / 2, it.y + it.dy / 2);
+  for (const o of outlines) grow(o.x - o.dx / 2, o.x + o.dx / 2, o.y - o.dy / 2, o.y + o.dy / 2);
   const W = 900, mx = 120, top = 50;
   const s = (W - 2 * mx) / (x1 - x0);
   const Wm = x1 - x0, Hm = y1 - y0;
@@ -489,6 +497,15 @@ export function hallPlanSvg(input: HallPlanInput): Drawing | null {
       if (it.dx * s > 26) p.push(text(X(bx) + 2, Y(it.y + it.dy / 2) + 9, label, "#445", 7.5, "start", HALO));
     }
   }
+  //  C272: the repeated trains, schematically: one dashed box per train and room
+  for (const o of outlines) {
+    p.push(`<rect data-outline="${esc(o.id)}" x="${X(o.x - o.dx / 2)}" y="${Y(o.y + o.dy / 2)}" `
+      + `width="${o.dx * s}" height="${o.dy * s}" fill="none" stroke="${GHOST}" stroke-width="1" `
+      + `stroke-dasharray="5 3"/>`);
+    if (o.dx * s > 40 && o.dy * s > 12)
+      p.push(text(X(o.x - o.dx / 2) + 2, Y(o.y + o.dy / 2) + 9,
+        `typical of train 1 (train ${o.trainIndex ?? "?"})`, "#667", 7.5, "start", HALO));
+  }
   //  the section's cut line
   if (cut)
     p.push(`<g data-cut="A"><line x1="${X(cut.x)}" y1="${Y(cut.ya)}" x2="${X(cut.x)}" y2="${Y(cut.yb)}" `
@@ -517,6 +534,9 @@ export function hallPlanSvg(input: HallPlanInput): Drawing | null {
     { text: "The rooms and the boxes of the pumps and exchanger arrays are the CASE's declared places and footprints "
       + "(the engine publishes no size for those two kinds); the racks are the engine's published geometry.", who: "declared" },
     { text: "Indoor piping is not routed by the engine, so the plan draws none.", who: null },
+    ...(outlines.length > 0 ? [{ text: `Train 1 is drawn in full; ${count(new Set(outlines.map((o) => o.trainIndex)).size, "repeated train")} `
+      + "appear as dashed outlines \"typical of train 1\", the engine's `typicalOutlines` (every repeat is still a real item "
+      + "in the checks and the pipes).", who: "choupo" as const }] : []),
   ];
   return { svg: svgOpen(W, H, "plan of the reverse-osmosis hall") + p.join("") + "</svg>", notes, dims };
 }
