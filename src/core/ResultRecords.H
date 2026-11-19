@@ -797,6 +797,24 @@ struct EconomicBreakEvenPrice
     scalar      breakEven = 0.0;    // currency per kg at which NPV = 0
 };
 
+// WHERE ONE PRICE CAME FROM (C389, PR-07, 2026-11-19): every price the
+// economics pass reads from constant/economics, beside its origin -- the
+// citation the case's `provenance { origin; }` carries, the year it is
+// priced in, and the KIND of number it is (`published`: a price a source
+// publishes; `quote`: a quotation the case declares; `assumption`: a figure
+// the case states without a source for the number).  Published beside the
+// price in the console, reports/economics/prices.csv and the result.
+struct EconomicPriceOrigin
+{
+    std::string name;               // a stream, or "labourRate"
+    std::string role;               // "product" | "rawMaterial" | "labour"
+    scalar      price = 0.0;        // the value the pass used
+    std::string unit;               // EUR/kg | EUR/h
+    std::string costYear;           // the year the price is stated for ("" if none)
+    std::string kind;               // published | quote | assumption | undeclared
+    std::string origin;             // the case's citation, verbatim
+};
+
 // THE LOAN AND THE EQUITY CASH FLOW, YEAR BY YEAR (2026-10-20, DEV.md 4c C110
 // G4), present only when the case declares `financing {}` in the economics
 // block.  One row per year of the PROJECT timeline (t = first..N); the
@@ -909,6 +927,9 @@ struct EconomicsSummary
     //  THE PRICE BREAK-EVENS (2026-11-13), empty unless `breakEven { price
     //  ( ... ); }` is declared.
     std::vector<EconomicBreakEvenPrice> breakEvenPrices;
+    //  WHERE EACH PRICE CAME FROM (C389, PR-07): every price read from
+    //  constant/economics with its origin; empty when no price file.
+    std::vector<EconomicPriceOrigin>    priceOrigins;
     //  THE FINANCING (G4), present only when the case declares
     //  `financing {}`.  Every number above stays the PROJECT's (unlevered);
     //  these are the loan and the EQUITY (levered) view beside it.

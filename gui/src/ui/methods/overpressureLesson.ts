@@ -546,7 +546,7 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
       + "vaporising vena contracta limits the flow, a lower outlet pressure "
       + "no longer raises it, even with the outlet still above the vapour "
       + "pressure (the letdown page puts the ammonia throttle's choke at "
-      + "about 5.22 bar against a vapour pressure of 1.894 bar).  An area "
+      + "about 5.34 bar against a vapour pressure of 2.067 bar).  An area "
       + "sized on the whole difference p1 - p2 is then too small, because "
       + "the flow it was sized for never arrives.  A liquid drawn from a "
       + "drum is saturated at the drum's pressure, so relieved to a lower "

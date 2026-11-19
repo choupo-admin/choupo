@@ -952,6 +952,13 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
         d.push_back("  the unit supplies the shear (door form 3: liquidProperty::apparentViscosity); the Newtonian liquid viscosity above is REFUSED for this liquid");
         out.row("liquid rheology (transport.liquid.rheology)", "the case's measured flow curve", d);
     }
+    //  C435 (4): the ions' D0 temperature rule, when the case DECLARES it (the default is said by the unit that reads the D).
+    if (!pkg.ionDiffusivityMode().empty())
+        out.row("ion diffusivity, temperature rule (transport.liquid.ionDiffusivity)", pkg.ionDiffusivityMode(),
+                { "  reason: " + pkg.ionDiffusivityReason(),
+                  pkg.ionDiffusivityMode() == "none"
+                      ? "  every ion's D0 (25 C) is used as it is at any T: no Stokes-Einstein correction"
+                      : "  D = D0 (T/298.15)(mu(298.15)/mu(T)) on the declared liquid viscosity" });
     out.line("================  end of resolved properties: " + title + "  ================");
 }
 

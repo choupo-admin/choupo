@@ -208,7 +208,7 @@ template <class F>
 inline BracketedRoot bisectIncreasing(F f, scalar lo, scalar flo,
                                       scalar hi, scalar fhi)
 {
-    for (int k = 0; k < 200 && (hi - lo) > 1.0e-10 * std::max<scalar>(1.0, hi); ++k)
+    for (int k = 0; k < 200 && (hi - lo) > 1.0e-13 * std::max<scalar>(1.0, hi); ++k)
     {
         const scalar mid = 0.5 * (lo + hi), fm = f(mid);
         if (flo * fm <= 0.0) { hi = mid; fhi = fm; }

@@ -142,7 +142,7 @@ private:
     scalar mu_  = 0.0;                // klb/h
     scalar eta_ = 0.0;                // [-]
 
-    scalar P_bar_ = 1.013;            // reported on streams only
+    scalar P_Pa_ = 101300.0;          // Pa; reported on streams and given to the density door
 
     //- The six mass derivatives, paper eqs. (3.6)-(3.11)  [klb/h].
     sVector rates_(const sVector& m) const;

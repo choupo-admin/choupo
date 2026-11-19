@@ -38,9 +38,9 @@ fit
     fittedInCase      labban2017_dspmde_validation;
     operation         fit_X_sw;
     propsDict         "system/propsDict";
-    fitBlockSha256    "6c807bc509e600a2e9573a75c7006dfda681f40ab45c1afc36b2eb2d0933fe53";
+    fitBlockSha256    "892d20ffd5c8783df7d1752496ce730af97e5f2377edb5d17e131b4aa704277a";
     baseRecord        LbLC_eps;
-    baseRecordSha256  "f249c624fc2fbdaa26634dddf4b3147a8c839efa67b722caf2e259e844a2853f";
+    baseRecordSha256  "3278ed97069bf1735cbf908e0e14b5a66c607550a25bf192b733b27c383eefd6";
     recordSha256      "3423fc624646c9ed0101841699fd9e288f434ecee8af1021d981f90025b8914c";
     datasets
     (

@@ -317,6 +317,45 @@ int Pump::solve(const DictPtr& dict,
           : 0.0;
         T_out = T_in + dT_rise;
 
+        //  THE PUMP SOLVES THE STREAM BALANCE (DEV.md 4c C390).  The liquid
+        //  enthalpy of the generic surface now carries the pressure term
+        //  v (1 - alpha T) dP (ThermoPackage::liquidPressureLeg), so the
+        //  discharge state is the one whose ABSOLUTE stream enthalpy rose by
+        //  the full shaft work, H(T_out, P_out) = H(T_in, P_in) + w_real --
+        //  what the pure-fluid branch above has always done -- and the
+        //  unit's first law closes by construction.  The closed form above
+        //  (only the loss heats the liquid) is the starting estimate and the
+        //  FALLBACK, announced, for a stream with no enthalpy route (a
+        //  dissolved salt with no liquid heat capacity).
+        bool streamSolved = false;
+        std::string streamWhy;
+        try
+        {
+            const scalar h_target = thermo.H_stream_formation(T_in, P_in, 0.0, x) + w_real;
+            auto f  = [&](scalar T){ return thermo.H_stream_formation(T, P_out, 0.0, x) - h_target; };
+            auto df = [&](scalar T){
+                const scalar d = 0.25;
+                return (f(T + d) - f(T - d)) / (2.0 * d);
+            };
+            solver::NROptions o;
+            o.tolerance = 1.0e-6; o.maxIter = 60;
+            o.lower = T_in - 1.0e-6; o.upper = T_in + 300.0;
+            o.bracket = true; o.monotoneIncreasing = true; o.maxStep = 50.0;
+            auto r = solver::newton1D(f, df, T_out, o);
+            if (r.converged && std::isfinite(r.x))
+            {
+                T_out = r.x;
+                streamSolved = true;
+            }
+            else streamWhy = "the discharge search did not converge";
+        }
+        catch (const std::exception& e) { streamWhy = e.what(); }
+        if (!streamSolved && verbosity >= 2)
+            std::cout << "  [pump] the stream-enthalpy balance could not be solved ("
+                      << streamWhy << "); the closed form (only the loss heats the"
+                         " liquid) is kept\n";
+
+        if (!streamSolved)
         //  NO SILENT CRUTCH (2026-05-30), applied to an ENERGY term rather
         //  than to a solver aid.  On this surface the liquid enthalpy is
         //  h(T) with NO pressure argument (`ThermoPackage::Hliquid(T, x)`),

@@ -383,6 +383,42 @@ public:
     // with a flagged note.
     scalar H_liquid_formation(scalar T_K, const sVector& x) const;
 
+    // ---- THE PRESSURE TERM OF THE GENERIC LIQUID (DEV.md 4c C390) ---------
+    //
+    // The formation-datum liquid above is a function of T alone, so a pump's
+    // useful work v dP appeared in no stream.  H_stream_formation and
+    // S_stream_formation add, to the liquid leg of a package that does not
+    // price its liquid on the equation of state, the isothermal departure of
+    // each component from its own saturated liquid at T:
+    //
+    //   dh_i(T, P) = INT_{psat_i(T)}^{P} [ v_i - T (dv_i/dT) ] dP'
+    //   ds_i(T, P) = - INT_{psat_i(T)}^{P} (dv_i/dT) dP'
+    //
+    // v_i is the pure-component liquid volume the property kernel returns,
+    // dv_i/dT its own temperature derivative (a central difference of 0.5 K),
+    // psat_i the same Psat(i, T) the K-value uses; the integral is 3-point
+    // Gauss where the volume carries pressure and closed form where it does
+    // not.  A component with no saturation line at T (above Tc, a Henry
+    // solute, a salt) or no liquid volume gets none.  Not in
+    // speciesPhaseEnthalpy: no heat of reaction moves.  The Poynting factor is
+    // NOT touched.  The run says, per component, which volume and so which
+    // slope the term used, and a term that changed sign gets its own line.
+    struct LiquidPressureLeg
+    {
+        bool        priced = false;     // false: no term for this component
+        scalar      h = 0.0;            // J/mol
+        scalar      s = 0.0;            // J/mol/K
+        std::string source;             // the volume method that gave v and its slope
+        bool        corrStates = false; // the slope is the corresponding-states (Rackett) one
+        bool        signChanged = false;// 1 - alpha T < 0 on that slope
+    };
+    LiquidPressureLeg liquidPressureLeg(std::size_t i, scalar T_K, scalar P_Pa) const;
+    //  The same, with no interpolation: the leg at exactly (T, P).
+    LiquidPressureLeg liquidPressureLegExact(std::size_t i, scalar T_K, scalar P_Pa) const;
+    //  sum_i x_i leg_i: the liquid leg's correction [J/mol] and [J/mol/K].
+    scalar liquidPressureEnthalpy(scalar T_K, scalar P_Pa, const sVector& x) const;
+    scalar liquidPressureEntropy(scalar T_K, scalar P_Pa, const sVector& x) const;
+
     // ---- THE LIQUID ON THE EQUATION OF STATE, phiPhi (DEV.md 4c C410) ----
     //
     // Under a phiPhi package ONE cubic prices both phases, so a liquid-phase
@@ -700,6 +736,10 @@ public:
     // diffusivityLiquid needs the solvent viscosity, so a liquidViscosity
     // model must be present alongside.  Each throws if its sub-block is absent.
     bool   hasLiquidViscosity()    const { return !liquidViscosityLaws_.empty(); }
+    //  C435 (4): the case's DECLARED temperature rule for the ions' D0 (`transport { liquid { ionDiffusivity { temperatureCorrection ...; reason "..."; } } }`);
+    //  "" when none is declared (the default rule: Stokes-Einstein when a liquid viscosity is declared, none otherwise).
+    const std::string& ionDiffusivityMode()   const { return ionDiffusivityMode_; }
+    const std::string& ionDiffusivityReason() const { return ionDiffusivityReason_; }
     scalar viscosityLiquid(scalar T_K, const sVector& x) const;
     bool   hasLiquidConductivity() const { return !liquidConductivityLaws_.empty(); }
     scalar thermalConductivityLiquid(scalar T_K, const sVector& x) const;
@@ -1042,6 +1082,8 @@ private:
     std::unique_ptr<LiquidConductivityModel>  liquidConductivity_;
     std::unique_ptr<LiquidDiffusivityModel>   liquidDiffusivity_;
     liquidTransport::DiffusivityDeclaration   liquidDiffusionDecl_;        // C398 slice (d)
+    std::string ionDiffusivityMode_;     // C435 (4): "", "stokesEinstein" or "none" (the case's declared choice)
+    std::string ionDiffusivityReason_;
     std::vector<liquidTransport::ViscosityMeasurement> liquidViscosityMeasured_;
     std::vector<rheology::FlowCurve> flowCurves_;                                   // C421 (7)
     scalar measuredOrCheckedViscosity(scalar T, const sVector& x, const scalar* computed) const;
@@ -1103,6 +1145,15 @@ private:
     mutable bool stageProjectionAnnounced_ = false;
     mutable bool stageIncipientAnnounced_  = false;
     //  The associating component, resolved on first use (see above).
+    //  C390: the pressure leg of a component priced on a REFERENCE equation
+    //  costs a saturation solve per new T, so it is computed on a 1 K grid
+    //  per (component, P) and interpolated (4-point Lagrange, error of the
+    //  order h^4 f'''' -- far below a golden's tolerance), exactly where all four
+    //  nodes are clean liquid legs; near the bubble point, or where a node
+    //  has no term, the exact leg is taken.
+    struct PressureLegNode { bool ok = false; scalar h = 0.0, s = 0.0; };
+    mutable std::map<std::pair<std::size_t, scalar>, std::map<long, PressureLegNode>> pressureLegGrid_;
+    mutable std::map<std::size_t, std::string> pressureLegExpensive_;   // "": cheap; else the volume method
     mutable bool        associationResolved_ = false;
     mutable std::size_t associationIndex_    = 0;      // n() when none
     mutable vapourAssociation::Dimerisation associationDim_;

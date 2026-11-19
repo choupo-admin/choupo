@@ -160,7 +160,7 @@ export const BODE_STEPS: readonly LessonStep[] = [
       + "engine's own equation, not from a transfer function someone wrote "
       + "down.  The unit integrates dn/dt = F·z_in − F·(n/Σn) with the "
       + "outflow equal to the inflow "
-      + "(src/unitOperations/dynamic/DynamicCSTR.cpp:788-791).",
+      + "(src/unitOperations/dynamic/DynamicCSTR.cpp:787-790).",
     derivation: [
       { step: "Write that balance for the tracer alone, in mole fraction, "
           + "with the total inventory N and the flow F both constant "
@@ -170,7 +170,7 @@ export const BODE_STEPS: readonly LessonStep[] = [
         eq: String.raw`N \frac{\mathrm{d}x}{\mathrm{d}t} = F x_\mathrm{in} - F x`},
       { step: "Divide by F.  The group that appears is the residence time — "
           + "the same one the unit computes for itself at "
-          + "src/unitOperations/dynamic/DynamicCSTR.cpp:628.",
+          + "src/unitOperations/dynamic/DynamicCSTR.cpp:629.",
         eq: String.raw`\tau = \frac{N}{F} \qquad \tau \frac{\mathrm{d}x}{\mathrm{d}t} + x = x_\mathrm{in}`},
       { step: "Now feed it the sinusoid of step 1 and look for a sinusoidal "
           + "answer of the same frequency: x = AR·sin(ω·t + φ).  "

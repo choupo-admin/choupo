@@ -124,6 +124,23 @@ describe("price break-even mapping", () => {
     expect(breakEvenPriceLine("EUR", b1)).toContain("the highest purchase price the plant can bear");
   });
 
+  it("keeps each price's origin and kind (C389, PR-07), and leaves the key absent without them", () => {
+    const r = extractStructured(wrap({ ...BASE, economics: econ({
+      priceOrigins: [
+        { name: "H2Feed", role: "rawMaterial", price: 8, unit: "EUR/kg", costYear: "2025",
+          kind: "published", origin: "a report, p. 40" },
+        { name: "labourRate", role: "labour", price: 42, unit: "EUR/h", costYear: "2026",
+          kind: "", origin: "" },
+      ] }) }), CASE);
+    const p = r.economics!.priceOrigins!;
+    expect(p.map((x) => x.name)).toEqual(["H2Feed", "labourRate"]);
+    expect(p[0]!.kind).toBe("published");
+    expect(p[0]!.origin).toBe("a report, p. 40");
+    expect(p[1]!.kind).toBe("undeclared");
+    expect(extractStructured(wrap({ ...BASE, economics: econ({}) }), CASE)
+      .economics!.priceOrigins).toBeUndefined();
+  });
+
   it("leaves the key absent when the engine wrote none, and drops a non-finite row", () => {
     expect(extractStructured(wrap({ ...BASE, economics: econ({}) }), CASE)
       .economics!.breakEvenPrices).toBeUndefined();

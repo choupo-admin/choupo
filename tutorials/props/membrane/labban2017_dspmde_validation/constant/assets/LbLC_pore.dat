@@ -38,7 +38,7 @@ fit
     fittedInCase      labban2017_dspmde_validation;
     operation         fit_pore_uncharged;
     propsDict         "system/propsDict";
-    fitBlockSha256    "53660ab5f9c11d2f71bf6324cb0bbddddfcb62929906a2847abe92ec692bf515";
+    fitBlockSha256    "d1929ba46d8db3fc976b35dfe5d2375e189d1d9d70d2ebf2981703e1373cf3be";
     baseRecord        LbLC;
     baseRecordSha256  "32dc4506a4a533818bd7cda7e0bd40127231ccabe829fe143ac3aa14ffcdcaf1";
     recordSha256      "c9cf6ce5692d66ed36c4fd822b5f130697092e540f77261a5745dc6ff96c8d91";

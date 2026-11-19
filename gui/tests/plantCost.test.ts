@@ -60,7 +60,7 @@ describe("every engine claim is held to the line it cites", () => {
     // carry the quoted text (the ENGINE_SOURCES test above holds those); corrected.
     // C269 (2026-11-09) moved them again: the tax-on-loss rule and the Turton
     // extrapolation advisory inserted lines above every one but 69/217/241/556.
-    for (const cite of ["3024-3025", "3017", "2865", "69", "755", "241", "217", "2817", "556", "1922", "1934", "1955"])
+    for (const cite of ["3086-3087", "3079", "2927", "69", "755", "278", "254", "2879", "618", "1984", "1996", "2017"])
       expect(text, cite).toContain(cite);
   });
   it("the engine's constants are the ones the page defaults to", () => {

@@ -28,6 +28,10 @@ propertyManifest
         "components/glycerol.dat"  "3e3cec148cabc43d771e5194baf86463882848e5d1d3697cedc1adc05d61eeab";
         "components/sucrose.dat"  "0f672de68a751fafd5257f7c55a79aa9203ea02d8d641a03b44b506c12d96901";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
+        "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+        "parameters/Helmholtz/SetzmannWagner1991.dat"  "2d75e1bff7b606847ff65b4854ca906f0f653cabb28036d87d7330109cf49b10";
+        "parameters/Helmholtz/Span2000.dat"  "ff57a1c162fb3e3d2b93332832d5472106b988a43db93d6537f5a1e8751dd032";
+        "parameters/Helmholtz/SpanWagner1996.dat"  "45e5b08168038ca401f0a99ec275378fa7fec8658671fc3c954dd201e1bff76a";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:9b39ca1d81ecceb80b252303e4e19342c8089952c427ed725ec3f3e6a6253591";
         "parameters/solution/NaCl-water.dat"  "e15ed02baf1dd90629885f257f5b85cff854ff009e2d5bf8fdc18e4b72e2124f";

@@ -140,6 +140,7 @@ number as printed.
 | `SpanWagner1996` | CO2 | 67 / 67 | 8.4e-4 (an entropy printed to 3 digits) |
 | `Span2000` | N2 | 67 / 67 | 2.7e-4 |
 | `SetzmannWagner1991` | CH4 | 74 / 74 | 1.2e-4 |
+| `Gao2023` | NH3 | 100 / 100 (the 17 state points of its Table 7; the zero-density point is evaluated at 1e-9 mol/dm3) | 3.8e-7 |
 
 Every one of them reproduced at the first load: no coefficient needed
 correcting.  The kernel gained only check-value kinds (saturation cv, cp, w;

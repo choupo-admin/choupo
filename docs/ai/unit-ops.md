@@ -995,8 +995,13 @@ unit is handed its inlets.
 
 ### `pump`
 Incompressible: `ΔP = η W_shaft / Q_vol`, `Q_vol = ṅ·v_molar` (set by the
-feed), tiny dissipation `dT = (1-η) w_real / Cp_liq`.  Closed form, no
-EoS, no Newton.  Because the relation inverts in closed form
+feed).  The discharge T solves the STREAM balance
+`H(T_out, P_out) = H(T_in, P_in) + w_real` on the generic liquid enthalpy, which
+carries the pressure term `v (1 - alpha T) dP` (C390, Theory Guide
+`sec:liquid-enthalpy-pressure`), so the pump first law closes (pump01/pump02
+left the energy-closure KNOWN_OPEN list); a stream with no liquid-enthalpy route
+(a salt with no liquid Cp) keeps the closed form `dT = (1-η) w_real / Cp_liq`,
+announced.  `ΔP` itself is closed form, no EoS.  Because the relation inverts in closed form
 (`W_shaft = Q_vol·ΔP/η`), give `eta` **plus exactly ONE** of:
 ```
 operation { eta 0.65;  P_out 30 bar; }   // header it feeds -> W_shaft is the RESULT (common)
@@ -4079,6 +4084,13 @@ value by the declared rule), `D_L_effective_<c>`, `D_L_MS_<i>_<j>`, `Gamma_<i>_<
 "The multicomponent liquid diffusivity").  `Psat_<comp>`, `gamma_<comp>`,
 `y_eq_<comp>`, `Cp_liquid_<comp>`, `Hvap_<comp>` are PER-COMPONENT (one value per named
 compound); the rest are mixture scalars at `state.composition`.
+
+`fitParameters` REPLAY (a test-suite facility, never authored in a case; C432):
+with `CHOUPO_FIT_REPLAY=<file>` set, an operation named in the file (lines
+`<operation> TAB <parameter path> TAB <value>`) starts at those values, runs no
+Levenberg-Marquardt step and no minimax stage, and publishes its statistics at
+them; an operation not named refuses.  `bin/curate/suite_reuse.py` uses it to ask
+"did the engine move THIS fit?" before refitting; the run prints a `REPLAY` line.
 
 # More steady units (choupoSolve)
 

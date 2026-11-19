@@ -64,7 +64,7 @@ namespace transportGrammar {
 inline const std::vector<std::string>& propertiesOf(const std::string& phase)
 {
     static const std::vector<std::string> fluid{ "viscosity", "thermalConductivity", "diffusivity" };
-    static const std::vector<std::string> liquidP{ "viscosity", "thermalConductivity", "diffusivity", "rheology" };   // C421 (7): the flow curve
+    static const std::vector<std::string> liquidP{ "viscosity", "thermalConductivity", "diffusivity", "rheology", "ionDiffusivity" };   // C421 (7): the flow curve; C435 (4): the ions' temperature rule
     static const std::vector<std::string> iface{ "surfaceTension" };
     static const std::vector<std::string> none;
     if (phase == "liquid") return liquidP;
@@ -108,6 +108,8 @@ inline bool readInsideBlock(const std::string& k)
 inline bool readInsideBlock(const std::string& phase, const std::string& prop,
                             const std::string& k)
 {
+    //  C435 (4): the ions' D0 temperature rule is a declared choice, not a side effect of a viscosity.
+    if (phase == "liquid" && prop == "ionDiffusivity") return k == "temperatureCorrection" || k == "reason";
     if (readInsideBlock(k)) return true;
     //  C421 slice (8): the liquid thermal conductivity and the surface tension take `measured {}` too.
     if (phase == "liquid" && (prop == "viscosity" || prop == "thermalConductivity")) return k == "measured";
@@ -176,7 +178,24 @@ inline void validate(const DictPtr& t, const std::string& where)
                           " `interaction` and `pin`; the liquid viscosity also"
                           " `measured`, the liquid diffusivity `returns`,"
                           " `composition`, `infiniteDilution` and"
-                          " `thermodynamicFactor`.");
+                          " `thermodynamicFactor`; `ionDiffusivity` only"
+                          " `temperatureCorrection` and `reason`.");
+            if (ph == "liquid" && pr == "ionDiffusivity")
+            {
+                const std::string w = where + ".liquid.ionDiffusivity";
+                const auto pk = pb->keys();
+                auto has = [&](const char* k) { for (const auto& x : pk) if (x == k) return true; return false; };
+                if (!has("temperatureCorrection") || !has("reason"))
+                    throw std::runtime_error(w + ": declare BOTH `temperatureCorrection"
+                        " stokesEinstein | none;` and `reason \"...\";` -- a choice"
+                        " that moves every ion's D at T != 298.15 K carries its why.");
+                const std::string m = pb->lookupWord("temperatureCorrection");
+                if (m != "stokesEinstein" && m != "none")
+                    throw std::runtime_error(w + ": `temperatureCorrection " + m
+                        + ";` is not a choice -- the choices are stokesEinstein"
+                          " (D = D0 (T/T0)(mu(T0)/mu(T)), needs a declared liquid"
+                          " viscosity) and none (D = D0 at every T).");
+            }
         }
     }
 }

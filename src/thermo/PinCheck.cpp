@@ -122,6 +122,34 @@ std::set<std::string>& loadedComponents_()
     static std::set<std::string>* s = new std::set<std::string>();
     return *s;
 }
+//  The friendly names (aliases) of the loaded components: a reference equation
+//  names its fluid by one of them (`fluid methane;` for the component CH4).
+//  Kept apart from the names above so that a Henry or solution pair's
+//  relevance is not widened by them.
+std::set<std::string>& loadedAliases_()
+{
+    static std::set<std::string>* s = new std::set<std::string>();
+    return *s;
+}
+
+//  The `fluid` a reference-equation record names (first `fluid <word>;` line).
+std::string helmholtzFluidOf(const fs::path& f)
+{
+    std::ifstream in(f);
+    std::string line;
+    while (std::getline(in, line))
+    {
+        std::size_t i = line.find_first_not_of(" \t");
+        if (i == std::string::npos || line.compare(i, 5, "fluid") != 0) continue;
+        i += 5;
+        if (i >= line.size() || (line[i] != ' ' && line[i] != '\t')) continue;
+        i = line.find_first_not_of(" \t", i);
+        if (i == std::string::npos) continue;
+        std::size_t e = line.find_first_of("; \t", i);
+        return line.substr(i, e == std::string::npos ? std::string::npos : e - i);
+    }
+    return "";
+}
 
 //  What the run would PIN: sub -> computational hash; `<dir>/` -> "relevant:<hash of the set>".
 std::map<std::string, std::string>& proposed_()
@@ -207,6 +235,14 @@ bool consumed(const std::string& sub, const std::set<std::string>& comps,
     const std::string stem = fs::path(sub).stem().string();
     if (dir == "parameters/Henry" || dir == "parameters/solution")
         return pairRelevant(stem, comps);
+    //  C390: a reference equation is consumed when its fluid is one of the case's
+    //  components (by name or alias) -- the directory is parsed whole by the
+    //  liquid-density door, and an unrelated fluid's record changes nothing.
+    if (dir == "parameters/Helmholtz")
+    {
+        const std::string fl = helmholtzFluidOf(catalogueRoot() / sub);
+        return !fl.empty() && (comps.count(fl) || loadedAliases_().count(fl));
+    }
     if (dir == "assets" || dir == "utilities")
         return words.count(stem) > 0;
     if (startsWith(dir, "parameters/adsorption/equilibria/"))
@@ -281,6 +317,12 @@ void computeProposed()
                 names.push_back(e.path().filename().string());
         setLine(dir, names);
     }
+    //  THE REFERENCE EQUATIONS (parameters/Helmholtz/) HAVE NO SET LINE (C390): a
+    //  record is consumed when its `fluid` is one of the case's components (see
+    //  consumed()), so a NEW equation for another fluid touches no manifest, and
+    //  a new equation for one of the case's fluids is a record the run consumes
+    //  and the manifest does not pin -- a drift, said by name.  A set line would
+    //  have put one line into every manifest that scans the directory.
     const fs::path eq = cat / "parameters" / "adsorption" / "equilibria";
     if (fs::is_directory(eq, ec))
         for (const auto& e : fs::directory_iterator(eq, ec))
@@ -430,6 +472,7 @@ std::string catalogueSubOf(const std::string& path)
 }
 
 void noteLoadedComponent(const std::string& name) { loadedComponents_().insert(name); }
+void noteLoadedAlias(const std::string& name) { loadedAliases_().insert(name); }
 
 const std::map<std::string, std::string>& proposedPinsSnapshot() { return proposed_(); }
 

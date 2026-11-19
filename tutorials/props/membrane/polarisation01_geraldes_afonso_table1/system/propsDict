@@ -66,8 +66,6 @@ operations
             model      StirredCell;           // Sh_i = a (omega r^2/nu)^b Sc_i^c
             omega      41.9;                  // rad/s
             radius     2.4 cm;
-            viscosity  8.97e-4;               // Pa.s   -> nu = 8.97e-7 m2/s
-            density    1000;                  // kg/m3
             // a 0.23;  b 0.567;  c 0.33;     // the defaults (Bowen et al. 1997)
         }
 

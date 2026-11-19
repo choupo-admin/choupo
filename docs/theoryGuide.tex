@@ -4752,6 +4752,65 @@ up); on the elements datum the liquid is $h^{\mathrm{ig}} -
 \label{fig:enthalpy-ladder}
 \end{figure}
 
+\subsection{The pressure term of the liquid enthalpy}\label{sec:liquid-enthalpy-pressure}
+
+The formation-datum liquid of the paragraph above, $h^{\mathrm{liq}}_i(T)
+= h^{\mathrm{ig}}_i(T) - \Delta h^{\mathrm{vap}}_i(T)$, is a function of
+temperature alone: it is the enthalpy of the saturated liquid at $T$.  A
+compressed liquid differs from it by an isothermal departure,
+$\mathrm{d}h = (v - T\,\partial v/\partial T)\,\mathrm{d}P$ at constant $T$
+(from $\mathrm{d}h = c_p\,\mathrm{d}T + [v - T(\partial v/\partial T)_P]\,\mathrm{d}P$).
+Without it a pump's useful shaft work, $v\,\Delta P$, appeared in no stream, and
+\code{pump01} and \code{pump02} carried an open first law (the residual was exactly
+the pump's efficiency).  The liquid leg of the stream enthalpy and entropy therefore
+take, per component, from that component's own saturated liquid at $T$ to the
+stream's $P$,
+\begin{align}
+  \Delta h_i(T,P) &= \int_{p^{\mathrm{sat}}_i(T)}^{P}
+        \left[\,v_i - T\left(\frac{\partial v_i}{\partial T}\right)_{P'}\right]\mathrm{d}P'
+        \;=\; \int_{p^{\mathrm{sat}}_i}^{P} v_i\,(1-\alpha_i T)\,\mathrm{d}P',
+        \label{eq:liquid-pressure-h}\\
+  \Delta s_i(T,P) &= -\int_{p^{\mathrm{sat}}_i(T)}^{P}
+        \left(\frac{\partial v_i}{\partial T}\right)_{P'}\mathrm{d}P',
+        \label{eq:liquid-pressure-s}
+\end{align}
+and $h^{\mathrm{liq}} = \sum_i x_i\,[h^{\mathrm{liq}}_i(T) + \Delta h_i]$ (the entropy likewise).
+Symbols: $v_i$ the pure-component liquid molar volume and $\alpha_i =
+v_i^{-1}(\partial v_i/\partial T)_P$ its expansivity, both from the property kernel's
+volume of the one-constituent set (\S\ref{sec:liquid-density-methods}: a reference
+equation that names the fluid, with its pressure dependence; else the record's volume
+route); $\partial v/\partial T$ is a central difference of $0.5$\,K of that same
+volume; $p^{\mathrm{sat}}_i(T)$ the same saturation pressure the K-value uses.  Where
+the volume carries pressure the integral is a three-point Gauss rule; where it does
+not (the Rackett and flat routes) it is $v(1-\alpha T)(P-p^{\mathrm{sat}})$ in closed
+form.  At or below $p^{\mathrm{sat}}$ the term is zero, so the liquid leg is continuous
+with the vapour at the bubble point.
+
+\emph{Why $v(1-\alpha T)$ and not $v\,\mathrm{d}P$:} on water at 298.15\,K and 100\,bar the
+engine's own IAPWS-95 route gives $166.127$\,J/mol, this form $166.117$ and $v\,\Delta P$
+alone $180.233$; at 450\,K, $86.110$, $85.327$ and $181.207$.  Both forms close a pump's
+balance (it is solved on the stream enthalpy), so closure cannot tell them apart; the
+pump's outlet temperature can (\file{liquidDensity01}: 0.024238\,K on the reference
+route, 0.024201 with this form, 0.020520 with $v\,\Delta P$).  (Review record:
+\file{docs/reviews/2026-11-13-c390-pressure-term-design/}.)
+
+\emph{Validity and the slope.}  The term is a difference, $1-\alpha T$.  For a fluid
+with a reference equation the slope is that equation's.  For any other liquid it is the
+corresponding-states (Rackett) slope, measured against the reference equations in the
+tree: within 1\,\% at a reduced temperature of 0.6, 7--13\,\% too large near 0.75, wrong
+by a third at 0.9 (where the term changes sign); water, the one associating fluid that
+could be checked, 19--22\,\% too small.  That is why ammonia's reference equation
+(Gao, Wu, Bell, Harvey and Lemmon 2023) was curated first
+(\S\ref{sec:helmholtz-eos-fluids}).  The run says once, per component, which volume (so
+which slope) the term used, and a term that has changed sign on the corresponding-states
+slope gets its own line.  A component with no saturation line at $T$ (above $T_c$, a
+Henry solute, a salt) or no liquid volume gets no term.  The term is not in the species'
+phase enthalpy, so no heat of reaction moves, and the Poynting factor is unchanged (it
+rides a constant record volume and is off whenever the vapour is an ideal gas).  A
+package that prices its liquid on the equation of state's liquid root already carries the
+pressure and takes no extra term.  Source: the thermodynamic identity above; the reference
+for the size of the correction is the engine's own IAPWS-95 route.
+
 \subsection{Which rung does the data file pin? The \code{referenceState} keyword}
 \label{sec:gibbs-phase}
 
@@ -12000,7 +12059,7 @@ dependence), plus any of
 the last being the vibrational contribution of one mode with reduced
 characteristic temperature $\gamma = \Theta/T_c$.
 
-\paragraph{Residual part.}  Four types, each summed over its rows:
+\paragraph{Residual part.}  Five types, each summed over its rows:
 \begin{align}
   \text{power:}&\quad n\,\delta^{d}\tau^{t}, \label{eq:helmholtz-power}\\
   \text{exponential:}&\quad n\,\delta^{d}\tau^{t}\,e^{-\delta^{c}},
@@ -12008,6 +12067,10 @@ characteristic temperature $\gamma = \Theta/T_c$.
   \text{gaussian:}&\quad n\,\delta^{d}\tau^{t}
      \exp\!\left[-\alpha(\delta-\varepsilon)^2 - \beta(\tau-\gamma)^2\right],
      \label{eq:helmholtz-gauss}\\
+  \text{associating:}&\quad n\,\delta^{d}\tau^{t}
+     \exp\!\left[-\eta(\delta-\varepsilon)^2
+       + \frac{1}{\beta(\tau-\gamma)^2 + b}\right],
+     \label{eq:helmholtz-assoc}\\
   \text{nonAnalytic:}&\quad n\,\Delta^{b}\,\delta\,\psi,\qquad
      \psi = e^{-C(\delta-1)^2 - D(\tau-1)^2},\quad
      \Delta = \theta^2 + B\left[(\delta-1)^2\right]^{a},\quad
@@ -12030,7 +12093,22 @@ $\alpha_\delta = X f_\delta$,
 $\alpha_{\delta\delta} = X\left(f_\delta^2 - d/\delta^2 - 2\alpha\right)$,
 $\alpha_\tau = X f_\tau$,
 $\alpha_{\tau\tau} = X\left(f_\tau^2 - t/\tau^2 - 2\beta\right)$,
-$\alpha_{\delta\tau} = X f_\delta f_\tau$.  The non-analytic term's
+$\alpha_{\delta\tau} = X f_\delta f_\tau$.  The associating term of
+Gao, Wu, Bell, Harvey and Lemmon\cite{Gao2023NH3} (their Eq.~30, terms 19 and 20 of the
+ammonia equation, written to describe the hydrogen-bonded association that
+makes the heat capacity of liquid and vapour ammonia behave) is a Gaussian in
+$\delta$ whose temperature factor sits as a reciprocal quadratic in the
+exponent; with $w = \beta(\tau-\gamma)^2 + b$ and $\eta$ carried in the
+\code{alpha} column,
+$E_\tau = -2\beta(\tau-\gamma)/w^2$,
+$E_{\tau\tau} = -2\beta/w^2 + 8\beta^2(\tau-\gamma)^2/w^3$,
+$f_\delta = d/\delta - 2\eta(\delta-\varepsilon)$ and $f_\tau = t/\tau + E_\tau$:
+$\alpha_\delta = X f_\delta$,
+$\alpha_{\delta\delta} = X\left(f_\delta^2 - d/\delta^2 - 2\eta\right)$,
+$\alpha_\tau = X f_\tau$,
+$\alpha_{\tau\tau} = X\left(f_\tau^2 - t/\tau^2 + E_{\tau\tau}\right)$,
+$\alpha_{\delta\tau} = X f_\delta f_\tau$ (an independent implementation in
+\file{bin/curate/check\_reference\_eos.py} derives it again).  The non-analytic term's
 derivatives are the chain rule through $\Delta^b$ and $\psi$, transcribed
 in the source from IAPWS R6-95(2018) Table~5\cite{IAPWS_R695}.  Its second
 $\delta$-derivative is singular exactly on the critical isochore; an
@@ -12138,15 +12216,17 @@ equation (record) & window & checks & uncertainty, as the publication states it 
 \code{IAPWS95}, water\cite{IAPWS_R695} & 251.165--1273\,K, $\le$1000\,MPa & 81 & density 0.0001\,\% (liquid near ambient) to 0.5\,\%; $w$, $c_p$ growing towards the critical point \\
 \code{SpanWagner1996}, CO$_2$\cite{SpanWagner1996} & 216.592--1100\,K, $\le$800\,MPa & 67 & to 30\,MPa and 523\,K: density 0.03--0.05\,\%, $w$ 0.03--1\,\%, $c_p$ 0.15--1.5\,\% \\
 \code{Span2000}, N$_2$\cite{Span2000N2} & 63.151--1000\,K, $\le$2200\,MPa & 67 & density 0.02\,\% below 30\,MPa to 0.6\,\% at very high pressure; 0.01\,\% at 270--350\,K below 12\,MPa \\
+\code{Gao2023}, NH$_3$\cite{Gao2023NH3} & 195.49--725\,K, $\le$1000\,MPa & 100 & vapour density 0.05--0.1\,\%, liquid density 0.05\,\% (190--400\,K, below 200\,MPa), vapour pressure 0.1\,\% (200--404\,K); $c_p$ 0.5\,\% (vapour), 2\,\% (liquid); read from the authors' manuscript, held to its Table~7 \\
 \code{SetzmannWagner1991}, CH$_4$\cite{SetzmannWagner1991} & 90.6941--625\,K, $\le$1000\,MPa & 74 & density 0.03\,\% below 12\,MPa and 350\,K, 0.03--0.15\,\% above; $w$ 0.03--0.3\,\%; heat capacities 1\,\% \\
 \hline
 \end{tabular}
 \end{center}
 
 IAPWS-95's 81 values are its release's Tables~6--8, the virial footnote and
-the triple point; the three others publish no dedicated verification table,
+the triple point; the CO$_2$, N$_2$ and CH$_4$ equations publish no dedicated verification table,
 so their check values are rows of their own property tables (saturation
-and single phase) at the digits printed there.  A $(T, p)$ outside the
+and single phase); ammonia's 17 are the state points of its Table~7 (a zero-density point
+holds the ideal-gas part) at the digits printed there.  A $(T, p)$ outside the
 window is announced as an extrapolation, quoting the publication's own
 statement on extrapolating it.
 
@@ -23878,6 +23958,17 @@ charge $z_i$.  $D_i$ is the species record's $D_{i,0}$ at 25\,$^\circ$C,
 corrected to the run's temperature by Stokes--Einstein on the package's
 declared liquid viscosity, $D_i = D_{i,0}\,(T/298.15)\,\mu(298.15)/\mu(T)$;
 with no viscosity model declared the factor is~1, and the run says so.
+\label{sec:ion-d0-temperature}%
+This rule is a \emph{declared choice} (DEV.md 4c C435~(4)).  Its default
+is unchanged --- on when a liquid viscosity is declared, off when not ---
+but every run prints which rule applied and why, and a case may state it:
+\code{transport \{ liquid \{ ionDiffusivity \{ temperatureCorrection
+stokesEinstein | none; reason "\dots"; \} \} \}}.  \code{none} takes
+$D_i = D_{i,0}$ at every $T$ (a case that reproduces a reference program
+that does not correct $D_0$ for temperature, even though it declares the
+viscosity that program used); \code{stokesEinstein} needs a declared liquid
+viscosity and is refused by name without one.  Both keys are required, and
+a declared choice appears as a row of the resolved view.
 
 Throughout the chapter the electric potential is \textbf{dimensionless}:
 $\psi = F\phi/(\Rgas T)$, with $\phi$ the potential in volts, measured from
@@ -27009,10 +27100,15 @@ with $\bar v = \bar M/\rho_L$ the liquid molar volume at the INLET state,
 $\rho_L$ the property kernel's liquid density by the method resolved for the
 liquid's constituent set (\S\ref{sec:liquid-density-methods}; pure water by its
 reference equation, with pressure; a dissolved salt with mass and no volume
-only when the case declares \code{massWithoutVolume}); the small inefficiency dissipates
-as a tiny temperature rise $\Delta T = (1-\eta)w_{\text{real}}/C_{p,L}$.
-A closed form --- the incompressible limit needs no equation of state
-and no iteration.
+only when the case declares \code{massWithoutVolume}); the discharge pressure is a closed form --- the incompressible limit needs no
+equation of state.  The discharge TEMPERATURE solves the stream balance,
+$H(T_{\text{out}},P_{\text{out}}) = H(T_{\text{in}},P_{\text{in}}) + w_{\text{real}}$, on the
+liquid enthalpy of \S\ref{sec:liquid-enthalpy-pressure} (which carries the useful work as
+$v(1-\alpha T)\,\mathrm{d}P$): the pump's first law closes by construction, and only the
+rest of the work, about $(1-\eta)w_{\text{real}}$ plus the $\alpha T$ part of $v\,\mathrm{d}P$, heats the
+liquid.  A stream with no liquid-enthalpy route (a dissolved salt with no liquid heat
+capacity) keeps the old closed form $\Delta T = (1-\eta)w_{\text{real}}/C_{p,L}$,
+announced.
 
 \begin{intuition}
 Because that relation is \emph{linear} in the work, it inverts in closed
@@ -33248,6 +33344,34 @@ Worked cases: \code{economics04\_building\_royalty\_breakeven} (the powder's
 minimum selling price) and \code{greenAmmoniaPEQ\_baseCase} (the minimum
 selling price of ammonia and the highest price of hydrogen).
 
+\paragraph{Where each price came from.}\label{par:price-origin}
+An appraisal is only as defensible as its prices, and a price is not one kind
+of number: a customs unit value, a regulator's modelled cost, a supplier's
+quotation and a round figure an author chose all print as ``\code{0.5300 EUR/kg}''.
+The economics pass therefore prints every price it used --- each priced stream
+of \code{constant/economics} and the labour rate --- beside the origin the case
+declares for it, in the console (section ``Prices and where they came from''),
+in \code{reports/economics/prices.csv} and in the result, where the GUI's
+Reports view draws it as a table.  The origin is the case's own
+\code{provenance \{ origin "\ldots"; kind \ldots; \}} block of that entry: the
+citation (source, table or page, retrieval date, the conversion written out), the
+\code{costYear} of the entry, and a \code{kind} that is one of
+\code{published} (a price a source publishes), \code{quote} (a quotation the
+case declares) or \code{assumption} (a figure the case states without a
+source for the number).  Nothing is computed: the engine reads the block and
+prints it, and no price moves.  A priced stream whose block carries no
+\code{origin} is refused by name (\code{refuseOnMissingPrice 0;} announces it
+instead), a \code{kind} outside the three words is refused by name, and an
+absent \code{kind} prints as \code{undeclared} with an advisory; the labour
+rate reads the same words from an optional \code{labourProvenance \{ \}}
+block and prints \code{undeclared} when there is none.  Each utility the run allocated is listed with its
+catalogue record's \code{cost} (EUR/GJ) and \code{costYear}; its kind is
+\code{published} when the record carries a \code{costSource "\ldots";} and
+\code{undeclared} when it does not (the shipped records name their source in a
+header comment but carry no such key yet, since adding it changes their pinned
+hash).  Worked case: \code{greenAmmoniaPEQ\_baseCase} (its three prices are
+published figures read at their sources, and its labour rate is an assumption).
+
 \paragraph{Operating labour and the cover of a shift position.}\label{par:operator-cover}
 The labour of the cost of manufacture is priced as $C_{OL} = n_{\mathrm{pos}}\,w\,h_{\mathrm{op}}$, with $w$ the loaded
 hourly rate, $h_{\mathrm{op}}$ the hours one person works in a year
@@ -33763,6 +33887,10 @@ with Emphasis on Asymmetric Mixtures'', \emph{Ind. Eng. Chem. Process Des. Dev.}
 Equilibria at 112.00\,K for Systems Containing Nitrogen, Argon, and Methane'',
 \emph{AIChE J.} \textbf{19}, 145--148, 1973.  The measured N$_2$ + Ar, N$_2$ + CH$_4$
 and ternary data (Tables 1--3) the Lee--Kesler--Pl\"ocker case is compared with.
+
+\bibitem{Gao2023NH3} K.~Gao, J.~Wu, I.~H.~Bell, A.~H.~Harvey and E.~W.~Lemmon,
+A Reference Equation of State with an Associating Term for the Thermodynamic
+Properties of Ammonia, \emph{J. Phys. Chem. Ref. Data} \textbf{52} (2023) 013102.
 
 \bibitem{Span2000N2} R.~Span, E.~W.~Lemmon, R.~T Jacobsen, W.~Wagner and
   A.~Yokozeki, A Reference Equation of State for the Thermodynamic Properties

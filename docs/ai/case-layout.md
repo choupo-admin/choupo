@@ -345,7 +345,10 @@ propertyManifest
   (comments and unit spellings are cosmetic), or `relevant:<hash>` for a registry directory.  A pin lists what the
   run CONSUMED: a registry parses a whole directory (562 files for flash01), so a
   scanned one contributes only the names the case selects -- the Henry and
-  solution pairs among its components, the assets and utilities it names, the
+  solution pairs among its components, the reference equations (`parameters/Helmholtz/`)
+  whose `fluid` is one of its components by name or alias (C390: a new reference
+  equation for another fluid touches no manifest, and the directory has no set line:
+  a new equation for one of the case's fluids is a consumed, unpinned record), the assets and utilities it names, the
   adsorption equilibria of a named adsorbent -- pinned one by one, plus ONE line
   per scanned directory (`"parameters/Henry/" "relevant:<hash of the sorted
   relevant names that exist>"`).  A relevant pair that arrives is a drift
@@ -1369,7 +1372,7 @@ utility a duty of this run is allocated to -- a steam CREDIT scales too),
 `labourRate`, `discountRate`, `taxRate`, `streamFactor`.  An unknown input, a
 price the case does not declare, a utility with no bill, a bare list, both or
 neither form, or an end outside what the input can be (a stream factor above 1)
-each REFUSE by name.  Published: a console table sorted by NPV swing, headed by
+each REFUSE by name.  (Each price of `constant/economics` also prints with its origin and kind: see pitfalls.md, "A price with no origin".)  Published: a console table sorted by NPV swing, headed by
 the statement that a sensitivity is NOT an uncertainty analysis (no probability,
 no correlation between inputs); `kpis.economics.sens_<input>_NPV_low/_high`,
 `_IRR_low/_high`, `_payback_low/_high`, `_value_low/_high` (the input's value

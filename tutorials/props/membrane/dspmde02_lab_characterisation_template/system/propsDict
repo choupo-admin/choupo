@@ -89,8 +89,6 @@ operations
                 a 0.26194;  b 0.33;  c 0.33;
                 radius     1.0e-3;
                 omega      300.0;
-                viscosity  8.968737390077713e-4;   // Pa.s, water at the run temperature
-                density    997;                    // kg/m3
             }
             polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
         }
@@ -136,8 +134,6 @@ operations
                 a 0.26194;  b 0.33;  c 0.33;
                 radius     1.0e-3;
                 omega      300.0;
-                viscosity  8.968737390077713e-4;   // Pa.s, water at the run temperature
-                density    997;                    // kg/m3
             }
             polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
         }
@@ -189,8 +185,6 @@ operations
                 a 0.26194;  b 0.33;  c 0.33;
                 radius     1.0e-3;
                 omega      300.0;
-                viscosity  8.968737390077713e-4;   // Pa.s, water at the run temperature
-                density    997;                    // kg/m3
             }
             polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
         }
@@ -236,8 +230,6 @@ operations
                 a 0.26194;  b 0.33;  c 0.33;
                 radius     1.0e-3;
                 omega      300.0;
-                viscosity  8.968737390077713e-4;   // Pa.s, water at the run temperature
-                density    997;                    // kg/m3
             }
             polarisation { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
         }

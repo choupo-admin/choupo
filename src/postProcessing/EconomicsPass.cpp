@@ -32,6 +32,7 @@ License
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
 #include "streams/UtilityCircuit.H"
+#include "thermo/utility/UtilityCatalogue.H"
 
 #include "core/Dictionary.H"
 #include "core/Dimensions.H"
@@ -111,6 +112,42 @@ struct PricedStream
     scalar      massFlow = 0.0; // kg/s  (filled at run time)
     std::string provenance;
 };
+
+//  WHERE A PRICE CAME FROM (C389, PR-07).  The origin of one entry of
+//  constant/economics, read from its `provenance { origin "..."; kind ...; }`
+//  block (a `kind` is one of published | quote | assumption: what KIND of
+//  number the price is -- a price a source publishes, a quotation the case
+//  declares, or a figure the case states).  The origin is REQUIRED (a price
+//  nobody can trace is refused by name, unless the case declared
+//  `refuseOnMissingPrice 0;`); a kind that is not one of the three is refused
+//  by name; an absent kind prints as `undeclared` and is announced.
+const char* const kPriceKinds[] = { "published", "quote", "assumption" };
+
+EconomicPriceOrigin readPriceOrigin(const DictPtr& prov,
+                                    const std::string& name, const std::string& role,
+                                    scalar price, const std::string& unit,
+                                    const std::string& yearText)
+{
+    EconomicPriceOrigin o;
+    o.name = name; o.role = role; o.price = price; o.unit = unit;
+    o.costYear = yearText;
+    if (prov)
+    {
+        o.origin = prov->lookupWordOrDefault("origin", "");
+        o.kind   = prov->lookupWordOrDefault("kind", "");
+    }
+    if (!o.kind.empty())
+    {
+        bool ok = false;
+        for (const char* k : kPriceKinds) ok = ok || o.kind == k;
+        if (!ok)
+            throw std::runtime_error("economics: the price of `" + name + "` declares"
+                " provenance { kind " + o.kind + "; } -- the kinds are `published` (a"
+                " price a source publishes), `quote` (a quotation the case declares)"
+                " and `assumption` (a figure the case states).");
+    }
+    return o;
+}
 
 // Load constant/economics relative to the case working directory.  The pass
 // runs with CWD == case dir (choupoSolve resolves up to the case root before
@@ -403,6 +440,31 @@ std::string csvNum(scalar v, int decimals)
     std::ostringstream os;
     os << std::fixed << std::setprecision(decimals) << v;
     return os.str();
+}
+
+// -------------------------------------------------------------------------
+//  WHERE EACH PRICE CAME FROM (C389, PR-07) -> reports/economics/prices.csv:
+//  one row per price the appraisal used, with the case's own citation.
+// -------------------------------------------------------------------------
+void writePricesCsv(const std::vector<EconomicPriceOrigin>& rows)
+{
+    const fs::path dir = fs::path("reports") / "economics";
+    fs::create_directories(dir);
+    std::ofstream f(dir / "prices.csv");
+    if (!f.is_open())
+        throw std::runtime_error("EconomicsPass: cannot open the prices spreadsheet");
+    auto q = [](const std::string& s)
+    {
+        std::string o = "\"";
+        for (char c : s) o += (c == '"') ? std::string("\"\"") : std::string(1, c);
+        return o + "\"";
+    };
+    f << "# Every price the appraisal used and where it came from (constant/economics)\n";
+    f << "name,role,price,unit,costYear,kind,origin\n";
+    for (const auto& r : rows)
+        f << q(r.name) << "," << r.role << "," << csvNum(r.price, 6) << "," << r.unit
+          << "," << r.costYear << "," << (r.kind.empty() ? "undeclared" : r.kind)
+          << "," << q(r.origin) << "\n";
 }
 
 // -------------------------------------------------------------------------
@@ -3357,12 +3419,30 @@ int EconomicsPass::run(SimulationResult& result)
         positionsPerOperatorPerShift * operatorsPerShiftUsed;   // operating positions
     const scalar operatorsTotalCorrelation =
         positionsPerOperatorPerShift * N_OL_per_shift;         // the comparison
+    //  Every price read from constant/economics, with its origin (C389).
+    std::vector<EconomicPriceOrigin> priceRows;
+    auto yearOf = [](const DictPtr& d, const char* key) -> std::string
+    {
+        if (!d->found(key)) return "";
+        std::ostringstream y;
+        y << std::fixed << std::setprecision(0) << d->lookupScalar(key);
+        return y.str();
+    };
     scalar labourRate = 0.0;      // €/h
     bool   haveLabour = false;
     if (prices && prices->found("labourRate"))
     {
         labourRate = prices->lookupScalar("labourRate");
         haveLabour = true;
+        //  Its origin (C389, PR-07): the optional `labourProvenance { origin;
+        //  kind; }` block beside it.  Unlike a stream's price, an absent block
+        //  does not refuse -- the row prints `undeclared`, so a student sees
+        //  that this number has no stated source.
+        priceRows.push_back(readPriceOrigin(
+            prices->found("labourProvenance") ? prices->subDict("labourProvenance")
+                                              : nullptr,
+            "labourRate", "labour", labourRate, "EUR/h",
+            prices->found("labourRateYear") ? yearOf(prices, "labourRateYear") : std::string()));
     }
     if (!haveLabour)
     {
@@ -3394,6 +3474,9 @@ int EconomicsPass::run(SimulationResult& result)
             ps.provenance = rm->found("provenance")
                 ? rm->subDict("provenance")->lookupWordOrDefault("origin", "")
                 : "";
+            priceRows.push_back(readPriceOrigin(
+                rm->found("provenance") ? rm->subDict("provenance") : nullptr,
+                ps.stream, "rawMaterial", ps.price, "EUR/kg", yearOf(rm, "costYear")));
             baseIn.rawMats.push_back(std::move(ps));
         }
     }
@@ -3436,7 +3519,63 @@ int EconomicsPass::run(SimulationResult& result)
             ps.provenance = pr->found("provenance")
                 ? pr->subDict("provenance")->lookupWordOrDefault("origin", "")
                 : "";
+            priceRows.push_back(readPriceOrigin(
+                pr->found("provenance") ? pr->subDict("provenance") : nullptr,
+                ps.stream, "product", ps.price, "EUR/kg", yearOf(pr, "costYear")));
             baseIn.products.push_back(std::move(ps));
+        }
+    }
+    //  (5.0) EVERY PRICE NAMES ITS ORIGIN (C389, PR-07): a price nobody can
+    //  trace is refused by name, and one with no declared kind is announced.
+    //  THE UTILITIES the run allocated (C389): each catalogue utility priced in
+    //  C_UT, with the record's own `cost` and `costYear`.  The kind is
+    //  `published` when the record carries a `costSource`, else `undeclared`.
+    {
+        std::set<std::string> seen;
+        for (const auto& a : result.utilityAllocation)
+        {
+            if (!a.allocated || !seen.insert(a.utility).second) continue;
+            if (!UtilityCatalogue::has(a.utility)) continue;
+            const Utility& u = UtilityCatalogue::byName(a.utility);
+            EconomicPriceOrigin o;
+            o.name = u.name; o.role = "utility"; o.price = u.cost; o.unit = "EUR/GJ";
+            o.costYear = u.costYear ? std::to_string(u.costYear) : "";
+            o.kind = u.costSource.empty() ? "undeclared" : "published";
+            o.origin = u.costSource.empty()
+                ? "utility record `" + u.name + "` of the catalogue: its `cost`; the record"
+                  " declares no `costSource`"
+                : u.costSource;
+            priceRows.push_back(o);
+        }
+    }
+    //  The streams first, the labour rate last.
+    std::stable_partition(priceRows.begin(), priceRows.end(),
+                          [](const EconomicPriceOrigin& r) { return r.role != "labour"; });
+    {
+        std::string noOrigin, noKind;
+        for (const auto& r : priceRows)
+        {
+            if (r.origin.empty()) noOrigin += (noOrigin.empty() ? "" : ", ") + r.name;
+            if (r.kind.empty() && r.name != "labourRate")
+                noKind += (noKind.empty() ? "" : ", ") + r.name;
+        }
+        if (!noOrigin.empty())
+        {
+            const std::string what = "the origin of the price of " + noOrigin
+                + ".\n  Every priced stream carries `provenance { origin \"...\"; kind"
+                  " published|quote|assumption; }` -- the citation of the number, and"
+                  " what kind of number it is.";
+            if (refuseOnMissing) return missing(what);
+            std::cerr << "EconomicsPass: " << what << "\n  refuseOnMissingPrice=0 -- the"
+                         " run goes on with these prices untraced (LOUD).\n";
+        }
+        if (!noKind.empty())
+        {
+            const std::string m = "the price of " + noKind + " declares no `kind`"
+                " (published | quote | assumption) in its provenance block: the report"
+                " prints it as `undeclared`.";
+            if (AdvisoryLog::instance().add("assumed", "warning", "economics", m))
+                std::cout << "  [assumed] economics: " << m << "\n";
         }
     }
     const std::vector<PricedStream>& products = baseIn.products;
@@ -3730,6 +3869,42 @@ int EconomicsPass::run(SimulationResult& result)
                   << p.price << " EUR/kg  -> " << std::setprecision(0)
                   << std::setw(12) << (p.price * p.massFlow * 3600.0 * H) << " EUR/yr\n";
     std::cout << "    R (total revenue)            = " << std::setw(14) << R << " EUR/yr\n";
+
+    //  WHERE EACH PRICE CAME FROM (C389, PR-07): every price this appraisal
+    //  used, beside the origin the case declares for it and the KIND of
+    //  number it is.  Also reports/economics/prices.csv and the result's
+    //  economics.priceOrigins (the GUI's Reports view).
+    if (!priceRows.empty())
+    {
+        std::cout << "\n  -- Prices and where they came from (constant/economics) ------\n"
+                     "    kind: published = a price a source publishes; quote = a quotation the\n"
+                     "    case declares; assumption = a figure the case states; undeclared = the\n"
+                     "    case names no kind.  Utilities: the catalogue record's cost.\n";
+        for (const auto& r : priceRows)
+        {
+            std::cout << "    " << std::left << std::setw(14) << r.name << std::right
+                      << std::fixed << std::setprecision(4) << std::setw(10) << r.price
+                      << " " << r.unit << "  year " << (r.costYear.empty() ? "?" : r.costYear)
+                      << "  [" << (r.kind.empty() ? "undeclared" : r.kind) << "]\n";
+            const std::string org = r.origin.empty() ? "(no origin declared)" : r.origin;
+            //  the citation, wrapped at 92 columns
+            std::size_t pos = 0;
+            while (pos < org.size())
+            {
+                std::size_t len = std::min<std::size_t>(92, org.size() - pos);
+                if (pos + len < org.size())
+                {
+                    const std::size_t sp = org.rfind(' ', pos + len);
+                    if (sp != std::string::npos && sp > pos) len = sp - pos;
+                }
+                std::cout << "        " << org.substr(pos, len) << "\n";
+                pos += len;
+                while (pos < org.size() && org[pos] == ' ') ++pos;
+            }
+        }
+        std::cout << std::setprecision(0);
+        writePricesCsv(priceRows);
+    }
 
     //  THE GROSS MARGIN, BEFORE ANY CAPITAL (DEV.md 4c C57).  A design is
     //  screened on its margin before it is costed: R - C_RM is the margin of
@@ -4666,6 +4841,7 @@ int EconomicsPass::run(SimulationResult& result)
     }
 
     summary.breakEvenPrices = bePrices;
+    summary.priceOrigins    = priceRows;
 
     //  THE FINANCING (G4) on the result, only when declared.
     if (fin.present)

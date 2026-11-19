@@ -713,6 +713,9 @@
   "EconomicBreakEvenPrice": [
    "src/core/ResultRecords.H"
   ],
+  "EconomicPriceOrigin": [
+   "src/core/ResultRecords.H"
+  ],
   "EconomicSensitivityRow": [
    "src/core/ResultRecords.H"
   ],
@@ -1353,6 +1356,9 @@
   ],
   "LiquidPhase": [
    "src/thermo/phase/LiquidPhase.H"
+  ],
+  "LiquidPressureLeg": [
+   "src/thermo/ThermoPackage.H"
   ],
   "LiquidState": [
    "src/unitOperations/dynamic/VariableVolumeHoldup.H"
@@ -5335,7 +5341,9 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
-   "src/thermo/transport/WilkeReduction.H"
+   "src/thermo/transport/WilkeReduction.H",
+   "src/thermo/utility/Utility.H",
+   "src/thermo/utility/UtilityCatalogue.H"
   ],
   "src/postProcessing/PinchPass.cpp": [
    "src/core/Advisory.H",
@@ -7327,6 +7335,7 @@
    "src/propertyOps/FitAlgebra.H",
    "src/propertyOps/FitObjective.H",
    "src/propertyOps/FitParameters.H",
+   "src/propertyOps/FitReplay.H",
    "src/propertyOps/FitWeighting.H",
    "src/propertyOps/LleResidual.H",
    "src/propertyOps/PropertyOperation.H",
@@ -7372,6 +7381,7 @@
    "src/core/Types.H",
    "src/propertyOps/CurationDossier.H",
    "src/propertyOps/EvidencePartition.H",
+   "src/propertyOps/FilmProperties.H",
    "src/propertyOps/FitAlgebra.H",
    "src/propertyOps/FitParameters.H",
    "src/propertyOps/LleResidual.H",
@@ -7380,6 +7390,7 @@
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PinCheck.H",
    "src/thermo/PropertyDomainError.H",
@@ -7395,6 +7406,7 @@
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
    "src/thermo/transport/WilkeReduction.H",
+   "src/unitOperations/UnitTypedProperties.H",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/massTransfer/Polarisation.H",
    "src/unitOperations/membrane/osmotic/OsmoticModel.H",
@@ -7987,11 +7999,13 @@
    "src/core/PublishedTable.H",
    "src/core/ReadLog.H",
    "src/core/Types.H",
+   "src/propertyOps/FilmProperties.H",
    "src/propertyOps/PolarisationIndex.H",
    "src/propertyOps/PropertyOperation.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PinCheck.H",
    "src/thermo/RecordLaws.H",
@@ -8003,6 +8017,7 @@
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
    "src/thermo/transport/WilkeReduction.H",
+   "src/unitOperations/UnitTypedProperties.H",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/massTransfer/Polarisation.H",
    "src/unitOperations/membrane/massTransfer/StirredCell.H"
@@ -8023,6 +8038,7 @@
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PinCheck.H",
    "src/thermo/RecordLaws.H",
@@ -8036,6 +8052,7 @@
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
    "src/thermo/transport/WilkeReduction.H",
+   "src/unitOperations/UnitTypedProperties.H",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/massTransfer/Polarisation.H",
    "src/unitOperations/membrane/osmotic/OsmoticModel.H",
@@ -10236,6 +10253,7 @@
    "src/core/Identifiers.H",
    "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
    "src/core/ReadLog.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -10244,6 +10262,7 @@
    "src/thermo/Database.H",
    "src/thermo/DerivedClosures.H",
    "src/thermo/FitGrade.H",
+   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PairAudit.H",
    "src/thermo/PinCheck.H",
@@ -10273,6 +10292,10 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/henrysLaw/HenrysLaw.H",
    "src/thermo/henrysLaw/HenrysLawRegistry.H",
+   "src/thermo/liquidProperty/DensityLeaf.H",
+   "src/thermo/liquidProperty/DensityMethod.H",
+   "src/thermo/liquidProperty/DensityResolver.H",
+   "src/thermo/liquidProperty/PureFluidLeaf.H",
    "src/thermo/phase/Phase.H",
    "src/thermo/phase/SaturatedVapour.H",
    "src/thermo/pureFluid/PureFluidModel.H",
@@ -10290,6 +10313,7 @@
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/LiquidViscosityMixingRule.H",
    "src/thermo/transport/LiquidViscosityModel.H",
+   "src/thermo/transport/StokesEinstein.H",
    "src/thermo/transport/SurfaceTensionMixingRule.H",
    "src/thermo/transport/ThermalConductivityModel.H",
    "src/thermo/transport/TransportModel.H",
@@ -19332,6 +19356,7 @@
    "src/streams/StreamStateIO.cpp",
    "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/ResolvedView.cpp",
+   "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
@@ -21122,6 +21147,10 @@
    "src/propertyOps/ExtractionShortcutOp.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
+  "src/propertyOps/FilmProperties.H": [
+   "src/propertyOps/FitParametersMembrane.cpp",
+   "src/propertyOps/PolarisationIndex.cpp"
+  ],
   "src/propertyOps/FitAlgebra.H": [
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
@@ -21139,6 +21168,9 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/PropertyOperation.cpp"
+  ],
+  "src/propertyOps/FitReplay.H": [
+   "src/propertyOps/FitParameters.cpp"
   ],
   "src/propertyOps/FitWeighting.H": [
    "src/propertyOps/FitParameters.cpp",
@@ -23549,9 +23581,13 @@
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PipeHeaderSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
+   "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/ResolvedView.cpp",
+   "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
@@ -26607,6 +26643,7 @@
   ],
   "src/thermo/liquidProperty/DensityLeaf.H": [
    "src/thermo/LiquidPropertyDoor.cpp",
+   "src/thermo/ThermoPackage.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
@@ -26622,6 +26659,7 @@
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/ResolvedView.cpp",
+   "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
@@ -26634,6 +26672,7 @@
    "src/thermo/liquidProperty/SolutionLaw.cpp"
   ],
   "src/thermo/liquidProperty/DensityResolver.H": [
+   "src/thermo/ThermoPackage.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
    "src/thermo/liquidProperty/Measured.cpp",
@@ -26670,6 +26709,7 @@
    "src/thermo/liquidProperty/Measured.cpp"
   ],
   "src/thermo/liquidProperty/PureFluidLeaf.H": [
+   "src/thermo/ThermoPackage.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp"
   ],
@@ -27609,6 +27649,7 @@
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/ResolvedView.cpp",
+   "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
@@ -27962,6 +28003,7 @@
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
@@ -27974,6 +28016,7 @@
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/EconomicsPass.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/reporting/UtilitiesReport.cpp",
    "src/reporting/UtilityAllocationReport.cpp",
@@ -28241,6 +28284,9 @@
   ],
   "src/unitOperations/UnitTypedProperties.H": [
    "src/postProcessing/sizing/PipeHeaderSize.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
+   "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",

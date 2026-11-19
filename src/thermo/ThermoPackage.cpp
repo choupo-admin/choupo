@@ -65,6 +65,8 @@ License
 #include "thermo/DerivedClosures.H"   // closures::rackettVliq (liquid Vm)
 #include "core/Advisory.H"
 #include "thermo/pureFluid/SaturationCurve.H"
+#include "thermo/liquidProperty/DensityResolver.H"   // C390: the pure-component liquid volume
+#include "thermo/liquidProperty/PureFluidLeaf.H"       // C390: a reference equation's own h(T, P)
 #include "thermo/RecordResolver.H"   // case-local mirrored constant/mixtures/ (sealing)
 
 #include <limits>
@@ -72,6 +74,7 @@ License
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <filesystem>
 #include <iostream>
 #include <map>
@@ -107,7 +110,7 @@ ThermoPackage& ThermoPackage::operator=(ThermoPackage&& o) noexcept
         diffusivity_        = std::move(o.diffusivity_);
         liquidViscosity_    = std::move(o.liquidViscosity_);
         liquidConductivity_ = std::move(o.liquidConductivity_);
-        liquidDiffusivity_  = std::move(o.liquidDiffusivity_);   liquidDiffusionDecl_ = std::move(o.liquidDiffusionDecl_);   liquidViscosityMeasured_ = std::move(o.liquidViscosityMeasured_);   flowCurves_ = std::move(o.flowCurves_);   // C398 (d); C421 (7)
+        liquidDiffusivity_  = std::move(o.liquidDiffusivity_);   liquidDiffusionDecl_ = std::move(o.liquidDiffusionDecl_);   ionDiffusivityMode_ = std::move(o.ionDiffusivityMode_);   ionDiffusivityReason_ = std::move(o.ionDiffusivityReason_);   liquidViscosityMeasured_ = std::move(o.liquidViscosityMeasured_);   flowCurves_ = std::move(o.flowCurves_);   // C398 (d); C421 (7)
         surfaceTension_     = std::move(o.surfaceTension_);   liquidConductivityMeasured_ = std::move(o.liquidConductivityMeasured_);   surfaceTensionMeasured_ = std::move(o.surfaceTensionMeasured_);   // C421 (8)
         liquidViscosityMixing_    = std::move(o.liquidViscosityMixing_);
         liquidConductivityMixing_ = std::move(o.liquidConductivityMixing_);
@@ -524,6 +527,12 @@ void ThermoPackage::readTransportBlock(const DictPtr& td)
             ThermalConductivityModel::New(td->subDict("thermalConductivity"));
     if (td->found("diffusivity"))
         diffusivity_ = DiffusivityModel::New(td->subDict("diffusivity"));
+    if (td->found("ionDiffusivity"))   // C435 (4): the ions' D0 temperature rule, declared
+    {
+        const DictPtr b = td->subDict("ionDiffusivity");
+        ionDiffusivityMode_   = b->lookupWord("temperatureCorrection");
+        ionDiffusivityReason_ = b->lookupWord("reason");
+    }
     if (td->found("liquidRheology")) flowCurves_ = rheology::readFlowCurves(td->subDict("liquidRheology"), components_);   // Liquid transport; the flow curve, C421 (7)
     //  Each liquid property's block also names its MIXING RULE (C331):
     //  `mixingRule <name>;` beside `model`, the factory's default otherwise.
@@ -1914,7 +1923,8 @@ scalar ThermoPackage::H_stream_formation(scalar T, scalar P_Pa,
     //  phiPhi: the liquid leg is the cubic's liquid root (C410).
     const bool onEos = liquidOnEosRoot();
     if (vapFrac <= 0.0)
-        return onEos ? H_liquid_eos(T, P_Pa, z) : H_liquid_formation(T, z);
+        return onEos ? H_liquid_eos(T, P_Pa, z)
+                     : H_liquid_formation(T, z) + liquidPressureEnthalpy(T, P_Pa, z);
 
     // NONVOLATILE species (no priceable ideal-gas leg -- sucrose, salts)
     // are WHOLLY liquid at ANY vapour fraction: their share contributes the
@@ -1945,7 +1955,8 @@ scalar ThermoPackage::H_stream_formation(scalar T, scalar P_Pa,
     }
     if (vapFrac >= 1.0) return hNonvol + H_real(T, P_Pa, zV);
     return (1.0 - vapFrac) * (onEos ? H_liquid_eos(T, P_Pa, z)
-                                    : H_liquid_formation(T, z))
+                                    : H_liquid_formation(T, z)
+                                      + liquidPressureEnthalpy(T, P_Pa, z))
          + vapFrac * (hNonvol + H_real(T, P_Pa, zV));
 }
 
@@ -2039,7 +2050,8 @@ scalar ThermoPackage::S_stream_formation(scalar T, scalar P_Pa,
 
     const bool onEos = liquidOnEosRoot();      // C410
     if (vapFrac <= 0.0)
-        return onEos ? S_liquid_eos(T, P_Pa, z) : S_liquid_formation(T, z);
+        return onEos ? S_liquid_eos(T, P_Pa, z)
+                     : S_liquid_formation(T, z) + liquidPressureEntropy(T, P_Pa, z);
 
     for (std::size_t i = 0; i < n() && i < z.size(); ++i)
         if (z[i] > 0.0 && (!components_[i].hasCpIdealGas()
@@ -2054,7 +2066,8 @@ scalar ThermoPackage::S_stream_formation(scalar T, scalar P_Pa,
 
     if (vapFrac >= 1.0) return S_real(T, P_Pa, z);
     return (1.0 - vapFrac) * (onEos ? S_liquid_eos(T, P_Pa, z)
-                                    : S_liquid_formation(T, z))
+                                    : S_liquid_formation(T, z)
+                                      + liquidPressureEntropy(T, P_Pa, z))
          + vapFrac * S_real(T, P_Pa, z);
 }
 
@@ -3888,6 +3901,253 @@ std::string ThermoPackage::liquidViscosityLawsText(const sVector& x, std::string
     if (!tables.empty()) { origin = "literature"; provenance = "a table of measured points -- " + tables; }
     else                 { origin = "regressed";  provenance = "the component records' transport blocks"; }
     return out;
+}
+
+//  (placed at the end of the file so that no line an EduTool lesson cites by
+//  `file:line` moved when it arrived, as for the aqueous-solvent home above)
+//  ---- THE PRESSURE TERM OF THE GENERIC LIQUID (C390) -----------------------
+//  See the header.  v_i(T, P) is the property kernel's pure-component liquid
+//  volume (the resolver's one-constituent set: the case's pure-fluid
+//  selection, a reference equation that names the fluid, the record's own
+//  volume route), asked at a pressure above psat so that the enthalpy never
+//  asks the kernel for a liquid on the vapour side (a flash trial).
+ThermoPackage::LiquidPressureLeg
+ThermoPackage::liquidPressureLeg(std::size_t i, scalar T, scalar P) const
+{
+    //  A component whose volume is a REFERENCE equation (or a case's pure-fluid
+    //  selection) costs a saturation solve per new T: grid and interpolate.
+    const auto known = pressureLegExpensive_.find(i);
+    if (known != pressureLegExpensive_.end() && known->second == "\x01never")
+        return LiquidPressureLeg();                  // no saturation line or no liquid volume, for good
+    if (known != pressureLegExpensive_.end() && known->second.empty())
+        return liquidPressureLegExact(i, T, P);
+    if (known == pressureLegExpensive_.end())
+    {
+        const LiquidPressureLeg first = liquidPressureLegExact(i, T, P);
+        if (!first.priced || first.source.rfind("none", 0) == 0) return first;  // undecided: ask again
+        const bool exp = first.source.find("referenceEquation") != std::string::npos
+                      || first.source.find("pureFluid") != std::string::npos;
+        pressureLegExpensive_[i] = exp ? first.source : std::string();
+        return first;
+    }
+    constexpr scalar hGrid = 4.0;                    // K (interpolation error measured: 4e-5 J/mol)
+    const long k = static_cast<long>(std::floor(T / hGrid));
+    auto& col = pressureLegGrid_[{ i, P }];
+    if (col.size() > 4000) col.clear();
+    scalar hv[4], sv[4];
+    for (int q = 0; q < 4; ++q)
+    {
+        const long n = k - 1 + q;
+        auto it = col.find(n);
+        if (it == col.end())
+        {
+            PressureLegNode node;
+            const LiquidPressureLeg e = liquidPressureLegExact(i, n * hGrid, P);
+            node.ok = e.priced && e.source.rfind("none", 0) != 0;
+            node.h = e.h; node.s = e.s;
+            it = col.emplace(n, node).first;
+        }
+        if (!it->second.ok) return liquidPressureLegExact(i, T, P);   // kink or window edge: exact
+        hv[q] = it->second.h; sv[q] = it->second.s;
+    }
+    const scalar t = T / hGrid - static_cast<scalar>(k);
+    const scalar w[4] = { -t * (t - 1.0) * (t - 2.0) / 6.0,
+                          (t + 1.0) * (t - 1.0) * (t - 2.0) / 2.0,
+                          -(t + 1.0) * t * (t - 2.0) / 2.0,
+                          (t + 1.0) * t * (t - 1.0) / 6.0 };
+    LiquidPressureLeg leg;
+    leg.priced = true;
+    for (int q = 0; q < 4; ++q) { leg.h += w[q] * hv[q]; leg.s += w[q] * sv[q]; }
+    leg.source = known->second;
+    leg.corrStates = false;
+    return leg;
+}
+
+ThermoPackage::LiquidPressureLeg
+ThermoPackage::liquidPressureLegExact(std::size_t i, scalar T, scalar P) const
+{
+    LiquidPressureLeg leg;
+    if (i >= n()) return leg;
+    if (!hasSaturationCurve(i) || isHenrySolute(i)) { pressureLegExpensive_[i] = "\x01never"; return leg; }
+    const Component& c = components_[i];
+    if (c.Tc() > 0.0 && T >= c.Tc()) return leg;           // no saturation line at T
+    scalar ps = 0.0;
+    try { ps = Psat(i, T); } catch (const std::exception&) { return leg; }
+    if (!(ps > 0.0) || !std::isfinite(ps)) return leg;
+    if (!(P > ps)) { leg.priced = true; leg.source = "none (P at or below psat)"; return leg; }
+
+    sVector e(n(), 0.0);
+    e[i] = 1.0;
+    liquidProperty::DensityResolution res;
+    try { res = liquidProperty::resolveDensity(*this, e); }
+    catch (const std::exception&) { pressureLegExpensive_[i] = "\x01never"; return leg; }   // no liquid volume: no term, for good
+    const auto method = liquidProperty::build(res, *this);
+    const scalar M = c.MW() * 1.0e-3;                       // kg/mol
+
+    //  A FLUID WITH A REFERENCE EQUATION (or a case's own pure-fluid selection):
+    //  at fixed T the integral of v (1 - alpha T) dP IS the equation's h(T, P) -
+    //  h(T, p_low), and the entropy's -INT (dv/dT) dP its s(T, P) - s(T, p_low),
+    //  with no finite difference of the volume (and one saturation per T instead
+    //  of three).  p_low is the engine's psat(T) where that lies on the liquid
+    //  side of the equation's own saturation line; where it lies below it (the
+    //  engine's vapour-pressure law reads lower than the equation's) the equation
+    //  is asked just above its own line and the slope there carries the tail.
+    {
+        const PureFluidModel* pm = nullptr;
+        std::string srcName;
+        if (const auto it = pureFluid_.find(i); it != pureFluid_.end())
+        { pm = it->second.get(); srcName = "pureFluid." + pm->type(); }
+        else if (res.method == "referenceEquation" && !res.record.empty())
+        { pm = &liquidProperty::referenceFluidModel(res.record, c.MW()); srcName = "referenceEquation." + res.record; }
+        if (pm)
+        {
+            try
+            {
+                const scalar psr  = pm->p_sat(T);
+                const scalar pLow = std::max(ps, psr * (1.0 + 1.0e-9));
+                scalar h = 0.0, s = 0.0;
+                const scalar span = P - pLow;
+                const scalar dPp = std::max<scalar>(1.0e3, 1.0e-2 * std::fabs(span));
+                const scalar hSlope = (pm->h_molar(T, pLow + dPp) - pm->h_molar(T, pLow)) / dPp;
+                const scalar sSlope = (pm->s_molar(T, pLow + dPp) - pm->s_molar(T, pLow)) / dPp;
+                if (span > 0.0)
+                {
+                    h = pm->h_molar(T, P) - pm->h_molar(T, pLow);
+                    s = pm->s_molar(T, P) - pm->s_molar(T, pLow);
+                    if (ps < pLow) { h += hSlope * (pLow - ps); s += sSlope * (pLow - ps); }
+                }
+                else
+                {   // between the engine's psat and the equation's own line: the slope alone
+                    h = hSlope * (P - ps);
+                    s = sSlope * (P - ps);
+                }
+                if (std::isfinite(h) && std::isfinite(s))
+                {
+                    leg.priced = true; leg.h = h; leg.s = s; leg.source = srcName;
+                    leg.corrStates = false;
+                    leg.signChanged = false;
+                    return leg;
+                }
+            }
+            catch (const std::exception&) { /* fall through to the volume route */ }
+        }
+    }
+
+    bool pressureApplied = false;
+    std::string source;
+    auto vAt = [&](scalar Tq, scalar Pq) -> scalar
+    {
+        const liquidProperty::DensityAnswer a = method->evaluate(Tq, Pq, e);
+        pressureApplied = a.pressureApplied;
+        if (source.empty()) source = a.methodId;
+        return M / a.rho;
+    };
+    constexpr scalar dT = 0.5;
+    scalar alphaT = 0.0;
+    auto gf = [&](scalar Pq, scalar& g, scalar& f)
+    {
+        //  A BACKWARD second-order difference: for P above psat(T) the states T,
+        //  T - dT and T - 2 dT are all liquid, whereas T + dT crosses the saturation
+        //  line whenever P - psat(T) < (dpsat/dT) dT, which refused the kernel and
+        //  dropped the term next to the bubble point (found by profiling letdown01).
+        const scalar v  = vAt(T, Pq);
+        const scalar v1 = vAt(T - dT, Pq);
+        const scalar v2 = vAt(T - 2.0 * dT, Pq);
+        f = (3.0 * v - 4.0 * v1 + v2) / (2.0 * dT);
+        g = v - T * f;
+        alphaT = T * f / v;
+    };
+    try
+    {
+        scalar g0 = 0.0, f0 = 0.0, h = 0.0, s = 0.0;
+        gf(P, g0, f0);                                      // also tells whether P matters
+        if (!pressureApplied)
+        {
+            h = g0 * (P - ps);
+            s = -f0 * (P - ps);
+        }
+        else
+        {
+            //  2-point Gauss--Legendre on [psat, P] (exact for a cubic in P; the
+            //  integrand v(1 - alpha T) is smooth and nearly linear in P)
+            static const scalar xg[2] = { -0.5773502691896257, 0.5773502691896257 };
+            const scalar half = 0.5 * (P - ps), mid = 0.5 * (P + ps);
+            for (int q = 0; q < 2; ++q)
+            {
+                scalar g = 0.0, f = 0.0;
+                gf(mid + half * xg[q], g, f);
+                h += half * g;
+                s -= half * f;
+            }
+        }
+        leg.priced = true; leg.h = h; leg.s = s; leg.source = source;
+        leg.corrStates = res.record.empty() && res.partRecords.empty()
+                      && source.find("referenceEquation") == std::string::npos
+                      && source.find("pureFluid") == std::string::npos;
+        leg.signChanged = (alphaT > 1.0);
+    }
+    catch (const std::exception& ex)
+    {
+        return LiquidPressureLeg();
+    }
+    return leg;
+}
+
+namespace {
+//  The once-per-run lines: which volume (so which slope) each component's
+//  term took, and a term that has changed sign on the corresponding-states
+//  slope.
+void announcePressureLeg(const std::string& comp,
+                         const ThermoPackage::LiquidPressureLeg& l)
+{
+    if (!l.priced || l.source.rfind("none", 0) == 0) return;
+    //  SAID ONCE PER RUN ON stderr, NOT FILED AS AN ADVISORY: the term is the model, not a
+    //  caveat, and a run whose only note is this line would otherwise stop printing
+    //  "ASSUMPTIONS AND CAVEATS: none raised".  A term that changed sign (below) IS a caveat
+    //  and is filed.
+    static std::set<std::string> said;
+    if (said.insert(comp + "|" + l.source).second)
+        std::cerr << "[thermo] liquid pressure term (" << comp << "): v (1 - alpha T) dP"
+                     " from psat(T) to P; volume and its temperature slope from "
+                  << l.source
+                  << (l.corrStates ? " (the corresponding-states slope: not checked"
+                                     " against a reference equation for this fluid)"
+                                   : " (a reference equation or a declared volume route)")
+                  << "\n";
+    if (l.signChanged
+        && AdvisoryLog::instance().add("thermo", "warning",
+            "liquid pressure term sign " + comp,
+            "1 - alpha T < 0: the term has changed sign"))
+        std::cerr << "[thermo] liquid pressure term (" << comp << "): alpha T > 1 on this"
+                     " slope, so the compressed liquid's enthalpy FALLS with pressure here;"
+                  << (l.corrStates ? " the slope is the corresponding-states one and nobody"
+                                     " has checked it against this fluid" : "")
+                  << "\n";
+}
+} // namespace
+
+scalar ThermoPackage::liquidPressureEnthalpy(scalar T, scalar P, const sVector& x) const
+{
+    scalar h = 0.0;
+    for (std::size_t i = 0; i < n() && i < x.size(); ++i)
+    {
+        if (x[i] <= 0.0) continue;
+        const LiquidPressureLeg l = liquidPressureLeg(i, T, P);
+        announcePressureLeg(components_[i].name(), l);
+        h += x[i] * l.h;
+    }
+    return h;
+}
+
+scalar ThermoPackage::liquidPressureEntropy(scalar T, scalar P, const sVector& x) const
+{
+    scalar s = 0.0;
+    for (std::size_t i = 0; i < n() && i < x.size(); ++i)
+    {
+        if (x[i] <= 0.0) continue;
+        s += x[i] * liquidPressureLeg(i, T, P).s;
+    }
+    return s;
 }
 
 } // namespace Choupo

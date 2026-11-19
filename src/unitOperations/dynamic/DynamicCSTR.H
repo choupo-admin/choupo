@@ -203,7 +203,7 @@ private:
 
     // ---- Geometric / operating parameters ---------------------------
     scalar   V_ = 0;              // m³  reactor volume (constant)
-    scalar   P_ = 1.0;             // bar (not used in liquid-only balance)
+    scalar   P_ = 101325.0;        // Pa (SI, as the reader returns it)
 
     // Inlet (continuously charged).  The AUTHORITATIVE state is the
     // per-component molar-flow vector nDotIn_ (forum #103: a composition
@@ -293,8 +293,6 @@ private:
     Resolved resolveVariable_(const sVector& n, scalar T, bool strict) const;
     //- Refuse a dry / overflowing / reversing ACCEPTED state at instant t.
     void     checkAccepted_(scalar t) const;
-    //- The pressure over the liquid in Pa (variable mode stores it in Pa).
-    scalar   P_Pa_() const { return variableVolume_ ? P_ : P_ * 1.0e5; }
 
     // ---- Helpers ----------------------------------------------------
     scalar rateOfReaction_(const ReactionSpec& rxn,

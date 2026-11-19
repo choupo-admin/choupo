@@ -1254,6 +1254,9 @@ function shapeEconomics(e: NonNullable<ResultPayload["economics"]>): Economics {
     //  The price break-evens: kept only when the engine wrote them, rows
     //  without a finite number dropped rather than drawn at zero.
     ...(shapeBreakEvenPrices(e.breakEvenPrices)),
+    //  Where each price came from (C389, PR-07): kept only when the engine
+    //  wrote it; a row with no name is dropped.
+    ...(shapePriceOrigins(e.priceOrigins)),
     //  The annual basis (C264): kept only when the engine wrote it.
     ...(typeof e.operatingHours === "number" && Number.isFinite(e.operatingHours)
       ? { operatingHours: e.operatingHours,
@@ -1262,6 +1265,21 @@ function shapeEconomics(e: NonNullable<ResultPayload["economics"]>): Economics {
             ? { utilityBill: e.utilityBill } : {}) }
       : {}),
   };
+}
+
+//  The price origins, in the engine's order; {} when it wrote none.
+function shapePriceOrigins(
+  b: NonNullable<ResultPayload["economics"]>["priceOrigins"],
+): { priceOrigins?: NonNullable<Economics["priceOrigins"]> } {
+  const str = (v: unknown): string => (typeof v === "string" ? v : "");
+  const rows: NonNullable<Economics["priceOrigins"]> = [];
+  for (const r of Array.isArray(b) ? b : [])
+    if (typeof r.name === "string" && typeof r.price === "number" && Number.isFinite(r.price))
+      rows.push({
+        name: r.name, role: str(r.role), price: r.price, unit: str(r.unit),
+        costYear: str(r.costYear), kind: str(r.kind) || "undeclared", origin: str(r.origin),
+      });
+  return rows.length ? { priceOrigins: rows } : {};
 }
 
 //  The price break-evens, in the engine's order; {} when it wrote none or
@@ -1538,6 +1556,8 @@ interface ResultPayload {
       cumulativeDCF: number }[];
     breakEvenPrices?: { stream?: string; role?: string; declared?: number;
       breakEven?: number }[];
+    priceOrigins?: { name?: string; role?: string; price?: number; unit?: string;
+      costYear?: string; kind?: string; origin?: string }[];
     sensitivity?: {
       caveat?: string;
       inputs?: { input?: string; kpiKey?: string; mode?: string; fromBand?: boolean;

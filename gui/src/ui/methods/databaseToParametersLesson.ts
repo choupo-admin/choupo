@@ -268,8 +268,8 @@ export const CITATIONS: readonly { file: string; line: number; contains: string 
   { file: "docs/design/binary-pairs-from-open-measurements.md", line: 1335, contains: "Rule 3 (severe records out" },
   { file: "bin/curate/check_regressed_pairs.py", line: 38, contains: "ONE LIQUID WHERE THE EVIDENCE SAYS ONE" },
   { file: "docs/design/from-a-database-to-binary-parameters.md", line: 189, contains: "Review is not validation" },
-  { file: "src/propertyOps/FitParameters.cpp", line: 406, contains: "\"P_bubble\"" },
+  { file: "src/propertyOps/FitParameters.cpp", line: 412, contains: "\"P_bubble\"" },
   { file: "src/propertyOps/LleResidual.H", line: 101, contains: "T_bubble+LLE" },
   { file: "data/standards/parameters/NRTL/nButanol-water.dat", line: 26, contains: "tie lines" },
-  { file: "src/propertyOps/FitParameters.cpp", line: 3219, contains: "residual_rel" },
+  { file: "src/propertyOps/FitParameters.cpp", line: 3226, contains: "residual_rel" },
 ];

@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The liquid density the NanoFiltran comparison stands over in the mixed polarised op (298.15 K): the
+  reference program's own constant, 997 kg/m3 (it prices Sc = VISCOS/997/D and
+  Re with it).  A HYPOTHESIS of the reference program, not a measurement of
+  the solution: the point has no solute and the box lets it stand over the
+  dilute feeds of the ops that name this record (NaCl below 1 wt %, the dye below 5 wt %).
+  The stated uncertainty is the rounding of the constant (water is 997.05 kg/m3
+  at 298.15 K).  Until DEV.md 4c C435 the number was typed in the
+  `massTransfer` block of each op; the property operation now refuses a
+  density typed there, and asks the package, which answers with this record.
+\*---------------------------------------------------------------------------*/
+provenance
+{
+    sha256       "a22a69d5931892eb5a82ac813c70cecb069c7e5114dde0186a01b93050be02e7";
+    origin       literature;
+    kind         adopted;
+    basis        "adopted: the reference program's own constant density of water, 997 kg/m3, taken for the dilute feeds of this case; a hypothesis of the program, not a measurement of the solution";
+    citation     "Geraldes, V.; Brites Alves, A. M. (2008). Computer program for simulation of mass transport in nanofiltration membranes. J. Membr. Sci. 321, 172-182. doi:10.1016/j.memsci.2008.04.054 -- NanoFiltran, the program's own water properties (its viscosity law is a Vogel fit; its density is the constant 997 kg/m3)";
+}
+system      ( water NaCl Na2SO4 );
+property    liquidDensity;
+solvent     water;
+columns     ( { name T; unit K; } { name P; unit kPa; } { name w[NaCl]; unit -; } { name w[Na2SO4]; unit -; } { name rho; unit kg/m3; } );
+data        ( 298.15 101.325 0 0 997 );
+uncertainty 0.5;           // kg/m3: the rounding of the constant
+box         { T ( 298.05 298.25 ); P ( 50e3 1500e3 ); w[NaCl] ( 0 0.01 ); w[Na2SO4] ( 0 0.01 ); }

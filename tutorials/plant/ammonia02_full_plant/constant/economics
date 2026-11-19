@@ -19,6 +19,7 @@ products
         costYear  2025;
         provenance
         {
+            kind    assumption;
             origin  "CRU / Argus ammonia CFR NW Europe (representative teaching figure)";
             method  "bulk contract mid-cycle price";
         }
@@ -32,6 +33,7 @@ rawMaterials
         costYear  2025;
         provenance
         {
+            kind    assumption;
             origin  "natural-gas-derived syngas production cost, EU gas ~30 EUR/MWh (teaching figure)";
             method  "steam-reforming H2 + air-separation N2, blended per kg makeup";
         }
@@ -39,5 +41,10 @@ rawMaterials
 );
 labourRate      42.0;                   // EUR/h loaded operating labour
 labourRateYear  2025;
+labourProvenance
+{
+    kind    assumption;
+    origin  "author-set assumption: a loaded operating-labour rate the case states without a source for the number";
+}
 usdToEur        0.92;                   // ECB reference
 taxRate         0.21;

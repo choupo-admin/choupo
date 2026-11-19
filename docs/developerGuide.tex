@@ -2150,6 +2150,40 @@ inputs --- the key refuses itself otherwise.  The one home, with the list of
 gates looked at and \emph{not} keyed and why:
 \file{bin/curate/suite\_reuse.py} (\code{--list}).
 
+\paragraph{A moved key is asked three questions before a fit is run again
+(DEV.md 4c C432).}  The exact key re-runs every curation fit when any engine
+object its operations reach changed, and the property kernel is reached by all
+of them.  So a fit whose stored verdict's key moved is taken in this order, and
+the sweep prints the rung and its reason on every line.  (1)~\emph{The route
+rule.}  When the only objects that moved are those listed in
+\file{bin/curate/property\_kernel\_objects.tsv} (the transport, surface-tension,
+pure-fluid, vapour-pressure and heat-capacity law objects; \code{ThermoPackage}
+is deliberately absent, it is a mixed object), every other part of the key is
+identical (data, the case's own files, harness, platform), the set of objects
+the case reaches is the same, and \code{check\_property\_route\_bench} answers
+byte for byte the same blocks for every record the fit reads, then and now,
+the verdict is \code{REUSED} with the bench fingerprint, and re-stored under the
+new key.  The bench names a sealed copy by its record and the first twelve
+digits of its sha256, and since C432 it covers the sealed copies of
+\file{data/curation/} as well as of \file{tutorials/}.  The bench is run once
+per plan (about twelve seconds).  The parts of each key are kept beside the
+verdicts (\file{.parts/}) so the next plan can compare them; a verdict taken
+before they existed has none and goes to the next rung.  What the rule does not
+claim: a state off the bench's grid, and anything a mixed object holds.  (2)~\emph{Replay.}  A fit made of
+\code{fitParameters} operations whose stored parameters are in the case's sealed
+records is run once without a search: \code{CHOUPO\_FIT\_REPLAY=<file>}
+(\file{src/propertyOps/FitParameters.cpp}) starts each operation at the
+listed values, takes no Levenberg--Marquardt step and no minimax stage, and
+publishes the statistics there; \file{bin/runTests} compares them with the golden
+to its own tolerances, leaving out the rows that describe the search (iterations,
+the convergence flag, the minimax counts).  A replay that matches is \code{REUSED}
+and the verdict stored under the new key; a replay that moves, or refuses, goes
+to (3)~a full refit.  Never reused, as before: a FAIL, CI and releases,
+\code{--no-reuse}, and any run under \code{--scope}, \code{--fast} or a named
+case (\code{CHOUPO\_REUSE\_NAMED=1} offers the mechanism to a named chunk for a
+demonstration).  Run \code{suite\_reuse.py} with \code{CHOUPO\_HOME} unset or
+the tree's own root: it reads the data from there.
+
 \paragraph{The gate self-test runs in a pool.}  \code{check\_gate\_selftest}
 runs its arms in worker copies of the tree, outside it (a shared clone at
 HEAD, with the tree's edits and its build copied over), at most as many at

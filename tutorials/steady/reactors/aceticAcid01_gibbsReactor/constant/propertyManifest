@@ -27,6 +27,7 @@ propertyManifest
         "components/methanol.dat"  "c0f57fdd6d14b567146f8fb8f54a3d8f5d9ac6b67560cfe4b15c461399d16a03";
         "components/methylAcetate.dat"  "ac6884a5f63cf720c4718c836407d1ca937f5e1bdabe26e5aa0d79896931c1ac";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
+        "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
         "parameters/Henry/"  "relevant:e283b2accc6766f773f5aab0b7e673a6ac5cd2df307ea9850e0dd7e090ec552d";
         "parameters/Henry/CO-water.dat"  "7e5772418f164af708f397b91073253f5a13cf0f806777414e5d4cfa63506e97";
         "parameters/Henry/aceticAcid-water.dat"  "2f8bd145544e6613d408306a238adc2980f185e6d805833a684381211c004cad";

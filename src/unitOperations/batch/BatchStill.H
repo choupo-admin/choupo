@@ -171,7 +171,7 @@ private:
     BatchState                  state_;
     const ThermoPackage*        thermo_     = nullptr;
     scalar                      F_vap_      = 0;      // kmol/s: rayleigh product; rectifier BOILUP V
-    scalar                      P_op_       = 0;      // bar
+    scalar                      P_op_       = 0;      // Pa (SI, as the reader returns it)
     scalar                      T_warm_     = 0;      // last bubble-T --- used as Newton seed
     sVector                     vapourBuf_;           // kmol vaporised since last discharge
 

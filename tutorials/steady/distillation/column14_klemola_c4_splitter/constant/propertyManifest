@@ -30,6 +30,11 @@ propertyManifest
         "components/neopentane.dat"  "be89682113d4d1813649799e1e69afd71027023a40cf809a70a21b973e4bb362";
         "components/propane.dat"  "26ffaecf82749edb18ccb34a3f18acb0ca45e55e1b461bf94d871ef0ab81358e";
         "components/trans2Butene.dat"  "25fa7e573dcd09d29032e59d0f3071fa355f72523c7bdef6390d7430b882d066";
+        "parameters/Helmholtz/Gao2023.dat"  "f0f5d38b6ad307e427b962203ec19ec610fb16a1d531fbe8056fa3be4db50b75";
+        "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+        "parameters/Helmholtz/SetzmannWagner1991.dat"  "2d75e1bff7b606847ff65b4854ca906f0f653cabb28036d87d7330109cf49b10";
+        "parameters/Helmholtz/Span2000.dat"  "ff57a1c162fb3e3d2b93332832d5472106b988a43db93d6537f5a1e8751dd032";
+        "parameters/Helmholtz/SpanWagner1996.dat"  "45e5b08168038ca401f0a99ec275378fa7fec8658671fc3c954dd201e1bff76a";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/UNIFAC/groups.dat"  "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
         "parameters/UNIFAC/interactions.dat"  "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";

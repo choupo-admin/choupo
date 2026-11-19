@@ -222,6 +222,17 @@ class Equation:
                     tl = t / ta - 2 * be * (ta - ga); tl2 = -t / ta ** 2 - 2 * be
                     a[0] += x; a[1] += x * dl; a[2] += x * (dl * dl + dl2)
                     a[3] += x * tl; a[4] += x * (tl * tl + tl2); a[5] += x * dl * tl
+            elif key == "associating":
+                for n, d, t, al, be, ga, ep, bb in zip(g["n"], g["d"], g["t"], g["alpha"], g["beta"], g["gamma"], g["epsilon"], g["b"]):
+                    w = be * (ta - ga) ** 2 + bb
+                    x = n * de ** d * ta ** t * math.exp(-al * (de - ep) ** 2 + 1 / w)
+                    dl = d / de - 2 * al * (de - ep); dl2 = -d / de ** 2 - 2 * al
+                    # d/dtau of 1/w = -2 be (tau-ga)/w^2 ; second derivative by the quotient rule
+                    e1 = -2 * be * (ta - ga) / w ** 2
+                    e2 = -2 * be / w ** 2 + 8 * be * be * (ta - ga) ** 2 / w ** 3
+                    tl = t / ta + e1; tl2 = -t / ta ** 2 + e2
+                    a[0] += x; a[1] += x * dl; a[2] += x * (dl * dl + dl2)
+                    a[3] += x * tl; a[4] += x * (tl * tl + tl2); a[5] += x * dl * tl
             elif key == "nonAnalytic":
                 for n, aa, b, B, C, D, A, be in zip(g["n"], g["a"], g["b"], g["B"], g["C"], g["D"], g["A"], g["beta"]):
                     dl = de if abs(de - 1) >= 1e-12 else 1 + 1e-12
