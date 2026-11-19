@@ -6,8 +6,8 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
-/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
-     componentMolarFlows
+
+componentMolarFlows
 {
     nButane    1.0 kmol/h;
 }
