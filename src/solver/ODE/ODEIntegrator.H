@@ -142,6 +142,76 @@ struct ODEBlockStructure
     long   wideBorderRows   = 0;     // border rows closed by direction
 };
 
+//- An ANALYTIC Jacobian supplied by the MODEL (opt-in; the batch reactor's
+//  `solver { jacobian analytic; }`).  Absent (ODEControls::analytic ==
+//  nullptr) the integrator builds the dense forward-difference Jacobian
+//  exactly as before: n extra evaluations of f per Jacobian.
+//
+//  WHY IT IS AUDITED.  Rosenbrock23 and Rodas4 are NOT W-methods: their
+//  order conditions assume W = I - h d J with the TRUE Jacobian.  A wrong
+//  or incomplete J does not make a step fail -- the embedded error estimate
+//  still passes or rejects it -- it silently degrades the method: steps
+//  shrink, or the accepted solution loses order and drifts.  Nothing
+//  downstream sees that; only a comparison with the Jacobian the model
+//  claims to differentiate does.  So, as for ODEBlockStructure, THE
+//  CLAIM IS MEASURED: at the 1st, 2nd, 4th, 8th, ... analytic Jacobian
+//  (doubling, so a term that is zero at the initial state -- a radical not
+//  yet formed -- is still seen once it is not, for log2(N) audits in all)
+//  the dense forward-difference Jacobian is built at the SAME state, and
+//  each column's largest difference is measured on that column's scale,
+//  every row divided by its own size s_i (a column mixes kmol/s rows with
+//  a K/s row; J_ij / s_i puts them on one footing):
+//
+//      d_j = max_i |Ja_ij - Jfd_ij|/s_i  /  max_i max(|Ja_ij|, |Jfd_ij|)/s_i
+//
+//  The audit's difference is its OWN, with column step sqrt(eps)*s_j: the
+//  integrator's step for a trace row (sqrt(eps) * atol, ~1e-23 kmol for a
+//  radical not yet formed) is so small that the rounding of f -- a sum of
+//  large terms that cancel -- is divided by it and swamps the column (seen
+//  on the first run: the T row of a radical column O(1) wrong in the
+//  DIFFERENCE, not in the analytic J).  s comes from the model
+//  (auditScale), else max(|y_i|, the integrator's typ_i).
+//
+//  A column above `tolerance` REFUSES the run by name (owner, row, column,
+//  both numbers).  The records are written back here so the CALLER can
+//  announce them; the integrator prints nothing.
+struct ODEAnalyticJacobian
+{
+    //  J(t, y, f0, typ) -> the full n x n matrix d f_i / d y_j at (t, y).
+    //  f0 = f(t, y) as the integrator has just evaluated it; typ = the
+    //  integrator's per-row scales, so a column the model chooses to
+    //  difference uses the integrator's own step for it.
+    std::function<std::vector<sVector>(scalar t, const sVector& y,
+                                       const sVector& f0, const sVector& typ)>
+        jacobian;
+    //  true: f does not read t, so df/dt is identically zero and the one
+    //  evaluation the forward difference of df/dt costs is skipped (the
+    //  difference of an autonomous f is exactly 0.0, so nothing moves).
+    bool   autonomous = false;
+    //  Names for a refusal: owner ("batchReactor 'bomb'") and row labels.
+    std::string                               owner;
+    std::function<std::string(std::size_t)>   rowLabel;
+    scalar tolerance = 1.0e-4;
+    //  Optional: the size s_i of each row for the audit (its difference step
+    //  and its row scaling).  Empty => max(|y_i|, typ_i).
+    std::function<sVector(const sVector& y)>  auditScale;
+
+    // ---- written by the integrator --------------------------------------
+    struct Audit
+    {
+        long        jacobian = 0;    // which analytic Jacobian (1-based)
+        scalar      t        = 0.0;  // integrator time of the state
+        sVector     y;               // the state audited
+        scalar      worst    = 0.0;  // max_j d_j
+        std::size_t row = 0, col = 0;// where the worst column peaks
+        scalar      analytic = 0.0, fd = 0.0;   // J_row,col both ways
+    };
+    std::vector<Audit> audits;
+    long   jacobians   = 0;          // analytic Jacobians built
+    long   nextAudit   = 1;          // the Jacobian count of the next audit
+    long   auditEvals  = 0;          // f evaluations spent on audits
+};
+
 // Integration controls.  `atol` is PER-COMPONENT: the state is unit-mixed
 // (species in kmol/s next to a temperature in K, trace radicals at 1e-10 next
 // to the bath gas at 1e0).  A single scalar atol lets the controller be driven
@@ -196,6 +266,13 @@ struct ODEControls
     // ODEBlockStructure).  Not owned; nullptr => the dense path, untouched.
     // Methods that build no Jacobian ignore it.
     ODEBlockStructure* structure = nullptr;
+
+    // OPT-IN analytic Jacobian (Rosenbrock23 / Rodas4; see
+    // ODEAnalyticJacobian).  Not owned -- the caller keeps it across
+    // integrate() calls so the audit schedule spans the whole run.  nullptr
+    // => the dense forward-difference path, untouched.  Refused together
+    // with a declared structure (the two are different claims about J).
+    ODEAnalyticJacobian* analytic = nullptr;
 };
 
 struct ODEStats

@@ -33,6 +33,7 @@ License
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -201,6 +202,76 @@ void auditStructure(const std::vector<sVector>& Jd,
             + std::to_string(mismatch) + " against " + std::to_string(in)
             + ").  The coloring is not separating the columns it groups."
             "  Refusing.");
+}
+
+//  THE ANALYTIC JACOBIAN IS A CLAIM TOO (ODEAnalyticJacobian).  At the
+//  audited Jacobians the dense forward-difference one is built at the same
+//  state (on the audit's scales s) and every column is compared on its own
+//  scale, each row divided by s_i so rows of different units compare,
+//      d_j = max_i |Ja_ij - Jfd_ij|/s_i / max_i max(|Ja_ij|, |Jfd_ij|)/s_i,
+//  a column that is zero both ways counting 0.  The record goes back to the
+//  caller; a column above the tolerance REFUSES the run by name.  Rosenbrock
+//  methods are not W-methods: an incomplete J degrades them silently (the
+//  steps still pass the error test, slower or less accurate), so this
+//  comparison is the only place the omission can be seen.
+void auditAnalytic(const std::vector<sVector>& Ja,
+                   const std::vector<sVector>& Jd,
+                   scalar t, const sVector& y, const sVector& sc,
+                   ODEAnalyticJacobian& A)
+{
+    const std::size_t n = Jd.size();
+    ODEAnalyticJacobian::Audit rec;
+    rec.jacobian = A.jacobians;
+    rec.t = t;
+    rec.y = y;
+    for (std::size_t c = 0; c < n; ++c)
+    {
+        scalar scale = 0.0, diff = 0.0;
+        std::size_t rowMax = 0;
+        bool nonFinite = false;
+        for (std::size_t r = 0; r < n; ++r)
+        {
+            if (!std::isfinite(Ja[r][c]))            // a NaN/inf entry fails
+            { if (!nonFinite) rowMax = r; nonFinite = true; continue; }
+            //  row r divided by its own scale: a column mixes rows of
+            //  different units (kmol/s next to K/s), and J_rc / s_r puts
+            //  them on one footing (a rate per unit of the row's size)
+            const scalar inv = 1.0 / std::max(sc[r], 1.0e-300);
+            scale = std::max(scale, inv * std::max(std::abs(Ja[r][c]), std::abs(Jd[r][c])));
+            const scalar dd = inv * std::abs(Ja[r][c] - Jd[r][c]);
+            if (dd > diff && !nonFinite) { diff = dd; rowMax = r; }
+        }
+        scalar d = (scale > 0.0) ? diff / scale : 0.0;
+        if (nonFinite || !std::isfinite(d)) d = HUGE_VAL;
+        if (c == 0 || d > rec.worst)
+        {
+            rec.worst = d;
+            rec.row = rowMax; rec.col = c;
+            rec.analytic = Ja[rowMax][c]; rec.fd = Jd[rowMax][c];
+        }
+    }
+    A.audits.push_back(rec);
+    if (!(rec.worst <= A.tolerance))
+    {
+        const auto label = [&](std::size_t i)
+        { return A.rowLabel ? A.rowLabel(i) : "row " + std::to_string(i); };
+        char buf[256];
+        std::snprintf(buf, sizeof buf, "%.6g against the finite-difference"
+                      " %.6g (relative difference %.3g on the column's scale,"
+                      " tolerance %.3g)", rec.analytic, rec.fd, rec.worst,
+                      A.tolerance);
+        throw std::runtime_error(
+            (A.owner.empty() ? std::string("Rosenbrock23") : A.owner)
+            + ": the ANALYTIC Jacobian is FALSE at analytic Jacobian #"
+            + std::to_string(rec.jacobian) + " (t = " + std::to_string(t)
+            + " s into the interval): d(" + label(rec.row) + ")/d("
+            + label(rec.col) + ") is " + buf + ".  A term of the model is"
+            " missing from, or wrong in, its derivative.  A Rosenbrock"
+            " method is not a W-method -- with a wrong Jacobian it would"
+            " still take steps, silently slower or less accurate.  Refusing;"
+            " drop `jacobian analytic;` to integrate on the finite-difference"
+            " Jacobian, or fix the derivative.");
+    }
 }
 //  ---- Rodas4: the six stages --------------------------------------------
 //  Hairer & Wanner, "Solving Ordinary Differential Equations II" (2nd ed.,
@@ -394,6 +465,14 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
     }
     const std::size_t nb = S ? S->nBlocks * S->blockSize : 0;
 
+    // ---- the OPT-IN analytic Jacobian (ODEAnalyticJacobian) --------------
+    ODEAnalyticJacobian* A = (ctrl.analytic && ctrl.analytic->jacobian)
+                           ? ctrl.analytic : nullptr;
+    if (A && S)
+        throw std::runtime_error("Rosenbrock23: an analytic Jacobian AND a"
+            " declared block structure were both given -- they are two"
+            " different claims about J, and only one can be used.  Refusing.");
+
     // The step the controller proposes for the NEXT interval (ODEStats).
     scalar hNext = h;
 
@@ -421,8 +500,39 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
         ColoredODEJacobian       colored;
         if (!S)
         {
-            auto J  = fdJacobianODE(f, t, y, f0, typ);
-            Td = fdDfDt(f, t, y, f0, std::max(span, 1.0));
+            //  The model's ANALYTIC Jacobian when it supplied one (audited
+            //  on the doubling schedule), else the dense forward difference.
+            std::vector<sVector> J;
+            if (A)
+            {
+                J = A->jacobian(t, y, f0, typ);
+                if (J.size() != n)
+                    throw std::runtime_error((A->owner.empty() ? std::string("Rosenbrock23")
+                        : A->owner) + ": the analytic Jacobian has "
+                        + std::to_string(J.size()) + " rows for a state of "
+                        + std::to_string(n) + ".  Refusing.");
+                ++A->jacobians;
+                if (A->jacobians >= A->nextAudit)
+                {
+                    //  The audit's OWN difference, on the model's scales
+                    //  (see ODEAnalyticJacobian::auditScale): the
+                    //  integrator's step for a trace row is so small that
+                    //  the rounding of f swamps the column.
+                    sVector sc(n);
+                    if (A->auditScale) sc = A->auditScale(y);
+                    if (sc.size() != n)
+                        for (std::size_t i = 0; i < n; ++i)
+                            sc[i] = std::max(std::abs(y[i]), typ[i]);
+                    const auto Jd = fdJacobianODE(f, t, y, f0, sc);
+                    A->auditEvals += long(n);
+                    A->nextAudit *= 2;
+                    auditAnalytic(J, Jd, t, y, sc, *A);   // may refuse
+                }
+            }
+            else
+                J = fdJacobianODE(f, t, y, f0, typ);
+            Td = (A && A->autonomous) ? sVector(n, 0.0)
+                                      : fdDfDt(f, t, y, f0, std::max(span, 1.0));
             stiffPeak = std::max(stiffPeak, spectralBound(J));
 
             W.assign(n, sVector(n, 0.0));

@@ -1450,6 +1450,7 @@ if (flowsheetDict->found("cycle"))
         //  form units (batchReactor) go through the stiff sweep; any non-ODE
         //  vessel (a still) takes ONE fixed step over the sub-interval.
         solver::AdaptiveTimeStepper stepper(adaptSet);
+        std::size_t jacAnnounced = 0;     // analytic-Jacobian audits printed
 
         // Glass-box step history: print the adaptive step as it grows/shrinks.
         bool printedHeader = false;
@@ -1488,7 +1489,19 @@ if (flowsheetDict->found("cycle"))
                         [up](const sVector& y){ up->setOdeState(y); },
                         [up](const sVector& y){ return up->odeDerivative(y); },
                         up->odeNPositive(),
-                        up->name(), [up](std::size_t i){ return up->odeRowLabel(i); } });
+                        up->name(), [up](std::size_t i){ return up->odeRowLabel(i); },
+                        {}, {} });   // the analytic Jacobian, if any, below
+                    //  The unit's analytic Jacobian, when it declared one
+                    //  (`solver { jacobian analytic; }`); the sweep uses it
+                    //  only if every unit of the sweep has one.
+                    if (up->hasOdeJacobian())
+                    {
+                        odeUnits.back().jacobian =
+                            [up](const sVector& y, const sVector& f0, const sVector& typ)
+                            { return up->odeJacobian(y, f0, typ); };
+                        odeUnits.back().jacobianScale =
+                            [up](const sVector& y) { return up->odeJacobianScale(y); };
+                    }
                 }
                 else
                     unit->step(t, tNext - t);   // non-ODE vessel: one fixed step
@@ -1498,7 +1511,40 @@ if (flowsheetDict->found("cycle"))
             //  events and the write below are never reached for a state that
             //  stopped short.
             if (!odeUnits.empty())
+            {
                 stepper.advance(odeUnits, t, tNext, onStep);
+                //  The analytic-Jacobian audits of this interval, announced
+                //  (the first at verbosity >= 1, the rest at >= 3).
+                const auto& aj = stepper.analyticAudit();
+                const auto label = [&odeUnits](std::size_t i) -> std::string
+                {
+                    for (const auto& u : odeUnits)
+                    {
+                        const std::size_t rows = u.pack().size();
+                        if (i < rows) return u.rowLabel(i) + " of '" + u.name + "'";
+                        i -= rows;
+                    }
+                    return "row " + std::to_string(i);
+                };
+                for (; jacAnnounced < aj.audits.size(); ++jacAnnounced)
+                {
+                    const auto& a = aj.audits[jacAnnounced];
+                    if (verbosity < (jacAnnounced == 0 ? 1 : 3)) continue;
+                    std::ostringstream os;
+                    os << "  [jacobian] adaptive sweep: analytic Jacobian #" << a.jacobian
+                       << " AUDITED at t = " << std::scientific << std::setprecision(4) << a.t
+                       << " s: worst column d(" << label(a.row) << ")/d(" << label(a.col) << ") "
+                       << std::setprecision(3) << a.worst
+                       << " of the column's scale from the finite difference (tolerance "
+                       << aj.tolerance << ")\n";
+                    if (jacAnnounced == 0)
+                        os << "             the sweep's Jacobian is ANALYTIC (every unit declares"
+                              " `jacobian analytic;`), block-diagonal over the units; audited"
+                              " against the dense finite difference at analytic Jacobians 1, 2,"
+                              " 4, 8, ...; a column above the tolerance refuses the run\n";
+                    std::cout << os.str();
+                }
+            }
 
             t = tNext;
             routeDischarges(t);
