@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Component.H"
+#include "thermo/DerivedClosures.H"
 #include "core/Advisory.H"
 #include "thermo/AtomicWeights.H"
 #include "thermo/ElementComposition.H"
@@ -1445,10 +1446,7 @@ scalar Component::Hvap_latent(scalar T) const
     if (Tc_ <= 0.0 || Tb_ <= 0.0 || Hvap_Tb_ <= 0.0)
         throw std::runtime_error("Component '" + name_ +
             "': Watson ΔHvap requires Tc, Tb and HvapTb");
-    if (T >= Tc_) return 0.0;          // supercritical
-    const scalar num = Tc_ - T;
-    const scalar den = Tc_ - Tb_;
-    return Hvap_Tb_ * std::pow(num / den, 0.38);
+    return closures::watsonLatent(Hvap_Tb_, Tb_, T, Tc_);   // 0 at or above Tc
 }
 
 const Component::DatumBridge298& Component::datumBridge298() const
@@ -1496,8 +1494,7 @@ const Component::DatumBridge298& Component::datumBridge298() const
             }
             else
             {
-                hMono298 = (298.15 >= Tc_) ? 0.0
-                    : hMonoTb * std::pow((Tc_ - 298.15) / (Tc_ - Tb_), 0.38);
+                hMono298 = closures::watsonLatent(hMonoTb, Tb_, 298.15, Tc_);
                 rule = "Watson on the monomer (exponent 0.38): the record"
                        " carries no liquid or ideal-gas heat capacity to"
                        " integrate, so the latent heat priced at Tb will not"
