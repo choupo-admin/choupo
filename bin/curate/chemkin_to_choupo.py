@@ -63,8 +63,11 @@ dHf_298 = H(298.15) and s_298 = S(298.15) DERIVED from the NASA-7 coefficients
 reading graphite.dat's header uses), on the interval that contains 298.15 K;
 `idealGasHeatCapacity` (gas) or `solidHeatCapacity` (solid) with `model NASA7`
 and Tlow/Tcommon/Thigh (NASA7Cp.cpp reads all three, refuses without).  Not
-written, because nothing in a mechanism supplies them: role, Tc, Pc, omega,
-vapour pressure, CAS.  A liquid ('L') record is refused by name.  Species names
+written, because nothing in a mechanism supplies them: Tc, Pc, omega,
+vapour pressure, CAS; every species is written `role nonvolatile;` (the
+convention of data/standards/thermoTables/), because a gamma-phi package
+otherwise asks each component for a vapour pressure (Component.cpp, found by
+the first engine load of an import, 2026-11-19).  A liquid ('L') record is refused by name.  Species names
 are sanitised for the dictionary grammar ('(' -> '_', ')' dropped, '-' and ','
 -> '_', '*' -> 'star'); a collision is refused and the original name stays in
 the record's comment.  Charged species (a '+' in the name) are not supported
@@ -319,6 +322,32 @@ def fmt_list(v):
     return "( " + " ".join("%.8e" % x for x in v) + " );"
 
 
+def _atoms(formula):
+    """Atom counts of a formula string (`C1O1S1` and `COS` read alike)."""
+    out = {}
+    for el, n in re.findall(r'([A-Z][a-z]?)(\d*)', formula):
+        out[el] = out.get(el, 0) + (int(n) if n else 1)
+    return out
+
+
+def catalogue_identity(cname, comp):
+    """A case-local record named like a catalogue record must say what it is
+    (the engine's shadow check refuses it otherwise -- found by the first
+    engine load of an import, 2026-11-19).  Same atoms: `variationOf`, the
+    mechanism's own fit kept for consistency with its rates; other atoms:
+    `distinctFrom`, another species under the same name."""
+    cat = os.path.join(ROOT, "data", "standards", "components", cname + ".dat")
+    if not os.path.isfile(cat):
+        return ""
+    m = re.search(r'(?m)^\s*formula\s+"?([A-Za-z0-9]+)"?\s*;', open(cat, errors="replace").read())
+    same = bool(m) and _atoms(m.group(1)) == {e: int(n) for e, n in comp.items()}
+    if same:
+        return ('variationOf  %s;\nvariationReason "the mechanism\'s own NASA-7 fit, kept so its '
+                'equilibria match the rate constants it was fitted with";\n' % cname)
+    return ('distinctFrom %s;\nvariationReason "a mechanism species that shares the name of a '
+            'different catalogue species (other atoms)";\n' % cname)
+
+
 def species_record(rec, cname, aw, source, licence):
     if rec["phase"].upper() == "L":
         raise Refusal("liquid-phase NASA record is not supported")
@@ -334,11 +363,12 @@ def species_record(rec, cname, aw, source, licence):
     prov = ('mechanism file %s; licence: %s' % (source, licence)).replace('"', "'")
     return """/*--- Component %s: imported from a CHEMKIN mechanism by bin/curate/chemkin_to_choupo.py ---*/
 //  Original mechanism name: %s.  A case-local import, not a catalogue record:
-//  role, Tc, Pc, omega, vapour pressure and CAS are not in a mechanism and are not written.
+//  Tc, Pc, omega, vapour pressure and CAS are not in a mechanism and are not written.
 name        %s;
 formula     %s;
 MW          %.4f;            // kg/kmol, from the composition with src/thermo/AtomicWeights.cpp
-reviewStatus interim;
+role        nonvolatile;     // a mechanism species: no vapour pressure is asked of it (the thermoTables convention)
+%sreviewStatus interim;
 reviewReason "imported mechanically from a CHEMKIN thermo record; not read back by a curator";
 
 standardThermochemistry
@@ -362,7 +392,7 @@ provenance
     standardThermochemistry { origin literature; method "H and S at 298.15 K integrated from the NASA-7 coefficients; %s"; }
     %s { origin literature; method "NASA-7 record imported unchanged; %s"; }
 }
-""" % (cname, rec["name"], cname, formula_of(rec["comp"]), mw, H, S,
+""" % (cname, rec["name"], cname, formula_of(rec["comp"]), mw, catalogue_identity(cname, rec["comp"]), H, S,
        "    referenceState pureSolid;\n" if solid else "",
        blk, fmt_list(rec["low"]), fmt_list(rec["high"]),
        rec["Tlow"], rec["Tcommon"], rec["Thigh"], prov, blk, prov)
