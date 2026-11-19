@@ -33669,10 +33669,11 @@ absent \code{kind} prints as \code{undeclared} with an advisory; the labour
 rate reads the same words from an optional \code{labourProvenance \{ \}}
 block and prints \code{undeclared} when there is none.  Each utility the run allocated is listed with its
 catalogue record's \code{cost} (EUR/GJ) and \code{costYear}; its kind is
-\code{published} when the record carries a \code{costSource "\ldots";} and
-\code{undeclared} when it does not (the shipped records name their source in a
-header comment but carry no such key yet, since adding it changes their pinned
-hash).  Worked case: \code{greenAmmoniaPEQ\_baseCase} (its three prices are
+\code{published} when the record carries a \code{costSource "\ldots";},
+\code{assumption} when that text opens with the word \code{assumption:} (the
+ten shipped records all do: their figures are the catalogue's own indicative
+values, with the derivation or the unverified reference named), and
+\code{undeclared} when the record carries none.  Worked case: \code{greenAmmoniaPEQ\_baseCase} (its three prices are
 published figures read at their sources, and its labour rate is an assumption).
 
 \paragraph{Operating labour and the cover of a shift position.}\label{par:operator-cover}

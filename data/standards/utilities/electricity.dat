@@ -31,6 +31,7 @@ mechanism   electrical;
 // 0.10 EUR/kWh industrial tariff = 0.10 / 3.6e-3 GJ = 27.8 EUR/GJ.
 cost        27.8;                      // €/GJ delivered (drawn) / credited (fed)
 costYear    2022;                      // reference price year
+costSource  "assumption: 0.10 EUR/kWh = 27.8 EUR/GJ, a round tariff chosen inside the 0.06-0.12 USD/kWh industrial range that the header attributes to Turton et al. 5th ed. (2018) Table 8.3; that edition is not in the project library, so the range was not re-read and the chosen value is not a published price; price year 2022";
 
 driveEfficiency 0.95;                  // electric motor / generator electromechanical eff.
 
