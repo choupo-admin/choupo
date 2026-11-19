@@ -204,11 +204,56 @@ void auditStructure(const std::vector<sVector>& Jd,
             "  Refusing.");
 }
 
+//  The audit's reference Jacobian: a CENTRAL difference, column step
+//  h_j = cbrt(eps) * s_j, so the rounding of f is divided by a step ~400x
+//  larger than the forward difference's sqrt(eps) * s_j and the truncation
+//  is second order (a mass-action leg, bilinear in c, is differenced
+//  exactly).  A row the positivity mask guards that sits within h_j of zero
+//  cannot be stepped below it (the rate clamps there), so that column is a
+//  FORWARD difference with sqrt(eps) * s_j.  Measured on
+//  batch04_reversible_wgs (2026-11-19): with the forward difference alone the
+//  CO2 column, whose entries are a reverse leg small against the forward
+//  rate in every row, read 8e-6 of its scale -- the rounding, not the J.
+std::vector<sVector> auditDifference(const DerivFn& f, scalar t,
+                                     const sVector& y, const sVector& f0,
+                                     const sVector& sc, const ODEControls& ctrl,
+                                     long& evals)
+{
+    const std::size_t n = y.size();
+    static const scalar kCbrtEps = std::cbrt(2.220446049250313e-16);
+    std::vector<sVector> J(n, sVector(n, 0.0));
+    sVector yp = y;
+    for (std::size_t j = 0; j < n; ++j)
+    {
+        const scalar s = std::max(sc[j], 1.0e-300);
+        const bool guarded = j < ctrl.positiveRows.size() && ctrl.positiveRows[j];
+        scalar h = kCbrtEps * s;
+        if (!guarded || y[j] - h >= 0.0)
+        {
+            yp[j] = y[j] + h;  const sVector fp = f(t, yp);
+            yp[j] = y[j] - h;  const sVector fm = f(t, yp);
+            yp[j] = y[j];
+            evals += 2;
+            for (std::size_t i = 0; i < n; ++i) J[i][j] = (fp[i] - fm[i]) / (2.0 * h);
+        }
+        else
+        {
+            h = kSqrtEpsR * s;
+            yp[j] = y[j] + h;  const sVector fp = f(t, yp);
+            yp[j] = y[j];
+            evals += 1;
+            for (std::size_t i = 0; i < n; ++i) J[i][j] = (fp[i] - f0[i]) / h;
+        }
+    }
+    return J;
+}
+
 //  THE ANALYTIC JACOBIAN IS A CLAIM TOO (ODEAnalyticJacobian).  At the
 //  audited Jacobians the dense forward-difference one is built at the same
-//  state (on the audit's scales s) and every column is compared on its own
-//  scale, each row divided by s_i so rows of different units compare,
-//      d_j = max_i |Ja_ij - Jfd_ij|/s_i / max_i max(|Ja_ij|, |Jfd_ij|)/s_i,
+//  state (on the audit's sizes s) and every column is compared on its own
+//  scale, every entry made a rate per unit size, J^_ij = J_ij s_j / s_i:
+//      d_j = max_i |Ja^_ij - Jfd^_ij| / max( max_i max(|Ja^_ij|, |Jfd^_ij|),
+//                                           columnFloor * max_ij |J^_ij| ),
 //  a column that is zero both ways counting 0.  The record goes back to the
 //  caller; a column above the tolerance REFUSES the run by name.  Rosenbrock
 //  methods are not W-methods: an incomplete J degrades them silently (the
@@ -224,6 +269,17 @@ void auditAnalytic(const std::vector<sVector>& Ja,
     rec.jacobian = A.jacobians;
     rec.t = t;
     rec.y = y;
+    //  J^_rc = J_rc s_c / s_r: every entry a rate [1/s] per unit of the
+    //  row's and the column's own size, so kmol/s rows and a K/s row
+    //  compare, and the matrix has ONE scale rho = max |J^|.
+    const auto sz = [&](std::size_t i) { return std::max(sc[i], 1.0e-300); };
+    scalar rho = 0.0;
+    for (std::size_t r = 0; r < n; ++r)
+        for (std::size_t c = 0; c < n; ++c)
+            if (std::isfinite(Ja[r][c]))
+                rho = std::max(rho, std::max(std::abs(Ja[r][c]), std::abs(Jd[r][c]))
+                                    * sz(c) / sz(r));
+    const scalar floor = A.columnFloor * rho;
     for (std::size_t c = 0; c < n; ++c)
     {
         scalar scale = 0.0, diff = 0.0;
@@ -233,15 +289,17 @@ void auditAnalytic(const std::vector<sVector>& Ja,
         {
             if (!std::isfinite(Ja[r][c]))            // a NaN/inf entry fails
             { if (!nonFinite) rowMax = r; nonFinite = true; continue; }
-            //  row r divided by its own scale: a column mixes rows of
-            //  different units (kmol/s next to K/s), and J_rc / s_r puts
-            //  them on one footing (a rate per unit of the row's size)
-            const scalar inv = 1.0 / std::max(sc[r], 1.0e-300);
-            scale = std::max(scale, inv * std::max(std::abs(Ja[r][c]), std::abs(Jd[r][c])));
-            const scalar dd = inv * std::abs(Ja[r][c] - Jd[r][c]);
+            const scalar w = sz(c) / sz(r);
+            scale = std::max(scale, w * std::max(std::abs(Ja[r][c]), std::abs(Jd[r][c])));
+            const scalar dd = w * std::abs(Ja[r][c] - Jd[r][c]);
             if (dd > diff && !nonFinite) { diff = dd; rowMax = r; }
         }
-        scalar d = (scale > 0.0) ? diff / scale : 0.0;
+        //  A column whose every entry is far below the matrix's scale is
+        //  judged on the floor: at equilibrium a bath gas's third-body
+        //  column is forward and reverse legs that cancel (analytic ~1e-14),
+        //  and its difference is nothing but the rounding of f.
+        const scalar den = std::max(scale, floor);
+        scalar d = (den > 0.0) ? diff / den : 0.0;
         if (nonFinite || !std::isfinite(d)) d = HUGE_VAL;
         if (c == 0 || d > rec.worst)
         {
@@ -523,8 +581,9 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
                     if (sc.size() != n)
                         for (std::size_t i = 0; i < n; ++i)
                             sc[i] = std::max(std::abs(y[i]), typ[i]);
-                    const auto Jd = fdJacobianODE(f, t, y, f0, sc);
-                    A->auditEvals += long(n);
+                    long evals = 0;
+                    const auto Jd = auditDifference(f, t, y, f0, sc, ctrl, evals);
+                    A->auditEvals += evals;
                     A->nextAudit *= 2;
                     auditAnalytic(J, Jd, t, y, sc, *A);   // may refuse
                 }

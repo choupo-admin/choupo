@@ -159,18 +159,28 @@ struct ODEBlockStructure
 //  yet formed -- is still seen once it is not, for log2(N) audits in all)
 //  the dense forward-difference Jacobian is built at the SAME state, and
 //  each column's largest difference is measured on that column's scale,
-//  every row divided by its own size s_i (a column mixes kmol/s rows with
-//  a K/s row; J_ij / s_i puts them on one footing):
+//  every entry made a rate per unit size, J^_ij = J_ij s_j / s_i (a column
+//  mixes kmol/s rows with a K/s row; this puts them on one footing):
 //
-//      d_j = max_i |Ja_ij - Jfd_ij|/s_i  /  max_i max(|Ja_ij|, |Jfd_ij|)/s_i
+//      d_j = max_i |Ja^_ij - Jfd^_ij|
+//            / max( max_i max(|Ja^_ij|, |Jfd^_ij|),  columnFloor * rho ),
+//      rho = max_ij max(|Ja^_ij|, |Jfd^_ij|)   (the matrix's own scale).
 //
-//  The audit's difference is its OWN, with column step sqrt(eps)*s_j: the
-//  integrator's step for a trace row (sqrt(eps) * atol, ~1e-23 kmol for a
-//  radical not yet formed) is so small that the rounding of f -- a sum of
-//  large terms that cancel -- is divided by it and swamps the column (seen
-//  on the first run: the T row of a radical column O(1) wrong in the
-//  DIFFERENCE, not in the analytic J).  s comes from the model
-//  (auditScale), else max(|y_i|, the integrator's typ_i).
+//  The floor is for a column whose entries all CANCEL: at chemical
+//  equilibrium a bath gas's third-body column is forward and reverse legs
+//  that cancel (analytic -6e-14, measured on the burned H2/O2 state), and
+//  its difference is the rounding of f (1.7e-4): on its own scale that
+//  column would read "100 % wrong" for a J that is right.
+//
+//  The audit's difference is its OWN: CENTRAL, column step cbrt(eps)*s_j
+//  (forward with sqrt(eps)*s_j where a guarded row sits within the step of
+//  zero), on the model's row sizes s.  The integrator's own difference, step
+//  sqrt(eps) * max(|y_j|, atol), is no reference: for a radical not yet
+//  formed that is ~1e-23 kmol, the rounding of f -- a sum of large terms
+//  that cancel -- is divided by it, and on the first run the T row of the
+//  H2O2 column came out 1.55 of its scale wrong IN THE DIFFERENCE, not in
+//  the analytic J.  s comes from the model (auditScale), else
+//  max(|y_i|, the integrator's typ_i).
 //
 //  A column above `tolerance` REFUSES the run by name (owner, row, column,
 //  both numbers).  The records are written back here so the CALLER can
@@ -191,7 +201,8 @@ struct ODEAnalyticJacobian
     //  Names for a refusal: owner ("batchReactor 'bomb'") and row labels.
     std::string                               owner;
     std::function<std::string(std::size_t)>   rowLabel;
-    scalar tolerance = 1.0e-4;
+    scalar tolerance   = 1.0e-4;
+    scalar columnFloor = 1.0e-3;     // of the matrix scale rho (see above)
     //  Optional: the size s_i of each row for the audit (its difference step
     //  and its row scaling).  Empty => max(|y_i|, typ_i).
     std::function<sVector(const sVector& y)>  auditScale;

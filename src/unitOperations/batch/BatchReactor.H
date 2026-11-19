@@ -234,7 +234,7 @@ private:
     mutable long rhsEvals_ = 0;             // derivatives_ calls (a count only)
     //  d r / d c_k [kmol/(m3 s) per kmol/m3] of one reaction, accumulated
     //  into `grad` (full length), mirroring rateOfReaction_ term by term.
-    //  `typ` is the integrator's per-row scale for the columns a Factory
+    //  `typ` is the row sizes (odeJacobianScale) for the columns a Factory
     //  law (or a power below one at zero) differentiates by a difference.
     void rateGradient_(const ReactionSpec& rxn, scalar T, const sVector& n,
                        scalar V, const sVector& typ, sVector& grad) const;

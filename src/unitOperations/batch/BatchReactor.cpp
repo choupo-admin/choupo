@@ -1830,12 +1830,18 @@ std::vector<sVector> BatchReactor::odeJacobian(const sVector& y,
     const scalar V = state_.V;
 
     // ---- species columns: J_ik = sum_j nu_ij dr_j/dc_k -------------------
+    //  A reaction differenced here (a Factory law) steps on the AUDIT's row
+    //  sizes, not on the integrator's typ: sqrt(eps) * atol (~1e-23 kmol for
+    //  a product not yet formed) moves an LHHW denominator by less than the
+    //  rounding of r, and the column came out exactly 0 against -0.058
+    //  (batch07_lhhw_methylAcetate, measured 2026-11-19).
+    const sVector sc = odeJacobianScale(y);
     sVector dHeat(n, 0.0);                   // sum_j dH_j dr_j/dc_k (liquidDH)
     sVector grad(n);
     for (const auto& rxn : reactions_)
     {
         std::fill(grad.begin(), grad.end(), 0.0);
-        rateGradient_(rxn, T, nv, V, typ, grad);
+        rateGradient_(rxn, T, nv, V, sc, grad);
         for (std::size_t s = 0; s < rxn.comps.size(); ++s)
         {
             sVector& row = J[rxn.comps[s]];
