@@ -1,0 +1,39 @@
+# Review: the three adsorption EduTools (tree 5f51313a21, read-only)
+
+Scope read: the three lessons and tools, `gui/src/case/{adsorptionIsotherms,batchAdsorption}.ts`, `FixedBedAdsorber.{H,cpp}`, `BatchAdsorber.H`, `IsothermModel.{H,cpp}`, `Adsorbent.cpp`, the witness `batch13_breakthrough_co2` (`system/flowsheetDict`, `expected`, the `CO2.dat` overlay) and the tests. Two notes on scope. None of the three lessons carries a `file:line` citation; they cite whole files in their header comments. There is no Toth, Sips, Thomas, Klinkenberg or Bohart-Adams model anywhere, and isosteric heat appears only as the van 't Hoff ΔH_ads.
+
+## WRONG
+
+1. **The overall countercurrent balance double-counts the solid.** `batchAdsorptionLesson.ts:228` gives `V c_0 = V c_N + Σ M_k q_k`. The gloss at :238-240 says that for countercurrent M_k = M and that only the solid leaving stage 1 leaves the system. Substituting gives `V c0 = V cN + M Σ q_k`, which is false. The code uses `V c0 = V cOut + M q_1` (`batchAdsorption.ts`, `countercurrent`, `onSolid = M * stages[0].q`). *Student:* following the boxed formula over-counts the adsorbed solute by `M Σ_{k≥2} q_k`.
+
+2. **"The solid that leaves is in equilibrium with the FEED"** (`batchAdsorptionLesson.ts:189-190`). With finite N the solid leaving stage 1 is at q*(c_1), not q*(c_0) (code: `stages[0].q = qStar(c[1])`). The statement is true only as N → ∞. *Student:* overestimates the spent-adsorbent loading and the capacity used.
+
+3. **The dose-climb claim is false for Freundlich** (`batchAdsorptionLesson.ts:113-114`): "for a favourable isotherm the climb starts later but is just as steep at the end". This holds for Langmuir, which has a Henry limit. For Freundlich (n < 1), M ∝ (c0−c)/c^n diverges only as (100−R)^−n. On the page's own Freundlich example (K_F = 30, n = 0.3, V = 100 L, c0 = 50), 90 → 99 → 99.9 % needs 92 → 203 → 409 g: a factor of 2 per decade, against 10 for a linear isotherm. *Student:* will expect a cliff the page's own numbers do not show.
+
+4. **The Langmuir b has two different units in one where-list** (`breakthroughLesson.ts:233-236`): `b` is given in "1/Pa" and called "the same quantity as b_i", which is "1/bar (declared)" (:241-245). The engine uses the declared basis: `IsothermModel.cpp:175,182`, `pInBasis`; the record is b_298 = 9.0 1/bar. The test `breakthroughLesson.test.ts:389` guards only `b_i`. *Student:* a 1e5 error in b if the 1/Pa gloss is used with 9.0.
+
+5. **The retention-factor caption contradicts step 2 and the arithmetic** (`BreakthroughTool.tsx:~681`): "retention_factor: how many hold-up times the front lags the carrier". The front time is R_f·L/u. The carrier's hold-up time is εL/u, so the lag is R_f/ε hold-up times (≈ 760, not 304), which is exactly what lesson step 2's note says (`breakthroughLesson.ts:~139-145`). The test **pins the false sentence** (`breakthroughLesson.test.ts:322`). *Student:* off by 1/ε = 2.5.
+
+6. **"About ten digits" is overstated** (`breakthroughLesson.ts`, step 3 note). The golden has integral_anchor 3040.51243456 against t_st 3040.51250948, a relative gap of 2.5e-8, or about 7.6 digits. The case's own header says "to 3e-8". *Student:* an overstated claim of exactness for a trapezoid truncated at endTime.
+
+7. **The V unit in step 4 disagrees with the arithmetic for α** (`batchAdsorptionLesson.ts`, step 4 where-list: V "m³ in this step"). α = V/(M K), with K in L/g, needs V in L, and `linearFilmC` and `filmRate` use `V_L`. Only `a = 6M/(ρ_p d V)` uses m³ (`filmCoefficients`: `V_m3`). M's gloss ("g, or kg in k_L a") makes the right distinction; V's does not. *Student:* computing α with V in m³ gives α 1000× too small.
+
+## SUSPECT
+
+8. **The R_f body and gloss contradict the note** (`breakthroughLesson.ts` step 2). The body says "The ratio of the two speeds [gas vs zone] is the retention factor". The gloss says R_f is how many times slower the front is "than the gas". Both are true only against the superficial u, which the note then corrects ("against the real gas the lag is R_f/ε"). Point 5 is this inconsistency reaching the tool.
+
+9. **D_ax's basis is not stated.** The engine equation `eps dc/dt + rho_b dq/dt = -d(uc)/dz + Dax d2c/dz2` (`FixedBedAdsorber.H:38-40`) is transcribed correctly, so D_ax = ε·D_L. The engine itself announces `D_L = Dax/eps` (`FixedBedAdsorber.cpp:906,1545-1554`). The gloss never says this, so a textbook interstitial D_L correlation would be used 1/ε too large. Pe = uL/D_ax (`cpp:3214`) is consistent.
+
+10. **The numerical-dispersion figures differ between the page and the run log** (limit `mesh`). The page compares u·Δz/2 = 1.25e-4 with D_ax = 1e-4, which is correct for the equation as written. The run log and the case header print the interstitial pair, v·Δz/2 = 3.1e-4 against Dax/ε = 2.5e-4 (`cpp:1552-1554`). The ratio, 1.25, is the same, but a student comparing the page with the log sees different numbers and no explanation.
+
+11. **ρ_b's gloss says ρ_p is "per cubic metre of solid"** (`breakthroughLesson.ts` step 1). The engine prints ρ_p = ρ_b/(1−ε), the envelope density with pores included (`cpp:949-950`). The batch lesson explicitly warns that ρ_p is not the skeletal density, so the two pages disagree.
+
+12. **"Those two lines are what this unit actually solves — no more"** (step 1 note). This holds for the constant-velocity witness, but the same unit solves Ergun pressure and energy rows (`FixedBedAdsorber.H:30-34`, A5-T1/T2). Limit 1 later says so, but the sentence as written is absolute.
+
+13. **Static mesh claims under the knobs.** The caption's "about 5 % / 43 %" and limit `mesh` are true only at the defaults. The L and u knobs change Δz and Pe, but the text does not change.
+
+## OK, verified
+
+- **Isotherms page.** The Langmuir derivation, K_L = k_d/k_a, b = 1/K_L, the Henry limit, the Freundlich slope, the 1/q–1/c and log–log linearisations, and K_L = slope/intercept all match `linearisedFit`. LM (JᵀWJ + λ diag) δ = −JᵀWr matches `directFit`, which runs in log-parameters as stated. s² = S/(N−p) and Cov = s²(JᵀWJ)⁻¹ use natural-parameter J, as in `finish`. The diagnostics thresholds match the prose. Unit conversions in `C_UNITS`/`Q_UNITS` (g/L = 1000 mg/L, kg/kg = 1000 mg/g) and `batchDose` (mg or mmol basis, mixed bases refused, slope in qU per cU) are correct. The "no liquid isotherm, no Freundlich in the engine" claim is true: only `henry` and `langmuir` are registered (`IsothermModel.cpp:236-242`), in partial pressure, and `BatchAdsorber.H` is gas–solid.
+- **Batch page.** The stage balance and operating line, the linear closed form, and the Langmuir quadratic (re-derived) are correct. The two-stage results are correct: crossflow 1/(1+a/2)², countercurrent 1/(1+a+a²) (Kremser). The best split is ½ for linear. The film model is right: c* = α(c0−c), c(t) = (c0/β)[e^{−k_L a β t} + α], the t-inversion, a = 6M/(ρ_p d V), and k_L = Sh D/d. Bi/5 = (R_p/5D_e)/(1/k_L) and Bi = (Sh/2)(D_AB/D_e) hold, and "never negligible at Sh = 2" follows (Bi/5 > 0.1). The Treybal Eq. 11.29 figure was recomputed: Sh ≈ 193 for 0.5 mm, 1 kW/m³, water, d_i/T = 1/3. The d^0.83 and d^1.17 scalings follow from Re ∝ d^{4/3}.
+- **Breakthrough page.** The governing equations, the LDF `dq/dt = k(q*−q)` (solidFilm), ρ_b with no (1−ε), and van Leer as the default (`H:313`) all match. R_f = ε + ρ_b q*/c_in, t_st = (L/u)R_f and u_sh = u/R_f match `cpp:1025-1027,3295-3298`. The witness numbers check: q* = 2.8723, R_f = 304.05, t_st = 3040.5 s, Pe = 250, L/u = 10 s, u/ε = 0.125 m/s, LUB 1.75 → 2.5 cm, width ratios 1.054 and 1.43, carrier 9.19 mol and 0.108, ΔH = −45 kJ/mol. The extended-Langmuir denominator matches `Adsorbent.cpp:126-141`, and the van 't Hoff sign matches `IsothermModel.cpp:175`. The temperature and pressure knob claims hold: R_f−ε = ρ_b q_sat b RT/(1+bp) falls with both T and P.

@@ -4634,3 +4634,6 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 - [open] cloud -> laptop, 2026-11-19: RATE-BASED DOUBLE CHECK IN docs/reviews/2026-11-19-ratebased-double-check/REPORT.md (Vitor asked it).
   Engine: no wrong equation or unit on ratebased01-04; latent trap -- corrugationAngle converted to radians twice (RateBasedSegment.cpp:244, DistillationColumn.cpp:5599), so `60 deg;` runs silently at 0.0183 rad.
   EduTools: four wrong statements to fix -- film control told backwards (oneFluxManyUnitsLesson.ts:295), the overall-coefficient panel 27 % low (OneFluxManyUnitsTool.tsx:349), the H_OG claim of step 4, "Antoine" for Wagner/IAPWS.
+- [open] cloud -> laptop, 2026-11-19: ADSORPTION DOUBLE CHECK IN docs/reviews/2026-11-19-adsorption-double-check/REPORT.md (Vitor asked it, before dispersion/film correlations are added).
+  Engine: physics right, goldens recompute; latent traps -- q_max/H_298/initialLoading read without a dimension (1000x silent if written mol/kg), Dax's superficial basis undeclared, IonExchanger.H:50 stale.
+  EduTools: seven wrong statements (counter-current balance, "leaves in equilibrium with the feed", Freundlich steepness, b in 1/Pa vs 1/bar, R_f caption 1/eps, ten digits, V in m3 for alpha).
