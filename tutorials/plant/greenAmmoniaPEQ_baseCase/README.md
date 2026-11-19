@@ -631,3 +631,22 @@ Dated notes moved here from the dictionaries' headers (DEV.md 4c C435):
   pressure before C150 R01; it is now the rule on the gauge pressure.
 * **constant/economics.** The three prices were replaced by CITED public
   figures on 2026-11-13 (DEV.md 4c C389).
+
+## The nozzle schedule (2026-11-19, DEV.md 4c C444)
+
+Every item's equipment sheet (`design/<unit>/<tag>`) carries a `nozzles {}` block, from the
+`nozzleDesign {}` block at the end of `system/layoutDict`: one row per line that ends on the
+item (mark N1.., service, stream and line, nominal size, flange class and facing,
+orientation, design pressure and temperature), and a manway (M1) on each vessel of 1.2 m or
+more.  The size is the line's, or the item's own criterion where that asks more: the
+Separator's liquid outlet is a 6 in nozzle on a 4 in line (the drum's rho v^2 and
+clearance criterion of C318), printed as a reducer.  The flange class is read from the
+case's pressure-temperature table (Perry 9th ed. Table 10-42a, c, d, pp. 10-95 and 10-96,
+extracted from ASME B16.5), at the item's `pressureDesign` (166 bar gauge on the loop:
+class 1500, ring joint) and the hottest connected stream plus an ASSUMED 25 K margin.
+Declared as `assumed`, with the reason: the 25 K margin, the 1500 ring-joint threshold, the
+inspection-opening size, the manway count of a vessel and a tank (Towler p. 714 gives the
+1.2 m entry limit; p. 1062 the 0.6 m access port).  Rows the case could not decide are
+listed with the reason, never defaulted: a line not sized (two-phase) or an item with no
+criterion for a port gives no size; a design temperature above the last row of the SS316
+table gives no class.  The rows are pinned by the golden (`layout nozzle:<item>:<mark> ...`).
