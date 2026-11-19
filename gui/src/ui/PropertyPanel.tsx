@@ -864,8 +864,8 @@ function StreamDetails({
               <Text size="xs" ff="monospace" fw={600}>
                 {ph.name} —{" "}
                 {ph.unavailable
-                  ? `${Object.values(ph.massFlowsKg ?? {})
-                        .reduce((a, b) => a + b, 0).toPrecision(4)} kg/s (molar n/a)`
+                  ? `${formatSig(Object.values(ph.massFlowsKg ?? {})
+                        .reduce((a, b) => a + b, 0))} kg/s (molar n/a)`
                   : `${formatFlow(ph.total, phaseFlowUnit)} ${phaseFlowUnit}`}
               </Text>
               {/* A phase whose molar conversion failed stays VISIBLE in its
