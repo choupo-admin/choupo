@@ -208,8 +208,8 @@ K(T)`,
       + "changes along the bed, and the composition changes as it reacts; "
       + "the formula is the order of magnitude a student checks a simulator "
       + "against, not a design equation.  The 27.98, 20.48 and −7.50 kJ are "
-      + "the integrals of the heat-capacity polynomials of the witness's own "
-      + "constant/components (N₂, H₂, NH₃), per mole of ammonia, between "
+      + "the integrals of the heat-capacity polynomials of the catalogue "
+      + "records the witness pins (data/standards/components N₂, H₂, NH₃), per mole of ammonia, between "
       + "298.15 K and 773.15 K.",
   },
   {
@@ -222,11 +222,15 @@ K(T)`,
       + "temperature.  The reaction heat at whatever temperature the reactor "
       + "runs at is then already inside the difference — the Hess cycle is "
       + "done by the bookkeeping, and no temperature has to be chosen for "
-      + "it.  This is how every Choupo reactor closes its energy balance, and "
-      + "when a reactor announces a reaction enthalpy it evaluates it at the "
+      + "it.  This is how the steady reactors close their energy balance, and "
+      + "when one announces a reaction enthalpy it evaluates it at the "
       + "reactor's own temperature, never at 25 °C (`reactionHeat`, "
       + "ReactionHeat.cpp:42, called with the local temperature — for a plug "
-      + "flow reactor at PFR.cpp:502).",
+      + "flow reactor at PFR.cpp:502).  Not every vessel does: `batchReactor` "
+      + "(BatchReactor.cpp:343, :804-812) and `dynamicCSTR` off its canonical "
+      + "route (DynamicCSTR.cpp:319, :841) integrate a frozen reaction "
+      + "enthalpy, resolved once at the charge temperature — a surrogate "
+      + "the engine itself announces.",
     formula: String.raw`\dot{Q} = \sum_i \dot{n}_i^\mathrm{out}\, h_i(T_\mathrm{out})
 - \sum_i \dot{n}_i^\mathrm{in}\, h_i(T_\mathrm{in})`,
     where: [

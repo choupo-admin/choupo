@@ -570,10 +570,11 @@ export function TieTriangleTool(): JSX.Element {
             + "(F–E₁ and R_N–S), so the remaining cuts are a test: this is the "
             + "largest perpendicular distance from the engine's own E_{j+1} to "
             + "the line through Δ and its own R_j, in units where a triangle "
-            + "edge is 1.  It comes out of the same order as the cascade's own "
-            + "stopping tolerance (a relative mass closure of 1e-4) — an "
-            + "order-of-magnitude remark and not an identity, since a mass "
-            + "closure and a distance on a diagram are different quantities."}>
+            + "edge is 1.  The cascade stops at a relative mass closure of 1e-8 "
+            + "(tightened from 1e-4 by DEV.md 4c C123), so on a converged run "
+            + "the residual should be far below anything drawable; a mass "
+            + "closure and a distance on a diagram are different quantities, "
+            + "so this is an expectation and not an identity."}>
           <Badge variant="light" color={worst === null ? "gray" : "cyan"} tt="none"
             styles={{ root: { cursor: "help" } }}>
             worst colinearity residual = {fmt(worst)} (triangle edge = 1)
