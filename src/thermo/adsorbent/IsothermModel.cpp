@@ -122,9 +122,10 @@ scalar IsothermModel::pInBasis(scalar p_Pa) const
 
 scalar lookupLoadingMolPerKg(const DictPtr& d, const std::string& key)
 {
-    if (d->hasDimensions(key))
-        return d->lookupScalar(key, Dims::molality) * 1000.0;   // kmol/kg -> mol/kg
-    return d->lookupScalar(key);                                // bare = mol/kg
+    //  Bare = mol/kg, a declared unit converted: the one reader of a key
+    //  whose bare number is in a working unit (Dictionary::lookupScalarIn,
+    //  DEV.md 4c C454) -- this used to be its own copy of that rule.
+    return d->lookupScalarIn(key, Dims::molality, "mol/kg");
 }
 
 void HenryIsotherm::read(const DictPtr& record, const std::string& sourcePath)
