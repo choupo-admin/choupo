@@ -458,7 +458,12 @@ describe("pool fire: the lesson text", () => {
     const [w0, w1] = /Component\.cpp:(\d+)-(\d+) \(Component::Hvap_latent\)/.exec(all)!
       .slice(1).map(Number);
     expect(comp[w0! - 1]).toContain("Component::Hvap_latent");
-    expect(comp.slice(w0! - 1, w1).join("\n")).toContain("0.38");
+    expect(comp.slice(w0! - 1, w1).join("\n")).toContain("closures::watsonLatent");
+    //  The exponent has ONE home since the Watson closure moved out of
+    //  Component.cpp (C454 correlations, 2026-11-19): the cited line holds it.
+    const dc = tree("src/thermo/DerivedClosures.H").split("\n");
+    const [d0] = /DerivedClosures\.H:(\d+)/.exec(all)!.slice(1).map(Number);
+    expect(dc[d0! - 1]).toContain("0.38");
     const [c0, c1] = /crossing at Component\.cpp:(\d+)-(\d+)/.exec(all)!.slice(1).map(Number);
     const block = comp.slice(c0! - 1, c1).join("\n");
     expect(block).toContain('naturalPhase_ == "gas" && targetPhase == "liquid"');

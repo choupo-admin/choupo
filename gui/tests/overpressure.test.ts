@@ -340,7 +340,7 @@ describe("overpressure: the lesson text", () => {
     const comp = tree("src/thermo/Component.cpp").split("\n");
     const [c0, c1] = /Component\.cpp:(\d+)-(\d+)/.exec(all)!.slice(1).map(Number);
     expect(comp[c0! - 1]).toContain("Component::Hvap_latent");
-    expect(comp.slice(c0! - 1, c1).join("\n")).toContain("0.38");
+    expect(comp.slice(c0! - 1, c1).join("\n")).toContain("closures::watsonLatent");   // the 0.38 exponent has one home, src/thermo/DerivedClosures.H
     const th = tree("src/thermo/ThermoPackage.H").split("\n");
     const t0 = Number(/ThermoPackage\.H:(\d+)/.exec(all)![1]);
     expect(th[t0 - 1]).toMatch(/H_liquid_formation.*hvap/i);
