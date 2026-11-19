@@ -282,8 +282,8 @@
       ]
     }
   ],
-  "liveTools": 90,
-  "registryTools": 90,
+  "liveTools": 91,
+  "registryTools": 91,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -673,6 +673,20 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=pump-system"
+    },
+    {
+      "id": "compression",
+      "label": "Compressing a gas: work, discharge temperature and staging",
+      "blurb": "Compress a gas in stages: work, discharge temperature, intercooling, real gas.",
+      "discipline": "Hydraulics & control",
+      "teaches": "Isentropic and polytropic work and efficiency; why the discharge temperature limits one stage; why N sections with intercooling take equal pressure ratios (derived) and how much work that saves against one stage; and the real-gas correction, the mean compressibility and the exponent from the package -- on the engine's staged design of an air compressor (1 to 12 bar, three sections) and of the reference plant's make-up compressor, each formula read at its page in Brown (2005).",
+      "origins": [
+        "engine",
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=compression"
     },
     {
       "id": "correlation-simplicity",

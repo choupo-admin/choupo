@@ -179,6 +179,8 @@ const BreakthroughTool = lazy(() =>
   import("./methods/BreakthroughTool.js").then((m) => ({ default: m.BreakthroughTool })));
 const PinchCompositeTool = lazy(() =>
   import("./methods/PinchCompositeTool.js").then((m) => ({ default: m.PinchCompositeTool })));
+const CompressionTool = lazy(() =>
+  import("./methods/CompressionTool.js").then((m) => ({ default: m.CompressionTool })));
 const PumpSystemTool = lazy(() =>
   import("./methods/PumpSystemTool.js").then((m) => ({ default: m.PumpSystemTool })));
 const MerkelTool = lazy(() =>
@@ -622,6 +624,7 @@ export function MethodsWorkspace() {
             : tool === "entu" ? <EpsilonNtuTool />
             : tool === "pinch-composite" ? <PinchCompositeTool />
             : tool === "pump-system" ? <PumpSystemTool />
+            : tool === "compression" ? <CompressionTool />
             : tool === "merkel" ? <MerkelTool />
             : tool === "rayleigh" ? <RayleighTool />
             : tool === "levenspiel" ? <LevenspielTool />

@@ -3129,6 +3129,35 @@ was specified by a fixed pressure rise and the curve is therefore the
 specification echoed back.
 \declaredanchor{ch:rotating}
 
+\subsection*{Compressing a gas \quad(\code{tool=compression})}\label{sec:edu-compression}
+Why one stage cannot compress a gas from 1 to 12~bar, why the pressure ratios
+of a staged machine come out equal, and what the real gas adds, worked on the
+engine's own staged design.  The page starts from the polytropic head of
+Brown (2005, Eq.~2.73) and the discharge temperature $T_2 = T_1
+r^{(n-1)/n}$ (Eq.~5.16), separates the isentropic efficiency from the
+polytropic one (the same 0.75 is 0.719 at the engine's section ratio and
+0.656 over the whole ratio of 12), turns a temperature limit into a ceiling
+on the ratio of one section, and \emph{derives} that $N$ sections cooled
+back to the suction temperature take the equal ratio $R^{1/N}$ (a Lagrange
+multiplier on the logarithm of the product of the ratios; Brown gives the
+two-section result, Eqs.~3.14--3.17).  The student moves the number of
+sections (one to four) and the intercooler temperature, and reads the total
+shaft power, each section's discharge temperature against the declared limit
+and the work saved against a single section; at the engine's own design
+(three sections of air cooled back to 298.15~K, 1281.9~kW) the page's total
+is the engine's, and a test holds the page's section~1 (412.44~K, 87\,036~J/kg,
+427.31~kW) to the specification sheet to the digits it prints.  The last step
+runs the make-up compressor of the reference ammonia plant (hydrogen and
+nitrogen, 25 to 245~bar, two sections) and shows the compressibility and the
+exponent the package contributes: the head is $Z_\mathrm{avg}$ times the
+ideal-gas head, 2.3\,\% more in the first section and 7.5\,\% more in the
+second.  Away from the engine's own design the page holds the exponent of
+section~1 for every section, which it says; it sizes no machine, no frame, no
+surge margin and no intercooler as an exchanger.  Witnesses:
+\code{tutorials/steady/rotating/compressor03\_staged\_design} and
+\code{tutorials/plant/ammonia02\_full\_plant}.
+\declaredanchor{sec:compressor-design}
+
 \subsection*{Adsorption breakthrough \quad(\code{tool=breakthrough})}
 The S-shaped breakthrough curve against the ideal square wave drawn at the
 engine's stoichiometric time: the mass-transfer zone consumes bed capacity
