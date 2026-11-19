@@ -338,13 +338,13 @@ int PhaseChanger::solve(const DictPtr& dict,
         const scalar Tsat = saturationT(thermo, P_out, z);
         if (hasSup)
         {
-            const scalar dK = operDict->lookupScalar("superheat");
+            const scalar dK = operDict->lookupTemperatureDifference("superheat");
             T_out = Tsat + dK;
             specMode = "superheat (given) -> Q (result)";
         }
         else
         {
-            const scalar dK = operDict->lookupScalar("subcool");
+            const scalar dK = operDict->lookupTemperatureDifference("subcool");
             T_out = Tsat - dK;
             specMode = "subcool (given) -> Q (result)";
         }

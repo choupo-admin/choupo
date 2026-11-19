@@ -336,7 +336,7 @@ int GibbsReactor::solve(const DictPtr& dict,
     //  an invalid magnitude, refused by name.  The direction is resolved
     //  below, once the enthalpy surface is in hand (`approachDirection`).
     const scalar dTmagnitude = operDict->found("temperatureApproach")
-                             ? operDict->lookupScalar("temperatureApproach") : 0.0;
+                             ? operDict->lookupTemperatureDifference("temperatureApproach") : 0.0;
     if (dTmagnitude < 0.0)
     {
         std::ostringstream m;

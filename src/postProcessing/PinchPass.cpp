@@ -89,10 +89,10 @@ PinchPass::PinchPass(const DictPtr& dict)
 {
     if (dict)
     {
-        dTmin_       = dict->lookupScalarOrDefault("dTmin", 10.0,
-                                                   Dims::temperature);
-        latentWidth_ = dict->lookupScalarOrDefault("latentWidth", 1.0,
-                                                   Dims::temperature);
+        //  Temperature DIFFERENCES: `10 C` is refused, not read as 283.15 K
+        //  (Dims::temperature cannot tell the two apart; DEV.md 4c C454).
+        dTmin_       = dict->lookupTemperatureDifferenceOrDefault("dTmin", 10.0);
+        latentWidth_ = dict->lookupTemperatureDifferenceOrDefault("latentWidth", 1.0);
     }
     if (dTmin_ <= 0.0)
         throw std::runtime_error("pinchPass: dTmin must be positive"

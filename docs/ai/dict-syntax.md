@@ -256,6 +256,13 @@ converted; the bare number is read in the working unit:
 So `Pc 220.64;` and `Pc 220.64 bar;` are the same value, and
 `pressureDesign 2;` and `pressureDesign 2 bar;` are too.
 
+**A temperature DIFFERENCE takes `K` or a bare number, never `C` or `F`.**
+`C` and `F` are affine: `10 C` converts to the TEMPERATURE 283.15 K, which is
+not a difference of 10 degrees.  So `temperatureApproach`, `superheat`,
+`subcool`, `dTmin`, `latentWidth` and `LMTD` refuse an affine word by name;
+write `dTmin 10 K;` (a kelvin is a degree Celsius of difference) or
+`dTmin 10;`.
+
 ### Dim-checked lookup error message
 
 When a downstream `lookupScalar(key, expectedDims)` sees a mismatch,
