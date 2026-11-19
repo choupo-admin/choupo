@@ -32,11 +32,6 @@ kpi     campaign               moles_kmol_initial 0.001            1e-4
 kpi     campaign               transfers_H_invalid 0                1e-4
 kpi     campaign               transfers_H_valid 0                1e-4
 kpi     campaign               transfers_logged 0                1e-4
-kpi     campaign               utility_coolingWater_eur 1.19681857553e-07 1e-4
-kpi     campaign               utility_coolingWater_kJ 0.299204643882   1e-4
-kpi     campaign               utility_coolingWater_kg 0.00715800583451 1e-4
-kpi     campaign               utility_coolingWater_peak_kW 0.00939242140953 1e-4
-kpi     campaign               utility_coolingWater_t_peak_s 0                1e-4
 kpi     campaign               utility_cost_eur_total 1.08337949496e-08 1e-4
 kpi     reactor                E_reaction_seg0_kJ 0.00108337949496 1e-4
 kpi     reactor                E_reaction_total_kJ 0.00108337949496 1e-4
