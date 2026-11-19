@@ -59,9 +59,21 @@ Ea units: cal/mol, kcal/mol, kJ/mol, J/mol are
 passed through for the engine; KELVINS (Ea = R * value, R = 8.314462618) and
 EVOLTS (Ea = F * value, F of src/core/Constants.H) are converted HERE to J/mol
 because the engine's Ea reader has no such word.
-REFUSED BY NAME (listed in mechanismImport.txt): SRI, PLOG, FORD/RORD, REV (the
-engine reads an explicit reverse only on `type Arrhenius` in SI and refuses it
-beside a units block), `(+M)` without LOW, `(+species)` colliders, MOLECULES
+EXPLICIT REVERSE (REV a b Ea), written the way Cantera's ck2yaml reads it: the
+reaction becomes TWO IRREVERSIBLE reactions, `<name>_f` (the main A b Ea, products
+as written) and `<name>_r` (products -> reactants, the REV A b Ea, the same units
+block, `order` = the reverse side's coefficients; on a `+M` reaction the reverse
+carries the same `thirdBody` efficiencies).  A REV with A = 0 writes the forward
+leg alone, irreversible (ck2yaml does the same).  The engine's own explicit reverse
+(`A_rev`/`Ea_rev`) needs `type Arrhenius` in SI and no b, so it cannot carry a
+published REV line; two reactions through the CHEMKIN grammar can, with no engine
+change.  REV on a `(+M)` fall-off stays REFUSED by name: ck2yaml (Cantera 3.2) writes
+the reverse of a fall-off as a plain elementary rate and silently drops the pressure
+dependence, and the pressure dependence of an explicit reverse is not defined the same
+way in every CHEMKIN reader, so no reading is chosen for the student.
+`--rev-from-thermo` stays as the declared variant (REV ignored, reverse from K_c).
+REFUSED BY NAME (listed in mechanismImport.txt): SRI, PLOG, FORD/RORD, REV on a
+`(+M)` fall-off, `(+M)` without LOW, `(+species)` colliders, MOLECULES
 (ckA_ has no Avogadro factor), species on both sides of a reversible reaction,
 non-integer molecularity, charged species.
 WHO READS THESE TYPES.  modifiedArrhenius / thirdBody / falloff are read by
@@ -319,9 +331,9 @@ def classify(rx, species, molecules=False):
         return "FORD/RORD", "explicit reaction orders (FORD/RORD) are not read"
     if "AUX?" in t:
         return "unparsed", "unrecognised auxiliary line"
-    if rx["rev"] is not None:
-        return "REV", ("explicit reverse (REV): the engine reads A_rev/Ea_rev only on `type Arrhenius` "
-                       "in SI and refuses it beside a units block (BatchReactor.cpp, explicitReverse)")
+    if rx["rev"] is not None and fo is not None:
+        return "REV", ("explicit reverse (REV) on a (+M) fall-off: ck2yaml writes the reverse as a plain "
+                       "elementary rate and drops the pressure dependence; no reading is chosen here")
     if fo is not None:
         if fo != "M":
             return "falloff", "(+%s): only a (+M) collider is read (per-species efficiencies)" % fo
@@ -477,7 +489,7 @@ EA_WORD = {"CAL/MOLE": ("cal/mol", 1.0), "KCAL/MOLE": ("kcal/mol", 1.0),
            "KELVINS": ("J/mol", R_GAS), "EVOLTS": ("J/mol", EV_J_MOL)}
 
 
-def reaction_text(idx, rx, cname, unit):
+def reaction_text(name, rx, cname, unit):
     """One reaction in the engine's CHEMKIN-native grammar (BatchReactor.cpp
     kinetics {type; A; b; Ea; units{}}).  A and Ea stay as PRINTED: the engine
     converts them.  Only KELVINS (Ea = R * value) and EVOLTS (Ea = F * value,
@@ -508,10 +520,30 @@ def reaction_text(idx, rx, cname, unit):
         k = ["type thirdBody;", "A %.10g;  b %.10g;  Ea %s;" % (rx["A"], rx["b"], ea(rx["Ea"])), tbl(), un]
     else:
         k = ["type modifiedArrhenius;", "A %.10g;  b %.10g;  Ea %s;" % (rx["A"], rx["b"], ea(rx["Ea"])), un]
-    rev = "    reversible        true;\n" if rx["arrow"] == "<=>" else ""
-    return ("// %s\nr%03d\n{\n%s    limitingReactant  %s;\n    stoichiometry\n    (\n%s\n    );\n"
+    rev = "    reversible        true;\n" if rx["arrow"] == "<=>" and rx["rev"] is None else ""
+    return ("// %s\n%s\n{\n%s    limitingReactant  %s;\n    stoichiometry\n    (\n%s\n    );\n"
             "    kinetics\n    {\n%s\n    }\n}\n\n") % (
-        rx["eq"], idx, rev, lim, st, "\n".join("        " + x for x in k))
+        rx["eq"], name, rev, lim, st, "\n".join("        " + x for x in k))
+
+
+def reaction_texts(idx, rx, cname, unit):
+    """The text of one mechanism reaction: one entry, or TWO irreversible ones for a REV line
+    (`rNNN_f`, `rNNN_r`; ck2yaml's reading).  A REV with A = 0 is the forward leg alone."""
+    name = "r%03d" % idx
+    if rx["rev"] is None:
+        return [reaction_text(name, rx, cname, unit)]
+    fwd = dict(rx, arrow="=>", rev=None)
+    if rx["rev"][0] == 0.0:
+        return [reaction_text(name, fwd, cname, unit)]
+    A, b, Ea = rx["rev"]
+    rv = dict(rx, r=rx["p"], p=rx["r"], A=A, b=b, Ea=Ea, arrow="=>", rev=None,
+              eq=_rev_eq(rx["p"], rx["r"], rx["tb"]))
+    return [reaction_text(name + "_f", fwd, cname, unit), reaction_text(name + "_r", rv, cname, unit)]
+
+
+def _rev_eq(lhs, rhs, tb):
+    side = lambda d: " + ".join(("%g %s" % (n, s)) if n != 1 else s for s, n in d.items()) + (" + M" if tb else "")
+    return "%s => %s   (REV leg)" % (side(lhs), side(rhs))
 
 
 def refuse_output(case):
@@ -599,7 +631,7 @@ def convert(mech_path, thermo_path, case, licence, reactions_only=False, rev_fro
             "// Reactions not written: see mechanismImport.txt.\n"
             % (source, licence.replace("\n", " "), EA_WORD[unit][0]))
     with open(os.path.join(cdir, "reactions"), "w", encoding="utf-8") as f:
-        f.write(head + "".join(reaction_text(i + 1, r, cname, unit) for i, r in enumerate(ok)))
+        f.write(head + "".join(t for i, r in enumerate(ok) for t in reaction_texts(i + 1, r, cname, unit)))
     lines = ["CHEMKIN import: %s" % source, "licence: %s" % licence,
              "species: %d, written %d, not written %d" % (len(species), len(written_sp), len(refused_sp)),
              "reactions: %d, written %d, not written %d" % (len(rx), len(ok), len(refused))]
@@ -609,6 +641,11 @@ def convert(mech_path, thermo_path, case, licence, reactions_only=False, rev_fro
                "re-referenced to the engine's 1 bar (a7 + ln 1.01325), so K_c equals CHEMKIN's and Cantera's")
               if p_std == "atm" else
               "NASA-7 standard state: the file's records were declared referenced to 1 bar (--standard-pressure bar); written as printed"]
+    nrv = sum(1 for r in ok if r["rev"] is not None and r["rev"][0] != 0.0)
+    if nrv:
+        lines += ["REV: %d reactions with an explicit reverse are written as TWO irreversible reactions each "
+                  "(`rNNN_f`, `rNNN_r`; the REV A b Ea on the products -> reactants leg), as Cantera's ck2yaml reads them; "
+                  "REV on a (+M) fall-off is refused" % nrv]
     lines += ["written reactions run in batchReactor and in the multi-reaction paths of cstr and pfr (ElementaryRate,",
               "  Theory Guide sec:elementary-rate); dynamicCSTR accepts the words but has no witness"]
     lines += ["  not written, by kind: %s = %d" % kv for kv in sorted(counts.items())]
@@ -809,9 +846,14 @@ def _fixture():
     out += ["END", "REACTIONS KCAL/MOLE",
             "A+B=C+D             1.0E+13  0.0  10.0   ! 1 reversible, order 2",
             "2A=>C+D             2.0E+10  0.0   5.0   ! 2 irreversible, order 2",
-            "A+B=C+D             1.0E+13  0.0  10.0   ! 3 with REV", "  REV / 4.0E+12 0.0 20.0 /",
+            "A+B=C+D             1.0E+13  0.0  10.0   ! 3 with REV", "  REV / 4.0E+12 0.5 20.0 /",
             "A+B=C+D             1.0E+13  0.5  10.0   ! 4 b != 0",
             "A+B+M=C+D+M         1.0E+13  0.0  10.0   ! 5 third body", "  A/2.5/ B/12/",
+            "A+B+M=C+M           1.0E+16  0.0  10.0   ! 5b third body with REV", "  A/2.5/ B/12/",
+            "  REV / 3.0E+10 0.0 7.0 /",
+            "A+B=C+D             1.0E+13  0.0  10.0   ! 5c REV with A = 0", "  REV / 0.0 0.0 20.0 /",
+            "A+B(+M)=C(+M)       1.0E+13  0.0  10.0   ! 5d falloff with REV", "  LOW / 1.0E+16 0.0 5.0 /",
+            "  REV / 3.0E+10 0.0 7.0 /",
             "A+B(+M)=C(+M)       1.0E+13  0.0  10.0   ! 6 falloff", "  LOW / 1.0E+16 0.0 5.0 /",
             "  TROE / 0.5 100 1000 /",
             "A+B=E+D             1.0E+13  0.0  10.0   ! 7 PLOG", "  PLOG / 1.0 1.0E+12 0.0 10.0 /",
@@ -866,8 +908,8 @@ def selftest():
     case = os.path.join(tmp, "case")
     with contextlib.redirect_stdout(io.StringIO()):
         res = convert(mech, None, case, "parser fixture, no data")
-    check(len(res["ok"]) == 7, "fixture: 7 written (reversible, irreversible, b != 0, third body, falloff, 2 DUP), got %d" % len(res["ok"]))
-    check(res["counts"] == {"REV": 1, "PLOG": 1, "FORD/RORD": 1},
+    check(len(res["ok"]) == 10, "fixture: 10 written (reversible, irreversible, REV, b != 0, third body, third body REV, REV A=0, falloff, 2 DUP), got %d" % len(res["ok"]))
+    check(res["counts"] == {"REV": 1, "PLOG": 1, "FORD/RORD": 1},   # REV: the (+M) fall-off one only
           "fixture: not written by kind %s" % dict(sorted(res["counts"].items())))
     # real files print M and (+M) in lower case (the LLNL H2 mechanism of 2004 does)
     r_, p_, _, tb_, fo_ = parse_equation("a+b+m=c+m", {"a", "b", "c"})
@@ -875,20 +917,38 @@ def selftest():
     check(parse_equation("a+b(+m)=c(+m)", {"a", "b", "c"})[4] == "M", "lower-case `(+m)` is the (+M) collider")
     with contextlib.redirect_stdout(io.StringIO()):
         res2 = convert(mech, None, os.path.join(tmp, "revthermo"), "parser fixture, no data", rev_from_thermo=True)
-    check(len(res2["ok"]) == 8 and "REV" not in res2["counts"],
-          "--rev-from-thermo: the REV reaction is written (reverse from the thermochemistry), the others still refused")
+    check(len(res2["ok"]) == 11 and "REV" not in res2["counts"],
+          "--rev-from-thermo: the REV reactions are written with the reverse from the thermochemistry "
+          "(including the fall-off one), the others still refused")
+    t2 = open(os.path.join(tmp, "revthermo", "constant", "reactions")).read()
+    check("_f" not in t2 and "_r" not in t2, "--rev-from-thermo: no `_f`/`_r` pair is written")
     txt = open(os.path.join(case, "constant", "reactions")).read()
     m = re.search(r'r001\s.*?type modifiedArrhenius;\s*A 1e\+13;\s+b 0;\s+Ea 10;\s*units \{ A "cm3/mol/s"; Ea "kcal/mol"; \}', txt, re.S)
     check(bool(m) and "1e+07" not in txt and "41840" not in txt,
           "A and Ea written AS PRINTED with a units{} block (1e13 cm3/mol/s, 10 kcal/mol); no conversion by the tool")
-    blk = lambda n: re.search(r'\nr%03d\n.*?\n}\n' % n, txt, re.S).group(0)
-    check(re.search(r"reversible\s+true", blk(1)) is not None, "`=`/`<=>` -> reversible true")
-    check("reversible" not in blk(2), "`=>` -> irreversible")
-    check("type modifiedArrhenius" in blk(3) and "b 0.5" in blk(3), "b != 0 -> modifiedArrhenius with b")
-    check("type thirdBody" in blk(4) and "thirdBody { A 2.5; B 12; }" in blk(4), "+M -> thirdBody with efficiencies")
-    check("type falloff" in blk(5) and "low  { A 1e+16;" in blk(5) and "troe ( 0.5 100 1000 );" in blk(5),
+    blk = lambda n: re.search(r'\nr%s\n.*?\n}\n' % n, txt, re.S).group(0)
+    check(re.search(r"reversible\s+true", blk("001")) is not None, "`=`/`<=>` -> reversible true")
+    check("reversible" not in blk("002"), "`=>` -> irreversible")
+    check("type modifiedArrhenius" in blk("004") and "b 0.5" in blk("004"), "b != 0 -> modifiedArrhenius with b")
+    check("type thirdBody" in blk("005") and "thirdBody { A 2.5; B 12; }" in blk("005"), "+M -> thirdBody with efficiencies")
+    check("type falloff" in blk("008") and "low  { A 1e+16;" in blk("008") and "troe ( 0.5 100 1000 );" in blk("008"),
           "(+M) LOW TROE -> falloff with low{} and troe")
-    check("type modifiedArrhenius" in blk(6) and "type modifiedArrhenius" in blk(7), "DUPLICATE -> two separate entries")
+    check("type modifiedArrhenius" in blk("009") and "type modifiedArrhenius" in blk("010"), "DUPLICATE -> two separate entries")
+    # REV -> two irreversible reactions (ck2yaml's reading): names, parameters, orders, units, third body
+    f3, r3 = blk("003_f"), blk("003_r")
+    check("reversible" not in f3 and "reversible" not in r3, "REV: both legs irreversible")
+    check("A 1e+13;  b 0;  Ea 10;" in f3 and "A 4e+12;  b 0.5;  Ea 20;" in r3,
+          "REV: forward keeps the main A b Ea, the reverse takes the REV A b Ea")
+    check(re.search(r"component A; nu -1; order 1;", f3) and re.search(r"component C; nu 1; order 0;", f3)
+          and re.search(r"component A; nu 1; order 0;", r3) and re.search(r"component C; nu -1; order 1;", r3),
+          "REV: the reverse leg is products -> reactants with the reverse side's orders")
+    check('units { A "cm3/mol/s"; Ea "kcal/mol"; }' in r3, "REV: the reverse leg carries the units block as printed")
+    t5 = blk("006_r")
+    check("type thirdBody" in t5 and "thirdBody { A 2.5; B 12; }" in t5 and "A 3e+10;" in t5
+          and re.search(r"component C; nu -1; order 1;", t5),
+          "REV on +M: the reverse leg is a thirdBody with the same efficiencies and the REV parameters")
+    check("\nr007\n" in txt and "r007_f" not in txt and "reversible" not in blk("007"),
+          "REV with A = 0: the forward leg alone, irreversible")
     with open(mech, "r") as f:
         mt = f.read()
     kcase = os.path.join(tmp, "kelvins")
@@ -904,7 +964,7 @@ def selftest():
         f.write(mt.replace("REACTIONS KCAL/MOLE", "REACTIONS KCAL/MOLE MOLECULES"))
     with contextlib.redirect_stdout(io.StringIO()):
         resm = convert(mm, None, os.path.join(tmp, "molecules"), "parser fixture, no data", reactions_only=True)
-    check(len(resm["ok"]) == 0 and resm["counts"].get("MOLECULES") == 10, "MOLECULES: every reaction refused by name")
+    check(len(resm["ok"]) == 0 and resm["counts"].get("MOLECULES") == 13, "MOLECULES: every reaction refused by name")
     _r = dict(name="X", comp={"H": 2}, phase="G", Tlow=300.0, Tcommon=1000.0, Thigh=5000.0,
               low=[3.5, 1e-3, 2e-7, 3e-11, 4e-15, -9e2, 5.0], high=[3.0, 2e-3, 3e-7, 4e-11, 5e-15, -1e3, 6.0])
     _b = to_bar_standard_state(_r, "atm")

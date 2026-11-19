@@ -5276,9 +5276,15 @@ form, \code{REACTIONS} with its unit header) and writes into a \emph{case's}
 \end{itemize}
 What the engine cannot yet run is listed, reaction by reaction and with the
 reason, in \file{constant/mechanismImport.txt}: \code{PLOG}, \code{SRI},
-explicit orders (\code{FORD}/\code{RORD}), an explicit reverse rate
-(\code{REV}), \code{MOLECULES} units, and a pressure-dependent reaction without
-a low-pressure limit.  Nothing is dropped silently.  Every record carries the
+explicit orders (\code{FORD}/\code{RORD}), an explicit reverse rate on a
+\code{(+M)} fall-off, \code{MOLECULES} units, and a pressure-dependent reaction
+without a low-pressure limit.  An explicit reverse rate (\code{REV}) on any other
+reaction is written the way Cantera's \code{ck2yaml} reads it: two irreversible
+reactions, \code{r}$NNN$\code{\_f} with the main $A,b,E_a$ and \code{r}$NNN$\code{\_r}
+(products to reactants, with the \code{REV} parameters and, for \code{+M}, the same
+efficiencies); \code{--rev-from-thermo} instead ignores \code{REV} and takes the reverse from
+detailed balance, a declared variant of the published mechanism.
+Nothing is dropped silently.  Every record carries the
 licence the user declares with \code{--licence}; a mechanism whose terms do not
 allow redistribution stays in the user's case or in \file{data/local/}, and the
 GRI-Mech family is refused by name (it carries no redistribution grant).
