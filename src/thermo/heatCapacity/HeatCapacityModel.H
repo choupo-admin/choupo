@@ -67,6 +67,11 @@ public:
 
     virtual const std::string& modelName() const = 0;
 
+    //  The fit's DECLARED upper temperature [K], or 0 when the record states
+    //  none (C377: the electrolyte package asks it, to hand water above the
+    //  window to the reference equation).  Default: no window known.
+    virtual scalar windowTmax() const { return 0.0; }
+
     using Factory = std::function<std::unique_ptr<HeatCapacityModel>(const DictPtr&)>;
     static void registerModel(const std::string& name, Factory f);
     static std::unique_ptr<HeatCapacityModel> New(const DictPtr& dict);

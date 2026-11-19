@@ -1822,7 +1822,11 @@ scalar ThermoPackage::speciesPhaseEnthalpy(std::size_t i, scalar T,
         return c.Hf298() + *dHsoln + cpAq;
     }
     if (c.hasCpLiquid())
+    {
+        if (hasElectrolyte() && i == electrolyte().solventIndex())
+            if (auto hRef = solventLiquidAboveWindow(i, T)) return *hRef;
         return c.h_formation(T, "liquid");
+    }
     // A species with NO liquid Cp (a permanent / supercritical gas -- H2,
     // N2 -- appearing as a dissolved trace in a liquid stream) has no
     // pure-liquid rung to integrate.  The honest future home is the
@@ -1851,6 +1855,72 @@ scalar ThermoPackage::speciesPhaseEnthalpy(std::size_t i, scalar T,
         std::cerr << "[thermo] " << c.name() << ": no liquidHeatCapacity --"
                      " liquid leg uses the ANNOUNCED Watson-slope fallback\n";
     return c.h_pure_ig(T) - c.Hvap_latent(T);
+}
+
+//  C377: the electrolyte solvent above its liquid-Cp window.  See the header.
+//  Water's polynomial (75.5 J/mol/K, window 273-373 K) is out of its range at
+//  130 C steam-heated effects; the reference equation prices the liquid there.
+//  The base surface stays a fixed-pressure one (dh/dT = Cp_p), as the pressure
+//  leg expects: the integrand is the isobaric Cp of the saturated liquid, the
+//  lowest-pressure liquid state the equation carries at each T.
+std::optional<scalar> ThermoPackage::solventLiquidAboveWindow(std::size_t i, scalar T) const
+{
+    const Component& c = components_[i];
+    const scalar Tcap = c.cpLiquid().windowTmax();
+    if (!(Tcap > 0.0) || !(T > Tcap)) return std::nullopt;
+    if (c.Tc() > 0.0 && T >= c.Tc()) return std::nullopt;   // no liquid: polynomial, as before
+
+    auto it = solventRefModel_.find(i);
+    if (it == solventRefModel_.end())
+    {
+        const PureFluidModel* pm = nullptr;
+        if (const auto pf = pureFluid_.find(i); pf != pureFluid_.end()) pm = pf->second.get();
+        else
+        {
+            sVector e(n(), 0.0);
+            e[i] = 1.0;
+            try
+            {
+                const auto res = liquidProperty::resolveDensity(*this, e);
+                if (res.method == "referenceEquation" && !res.record.empty())
+                    pm = &liquidProperty::referenceFluidModel(res.record, c.MW());
+            }
+            catch (const std::exception&) { pm = nullptr; }
+        }
+        it = solventRefModel_.emplace(i, pm).first;
+    }
+    const PureFluidModel* pm = it->second;
+    if (!pm) return std::nullopt;
+
+    scalar dh = 0.0;
+    try
+    {
+        static const scalar xg[5] = { -0.9061798459386640, -0.5384693101056831, 0.0,
+                                       0.5384693101056831,  0.9061798459386640 };
+        static const scalar wg[5] = {  0.2369268850561891,  0.4786286704993665, 0.5688888888888889,
+                                       0.4786286704993665,  0.2369268850561891 };
+        const int nseg = std::max(1, static_cast<int>(std::ceil((T - Tcap) / 40.0)));
+        const scalar dT = (T - Tcap) / nseg;
+        for (int s = 0; s < nseg; ++s)
+        {
+            const scalar lo = Tcap + s * dT, mid = lo + 0.5 * dT;
+            for (int q = 0; q < 5; ++q)
+            {
+                const scalar Tq = mid + 0.5 * dT * xg[q];
+                dh += 0.5 * dT * wg[q] * pm->cp_molar(Tq, pm->p_sat(Tq) * (1.0 + 1.0e-6));
+            }
+        }
+    }
+    catch (const std::exception&) { return std::nullopt; }
+    if (!std::isfinite(dh)) return std::nullopt;
+
+    if (AdvisoryLog::instance().add("thermo", "info", "solvent liquid Cp " + c.name(),
+            "reference equation above the polynomial window"))
+        std::cerr << "[thermo] " << c.name() << ": liquid Cp above " << Tcap
+                  << " K (the end of its liquidHeatCapacity window) is the reference equation's"
+                     " isobaric Cp of the saturated liquid, " << pm->type()
+                  << "; h anchored on the polynomial at " << Tcap << " K (continuous; Cp steps there)\n";
+    return c.h_formation(Tcap, "liquid") + dh;
 }
 
 //  THE LIQUID ON THE EQUATION OF STATE (C410).  See the header.  The route is

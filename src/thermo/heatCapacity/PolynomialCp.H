@@ -51,6 +51,8 @@ public:
     scalar H (scalar T, scalar Tref) const override;
     scalar S (scalar T, scalar Tref) const override;
     const std::string& modelName() const override { return name_; }
+    scalar windowTmax() const override
+    { return (!rangeUnknown_ && Tmax_ > Tmin_) ? Tmax_ : 0.0; }
 
 private:
     //  I4 ("a number outside its fitted range is ANNOUNCED, never silently
