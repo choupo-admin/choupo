@@ -109,7 +109,7 @@ export const ENGINE_FACTS = {
     says: "an IRR above 200 % is printed with a warning: the cash flow dwarfs the investment, which points to a scale error.",
   },
   breakEven: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 4493,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 4498,
     needle: "x = F / (R - V) = ",
     says: "with `breakEven {}` declared, the engine prints the operating break-even x = F/(R - V) (fixed: 0.180 FCI + 2.73 C_OL + depreciation; variable: 1.23 (C_RM + C_UT + C_WT)) and the NPV break-even, the production fraction at which `appraise` on a copy returns NPV = 0; the two are published separately.",
   },
