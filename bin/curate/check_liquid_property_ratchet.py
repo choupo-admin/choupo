@@ -90,9 +90,11 @@ line that names neither a volume nor a flow; a guard written as an
 `if`/`else` rather than a ternary is COUNTED (none today).  thermo/ (the
 kernel itself) is outside its roots; src/propertyOps IS inside them (C402):
 the property layer and names that are not liquid properties are DECLARED
-EXCEPTIONS with their reasons, and the three membrane benches that read a
-film `viscosity`/`density` typed in an op (PoreTransportBench,
-PolarisationIndex, FitParametersMembrane) are pinned DEBT (C435 (4)).
+EXCEPTIONS with their reasons.  The three membrane benches (PoreTransportBench,
+PolarisationIndex, FitParametersMembrane) no longer read a film `viscosity` /
+`density` typed in an op: they ask the door and refuse typed ones (C435 (4),
+paid).  What stays pinned there is FitParametersMembrane's one read of a typed
+neutral-solute `diffusivity` (keyRead 1).
 """
 import re
 import sys
@@ -483,7 +485,7 @@ def main() -> int:
           "that says no property (a variable read under an unrelated key, a constant "
           "spelled otherwise in another header), a brine density outside 997-1030 under "
           "a name that says no sea/brine, a conversion line that names no volume or flow, "
-          "thermo/ and propertyOps/; a duty line that carries none of the exempt markers is counted although false (none today); the exemptions are listed in FALSE_POSITIVES; a phase-variable density call guarded by if/else rather than a ternary would "
+          "the kernel itself under src/thermo/ (propertyOps IS scanned since C402); a duty line that carries none of the exempt markers is counted although false (none today); the exemptions are listed in FALSE_POSITIVES; a phase-variable density call guarded by if/else rather than a ternary would "
           "be counted too (none today).")
     return 0
 

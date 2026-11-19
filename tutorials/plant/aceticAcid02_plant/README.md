@@ -101,9 +101,9 @@ is **not** stored: it arrives by pipeline at the plant pressure.
   isothermal flash after `M1` and see where the duty goes.
 * **The pump's own energy balance closes.**  The liquid enthalpy of this
   package carries the pressure term v (1 - alpha T) dP from the reference
-  pressure (C390), so the 3.29 kW of useful work v·dP the pump puts into the
-  liquid (5.06 kW of shaft work at eta = 0.65) shows in the outlet enthalpy
-  as well as the 1.44 K temperature rise that is the dissipation.  Before
+  pressure (C390), so the 3.29 kW<!--golden: kpi methanolPump W_hydraulic *1e-3--> of useful work v·dP the pump puts into the
+  liquid (5.06 kW<!--golden: kpi methanolPump W_shaft_kW--> of shaft work at eta = 0.65) shows in the outlet enthalpy
+  as well as the 1.44 K<!--golden: kpi methanolPump dT--> temperature rise that is the dissipation.  Before
   that leg the 3.28 kW was invisible to the energy report and the plant's
   first-law residual was 3.40 kW instead of the 0.12 kW above.
   `tutorials/steady/rotating/pump01_water` is the same lesson on one pump.
@@ -138,7 +138,7 @@ methanol cost minus utilities (the condenser, degasser and column duties are in
 described in `docs/ai/outer-drivers.md`; this case ships without an `outerDict`
 on purpose.
 
-**Measured sensitivities on this base case** (one variable moved at a time; measured before the vapour was made associated on 2026-11-03 and NOT re-measured since -- the base case now gives 98.00 kmol/h at 99.87 mol %):
+**Measured sensitivities on this base case** (one variable moved at a time; measured before the vapour was made associated on 2026-11-03 and NOT re-measured since -- the base case now gives 98.06 kmol/h<!--golden: stream acidProduct F *3600--> at 99.87 mol %):
 
 | change | acid product | purity |
 |---|---|---|
@@ -169,7 +169,7 @@ rests on. After a run the sheets land in `design/`, one folder per unit.
 | unit | sized as | basis |
 |---|---|---|
 | `preheater` | shell-and-tube | A = Q/(U·LMTD): the LMTD computed from the unit's own 320 → 460 K against HP steam, U **assumed** |
-| `acidCooler` | shell-and-tube | A = Q/(U·LMTD): the LMTD computed from the unit's own 404.14 → 313.15 K against cooling water (298.15 → 308.15 K), 43.6 K; U = 500 W/m²/K **assumed**; 14.0 m² |
+| `acidCooler` | shell-and-tube | A = Q/(U·LMTD): the LMTD computed from the unit's own 404.14 → 313.15 K against cooling water (298.15 → 308.15 K), 43.6 K<!--golden: equipment acidCooler values.LMTD-->; U = 500 W/m²/K **assumed**; 14.0 m²<!--golden: equipment acidCooler values.A--> |
 | `reactor` | vessel | a **declared volume** (3 m³), a hand calculation written out in the postDict — an equilibrium reactor has no volume of its own, and this one does not follow the run |
 | `condenser` | vessel (the knock-out drum) | vapour residence time |
 | `degasser` | vessel | vapour residence time — a liquid drum, so the volume is a **lower bound** |
@@ -301,7 +301,7 @@ source:
   handbook figure -- the case's records carry no melting point), so glacial
   acid does not freeze in the tank or the line; and 15 K above the cooling
   water supply, a reachable approach.  The cold tank is 11 % smaller than a
-  hot one would be (1026 against 911 kg/m³), and the 306 kW go to cooling
+  hot one would be (1026 against 911 kg/m³), and the 305 kW<!--golden: kpi acidCooler Q_kW *-1--> go to cooling
   water -- a utility cost.  Its U (500 W/m²/K) is assumed too.
 * **The tank's material.**  Both are SS316, the one material record this
   sealed case carries; whether a methanol tank needs stainless steel is your
@@ -323,7 +323,7 @@ sheets of the placed items.  Process nozzles are sized by the item's own criteri
 publishes one, and the rest are listed with the reason (no sized line, no criterion); the
 flange class comes from the SS316 table of Perry's Table 10-42d (p. 10-96) at the item's
 `pressureDesign`.  The vessels and the column shell here are all under the 1.2 m entry limit
-of Towler p. 714 (the lights column shell is 0.34 m), so each shows an inspection opening
+of Towler p. 714 (the lights column shell is 0.34 m<!--golden: equipment lightsColumn/shell values.D-->), so each shows an inspection opening
 (H1, 4 in, an assumed size) in place of a manway, two on the column shell; each storage tank
 shows a shell and a roof manway of 24 in, its diameter read from the placed footprint, and no
 class, because a tank has no `pressureDesign`.

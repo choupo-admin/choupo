@@ -364,6 +364,13 @@ propertyManifest
   `[held]`, verified against its own hash).  `--repin <record>` rewrites that
   record's line in every manifest that pins it.  `--seal <case> --to <dir>` EXPORTS
   a sealed copy (copies + `sealed true`), validated with the catalogue hidden.
+* **AN AUTHORISED RE-RECORD (C365).**  `bin/choupo-import <case> --authorise-rows <file>`
+  (also with `--seal <case> --to <dir>`): the file lists the golden rows allowed to
+  move in this re-import, one `kind unit key` per line (`#` comments).  The staged
+  run is compared with the whole golden; a listed row that moved is accepted and
+  printed, every other moved or missing row is refused by name and nothing is
+  installed.  The golden is never edited: re-record the accepted rows with
+  `bin/runTests --record`.  Refused with `--pin`/`--repin` (they read no golden).
 * **WHAT A DOWNLOADED CASE CONTAINS (contract K4).**  A case that references the
   catalogue holds no record, so the case a student takes away must carry them.
   Two exports, both held by `bin/curate/check_exported_case_runs_alone.py`
