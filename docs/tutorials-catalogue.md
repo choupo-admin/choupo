@@ -377,6 +377,7 @@ can skip them; developers touching the guarded seam must keep them green.
 | `props/electrolyte/composition01_nacl` | component-basis salt input (`composition { NaCl }`) → ion-totals expansion |
 | `props/electrolyte/overlay01_nacl_ksp` | partial deep-merge `overlayOf` (single logK25 recalibration) |
 | `props/electrolyte/olsson01_naoh_high_concentration` | the `OlssonNaOH` model's design table (10-50 wt % x 25-200 C: a_w, EXACT and linearised boiling-point rise, L_phi, chart enthalpy, Gibbs-Helmholtz gap) beside the Na-OH Pitzer pair at 25 and 100 C; anchored to Parker's L_phi at 10/15/20 mol/kg (+2.2/+2.1/+0.9 %) and to Geankoplis's two printed enthalpies (214.5 vs 214, 511.7 vs 505 kJ/kg) |
+| `batch/reactor/batch04_reversible_wgs` | the reversible water-gas shift (CO + H2O <-> CO2 + H2, 600 K, 10 bar) in a closed isothermal BATCH vessel charged as a GAS (`energy gasConstantV;`), so the campaign heat ledger is priced on the ideal-gas surface; approach to X_eq ~ 0.84, and the jacket duty is held to a hand value (extent x dH_rxn(600 K) from the catalogue formation enthalpies and ideal-gas Cp: about -16.4 kJ) |
 | `batch/reactor/batch04_transient_dirs` | transient instant-directory mechanics (0.01/ 0.02/ …) |
 | `batch/adsorber/batch14_transport_only` | isolated transport verification (no isotherm coupling) |
 | `batch/adsorber/batch15_mesh_study` | mesh-convergence verification of the adsorber column |

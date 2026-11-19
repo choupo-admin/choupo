@@ -32,6 +32,7 @@ units
         {
             mode         isothermal;
             T_setpoint   600.0 K;
+            energy       gasConstantV;   // the charge is a GAS (CO, H2O vapour at 600 K, 10 bar): ledger on the ideal-gas surface
         }
 
         reaction    wgs_reversible;

@@ -20,6 +20,7 @@ propertyManifest
 {
     pins
     {
+        "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
         "components/H.dat"  "6e93334697c716cb992113771bf2b1b93e0824a5e8e095af839a707d3ab3e79b";
         "components/H2O2.dat"  "f78f0fcce721bf25bf788ed9e60ae52c8cc06ea45fe6f813c4df5f3696d509e4";
         "components/HO2.dat"  "2980e8e9cdcc1b089da7d2ec8d3ceebd31ac5060f465a4bc394ee0c488073ae5";
@@ -33,8 +34,5 @@ propertyManifest
         "parameters/Henry/O2-water.dat"  "7d1943cf41a94ac447b3d7774fef5b62e2e5a7698bee77a48b59dabb022458db";
         "parameters/Henry/OH-water.dat"  "cf7c83d838a3966d67f7d420131574085908a12969f2a70a49052856d425a2d2";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
     }
 }
