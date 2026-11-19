@@ -124,8 +124,8 @@ export const T_KNOB: PanelKnob = {
   id: "T", label: "temperature T — every reactor and the feed",
   min: 550, max: 700, step: 25, unit: "K",
   why: "Hot: the rate is fast and the limit is low.  Cool: the limit is high "
-    + "and the rate is slow.  At 550 K the same bed no longer reaches the "
-    + "limit.",
+    + "and the rate is slow.  On this witness's gas basis the bed still reaches "
+    + "the limit across the whole range; the badge says which binds.",
 };
 
 export const DT_KNOB: PanelKnob = {

@@ -37,8 +37,10 @@
               limit                 0.841432775225   Kp 28.1586609387
               approach 25 K         0.8195501646     Kp at 625 K 20.6270966354
               gibbs  y_CO2          0.420716387613   (= limit, X/2)
-              pfr    X at V_R       0.84143272012
-      550 K   limit 0.883502911646, pfr 0.865598497629   (the RATE binds)
+              pfr    X at V_R       0.841432775225
+      550 K   limit 0.883502911646, pfr 0.883502788958   (the bed reaches the limit;
+              re-measured 2026-11-19 on the gas basis, DEV.md 4c C421 -- the
+              0.865598497629 first written here was the old liquid-basis PFR)
       650 K   limit 0.797474319208, pfr 0.797474319208
       700 K   limit 0.753662089481, pfr 0.753662089481
       600 K with a 50 K approach = 0.797474319208 = the 650 K limit, exactly.
@@ -240,19 +242,22 @@ X_\mathrm{eq} = \frac{\sqrt{K}}{1+\sqrt{K}}`,
       + "the number of moles, the K in $k_r = k_f / K$ must be written on "
       + "the same basis and standard state as the rate law (the engine "
       + "converts for an ideal gas, Reaction.cpp:104–112, which is the basis "
-      + "of the batch reactor; this liquid-basis PFR refuses such a reverse "
-      + "term by name, PFR.cpp:223–224), and a law whose "
+      + "of the batch reactor; this PFR refuses such a reverse "
+      + "term by name when the reaction changes the number of moles, PFR.cpp:223–224), and a law whose "
       + "orders are not the stoichiometric ones does not vanish at "
       + "equilibrium through that ratio alone.  Read the "
       + "shape.  Most of the conversion arrives in the first part of the bed, "
       + "and the approach line is crossed early.  After that, most of the "
       + "remaining volume buys the last couple of per cent.  That tail is why "
       + "the approach heuristic exists.  Now cool the bed to 550 K.  The limit "
-      + "rises to 0.884, but the same bed delivers only 0.866, because the "
-      + "rate is now what binds.  Hot beds are limited by equilibrium and cool "
-      + "beds by the rate.  That is why industry runs the shift in two beds: "
-      + "a hot one where the rate is fast, then a cooler one on a more active "
-      + "catalyst, where the limit is higher.",
+      + "rises to 0.884 and, on this witness's gas basis, the same bed reaches it "
+      + "(0.8835028 against 0.8835029): this bed is long enough at every "
+      + "temperature on the slider, so equilibrium is what binds throughout.  "
+      + "A shorter bed, or a less active catalyst, would end below the limit "
+      + "first where the rate is slowest, at the cool end, and the badge on the "
+      + "plot says which of the two binds for the values you set.  That is why "
+      + "industry runs the shift in two beds: a hot one where the rate is fast, "
+      + "then a cooler one on a more active catalyst, where the limit is higher.",
     eq: String.raw`\frac{\mathrm{d}F_{\mathrm{CO}}}{\mathrm{d}V} = -r, \qquad
 r = k_f(T)\left(C_{\mathrm{CO}}\,C_{\mathrm{H_2O}}
 - \frac{C_{\mathrm{CO_2}}\,C_{\mathrm{H_2}}}{K(T)}\right), \qquad
@@ -437,22 +442,22 @@ export const LADDER_QUIZ: readonly QuizQuestion[] = [
     origins: ["assumption"],
   },
   {
-    id: "rate-binds", steps: [3, 5],
+    id: "bed-vs-limit", steps: [3, 5],
     q: "Cool the plug-flow bed from 600 K to 550 K: the limit rises from 0.841 "
-      + "to 0.884, but the same bed delivers only 0.866.  Why?",
+      + "to 0.884.  What does this witness's bed deliver, and what may it never do?",
     options: [
-      "The equilibrium constant falls when the bed is cooled",
-      "The plug-flow profile has crossed the equilibrium line",
-      "At 550 K the rate binds, not equilibrium: hot beds are limited by "
-        + "equilibrium, cool beds by the rate",
+      "It delivers less than the limit, because the equilibrium constant falls when the bed is cooled",
+      "It reaches the new limit here, and it can never cross it",
+      "It crosses the limit, because a cooler bed holds the gas longer",
     ],
-    correct: 2,
+    correct: 1,
     feedback: "The shift is exothermic, so cooling raises K and the limit "
-      + "(rung 2); but the rate falls with temperature, and the same volume "
-      + "no longer reaches the limit.  The profile can never cross it: the "
+      + "(rung 2), and the bed, run on the gas basis since C421, reaches it "
+      + "(0.8835028 against 0.8835029).  The profile can never cross it: the "
       + "reverse term is built from the same K, so the net rate vanishes "
-      + "there.  That is why industry runs the shift in two beds, hot then "
-      + "cool.",
+      + "there.  Whether the rate or the equilibrium binds depends on the "
+      + "bed's volume and the catalyst, which is why industry runs the shift "
+      + "in two beds, hot then cool.",
     origins: ["engine", "assumption"],
   },
 ];
