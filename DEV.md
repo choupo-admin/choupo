@@ -4814,6 +4814,19 @@ accepts today, and that is a policy call.
 > beside each EduTool factor), C272 (the GUI draws the typical outlines the
 > engine already publishes).  Everything else keeps its rewritten "missing".
 
+> **C452 (Vitor, 2026-11-19: "eu sempre achei o Chemkin misterioso ... Achas
+> bem um EduTool sobre isso?").**  WEIGHED: not an EduTool about the product
+> (commercial software, a name the project keeps off its surfaces, and a file
+> format teaches no engineering); YES to one about the idea it carried -- from
+> ONE global rate law to an ELEMENTARY MECHANISM: the same H2/O2 charge under a
+> global law and under the mechanism (the ignition delay only the mechanism
+> predicts), the stiffness (radicals living microseconds beside products
+> living seconds, why an explicit integrator fails -- ignition01_h2o2 already
+> carries the stiff and the explicit integrator), and a mechanism file read
+> line by line for what it is (modified Arrhenius, third body, fall-off, NASA
+> polynomials).  Built on what the engine already does; every number from the
+> cited mechanism's own paper.  Size M, ranked in the "rest" group.
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
