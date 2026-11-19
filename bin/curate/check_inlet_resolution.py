@@ -858,11 +858,18 @@ def arm_p(tmp: pathlib.Path, fail: list) -> str:
                     "must refuse")
     if re.search(r"rho = -?nan|\bnan\s+bar", log):
         fail.append("(p2) the pipe printed a NaN density or pressure drop")
-    if not re.search(r"no liquid molar volume for component '(N2|H2|Ar)'",
-                     log) or "above its critical temperature" not in log:
-        fail.append("(p2) the refusal does not name the supercritical "
-                    "component and its critical temperature")
-    m = re.search(r"no liquid molar volume for component '(\w+)'", log)
+    #  Two wordings are the same refusal: the package's own ("no liquid molar
+    #  volume for component 'N2' ... above its critical temperature") and, since
+    #  the one liquid-density door (C445), the door's ("'N2' is a declared Henry
+    #  solute: its volume in the liquid is a partial molar volume ...").
+    old_word = (re.search(r"no liquid molar volume for component '(N2|H2|Ar)'", log)
+                and "above its critical temperature" in log)
+    door_word = re.search(r"'(N2|H2|Ar)' is a declared Henry solute", log)
+    if not (old_word or door_word):
+        fail.append("(p2) the refusal does not name the dissolved gas "
+                    "component (supercritical / a declared Henry solute)")
+    m = (re.search(r"no liquid molar volume for component '(\w+)'", log)
+         or re.search(r"'(\w+)' is a declared Henry solute", log))
     return (f"the pipe exits {rc} naming '{m.group(1)}'" if m
             else f"the pipe exits {rc}")
 

@@ -494,7 +494,7 @@ def main():
         probe("range_record", WITNESS,
               lambda c: edit(c, "corrugationAngle  60;", "corrugationAngle  95;",
                              rel="constant/assets/MontzA3-500M.dat"),
-              ["`corrugationAngle` = 95 is outside its range"])
+              ["`corrugationAngle` = 95", "is outside (0, 90) deg"])
         probe("range_record_void", WITNESS,
               lambda c: edit(c, "specificArea      500;", "specificArea      500;\nvoidFraction      1.5;",
                              rel="constant/assets/MontzA3-500M.dat"),

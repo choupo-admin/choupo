@@ -154,7 +154,7 @@ request, and frozen for the run -- never by T, P or the amounts:
 | `recordVolume` (its id names the route: `recordVolume.anchoredRackett`, `.flatVliq`, `.bareRackett`) | leaf | the record's `Vliq` on its route (anchored on Rackett at `VliqT`; flat; Rackett alone, an estimate); no pressure |
 | `pureFluid` | leaf / one-constituent set | the case's `pureFluids` selection, liquid branch, with pressure |
 | `referenceEquation` | leaf / one-constituent set | a Helmholtz record in `parameters/Helmholtz/` whose `fluid` is the component (water, CO2, CH4, N2 today), by that fact, with pressure; case-local copy first |
-| `idealMixing` | set | additive volumes over one leaf per constituent; no excess volume.  Its id `idealMixing[...]` is the slice-0 door's `liquidVolume.idealMix[...]` under another name: ONE arithmetic, two ids until the wrapper consumers migrate |
+| `idealMixing` | set | additive volumes over one leaf per constituent; no excess volume.  Its id is `idealMixing[...]` everywhere since the one liquid-density door (C445); the slice-0 label `liquidVolume.idealMix[...]` is retired |
 | `massWithoutVolume` | leaf | the declared hypothesis: mass kept, no volume, bounded by `maxMassFraction`; honoured for EVERY listed component, even one whose record has a volume (and a set with a listed constituent is mixed by additive volumes, never by its solution law).  Read by the density only: the pump's heat capacity does not read it |
 | `solutionLaw` | set | a solution record's own density law for exactly the set (form `polynomialTSqrtX`: NaOH-water) |
 | `measured` | set | the case's measurement marked `use method`, constant inside its hard box |

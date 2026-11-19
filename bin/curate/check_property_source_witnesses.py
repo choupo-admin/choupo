@@ -46,7 +46,7 @@ WHAT IT DOES NOT CHECK.  Cases other than the witnesses (the goldens'
 `source` rows hold their ids, not their words); whether a source is the
 right physics; the WORDS of an addendum a site appends after "; "; a
 `PropertySourceLog::use(...)` call handed its own id and words as strings
-(today the door alone, whose ids -- `liquidVolume.idealMix[<routes>]`, the
+(today the door alone, whose ids -- `idealMixing[<routes>]` (was `liquidVolume.idealMix[...]` until C445), the
 viscosity and surface-tension method names -- and labels are built in
 src/thermo/LiquidPropertyDoor.cpp and held per state by
 check_property_route_bench's label hashes, bin/curate/property_route_labels.sha256.tsv;

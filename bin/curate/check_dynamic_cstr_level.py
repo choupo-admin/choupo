@@ -333,9 +333,16 @@ def main():
             fp.write_text(txt[:mo.end()] + "\n" + vm + txt[mo.end():])
             ip.write_text(re.sub(r"(?m)^\s*V\s+[^;]+;[^\n]*\n", "", ip.read_text()))
             r, out = run(CTRL, c10)
-            if r.returncode == 0 or "cannot price a liquid density" not in out:
-                bad.append("mixture-H variant: a salt with no Vliq must REFUSE by name"
-                           " (no liquid density assumed): " + out[-300:])
+            #  A salt with no Vliq used to REFUSE here ("cannot price a liquid density").
+            #  Since the one liquid-density door (C445) brine is priced by its own
+            #  solution law (Laliberte & Cooper 2004, parameters/solution/NaCl-water),
+            #  so the arm now holds the other half of the same contract: the density
+            #  is NOT assumed from a crystal volume -- the run names the law that
+            #  priced it, and the Vliq probe below still has to leave the ledger closed.
+            if r.returncode != 0 or "solutionLaw.NaCl-water" not in out:
+                bad.append("mixture-H variant: a salt with no Vliq must be priced by its"
+                           " solution law (named in the run), never by an assumed volume: "
+                           + out[-300:])
             # the PROBE: give NaCl a molar volume (2.7e-5 m3/mol, the crystal's -- an ARITHMETIC probe,
             # not a claim about brine) and adopt the edited record so the seal does not object
             nacl = c10 / "constant" / "components" / "NaCl.dat"
