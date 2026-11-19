@@ -35,8 +35,8 @@ that defect impossible by construction, for EVERY kind:
       against the closed form, a material's change refused, the state files
       round-trip byte for byte, an old file without the block reads as none.
 
-The probe is built against build/linux64Gcc (a probe build writes there, so
-the gate is SERIAL in bin/curate/suite_lanes.txt); every case it runs is in a
+The probe is built against build/linux64Gcc (a probe build writes there; the
+gate is ISO in bin/curate/suite_lanes.txt, where the slot's shadow build/ takes the write); every case it runs is in a
 temporary copy.
 """
 import json
