@@ -134,6 +134,15 @@ export interface KeyHelp {
   guide?: { url: string; label: string };
 }
 
+/** A key of the thermoPhysPropDict -> the model token whose Theory Guide
+ *  section derives it (tokens of modelDocs' PROPS_MODEL_DEST). */
+const THERMO_FAMILY: { [key: string]: string } = {
+  equilibrium: "idealGas", formulation: "idealGas", vapour: "idealGas", fugacityModel: "idealGas",
+  activityModel: "ideal", standardState: "ideal",
+  viscosity: "viscosity", conductivity: "conductivity", diffusivity: "diffusivity",
+  ionDiffusivity: "diffusivity", volumetric: "Rackett", measured: "measured",
+};
+
 const props = (n: Node): Node => (n && typeof n === "object" ? (n.properties ?? n.items?.properties ?? null) : null);
 
 /** Walk a schema node by segments; returns the deepest node reached and how
@@ -219,6 +228,22 @@ export function keyHelp(file: string, text: string, line: number,
     if (schema)
       return fromSchema({ ...base, source: `the ${type} unit's schema (gui/schemas/operations/${type}.schema.json)`,
         guide }, schema, segs.slice(1), `unit ${type}`);
+  }
+  //  the thermoPhysPropDict (C154): no schema documents its (v2) grammar, so
+  //  the answer is the Theory Guide section of the model the line selects, or
+  //  of the property family the key names -- and it says it is not a schema.
+  if (/(^|\/)constant\/thermoPhysPropDict$/.test(file)) {
+    const word = at.key ? valueAtLine(text, line, at.key) : null;
+    const fam = [...segs].reverse().find((s) => THERMO_FAMILY[s] !== undefined);
+    const token = word && propsModelTheoryLink(word) ? word : fam ? THERMO_FAMILY[fam]! : null;
+    const url = token ? propsModelTheoryLink(token) : null;
+    const subject = segs.join(".") || file;
+    return { ...base, scope: "block", subject, title: at.key ?? "thermoPhysPropDict", unit: "",
+      description: `No schema documents the keys of the thermoPhysPropDict; this is the theory of ${
+        word && propsModelTheoryLink(word) ? `the model \`${word}\`` : fam ? `the property family \`${fam}\`` : "the thermophysical system"
+      } that the line selects.  The file's own comments say why each choice was made.`,
+      source: "the Theory Guide section of the model or property family (gui/src/case/modelDocs.ts)",
+      ...(url ? { guide: { url, label: `the theory of ${word && propsModelTheoryLink(word) ? word : fam}` } } : {}) };
   }
   if (/(^|\/)system\/controlDict$/.test(file))
     return fromSchema({ ...base, source: "the controlDict schema (gui/schemas/controlDict.schema.json)" },

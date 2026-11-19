@@ -85,6 +85,7 @@ import { useReducedMotion } from "@mantine/hooks";
 import { ActionIcon, Anchor, Box, Group, ScrollArea, SegmentedControl, Stack, Text } from "@mantine/core";
 import { IconHelp, IconX } from "@tabler/icons-react";
 import { keyHelp, type KeyHelp } from "../case/keyHelp.js";
+import { inactiveLines, unreadKeysFromLog } from "../case/inactiveKeys.js";
 import { locatePropsBlocks } from "../case/propsDictLocate.js";
 import { openGuide } from "../help/guideLinks.js";
 import { FileTree } from "./FileTree.js";
@@ -381,6 +382,14 @@ export function CaseWorkspace() {
   }, [caseFocus?.seq]);
   const marked = (i: number) => !!mark && mark.path === active && i + 1 >= mark.line && i + 1 <= mark.endLine;
 
+  /* INACTIVE KEYS (DEV.md 4c C154): a key the propsDict declares and the run
+   * never read -- the engine's own `[dict]` report -- is drawn dimmed with a
+   * tag, so a value that did nothing is not mistaken for one that did. */
+  const runLog = useStore((s) => s.runLog);
+  const inactive = useMemo(
+    () => (/(^|\/)system\/propsDict$/.test(active ?? "") ? inactiveLines(activeText ?? "", unreadKeysFromLog(runLog)) : new Map<number, string>()),
+    [active, activeText, runLog]);
+
   /* THE SELECTED LINE and F1's answer for its key (DEV.md 4c C154). */
   const [activeLine, setActiveLine] = useState<{ path: string; line: number } | null>(null);
   const [help, setHelp] = useState<KeyHelp | null>(null);
@@ -562,9 +571,11 @@ export function CaseWorkspace() {
                     id={`ln-${i + 1}`}
                     className={`cw-line${activeLine?.path === active && activeLine.line === i + 1 ? " cw-active" : ""}`}
                     data-line={i + 1}
+                    {...(inactive.has(i + 1) ? { "data-inactive": "" } : {})}
                     onClick={() => setActiveLine({ path: active, line: i + 1 })}
-                    title="Click to select this line, then F1 for what its key means"
+                    title={inactive.get(i + 1) ?? "Click to select this line, then F1 for what its key means"}
                     style={{
+                      ...(inactive.has(i + 1) ? { opacity: 0.5, textDecoration: "line-through" } : {}),
                       fontFamily: "JetBrains Mono, monospace",
                       fontSize: 12,
                       lineHeight: 1.55,
