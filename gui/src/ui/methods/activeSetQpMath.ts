@@ -51,8 +51,8 @@
   THE TRANSCRIPTION IS OF THE ENGINE'S VARIANT, NOT OF THE TEXTBOOK'S.  Two
   differences matter and both are in the engine's own comments: it keeps a
   RUNNING POINT starting at zero and solves each KKT system for a SUB-STEP
-  (:151-162), and it carries a LICQ recovery that drops the most recently
-  added inequality when the KKT system goes singular and forbids it
+  (:151-162), and it carries a LICQ recovery that drops the highest-indexed active
+  inequality when the KKT system goes singular and forbids it
   re-entering (:164-169, :303-321).  Reproducing the textbook instead would
   produce a different sequence of working sets from the one the engine
   actually walks, which is the only thing this module is for.
@@ -190,7 +190,7 @@ export type QpAction =
   /** A full step was taken and nothing blocked it. */
   | "step"
   /** The KKT matrix went singular over the active rows: the engine's
-   *  documented LICQ recovery drops the most recently added inequality and
+   *  documented LICQ recovery drops the highest-indexed active inequality and
    *  forbids it re-entering this solve. */
   | "licq"
   /** The working-set change cap was reached.  The engine THROWS here, loudly
@@ -266,7 +266,7 @@ export const rowTol = (
  *  dependence test BEFORE the solve, and the same final verdict: "KKT
  *  satisfied" only when every row is feasible. */
 export function activeSetQP(
-  qp: QPProblem, warmStart?: readonly boolean[], maxIter = 50,
+  qp: QPProblem, warmStart?: readonly boolean[], maxIter = 200,
 ): QpTrace {
   const n = qp.g.length;
   const me = qp.Aeq.length;
@@ -377,8 +377,8 @@ export function activeSetQP(
     }
     const sol = gaussSolve(K, rhs);
     if (!sol) {
-      //  LICQ recovery, exactly as the engine does it: drop the most recently
-      //  added active inequality and forbid it re-entering.  With no
+      //  LICQ recovery, exactly as the engine does it: drop the highest-indexed active
+      //  inequality and forbid it re-entering.  With no
       //  inequality to drop the deficiency is in the equality rows and is
       //  genuine, which the engine lets propagate.
       const drop = ineqRowOf[ineqRowOf.length - 1];

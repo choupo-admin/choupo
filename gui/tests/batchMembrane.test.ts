@@ -136,7 +136,7 @@ describe("the classical batch results, against their limiting cases", () => {
     expect(diafiltrationTime(1, 0.010, 5, 1e-4)).toBeCloseTo(20, 10);
     expect(diafiltrationTime(5, 0.010, 5, 1e-4)).toBeCloseTo(100, 10);
     //  The engine's own LMH conversion, so the page and the run agree on
-    //  what the unit means (BatchDiafilter.cpp:567).
+    //  what the unit means (BatchDiafilter.cpp:575).
     expect(LMH_PER_MS).toBe(3.6e6);
   });
 });
@@ -443,7 +443,7 @@ describe("readVessel -- the witnesses' own declared operation", () => {
     expect(v.fouling).not.toBeNull();
     expect(v.fouling!.law).toBe("cake");
     expect(v.fouling!.k).toBeCloseTo(4.0e11, 0);
-    //  The engine refuses the block without one (BatchDiafilter.cpp:191-199),
+    //  The engine refuses the block without one (BatchDiafilter.cpp:181-188),
     //  and the page quotes it verbatim -- so it must actually arrive.
     expect(v.fouling!.reason).toMatch(/HYPOTHETICAL/);
     //  Everything ELSE is the clean twin's: the two differ by the fouling

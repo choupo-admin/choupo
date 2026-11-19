@@ -480,7 +480,7 @@ export function ActiveSetQpTool(): JSX.Element {
             </Text>
             . The sheet reports calcium, chloride, alkalinity and total
             hardness, each with its own declared uncertainty, and it carries
-            0.78 % more positive charge than negative — which no aqueous
+            a 0.78 % charge-balance error (cations exceed anions by 1.58 %) — which no aqueous
             solution does. The engine sets up the QP of step 6 and hands it to
             the same active-set solver drawn above. The table is read out of
             the solved stream file the run wrote; nothing in it is computed by

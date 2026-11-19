@@ -41,7 +41,7 @@ License
   correlations a student already uses.
 
   Every `file:line` below is held to its text by
-  gui/tests/fastSlowLesson.test.ts.  No named result enters this page: the
+  gui/tests/fastSlow.test.ts.  No named result enters this page: the
   arithmetic of two time scales is mathematics, written out here.
 \*---------------------------------------------------------------------------*/
 
@@ -120,7 +120,7 @@ export const FAST_SLOW_STEPS: readonly LessonStep[] = [
         eq: String.raw`\begin{aligned} \varepsilon\,\tau_s\,\frac{\mathrm{d}x_f}{\mathrm{d}t} &= x_s - x_f \\ &\xrightarrow{\;\varepsilon \to 0\;}\; x_f = x_s \end{aligned}` },
       { step: "For a step in the feed, both solutions are known in closed form, and their "
           + "difference is the lag the reduction drops:",
-        eq: String.raw`\begin{aligned} x_f - x_s^\mathrm{red} = &\frac{\tau_f\,\exp(-t/\tau_s)}{\tau_s - \tau_f} \\ - &\frac{\tau_f\,\exp(-t/\tau_f)}{\tau_s - \tau_f} \end{aligned}` },
+        eq: String.raw`\begin{aligned} x_f - x_s^\mathrm{red} = &\frac{\tau_f\,\exp(-t/\tau_f)}{\tau_s - \tau_f} \\ - &\frac{\tau_f\,\exp(-t/\tau_s)}{\tau_s - \tau_f} \end{aligned}` },
       { step: "Its largest value, over all t, depends on ε alone:",
         eq: String.raw`\max_t\,\lvert x_f - x_s^\mathrm{red}\rvert = \varepsilon^{1/(1-\varepsilon)} \approx \varepsilon` },
     ],

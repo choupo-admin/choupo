@@ -85,9 +85,11 @@ License
         phototrophic   310.15 K  dG  675.070347441
         haberBosch     310.15 K  dG  -30.4256098317
         haberBosch     700 K     dG   54.2847022924  (ln K -9.32706998232)
-        and the sugar route at 310.15 K REFUSES: "Component 'glucose':
-        h_formation liquid leg needs liquidHeatCapacity" (a copy of the
-        witness with heterotrophic added to routes310).
+        and the sugar route at 310.15 K REFUSED when this was measured
+        ("Component 'glucose': h_formation liquid leg needs
+        liquidHeatCapacity"); glucose.dat has since gained a
+        liquidHeatCapacity (Kishore 1993) that the solid leg falls back to,
+        announced, so that route is no longer refused (not re-run here).
 
   THE SIXTH WITNESS IS NOT A LANDSCAPE.  It runs `reactionGibbs`, the op
   built for this page (src/propertyOps/ReactionGibbs.cpp), because the
@@ -226,7 +228,7 @@ export const SRK_CONTRAST = {
 } as const;
 
 /** The two anchor KPIs the contrast reads, exactly as GibbsMapOp names them
- *  (`metric_T<C>C_P<atm>atm`, GibbsMapOp.cpp:249–255): 298.15 K rounds to
+ *  (`metric_T<C>C_P<atm>atm`, GibbsMapOp.cpp:307–311): 298.15 K rounds to
  *  25 C and 1e5 Pa to 1 atm; 700 K is 427 C and 2e7 Pa rounds to 197 atm. */
 export const CONTRAST_ANCHORS = {
   ambient: { key: "metric_T25C_P1atm", label: "298 K, 1 bar" },
@@ -243,7 +245,7 @@ export function approachOverride(dT: number): DictOverride[] {
 }
 
 /** The magnitude knob: floor 0 because the engine's is (GibbsMapOp.cpp:
- *  109–118 refuses a negative magnitude by name). */
+ *  135–144 refuses a negative magnitude by name). */
 export const LANDSCAPE_DT_KNOB: PanelKnob = {
   id: "dT", label: "approach |ΔT| — a magnitude; the engine assigns the sign per cell",
   min: 0, max: 100, step: 5, unit: "K",
@@ -588,8 +590,9 @@ export function EquilibriumLandscapesTool(): JSX.Element {
         pure liquid by the vaporisation crossing, the gases on theirs), the
         datum the elements/formation convention at 298.15 K.  A row that is
         not in this table is a refusal the lesson quotes: the sugar route
-        cannot be priced off the datum temperature because glucose.dat carries
-        no heat capacity, and liquid water is not asked at 700 K.  Exergonic
+        is asked at the datum temperature only (glucose.dat's Cp is an
+        aqueous one, standing in for a crystal's, so the witness does not
+        integrate it), and liquid water is not asked at 700 K.  Exergonic
         means the equilibrium permits it — nothing here is a rate.
       </Text>
       {fixRun.err && (

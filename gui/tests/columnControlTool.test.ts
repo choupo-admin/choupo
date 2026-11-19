@@ -439,6 +439,12 @@ describe("column-control — the tray criteria", () => {
     expect(drumStreams({ L_rect: 0.02 })).toBeNull();
     expect(drumStreams({ L_rect: 0.02, D: 0 })).toBeNull();
     expect(drumStreams(undefined)).toBeNull();
+    //  `model simultaneous` (the witness) publishes R = L/D and D, not
+    //  L_rect: the chip must still fire there (K/L review, item 3).
+    const sim = drumStreams({ R: 2, D: 0.0138888888889 })!;
+    expect(sim.ratio).toBeCloseTo(2, 9);
+    expect(sim.larger).toBe("reflux");
+    expect(drumStreams({ R: 0.5, D: 0.01 })!.larger).toBe("distillate");
   });
 
   it("an empty metric set picks NOTHING rather than stage 1", () => {
@@ -491,7 +497,7 @@ describe("column-control — the classroom witness", () => {
     expect(files).toBeTruthy();
   });
 
-  it("the REFLUX handle moves L alone: R rises, D is untouched", () => {
+  it("the REFLUX handle raises R with D untouched (so L = R*D rises)", () => {
     const v = defaultKnobValues();
     const o = perturbedOverrides(v, "reflux", 0.01);
     const get = (k: string) => o.find((x) => x.key === k)!.value;
@@ -502,7 +508,7 @@ describe("column-control — the classroom witness", () => {
       WITNESS_REFLUX_RATIO * WITNESS_DISTILLATE_RATE * 1.01, 9);
   });
 
-  it("the DISTILLATE handle moves D alone: L = R·D is held EXACTLY", () => {
+  it("the DISTILLATE handle raises D with L = R·D held EXACTLY", () => {
     //  This is the arm that makes the second handle a handle rather than a
     //  diagonal move.  Raising D at a fixed reflux RATIO would move the reflux
     //  too, and the sensitivity would then belong to no manipulated variable
@@ -519,7 +525,7 @@ describe("column-control — the classroom witness", () => {
     //  neither handle moves one stream alone; the text used to say each did.
     for (const h of [HANDLE_TEXT.reflux, HANDLE_TEXT.distillate]) {
       expect(h.means).not.toMatch(/only stream/);
-      expect(h.means).toMatch(/V = L \+ D/);
+      expect(h.means).toMatch(/V_\{top\} = L \+ D/);
     }
   });
 

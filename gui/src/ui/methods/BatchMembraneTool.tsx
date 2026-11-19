@@ -54,7 +54,7 @@ License
 
   THE MODE KNOB IS A WORD OVERRIDE on the witness's own `mode` key -- one of
   the two words the engine accepts, written into the slot that already holds
-  the other (BatchDiafilter.cpp:202-210).  It stays INLINE beside the plot
+  the other (BatchDiafilter.cpp:192-201).  It stays INLINE beside the plot
   rather than folding into a popover, under the credo's one stated exception:
   a control that FORKS THE CURVE stays visible, because seeing the fork is
   the lesson.  Flipping it changes what the horizontal axis MEANS -- N in
@@ -735,7 +735,7 @@ export function BatchMembraneTool(): JSX.Element {
                 + "they do the page and the engine are quoting one law rather "
                 + "than two."
               : "In concentration mode the engine publishes no idealisation "
-                + "(BatchDiafilter.cpp:651-655) — the washout law is not the "
+                + "(BatchDiafilter.cpp:658-662) — the washout law is not the "
                 + "law of this mode. The power-law row is therefore this "
                 + "page's own, from the engine's R_0 and VCF, and is labelled "
                 + "so."}
