@@ -366,7 +366,7 @@ describe("one-flux-many-units: the exercises", () => {
     expect(all).toContain("1.2×10⁻⁵ to 1.3×10⁻⁵");
     printed(e.values.mgLow!, 1.2e-5 * 0.21 * 101325 * 31.998, 2);
     expect(all).toContain(`from ${sig(e.values.mgLow!, 2)} to ${sig(e.values.mg!, 2)} mg/L`);
-    printed(e.values.pw!, 3167, 3);                       // Pa, the record's Antoine at 298.15 K
+    printed(e.values.pw!, 3167, 3);                       // Pa, the record's Wagner (IAPWS) form at 298.15 K
     near(e.values.pw!, pwIndep, 1e-12);
     expect(all).toContain(`${sig(100 * e.values.pw! / 101325, 2)} % less`);
     expect(sig(100 * e.values.pw! / 101325, 2)).toBe("3.1");
@@ -415,6 +415,10 @@ describe("one-flux-many-units: the lesson", () => {
       "RateBasedSegment.cpp:604": "R[r++] = w[lk] - (c.betaL * (s.xm[lk] - xI[lk]) + 0.5 * (xI[lk] + s.xm[lk]) * wt);",
       "RateBasedSegment.cpp:597": "R[r++] = (i == lk) ? yI[lk] - (ys + m * (xI[lk] - s.xm[lk])) : sKx - 1.0;",
       "RateBasedSegment.cpp:679": "const scalar rr = 1.0 / (1.0 / c0.betaV + c0.m / c0.betaL);",
+      "RateBasedSegment.cpp:471": "c.HOG = r.HG + st.lambda * r.HL;",
+      "RateBasedSegment.cpp:690": "const scalar wl = (ys - xm[lk]) / (1.0 / c0.betaV + m / c0.betaL);",
+      "RateBasedSegment.cpp:854": "const scalar HOGk = HGk + c.m * s.vm / s.lm * HLk;",
+      "RateBasedSegment.cpp:886": "profile_.columns[\"HOG\"].push_back(HOGk);",
       "HenrysLaw.cpp:50": "H_ref_   = d->lookupScalar(\"H_ref\",   Dims::pressure);",
       "HenrysLaw.cpp:163": "return H_ref_ * std::exp(dHdiss_ / constant::R * (1.0/T - 1.0/T_ref_));",
       "ThermoPackage.cpp:1305": "K[i] = hl.H(T) / P;",
@@ -480,6 +484,36 @@ describe("one-flux-many-units: the numbers the prose states (MT-03, MT-04, MT-06
     expect(body(2)).toContain("1/0.915 = 1.09");
     printed(1 / 0.915, 1.09, 3);
     printed(1 / driftLogMean(0.085, 0.085), 1.09, 3);
+  });
+
+  it("C449: film control puts the interface near x*, not near the bulk liquid", () => {
+    const d = curvedDemo();
+    expect((d.xi - 0.001) / (d.xStar - 0.001)).toBeGreaterThan(0.95);
+    expect(body(5)).not.toContain("interface sits close to the bulk liquid");
+    expect(body(5)).toContain("close to equilibrium with the bulk GAS");
+  });
+
+  it("C449: the panel's flux is K_x (x* - x_b), the same number as exercise 3", () => {
+    const o = overallMoleFraction(8.1, 9.9, 49.7);
+    const N = o.Kx * (0.001975 - 0.001);
+    const ex3 = exercises().find((e) => e.id === "overall")!;
+    expect(ex3.values!.N).toBeCloseTo(N, 12);
+    // the old panel formula, a line through the origin, was 27 % low
+    expect(o.Ky * (0.085 - 49.7 * 0.001)).toBeLessThan(0.75 * N);
+    const tool = readFileSync("src/ui/methods/OneFluxManyUnitsTool.tsx", "utf8");
+    expect(tool).toContain("N = K_x (x* − x_b)");
+    expect(tool).not.toContain("N = K_y (y_b − m x_b)");
+  });
+
+  it("C449: step 4 does not claim the first guess is the only place the sum appears", () => {
+    expect(body(4)).not.toContain("The one place the sum appears");
+    expect(body(4)).toContain("RateBasedSegment.cpp:854");
+  });
+
+  it("C449: water's vapour pressure is the Wagner/IAPWS form, never called Antoine", () => {
+    const text = JSON.stringify(exercises());
+    expect(text).not.toContain("Antoine");
+    expect(text).toContain("Wagner");
   });
 
   it("step 3: oxygen's slope at 1 atm is about 4x10^4; the guide's 4.7 orders of magnitude to ammonia", () => {

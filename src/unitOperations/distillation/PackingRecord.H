@@ -166,6 +166,13 @@ const std::vector<std::string>& geometryFields();
 //  description), the resolution printed to stdout; nullptr otherwise.
 DictPtr resolveUnit(const DictPtr& unitDict, int verbosity);
 
+//  The corrugation angle of a packing dictionary, in DEGREES, converted
+//  exactly once.  A bare number is degrees (what every shipped record and
+//  case writes); `60 deg;` or `1.047 rad;` is parsed to radians by the
+//  dictionary reader and converted back here, never twice.  Any other unit
+//  word, or a value outside (0, 90) deg, is refused by name.
+scalar angleDegrees(const Dictionary& d, const std::string& key = "corrugationAngle");
+
 //  The INLINE form (no `record`): the same range checks a record's values
 //  get -- a void fraction above 1 is refused wherever it is written (PK-03).
 //  Read on a copy, so it marks nothing read in the case's dictionary.

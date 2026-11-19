@@ -320,11 +320,12 @@ function OverallPanel(): JSX.Element {
   const [mS, setM] = useState<number | string>(49.7);
   const [ybS, setYb] = useState<number | string>(0.085);
   const [xbS, setXb] = useState<number | string>(0.001);
+  const [xsS, setXs] = useState<number | string>(0.001975);
   const [kpS, setKp] = useState<number | string>(1.0e-5);
   const [kLS, setKL] = useState<number | string>(1.0e-4);
   const [HS, setH] = useState<number | string>(0.59);
-  const ky = num(kyS), kx = num(kxS), m = num(mS), yb = num(ybS), xb = num(xbS);
-  const ok = ky > 0 && kx > 0 && m > 0 && yb >= 0 && xb >= 0;
+  const ky = num(kyS), kx = num(kxS), m = num(mS), yb = num(ybS), xb = num(xbS), xs = num(xsS);
+  const ok = ky > 0 && kx > 0 && m > 0 && yb >= 0 && xb >= 0 && xs >= 0;
   const o = ok ? overallMoleFraction(ky, kx, m) : null;
   const kp = num(kpS), kL = num(kLS), H = num(HS);
   const okC = kp > 0 && kL > 0 && H > 0;
@@ -332,13 +333,14 @@ function OverallPanel(): JSX.Element {
   return (
     <Panel title="the overall coefficient and the controlling film" origin={["page", "assumption"]}
       originNote="Treybal Eqs. 5.7-5.11 and Seader Eqs. 3-187, 3-191 by this page; the defaults are Seader's Example 3.18 (a) and exercise 4's values">
-      <Text size="sm" fw={600}>Mole fractions (one slope m for both chords)</Text>
+      <Text size="sm" fw={600}>Mole fractions (one chord slope m, from (x_b, y*) to (x*, y_b))</Text>
       <Group gap="sm" align="flex-end" wrap="wrap">
         <NumberInput label="k_y, kmol/(h m²)" value={kyS} onChange={setKy} min={0} decimalScale={6} w={140} />
         <NumberInput label="k_x, kmol/(h m²)" value={kxS} onChange={setKx} min={0} decimalScale={6} w={140} />
         <NumberInput label="m" value={mS} onChange={setM} min={0} decimalScale={6} w={100} />
         <NumberInput label="y_b" value={ybS} onChange={setYb} min={0} max={1} decimalScale={6} w={100} />
         <NumberInput label="x_b" value={xbS} onChange={setXb} min={0} max={1} decimalScale={6} w={100} />
+        <NumberInput label="x* (liquid in equilibrium with y_b)" value={xsS} onChange={setXs} min={0} max={1} decimalScale={6} w={140} />
       </Group>
       {!o ? (
         <Alert color="red" variant="light" title="Refused"><Text size="sm">k_y, k_x and m must be positive; y_b and x_b not negative.</Text></Alert>
@@ -347,8 +349,10 @@ function OverallPanel(): JSX.Element {
           <Text size="sm">
             1/K_y = 1/k_y + m/k_x = {sig(1 / ky)} + {sig(m / kx)} = {sig(1 / o.Ky)}, so <b>K_y = {sig(o.Ky)}</b>; and{" "}
             <b>K_x = m K_y = {sig(o.Kx)}</b> (the unit of k_y).  The flux on the bulk compositions:{" "}
-            N = K_y (y_b − m x_b) = {sig(o.Ky)} × ({sig(yb)} − {sig(m * xb)}) = <b>{sig(o.Ky * (yb - m * xb))}</b>
-            {yb - m * xb < 0 ? " (negative: the liquid gives A to the gas; this is stripping)" : ""}.
+            N = K_x (x* − x_b) = {sig(o.Kx)} × ({sig(xs)} − {sig(xb)}) = <b>{sig(o.Kx * (xs - xb))}</b>
+            {xs - xb < 0 ? " (negative: the liquid gives A to the gas; this is stripping)" : ""}.  The same flux
+            as K_y (y_b − y*) with the fictitious y* = y_b − m (x* − x_b) = {sig(yb - m * (xs - xb))}: m is the
+            CHORD from (x_b, y*) to (x*, y_b), not the line y = m x through the origin.
           </Text>
           <ShareBar label="gas film" share={o.gasShare} color={BLUE} />
           <ShareBar label="liquid film" share={o.liquidShare} color={ORANGE} />

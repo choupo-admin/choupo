@@ -5596,7 +5596,7 @@ int DistillationColumn::solveTotalRefluxPacked(const DictPtr& dict,
     PackingDelft::Geometry dg;
     pg.ap    = pk->lookupScalar("specificArea");
     pg.eps   = pk->lookupScalar("voidFraction");
-    pg.theta = pk->lookupScalar("corrugationAngle") * constant::pi / 180.0;
+    pg.theta = packingRecord::angleDegrees(*pk) * constant::pi / 180.0;
     if (delft)
     {
         //  The Delft model reads the corrugation base and height and the
@@ -5893,7 +5893,7 @@ int DistillationColumn::solvePackedReadingRecord(const DictPtr& dict,
         auto pk = resolved->subDict("operation")->subDict("packing");
         kpis_["packing_specificArea_m2_m3"]  = pk->lookupScalar("specificArea");
         kpis_["packing_voidFraction"]        = pk->lookupScalar("voidFraction");
-        kpis_["packing_corrugationAngle_deg"] = pk->lookupScalar("corrugationAngle");
+        kpis_["packing_corrugationAngle_deg"] = packingRecord::angleDegrees(*pk);
         packingRecord::transferReads(*resolved, *dict);
     }
     return rc;
