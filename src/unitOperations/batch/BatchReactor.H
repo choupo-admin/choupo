@@ -268,6 +268,21 @@ private:
     bool                ropFileStarted_ = false;
     void reportRatesOfProduction_(scalar tRequested, scalar t);
 
+    //  Phase 2: `pathFlux ( H O );` in the same block -- the flux of an
+    //  element's atoms from each reactant to each product of every reaction,
+    //  summed to net species-to-species paths (pathFlux.csv + Graphviz).
+    struct PathSplit
+    {
+        bool present = false;                                   // the element is in the reaction
+        scalar N = 0.0;                                         // atoms of e per turnover
+        std::vector<std::pair<std::size_t, scalar>> reactants;  // (species, nu' a_e)
+        std::vector<std::pair<std::size_t, scalar>> products;   // (species, nu'' a_e)
+    };
+    PathSplit pathSplit_(std::size_t j, const std::string& e) const;
+    std::vector<std::string> pfElements_;
+    bool                     pfFileStarted_ = false;
+    void reportPathFlux_(scalar tRequested, scalar t, const sVector& r, scalar V);
+
     void openSegment_(scalar t);
     void closeSegment_(scalar t);
     // The setParameter T IMPULSE (phase (e), #99-3): an instantaneous

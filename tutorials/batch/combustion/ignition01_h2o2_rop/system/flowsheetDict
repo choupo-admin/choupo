@@ -17,7 +17,11 @@
   read from ignition01_h2o2's own trajectory: 3 us (induction, T 1108 K, the
   radical pool still growing), 7 us (the ramp, T 1766 K, between the 6 and
   8 us rows where dT/dt peaks) and 15 us (burned gas, T 3076 K, the chain
-  reactions and their reverses nearly cancel).
+  reactions and their reverses nearly cancel).  `pathFlux ( H O );` adds, at the
+  same instants, where the atoms of H and O go: species-to-species paths (the
+  atoms of each reaction shared between its reactants and products in
+  proportion to the atoms taken), printed, written to pathFlux.csv and drawn
+  as one Graphviz file per element and instant.
 
     H2 : O2 : N2  =  2 : 1 : 4   (stoichiometric H2 + 1/2 O2 -> H2O, 57% N2)
 
@@ -46,6 +50,7 @@ units
         {
             times  ( 3.0e-6  7.0e-6  1.5e-5 );   // s -- induction, ramp, burned gas
             top    5;                            // reactions listed per species and side
+            pathFlux ( H O );                    // where each H and O atom goes: species-to-species paths
         }
 
         solver

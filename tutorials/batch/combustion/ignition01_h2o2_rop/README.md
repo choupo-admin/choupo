@@ -5,7 +5,7 @@ The same H₂/O₂ ignition as `ignition01_h2o2` (closed rigid vessel, 1100 K,
 vessel:
 
 ```
-rateOfProduction { times ( 3.0e-6 7.0e-6 1.5e-5 ); top 5; }
+rateOfProduction { times ( 3.0e-6 7.0e-6 1.5e-5 ); top 5; pathFlux ( H O ); }
 ```
 
 Run it:
@@ -21,6 +21,17 @@ with their **share** of that gross. The whole matrix goes to
 `rateOfProduction.csv` (columns `t_s, species, reaction, nu, rate_kmol_m3_s,
 contribution_kmol_s`, plus a `NET` row and the integrator's own `DNDT_ODE`
 row per species).
+
+`pathFlux ( H O );` adds the **element path flux**: at the same instants, for
+each listed element, the net flux of its atoms from each species to each other
+(`pathFlux.csv`: `t_s, element, from, to, reaction, flux_kmol_atoms_s`, one row
+per reaction and directed pair plus a `NET` row per pair), the `top` largest
+printed with their share and leading reaction, and one Graphviz file
+`pathFlux_<element>_<t>.dot` per element and instant (`dot -Tpng` renders it).
+For reaction *j* and element *e* the atoms leaving reactant A for product B are
+f_AB = |r_j| V (ν′_A a_eA)(ν″_B a_eB) / N_ej, with N_ej the atoms of *e* on one
+side; the identity "atoms in minus atoms out of species i = a_ei · net_i" is
+held by the same gate.
 
 The three instants were read from `ignition01_h2o2`'s trajectory:
 

@@ -32,6 +32,7 @@ License
 #include "streams/Composition.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/Component.H"
+#include "thermo/ElementComposition.H"
 #include "thermo/reaction/Reaction.H"
 #include "unitOperations/reactor/ReactionHeat.H"
 #include "unitOperations/reactor/CatalystPellet.H"
@@ -45,6 +46,8 @@ License
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <cstdio>
+#include <map>
 #include <optional>
 #include <stdexcept>
 #include "thermo/heatCapacity/HeatCapacityModel.H"
@@ -383,14 +386,16 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
     // -----------------------------------------------------------------
     ropTimes_.clear();
     ropNext_ = 0;
+    pfElements_.clear();
+    pfFileStarted_ = false;
     if (unitDict->found("rateOfProduction"))
     {
         const std::string who = "BatchReactor '" + name_ + "': rateOfProduction";
         auto rop = unitDict->subDict("rateOfProduction");
         for (const auto& k : rop->keys())
-            if (k != "times" && k != "top")
+            if (k != "times" && k != "top" && k != "pathFlux")
                 throw std::runtime_error(who + ": unknown key '" + k
-                    + "' (the block reads `times ( ... );` and `top N;`)");
+                    + "' (the block reads `times ( ... );`, `top N;` and `pathFlux ( elements );`)");
         if (!rop->found("times"))
             throw std::runtime_error(who + ": `times ( t1 t2 ... );` is required"
                 " -- the instants [s] at which to report which reactions make and"
@@ -404,7 +409,80 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
             throw std::runtime_error(who + ": `top` must be a positive integer, got "
                 + std::to_string(top));
         ropTop_ = static_cast<std::size_t>(top);
+
+        // pathFlux ( H O ); -- the element path flux of phase 2.
+        if (rop->found("pathFlux"))
+        {
+            pfElements_ = rop->lookupWordList("pathFlux");
+            if (pfElements_.empty())
+                throw std::runtime_error(who + ": `pathFlux ( ... );` is empty -- list"
+                    " the elements, e.g. `pathFlux ( H O );`");
+            for (std::size_t a = 0; a < pfElements_.size(); ++a)
+                for (std::size_t b = a + 1; b < pfElements_.size(); ++b)
+                    if (pfElements_[a] == pfElements_[b])
+                        throw std::runtime_error(who + ": pathFlux lists element '"
+                            + pfElements_[a] + "' twice");
+            // Every reaction is split and checked NOW, so a refusal comes at
+            // the start of the run and not at the first reported instant.
+            for (const auto& e : pfElements_)
+            {
+                bool seen = false;
+                for (std::size_t j = 0; j < reactions_.size(); ++j)
+                    seen = pathSplit_(j, e).present || seen;
+                if (!seen)
+                    throw std::runtime_error(who + ": pathFlux element '" + e
+                        + "' is in no species of any reaction of this vessel");
+            }
+        }
     }
+}
+
+// -----------------------------------------------------------------------
+//  The reactant / product split of reaction j for element e, from the
+//  stoichiometry entries as the dictionary lists them: an entry with nu < 0
+//  is a reactant (coefficient -nu), nu > 0 a product, and a species listed
+//  twice (once on each side) keeps both halves.  A species written ONCE with
+//  its net coefficient has lost its split: the flux is then built on the net,
+//  so a species that is on both sides of the real step must be listed as two
+//  entries.  What is refused by name: an entry with nu = 0 (no side), a
+//  species whose elemental composition the package cannot resolve, and a
+//  reaction whose reactant and product atoms of e differ (the normalisation
+//  N_ej would then not be defined).
+// -----------------------------------------------------------------------
+BatchReactor::PathSplit BatchReactor::pathSplit_(std::size_t j, const std::string& e) const
+{
+    const ReactionSpec& rx = reactions_[j];
+    const std::string who = "BatchReactor '" + name_ + "': pathFlux, reaction '" + rx.name + "'";
+    PathSplit ps;
+    scalar nR = 0.0, nP = 0.0;
+    for (std::size_t s = 0; s < rx.comps.size(); ++s)
+    {
+        if (rx.nu[s] == 0.0)
+            throw std::runtime_error(who + ": species '" + thermo_->comp(rx.comps[s]).name()
+                + "' has nu = 0 -- it belongs to neither side, so the reactant/product split"
+                " cannot be recovered; list it as two entries (nu -1 and nu +1) or remove it");
+        const auto er = elementalCompositionOf(thermo_->comp(rx.comps[s]));
+        if (er.completeness == ElementalResolution::Completeness::unavailable)
+            throw std::runtime_error(who + ": species '" + thermo_->comp(rx.comps[s]).name()
+                + "' has no elemental composition (" + er.reason + ")");
+        const auto it = er.atoms.find(e);
+        const scalar a = (it == er.atoms.end()) ? 0.0 : it->second;
+        if (a == 0.0) continue;
+        ps.present = true;
+        const scalar w = std::fabs(rx.nu[s]) * a;           // nu a_e
+        (rx.nu[s] < 0.0 ? ps.reactants : ps.products).emplace_back(rx.comps[s], w);
+        (rx.nu[s] < 0.0 ? nR : nP) += w;
+    }
+    if (std::fabs(nR - nP) > 1.0e-9 * std::max(nR, nP))
+    {
+        std::ostringstream os;
+        os << who << ": element " << e << " is not conserved by the stoichiometry (reactants "
+           << nR << ", products " << nP << " atoms) -- the path flux is normalised by that"
+           " count and would not be defined";
+        throw std::runtime_error(os.str());
+    }
+    ps.N = nR;
+    return ps;
 }
 
 void BatchReactor::setRunWindow(scalar t0, scalar t1)
@@ -525,6 +603,131 @@ void BatchReactor::reportRatesOfProduction_(scalar tRequested, scalar t)
     }
     os << std::defaultfloat << std::setprecision(6);
     os << "  Full matrix appended to rateOfProduction.csv\n";
+    std::cout << os.str();
+    if (!pfElements_.empty()) reportPathFlux_(tRequested, t, r, V);
+}
+
+// -----------------------------------------------------------------------
+//  ELEMENT PATH FLUX.  For element e and reaction j, with N_ej the atoms of e
+//  on either side of one turnover (sum over reactants nu' a_e = sum over
+//  products nu'' a_e), the atoms of e that go from reactant A to product B:
+//
+//      f_AB^(e,j) = |r_j| V (nu'_A a_eA) (nu''_B a_eB) / N_ej     [kmol atoms/s]
+//
+//  Each atom of e leaving A lands on one of the products in proportion to the
+//  atoms of e they take, so sum_B f_AB = |r_j| V nu'_A a_eA (what the step
+//  takes out of A) and sum_A f_AB = |r_j| V nu''_B a_eB (what it puts into B).
+//  r_j < 0 runs the step backwards: the products are the donors, so the same
+//  magnitudes flow from B to A.  Net species-to-species flux
+//  F_AB = sum_j (f_AB - f_BA); the writer keeps one direction per pair.
+// -----------------------------------------------------------------------
+void BatchReactor::reportPathFlux_(scalar tRequested, scalar t, const sVector& r, scalar V)
+{
+    const std::size_t nc = state_.n.size();
+    const std::size_t nr = reactions_.size();
+    std::ofstream f("pathFlux.csv", pfFileStarted_ ? std::ios::app : std::ios::trunc);
+    if (!f) throw std::runtime_error("BatchReactor '" + name_
+        + "': cannot open pathFlux.csv for writing");
+    f << std::setprecision(17);
+    if (!pfFileStarted_)
+        f << "t_s,element,from,to,reaction,flux_kmol_atoms_s\n";
+    pfFileStarted_ = true;
+
+    std::ostringstream os;
+    os << std::defaultfloat << std::setprecision(6);
+    os << "\n=== Element path flux, unit '" << name_ << "' ===\n";
+    os << "  requested t = " << tRequested << " s; reported at t = " << t
+       << " s.  f_AB = |r_j| V (nu' a)_A (nu'' a)_B / N_ej [kmol atoms/s]; share = of the"
+          " element's total net throughput.\n";
+
+    char tbuf[32];
+    std::snprintf(tbuf, sizeof tbuf, "%.3e", tRequested);
+    const std::string tTag(tbuf);
+
+    for (const auto& e : pfElements_)
+    {
+        std::vector<sVector> net(nc, sVector(nc, 0.0));        // net[A][B]: directed, signed
+        std::vector<sVector> lead(nc, sVector(nc, 0.0));       // largest directed leg
+        std::vector<std::vector<int>> leadRx(nc, std::vector<int>(nc, -1));
+        for (std::size_t j = 0; j < nr; ++j)
+        {
+            const PathSplit ps = pathSplit_(j, e);
+            if (!ps.present || r[j] == 0.0) continue;
+            const bool fwd = r[j] > 0.0;
+            const auto& donors = fwd ? ps.reactants : ps.products;
+            const auto& sinks  = fwd ? ps.products  : ps.reactants;
+            for (const auto& [A, wA] : donors)
+                for (const auto& [B, wB] : sinks)
+                {
+                    const scalar flux = std::fabs(r[j]) * V * wA * wB / ps.N;
+                    f << t << ',' << e << ',' << thermo_->comp(A).name() << ','
+                      << thermo_->comp(B).name() << ',' << reactions_[j].name << ','
+                      << flux << '\n';
+                    if (A == B) continue;                       // a self-loop moves no atom between species
+                    net[A][B] += flux;
+                    net[B][A] -= flux;
+                    if (flux > lead[A][B]) { lead[A][B] = flux; leadRx[A][B] = static_cast<int>(j); }
+                }
+        }
+        struct Edge { std::size_t a, b; scalar F; int rx; };
+        std::vector<Edge> edges;
+        scalar total = 0.0;
+        for (std::size_t A = 0; A < nc; ++A)
+            for (std::size_t B = 0; B < nc; ++B)
+                if (net[A][B] > 0.0)
+                {
+                    edges.push_back({A, B, net[A][B], leadRx[A][B]});
+                    total += net[A][B];
+                    f << t << ',' << e << ',' << thermo_->comp(A).name() << ','
+                      << thermo_->comp(B).name() << ",NET," << net[A][B] << '\n';
+                }
+        std::sort(edges.begin(), edges.end(),
+                  [](const Edge& x, const Edge& y) { return x.F > y.F; });
+
+        os << std::scientific << std::setprecision(4);
+        os << "  element " << e << ": total net throughput " << total << " kmol atoms/s, "
+           << edges.size() << " species pairs\n";
+        const std::size_t m = std::min(edges.size(), ropTop_);
+        for (std::size_t k = 0; k < m; ++k)
+        {
+            const Edge& g = edges[k];
+            os << "      " << thermo_->comp(g.a).name() << " -> " << thermo_->comp(g.b).name()
+               << "  " << g.F << "  (" << std::fixed << std::setprecision(1)
+               << 100.0 * g.F / total << " %)  via "
+               << (g.rx >= 0 ? reactions_[g.rx].name : std::string("?"))
+               << std::scientific << std::setprecision(4) << "\n";
+        }
+        if (edges.size() > m) os << "      (+" << edges.size() - m << " more pairs in pathFlux.csv)\n";
+
+        // Graphviz: nodes = species with an edge, width ~ log of the flux.
+        const std::string dotName = "pathFlux_" + e + "_" + tTag + ".dot";
+        std::ofstream d(dotName);
+        if (!d) throw std::runtime_error("BatchReactor '" + name_ + "': cannot open "
+            + dotName + " for writing");
+        d << "digraph pathFlux_" << e << " {\n"
+          << "  // element " << e << ", t = " << std::defaultfloat << std::setprecision(6) << t
+          << " s; edge = net flux of " << e
+          << " atoms [kmol/s], penwidth = max(0.25, 1 + 4 log10(F/Fmax)/6), label = value (leading reaction)\n"
+          << "  rankdir=LR;\n  node [shape=box];\n";
+        std::vector<bool> used(nc, false);
+        for (const auto& g : edges) used[g.a] = used[g.b] = true;
+        for (std::size_t i = 0; i < nc; ++i)
+            if (used[i]) d << "  \"" << thermo_->comp(i).name() << "\";\n";
+        const scalar Fmax = edges.empty() ? 1.0 : edges.front().F;
+        for (const auto& g : edges)
+        {
+            const scalar w = std::max(0.25, 1.0 + 4.0 * std::log10(g.F / Fmax) / 6.0);
+            d << std::defaultfloat << std::setprecision(4);
+            d << "  \"" << thermo_->comp(g.a).name() << "\" -> \"" << thermo_->comp(g.b).name()
+              << "\" [penwidth=" << w << ", label=\"" << std::scientific << std::setprecision(3)
+              << g.F << " (" << (g.rx >= 0 ? reactions_[g.rx].name : std::string("?"))
+              << ")\"];\n";
+        }
+        d << "}\n";
+    }
+    os << std::defaultfloat << std::setprecision(6);
+    os << "  Per-reaction fluxes and NET pairs appended to pathFlux.csv; one"
+          " pathFlux_<element>_<t>.dot per element and instant.\n";
     std::cout << os.str();
 }
 
