@@ -168,7 +168,9 @@ int StorageTank::solve(const DictPtr& dict,
           << dropped << " ha"
           << (dropped.find(',') != std::string::npos ? "ve" : "s")
           << " no " << (isVapour ? "vapour" : "liquid") << " density there"
-             " -- dissolved supercritical gases have no liquid molar volume."
+             " -- either a dissolved supercritical gas (no liquid molar volume)"
+             " or a trace component (below 1e-6 mole fraction, such as the"
+             " solver's probe of a zero flow) outside its record's range."
              "  The HOLDUP MASS still counts every component (it is the volume"
              " times this density), so what the approximation touches is the"
              " density, not the inventory's composition.  The excluded share"
