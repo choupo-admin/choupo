@@ -23,8 +23,8 @@
     },
     "check_advisory_attribution": {
       "exit": 0,
-      "claim": "check_advisory_attribution: OK -- column13's caveat block reports 28 advisory(ies) about its ANSWER (still naming Davies beyond its trust range on the published blocks) and attributes 95 to three named solver searches, where it used to print 103 indistinguishable lines; a molecular case that opens no frame prints no path section at all; status only ever moves toward the answer (checked against the sink in isolation, both directions); every advisory in the result JSON carries a status; and each frame has one home whose close sits below its last search.  NOT covered: which solvers OUGHT to be framed -- the recycle Wegstein, the Gibbs multi-start, Wang-Henke and both time integrators still report their paths as answers -- whether any given trial advisory is uninteresting, and the absence of the data race the same change closed (no test can demonstrate that).",
-      "seconds": 0.6
+      "claim": "check_advisory_attribution: OK -- column13's caveat block reports 31 advisory(ies) about its ANSWER (still naming Davies beyond its trust range on the published blocks) and attributes 97 to three named solver searches, where it used to print 103 indistinguishable lines; a molecular case that opens no frame prints no path section at all; status only ever moves toward the answer (checked against the sink in isolation, both directions); every advisory in the result JSON carries a status; and each frame has one home whose close sits below its last search.  NOT covered: which solvers OUGHT to be framed -- the recycle Wegstein, the Gibbs multi-start, Wang-Henke and both time integrators still report their paths as answers -- whether any given trial advisory is uninteresting, and the absence of the data race the same change closed (no test can demonstrate that).",
+      "seconds": 0.7
     },
     "check_ammonia_rate": {
       "exit": 0,
@@ -733,8 +733,8 @@
     },
     "check_reference_rung": {
       "exit": 0,
-      "claim": "check_reference_rung: OK -- the default (idealGas) rung evaluates, h(400 K) = -2212360.0 J/mol; an explicit `idealGas` is byte-identical to omitting it; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureLiquid` is refused by name, quoting the record's own key, with h_formation named as the remedy; the refusal explicitly warns AGAINST adding a gas Cp block, which was the old message's advice; s_pure_ig refuses the solid rung ON ITS OWN, not only through g_pure_ig; g = h - T*s refuses the solid rung and accepts the default; a second rung is accepted and both are reachable; a duplicate of the declared rung is refused as two homes for one datum; the derived liquid potential closes to +0.59 J/mol of CODATA while its legs are -572 J/mol and -1.92 J/(mol K) out -- the cancellation that makes a potential the right interface; the liquid esterification heat is -2.66 kJ/mol against -3.83 from the liquid formation enthalpies (acetic acid bridged to the datum's monomer, +0.24 kJ/mol out); pure acetic acid boils at 391.0085 K (bubble = dew = the record's Antoine root; record Tb 391.05) on the associated vapour, K = 1; latent heat at Tb 24.389 kJ/mol on the associated vapour (closed form 24.389; record HvapTb 24.39, -0.00; dimer heat in the vapour -22.84 kJ/mol); acetic acid/water T-x-y at 1 atm (UNIFAC + associated vapour) against Calvar et al. 2005: AAD T 1.503 K, y_water 0.0288 (monomer ideal gas: 3.486 K, 0.0355); the named remedy works: h_formation(400 K, \"solid\") = -2185360.0 J/mol; the named remedy works: h_formation(400 K, \"liquid\") = -2185360.0 J/mol",
-      "seconds": 2.3
+      "claim": "check_reference_rung: OK -- the default (idealGas) rung evaluates, h(400 K) = -2212360.0 J/mol; an explicit `idealGas` is byte-identical to omitting it; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureLiquid` is refused by name, quoting the record's own key, with h_formation named as the remedy; the refusal explicitly warns AGAINST adding a gas Cp block, which was the old message's advice; s_pure_ig refuses the solid rung ON ITS OWN, not only through g_pure_ig; g = h - T*s refuses the solid rung and accepts the default; a second rung is accepted and both are reachable; a duplicate of the declared rung is refused as two homes for one datum; the derived liquid potential closes to +2.59 J/mol of CODATA while its legs are -572 J/mol and -1.93 J/(mol K) out -- the cancellation that makes a potential the right interface; the liquid esterification heat is -2.66 kJ/mol against -3.83 from the liquid formation enthalpies (acetic acid bridged to the datum's monomer, +0.24 kJ/mol out); pure acetic acid boils at 391.0085 K (bubble = dew = the record's Antoine root; record Tb 391.05) on the associated vapour, K = 1; latent heat at Tb 24.386 kJ/mol on the associated vapour (closed form 24.389; record HvapTb 24.39, -0.00; dimer heat in the vapour -22.84 kJ/mol); acetic acid/water T-x-y at 1 atm (UNIFAC + associated vapour) against Calvar et al. 2005: AAD T 0.965 K, y_water 0.0330 (monomer ideal gas: 3.486 K, 0.0355); the named remedy works: h_formation(400 K, \"solid\") = -2185360.0 J/mol; the named remedy works: h_formation(400 K, \"liquid\") = -2185360.0 J/mol",
+      "seconds": 3.2
     },
     "check_registry_scan": {
       "exit": 0,
@@ -1204,7 +1204,7 @@
     "check_reactor_limits": {
       "exit": 0,
       "claim": "check_reactor_limits: OK -- R1 sum(nu) != 0 detailed balance refused on 4 paths, an expression law keeps its own refusal; WGS (sum 0) runs; R2 autocatalytic cstr announces 2 roots (washout UNSTABLE, REPORTED), cubic 3; monotone cases silent; R3 a gibbs condensate with one outlet refused; gibbs09 runs; R4 SRK: equilibriumReactor y_NH3 0.3239 = gibbsReactor 0.3239; R5 equil01 fed at 700 K: Q = 80.43 kW = report dH; R6 supersaturated gas-phase equilibrium refused, by component and at the mixture's dew point; equil01 runs; R7 dynamicCSTR announces sum(nu) != 0; reverse leg moves n_ethanol 7.88180818e-03 -> 8.77213733e-03; R8 cstr05 announces 0 failed scan points and keeps its one steady state; adiabaticFlash01 reports both flags and maxOuterIter 3 reports NOT converged; gibbs05 seeded at 5000 / 250 K converges with no penalty; R9 cstr08 with the glycol on its pureLiquid rung RUNS; with no liquid Cp it is refused naming pureLiquid and the missing liquid Cp; with no block the old message still stands; R10 the same case retyped pfr: gas-rung and pureLiquid glycol RUN; with no liquid Cp it is refused naming pureLiquid and the missing liquid Cp; with no block the old message stands (NOT checked: several-reaction extent multiplicity, a liquid standard state for reversible liquid reactions)",
-      "seconds": 2.0
+      "seconds": 3.3
     },
     "check_pore_partition": {
       "exit": 0,
@@ -1543,8 +1543,8 @@
     },
     "check_feature_documented": {
       "exit": 0,
-      "claim": "check_feature_documented: OK -- 289 registered names, 257 documented in a labelled guide section and the catalogue, 32 pinned as debt (ActivityModel 1, AqueousVolumetric 2, Atomizer 1, BatchUnitOperation 2, BedWallHeatTransfer 1, ConstantEstimator 3, DynamicUnitOperation 1, EquipmentSize 2, FrictionFactorCorrelation 1, HeatCapacityModel 4, HeatTransferCorrelation 1, IsothermModel 1, ODEIntegrator 2, PhaseChangeHTC 3, Report 2, Signal 1, SizeDistribution 1, TransportModel 1, UnitOperation 2); NOT COVERED: that the section's equations match the implementation",
-      "seconds": 0.5
+      "claim": "check_feature_documented: OK -- 289 registered names, 258 documented in a labelled guide section and the catalogue, 31 pinned as debt (ActivityModel 1, AqueousVolumetric 2, Atomizer 1, BatchUnitOperation 2, BedWallHeatTransfer 1, ConstantEstimator 3, DynamicUnitOperation 1, EquipmentSize 1, FrictionFactorCorrelation 1, HeatCapacityModel 4, HeatTransferCorrelation 1, IsothermModel 1, ODEIntegrator 2, PhaseChangeHTC 3, Report 2, Signal 1, SizeDistribution 1, TransportModel 1, UnitOperation 2); NOT COVERED: that the section's equations match the implementation",
+      "seconds": 0.4
     },
     "check_species_records": {
       "exit": 0,
@@ -1578,7 +1578,7 @@
     },
     "check_liquid_property_ratchet": {
       "exit": 0,
-      "claim": "check_liquid_property_ratchet: OK -- 536 files of src/unitOperations and src/postProcessing hold 13 raw liquid-property site(s) (vliq 0, direct 0, phaseVariable 0, literal 0, keyRead 13, conversion 0), each within its pin; none new; the two door reviews' 38 probe lines all caught (direct and phaseVariable per statement).  NOT CHECKED: a value built from a non-literal term under a name that says no property (a variable read under an unrelated key, a constant spelled otherwise in another header), a brine density outside 997-1030 under a name that says no sea/brine, a conversion line that names no volume or flow, thermo/ and propertyOps/; a duty line that carries none of the exempt markers is counted although false (none today); the exemptions are listed in FALSE_POSITIVES; a phase-variable density call guarded by if/else rather than a ternary would be counted too (none today).",
+      "claim": "check_liquid_property_ratchet: OK -- 544 files of src/unitOperations and src/postProcessing hold 1 raw liquid-property site(s) (vliq 0, direct 0, phaseVariable 0, literal 0, keyRead 1, conversion 0), each within its pin; none new; the two door reviews' 38 probe lines all caught (direct and phaseVariable per statement).  NOT CHECKED: a value built from a non-literal term under a name that says no property (a variable read under an unrelated key, a constant spelled otherwise in another header), a brine density outside 997-1030 under a name that says no sea/brine, a conversion line that names no volume or flow, thermo/ and propertyOps/; a duty line that carries none of the exempt markers is counted although false (none today); the exemptions are listed in FALSE_POSITIVES; a phase-variable density call guarded by if/else rather than a ternary would be counted too (none today).",
       "seconds": 3.6
     },
     "check_property_source_witnesses": {
@@ -1804,7 +1804,7 @@
     "check_readme_numbers": {
       "exit": 0,
       "claim": "check_readme_numbers: OK -- 350 marked README number(s) in 40 case(s) agree with their golden rows at the precision written",
-      "seconds": 0.1
+      "seconds": 0.3
     },
     "check_pressure_si": {
       "exit": 0,
