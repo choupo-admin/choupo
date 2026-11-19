@@ -2900,3 +2900,27 @@ layout  nozzle:WaterCooler:N2  nozzleClass      1500             exact
 layout  nozzle:WaterCooler:N2  nozzleFacing     RTJ              exact
 layout  nozzle:WaterCooler:N2  nozzleDesignP    16600000         1e-4
 layout  nozzle:WaterCooler:N2  nozzleDesignT    362.13439933     1e-4
+layout  nozzle:NH3Storage/tank1:M1 nozzleService    manway           exact
+layout  nozzle:NH3Storage/tank1:M1 nozzleStream     exact            
+layout  nozzle:NH3Storage/tank1:M1 nozzleSizeFrom   declared         exact
+layout  nozzle:NH3Storage/tank1:M1 nozzleSize       24               exact
+layout  nozzle:NH3Storage/tank1:M1 nozzleDesignP    0                1e-4
+layout  nozzle:NH3Storage/tank1:M1 nozzleDesignT    0                1e-4
+layout  nozzle:NH3Storage/tank1:M2 nozzleService    manway           exact
+layout  nozzle:NH3Storage/tank1:M2 nozzleStream     exact            
+layout  nozzle:NH3Storage/tank1:M2 nozzleSizeFrom   declared         exact
+layout  nozzle:NH3Storage/tank1:M2 nozzleSize       24               exact
+layout  nozzle:NH3Storage/tank1:M2 nozzleDesignP    0                1e-4
+layout  nozzle:NH3Storage/tank1:M2 nozzleDesignT    0                1e-4
+layout  nozzle:NH3Storage/tank2:M1 nozzleService    manway           exact
+layout  nozzle:NH3Storage/tank2:M1 nozzleStream     exact            
+layout  nozzle:NH3Storage/tank2:M1 nozzleSizeFrom   declared         exact
+layout  nozzle:NH3Storage/tank2:M1 nozzleSize       24               exact
+layout  nozzle:NH3Storage/tank2:M1 nozzleDesignP    0                1e-4
+layout  nozzle:NH3Storage/tank2:M1 nozzleDesignT    0                1e-4
+layout  nozzle:NH3Storage/tank2:M2 nozzleService    manway           exact
+layout  nozzle:NH3Storage/tank2:M2 nozzleStream     exact            
+layout  nozzle:NH3Storage/tank2:M2 nozzleSizeFrom   declared         exact
+layout  nozzle:NH3Storage/tank2:M2 nozzleSize       24               exact
+layout  nozzle:NH3Storage/tank2:M2 nozzleDesignP    0                1e-4
+layout  nozzle:NH3Storage/tank2:M2 nozzleDesignT    0                1e-4
