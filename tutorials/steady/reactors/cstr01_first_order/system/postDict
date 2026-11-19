@@ -1,0 +1,58 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  cstr01_first_order -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: the first reactor and the number that sizes it: one reaction, one Newton in the extent, and a conversion fixed by the volume, the rate constant and the flow.
+
+  The plot: the feed and the reactor outlet side by side: the reactants fall and the ester and water rise by the extent the Newton found; the second table gives conversion, residence time and Damkohler number.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    feed_and_outlet;
+        type    table;
+        title   "The CSTR feed and outlet: ethanol falls, ethyl acetate rises";
+        note    "Mole fractions at the reactor inlet and outlet; the reactor is isothermal at 350 K and well mixed, so every molecule reacts at the outlet concentration.";
+        columns
+        (
+            { name ethanol; label "ethanol mole fraction"; unit "-"; }
+            { name aceticAcid; label "acetic acid mole fraction"; unit "-"; }
+            { name ethylAcetate; label "ethyl acetate mole fraction"; unit "-"; }
+            { name water; label "water mole fraction"; unit "-"; }
+        );
+        rows
+        (
+            { name feed; label "feed"; cells { ethanol { stream feed; key x_ethanol; } aceticAcid { stream feed; key x_aceticAcid; } ethylAcetate { stream feed; key x_ethylAcetate; } water { stream feed; key x_water; } } }
+            { name reactorOut; label "reactor outlet"; cells { ethanol { stream reactorOut; key x_ethanol; } aceticAcid { stream reactorOut; key x_aceticAcid; } ethylAcetate { stream reactorOut; key x_ethylAcetate; } water { stream reactorOut; key x_water; } } }
+        );
+    }
+    {
+        name    reactor_numbers;
+        type    table;
+        title   "What sizes the conversion";
+        note    "Conversion of ethanol (the limiting reactant), residence time and the heat the reactor removes to stay isothermal.";
+        columns
+        (
+            { name X; label "conversion of ethanol"; unit "-"; }
+            { name tau; label "residence time"; unit "s"; }
+            { name Q; label "heat removed (negative)"; unit "kW"; }
+        );
+        rows
+        (
+            { name reactor; label "reactor"; cells { X { unitOp reactor; key X_limiting; } tau { unitOp reactor; key tau_s; } Q { unitOp reactor; key Q_kW; } } }
+        );
+    }
+);

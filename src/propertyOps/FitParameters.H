@@ -199,6 +199,9 @@ private:
     static PublishedTable bubbleFitPoints(const ThermoPackage& thermo,
         const sVector& xExp, const sVector& pExp, const sVector& tExp,
         std::size_t iF1, std::size_t iF2, bool kindP, const std::string& parityPath);
+    static void appendHeldOutPoints(std::vector<PublishedTable>& tables,
+        const ThermoPackage& thermo, const sVector& fixedVal, const sVector& xVal,
+        const sVector& measVal, std::size_t iF1, std::size_t iF2, bool kindP);
     std::vector<scalar> isoTemperatures_;   // the distinct T of an isotherm dataset
     bool isoUnweighted_ = true;              // every sigma the unweighted 1 mol/kg
 

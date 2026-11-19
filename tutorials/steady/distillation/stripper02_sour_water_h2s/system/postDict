@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  stripper02_sour_water_h2s -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: the selectivity lesson: with H2S added, three speciation networks run on every tray, and CO2 strips hard while H2S concentrates in the liquid, so the pH falls instead of rising as in stripper01.
+
+  The plot: the ammonia (apparent) mole fraction stage by stage, liquid and vapour: the profile the column built between its two ends.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    composition_by_stage;
+        type    profile;
+        title   "Ammonia, carbon dioxide and hydrogen sulfide stage by stage";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "ammonia (apparent) mole fraction"; unit "-"; scale linear; }
+        note    "Liquid compositions of the apparent components. CO2 is the more volatile acid gas here and leaves overhead; H2S stays with the liquid, which is why the bottoms acidify. The marker is the feed stage.";
+        series
+        (
+            { name liquid; label "liquid on the stage"; unitOp tower; table profile; x stage; y x_NH3; style linesMarkers; }
+            { name vapour; label "vapour leaving the stage"; unitOp tower; table profile; x stage; y y_NH3; style linesMarkers; }
+            { name liq_CO2; label "carbon dioxide, liquid"; unitOp tower; table profile; x stage; y x_CO2; style linesMarkers; }
+            { name liq_H2S; label "hydrogen sulfide, liquid"; unitOp tower; table profile; x stage; y x_H2S; style linesMarkers; }
+            { name feedStage; label "feed stage (2)"; unitOp tower; table profile; select { stage 2; } x stage; y x_NH3; style markers; }
+        );
+    }
+);

@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  heatExchanger01_water_water -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: a counter-current exchanger whose outlet temperatures nobody declared: the epsilon-NTU method finds them from the area and U, and the answer can be checked by hand.
+
+  The plot: the four terminal temperatures with the duty, effectiveness, NTU and LMTD the method turned on, as a table (the engine publishes no exchanger temperature-duty profile to draw).
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    exchanger;
+        type    table;
+        title   "The exchanger, in numbers";
+        note    "NTU and effectiveness are the two dimensionless numbers the method turns on; Q is the duty exchanged.";
+        columns
+        (
+            { name Thi; label "hot in"; unit "K"; }
+            { name Tho; label "hot out"; unit "K"; }
+            { name Tci; label "cold in"; unit "K"; }
+            { name Tco; label "cold out"; unit "K"; }
+            { name Q; label "duty"; unit "kW"; }
+            { name eps; label "effectiveness"; unit "-"; }
+            { name NTU; label "NTU"; unit "-"; }
+            { name LMTD; label "log-mean temperature difference"; unit "K"; }
+        );
+        rows
+        (
+            { name hx; label "hx"; cells { Thi { stream hot; key T; } Tho { stream hotOut; key T; } Tci { stream cold; key T; } Tco { stream coldOut; key T; } Q { unitOp hx; key Q_kW; } eps { unitOp hx; key effectiveness; } NTU { unitOp hx; key NTU; } LMTD { unitOp hx; key LMTD; } } }
+        );
+    }
+);

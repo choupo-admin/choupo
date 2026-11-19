@@ -112,6 +112,13 @@ public:
 
     std::vector<ProcessStream>    producedStreams() const override { return produced_; }
     std::map<std::string, scalar> kpis()            const override { return kpis_; }
+
+    std::map<std::string, std::string> kpiUnits() const override
+    {
+        return { {"Q", "W"}, {"Q_kW", "kW"}, {"LMTD", "K"}, {"NTU", "-"},
+                 {"effectiveness", "-"}, {"C_r", "-"}, {"T_hot_in", "K"},
+                 {"T_hot_out", "K"}, {"T_cold_in", "K"}, {"T_cold_out", "K"} };
+    }
     std::optional<UnitProfile>    profile()         const override { return profile_; }
 
 private:

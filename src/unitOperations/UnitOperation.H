@@ -125,6 +125,14 @@ public:
     //    Mixer / Splitter :  F_total, T_out
     virtual std::map<std::string, scalar> kpis() const { return {}; }
 
+    //  The unit each KPI is PUBLISHED IN, declared by the unit that computes it
+    //  (DEV.md 4c C443): `{ {"N_min", "-"}, {"T_out", "K"} }`, in the units the
+    //  numbers in kpis() are held in (SI unless the key says a scale, e.g. Q_kW).
+    //  A KPI absent here publishes no unit; a view that names it then declares
+    //  the unit itself, said aloud.  Never inferred from the key's spelling:
+    //  `N_min` is not minutes and `T_in` is not inches.
+    virtual std::map<std::string, std::string> kpiUnits() const { return {}; }
+
     // ---- CLOSURE VARIABLES (DEV.md 4c C174) -------------------------------
     // The terms this unit published that it computed AS THE REMAINDER of one
     // of its own balances -- so that balance, closed over this unit, cannot

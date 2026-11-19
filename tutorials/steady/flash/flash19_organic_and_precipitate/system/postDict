@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flash19_organic_and_precipitate -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: one flash, four phases at once: the vapour, the aqueous liquid, the benzene-rich organic liquid and the calcite precipitate coexist, and each stream carries what belongs to its phase.
+
+  The plot: what each phase the flash returns is made of: the mole fractions of the feed, the liquid and the vapour side by side.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    phase_contents;
+        type    table;
+        title   "What each stream is made of (mole fractions)";
+        note    "The vapour carries the CO2 and most of the volatile benzene and ethanol; the liquid stream holds the water and the dissolved species. The carbonate precipitate is a solid and is carried in the liquid stream's flows rather than its fractions.";
+        columns
+        (
+            { name CO2; label "CO2"; unit "-"; }
+            { name water; label "water"; unit "-"; }
+            { name benzene; label "benzene"; unit "-"; }
+            { name ethanol; label "ethanol"; unit "-"; }
+            { name vf; label "vapour fraction"; unit "-"; }
+        );
+        rows
+        (
+            { name feed; label "feed"; cells { CO2 { stream feed; key x_CO2; } water { stream feed; key x_water; } benzene { stream feed; key x_benzene; } ethanol { stream feed; key x_ethanol; } vf { stream feed; key vf; } } }
+            { name liquid; label "liquid"; cells { CO2 { stream liquid; key x_CO2; } water { stream liquid; key x_water; } benzene { stream liquid; key x_benzene; } ethanol { stream liquid; key x_ethanol; } vf { stream liquid; key vf; } } }
+            { name vapor; label "vapour"; cells { CO2 { stream vapor; key x_CO2; } water { stream vapor; key x_water; } benzene { stream vapor; key x_benzene; } ethanol { stream vapor; key x_ethanol; } vf { stream vapor; key vf; } } }
+        );
+    }
+);

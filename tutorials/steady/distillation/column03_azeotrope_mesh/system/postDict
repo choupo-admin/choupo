@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column03_azeotrope_mesh -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: ethanol-water with the simultaneous (MESH Newton) method, which stays stable through the azeotrope that bubble-point iteration cannot cross.
+
+  The plot: the ethanol mole fraction stage by stage, liquid and vapour: the profile the column built between its two ends.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    composition_by_stage;
+        type    profile;
+        title   "Ethanol stage by stage: the column approaches the azeotrope";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "ethanol mole fraction"; unit "-"; scale linear; }
+        note    "The top stage stays at about 0.79 ethanol in the liquid and 0.81 in the vapour, below the ethanol-water azeotrope that no column at 1 atm can pass; below the feed the liquid is almost flat until the stripping section takes the ethanol out. The marker is the feed stage.";
+        series
+        (
+            { name liquid; label "liquid on the stage"; unitOp column; table profile; x stage; y x_ethanol; style linesMarkers; }
+            { name vapour; label "vapour leaving the stage"; unitOp column; table profile; x stage; y y_ethanol; style linesMarkers; }
+            { name feedStage; label "feed stage (8)"; unitOp column; table profile; select { stage 8; } x stage; y x_ethanol; style markers; }
+        );
+    }
+);

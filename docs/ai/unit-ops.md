@@ -6,6 +6,12 @@ One entry per type registered in `UnitOperation::registerBuiltins()`
 `PropertyOperation::registerBuiltins()` (props).  Grouped by binary,
 then by family.
 
+A unit declares the unit each of its KPIs is published in
+(`UnitOperation::kpiUnits()`; DEV.md 4c C443), and a case's `views` read it:
+`column.N_min` is "-", a heater's `T_out` is K.  A KPI the unit does not
+declare publishes no unit and the view states its own, said on the console.
+Declared so far: `shortcutColumn`, `heater`, `heatExchanger`, `cstr`.
+
 The keys `name` / `type` / `in` (or `inputs`) / `outputs` are
 required on every steady/batch/ctrl unit; they are listed once at the
 top of each entry and elided in per-op examples.

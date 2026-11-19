@@ -58,3 +58,35 @@ costing
     cepci2001   397;        // Turton base-year basis
     usdToEur    0.92;
 }
+
+/*---------------------------------------------------------------------------*\
+  THE VIEW THE LESSON OPENS ON (DEV.md 4c C443).
+
+  The lesson: process01 with a heater between the reactor and the flash, and the two reports a project needs most, sizing and costing; the process side of the case is the flowsheet the heater changes.
+
+  The plot: the five streams in flow order with the temperature each carries: the heater raises the reactor outlet to the flash temperature before the split. (The sizing and cost results are written to the design and economics reports, not to the published streams and units that views read.)
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    along_the_flowsheet;
+        type    table;
+        title   "Temperature and ethyl acetate along the flowsheet with the heater";
+        note    "The heater adds 0.4 kW between reactor and flash; the temperature column shows where it acts. At this temperature the liquid is below its bubble point, so the flash returns no vapour.";
+        columns
+        (
+            { name F; label "molar flow"; unit "kmol/h"; }
+            { name T; label "temperature"; unit "K"; }
+            { name xEA; label "ethyl acetate mole fraction"; unit "-"; }
+        );
+        rows
+        (
+            { name feed; label "feed"; cells { F { stream feed; key F; } T { stream feed; key T; } xEA { stream feed; key x_ethylAcetate; } } }
+            { name reactorOut; label "reactor outlet"; cells { F { stream reactorOut; key F; } T { stream reactorOut; key T; } xEA { stream reactorOut; key x_ethylAcetate; } } }
+            { name hotStream; label "heater outlet"; cells { F { stream hotStream; key F; } T { stream hotStream; key T; } xEA { stream hotStream; key x_ethylAcetate; } } }
+            { name vapProd; label "vapour product"; cells { F { stream vapProd; key F; } T { stream vapProd; key T; } xEA { stream vapProd; key x_ethylAcetate; } } }
+            { name liqProd; label "liquid product"; cells { F { stream liqProd; key F; } T { stream liqProd; key T; } xEA { stream liqProd; key x_ethylAcetate; } } }
+        );
+    }
+);

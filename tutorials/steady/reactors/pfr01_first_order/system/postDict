@@ -1,0 +1,51 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  pfr01_first_order -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: the same volume and kinetics as the CSTR, with no back-mixing: the concentration falls along the tube, so most of the volume works at a higher rate and the conversion is higher.
+
+  The plot: conversion of ethanol against the volume travelled along the tube, and the molar flow of each species along it.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    conversion_along_tube;
+        type    profile;
+        title   "Conversion builds along the tube";
+        xAxis   { label "volume travelled"; unit "-"; scale linear; }
+        yAxis   { label "conversion of ethanol"; unit "-"; scale linear; }
+        note    "X is the conversion of the limiting reactant, ethanol, at each point of the axial profile the integrator wrote (RK4, uniform steps in volume). The CSTR of cstr01 reaches its single outlet value of the same Damkohler number at the end of its volume; the tube gets more out of the same volume.";
+        series
+        (
+            { name X; label "conversion"; unitOp reactor; table profile; x V; y X; style lines; }
+        );
+    }
+    {
+        name    flows_along_tube;
+        type    profile;
+        title   "Molar flow of each species along the tube";
+        xAxis   { label "volume travelled"; unit "-"; scale linear; }
+        yAxis   { label "molar flow"; unit "kmol/s"; scale linear; }
+        note    "The reactants fall and the products rise along the volume coordinate.";
+        series
+        (
+            { name ethanol; label "ethanol"; unitOp reactor; table profile; x V; y F_ethanol; style lines; }
+            { name aceticAcid; label "acetic acid"; unitOp reactor; table profile; x V; y F_aceticAcid; style lines; }
+            { name ethylAcetate; label "ethyl acetate"; unitOp reactor; table profile; x V; y F_ethylAcetate; style lines; }
+            { name water; label "water"; unitOp reactor; table profile; x V; y F_water; style lines; }
+        );
+    }
+);

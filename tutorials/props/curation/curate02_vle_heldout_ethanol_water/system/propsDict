@@ -37,10 +37,19 @@
 
   THE BAND, declared before the fit and not adjusted: see `acceptance` below.
 
-  WHAT YOU SEE after Run: the T-x-y diagram of the two `experimental`
-  overlays: the Raoult curves, the fitted NRTL curves, the measured points (all 14;
-  the parity view of the fit marks the four held-out apart).  Then the held-out AAD
-  and the verdict in the log, and the proposal file.
+  WHAT YOU SEE after Run, first the VIEWS this file declares (the `views` list at
+  the end; docs/design/a-post-processing-dictionary.md):
+    1. txy_fit  the T-x-y diagram: the ten measured points the fit used, the four
+                it never saw (a separate marker series), the Raoult curve (the
+                start of the fit) and the fitted NRTL curve, and each curve's
+                vapour branch (T against y).
+    2. parity_heldout  the four held-out points: the model's T against the
+                measured T, on the line when the pair predicts.
+  Then the held-out AAD and the verdict in the log, and the proposal file.  The
+  engine draws nothing and the GUI computes nothing: every point is a number the
+  run published (the scans' `scan` tables, the fit's `fitPoints` table whose
+  `heldOut` column marks the four).  The `experimental` overlay below stays: it
+  is what the Property Explorer overlays and what pins the curves' AAD rows.
 \*---------------------------------------------------------------------------*/
 
 operations
@@ -131,5 +140,43 @@ experimental
         models    ( txy_raoult  txy_nrtl );
         dataset   "constant/experiments/etoh-water-bubble-lai2014.dat";
         source    "Lai, Lin & Tu 2014, doi 10.1016/j.jct.2013.08.020 (fit: 10 points; held out: rows 3, 6, 9, 12)";
+    }
+);
+
+views
+(
+    //  1. THE T-x-y DIAGRAM, first.  Liquid branch (T against x) and vapour
+    //  branch (T against y) of the two scanned models; the measured bubble
+    //  points as markers, the four held out drawn apart.
+    {
+        name    txy_fit;
+        type    series;
+        title   "Ethanol + water at 101.3 kPa: measured bubble points against Raoult's law and the fitted NRTL";
+        xAxis   { label "mole fraction of ethanol, x (liquid) or y (vapour)"; unit "-"; scale linear; }
+        yAxis   { label "temperature"; unit "K"; scale linear; }
+        note    "Markers: Lai, Lin and Tu (2014), bubble temperature against liquid composition; filled by the ten points the fit used, the second marker series is the four held out before the fit. Lines: Raoult's law (the fit's start, gamma = 1) and the fitted NRTL, each as the liquid branch (T against x) and the vapour branch (T against y). The measured vapour compositions are in the dataset and are not drawn; the case's experimental overlay in the Property Explorer holds them.";
+        series
+        (
+            { name fitPts;  label "measured, used in the fit";      op nrtl_etoh_water_heldout; table fitPoints; select { heldOut 0; } x x_1; y measured; style markers; }
+            { name heldPts; label "measured, held out (4)";         op nrtl_etoh_water_heldout; table fitPoints; select { heldOut 1; } x x_1; y measured; style markers; }
+            { name raoultL; label "Raoult, liquid (T against x)";   op txy_raoult; table scan; x x_ethanol;     y T_bubble; style lines; group raoult; }
+            { name raoultV; label "Raoult, vapour (T against y)";   op txy_raoult; table scan; x y_eq_ethanol;  y T_bubble; style lines; group raoult; }
+            { name nrtlL;   label "fitted NRTL, liquid (T against x)"; op txy_nrtl; table scan; x x_ethanol;    y T_bubble; style lines; group nrtl; }
+            { name nrtlV;   label "fitted NRTL, vapour (T against y)"; op txy_nrtl; table scan; x y_eq_ethanol; y T_bubble; style lines; group nrtl; }
+        );
+    }
+    //  2. THE PARITY OF THE HELD-OUT POINTS: what the fitted pair predicted for
+    //  evidence it never saw, against what was measured.
+    {
+        name    parity_heldout;
+        type    parity;
+        title   "Held-out bubble temperatures: the fitted NRTL's prediction against the measurement";
+        xAxis   { label "measured bubble temperature"; unit "K"; scale linear; }
+        yAxis   { label "predicted bubble temperature"; unit "K"; scale linear; }
+        note    "The four points set aside before the fit (rows 3, 6, 9, 12 by increasing x). The model never saw them; on the 1:1 line the prediction is perfect.";
+        series
+        (
+            { name held; label "held out (predicted)"; op nrtl_etoh_water_heldout; table fitPoints; select { heldOut 1; } x measured; y model; style markers; }
+        );
     }
 );

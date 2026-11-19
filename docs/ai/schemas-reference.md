@@ -1134,7 +1134,7 @@ Single-point property evaluation: at a given (T, P, composition) the thermo pack
 
 ## `propertyScan1D`  (propertyScan1D operation)
 
-One-dimensional property sweep: varies one state variable (T, P or a mole fraction) over n evenly-spaced points and evaluates the requested properties at each. Writes one CSV row per point.
+One-dimensional property sweep: varies one state variable (T, P or a mole fraction) over n evenly-spaced points and evaluates the requested properties at each. Writes one CSV row per point, and publishes the same numbers as a table named `scan` (columns: the swept variable, `x_<comp>` for a composition, then each property whose unit the catalogue knows) that a `views` series names: `op <name>; table scan; x <column>; y <column>;`.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|

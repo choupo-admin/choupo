@@ -214,3 +214,34 @@ sizing
 }
 
 // ************************************************************************* //
+
+/*---------------------------------------------------------------------------*\
+  THE VIEW THE LESSON OPENS ON (DEV.md 4c C443).
+
+  The lesson: a base case to optimise: the Gibbs reactor of aceticAcid01 inside a plant with a CO recycle, a purge, a degasser and a lights column; it runs and converges and is deliberately not optimised.
+
+  The plot: the acetic acid mole fraction through the plant: the crude acid from the reactor train, the column feed, and the product of the lights column.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    acid_through_the_plant;
+        type    table;
+        title   "Acetic acid purity through the plant";
+        note    "The acid is concentrated by the condenser and the degasser and finished by the lights column; the numbers a student would tune (conditions in the flowsheet dictionary) move these purities and the flows.";
+        columns
+        (
+            { name F; label "molar flow"; unit "kmol/h"; }
+            { name xAA; label "acetic acid mole fraction"; unit "-"; }
+            { name xWater; label "water mole fraction"; unit "-"; }
+            { name xMeOH; label "methanol mole fraction"; unit "-"; }
+        );
+        rows
+        (
+            { name crudeAcid; label "crude acid"; cells { F { stream crudeAcid; key F; } xAA { stream crudeAcid; key x_aceticAcid; } xWater { stream crudeAcid; key x_water; } xMeOH { stream crudeAcid; key x_methanol; } } }
+            { name columnFeed; label "column feed"; cells { F { stream columnFeed; key F; } xAA { stream columnFeed; key x_aceticAcid; } xWater { stream columnFeed; key x_water; } xMeOH { stream columnFeed; key x_methanol; } } }
+            { name acidProduct; label "acid product"; cells { F { stream acidProduct; key F; } xAA { stream acidProduct; key x_aceticAcid; } xWater { stream acidProduct; key x_water; } xMeOH { stream acidProduct; key x_methanol; } } }
+        );
+    }
+);

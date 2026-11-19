@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ammonia01_synthesis_loop -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: the answer stops being a sequence: the Haber-Bosch loop recycles the unreacted gas, so no unit can be run before the one downstream of it, and the whole loop is one solver problem.
+
+  The plot: the ammonia mole fraction of the streams around the loop: low in the make-up, built in the converter, removed as liquid product, and kept low in the recycle.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    around_the_loop;
+        type    table;
+        title   "Ammonia around the synthesis loop";
+        note    "Make-up gas and recycle meet in the mixer, the converter makes ammonia (reacted), the cold separator takes it out as liquid product (productNH3) and the unreacted gas is split between purge and recycle.";
+        columns
+        (
+            { name F; label "molar flow"; unit "kmol/h"; }
+            { name xNH3; label "ammonia mole fraction"; unit "-"; }
+            { name xAr; label "argon mole fraction"; unit "-"; }
+        );
+        rows
+        (
+            { name makeup; label "make-up"; cells { F { stream makeup; key F; } xNH3 { stream makeup; key x_NH3; } xAr { stream makeup; key x_Ar; } } }
+            { name mixed; label "converter inlet"; cells { F { stream mixed; key F; } xNH3 { stream mixed; key x_NH3; } xAr { stream mixed; key x_Ar; } } }
+            { name reacted; label "converter outlet"; cells { F { stream reacted; key F; } xNH3 { stream reacted; key x_NH3; } xAr { stream reacted; key x_Ar; } } }
+            { name productNH3; label "liquid product"; cells { F { stream productNH3; key F; } xNH3 { stream productNH3; key x_NH3; } xAr { stream productNH3; key x_Ar; } } }
+            { name recycle; label "recycle"; cells { F { stream recycle; key F; } xNH3 { stream recycle; key x_NH3; } xAr { stream recycle; key x_Ar; } } }
+            { name purge; label "purge"; cells { F { stream purge; key F; } xNH3 { stream purge; key x_NH3; } xAr { stream purge; key x_Ar; } } }
+        );
+    }
+);

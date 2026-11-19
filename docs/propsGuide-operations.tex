@@ -80,7 +80,7 @@ The van der Waals ONE-FLUID DECOMPOSITION of a cubic EoS's mixture parameters at
 \end{tutoriallink}
 
 \paragraph{\code{propertyScan1D}}\label{op:propertyScan1D}
-One-dimensional property sweep: varies one state variable (T, P or a mole fraction) over n evenly-spaced points and evaluates the requested properties at each. Writes one CSV row per point.
+One-dimensional property sweep: varies one state variable (T, P or a mole fraction) over n evenly-spaced points and evaluates the requested properties at each. Writes one CSV row per point, and publishes the same numbers as a table named \code{scan} (columns: the swept variable, \code{x\_<comp>} for a composition, then each property whose unit the catalogue knows) that a \code{views} series names: \code{op <name>; table scan; x <column>; y <column>;}.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
 \hline

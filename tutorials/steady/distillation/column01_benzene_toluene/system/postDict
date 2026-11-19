@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column01_benzene_toluene -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: the specification is the column (15 stages, feed on stage 8, R = 2, D = 50 kmol/h), and the product purity is the ANSWER; the stage-by-stage table is the McCabe-Thiele diagram in numbers.
+
+  The plot: the benzene mole fraction stage by stage, liquid and vapour: the profile the column built between its two ends.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    composition_by_stage;
+        type    profile;
+        title   "Benzene stage by stage: the column the specification built";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "benzene mole fraction"; unit "-"; scale linear; }
+        note    "Stage 1 is the top tray; the last stage is the reboiler. The marker is the feed stage. The liquid and vapour curves are the two sides of the equilibrium staircase.";
+        series
+        (
+            { name liquid; label "liquid on the stage"; unitOp column01; table profile; x stage; y x_benzene; style linesMarkers; }
+            { name vapour; label "vapour leaving the stage"; unitOp column01; table profile; x stage; y y_benzene; style linesMarkers; }
+            { name feedStage; label "feed stage (8)"; unitOp column01; table profile; select { stage 8; } x stage; y x_benzene; style markers; }
+        );
+    }
+);

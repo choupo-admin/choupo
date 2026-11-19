@@ -1555,7 +1555,7 @@ int FitParameters::run(const DictPtr& dict,
             //  comparison, between a fitted pair and the catalogue pair on the
             //  same held-out file.  Both are printed with their unit, always.
             aadHeldOutK_ /= static_cast<scalar>(rV.size());
-            nHeldOut = rV.size(); fitobj::publishBubble(diag_, "heldout", rV); for (const auto& ds : lle::vleSets(part.validation(), lleMode)) { sVector xs, ts, ps; for (const auto& pt : EvidencePartition::loadAll(std::vector<EvidenceDataset>{ds}, xNames, yNames, "fitParameters(" + kind + ")", zNames)) { xs.push_back(pt.x); ts.push_back(pt.y); ps.push_back(pt.hasZ() ? pt.z : pExp[0]); } if (xs.empty()) continue; sVector rd; computeResiduals(thV, ps, xs, ts, rd, nullptr, iF1, iF2); fitobj::DatasetError de; de.name = ds.path; de.n = rd.size(); for (const scalar v : rd) { de.mean += std::fabs(v) / static_cast<scalar>(rd.size()); de.max = std::max(de.max, std::fabs(v)); } heldBubble.push_back(de); }
+            nHeldOut = rV.size(); fitobj::publishBubble(diag_, "heldout", rV); for (const auto& ds : lle::vleSets(part.validation(), lleMode)) { sVector xs, ts, ps; for (const auto& pt : EvidencePartition::loadAll(std::vector<EvidenceDataset>{ds}, xNames, yNames, "fitParameters(" + kind + ")", zNames)) { xs.push_back(pt.x); ts.push_back(pt.y); ps.push_back(pt.hasZ() ? pt.z : pExp[0]); } if (xs.empty()) continue; sVector rd; computeResiduals(thV, ps, xs, ts, rd, nullptr, iF1, iF2); fitobj::DatasetError de; de.name = ds.path; de.n = rd.size(); for (const scalar v : rd) { de.mean += std::fabs(v) / static_cast<scalar>(rd.size()); de.max = std::max(de.max, std::fabs(v)); } heldBubble.push_back(de); } appendHeldOutPoints(tables_, thV, pVal, xVal, tVal, iF1, iF2, kindP);
             heldOutXmin = *std::min_element(xVal.begin(), xVal.end());
             heldOutXmax = *std::max_element(xVal.begin(), xVal.end());
         } if (lleVal.active()) { ThermoPackage thL = buildThermo(params); lleHeld = lle::heldOut(thL, lleVal, iF1, iF2, verbosity, partPtr->lleBand()); lle::publishHeldOut(diag_, lleHeld); }
@@ -3250,6 +3250,33 @@ PublishedTable FitParameters::bubbleFitPoints(const ThermoPackage& thermo,
             pExp[k], tExp[k], Tm, Tm - tExp[k] });
     }
     return tab;
+}
+
+//  THE HELD-OUT POINTS JOIN THE FIT'S TABLE (DEV.md 4c C443).  The bubble fit's
+//  `fitPoints` held only the points it was fitted to, so a view could not draw
+//  the held-out ones apart.  When the run held points out, every row of the
+//  table gains a `heldOut` column (0 = fitted, 1 = held out) and the held-out
+//  points follow, priced by the SAME routine on the same fitted package, so the
+//  default parity and residual views (genericDefaultViews) and any declared
+//  view can `select { heldOut 1; }`.  A fit that held nothing out publishes the
+//  table it always did.
+void FitParameters::appendHeldOutPoints(std::vector<PublishedTable>& tables,
+    const ThermoPackage& thermo, const sVector& fixedVal, const sVector& xVal,
+    const sVector& measVal, std::size_t iF1, std::size_t iF2, bool kindP)
+{
+    if (tables.empty() || tables[0].name != "fitPoints" || xVal.empty()) return;
+    PublishedTable held = bubbleFitPoints(thermo, xVal, fixedVal, measVal, iF1, iF2, kindP, "");
+    PublishedTable& tab = tables[0];
+    const scalar nFit = static_cast<scalar>(tab.rows.size());
+    tab.columns.push_back({ "heldOut", "-" });
+    for (auto& r : tab.rows) r.push_back(0.0);
+    for (auto r : held.rows)
+    {
+        r[0] += nFit;
+        r.push_back(1.0);
+        tab.rows.push_back(std::move(r));
+    }
+    tab.description += "; heldOut = 1 marks a point the fit never saw (predicted, not fitted)";
 }
 
 } // namespace Choupo

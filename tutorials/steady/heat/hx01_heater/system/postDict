@@ -1,0 +1,53 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  hx01_heater -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: a duty goes in and a temperature comes out: the dictionary says how much heat, the energy balance says how hot.
+
+  The plot: the stream before and after the heater on a temperature scale, with the duty beside it.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    T_in_out;
+        type    series;
+        title   "A 100 kW duty heats the stream from 300 K to the temperature the energy balance gives";
+        xAxis   { label "vapour fraction"; unit "-"; scale linear; }
+        yAxis   { label "temperature"; unit "K"; scale linear; }
+        note    "One marker per stream: the stream stays liquid (vapour fraction 0), so the whole duty goes into sensible heat.";
+        series
+        (
+            { name feed; label "inlet"; ops ( stream:feed ); x vf; y T; style markers; }
+            { name hot; label "outlet"; ops ( stream:hotStream ); x vf; y T; style markers; }
+        );
+    }
+    {
+        name    heater;
+        type    table;
+        title   "The heater, in numbers";
+        note    "The duty is the input; the outlet temperature is what the energy balance returns.";
+        columns
+        (
+            { name Tin; label "inlet temperature"; unit "K"; }
+            { name Tout; label "outlet temperature"; unit "K"; }
+            { name Q; label "duty"; unit "kW"; }
+        );
+        rows
+        (
+            { name heater01; label "heater01"; cells { Tin { stream feed; key T; } Tout { stream hotStream; key T; } Q { unitOp heater01; key Q_kW; } } }
+        );
+    }
+);

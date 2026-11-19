@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column13_sour_water_stage_identity -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: the stage identity under chemistry: the effective K-value the column uses on each stage is the same equilibrium a flash computes, proved through two independent code paths.
+
+  The plot: the stage temperature of the four-stage tower, the profile the column publishes, with the feed stage marked.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    temperature_by_stage;
+        type    profile;
+        title   "Stage temperature of the sour-water tower";
+        xAxis   { label "stage (1 = top)"; unit "-"; scale linear; }
+        yAxis   { label "temperature"; unit "degC"; scale linear; }
+        note    "Stage 1 is the top tray; the marker is the feed stage. The identity check itself (the flash of the stage mixture agrees with the stage) is in the stage-mixture streams of the case.";
+        series
+        (
+            { name temperature; label "stage temperature"; unitOp tower; table profile; x stage; y T; style linesMarkers; }
+            { name feedStage; label "feed stage (3)"; unitOp tower; table profile; select { stage 3; } x stage; y T; style markers; }
+        );
+    }
+);

@@ -43,10 +43,10 @@ namespace views {
 
 namespace {
 
-//  A quantity's unit WHERE ITS NAME SAYS IT: the part after the last `_`
-//  when that is a registered, linear, dimensioned unit (`Q_reboiler_kW`).  A
-//  name that does not say it publishes none: the unit a view declares is then
-//  the author's statement, said aloud on the console.
+//  A PROFILE COLUMN's unit where its name says it (the part after the last `_`
+//  when that is a registered, linear, dimensioned unit).  KPIs do NOT do this:
+//  they carry the unit their unit declared (UnitOperation::kpiUnits, C443).
+//  Profile columns are still read this way: DEBT, named in the C443 report.
 std::string unitFromName(const std::string& name)
 {
     const auto us = name.rfind('_');
@@ -83,7 +83,16 @@ std::vector<Publication> publicationsOfRun(const SimulationResult& r)
             for (const auto& [key, v] : kp->second)
             {
                 pub.diagnostics[key] = v;
-                pub.units[key] = unitFromName(key);
+                //  the unit the UNIT declared (UnitOperation::kpiUnits), never
+                //  read off the key's spelling (N_min is not minutes)
+                const auto ku = r.kpiUnits.find(fu.name);
+                std::string un;
+                if (ku != r.kpiUnits.end())
+                {
+                    const auto k1 = ku->second.find(key);
+                    if (k1 != ku->second.end()) un = k1->second;
+                }
+                pub.units[key] = un;
             }
         const auto pr = r.profiles.find(fu.name);
         if (pr != r.profiles.end() && !pr->second.columns.empty())

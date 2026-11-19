@@ -1422,6 +1422,17 @@ azeotrope entirely while NRTL lands on it.
 curves overlaid with measured VLE points (Carey \& Lewis, 1932).
 \end{tutoriallink}
 
+A case can also \emph{declare} the picture instead of relying on the overlay: a
+\code{views} list in the propsDict names the numbers the run published.
+Each \code{propertyScan1D} publishes its swept variable and its properties as a
+table \code{scan}, and a bubble-point fit that held evidence out marks those
+points in its \code{fitPoints} table (column \code{heldOut}, 1 for a point the
+fit never saw), so one view can draw the measured points the fit used, the
+held-out points as a separate series, the ideal-solution curve and the fitted
+curve on the same axes.  The engine resolves every name and writes the numbers;
+the GUI draws them.  \file{tutorials/props/curation/curate02\_vle\_heldout\_ethanol\_water}
+opens on exactly this T--$x$--$y$ view.
+
 \subsection{Fit, then promote}
 
 When a model earns its keep, \code{fitParameters} regresses its coefficients to

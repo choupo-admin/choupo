@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  bubbleT01_ethanol_water -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: the temperature at which a 30 % ethanol liquid first boils, and the vapour in the first bubble, richer in ethanol than the liquid.
+
+  The plot: two rows, the liquid and its first bubble of vapour, on the same temperature: the ethanol enrichment is the gap between them.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    liquid_and_first_vapour;
+        type    table;
+        title   "The liquid and the first vapour it makes, at the bubble temperature";
+        note    "Both rows are at the bubble temperature the unit solved (the feed stream itself is declared at its own temperature). The enrichment of ethanol in the first bubble is what every distillation column lives on.";
+        columns
+        (
+            { name x; label "ethanol mole fraction"; unit "-"; }
+            { name T; label "bubble temperature"; unit "K"; }
+        );
+        rows
+        (
+            { name liquid; label "liquid (the feed)"; cells { x { stream feed; key x_ethanol; } T { unitOp bubble01; key T_bubble; } } }
+            { name vapour; label "first bubble of vapour"; cells { x { unitOp bubble01; key y_ethanol; } T { unitOp bubble01; key T_bubble; } } }
+        );
+    }
+);

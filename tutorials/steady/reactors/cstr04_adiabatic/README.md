@@ -4,10 +4,10 @@ The `cstr01` reactor with **no heat removal**.  The esterification is
 only **mildly exothermic in the liquid** (dH_rxn about -2.7 kJ/mol at
 298 K, after the acetic-acid correction recorded in
 `docs/design/acetic-acid-latent-heat-closure.md`), so the contents heat
-only a little: the golden lands at **T_out = 355.34 K**, a **5.34 K**
-rise from the 350 K feed, with the extent **ξ = 0.0853 mol/s** (ξ_max is
-0.1389 mol/s, so conversion is about 61 %) at a rate constant of
-**5.1e-3 s⁻¹**.
+only a little: the golden lands at **T_out = 355.17 K**, a **5.17 K**
+rise from the 350 K feed, with the extent **ξ = 0.0825 mol/s** (ξ_max is
+0.1389 mol/s, so conversion is about 59 %) at a rate constant of
+**5.07e-3 s⁻¹**.
 
 Earlier versions of this case printed a 104 K rise and complete
 conversion; they were written around a liquid heat of reaction about ten

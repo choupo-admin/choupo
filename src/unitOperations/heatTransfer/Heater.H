@@ -110,6 +110,12 @@ public:
         return kpis_;
     }
 
+    std::map<std::string, std::string> kpiUnits() const override
+    {
+        return { {"Q", "W"}, {"Q_kW", "kW"}, {"T_in", "K"}, {"T_out", "K"},
+                 {"dT", "K"}, {"P", "Pa"}, {"vf_out", "-"} };
+    }
+
 private:
     inline static const std::string type_ = "heater";
     std::vector<ProcessStream>      produced_;

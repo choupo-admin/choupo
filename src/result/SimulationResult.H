@@ -129,6 +129,9 @@ struct SimulationResult
     //  taken out of on 2026-09-05.  Empty unless the case declares a circuit.
     std::map<std::string,std::string>                              utilityCircuitOf;
     std::map<std::string, std::map<std::string, scalar>>           kpis;
+    //  the unit each KPI of `kpis` is published in, declared by the unit
+    //  (UnitOperation::kpiUnits); a KPI missing here publishes no unit
+    std::map<std::string, std::map<std::string, std::string>>      kpiUnits;
     std::vector<FlatUnit>                                          topology;
     //  The dicts the units were BUILT from, in `topology` order, under the
     //  same qualified names (Flowsheet::unitDicts, DEV.md 4c C52).  For the

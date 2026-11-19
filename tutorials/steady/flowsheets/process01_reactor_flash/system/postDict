@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  process01_reactor_flash -- the view the lesson opens on (DEV.md 4c C443).
+
+  The lesson: a flowsheet is a graph of streams and information follows them: a reactor makes ethyl acetate, and the flash downstream splits what arrives into a vapour and a liquid product.
+
+  The plot: the four streams in flow order, with the molar flow, the temperature and the ethyl acetate mole fraction each carries: the ester appears at the reactor outlet and is split by the flash.
+
+  This declares how the run is DRAWN, over what the run already publishes
+  (every stream and every unit's KPIs and profile are nameable); it computes
+  nothing and changes no number.  Grammar: docs/design/a-post-processing-
+  dictionary.md.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    along_the_flowsheet;
+        type    table;
+        title   "Ethyl acetate along the flowsheet: made in the reactor, split by the flash";
+        note    "The streams are listed in the order of the flowsheet: feed, reactor outlet, then the two flash products. The mole fraction of ethyl acetate rises across the reactor; the flash puts more of it in the vapour than in the liquid.";
+        columns
+        (
+            { name F; label "molar flow"; unit "kmol/h"; }
+            { name T; label "temperature"; unit "K"; }
+            { name xEA; label "ethyl acetate mole fraction"; unit "-"; }
+            { name xEtOH; label "ethanol mole fraction"; unit "-"; }
+        );
+        rows
+        (
+            { name feed; label "feed"; cells { F { stream feed; key F; } T { stream feed; key T; } xEA { stream feed; key x_ethylAcetate; } xEtOH { stream feed; key x_ethanol; } } }
+            { name reactorOut; label "reactor outlet"; cells { F { stream reactorOut; key F; } T { stream reactorOut; key T; } xEA { stream reactorOut; key x_ethylAcetate; } xEtOH { stream reactorOut; key x_ethanol; } } }
+            { name vapProd; label "vapour product"; cells { F { stream vapProd; key F; } T { stream vapProd; key T; } xEA { stream vapProd; key x_ethylAcetate; } xEtOH { stream vapProd; key x_ethanol; } } }
+            { name liqProd; label "liquid product"; cells { F { stream liqProd; key F; } T { stream liqProd; key T; } xEA { stream liqProd; key x_ethylAcetate; } xEtOH { stream liqProd; key x_ethanol; } } }
+        );
+    }
+);

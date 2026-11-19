@@ -2,8 +2,8 @@
 
 The reactor of `cstr01` rebuilt as a plug-flow tube: the same 5 litres,
 the same 1 kmol/h feed at 350 K, the same Arrhenius pair.  The golden:
-**X = 67.02 %** against the CSTR's 52.59 %, at the same **τ = 310.3 s**
-and the same **Da = 1.109**.
+**X = 64.32 %** against the CSTR's 50.75 %, at the same **τ = 288.3 s**
+and the same **Da = 1.030**.
 
 ## The lesson
 
@@ -11,7 +11,7 @@ and the same **Da = 1.109**.
    molecule reacts at the *outlet* concentration, the lowest in the
    vessel.  In the tube the concentration falls along V, so most of the
    volume works at a higher rate.  For first order:
-   CSTR X = Da/(1+Da) = 0.526; PFR X = 1 − e^(−Da) = 0.670.  Both from
+   CSTR X = Da/(1+Da) = 0.507; PFR X = 1 − e^(−Da) = 0.643.  Both from
    the same Da; both in the goldens.
 2. **The profile is printed, not just the endpoint.**  `nSteps 100;
    writeInterval 10;` in `operation {}` — the **Log** tab shows the
