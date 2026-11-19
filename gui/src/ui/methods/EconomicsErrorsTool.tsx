@@ -176,7 +176,7 @@ export function EconomicsErrorsTool(): JSX.Element {
   const [wc, setWc] = useState(wcDefaults());
   const wr = useMemo(() => workingCapitals(wc), [wc]);
   // ---- class 6
-  const [rt, setRt] = useState({ I: 30, cf: 6, L: 10, i: 0.60, scale: 6 });
+  const [rt, setRt] = useState({ I: 30, cf: 6, L: 10, i: 0.60, scale: 12 });
   const rres = useMemo(() => rateAndIrr(rt), [rt]);
   // ---- class 7
   const [ub, setUb] = useState({ qty: 10800, qtyUnit: "GJ", price: 0.10, priceUnit: "kWh" });
@@ -263,7 +263,7 @@ export function EconomicsErrorsTool(): JSX.Element {
         {step(3)}
         <Box data-class="twoRevenues">
           <Title order={5}>2. The break-even and the NPV on one revenue</Title>
-          <OriginMark of={["page", "assumption"]} note="one illustrative plant, shared with classes 3 and 6" />
+          <OriginMark of={["page", "assumption"]} note="one illustrative plant, shared with class 3 (class 6 has its own cash flow)" />
           <Group mt={6} gap="md" align="flex-end" wrap="wrap">
             <Num label="Investment I" unit="M EUR" value={plant.I} onChange={(v) => setP("I", v)} />
             <Num label="Fixed costs F" unit="M EUR / yr" value={plant.F} onChange={(v) => setP("F", v)} />

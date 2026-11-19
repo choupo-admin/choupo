@@ -67,7 +67,7 @@ export const PLANT_COST_STEPS: readonly LessonStep[] = [
       + "it hides everything it adds. Choupo's engine prints the same "
       + "multiplier as a cross-check line: 3.63 times the sum of the "
       + "purchased costs, labelled as not used in the fixed capital "
-      + "(EconomicsPass.cpp:3087-3088; the print is at line 3802). The "
+      + "(EconomicsPass.cpp:3087-3088; the print is at line 3807). The "
       + "factor can be declared as langFactor.",
     formula: String.raw`F_{\mathrm{L}}=K\,C_{\mathrm{Be}}`,
     where: [
