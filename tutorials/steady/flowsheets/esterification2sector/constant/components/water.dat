@@ -1,3 +1,4 @@
+// [imported] origin "data/standards/components/water.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Water  (H2O, CAS 7732-18-5)
   Vapour pressure: the IAPWS saturation equation (IAPWS SR1-86(1992),
@@ -267,6 +268,29 @@ surfaceTension
     Tmax  353.15;
 }
 
+//  The cubic's alpha function, fitted BY CURATION to this record's own vapour-pressure
+//  law (C408 slice 0): bin/curate/fit_alpha_function.py writes it, never a table.  Read only when a case
+//  selects `alphaFunction MathiasCopeman;` on that cubic.
+cubicAlpha
+{
+    SRK
+    {
+        form    MathiasCopeman;
+        c1      1.093148;
+        c2      -0.67094674;
+        c3      0.69182682;
+        Trange  (273.16 634.1972);   // K, the fitted window: the law's own, cut at 0.98 Tc where the law reaches higher
+    }
+    PengRobinson
+    {
+        form    MathiasCopeman;
+        c1      0.91825576;
+        c2      -0.32975741;
+        c3      0.31981107;
+        Trange  (273.16 634.1972);   // K, the fitted window: the law's own, cut at 0.98 Tc where the law reaches higher
+    }
+}
+
 provenance
 {
     vaporPressure
@@ -368,11 +392,45 @@ provenance
             max_pct     2.710171;
         }
     }
+    cubicAlpha
+    {
+        SRK
+        {
+            origin        derived;
+            method        "least squares in ln Psat of the SRK cubic's pure-component saturation pressure against this record's own vapour-pressure law (Wagner (reducing 647.096 K, 22.064 MPa; the record's own equation), 273.16-647.096 K; the cubic's fit window is cut at 0.98 Tc = 634.20 K), 41 points over the law's window; Mathias-Copeman form as printed in Poling et al., 5th ed., Table 4-7; sqrt(alpha) kept positive to Tc";
+            methodVersion "bin/curate/fit_alpha_function.py";
+            fittedTo      "vaporPressure";
+            window        (273.16 634.1972);
+            maxDeviation_pct  0.6546;   // |Psat_cubic/Psat_law - 1| over the window, 201 points
+            defaultDeviation_pct  34.127;   // the same, with the default alpha function
+            valueSha256   "40631c76fdda650378ada6a60e8f7768ebde7fd76999a2d257396d265e555b8e";   // sha256 of "SRK MathiasCopeman 1.093148 -0.67094674 0.69182682 273.16 634.1972"
+            uncertainty   "in-sample: the constants reproduce THIS record's law over its window; outside it they extrapolate and above Tc only c1 acts";
+            reviewStatus  autoPromoted;
+            review        { by none; }
+            reviewReason  "computed by a machine from the record's own law; not yet read back by a human";
+        }
+        PengRobinson
+        {
+            origin        derived;
+            method        "least squares in ln Psat of the PengRobinson cubic's pure-component saturation pressure against this record's own vapour-pressure law (Wagner (reducing 647.096 K, 22.064 MPa; the record's own equation), 273.16-647.096 K; the cubic's fit window is cut at 0.98 Tc = 634.20 K), 41 points over the law's window; Mathias-Copeman form as printed in Poling et al., 5th ed., Table 4-7; sqrt(alpha) kept positive to Tc";
+            methodVersion "bin/curate/fit_alpha_function.py";
+            fittedTo      "vaporPressure";
+            window        (273.16 634.1972);
+            maxDeviation_pct  0.5064;   // |Psat_cubic/Psat_law - 1| over the window, 201 points
+            defaultDeviation_pct  21.296;   // the same, with the default alpha function
+            valueSha256   "a45fd4d84a293221a820b2a4d88b364069d4112a041505dfa5ef248aded59d47";   // sha256 of "PengRobinson MathiasCopeman 0.91825576 -0.32975741 0.31981107 273.16 634.1972"
+            uncertainty   "in-sample: the constants reproduce THIS record's law over its window; outside it they extrapolate and above Tc only c1 acts";
+            reviewStatus  autoPromoted;
+            review        { by none; }
+            reviewReason  "computed by a machine from the record's own law; not yet read back by a human";
+        }
+    }
 }
 
 groups
 {
     unifac ( { group H2O; count 1; } );
+    unifacDortmund ( { group H2O; count 1; } );   // C408 (c): P water, Table III p. 182-183
 }
 
 uniquac
