@@ -6236,6 +6236,24 @@ PYEOF
     fi
     rm -f /tmp/voltr.$$
 
+    # elementary-rates gate (2026-11-19, CHEMKIN line slice 3).  The CHEMKIN
+    # words modifiedArrhenius / thirdBody / falloff run in a pfr through the
+    # ReactionRate factory (ElementaryRate), in mol/m3 where the batch vessel
+    # reads kmol/m3.  Each of three witness pairs is the CHEMKIN law (cm-mol-s,
+    # kcal/mol) against the plain Arrhenius law it equals at one temperature;
+    # the outlets must agree to 1e-9.  The defect it would have caught:
+    # chemkin_to_choupo.py slice 1 converted A with x1e-6 per order where the
+    # batch reader uses x1e-3 (10^3 per order), at exit 0 and green closures.
+    if gate_exec "$ROOT/bin/curate/check_elementary_rates.py" > /tmp/elemrate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "elementary-rates-gate" "$(head -1 /tmp/elemrate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_elementary_rates.py)\n" "elementary-rates-gate"
+        cat /tmp/elemrate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/elemrate.$$
+
     # cubic-mixing-rule gate (2026-11-16, DEV.md 4c C408 (b)).  The mixing rule
     # of a cubic is an object (CubicMixingRule): the van der Waals one-fluid
     # arithmetic moved intact, and MHV1 / MHV2 (Michelsen 1990 Eq. 12; Dahl &
