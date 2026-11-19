@@ -295,6 +295,15 @@ void sweep(const Grid& g, Writer& w, const std::string& xTag,
             }
             catch (const std::exception& e) { dMsg = e.what(); }
             catch (...) { dMsg = "(non-standard)"; }
+            //  DENSITY IS NO LONGER THE OLD CALL (C445, the one density
+            //  door): evaluate(Property::density) is the resolver of
+            //  thermo/liquidProperty/DensityResolver, which departs from the
+            //  package's own `density` deliberately (the reference leaf, the
+            //  liquid branch, ideal mixing per constituent set).  Those
+            //  departures are counted by kind in the kernel sweep below, so
+            //  a density state is only LABELLED here; viscosity and surface
+            //  tension are still held to the old call, bit for bit.
+            if (dc.prop == 0) continue;
             ++doorCompared;
             const bool same = (ok == dOk)
                 && (ok ? std::memcmp(&v, &dv, sizeof v) == 0 : msg == dMsg);
