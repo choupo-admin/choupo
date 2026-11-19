@@ -182,7 +182,7 @@ provenance
         fittedBy      "bin/curate/transport_fit.py";
         reviewStatus  autoPromoted;
         review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
-        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGrade      clean;   // DEV.md 4c C336 class B limits 10 / 20 / 30 % on the max relative error
         fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
         fitGradeMaxRelativeError_pct 2.878126;
         Trange        (234.6 375.71);   // K, the kept points -- outside it the engine announces an extrapolation
@@ -215,7 +215,7 @@ provenance
         fittedBy      "bin/curate/transport_fit.py";
         reviewStatus  autoPromoted;
         review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
-        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGrade      clean;   // DEV.md 4c C336 class B limits 10 / 20 / 30 % on the max relative error
         fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
         fitGradeMaxRelativeError_pct 1.340445;
         Trange        (277.85 368.139);   // K, the kept points -- outside it the engine announces an extrapolation

@@ -138,6 +138,10 @@ LARGEST error over the measurements it kept, graded by property class:
 | (B) Henry constant, gamma-infinity, transport properties | ≤ 10 % | 10–20 % | 20–30 % | > 30 % |
 | (C) bubble temperature (binary pairs) | ≤ 1 K | 1–2 K | 2–4 K | > 4 K |
 
+The three rows are ONE definition, `bin/curate/property_grades.py`; every
+curation tool reads its limits from there (none carries a copy), and a
+property kind it does not list is refused by name.
+
 clean, warning and severe records are in the catalogue; refused is not
 shipped.  The grade is in-sample (`fitGradeBasis inSample;`); one laboratory
 or one temperature caps a clean to warning (`fitGradeCap`), and with one

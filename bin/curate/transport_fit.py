@@ -22,8 +22,8 @@ Engine forms (read at src/thermo/transport/):
                 only); sigma = s0 (1 - T/Tc)^n is fitted into the dataset ONLY.
 
 Points: one-component blocks, liquid phase, variables only T and P, P <= 200 kPa
-(absent P kept), T < Tc.  Limits (5/10/20 %), outlier rule (15 %) and grade
-function are those of c287_new_components (one home).  Every laboratory (DOI)
+(absent P kept), T < Tc.  Grade limits are class B of property_grades (10/20/30 %, C336, one
+home); the outlier rule (15 %) is that of c287_new_components.  Every laboratory (DOI)
 is fitted; least squares on ln y, outliers dropped by name, then the largest
 relative error minimised.  `fitGradeBasis inSample`; clean needs >= 2
 temperatures AND >= 2 laboratories (C300 rule 2) else warning + fitGradeCap.
@@ -34,14 +34,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "bin" / "curate"))
 import c287_new_components as c287  # noqa: E402
+import property_grades as pg  # noqa: E402
 
 TOOL = "bin/curate/transport_fit.py"
 CACHE = c287.CACHE
 STD = c287.STD
-LIMITS = c287.LIMITS
+LIMITS = pg.CLASS_B_PCT     # class B (DEV.md 4c C336): viscosity, conductivity, surface tension; ONE home property_grades.py
 OUTLIER_PCT = c287.OUTLIER_PCT
 P_MAX_KPA = c287.P_MAX_KPA
-grade = c287.grade
+
+
+def grade(x):
+    return pg.grade_of(x, LIMITS)
+
+
 BATCH = ROOT / "data" / "curation" / "batches" / "transport_c327"
 DATASET = BATCH / "constant" / "transportDataset.json"
 CENSUS = ROOT / "docs" / "audits" / "2026-11-11-transport-thermoml-census.tsv"
@@ -557,7 +563,7 @@ def prov_text(prop, f, sha):
             f'        fittedBy      "{TOOL}";\n'
             "        reviewStatus  autoPromoted;\n"
             "        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it\n"
-            f"        fitGrade      {f['grade']};   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error\n"
+            f"        fitGrade      {f['grade']};   // DEV.md 4c C336 class B limits 10 / 20 / 30 % on the max relative error\n"
             "        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1\n"
             + cap +
             f"        fitGradeMaxRelativeError_pct {f['max']:.6f};\n"
@@ -736,7 +742,7 @@ def cmd_verify(refit=True):
         print(f"check_transport_records: FAIL -- {len(fails)} failure(s) over {len(written)} record(s)")
     else:
         print(f"check_transport_records: OK -- {len(written)} fitted liquid-viscosity / liquid-thermal-conductivity record(s) held to the dataset "
-              f"(parameters, window, D/E written as zero, review by none, fitGradeBasis inSample, grade limits 5/10/20 %, C300 cap words, "
+              f"(parameters, window, D/E written as zero, review by none, fitGradeBasis inSample, grade limits 10/20/30 %, class B, C300 cap words, "
               f"Trange = window, nothing below warning or with one parameter), and, when the ThermoML archive cache is reachable, each "
               "refit from it (parameters, window and max error equal the stored ones at 1e-6).  NOT CHECKED: that a fit agrees with the "
               "articles' own tables (a machine read them), surface tension (its own arm, `verify --surface-tension`), any molecule outside the written records.")
@@ -764,7 +770,7 @@ def sigma_prov_text(f, sha):
             f'        fittedBy      "{TOOL}";\n'
             "        reviewStatus  autoPromoted;\n"
             "        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it\n"
-            f"        fitGrade      {f['grade']};   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error\n"
+            f"        fitGrade      {f['grade']};   // DEV.md 4c C336 class B limits 10 / 20 / 30 % on the max relative error\n"
             "        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1\n"
             + cap +
             f"        fitGradeMaxRelativeError_pct {f['max']:.6f};\n"
@@ -914,7 +920,7 @@ def cmd_verify_sigma(refit=True):
         print(f"check_transport_records surfaceTension: FAIL -- {len(fails)} failure(s) over {len(written)} record(s)")
     else:
         print(f"check_transport_records surfaceTension: OK -- {len(written)} stored surfaceTension record(s) held to the dataset "
-              f"(A, B = 0, Tc, n, window, review by none, fitGradeBasis inSample, grade limits 5/10/20 %, C300 cap words, Trange = window, "
+              f"(A, B = 0, Tc, n, window, review by none, fitGradeBasis inSample, grade limits 10/20/30 %, class B, C300 cap words, Trange = window, "
               f"nothing below warning), and 3 sabotages caught by name ({', '.join(caught)}).  NOT CHECKED: that a fit agrees with the "
               "articles' own tables, any molecule outside the written records.")
         print("  " + arm)

@@ -1475,6 +1475,8 @@ end-of-run caveat block), so a result that leans on a weak record says so.  A
 measurements before you cite it.  A \code{refused} fit is not shipped at all;
 its curation case keeps the attempt and the reason.
 
+\textbf{One definition.}  The three rows are one definition, \file{bin/curate/property\_grades.py}; every curation tool (vapour pressure, pairs, Henry, transport, and the $\gamma^\infty$ rows when they are fitted) reads its limits from there, and a property kind it does not list is refused by name rather than given a default.
+
 \textbf{Why class (B) is wider.}  Independent laboratories disagree by
 10--30\,\% on Henry constants, infinite-dilution activity coefficients and
 transport properties, so a 5\,\% limit would refuse curves better than the
