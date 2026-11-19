@@ -6254,6 +6254,25 @@ PYEOF
     fi
     rm -f /tmp/elemrate.$$
 
+    # rate-of-production gate (2026-11-19, glass box of a mechanism, phase 1).
+    # `rateOfProduction { times (...); }` on a batchReactor prints, per species,
+    # which reactions make and destroy it, from c_ij = nu_ij r_j V computed a
+    # SECOND time beside the integrator's right-hand side.  The defect it would
+    # have caught: a reporting path that forgot the third-body [M] / fall-off
+    # factor rateOfReaction_ adds prints plausible shares that do not sum to
+    # dn_i/dt; no golden and no atom balance sees it.  Sum rule against the
+    # integrator's own derivative, element conservation, the opt-in changing
+    # nothing, and a teeth arm.
+    if gate_exec "$ROOT/bin/curate/check_rate_of_production.py" > /tmp/rateprod.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "rate-of-production-gate" "$(head -1 /tmp/rateprod.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_rate_of_production.py)\n" "rate-of-production-gate"
+        cat /tmp/rateprod.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rateprod.$$
+
     # cubic-mixing-rule gate (2026-11-16, DEV.md 4c C408 (b)).  The mixing rule
     # of a cubic is an object (CubicMixingRule): the van der Waals one-fluid
     # arithmetic moved intact, and MHV1 / MHV2 (Michelsen 1990 Eq. 12; Dahl &
