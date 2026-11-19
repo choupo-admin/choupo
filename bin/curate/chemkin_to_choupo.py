@@ -392,7 +392,31 @@ def catalogue_identity(cname, comp):
             'different catalogue species (other atoms)";\n' % cname)
 
 
-def species_record(rec, cname, aw, source, licence):
+LN_ATM_PER_BAR = math.log(101325.0 / 1.0e5)   # ln(1.01325)
+
+
+def to_bar_standard_state(rec, p_std):
+    """A NASA-7 record referenced to 1 atm, re-referenced to the engine's 1 bar
+    (constant::Pref, src/core/Constants.H): S(1 bar) = S(1 atm) + R ln(1.01325),
+    i.e. a7 + ln(1.01325) on both ranges; H, Cp and every other coefficient are
+    unchanged.  Then Kc = Kp,atm (P_atm/RT)^sum(nu), exactly what CHEMKIN-II and
+    Cantera compute from the same file (found by the Cantera comparison,
+    docs/reviews/2026-11-19-chemkin-real-mechanism/: +1.26 K and -0.1..-0.9 % in
+    the radicals without it)."""
+    if p_std == "bar":
+        return rec
+    if p_std != "atm":
+        raise Refusal("--standard-pressure must be atm or bar, got %r" % p_std)
+    out = dict(rec)
+    out["low"] = list(rec["low"]); out["high"] = list(rec["high"])
+    out["low"][6] += LN_ATM_PER_BAR
+    out["high"][6] += LN_ATM_PER_BAR
+    out["a7_printed"] = (rec["low"][6], rec["high"][6])
+    return out
+
+
+def species_record(rec, cname, aw, source, licence, p_std="bar"):
+    rec = to_bar_standard_state(rec, p_std)
     if rec["phase"].upper() == "L":
         raise Refusal("liquid-phase NASA record is not supported")
     miss = [e for e in rec["comp"] if e not in aw]
@@ -408,6 +432,9 @@ def species_record(rec, cname, aw, source, licence):
     solid = rec["phase"].upper() == "S"
     blk = "solidHeatCapacity" if solid else "idealGasHeatCapacity"
     prov = ('mechanism file %s; licence: %s' % (source, licence)).replace('"', "'")
+    if "a7_printed" in rec:
+        prov += ("; standard state re-referenced from 1 atm to 1 bar: a7 + ln(1.01325) on both "
+                 "ranges (printed a7: %.9e low, %.9e high)" % rec["a7_printed"])
     return """/*--- Component %s: imported from a CHEMKIN mechanism by bin/curate/chemkin_to_choupo.py ---*/
 //  Original mechanism name: %s.  A case-local import, not a catalogue record:
 //  Tc, Pc, omega, vapour pressure and CAS are not in a mechanism and are not written.
@@ -495,7 +522,8 @@ def refuse_output(case):
                       "this tool writes a case's constant/ only")
 
 
-def convert(mech_path, thermo_path, case, licence, reactions_only=False, rev_from_thermo=False):
+def convert(mech_path, thermo_path, case, licence, reactions_only=False, rev_from_thermo=False,
+            p_std="atm"):
     if not licence or not licence.strip():
         raise Refusal("--licence is required: the provenance of every record names it")
     refuse_output(case)
@@ -537,7 +565,7 @@ def convert(mech_path, thermo_path, case, licence, reactions_only=False, rev_fro
             refused_sp.append((s, "no THERMO record"))
             continue
         try:
-            txt = species_record(thermo[s], cname[s], aw, source, licence)
+            txt = species_record(thermo[s], cname[s], aw, source, licence, p_std)
         except Refusal as e:
             refused_sp.append((s, str(e)))
             continue
@@ -577,12 +605,12 @@ def convert(mech_path, thermo_path, case, licence, reactions_only=False, rev_fro
              "reactions: %d, written %d, not written %d" % (len(rx), len(ok), len(refused))]
     if nrev:
         lines += ["--rev-from-thermo: %d explicit REV lines IGNORED (reverse from equilibrium); this is a variant, not the published mechanism" % nrev]
-    lines += ["NASA-7 standard state: the engine's K_c uses P0 = 1 bar (constant::Pref); CHEMKIN-II and Cantera's ck2yaml read the same",
-              "  polynomials at 1 atm, so a reverse rate taken from the thermochemistry differs by 1.01325^(sum nu) per reaction",
-              "  (measured on the LLNL H2 mechanism: +1.26 K in the final temperature, radicals -0.1 to -0.9 %)"]
-    lines += ["written reactions are runnable in batchReactor ONLY (kinetics types modifiedArrhenius, thirdBody,",
-              "  falloff are read by BatchReactor.cpp alone; cstr, pfr and dynamicCSTR read Arrhenius and the",
-              "  factory laws and refuse these words by name)"]
+    lines += [("NASA-7 standard state: the file's records were read as referenced to 1 atm (the CHEMKIN-II convention) and "
+               "re-referenced to the engine's 1 bar (a7 + ln 1.01325), so K_c equals CHEMKIN's and Cantera's")
+              if p_std == "atm" else
+              "NASA-7 standard state: the file's records were declared referenced to 1 bar (--standard-pressure bar); written as printed"]
+    lines += ["written reactions run in batchReactor and in the multi-reaction paths of cstr and pfr (ElementaryRate,",
+              "  Theory Guide sec:elementary-rate); dynamicCSTR accepts the words but has no witness"]
     lines += ["  not written, by kind: %s = %d" % kv for kv in sorted(counts.items())]
     lines += ["SPECIES NOT WRITTEN:"] + ["  %s: %s" % x for x in refused_sp]
     lines += ["REACTIONS NOT WRITTEN:"] + ["  %s   [%s] %s" % x for x in refused]
@@ -877,8 +905,19 @@ def selftest():
     with contextlib.redirect_stdout(io.StringIO()):
         resm = convert(mm, None, os.path.join(tmp, "molecules"), "parser fixture, no data", reactions_only=True)
     check(len(resm["ok"]) == 0 and resm["counts"].get("MOLECULES") == 10, "MOLECULES: every reaction refused by name")
+    _r = dict(name="X", comp={"H": 2}, phase="G", Tlow=300.0, Tcommon=1000.0, Thigh=5000.0,
+              low=[3.5, 1e-3, 2e-7, 3e-11, 4e-15, -9e2, 5.0], high=[3.0, 2e-3, 3e-7, 4e-11, 5e-15, -1e3, 6.0])
+    _b = to_bar_standard_state(_r, "atm")
+    _H0, _S0 = nasa_H_S(_r["low"], T0)
+    _H1, _S1 = nasa_H_S(_b["low"], T0)
+    check(abs(_b["low"][6] - _r["low"][6] - math.log(1.01325)) < 1e-15
+          and abs(_b["high"][6] - _r["high"][6] - math.log(1.01325)) < 1e-15
+          and _H1 == _H0 and abs((_S1 - _S0) - 8.314462618 * math.log(1.01325)) < 1e-9
+          and to_bar_standard_state(_r, "bar") is _r,
+          "standard state: a 1 atm record gains ln(1.01325) in a7 on both ranges, H unchanged, "
+          "S + R ln(1.01325); a 1 bar record is written as printed")
     rep = open(os.path.join(case, "constant", "mechanismImport.txt")).read()
-    check(all(s in rep for s in ("REV", "PLOG", "FORD")) and "runnable in batchReactor ONLY" in rep,
+    check(all(s in rep for s in ("REV", "PLOG", "FORD")) and "multi-reaction paths of cstr and pfr" in rep,
           "every reaction not written is listed by its equation, with its reason")
     comp = open(os.path.join(case, "constant", "components", "A.dat")).read()
     check("model    NASA7;" in comp and "MW          2.0160" in comp and "parser fixture, no data" in comp,
@@ -920,6 +959,9 @@ def main():
                     help="write constant/reactions and mechanismImport.txt only (no thermo, no components)")
     ap.add_argument("--rev-from-thermo", action="store_true",
                     help="ignore explicit REV lines (reverse from the thermochemistry); a declared variant")
+    ap.add_argument("--standard-pressure", default="atm", choices=("atm", "bar"),
+                    help="pressure the file's NASA-7 records are referenced to (CHEMKIN-II: atm, the default); "
+                         "atm records are re-referenced to the engine's 1 bar")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args()
     if a.selftest:
@@ -927,7 +969,8 @@ def main():
     if not a.mechanism or not a.case:
         ap.error("mechanism and --case are required")
     try:
-        convert(a.mechanism, a.thermo, a.case, a.licence, a.reactions_only, a.rev_from_thermo)
+        convert(a.mechanism, a.thermo, a.case, a.licence, a.reactions_only, a.rev_from_thermo,
+                a.standard_pressure)
     except Refusal as e:
         print("REFUSED: %s" % e, file=sys.stderr)
         return 2
