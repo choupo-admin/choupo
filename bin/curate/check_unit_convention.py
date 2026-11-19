@@ -28,15 +28,17 @@ ARMS.
       as the Pa number.  The first two must agree to 1e-12 on V/F; the third
       must NOT (it proves the run is sensitive to Pc, without which the first
       comparison would prove nothing).
-  (c) pressureDesign, BEHAVIOUR: a sizing witness run with its bare
-      `pressureDesign` and with the same number written `bar` must publish
-      the same wall thickness and cost to 1e-12.
+  (c) pressureDesign, BEHAVIOUR: flash22_drum_sizing_benzene_toluene run
+      with its bare `pressureDesign` and with the same number written `bar`
+      must publish the same sizing numbers to 1e-12; ten times the number
+      bare must move some (the sheet sees the pressure).
 
 WHAT IT DOES NOT CHECK.  The other 16 trap families of the sweep (they are
 the rest of C454, one family per slice); whether `bar` is the RIGHT working
 unit (it is the corpus convention, kept so no golden moves).
 """
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -82,8 +84,9 @@ def arm_a():
 
 
 def run(case):
+    env = dict(os.environ, CHOUPO_HOME=str(ROOT))
     p = subprocess.run([str(BIN)], cwd=str(case), capture_output=True,
-                       text=True, timeout=600)
+                       text=True, timeout=600, env=env)
     out = p.stdout + p.stderr
     m = re.search(r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>", out, re.S)
     js = json.loads(m.group(1)) if m else None
@@ -138,18 +141,23 @@ def arm_b(td):
 
 
 def sizing_numbers(js):
+    """Every number the sizing pass published: each equipment item's
+    `values {}` (wall, dimensions, weight ...) and its equipment-list row."""
     out = {}
-    for it in js.get("sizing", js.get("equipment", [])) or []:
-        if isinstance(it, dict):
-            for k, v in it.items():
-                if isinstance(v, (int, float)) and k not in ("index",):
-                    out[(it.get("item", it.get("unit", "?")), k)] = v
+    for it in js.get("equipment", []) or []:
+        for k, v in (it.get("values") or {}).items():
+            if isinstance(v, (int, float)):
+                out[(it.get("item", "?"), k)] = v
+    for row in (js.get("equipmentList") or {}).get("rows", []):
+        for k, v in row.items():
+            if isinstance(v, (int, float)):
+                out[(row.get("itemId", "?"), "list." + k)] = v
     return out
 
 
 def arm_c(td):
     res = {}
-    for name in ("bare", "declared"):
+    for name in ("bare", "declared", "x10"):
         d = copy_unsealed(SIZING, Path(td) / ("pd_" + name))
         pd = d / "system" / "postDict"
         t = pd.read_text()
@@ -157,9 +165,10 @@ def arm_c(td):
         if not ms:
             fails.append("(c) the sizing witness declares no bare pressureDesign -- STALE fixture")
             return False
-        if name == "declared":
+        if name != "bare":
             for m in reversed(ms):
-                t = t[:m.start()] + "pressureDesign %s bar;" % m.group(1) + t[m.end():]
+                v = (m.group(1) + " bar") if name == "declared" else repr(10 * float(m.group(1)))
+                t = t[:m.start()] + "pressureDesign %s;" % v + t[m.end():]
             pd.write_text(t)
         rc, out, js = run(d)
         if rc != 0 or js is None:
@@ -171,6 +180,11 @@ def arm_c(td):
         fails.append("(c) the witness published no sizing numbers in its result -- STALE fixture")
         return False
     diff = [k for k in a if k not in b or abs(a[k] - b[k]) > 1e-12 * max(1.0, abs(a[k]))]
+    x10 = res["x10"][0]
+    if all(abs(a[k] - x10.get(k, a[k])) <= 1e-12 * max(1.0, abs(a[k])) for k in a):
+        fails.append("(c) ten times the design pressure moved no published sizing number -- "
+                     "the comparison proves nothing; choose another witness")
+        return False
     if diff:
         fails.append("(c) `pressureDesign <v> bar;` moved %d sizing number(s), e.g. %s: %r -> %r"
                      % (len(diff), diff[0], a[diff[0]], b.get(diff[0])))
@@ -196,7 +210,7 @@ def main():
     print("%s: OK (a) every read of %s goes through lookupScalarIn; (b) flash09's "
           "V/F is %.12g with CH4's Pc bare and with it written `bar`, and %.6g with "
           "the Pa number bare (the run sees Pc); (c) %d published sizing numbers of "
-          "flash22 are identical with pressureDesign bare and written `bar`.  NOT "
+          "flash22 are identical with pressureDesign bare and written `bar` (ten times the pressure moves them: the sheet sees it).  NOT "
           "checked: the other 16 trap families of C454."
           % (LABEL, " and ".join("`%s` (%s)" % kv for kv in WORKING_UNIT_KEYS.items()),
              v["bare"], v["pa"], c))
