@@ -4885,6 +4885,29 @@ accepts today, and that is a policy call.
 > mechanism, an implicit sparse integrator).  Related: C452 (the EduTool on
 > mechanisms) and the two Chemkin manuals filed today.
 
+> **C459 (Vitor, 2026-11-19: "nas minhas aulas de adsorção eu falo dos adsorventes
+> mais comuns na indústria e a sua utilização. Era bom uma EduTool tipo Pareto
+> nesta matéria").**  WEIGHED, agreed: a page mapping the few adsorbents that
+> do most industrial work (activated carbon, zeolites 3A/4A/5A/13X, silica gel,
+> activated alumina, carbon molecular sieves) to the separations they dominate
+> (drying, H2 PSA, air separation, VOC recovery, water treatment) and to why
+> (polarity, pore size, heat of adsorption).  Every share and every typical
+> use read from a source in the folder (Ruthven's book; Yang 2003 or a market
+> review if Vitor files one), never from memory; each adsorbent opens the
+> catalogue record and the case that uses it.  The page's scope goes to Vitor
+> before dispatch.  Size M, "rest" group.
+
+> **C460 (Vitor, 2026-11-19: "E outra sobre heurísticas de selecção de secadores?
+> Também estilo Pareto e com os esquemas mais comuns pelos quais são
+> esquematicamente conhecidos").**  WEIGHED, agreed: the few dryer types that
+> do most industrial drying (spray, rotary, fluidised bed, tray, belt, drum,
+> freeze) with the selection heuristics (feed form, heat sensitivity, scale,
+> batch/continuous, final moisture) read from Mujumdar's Handbook of Industrial
+> Drying 3rd ed. (in the folder) and Perry's drying chapter, cited by page;
+> the schematics DRAWN ANEW for the page (no figure copied, copyright); each
+> type the engine models opens its case.  Scope to Vitor before dispatch.
+> Size M, "rest" group, beside C459.
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
