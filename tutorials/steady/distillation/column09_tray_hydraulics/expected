@@ -108,7 +108,7 @@ equipment column09/refluxDrum    tagNo            V-101            exact
 equipment column09/shell         tagNo            T-101            exact
 equipment column09/trays         tagNo            TR-101           exact
 kpi     column09               Q_reboiler_ownEnvelope_kW 772.533859594    1e-4
-source  column09               liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  column09               liquidDensity    idealMixing[anchoredRackett] exact
 source  column09               surfaceTension   BrockBird/Butler exact
 boundary global                 noBoundary       false            exact
 boundary global                 residual_denom_kW 1994.50066086    1e-4

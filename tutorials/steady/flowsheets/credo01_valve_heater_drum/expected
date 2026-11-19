@@ -56,6 +56,6 @@ kpi     V1                     rho_in           746.519617977    1e-4
 kpi     V1                     rho_out          13.8011695683    1e-4
 kpi     V1                     volumeRatio      54.0910402038    1e-4
 kpi     V1                     x_mass_out       0.195619752639   1e-4
-source  V1                     liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  V1                     liquidDensity    idealMixing[anchoredRackett] exact
 boundary global                 noBoundary       false            exact
 boundary global                 residual_denom_kW 260              1e-4

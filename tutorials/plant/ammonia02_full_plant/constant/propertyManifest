@@ -30,9 +30,7 @@ propertyManifest
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Helmholtz/Gao2023.dat"  "f0f5d38b6ad307e427b962203ec19ec610fb16a1d531fbe8056fa3be4db50b75";
         "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
-        "parameters/Helmholtz/SetzmannWagner1991.dat"  "2d75e1bff7b606847ff65b4854ca906f0f653cabb28036d87d7330109cf49b10";
         "parameters/Helmholtz/Span2000.dat"  "ff57a1c162fb3e3d2b93332832d5472106b988a43db93d6537f5a1e8751dd032";
-        "parameters/Helmholtz/SpanWagner1996.dat"  "45e5b08168038ca401f0a99ec275378fa7fec8658671fc3c954dd201e1bff76a";
         "parameters/Henry/"  "relevant:5992bd62d78ab24864672ee363bfc91c7aa75020955428cea7a6174863534619";
         "parameters/Henry/Ar-NH3.dat"  "ffb5721c2fbe7b7c580256c3eed55b25ba2783ecf2093b18b1f8a080f46d2481";
         "parameters/Henry/Ar-water.dat"  "9592cfb34c30ff2b94c3b394bbfd70a38ce25b03d36876f3577e85e17041ff50";
@@ -45,6 +43,5 @@ propertyManifest
         "utilities/coolingWater.dat"  "a56494132642337e92cca25e5fcb943c8e7d6b3f48b630442da8613aca961798";
         "utilities/electricity.dat"  "05317a957413165722c1f4ab1fffc523c459c9354f2afb234c2cab3768fbb392";
         "utilities/refrigerationNH3.dat"  "5aa7fc4c2d2a59f291ef19c2522dc0f448d45eb7ad9fb70dda4d9a65847cead0";
-        "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
     }
 }
