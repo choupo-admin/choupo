@@ -1,0 +1,51 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Four elementary steps of propane pyrolysis, stoichiometry only --
+  `reactionGibbs` prices each on the species' formation data.
+\*---------------------------------------------------------------------------*/
+
+primaryCH           // C3H8 -> n-C3H7 + H
+{
+    stoichiometry
+    (
+        { component propane;      nu -1; }
+        { component C3H7;         nu  1; }
+        { component H;            nu  1; }
+    );
+}
+
+secondaryCH         // C3H8 -> i-C3H7 + H
+{
+    stoichiometry
+    (
+        { component propane;      nu -1; }
+        { component C3H7_ipropyl; nu  1; }
+        { component H;            nu  1; }
+    );
+}
+
+betaScission        // n-C3H7 -> C2H4 + CH3
+{
+    stoichiometry
+    (
+        { component C3H7;         nu -1; }
+        { component ethylene;     nu  1; }
+        { component CH3;          nu  1; }
+    );
+}
+
+isomerisation       // n-C3H7 -> i-C3H7
+{
+    stoichiometry
+    (
+        { component C3H7;         nu -1; }
+        { component C3H7_ipropyl; nu  1; }
+    );
+}

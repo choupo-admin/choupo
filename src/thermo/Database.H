@@ -98,6 +98,7 @@ private:
 
 class Database
 {
+    static std::vector<std::string>& tables_() { static std::vector<std::string> t; return t; }
 public:
     explicit Database(const std::string& explicitRoot = "");
 
@@ -128,6 +129,17 @@ public:
     // implementations to locate `data/standards/binaryPairs/...` files
     // without threading the database object through their factory.
     static const std::string& currentRoot() { return current_; }
+
+    //  THE SPECIES TABLES A CASE DECLARES (Vitor's architecture decision,
+    //  2026-11-19): `speciesTables ( NASA-TP-2002-211556 );` at the top of a
+    //  thermoPhysPropDict names homes under data/standards/thermoTables/
+    //  whose machine-transcribed species a component name may resolve to
+    //  when components/ has no record of that name.  EXPLICIT by design --
+    //  a case that declares no table resolves exactly as before (the silent
+    //  backfill was closed 2026-11-18 and must not reopen through here).
+    //  Set once by the builder's one dispatch; read by componentDict().
+    static void setSpeciesTables(const std::vector<std::string>& t) { tables_() = t; }
+    static const std::vector<std::string>& speciesTables() { return tables_(); }
 
     // Resolved component dictionary after an optional case-local `overlayOf`
     // PARTIAL deep-merge (roadmap Phase A).  `overlayOf` is loader metadata:

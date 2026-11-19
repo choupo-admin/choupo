@@ -1,0 +1,64 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Species C2F6 (NASA/TP-2002-211556 appendix D entry "C2F6"):
+  ideal-gas formation data and heat capacity transcribed by machine with
+  bin/curate/nasa_tp2002_to_choupo.py table, which holds H and S at
+  298.15 K recomputed from the printed coefficients to the printed
+  values.  Not read back against the page by a curator.
+  The report's own description and sources: Gurvich,1991 pt1 p86 pt2 p64.
+\*---------------------------------------------------------------------------*/
+name           C2F6;
+formula        C2F6;
+CAS            n/a;
+MW             138.0118;       // kg/kmol, appendix D record line
+role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it
+tags           ( gasPhase thermoTable );
+nasaEntry      "C2F6";
+reviewStatus   interim;
+reviewReason   "transcribed by machine from NASA/TP-2002-211556 into the thermoTables home and checked against the report itself; not yet read back against the page by a curator";
+standardThermochemistry
+{
+    dHf_298    -1344000.000;   // J/mol  -- ideal gas; NASA/TP-2002-211556 appendix D, p. 88, entry C2F6
+    s_298      332.434;     // J/(mol·K) -- third-law absolute; Table B1, p. 15
+}
+
+idealGasHeatCapacity
+{
+    //  NASA/TP-2002-211556 eq. (1), Cp/R = a1/T^2 + a2/T + a3 + a4 T + a5 T^2
+    //  + a6 T^3 + a7 T^4; appendix D, p. 88, entry C2F6, a1..a7 as printed.
+    model    NASA9;
+    Tlow     200;
+    Tcommon  1000;
+    Thigh    6000;
+    low      ( -3.795371700e+04 7.998276400e+02 -4.671561810e+00 7.501450990e-02 -9.812116100e-05 6.319807590e-08 -1.622597311e-11 );
+    high     ( -1.011551484e+06 -9.422140710e+02 2.202553906e+01 -1.314518750e-04 1.866045300e-08 -3.467118610e-12 2.488311205e-16 );
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 88, entry C2F6, record-line H(298.15) (elements reference, so = dHf)";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "Table B1 p. 15 prints -1344.0 kJ/mol; the report's own sources: Gurvich,1991 pt1 p86 pt2 p64.";
+    }
+    s_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 Table B1, p. 15, entry C2F6";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "appendix D's coefficients with b2 integrate to 332.434";
+    }
+    idealGasHeatCapacity
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 88, entry C2F6, a1..a7 of the 200-1000 K and 1000-6000 K intervals, as printed";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "read by bin/curate/nasa_tp2002_to_choupo.py, which holds H and S at 298.15 K to the printed values";
+    }
+    source   "McBride, Zehe & Gordon, NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species, NASA/TP-2002-211556 (2002)";
+    licence  publicDomain;    // US government work (NASA), 17 U.S.C. 105
+}

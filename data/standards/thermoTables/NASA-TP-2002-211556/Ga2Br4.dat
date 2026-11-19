@@ -1,0 +1,64 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Species Ga2Br4 (NASA/TP-2002-211556 appendix D entry "Ga2Br4"):
+  ideal-gas formation data and heat capacity transcribed by machine with
+  bin/curate/nasa_tp2002_to_choupo.py table, which holds H and S at
+  298.15 K recomputed from the printed coefficients to the printed
+  values.  Not read back against the page by a curator.
+  The report's own description and sources: Gurvich,1996a pt1 p245 pt2 p198.
+\*---------------------------------------------------------------------------*/
+name           Ga2Br4;
+formula        Ga2Br4;
+CAS            n/a;
+MW             459.062;       // kg/kmol, appendix D record line
+role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it
+tags           ( gasPhase thermoTable );
+nasaEntry      "Ga2Br4";
+reviewStatus   interim;
+reviewReason   "transcribed by machine from NASA/TP-2002-211556 into the thermoTables home and checked against the report itself; not yet read back against the page by a curator";
+standardThermochemistry
+{
+    dHf_298    -415820.034;   // J/mol  -- ideal gas; NASA/TP-2002-211556 appendix D, p. 121, entry Ga2Br4
+    s_298      471.809;     // J/(mol·K) -- third-law absolute; Table B1, p. 20
+}
+
+idealGasHeatCapacity
+{
+    //  NASA/TP-2002-211556 eq. (1), Cp/R = a1/T^2 + a2/T + a3 + a4 T + a5 T^2
+    //  + a6 T^3 + a7 T^4; appendix D, p. 121, entry Ga2Br4, a1..a7 as printed.
+    model    NASA9;
+    Tlow     200;
+    Tcommon  1000;
+    Thigh    6000;
+    low      ( -1.315545939e+04 -4.136553020e+02 1.762849229e+01 -3.514652160e-03 4.266937730e-06 -2.726515882e-09 7.118924490e-13 );
+    high     ( -5.742167210e+04 -7.160137370e+00 1.600598947e+01 -2.608182270e-06 6.146455950e-10 -7.405438650e-14 3.567126630e-18 );
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 121, entry Ga2Br4, record-line H(298.15) (elements reference, so = dHf)";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "Table B1 p. 20 prints -415.82 kJ/mol; the report's own sources: Gurvich,1996a pt1 p245 pt2 p198.";
+    }
+    s_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 Table B1, p. 20, entry Ga2Br4";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "appendix D's coefficients with b2 integrate to 471.809";
+    }
+    idealGasHeatCapacity
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 121, entry Ga2Br4, a1..a7 of the 200-1000 K and 1000-6000 K intervals, as printed";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "read by bin/curate/nasa_tp2002_to_choupo.py, which holds H and S at 298.15 K to the printed values";
+    }
+    source   "McBride, Zehe & Gordon, NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species, NASA/TP-2002-211556 (2002)";
+    licence  publicDomain;    // US government work (NASA), 17 U.S.C. 105
+}

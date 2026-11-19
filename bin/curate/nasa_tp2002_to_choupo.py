@@ -313,10 +313,164 @@ def cmd_verify():
     return 1 if bad else 0
 
 
+#  THE WHOLE TABLE INTO ITS OWN HOME (Vitor's architecture decision,
+#  2026-11-19: "Convinha era entrarem numa pasta a parte!").  Every
+#  appendix-D entry that passes checked() and is a NEUTRAL GAS is written to
+#  data/standards/thermoTables/NASA-TP-2002-211556/<name>.dat, one species per
+#  file.  Left out, each LISTED in the home's INDEX with its reason, never
+#  dropped in silence:
+#    * a species components/ already holds (one home per species: the
+#      curated record wins; moving it is a separate decision);
+#    * an entry whose own sources name Burcat (the NonCommercial compilation
+#      CLAUDE.md 7 rules out as a value's origin; whether a NASA reprint frees
+#      it is RESERVED for Vitor);
+#    * condensed phases and ions (slice 1 is the gas-phase radical/molecule
+#      set a mechanism needs; ions need the charge grammar);
+#    * a name the case grammar cannot carry (characters other than letters,
+#      digits, the comma NASA writes before an isomer label and a hyphen inside
+#      that label);
+#    * an entry checked() refuses (the report disagreeing with itself).
+TABLE_HOME = os.path.join(ROOT, "data", "standards", "thermoTables", "NASA-TP-2002-211556")
+_ELEM = re.compile(r'([A-Z][A-Za-z]?)\s*(-?\d+\.\d\d)')
+
+
+def _composition(rec2):
+    """Element counts from the record line (NASA writes AL, CL, BR...)."""
+    body = rec2[:rec2.rfind(" 0 ")] if " 0 " in rec2 else rec2
+    out = []
+    for el, n in _ELEM.findall(body.split(None, 2)[2] if len(body.split(None, 2)) > 2 else body):
+        v = float(n)
+        if v == 0.0:
+            continue
+        sym = el[0] + el[1:].lower()
+        out.append((sym, v))
+    return out
+
+
+def _formula(comp):
+    f = ""
+    for sym, v in comp:
+        if abs(v - round(v)) > 1e-9:
+            return None
+        k = int(round(v))
+        f += sym + ("" if k == 1 else str(k))
+    return f
+
+
+def _safe(name):
+    """The component word: NASA's isomer label after a comma becomes a suffix
+    (`C3H7,i-propyl` -> `C3H7_ipropyl`); the NASA name itself is kept in
+    `nasaEntry`."""
+    return name.replace(",", "_").replace("-", "")
+
+
+def cmd_table():
+    lines = report_lines()
+    ad, b1 = parse(lines)
+    page = page_of(lines)
+    comp_dir = os.path.join(ROOT, "data", "standards", "components")
+    have = {f[:-4] for f in os.listdir(comp_dir) if f.endswith(".dat")}
+    #  a curated record already transcribed from this report names its entry
+    have_entries = set()
+    for f in os.listdir(comp_dir):
+        if f.endswith(".dat"):
+            t = open(os.path.join(comp_dir, f), errors="ignore").read()
+            m = _ENTRY.search(t)
+            if m and "TP-2002-211556" in t:
+                have_entries.add(m.group(1))
+    #  ...and by FORMULA: ethylene.dat is C2H4 under its common name, so a
+    #  table record C2H4 would be a second home for one molecule.  Any
+    #  formula components/ already carries is left out and named (isomers
+    #  included -- telling cyclopropane from propylene is a curator's call).
+    by_formula = {}
+    for f in os.listdir(comp_dir):
+        if f.endswith(".dat"):
+            m = re.search(r"(?m)^formula\s+([A-Za-z0-9]+)\s*;", open(os.path.join(comp_dir, f), errors="ignore").read())
+            if m:
+                t = open(os.path.join(comp_dir, f), errors="ignore").read()
+                me = _ENTRY.search(t) if "TP-2002-211556" in t else None
+                by_formula.setdefault(m.group(1), []).append((f[:-4], me.group(1) if me else None))
+    os.makedirs(TABLE_HOME, exist_ok=True)
+    written, left = [], []
+    for name, e in ad.items():
+        rec2 = lines[e["line"] + 1]
+        phase = _REC2.match(rec2).group(4)
+        comp = _composition(rec2)
+        why = None
+        if phase != "0":
+            why = "condensed phase (slice 1 is the gas set)"
+        elif any(sym == "E" for sym, _ in comp) or name.endswith(("+", "-")):
+            why = "ion (needs the charge grammar)"
+        elif not re.fullmatch(r"[A-Za-z0-9]+(,[A-Za-z0-9-]+)?", name):
+            why = "name not expressible as a component word"
+        elif name in have_entries or _safe(name) in have:
+            why = "components/ already holds it (one home per species)"
+        elif "burcat" in e["refs"].lower():
+            why = "its sources name Burcat (RESERVED for Vitor: NonCommercial compilation)"
+        if why is None:
+            formula = _formula(comp)
+            if not formula:
+                why = "non-integer element count (a lumped or averaged entry)"
+            elif formula in by_formula:
+                #  An isomer NASA labels (`C3H7,i-propyl`) is a different species
+                #  from a NASA-sourced record of another label (components/C3H7
+                #  is `C3H7,n-propyl`); against a common-name record (propylene)
+                #  the identity is a curator's call.
+                others = by_formula[formula]
+                distinct = "," in name and all(ent and ent != name for _, ent in others)
+                if not distinct:
+                    why = ("components/ holds the formula %s as %s (one home per species; "
+                           "an isomer is a curator's call)"
+                           % (formula, ", ".join(sorted(n for n, _ in others))))
+        if why is None:
+            try:
+                c = checked(name, ad, b1, page)
+            except SystemExit as ex:
+                why = "refused by the report's own check: " + str(ex).split("REFUSED -- ")[-1][:120]
+        if why:
+            left.append((name, why))
+            continue
+        L, prov = block(name, c)
+        safe = _safe(name)
+        head = [
+            "/*--------------------------------*- Choupo -*-----------------------*\\",
+            f"  Species {safe} (NASA/TP-2002-211556 appendix D entry \"{name}\"):",
+            "  ideal-gas formation data and heat capacity transcribed by machine with",
+            "  bin/curate/nasa_tp2002_to_choupo.py table, which holds H and S at",
+            "  298.15 K recomputed from the printed coefficients to the printed",
+            "  values.  Not read back against the page by a curator.",
+            f"  The report's own description and sources: {e['refs']}",
+            "\\*---------------------------------------------------------------------------*/",
+            f"name           {safe};",
+            f"formula        {formula};",
+            "CAS            n/a;",
+            f"MW             {e['MW']:.7g};       // kg/kmol, appendix D record line",
+            "role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it",
+            "tags           ( gasPhase thermoTable );",
+            f"nasaEntry      \"{name}\";",
+            "reviewStatus   interim;",
+            "reviewReason   \"transcribed by machine from NASA/TP-2002-211556 into the thermoTables home and checked against the report itself; not yet read back against the page by a curator\";",
+        ]
+        text = "\n".join(head + L + [""] + provenance_block(prov)) + "\n"
+        with open(os.path.join(TABLE_HOME, safe + ".dat"), "w") as fh:
+            fh.write(text)
+        written.append(safe)
+    idx = ["# NASA/TP-2002-211556 in Choupo's thermoTables home -- generated by",
+           "# bin/curate/nasa_tp2002_to_choupo.py table; do not edit by hand.",
+           f"# {len(written)} species written; {len(left)} entries left out, each with its reason.",
+           "", "## written", ""] + [f"- {w}" for w in sorted(written)] + \
+          ["", "## left out", ""] + [f"- `{n}`: {w}" for n, w in sorted(left)]
+    with open(os.path.join(TABLE_HOME, "INDEX.md"), "w") as fh:
+        fh.write("\n".join(idx) + "\n")
+    print(f"nasa_tp2002_to_choupo table: {len(written)} species written to "
+          f"{os.path.relpath(TABLE_HOME, ROOT)}/, {len(left)} left out (INDEX.md names each with its reason)")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--fetch", action="store_true", help="download the report into thirdParty/nasa-tp2002/")
-    ap.add_argument("cmd", nargs="?", choices=["block", "verify"])
+    ap.add_argument("cmd", nargs="?", choices=["block", "verify", "table"])
     ap.add_argument("names", nargs="*")
     a = ap.parse_args()
     if a.fetch:
@@ -327,6 +481,8 @@ def main():
         cmd_block(a.names)
     elif a.cmd == "verify":
         return cmd_verify()
+    elif a.cmd == "table":
+        return cmd_table()
     return 0
 
 

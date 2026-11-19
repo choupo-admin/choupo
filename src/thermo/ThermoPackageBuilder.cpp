@@ -2534,6 +2534,22 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
     //  top level; they consult ApproximationAuthorisation instead of
     //  re-parsing -- one parse, several callers, never a second copy.
     ApproximationAuthorisation::instance().readFrom(v2);   liquidProperty::MeasurementDeclarations::instance().readFrom(v2);   // and the measurements (C378)
+    //  THE DECLARED SPECIES TABLES (2026-11-19, Database::speciesTables): one
+    //  parse, here, before any component of this system is loaded; a name
+    //  that is not a home under data/standards/thermoTables/ refuses.
+    {
+        std::vector<std::string> tables;
+        if (v2->found("speciesTables"))
+            for (const auto& t : v2->lookupWordList("speciesTables"))
+            {
+                const fs::path home = fs::path(Database::currentRoot()) / "standards" / "thermoTables" / t;
+                if (!fs::is_directory(home))
+                    throw std::runtime_error("thermophysicalPropertySystem: speciesTables names '"
+                        + t + "', which is not a home under data/standards/thermoTables/.");
+                tables.push_back(t);
+            }
+        Database::setSpeciesTables(tables);
+    }
 
     if (!ThermoPackageBuilder::v2NativeFormulation(v2))
         throw std::runtime_error("ThermoPackageBuilder::buildV2: this system's"
