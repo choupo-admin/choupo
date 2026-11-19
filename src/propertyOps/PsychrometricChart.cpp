@@ -60,6 +60,18 @@ double cpMass(const Component& c, double T_K)
     return c.cpIdealGas().Cp(T_K) / c.MW() * 1000.0;
 }
 
+//  A chart bound in DEGREES CELSIUS (C454 family 13).  `TminC`/`TmaxC` were
+//  written bare in degC; the parser reads `0 C;` AFFINELY to 273.15 K, which
+//  the chart then used as 273.15 degC.  Bare keeps the legacy degC; a declared
+//  temperature (C, K, F ...) is read as a temperature (SI K) and expressed in
+//  degC.  `lookupScalarIn` refuses an affine working unit, hence this helper.
+double readCelsius(const Dictionary& d, const std::string& key, double def)
+{
+    if (!d.found(key)) return def;
+    if (!d.hasDimensions(key)) return d.lookupScalar(key);   // bare: degC
+    return d.lookupScalar(key, Dims::temperature) - 273.15;  // declared: K -> degC
+}
+
 } // namespace
 
 int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, int verbosity)
@@ -87,8 +99,8 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
     const double Mc  = carrier->MW();
     const double Mv  = cond->MW();
     const double ratio = Mv / Mc;                                       // (M_v/M_c)
-    const double TminC = dict->lookupScalarOrDefault("TminC", 0.0);
-    const double TmaxC = dict->lookupScalarOrDefault("TmaxC", 150.0);
+    const double TminC = readCelsius(*dict, "TminC", 0.0);
+    const double TmaxC = readCelsius(*dict, "TmaxC", 150.0);
     std::size_t n = 80;
     if (dict->found("grid") && dict->subDict("grid")->found("n"))
         n = std::max<std::size_t>(8, static_cast<std::size_t>(dict->subDict("grid")->lookupScalar("n")));

@@ -1437,7 +1437,7 @@ int SprayDryer::solve(const DictPtr& dict,
     kpis_["chamberHeight"]    = Lch;              // m  (HARDWARE)
     kpis_["v_gas"]            = v_gas;            // m/s superficial gas velocity
     kpis_["v_particle"]       = v_particle;       // m/s particle fall velocity
-    kpis_["wheelSpeed"]       = atomDict->lookupScalarOrDefault("wheelSpeed", 0.0);  // rpm (rotary; 0 otherwise)
+    kpis_["wheelSpeed"]       = atomDict->lookupScalarInOrDefault("wheelSpeed", 0.0, Dims::inverseTime, "rpm");  // rpm, bare = rpm (C454 family 8) (rotary; 0 otherwise)
     kpis_["atomiserPower"]    = drop.power;       // W  shaft estimate (see the atomiser note for the split)
     if (multiSolvent)
     {

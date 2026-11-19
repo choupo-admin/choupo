@@ -252,9 +252,25 @@ converted; the bare number is read in the working unit:
 |---|---|---|
 | `Pc` | component records, a `vaporPressure {}` block, an estimate's `reference {}` | bar |
 | `pressureDesign` | every `designRules {}` in `system/postDict` | bar (gauge) |
+| `projectLife`, `depreciableLife`, `constructionPeriod` | `economics {}` in `system/postDict` | years |
+| `operatorAnnualHours` | `economics {}` | hours |
+| `chargeDensity` | a membrane `poreModel {}`; the `poreTransport` op | mol/m3 (signed) |
+| `P_max` | a membrane class record; a module record's `limits {}` | bar |
+| `wheelSpeed` | a rotary atomizer | rpm |
+| `m`, `from`, `to`, `totalMolality`, `fromMolality`, `toMolality` | the Pitzer, freezing-point and eNRTL ops' molality series and grids; an Olsson record's `handover {}` | mol/kg |
+| `phiL` | a Pitzer op's data points | cal/mol |
+| `spaceVelocity` | `designRules {}` of a vessel (with its `spaceVelocityBasis`) | 1/h |
+| `baffleCutPercent` | a Bell-Delaware `bellDelaware {}` block | per cent |
+| `wtAlcohol` | an eNRTL mixed-solvent op's `systems` | wt per cent |
+| `targetSize` | a spray dryer's `design {}` | um |
+| `TminC`, `TmaxC` | the psychrometric chart | degC (read as a TEMPERATURE when a unit is declared: `TminC 273.15 K;` is 0) |
+| `maxAAD` | a validation record's `acceptance {}` (display) | per cent |
+| `Q` | a `gibbsReactor` | kJ/kmol (= J/mol); a POWER (`Q -500 kW;`) is REFUSED by its dimensions |
 
 So `Pc 220.64;` and `Pc 220.64 bar;` are the same value, and
-`pressureDesign 2;` and `pressureDesign 2 bar;` are too.
+`pressureDesign 2;` and `pressureDesign 2 bar;` are too; so are
+`wheelSpeed 20000;` and `wheelSpeed 20000 rpm;`, `baffleCutPercent 25;` and
+`baffleCutPercent 25 percent;`.
 
 **A temperature DIFFERENCE takes `K` or a bare number, never `C` or `F`.**
 `C` and `F` are affine: `10 C` converts to the TEMPERATURE 283.15 K, which is

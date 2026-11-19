@@ -39,7 +39,7 @@ namespace { constexpr scalar PI = 3.14159265358979323846; }
 
 RotaryAtomizer::RotaryAtomizer(const DictPtr& dict)
 {
-    Nrpm_  = dict->lookupScalarOrDefault("wheelSpeed", 10000.0);   // rpm
+    Nrpm_  = dict->lookupScalarInOrDefault("wheelSpeed", 10000.0, Dims::inverseTime, "rpm");   // bare = rpm (C454 family 8)
     Ddisk_ = dict->lookupScalar("wheelDiameter", Dims::length);    // m
     if (Ddisk_ <= 0.0)
         throw std::runtime_error("RotaryAtomizer: wheelDiameter must be > 0");
