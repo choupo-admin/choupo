@@ -201,7 +201,7 @@ C203	OPEN	63	Gémeo digital como última forma de um caso de planta	nada constru
 C204	OPEN	20	EduTool sobre onde colocar malhas de controlo	EduTool de colocação de malhas de controlo não construído	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-02	M		
 C205	PARTIAL	11	Versões dinâmicas das unidades que não têm	flash drum dinâmico, permutador, trem RO e coluna (fatias 3-6) por construir	dinâmica das unidades que faltam	2026-11-02	L	7753441e4	
 C206	OPEN	64	EduTools de tratamento de efluentes líquidos e gasosos	nada construído; EduTools de efluentes líquidos e gasosos	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-02	L		
-C207	OPEN	0	Folha de especificação por tubo de uma fábrica com layout	construído; em integração (por cima do C318: 568 linhas de folha recalculadas, nenhuma antiga mudou)	a aterrar	2026-11-02	M	563d83b2c	
+C207	DONE		Folha de especificação por tubo de uma fábrica com layout	Folha por linha: diâmetro pela velocidade do serviço, velocidade, perda de carga (Darcy-Weisbach), schedule e material; no main.	a aterrar	2026-11-02	M	de47766fee	
 C208	DONE		Casos C208 validados para aterrar			2026-11-03	M	54142109f	
 C209	OPEN	21	Setor que diz quantas vezes se repete	não encontrado construído	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-02	M		
 C210	PARTIAL	65	Direção: Choupo ferramenta útil ao projeto farmacêutico	L1-L10 de longo prazo (via estéril, liofilizador, AVAC completo, Monte Carlo) por fazer	fila: primeiro os mais pequenos, depois os mais antigos	2026-11-02	L	563d83b2c	
