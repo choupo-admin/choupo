@@ -277,9 +277,12 @@ describe("the lesson", () => {
   });
 
   it("says what the engine has, and the engine's source agrees (searched fragments)", () => {
-    const pfr = read("unitOperations/reactor/PFR.cpp");
-    expect(pfr).toContain("150.0 * (1.0 - e) * (1.0 - e) * mu / (e * e * e * h.dp * h.dp)");
-    expect(pfr).toContain("1.75 * (1.0 - e) * rho / (e * e * e * h.dp)");
+    //  Ergun has ONE home since the C454 correlations slice (2026-11-19): the
+    //  PFR (and the fixed-bed adsorber) call ergun::coefficients.
+    const ergun = read("unitOperations/hydraulics/packedBed/ErgunEquation.cpp");
+    expect(ergun).toContain("150.0 * (1.0 - eps) * (1.0 - eps) * mu / (e3 * dp * dp)");
+    expect(ergun).toContain("1.75 * (1.0 - eps) * rho / (e3 * dp)");
+    expect(read("unitOperations/reactor/PFR.cpp")).toContain("ergun::coefficients(h.eps, h.dp, mu, rho)");
     const pc = read("unitOperations/hydraulics/PneumaticConveyor.cpp");
     expect(pc).toContain("24.0 / Re * (1.0 + 0.15 * std::pow(Re, 0.687))");
     expect(pc).toContain("if (Re < 1000.0)");
