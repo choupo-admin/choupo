@@ -21,7 +21,7 @@
       Cp_ig/(Cp_ig - R), the ideal-gas ratio the critical-pressure-ratio
       formula is derived with -- and the SRK compressibility Z.
     * the LIQUID: the 20 bar drum liquid of letdown01, at the temperature
-      its first throttle left it (253.014292544 K, copied from that case's
+      its first throttle left it (255.029704744 K, copied from that case's
       converged/LetdownLiquid; gui/tests/letdown.test.ts holds it to the
       ValveHP T_out golden).  Whether its second throttle cavitates or
       flashes is judged by the ammonia's VAPOUR PRESSURE at that
@@ -55,10 +55,10 @@ operations
         type        propertyPoint;
         state
         {
-            T            253.014292544 K;
+            T            255.029704744 K;
             P            2000000 Pa;
-            composition  { N2 0.7166717468;  H2 1.20928189;
-                           NH3 2925.664118;  Ar 0.03400117833; }
+            composition  { N2 0.7390771423;  H2 1.260850068;
+                           NH3 2925.538154;  Ar 0.03476003488; }
         }
         properties  ( Psat_NH3 );
     }
