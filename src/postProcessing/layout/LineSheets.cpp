@@ -321,8 +321,8 @@ void evaluate(const Dictionary& layoutDict, SimulationResult& result, int verbos
         else
         {
             double water = 0;
-            for (std::size_t i = 0; i < pkg->n() && i < s.z.size(); ++i)
-                if (pkg->comp(i).name() == "water") water = s.z[i];
+            const std::size_t iw = pkg->findAqueousSolvent();   // n() when absent
+            if (iw < pkg->n() && iw < s.z.size()) water = s.z[iw];
             if (steamAbove > 0 && water > 0.99 && s.P > steamAbove)
             { svc = "steam"; S.serviceWhy = "water vapour above " + fmt(steamAbove / 1e5) + " bar"; }
             else { svc = "gas"; S.serviceWhy = "a vapour"; }
