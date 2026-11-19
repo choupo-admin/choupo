@@ -1451,6 +1451,7 @@ if (flowsheetDict->found("cycle"))
         //  vessel (a still) takes ONE fixed step over the sub-interval.
         solver::AdaptiveTimeStepper stepper(adaptSet);
         std::size_t jacAnnounced = 0;     // analytic-Jacobian audits printed
+        bool jacMixedAnnounced = false;   // the mixed-sweep warning, once
 
         // Glass-box step history: print the adaptive step as it grows/shrinks.
         bool printedHeader = false;
@@ -1505,6 +1506,24 @@ if (flowsheetDict->found("cycle"))
                 }
                 else
                     unit->step(t, tNext - t);   // non-ODE vessel: one fixed step
+            }
+            //  A sweep with SOME units declaring `jacobian analytic;` and some
+            //  not integrates on the finite difference (the global matrix is
+            //  analytic only when every block is): the declared key is then
+            //  read by nothing, and that is announced once, never silent.
+            {
+                std::size_t nJac = 0;
+                for (const auto& u : odeUnits) nJac += u.jacobian ? 1 : 0;
+                if (nJac > 0 && nJac < odeUnits.size() && !jacMixedAnnounced)
+                {
+                    jacMixedAnnounced = true;
+                    std::cerr << "  [jacobian] WARNING: " << nJac << " of the "
+                              << odeUnits.size() << " vessels integrated together"
+                                 " declare `jacobian analytic;` and the others"
+                                 " supply none, so the adaptive sweep builds its"
+                                 " Jacobian by FINITE DIFFERENCE for all of them --"
+                                 " the key has no effect on this run.\n";
+                }
             }
             //  advance() THROWS IntegrationFailure when the integrator gives
             //  up short of tNext (C178): the clock, the routing, the recipe
