@@ -4833,6 +4833,30 @@ accepts today, and that is a policy call.
 > :89-96) and the modified Arrhenius to those manuals' equations, cited by
 > page in the code and the Theory Guide; the lesson is slice 2.
 
+> **C453 and C454 (architect, 2026-11-19, from the cloud's outside reviews Vitor
+> asked for: docs/reviews/2026-11-19-units-correlations-edutools/,
+> -edutools-batch-cd/, -edutools-batch-ef/, -edutools-batch-gh/).**  Weighed;
+> they hold as written.  C453 -- the WRONG statements in 32 EduTool lessons
+> (batch A/B: McCabe R_min for a subcooled feed, the azeotrope readout,
+> Ponchon's promise, ...; C/D: rayleigh, residueCurves, hunterNash, slePair,
+> reactionEnthalpy, standardState, vanHeerden, approachToEquilibrium; E/F:
+> compression step 5's formula vs its numbers, drying, fluidisedBeds,
+> syngas, ...; G/H: bjerrum, electrolyteModels' stale prose citations,
+> saltMixing, elementPotential, tear, wegstein, relaxation, reactorLadder)
+> and the engine defect found through a lesson: recycleWegsteinQmin/Qmax read
+> unchecked (qmin > qmax reaches std::clamp with lo > hi) -- refused by name,
+> non-default bounds announced.  Fixed in four slices, one per review batch.
+> C454 (ARCHITECTURE) -- 18 families of latent unit traps (1523 of 2251
+> scalar reads pass no Dims: component Pc stored in bar while the estimate
+> block reads SI, pressureDesign in bar, temperature DIFFERENCES read as
+> affine temperatures, adsorbent amounts) and the correlations without one
+> home (Ergun x3, Blasius x2, Watson x2; 32 objects missing window, citation
+> or verify; HeatTransferCorrelation without citation; out-of-window Nusselt
+> never reaching the advisory log).  Ruled: one dimension-checked read for
+> each trap family and a Dims kind for temperature differences, then the
+> correlation objects by reach (Rackett, Watson, Schock-Miquel, the
+> heat-transfer citation, one Ergun); no golden may move from the unit work.
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
