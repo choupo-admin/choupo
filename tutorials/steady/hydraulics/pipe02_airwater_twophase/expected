@@ -23,10 +23,10 @@ kpi     P1                     vaporFraction    0.0149935427785  1e-4
 kpi     P1                     voidFraction     0.682252432857   1e-4
 stream  downstream             T                298.15           1e-4
 stream  feed                   T                298.15           1e-4
-boundary global                 H_feeds_kW       -15910.6022439   1e-4
+boundary global                 H_feeds_kW       -15910.4198668   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
-boundary global                 H_products_kW    -15910.578553    1e-4
-boundary global                 residual_kW      -0.0236908127845 abs:0.001
+boundary global                 H_products_kW    -15910.4031245   1e-4
+boundary global                 residual_kW      -0.0167422488394 abs:0.001
 source  P1                     liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
 source  P1                     liquidViscosity  Vogel/GrunbergNissan exact
 boundary global                 noBoundary       false            exact

@@ -79,7 +79,14 @@ sVector Wegstein::step(const sVector& x, const sVector& gx)
             if (std::abs(s - 1.0) < epsS)
                 q = 0.0;                          // degenerate (g ~ x + c)
             else
+            {
                 q = std::clamp(s / (s - 1.0), qMin_, qMax_);
+                if (q < 0.0 && i < positive_.size() && positive_[i])
+                {
+                    const scalar xStar = (gx[i] - s * x[i]) / (1.0 - s);   // the secant fixed point
+                    if (!(xStar > 0.0)) q = 0.0;
+                }
+            }
         }
         qLast_[i] = q;
         xNext[i]  = q * x[i] + (1.0 - q) * gx[i];

@@ -3539,6 +3539,17 @@ int Flowsheet::solve(const DictPtr& dict,
             const scalar qmax = recScalar("recycleWegsteinQmax",  0.0);
             sVector x = packTears(tears, streams_);
             solver::Wegstein accel(x.size(), qmin, qmax);
+            //  A tear's pressure entry (bar, the last of its [F, z.., T, P] block) cannot be
+            //  negative at a fixed point: the accelerator withholds a step toward one
+            //  (solver/Wegstein.H; C390 sweep fix).
+            std::vector<char> positiveEntries(x.size(), 0);
+            {
+                const std::size_t stride = thermo.n() + 3;
+                for (std::size_t t = 0; t < tears.size(); ++t)
+                    if ((t + 1) * stride <= positiveEntries.size())
+                        positiveEntries[t * stride + stride - 1] = 1;
+            }
+            accel.setPositiveEntries(positiveEntries);
             //  Dominant-eigenvalue aid (opt-in): the paper's method (Orbach &
             //  Crowe 1971, derived in solver/DominantEigenvalue.H); every
             //  number is declared in solverDict and a defaulted one is
@@ -3617,6 +3628,7 @@ int Flowsheet::solve(const DictPtr& dict,
                     x = gPrev;
                     haveImage = false;
                     accel = solver::Wegstein(x.size(), qmin, qmax);
+                    accel.setPositiveEntries(positiveEntries);
                     if (recDE)
                         deAccel = solver::FixedPointAccelerator::New(
                             "DominantEigenvalue", x.size(), deOpts);

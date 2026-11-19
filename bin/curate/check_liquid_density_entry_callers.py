@@ -53,6 +53,8 @@ ALLOWED = {
     "src/unitOperations/crystallisation/CrystallisationSaturation.cpp": 1,  # the saturated liquor's density (C421 door slice d)
     "src/unitOperations/rotating/PressureExchanger.cpp": 1,     # the brine's density for the rotor flow (C421 door slice d)
     "src/unitOperations/agitation/AgitatedVessel.cpp": 1,       # the vessel's liquid density for Re and the power number (flow curves, C421 (7))
+    "src/propertyOps/FilmProperties.H": 1,                     # the film's density at its own composition, the mole basis aside (C435 slice 4: the membrane benches ask the door)
+    "src/propertyOps/PoreTransportBench.cpp": 1,               # the pore bench's film density, same Request form (C435 slice 4)
     "src/propertyOps/PropertyEvaluator.cpp": 1,
     "src/applications/choupoProps/PropertyRouteBench.cpp": 4,   # the sweep, the address-reuse check, the domain-trial check (two calls)
 }

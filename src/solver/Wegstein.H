@@ -63,6 +63,7 @@ Description
 #include "core/Types.H"
 
 #include <cstddef>
+#include <vector>
 
 namespace Choupo::solver {
 
@@ -82,6 +83,17 @@ public:
 
     void reset();
 
+    //  THE ENTRIES THAT CANNOT BE NEGATIVE AT A FIXED POINT (a pressure).  For such an entry the
+    //  secant model x* = (g - s x)/(1 - s) names where the acceleration is heading; when that
+    //  point is not positive the loop has no feasible fixed point (a pressure-inconsistent
+    //  recycle drifting by the same dP every pass looks like a slope of 1 - 3e-4 and "converges"
+    //  to -160 bar), and the acceleration is withheld for that entry: plain substitution, so the
+    //  loop runs its passes and is refused by the tear's name, not by a pipe at 0.0135 bar.
+    //  Neither Wegstein (1958) nor Biegler, Grossmann & Westerberg (1997) states a bound of this
+    //  kind (the first only classifies q by the slope, the second does not treat the method);
+    //  it is this engine's declaration, stated here and in the Theory Guide.
+    void setPositiveEntries(const std::vector<char>& mask) { positive_ = mask; }
+
     int callCount()  const { return ncalls_; }
     // Last vector of per-component q values (clamped) — for logging.
     const sVector& lastQ() const { return qLast_; }
@@ -92,6 +104,7 @@ private:
     sVector     xPrev_;
     sVector     gPrev_;
     sVector     qLast_;
+    std::vector<char> positive_;
     int         ncalls_ = 0;
 };
 

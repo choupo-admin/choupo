@@ -129,7 +129,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import gatekit  # noqa: E402
 
 ROOT = gatekit.repo
-SCAN_ROOTS = ("tutorials",)  # arm (e) walks every outerDict for a designSpec
+
+#  arm_starts walks the tutorials' outerDict files (C435): the tree.
+SCAN_ROOTS = ("tutorials/**/system/outerDict",)
+
 SOLVE = None
 SRC = ROOT / "src" / "outerDriver" / "OptimizationDriver.cpp"
 CASE = "tutorials/steady/flowsheets/cavett01_recycle_train"

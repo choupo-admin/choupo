@@ -37,7 +37,7 @@ kpi     Mixer                  n_in             4                1e-4
 kpi     Mixer                  vf               1                1e-4
 kpi     Reactor                F_in_kmol_h      2124.98610878    1e-4
 kpi     Reactor                F_out_kmol_h     2124.98610878    1e-4
-kpi     Reactor                Q_kW             20502.490468    1e-4
+kpi     Reactor                Q_kW             20502.490468     1e-4
 kpi     Reactor                T                900              1e-4
 kpi     Reactor                conversion       0.75             1e-4
 kpi     Reactor                dHrxn_kJ_per_mol -48.3683482303   1e-4
@@ -72,6 +72,8 @@ utility Mixer                  heating.steamLP.duty_kW 349.538143799    1e-4
 utility Mixer                  heating.steamLP.T 330              1e-4
 utility Mixer                  heating.steamLP.kg_s 0.159898510429   1e-4
 utility Mixer                  heating.steamLP.eur_h 15.1000478121    1e-4
-closure Column                 raw_kW           1.84393650481  1e-4
-closure Column                 step_kW          1.91177603779  1e-4
-closure Column                 remaining_kW     1.84393650481  1e-4
+closure Column                 raw_kW           1.84393650481    1e-4
+closure Column                 step_kW          1.91207999242    1e-4
+closure Column                 remaining_kW     1.84393650481    1e-4
+boundary global                 noBoundary       false            exact
+boundary global                 residual_denom_kW 42650.744103     1e-4

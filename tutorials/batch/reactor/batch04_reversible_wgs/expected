@@ -1,23 +1,23 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-kpi     reactor                P_final          1000000            1e-4
-kpi     reactor                T_final          600                1e-4
-kpi     reactor                n_CO2_final      0.000420715762123  1e-4
-kpi     reactor                n_CO_final       7.92842378768e-05  1e-4
-kpi     reactor                n_H2_final       0.000420715762123  1e-4
-kpi     reactor                n_water_final    7.92842378768e-05  1e-4
-kpi     reactor                t_end            1200               1e-4
-kpi     reactor                totalMoles_final 0.001              1e-4
+kpi     reactor                P_final          1000000          1e-4
+kpi     reactor                T_final          600              1e-4
+kpi     reactor                n_CO2_final      0.000420715762123 1e-4
+kpi     reactor                n_CO_final       7.92842378768e-05 1e-4
+kpi     reactor                n_H2_final       0.000420715762123 1e-4
+kpi     reactor                n_water_final    7.92842378768e-05 1e-4
+kpi     reactor                t_end            1200             1e-4
+kpi     reactor                totalMoles_final 0.001            1e-4
 kpi     campaign               element_C_closure_rel 1.95156391047e-15 abs:1e-09
 kpi     campaign               element_H_closure_rel 1.95156391047e-15 abs:1e-09
 kpi     campaign               element_O_closure_rel 1.95156391047e-15 abs:1e-09
 kpi     campaign               element_worst_closure_rel 1.95156391047e-15 abs:1e-09
 kpi     campaign               energy_H_external_kJ 0                1e-4
-kpi     campaign               energy_Q_ledger_kJ -0.299204643882  1e-4
+kpi     campaign               energy_Q_ledger_kJ 0.00108337949496 1e-4
 kpi     campaign               energy_balance_available 1                1e-4
 kpi     campaign               energy_closure_rel 0                1e-4
-kpi     campaign               energy_dH_vessels_kJ -0.299204643882  1e-4
+kpi     campaign               energy_dH_vessels_kJ 0.00108337949496 1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
 kpi     campaign               energy_records_valid 1                1e-4
 kpi     campaign               energy_residual_kJ 0                abs:1e-09
@@ -37,7 +37,12 @@ kpi     campaign               utility_coolingWater_kJ 0.299204643882   1e-4
 kpi     campaign               utility_coolingWater_kg 0.00715800583451 1e-4
 kpi     campaign               utility_coolingWater_peak_kW 0.00939242140953 1e-4
 kpi     campaign               utility_coolingWater_t_peak_s 0                1e-4
-kpi     campaign               utility_cost_eur_total 1.19681857553e-07 1e-4
-kpi     reactor                E_reaction_seg0_kJ -0.299204643882  1e-4
-kpi     reactor                E_reaction_total_kJ -0.299204643882  1e-4
+kpi     campaign               utility_cost_eur_total 1.08337949496e-08 1e-4
+kpi     reactor                E_reaction_seg0_kJ 0.00108337949496 1e-4
+kpi     reactor                E_reaction_total_kJ 0.00108337949496 1e-4
 ledger  reactor                energy.reaction.valid valid            exact
+kpi     campaign               utility_dowthermA_eur 1.08337949496e-08 1e-4
+kpi     campaign               utility_dowthermA_kJ 0.00108337949496 1e-4
+kpi     campaign               utility_dowthermA_kg 5.52744640285e-06 1e-4
+kpi     campaign               utility_dowthermA_peak_kW 3.40086859012e-05 1e-4
+kpi     campaign               utility_dowthermA_t_peak_s 0                1e-4

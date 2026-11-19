@@ -373,6 +373,13 @@ def arm_g(tmp):
            difference of +-0.1 K (the result JSON carries 12 digits, and the
            O(dT^2/T^2) bias is below 1e-7): flash01's ideal liquid (330 K), flash01's
            vapour (400 K), flash09's SRK vapour (200 K), to 1e-6 relative.
+           THE LIQUID'S PRESSURE LEG (DEV.md 4c C390, the architect's ruling of
+           2026-11-19): the gate stays at 1e-6.  Its first form integrated
+           v (1 - alpha T) dP from psat(T), a limit that MOVES with T, and this arm
+           caught it: dH was 7.2e-4 off T dS on liq01 (330 K), the net -v dpsat/dT
+           the moving limit adds to the isobaric heat capacity.  The leg now
+           integrates from ONE reference pressure per component, psat(T_ref), so
+           the identity is exact at fixed P and nothing is added to any gate.
            NOT on the NRTL liquid: its H surface omits H^E (announced in the
            engine), and the entropy follows the G^E the flash equilibrates, so
            the identity there misses exactly the omitted term.

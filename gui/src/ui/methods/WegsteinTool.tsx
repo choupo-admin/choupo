@@ -413,7 +413,7 @@ export function WegsteinTool(): JSX.Element {
             It is here because the engine does not publish these two numbers.{" "}
             <Text span ff="monospace" size="xs">Wegstein::lastQ()</Text> exists
             and says in its own comment that it is for logging
-            (src/solver/Wegstein.H:86-87); nothing prints it. The secant slope
+            (src/solver/Wegstein.H:98-99); nothing prints it. The secant slope
             and the coefficient are the method, and there is no run in this
             tree from which a student can read them.
           </Text>

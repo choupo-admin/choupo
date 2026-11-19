@@ -28,11 +28,11 @@
 
   PLANE B, THE TRANSPARENT ONE, IS THE RECURSION ITSELF, and it is here
   because THE ENGINE DOES NOT PUBLISH IT.  `Wegstein::lastQ()` exists and is
-  commented "for logging" (src/solver/Wegstein.H:86-87); nothing in the
+  commented "for logging" (src/solver/Wegstein.H:98-99); nothing in the
   recycle loop prints it, and the iteration table's own `γ-info` column
   carries the energy-tear relative change instead
   (src/unitOperations/flowsheet/Flowsheet.cpp:3536, filled at
-  src/unitOperations/flowsheet/Flowsheet.cpp:3653-3654).  So there is no run,
+  src/unitOperations/flowsheet/Flowsheet.cpp:3665-3666).  So there is no run,
   in this tree, from which a student can read the per-variable secant slope
   `s_i` or the coefficient `q_i` that it produces — and those two numbers ARE
   the method.  The page therefore drives the recursion over a DECLARED toy
@@ -65,7 +65,7 @@
   AND THE PRICE, which is the other half and must not blur.  The STOPPING
   TEST is a different question from the STEP, and it does not share the step's
   invariance.  The Wegstein branch converges on `normL2(gx, x)`
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3627, the norm itself at
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3639, the norm itself at
   src/unitOperations/flowsheet/Flowsheet.cpp:1949-1958) over the packed tear
   vector `[F, z_0..z_{nC-1}, T, P]`, P in bar
   (src/unitOperations/flowsheet/Flowsheet.cpp:1844-1877, renormalised onto the
@@ -74,13 +74,13 @@
   temperature in kelvin and a pressure in bar, with no per-variable scale.
   The Newton branch of the same function does NOT do this: it tears on
   component molar flows plus T and P
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3729-3738) and divides each
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3741-3750) and divides each
   residual by a characteristic scale
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3793-3812, applied at
-  src/unitOperations/flowsheet/Flowsheet.cpp:3834), and its own comment names
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3805-3824, applied at
+  src/unitOperations/flowsheet/Flowsheet.cpp:3846), and its own comment names
   what the absence of that scaling costs — "the latent under-convergence the
   old Wegstein default also had"
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3793-3797).
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3805-3809).
 
   NOT HERE, deliberately: any tear-SELECTION heuristic (that is the
   tear-streams page, and the engine deliberately does not choose either), any
@@ -107,7 +107,7 @@ export const EPS_S = 1.0e-10;
  *  fallbacks at src/unitOperations/flowsheet/Flowsheet.cpp:3539-3540.
  *
  *  They are NOT the defaults of the `Wegstein` class, which are [-5, 0]
- *  (src/solver/Wegstein.H:73-74) and which the Theory Guide quotes as
+ *  (src/solver/Wegstein.H:74-75) and which the Theory Guide quotes as
  *  "typical" (§ch:wegstein, eq:wegstein-clip).  The recycle loop constructs
  *  the accelerator with its own pair, so a Choupo recycle that declares
  *  nothing runs at q_min = -1: at most a step twice the direct one (w = 1 - q
@@ -176,7 +176,7 @@ export function wegsteinStep(
 /** The engine's tear convergence measure for the Wegstein branch: a PLAIN
  *  Euclidean norm of `G(x) − x` over the packed vector, no per-variable
  *  scale (src/unitOperations/flowsheet/Flowsheet.cpp:1949-1958, called at
- *  src/unitOperations/flowsheet/Flowsheet.cpp:3627).  Named after the
+ *  src/unitOperations/flowsheet/Flowsheet.cpp:3639).  Named after the
  *  engine's own function so the page and the source cannot drift into two
  *  names for one thing. */
 export function normL2(a: readonly number[], b: readonly number[]): number {
@@ -347,7 +347,7 @@ interface DriveOptions {
 }
 
 /** WEGSTEIN — the accelerator, driven exactly as `Flowsheet`'s recycle branch
- *  drives it (src/unitOperations/flowsheet/Flowsheet.cpp:3531-3680): pack,
+ *  drives it (src/unitOperations/flowsheet/Flowsheet.cpp:3531-3692): pack,
  *  sweep, measure `normL2(gx, x)`, test, then accelerate and unpack.  The
  *  test comes BEFORE the acceleration, which is why a converged run's last
  *  recorded step has no coefficients: the loop broke out of it. */
@@ -393,7 +393,7 @@ export function driveDirect(m: ToyMap, o: DriveOptions): SolveTrace {
  *  tear variables — two full flowsheet sweeps per variable
  *  (Theory Guide §ch:newton-tears) — and tears on component molar flows plus
  *  T and P rather than on (F, z, T, P)
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:3729-3738).  The cost per step
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:3741-3750).  The cost per step
  *  is the whole reason Wegstein is still on offer, and no toy can show it. */
 export function driveNewton(m: ToyMap, o: DriveOptions): SolveTrace {
   const units = o.units ?? SI;

@@ -424,7 +424,7 @@ gate re-run to OK (docs/design/a-stiff-pore-solved-at-once.md section 13.5):
             try:
                 got = dict(NaCl=num(r"NaCl\s+([-\d.eE+]+);", b), dye=num(r"Na3Dye\s+([-\d.eE+]+);", b),
                            X=num(r"chargeDensity\s+([-\d.eE+]+);", b), Jv=num(r"J_v\s+\(\s*([-\d.eE+]+)\s*\)", b),
-                           mu=num(r"viscosity\s+([-\d.eE+]+);", b), rho=num(r"density\s+([-\d.eE+]+);", b),
+                           mu=mu, rho=997.0,   # C435 (4): the case no longer carries them; the door prices the film and the c2c arm below holds the answer to NanoFiltran at 1e-6
                            om=num(r"omega\s+([-\d.eE+]+);", b), r=num(r"radius\s+([-\d.eE+]+);", b),
                            T=num(r"\bT\s+([-\d.eE+]+)\s*K;", b))
             except AttributeError:

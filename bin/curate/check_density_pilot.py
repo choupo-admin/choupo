@@ -599,13 +599,26 @@ def main():
                 arm("PA-04a density honours the list", abs(rho1 / rho0 - 1.0) > 1e-3 and used,
                     f"CSTR tau {rho0:.6g} s -> {rho1:.6g} s with ethanol declared (no volume); the "
                     f"[hypothesis] line names it: {used}")
-                def cp(k):
-                    return (k["W_shaft"] - k["W_hydraulic"]) / (k["F"] * 1000.0 * (k["T_out"] - k["T_in"]))
-                c0, c1 = cp(k0), cp(k1)
-                arm("PA-04b the pump's heat capacity ignores the list", rel(c1, c0) < 1e-6,
-                    f"pump Cp = (W_shaft - W_hydraulic) / (F dT): {c0:.8g} vs {c1:.8g} J/(mol K) "
-                    f"(rel {rel(c1, c0):.1e}, limit 1e-6); dT {k0['T_out'] - k0['T_in']:.6g} -> "
-                    f"{k1['T_out'] - k1['T_in']:.6g} K moves only with W_shaft")
+                #  PA-04b (rewritten 2026-11-19, DEV.md 4c C390).  It used to hold the pump's
+                #  closed-form heat capacity, Cp = (W_shaft - W_hydraulic) / (F dT), to the
+                #  same value with and without the list.  That identity belonged to the
+                #  closed-form pump, whose useful work was eta W_shaft; the pump now SOLVES the
+                #  stream balance H(T_out, P_out) = H(T_in, P_in) + w on a liquid enthalpy that
+                #  carries v (1 - alpha T) dP, so dT moves with the volume the list changes and
+                #  the identity is gone.  What the arm held -- that the list changes the
+                #  VOLUME and nothing the heat-capacity legs read -- is held by the first law:
+                #  both runs close it (the plant's boundary residual below 1e-6 kW), which
+                #  a pump that priced its shaft work on a different surface than its streams
+                #  could not do.  A pump whose balance drops the shaft work leaves the residual
+                #  at the shaft power (sabotage observed, in the commit).
+                def residual(res):
+                    return abs(res["globalEnergyBoundary"]["residual_kW"])
+                r0, r1 = residual(res0), residual(res1)
+                arm("PA-04b the pump's first law closes with and without the list",
+                    r0 < 1e-6 and r1 < 1e-6,
+                    f"plant boundary residual {r0:.2e} kW without, {r1:.2e} kW with ethanol declared "
+                    f"(limit 1e-6 kW); pump dT {k0['T_out'] - k0['T_in']:.6g} -> "
+                    f"{k1['T_out'] - k1['T_in']:.6g} K, W_shaft {k0['W_shaft']:.6g} -> {k1['W_shaft']:.6g} W")
 
             #  PA-05: every declared measurement is used, checked or refused; an
             #  unknown key in a new block is refused, naming the keys it reads.

@@ -134,6 +134,14 @@ public:
     // -- existing kernels keep working untouched via the default.
     virtual scalar T_sat(scalar p_Pa) const;
 
+    // The LIQUID branch's h and s at (T, p), also where p lies below psat(T) and the
+    // liquid is metastable (C390: the pressure leg of the generic liquid integrates
+    // from a fixed reference pressure, which for T above the reference temperature
+    // lies below psat(T)).  Default: the stable state (a model with no metastable
+    // branch).  A model that has the branch but no root at (T, p) THROWS.
+    virtual scalar h_molarLiquid(scalar T_K, scalar p_Pa) const { return h_molar(T_K, p_Pa); }
+    virtual scalar s_molarLiquid(scalar T_K, scalar p_Pa) const { return s_molar(T_K, p_Pa); }
+
     // The temperature window [T_lo, T_hi] on which p_sat(T) is DEFINED -- for
     // IF97, region 4: the triple point to the critical point.  Pure virtual:
     // a kernel that cannot say where its saturation curve ends cannot be

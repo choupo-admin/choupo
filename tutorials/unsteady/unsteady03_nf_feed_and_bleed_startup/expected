@@ -43,3 +43,4 @@ kpi     balance                material_available 1                1e-4
 source  NF                     liquidDensity    idealMixing[referenceEquation.IAPWS95+flatVliq] exact
 kpi     MIX                    kpi_Q_kW_final   0                1e-4
 kpi     NF                     kpi_rho_feed_final 1004.2396408     1e-4
+kpi     NF                     kpi_Q_kW_final   -0.571065488446  1e-4

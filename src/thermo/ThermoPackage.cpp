@@ -3924,7 +3924,7 @@ ThermoPackage::liquidPressureLeg(std::size_t i, scalar T, scalar P) const
     if (known == pressureLegExpensive_.end())
     {
         const LiquidPressureLeg first = liquidPressureLegExact(i, T, P);
-        if (!first.priced || first.source.rfind("none", 0) == 0) return first;  // undecided: ask again
+        if (!first.priced) return first;                       // undecided: ask again
         const bool exp = first.source.find("referenceEquation") != std::string::npos
                       || first.source.find("pureFluid") != std::string::npos;
         pressureLegExpensive_[i] = exp ? first.source : std::string();
@@ -3943,7 +3943,7 @@ ThermoPackage::liquidPressureLeg(std::size_t i, scalar T, scalar P) const
         {
             PressureLegNode node;
             const LiquidPressureLeg e = liquidPressureLegExact(i, n * hGrid, P);
-            node.ok = e.priced && e.source.rfind("none", 0) != 0;
+            node.ok = e.priced && !e.clamped;
             node.h = e.h; node.s = e.s;
             it = col.emplace(n, node).first;
         }
@@ -3966,32 +3966,61 @@ ThermoPackage::liquidPressureLeg(std::size_t i, scalar T, scalar P) const
 ThermoPackage::LiquidPressureLeg
 ThermoPackage::liquidPressureLegExact(std::size_t i, scalar T, scalar P) const
 {
+    //  THE REFERENCE PRESSURE IS ONE PRESSURE (the architect's ruling, 2026-11-19, on
+    //  the Maxwell identity dH = T dS at fixed P): the base liquid surface is a
+    //  fixed-pressure function (dh/dT = cp_liq, anchored at the component's Kirchhoff
+    //  datum), so it lives at P_ref,i = psat_i(T_ref,i), T_ref,i the datum temperature
+    //  (298.15 K, or 0.9 Tc for a component whose critical point lies below it).  The
+    //  leg integrates from P_ref,i to P with BOTH limits fixed, so (dh/dT)_P = T (ds/dT)_P
+    //  exactly and G = H - T S is the integral of v dP.  The earlier lower limit psat(T)
+    //  moved with T and added -v dpsat/dT to the isobaric heat capacity.  Below psat(T)
+    //  the leg is held at P = psat(T) (the liquid does not exist further down).
     LiquidPressureLeg leg;
     if (i >= n()) return leg;
     if (!hasSaturationCurve(i) || isHenrySolute(i)) { pressureLegExpensive_[i] = "\x01never"; return leg; }
     const Component& c = components_[i];
     if (c.Tc() > 0.0 && T >= c.Tc()) return leg;           // no saturation line at T
     scalar ps = 0.0;
-    try { ps = Psat(i, T); } catch (const std::exception&) { return leg; }
+    try { ps = Psat(i, T); }
+    catch (const std::exception& ex) { leg.unpricedWhy = std::string("the saturation pressure could not be evaluated: ") + ex.what(); return leg; }
     if (!(ps > 0.0) || !std::isfinite(ps)) return leg;
-    if (!(P > ps)) { leg.priced = true; leg.source = "none (P at or below psat)"; return leg; }
+
+    auto refIt = pressureRef_.find(i);
+    if (refIt == pressureRef_.end())
+    {
+        const scalar Tr = (c.Tc() > 0.0) ? std::min<scalar>(298.15, 0.9 * c.Tc()) : 298.15;
+        scalar Pr = 0.0;
+        try { Pr = Psat(i, Tr); } catch (const std::exception&) { Pr = 0.0; }
+        if (!(Pr > 0.0) || !std::isfinite(Pr)) { pressureLegExpensive_[i] = "\x01never"; return leg; }
+        refIt = pressureRef_.emplace(i, std::make_pair(Tr, Pr)).first;
+    }
+    const scalar Pref = refIt->second.second;
+    leg.Tref = refIt->second.first; leg.Pref = Pref;
+    const bool clamped = !(P > ps);
+    const scalar Peff = clamped ? ps : P;
+    leg.clamped = clamped;
 
     sVector e(n(), 0.0);
     e[i] = 1.0;
     liquidProperty::DensityResolution res;
     try { res = liquidProperty::resolveDensity(*this, e); }
-    catch (const std::exception&) { pressureLegExpensive_[i] = "\x01never"; return leg; }   // no liquid volume: no term, for good
+    catch (const std::exception& ex)
+    {
+        //  No liquid volume: no term, for good -- but SAID, never swallowed (a probe that had not
+        //  registered the density methods landed here silently and hid 43 findings, C390).
+        pressureLegExpensive_[i] = "\x01never";
+        leg.unpricedWhy = std::string("no liquid volume could be resolved: ") + ex.what();
+        return leg;
+    }
     const auto method = liquidProperty::build(res, *this);
     const scalar M = c.MW() * 1.0e-3;                       // kg/mol
 
-    //  A FLUID WITH A REFERENCE EQUATION (or a case's own pure-fluid selection):
-    //  at fixed T the integral of v (1 - alpha T) dP IS the equation's h(T, P) -
-    //  h(T, p_low), and the entropy's -INT (dv/dT) dP its s(T, P) - s(T, p_low),
-    //  with no finite difference of the volume (and one saturation per T instead
-    //  of three).  p_low is the engine's psat(T) where that lies on the liquid
-    //  side of the equation's own saturation line; where it lies below it (the
-    //  engine's vapour-pressure law reads lower than the equation's) the equation
-    //  is asked just above its own line and the slope there carries the tail.
+    //  A FLUID WITH A REFERENCE EQUATION (or a case's own pure-fluid selection): at
+    //  fixed T the integral of v (1 - alpha T) dP between two pressures IS the
+    //  equation's h(T, P2) - h(T, P1) on the LIQUID branch (metastable below psat),
+    //  and the entropy's -INT (dv/dT) dP its s(T, P2) - s(T, P1).  Where the branch
+    //  has no root at the reference pressure (near the critical point) the slope at
+    //  the lowest root carries the tail.
     {
         const PureFluidModel* pm = nullptr;
         std::string srcName;
@@ -4005,22 +4034,23 @@ ThermoPackage::liquidPressureLegExact(std::size_t i, scalar T, scalar P) const
             {
                 const scalar psr  = pm->p_sat(T);
                 const scalar pLow = std::max(ps, psr * (1.0 + 1.0e-9));
-                scalar h = 0.0, s = 0.0;
-                const scalar span = P - pLow;
-                const scalar dPp = std::max<scalar>(1.0e3, 1.0e-2 * std::fabs(span));
-                const scalar hSlope = (pm->h_molar(T, pLow + dPp) - pm->h_molar(T, pLow)) / dPp;
-                const scalar sSlope = (pm->s_molar(T, pLow + dPp) - pm->s_molar(T, pLow)) / dPp;
-                if (span > 0.0)
+                const scalar dPp = 1.0e3;
+                const scalar hSlope = (pm->h_molarLiquid(T, pLow + dPp) - pm->h_molarLiquid(T, pLow)) / dPp;
+                const scalar sSlope = (pm->s_molarLiquid(T, pLow + dPp) - pm->s_molarLiquid(T, pLow)) / dPp;
+                auto H = [&](scalar x) -> scalar
                 {
-                    h = pm->h_molar(T, P) - pm->h_molar(T, pLow);
-                    s = pm->s_molar(T, P) - pm->s_molar(T, pLow);
-                    if (ps < pLow) { h += hSlope * (pLow - ps); s += sSlope * (pLow - ps); }
-                }
-                else
-                {   // between the engine's psat and the equation's own line: the slope alone
-                    h = hSlope * (P - ps);
-                    s = sSlope * (P - ps);
-                }
+                    if (x >= pLow) return pm->h_molarLiquid(T, x);
+                    try { return pm->h_molarLiquid(T, x); }
+                    catch (const std::exception&) { return pm->h_molarLiquid(T, pLow) + hSlope * (x - pLow); }
+                };
+                auto Sx = [&](scalar x) -> scalar
+                {
+                    if (x >= pLow) return pm->s_molarLiquid(T, x);
+                    try { return pm->s_molarLiquid(T, x); }
+                    catch (const std::exception&) { return pm->s_molarLiquid(T, pLow) + sSlope * (x - pLow); }
+                };
+                const scalar h = H(Peff) - H(Pref);
+                const scalar s = Sx(Peff) - Sx(Pref);
                 if (std::isfinite(h) && std::isfinite(s))
                 {
                     leg.priced = true; leg.h = h; leg.s = s; leg.source = srcName;
@@ -4046,10 +4076,8 @@ ThermoPackage::liquidPressureLegExact(std::size_t i, scalar T, scalar P) const
     scalar alphaT = 0.0;
     auto gf = [&](scalar Pq, scalar& g, scalar& f)
     {
-        //  A BACKWARD second-order difference: for P above psat(T) the states T,
-        //  T - dT and T - 2 dT are all liquid, whereas T + dT crosses the saturation
-        //  line whenever P - psat(T) < (dpsat/dT) dT, which refused the kernel and
-        //  dropped the term next to the bubble point (found by profiling letdown01).
+        //  A BACKWARD second-order difference: T, T - dT and T - 2 dT are liquid
+        //  whenever Pq >= psat(T); T + dT would cross the line next to the bubble point.
         const scalar v  = vAt(T, Pq);
         const scalar v1 = vAt(T - dT, Pq);
         const scalar v2 = vAt(T - 2.0 * dT, Pq);
@@ -4060,24 +4088,38 @@ ThermoPackage::liquidPressureLegExact(std::size_t i, scalar T, scalar P) const
     try
     {
         scalar g0 = 0.0, f0 = 0.0, h = 0.0, s = 0.0;
-        gf(P, g0, f0);                                      // also tells whether P matters
+        const scalar Pl = ps * (1.0 + 1.0e-6);             // the lowest pressure the kernel is asked
+        gf(std::max(Peff, Pl), g0, f0);                    // also tells whether P matters
         if (!pressureApplied)
         {
-            h = g0 * (P - ps);
-            s = -f0 * (P - ps);
+            h = g0 * (Peff - Pref);
+            s = -f0 * (Peff - Pref);
         }
         else
         {
-            //  2-point Gauss--Legendre on [psat, P] (exact for a cubic in P; the
-            //  integrand v(1 - alpha T) is smooth and nearly linear in P)
+            //  2-point Gauss--Legendre on the liquid part of [P_ref, Peff]; below psat the
+            //  integrand is held at its value there
+            const scalar lo = std::min(Peff, Pref), hi = std::max(Peff, Pref);
+            const scalar sgn = (Peff >= Pref) ? 1.0 : -1.0;
+            const scalar liqLo = std::max(lo, Pl);
             static const scalar xg[2] = { -0.5773502691896257, 0.5773502691896257 };
-            const scalar half = 0.5 * (P - ps), mid = 0.5 * (P + ps);
-            for (int q = 0; q < 2; ++q)
+            if (hi > liqLo)
+            {
+                const scalar half = 0.5 * (hi - liqLo), mid = 0.5 * (hi + liqLo);
+                for (int q = 0; q < 2; ++q)
+                {
+                    scalar g = 0.0, f = 0.0;
+                    gf(mid + half * xg[q], g, f);
+                    h += sgn * half * g;
+                    s -= sgn * half * f;
+                }
+            }
+            if (lo < liqLo)                                // the tail below the liquid's lower limit
             {
                 scalar g = 0.0, f = 0.0;
-                gf(mid + half * xg[q], g, f);
-                h += half * g;
-                s -= half * f;
+                gf(Pl, g, f);
+                h += sgn * g * (liqLo - lo);
+                s -= sgn * f * (liqLo - lo);
             }
         }
         leg.priced = true; leg.h = h; leg.s = s; leg.source = source;
@@ -4088,7 +4130,9 @@ ThermoPackage::liquidPressureLegExact(std::size_t i, scalar T, scalar P) const
     }
     catch (const std::exception& ex)
     {
-        return LiquidPressureLeg();
+        LiquidPressureLeg failed;
+        failed.unpricedWhy = std::string("the leg could not be priced: ") + ex.what();
+        return failed;
     }
     return leg;
 }
@@ -4100,7 +4144,17 @@ namespace {
 void announcePressureLeg(const std::string& comp,
                          const ThermoPackage::LiquidPressureLeg& l)
 {
-    if (!l.priced || l.source.rfind("none", 0) == 0) return;
+    if (!l.priced)
+    {
+        if (!l.unpricedWhy.empty())
+        {
+            static std::set<std::string> saidNot;
+            if (saidNot.insert(comp).second)
+                std::cerr << "[thermo] liquid pressure term (" << comp << "): NOT PRICED, so this component's"
+                             " liquid enthalpy carries no pressure term -- " << l.unpricedWhy.substr(0, 300) << "\n";
+        }
+        return;
+    }
     //  SAID ONCE PER RUN ON stderr, NOT FILED AS AN ADVISORY: the term is the model, not a
     //  caveat, and a run whose only note is this line would otherwise stop printing
     //  "ASSUMPTIONS AND CAVEATS: none raised".  A term that changed sign (below) IS a caveat
@@ -4108,7 +4162,8 @@ void announcePressureLeg(const std::string& comp,
     static std::set<std::string> said;
     if (said.insert(comp + "|" + l.source).second)
         std::cerr << "[thermo] liquid pressure term (" << comp << "): v (1 - alpha T) dP"
-                     " from psat(T) to P; volume and its temperature slope from "
+                     " from the reference pressure P_ref = psat(" << l.Tref << " K) = "
+                  << l.Pref * 1.0e-3 << " kPa (the one pressure the base liquid enthalpy lives at) to P; volume and its temperature slope from "
                   << l.source
                   << (l.corrStates ? " (the corresponding-states slope: not checked"
                                      " against a reference equation for this fluid)"

@@ -517,7 +517,17 @@ recycleWegsteinQmax    0.0;
 \noindent The Wegstein \cite{Wegstein} accelerator is the default;
 $q_{\min} = q_{\max} = 0$ degenerates to plain direct substitution
 for cases where acceleration is unsafe (flash regime switches,
-strongly non-linear recycles).
+strongly non-linear recycles).  One bound is the engine's own and is stated
+here because no source in the project's literature folder gives it: Wegstein's
+paper (1958) classifies $q$ by the slope $s$ of the iteration map and names no
+numerical limit, and the process-flowsheeting text of Biegler, Grossmann and
+Westerberg (1997) does not treat the method.  For a tear's \emph{pressure} the
+secant model $x^{*}=(g-s\,x)/(1-s)$ names the point the acceleration is heading for;
+when that point is not positive the loop has no feasible fixed point (a recycle
+whose pressure falls by the same $\Delta P$ every pass has $s=1-3\times10^{-4}$ and
+``converges'' to $-160$\,bar), and the acceleration is withheld for that entry: plain
+substitution, so the loop runs its \code{recycleMaxIter} passes and is refused by the
+tear's name.  The limits $q_{\min}$, $q_{\max}$ above are the declared ones.
 
 \noindent A third closure, \texttt{recycleSolver DominantEigenvalue;}, is the
 dominant eigenvalue method of Orbach and Crowe (Can.\ J.\ Chem.\ Eng.\ 49
@@ -4763,14 +4773,14 @@ $\mathrm{d}h = (v - T\,\partial v/\partial T)\,\mathrm{d}P$ at constant $T$
 Without it a pump's useful shaft work, $v\,\Delta P$, appeared in no stream, and
 \code{pump01} and \code{pump02} carried an open first law (the residual was exactly
 the pump's efficiency).  The liquid leg of the stream enthalpy and entropy therefore
-take, per component, from that component's own saturated liquid at $T$ to the
-stream's $P$,
+take, per component, from that component's FIXED reference pressure
+$P_{\mathrm{ref},i}$ (below) to the stream's $P$,
 \begin{align}
-  \Delta h_i(T,P) &= \int_{p^{\mathrm{sat}}_i(T)}^{P}
+  \Delta h_i(T,P) &= \int_{P_{\mathrm{ref},i}}^{P}
         \left[\,v_i - T\left(\frac{\partial v_i}{\partial T}\right)_{P'}\right]\mathrm{d}P'
-        \;=\; \int_{p^{\mathrm{sat}}_i}^{P} v_i\,(1-\alpha_i T)\,\mathrm{d}P',
+        \;=\; \int_{P_{\mathrm{ref},i}}^{P} v_i\,(1-\alpha_i T)\,\mathrm{d}P',
         \label{eq:liquid-pressure-h}\\
-  \Delta s_i(T,P) &= -\int_{p^{\mathrm{sat}}_i(T)}^{P}
+  \Delta s_i(T,P) &= -\int_{P_{\mathrm{ref},i}}^{P}
         \left(\frac{\partial v_i}{\partial T}\right)_{P'}\mathrm{d}P',
         \label{eq:liquid-pressure-s}
 \end{align}
@@ -4779,19 +4789,42 @@ Symbols: $v_i$ the pure-component liquid molar volume and $\alpha_i =
 v_i^{-1}(\partial v_i/\partial T)_P$ its expansivity, both from the property kernel's
 volume of the one-constituent set (\S\ref{sec:liquid-density-methods}: a reference
 equation that names the fluid, with its pressure dependence; else the record's volume
-route); $\partial v/\partial T$ is a central difference of $0.5$\,K of that same
-volume; $p^{\mathrm{sat}}_i(T)$ the same saturation pressure the K-value uses.  Where
-the volume carries pressure the integral is a three-point Gauss rule; where it does
-not (the Rackett and flat routes) it is $v(1-\alpha T)(P-p^{\mathrm{sat}})$ in closed
-form.  At or below $p^{\mathrm{sat}}$ the term is zero, so the liquid leg is continuous
-with the vapour at the bubble point.
+route); $\partial v/\partial T$ is a backward second-order difference of step
+$0.5$\,K of that same volume (backward, so that no evaluation crosses the saturation
+line); $p^{\mathrm{sat}}_i(T)$ the same saturation pressure the K-value uses.  Where
+the volume carries pressure the integral is a two-point Gauss rule; where it does
+not (the Rackett and flat routes) it is $v(1-\alpha T)(P-P_{\mathrm{ref}})$ in closed
+form.  For a fluid with a reference equation the leg is that equation's own $h(T,P)$
+and $s(T,P)$ on the liquid branch (metastable below $p^{\mathrm{sat}}$), differenced
+between the two pressures.  At or below $p^{\mathrm{sat}}(T)$ the upper limit is held at
+$p^{\mathrm{sat}}(T)$ (a liquid below its own saturation pressure gains no pressure
+effect), so the liquid leg is continuous with the vapour at the bubble point.
+
+\emph{The reference pressure is fixed (C390, 2026-11-19).}
+$P_{\mathrm{ref},i} = p^{\mathrm{sat}}_i(T_{\mathrm{ref},i})$ with
+$T_{\mathrm{ref},i} = \min(298.15\,\mathrm{K},\,0.9\,T_{c,i})$, the
+component's own datum temperature; it does not depend on the stream's $T$.  An
+earlier form took the lower limit at $p^{\mathrm{sat}}_i(T)$, which moves with $T$ and
+adds $-v\,\mathrm{d}p^{\mathrm{sat}}/\mathrm{d}T$ to $(\partial h/\partial T)_P$ but not to
+$T(\partial s/\partial T)_P$: the identity $(\partial h/\partial T)_P = T(\partial s/\partial
+T)_P$ was broken by $7\times10^{-4}$ of $c_p$ on water, and the gate that recovers
+$T$ from $(P,H)$ and from $(P,S)$ caught it at $10^{-6}$.  With one lower limit
+for both integrals the identity is exact.  The cost, stated: the saturated-liquid
+enthalpy (and with it the latent heat) now carries the leg
+$P_{\mathrm{ref}} \to p^{\mathrm{sat}}(T)$; on water it is $0.006$, $1.33$ and
+$8.65$\,J/mol at 300, 373.15 and 450\,K (against latent heats of 44, 41 and
+37\,kJ/mol), and $-236$\,J/mol at 572\,K, 86\,bar where $\alpha T>1$.  K-values are
+untouched (they use the vapour pressure, not this leg).  The run prints each
+component's $P_{\mathrm{ref}}$ once, beside the line that names the volume.
 
 \emph{Why $v(1-\alpha T)$ and not $v\,\mathrm{d}P$:} on water at 298.15\,K and 100\,bar the
 engine's own IAPWS-95 route gives $166.127$\,J/mol, this form $166.117$ and $v\,\Delta P$
 alone $180.233$; at 450\,K, $86.110$, $85.327$ and $181.207$.  Both forms close a pump's
 balance (it is solved on the stream enthalpy), so closure cannot tell them apart; the
 pump's outlet temperature can (\file{liquidDensity01}: 0.024238\,K on the reference
-route, 0.024201 with this form, 0.020520 with $v\,\Delta P$).  (Review record:
+route, 0.024201 with this form, 0.020520 with $v\,\Delta P$; the 298.15\,K figures are unchanged by the fixed
+reference, which coincides with the saturation line there, and the 450\,K figures were
+taken with the saturation line as lower limit).  (Review record:
 \file{docs/reviews/2026-11-13-c390-pressure-term-design/}.)
 
 \emph{Validity and the slope.}  The term is a difference, $1-\alpha T$.  For a fluid

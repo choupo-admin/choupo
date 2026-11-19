@@ -122,6 +122,8 @@ from props_views import strip_views  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 BUILD = ROOT / "build" / "linux64Gcc"
 PROPS_CASE = ROOT / "tutorials/props/membrane/polarisation01_geraldes_afonso_table1"
+#  record_datum() globs the witness's own experiment records (and the probes' copies of them, in scratch).
+SCAN_ROOTS = ("tutorials/props/membrane/polarisation01_geraldes_afonso_table1/constant/experiments/*.dat",)
 M12 = ROOT / "tutorials/steady/membranes/membrane12_sdem_nf270_nacl_traces"
 M14 = ROOT / "tutorials/steady/membranes/membrane14_polarisation_multiionic"
 R_GAS = 8.314462618
@@ -173,6 +175,17 @@ def species_D0(name, case):
             if m:
                 return float(m.group(1))
     raise RuntimeError(f"no D0 for {name}")
+
+
+def record_datum(prop, col, case=None):
+    """The one data row of the case's experiments record for `prop` (column index `col`)."""
+    case = case or PROPS_CASE
+    for f in sorted((case / "constant" / "experiments").glob("*.dat")):
+        t = strip_comments(f.read_text())
+        if re.search(r"\bproperty\s+%s\s*;" % prop, t):
+            m = re.search(r"\bdata\s*\(([^)]*)\)", t)
+            return float(m.group(1).split()[col])
+    return None
 
 
 def scalar_in(text, key):
@@ -231,6 +244,41 @@ def build_props_probe(dst, ions, close_by, dataset_text, policy):
     t = re.sub(r'dataset\s+"[^"]*";', 'dataset "constant/experimental/probe";', t)
     t = re.sub(r"polarisation\s*\{[^}]*\}", "polarisation { %s }" % policy, t)
     pd.write_text(t)
+    add_film_records(dst, ions)
+
+
+def add_film_records(dst, ions):
+    """The door matches a record to the SET of constituents the feed carries (C435 (4)): a probe that
+    changes the ions needs the film's two records stated for ITS set, with the witness's numbers."""
+    exp = dst / "constant" / "experiments"
+    names = []
+    for kind, ncol in (("liquidViscosity", 1), ("liquidDensity", 4)):
+        src = next(iter(sorted(exp.glob("geraldesAfonsoTable1_*_%s.dat" % kind))))
+        t = src.read_text()
+        wcols = " ".join("{ name w[%s]; unit -; }" % i for i in ions)
+        zeros = " ".join("0" for _ in ions)
+        val = record_datum(kind, ncol, dst)
+        if kind == "liquidViscosity":
+            t = re.sub(r"\bcolumns\s*\(.*?\n?\)\s*;", "columns ( { name T; unit K; } { name mu; unit Pa.s; } %s );" % wcols, t, count=1, flags=re.S)
+            t = re.sub(r"\bdata\s*\([^)]*\)\s*;", "data ( 298.15 %r %s );" % (val, zeros), t, count=1)
+        else:
+            t = re.sub(r"\bcolumns\s*\(.*?\n?\)\s*;", "columns ( { name T; unit K; } { name P; unit kPa; } %s { name rho; unit kg/m3; } );" % wcols, t, count=1, flags=re.S)
+            t = re.sub(r"\bdata\s*\([^)]*\)\s*;", "data ( 298.15 101.325 %s %r );" % (zeros, val), t, count=1)
+        t = re.sub(r"\bsystem\s*\([^)]*\)\s*;", "system ( water %s );" % " ".join(ions), t, count=1)
+        pbox = "P ( 50e3 1500e3 ); " if kind == "liquidDensity" else ""
+        t = re.sub(r"\bbox\s*\{.*?\}\s*\n", "box { T ( 298.05 298.25 ); %s%s }\n"
+                   % (pbox, " ".join("w[%s] ( 0 0.1 );" % i for i in ions)), t, count=1, flags=re.S)
+        t = re.sub(r'sha256\s+"[0-9a-f]+";', 'sha256 "0";', t)
+        name = "probe_%s" % kind
+        (exp / (name + ".dat")).write_text(t)
+        names.append(name)
+    tp = dst / "constant" / "thermoPhysPropDict"
+    tt = tp.read_text()
+    for n in names:
+        entry = '%s { use method; reason "probe: the witness film numbers for this probe set"; }' % n
+        key = "liquidViscosity" if "Viscosity" in n else "liquidDensity"
+        tt = re.sub(r"(geraldesAfonsoTable1_dyeCl_%s\s*\{[^}]*\})" % key, lambda m: m.group(1) + "\n                " + entry, tt, count=1)
+    tp.write_text(tt)
 
 
 def two_ion_dataset(rows):
@@ -252,7 +300,9 @@ def main():
         return 1
     pdict = strip_comments((PROPS_CASE / "system" / "propsDict").read_text())
     omega = scalar_in(pdict, "omega"); r_cm = scalar_in(pdict, "radius")
-    mu = scalar_in(pdict, "viscosity"); rho = scalar_in(pdict, "density")
+    #  C435 (4): the film's viscosity and density are the case's own RECORDS (constant/experiments),
+    #  asked of the package by the bench; the op's massTransfer {} refuses them
+    mu, rho = record_datum("liquidViscosity", 1), record_datum("liquidDensity", 4)
     T = scalar_in(pdict, "T")
     if None in (omega, r_cm, mu, rho, T):
         failures.append("(a) could not read omega/radius/viscosity/density/T from the witness propsDict")
@@ -376,7 +426,7 @@ def main():
         def wrong_block(dd):
             p = dd / "system/propsDict"
             t = p.read_text().replace("polarisation\n        {\n            suctionCorrection  GeraldesAfonso2006;\n            ionCoupling        electroneutral;\n        }", "")
-            t = t.replace("density    1000;", "density    1000;\n            ionCoupling electroneutral;")
+            t = t.replace("radius     2.4 cm;", "radius     2.4 cm;\n            ionCoupling electroneutral;")
             p.write_text(t)
         probe_refusal("wrongBlock", wrong_block, ["inside `massTransfer {}`", "polarisation {"])
 
