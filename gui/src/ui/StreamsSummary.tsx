@@ -51,6 +51,7 @@ import { IconCircleCheck, IconAlertTriangle, IconArrowsSplit2 } from "@tabler/ic
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import { massBalance } from "../case/balances.js";
 import { useStore } from "../state/store.js";
+import { SortTh, useSortable } from "./SortableTable.js";
 import { dTText, dutyFixed, dutyText } from "../case/resultUnits.js";
 import { closureLine, closureWordOf, closureWords } from "../case/closureByConstruction.js";
 import { groupAdvisories, groupLoci, GROUP_LOCI_SHOWN } from "../case/advisoryGroups.js";
@@ -58,6 +59,7 @@ import {
   dutyLabel,
   flowBasis,
   formatFlow,
+  formatSig,
   type FlowUnit,
 } from "../state/displayUnits.js";
 
@@ -97,6 +99,38 @@ function columnDuties(result: RunResult): DutyRow[] {
   return rows;
 }
 
+type CompRow = { c: string; ci: number; co: number; err: number };
+
+function CompTable({ rows, u }: { rows: CompRow[]; u: Parameters<typeof formatFlow>[1] }) {
+  const s = useSortable(rows, { c: (r) => r.c, ci: (r) => r.ci, co: (r) => r.co, err: (r) => r.err });
+  const th = (k: string, label: string, right?: boolean) => (
+    <SortTh s={s} k={k} right={right}><Text span size="9px" c="dimmed" tt="uppercase">{label}</Text></SortTh>
+  );
+  return (
+    <Table withRowBorders={false} verticalSpacing={1} horizontalSpacing="sm" fz="xs">
+      <Table.Thead>
+        <Table.Tr>
+          {th("c", "component")}{th("ci", "in", true)}{th("co", "out", true)}{th("err", "Δ%", true)}
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody>
+        {s.rows.map(({ c, ci, co, err }) => (
+          <Table.Tr key={c}>
+            <Table.Td><Text size="xs" ff="monospace">{c}</Text></Table.Td>
+            <Table.Td ta="right"><Text size="xs" ff="monospace">{formatFlow(ci, u)}</Text></Table.Td>
+            <Table.Td ta="right"><Text size="xs" ff="monospace">{formatFlow(co, u)}</Text></Table.Td>
+            <Table.Td ta="right">
+              <Text size="xs" ff="monospace" c={err < MASS_TOL ? "dimmed" : "yellow.5"}>
+                {formatSig(err * 100)}
+              </Text>
+            </Table.Td>
+          </Table.Tr>
+        ))}
+      </Table.Tbody>
+    </Table>
+  );
+}
+
 export function StreamsSummary({
   result,
   flow,
@@ -116,7 +150,7 @@ export function StreamsSummary({
   const massOk = mb.closureErr < MASS_TOL
               && (result.closuresByConstruction ?? []).every(
                    (c) => c.balance !== "material" || c.status === "verified");
-  const closurePct = (mb.closureErr * 100).toFixed(mb.closureErr < 1e-4 ? 4 : 2);
+  const closurePct = formatSig(mb.closureErr * 100);
   //  A PERCENTAGE THE ENGINE COULD NOT FORM IS NOT DRAWN.  `residual_pct` is
   //  null when the plant declares no duty and carries no boundary heat, so
   //  there is no exchanged-energy scale (2026-09-08).  The residual in kW is
@@ -137,7 +171,7 @@ export function StreamsSummary({
                 && (gb.noBoundary || (energyScaled && energyErr < ENERGY_TOL))
                 && ecw.notVerified.length === 0;
   const energyPct = energyScaled
-    ? (energyErr * 100).toFixed(energyErr < 1e-4 ? 4 : 2)
+    ? formatSig(energyErr * 100)
     : "—";
 
   // Per-component rows, biggest first; closure-% per component.
@@ -292,7 +326,7 @@ export function StreamsSummary({
                   <Text span fw={600}>model boundary {b.producer}→{b.consumer} ({b.stream}):</Text>{" "}
                   {b.refused
                     ? <><Text span fw={700}>REFUSED</Text> — {b.reason ?? "speciation change"}</>
-                    : `ΔH ${b.dH_kJ_per_mol?.toFixed(3) ?? "—"} kJ/mol (${b.dH_kW === undefined ? "—" : dutyText(b.dH_kW, 2, prefs)}), implied ΔT ${b.implied_dT_K === undefined ? "—" : dTText(b.implied_dT_K, 2, prefs)}`}
+                    : `ΔH ${b.dH_kJ_per_mol === undefined ? "—" : formatSig(b.dH_kJ_per_mol)} kJ/mol (${b.dH_kW === undefined ? "—" : dutyText(b.dH_kW, 2, prefs)}), implied ΔT ${b.implied_dT_K === undefined ? "—" : dTText(b.implied_dT_K, 2, prefs)}`}
                 </Text>
               </Tooltip>
             </Group>
@@ -405,30 +439,7 @@ export function StreamsSummary({
         {/* Per-component table */}
         {compRows.length > 0 && (
           <Box style={{ minWidth: 260 }}>
-            <Table withRowBorders={false} verticalSpacing={1} horizontalSpacing="sm" fz="xs">
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th><Text size="9px" c="dimmed" tt="uppercase">component</Text></Table.Th>
-                  <Table.Th ta="right"><Text size="9px" c="dimmed" tt="uppercase">in</Text></Table.Th>
-                  <Table.Th ta="right"><Text size="9px" c="dimmed" tt="uppercase">out</Text></Table.Th>
-                  <Table.Th ta="right"><Text size="9px" c="dimmed" tt="uppercase">Δ%</Text></Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {compRows.map(({ c, ci, co, err }) => (
-                  <Table.Tr key={c}>
-                    <Table.Td><Text size="xs" ff="monospace">{c}</Text></Table.Td>
-                    <Table.Td ta="right"><Text size="xs" ff="monospace">{formatFlow(ci, u)}</Text></Table.Td>
-                    <Table.Td ta="right"><Text size="xs" ff="monospace">{formatFlow(co, u)}</Text></Table.Td>
-                    <Table.Td ta="right">
-                      <Text size="xs" ff="monospace" c={err < MASS_TOL ? "dimmed" : "yellow.5"}>
-                        {(err * 100).toFixed(err < 1e-4 ? 3 : 1)}
-                      </Text>
-                    </Table.Td>
-                  </Table.Tr>
-                ))}
-              </Table.Tbody>
-            </Table>
+            <CompTable rows={compRows} u={u} />
             <Text size="9px" c="dimmed" ff="monospace" mt={2}>mass flow ({u})</Text>
           </Box>
         )}
@@ -468,7 +479,7 @@ export function StreamsSummary({
                     </Table.Td>
                     <Table.Td ta="right">
                       <Text size="xs" ff="monospace" c="dimmed">
-                        {d.eurH !== undefined ? `${d.eurH.toFixed(1)} €/h` : ""}
+                        {d.eurH !== undefined ? `${formatSig(d.eurH)} €/h` : ""}
                       </Text>
                     </Table.Td>
                   </Table.Tr>

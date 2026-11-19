@@ -56,6 +56,8 @@ import { acceptanceOf, type UnitAcceptanceLists } from "../case/unitAcceptance.j
 import type { CaseFiles } from "../case/types.js";
 import { ProfilePlot } from "./plotting/ProfilePlot.js";
 import { ExpiredTabPanel } from "./ExpiredTabPanel.js";
+import { formatSig } from "../state/displayUnits.js";
+import { SortTh, useSortable } from "./SortableTable.js";
 import { UnitStreamsTable } from "./UnitStreamsTable.js";
 import { WhatIfTab } from "./WhatIfTab.js";
 import { focusKey } from "./unitFocus.js";
@@ -92,11 +94,11 @@ function readStash(): Stash | null {
   catch { return null; }
 }
 
-const fmtNum = (n: number) => (Math.abs(n) >= 1e4 || (n !== 0 && Math.abs(n) < 1e-2) ? n.toExponential(3) : String(+n.toFixed(4)));
+const fmtNum = (n: number) => formatSig(n);
 
 // "2 methanol + CO  →  aceticAcid" from a stoichiometry list (|nu| coefficient).
 function equationOf(stoich: StoichTerm[]): string {
-  const term = (s: StoichTerm) => { const c = Math.abs(s.nu); return (c === 1 ? "" : `${+c.toFixed(3)} `) + s.component; };
+  const term = (s: StoichTerm) => { const c = Math.abs(s.nu); return (c === 1 ? "" : `${formatSig(c)} `) + s.component; };
   const r = stoich.filter((s) => s.nu < 0).map(term);
   const p = stoich.filter((s) => s.nu > 0).map(term);
   return `${r.join(" + ")}  →  ${p.join(" + ")}`;
@@ -241,6 +243,27 @@ export function InternalsView() {
 
 // One reaction: equation + stoichiometry/order table + Arrhenius + what the run
 // achieved (conversion, extent, k, Damköhler) pulled from the unit's KPIs.
+function StoichTable({ stoich }: { stoich: StoichTerm[] }) {
+  const s = useSortable(stoich, { component: (t) => t.component, nu: (t) => t.nu, order: (t) => t.order });
+  return (
+    <Table withTableBorder fz="sm" ff="monospace" w="auto">
+      <Table.Thead><Table.Tr>
+        <SortTh s={s} k="component">component</SortTh><SortTh s={s} k="nu" right>ν</SortTh>
+        <SortTh s={s} k="order" right>order</SortTh>
+      </Table.Tr></Table.Thead>
+      <Table.Tbody>
+        {s.rows.map((t) => (
+          <Table.Tr key={t.component}>
+            <Table.Td>{t.component}</Table.Td>
+            <Table.Td ta="right">{t.nu > 0 ? `+${formatSig(t.nu)}` : formatSig(t.nu)}</Table.Td>
+            <Table.Td ta="right">{t.order === undefined ? "—" : formatSig(t.order)}</Table.Td>
+          </Table.Tr>
+        ))}
+      </Table.Tbody>
+    </Table>
+  );
+}
+
 function ReactionCard({ name, r, kpis }: { name: string; r: ReactionDef; kpis: Record<string, number> }) {
   const stoich = r.stoichiometry ?? [];
   const kin = r.kinetics ?? {};
@@ -252,7 +275,7 @@ function ReactionCard({ name, r, kpis }: { name: string; r: ReactionDef; kpis: R
     if (typeof kpis[k] === "number") run.push([label, fmt(kpis[k])]);
   };
   push("k", "rate constant k", (v) => `${fmtNum(v)} s⁻¹`);
-  push("X_limiting", "conversion X", (v) => `${(v * 100).toFixed(1)} %`);
+  push("X_limiting", "conversion X", (v) => `${formatSig(v * 100)} %`);
   push("xi_mol_per_s", "extent ξ", (v) => `${fmtNum(v)} mol/s`);
   push("Da_kTau", "Damköhler Da", (v) => fmtNum(v));
   push("tau_s", "residence τ", (v) => `${fmtNum(v)} s`);
@@ -268,20 +291,7 @@ function ReactionCard({ name, r, kpis }: { name: string; r: ReactionDef; kpis: R
       <Group align="flex-start" gap="xl">
         <Box>
           <Text size="xs" c="dimmed" tt="uppercase" fw={600} mb={4}>Stoichiometry</Text>
-          <Table withTableBorder fz="sm" ff="monospace" w="auto">
-            <Table.Thead><Table.Tr>
-              <Table.Th>component</Table.Th><Table.Th ta="right">ν</Table.Th><Table.Th ta="right">order</Table.Th>
-            </Table.Tr></Table.Thead>
-            <Table.Tbody>
-              {stoich.map((t) => (
-                <Table.Tr key={t.component}>
-                  <Table.Td>{t.component}</Table.Td>
-                  <Table.Td ta="right">{t.nu > 0 ? `+${t.nu}` : t.nu}</Table.Td>
-                  <Table.Td ta="right">{t.order ?? "—"}</Table.Td>
-                </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
+          <StoichTable stoich={stoich} />
         </Box>
 
         <Box>
