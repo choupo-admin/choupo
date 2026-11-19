@@ -100,7 +100,7 @@ int ENRTLMultiSaltOp::run(const DictPtr& dict, const ThermoPackage&, int verbosi
         throw std::runtime_error("enrtlMultiSalt: formulation must be `published` or `consistent`");
     const bool cons = (formulation == "consistent");
 
-    const double mTot = dict->lookupScalarOrDefault("totalMolality", 4.0);
+    const double mTot = dict->lookupScalarInOrDefault("totalMolality", 4.0, Dims::molality, "mol/kg");   // bare = mol/kg (C454 family 9)
     const int nPts    = static_cast<int>(dict->lookupScalarOrDefault("sweepPoints", 21));
     const double T    = 298.15;
 
