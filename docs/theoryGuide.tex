@@ -35792,6 +35792,70 @@ $0.1\,\%$.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\subsection{Rates of production of a reaction mechanism}\label{sec:rates-of-production}
+
+A mechanism of tens of reactions integrates to a few curves, and the curves hide
+the question a kineticist asks first: \emph{which reactions make this species,
+and which destroy it, right now?}  The \texttt{batchReactor} answers it on request.
+On the unit, an opt-in block
+
+\begin{verbatim}
+rateOfProduction { times ( 3.0e-6 7.0e-6 1.5e-5 ); top 5; }
+\end{verbatim}
+
+reports at each listed instant (the first committed step that reaches it; the
+run prints both the requested and the reached time) three things per species:
+its net rate, its gross production and consumption, and the reactions that
+account for them.
+
+\paragraph{Definitions.}  Let $r_j$ be the net rate of reaction $j$
+[kmol\,m$^{-3}$\,s$^{-1}$] --- the very function the integrator's right-hand
+side calls, so the third-body concentration $[M]=\sum_k \varepsilon_k c_k$, the
+fall-off blend and the reverse leg $k_j/K_{c,j}$ of a reversible reaction are
+already in it --- and $\nu_{ij}$ the signed stoichiometric coefficient of species
+$i$ in reaction $j$.  The contribution of reaction $j$ to species $i$ is
+\begin{equation}\label{eq:rop-contribution}
+c_{ij} \;=\; \nu_{ij}\, r_j\, V \qquad [\mathrm{kmol\,s^{-1}}],
+\end{equation}
+and the net rate of species $i$ is the sum over reactions, which is the species
+balance the integrator advances,
+\begin{equation}\label{eq:rop-sum-rule}
+\frac{\mathrm{d}n_i}{\mathrm{d}t} \;=\; \sum_j c_{ij} \;=\; P_i - D_i ,
+\qquad
+P_i = \sum_{c_{ij}>0} c_{ij},\quad D_i = -\sum_{c_{ij}<0} c_{ij},
+\end{equation}
+with $P_i$ and $D_i$ the \emph{gross} production and consumption.  The
+\emph{share} of a producer is $c_{ij}/P_i$ and of a consumer $-c_{ij}/D_i$; the
+printed list holds the \texttt{top} largest on each side with their shares in
+percent, and counts the rest.  A species whose gross terms far exceed its net
+is held by near-cancelling channels (the burned gas of an ignition is the
+example): its net says nothing about which reactions matter, its shares do.
+
+\paragraph{Why the sum rule is the check.}  Because every reaction is
+atom-balanced, $\sum_i a_{ei}\nu_{ij}=0$ for each element $e$ ($a_{ei}$ the
+atoms of $e$ in species $i$), the nets conserve atoms,
+$\sum_i a_{ei}\,\mathrm{d}n_i/\mathrm{d}t = 0$, whatever $r_j$ is --- atoms
+therefore cannot tell a wrong $r_j$.  Only Eq.~\eqref{eq:rop-sum-rule} against
+the integrator's own $\mathrm{d}n_i/\mathrm{d}t$ can; the run writes that
+derivative beside the net (row \texttt{DNDT\_ODE}) and
+\texttt{bin/curate/check\_rate\_of\_production.py} holds both identities, and
+the opt-in's neutrality, on the witness \texttt{ignition01\_h2o2\_rop}.
+
+\paragraph{Output and validity.}  The whole matrix $c_{ij}$ is appended, in
+long format, to \texttt{rateOfProduction.csv} beside \texttt{trajectory.csv}
+(columns \texttt{t\_s, species, reaction, nu, rate\_kmol\_m3\_s,
+contribution\_kmol\_s}; the rows \texttt{NET} and \texttt{DNDT\_ODE} per
+species).  A time outside $[\texttt{startTime},\texttt{endTime}]$ and an unknown
+key in the block are refused by name.  The report reads the state and does not
+change it: a case without the block runs byte-identically.  It applies to the
+vessel's own reactions --- power-law, CHEMKIN and factory laws alike, since all
+go through the one rate function.  It is a snapshot per instant, not a time
+integral; path fluxes and sensitivities are separate tools.  The quantities are
+plain kinetic bookkeeping of the species balance (no correlation, no fitted
+parameter, so no in-sample statement applies); the implementation is
+\texttt{BatchReactor::reportRatesOfProduction\_}.  Witness:
+\texttt{ignition01\_h2o2\_rop}.
+
 \section{Rayleigh batch distillation}\label{ch:rayleigh}
 
 \begin{figure}[ht]

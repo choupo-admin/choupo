@@ -37,26 +37,12 @@ the integrator uses, third-body concentration and fall-off included),
 `bin/curate/check_rate_of_production.py`). Theory Guide: *Rates of production
 of a reaction mechanism*.
 
-## The lesson: stiffness
+## Stiffness
 
-The radical lifetimes are far shorter than the induction — the solver prints
-a stiffness ratio of order 10⁷.  That is **stiffness**.  An explicit method
-(RK4) is stability-limited to a step of order the *fastest* scale, so it cannot
-take the 1 µs steps this case uses.  The solver here is **Rosenbrock23**, an
-L-stable linearly-implicit method that steps by *accuracy*, not stability; at
-verbosity 3 it prints its stiffness verdict and step counts (the no-silent-
-crutch credo).
-
-See it fail on purpose — two siblings run the **same** problem at the same
-step with other integrators:
-
-```
-runCase tutorials/batch/combustion/ignition01_h2o2_rk4      # explicit RK4: blows up to NaN
-runCase tutorials/batch/combustion/ignition01_h2o2_eulersi  # semi-implicit Euler: refuses by name
-```
-
-(Both ship a `.expect-nonconvergence` marker — their whole point is to fail.)
-*See, then decide*, applied to numerics.
+The solver is Rosenbrock23, as in `ignition01_h2o2`, whose `_rk4` and
+`_eulersi` siblings show the explicit integrators failing on this chemistry;
+this case adds nothing to that lesson and only reads the state the integrator
+reaches.
 
 ## Provenance — read before you quote a number
 

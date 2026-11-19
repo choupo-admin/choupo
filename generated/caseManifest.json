@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1905,
+  "cases": 1906,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -21386,6 +21386,20 @@
    ],
    "hasGolden": false
   },
+  "tutorials/batch/combustion/ignition01_h2o2_rop": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/batch/combustion/ignition02_h2air_slack": {
    "application": "choupoBatch",
    "unitTypes": [
@@ -30665,6 +30679,7 @@
     "tutorials/batch/combustion/ignition01_h2o2",
     "tutorials/batch/combustion/ignition01_h2o2_eulersi",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
+    "tutorials/batch/combustion/ignition01_h2o2_rop",
     "tutorials/batch/combustion/ignition02_h2air_slack",
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
     "tutorials/batch/crystallisation/batch13_nacl_pitzer",
@@ -32651,6 +32666,7 @@
     "tutorials/batch/combustion/ignition01_h2o2",
     "tutorials/batch/combustion/ignition01_h2o2_eulersi",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
+    "tutorials/batch/combustion/ignition01_h2o2_rop",
     "tutorials/batch/combustion/ignition02_h2air_slack",
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
     "tutorials/batch/reactor/batch01_first_order",
@@ -35598,6 +35614,7 @@
     "tutorials/batch/combustion/ignition01_h2o2",
     "tutorials/batch/combustion/ignition01_h2o2_eulersi",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
+    "tutorials/batch/combustion/ignition01_h2o2_rop",
     "tutorials/batch/combustion/ignition02_h2air_slack",
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
     "tutorials/batch/drying/dryer01_sucrose_tray",

@@ -3329,6 +3329,24 @@ adsorption denominator means.  With `basis activity` it needs an activity model.
 Example: `batch07_lhhw_methylAcetate` (Pöpken 2000 Eq 16 on UNIQUAC activities;
 X → 76.6 %, the activity equilibrium the steady CSTR also reaches).
 
+**Rates of production (opt-in, the glass box of a mechanism).**  A block on the
+unit, beside `operation` and `solver`:
+```
+rateOfProduction { times ( 3.0e-6 7.0e-6 1.5e-5 ); top 5; }
+```
+At the first committed step that reaches each time (the run prints requested and
+reached) it prints, per species, the net rate, the gross production and
+consumption, and the `top` reactions on each side with their share, where
+`c_ij = nu_ij r_j V` [kmol/s] is what reaction j does to species i and
+`r_j` is the very rate the integrator uses (third body, fall-off, reverse leg
+included).  The whole matrix goes to `rateOfProduction.csv` in the case directory
+(`t_s, species, reaction, nu, rate_kmol_m3_s, contribution_kmol_s`, plus a `NET`
+row and the integrator's own `DNDT_ODE` row per species: sum_j c_ij = dn_i/dt).
+A time outside `[startTime, endTime]` and an unknown key are refused by name;
+absent, nothing changes.  Witness `ignition01_h2o2_rop`
+(`bin/curate/check_rate_of_production.py`); Theory Guide, "Rates of production
+of a reaction mechanism".
+
 ### `fixedBedAdsorber`
 One-dimensional isothermal adsorption with conservative finite volumes,
 axial dispersion and declared LDF kinetics.  `flowModel ergun` activates the

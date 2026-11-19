@@ -805,6 +805,50 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \tutreadme{Same as the sibling: the ? Conaire et al. (2004) H$_2$/O$_2$ mechanism (constant/reactions, shared with ignition02\_h2air\_slack) and NASA-9 heat capacities from NASA/TP-2002-211556 for H$_2$, O$_2$, N$_2$ and water. Until 2026-10-25 it ran a GRI-Mech 3.0 subset, replaced because GRI-Mech grants no redistribution (DEV.md ?4c C164); the failure it teaches did not change.}
 
 \clearpage
+\tutentry{ignition01\_h2o2\_rop}{tutorials/batch/combustion/ignition01\_h2o2\_rop}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bomb) at (0.0,-0.0) {\textbf{bomb}\\[-1pt]{\tiny batchReactor}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Adiabatic constant-V H2/O2 ignition with rates of production per species and reaction at three instants at 1100 K (O Conaire 2004 H2/O2 kinetics, NASA-9 thermo); Rosenbrock23 stiff solver; reports ignition delay}
+\begin{tutnarrative}
+ignition01\_h2o2 plus the RATES OF PRODUCTION report.
+
+The case is ignition01\_h2o2 unchanged (closed rigid vessel, stoichiometric H2/O2 in N2 at 1100 K) with ONE added block on the vessel, `rateOfProduction`: at three instants of the 1 us write grid it prints, per species, which reactions make and destroy it, and writes the whole matrix c\_ij = nu\_ij r\_j V [kmol/s] to rateOfProduction.csv. The instants were read from ignition01\_h2o2's own trajectory: 3 us (induction, T 1108 K, the radical pool still growing), 7 us (the ramp, T 1766 K, between the 6 and 8 us rows where dT/dt peaks) and 15 us (burned gas, T 3076 K, the chain reactions and their reverses nearly cancel).
+
+H2 : O2 : N2 = 2 : 1 : 4 (stoichiometric H2 + 1/2 O2 $\to$ H2O, 57\% N2)
+
+mode adiabatic + energy gasConstantV: the first law dU = 0 in a fixed volume, with the heat release coming from the species FORMATION enthalpies (curated thermo) -- no per-reaction $\Delta$H is supplied. Temperature, and the radicals H/O/OH/HO2, are integrated by the stiff solver until branching runs away.
+
+solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 (see the ignition01\_h2o2\_rk4 sibling) and the same step blows up.
+
+\end{tutnarrative}
+\tutreadme{The same H$_2$/O$_2$ ignition as ignition01\_h2o2 (closed rigid vessel, 1100 K, 5 bar, O Conaire 2004 mechanism, Rosenbrock23), with one added block on the vessel:}
+\tutreadme{At the first committed step that reaches each time (here the 1 $\mu$s write grid hits them exactly) the run prints, for every species, its net rate of change, its gross production and consumption, and the top reactions on each side with their share of that gross. The whole matrix goes to rateOfProduction.csv (columns t\_s, species, reaction, nu, rate\_kmol\_m3\_s, contribution\_kmol\_s, plus a NET row and the integrator's own DNDT\_ODE row per species).}
+\tutreadme{The three instants were read from ignition01\_h2o2's trajectory:}
+\tutreadme{Definitions: r\_j is the net rate of reaction $\ast$j$\ast$ (kmol/m$^3$/s, the very number the integrator uses, third-body concentration and fall-off included), c\_ij = $\nu$\_ij r\_j V (kmol/s) is what reaction $\ast$j$\ast$ does to species $\ast$i$\ast$, and $\Sigma$\_j c\_ij equals the integrator's dn$_i$/dt exactly (held by bin/curate/check\_rate\_of\_production.py). Theory Guide: $\ast$Rates of production of a reaction mechanism$\ast$.}
+\tutreadme{The solver is Rosenbrock23, as in ignition01\_h2o2, whose \_rk4 and \_eulersi siblings show the explicit integrators failing on this chemistry; this case adds nothing to that lesson and only reads the state the integrator reaches.}
+\tutreadme{- The reaction rates are the H$_2$/O$_2$ mechanism of ? Conaire, Curran, Simmie, Pitz \& Westbrook, $\ast$Int. J. Chem. Kinet.$\ast$ 36 (2004) 603, Table I, transcribed from the paper --- the same constant/reactions as ignition02\_h2air\_slack, where the transcription is pinned against the Slack shock-tube delays. Reverse rates come from equilibrium, through the thermo below. - The thermodynamics: the formation data are the curated catalogue's; the ideal-gas heat capacities of H$_2$, O$_2$, N$_2$ and water are case-local NASA-9 polynomials read from NASA/TP-2002-211556 (McBride, Zehe \& Gordon 2002, public domain), because the catalogue's process-range Cp does not reach a flame. - What changed on 2026-10-25 (DEV.md ?4c C164): until then this case and its two siblings ran the H/O subsystem of GRI-Mech 3.0, copied verbatim, with heat capacities from GRI-Mech's thermo file. GRI-Mech grants no redistribution, so both were replaced. The burned temperature moved from 2641 K to 3078 K, and the new one is the right one, measured rather than argued: a Gibbs minimisation (gibbsReactor, isothermal, this charge's elements) at the run's final T and P reproduces the run's final composition (H 1.152 \%, water 26.98 \%), while at the old 2641 K it puts H at 0.17 \% and water at 31.1 \% where the old run had stopped at 3.17 \% and 23.1 \%. The old plateau was a radical pool that never recombined, not an equilibrium. The integrator lesson is unchanged.}
+\begin{tutgolden}
+\goldrow{kpi}{bomb}{P\_final}{500000}
+\goldrow{kpi}{bomb}{T\_final}{3076.31278179}
+\goldrow{kpi}{bomb}{n\_H2O2\_final}{9.60661475471e-11}
+\goldrow{kpi}{bomb}{n\_H2\_final}{1.6749742078e-06}
+\goldrow{kpi}{bomb}{n\_HO2\_final}{9.12802450492e-10}
+\goldrow{kpi}{bomb}{n\_H\_final}{5.08698565686e-07}
+\goldrow{kpi}{bomb}{n\_N2\_final}{2.857145e-05}
+\goldrow{kpi}{bomb}{n\_O2\_final}{6.5975872805e-07}
+\goldrow{kpi}{bomb}{n\_OH\_final}{7.52547147842e-07}
+\goldrow{kpi}{bomb}{n\_O\_final}{2.34567190793e-07}
+\goldrow{kpi}{bomb}{n\_water\_final}{1.19770504681e-05}
+\goldrow{kpi}{bomb}{t\_end}{0.0002}
+\goldrow{kpi}{bomb}{totalMoles\_final}{4.43800551768e-05}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{7.94656764115e-15}
+\goldmore{17}
+\end{tutgolden}
+
+\clearpage
 \tutentry{ignition02\_h2air\_slack}{tutorials/batch/combustion/ignition02\_h2air\_slack}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
