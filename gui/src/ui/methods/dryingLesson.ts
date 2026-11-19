@@ -291,9 +291,10 @@ n = 1:\quad X(t) - X_\mathrm{eq} &= (X_c - X_\mathrm{eq}) \exp\!\left(-\frac{t -
       + "or hotter air, not a longer run.  A dryer specified to a moisture "
       + "below the equilibrium value of the air it is fed cannot meet its "
       + "specification at any residence time.",
-    formula: String.raw`t(X) = t_c + \tau \ln\!\left(\frac{X_c - X_\mathrm{eq}}{X - X_\mathrm{eq}}\right) \;\longrightarrow\; \infty \quad \text{as } X \to X_\mathrm{eq}`,
+    formula: String.raw`t(X) = t_c + \tau \ln\!\left(\frac{X_c - X_\mathrm{eq}}{X - X_\mathrm{eq}}\right) \;\longrightarrow\; \infty \quad \text{as } X \to X_\mathrm{eq}\ (n \ge 1)`,
     note: "Both consequences are visible in the two diagrams: on X(t) the tail "
-      + "flattens onto X_eq and never touches it; on R(X) the sloping segment "
+      + "flattens onto X_eq and, for n of 1 or more, never touches it "
+      + "(for n < 1 the curve reaches X_eq in the finite time of step 4); on R(X) the sloping segment "
       + "aims at R = 0 exactly at X_eq.  X_eq here is a result, not a "
       + "declaration — the GAB isotherm of the solid evaluated at the water "
       + "activity of the declared air — so it moves when you move the air's "
@@ -314,13 +315,18 @@ export const DRYING_LIMITS: readonly { id: string; title: string; body: string }
   },
   {
     id: "falling-rate-law",
-    title: "One falling-rate period, by a law that is a choice.",
-    body: "R = R_c (X − X_eq)/(X_c − X_eq) is announced by the engine as a "
-      + "modelling choice, not physics. There is no internal diffusion "
+    title: "The falling-rate curve is a declared choice, not a mechanism.",
+    body: "Undeclared, the engine runs R = R_c (X − X_eq)/(X_c − X_eq) and "
+      + "announces it as a modelling choice, not physics; a case may instead "
+      + "declare a characteristic drying curve (van Meel 1958: a power law, "
+      + "as this witness does, or a measured table that can carry two "
+      + "falling-rate periods), and the engine then quotes the declaration. "
+      + "Either way the curve is a fit to the falling period: there is no internal diffusion "
       + "coefficient, no moisture profile inside the solid, no receding "
-      + "evaporation front, no case hardening, and no second falling-rate "
-      + "period. A material whose tail is governed by liquid capillary flow "
-      + "and one governed by vapour diffusion are drawn identically here.",
+      + "evaporation front and no case hardening, and this page's power "
+      + "curve has one falling-rate period.  A material whose tail is governed by "
+      + "liquid capillary flow and one governed by vapour diffusion are drawn "
+      + "identically by the same curve.",
   },
   {
     id: "solid-temperature",

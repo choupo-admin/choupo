@@ -60,8 +60,10 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
       + "given syngas is good for is its composition, and two numbers carry "
       + "most of it: the hydrogen-to-carbon-monoxide ratio, and the "
       + "stoichiometric module that a methanol designer uses because it "
-      + "also counts the CO2.  Every exercise on this page reports both, "
-      + "computed from the outlet flows the engine publishes.",
+      + "also counts the CO2.  The reformer, route, carbon, shift and destination "
+      + "exercises report both (the pressure exercise only the ratio, and the "
+      + "adsorber exercise its purity and recovery instead), computed from the "
+      + "outlet flows the engine publishes.",
     formula: String.raw`r = \frac{n_{\ce{H2}}}{n_{\ce{CO}}}, \qquad M = \frac{n_{\ce{H2}} - n_{\ce{CO2}}}{n_{\ce{CO}} + n_{\ce{CO2}}}`,
     where: [
       { sym: "r", means: "the H2/CO ratio of the gas", unit: "mol/mol" },
@@ -460,11 +462,15 @@ a + c &= n_{\ce{CO}} + n_{\ce{CO2}}\\
       + "adsorbs, pass through as product; each bed is then blown down to a "
       + "low pressure, releasing what it held as the tail gas.  CO2, with its "
       + "large quadrupole moment, is held most strongly and nitrogen least "
-      + "among the impurities, with methane and CO between them (the host "
-      + "case's isotherms rank them CO2 >> CH4 > CO ~ N2 >> H2), which is "
-      + "why the adsorber removes CO2 first and nitrogen last.  Molar mass "
-      + "is not the measure: methane is lighter than nitrogen and is held "
-      + "more strongly.",
+      + "among the impurities, with CO and methane between them (at the bed's 313 K "
+      + "the Henry slopes of the host case's zeolite 5A records are about 16.2 "
+      + "for CO2, 1.54 for CO, 0.87 for CH4, 0.55 for N2 and 0.045 for H2, in "
+      + "mol/(kg bar), so CO2 >> CO > CH4 > N2 >> H2), which is "
+      + "why the adsorber removes CO2 first and nitrogen last.  Methane "
+      + "nevertheless reaches the product before CO, because the feed carries "
+      + "more of it (5 % against 4 %), not because it is held more strongly.  "
+      + "Molar mass is not the measure: methane is lighter than nitrogen and "
+      + "is held more strongly.",
     formula: String.raw`\Delta q_i = \eta\,\bigl(q_i(P_\mathrm{high}) - q_i(P_\mathrm{low})\bigr), \qquad S_i = \min(\Delta q_i\, w\, F,\; z_i F)`,
     where: [
       { sym: "\\Delta q_i", means: "the working capacity of the adsorbent for "

@@ -87,7 +87,9 @@ export const PUMP_STEPS: readonly LessonStep[] = [
         + "imposes that point by point.", unit: "m³/s" },
       { sym: "Q^*", means: "The operating point — the one flow at which the "
         + "two curves agree.  It is not a setting: it is where the "
-        + "installation ends up, which is the whole lesson of the page.",
+        + "installation ends up, which is the whole lesson of the page.  The tool "
+        + "reports it as the molar flow F* in kmol/h; convert with Q* = F* M / (3600 ρ) "
+        + "(M in kg/kmol, ρ in kg/m³) to compare it with the curves above.",
         unit: "m³/s" },
     ],
     note: "The single crossing on this page also rests on the model's "
