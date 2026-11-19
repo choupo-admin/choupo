@@ -104,6 +104,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 R_GAS = 8.314462618          # src/core/Constants.H
 N_A = 6.02214076e23
 T0 = 298.15
+EXTRAP_K = 5.0     # K below Tlow at which 298.15 K is still read from the low polynomial
 CAL = 4.184
 EV_J_MOL = 96485.33212       # 1 eV per particle in J/mol
 
@@ -217,6 +218,8 @@ def parse_equation(eq, species):
     m = re.search(r'\(\+\s*([^)\s]+)\s*\)', eq)
     if m:
         falloff = m.group(1)
+        if falloff.upper() == "M" and falloff not in species:
+            falloff = "M"        # real files print (+m) in lower case (LLNL H2, 2004)
         eq = re.sub(r'\(\+\s*[^)\s]+\s*\)', '', eq)
     for arrow in ("<=>", "=>", "="):
         if arrow in eq:
@@ -228,7 +231,7 @@ def parse_equation(eq, species):
     def side(s):
         terms, m_flag = {}, False
         for tok in [t.strip() for t in s.split("+") if t.strip()]:
-            if tok == "M":
+            if tok.upper() == "M" and "M" not in species and tok not in species:
                 m_flag = True
                 continue
             if tok in species:
@@ -395,7 +398,10 @@ def species_record(rec, cname, aw, source, licence):
     miss = [e for e in rec["comp"] if e not in aw]
     if miss:
         raise Refusal("element(s) %s not in the engine's atomic-weight table" % miss)
-    if not rec["Tlow"] <= T0 <= rec["Thigh"]:
+    # Almost every published NASA-7 record starts at 300 K, 1.85 K above 298.15; the low
+    # polynomial is evaluated there (a 1.85 K extrapolation, what Cantera and CHEMKIN do).
+    # A wider gap is still refused.
+    if not (rec["Tlow"] - EXTRAP_K) <= T0 <= rec["Thigh"]:
         raise Refusal("298.15 K is outside %g-%g K, no dHf_298/s_298 derivable" % (rec["Tlow"], rec["Thigh"]))
     mw = sum(aw[e] * n for e, n in rec["comp"].items())
     H, S = nasa_H_S(rec["low"] if T0 <= rec["Tcommon"] else rec["high"], T0)
@@ -489,7 +495,7 @@ def refuse_output(case):
                       "this tool writes a case's constant/ only")
 
 
-def convert(mech_path, thermo_path, case, licence, reactions_only=False):
+def convert(mech_path, thermo_path, case, licence, reactions_only=False, rev_from_thermo=False):
     if not licence or not licence.strip():
         raise Refusal("--licence is required: the provenance of every record names it")
     refuse_output(case)
@@ -542,7 +548,13 @@ def convert(mech_path, thermo_path, case, licence, reactions_only=False):
     rx, unit, mol = parse_reactions(reac[1], reac[0])
     ok, refused, counts = [], [], {}
     bad_sp = {s for s, _ in refused_sp}
+    nrev = 0
     for r in rx:
+        if rev_from_thermo and r["rev"] is not None:
+            # OPT-IN, NOT the published mechanism: the engine cannot read an explicit reverse
+            # with a b or a units block, so the reverse is taken from the thermochemistry
+            # (K_c from the NASA-7 records), which is what the paper's own reverse fits encode.
+            r["rev"], nrev = None, nrev + 1
         kind, why = classify(r, set(species), mol)
         used = (set(r.get("r", {})) | set(r.get("p", {}))) & bad_sp
         if kind is None and used:
@@ -563,6 +575,11 @@ def convert(mech_path, thermo_path, case, licence, reactions_only=False):
     lines = ["CHEMKIN import: %s" % source, "licence: %s" % licence,
              "species: %d, written %d, not written %d" % (len(species), len(written_sp), len(refused_sp)),
              "reactions: %d, written %d, not written %d" % (len(rx), len(ok), len(refused))]
+    if nrev:
+        lines += ["--rev-from-thermo: %d explicit REV lines IGNORED (reverse from equilibrium); this is a variant, not the published mechanism" % nrev]
+    lines += ["NASA-7 standard state: the engine's K_c uses P0 = 1 bar (constant::Pref); CHEMKIN-II and Cantera's ck2yaml read the same",
+              "  polynomials at 1 atm, so a reverse rate taken from the thermochemistry differs by 1.01325^(sum nu) per reaction",
+              "  (measured on the LLNL H2 mechanism: +1.26 K in the final temperature, radicals -0.1 to -0.9 %)"]
     lines += ["written reactions are runnable in batchReactor ONLY (kinetics types modifiedArrhenius, thirdBody,",
               "  falloff are read by BatchReactor.cpp alone; cstr, pfr and dynamicCSTR read Arrhenius and the",
               "  factory laws and refuse these words by name)"]
@@ -824,6 +841,14 @@ def selftest():
     check(len(res["ok"]) == 7, "fixture: 7 written (reversible, irreversible, b != 0, third body, falloff, 2 DUP), got %d" % len(res["ok"]))
     check(res["counts"] == {"REV": 1, "PLOG": 1, "FORD/RORD": 1},
           "fixture: not written by kind %s" % dict(sorted(res["counts"].items())))
+    # real files print M and (+M) in lower case (the LLNL H2 mechanism of 2004 does)
+    r_, p_, _, tb_, fo_ = parse_equation("a+b+m=c+m", {"a", "b", "c"})
+    check(tb_ is True and set(r_) == {"a", "b"}, "lower-case `+m` is the third body")
+    check(parse_equation("a+b(+m)=c(+m)", {"a", "b", "c"})[4] == "M", "lower-case `(+m)` is the (+M) collider")
+    with contextlib.redirect_stdout(io.StringIO()):
+        res2 = convert(mech, None, os.path.join(tmp, "revthermo"), "parser fixture, no data", rev_from_thermo=True)
+    check(len(res2["ok"]) == 8 and "REV" not in res2["counts"],
+          "--rev-from-thermo: the REV reaction is written (reverse from the thermochemistry), the others still refused")
     txt = open(os.path.join(case, "constant", "reactions")).read()
     m = re.search(r'r001\s.*?type modifiedArrhenius;\s*A 1e\+13;\s+b 0;\s+Ea 10;\s*units \{ A "cm3/mol/s"; Ea "kcal/mol"; \}', txt, re.S)
     check(bool(m) and "1e+07" not in txt and "41840" not in txt,
@@ -893,6 +918,8 @@ def main():
     ap.add_argument("--licence", help="licence/permission text, written in every provenance block")
     ap.add_argument("--reactions-only", action="store_true",
                     help="write constant/reactions and mechanismImport.txt only (no thermo, no components)")
+    ap.add_argument("--rev-from-thermo", action="store_true",
+                    help="ignore explicit REV lines (reverse from the thermochemistry); a declared variant")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args()
     if a.selftest:
@@ -900,7 +927,7 @@ def main():
     if not a.mechanism or not a.case:
         ap.error("mechanism and --case are required")
     try:
-        convert(a.mechanism, a.thermo, a.case, a.licence, a.reactions_only)
+        convert(a.mechanism, a.thermo, a.case, a.licence, a.reactions_only, a.rev_from_thermo)
     except Refusal as e:
         print("REFUSED: %s" % e, file=sys.stderr)
         return 2
