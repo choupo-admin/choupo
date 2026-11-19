@@ -72,10 +72,10 @@ catalyst volumes need a rate law: a plug-flow reactor
 |---|---|
 | ammonia produced | 1180 t/day, −35 °C, 1 atm |
 | converter outlet | 19.7 % NH₃ at 460 °C |
-| recycle | ~13 400 kmol/h |
-| reaction heat (steam) | ~31 MW |
-| refrigeration (−20 °C) | ~20 MW |
-| compression | 13.7 MW, ~280 kWh/t |
+| recycle | ~13 687 kmol/h<!--golden: stream CompRecycle F *3600--> |
+| reaction heat (steam) | 30.3 MW<!--golden: kpi Converter Q_kW *-1e-3--> |
+| refrigeration (−20 °C) | 20.8 MW<!--golden: kpi Chiller Q_kW *-1e-3--> |
+| compression | 13.7 MW<!--golden: kpi MakeupComp1 W_shaft_kW & kpi MakeupComp2 W_shaft_kW & kpi N2Boost W_shaft_kW & kpi RecycleComp W_shaft_kW *1e-3-->, ~280 kWh/t |
 | plant first law | closes to ~9 kW |
 
 ### The pinch: what the heat targets of this plant show
@@ -83,21 +83,21 @@ catalyst volumes need a rate law: a plug-flow reactor
 `system/postDict` runs the pinch pass on the converged result (dTmin 10 K,
 as in the feasibility case; `reports/pinch/`). It reads 10 segments:
 the four water coolers, the chiller, the three flash drums and the FEHE's two sides.
-The Gibbs converter publishes only `Q_kW`, so its 30.3 MW is **not** in the
+The Gibbs converter publishes only `Q_kW`, so its 30.3 MW<!--golden: kpi pinch Q_excluded_kW *1e-3--> is **not** in the
 population, and the run says so: these are the targets of the 10 segments,
 not of the plant.
 
 | | |
 |---|---|
-| minimum heating, Q_H,min | **0** (0.08 MW bought today, on the two cold flash drums) |
-| minimum cooling, Q_C,min | 41.05 MW (against 41.13 MW cooled today) |
+| minimum heating, Q_H,min | **0** (0.06 MW<!--golden: kpi pinch Q_heat_current_kW *1e-3--> bought today, on the two cold flash drums) |
+| minimum cooling, Q_C,min | 41.11 MW<!--golden: kpi pinch Q_C_min_kW *1e-3--> (against 41.17 MW<!--golden: kpi pinch Q_cool_current_kW *1e-3--> cooled today) |
 | class | threshold problem, no hot utility, **no interior pinch** (the cascade touches zero only at the top of the range, 728.15 K shifted) |
 
 The plant has no heat to buy and nothing left to recover: the FEHE already
-carries 61.4 MW of the 61.49 MW maximum recovery of this population (all
-but the 0.08 MW the two flash drums draw), and the cooling it buys is within 0.2 % of its target. The
+carries 61.6 MW<!--golden: kpi FEHE Q_kW *1e-3--> of the 61.6 MW<!--golden: kpi pinch Q_recovery_max_kW *1e-3--> maximum recovery of this population (all
+but the 0.06 MW the two flash drums draw), and the cooling it buys is within 0.2 % of its target. The
 pinch says this base case is thermally tight on the process side; what is
-left is the converter's 30.3 MW, served by the steam generation, which no
+left is the converter's 30.3 MW<!--golden: kpi Converter Q_kW *-1e-3-->, served by the steam generation, which no
 pinch of generic duties can see.
 
 ## What a group should notice
@@ -173,7 +173,7 @@ pressure drops. Three things to read before quoting it:
 * **The chiller's boiling-ammonia coefficient is typed** (2500 W/m²/K), not
   computed: no boiling correlation is wired into the design.
 
-The FEHE comes out at ~1840 m² over four shells with U ≈ 470 W/m²/K — the
+The FEHE comes out at ~1821 m²<!--golden: equipment FEHE values.A--> over four shells with U ≈ 474 W/m²/K<!--golden: equipment FEHE values.U--> — the
 flowsheet's own interchanger declares 2000 m² at U = 550. The design's area
 is the one costed; the declared one is published beside it, and the
 flowsheet's answer is not moved.
@@ -199,16 +199,13 @@ Two things a group should read before quoting the tanks:
   −35 °C, in an insulated, double-containment tank that costs more. No
   factor is invented to close the gap; the run says LOWER BOUND on every
   tank.
-* **The density is probably about 12 % high, so the tanks are about 12 %
-  small.** The run prices liquid ammonia at 238 K at ~769 kg/m³. The NH₃
-  record's `Vliq` (2.50 × 10⁻⁵ m³/mol, i.e. 681 kg/m³) is read by the
-  engine as a 25 °C datum and extrapolated to −35 °C with Rackett; 681
-  kg/m³ is, however, the figure usually quoted for liquid ammonia near its
-  *normal boiling point*, not at 25 °C (this has not been checked against a
-  primary source here). If the record's value is the boiling-point one,
-  the density at 238 K is ~684 kg/m³ and every liquid volume sized from it
-  is ~12 % larger. Correcting a record is a curation act and was not done
-  in this case.
+* **The density is the engine's own liquid-property door.** The run prices
+  liquid ammonia at 238 K at 681 kg/m³<!--golden: equipment NH3Storage/tank1 inventory.ProductNH3.rho--> (the tanks'
+  stored mass divided by their liquid volume). Until the door took over
+  (DEV.md 4c C378) the tanks were sized on ~769 kg/m³, about 12 % high against
+  the ~684 kg/m³ the literature gives near 238 K, and so about 12 % small;
+  this page's earlier warning about that is retired with the number it
+  described.
 
 Not stored here, by decision: the **nitrogen supply** belongs to the air
 separation unit, outside this battery limit. A *gas* is refused by the tank
@@ -240,25 +237,25 @@ a day/night or seasonal buffer is a different store, a cavern or a
 pipeline, and the groups' question); **P_max 100 bar**, the carbon-steel
 record's own rating; **P_min 32 bar**, the 30 bar make-up suction plus 2
 bar for the let-down valve; **313.15 K**, the stream's own; at most **400
-m³** per vessel. The run gives ten vessels of about 362 m³ (D 5.36 m × H
-16.1 m) with **200 mm walls**, holding 26.6 t of hydrogen full, of which
-17.8 t is working gas and 8.8 t is cushion that never leaves.
+m³** per vessel. The run gives ten vessels of about 362 m³<!--golden: equipment H2Buffer/vessel1 values.V_R--> (D 5.36 m<!--golden: equipment H2Buffer/vessel1 values.D--> × H
+16.1 m<!--golden: equipment H2Buffer/vessel1 values.H-->) with **201 mm<!--golden: equipment H2Buffer/vessel1 values.t_wall *1e3--> walls**, holding 26.6 t<!--golden: equipment H2Buffer/vessel1 values.m_full *1e-3--> of hydrogen full, of which
+17.8 t<!--golden: equipment H2Buffer/vessel1 values.m_working *1e-3--> is working gas and 8.8 t<!--golden: equipment H2Buffer/vessel1 values.m_cushion *1e-3--> is cushion that never leaves.
 
 Three things to read before quoting the buffer:
 
 * **It is priced by its steel, not by a correlation** (Vítor's ruling,
   DEV.md 4c C89). Each vessel costs its published shell steel — the
-  cylindrical shell only, ρ π D H t, 426 t — times a **declared installed
+  cylindrical shell only, ρ π D H t, 426 t<!--golden: equipment H2Buffer/vessel1 values.weight *1e-3--> — times a **declared installed
   price of 8 EUR/kg** (`steelPrice`, a round placeholder with heads,
   nozzles and supports folded in; not a quotation and not from any source):
-  about 3.4 M€ per vessel and **34.1 M€ for the buffer** (its bare-module
+  about 3.4<!--golden: equipment H2Buffer/vessel1 cost.bareModule *1e-6--> M€ per vessel and **34.1 M€ for the buffer** (its bare-module
   cost), with no index and no module factor applied, because the price is
   already an installed one; like every item it then carries the 1.18
   contingency and fee into its total-module cost and the FCI. The Turton vessel set is still printed beside each vessel
   as an *extrapolated comparison*: its pressure factor grows with the wall,
   and a 200 mm wall on a 5.36 m shell (t/R ≈ 0.075) gives F_P ≈ 32 and about
   30 M€ per vessel — nine times the steel. It enters no total. The buffer
-  still more than doubles the fixed capital (41.3 → 98.6 M€); the price per
+  still more than doubles the fixed capital (41.3 → 102.1<!--golden: kpi economics FCI *1e-6--> M€); the price per
   kg, the hours, the pressures and the vessel size are the levers.
 * **It is a lower bound.** The *charging compressor* that takes the
   hydrogen from 30 bar to 100 bar is not in the flowsheet: neither it nor
@@ -288,11 +285,11 @@ The storage tanks hold their working level, 21 days of production.
 
 | item | held | kg |
 |---|---|---|
-| `NH3Storage` (2 tanks) | liquid ammonia | ~24.8 × 10⁶ |
-| `Separator` | liquid + loop gas | ~5 600 |
-| `StorageFlash` | liquid + flash gas | ~5 050 |
-| `Converter` | loop gas in the bed voids | ~190 |
-| `LetdownHP` | liquid + let-down gas | ~85 |
+| `NH3Storage` (2 tanks) | liquid ammonia | ~24.9<!--golden: equipment NH3Storage/tank1 inventory.mass.total & equipment NH3Storage/tank2 inventory.mass.total *1e-6--> × 10⁶ |
+| `Separator` | liquid + loop gas | ~7 689<!--golden: equipment Separator inventory.mass.total--> |
+| `StorageFlash` | liquid + flash gas | ~11 647<!--golden: equipment StorageFlash inventory.mass.total--> |
+| `Converter` | loop gas in the bed voids | ~193<!--golden: equipment Converter inventory.mass.total--> |
+| `LetdownHP` | liquid + let-down gas | ~12 616<!--golden: equipment LetdownHP inventory.mass.total--> |
 
 The run prints this table, writes it to `reports/inventory/inventory.csv`
 and puts each item's block on its design sheet. The compressors and the
@@ -333,7 +330,7 @@ a subsidised auction (p. 26).
 
 At these prices **the plant loses money, and that is the finding**: the
 hydrogen alone costs 0.1803 kg H₂/kg NH₃ x 8.0 = 1.44 EUR per kg of ammonia,
-2.7 times what the ammonia sells for (0.530). NPV is −3 243 M EUR and there
+2.7 times what the ammonia sells for (0.530). NPV is -3 243<!--golden: kpi economics NPV *1e-6--> M EUR and there
 is no IRR. (The hydrogen price was an assumed 4.50 EUR/kg, the ammonia 1.00
 and the nitrogen 0.05 EUR/kg before 2026-11-13, giving NPV −405 M EUR; those
 figures had no source.)
@@ -341,29 +338,30 @@ figures had no source.)
 **Which tax reading this NPV is.** The plant loses money in every one of its
 15 operating years, and by default the cash flow treats each year's negative
 tax as a credit: it assumes the owner has other taxable profit to set the
-loss against. That credit is worth about **841 MEUR of the NPV** (1 652 MEUR
+loss against. That credit is worth about **842 MEUR<!--golden: kpi economics taxCreditOnLoss_NPV *1e-6--> of the NPV** (1 656 MEUR<!--golden: kpi economics taxCreditOnLoss *1e-6-->
 of tax credited over the 15 years, undiscounted; the run announces it, with
 the KPIs `lossYears`, `taxCreditOnLoss` and `taxCreditOnLoss_NPV`). A
 stand-alone project has no such profit; declare `taxOnLoss none;` in the
 `economics` block for that reading, and the NPV falls by that amount, to
-−4 085.64 MEUR (a run of a scratch copy of this case with `taxOnLoss none;`
-added to the `economics` block: `choupoSolve` on it prints `NPV(i=0.100) =
--4085642704 EUR`, `taxCreditOnLoss` 0, the break-evens unchanged at 1.9326 and
-1.7700 EUR/kg). Neither reading carries a loss forward.
+-4 085.5 MEUR<!--golden: kpi economics NPV &- kpi economics taxCreditOnLoss_NPV *1e-6--> (the difference of the two numbers above; a run of a scratch copy of
+this case with `taxOnLoss none;` added to the `economics` block printed
+`NPV(i=0.100) = -4085642704 EUR`, `taxCreditOnLoss` 0 and the break-evens
+unchanged, but it was taken BEFORE the 2026-11-19 lote moved this plant and
+has not been repeated). Neither reading carries a loss forward.
 
 **At what price does it pay?** "Never" teaches little, so the `economics`
 block declares `breakEven { price ( ProductNH3 H2Feed ); }` and the run
 prints, beside the NPV, the price of one stream at which the NPV is zero with
 every other price held (found by pricing the same appraisal again). The
-**minimum selling price of ammonia** is **1.929 EUR/kg**, **3.6 times** the
+**minimum selling price of ammonia** is **1.933 EUR/kg<!--golden: kpi economics breakEven_price_ProductNH3-->**, **3.6 times** the
 conventional market price of 0.530 (KPI `breakEven_price_ProductNH3`): that
 is the premium a renewable-ammonia buyer would have to pay for the plant to
 break even at the cited hydrogen cost. The **highest price of hydrogen the
-plant can bear** is **1.770 EUR/kg**, 22 % of the cited 8.0 and below the
+plant can bear** is **1.770 EUR/kg<!--golden: kpi economics breakEven_price_H2Feed-->**, 22 % of the cited 8.0 and below the
 bottom of ACER's 7-10 EUR/kg range (`breakEven_price_H2Feed`). The first is above the
-cost of making a kilogram (`productionCostPerKg` 1.864 EUR/kg, which is COM_d
+cost of making a kilogram (`productionCostPerKg` 1.864<!--golden: kpi economics productionCostPerKg--> EUR/kg, which is COM_d
 over the year's ammonia) because a price that only covered COM_d would leave
-nothing to recover the 149 MEUR of total capital: pre-tax, at the 10 %
+nothing to recover the 149 MEUR<!--golden: kpi economics TCI *1e-6--> of total capital: pre-tax, at the 10 %
 discount rate over 15 years, that capital charge alone adds about 0.07
 EUR/kg. Both numbers inherit every assumption of the case (the other prices,
 the capital, the utility bill that is a lower bound) and say what the plant
@@ -386,7 +384,7 @@ lowest-grade utility in `constant/utilities/` that can take it across a
 10 K approach: cooling water for the 40 °C coolers, ammonia boiling at
 −33 °C for the chiller, electricity for the compressors.
 
-The **converter** releases ~30.6 MW at 460 °C. Left to the automatic pick it
+The **converter** releases 30.3 MW<!--golden: kpi Converter Q_kW *-1e-3--> at 460 °C. Left to the automatic pick it
 would be dumped into cooling water and *charged for*. A real ammonia loop
 raises HP steam from that heat in a waste-heat boiler, so the case
 **declares** the service on the unit (`utility steamGenerationHP;` in
@@ -395,9 +393,9 @@ raises HP steam from that heat in a waste-heat boiler, so the case
 | | |
 |---|---|
 | the record | [`constant/utilities/steamGenerationHP.dat`](constant/utilities/steamGenerationHP.dat) — saturated steam at the `steamHP` header's own 41 bar / 252 °C, feedwater taken at saturation |
-| steam raised | ~17.9 kg/s (~64 t/h) |
+| steam raised | ~17.7 kg/s<!--golden: utility Converter cooling.steamGenerationHP.kg_s--> (~64 t/h) |
 | its value | **−18 EUR/GJ — a credit**, the price the plant would pay for the same steam from `steamHP.dat`; an **author-set assumption** and an *upper* bound (the steam is worth that only if something in the plant uses it) |
-| the credit | ~15.6 × 10⁶ EUR/yr, printed on its own line under C_UT |
+| the credit | ~15.5<!--golden: kpi economics C_UT_credit *-1e-6--> × 10⁶ EUR/yr, printed on its own line under C_UT |
 
 The record lives **in this case**, not in the public catalogue, because its
 price has no primary source behind it. A credit is never picked
@@ -518,9 +516,9 @@ on to the east fence. Each branch is a pipe of its own in the register
 
 **The utilities block (2026-11-10).** The north-east corner of the plot
 holds three facilities that the run's own utility ledger consumes: the
-**cooling tower** (19.7 MW rejected by the four water coolers, 471 kg/s
-circulated), the **ammonia refrigeration package** (the 20.6 MW the Chiller
-takes at -33.3 C, 15.1 kg/s of boiling ammonia) and the **flare** (the three
+**cooling tower** (19.4 MW<!--golden: utility N2Cooler cooling.coolingWater.duty_kW & utility Intercooler cooling.coolingWater.duty_kW & utility Aftercooler cooling.coolingWater.duty_kW & utility WaterCooler cooling.coolingWater.duty_kW *-1e-3--> rejected by the four water coolers, 465 kg/s<!--golden: utility N2Cooler cooling.coolingWater.kg_s & utility Intercooler cooling.coolingWater.kg_s & utility Aftercooler cooling.coolingWater.kg_s & utility WaterCooler cooling.coolingWater.kg_s-->
+circulated), the **ammonia refrigeration package** (the 20.8 MW<!--golden: utility Chiller cooling.refrigerationNH3.duty_kW *-1e-3--> the Chiller
+takes at -33.3 C, 15.2 kg/s<!--golden: utility Chiller cooling.refrigerationNH3.kg_s--> of boiling ammonia) and the **flare** (the three
 gas outlets, 747 kg/h in all, with its own spur of the tank-farm road and
 60 m rows in the separation table). Each is a non-process box declared in
 `layoutDict`; the number it is sized on is the run's, the box drawn on it
@@ -534,16 +532,16 @@ itself; `layoutDict` now DECLARES thirteen lines in `utilityLines` and the
 engine routes them on the pipe rack, on tiers above the process pipes' (no
 process route moves), and checks them like a process pipe: the cooling
 water from the tower to each of the four coolers and back (eight lines,
-carrying 47.3, 123.9, 131.2 and 169.1 kg/s, the run's own utility
-allocation), the refrigerant between the package and the Chiller (two, 15.06
+carrying 47.3<!--golden: utility N2Cooler cooling.coolingWater.kg_s-->, 123.9<!--golden: utility Intercooler cooling.coolingWater.kg_s-->, 131.2<!--golden: utility Aftercooler cooling.coolingWater.kg_s--> and 162.9<!--golden: utility WaterCooler cooling.coolingWater.kg_s--> kg/s, the run's own utility
+allocation), the refrigerant between the package and the Chiller (two, 15.18<!--golden: utility Chiller cooling.refrigerationNH3.kg_s-->
 kg/s) and a flare header from the separator and the two let-down drums (three,
 no flow: the case declares no relief valve, and its three vent gases are
 already piped to the fence as process streams). EVERY LINE IS UNSIZED:
 the layout sizes no pipe. They are listed under the pipe register in
 Reports -> Plant layout (3D) and drawn there by service.
 
-**What still hangs, and why.** No steam line: the run draws 0.04 kg/s of
-low-pressure steam for the separator and the let-down drum (82 kW), from a
+**What still hangs, and why.** No steam line: the run draws 0.03 kg/s<!--golden: utility Separator heating.steamLP.kg_s--> of
+low-pressure steam for the separator (60 kW<!--golden: utility Separator heating.steamLP.duty_kW-->), from a
 steam system outside this battery limit with no item on the plot to start a
 line from; the steam the converter raises is a credit, not equipment. Two
 things a real plant has and this case does not compute: the refrigeration
