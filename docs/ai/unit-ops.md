@@ -315,6 +315,12 @@ follows, L = V_R / (pi D^2 / 4) (`D_bed_declared_m` published) -- the form a mul
 converter's beds take, every bed reading ONE plant variable (`diameter $D_converter;`):
 a `converterShell` refuses a bed at its own `L_over_D`.  `L_over_D` or `tubes` beside
 `diameter` refuse.
+A `converterShell`'s sheet carries `T_service` (the hottest port state of its members, a
+lower bound on the metal temperature) and its basis states that the wall is NOT de-rated for
+temperature and that hydrogen attack / nitriding are NOT checked (no Nelson curve is shipped).
+Eq 39 below Table I's 150 atm: written in the case as `Pxi "max(P, Pfloor)"` (a declared clamp
+to the 150 atm column, announced by the `P` window), never a table extrapolation
+(`ammoniaRate01_dyson_simon`).
 `pressureDrop` marches `dP/dV = (dP/dz)/A` from Ergun's equation with the species
 (density from the package's EoS, viscosity from its declared `transport` — required,
 dilute-gas); the rate law and `T` read the local `P`; the outlet leaves at `P_in − ΔP`

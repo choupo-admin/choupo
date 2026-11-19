@@ -29,3 +29,7 @@ diag    dysonSimon             locus3_V3_max    274.092717767    1e-4
 diag    dysonSimon             locus3_eta       0.25             1e-4
 diag    dysonSimon             locus3_xi        0.531500922551   1e-4
 diag    dysonSimon             locusDescends    1                1e-4
+diag    dysonSimon             bed1Inlet_148p9atm_Eq40 113.93665156     1e-4
+diag    dysonSimon             bed1Inlet_148p9atm_V3 238.325490217    1e-4
+diag    dysonSimon             bed1Inlet_148p9atm_eta 0.0365798726419  1e-4
+diag    dysonSimon             bed1Inlet_148p9atm_xi 0.478071613138   1e-4

@@ -397,6 +397,13 @@ std::vector<EquipmentSizing> ConverterShellSize::size(const std::string& unitNam
     }
     if (Dmin > 0.0) d.set("D_smallestAdmissible", Dmin, "m");
 
+    //  THE STATE THE WALL IS READ AGAINST (C440).  Choupo has no design
+    //  temperature, so the sheet carries the hottest state any member's port
+    //  holds -- a LOWER bound on what the metal sees (a bed's hot spot is not
+    //  a port) -- beside the design pressure it is sized at.
+    const auto hot = materialLimits::hottestPort(d, result);
+    if (hot.T > 0.0) d.set("T_service", hot.T, "K");
+
     std::ostringstream basis;
     basis << "ONE pressure shell around the " << members.size() << " items of sector "
           << unitName << ": D the beds' ONE declared diameter (read from their"
@@ -415,6 +422,18 @@ std::vector<EquipmentSizing> ConverterShellSize::size(const std::string& unitNam
                  " state held fixed: " << fmt(Dmin) << " m, binding bed " << binding;
     else if (!binding.empty())
         basis << "; binding bed " << binding;
+    basis << "; WALL: ONE thin-wall ASME thickness at " << fmt(pressureDesign)
+          << " bar g on material " << material.name << "'s single sigma_y ("
+          << fmt(material.sigma_y) << " MPa), NOT de-rated for the"
+             " service temperature (the record's own service limits are"
+             " announced above)";
+    if (hot.T > 0.0)
+        basis << "; hottest member port " << fmt(hot.T) << " K, stream "
+              << hot.stream;
+    basis << "; HYDROGEN SERVICE: hydrogen attack and nitriding are NOT checked"
+             " -- the engine ships no Nelson-curve or hydrogen-service material"
+             " table, so the material's suitability at this hydrogen partial"
+             " pressure and temperature is the designer's to confirm";
     d.basis = basis.str();
     for (const auto& m : members)
         if (m.vessel) d.encloses.push_back(m.item);

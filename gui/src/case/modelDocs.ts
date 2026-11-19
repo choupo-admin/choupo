@@ -96,6 +96,8 @@ const THEORY_DEST: Record<string, string> = {
   // reactors
   cstr: "ch:cstr",
   pfr: "ch:pfr",
+  // the post-processing sizer of a catalyst converter's ONE pressure shell (C440): the beds' kinetic rate, Eq 39/40 and its 150 atm clamp, the wall
+  converterShell: "sec:converter-shell",
   gibbsReactor: "ch:gibbs-reactor",
   // spec-driven (non-kinetic) reactors: outlet fixed by a user conversion
   // (RStoic) or by mass yields (RYield).  No kinetics -- the outlet is a pure
