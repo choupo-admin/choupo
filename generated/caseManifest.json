@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1898,
+  "cases": 1905,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -23827,6 +23827,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/gibbs/thermoTable01_propane_radicals": {
+   "application": "choupoProps",
+   "ops": [
+    "reactionGibbs"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/heat/bellDelaware01_hewitt_example62": {
    "application": "choupoProps",
    "ops": [
@@ -29403,6 +29417,90 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/reactors/elementary01a_modArrhenius_chemkin": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/elementary01b_modArrhenius_arrhenius": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/elementary02a_thirdBody_chemkin": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/elementary02b_thirdBody_arrhenius": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/elementary03a_falloff_chemkin": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/elementary03b_falloff_arrhenius": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/reactors/equil01_reforming": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -31985,6 +32083,7 @@
     "tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways",
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff",
+    "tutorials/props/gibbs/thermoTable01_propane_radicals",
     "tutorials/props/heat/bellDelaware01_hewitt_example62",
     "tutorials/props/heat/bellDelaware02_serth_example61",
     "tutorials/props/heat/htbench01_correlations",
@@ -32387,6 +32486,12 @@
     "tutorials/steady/reactors/cstr06_jacketed",
     "tutorials/steady/reactors/cstr07_lhhw_methylAcetate",
     "tutorials/steady/reactors/cstr08_furusawa_bistable",
+    "tutorials/steady/reactors/elementary01a_modArrhenius_chemkin",
+    "tutorials/steady/reactors/elementary01b_modArrhenius_arrhenius",
+    "tutorials/steady/reactors/elementary02a_thirdBody_chemkin",
+    "tutorials/steady/reactors/elementary02b_thirdBody_arrhenius",
+    "tutorials/steady/reactors/elementary03a_falloff_chemkin",
+    "tutorials/steady/reactors/elementary03b_falloff_arrhenius",
     "tutorials/steady/reactors/equil01_reforming",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
@@ -33041,6 +33146,12 @@
    "pfr": [
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
+    "tutorials/steady/reactors/elementary01a_modArrhenius_chemkin",
+    "tutorials/steady/reactors/elementary01b_modArrhenius_arrhenius",
+    "tutorials/steady/reactors/elementary02a_thirdBody_chemkin",
+    "tutorials/steady/reactors/elementary02b_thirdBody_arrhenius",
+    "tutorials/steady/reactors/elementary03a_falloff_chemkin",
+    "tutorials/steady/reactors/elementary03b_falloff_arrhenius",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
@@ -35604,6 +35715,7 @@
     "tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways",
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff",
+    "tutorials/props/gibbs/thermoTable01_propane_radicals",
     "tutorials/props/heat/bellDelaware01_hewitt_example62",
     "tutorials/props/heat/bellDelaware02_serth_example61",
     "tutorials/props/heat/htbench01_correlations",
@@ -35855,6 +35967,12 @@
     "tutorials/steady/reactors/cstr05_multiplicity",
     "tutorials/steady/reactors/cstr06_jacketed",
     "tutorials/steady/reactors/cstr08_furusawa_bistable",
+    "tutorials/steady/reactors/elementary01a_modArrhenius_chemkin",
+    "tutorials/steady/reactors/elementary01b_modArrhenius_arrhenius",
+    "tutorials/steady/reactors/elementary02a_thirdBody_chemkin",
+    "tutorials/steady/reactors/elementary02b_thirdBody_arrhenius",
+    "tutorials/steady/reactors/elementary03a_falloff_chemkin",
+    "tutorials/steady/reactors/elementary03b_falloff_arrhenius",
     "tutorials/steady/reactors/equil01_reforming",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
@@ -37978,7 +38096,8 @@
    ],
    "reactionGibbs": [
     "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes",
-    "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff"
+    "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff",
+    "tutorials/props/gibbs/thermoTable01_propane_radicals"
    ],
    "referenceEoS": [
     "tutorials/props/thermo/refEoS01_iapws95_verification"
