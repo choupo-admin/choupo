@@ -336,7 +336,7 @@ export interface Forecast {
   rows: ForecastRow[];
   meanSoldPacks: number;
   meanMarketPacks: number;
-  /** design production over the mean forecast sold: the factor that would fill the plant */
+  /** design production over the mean forecast sold: Q over the mean sold, which already carries the capacity factor phi: multiply by phi to get the lesson's phi_fill = Q / mean(M s) */
   fillFactor: number;
   fit?: Regression;
   notes: string[];

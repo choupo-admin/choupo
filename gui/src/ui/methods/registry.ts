@@ -1951,7 +1951,7 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "ammonia loop that converts less per pass, passes about four times "
       + "the volume of gas, carries about four times as much ammonia in the "
       + "recycle stream, and earns less, so that the engine cannot call it "
-      + "safer without sizing the equipment and the release scenarios.",
+      + "safer from the inventory it can compute (converter gas and separator liquid) without the pipes, the exchangers and the release scenarios.",
     theory: "ch:batch-adiabatic",
   },
   //  COMMISSIONED 2026-10-11 (DEV.md 4c C61): "E depois outro sobre design
@@ -2217,7 +2217,9 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "atom economy, the equilibrium limit at the catalyst's temperature, "
       + "the heat to remove, and whether the product is where the atoms go "
       + "when every species is allowed; that direct oxidation of methane "
-      + "wins the first four and fails the fifth, because the combustion "
+      + "passes the first four, though it removes the most heat (127 kJ/mol "
+      + "of methanol against 98 and 59) and only ties the best atom "
+      + "economy, and fails the fifth, because the combustion "
       + "products lie far below methanol in Gibbs energy; that the "
       + "remaining questions (Safety, Environmental, Legal, Economics, "
       + "Control, Throughput) need no rate constant; and that the rate law "

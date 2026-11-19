@@ -48,7 +48,7 @@ export const RECORD_LINES: readonly RecordLine[] = [
   { file: EXAMPLE_RECORD, line: 49, text: "b_ij        103.58615288;",
     means: "The fitted parameter, in kelvin: tau_ij = b_ij / T." },
   { file: EXAMPLE_RECORD, line: 51, text: "b_ji        112.54970592;",
-    means: "The other one.  a_ij, a_ji are 0 and alpha is 0.30, fixed." },
+    means: "The other one.  in this record a_ij, a_ji are 0 and alpha is 0.30, as the fit rule on this page fixes them." },
   { file: EXAMPLE_RECORD, line: 61, text: "reviewStatus  autoPromoted;",
     means: "A rule promoted it, declared before the fit." },
   { file: EXAMPLE_RECORD, line: 62, text: "humanReviewed false;",
@@ -129,17 +129,17 @@ export const DP_STEPS: readonly LessonStep[] = [
     n: 1,
     title: "What a binary pair is",
     body: "NRTL describes a liquid mixture with two energy parameters per pair. "
-      + "Choupo's curated pairs fix a and alpha and fit only the two b's, in "
-      + "kelvin, to measurements.  A database of measurements becomes a "
-      + "parameter only through such a fit.",
+      + "The fit on this page fixes a = 0 and alpha = 0.30 and fits only the "
+      + "two b's, in kelvin; older records may carry their own a and alpha "
+      + "(n-butanol and water: alpha 0.446).",
     formula: String.raw`\tau_{ij} = a_{ij} + \frac{b_{ij}}{T}, \qquad G_{ij} = \exp(-\alpha\,\tau_{ij})`,
     where: [
       { sym: "\\tau_{ij}", means: "the NRTL interaction parameter of i with j" },
-      { sym: "a_{ij}", means: "its constant part, fixed at 0 in the curated pairs" },
+      { sym: "a_{ij}", means: "its constant part, fixed at 0 by the fit on this page" },
       { sym: "b_{ij}", means: "its temperature part, the fitted parameter", unit: "K" },
       { sym: "T", means: "the temperature", unit: "K" },
       { sym: "G_{ij}", means: "the NRTL weighting factor" },
-      { sym: "\\alpha", means: "the non-randomness parameter, fixed at 0.30" },
+      { sym: "\\alpha", means: "the non-randomness parameter, fixed at 0.30 by the fit on this page" },
     ],
     note: "The equation the engine evaluates: src/thermo/activityCoefficient/NRTL.cpp:114.",
   },
@@ -199,10 +199,9 @@ export const DP_STEPS: readonly LessonStep[] = [
     body: "The largest error over the kept points decides: up to 1 K clean, "
       + "2 K warning, 4 K severe, above that refused (5, 10, 20 % for a "
       + "pressure).  The grade is in-sample.  A clean on one temperature or "
-      + "one laboratory is capped at warning, and severe fits are no longer "
-      + "promoted.",
-    note: "The limits live in bin/curate/property_grades.py:26, :28 and pairs_c283 reads them at bin/curate/pairs_c283.py:94; the cap and the refusal to promote: bin/curate/pairs_c283.py:155, :170.  The 17 severe records "
-      + "promoted before that rule are still in the catalogue: "
+      + "one laboratory is capped at warning, and a severe fit is promoted, "
+      + "voiced severe (C333).",
+    note: "The limits live in bin/curate/property_grades.py:26, :28 and pairs_c283 reads them at bin/curate/pairs_c283.py:94; the cap and the refusal to promote: bin/curate/pairs_c283.py:155, :170.  Records graded severe are promoted, not discarded (NOT_PROMOTED_GRADES = refused; the rule before C333 refused them): "
       + "docs/design/binary-pairs-from-open-measurements.md:1335.",
   },
   {

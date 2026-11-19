@@ -378,7 +378,7 @@ export function DemandForecastTool(): JSX.Element {
                         <Table.Td>{f(show(r.meanMarketPacks), 3)}</Table.Td>
                         <Table.Td>{f(show(r.meanSoldPacks), 3)}</Table.Td>
                         <Table.Td>{f(r.meanSoldPacks / Math.max(r.meanMarketPacks, 1e-12), 3)}</Table.Td>
-                        <Table.Td>{f(r.fillFactor, 2)}</Table.Td>
+                        <Table.Td data-fill-factor={m}>{f(r.fillFactor * plant.factor, 2)}</Table.Td>
                       </Table.Tr>
                     );
                   })}

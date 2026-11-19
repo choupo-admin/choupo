@@ -22,7 +22,7 @@
   rule, the engine's reading and the page's side by side), the SCENARIOS
   (the four ways a bund is tested, integrated in time, drawn as a section
   and balanced to the cubic metre), and the EXERCISE (Vitor's three tanks of
-  20, 15 and 10 m3, dry and after rain).  One volume held by three walls
+  20, 15 and 10 m3, dry and after rain).  One volume held by four walls
   sits after the geometry step.
 
   NO ENGINE RUN.  The arithmetic is bund.ts, whose engine half is
@@ -337,7 +337,7 @@ function ScenarioBench({ bund }: { bund: Bund }): JSX.Element {
   );
 }
 
-// ---- After step 11: one volume, three walls ----------------------------------------
+// ---- After step 11: one volume, four walls ----------------------------------------
 
 function GeometryTable(): JSX.Element {
   const V = 22, Af = EXERCISE_TANKS.reduce((s, t) => s + footprint(t), 0), rho = 1000;

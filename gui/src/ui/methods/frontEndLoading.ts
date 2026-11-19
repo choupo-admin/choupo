@@ -333,8 +333,8 @@ export const FEL_STAGES: readonly FelStage[] = [
       + "equipment the vendors selected.",
     deliverables: "Mechanical, electrical and civil drawings, vendor "
       + "quotations, isometrics, construction packages.",
-    choupo: "Nothing, and deliberately: no part of the engine reads a vendor "
-      + "quotation.",
+    choupo: "Only what a case declares: a vendor quotation is read as a declared "
+      + "quote (src/postProcessing/costing/DeclaredQuote.H, C98); the engine fetches or estimates none.",
     choupoCases: [],
     choupoTools: [],
     notChoupo: "All of it.",
