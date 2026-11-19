@@ -210,6 +210,8 @@ export interface LayoutView {
   setToggles(t: Toggles): void;
   setQuality(q: RenderQuality): void;
   fit(view: ViewPreset): void;
+  /** C91: select (highlight + card) the pipe with this engine id, or none. */
+  selectPipe(id: string | null): void;
   dispose(): void;
 }
 
@@ -232,6 +234,8 @@ export interface MountOptions {
   /** Mount the interaction layer (tour, cameras, colour, minimap, cards).
    *  Default true. */
   interactive?: boolean;
+  /** C91: told when the reader clicks a pipe in the view (its id; null = none). */
+  onPipePicked?: (id: string | null) => void;
 }
 
 /** THE ONE HOOK (DEV.md 4c C97): a module that draws something more in this
@@ -1614,6 +1618,7 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
       ...(opts.layout ? { layout: opts.layout } : {}),
       facts: opts.facts ?? null,
       pickables, fov: FOV, heightOf, draw, paintPipes, selectPipe, raycast, onFrame: frameHooks,
+      ...(opts.onPipePicked ? { onPipePicked: opts.onPipePicked } : {}),
     });
   fit(opts.view);
   apply(opts.toggles);
@@ -1637,5 +1642,10 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
     el.replaceChildren();
   };
 
-  return { setToggles: apply, setQuality, fit, dispose };
+  const selectPipeOuter = (id: string | null) => {
+    if (interaction) interaction.selectPipeById(id);
+    else selectPipe(id === null ? null : scene.pipes.findIndex((p) => p.id === id));
+    draw();
+  };
+  return { setToggles: apply, setQuality, fit, selectPipe: selectPipeOuter, dispose };
 }

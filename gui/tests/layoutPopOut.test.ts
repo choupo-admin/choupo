@@ -195,7 +195,7 @@ describe("the stable key and the ?layout= route", () => {
     //  C100: the plot plan draws the building through the ONE overlay the
     //  Reports view uses -- glass shell, rooms, flows, toggles.
     expect(tab).toContain("const overlay = useBuildingOverlay(stash.building, scene);");
-    expect(tab).toMatch(/<PlantLayout3D scene=\{overlay\.shown\} height="fill" extend=\{overlay\.extend\}\s+toolbarExtra=\{overlay\.toggles\}\s+layout=\{stash\.layout\} \/>/);
+    expect(tab).toMatch(/<PlantLayout3D scene=\{overlay\.shown\} height="fill" extend=\{overlay\.extend\}\s+toolbarExtra=\{overlay\.toggles\}\s+layout=\{stash\.layout\}\s+selectedPipe=\{selectedPipe\} onPipePicked=\{onPipePicked\} \/>/);
     expect(tab).not.toContain("<PlantLayout3D scene={scene}");
     //  C91: the tables in their bottom panel, each a section the reader folds.
     expect(tab).toContain("<PlantLayoutTables layout={stash.layout} sectioned />");
