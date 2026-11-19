@@ -7020,6 +7020,19 @@ PYEOF
     fi
     rm -f /tmp/casetier.$$
 
+    #  A README number that quotes a run is tied to its golden row (DEV.md 4c
+    #  C447): cstr01 said 52.59 % while the run printed 50.75 %, and nothing
+    #  noticed because the golden pins the run and not the prose.
+    if gate_exec "$ROOT/bin/curate/check_readme_numbers.py" > /tmp/readmenum.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "readme-numbers-gate" "$(head -1 /tmp/readmenum.$$ | cut -c1-240)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_readme_numbers.py)\n" "readme-numbers-gate"
+        cat /tmp/readmenum.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/readmenum.$$
+
     #  ITS SIBLING, AND THE HALF THE TIER GATE DELIBERATELY DOES NOT CHECK.
     #  `check_case_tiers` states in its own blind-spot list that it does NOT
     #  check coverage -- "a gate demanding growth would defeat the doctrine",

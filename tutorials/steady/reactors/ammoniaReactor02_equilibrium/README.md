@@ -39,21 +39,21 @@ Measured from this run:
 
 | quantity | value |
 |---|---|
-| converter inlet | 16 205.32 kmol/h, y(NH₃) = 0.008042 |
-| converter outlet | 12 462.27 kmol/h, **y(NH₃) = 0.310807** |
-| **per-pass N₂ conversion** | **47.9288 %** |
-| recycle / makeup (molar) | 1.0257 |
-| product | 3 794.41 kmol/h at 98.3902 mol% NH₃ → 1 525.9 t/d NH₃ |
-| global first-law residual | +0.0007 kW (1.0e-6 %) |
-| global mass closure | 99.9973 % |
+| converter inlet | 18 163.71 kmol/h<!--golden: kpi converter F_in_kmol_h-->, y(NH₃) = 0.012930 |
+| converter outlet | 14 438.03 kmol/h<!--golden: kpi converter F_out_kmol_h-->, **y(NH₃) = 0.274313**<!--golden: kpi converter y_NH3--> |
+| **per-pass N₂ conversion** | **45.5452 %** |
+| recycle / makeup (molar) | 1.2705 |
+| product | 3 714.29 kmol/h<!--golden: stream productNH3 F *3600--> at 99.9100 mol% NH₃ → 1 516.8 t/d NH₃ |
+| global first-law residual | +0.0020 kW<!--golden: boundary global residual_kW--> |
+| global mass closure | 99.997 % |
 
 It also claims a **converged heat and material balance**, and here that claim
 holds: every unit closes at 100.00 % and the plant boundary closes at
-1.0e-6 %.
+2.2e-6 %.
 
 ## 3. What this case REFUSES to claim — the load-bearing half
 
-* **It does not claim that 47.93 % is achievable.**  Equilibrium is the limit
+* **It does not claim that 45.55 % is achievable.**  Equilibrium is the limit
   of infinite catalyst and infinite time.  A converter that reached it would
   be infinitely long.
 * **It carries no `system/postDict`**, so it sizes nothing and costs nothing.
@@ -70,9 +70,9 @@ ladder, all measured by running the cases:
 
 | | per-pass N₂ conversion | converter outlet y(NH₃) | recycle / makeup |
 |---|---|---|---|
-| 1 — declared 25 % (an assumption) | 25.0000 % | 0.149843 | 2.5646 |
-| **2 — this case, the ceiling** | **47.9288 %** | **0.310807** | **1.0257** |
-| 3 — 5 K approach | 46.6023 % | 0.300194 | 1.0778 |
+| 1 — declared 25 % (an assumption) | 25.0000 % | 0.149271 | 2.6982 |
+| **2 — this case, the ceiling** | **45.5452 %** | **0.274313**<!--golden: kpi converter y_NH3--> | **1.2705** |
+| 3 — 5 K approach | 44.2715 % | 0.265937<!--golden: @steady/reactors/ammoniaReactor03_equilibriumApproach kpi converter y_NH3--> | 1.3249 |
 
 And two probes run outside the shipped cases, by editing rung 3's approach to
 the ends of the range its source states (US 5,352,428: "0 °C. to 30 °C. and
@@ -80,11 +80,11 @@ preferably 1 °C. to 10 °C."):
 
 | approach | per-pass N₂ conversion | recycle / makeup |
 |---|---|---|
-| 10 K | 45.2867 % | 1.1323 |
-| 30 K | 40.1644 % | 1.3739 |
+| 10 K | 43.0097 % | 1.3817 |
+| 30 K | 38.1084 % | 1.6327 |
 
 **Read the last column.**  At the outer end of the source's own range the
-recycle is 34 % larger than the ceiling says it needs to be — so a compressor,
+recycle is 28 % larger than the ceiling says it needs to be — so a compressor,
 a converter and an interchanger sized on rung 2's answer are all under-sized
 by that much, at exit 0, with every balance closing.  *The fiction is not that
 the arithmetic is wrong; it is that the arithmetic is answering a different
@@ -94,7 +94,7 @@ question.*
 
 **The per-pass conversions here are HIGHER than an industrial loop's, and the
 reason is the separator, not the reactor.**  The converter inlet carries only
-0.80 mol% NH₃, and a leaner inlet buys a larger per-pass conversion.  (How lean
+1.29 mol% NH₃, and a leaner inlet buys a larger per-pass conversion.  (How lean
 is lean is answered below from a source rather than from memory; no "typical"
 industrial inlet figure is asserted here that a document does not carry.)  Two
 causes, both inherited from the structural reference
@@ -104,11 +104,11 @@ causes, both inherited from the structural reference
 2. The SRK package declares no binary interaction parameters — all six pairs
    run k_ij = 0, which the engine announces on every run.
 
-So **47.93 % is this flowsheet's ceiling, not the ammonia industry's.**  For an
+So **45.55 % is this flowsheet's ceiling, not the ammonia industry's.**  For an
 industrial comparison of converter concentrations, US 5,352,428 describes a
 commercial converter going from 3.5 vol% NH₃ in to 16.1 vol% NH₃ out, at
 conditions the patent calls "typical and optimum in many commercial process
-designs".  That inlet is four times richer than this one.
+designs".  That inlet is 2.7 times richer than this one.
 
 Also inherited and unchanged: the loop is isobaric at 200 bar (makeup
 compression and feed/effluent interchange are folded into the unit duties, not
@@ -124,9 +124,9 @@ bound of every vessel cost correlation the engine carries, so rung 3 could not
 honestly cost it.
 
 **The scale-up changes no intensive answer, and that is checked rather than
-asserted**: this case's converter reports y(NH₃) = 0.310807360246 against
-`ammonia01`'s own golden value of 0.310807360284, and both cases close their
-mass balance at 99.9973 %.
+asserted**: this case's converter reports y(NH₃) = 0.274313364862<!--golden: kpi converter y_NH3--> against
+`ammonia01`'s own golden value of 0.274313364606<!--golden: @steady/flowsheets/ammonia01_synthesis_loop kpi converter y_NH3-->, and both cases close their
+mass balance at 99.997 %.
 
 ## 7. Running it
 

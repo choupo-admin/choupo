@@ -15,7 +15,7 @@ converged profile says otherwise:
 |---|---|
 | carbonate loading (per NH₃ species) | 0.196 → 0.00001 — CO₂ strips hard |
 | sulfide loading | 0.18 → **0.51** — H₂S *concentrates* |
-| pH | 8.49 → **7.61** — it *falls* |
+| pH | 8.49<!--golden: csv reports/unitOperations/tower/profile.csv 0:pH--> → **7.64**<!--golden: csv reports/unitOperations/tower/profile.csv 7:pH--> — it *falls* |
 
 CO₂ is the more volatile acid gas at these conditions, so the stripper is
 **selective**: the carbonate leaves overhead while the sulfide stays with

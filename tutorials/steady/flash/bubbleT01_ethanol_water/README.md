@@ -2,8 +2,8 @@
 
 30/70 ethanol/water (100 kmol/h) at 1 atm: at what temperature does the
 first bubble form, and what is in it?  The answer from the golden:
-**T_bubble = 354.42 K** (81.27 °C), and the first vapour is
-**58.2 mol% ethanol** from a liquid that is 30 % — the enrichment every
+**T_bubble = 354.57 K**<!--golden: kpi bubble01 T_bubble--> (81.42 °C<!--golden: kpi bubble01 T_bubble +-273.15-->), and the first vapour is
+**58.5 mol%<!--golden: kpi bubble01 y_ethanol *100--> ethanol** from a liquid that is 30 % — the enrichment every
 distillation column lives on.
 
 ## The lesson
@@ -14,9 +14,9 @@ distillation column lives on.
    (`liquid activity.NRTL; vapour idealGas`).  Nothing is chosen for you.
 2. **One equation, one unknown.**  Σ y_i = Σ K_i x_i = 1, solved for T by
    Newton.  The **Log** tab prints the whole table: five iterations from
-   a 366.6 K guess, |f| driven to 4.4e-12.  Count them; read ΔT shrink.
+   a 366.6 K guess, |f| driven to 3.1e-12.  Count them; read ΔT shrink.
 3. **K carries the non-ideality.**  The result table gives
-   K_ethanol = 1.940 and K_water = 0.597 at 354.4 K.  With Raoult alone
+   K_ethanol = 1.951<!--golden: kpi bubble01 y_ethanol *3.333333333--> and K_water = 0.593<!--golden: kpi bubble01 y_water *1.428571429--> at 354.6 K<!--golden: kpi bubble01 T_bubble-->.  With Raoult alone
    (K = Psat/P) ethanol's K would be far smaller here — the difference is
    the activity coefficient, and it is why the vapour is ethanol-rich.
 4. **This is one point on a curve.**  `dewT01_ethanol_water` asks the

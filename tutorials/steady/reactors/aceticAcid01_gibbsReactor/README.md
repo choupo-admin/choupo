@@ -38,11 +38,11 @@ the energy report refuses to price it (found while writing this case).
 
 | | |
 |---|---|
-| methanol converted | ~100 % (y_MeOH = 4e-8 in the gas) |
-| acetic acid | 97.5 kmol/h liquid + 2.5 kmol/h in the gas ~ 99.98 kmol/h per 100 fed |
-| gas outlet | 12.5 kmol/h: CO 80.1 %, acetic acid 19.8 %, methyl acetate and water 0.075 % each |
-| dimethyl ether | ~2e-8 mole fraction — nil |
-| reactor duty | **-4578 kW** (the reactor must be COOLED: reaction heat plus condensing the acid; it read -3927 before the liquid acid was bridged to the ideal-gas monomer datum, because the condensation of the acid is now priced with the dimer heat in the liquid-to-monomer bridge) |
+| methanol converted | ~100 % (y_MeOH = 4.0e-8<!--golden: kpi reactor y_methanol--> in the gas) |
+| acetic acid | 97.5 kmol/h<!--golden: kpi reactor F_condensate_kmol_h--> liquid + 2.5 kmol/h in the gas ~ 99.98 kmol/h per 100 fed |
+| gas outlet | 12.5 kmol/h<!--golden: kpi reactor F_out_kmol_h-->: CO 80.1 %<!--golden: kpi reactor y_CO *100-->, acetic acid 19.8 %<!--golden: kpi reactor y_aceticAcid *100-->, methyl acetate 0.075 %<!--golden: kpi reactor y_methylAcetate *100--> and water 0.075 %<!--golden: kpi reactor y_water *100--> |
+| dimethyl ether | ~2e-8<!--golden: kpi reactor y_dimethylEther--> mole fraction — nil |
+| reactor duty | **-4578 kW**<!--golden: kpi reactor Q_kW--> (the reactor must be COOLED: reaction heat plus condensing the acid; it read -3927 before the liquid acid was bridged to the ideal-gas monomer datum, because the condensation of the acid is now priced with the dimer heat in the liquid-to-monomer bridge) |
 
 **The lesson is that the by-products vanish.**  Carbonylation is so
 favourable (K ~ 2e5 bar^-1 at 470 K, from the formation data) that methanol is
@@ -65,9 +65,9 @@ assigns the sign, and evaluates the reaction equilibrium at **T + 10 K =
 
 | | approach 0 | approach 10 |
 |---|---|---|
-| y acetic acid (gas) | 0.19785 | 0.19785 |
-| y methyl acetate | 5.7e-4 | 7.5e-4 |
-| y methanol | 2.0e-8 | 4.0e-8 |
+| y acetic acid (gas) | 0.19785 | 0.19785<!--golden: kpi reactor y_aceticAcid--> |
+| y methyl acetate | 5.7e-4 | 7.5e-4<!--golden: kpi reactor y_methylAcetate--> |
+| y methanol | 2.0e-8 | 4.0e-8<!--golden: kpi reactor y_methanol--> |
 
 The main product does not move.  The approach shifts only the traces, by
 30-100 %.  The engine's own documentation says why: a parameter built for

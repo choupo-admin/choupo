@@ -44,19 +44,19 @@ turret speed of `n` revolutions per second, a point on the pitch circle of
 diameter `D` moves at `pi D n`, so the flat of length `L` stays under the
 roll for
 
-    t_dwell = L / (pi D n) = 8 mm / (pi x 0.30 m x 75/60 s^-1) = 6.8 ms
+    t_dwell = L / (pi D n) = 8 mm / (pi x 0.30 m x 75/60 s^-1) = 6.8 ms<!--golden: equipment tabletPress values.dwellTime_atRating-->
 
 The case declares that this formulation needs at least 10 ms.  The fastest
 speed that gives 10 ms is
 
-    n_max = L / (pi D t_min) = 50.9 rpm
+    n_max = L / (pi D t_min) = 50.9 rpm<!--golden: equipment tabletPress values.turretSpeed_dwellLimited-->
 
-so the press makes 36 x 50.9 x 60 = **110 008 tablets/h**, not the
+so the press makes 36 x 50.9 x 60 = **110 008 tablets/h**<!--golden: equipment tabletPress values.capacity_dwellLimited-->, not the
 catalogue's 36 x 75 x 60 = 162 000.  The run announces that the dwell limit
 **binds**, and the utilisation it reports uses the lower number.  With the
 declared overall equipment effectiveness (availability 0.90 x performance
-0.95 x quality 1.0 = 0.855) the press makes 94 057 tablets/h against a load
-of 71 429: a utilisation of **0.76**.  On the catalogue speed alone the same
+0.95 x quality 1.0 = 0.855<!--golden: equipment tabletPress values.oee-->) the press makes 94 057 tablets/h<!--golden: equipment tabletPress values.capacity_effective--> against a load
+of 71 429<!--golden: equipment tabletPress values.load-->: a utilisation of **0.76**<!--golden: equipment tabletPress values.utilisation-->.  On the catalogue speed alone the same
 press would have looked to be **44 %** busy.
 
 Where the 10 ms comes from: it is an author-set assumption, read against an
@@ -92,14 +92,14 @@ golden, so the two cannot drift apart) and runs both curves backwards:
 1. The target strength is **2 MPa** (Mohylyuk et al., *Pharmaceutics* 16
    (2024) 362, CC BY 4.0, write that 2 MPa is widely considered the minimum
    acceptable tensile strength of tablets).  The porosity that gives it:
-   `eps = ln(sigma_0 / sigma_t) / k_b = ln(34.17 / 2) / 7.173 = 0.3957`.
-2. The solid fraction is `D = 1 - eps = 0.6043`, and the pressure the Heckel
-   line needs to reach it: `P = (ln(1/(1 - D)) - A) / K = 29.7 MPa`.
-3. The force on one punch is `P x A_tip = 29.7 MPa x 99.93 mm2 = 2.97 kN`
+   `eps = ln(sigma_0 / sigma_t) / k_b = ln(34.17 / 2) / 7.173 = 0.3957`<!--golden: equipment tabletPress values.porosity_target-->.
+2. The solid fraction is `D = 1 - eps = 0.6043`<!--golden: equipment tabletPress values.solidFraction_target-->, and the pressure the Heckel
+   line needs to reach it: `P = (ln(1/(1 - D)) - A) / K = 29.7 MPa`<!--golden: equipment tabletPress values.compactionPressure-->.
+3. The force on one punch is `P x A_tip = 29.7 MPa x 99.93 mm2 = 2.97 kN`<!--golden: equipment tabletPress values.punchForce-->
    (the 11.28 mm round flat-faced punch the bench's tablets were made with),
-   **3.7 %** of the press's 80 kN.
+   **3.7 %**<!--golden: equipment tabletPress values.forceRatio *100--> of the press's 80 kN.
 4. With the true density the bench declares (1.6374 g/cm3), the flat-faced
-   0.40 g tablet is `m / (rho_true D A_tip) = 4.05 mm` thick.
+   0.40 g tablet is `m / (rho_true D A_tip) = 4.05 mm<!--golden: equipment tabletPress values.tabletThickness-->` thick.
 
 **Two warnings the run gives, and why they are right:**
 

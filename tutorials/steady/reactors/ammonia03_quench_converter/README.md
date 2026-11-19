@@ -52,22 +52,22 @@ Measured, this run:
 
 | | feed T | feed y(NH₃) | exit T | exit y(NH₃) | ΔT | gas through it | NH₃ made |
 |---|---|---|---|---|---|---|---|
-| **bed 1** | 683.15 K | 1.11 % | 841.28 K | 10.61 % | +158.1 K | 12 523 kmol/h | 1075.2 kmol/h |
-| **bed 2** | 682.05 K | 7.12 % | 797.93 K | 14.77 % | +115.9 K | 18 109 kmol/h | 1207.7 kmol/h |
-| **bed 3** | 680.61 K | 10.59 % | 777.51 K | 17.28 % | +96.9 K | 24 362 kmol/h | 1391.0 kmol/h |
+| **bed 1** | 665.01 K<!--golden: stream preheatedFeed T--> | 1.62 % | 820.54 K<!--golden: kpi bed1 T--> | 10.85 % | +155.5 K | 13 036 kmol/h<!--golden: kpi bed1 F_in_kmol_h--> | 1085.2 kmol/h |
+| **bed 2** | 666.45 K<!--golden: stream bed2Feed T--> | 7.46 % | 779.84 K<!--golden: kpi bed2 T--> | 14.83 % | +113.4 K | 18 885 kmol/h<!--golden: kpi bed2 F_in_kmol_h--> | 1212.3 kmol/h |
+| **bed 3** | 665.99 K<!--golden: stream bed3Feed T--> | 10.80 % | 760.46 K<!--golden: kpi bed3 T--> | 17.21 % | +94.5 K | 25 438 kmol/h<!--golden: kpi bed3 F_in_kmol_h--> | 1391.6 kmol/h |
 
 Read it as the staircase:
 
-* **The three inlets are the same temperature** (683.2 / 682.1 / 680.6 K —
-  a spread of 2.54 K).  That is not an accident, it is the design rule of §3.
-* **Each exit is cooler than the last.**  841 → 798 → 778 K.  Every bed ends
+* **The three inlets are the same temperature** (665.0 / 666.4 / 666.0 K —
+  a spread of 1.4 K).  That is not an accident, it is the design rule of §3.
+* **Each exit is cooler than the last.**  821 → 780 → 760 K.  Every bed ends
   on the equilibrium curve, and each one meets it further along and lower
   down.
 * **Each bed makes MORE ammonia than the one before it**, while its
   temperature rise gets smaller.  Two things are happening at once: the later
   beds carry more gas (the cold shots join in), and they work against a
   **cooler, therefore richer, equilibrium.**
-* **The cold shot dilutes as well as cools.**  Bed 1 leaves at 10.61 % NH₃ and
+* **The cold shot dilutes as well as cools.**  Bed 1 leaves at 10.85 % NH₃ and
   bed 2 starts at 7.12 %.  A vertical drop on the temperature axis is also a
   step backwards on the conversion axis — you pay for the cooling with
   unconverted-looking gas.  That is the trade the split has to price.
@@ -114,15 +114,15 @@ and the interchanger sized for it differ.
 
 | | ammonia02 — one bed | ammonia03 — three beds + quench |
 |---|---|---|
-| converter exit | **10.75 % NH₃ at 839.6 K** | **17.28 % NH₃ at 777.5 K** |
-| per-pass N₂ conversion | 17.84 % | **28.80 %** |
-| loop circulation | 40 545 kmol/h | 26 645 kmol/h |
-| recycle | 32 545 kmol/h | 18 645 kmol/h (−42.7 %) |
-| purge (3 % of recycle) | 1006 kmol/h | 577 kmol/h |
-| H₂ lost in the purge | 724.8 kmol/h | 414.8 kmol/h |
-| **product** | **3498.7 kmol/h** (60.7 t/h) | **3719.8 kmol/h** (64.6 t/h, **+6.3 %**) |
-| interchanger | 1500 m², 117.2 MW | 375 m², 31.2 MW |
-| cooling-water duty | 57.8 MW | 66.2 MW |
+| converter exit | **11.12 % NH₃ at 824.9 K**<!--golden: @plant/ammonia02_full_plant kpi converter T--> | **17.21 % NH₃ at 760.5 K**<!--golden: kpi bed3 T--> |
+| per-pass N₂ conversion | 18.36 % | **29.94 %** |
+| loop circulation | 41 406 kmol/h<!--golden: @plant/ammonia02_full_plant stream mixed F *3600--> | 27 736 kmol/h<!--golden: stream mixed F *3600--> |
+| recycle | 33 406 kmol/h<!--golden: @plant/ammonia02_full_plant stream recycle F *3600--> | 19 736 kmol/h<!--golden: stream recycle F *3600--> (−40.9 %) |
+| purge | 1033 kmol/h<!--golden: @plant/ammonia02_full_plant stream purge F *3600--> | 610 kmol/h<!--golden: stream purge F *3600--> |
+| H₂ lost in the purge | 702.1 kmol/h | 393.5 kmol/h |
+| **product** | **3461.5 kmol/h**<!--golden: @plant/ammonia02_full_plant stream productNH3 F *3600--> (58.9 t/h NH₃) | **3676.1 kmol/h**<!--golden: stream productNH3 F *3600--> (62.6 t/h NH₃, **+6.2 %**) |
+| interchanger | 1500 m², 115.0 MW<!--golden: @plant/ammonia02_full_plant kpi FEHE Q_kW *0.001--> | 375 m², 30.6 MW<!--golden: kpi FEHE Q_kW *0.001--> |
+| cooling-water duty | 57.8 MW | 66.1 MW |
 
 **The product gain is not simply the extra equilibrium conversion.**  It is
 that a loop converting more per pass has to recirculate less; the purge is a
@@ -131,20 +131,20 @@ hydrogen.  The converter design reaches the product through the purge.
 
 Two costs, both stated rather than hidden:
 
-* **8.4 MW more goes to the cooling water.**  The effluent leaves the
+* **8.3 MW more goes to the cooling water.**  The effluent leaves the
   interchanger at 632 K instead of 486 K, because the interchanger only has
   47 % of the feed to heat.  A real plant recovers that heat in a waste-heat
   boiler.  This case does not add one: that is a separate design act, and
   adding it would change two things at once.
 * **The recycle compressor is now oversized.**  It still takes 4000 kW on a
-  circulation 43 % smaller, so it discharges at 258 bar into a mixer that runs
+  circulation 33 % smaller, so it discharges at 258 bar into a mixer that runs
   at 245 bar.  Left visible on purpose — a converter redesign propagates into
   the machines, and the run shows it.
 
 
 ## 5. What a BAD split costs — measured, same hardware
 
-Same 375 m² interchanger, same everything; only the three fractions move.
+Same 375 m² interchanger, same everything; only the three fractions move.  *(This table and the one in section 7 are probes measured on the loop as it stood before the equilibrium-outlet and density changes of C72/C73 and the density door; they were not re-run in this pass, so read them for their SHAPE, not their digits.  The case's own row is section 2 and 4.)*
 
 | toFEHE / q1 / q2 | bed inlets (K) | bed exits (K) | converter exit | product kmol/h |
 |---|---|---|---|---|

@@ -98,11 +98,12 @@ far the two sit apart.
 
 | DesignSpec iteration | `$V_bed` (m³) | residual F = (approach − 5)/0.02 |
 |---|---|---|
-| 0 | 6.0000 | 553.6 |
-| 1 | 6.5636 | 159.6 |
-| 2 | 6.8960 | 28.45 |
-| 3 | 6.9848 | 1.460 |
-| **converged** | **6.989826** | 4.4e-3 (13 evaluations) |
+| 0 | 6.0000 | 2115 |
+| 1 | 6.8554 | 711.6 |
+| 2 | 7.5691 | 215.6 |
+| 3 | 8.0335 | 44.44 |
+| 4 | 8.1879 | 3.300 |
+| **converged** | **8.201350**<!--golden: kpi converter V_R--> | 2.2e-2 (16 evaluations) |
 
 The whole recycle loop is re-converged inside every evaluation (Newton on
 the tear, |r| 2.6e-9); the bed's RK4 was checked by rating the solved
@@ -114,49 +115,48 @@ relative and the approach by 1e-6 K.
 | quantity | 1 | 2 | 3 | **4** |
 |---|---|---|---|---|
 | converter model | conversion 25 % | Gibbs, 700 K isothermal | Gibbs + 5 K, 700 K isothermal | **Dyson–Simon bed, 700 K in, adiabatic** |
-| converter outlet y(NH₃) | 0.149843 | 0.310807 | 0.300194 | **0.100764** |
-| per-pass N₂ conversion | 25.0 (declared) | 47.9288 % | 46.6023 % | **16.5991 %** |
-| converter outlet T | 700 K | 700 K | 700 K | **844.86 K** (the hot spot: +144.86 K, and it is the outlet) |
-| recycle / makeup (molar) | 2.565 | 1.0257 | 1.0778 | **3.9289** |
-| converter inlet, kmol/h | — | — | 16 622.66 | **39 431.19** (y(NH₃) 0.0127) |
-| product NH₃, kmol/h | — | — | 3 722.5 (1 521.5 t/d) | **3 127.0 (1 278 t/d)**, 98.75 mol% in 3 166.58 kmol/h |
+| converter outlet y(NH₃) | 0.149271 | 0.274313 | 0.265937 | **0.101619**<!--golden: kpi converter y_NH3_out--> |
+| per-pass N₂ conversion | 25.0 (declared) | 45.5452 % | 44.2715 % | **16.2661 %**<!--golden: kpi converter X_N2 *100--> |
+| converter outlet T | 700 K | 700 K | 700 K | **838.92 K**<!--golden: kpi converter T_out--> (the hot spot: +138.92 K<!--golden: kpi converter hotSpot_dT-->, and it is the outlet) |
+| recycle / makeup (molar) | 2.698 | 1.2705 | 1.3249 | **4.1237** |
+| converter inlet, kmol/h | — | — | 18 599.42 | **40 989.32**<!--golden: kpi converter F_in_kmol_h--> (y(NH₃) 0.0172) |
+| product NH₃, kmol/h | — | — | 3 699.4 (1 512.1 t/d) | **3 101.7 (1 268 t/d)**, 99.93 mol% in 3 104.03 kmol/h<!--golden: stream productNH3 F *3600--> |
 | bed volume | none | none | 20.8443 m³ from an ASSUMED 20 000 Nm³/(m³ h) | **8.2013 m³, SOLVED for a 5 K approach** |
-| GHSV on the normal basis | — | — | 20 000 (the assumption) | **126 442 Nm³/(m³ h)** (KPI, 0 °C / 1 atm ideal-gas convention, computed) |
-| actual-gas residence time | — | — | — | **2.057 s** (SRK molar volume at the inlet) |
-| approach to equilibrium of the effluent | — | 0 | 5 K, imposed on the whole converter | **5.0001 K, reached, on the law's own equilibrium** |
-| rate at inlet → outlet, kmol NH₃/(m³ bed h) | — | — | — | **1 076.6 → 58.96** (a factor of 18.3) |
-| preheat duty | inside the converter's duty | inside | inside (3 287 kW total) | **146 229 kW**, its own unit |
+| GHSV on the normal basis | — | — | 20 000 (the assumption) | **112 022<!--golden: kpi converter GHSV_normal_h--> Nm³/(m³ h)** (KPI, 0 °C / 1 atm ideal-gas convention, computed) |
+| actual-gas residence time | — | — | — | **2.322 s**<!--golden: kpi converter tau_gas_s--> (SRK molar volume at the inlet) |
+| approach to equilibrium of the effluent | — | 0 | 5 K, imposed on the whole converter | **5.0004 K**<!--golden: kpi converter approach_K-->, reached, on the law's own equilibrium** |
+| rate at inlet → outlet, kmol NH₃/(m³ bed h) | — | — | — | **747.1**<!--golden: kpi converter rate_in_kmolNH3_m3_h--> → **52.57**<!--golden: kpi converter rate_out_kmolNH3_m3_h--> (a factor of 14.2) |
+| preheat duty | inside the converter's duty | inside | inside (3 287 kW total) | **152 026 kW**, its own unit |
 
 **The two gaps are the lesson, and the second is larger than the first.**
 
 1. *The volume.*  The engine's bed at a 5 K approach is **8.20 m³ against
    the 20.84 m³** rung 3 sized from an assumed 20 000 Nm³/(m³ h) — the
-   kinetic bed runs at 126 442 Nm³/(m³ h) on the same basis.  Read this with
+   kinetic bed runs at 112 022 Nm³/(m³ h) on the same basis.  Read this with
    §5 in hand: it is a FRESH, CLEAN, FULLY REDUCED bed with the pellet
    correction UNPRICED, and both of those make it smaller than a real one.
-2. *The conversion.*  A single adiabatic bed converts **16.60 %** of its
-   nitrogen per pass where rung 3's isothermal converter converts 46.60 %.
-   The bed heats itself 145 K as it converts, ammonia equilibrium retreats
+2. *The conversion.*  A single adiabatic bed converts **16.27 %** of its
+   nitrogen per pass where rung 3's isothermal converter converts 44.27 %.
+   The bed heats itself 139 K as it converts, ammonia equilibrium retreats
    as it heats, and the conversion is capped where the adiabatic line meets
    the equilibrium curve.  Measured, by rating the bed at sixteen volumes
    (the case without its `outerDict`):
 
    | V_bed, m³ | X(N₂) % | approach, K | T_out, K | y(NH₃) out |
    |---|---|---|---|---|
-   | 0.5 | 0.617 | (not published: at equilibrium above 1 500 K) | 705.33 | 0.0181 |
-   | 1 | 1.311 | 389.1 | 711.32 | 0.0214 |
-   | 2 | 3.007 | 311.3 | 725.99 | 0.0297 |
-   | 4 | 8.861 | 148.0 | 776.90 | 0.0592 |
-   | 5 | 13.561 | 56.59 | 818.09 | 0.0841 |
-   | 6 | 15.926 | 16.07 | 838.92 | 0.0970 |
-   | **6.99** | **16.599** | **5.00** | **844.86** | **0.1008** |
-   | 8 | 16.808 | 1.604 | 846.70 | 0.1019 |
-   | 10 | 16.895 | 0.179 | 847.47 | 0.1024 |
-   | 20 | 16.906 | 3e-6 | 847.57 | 0.1025 |
-   | 200 | 16.906 | 1e-13 | 847.57 | 0.1025 |
+   | 0.5 | 0.467 | 391.4 | 704.00 | 0.0220 |
+   | 1 | 0.992 | 365.0 | 708.50 | 0.0245 |
+   | 2 | 2.267 | 311.8 | 719.42 | 0.0307 |
+   | 4 | 6.363 | 192.1 | 754.48 | 0.0508 |
+   | 5 | 9.878 | 116.5 | 784.53 | 0.0685 |
+   | 6 | 13.690 | 47.31 | 817.02 | 0.0881 |
+   | **8.20** | **16.266** | **5.00** | **838.92** | **0.1016** |
+   | 10 | 16.525 | 0.904 | 841.11 | 0.1030 |
+   | 20 | 16.582 | 8.5e-5 | 841.60 | 0.1033 |
+   | 200 | 16.582 | 0 | 841.60 | 0.1033 |
 
-   **16.906 % is the cap**, at 847.57 K.  No volume of this bed reaches
-   rung 3's 46.60 %, which is why the DesignSpec targets the sourced
+   **16.582 % is the cap**, at 841.60 K.  No volume of this bed reaches
+   rung 3's 44.27 %, which is why the DesignSpec targets the sourced
    per-bed approach and not rung 3's conversion — a target the bed cannot reach
    would make the Newton diverge honestly and size nothing.  Because the
    per-pass conversion is a third of rung 3's, the loop recirculates 3.9× the
@@ -200,7 +200,7 @@ and the result JSON; this README must agree with it and not soften it.
 * **Two equilibria, and the approach is quoted on the law's.**  The rate
   vanishes at Gillespie & Beattie's Ka; the package minimises Gibbs energy
   with SRK.  Probed with a `gibbsReactor` fed the converged bed inlet
-  (outside the shipped case): at the bed's outlet T (844.86 K, 200 bar) the
+  (outside the shipped case): at the bed's outlet T (844.86 K, 200 bar; the probe of the earlier 6.99 m³ state, not re-run) the
   package's equilibrium ammonia is **0.103917** against the bed's 0.100764, so
   on the Gibbs surface the effluent is at 96.97 % of equilibrium ammonia —
   about 4.1 K short by the local slope (−0.000766 per K) — where the law

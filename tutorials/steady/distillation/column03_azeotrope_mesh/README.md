@@ -7,9 +7,9 @@ the feed on **stage 8**, **R = 2.5**, distillate **25 kmol/h**, at
 Everything about that specification is ordinary.  The one line that is not is
 in the unit's third slot: **`model simultaneous;`**.
 
-The golden: **x_D = 0.8046** ethanol, **x_B = 0.8682** water, T_top
-**351.39 K**, T_bottom **357.71 K**, reboiler **956.24 kW**, condenser
-**−952.97 kW**, and the plant-boundary first law closing at a residual of
+The golden: **x_D = 0.8100**<!--golden: kpi column x_D_LK--> ethanol, **x_B = 0.8700**<!--golden: kpi column x_B_HK--> water, T_top
+**351.44 K**<!--golden: kpi column T_top-->, T_bottom **357.99 K**<!--golden: kpi column T_bottom-->, reboiler **1000.37 kW**<!--golden: kpi column Q_reboiler_kW-->, condenser
+**−996.63 kW**<!--golden: kpi column Q_condenser_kW *-1-->, and the plant-boundary first law closing at a residual of
 **0 kW**.  The feed is a **saturated liquid at 354.42 K**, declared as one in
 `0/feed` (`phase liquid;` at its own bubble point).
 
@@ -26,17 +26,17 @@ The golden: **x_D = 0.8046** ethanol, **x_B = 0.8682** water, T_top
    sequential bubble-point method does not converge here.
 2. **The azeotrope is a ceiling, and the answer sits under it.**  Ethanol and
    water form an azeotrope the case names at roughly `x_eth 0.894` at 1 atm;
-   the distillate comes out at **0.804616545279** ethanol.  A distillate
+   the distillate comes out at **0.810027796534**<!--golden: kpi column x_D_LK--> ethanol.  A distillate
    specified above the azeotrope is not a hard convergence problem — it does
    not exist, and the header is explicit that no method reaches it.  A solver
    that *did* return such a number would be reporting something physically
    impossible.
 3. **The temperature span is the azeotrope showing itself.**  Sixteen stages
-   buy only **6.32 K** from top to bottom here (351.39 K to 357.71 K).
-   `column01` separates benzene from toluene over **28.68 K** on fifteen
+   buy only **6.55 K**<!--golden: kpi column T_bottom &- kpi column T_top--> from top to bottom here (351.44 K to 357.99 K).
+   `column01` separates benzene from toluene over **25.83 K** on fifteen
    stages.  Same kind of equipment, same kind of specification; the mixture
    is what collapsed the driving force, and the duties tell the same story —
-   956.24 kW of reboiler heat for a 25 kmol/h distillate.
+   1000.37 kW<!--golden: kpi column Q_reboiler_kW--> of reboiler heat for a 25 kmol/h distillate.
 4. **The case asks for the profile, and the profile is where a column is
    read.**  `controlDict` declares `reports { streamTable massBalance
    profiles spreadsheet }`.  The `profiles` report prints T, x and y stage by

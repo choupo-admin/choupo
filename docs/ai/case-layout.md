@@ -2455,3 +2455,26 @@ exits **1** and `converged/` is not written.  The tear's initial guess lives
 in its `0/` file, like any other stream.  Declare `tearStreams` in
 `system/solverDict` (the numerical home); the flowsheetDict is still read for
 older cases.
+
+## A README number that quotes a run carries a marker (DEV.md 4c C447)
+
+A tutorial's `README.md` is the first text a student reads, and the golden
+(`expected`) pins what the RUN prints, not what the prose says.  So a README
+number that quotes the run is written with an HTML comment directly after it
+(invisible when rendered) naming the row of the case's `expected` it comes
+from, the first three columns of that row:
+
+```
+V/F = **0.7685**<!--golden: kpi flash02 V_over_F-->
+conversion 50.75 %<!--golden: kpi cstr01 X_limiting *100-->
+```
+
+`*F` multiplies the row (a unit change), `+O` adds after it, `&` sums two rows,
+`&-` subtracts, and a first word `@steady/flash/flash01_x` reads a sister
+case's `expected`.  `bin/curate/check_readme_numbers.py` (gate
+`readme-numbers-gate`, every mode) fails when a marked number does not round to
+its row at the digits written, when the row is gone, or when a marker is not
+directly after a number.  A moved golden row therefore fails the README it
+feeds.  A number that is NOT the run's (a paper's value, a hand calculation, an
+input) carries no marker and is not checked; a number the golden does not hold
+(a log line, a probe) cannot be marked and is read, not gated.

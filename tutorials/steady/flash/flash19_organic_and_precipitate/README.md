@@ -4,7 +4,7 @@ One isothermal flash at 313.15 K / 1 atm, and **four phases coexist**:
 
 | phase | what is in it |
 |---|---|
-| vapour | CO₂, water, benzene, ethanol — V/F = 0.0283 |
+| vapour | CO₂, water, benzene, ethanol — V/F = 0.0284<!--golden: kpi flash01 V_over_F--> |
 | aqueous liquid | water + the carbonate speciation network + the dissolved co-solvent |
 | organic liquid | benzene-rich (x_benzene = 0.993), 1.27 % of the backbone liquid |
 | solid | calcite, 1096 mg/kg of water, at its SI = 0 ceiling |
@@ -28,8 +28,8 @@ cases differ by exactly those two components:
 | | flash16 | flash19 |
 |---|---|---|
 | calcite formed | 729 mg/kg | **1096 mg/kg** |
-| pH | 6.020 | 6.107 |
-| V/F | 0.0213 | 0.0283 |
+| pH | 6.020 | 6.108<!--golden: kpi flash01 pH--> |
+| V/F | 0.0213 | 0.0284<!--golden: kpi flash01 V_over_F--> |
 
 Adding a co-solvent pushed half again as much calcite out of solution.
 

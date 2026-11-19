@@ -115,6 +115,7 @@ def readme_paras(case: Path):
     if not p.exists():
         return []
     txt = p.read_text(errors="replace")
+    txt = re.sub(r"<!--.*?-->", "", txt, flags=re.S)  # C447 markers (and any HTML comment) are invisible
     txt = re.sub(r"^#.*$", "", txt, flags=re.M)          # headings out
     txt = re.sub(r"\|.*\|", "", txt)                     # tables out (golden table comes from expected)
     txt = re.sub(r"```.*?```", "", txt, flags=re.S)
@@ -144,6 +145,7 @@ def readme_card(case: Path):
     if CARD_MARK not in txt:
         return None
     txt = txt.replace(CARD_MARK, "")
+    txt = re.sub(r"<!--.*?-->", "", txt, flags=re.S)  # C447 markers (and any HTML comment) are invisible
     txt = re.sub(r"```.*?```", "", txt, flags=re.S)
     out = []
     for block in txt.split("\n\n"):

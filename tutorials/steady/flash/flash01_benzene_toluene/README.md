@@ -3,8 +3,8 @@
 The same 40/60 benzene/toluene feed (100 kmol/h) as `adiabaticFlash01`,
 this time **held at 370 K** and 1 bar.  Raoult's law, ideal vapour, the
 Rachford-Rice equation solved by Newton in one unknown.  The golden:
-**V/F = 0.3040** (30.40 kmol/h vapour, 69.60 kmol/h liquid),
-**K_benzene = 1.651**, **K_toluene = 0.674**.
+**V/F = 0.3040**<!--golden: kpi flash01 V_over_F--> (30.40 kmol/h<!--golden: kpi flash01 F_beta *3600--> vapour, 69.60 kmol/h<!--golden: kpi flash01 F_alpha *3600--> liquid),
+**K_benzene = 1.651**<!--golden: kpi flash01 K_benzene-->, **K_toluene = 0.674**<!--golden: kpi flash01 K_toluene-->.
 
 ## The lesson
 

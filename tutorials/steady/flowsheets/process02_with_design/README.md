@@ -6,13 +6,13 @@ costing**.  The chain runs from `system/postDict`; `reports { design {}
 economics {} }` in the controlDict *serialise* what it produced into
 `reports/design/sizing.csv` and `reports/economics/costs.csv`.
 
-The golden (process side): heater 0.4 kW → **361.95 K**; reactor
-X = 0.526; flash at 361.95 K with V/F 0 -- below this liquid's bubble
+The golden (process side): heater 0.4 kW → **361.96 K**<!--golden: kpi heater T_out-->; reactor
+X = 0.508<!--golden: kpi reactor X_limiting-->; flash at 361.96 K<!--golden: kpi separator T--> with V/F 0 -- below this liquid's bubble
 point, so nothing vaporises (acetic acid's vapour is associated, which
 lowers the volatility an ideal monomer vapour would give it).  The design side, from the
-run: reactor **V_R = 0.005 m³**, wall 3.15 mm, 3.7 kg of SS316; heater
-**A = 0.0667 m²** of SS304; costing totals **€155,475 purchased /
-€917,756 bare module / €1,082,952 total module**, CEPCI 820/397 = 2.0655,
+run: reactor **V_R = 0.005 m³**<!--golden: equipment reactor values.V_R-->, wall 3.15 mm<!--golden: equipment reactor values.t_wall *1000-->, 3.7 kg<!--golden: equipment reactor values.weight--> of SS316; heater
+**A = 0.0667 m²**<!--golden: equipment heater values.A--> of SS304; costing totals **€155,475<!--golden: equipment heater cost.purchased & equipment reactor cost.purchased--> purchased /
+€862,048<!--golden: equipment heater cost.bareModule & equipment reactor cost.bareModule--> bare module / €1,017,217<!--golden: equipment heater cost.totalModule & equipment reactor cost.totalModule--> total module**, CEPCI 820/397 = 2.0655,
 0.92 EUR/USD.
 
 ## The lesson
@@ -33,7 +33,7 @@ run: reactor **V_R = 0.005 m³**, wall 3.15 mm, 3.7 kg of SS316; heater
    the correlation range [0.3, 520]` and the heater's 0.0667 m² against
    [10, 1000].  A 1 kmol/h process is laboratory scale; Turton's
    correlations were fitted to plant scale, and the engine *extrapolates
-   and says so* rather than clamping.  The €1.06 M for a 0.4 kW exchanger
+   and says so* rather than clamping.  The €1.00 M for a 0.4 kW exchanger
    is what an extrapolated correlation returns — a number to distrust
    because you were told to.
 4. **A report draws, it does not recompute.**  Until 2026-09-02 this
