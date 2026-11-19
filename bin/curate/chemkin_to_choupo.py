@@ -52,7 +52,10 @@ kInf, `low {}`, `troe ( ... )`, efficiencies); `=`/`<=>` -> `reversible true`
 (detailed balance from the curated thermo), `=>` -> irreversible; DUPLICATE
 reactions are written as separate entries (the engine sums the rates of the
 entries a unit lists, as ignition01's 14a/14b and 19a/19b).  order = reactant
-coefficient (0 for products).  Ea units: cal/mol, kcal/mol, kJ/mol, J/mol are
+coefficient (0 for products); the stoichiometry list is written in alphabetical order of the
+component names, because the engine sums species rates in list order and a different
+order moves the trajectory at the 1e-9 level (measured 2026-11-19 on ignition01_h2o2).
+Ea units: cal/mol, kcal/mol, kJ/mol, J/mol are
 passed through for the engine; KELVINS (Ea = R * value, R = 8.314462618) and
 EVOLTS (Ea = F * value, F of src/core/Constants.H) are converted HERE to J/mol
 because the engine's Ea reader has no such word.
@@ -453,7 +456,7 @@ def reaction_text(idx, rx, cname, unit):
     for s, n in rx["p"].items():
         nu[s] = nu.get(s, 0.0) + n
     st = "\n".join("        { component %s; nu %g; order %g; }" % (cname[s], v, rx["r"].get(s, 0.0))
-                   for s, v in nu.items())
+                   for s, v in sorted(nu.items(), key=lambda kv: cname[kv[0]]))
     lim = cname[next(iter(rx["r"]))] if rx["r"] else cname[next(iter(rx["p"]))]
     uw, f = EA_WORD[unit]
     ea = lambda x: "%.10g" % (x * f)
@@ -719,24 +722,19 @@ def roundtrip_witness(check, tmp):
     for label, c in (("original", ref), ("imported", case)):
         r = subprocess.run([exe, c], capture_output=True, text=True, cwd=ROOT)
         outs[label] = (r.returncode, r.stdout.replace(c, "CASE"))
-    check(outs["original"][0] == 0 and outs["imported"][0] == 0, "engine run: both exit 0")
-    strip = lambda o: "\n".join(l for l in o.splitlines() if not re.search(r'\br\d{3}\b|\bR\d+[ab]?_', l))
-    check(strip(outs["original"][1]) == strip(outs["imported"][1]),
-          "engine run: stdout identical outside lines naming a reaction (%d lines)"
-          % len(strip(outs["original"][1]).splitlines()))
-    names = []
-    for root, _, fl in os.walk(ref):
-        for fn in fl:
-            rel = os.path.relpath(os.path.join(root, fn), ref)
-            if rel.split(os.sep)[0] not in ("constant", "system"):
-                names.append(rel)
+    for o, n in zip(orig, back):                      # the only other difference: the reaction names
+        outs["original"] = (outs["original"][0], outs["original"][1].replace("'%s'" % o["name"], "'%s'" % n["name"]))
+    check(all(v[0] == 0 for v in outs.values()), "engine run: original and imported cases exit 0")
+    names = sorted(os.path.relpath(os.path.join(root, fn), ref) for root, _, fl in os.walk(ref) for fn in fl
+                   if os.path.relpath(os.path.join(root, fn), ref).split(os.sep)[0] not in ("constant", "system")
+                   and fn != "solution.log")                       # solution.log carries wall-clock stamps
     bad = [n for n in names if not os.path.exists(os.path.join(case, n))
            or not filecmp.cmp(os.path.join(ref, n), os.path.join(case, n), shallow=False)]
-    check(bool(names) and not bad, "engine run: %d result files byte-identical%s"
+    check(bool(names) and not bad and outs["original"][1] == outs["imported"][1],
+          "engine run: original vs imported reactions (new names r001..): stdout (reaction names mapped) and %d result files byte-identical%s"
           % (len(names), "" if not bad else ": " + ", ".join(bad[:3])))
 
 
-# ---------------------------------------------------------------------- selftest
 def _rec(n, comp, ph, lo, hi, tc, lc, hc):
     return ("%-24s%-20s%s%10.3f%10.3f%8.2f" % (n, comp, ph, lo, hi, tc)).ljust(79) + "1"
 
