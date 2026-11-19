@@ -76,7 +76,7 @@ describe("operation schema registry", () => {
     expect(pump).not.toBeNull();
     const eta = pump!.fields.find((f) => f.key === "eta");
     expect(eta?.type).toBe("number");
-    expect(eta?.required).toBe(true);
+    expect(eta?.required).toBe(false);   // C441: eta, or efficiency+selection, or a curve -- anyOf, so no key is flat-required
     expect(eta?.unit).toBe("-");
     //  pipe carries geometry{} + twoPhase{} -- both must be absent from the
     //  flat view while its scalar viscosity survives.
