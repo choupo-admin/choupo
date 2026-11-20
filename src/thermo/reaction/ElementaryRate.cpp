@@ -70,7 +70,8 @@ scalar eaJoulePerMol(const DictPtr& d, scalar Ea, const std::string& who)
 
 ElementaryRate ElementaryRate::fromDict(const DictPtr&       rxn,
                                         const ThermoPackage& thermo,
-                                        const std::string&   who)
+                                        const std::string&   who,
+                                        const RateOffer&     offer)
 {
     const std::size_t n = thermo.n();
     ElementaryRate law;
@@ -94,6 +95,7 @@ ElementaryRate ElementaryRate::fromDict(const DictPtr&       rxn,
     if      (word == "modifiedArrhenius") law.form_ = Form::modifiedArrhenius;
     else if (word == "thirdBody")         law.form_ = Form::thirdBody;
     else if (word == "falloff")           law.form_ = Form::falloff;
+    else if (word == "plog")              law.form_ = Form::plog;
     else throw std::runtime_error(who + ": ElementaryRate does not read `type "
         + word + "`.");
 
@@ -116,6 +118,38 @@ ElementaryRate ElementaryRate::fromDict(const DictPtr&       rxn,
         law.cmALow_ = isCm(kin->subDict("low"), who);
     if (law.cmA_ || law.cmALow_)
         law.molec_ = Reaction::chemkinMolecularity(orders, rxn->name(), who);
+
+    if (law.form_ == Form::plog)
+    {
+        if (!offer.pressure)
+            throw std::runtime_error(who + ": `type plog` reads the pressure, and "
+                + (offer.pressureAbsent.empty()
+                       ? std::string("this vessel carries none a rate law can read.")
+                       : offer.pressureAbsent));
+        if (kin->found("thirdBody") || kin->found("low") || kin->found("troe"))
+            throw std::runtime_error(who + ": `type plog` takes no `thirdBody` / `low` / `troe`.");
+        if (!kin->found("plog"))
+            throw std::runtime_error(who + ": `type plog` needs `plog ( { P 1 atm; A; b; Ea; } ... );`.");
+        for (const auto& e : kin->lookupDictList("plog"))
+        {
+            const scalar P = e->lookupScalar("P");
+            if (!(P > 0.0))
+                throw std::runtime_error(who + ": a `plog` line has P <= 0.");
+            PlogArr a;
+            a.A  = e->lookupScalar("A");
+            a.b  = e->lookupScalarOrDefault("b", 0.0);
+            a.Ea = eaJoulePerMol(kin, e->lookupScalar("Ea"), who);
+            auto it = std::find_if(law.plog_.begin(), law.plog_.end(),
+                [&](const PlogRow& r) { return r.P == P; });
+            if (it == law.plog_.end()) { law.plog_.push_back(PlogRow{P, {a}}); }
+            else it->arr.push_back(a);
+        }
+        if (law.plog_.empty())
+            throw std::runtime_error(who + ": `plog ( ... )` is empty.");
+        std::sort(law.plog_.begin(), law.plog_.end(),
+                  [](const PlogRow& x, const PlogRow& y) { return x.P < y.P; });
+        return law;
+    }
 
     law.A_  = kin->lookupScalar("A");
     law.b_  = (law.form_ == Form::modifiedArrhenius) ? kin->lookupScalar("b")
@@ -153,6 +187,14 @@ ElementaryRate ElementaryRate::fromDict(const DictPtr&       rxn,
     return law;
 }
 
+scalar ElementaryRate::plogK(const PlogRow& row, scalar T) const
+{
+    scalar k = 0.0;
+    for (const auto& a : row.arr)
+        k += Reaction::modifiedArrheniusRate(a.A, a.b, a.Ea, T);
+    return k;
+}
+
 scalar ElementaryRate::kEff(const RateState& s) const
 {
     //  CHEMKIN cm3/mol/s -> the caller's amount unit: 1e-6 m3/cm3 per order
@@ -160,6 +202,25 @@ scalar ElementaryRate::kEff(const RateState& s) const
     const scalar perOrder = 1.0e-6 * (1000.0 / s.amountPerKmol);
     const auto conv = [&](bool cm, scalar A, int extra)
     { return cm ? A * std::pow(perOrder, molec_ + extra - 1) : A; };
+
+    if (form_ == Form::plog)
+    {
+        //  The A of each line is converted to the caller's unit here (below),
+        //  by scaling the summed k: every line has the same molecularity.
+        const scalar f = cmA_ ? std::pow(perOrder, molec_ - 1) : 1.0;
+        const scalar P = s.P;
+        if (std::isnan(P))
+            throw std::runtime_error(who_ + ": `type plog` was handed no pressure (an empty vessel?).");
+        if (!(P > plog_.front().P)) return f * plogK(plog_.front(), s.T);
+        if (!(P < plog_.back().P))  return f * plogK(plog_.back(),  s.T);
+        std::size_t j = 1;                       // plog_[j-1].P < P < plog_[j].P (or equal: j-1)
+        while (j + 1 < plog_.size() && plog_[j].P < P) ++j;
+        const scalar k1 = plogK(plog_[j - 1], s.T), k2 = plogK(plog_[j], s.T);
+        const scalar w  = std::log(P / plog_[j - 1].P) / std::log(plog_[j].P / plog_[j - 1].P);
+        if (!(k1 > 0.0) || !(k2 > 0.0))          // ln k undefined: linear in ln P of k itself
+            return f * (k1 + w * (k2 - k1));
+        return f * std::exp(std::log(k1) + w * (std::log(k2) - std::log(k1)));
+    }
 
     const scalar kInf = Reaction::modifiedArrheniusRate(
         conv(cmA_, A_, form_ == Form::thirdBody ? 1 : 0), b_, Ea_, s.T);

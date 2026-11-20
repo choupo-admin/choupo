@@ -6254,6 +6254,22 @@ PYEOF
     fi
     rm -f /tmp/elemrate.$$
 
+    # plog gate (2026-11-20).  `type plog` (CHEMKIN-II PLOG) interpolates ln k
+    # linearly in ln P between tabulated pressures, clamps outside them and sums
+    # lines at one pressure.  Four pfr witnesses whose tables all give the
+    # elementary01a law at the bed pressure; the defect it would have caught is
+    # interpolating k (not ln k) or in P (not ln P): plausible rates, exact at
+    # the lines, invisible to closures and goldens.
+    if gate_exec "$ROOT/bin/curate/check_plog.py" > /tmp/plog.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "plog-gate" "$(head -1 /tmp/plog.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_plog.py)\n" "plog-gate"
+        cat /tmp/plog.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/plog.$$
+
     # rate-of-production gate (2026-11-19, glass box of a mechanism, phase 1).
     # `rateOfProduction { times (...); }` on a batchReactor prints, per species,
     # which reactions make and destroy it, from c_ij = nu_ij r_j V computed a
