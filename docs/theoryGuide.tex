@@ -5269,13 +5269,14 @@ form, \code{REACTIONS} with its unit header) and writes into a \emph{case's}
         was fitted with) or \code{distinctFrom} when they do not;
   \item the reactions, in the engine's own grammar: \code{modifiedArrhenius},
         \code{thirdBody} with its efficiencies, \code{falloff} with its
-        \code{low} block and Troe parameters, and \code{reversible true} for
+        \code{low} block and Troe parameters, \code{plog} with its pressure
+        lines (Section~\ref{sec:plog-rate}), and \code{reversible true} for
         detailed balance.  $A$ and $E_a$ are written \emph{as printed}, with a
         \code{units} block; the conversion to SI is the engine's
         (Section~\ref{sec:elementary-rate}), so there is one home for it.
 \end{itemize}
 What the engine cannot yet run is listed, reaction by reaction and with the
-reason, in \file{constant/mechanismImport.txt}: \code{PLOG}, \code{SRI},
+reason, in \file{constant/mechanismImport.txt}: \code{SRI}, \code{PLOG} with a \code{REV} line or on a third-body/fall-off reaction,
 explicit orders (\code{FORD}/\code{RORD}), an explicit reverse rate on a
 \code{(+M)} fall-off, \code{MOLECULES} units, and a pressure-dependent reaction
 without a low-pressure limit.  An explicit reverse rate (\code{REV}) on any other
@@ -38403,6 +38404,88 @@ CHEMKIN law against the plain Arrhenius law it equals at one temperature
 (isothermal, isobaric, no mole change, so $[\mathrm{M}]=P/\Rgas T$ is constant), and
 \code{bin/curate/check\_elementary\_rates.py} holds each pair's outlets to
 $10^{-9}$.
+
+\subsection{Pressure-dependent rate tables: PLOG (\code{plog})}\label{sec:plog-rate}
+
+CHEMKIN-II's \code{PLOG} form (Kee, Rupley and Miller, SAND89-8009, with the
+extension used by published pyrolysis mechanisms) gives the rate constant as a
+table of modified Arrhenius laws, one per tabulated pressure $P_i$:
+\begin{equation}
+    k_i(T) \;=\; \sum_{l\,\in\,\text{lines at }P_i} A_l\,T^{\,b_l}\,e^{-E_{a,l}/\Rgas T}.
+    \label{eq:plog-ki}
+\end{equation}
+Lines written at the \emph{same} pressure are summed (the CHEMKIN and Cantera
+convention).  With the tabulated pressures sorted, $P_1<\dots<P_N$, the rate
+constant at the state pressure $P$ is
+\begin{equation}
+    k(T,P) \;=\;
+    \begin{cases}
+        k_1(T) & P \le P_1,\\[2pt]
+        \exp\!\Bigl[\ln k_j + \dfrac{\ln(P/P_j)}{\ln(P_{j+1}/P_j)}
+            \bigl(\ln k_{j+1}-\ln k_j\bigr)\Bigr] & P_j \le P \le P_{j+1},\\[6pt]
+        k_N(T) & P \ge P_N,
+    \end{cases}
+    \label{eq:plog}
+\end{equation}
+that is, $\ln k$ is \emph{linear in $\ln P$} between two tabulated pressures,
+and there is no extrapolation: below the lowest and above the highest
+pressure $k$ is that end's value (checked against Cantera 3.2.0, which does
+the same, and sums lines at one pressure the same way).  If a $k_j$ at a
+bracketing pressure is not positive ($\ln k$ undefined) the interpolation falls
+back to the linear one in $\ln P$ of $k$ itself.  The reaction line's own
+nominal $A\,b\,E_a$ is not used.  A reversible PLOG reaction takes its reverse
+leg from detailed balance, $k_r=k(T,P)/K_c$ as for the other laws
+(\eqref{eq:k-rev}).
+
+\paragraph{Grammar.}
+\begin{verbatim}
+kinetics
+{
+    type  plog;
+    plog  ( { P 0.1 atm; A 1.0e10; b 0.5; Ea 20.0; }
+            { P 1   atm; A 2.0e10; b 0.5; Ea 20.0; } ... );
+    units { A "cm3/mol/s"; Ea "kcal/mol"; }
+}
+\end{verbatim}
+$P$ carries its unit through the dictionary's unit machinery (\code{atm},
+\code{bar}, \code{Pa}), so \code{atm} is read as 101325~Pa; $A$ and $E_a$ are
+converted exactly as in Section~\ref{sec:elementary-rate}, with the same
+molecularity for every line.  \code{thirdBody}, \code{low} and \code{troe} on a
+PLOG reaction are refused by name.
+
+\paragraph{Where the pressure comes from.}  The law reads the state pressure,
+so a vessel that carries none refuses it at construction, by name:
+\code{pfr} and \code{cstr} hand it the feed/bed pressure; a
+\code{batchReactor} offers $P=nR T/V$ of its closed ideal gas in
+\code{energy gasConstantV} (the pressure rises through an ignition and the
+interpolation follows it) and in \code{energy gasConstantP}
+(Section~\ref{sec:batch-gas-constp}: there $V=nRT/P$, so the same expression
+returns the holdup's fixed pressure: the R1 reaction of
+\code{ignition03\_h2air\_constp}, 5~bar, written as a PLOG at 2.5~bar with $A/2$
+and 10~bar with $2A$, reproduces every printed digit of that case); a liquid
+batch vessel and \code{dynamicCSTR} refuse it.
+
+\paragraph{Jacobian.}  The pressure depends, in a constant-volume gas, on every
+$n_k$ and on $T$.  The analytic Jacobian of the batch vessel differences a
+PLOG reaction, like every factory law, by a forward difference of that
+reaction's own rate over all species, and the $T$ column is one difference of
+the whole right-hand side; $P(n,T)$ is recomputed inside the rate evaluation,
+so both columns carry it, and the integrator's audit against the dense finite
+difference still holds (it passes on the fixture below).
+
+\paragraph{Validity and witnesses.}  Ideal-gas mass action, $k$ within the
+tabulated pressure range (outside it the law is constant, not predictive).
+Four \code{pfr} witnesses, \code{plog01}--\code{plog04}, are built so that the
+hand value is the law of \code{elementary01a}: a one-line table, $P$ exactly at
+a line, $P=3$~bar midway in $\ln P$ between 1 and 9~bar
+($A=\sqrt{0.6\cdot 2.4}\times10^{7}=1.2\times10^{7}$; interpolating $k$ itself
+would give $1.5\times10^{7}$, $\ln k$ linearly in $P$ $0.85\times10^{7}$), and
+two lines at one pressure summed.  \code{bin/curate/check\_plog.py} holds each to
+$10^{-9}$ against the hand value and sees a table defect.  Against Cantera, a
+numerical fixture (one reaction of the LLNL H$_2$ mechanism rewritten as a
+three-line PLOG; not chemistry) gives the same ignition delay to the 0.1~$\mu$s
+grid and $T$ within 0.25~K along the trajectory
+(\file{docs/reviews/2026-11-19-chemkin-real-mechanism/REPORT.md}, section~8).
 
 \subsection{Reversible reactions: the reverse rate from thermodynamics}
 

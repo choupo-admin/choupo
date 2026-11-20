@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  plog03 -- BETWEEN two tabulated pressures ln k is linear in ln P.  The lines are at 1 bar
+  (A = 0.6e7) and 9 bar (A = 2.4e7); P = 3 bar = sqrt(1 * 9) bar is midway in ln P, so
+  k = sqrt(k1 k2): A = sqrt(0.6e7 * 2.4e7) = 1.2e7 EXACTLY, the elementary01a law.
+  Interpolating k itself linearly in ln P would give A = 1.5e7, and ln k linearly in P
+  (weight (3-1)/(9-1) = 0.25) A = 0.6e7 * 4^0.25 = 0.8485e7: both plausible, both far off.
+  Reference: elementary01a (modifiedArrhenius, the same ODE).  Hand value at P = 3 bar, 900 K:
+    A_eq = 1.2e7 * 1e-6 * 900^1.5 = 324000 m3/mol/s, Ea = 125520 J/mol, k = 0.016814971049578225 m3/mol/s,
+    r = k c^2, c = P/(R T) = 40.0907850149809 mol/m3 (constant along the isobaric bed).
+  The outlet and the reported k_isom must equal elementary01a's to 1e-9 (bin/curate/check_plog.py).
+\*---------------------------------------------------------------------------*/
+
+isom
+{
+    stoichiometry
+    (
+        { component nButane;    nu -1;  order 2; }
+        { component isoButane;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type   plog;
+        plog
+        (
+            { P 1 bar; A 0.6e7; b 1.5; Ea 30.0; }
+            { P 9 bar; A 2.4e7; b 1.5; Ea 30.0; }
+        );
+        units  { A "cm3/mol/s"; Ea "kcal/mol"; }
+    }
+}
