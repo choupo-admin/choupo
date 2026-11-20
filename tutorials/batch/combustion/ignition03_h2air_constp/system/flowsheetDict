@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ignition03_h2air_constp -- the SAME charge as ignition01_h2o2, but the vessel
+  is a free-floating adiabatic cell at CONSTANT PRESSURE (5 bar) instead of a
+  rigid one.  (This is the cell OpenFOAM's chemistry solver integrates.)
+
+  mode adiabatic + energy gasConstantP: the first law is dH = 0 at fixed P,
+      dT/dt = - sum_i h_i(T) dn_i/dt / sum_i n_i Cp_i(T),     V = n R T / P,
+  with h_i the ideal-gas molar enthalpy on the formation datum (the datum
+  gasConstantV takes u_i = h_i - R T from).  V is NOT an input: it follows
+  from (n, T, P) at every state, so the holdup declares no V.
+
+  What it shows, against ignition01_h2o2 (constant V, same T, P, composition):
+  ignition is SLOWER and the burned gas COOLER.  At constant V the heat of
+  reaction raises the temperature of a gas that cannot expand, and the
+  pressure climbs; at constant P the same heat also does the expansion work
+  P dV and is spread over the larger Cp (= Cv + R per mole), so the
+  temperature rises less.  The cooler trajectory lowers the rate constants
+  and lengthens the induction.  The burned-gas volume is V = n R T / P of its
+  own final state (hand-check in the README).
+
+  solver { integrator Rosenbrock23; }  -- the L-stable stiff method.
+  `jacobian analytic` is refused for this basis by name (debt: c_k = n_k/V
+  moves with every n_j and with T); the finite-difference Jacobian is used.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        bomb;
+        type        batchReactor;
+
+        operation
+        {
+            mode      adiabatic;
+            energy    gasConstantP;         // closed fixed-P gas; heat from Hf
+        }
+
+        solver
+        {
+            integrator  Rosenbrock23;       // L-stable stiff method
+            verbosity   3;                  // announce the stiffness verdict
+        }
+
+        reactions
+        (
+            R1_H_O2_O_OH  R2_O_H2_H_OH  R3_OH_H2_H_H2O
+            R4_O_H2O_2OH  R5_H2_M_2H_M  R6_2O_M_O2_M
+            R7_O_H_M_OH_M  R8_H_OH_M_H2O_M  R9_H_O2_M_HO2
+            R10_HO2_H_H2_O2  R11_HO2_H_2OH  R12_HO2_O_OH_O2
+            R13_HO2_OH_H2O_O2  R14a_2HO2_H2O2_O2  R14b_2HO2_H2O2_O2
+            R15_H2O2_M_2OH  R16_H2O2_H_H2O_OH  R17_H2O2_H_H2_HO2
+            R18_H2O2_O_OH_HO2  R19a_H2O2_OH_H2O_HO2  R19b_H2O2_OH_H2O_HO2
+        );
+    }
+);

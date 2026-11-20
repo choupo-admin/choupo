@@ -134,7 +134,7 @@ public:
          energyRecords(scalar tEnd) override;
     std::string energyLedgerGap() const override;
     scalar pricingVapourFraction_() const override
-    { return energy_ == Energy::GasConstantV ? 1.0 : 0.0; }
+    { return isGas_() ? 1.0 : 0.0; }
 
 protected:
     BatchState& mutableState() override { return state_; }
@@ -191,7 +191,19 @@ private:
     //                 energy u_i = h_pure_ig − R_uT over gas Cv = Cp − R.  The
     //                 heat release comes from the species' FORMATION enthalpies
     //                 (curated thermo), not a per-reaction ΔH.  For combustion.
-    enum class Energy { LiquidDH, GasConstantV };
+    //   GasConstantP  closed adiabatic gas at FIXED pressure (OpenFOAM's chemistry
+    //                 cell): V = n R T / P at every state, dT/dt = -sum h_i
+    //                 ndot_i / sum n_i Cp_i with h_i = h_pure_ig (the datum
+    //                 gasConstantV reads u_i from).  Theory Guide,
+    //                 sec:batch-gas-constp.
+    enum class Energy { LiquidDH, GasConstantV, GasConstantP };
+
+    //- Either gas basis: priced on the gas leg of the canonical surface.
+    bool isGas_() const { return energy_ != Energy::LiquidDH; }
+    //- gasConstantP: the volume is a CONSEQUENCE of (n, T, P), never an input.
+    scalar constPVolume_(scalar nTotKmol, scalar T) const
+    { return nTotKmol * 1000.0 * constant::R * T / state_.P; }
+    void syncConstPVolume_();
 
     BatchState                  state_;
     const ThermoPackage*        thermo_ = nullptr;
