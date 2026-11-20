@@ -3389,6 +3389,31 @@ species with no elemental composition, a step that does not conserve the element
 Identity held by the gate: atoms in minus atoms out of species i = a_ei * net_i.
 Theory Guide `sec:path-flux`.
 
+**Ignition-delay sensitivity (opt-in, brute force, `sensitivity { }`).**  Which
+reaction governs an ignition?  A block on an adiabatic `batchReactor` with a
+Rosenbrock23 / Rodas4 integrator:
+```
+sensitivity { response tauIgnition; factor 1.1; reactions all; top 6; rise 400; }
+```
+`reactions` is `all` or a list of the vessel's reaction names; `rise` [K] defaults to
+400, `top` to 10, `factor` to 1.1 (must be > 1).  The engine integrates the vessel
+from its initial state N + 1 times (base, then once per reaction with its NET rate
+multiplied by `factor`: forward and reverse together, so K_c and the final
+equilibrium are unchanged; the same as Cantera's `set_multiplier`) and prints a table
+sorted by |S|: `S_j = d ln tau / d ln k_j = (ln tau_j - ln tau_0) / ln factor`, with
+tau = the time T first exceeds T0 + rise, linearly interpolated between the two
+accepted integrator states that bracket it (NOT the write-grid maximum of dT/dt).
+S < 0 means a faster reaction shortens the delay.  Files and KPIs: `sensitivity.csv`
+(`reaction,S,tau_s,tau0_s,factor,T_end_K,T_end0_K`, every reaction) and
+`sens_tau0`, `sens_S_<reaction>` for the top N.  Refused by name: an unknown key,
+`factor <= 1`, a reaction name the vessel lacks, a non-adiabatic vessel, RK4 or
+another integrator, a base run that never reaches T0 + rise by `endTime`.  Cost: N + 1
+integrations (about 7 s for 21 reactions).  Absent the block nothing changes.
+Witness `ignition04_h2air_sensitivity`, checked against Cantera 3.2.0 to 2e-5 in S
+and held by `bin/curate/check_ignition_sensitivity.py`; Theory Guide
+`sec:ignition-sensitivity`.  Not available: sensitivity of another response,
+adjoint or direct methods.
+
 **Analytic kinetics Jacobian (opt-in, `solver { jacobian analytic; }`).**
 ```
 solver { integrator Rosenbrock23; jacobian analytic; }   // or Rodas4

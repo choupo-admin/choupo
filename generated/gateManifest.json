@@ -1850,6 +1850,11 @@
       "exit": 0,
       "claim": "check_plog: OK -- PLOG equals its hand values in a pfr: one line, a tabulated pressure, midway in ln P and two lines at one pressure summed (max relative difference plog01 1.3e-12, plog02 1.3e-12, plog03 1.3e-12, plog04 1.3e-12; tol 1e-09); a 25 % table defect and a dropped line are seen",
       "seconds": 0.3
+    },
+    "check_ignition_sensitivity": {
+      "exit": 0,
+      "claim": "check_ignition_sensitivity: OK -- the multiplier scales the NET rate: 21 multiplied runs end at the base T_end (max relative difference 7.6e-12; tol 1e-06) and S(R1_H_O2_O_OH) = -1.024601 equals the hand recomputation from two runs with its A x 1.1 (difference 5.1e-13; tol 1e-06); a wrong A factor is seen",
+      "seconds": 8.9
     }
   }
 }
