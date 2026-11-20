@@ -54,6 +54,16 @@ Class
     unchanged).  WITHOUT a `units` block the values are taken as already in
     the caller's amount unit, as for `Arrhenius`.
 
+    PLOG (`type plog`, CHEMKIN-II PLOG): `plog ( { P 0.1 atm; A; b; Ea; } ... )`,
+    one modified Arrhenius per pressure line, P through the Dictionary's unit
+    machinery (stored in Pa).  k(T,P): at a tabulated P the law is that line's
+    k_i(T); between two tabulated pressures ln k is LINEAR in ln P; below the
+    lowest / above the highest pressure k is that end's value (no
+    extrapolation -- Cantera's convention); several lines at the SAME P are
+    SUMMED, k_i = sum of their Arrhenius, before the interpolation (CHEMKIN and
+    Cantera).  The nominal `A b Ea` of the reaction line is ignored.  The law
+    reads the caller's pressure, so a vessel without one refuses it by name.
+
     REFUSED BY NAME: an `adsorption` block or `basis activity` (LHHW's), an
     explicit `A_rev`/`Ea_rev` (use `reversible true`), a `thirdBody` /
     `falloff` without its required blocks, and an A unit that is not a
@@ -72,11 +82,14 @@ class ElementaryRate : public ReactionRate
 {
 public:
 
-    enum class Form { modifiedArrhenius, thirdBody, falloff };
+    enum class Form { modifiedArrhenius, thirdBody, falloff, plog };
 
+    //  `offer` says whether the caller can hand the law a pressure; `plog`
+    //  refuses at construction when it cannot.
     static ElementaryRate fromDict(const DictPtr&       rxn,
                                    const ThermoPackage& thermo,
-                                   const std::string&   who);
+                                   const std::string&   who,
+                                   const RateOffer&     offer = RateOffer());
 
     scalar netRate(const ThermoPackage& thermo, const RateState& s) const override;
     const sVector* gibbsStoichiometry() const override
@@ -103,6 +116,13 @@ private:
     bool   cmA_ = false, cmALow_ = false;
     int    molec_ = 0;
     sVector troe_;
+
+    //  PLOG (CHEMKIN-II): one entry per DISTINCT tabulated pressure, ascending;
+    //  `arr` holds every Arrhenius line given at that pressure (summed).
+    struct PlogArr { scalar A = 0.0, b = 0.0, Ea = 0.0; };    // A in the caller's unit
+    struct PlogRow { scalar P = 0.0; std::vector<PlogArr> arr; };
+    std::vector<PlogRow> plog_;
+    scalar plogK(const PlogRow& row, scalar T) const;
     sVector eff_;                                  // full-length third-body efficiencies
 
     sVector nu_, order_;

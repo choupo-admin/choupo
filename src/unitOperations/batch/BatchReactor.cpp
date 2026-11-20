@@ -325,12 +325,18 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
             // A FACTORY law -- LHHW (Langmuir-Hinshelwood-Hougen-Watson), a
             // `type expression` written in the case, or a law a case's code/
             // registered.  No CHEMKIN unit conversion and no molecularity: such
-            // a law is reported in whatever basis its source used.  This vessel
-            // carries no pressure a rate law can read (a law that reads P
-            // refuses here), and forms c_i = n_i / V in kmol/m3.
+            // a law is reported in whatever basis its source used (`type plog`
+            // converts its own cm-mol-s A).  The vessel offers a pressure only
+            // in `energy gasConstantV` (P = n R T / V); a law that reads P
+            // refuses here otherwise.  c_i = n_i / V in kmol/m3.
             r.form = RateForm::Factory;
             RateOffer offer;
-            offer.pressure = false;
+            //  P = n R T / V exists only for the closed constant-volume ideal gas
+            //  (`energy gasConstantV`); a liquid vessel carries none.
+            offer.pressure = (energy_ == Energy::GasConstantV);
+            offer.pressureAbsent = "a batchReactor reads a pressure only in `energy"
+                " gasConstantV;` (P = n R T / V of the closed ideal gas); this liquid"
+                " vessel carries none.";
             offer.concentrationBasis = "n_i / V";
             const std::string who = "BatchReactor: reaction '" + rxnName + "'";
             r.law = ReactionRate::New(rxn, thermo, who, offer);
@@ -878,7 +884,10 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
         if (ntot > 0.0) for (std::size_t j = 0; j < nc; ++j) x[j] = std::max<scalar>(n[j], 0.0) / ntot;
         const scalar cf = (catalystLoading_ > 0.0) ? catalystLoading_ : 1.0;
         RateState rs;
-        rs.T = T; rs.P = std::nan(""); rs.conc = &conc; rs.x = &x;
+        //  P = n R T / V (kmol -> mol): read only by a law that asked for it
+        //  (the offer refuses a liquid vessel); NaN when the vessel is empty.
+        rs.T = T; rs.P = (ntot > 0.0 && V > 0.0) ? ntot * 1000.0 * constant::R * T / V : std::nan("");
+        rs.conc = &conc; rs.x = &x;
         rs.amountPerKmol = 1.0;                       // conc in kmol/m3
         rs.gibbs = (g && !g->empty()) ? g : nullptr;
         return cf * rxn.law->netRate(*thermo_, rs);
@@ -1670,7 +1679,13 @@ void BatchReactor::setOdeState(const sVector& y)
 //                  law receives the whole concentration and mole-fraction
 //                  vectors (an adsorption denominator may hold a species
 //                  outside its stoichiometry, x_i moves with every n_k), so
-//                  its own species would not be its whole reach.
+//                  its own species would not be its whole reach.  A PLOG law
+//                  (k interpolated in ln P, P = n R T / V of the gas) is
+//                  differenced the same way: its P moves with EVERY n_k, so
+//                  the column is one forward difference of the rate over the
+//                  species, and the T column (a difference of the whole
+//                  right-hand side) carries P(T) because rateOfReaction_
+//                  recomputes P from the n and T it is given.
 //  The energy row by the chain rule on the same species columns:
 //    gasConstantV  dT/dt = -sum_i u_i ndot_i / CvTot  =>
 //                  d/dn_k = -( sum_i u_i J_ik + Tdot Cv_k ) / CvTot
