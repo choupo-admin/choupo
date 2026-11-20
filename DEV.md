@@ -4920,6 +4920,27 @@ accepts today, and that is a policy call.
 > private data/local/ tier through chemkin_to_choupo.py, never public.  Also: the
 > 858 thermoTables records are on main but neither the GUI (catalogue.ts globs
 > components/ only) nor release_inventory.py reads them -- the site shows none.
+> DECIDED THE SAME DAY, in conversation with Vitor (to start 2026-11-21):
+> (a) a gas-phase reaction library built like the binary pairs: one record per
+> elementary reaction (form, A b Ea, efficiencies, source page), the same
+> precedence case > standards > data/local, named sets a case can ask for; the
+> radicals are the thermoTables species (no second list).  (b) Elementary rate
+> constants are REUSABLE across mechanisms by default (Vitor: a high-T radical
+> step's k(T) is a property of the reaction -- the hierarchical build of
+> combustion mechanisms); a record marked "optimised within set X" (GRI-Mech,
+> FFCM-1 style) is announced when used outside X, nothing else is.  (c) Identity:
+> no universal naming exists (CHEMKIN and Cantera key a reaction by its equation
+> string and file position; PrIMe ids never became standard); Choupo keys a
+> species by catalogue/thermoTables name tied to formula (+ InChI for isomers,
+> mechanism names as aliases mapped by the importer) and a reaction by its
+> canonical equation (sorted sides, reverse = same reaction, +M and (+M)
+> distinct); the mechanism's own label (R1) is kept as an alias in its set.
+> (d) The reverse: one thermochemistry (the catalogue's) prices K_c; a reverse
+> given as its own record (CHEMKIN REV, or two irreversibles) is allowed, and the
+> engine prints k_f/k_r against K_c(T) at the run temperature (today it does
+> not).  Order: licence survey of the public sources first, then the home seeded
+> with the 21 O Conaire 2004 reactions (ignition cases byte-identical), then the
+> Explorer view (and the 858 thermoTables species on screen), then C1 growth.
 
 > **C460 (Vitor, 2026-11-19: "E outra sobre heurísticas de selecção de secadores?
 > Também estilo Pareto e com os esquemas mais comuns pelos quais são
