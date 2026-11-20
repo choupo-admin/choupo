@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1906,
+  "cases": 1911,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -21370,6 +21370,20 @@
    ],
    "hasGolden": false
   },
+  "tutorials/batch/combustion/ignition01_h2o2_jac": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/batch/combustion/ignition01_h2o2_rk4": {
    "application": "choupoBatch",
    "unitTypes": [
@@ -29679,6 +29693,62 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/reactors/plog01_onePressure": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/plog02_atTabulated": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/plog03_midway": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/plog04_sameP": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/reactors/screen01_methanol_routes": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -30678,6 +30748,7 @@
     "tutorials/batch/adsorber/batch29_pulse_two_schemes",
     "tutorials/batch/combustion/ignition01_h2o2",
     "tutorials/batch/combustion/ignition01_h2o2_eulersi",
+    "tutorials/batch/combustion/ignition01_h2o2_jac",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
     "tutorials/batch/combustion/ignition01_h2o2_rop",
     "tutorials/batch/combustion/ignition02_h2air_slack",
@@ -32518,6 +32589,10 @@
     "tutorials/steady/reactors/pfr04_adiabatic",
     "tutorials/steady/reactors/pfr05_cooled_multitubular",
     "tutorials/steady/reactors/pfr_polyesterification",
+    "tutorials/steady/reactors/plog01_onePressure",
+    "tutorials/steady/reactors/plog02_atTabulated",
+    "tutorials/steady/reactors/plog03_midway",
+    "tutorials/steady/reactors/plog04_sameP",
     "tutorials/steady/reactors/screen01_methanol_routes",
     "tutorials/steady/rotating/compressor01_air",
     "tutorials/steady/rotating/compressor02_designspec_pout",
@@ -32665,6 +32740,7 @@
    "batchReactor": [
     "tutorials/batch/combustion/ignition01_h2o2",
     "tutorials/batch/combustion/ignition01_h2o2_eulersi",
+    "tutorials/batch/combustion/ignition01_h2o2_jac",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
     "tutorials/batch/combustion/ignition01_h2o2_rop",
     "tutorials/batch/combustion/ignition02_h2air_slack",
@@ -33174,7 +33250,11 @@
     "tutorials/steady/reactors/pfr03_series_selectivity",
     "tutorials/steady/reactors/pfr04_adiabatic",
     "tutorials/steady/reactors/pfr05_cooled_multitubular",
-    "tutorials/steady/reactors/pfr_polyesterification"
+    "tutorials/steady/reactors/pfr_polyesterification",
+    "tutorials/steady/reactors/plog01_onePressure",
+    "tutorials/steady/reactors/plog02_atTabulated",
+    "tutorials/steady/reactors/plog03_midway",
+    "tutorials/steady/reactors/plog04_sameP"
    ],
    "phaseChanger": [
     "tutorials/batch/plant/apalutamide01_tablets",
@@ -35613,6 +35693,7 @@
     "tutorials/batch/adsorber/batch29_pulse_two_schemes",
     "tutorials/batch/combustion/ignition01_h2o2",
     "tutorials/batch/combustion/ignition01_h2o2_eulersi",
+    "tutorials/batch/combustion/ignition01_h2o2_jac",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
     "tutorials/batch/combustion/ignition01_h2o2_rop",
     "tutorials/batch/combustion/ignition02_h2air_slack",
@@ -36001,6 +36082,10 @@
     "tutorials/steady/reactors/pfr04_adiabatic",
     "tutorials/steady/reactors/pfr05_cooled_multitubular",
     "tutorials/steady/reactors/pfr_polyesterification",
+    "tutorials/steady/reactors/plog01_onePressure",
+    "tutorials/steady/reactors/plog02_atTabulated",
+    "tutorials/steady/reactors/plog03_midway",
+    "tutorials/steady/reactors/plog04_sameP",
     "tutorials/steady/reactors/screen01_methanol_routes",
     "tutorials/steady/rotating/compressor01_air",
     "tutorials/steady/rotating/compressor02_designspec_pout",

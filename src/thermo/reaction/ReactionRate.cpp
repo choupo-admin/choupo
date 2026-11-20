@@ -141,11 +141,12 @@ void ReactionRate::registerBuiltins()
                     " write it irreversible (`=>`) with its reverse as a separate"
                     " reaction.");
         }
-        return std::make_unique<ElementaryRate>(ElementaryRate::fromDict(rxn, thermo, who));
+        return std::make_unique<ElementaryRate>(ElementaryRate::fromDict(rxn, thermo, who, offer));
     };
     registerType("modifiedArrhenius", elementary);
     registerType("thirdBody",         elementary);
     registerType("falloff",           elementary);
+    registerType("plog",              elementary);
     registerType("expression",
         [](const DictPtr& rxn, const ThermoPackage& thermo,
            const std::string& who, const RateOffer& offer)

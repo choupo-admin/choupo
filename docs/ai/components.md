@@ -64,8 +64,9 @@ the multi-reaction paths of `cstr` and `pfr` (`reactions ( ... );`; class
 unit: 1e-6 per order in mol/m3, 1e-3 in kmol/m3).  The single-reaction `reaction
 <name>;` path of `cstr`/`pfr` and a `distillationColumn` do not read them.  Refused by name and
 listed by equation, with the reason, in `constant/mechanismImport.txt`: SRI,
-PLOG, FORD/RORD, REV on a `(+M)` fall-off, `(+M)` without LOW, `(+species)` colliders, MOLECULES
-units, species on both sides of a reversible reaction.  An explicit reverse `REV a b Ea`
+PLOG with REV or on a `(+M)`/`+M`/LOW/TROE reaction, FORD/RORD, REV on a `(+M)` fall-off, `(+M)` without LOW, `(+species)` colliders, MOLECULES
+units, species on both sides of a reversible reaction.  `PLOG / P A b Ea /` lines are written as `type plog; plog ( { P <P> atm; A; b; Ea; } ... )` as printed (the reaction line's
+nominal A b Ea is dropped; lines at one pressure are summed by the engine; Theory Guide `sec:plog-rate`).  An explicit reverse `REV a b Ea`
 on any other reaction is written as TWO irreversible reactions (`rNNN_f` with the main
 A b Ea, `rNNN_r` products -> reactants with the REV parameters, the same units block,
 and for `+M` the same efficiencies), the way Cantera's ck2yaml reads it; `--rev-from-thermo`

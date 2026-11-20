@@ -1834,7 +1834,7 @@
     "check_elementary_rates": {
       "exit": 0,
       "claim": "check_elementary_rates: OK -- the CHEMKIN laws modifiedArrhenius, thirdBody and falloff in a pfr equal the Arrhenius law they stand for (3 pairs, max relative outlet difference elementary01a 0.0e+00, elementary02a 0.0e+00, elementary03a 0.0e+00; tol 1e-09); a unit factor 10^3 off is seen",
-      "seconds": 0.4
+      "seconds": 0.3
     },
     "check_rate_of_production": {
       "exit": 0,
@@ -1845,6 +1845,11 @@
       "exit": 0,
       "claim": "check_kinetics_jacobian: OK -- 21 audits on ignition01 (worst 6.5e-07); pre-ignition 16 audits, worst 7.1e-08; ramp 4 audits, worst 1.3e-07; burned 1 audits, worst 6.5e-07; FD 1939+23 steps 27668 RHS; analytic 1939+23 steps 8252 RHS (1962 Jacobians, 204 RHS on audits); KPIs 0e+00; batch02_adiabatic 11 audits <= 2e-07; batch04_reversible_wgs 11 audits <= 6e-09; batch07_lhhw_methylAcetate 12 audits <= 1e-06; nox01_zeldovich_postflame 9 audits <= 2e-10; batch06_adaptive_runaway 7 audits <= 2e-07; batch31_fast_equilibrium_reduced 9 audits <= 2e-08",
       "seconds": 3.5
+    },
+    "check_plog": {
+      "exit": 0,
+      "claim": "check_plog: OK -- PLOG equals its hand values in a pfr: one line, a tabulated pressure, midway in ln P and two lines at one pressure summed (max relative difference plog01 1.3e-12, plog02 1.3e-12, plog03 1.3e-12, plog04 1.3e-12; tol 1e-09); a 25 % table defect and a dropped line are seen",
+      "seconds": 0.3
     }
   }
 }

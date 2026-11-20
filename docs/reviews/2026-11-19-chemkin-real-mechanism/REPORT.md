@@ -183,3 +183,65 @@ the shared rate/thermo path.  Reproduce: `ck2yaml` of the published files,
 `tutorials/batch/combustion/ignition03_h2air_constp` with `P 1.01325 bar` and no
 `V`, `scripts/runch.py <case> h2p Rosenbrock23 1e-7 1e-7 1e-3`, then
 `scripts/cmp_constp.py h2p/trajectory.csv ct_p.csv 1e-7 101325`.
+
+## 9. PLOG (2026-11-20): a numerical fixture against Cantera, and the conventions
+
+`type plog` (CHEMKIN-II PLOG; Theory Guide `sec:plog-rate`) is read by the
+ReactionRate factory (`ElementaryRate`), so `cstr`, `pfr` and `batchReactor`
+share one reader.  Conventions, each checked against Cantera 3.2.0
+(`scripts/ct_plog_conventions.py`, a four-line table 0.1 atm 1e10, 1 atm 2e10 and
+3e10, 10 atm 1e12 at 1000 K):
+
+| question | Cantera 3.2.0 | Choupo |
+|---|---|---|
+| below the lowest / above the highest P | k of that end (1.0e10 at 0.01 atm, 1.0e12 at 100 atm) | the same: no extrapolation |
+| two lines at one P | summed: 5.0e10 at 1 atm | summed before the interpolation |
+| between two P | ln k linear in ln P (the geometric mean, below) | the same |
+| the reaction line's own A b Ea | not used for the rate | ignored |
+
+(Cantera at P = sqrt(0.1) atm gives 2.2361e10 = sqrt(1e10 x 5e10); at sqrt(10) atm
+2.2361e11 = sqrt(5e10 x 1e12): the geometric mean, i.e. ln k linear in ln P.)
+
+**The fixture is NOT chemistry.**  One reaction of the real LLNL H2 mechanism
+(O'Connaire 2004, local files under `thirdParty/`, never committed; section 1)
+is rewritten as a PLOG, `h+o2 = o+oh`, whose three pressure lines are the
+published A multiplied by 0.6 at 0.5 atm, 1.0 at 1.5 atm and 1.6 at 3.0 atm
+(b and Ea unchanged); the 20 other reactions and all REV lines are as in section 3
+(REV lines deleted for BOTH codes, reverse by detailed balance).  The
+pressure of the closed vessel rises 1.0 -> 2.41 atm through the ignition, so the
+interpolation is exercised between all three lines.  Same case as section 3
+(stoichiometric H2/air, 1100 K, 1 atm, 1 L, adiabatic, constant V), Choupo
+`choupoBatch` `energy gasConstantV` Rosenbrock23 at 0.1 us, Cantera `IdealGasReactor`
+rtol 1e-9; `scripts/plog_fixture.py` builds both mechanism files.
+
+| quantity | control (no PLOG) Choupo / Cantera | PLOG fixture Choupo | PLOG fixture Cantera |
+|---|---|---|---|
+| tau (max dT/dt, 0.1 us grid) | 79.30 / 79.30 us | 93.20 us | 93.20 us |
+| T_final | 2927.795 / 2927.796 K | 2927.795 K | 2927.796 K |
+| P_final | 2.41460 / 2.41461 bar | 2.41460 bar | 2.41461 bar |
+| final mole fractions (9 species) | 1e-7 to 7.8e-6 rel | 1e-7 to 7.8e-6 rel | |
+| T at 0.9 / 1.0 / 1.1 tau, Choupo - Cantera | +0.01 / +0.29 / +0.05 K | +0.01 / +0.25 / +0.03 K | |
+| max abs T difference over the trajectory | 0.29 K (rms 0.02 K) | 0.25 K (rms 0.01 K) | |
+
+The PLOG lengthens tau by 17.5 % in both codes (the 1 atm rate of the branching
+reaction is 0.84 of the published value), and the two codes agree on it to the
+same 0.1 us grid cell and the same 0.25 K at the steepest point as without PLOG:
+the PLOG law adds no measurable difference beyond the one already in the
+control.  The analytic Jacobian (`jacobian analytic;`) runs the fixture with its
+audit passing at Jacobians 1, 2, 4, 8, ... (worst column 1.1e-6 of the column's scale,
+tolerance 1e-4) and the same T_final.  A liquid batch vessel refuses the reaction by
+name (`energy liquidDH`: "reads a pressure only for an ideal gas (`energy
+gasConstantV;` or `gasConstantP;`, P = n R T / V)").
+
+At constant pressure (added by the commander at the merge with section 8): R1 of
+`ignition03_h2air_constp` (5 bar) written as a PLOG at 2.5 bar with A/2 and
+10 bar with 2A (geometric mean exactly A at 5 bar) reproduces the case's every
+printed digit: tau 8.000 us, T_final 2828.1824545 K, all 201 printed rows.  The
+same table at 0.5 and 2 atm is clamped at 2 atm (k = 2A) and ignites at 5 us
+with the same final equilibrium, as clamping predicts.
+
+Not verified: a real PLOG mechanism (the fixture is a rewritten reaction of an
+H2 file), PLOG in a pyrolysis network, a reversible PLOG whose forward rate changes
+steeply with P, PLOG in `dynamicCSTR` (refused by name), Cantera's behaviour for a
+negative summed k (Choupo falls back to linear interpolation in ln P of k itself).
+

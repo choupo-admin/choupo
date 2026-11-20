@@ -72,7 +72,12 @@ the reverse of a fall-off as a plain elementary rate and silently drops the pres
 dependence, and the pressure dependence of an explicit reverse is not defined the same
 way in every CHEMKIN reader, so no reading is chosen for the student.
 `--rev-from-thermo` stays as the declared variant (REV ignored, reverse from K_c).
-REFUSED BY NAME (listed in mechanismImport.txt): SRI, PLOG, FORD/RORD, REV on a
+PLOG (CHEMKIN-II): each `PLOG / P A b Ea /` line -> `plog ( { P <P> atm; A; b; Ea; } ... )`
+as printed (P in atm), the reaction line's own A b Ea (nominal) is dropped, lines at one
+pressure are written in file order and SUMMED by the engine; `=` -> reversible (detailed
+balance).  PLOG reads the pressure: the batch vessel offers it only for an ideal gas (`energy gasConstantV` or `gasConstantP`);
+cstr / pfr offer the feed / bed pressure.
+REFUSED BY NAME (listed in mechanismImport.txt): SRI, PLOG with REV or with (+M)/+M/LOW/TROE, FORD/RORD, REV on a
 `(+M)` fall-off, `(+M)` without LOW, `(+species)` colliders, MOLECULES
 (ckA_ has no Avogadro factor), species on both sides of a reversible reaction,
 non-integer molecularity, charged species.
@@ -294,8 +299,11 @@ def parse_reactions(lines, header_words):
         elif up.startswith("TROE"):
             cur["tags"].add("TROE")
             cur["troe"] = nums(s[4:].replace("/", " "))
-        elif up.startswith(("SRI", "PLOG")):
-            cur["tags"].add(re.match(r'[A-Z]+', up).group(0))
+        elif up.startswith("PLOG"):
+            cur["tags"].add("PLOG")
+            cur.setdefault("plog", []).append(nums(s[4:].replace("/", " ")))
+        elif up.startswith("SRI"):
+            cur["tags"].add("SRI")
         elif up.startswith(("FORD", "RORD")):
             cur["tags"].add("FORD")
         elif up.startswith("REV"):
@@ -326,7 +334,13 @@ def classify(rx, species, molecules=False):
     if "SRI" in t:
         return "SRI", "SRI falloff form is not read by the engine"
     if "PLOG" in t:
-        return "PLOG", "pressure-dependent PLOG rate is not read by the engine"
+        if any(len(l) != 4 for l in rx.get("plog", [])):
+            return "PLOG", "a PLOG line does not carry P A b Ea"
+        if rx["rev"] is not None:
+            return "PLOG", ("explicit reverse (REV) on a PLOG reaction: the pressure dependence of an explicit "
+                            "reverse is not defined the same way in every CHEMKIN reader; no reading is chosen here")
+        if fo is not None or tb or "LOW" in t or "TROE" in t or "EFF" in t:
+            return "PLOG", "PLOG together with (+M) / +M / LOW / TROE / efficiencies: no such form is read"
     if "FORD" in t:
         return "FORD/RORD", "explicit reaction orders (FORD/RORD) are not read"
     if "AUX?" in t:
@@ -507,7 +521,13 @@ def reaction_text(name, rx, cname, unit):
     ea = lambda x: "%.10g" % (x * f)
     un = 'units { A "cm3/mol/s"; Ea "%s"; }' % uw
     tbl = lambda: "thirdBody { %s }" % " ".join("%s %.10g;" % (cname[s], v) for s, v in rx.get("eff", {}).items())
-    if rx["fo"] is not None:
+    if "PLOG" in rx["tags"]:
+        #  CHEMKIN-II PLOG: P in atm as printed; the reaction line's own A b Ea is the nominal
+        #  rate, which the engine ignores for `type plog` and so is not written.  Lines at
+        #  one pressure are written in file order; the engine sums them (as CHEMKIN does).
+        k = ["type plog;", "plog", "(" ] + ["    { P %.10g atm;  A %.10g;  b %.10g;  Ea %s; }" % (P, A, b, ea(E))
+                                              for P, A, b, E in rx["plog"]] + [");", un]
+    elif rx["fo"] is not None:
         lo = rx["low"]
         k = ["type falloff;", "A %.10g;  b %.10g;  Ea %s;" % (rx["A"], rx["b"], ea(rx["Ea"])),
              "low  { A %.10g;  b %.10g;  Ea %s;  %s }" % (lo[0], lo[1], ea(lo[2]), un)]
@@ -856,10 +876,17 @@ def _fixture():
             "  REV / 3.0E+10 0.0 7.0 /",
             "A+B(+M)=C(+M)       1.0E+13  0.0  10.0   ! 6 falloff", "  LOW / 1.0E+16 0.0 5.0 /",
             "  TROE / 0.5 100 1000 /",
-            "A+B=E+D             1.0E+13  0.0  10.0   ! 7 PLOG", "  PLOG / 1.0 1.0E+12 0.0 10.0 /",
+            "A+B=E+D             1.0E+13  0.0  10.0   ! 7 PLOG with REV (refused)", "  PLOG / 1.0 1.0E+12 0.0 10.0 /",
+            "  REV / 3.0E+10 0.0 7.0 /",
             "A+B=C+D             1.0E+13  0.0  10.0   ! 8 FORD", "  FORD / A 1.5 /",
             "A+B=C+D             1.0E+13  0.0  10.0   ! 9 duplicate pair", "  DUP",
-            "A+B=C+D             3.0E+12  0.0  10.0   ! 10 duplicate pair", "  DUPLICATE", "END", ""]
+            "A+B=C+D             3.0E+12  0.0  10.0   ! 10 duplicate pair", "  DUPLICATE",
+            "A+B=C+D             1.0E+13  0.0  10.0   ! 11 PLOG, two lines at 1 atm and one at 10 atm",
+            "  PLOG / 0.1  1.0E+12 0.5 10.0 /", "  PLOG / 1.0  2.0E+12 0.5 10.0 /",
+            "  PLOG / 1.0  3.0E+12 0.5 10.0 /", "  PLOG / 10.0 1.0E+14 0.5 12.0 /",
+            "A+B=>C+D            1.0E+13  0.0  10.0   ! 12 PLOG irreversible", "  PLOG / 1.0 1.0E+12 0.0 10.0 /",
+            "A+B+M=C+D+M         1.0E+13  0.0  10.0   ! 13 PLOG with +M (refused)", "  PLOG / 1.0 1.0E+12 0.0 10.0 /",
+            "END", ""]
     return "\n".join(out)
 
 
@@ -908,8 +935,8 @@ def selftest():
     case = os.path.join(tmp, "case")
     with contextlib.redirect_stdout(io.StringIO()):
         res = convert(mech, None, case, "parser fixture, no data")
-    check(len(res["ok"]) == 10, "fixture: 10 written (reversible, irreversible, REV, b != 0, third body, third body REV, REV A=0, falloff, 2 DUP), got %d" % len(res["ok"]))
-    check(res["counts"] == {"REV": 1, "PLOG": 1, "FORD/RORD": 1},   # REV: the (+M) fall-off one only
+    check(len(res["ok"]) == 12, "fixture: 12 written (reversible, irreversible, REV, b != 0, third body, third body REV, REV A=0, falloff, 2 DUP, 2 PLOG), got %d" % len(res["ok"]))
+    check(res["counts"] == {"REV": 1, "PLOG": 2, "FORD/RORD": 1},   # REV: the (+M) fall-off one only
           "fixture: not written by kind %s" % dict(sorted(res["counts"].items())))
     # real files print M and (+M) in lower case (the LLNL H2 mechanism of 2004 does)
     r_, p_, _, tb_, fo_ = parse_equation("a+b+m=c+m", {"a", "b", "c"})
@@ -917,7 +944,7 @@ def selftest():
     check(parse_equation("a+b(+m)=c(+m)", {"a", "b", "c"})[4] == "M", "lower-case `(+m)` is the (+M) collider")
     with contextlib.redirect_stdout(io.StringIO()):
         res2 = convert(mech, None, os.path.join(tmp, "revthermo"), "parser fixture, no data", rev_from_thermo=True)
-    check(len(res2["ok"]) == 11 and "REV" not in res2["counts"],
+    check(len(res2["ok"]) == 14 and "REV" not in res2["counts"],
           "--rev-from-thermo: the REV reactions are written with the reverse from the thermochemistry "
           "(including the fall-off one), the others still refused")
     t2 = open(os.path.join(tmp, "revthermo", "constant", "reactions")).read()
@@ -934,6 +961,15 @@ def selftest():
     check("type falloff" in blk("008") and "low  { A 1e+16;" in blk("008") and "troe ( 0.5 100 1000 );" in blk("008"),
           "(+M) LOW TROE -> falloff with low{} and troe")
     check("type modifiedArrhenius" in blk("009") and "type modifiedArrhenius" in blk("010"), "DUPLICATE -> two separate entries")
+    #  PLOG: P as printed in atm, nominal A b Ea dropped, lines kept in order, DUP lines at one pressure
+    #  written separately (the engine sums them), `=` -> reversible, `=>` -> irreversible
+    p11 = blk("011")
+    check("type plog;" in p11 and "type modifiedArrhenius" not in p11 and "A 1e+13" not in p11
+          and p11.count("P 1 atm;") == 2 and "P 0.1 atm;" in p11 and "P 10 atm;" in p11
+          and "A 2e+12;  b 0.5;  Ea 10;" in p11 and "A 3e+12;  b 0.5;  Ea 10;" in p11
+          and "A 1e+14;  b 0.5;  Ea 12;" in p11 and re.search(r"reversible\s+true", p11) is not None,
+          "PLOG -> plog ( ... ), P in atm as printed, two lines at 1 atm kept, nominal A b Ea dropped, `=` reversible")
+    check("type plog;" in blk("012") and "reversible" not in blk("012"), "PLOG with `=>` -> irreversible")
     # REV -> two irreversible reactions (ck2yaml's reading): names, parameters, orders, units, third body
     f3, r3 = blk("003_f"), blk("003_r")
     check("reversible" not in f3 and "reversible" not in r3, "REV: both legs irreversible")
@@ -964,7 +1000,7 @@ def selftest():
         f.write(mt.replace("REACTIONS KCAL/MOLE", "REACTIONS KCAL/MOLE MOLECULES"))
     with contextlib.redirect_stdout(io.StringIO()):
         resm = convert(mm, None, os.path.join(tmp, "molecules"), "parser fixture, no data", reactions_only=True)
-    check(len(resm["ok"]) == 0 and resm["counts"].get("MOLECULES") == 13, "MOLECULES: every reaction refused by name")
+    check(len(resm["ok"]) == 0 and resm["counts"].get("MOLECULES") == 16, "MOLECULES: every reaction refused by name")
     _r = dict(name="X", comp={"H": 2}, phase="G", Tlow=300.0, Tcommon=1000.0, Thigh=5000.0,
               low=[3.5, 1e-3, 2e-7, 3e-11, 4e-15, -9e2, 5.0], high=[3.0, 2e-3, 3e-7, 4e-11, 5e-15, -1e3, 6.0])
     _b = to_bar_standard_state(_r, "atm")
