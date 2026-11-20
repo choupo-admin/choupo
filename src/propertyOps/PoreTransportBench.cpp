@@ -94,7 +94,7 @@ int PoreTransportBench::run(const DictPtr& dict,
     std::unique_ptr<Membrane> withCharge;
     if (dict->found("chargeDensity"))
     {
-        const scalar X = dict->lookupScalar("chargeDensity");
+        const scalar X = dict->lookupScalarIn("chargeDensity", Dims::concentration, "mol/m3");   // bare = mol/m3 (C454 family 5)
         if (!std::isfinite(X))
             throw std::runtime_error(site + ": `chargeDensity` must be a finite"
                 " signed fixed charge in mol/m3");

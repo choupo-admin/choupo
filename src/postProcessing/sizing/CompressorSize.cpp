@@ -44,7 +44,7 @@ std::vector<EquipmentSizing> CompressorSize::size(const std::string& unitName,
     if (k.count("ratio"))  d.set("ratio",  k.at("ratio"),  "-");
     if (k.count("P_out"))  d.set("P_out",  k.at("P_out"),  "Pa");
     // Carry the design pressure through (records only; compressors have F_P=1).
-    const scalar P_des = designRules->lookupScalarOrDefault("pressureDesign", 1.0);
+    const scalar P_des = designRules->lookupScalarInOrDefault("pressureDesign", 1.0, Dims::pressure, "bar");
     d.set("pressureDesign", P_des, "bar");
     //  A published design pressure is compared with the casing material's
     //  rating like every other one (DEV.md 4c C86).

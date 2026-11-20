@@ -105,6 +105,18 @@ struct OdeUnit
     //  Optional: the name of packed row i ("n_compA"), so a refusal can say
     //  WHICH state the mask stopped.  Empty => the row is named by index.
     std::function<std::string(std::size_t)>  rowLabel;
+    //  Optional: the unit's ANALYTIC Jacobian d f / d Y at Y (the unit's
+    //  own block), given its f(Y) and the integrator's per-row scales.
+    //  Empty => none.  The sweep hands the integrator a global Jacobian,
+    //  block-diagonal over the units, ONLY when EVERY unit of the sweep
+    //  supplies one (a coupling between units would be an off-block entry
+    //  the audit measures and refuses); otherwise the dense finite
+    //  difference, exactly as before.  The model's f must not read t.
+    std::function<std::vector<sVector>(const sVector& y, const sVector& f0,
+                                        const sVector& typ)> jacobian;
+    //  Optional: the unit's row sizes for the audit of that Jacobian
+    //  (ODEAnalyticJacobian::auditScale).  Empty => max(|y_i|, atol).
+    std::function<sVector(const sVector& y)> jacobianScale;
 };
 
 //  THE ONE HOME of the per-row positivity mask over a vector packed from
@@ -265,6 +277,67 @@ public:
         //  reaching a unit's commit is a defect the unit refuses by name.
         ctrl.positiveRows = positiveRowMask(units, off);
         if (onStep) ctrl.onAccept = onStep;
+        //  The analytic Jacobian, block-diagonal over the units, when EVERY
+        //  unit supplies one (ODEAnalyticJacobian; the audit record lives in
+        //  analytic_, across intervals, so its schedule spans the run).
+        bool allAnalytic = true;
+        for (const auto& u : units) allAnalytic = allAnalytic && bool(u.jacobian);
+        if (allAnalytic)
+        {
+            analytic_.autonomous = true;          // the sweep's f ignores t
+            analytic_.owner = "the adaptive sweep (unit(s)";
+            for (std::size_t u = 0; u < units.size(); ++u)
+                analytic_.owner += (u ? ", '" : " '") + units[u].name + "'";
+            analytic_.owner += ")";
+            analytic_.rowLabel = [&units, off](std::size_t i) -> std::string
+            {
+                for (std::size_t u = 0; u < units.size(); ++u)
+                    if (i < off[u + 1])
+                        return (units[u].rowLabel ? units[u].rowLabel(i - off[u])
+                                                  : "row " + std::to_string(i - off[u]))
+                             + " of '" + units[u].name + "'";
+                return "row " + std::to_string(i);
+            };
+            analytic_.jacobian = [&units, off, N](scalar, const sVector& yg,
+                                                  const sVector& fg, const sVector& tg)
+            {
+                std::vector<sVector> J(N, sVector(N, 0.0));
+                for (std::size_t u = 0; u < units.size(); ++u)
+                {
+                    const std::size_t lo = off[u], hi = off[u + 1];
+                    const sVector yu(yg.begin() + lo, yg.begin() + hi);
+                    const sVector fu(fg.begin() + lo, fg.begin() + hi);
+                    const sVector tu(tg.begin() + lo, tg.begin() + hi);
+                    const auto Ju = units[u].jacobian(yu, fu, tu);
+                    if (Ju.size() != hi - lo)
+                        throw std::runtime_error("AdaptiveTimeStepper: unit '"
+                            + units[u].name + "' returned an analytic Jacobian of "
+                            + std::to_string(Ju.size()) + " rows for "
+                            + std::to_string(hi - lo) + " packed rows");
+                    for (std::size_t i = 0; i < Ju.size(); ++i)
+                        for (std::size_t k = 0; k < Ju[i].size() && k < hi - lo; ++k)
+                            J[lo + i][lo + k] = Ju[i][k];
+                }
+                return J;
+            };
+            const scalar atolFloor = settings_.atol;
+            analytic_.auditScale = [&units, off, N, atolFloor](const sVector& yg)
+            {
+                sVector sc(N, 0.0);
+                for (std::size_t u = 0; u < units.size(); ++u)
+                {
+                    const std::size_t lo = off[u], hi = off[u + 1];
+                    sVector su;
+                    if (units[u].jacobianScale)
+                        su = units[u].jacobianScale(sVector(yg.begin() + lo, yg.begin() + hi));
+                    for (std::size_t i = lo; i < hi; ++i)
+                        sc[i] = (su.size() == hi - lo) ? su[i - lo]
+                                                       : std::max(std::abs(yg[i]), atolFloor);
+                }
+                return sc;
+            };
+            ctrl.analytic = &analytic_;
+        }
         // State-aware ledger hook: commit the ACCEPTED state into the units
         // FIRST, so the ledger's snapshots read the accepted state, then let
         // the ledger integrate over the step just taken.
@@ -281,6 +354,11 @@ public:
             };
 
         st = integ_->integrate(y, t0, t1, f, ctrl);
+        //  The closures above read this call's `units` and offsets: drop
+        //  them, so the record kept across intervals holds no dangling one.
+        analytic_.jacobian = nullptr;
+        analytic_.rowLabel = nullptr;
+        analytic_.auditScale = nullptr;
 
         // --- a FAILED interval is refused, never handed back as a step ----
         //  The partial vector is NOT scattered: nothing may describe the
@@ -306,6 +384,10 @@ public:
     }
 
     scalar carriedStep() const { return hCarry_; }
+
+    //  The analytic-Jacobian audit record of the run (empty when no sweep
+    //  ran on an analytic Jacobian).  The caller announces it.
+    const ODEAnalyticJacobian& analyticAudit() const { return analytic_; }
 
     //  The refusal's text: ONE home, so both time loops say the same thing.
     static std::string failureMessage(const std::vector<OdeUnit>& units,
@@ -366,6 +448,7 @@ private:
     AdaptiveSettings                 settings_;
     std::unique_ptr<ODEIntegrator>   integ_;
     scalar                           hCarry_ = 0.0;
+    ODEAnalyticJacobian              analytic_;
 };
 
 } // namespace Choupo::solver

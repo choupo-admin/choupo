@@ -1,7 +1,7 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-kpi     bomb                   P_final          202650             1e-4
+kpi     bomb                   P_final          562410.632114            1e-4
 kpi     bomb                   T_final          3040.05307724      1e-4
 kpi     bomb                   n_H2O2_final     3.48411611466e-11  1e-4
 kpi     bomb                   n_H2_final       9.81287128429e-07  1e-4

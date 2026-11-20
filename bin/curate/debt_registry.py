@@ -1024,3 +1024,114 @@ OWN_CASE_COPY = {
     "check_batch_plan.py": "the copy goes to a nested bin/runTests --record; through case_records.copytree arms (g) and (l) failed (nothing recorded), observed 2026-11-17",
     "check_carried_kinds.py": "not a catalogue case copy: the source is the fixture bin/curate/carried_kinds/mixsplit, a pinned case with no local record to declare",
 }
+
+
+# ---------------------------------------------------------------------------
+#  LESSON PROSE CITATIONS NO CLAIM KEEPS (DEV.md 4c C455 class 1, 2026-11-19)
+# ---------------------------------------------------------------------------
+
+#  A prose `File.cpp:N` token in gui/src or gui/tests that no managed claim
+#  (a CLAIMS key or an ANCHORS line, repoint_lesson_citations.py) covers is a
+#  citation NOTHING keeps: when the engine file moves, the number goes stale
+#  in silence.  The 2026-11-19 sweep of all 75 lessons found such drift in
+#  almost every batch (electrolyteModels 10-30 lines, lubScaleup every
+#  FixedBedAdsorber.cpp line, a reversed "658-655" in batchMembrane).  Counted
+#  per file by `repoint_lesson_citations.unmanaged_tokens` (the one home of
+#  "unmanaged"), measured at 9e253a5fbc; check_lesson_prose_citations holds
+#  each count: it may only fall, and a fall must lower the pin.
+LESSON_PROSE_CITATIONS_UNMANAGED = {
+    "gui/src/case/columnStageSheet.ts": 3,
+    "gui/src/case/completeZero.ts": 4,
+    "gui/src/case/dutyUtility.ts": 2,
+    "gui/src/case/electrolyteModels.ts": 7,
+    "gui/src/case/trayGeometry.ts": 1,
+    "gui/src/ui/ExploreWorkspace.tsx": 3,
+    "gui/src/ui/methods/ActiveSetQpTool.tsx": 1,
+    "gui/src/ui/methods/ApproachToEquilibriumTool.tsx": 3,
+    "gui/src/ui/methods/BatchMembraneTool.tsx": 4,
+    "gui/src/ui/methods/ClausGibbsTool.tsx": 5,
+    "gui/src/ui/methods/ColumnControlTool.tsx": 1,
+    "gui/src/ui/methods/CosmoSacTheoryTool.tsx": 17,
+    "gui/src/ui/methods/EquilibriumLandscapesTool.tsx": 4,
+    "gui/src/ui/methods/LocalCompositionTool.tsx": 17,
+    "gui/src/ui/methods/LubScaleupTool.tsx": 2,
+    "gui/src/ui/methods/PcSaftTheoryTool.tsx": 17,
+    "gui/src/ui/methods/PlantCostTool.tsx": 7,
+    "gui/src/ui/methods/PropertyOriginsTool.tsx": 3,
+    "gui/src/ui/methods/ReactorLadderTool.tsx": 1,
+    "gui/src/ui/methods/SourWaterTool.tsx": 4,
+    "gui/src/ui/methods/UnifacTheoryTool.tsx": 10,
+    "gui/src/ui/methods/WhatIsEntropyTool.tsx": 2,
+    "gui/src/ui/methods/WhatIsExergyTool.tsx": 1,
+    "gui/src/ui/methods/activeSetQpMath.ts": 4,
+    "gui/src/ui/methods/approachToEquilibriumLesson.ts": 15,
+    "gui/src/ui/methods/batchMembraneLesson.ts": 53,
+    "gui/src/ui/methods/batchMembraneMath.ts": 23,
+    "gui/src/ui/methods/bodeLesson.ts": 1,
+    "gui/src/ui/methods/bodeMath.ts": 4,
+    "gui/src/ui/methods/bundLesson.ts": 2,
+    "gui/src/ui/methods/campaignPlanLesson.ts": 22,
+    "gui/src/ui/methods/campaignPlanMath.ts": 12,
+    "gui/src/ui/methods/dataSourcesLesson.ts": 5,
+    "gui/src/ui/methods/databaseToParametersFit.ts": 9,
+    "gui/src/ui/methods/databaseToParametersLesson.ts": 8,
+    "gui/src/ui/methods/declaredPathwaysLesson.ts": 13,
+    "gui/src/ui/methods/elementPotentialLesson.ts": 2,
+    "gui/src/ui/methods/epsilonNtuLesson.ts": 1,
+    "gui/src/ui/methods/equilibriumLandscapesLesson.ts": 22,
+    "gui/src/ui/methods/frontEndLoading.ts": 2,
+    "gui/src/ui/methods/frontEndLoadingLesson.ts": 1,
+    "gui/src/ui/methods/fugLesson.ts": 1,
+    "gui/src/ui/methods/gmpLayoutLesson.ts": 1,
+    "gui/src/ui/methods/lubScaleupLesson.ts": 14,
+    "gui/src/ui/methods/lubScaleupMath.ts": 7,
+    "gui/src/ui/methods/overpressureLesson.ts": 7,
+    "gui/src/ui/methods/plantCostLesson.ts": 8,
+    "gui/src/ui/methods/plantCostMath.ts": 5,
+    "gui/src/ui/methods/plantLayoutLesson.ts": 1,
+    "gui/src/ui/methods/poolFire.ts": 4,
+    "gui/src/ui/methods/poolFireLesson.ts": 2,
+    "gui/src/ui/methods/processSafetyLesson.ts": 2,
+    "gui/src/ui/methods/reactionEnthalpyLesson.ts": 2,
+    "gui/src/ui/methods/reactorLadderLesson.ts": 7,
+    "gui/src/ui/methods/standardStateLesson.ts": 3,
+    "gui/src/ui/methods/tearMath.ts": 2,
+    "gui/src/ui/methods/vanHeerdenLesson.ts": 2,
+    "gui/src/ui/methods/wegsteinLesson.ts": 2,
+    "gui/src/ui/methods/wegsteinMath.ts": 3,
+    "gui/tests/approachToEquilibriumLesson.test.ts": 4,
+    "gui/tests/batchMembrane.test.ts": 6,
+    "gui/tests/campaignPlan.test.ts": 18,
+    "gui/tests/columnControlTool.test.ts": 1,
+    "gui/tests/columnDatasheet.test.ts": 1,
+    "gui/tests/columnStageSheet.test.ts": 2,
+    "gui/tests/completeZero.test.ts": 1,
+    "gui/tests/correlationSimplicityLesson.test.ts": 1,
+    "gui/tests/declaredPathwaysLesson.test.ts": 1,
+    "gui/tests/elementPotentialLesson.test.ts": 1,
+    "gui/tests/epsilonNtuLesson.test.ts": 1,
+    "gui/tests/equilibriumLandscapesLesson.test.ts": 7,
+    "gui/tests/frontEndLoading.test.ts": 1,
+    "gui/tests/gmpLayoutLesson.test.ts": 1,
+    "gui/tests/materialsLesson.test.ts": 2,
+    "gui/tests/overpressure.test.ts": 2,
+    "gui/tests/physicsApproachDuty.test.ts": 2,
+    "gui/tests/physicsBatchMembraneClaims.test.ts": 2,
+    "gui/tests/physicsEpsilonNtu.test.ts": 1,
+    "gui/tests/plantCost.test.ts": 1,
+    "gui/tests/plantLayoutLesson.test.ts": 2,
+    "gui/tests/reactionEnthalpy.test.ts": 2,
+    "gui/tests/standardState.test.ts": 3,
+    "gui/tests/whatIsEntropyTool.test.ts": 1,
+}
+
+LESSON_PROSE_CITATIONS_DEBT = {
+    "why": "A prose engine citation no claim covers drifts with every edit of "
+           "the cited file and nothing notices; a student follows it to the "
+           "wrong line.",
+    "remedy": "Give the citation a claim (a CLAIMS key with the text the "
+              "lesson says is there, or an ANCHORS line inside its range) so "
+              "repoint_lesson_citations keeps it, or drop the line number; "
+              "lower the file's count in the same commit.",
+    "blocked": None,   # writing, file by file (C453 is fixing the lessons)
+}

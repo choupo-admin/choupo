@@ -68,8 +68,8 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
     if (dict->found("molality"))
     {
         auto md = dict->subDict("molality");
-        mFrom = md->lookupScalarOrDefault("from", mFrom);
-        mTo   = md->lookupScalarOrDefault("to",   mTo);
+        mFrom = md->lookupScalarInOrDefault("from", mFrom, Dims::molality, "mol/kg");   // bare = mol/kg (C454 family 9)
+        mTo   = md->lookupScalarInOrDefault("to",   mTo, Dims::molality, "mol/kg");
         if (md->found("n")) n = std::max<std::size_t>(2, static_cast<std::size_t>(md->lookupScalar("n")));
     }
 
@@ -139,7 +139,7 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
         scalar gSum = 0.0, pSum = 0.0; int gN = 0, pN = 0;
         for (const auto& e : pts)
         {
-            const scalar m = e->lookupScalar("m");
+            const scalar m = e->lookupScalarIn("m", Dims::molality, "mol/kg");   // mol/kg (C454 family 9)
             if (m < mFrom || m > mTo) continue;
             if (e->found("gamma") && m >= wLo && m <= wHi)
             {
@@ -152,7 +152,7 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
                 pSum += std::fabs(model.osmoticCoefficient(m, T) - meas) / meas; ++pN;
             }
             if (!e->found("phiL")) continue;
-            const scalar meas = e->lookupScalar("phiL") * CALORIE;   // cal -> J
+            const scalar meas = e->lookupScalarIn("phiL", Dims::molarEnergy, "cal/mol") * CALORIE;   // bare = cal/mol, then -> J/mol (C454 family 15: a declared unit is converted ONCE)
             const scalar pred = Lphi(model, m);
             const scalar dev  = std::fabs(pred - meas);
             if (m >= wLo && m <= wHi)

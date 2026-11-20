@@ -65,8 +65,8 @@ OlssonNaOH OlssonNaOH::fromRecord(const DictPtr& rec, const std::string& where)
     o.nH_ = listOfLength(h, "n", 8, where + " enthalpy");
     o.winH_ = bands(h, where + " enthalpy");
     auto ho = rec->subDict("handover");
-    o.mFrom_ = ho->lookupScalar("fromMolality");
-    o.mTo_   = ho->lookupScalar("toMolality");
+    o.mFrom_ = ho->lookupScalarIn("fromMolality", Dims::molality, "mol/kg");   // bare = mol/kg (C454 family 9)
+    o.mTo_   = ho->lookupScalarIn("toMolality", Dims::molality, "mol/kg");
     if (!(o.mTo_ > o.mFrom_ && o.mFrom_ > 0.0))
         throw std::runtime_error(where + ": handover needs 0 < fromMolality"
             " < toMolality.");

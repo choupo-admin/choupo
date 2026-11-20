@@ -64,6 +64,7 @@ Description
 #pragma once
 
 #include "thermo/reaction/ReactionRate.H"
+#include "solver/ODE/ODEIntegrator.H"
 
 #include <memory>
 
@@ -93,6 +94,18 @@ public:
     sVector odeDerivative(const sVector& y) const override { return derivatives_(y); }
     std::size_t odeNPositive() const override { return state_.n.size(); }
     std::string odeRowLabel(std::size_t i) const override;
+    //  The ANALYTIC Jacobian (opt-in, `solver { jacobian analytic; }`):
+    //  the species columns from the rate laws' own derivatives, the energy
+    //  row by the chain rule, the T column by one directional difference.
+    //  See odeJacobian in BatchReactor.cpp and the Theory Guide section
+    //  sec:batch-analytic-jacobian.  Absent the key: none (the default).
+    bool hasOdeJacobian() const override { return jacobianAnalytic_; }
+    std::vector<sVector> odeJacobian(const sVector& y, const sVector& f0,
+                                     const sVector& typ) const override;
+    //  The audit of the analytic Jacobian in the ADAPTIVE sweep is kept by
+    //  the stepper; this one serves the fixed-deltaT stiff path (step()).
+    const solver::ODEAnalyticJacobian& jacobianAudit() const { return jacAudit_; }
+    sVector odeJacobianScale(const sVector& y) const override;
 
     const BatchState& state() const override { return state_; }
     //- The reactor's whole integrated state IS its holdup (the inventory
@@ -114,13 +127,15 @@ public:
     //   re-bases on the post-transfer state.  Adiabatic mode exchanges
     //   nothing (records none).
     void noteTimeAdvanced(scalar t) override;
+    void setRunWindow(scalar t0, scalar t1) override;
+    std::map<std::string, scalar> kpis() const override;
     void notifyStateWillChange() override;
     void notifyStateChanged() override;
     std::vector<SimulationResult::EnergyRecord>
          energyRecords(scalar tEnd) override;
     std::string energyLedgerGap() const override;
     scalar pricingVapourFraction_() const override
-    { return energy_ == Energy::GasConstantV ? 1.0 : 0.0; }
+    { return isGas_() ? 1.0 : 0.0; }
 
 protected:
     BatchState& mutableState() override { return state_; }
@@ -163,6 +178,10 @@ private:
         sVector                  troe;           // (a T*** T* [T**]); empty => Lindemann
         // A Factory law (LHHW, expression, a user law), parsed once.
         std::shared_ptr<const ReactionRate> law;
+        //  Sensitivity multiplier m_j on the NET rate (forward AND reverse
+        //  together, so the equilibrium is untouched).  1 in every normal run;
+        //  only runSensitivity_ ever sets it (Theory Guide sec:ignition-sensitivity).
+        scalar mult = 1.0;
     };
 
     enum class Mode { Isothermal, Adiabatic };
@@ -177,7 +196,19 @@ private:
     //                 energy u_i = h_pure_ig − R_uT over gas Cv = Cp − R.  The
     //                 heat release comes from the species' FORMATION enthalpies
     //                 (curated thermo), not a per-reaction ΔH.  For combustion.
-    enum class Energy { LiquidDH, GasConstantV };
+    //   GasConstantP  closed adiabatic gas at FIXED pressure (OpenFOAM's chemistry
+    //                 cell): V = n R T / P at every state, dT/dt = -sum h_i
+    //                 ndot_i / sum n_i Cp_i with h_i = h_pure_ig (the datum
+    //                 gasConstantV reads u_i from).  Theory Guide,
+    //                 sec:batch-gas-constp.
+    enum class Energy { LiquidDH, GasConstantV, GasConstantP };
+
+    //- Either gas basis: priced on the gas leg of the canonical surface.
+    bool isGas_() const { return energy_ != Energy::LiquidDH; }
+    //- gasConstantP: the volume is a CONSEQUENCE of (n, T, P), never an input.
+    scalar constPVolume_(scalar nTotKmol, scalar T) const
+    { return nTotKmol * 1000.0 * constant::R * T / state_.P; }
+    void syncConstPVolume_();
 
     BatchState                  state_;
     const ThermoPackage*        thermo_ = nullptr;
@@ -198,10 +229,18 @@ private:
     int                         verbosity_  = 1;
 
     // Rate r [kmol/(m³·s)] of a single reaction at (T, n, V).
+    //  `g`, when non-null, is g_i(T) from gibbsAt_(T) for the SAME T: the
+    //  detailed-balance Kc reads it instead of rebuilding each g (bit-identical).
     scalar rateOfReaction_(const ReactionSpec& rxn,
                            scalar T,
                            const sVector& n,
-                           scalar V) const;
+                           scalar V,
+                           const sVector* g = nullptr) const;
+
+    //  g_i(T) = comp(i).g_pure_ig(T) for the species of every reversible
+    //  reaction, evaluated ONCE for one right-hand-side evaluation and passed
+    //  down by the caller (no cache keyed on T); empty when nothing is reversible.
+    sVector gibbsAt_(scalar T) const;
 
     // CHEMKIN unit helpers: convert a declared `units { A "cm3/mol/s"; Ea
     // "cal/mol"; }` to SI (kmol-m³-s, J/mol) on load, announcing the factor at
@@ -212,6 +251,24 @@ private:
     // sub-dict (unlisted species => 1.0).
     sVector thirdBodyEfficiencies_(const DictPtr& kin,
                                    const ThermoPackage& thermo) const;
+
+    // ---- The analytic Jacobian (opt-in) --------------------------------
+    bool jacobianAnalytic_ = false;         // `solver { jacobian analytic; }`
+    solver::ODEAnalyticJacobian jacAudit_;  // the step() path's audit record
+    std::size_t jacAnnounced_ = 0;          // audits already printed
+    mutable long rhsEvals_ = 0;             // derivatives_ calls (a count only)
+    //  d r / d c_k [kmol/(m3 s) per kmol/m3] of one reaction, accumulated
+    //  into `grad` (full length), mirroring rateOfReaction_ term by term.
+    //  `typ` is the row sizes (odeJacobianScale) for the columns a Factory
+    //  law (or a power below one at zero) differentiates by a difference.
+    void rateGradient_(const ReactionSpec& rxn, scalar T, const sVector& n,
+                       scalar V, const sVector& typ, sVector& grad,
+                       const sVector* g = nullptr) const;
+    //  The per-reaction difference: every species column of ONE reaction.
+    void rateGradientFD_(const ReactionSpec& rxn, scalar T, const sVector& n,
+                         scalar V, const sVector& typ, sVector& grad,
+                         const sVector* g = nullptr) const;
+    void announceJacobianAudits_(scalar tRun);
 
     // Combined derivatives for the packed state.
     //   packed[0..n-1] = mole numbers (kmol)
@@ -254,6 +311,52 @@ private:
     //                              dH_j*xi_j with the announced overrides.
     std::vector<std::string> dutyMissing_;
     bool                     dutyByStateDiff_ = false;
+
+    // ---- Rates of production (the glass box of a mechanism, opt-in) --------
+    //  `rateOfProduction { times (...); top N; }` on the unit.  At the first
+    //  committed step that reaches each requested time the reactor prints, per
+    //  species, which reactions make and destroy it, and appends the whole
+    //  matrix c_ij = nu_ij * r_j * V [kmol/s] to rateOfProduction.csv.  Absent
+    //  = nothing here runs and every existing case is byte-identical.
+    std::vector<scalar> ropTimes_;     // sorted ascending
+    std::size_t         ropNext_  = 0;
+    std::size_t         ropTop_   = 5;
+    bool                ropFileStarted_ = false;
+    void reportRatesOfProduction_(scalar tRequested, scalar t);
+
+    // ---- Ignition-delay sensitivity (brute force, opt-in) -----------------
+    //  `sensitivity { response tauIgnition; factor 1.1; reactions all; top 10; }`
+    //  N+1 integrations of the vessel from its initial state, each with one
+    //  reaction's net rate multiplied by `factor`; S_j = d ln tau / d ln k_j.
+    //  Absent = nothing here runs and every existing case is byte-identical.
+    struct SensResult { std::string name; scalar tau = 0.0; scalar S = 0.0; scalar Tend = 0.0; };
+    bool                     sensOn_     = false;
+    scalar                   sensFactor_ = 1.1;
+    scalar                   sensRise_   = 400.0;     // K above T0 that defines tau
+    std::size_t              sensTop_    = 10;
+    std::vector<std::string> sensReactions_;          // empty => all
+    scalar                   sensTau0_   = 0.0;
+    scalar                   sensTend0_  = 0.0;       // T at the run's end, base run
+    std::vector<SensResult>  sensResults_;            // sorted by |S| descending
+    //  tau [s] of one integration from `y0` over [0, tMax]; `why` says why not.
+    bool sensitivityTau_(const sVector& y0, scalar tMax, scalar& tau, scalar& Tend,
+                         std::string& why);
+    void runSensitivity_(scalar tMax);
+
+    //  Phase 2: `pathFlux ( H O );` in the same block -- the flux of an
+    //  element's atoms from each reactant to each product of every reaction,
+    //  summed to net species-to-species paths (pathFlux.csv + Graphviz).
+    struct PathSplit
+    {
+        bool present = false;                                   // the element is in the reaction
+        scalar N = 0.0;                                         // atoms of e per turnover
+        std::vector<std::pair<std::size_t, scalar>> reactants;  // (species, nu' a_e)
+        std::vector<std::pair<std::size_t, scalar>> products;   // (species, nu'' a_e)
+    };
+    PathSplit pathSplit_(std::size_t j, const std::string& e) const;
+    std::vector<std::string> pfElements_;
+    bool                     pfFileStarted_ = false;
+    void reportPathFlux_(scalar tRequested, scalar t, const sVector& r, scalar V);
 
     void openSegment_(scalar t);
     void closeSegment_(scalar t);

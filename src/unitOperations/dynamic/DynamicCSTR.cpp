@@ -744,10 +744,25 @@ scalar DynamicCSTR::storedEnthalpy_() const
     return H;
 }
 
+sVector DynamicCSTR::gibbsAt_(scalar T) const
+{
+    std::vector<char> want;
+    for (const auto& rxn : reactions_)
+    {
+        const sVector* nuLaw = (rxn.factoryLaw && rxn.law) ? rxn.law->gibbsStoichiometry() : nullptr;
+        if (!nuLaw) continue;
+        if (want.empty()) want.assign(thermo_->n(), 0);
+        Reaction::markSpecies(want, *nuLaw);
+    }
+    if (want.empty()) return sVector();
+    return Reaction::gibbsVector(*thermo_, want, T);
+}
+
 scalar DynamicCSTR::rateOfReaction_(const ReactionSpec& rxn,
                                     scalar               T,
                                     const sVector&       n,
-                                    scalar               V) const
+                                    scalar               V,
+                                    const sVector*       g) const
 {
     // LHHW answers for itself: the shared RateLaw carries the basis (concentration
     // or activity), the adsorption denominator and the reverse leg.  With conc in
@@ -765,6 +780,7 @@ scalar DynamicCSTR::rateOfReaction_(const ReactionSpec& rxn,
         RateState rs;
         rs.T = T; rs.P = std::nan(""); rs.conc = &conc; rs.x = &x;
         rs.amountPerKmol = 1.0;                       // conc in kmol/m3
+        rs.gibbs = (g && !g->empty()) ? g : nullptr;
         return cf * rxn.law->netRate(*thermo_, rs);
     }
 
@@ -774,7 +790,9 @@ scalar DynamicCSTR::rateOfReaction_(const ReactionSpec& rxn,
     {
         if (rxn.order[s] == 0.0) continue;              // C190 item 10: a NEGATIVE order is honoured
         const scalar c_i = n[rxn.comps[s]] / V;
-        r *= Reaction::powerLawFactor(rxn.order[s] > 0.0 ? std::max<scalar>(c_i, 0.0) : c_i, rxn.order[s], thermo_->comp(rxn.comps[s]).name(), "dynamicCSTR reaction '" + rxn.name + "'");
+        r *= Reaction::powerLawFactorLazy(rxn.order[s] > 0.0 ? std::max<scalar>(c_i, 0.0) : c_i, rxn.order[s],
+                                          [&]() -> const std::string& { return thermo_->comp(rxn.comps[s]).name(); },
+                                          [&]() { return "dynamicCSTR reaction '" + rxn.name + "'"; });
     }
     return r;
 }
@@ -830,9 +848,10 @@ sVector DynamicCSTR::derivatives_(const sVector& packed) const
 
     // ---- Reactions ----------------------------------------------------
     scalar heatRxn = 0.0;   // kJ/s released (signed: + means absorbed)
+    const sVector gT = gibbsAt_(T);          // g_i(T) once per evaluation
     for (const auto& rxn : reactions_)
     {
-        const scalar rr = rateOfReaction_(rxn, T, n, V);    // kmol/(m³·s)
+        const scalar rr = rateOfReaction_(rxn, T, n, V, &gT);    // kmol/(m³·s)
         for (std::size_t s = 0; s < rxn.comps.size(); ++s)
             dydt[rxn.comps[s]] += rxn.nu[s] * rr * V;        // kmol/s
         //  ΔH_r AT THE CURRENT T on the canonical route.  Frozen at the

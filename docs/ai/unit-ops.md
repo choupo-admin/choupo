@@ -266,6 +266,18 @@ correction; the PFR on the same reaction reaches +6.6 K) · `cstr05_multiplicity
 counts the steady states in KPI `steadyStates`; the shipped nearly thermoneutral case has
 ONE, 300.04 K — a case with three needs a genuinely exothermic reaction, planned) · `cstr06_jacketed` (`Q_kW` equals `UA (T_coolant − T_out)` to the digit).
 
+**CHEMKIN laws in the MULTI path (C-CHEMKIN slice 3).**  `kinetics { type modifiedArrhenius | thirdBody | falloff; ... }`
+(`ElementaryRate`) is read here with the SAME grammar as `batchReactor` (`A`, `b`, `Ea`, `units { A "cm3/mol/s"; Ea "kcal/mol"; }`,
+`thirdBody { species eff; }`, `low { }`, `troe ( ... )`, `reversible true`), so one `reactions` file runs in both.  A is converted to
+the reactor's amount unit (mol/m3 here: 1e-6 per order beyond the first; the batch vessel's kmol/m3: 1e-3).  Refused by name:
+`adsorption`, `basis activity`, `A_rev`/`Ea_rev`.  Witnesses: `elementary01..03` (a pair each, CHEMKIN law vs the Arrhenius law it equals).
+**PLOG (`kinetics { type plog; plog ( { P 1 atm; A; b; Ea; } ... ); units { A "cm3/mol/s"; Ea "kcal/mol"; } }`).**  The CHEMKIN-II
+pressure table: k_i(T) is a modified Arrhenius at each tabulated P (P with its unit, `atm` read as 101325 Pa); between two
+pressures ln k is linear in ln P; below the lowest / above the highest k is that end's value (no extrapolation); lines at
+the SAME P are summed.  The reaction line's own A b Ea is ignored; `reversible true` is detailed balance.  Reads the bed /
+feed pressure (a feed with no P refuses it by name); `thirdBody`/`low`/`troe` on it are refused.  Theory Guide `sec:plog-rate`.
+Witnesses: `plog01..04` (each equals `elementary01a` at 3 bar; gate `check_plog`).
+
 ### `pfr`
 Plug-flow reactor.  Manual RK4 along the axial coordinate; supports reversible
 reactions.  **One or many reactions** — with many it marches
@@ -421,6 +433,18 @@ of 4 of the ammonia reactor-model ladder: the engine SOLVES the bed volume),
 `greenAmmonia03_basicDesign`, and with Eq 39 in the props bench
 `tutorials/props/kinetics/ammoniaRate01_dyson_simon` (`rateLawBench`).
 The single-reaction paths (`reaction <name>;`) of `cstr` and `pfr` read `Arrhenius` only.
+
+**CHEMKIN laws in the MULTI path (C-CHEMKIN slice 3).**  `kinetics { type modifiedArrhenius | thirdBody | falloff; ... }`
+(`ElementaryRate`) is read here with the SAME grammar as `batchReactor` (`A`, `b`, `Ea`, `units { A "cm3/mol/s"; Ea "kcal/mol"; }`,
+`thirdBody { species eff; }`, `low { }`, `troe ( ... )`, `reversible true`), so one `reactions` file runs in both.  A is converted to
+the reactor's amount unit (mol/m3 here: 1e-6 per order beyond the first; the batch vessel's kmol/m3: 1e-3).  Refused by name:
+`adsorption`, `basis activity`, `A_rev`/`Ea_rev`.  Witnesses: `elementary01..03` (a pair each, CHEMKIN law vs the Arrhenius law it equals).
+**PLOG (`kinetics { type plog; plog ( { P 1 atm; A; b; Ea; } ... ); units { A "cm3/mol/s"; Ea "kcal/mol"; } }`).**  The CHEMKIN-II
+pressure table: k_i(T) is a modified Arrhenius at each tabulated P (P with its unit, `atm` read as 101325 Pa); between two
+pressures ln k is linear in ln P; below the lowest / above the highest k is that end's value (no extrapolation); lines at
+the SAME P are summed.  The reaction line's own A b Ea is ignored; `reversible true` is detailed balance.  Reads the bed /
+feed pressure (a feed with no P refuses it by name); `thirdBody`/`low`/`troe` on it are refused.  Theory Guide `sec:plog-rate`.
+Witnesses: `plog01..04` (each equals `elementary01a` at 3 bar; gate `check_plog`).
 
 ### `conversionReactor`
 Stoichiometric reactor: you **specify the per-pass conversion** of the
@@ -3308,14 +3332,112 @@ Witness: `tutorials/steady/hydraulics/agitation01_helical_ribbon_polymer_melt` (
 Closed vessel, RK4 in time.  `mode isothermal` (T held) or `adiabatic`
 (T integrated via Σ rᵢΔH/ΣnᵢCp).  Single or list of reactions
 (`reactions (A B );`).
-`kinetics { type ... }`: `Arrhenius` · `modifiedArrhenius` · `thirdBody` · `falloff`
-(the CHEMKIN gas forms) · **`LHHW`** — the SAME shared `RateLaw` the steady `cstr`/`pfr`
+**Adiabatic energy basis** `operation { mode adiabatic; energy liquidDH | gasConstantV | gasConstantP; }`:
+`liquidDH` (default) = sum r V dH over liquid Cp; `gasConstantV` = closed rigid ideal gas, dU = 0,
+dT/dt = -sum u_i ndot_i / sum n_i Cv_i; **`gasConstantP`** = closed ideal gas at the holdup's FIXED P,
+dH = 0, dT/dt = -sum h_i(T) ndot_i / sum n_i Cp_i(T), V = n R T / P at every state (so the holdup
+declares NO `V`; a declared one that disagrees is refused; the time directories and the rate-of-production
+report carry the V of their own state).  Both gas bases take h_i = `h_pure_ig` on the formation datum and
+need `idealGasHeatCapacity` + `standardThermochemistry`.  `jacobian analytic` is refused by name for
+`gasConstantP` (open debt); the campaign energy ledger names a gap for adiabatic vessels.  Theory Guide
+`sec:batch-gas-constp`; example `ignition03_h2air_constp` (constant-P ignition is slower and cooler than
+`ignition01_h2o2`'s constant-V one; witnessed against Cantera's IdealGasConstPressureReactor to 1 mK).
+`kinetics { type ... }`: `Arrhenius` · `modifiedArrhenius` · `thirdBody` · `falloff` · `plog`
+(the CHEMKIN gas forms; `plog` -- the CHEMKIN-II pressure table, ln k linear in ln P, clamped at the ends, same-P lines summed -- reads P = nRT/V and is accepted with `energy gasConstantV` (the rising pressure) or `gasConstantP` (the fixed P), refused by name in a liquid vessel; Theory Guide `sec:plog-rate`) · **`LHHW`** — the SAME shared `RateLaw` the steady `cstr`/`pfr`
 evaluate, so a batch vessel and a continuous one cannot disagree about what an
 adsorption denominator means.  With `basis activity` it needs an activity model.
 `operation { catalystLoading <kg/m^3>; }` turns per-gram rate constants volumetric
 (with c in kmol/m³ the factor IS the loading: mol/(g·s)·kg/m³ = kmol/(m³·s)).
 Example: `batch07_lhhw_methylAcetate` (Pöpken 2000 Eq 16 on UNIQUAC activities;
 X → 76.6 %, the activity equilibrium the steady CSTR also reaches).
+
+**Rates of production (opt-in, the glass box of a mechanism).**  A block on the
+unit, beside `operation` and `solver`:
+```
+rateOfProduction { times ( 3.0e-6 7.0e-6 1.5e-5 ); top 5; }
+```
+At the first committed step that reaches each time (the run prints requested and
+reached) it prints, per species, the net rate, the gross production and
+consumption, and the `top` reactions on each side with their share, where
+`c_ij = nu_ij r_j V` [kmol/s] is what reaction j does to species i and
+`r_j` is the very rate the integrator uses (third body, fall-off, reverse leg
+included).  The whole matrix goes to `rateOfProduction.csv` in the case directory
+(`t_s, species, reaction, nu, rate_kmol_m3_s, contribution_kmol_s`, plus a `NET`
+row and the integrator's own `DNDT_ODE` row per species: sum_j c_ij = dn_i/dt).
+A time outside `[startTime, endTime]` and an unknown key are refused by name;
+absent, nothing changes.  Witness `ignition01_h2o2_rop`
+(`bin/curate/check_rate_of_production.py`); Theory Guide, "Rates of production
+of a reaction mechanism".
+
+**Element path flux (`pathFlux`, phase 2, same block).**
+```
+rateOfProduction { times ( 3.0e-6 7.0e-6 1.5e-5 ); top 5; pathFlux ( H O ); }
+```
+At each reported instant, for each listed element and reaction, the atoms of the
+element go from each reactant A to each product B at
+`f_AB = |r_j| V (nu' a)_A (nu'' a)_B / N_ej` [kmol atoms/s], `N_ej` the atoms of the
+element on one side of the step; a reverse-dominated step (`r_j < 0`) runs from
+products to reactants.  Summed over reactions and netted per pair, the run prints
+per element the `top` largest net paths (from -> to, value, share of the element's
+throughput, leading reaction), appends `pathFlux.csv` (`t_s, element, from, to,
+reaction, flux_kmol_atoms_s`; per-reaction rows plus a `NET` row per pair) and writes
+`pathFlux_<element>_<t>.dot` (Graphviz, plain text, `dot -Tpng` renders it).  The
+split is read from the stoichiometry entries: `nu < 0` reactant, `nu > 0` product; a
+species on both sides of one step must be listed as two entries (one entry carries
+only its net).  Refused by name: an element in no species, an entry with `nu = 0`, a
+species with no elemental composition, a step that does not conserve the element.
+Identity held by the gate: atoms in minus atoms out of species i = a_ei * net_i.
+Theory Guide `sec:path-flux`.
+
+**Ignition-delay sensitivity (opt-in, brute force, `sensitivity { }`).**  Which
+reaction governs an ignition?  A block on an adiabatic `batchReactor` with a
+Rosenbrock23 / Rodas4 integrator:
+```
+sensitivity { response tauIgnition; factor 1.1; reactions all; top 6; rise 400; }
+```
+`reactions` is `all` or a list of the vessel's reaction names; `rise` [K] defaults to
+400, `top` to 10, `factor` to 1.1 (must be > 1).  The engine integrates the vessel
+from its initial state N + 1 times (base, then once per reaction with its NET rate
+multiplied by `factor`: forward and reverse together, so K_c and the final
+equilibrium are unchanged; the same as Cantera's `set_multiplier`) and prints a table
+sorted by |S|: `S_j = d ln tau / d ln k_j = (ln tau_j - ln tau_0) / ln factor`, with
+tau = the time T first exceeds T0 + rise, linearly interpolated between the two
+accepted integrator states that bracket it (NOT the write-grid maximum of dT/dt).
+S < 0 means a faster reaction shortens the delay.  Files and KPIs: `sensitivity.csv`
+(`reaction,S,tau_s,tau0_s,factor,T_end_K,T_end0_K`, every reaction) and
+`sens_tau0`, `sens_S_<reaction>` for the top N.  Refused by name: an unknown key,
+`factor <= 1`, a reaction name the vessel lacks, a non-adiabatic vessel, RK4 or
+another integrator, a base run that never reaches T0 + rise by `endTime`.  Cost: N + 1
+integrations (about 7 s for 21 reactions).  Absent the block nothing changes.
+Witness `ignition04_h2air_sensitivity`, checked against Cantera 3.2.0 to 2e-5 in S
+and held by `bin/curate/check_ignition_sensitivity.py`; Theory Guide
+`sec:ignition-sensitivity`.  Not available: sensitivity of another response,
+adjoint or direct methods.
+
+**Analytic kinetics Jacobian (opt-in, `solver { jacobian analytic; }`).**
+```
+solver { integrator Rosenbrock23; jacobian analytic; }   // or Rodas4
+```
+The stiff Rosenbrock integrators then build `W = I - h d J` from the rate laws'
+own derivatives instead of differencing every state column (N + 1 right-hand
+sides per Jacobian): species columns `dn_i'/dn_k = sum_j nu_ij dr_j/dc_k`
+(mass action by the product of the other factors; third body `k0 eff_k`;
+Lindemann exactly; Troe by one central difference in [M]; the reverse leg with
+`Kc` once per reaction; LHHW / `expression` laws by a per-reaction difference over
+every species), the energy row by the chain rule (`gasConstantV` and `liquidDH`),
+the T column by ONE difference (zero, and free, when isothermal).  Words:
+`finiteDifference` (default) | `analytic`; anything else is refused by name, as
+is `analytic` beside an explicit `RK4`/`EulerSI` or on a fixed-step run whose
+integrator is the default RK4.  Under `timeStepping adaptive;` the sweep uses it
+when every ODE unit supplies one.  AUDITED: at analytic Jacobians 1, 2, 4, 8, ...
+it is compared with a central difference (on row sizes max(|n_k|, 1e-2 of the
+inventory)) and a column off by more than 1e-4 of its scale refuses the run,
+naming row and column; the audits print as `[jacobian] ... AUDITED` (the first at
+verbosity 1, all at 3), and solver verbosity 4 prints the right-hand-side count.
+Same answer, fewer evaluations: `ignition01_h2o2_jac` 8252 right-hand sides
+against 27668 for `ignition01_h2o2`, KPIs equal to 6e-12.  Gate
+`bin/curate/check_kinetics_jacobian.py`; Theory Guide
+`sec:batch-analytic-jacobian`.
 
 ### `fixedBedAdsorber`
 One-dimensional isothermal adsorption with conservative finite volumes,

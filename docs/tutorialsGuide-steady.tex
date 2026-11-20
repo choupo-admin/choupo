@@ -12138,6 +12138,194 @@ Eliminate the extent and what remains is ONE equation in the temperature, the te
 \end{tutgolden}
 
 \clearpage
+\tutentry{elementary01a\_modArrhenius\_chemkin}{tutorials/steady/reactors/elementary01a\_modArrhenius\_chemkin}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny pfr}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{PFR, CHEMKIN modified-Arrhenius second-order isomerisation (witness: equals elementary01b)}
+\begin{tutnarrative}
+elementary01a -- CHEMKIN modifiedArrhenius (see constant/reactions)
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.000277777777778}
+\goldrow{stream}{feed}{T}{900}
+\goldrow{stream}{product}{F}{0.000277777777778}
+\goldrow{stream}{product}{T}{900}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.614575639582}
+\goldrow{kpi}{reactor}{T}{900}
+\goldrow{kpi}{reactor}{T\_out}{900}
+\goldrow{kpi}{reactor}{V\_R}{0.01}
+\goldrow{kpi}{reactor}{k\_isom}{0.0168149710496}
+\goldrow{kpi}{reactor}{nReactions}{1}
+\goldrow{kpi}{reactor}{nSteps}{200}
+\goldrow{kpi}{reactor}{tau\_s}{1.44326826054}
+\goldmore{10}
+\end{tutgolden}
+
+\clearpage
+\tutentry{elementary01b\_modArrhenius\_arrhenius}{tutorials/steady/reactors/elementary01b\_modArrhenius\_arrhenius}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny pfr}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{PFR, plain-Arrhenius equivalent of elementary01a}
+\begin{tutnarrative}
+elementary01b -- the Arrhenius equivalent of elementary01a (see constant/reactions)
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.000277777777778}
+\goldrow{stream}{feed}{T}{900}
+\goldrow{stream}{product}{F}{0.000277777777778}
+\goldrow{stream}{product}{T}{900}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.614575639582}
+\goldrow{kpi}{reactor}{T}{900}
+\goldrow{kpi}{reactor}{T\_out}{900}
+\goldrow{kpi}{reactor}{V\_R}{0.01}
+\goldrow{kpi}{reactor}{k\_isom}{0.0168149710496}
+\goldrow{kpi}{reactor}{nReactions}{1}
+\goldrow{kpi}{reactor}{nSteps}{200}
+\goldrow{kpi}{reactor}{tau\_s}{1.44326826054}
+\goldmore{10}
+\end{tutgolden}
+
+\clearpage
+\tutentry{elementary02a\_thirdBody\_chemkin}{tutorials/steady/reactors/elementary02a\_thirdBody\_chemkin}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny pfr}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{PFR, CHEMKIN third-body reversible isomerisation (witness: equals elementary02b)}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.000277777777778}
+\goldrow{stream}{feed}{T}{900}
+\goldrow{stream}{product}{F}{0.000277777777778}
+\goldrow{stream}{product}{T}{900}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.487020829617}
+\goldrow{kpi}{reactor}{T}{900}
+\goldrow{kpi}{reactor}{T\_out}{900}
+\goldrow{kpi}{reactor}{V\_R}{0.01}
+\goldrow{kpi}{reactor}{k\_isom}{0.613210609322}
+\goldrow{kpi}{reactor}{nReactions}{1}
+\goldrow{kpi}{reactor}{nSteps}{200}
+\goldrow{kpi}{reactor}{tau\_s}{1.44326826054}
+\goldmore{10}
+\end{tutgolden}
+
+\clearpage
+\tutentry{elementary02b\_thirdBody\_arrhenius}{tutorials/steady/reactors/elementary02b\_thirdBody\_arrhenius}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny pfr}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{PFR, Arrhenius equivalent of elementary02a}
+\begin{tutnarrative}
+elementary02b -- the Arrhenius equivalent of elementary02a (see constant/reactions)
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.000277777777778}
+\goldrow{stream}{feed}{T}{900}
+\goldrow{stream}{product}{F}{0.000277777777778}
+\goldrow{stream}{product}{T}{900}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.487020829617}
+\goldrow{kpi}{reactor}{T}{900}
+\goldrow{kpi}{reactor}{T\_out}{900}
+\goldrow{kpi}{reactor}{V\_R}{0.01}
+\goldrow{kpi}{reactor}{k\_isom}{0.613210609322}
+\goldrow{kpi}{reactor}{nReactions}{1}
+\goldrow{kpi}{reactor}{nSteps}{200}
+\goldrow{kpi}{reactor}{tau\_s}{1.44326826054}
+\goldmore{10}
+\end{tutgolden}
+
+\clearpage
+\tutentry{elementary03a\_falloff\_chemkin}{tutorials/steady/reactors/elementary03a\_falloff\_chemkin}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny pfr}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{PFR, CHEMKIN Lindemann fall-off reversible isomerisation (witness: equals elementary03b)}
+\begin{tutnarrative}
+elementary03a -- CHEMKIN Lindemann falloff (see constant/reactions)
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.000277777777778}
+\goldrow{stream}{feed}{T}{900}
+\goldrow{stream}{product}{F}{0.000277777777778}
+\goldrow{stream}{product}{T}{900}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.322203135352}
+\goldrow{kpi}{reactor}{T}{900}
+\goldrow{kpi}{reactor}{T\_out}{900}
+\goldrow{kpi}{reactor}{V\_R}{0.01}
+\goldrow{kpi}{reactor}{k\_isom}{0.264285970106}
+\goldrow{kpi}{reactor}{nReactions}{1}
+\goldrow{kpi}{reactor}{nSteps}{200}
+\goldrow{kpi}{reactor}{tau\_s}{1.44326826054}
+\goldmore{10}
+\end{tutgolden}
+
+\clearpage
+\tutentry{elementary03b\_falloff\_arrhenius}{tutorials/steady/reactors/elementary03b\_falloff\_arrhenius}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny pfr}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{PFR, Arrhenius equivalent of elementary03a}
+\begin{tutnarrative}
+elementary03b -- the Arrhenius equivalent of elementary03a (see constant/reactions)
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.000277777777778}
+\goldrow{stream}{feed}{T}{900}
+\goldrow{stream}{product}{F}{0.000277777777778}
+\goldrow{stream}{product}{T}{900}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.322203135352}
+\goldrow{kpi}{reactor}{T}{900}
+\goldrow{kpi}{reactor}{T\_out}{900}
+\goldrow{kpi}{reactor}{V\_R}{0.01}
+\goldrow{kpi}{reactor}{k\_isom}{0.264285970106}
+\goldrow{kpi}{reactor}{nReactions}{1}
+\goldrow{kpi}{reactor}{nSteps}{200}
+\goldrow{kpi}{reactor}{tau\_s}{1.44326826054}
+\goldmore{10}
+\end{tutgolden}
+
+\clearpage
 \tutentry{equil01\_reforming}{tutorials/steady/reactors/equil01\_reforming}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -12616,6 +12804,118 @@ Try a `sweep` over operation.V\_R and watch Xn, Mn and PDI climb and the Flory-S
 \goldrow{kpi}{reactor}{p\_conversion}{0.968445726485}
 \goldrow{kpi}{reactor}{tau\_s}{5055.00604287}
 \goldmore{14}
+\end{tutgolden}
+
+\clearpage
+\tutentry{plog01\_onePressure}{tutorials/steady/reactors/plog01\_onePressure}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny pfr}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{PFR, PLOG with one pressure line equals modifiedArrhenius (witness: equals elementary01a)}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.000277777777778}
+\goldrow{stream}{feed}{T}{900}
+\goldrow{stream}{product}{F}{0.000277777777778}
+\goldrow{stream}{product}{T}{900}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.614575639582}
+\goldrow{kpi}{reactor}{T}{900}
+\goldrow{kpi}{reactor}{T\_out}{900}
+\goldrow{kpi}{reactor}{V\_R}{0.01}
+\goldrow{kpi}{reactor}{k\_isom}{0.0168149710496}
+\goldrow{kpi}{reactor}{nReactions}{1}
+\goldrow{kpi}{reactor}{nSteps}{200}
+\goldrow{kpi}{reactor}{tau\_s}{1.44326826054}
+\goldmore{10}
+\end{tutgolden}
+
+\clearpage
+\tutentry{plog02\_atTabulated}{tutorials/steady/reactors/plog02\_atTabulated}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny pfr}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{PFR, PLOG at a tabulated pressure equals that line (witness: equals elementary01a)}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.000277777777778}
+\goldrow{stream}{feed}{T}{900}
+\goldrow{stream}{product}{F}{0.000277777777778}
+\goldrow{stream}{product}{T}{900}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.614575639582}
+\goldrow{kpi}{reactor}{T}{900}
+\goldrow{kpi}{reactor}{T\_out}{900}
+\goldrow{kpi}{reactor}{V\_R}{0.01}
+\goldrow{kpi}{reactor}{k\_isom}{0.0168149710496}
+\goldrow{kpi}{reactor}{nReactions}{1}
+\goldrow{kpi}{reactor}{nSteps}{200}
+\goldrow{kpi}{reactor}{tau\_s}{1.44326826054}
+\goldmore{10}
+\end{tutgolden}
+
+\clearpage
+\tutentry{plog03\_midway}{tutorials/steady/reactors/plog03\_midway}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny pfr}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{PFR, PLOG midway in ln P between two lines (witness: equals elementary01a)}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.000277777777778}
+\goldrow{stream}{feed}{T}{900}
+\goldrow{stream}{product}{F}{0.000277777777778}
+\goldrow{stream}{product}{T}{900}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.614575639582}
+\goldrow{kpi}{reactor}{T}{900}
+\goldrow{kpi}{reactor}{T\_out}{900}
+\goldrow{kpi}{reactor}{V\_R}{0.01}
+\goldrow{kpi}{reactor}{k\_isom}{0.0168149710496}
+\goldrow{kpi}{reactor}{nReactions}{1}
+\goldrow{kpi}{reactor}{nSteps}{200}
+\goldrow{kpi}{reactor}{tau\_s}{1.44326826054}
+\goldmore{10}
+\end{tutgolden}
+
+\clearpage
+\tutentry{plog04\_sameP}{tutorials/steady/reactors/plog04\_sameP}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny pfr}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{PFR, PLOG with two lines at one pressure are summed (witness: equals elementary01a)}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.000277777777778}
+\goldrow{stream}{feed}{T}{900}
+\goldrow{stream}{product}{F}{0.000277777777778}
+\goldrow{stream}{product}{T}{900}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.614575639582}
+\goldrow{kpi}{reactor}{T}{900}
+\goldrow{kpi}{reactor}{T\_out}{900}
+\goldrow{kpi}{reactor}{V\_R}{0.01}
+\goldrow{kpi}{reactor}{k\_isom}{0.0168149710496}
+\goldrow{kpi}{reactor}{nReactions}{1}
+\goldrow{kpi}{reactor}{nSteps}{200}
+\goldrow{kpi}{reactor}{tau\_s}{1.44326826054}
+\goldmore{10}
 \end{tutgolden}
 
 \clearpage

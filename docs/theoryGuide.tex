@@ -5224,6 +5224,89 @@ which the per-value provenance tag makes the student check before
 trusting an equilibrium prediction.
 \end{intuition}
 
+\subsection{Thousands of gas-phase species: the species tables and a CHEMKIN mechanism}
+\label{sec:species-tables-chemkin}
+
+A reaction mechanism names radicals and intermediates by the hundred, most of
+which no flowsheet will ever carry.  They do not belong in
+\file{data/standards/components/}, which stays flat and curated
+(Section~\ref{sec:gibbs-nasa-import}).  Two routes bring them in, and both keep
+the identity of the previous subsection: an element-referenced polynomial gives
+$\Delta h^{\circ}_{f} = H^{0}(298.15)$ and $s^{\circ}_{298} = S^{0}(298.15)$
+directly.
+
+\paragraph{The species tables.}  \file{data/standards/thermoTables/NASA-TP-2002-211556/}
+holds one record per species of that public-domain report, radicals included
+(listed in the home's own \file{INDEX.md}, which \code{check\_thermo\_tables} holds to the files; written by \code{nasa\_tp2002\_to\_choupo.py table}, each
+checked against the report's printed $H$ and $S$ at $298.15$~K, with
+\code{reviewStatus interim}).  A case reads a table \emph{only} when its
+thermophysical system declares it,
+\begin{verbatim}
+speciesTables ( NASA-TP-2002-211556 );
+\end{verbatim}
+and then only for a name \file{components/} does not hold, and only while the
+case is unsealed; every such read is announced \code{[thermoTable]}.  A curated
+component therefore always wins, and an undeclared name is refused as before.
+A table species is written \code{role nonvolatile;}: it is an ideal-gas
+species, and no vapour pressure is asked of it.  The witness
+\file{tutorials/props/gibbs/thermoTable01\_propane\_radicals} prices the two
+C--H scissions of propane on records read this way (gate
+\code{check\_thermo\_tables}).
+
+\paragraph{A mechanism imported from CHEMKIN.}  The curation tool
+\file{bin/curate/chemkin\_to\_choupo.py} reads a CHEMKIN-II mechanism
+(\code{ELEMENTS}, \code{SPECIES}, \code{THERMO} in the fixed-column NASA-7
+form, \code{REACTIONS} with its unit header) and writes into a \emph{case's}
+\file{constant/}, never into the catalogue (a path under
+\file{data/standards/} is refused by name):
+\begin{itemize}[leftmargin=*]
+  \item one component record per species, \code{model NASA7} with the seven
+        coefficients of each range as printed, $M$ from the engine's own
+        atomic-weight table, and $\Delta h^{\circ}_f$, $s^{\circ}_{298}$ from
+        the identity above.  A species named like a catalogue record declares
+        what it is: \code{variationOf} when the atoms agree (the mechanism's
+        own fit is kept, so that its equilibria match the rate constants it
+        was fitted with) or \code{distinctFrom} when they do not;
+  \item the reactions, in the engine's own grammar: \code{modifiedArrhenius},
+        \code{thirdBody} with its efficiencies, \code{falloff} with its
+        \code{low} block and Troe parameters, \code{plog} with its pressure
+        lines (Section~\ref{sec:plog-rate}), and \code{reversible true} for
+        detailed balance.  $A$ and $E_a$ are written \emph{as printed}, with a
+        \code{units} block; the conversion to SI is the engine's
+        (Section~\ref{sec:elementary-rate}), so there is one home for it.
+\end{itemize}
+What the engine cannot yet run is listed, reaction by reaction and with the
+reason, in \file{constant/mechanismImport.txt}: \code{SRI}, \code{PLOG} with a \code{REV} line or on a third-body/fall-off reaction,
+explicit orders (\code{FORD}/\code{RORD}), an explicit reverse rate on a
+\code{(+M)} fall-off, \code{MOLECULES} units, and a pressure-dependent reaction
+without a low-pressure limit.  An explicit reverse rate (\code{REV}) on any other
+reaction is written the way Cantera's \code{ck2yaml} reads it: two irreversible
+reactions, \code{r}$NNN$\code{\_f} with the main $A,b,E_a$ and \code{r}$NNN$\code{\_r}
+(products to reactants, with the \code{REV} parameters and, for \code{+M}, the same
+efficiencies); \code{--rev-from-thermo} instead ignores \code{REV} and takes the reverse from
+detailed balance, a declared variant of the published mechanism.
+Nothing is dropped silently.  Every record carries the
+licence the user declares with \code{--licence}; a mechanism whose terms do not
+allow redistribution stays in the user's case or in \file{data/local/}, and the
+GRI-Mech family is refused by name (it carries no redistribution grant).
+
+The import is held to a round trip: the H$_2$/O$_2$ mechanism of
+\file{tutorials/batch/combustion/ignition01\_h2o2} (O~Conaire \emph{et al.},
+21 reactions), exported to CHEMKIN text and imported back, gives the same
+reaction set and a byte-identical run (\code{chemkin\_to\_choupo.py
+--selftest}).
+
+\begin{intuition}[Power and limit]
+\textbf{Power:} a published mechanism enters a case in one command, with every
+number traceable to the line it came from and every reaction the engine cannot
+run named.  \textbf{Limit:} the importer is a transcriber, not a referee --- a
+mechanism's own thermochemistry is kept even where the catalogue disagrees,
+because its rate constants were fitted with it, and the records stay
+\code{interim} until a curator reads them back.  A mechanism of thousands of
+species also needs a sparse stiff integrator, which is a separate piece of
+work.
+\end{intuition}
+
 \subsection{Latent heat at any $T$: Watson}
 
 Each data file lists $\Delta h^{\mathrm{vap}}_i(T_b)$ at the normal
@@ -35809,6 +35892,208 @@ $0.1\,\%$.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\subsection{A closed gas: constant volume and constant pressure}\label{sec:batch-gas-constp}
+
+\code{energy gasConstantV;} and \code{energy gasConstantP;} are the two
+adiabatic bases for a closed ideal gas, on the \emph{same} species datum:
+$h_i(T)=h^{\mathrm{ig}}_i(T)$, the ideal-gas molar enthalpy on the formation
+datum, and $C_{p,i}=C^{\mathrm{ig}}_{p,i}(T)$.  The heat release is intrinsic
+to the formation enthalpies; no per-reaction $\Delta H$ is supplied.
+\textbf{Constant volume} ($V$ fixed, $dU=0$, $u_i=h_i-\Rgas T$,
+$C_{v,i}=C_{p,i}-\Rgas$):
+\begin{equation}\label{eq:batch-gas-constv}
+  \frac{dT}{dt}\;=\;-\,\frac{\sum_i u_i\,\dot n_i}{\sum_i n_i\,C_{v,i}},
+  \qquad P=\frac{n_{\mathrm{tot}}\Rgas T}{V}.
+\end{equation}
+\textbf{Constant pressure} ($P$ fixed at the holdup's declared value,
+$dH=0$):
+\begin{equation}\label{eq:batch-gas-constp}
+  \frac{dT}{dt}\;=\;-\,\frac{\sum_i h_i(T)\,\dot n_i}{\sum_i n_i\,C_{p,i}(T)},
+  \qquad V=\frac{n_{\mathrm{tot}}\Rgas T}{P},\qquad
+  \dot n_i=V\sum_j\nu_{ij}\,r_j(c),\quad c_k=\frac{n_k}{V}.
+\end{equation}
+Symbols: $n_i$ [kmol]; $\dot n_i$ [kmol/s]; $h_i$, $u_i$ [J/mol];
+$C_{p,i}$, $C_{v,i}$ [J/(mol\,K)]; $\Rgas$ the gas constant;
+$n_{\mathrm{tot}}=\sum n_i$.  The factors of $10^{3}$ between kmol and mol cancel
+between numerator and denominator.  Under \eqref{eq:batch-gas-constp} the volume
+is a \emph{consequence} of $(n,T,P)$, never an input: the holdup declares no
+$V$ (a declared one that disagrees with $n_{\mathrm{tot}}\Rgas T/P$ is refused by
+name), the engine evaluates $V$ at every trial state of the integrator, and the
+state it writes (\code{internalStates}, rate-of-production report) carries the
+$V$ of its own $(n,T)$.  Validity: closed, adiabatic, ideal-gas mixture; both
+bases need \code{idealGasHeatCapacity} and \code{standardThermochemistry} on
+every species.  The isothermal mode of this basis pins $T$ and still takes
+$V=n_{\mathrm{tot}}\Rgas T/P$.  Open debt: \code{jacobian analytic;} is refused by
+name (the extra terms, $c_k$ moving with every $n_j$ and with $T$ through $V$,
+are not derived); the finite-difference Jacobian is used.  The campaign energy
+ledger names a gap for adiabatic vessels, this basis included ($dH=0$ is what
+the ODE integrates, but it is not ledgered).
+
+\emph{Why constant pressure is slower and cooler.}  At constant volume the
+reaction heat goes into a gas that cannot expand; at constant pressure the same
+heat also does the work $P\,dV$ and is spread over $C_p=C_v+\Rgas$ per mole, so the
+temperature rises less, the rate constants stay lower and the induction is
+longer.  \emph{Source:} the first law for a closed system, $dU=\delta Q-P\,dV$,
+so $dH=\delta Q+V\,dP$ (Smith, Van Ness \& Abbott, \emph{Introduction to Chemical
+Engineering Thermodynamics}, ch.\ 2); the cell integrated is the constant-pressure
+adiabatic cell of OpenFOAM's chemistry solvers.  \emph{Measured witness:}
+LLNL's published H$_2$ mechanism at 1100\,K and 1\,atm against Cantera
+3.2.0's \code{IdealGasConstPressureReactor}: $\tau$ equal on a 0.1\,$\mu$s grid,
+$T_{\mathrm{final}}$ to $<1$\,mK, final volume $3\times10^{-7}$ relative
+(\file{docs/reviews/2026-11-19-chemkin-real-mechanism/REPORT.md}, section~8).
+
+\begin{tutoriallink}{batch/combustion/ignition03\_h2air\_constp}
+The ignition of \file{ignition01\_h2o2}'s charge at constant pressure: $\tau$
+7.6\,$\mu$s against 7.1\,$\mu$s, burned gas 2828\,K against 3076\,K, and
+$V=n_{\mathrm{tot}}\Rgas T/P=2.0658$\,L from the run's own final state.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
+\subsection{Rates of production of a reaction mechanism}\label{sec:rates-of-production}
+
+A mechanism of tens of reactions integrates to a few curves, and the curves hide
+the question a kineticist asks first: \emph{which reactions make this species,
+and which destroy it, right now?}  The \texttt{batchReactor} answers it on request.
+On the unit, an opt-in block
+
+\begin{verbatim}
+rateOfProduction { times ( 3.0e-6 7.0e-6 1.5e-5 ); top 5; }
+\end{verbatim}
+
+reports at each listed instant (the first committed step that reaches it; the
+run prints both the requested and the reached time) three things per species:
+its net rate, its gross production and consumption, and the reactions that
+account for them.
+
+\paragraph{Definitions.}  Let $r_j$ be the net rate of reaction $j$
+[kmol\,m$^{-3}$\,s$^{-1}$] --- the very function the integrator's right-hand
+side calls, so the third-body concentration $[M]=\sum_k \varepsilon_k c_k$, the
+fall-off blend and the reverse leg $k_j/K_{c,j}$ of a reversible reaction are
+already in it --- and $\nu_{ij}$ the signed stoichiometric coefficient of species
+$i$ in reaction $j$.  The contribution of reaction $j$ to species $i$ is
+\begin{equation}\label{eq:rop-contribution}
+c_{ij} \;=\; \nu_{ij}\, r_j\, V \qquad [\mathrm{kmol\,s^{-1}}],
+\end{equation}
+and the net rate of species $i$ is the sum over reactions, which is the species
+balance the integrator advances,
+\begin{equation}\label{eq:rop-sum-rule}
+\frac{\mathrm{d}n_i}{\mathrm{d}t} \;=\; \sum_j c_{ij} \;=\; P_i - D_i ,
+\qquad
+P_i = \sum_{c_{ij}>0} c_{ij},\quad D_i = -\sum_{c_{ij}<0} c_{ij},
+\end{equation}
+with $P_i$ and $D_i$ the \emph{gross} production and consumption.  The
+\emph{share} of a producer is $c_{ij}/P_i$ and of a consumer $-c_{ij}/D_i$; the
+printed list holds the \texttt{top} largest on each side with their shares in
+percent, and counts the rest.  A species whose gross terms far exceed its net
+is held by near-cancelling channels (the burned gas of an ignition is the
+example): its net says nothing about which reactions matter, its shares do.
+
+\paragraph{Why the sum rule is the check.}  Because every reaction is
+atom-balanced, $\sum_i a_{ei}\nu_{ij}=0$ for each element $e$ ($a_{ei}$ the
+atoms of $e$ in species $i$), the nets conserve atoms,
+$\sum_i a_{ei}\,\mathrm{d}n_i/\mathrm{d}t = 0$, whatever $r_j$ is --- atoms
+therefore cannot tell a wrong $r_j$.  Only Eq.~\eqref{eq:rop-sum-rule} against
+the integrator's own $\mathrm{d}n_i/\mathrm{d}t$ can; the run writes that
+derivative beside the net (row \texttt{DNDT\_ODE}) and
+\texttt{bin/curate/check\_rate\_of\_production.py} holds both identities, and
+the opt-in's neutrality, on the witness \texttt{ignition01\_h2o2\_rop}.
+
+\paragraph{Output and validity.}  The whole matrix $c_{ij}$ is appended, in
+long format, to \texttt{rateOfProduction.csv} beside \texttt{trajectory.csv}
+(columns \texttt{t\_s, species, reaction, nu, rate\_kmol\_m3\_s,
+contribution\_kmol\_s}; the rows \texttt{NET} and \texttt{DNDT\_ODE} per
+species).  A time outside $[\texttt{startTime},\texttt{endTime}]$ and an unknown
+key in the block are refused by name.  The report reads the state and does not
+change it: a case without the block runs byte-identically.  It applies to the
+vessel's own reactions --- power-law, CHEMKIN and factory laws alike, since all
+go through the one rate function.  It is a snapshot per instant, not a time
+integral; element path fluxes are the next subsection, sensitivities a separate tool.  The quantities are
+plain kinetic bookkeeping of the species balance (no correlation, no fitted
+parameter, so no in-sample statement applies); the implementation is
+\texttt{BatchReactor::reportRatesOfProduction\_}.  Witness:
+\texttt{ignition01\_h2o2\_rop}.
+
+\subsection{Element path flux}\label{sec:path-flux}
+
+The rates of production say which reactions make a species; they do not say where
+an atom \emph{goes}.  The question a kineticist asks next --- ``the H in the water
+at the end, which species carried it, and through which steps?'' --- is answered by
+following one element through the mechanism.  The definition below is the one
+Choupo uses; it is derived from atom conservation alone and needs nothing beyond
+the stoichiometry and the rates of Section~\ref{sec:rates-of-production}.  The
+\texttt{batchReactor} reports it when the block lists the elements,
+
+\begin{verbatim}
+rateOfProduction { times ( 3.0e-6 7.0e-6 1.5e-5 ); top 5; pathFlux ( H O ); }
+\end{verbatim}
+
+\paragraph{Definition.}  Write reaction $j$ with reactant coefficients
+$\nu'_{Aj}>0$ and product coefficients $\nu''_{Bj}>0$ ($\nu_{ij}=\nu''_{ij}-\nu'_{ij}$,
+the dictionary's signed entry: $\nu<0$ is a reactant, $\nu>0$ a product), and let
+$a_{eA}$ be the atoms of element $e$ in species $A$.  One turnover of the step moves
+\begin{equation}\label{eq:pf-N}
+N_{ej} \;=\; \sum_{A\in\text{reactants}} \nu'_{Aj}\,a_{eA}
+        \;=\; \sum_{B\in\text{products}} \nu''_{Bj}\,a_{eB}
+\end{equation}
+atoms of $e$ from the reactant side to the product side (equal, because every
+reaction is atom-balanced; a reaction for which the two sums differ is refused by
+name, since $N_{ej}$ would not be defined).  Each atom leaving $A$ is taken to land
+on a product in proportion to the atoms of $e$ that product takes, so the flux from
+reactant $A$ to product $B$ is
+\begin{equation}\label{eq:pf-flux}
+f^{(e,j)}_{AB} \;=\; |r_j|\,V\,\frac{\nu'_{Aj}\,a_{eA}\;\nu''_{Bj}\,a_{eB}}{N_{ej}}
+\qquad [\mathrm{kmol\ atoms\,s^{-1}}] .
+\end{equation}
+A reaction running backwards ($r_j<0$) is the same step with the roles of the sides
+exchanged: the products are the donors and the reactants the sinks, with the same
+magnitude, so the arrow runs from $B$ to $A$.  Summing over reactions, the net
+species-to-species flux is
+\begin{equation}\label{eq:pf-net}
+F^{e}_{AB} \;=\; \sum_j \bigl(f^{(e,j)}_{A\to B} - f^{(e,j)}_{B\to A}\bigr),
+\end{equation}
+where $f_{A\to B}$ is the flux of Eq.~\eqref{eq:pf-flux} directed by the sign of
+$r_j$; the report keeps the direction in which $F^e_{AB}>0$.  A species that stands
+on both sides of a step has its two halves as separate dictionary entries and the
+flux between them (a self-loop) moves no atom between species; it is written to the
+per-reaction rows and left out of the net.
+
+\paragraph{The identity that holds it.}  Summing Eq.~\eqref{eq:pf-flux} over the
+products gives $\sum_B f_{AB}^{(e,j)}=|r_j|V\nu'_{Aj}a_{eA}$, what the step takes
+out of $A$, and over the reactants $\sum_A f_{AB}^{(e,j)}=|r_j|V\nu''_{Bj}a_{eB}$,
+what it puts into $B$ (Eq.~\eqref{eq:pf-N} cancels $N_{ej}$).  Therefore, for every
+species $i$ and element $e$,
+\begin{equation}\label{eq:pf-identity}
+\sum_B F^e_{B\to i} - \sum_B F^e_{i\to B} \;=\; a_{ei}\sum_j \nu_{ij}\,r_j V
+\;=\; a_{ei}\,\frac{\mathrm{d}n_i}{\mathrm{d}t},
+\end{equation}
+the atoms arriving at $i$ minus the atoms leaving it equal the atoms its net
+production adds.  It is checked from the two outputs of the same run, the paths and
+the rate matrix, to round-off on the scale of the gross flux through $i$
+(\texttt{bin/curate/check\_rate\_of\_production.py}, which also holds each
+reaction's fluxes to $\sum_{AB}f_{AB}^{(e,j)}=|r_j|VN_{ej}$ and shows that a flux
+without the $1/N_{ej}$ fails it).  A flux built on the \emph{net} stoichiometry
+fails for the reason the dictionary rule above exists: a species that is both
+consumed and produced by one step cancels in $\nu_{ij}$ and its atoms vanish from
+the picture.
+
+\paragraph{Output and validity.}  Per instant and element the run prints the
+\texttt{top} largest net fluxes (from $\to$ to, value, share of the element's total
+net throughput $\sum F^e_{AB}$, and the reaction contributing most to that
+direction) and appends to \texttt{pathFlux.csv} (columns \texttt{t\_s, element,
+from, to, reaction, flux\_kmol\_atoms\_s}) one row per reaction and directed pair
+plus a row with reaction \texttt{NET} per net pair.  One Graphviz file
+\texttt{pathFlux\_<element>\_<t>.dot} per element and instant draws the net paths
+(nodes the species, edge width $\propto 1+\tfrac{4}{6}\log_{10}(F/F_{\max})$, floored,
+label the value and leading reaction); it is plain text, rendered by any Graphviz
+(\texttt{dot -Tpng}).  The proportional split of Eq.~\eqref{eq:pf-flux} is a
+definition, not a measurement of which bond breaks: for a step with several products
+carrying the element it states where atoms go \emph{on average}, which is the
+standard reading of reaction-path diagrams and the only one atom conservation fixes.
+No correlation or fitted parameter enters (no in-sample statement applies), and a
+case without \texttt{pathFlux} runs byte-identically.  Implementation:
+\texttt{BatchReactor::pathSplit\_}, \texttt{BatchReactor::reportPathFlux\_}.
+Witness: \texttt{ignition01\_h2o2\_rop}.
+
 \section{Rayleigh batch distillation}\label{ch:rayleigh}
 
 \begin{figure}[ht]
@@ -37964,9 +38249,10 @@ overflow on the Robertson benchmark.}
 \subsection{The Jacobian, and two correctness traps}
 
 The method needs $\Jac = \partial f/\partial\Yv$.  Choupo forms it by
-finite differences (a perturbation of each state in turn) with an
-analytic option; either is acceptable, but two details are not
-optional in a chemical system:
+finite differences (a perturbation of each state in turn); a batch
+reactor may instead supply it analytically, audited against a
+difference (Section~\ref{sec:batch-analytic-jacobian}).  Either way,
+two details are not optional in a chemical system:
 \begin{itemize}
     \item \textbf{Per-component scaling.}  The state mixes mole numbers
     that span orders of magnitude (a bath gas at $\mathcal{O}(1)$, a
@@ -38078,6 +38364,146 @@ broadening factor $F(P_r, T)$ from three or four tabulated parameters.
 This is why a gas-phase rate can depend on pressure even though
 \eqref{eq:arrhenius} contains only temperature.
 
+\subsection{The CHEMKIN laws in a continuous reactor (\code{ElementaryRate})}\label{sec:elementary-rate}
+
+The batch vessel reads the three CHEMKIN words \code{modifiedArrhenius},
+\code{thirdBody} and \code{falloff} natively; since the third slice of the
+CHEMKIN line the multi-reaction paths of \code{cstr} and \code{pfr}
+(\code{reactions ( \dots );}) run them too, through the
+\code{ReactionRate} factory (class \code{ElementaryRate}), with the same
+dictionary grammar, so one \file{constant/reactions} file runs in both.
+With $c_i$ the concentration the reactor forms, the net extent rate is
+\begin{align}
+    r &= k_{\mathrm{eff}}\prod_i c_i^{\,m_i}
+        \;-\;\frac{k_{\mathrm{eff}}}{K_c}\prod_{\nu_i>0} c_i^{\,\nu_i}
+        && \text{(second term only for \code{reversible true})}, \\
+    k_{\mathrm{eff}} &=
+    \begin{cases}
+        A\,T^{b}\,e^{-E_a/\Rgas T} & \text{\code{modifiedArrhenius}},\\[2pt]
+        A\,T^{b}\,e^{-E_a/\Rgas T}\,[\mathrm{M}] & \text{\code{thirdBody}},\\[2pt]
+        k_\infty\,\dfrac{P_r}{1+P_r}\,F,\quad P_r=\dfrac{k_0[\mathrm{M}]}{k_\infty}
+            & \text{\code{falloff}},
+    \end{cases}
+    \label{eq:elementary-rate}
+\end{align}
+with $[\mathrm{M}]=\sum_j\varepsilon_j c_j$ (\eqref{eq:third-body}, unlisted
+species $\varepsilon=1$), $k_0$ the \code{low \{ \}} block and $F=1$
+(Lindemann) unless a \code{troe ( $\alpha$ $T_3$ $T_1$ [$T_2$] )} list is
+given (Gilbert, Luther and Troe 1983; \eqref{eq:falloff}).  The orders $m_i$
+are the \code{order} entries of the stoichiometry, as for \code{Arrhenius};
+$K_c$ is the ideal-gas equilibrium constant on the concentration basis
+(\eqref{eq:k-rev}), rescaled to the caller's amount unit.  The reverse leg
+keeps the mass-action refusal of the other laws (a declared order that is not
+the stoichiometric one is refused by name).
+
+\paragraph{Units.}  With \code{units \{ A "cm3/mol/s"; Ea "kcal/mol"; \}} the
+constant is converted at evaluation to the CALLER's amount unit.  The
+molecularity $n$ is the sum of the declared orders, plus one for
+\code{thirdBody} and for the \code{low} block; each order beyond the first
+multiplies $A$ by $10^{-6}\cdot 1000/a$, where $a$ is the number of mol in
+the reactor's amount unit ($a=1000$ in a reactor that works in mol/m$^3$, the
+\code{cstr} and \code{pfr}: factor $10^{-6}$; $a=1$ in the batch vessel's
+kmol/m$^3$: factor $10^{-3}$):
+\begin{equation}
+    A_{\mathrm{caller}} \;=\; A_{\mathrm{cm\text{-}mol\text{-}s}}
+        \,\bigl(10^{-6}\cdot 1000/a\bigr)^{\,n-1}.
+    \label{eq:chemkin-a-conversion}
+\end{equation}
+Activation energies: kcal/mol $\times4184$, cal/mol $\times4.184$, kJ/mol
+$\times1000$, J/mol unchanged.  Without a \code{units} block the values are
+taken as already in the caller's amount unit, exactly as for \code{Arrhenius}.
+Adsorption terms, \code{basis activity} and an explicit
+\code{A\_rev}/\code{Ea\_rev} pair are refused by name (they belong to
+\code{LHHW} and \code{Arrhenius}).  Validity: ideal-gas mass action; the Troe
+form is empirical.  A conversion error is the defect the three witness pairs
+\code{elementary01}--\code{elementary03} are built to expose.  They are the
+CHEMKIN law against the plain Arrhenius law it equals at one temperature
+(isothermal, isobaric, no mole change, so $[\mathrm{M}]=P/\Rgas T$ is constant), and
+\code{bin/curate/check\_elementary\_rates.py} holds each pair's outlets to
+$10^{-9}$.
+
+\subsection{Pressure-dependent rate tables: PLOG (\code{plog})}\label{sec:plog-rate}
+
+CHEMKIN-II's \code{PLOG} form (Kee, Rupley and Miller, SAND89-8009, with the
+extension used by published pyrolysis mechanisms) gives the rate constant as a
+table of modified Arrhenius laws, one per tabulated pressure $P_i$:
+\begin{equation}
+    k_i(T) \;=\; \sum_{l\,\in\,\text{lines at }P_i} A_l\,T^{\,b_l}\,e^{-E_{a,l}/\Rgas T}.
+    \label{eq:plog-ki}
+\end{equation}
+Lines written at the \emph{same} pressure are summed (the CHEMKIN and Cantera
+convention).  With the tabulated pressures sorted, $P_1<\dots<P_N$, the rate
+constant at the state pressure $P$ is
+\begin{equation}
+    k(T,P) \;=\;
+    \begin{cases}
+        k_1(T) & P \le P_1,\\[2pt]
+        \exp\!\Bigl[\ln k_j + \dfrac{\ln(P/P_j)}{\ln(P_{j+1}/P_j)}
+            \bigl(\ln k_{j+1}-\ln k_j\bigr)\Bigr] & P_j \le P \le P_{j+1},\\[6pt]
+        k_N(T) & P \ge P_N,
+    \end{cases}
+    \label{eq:plog}
+\end{equation}
+that is, $\ln k$ is \emph{linear in $\ln P$} between two tabulated pressures,
+and there is no extrapolation: below the lowest and above the highest
+pressure $k$ is that end's value (checked against Cantera 3.2.0, which does
+the same, and sums lines at one pressure the same way).  If a $k_j$ at a
+bracketing pressure is not positive ($\ln k$ undefined) the interpolation falls
+back to the linear one in $\ln P$ of $k$ itself.  The reaction line's own
+nominal $A\,b\,E_a$ is not used.  A reversible PLOG reaction takes its reverse
+leg from detailed balance, $k_r=k(T,P)/K_c$ as for the other laws
+(\eqref{eq:k-rev}).
+
+\paragraph{Grammar.}
+\begin{verbatim}
+kinetics
+{
+    type  plog;
+    plog  ( { P 0.1 atm; A 1.0e10; b 0.5; Ea 20.0; }
+            { P 1   atm; A 2.0e10; b 0.5; Ea 20.0; } ... );
+    units { A "cm3/mol/s"; Ea "kcal/mol"; }
+}
+\end{verbatim}
+$P$ carries its unit through the dictionary's unit machinery (\code{atm},
+\code{bar}, \code{Pa}), so \code{atm} is read as 101325~Pa; $A$ and $E_a$ are
+converted exactly as in Section~\ref{sec:elementary-rate}, with the same
+molecularity for every line.  \code{thirdBody}, \code{low} and \code{troe} on a
+PLOG reaction are refused by name.
+
+\paragraph{Where the pressure comes from.}  The law reads the state pressure,
+so a vessel that carries none refuses it at construction, by name:
+\code{pfr} and \code{cstr} hand it the feed/bed pressure; a
+\code{batchReactor} offers $P=nR T/V$ of its closed ideal gas in
+\code{energy gasConstantV} (the pressure rises through an ignition and the
+interpolation follows it) and in \code{energy gasConstantP}
+(Section~\ref{sec:batch-gas-constp}: there $V=nRT/P$, so the same expression
+returns the holdup's fixed pressure: the R1 reaction of
+\code{ignition03\_h2air\_constp}, 5~bar, written as a PLOG at 2.5~bar with $A/2$
+and 10~bar with $2A$, reproduces every printed digit of that case); a liquid
+batch vessel and \code{dynamicCSTR} refuse it.
+
+\paragraph{Jacobian.}  The pressure depends, in a constant-volume gas, on every
+$n_k$ and on $T$.  The analytic Jacobian of the batch vessel differences a
+PLOG reaction, like every factory law, by a forward difference of that
+reaction's own rate over all species, and the $T$ column is one difference of
+the whole right-hand side; $P(n,T)$ is recomputed inside the rate evaluation,
+so both columns carry it, and the integrator's audit against the dense finite
+difference still holds (it passes on the fixture below).
+
+\paragraph{Validity and witnesses.}  Ideal-gas mass action, $k$ within the
+tabulated pressure range (outside it the law is constant, not predictive).
+Four \code{pfr} witnesses, \code{plog01}--\code{plog04}, are built so that the
+hand value is the law of \code{elementary01a}: a one-line table, $P$ exactly at
+a line, $P=3$~bar midway in $\ln P$ between 1 and 9~bar
+($A=\sqrt{0.6\cdot 2.4}\times10^{7}=1.2\times10^{7}$; interpolating $k$ itself
+would give $1.5\times10^{7}$, $\ln k$ linearly in $P$ $0.85\times10^{7}$), and
+two lines at one pressure summed.  \code{bin/curate/check\_plog.py} holds each to
+$10^{-9}$ against the hand value and sees a table defect.  Against Cantera, a
+numerical fixture (one reaction of the LLNL H$_2$ mechanism rewritten as a
+three-line PLOG; not chemistry) gives the same ignition delay to the 0.1~$\mu$s
+grid and $T$ within 0.25~K along the trajectory
+(\file{docs/reviews/2026-11-19-chemkin-real-mechanism/REPORT.md}, section~8).
+
 \subsection{Reversible reactions: the reverse rate from thermodynamics}
 
 A reversible reaction must relax to chemical equilibrium, so its
@@ -38106,6 +38532,17 @@ which introduces a factor for every net mole produced:
     \qquad \Delta\nu = \sum_i \nu_i .\,}
     \label{eq:Kc}
 \end{equation}
+The $g_i^\circ(T)$ of \eqref{eq:Kp} are evaluated \emph{once per species
+per right-hand-side evaluation}, not once per reaction the species appears
+in: the reactor builds the vector $g_i^\circ(T)$ for the species of its
+reversible reactions at the evaluation's single temperature
+(\code{Reaction::gibbsVector}) and hands it down to every $K_c$ of that
+evaluation (\code{Reaction::equilibriumKc} with a $g$ argument).  The
+arithmetic and its order are those of the per-reaction form, so the result is
+bit-identical; only the repeated evaluation of the NASA-polynomial integrals is
+removed.  There is deliberately no cache keyed on $T$ inside the property
+layer: the vector is an argument, so the value a $K_c$ reads is visible at the
+call.
 
 \begin{pitfall}
 The $(P^\circ/\Rgas T)^{\Delta\nu}$ factor is \emph{mandatory} whenever
@@ -38142,6 +38579,259 @@ mechanism file, whose particular arrangement may carry its compiler's
 licence.  Standard graduate texts for this chapter are C.~K.~Law,
 \emph{Combustion Physics} (Cambridge, 2006), and S.~R.~Turns,
 \emph{An Introduction to Combustion} (McGraw-Hill).
+
+\subsection{The analytic Jacobian of a batch reactor's kinetics, and its audit}\label{sec:batch-analytic-jacobian}
+
+A Rosenbrock step (Section~\ref{ch:stiff-ode}) factorises
+$\mathbf W = \mathbf I - h\gamma\Jac$ once per step.  By default
+Choupo builds $\Jac$ by forward differences: each of the $N+1$ state
+entries ($N$ mole numbers and $T$) is perturbed in turn and the whole
+right-hand side is evaluated again --- $N+1$ evaluations per Jacobian,
+each one recomputing every rate coefficient and every $K_c$.  The
+\code{batchReactor} key \code{solver \{ jacobian analytic; \}} replaces
+that with the derivatives of the rate laws themselves
+(\code{BatchReactor::odeJacobian},
+\code{src/unitOperations/batch/BatchReactor.cpp}); the default stays
+\code{finiteDifference}, and any other word is refused by name.
+
+\paragraph{Species columns.}  With the state
+$\Yv = (n_1,\dots,n_N,T)$, constant volume $V$ and $c_k = n_k/V$,
+\begin{equation}
+    \frac{\mathrm d n_i}{\mathrm dt} = \sum_j \nu_{ij}\, r_j\, V
+    \quad\Longrightarrow\quad
+    \frac{\partial \dot n_i}{\partial n_k}
+      = \sum_j \nu_{ij}\, \frac{\partial r_j}{\partial c_k}.
+    \label{eq:batch-jac-species}
+\end{equation}
+For a mass-action leg $r_f = k\prod_s f_s$ with
+$f_s = c_s^{\,m_s}$ (clamped at $c_s = 0$ for a positive order, exactly
+as the rate is), the derivative is the \emph{product of the other
+factors},
+\begin{equation}
+    \frac{\partial r_f}{\partial c_k}
+      = \frac{\partial k}{\partial c_k}\prod_s f_s
+      \;+\; k \sum_{s:\,\text{species }k} m_s\, c_k^{\,m_s-1} \prod_{s'\neq s} f_{s'},
+    \label{eq:batch-jac-mass-action}
+\end{equation}
+never $m_k r_f / c_k$, which would divide by a radical that has not
+formed yet.  The coefficient depends on the concentrations only through
+$[\mathrm M]$ \eqref{eq:third-body}:
+\begin{itemize}
+    \item third body, $k = k_0(T)[\mathrm M]$:
+    $\partial k/\partial c_k = k_0\,\varepsilon_k$;
+    \item Lindemann fall-off \eqref{eq:falloff} with $F=1$:
+    $\partial k/\partial[\mathrm M] = k_0/(1+P_r)^2$, exactly;
+    \item Troe fall-off: $\partial k/\partial[\mathrm M]$ by a central
+    difference of the engine's one fall-off function in $[\mathrm M]$
+    alone, step $\epsilon^{1/3}[\mathrm M]$ --- one scalar per reaction,
+    not a column, and the Troe formula keeps its single home;
+\end{itemize}
+and then $\partial k/\partial c_k = \varepsilon_k\,\partial k/\partial[\mathrm M]$.
+A reversible leg \eqref{eq:k-rev} is differentiated the same way with
+$k/K_c$ and the products' orders $\nu_s$, $K_c$ \eqref{eq:Kc} being
+evaluated \emph{once} per reaction at the $T$ of the call (it does not
+depend on $c$).  A \code{catalystLoading} multiplies both.  A rate law
+built by the shared factory (\code{LHHW}, \code{type expression}, a
+case's own law) is differenced reaction by reaction over \emph{every}
+species column, because such a law receives the whole concentration and
+mole-fraction vectors (an adsorption denominator may hold a species
+outside its stoichiometry, and $x_i$ moves with every $n_k$); the same
+is done for a power below one at zero concentration, whose one-sided
+derivative is infinite.
+
+\paragraph{Energy row.}  By the chain rule on the same columns,
+\begin{align}
+    \text{gasConstantV:}\quad
+    \frac{\partial \dot T}{\partial n_k}
+      &= -\,\frac{\sum_i u_i\,\partial \dot n_i/\partial n_k \;+\; \dot T\, C_{v,k}}
+                {\sum_i n_i C_{v,i}}, \notag\\
+    \text{liquidDH:}\quad
+    \frac{\partial \dot T}{\partial n_k}
+      &= -\,\frac{\sum_j \Delta H_j\,\partial r_j/\partial c_k \;+\; \dot T\, C_{p,k}}
+                {\sum_i n_i C_{p,i}},
+    \label{eq:batch-jac-energy}
+\end{align}
+the second term being the derivative of the heat-capacity sum.  The
+\emph{temperature column} is one forward difference of the whole
+right-hand side (one evaluation, the integrator's own step for that
+row): every $k$, $K_c$, $u_i$ and $C_{v,i}$ depends on $T$, and their
+closed-form derivatives would be a second home for the thermodynamics.
+Isothermal, the right-hand side reads the set point, not $\Yv_{N+1}$, so
+the column is exactly zero and costs nothing.  A Jacobian therefore
+costs one right-hand side plus the rate derivatives, whatever $N$ is.
+
+\paragraph{The audit.}  Rosenbrock23 and Rodas4 are \emph{not}
+W-methods: their order conditions assume the true $\Jac$ in
+$\mathbf W$.  An incomplete analytic Jacobian does not stop the
+integration --- the embedded error estimate still accepts or rejects
+each step --- it makes the run silently slower or less accurate.
+Measured by sabotage (the third-body term dropped from $\Jac$ only, on
+\code{ignition01\_h2o2\_jac}): Rodas4 took 3317 steps instead of 602,
+and every KPI of the golden still passed.  So the claim is measured
+(\code{ODEAnalyticJacobian}, \code{src/solver/ODE/ODEIntegrator.H}): at
+the 1st, 2nd, 4th, 8th, \dots\ analytic Jacobian --- doubling, so a term
+that is zero at the initial state is seen once it is not, at
+$\log_2$ of the Jacobian count in all --- the integrator builds a
+reference by \emph{central} differences, step $\epsilon^{1/3}s_j$ on row
+sizes $s_j = \max(|n_j|,\,10^{-2}\sum_i n_i)$ and $s_T = T$ (forward,
+step $\epsilon^{1/2}s_j$, where a guarded mole number sits within the
+step of zero).  Every entry is made a rate per unit size,
+$\hat J_{ij} = J_{ij}\,s_j/s_i$, and each column is compared on its own
+scale,
+\begin{equation}
+    d_j = \frac{\max_i |\hat J^{\,a}_{ij} - \hat J^{\,\mathrm{fd}}_{ij}|}
+               {\max\!\bigl(\max_i \max(|\hat J^{\,a}_{ij}|,|\hat J^{\,\mathrm{fd}}_{ij}|),\;
+                10^{-3}\rho\bigr)},
+    \qquad \rho = \max_{ij}|\hat J_{ij}|,
+    \label{eq:batch-jac-audit}
+\end{equation}
+the floor $10^{-3}\rho$ serving a column whose entries all cancel (a
+bath gas's third-body column at equilibrium is forward and reverse legs
+of equal size).  A column with $d_j > 10^{-4}$ refuses the run by name
+--- row, column and both numbers.  The first audit is announced at
+verbosity~1 and every audit at verbosity~3.
+
+\begin{pitfall}
+The reference must not be the integrator's own difference.  Its step,
+$\epsilon^{1/2}\max(|y_j|,\mathrm{atol})$, is about $10^{-23}$~kmol for a
+radical not yet formed, and the rounding of $f$ --- a sum of large terms
+that cancel --- divided by it is larger than the column: on the first
+run the temperature row of the $\mathrm{H_2O_2}$ column came out 1.55 of
+its scale wrong \emph{in the difference}.  The same small step read an
+LHHW column as exactly zero against $-0.058$.  The default
+finite-difference Jacobian carries that noise in its trace columns;
+the analytic one does not.
+\end{pitfall}
+
+\begin{example}[What it buys]
+\code{ignition01\_h2o2} (9 species, 21 reactions, Rosenbrock23) on the
+finite-difference Jacobian: 1939 accepted and 23 rejected steps, 27\,668
+right-hand sides (14 per step: one, ten for the Jacobian, one for
+$\partial f/\partial t$, two stages); on the analytic one
+(\code{ignition01\_h2o2\_jac}): the same steps and 8\,252 right-hand sides
+(4 per step: $\partial f/\partial t$ is skipped because the chemistry is
+autonomous), the burned state equal to $6\times10^{-12}$ relative.  The
+saving is $N$ evaluations per Jacobian, so it grows with the mechanism.
+\end{example}
+
+\subsection{Which reaction governs an ignition: brute-force sensitivity of the delay}\label{sec:ignition-sensitivity}
+
+A mechanism has dozens of reactions and an ignition delay depends on a handful.
+\code{sensitivity \{ \dots \}} on a \code{batchReactor} says which: it repeats
+the integration once per reaction with that reaction faster by a stated factor
+and reports how much the delay moved.  There is no adjoint and no direct
+(forward-sensitivity) method: the cost is $N_r+1$ integrations of the vessel,
+each exactly the integration the run itself would do, and a student can read it
+in one function.
+
+\paragraph{The response, $\tau$.}  For one integration from the vessel's initial
+state $(\mathbf n_0,T_0)$ the delay is the time at which the temperature first
+exceeds $T_0+\Delta T$ (\code{rise}, default 400~K), \emph{interpolated
+linearly between the two accepted integrator states that bracket it}:
+\begin{equation}
+    \tau \;=\; t_k + \frac{(T_0+\Delta T) - T_k}{T_{k+1}-T_k}\,(t_{k+1}-t_k),
+    \qquad T_k \le T_0+\Delta T < T_{k+1}.
+    \label{eq:ign-tau}
+\end{equation}
+The delay that \code{choupoBatch} prints in the epilogue (the time of maximum
+$\mathrm{d}T/\mathrm{d}t$ on the write grid) has the resolution of the write
+interval, which is the size of the effect for a 10~\% change of a minor
+reaction; Eq.~\eqref{eq:ign-tau} has the resolution of the integrator.  The step
+is capped at $2\times10^{-4}$ of the run's \code{endTime} so that the chord
+stays inside a short step.  After the crossing the integration continues to
+\code{endTime}, only to record $T_{\mathrm{end}}$ (below).
+
+\paragraph{The coefficient.}  With the rate of reaction $j$ multiplied by $m_j$
+and every other reaction untouched, the normalised sensitivity is
+\begin{equation}
+    S_j \;=\; \frac{\partial\ln\tau}{\partial\ln m_j}
+        \;\approx\; \frac{\ln\tau(m_j=f)-\ln\tau(m=\mathbf 1)}{\ln f},
+    \label{eq:ign-S}
+\end{equation}
+a forward difference in $\ln m_j$ with the step $\ln f$ (\code{factor}, default
+1.1).  Its truncation error is $\tfrac12 f'' \ln f$ with $f''=\partial^2\ln\tau/\partial(\ln m_j)^2$:
+for $f=1.1$, $\ln f=0.095$, a coefficient of $-1.02$ carries an error of order $0.05\,f''$, which
+is the reason the factor is a key and not a constant.  A smaller factor reduces it and amplifies the noise in $\tau$ by $1/\ln f$; against Cantera's CVODES, a different integrator on the same problem, $S$ agrees to $2\times10^{-5}$ for $f=1.1$ (below), so the noise is at most that and $f=1.1$ is limited by the finite difference, not by the solver.
+$S_j<0$: a faster reaction shortens the delay (promotes ignition); $S_j>0$: it
+lengthens it (inhibits).  The base and every perturbed run use the \emph{same}
+integrator, tolerances and Eq.~\eqref{eq:ign-tau}, so the bias of the delay
+cancels in the difference.
+
+\paragraph{The multiplier convention.}  $m_j$ multiplies the \emph{net} rate,
+\begin{equation}
+    r_j \;\to\; m_j\,(r_j^{\rightarrow}-r_j^{\leftarrow})
+    \;=\; m_j\,\bigl(k_j\,\Pi_{\mathrm{f}} - (k_j/K_{c,j})\,\Pi_{\mathrm{r}}\bigr),
+    \label{eq:ign-mult}
+\end{equation}
+that is, $k_j\to m_jk_j$ and, because the reverse constant is $k_j/K_{c,j}$
+(Eq.~\eqref{eq:k-rev}), $k_{r,j}\to m_jk_{r,j}$ with it.  This is Cantera's
+\code{Kinetics.set\_multiplier}.  Forward and reverse move together, so $K_{c,j}$
+and the final equilibrium state are those of the unperturbed mechanism.  A
+multiplier on the forward rate alone would change $K_{c,j}$: the perturbed run
+would end in a different state, and the table would still print a plausible $S_j$
+because early in an ignition the reverse leg is small.  The multiplier is a member
+of the reaction record, applied in one place (\code{rateOfReaction\_}) and in the
+same place of the analytic Jacobian (\code{rateGradient\_}), so
+\code{jacobian analytic;} remains audited.
+
+\paragraph{Grammar.}
+\begin{verbatim}
+sensitivity { response tauIgnition; factor 1.1; reactions all; top 6; rise 400; }
+\end{verbatim}
+\code{reactions} is \code{all} or a list of the vessel's reaction names (a name that
+is not one is refused); \code{top} is how many $S_j$ become result KPIs
+(\code{sens\_S\_<name>}), beside \code{sens\_tau0}; every reaction is in
+\code{sensitivity.csv} with its $\tau_j$ and the final temperature of its run.  An
+unknown key, \code{factor}~$\le 1$, an integrator other than Rosenbrock23 or Rodas4
+(the $N_r+1$ integrations are stiff), a vessel that is not \code{mode adiabatic}
+(no delay exists), and a base run that does not reach $T_0+\Delta T$ by
+\code{endTime} are each refused by name.  Absent the block, nothing here runs and
+every output is byte-identical.
+
+\paragraph{What holds it.}  \texttt{bin/curate/check\_ignition\_sensitivity.py}:
+(a) the $N_r$ perturbed runs end at the base run's temperature within $10^{-6}$
+(measured $7\times10^{-12}$), which a forward-only multiplier fails at
+$2.5\times10^{-3}$; (b) $S$ of the top reaction equals $\ln(\tau'/\tau)/\ln f$ from two
+\emph{separate} runs of the case, the second with that reaction's \code{A} multiplied by $f$
+in a copy, to $10^{-6}$ (measured $5\times10^{-13}$; the forward-only multiplier misses by
+$4\times10^{-3}$).
+
+\begin{example}[Stoichiometric H$_2$/air, 1100~K, 2~atm, constant volume]
+\code{ignition04\_h2air\_sensitivity} (the O Conaire 2004 mechanism, 21 reactions
+including the duplicate pairs counted separately), $\tau_0=45.12\ \mu$s:
+\begin{center}\small
+\begin{tabular}{llr}
+\toprule
+reaction & role & $S_j$\\
+\midrule
+R1 \; H + O$_2$ = O + OH & chain branching & $-1.025$\\
+R9 \; H + O$_2$ (+M) = HO$_2$ (+M) & chain termination & $+0.366$\\
+R2 \; O + H$_2$ = H + OH & branching & $-0.150$\\
+R3 \; OH + H$_2$ = H + H$_2$O & propagation & $-0.050$\\
+R10 \; HO$_2$ + H = H$_2$ + O$_2$ & & $-0.049$\\
+R11 \; HO$_2$ + H = 2 OH & & $-0.035$\\
+the other 15 & & $|S|<0.004$\\
+\bottomrule
+\end{tabular}
+\end{center}
+The termination step R9 has the opposite sign to the branching step R1 because it
+takes H atoms from it.  \textbf{Witness.}  The same brute force in Cantera 3.2.0
+(\code{IdealGasReactor}, constant volume, \code{set\_multiplier(1.1, j)}, the same
+Eq.~\eqref{eq:ign-tau}) on the LLNL form of the mechanism imported by
+\texttt{chemkin\_to\_choupo.py} (the reverse from the thermochemistry in both codes),
+same mixture, $T_0$ and $P_0$: $\tau_0$ 44.958570 against 44.958848~$\mu$s (relative
+$-6\times10^{-6}$), the top five in the same order, worst $|S_j^{\mathrm{Choupo}}-S_j^{\mathrm{Cantera}}|$
+over all 21 reactions $2\times10^{-5}$ (\texttt{docs/reviews/2026-11-19-chemkin-real-mechanism/REPORT.md},
+section~10).  The case's own mechanism (Table~I as printed, catalogue thermo) gives the
+numbers above, within 0.006 of the LLNL form for every $|S|>0.03$.
+\end{example}
+
+\paragraph{Limits.}  The response is one: the delay as defined by a temperature rise.
+The derivative is a finite difference at the base point, so a reaction whose
+sensitivity changes sign within a factor of 1.1 is mis-stated, and the table is a
+statement about this initial state ($T_0$, $P_0$, composition), not about the mechanism.
+Constant-pressure vessels (\code{energy gasConstantP}) use the same code
+but are not witnessed.  Cost: $N_r+1$ integrations, about 7~s for the 21 reactions above.
 
 % ---------------------------------------------------------------------
 \section{Polymerisation: chain statistics from conversion}\label{ch:polymers}

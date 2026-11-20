@@ -36,6 +36,8 @@ License
 #include "thermo/vaporPressure/AmbroseWalton.H"
 
 #include "thermo/RecordResolver.H"
+#include "core/Units.H"
+#include <optional>
 #include <chrono>
 #include <cmath>
 #include <ctime>
@@ -545,13 +547,19 @@ int EstimateComponent::run(const DictPtr& dict,
     //   displayed reference is divided by `refScale` so it reads in the same
     //   unit as the estimate (e.g. Pa->bar with refScale=1e5).
     auto line = [&](const char* label, double val, const char* unit,
-                    const char* refKey, double valForRef, double refScale = 1.0)
+                    const char* refKey, double valForRef, double refScale = 1.0,
+                    const char* bareUnit = nullptr)
     {
         std::cout << "    " << std::left << std::setw(26) << label << std::right
                   << std::setw(10) << val << " " << std::left << std::setw(8) << unit;
         if (ref && refKey && ref->found(refKey))
         {
-            const double rv = ref->lookupScalar(refKey);     // SI for dim'd keys
+            //  A key whose bare number is in a working unit (`Pc`, bar) is
+            //  read through the one reader, so a bare reference and a
+            //  declared one mean the same thing (DEV.md 4c C454).
+            const auto bu = bareUnit ? units::lookupUnit(bareUnit) : std::nullopt;
+            const double rv = bu ? ref->lookupScalarIn(refKey, bu->dims, bareUnit) * bu->factor
+                                 : ref->lookupScalar(refKey);     // SI for dim'd keys
             const double dev = (valForRef - rv) / (std::abs(rv) > 1e-30 ? rv : 1.0) * 100.0;
             std::cout << std::right << "  ref " << std::setw(9) << std::setprecision(3)
                       << (rv / refScale)
@@ -565,7 +573,7 @@ int EstimateComponent::run(const DictPtr& dict,
     line("MW",                        MW,     "g/mol", nullptr, MW);
     line("Tb (normal boiling)",       Tb,     "K",     "Tb",    Tb);
     line("Tc (critical)",             Tc,     "K",     "Tc",    Tc);
-    line("Pc (critical)",             Pc_bar, "bar",   "Pc",    Pc_bar * 1.0e5, 1.0e5);  // ref Pa->bar
+    line("Pc (critical)",             Pc_bar, "bar",   "Pc",    Pc_bar * 1.0e5, 1.0e5, "bar");  // ref Pa->bar
     line("Vc (critical)",             Vc,     "cm3/mol", nullptr, Vc);
     line("omega (Lee-Kesler)",        omega,  "-",     "omega", omega);
     line("dHf_298 (ideal gas)",       Hf,     "kJ/mol", nullptr, Hf);
@@ -764,13 +772,19 @@ int EstimateComponent::runScalar(const DictPtr& dict, const std::string& comp,
     const ValidationBlock refBlock = validationBlock(dict);
     const DictPtr& ref = refBlock.dict;
     auto line = [&](const char* label, double val, const char* unit,
-                    const char* refKey, double valForRef, double refScale = 1.0)
+                    const char* refKey, double valForRef, double refScale = 1.0,
+                    const char* bareUnit = nullptr)
     {
         std::cout << "    " << std::left << std::setw(26) << label << std::right
                   << std::setw(10) << val << " " << std::left << std::setw(8) << unit;
         if (ref && refKey && ref->found(refKey))
         {
-            const double rv = ref->lookupScalar(refKey);
+            //  A key whose bare number is in a working unit (`Pc`, bar) is
+            //  read through the one reader, so a bare reference and a
+            //  declared one mean the same thing (DEV.md 4c C454).
+            const auto bu = bareUnit ? units::lookupUnit(bareUnit) : std::nullopt;
+            const double rv = bu ? ref->lookupScalarIn(refKey, bu->dims, bareUnit) * bu->factor
+                                 : ref->lookupScalar(refKey);     // SI for dim'd keys
             const double dev = (valForRef - rv) / (std::abs(rv) > 1e-30 ? rv : 1.0) * 100.0;
             std::cout << std::right << "  ref " << std::setw(9) << std::setprecision(3)
                       << (rv / refScale)
@@ -792,7 +806,7 @@ int EstimateComponent::runScalar(const DictPtr& dict, const std::string& comp,
     line("MW",                  MW,     "g/mol", "MW",    MW);
     line("Tb (anchor)",         Tb,     "K",     "Tb",    Tb);
     line("Tc (critical)",       Tc,     "K",     "Tc",    Tc);
-    line("Pc (critical)",       Pc_bar, "bar",   "Pc",    Pc_bar * 1.0e5, 1.0e5);
+    line("Pc (critical)",       Pc_bar, "bar",   "Pc",    Pc_bar * 1.0e5, 1.0e5, "bar");
     line("Vc (critical)",       Vc,     "cm3/mol", "Vc",  Vc);
     line("omega (Lee-Kesler)",  omega,  "-",     "omega", omega);
     line("Cp_ig(298 K)",        Cp(298.15), "J/mol/K", nullptr, Cp(298.15));

@@ -484,7 +484,7 @@ std::vector<EquipmentSizing> ShellTubeHX::size(const std::string& unitName,
             refuseCross(unitName, uName, cooling, Tpi, Tpo, ut, dT1, dT2);
         const scalar LMTD = counterCurrentLMTD(dT1, dT2);
         const scalar U = designRules->lookupScalar("U");
-        const scalar pressureDesign = designRules->lookupScalar("pressureDesign");
+        const scalar pressureDesign = designRules->lookupScalarIn("pressureDesign", Dims::pressure, "bar");
         char line[320];
         std::snprintf(line, sizeof(line),
             "  [basis] shellTubeHX '%s': LMTD %.6g K computed against utility"
@@ -518,7 +518,7 @@ std::vector<EquipmentSizing> ShellTubeHX::size(const std::string& unitName,
               " passed through without one.");
     const scalar U    = k.count("U")    ? k.at("U")    : 0.0;
     const scalar LMTD = k.count("LMTD") ? k.at("LMTD") : 0.0;
-    const scalar pressureDesign = designRules->lookupScalar("pressureDesign");
+    const scalar pressureDesign = designRules->lookupScalarIn("pressureDesign", Dims::pressure, "bar");
     return { exchangerRecord(unitName, Q_kW, U, LMTD, A, pressureDesign,
         material,
         "A = the unit's own rated area (pass-through); U and LMTD read from"
@@ -577,8 +577,8 @@ EquipmentSizing ShellTubeHX::sizeFromDuty(const std::string& unitName,
     const std::string&      equipmentTag)
 {
     const scalar U              = designRules->lookupScalar("U");        // W/(m²·K)
-    const scalar LMTD           = designRules->lookupScalar("LMTD");      // K
-    const scalar pressureDesign = designRules->lookupScalar("pressureDesign");
+    const scalar LMTD           = designRules->lookupTemperatureDifference("LMTD");      // K
+    const scalar pressureDesign = designRules->lookupScalarIn("pressureDesign", Dims::pressure, "bar");
 
     return exchangerRecord(unitName, Q_kW, U, LMTD, areaFromDuty(Q_kW, U, LMTD),
         pressureDesign, material, "A = Q/(U*LMTD) with U and LMTD author-set",
@@ -1550,7 +1550,7 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
               << " separate shells of A/" << nShells << " each would cost more)";
     for (const auto& w : warnings) basis << "; WARNING: " << w;
 
-    const scalar pressureDesign = designRules->lookupScalar("pressureDesign");
+    const scalar pressureDesign = designRules->lookupScalarIn("pressureDesign", Dims::pressure, "bar");
     EquipmentSizing d = exchangerRecord(unitName, Q_kW, U, LMTD, e.A,
                                         pressureDesign, material, basis.str(),
                                         equipmentTag);

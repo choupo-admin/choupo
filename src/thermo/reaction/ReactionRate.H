@@ -56,10 +56,11 @@ Description
     (`reactions ( ... );`) take EVERY law through `New`.  `batchReactor` and
     `dynamicCSTR` keep their own readers for the words they own -- the batch
     vessel's `Arrhenius` / `modifiedArrhenius` / `thirdBody` / `falloff`
-    carry CHEMKIN unit conversion and pressure fall-off that no law here
-    has, and the dynamic CSTR's `Arrhenius` is wired into its own energy
-    probe -- and send every OTHER word (`LHHW`, `expression`, a user law)
-    here.  The SINGLE-reaction paths of `cstr` and `pfr` (`reaction
+    are read by its own code (the three CHEMKIN words are ALSO a factory
+    law here, `ElementaryRate`, so a `cstr` / `pfr` runs them with the same
+    grammar and the same unit conversion, in the caller's amount unit), and
+    the dynamic CSTR's `Arrhenius` is wired into its own energy probe -- and
+    send every OTHER word (`LHHW`, `expression`, a user law) here.  The SINGLE-reaction paths of `cstr` and `pfr` (`reaction
     <name>;`) keep their closed-form Arrhenius reader (Damkohler number and
     the analytic first-order check are about THAT law) and refuse any other
     word naming the multi-reaction grammar.  The reactive distillation
@@ -106,6 +107,10 @@ struct RateState
     const sVector* x    = nullptr;       // mole fractions of the reacting fluid
     scalar         amountPerKmol = 1000.0;   // 1000: conc in mol/m3; 1: in kmol/m3
     const sVector* act  = nullptr;       // activities gamma_i x_i (only the column supplies them)
+    //  g_i(T) = comp(i).g_pure_ig(T) at THIS state's T, for the species of every
+    //  law that asks `gibbsStoichiometry()`; null = the law computes it itself
+    //  (bit-identical either way).  Owned by the caller for one evaluation.
+    const sVector* gibbs = nullptr;
 };
 
 //- What a reactor can hand a law.
@@ -157,6 +162,11 @@ public:
     //- Whether the law reads concentrations at all (a gas bed whose law is in
     //  T, P and mole fractions never asks the reactor for a liquid basis).
     virtual bool needsConcentration() const { return true; }
+
+    //  Non-null when the law's reverse leg is built from detailed balance
+    //  (Kc from Gibbs energies): the full-length stoichiometry whose species'
+    //  g(T) a caller may hand in through RateState::gibbs.  Null otherwise.
+    virtual const sVector* gibbsStoichiometry() const { return nullptr; }
 
     //- The basis the law DECLARES: "reactorVolume", "catalystMass", or ""
     //  when the law does not declare one (Arrhenius / LHHW: the reactor's

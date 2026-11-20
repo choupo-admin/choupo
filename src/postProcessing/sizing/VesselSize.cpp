@@ -159,7 +159,7 @@ std::vector<EquipmentSizing> VesselSize::size(const std::string& unitName,
         //  a declared word and REFUSES when there is none, quoting the ratio
         //  at THIS unit's own conditions so the size of the trap is in the
         //  message, not in a reader's head.
-        const scalar SV = designRules->lookupScalar("spaceVelocity");   // 1/h
+        const scalar SV = designRules->lookupScalarIn("spaceVelocity", Dims::inverseTime, "1/h");   // bare = 1/h (C454 family 10)
         const scalar Q_normal_m3s =
             N_mol_s * constant::R * constant::T_normal / constant::P_normal;
         const scalar ratio = Q_normal_m3s / Q_m3s;     // = T_n P / (P_n T)
@@ -238,7 +238,7 @@ std::vector<EquipmentSizing> VesselSize::size(const std::string& unitName,
     //  is ever raised about a size that will not exist.  "the size below was
     //  computed with the built-in default 0.003 m" is false when the unit
     //  then refuses and there is no size below.
-    const scalar pressureDesign = designRules->lookupScalar("pressureDesign");   // bar
+    const scalar pressureDesign = designRules->lookupScalarIn("pressureDesign", Dims::pressure, "bar");   // bar
     if (material.sigma_y <= 0.0)
         throw std::runtime_error("Vessel: material '" + material.name
             + "' has no sigma_y defined");

@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PFR.H"
+#include "unitOperations/hydraulics/packedBed/ErgunEquation.H"
 #include "thermo/PropertyDomainError.H"
 #include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
@@ -721,6 +722,15 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     for (std::size_t i = 0; i < n; ++i) F_i[i] = z_in[i] * F_in;
     bool anyConcLaw = false;
     for (std::size_t j = 0; j < R; ++j) if (law[j]->needsConcentration()) anyConcLaw = true;
+    //  The species whose g(T) a detailed-balance law reads: evaluated once per
+    //  right-hand side (all reactions share one Tk) instead of once per law.
+    std::vector<char> gWant;
+    for (std::size_t j = 0; j < R; ++j)
+        if (const sVector* nuLaw = law[j]->gibbsStoichiometry())
+        {
+            if (gWant.empty()) gWant.assign(n, 0);
+            Reaction::markSpecies(gWant, *nuLaw);
+        }
     const scalar V_mol_in = anyConcLaw
         ? feedMolarVolume(thermo, T, P, z_in, vf_in, unitNameOf(dict)) : 0.0;
     const scalar Q   = anyConcLaw ? F_in * V_mol_in : 0.0;
@@ -948,6 +958,8 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
         RateState rs;
         rs.T = Tk; rs.P = Pk; rs.conc = &conc; rs.x = &zz;
         rs.amountPerKmol = 1000.0;                   // the march is in mol
+        const sVector gT = gWant.empty() ? sVector() : Reaction::gibbsVector(thermo, gWant, Tk);
+        rs.gibbs = gT.empty() ? nullptr : &gT;
         for (std::size_t j = 0; j < R; ++j)
         {
             const scalar rj = catFactor * law[j]->netRate(thermo, rs);         // mol/(m^3.s)
@@ -1727,12 +1739,10 @@ PFR::ErgunTerms PFR::ergunTerms(const BedHydraulics& h, const ThermoPackage& the
     const scalar rho = 1.0e-3 * MW / vmol;                          // kg/m3
     const scalar u   = Ftot * vmol / h.A;                           // m/s, superficial
     const scalar mu  = thermo.viscosityGas(T, z);                   // Pa s
-    const scalar e   = h.eps;
-    const scalar a = 150.0 * (1.0 - e) * (1.0 - e) * mu / (e * e * e * h.dp * h.dp);
-    const scalar b = 1.75 * (1.0 - e) * rho / (e * e * e * h.dp);
+    const ergun::Coefficients k = ergun::coefficients(h.eps, h.dp, mu, rho);   // one home
     ErgunTerms t;
-    t.viscous  = a * u;
-    t.inertial = b * u * u;
+    t.viscous  = k.viscous * u;
+    t.inertial = k.inertial * u * u;
     return t;
 }
 
@@ -1787,10 +1797,8 @@ void PFR::publishBedHydraulics(const BedHydraulics& h, const ThermoPackage& ther
         mu  = thermo.viscosityGas(T, z);
         u = F * vmol / h.A;
         Re = rho * u * h.dp / (mu * (1.0 - h.eps));
-        const scalar e = h.eps;
-        const scalar a = 150.0 * (1.0 - e) * (1.0 - e) * mu / (e * e * e * h.dp * h.dp);
-        const scalar b = 1.75 * (1.0 - e) * rho / (e * e * e * h.dp);
-        inertial = b * u * u / (a * u + b * u * u);
+        const ergun::Coefficients k = ergun::coefficients(h.eps, h.dp, mu, rho);
+        inertial = k.inertial * u * u / (k.viscous * u + k.inertial * u * u);
     };
     scalar u_in, Re_in, in_in, u_out, Re_out, in_out, rho_in, mu_in, rho_out, mu_out;
     regime(T_in, P_in, z_in, F_in_mols, u_in, Re_in, in_in, rho_in, mu_in);

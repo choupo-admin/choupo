@@ -89,8 +89,8 @@ int FreezingPoint::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
     };
 
     auto md = dict->subDict("molality");
-    const scalar mFrom = md->lookupScalar("from");
-    const scalar mTo   = md->lookupScalar("to");
+    const scalar mFrom = md->lookupScalarIn("from", Dims::molality, "mol/kg");   // bare = mol/kg (C454 family 9)
+    const scalar mTo   = md->lookupScalarIn("to",   Dims::molality, "mol/kg");
     const int    n     = static_cast<int>(md->lookupScalar("n"));
 
     const std::string outFile_ = dict->subDict("output")->lookupWord("file");
@@ -166,7 +166,7 @@ int FreezingPoint::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
         scalar sum = 0.0; int nM = 0;
         for (const auto& e : pts)
         {
-            const scalar m = e->lookupScalar("m");
+            const scalar m = e->lookupScalarIn("m", Dims::molality, "mol/kg");   // mol/kg
             if (m < mFrom || m > mTo) continue;
             const scalar meas = e->lookupScalar("theta");   // depression [K]
             scalar lo = Tt - 45.0, hi = Tt + 0.5;

@@ -23,11 +23,11 @@
   period + phase)`), the dynamic binary integrates the plant, and
   `frequencyResponse {}` least-squares fits `a + b sin(wt) + c cos(wt)` to the
   outlet after the start-up transient is discarded
-  (src/dynamicDriver/DynamicDriver.cpp:2016-2048): amplitude
-  `hypot(b, c)` at src/dynamicDriver/DynamicDriver.cpp:2029, phase
-  `atan2(c, b)` at src/dynamicDriver/DynamicDriver.cpp:2031, and the share of
+  (src/dynamicDriver/DynamicDriver.cpp:2017-2049): amplitude
+  `hypot(b, c)` at src/dynamicDriver/DynamicDriver.cpp:2030, phase
+  `atan2(c, b)` at src/dynamicDriver/DynamicDriver.cpp:2032, and the share of
   the output variance the single sinusoid does NOT explain at
-  src/dynamicDriver/DynamicDriver.cpp:2048.  One run is
+  src/dynamicDriver/DynamicDriver.cpp:2049.  One run is
   ONE POINT of a Bode diagram, measured.  Everything this module contributes
   to that plane is the EXPERIMENT DESIGN — which frequencies to ask for, and
   what time step and run length each one needs — plus arithmetic on the
@@ -75,7 +75,7 @@ import type { ScalarOverride } from "../../case/methodRun.js";
 /** One frequency's answer: how much bigger the output swing is, and how far
  *  behind it runs.  `phaseRad` is NEGATIVE for a lag, which is the sign
  *  convention the engine's own fit publishes (`out_phase_rad` at
- *  src/dynamicDriver/DynamicDriver.cpp:2043 is the lag of the outlet behind the drive). */
+ *  src/dynamicDriver/DynamicDriver.cpp:2044 is the lag of the outlet behind the drive). */
 export interface Response {
   mag: number;
   phaseRad: number;
@@ -112,7 +112,7 @@ export function gainResponse(K: number): Response {
  *  THIS IS THE ONE ELEMENT THE ENGINE JUDGES.  It is the tracer dynamics of
  *  a constant-volume stirred tank: the engine integrates
  *  `dn_i/dt = F_in z_in_i - F_out (n_i/Sum n)` with `F_out = F_in`
- *  (src/unitOperations/dynamic/DynamicCSTR.cpp:787-790), whose single time
+ *  (src/unitOperations/dynamic/DynamicCSTR.cpp:805-808), whose single time
  *  constant is the residence time `nTot / F_in` the same unit computes at
  *  :628.  Put a sinusoid in and the closed forms below come out; the
  *  measured plane checks them. */

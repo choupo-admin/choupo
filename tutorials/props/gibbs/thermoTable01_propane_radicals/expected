@@ -1,0 +1,52 @@
+# platform cpu=Intel(R) Xeon(R) Processor @ 2.30GHz; arch=x86_64; libc=glibc 2.39; cxx=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; simd=sse4_1,avx,avx2,fma,avx512f
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    pyrolysis              betaScission_T1100K_dG_kJ_mol -39.703257309      1e-4
+diag    pyrolysis              betaScission_T1100K_dH_kJ_mol 97.5115598885      1e-4
+diag    pyrolysis              betaScission_T1100K_dS_J_molK 124.740742907      1e-4
+diag    pyrolysis              betaScission_T1100K_lnK 4.34109478138      1e-4
+diag    pyrolysis              betaScission_T298K_dG_kJ_mol 61.54406455        1e-4
+diag    pyrolysis              betaScission_T298K_dH_kJ_mol 98.43804           1e-4
+diag    pyrolysis              betaScission_T298K_dS_J_molK 123.743            1e-4
+diag    pyrolysis              betaScission_T298K_lnK -24.8265959499     1e-4
+diag    pyrolysis              betaScission_T800K_dG_kJ_mol -2.00661070527     1e-4
+diag    pyrolysis              betaScission_T800K_dH_kJ_mol 99.2133029213      1e-4
+diag    pyrolysis              betaScission_T800K_dS_J_molK 126.524892033      1e-4
+diag    pyrolysis              betaScission_T800K_lnK 0.301674743976     1e-4
+diag    pyrolysis              isomerisation_T1100K_dG_kJ_mol -3.45226389779     1e-4
+diag    pyrolysis              isomerisation_T1100K_dH_kJ_mol -11.1607433454     1e-4
+diag    pyrolysis              isomerisation_T1100K_dS_J_molK -7.00770858878     1e-4
+diag    pyrolysis              isomerisation_T1100K_lnK 0.377465372022     1e-4
+diag    pyrolysis              isomerisation_T298K_dG_kJ_mol -7.1725702         1e-4
+diag    pyrolysis              isomerisation_T298K_dH_kJ_mol -7.2               1e-4
+diag    pyrolysis              isomerisation_T298K_dS_J_molK -0.092             1e-4
+diag    pyrolysis              isomerisation_T298K_lnK 2.89338222264      1e-4
+diag    pyrolysis              isomerisation_T800K_dG_kJ_mol -5.40576255338     1e-4
+diag    pyrolysis              isomerisation_T800K_dH_kJ_mol -10.0979166615     1e-4
+diag    pyrolysis              isomerisation_T800K_dS_J_molK -5.86519263508     1e-4
+diag    pyrolysis              isomerisation_T800K_lnK 0.812704741387     1e-4
+diag    pyrolysis              primaryCH_T1100K_dG_kJ_mol 267.132141364      1e-4
+diag    pyrolysis              primaryCH_T1100K_dH_kJ_mol 431.239762821      1e-4
+diag    pyrolysis              primaryCH_T1100K_dS_J_molK 149.188746779      1e-4
+diag    pyrolysis              primaryCH_T1100K_lnK -29.2078288636     1e-4
+diag    pyrolysis              primaryCH_T298K_dG_kJ_mol 383.2455354        1e-4
+diag    pyrolysis              primaryCH_T298K_dH_kJ_mol 423.198828         1e-4
+diag    pyrolysis              primaryCH_T298K_dS_J_molK 134.004            1e-4
+diag    pyrolysis              primaryCH_T298K_lnK -154.599507305     1e-4
+diag    pyrolysis              primaryCH_T800K_dG_kJ_mol 311.670308005      1e-4
+diag    pyrolysis              primaryCH_T800K_dH_kJ_mol 429.608804144      1e-4
+diag    pyrolysis              primaryCH_T800K_dS_J_molK 147.423120173      1e-4
+diag    pyrolysis              primaryCH_T800K_lnK -46.8566524267     1e-4
+diag    pyrolysis              secondaryCH_T1100K_dG_kJ_mol 263.679877466      1e-4
+diag    pyrolysis              secondaryCH_T1100K_dH_kJ_mol 420.079019475      1e-4
+diag    pyrolysis              secondaryCH_T1100K_dS_J_molK 142.18103819       1e-4
+diag    pyrolysis              secondaryCH_T1100K_lnK -28.8303634916     1e-4
+diag    pyrolysis              secondaryCH_T298K_dG_kJ_mol 376.0729652        1e-4
+diag    pyrolysis              secondaryCH_T298K_dH_kJ_mol 415.998828         1e-4
+diag    pyrolysis              secondaryCH_T298K_dS_J_molK 133.912            1e-4
+diag    pyrolysis              secondaryCH_T298K_lnK -151.706125082     1e-4
+diag    pyrolysis              secondaryCH_T800K_dG_kJ_mol 306.264545452      1e-4
+diag    pyrolysis              secondaryCH_T800K_dH_kJ_mol 419.510887482      1e-4
+diag    pyrolysis              secondaryCH_T800K_dS_J_molK 141.557927538      1e-4
+diag    pyrolysis              secondaryCH_T800K_lnK -46.0439476854     1e-4

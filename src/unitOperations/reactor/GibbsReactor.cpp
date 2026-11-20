@@ -183,7 +183,7 @@ int GibbsReactor::solve(const DictPtr& dict,
     if (mode != "isothermal" && mode != "adiabatic")
         throw std::runtime_error("GibbsReactor: unknown mode '" + mode
             + "' (expected 'isothermal' or 'adiabatic')");
-    const scalar Q_kJ_per_kmol = operDict->lookupScalarOrDefault("Q", 0.0); if (dict->hasDictList("reactions")) for (const auto& rx : dict->lookupDictList("reactions")) refuseDeclaredHeat(*rx, "gibbsReactor", "It has no reactions and therefore no extents to multiply a per-extent heat by: it minimises G over element-conserving species, so a measured heat of reaction has nothing to correct.  Use a cstr, conversionReactor or batchReactor with the declared reaction.");
+    const scalar Q_kJ_per_kmol = operDict->lookupScalarInOrDefault("Q", 0.0, Dims::molarEnergy, "kJ/kmol");   /* C454 family 18: bare = kJ/kmol; a POWER (`Q -500 kW;`) is refused by its dimensions, it ran as -500 J/mol */ if (dict->hasDictList("reactions")) for (const auto& rx : dict->lookupDictList("reactions")) refuseDeclaredHeat(*rx, "gibbsReactor", "It has no reactions and therefore no extents to multiply a per-extent heat by: it minimises G over element-conserving species, so a measured heat of reaction has nothing to correct.  Use a cstr, conversionReactor or batchReactor with the declared reaction.");
 
     // `approachTemperature` is RETIRED (2026-09-26).  It was a SECOND approach
     // key read by this same solve, 76 lines above the one that announces
@@ -336,7 +336,7 @@ int GibbsReactor::solve(const DictPtr& dict,
     //  an invalid magnitude, refused by name.  The direction is resolved
     //  below, once the enthalpy surface is in hand (`approachDirection`).
     const scalar dTmagnitude = operDict->found("temperatureApproach")
-                             ? operDict->lookupScalar("temperatureApproach") : 0.0;
+                             ? operDict->lookupTemperatureDifference("temperatureApproach") : 0.0;
     if (dTmagnitude < 0.0)
     {
         std::ostringstream m;

@@ -127,6 +127,56 @@ scalar Reaction::equilibriumKc(const ThermoPackage&            thermo,
     return std::exp(-dG / (constant::R * T)) * concentrationFactor(sumNu, T);
 }
 
+scalar Reaction::equilibriumKc(const std::vector<std::size_t>& comps,
+                               const sVector&                  nu,
+                               scalar                          T,
+                               const sVector&                  g)
+{
+    scalar dG    = 0.0;
+    scalar sumNu = 0.0;
+    for (std::size_t s = 0; s < comps.size(); ++s)
+    {
+        dG    += nu[s] * g[comps[s]];
+        sumNu += nu[s];
+    }
+    return std::exp(-dG / (constant::R * T)) * concentrationFactor(sumNu, T);
+}
+
+scalar Reaction::equilibriumKc(const sVector& nu, scalar T, const sVector& g)
+{
+    return equilibrium(nu, T, g).Kc;
+}
+
+sVector Reaction::gibbsVector(const ThermoPackage&     thermo,
+                              const std::vector<char>& want,
+                              scalar                   T)
+{
+    sVector g(want.size(), 0.0);
+    for (std::size_t i = 0; i < want.size(); ++i)
+        if (want[i]) g[i] = thermo.comp(i).g_pure_ig(T);
+    return g;
+}
+
+void Reaction::markSpecies(std::vector<char>& want, const sVector& nu)
+{
+    for (std::size_t i = 0; i < nu.size() && i < want.size(); ++i)
+        if (nu[i] != 0.0) want[i] = 1;
+}
+
+Reaction::Equilibrium Reaction::equilibrium(const sVector& nu, scalar T, const sVector& g)
+{
+    scalar dG    = 0.0;
+    scalar sumNu = 0.0;
+    for (std::size_t i = 0; i < nu.size(); ++i)
+        if (nu[i] != 0.0)
+        {
+            dG    += nu[i] * g[i];
+            sumNu += nu[i];
+        }
+    const scalar Kp = std::exp(-dG / (constant::R * T));
+    return { Kp, sumNu, Kp * concentrationFactor(sumNu, T), -dG / (constant::R * T) };
+}
+
 scalar Reaction::equilibriumKc(const ThermoPackage& thermo,
                                const sVector&       nu,
                                scalar               T)

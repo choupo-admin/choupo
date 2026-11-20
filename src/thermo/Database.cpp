@@ -325,6 +325,27 @@ DictPtr Database::componentDict(const std::string& name) const
     // verified exists.
     fs::path proposed  = fs::path(root_) / "local"  / "components" / (name + ".dat");
 
+    //  A DECLARED species table (Database::speciesTables, header): only when
+    //  components/ holds no record of this name, only in an unsealed case,
+    //  and only for a table the case named.  The table's record is then the
+    //  base, labelled and announced once per component -- never a fallback
+    //  nobody asked for.
+    std::string tableHit;
+    if (!sealed && !fs::exists(standard))
+        for (const auto& t : speciesTables())
+        {
+            const fs::path cand = fs::path(root_) / "standards" / "thermoTables" / t / (name + ".dat");
+            if (fs::exists(cand)) { standard = cand; tableHit = t; break; }
+        }
+    if (!tableHit.empty())
+    {
+        static std::set<std::string> said;
+        if (said.insert(name).second)
+            std::cerr << "[thermoTable] component '" << name << "' read from the declared species table "
+                      << tableHit << " (data/standards/thermoTables/" << tableHit
+                      << "/, machine-transcribed, reviewStatus interim)\n";
+    }
+
     const bool hasCase       = !caseLocal.empty();
     const bool hasStd        = fs::exists(standard);
     const bool hasProposed   = fs::exists(proposed);

@@ -1,0 +1,28 @@
+# platform cpu=Intel(R) Xeon(R) Processor @ 2.10GHz; arch=x86_64; libc=glibc 2.39; cxx=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; simd=sse4_1,avx,avx2,fma,avx512f
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feed                   F                0.000277777777778  1e-4
+stream  feed                   T                900                1e-4
+stream  product                F                0.000277777777778  1e-4
+stream  product                T                900                1e-4
+kpi     reactor                F_in_kmol_h      1                  1e-4
+kpi     reactor                F_out_kmol_h     1                  1e-4
+kpi     reactor                Q_kW             -0.614575639582    1e-4
+kpi     reactor                T                900                1e-4
+kpi     reactor                T_out            900                1e-4
+kpi     reactor                V_R              0.01               1e-4
+kpi     reactor                k_isom           0.0168149710496    1e-4
+kpi     reactor                nReactions       1                  1e-4
+kpi     reactor                nSteps           200                1e-4
+kpi     reactor                tau_s            1.44326826054      1e-4
+boundary global               H_feeds_kW       -7.5088285604      1e-4
+boundary global               Q_boundary_kW    -0.614575639582    1e-4
+boundary global               H_products_kW    -8.12340419999     1e-4
+boundary global               noBoundary       false              exact
+boundary global               residual_denom_kW 0.614575639582     1e-4
+utility reactor                cooling.coolingWater.duty_kW -0.614575639582    1e-4
+utility reactor                cooling.coolingWater.T 900                1e-4
+utility reactor                cooling.coolingWater.kg_s 0.0147027664972    1e-4
+utility reactor                cooling.coolingWater.eur_h 0.000884988920998  1e-4
+source  reactor                vapourVolume     kernel.vapourVolume.equationOfState exact

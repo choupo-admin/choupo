@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  elementary03 (plain-Arrhenius side) -- a CHEMKIN Lindemann fall-off law in a PFR, REVERSIBLE
+  by detailed balance, against the Arrhenius law it equals.  nButane <=> isoButane,
+  gas, isothermal 900 K, isobaric 3 bar, ideal gas, no mole change: [M] = c =
+  P/(R T) = 40.0907850149809 mol/m3 (no thirdBody block: every efficiency 1) along the bed.
+  No `troe` list, so F = 1.
+    high-pressure limit kInf: A = 20 1/s, b = 0.3, Ea = 10 kcal/mol (41840 J/mol)
+                      kInf(900 K) = 0.5741426194765832 1/s
+    low-pressure limit  kLow: A = 2.0e5 cm6/mol2/s (x1e-6 = 0.2 m3/mol/s, molecularity 1+1),
+                      b = 0, Ea = 5 kcal/mol (20920 J/mol)  kLow(900 K) = 0.012214860588480175 m3/mol/s
+    Pr = kLow [M] / kInf = 0.8529298004164185;   k = kInf Pr/(1+Pr) = 0.26428597010565014 1/s
+  The equivalent Arrhenius case carries A = k with Ea = 0.
+  The two cases' outlets must agree to 1e-9 (bin/curate/check_elementary_rates.py).
+\*---------------------------------------------------------------------------*/
+
+isom
+{
+    reversible true;
+    stoichiometry
+    (
+        { component nButane;    nu -1;  order 1; }
+        { component isoButane;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type   Arrhenius;
+        A      0.26428597010565014;
+        Ea     0.0;
+    }
+}

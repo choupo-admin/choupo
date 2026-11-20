@@ -3277,6 +3277,49 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/crp.$$
 
+    #  Lesson prose citations gate (DEV.md 4c C455 class 1): a prose
+    #  `File.cpp:N` in gui/ that no claim keeps may not be added; the
+    #  per-file count of such tokens is a ratchet in debt_registry.  Pure
+    #  file reading, so it cannot SKIP.
+    gate_exec "$ROOT/bin/curate/check_lesson_prose_citations.py" > /tmp/lpc.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "lesson-prose-citations-gate" "$(grep -m1 '^check_lesson_prose_citations: OK' /tmp/lpc.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_lesson_prose_citations.py)\n" "lesson-prose-citations-gate"
+        cat /tmp/lpc.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lpc.$$
+
+    #  Unit-convention gate (DEV.md 4c C454): a key whose bare number is in a
+    #  working unit (`Pc`, `pressureDesign`: bar) is read through
+    #  Dictionary::lookupScalarIn, and writing its unit gives the same answer
+    #  (flash09 for Pc, flash22's sizing for pressureDesign).  Runs the engine.
+    gate_exec "$ROOT/bin/curate/check_unit_convention.py" > /tmp/ucv.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "unit-convention-gate" "$(grep -m1 '^check_unit_convention: OK' /tmp/ucv.$$ | cut -c1-200)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_unit_convention.py)\n" "unit-convention-gate"
+        cat /tmp/ucv.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ucv.$$
+
+    # Species-table home gate: the thermoTables home is complete, is what the
+    # report prints, has one home per species, is read only when declared.
+    gate_exec "$ROOT/bin/curate/check_thermo_tables.py" > /tmp/ttg.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "thermo-tables-gate" "$(grep -m1 '^check_thermo_tables: OK' /tmp/ttg.$$ | cut -c1-200)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_thermo_tables.py)\n" "thermo-tables-gate"
+        cat /tmp/ttg.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ttg.$$
+
     # Tree gate (Migration 6): retired data/standards homes must never come
     # back -- neither as src path-builders nor as resurrected directories.
     if gate_exec "$ROOT/bin/curate/check_tree_gate.py" > /tmp/treegate.$$ 2>&1; then
@@ -6192,6 +6235,94 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/voltr.$$
+
+    # elementary-rates gate (2026-11-19, CHEMKIN line slice 3).  The CHEMKIN
+    # words modifiedArrhenius / thirdBody / falloff run in a pfr through the
+    # ReactionRate factory (ElementaryRate), in mol/m3 where the batch vessel
+    # reads kmol/m3.  Each of three witness pairs is the CHEMKIN law (cm-mol-s,
+    # kcal/mol) against the plain Arrhenius law it equals at one temperature;
+    # the outlets must agree to 1e-9.  The defect it would have caught:
+    # chemkin_to_choupo.py slice 1 converted A with x1e-6 per order where the
+    # batch reader uses x1e-3 (10^3 per order), at exit 0 and green closures.
+    if gate_exec "$ROOT/bin/curate/check_elementary_rates.py" > /tmp/elemrate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "elementary-rates-gate" "$(head -1 /tmp/elemrate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_elementary_rates.py)\n" "elementary-rates-gate"
+        cat /tmp/elemrate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/elemrate.$$
+
+    # plog gate (2026-11-20).  `type plog` (CHEMKIN-II PLOG) interpolates ln k
+    # linearly in ln P between tabulated pressures, clamps outside them and sums
+    # lines at one pressure.  Four pfr witnesses whose tables all give the
+    # elementary01a law at the bed pressure; the defect it would have caught is
+    # interpolating k (not ln k) or in P (not ln P): plausible rates, exact at
+    # the lines, invisible to closures and goldens.
+    if gate_exec "$ROOT/bin/curate/check_plog.py" > /tmp/plog.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "plog-gate" "$(head -1 /tmp/plog.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_plog.py)\n" "plog-gate"
+        cat /tmp/plog.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/plog.$$
+
+    # ignition-sensitivity gate (2026-11-20).  `sensitivity { }` on a batchReactor
+    # multiplies ONE reaction's NET rate and integrates N+1 times.  The defect it
+    # would have caught: a multiplier on the forward rate only, which moves the
+    # equilibrium and still prints a plausible S_j.  Two independent statements:
+    # every multiplied run ends at the base T_end, and S of the top reaction
+    # equals a hand recomputation from two runs with that reaction's A edited.
+    if gate_exec "$ROOT/bin/curate/check_ignition_sensitivity.py" > /tmp/ignsens.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ignition-sensitivity-gate" "$(head -1 /tmp/ignsens.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ignition_sensitivity.py)\n" "ignition-sensitivity-gate"
+        cat /tmp/ignsens.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ignsens.$$
+
+    # rate-of-production gate (2026-11-19, glass box of a mechanism, phase 1).
+    # `rateOfProduction { times (...); }` on a batchReactor prints, per species,
+    # which reactions make and destroy it, from c_ij = nu_ij r_j V computed a
+    # SECOND time beside the integrator's right-hand side.  The defect it would
+    # have caught: a reporting path that forgot the third-body [M] / fall-off
+    # factor rateOfReaction_ adds prints plausible shares that do not sum to
+    # dn_i/dt; no golden and no atom balance sees it.  Sum rule against the
+    # integrator's own derivative, element conservation, the opt-in changing
+    # nothing, and a teeth arm.
+    if gate_exec "$ROOT/bin/curate/check_rate_of_production.py" > /tmp/rateprod.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "rate-of-production-gate" "$(head -1 /tmp/rateprod.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_rate_of_production.py)\n" "rate-of-production-gate"
+        cat /tmp/rateprod.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rateprod.$$
+
+    # kinetics-jacobian gate (2026-11-19).  `solver { jacobian analytic; }` on a
+    # batchReactor hands Rosenbrock23 / Rodas4 the rate laws' own derivatives.
+    # The defect it would have caught: a Rosenbrock method is not a W-method,
+    # so an analytic Jacobian with a term missing (the third-body k0 eff_k,
+    # dropped by sabotage) only makes the run silently slower or less accurate
+    # -- Rodas4 took 3317 steps instead of 602 and every golden KPI still
+    # passed.  The engine's own audits along the ignition (pre-ignition, ramp,
+    # burned), the same answer at half the right-hand sides, every path on six
+    # shipped cases, and the refusals by name.
+    if gate_exec "$ROOT/bin/curate/check_kinetics_jacobian.py" > /tmp/kinjac.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "kinetics-jacobian-gate" "$(head -1 /tmp/kinjac.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_kinetics_jacobian.py)\n" "kinetics-jacobian-gate"
+        cat /tmp/kinjac.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/kinjac.$$
 
     # cubic-mixing-rule gate (2026-11-16, DEV.md 4c C408 (b)).  The mixing rule
     # of a cubic is an object (CubicMixingRule): the van der Waals one-fluid

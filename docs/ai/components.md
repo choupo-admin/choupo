@@ -46,6 +46,37 @@ Tc, Pc, omega and Tb plus a PREDICTIVE (Ambrose-Walton) vapour pressure, and
 leaves Cp, formation thermochemistry, transport and group data absent — good
 enough to screen a flash, not good enough for an energy or reaction balance.
 
+**A CHEMKIN mechanism into a case (a curation tool, slice 2).**
+`bin/curate/chemkin_to_choupo.py mech.inp [--thermo t.dat] --case DIR --licence "<text>" [--reactions-only]`
+writes `DIR/constant/components/<name>.dat` (NASA-7 records: MW from the
+engine's atomic-weight table, `dHf_298`/`s_298` derived from the coefficients,
+licence in every provenance block) and `DIR/constant/reactions` in the engine's
+own CHEMKIN-native grammar (`BatchReactor.cpp`): `kinetics { type; A; b; Ea;
+units { A "cm3/mol/s"; Ea "kcal/mol"; } }`.  A and Ea are written AS PRINTED and
+the ENGINE converts them (cm-mol-s to kmol-m3-s, cal/kcal/kJ to J/mol); the
+tool does no A conversion.  Types written: `modifiedArrhenius` (b may be 0),
+`thirdBody` (+M, with `thirdBody { species eff; }`), `falloff` ((+M) with LOW,
+optional TROE, `low {}`), `reversible true` for `=`/`<=>`, DUPLICATE as
+separate entries.  KELVINS and EVOLTS Ea are converted by the tool to J/mol (the
+engine's Ea reader has no such word).  These types are read by `batchReactor` AND by
+the multi-reaction paths of `cstr` and `pfr` (`reactions ( ... );`; class
+`ElementaryRate`, same grammar; the A conversion follows the reactor's amount
+unit: 1e-6 per order in mol/m3, 1e-3 in kmol/m3).  The single-reaction `reaction
+<name>;` path of `cstr`/`pfr` and a `distillationColumn` do not read them.  Refused by name and
+listed by equation, with the reason, in `constant/mechanismImport.txt`: SRI,
+PLOG with REV or on a `(+M)`/`+M`/LOW/TROE reaction, FORD/RORD, REV on a `(+M)` fall-off, `(+M)` without LOW, `(+species)` colliders, MOLECULES
+units, species on both sides of a reversible reaction.  `PLOG / P A b Ea /` lines are written as `type plog; plog ( { P <P> atm; A; b; Ea; } ... )` as printed (the reaction line's
+nominal A b Ea is dropped; lines at one pressure are summed by the engine; Theory Guide `sec:plog-rate`).  An explicit reverse `REV a b Ea`
+on any other reaction is written as TWO irreversible reactions (`rNNN_f` with the main
+A b Ea, `rNNN_r` products -> reactants with the REV parameters, the same units block,
+and for `+M` the same efficiencies), the way Cantera's ck2yaml reads it; `--rev-from-thermo`
+ignores REV and takes the reverse from detailed balance (a declared variant).  It refuses the GRI-Mech
+family by name, a missing `--licence`, and any output under `data/standards`.
+`--reactions-only` keeps the case's own thermo.  `--selftest` runs offline and
+exports `tutorials/batch/combustion/ignition01_h2o2` to CHEMKIN text, imports
+it back and, when `./choupoBatch` is built, runs both and compares the results.
+Role, Tc, Pc, vapour pressure are not in a mechanism and are not written.
+
 The component COUNT is not written here: this whole section below
 `AUTO-GENERATED` is produced by `bin/regen-llm-docs` from the `.dat` files
 themselves, and the heading it writes is the count.  (A number typed into this

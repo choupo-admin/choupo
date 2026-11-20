@@ -1,0 +1,56 @@
+/*---------------------------------------------------------------------------*\
+  ignition04_h2air_sensitivity / flowsheetDict
+  WHICH REACTION GOVERNS THE IGNITION?  The ignition02 vessel (stoichiometric
+  H2/air, 1100 K, 2 atm, constant volume, O Conaire 2004) with ONE added block,
+  `sensitivity { ... }`.  The engine integrates the vessel N+1 times (the base
+  run, then once per reaction with that reaction's NET rate multiplied by
+  `factor`) and prints, sorted by |S_j|,
+
+      S_j = d ln tau / d ln k_j = ( ln tau_j - ln tau_0 ) / ln factor
+
+  with tau = the time T first exceeds T0 + 400 K, linearly interpolated between
+  the two accepted states that bracket it.  The multiplier scales forward and
+  reverse together, so the equilibrium (the final state) is the same in every
+  run.  Read the sign first: NEGATIVE S speeds the ignition up when that
+  reaction is faster (chain branching: R1, H + O2 = O + OH, is the dominant
+  negative entry), POSITIVE S slows it down (chain termination: R9,
+  H + O2 (+M) = HO2 (+M), competes with R1 for the same H atoms).  The signs
+  and magnitudes are the run's own, checked reaction by reaction against
+  Cantera 3.2.0 (docs/reviews/2026-11-19-chemkin-real-mechanism/REPORT.md
+  section 10).  `sensitivity.csv` carries every reaction.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        bomb;
+        type        batchReactor;
+        operation
+        {
+            mode        adiabatic;
+            energy      gasConstantV;
+        }
+        solver
+        {
+            integrator  Rosenbrock23;
+            jacobian    analytic;           // audited; carries the sensitivity multiplier
+            verbosity   3;
+        }
+        sensitivity
+        {
+            response    tauIgnition;        // time T first exceeds T0 + rise
+            factor      1.1;                // k_j -> 1.1 k_j, one reaction at a time
+            reactions   all;
+            top         6;                  // pinned in the golden: the six that are not noise
+        }
+        reactions
+        (
+            R1_H_O2_O_OH  R2_O_H2_H_OH  R3_OH_H2_H_H2O
+            R4_O_H2O_2OH  R5_H2_M_2H_M  R6_2O_M_O2_M
+            R7_O_H_M_OH_M  R8_H_OH_M_H2O_M  R9_H_O2_M_HO2
+            R10_HO2_H_H2_O2  R11_HO2_H_2OH  R12_HO2_O_OH_O2
+            R13_HO2_OH_H2O_O2  R14a_2HO2_H2O2_O2  R14b_2HO2_H2O2_O2
+            R15_H2O2_M_2OH  R16_H2O2_H_H2O_OH  R17_H2O2_H_H2_HO2
+            R18_H2O2_O_OH_HO2  R19a_H2O2_OH_H2O_HO2  R19b_H2O2_OH_H2O_HO2
+        );
+    }
+);

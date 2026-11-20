@@ -66,7 +66,7 @@ std::vector<EquipmentSizing> CrystalliserSize::size(const std::string& unitName,
     //  honest answer.  Deriving V as throughput * residenceTime was rejected --
     //  it reproduces the declaration to round-off and hides that it is one.
     const scalar V_magma = vm->second;                   // m^3, declared
-    const scalar P_des = designRules->lookupScalar("pressureDesign");   // required: a silent
+    const scalar P_des = designRules->lookupScalarIn("pressureDesign", Dims::pressure, "bar");   // required: a silent
         // 1 bar default costed pressure equipment as atmospheric while the
         // identical omission on a stirredTank refused -- one decision, six
         // homes, two answers (2026-08-22 fresh-eyes audit).

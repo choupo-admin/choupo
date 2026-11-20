@@ -179,6 +179,38 @@ public:
     //  words with `units::sameUnit`, never as strings.
     std::string unitWordOf(const std::string& key) const;
 
+    //  A KEY WHOSE BARE NUMBER IS NOT SI (DEV.md 4c C454).  Some record keys
+    //  were written bare in a WORKING unit long before the parser converted
+    //  units -- a component's `Pc` is in bar -- and the code reads them
+    //  bare and converts by hand.  Read through `lookupScalar(key)`, such a
+    //  key is a trap: `Pc 220.64 bar;` is parsed to 2.2064e7 (SI) and then
+    //  read as 2.2064e7 BAR, at exit 0.  This is the one reader for them:
+    //    * no unit declared  -> the bare number, in `workingUnit` (the
+    //      legacy meaning, unchanged, so no record and no golden moves);
+    //    * a unit declared   -> the parsed SI value, its dimensions checked
+    //      against `expectedDims`, expressed in `workingUnit`.
+    //  `workingUnit` must be a registered unit word whose dimensions are
+    //  `expectedDims` (checked: a mismatch is a programming error, refused).
+    //  The bracket form (`[..] v`) is SI and is converted the same way.
+    scalar lookupScalarIn(const std::string& key,
+                          const Dimensions&  expectedDims,
+                          const std::string& workingUnit) const;
+    scalar lookupScalarInOrDefault(const std::string& key,
+                                   scalar             def,
+                                   const Dimensions&  expectedDims,
+                                   const std::string& workingUnit) const;
+
+    //  A TEMPERATURE DIFFERENCE (DEV.md 4c C454, family 2).  The parser
+    //  converts `10 C` AFFINELY, to 283.15 K -- right for a temperature,
+    //  wrong for a difference (an approach, a superheat, a dTmin, an LMTD),
+    //  which would run as 283.15 K at exit 0; and `Dims::temperature` cannot
+    //  tell the two apart.  This reader takes a bare number or `K` (one
+    //  kelvin is one degree Celsius of DIFFERENCE) and REFUSES an affine unit
+    //  word (C, degC, F, ...) by name, naming the remedy.
+    scalar lookupTemperatureDifference(const std::string& key) const;
+    scalar lookupTemperatureDifferenceOrDefault(const std::string& key,
+                                                scalar def) const;
+
     const std::string& name()       const { return name_;   }
     const std::string& sourceName() const { return source_; }
 

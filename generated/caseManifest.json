@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1898,
+  "cases": 1913,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -21370,6 +21370,20 @@
    ],
    "hasGolden": false
   },
+  "tutorials/batch/combustion/ignition01_h2o2_jac": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/batch/combustion/ignition01_h2o2_rk4": {
    "application": "choupoBatch",
    "unitTypes": [
@@ -21386,7 +21400,49 @@
    ],
    "hasGolden": false
   },
+  "tutorials/batch/combustion/ignition01_h2o2_rop": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/batch/combustion/ignition02_h2air_slack": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/combustion/ignition03_h2air_constp": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/combustion/ignition04_h2air_sensitivity": {
    "application": "choupoBatch",
    "unitTypes": [
     "batchReactor"
@@ -23814,6 +23870,20 @@
    "hasGolden": true
   },
   "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff": {
+   "application": "choupoProps",
+   "ops": [
+    "reactionGibbs"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/gibbs/thermoTable01_propane_radicals": {
    "application": "choupoProps",
    "ops": [
     "reactionGibbs"
@@ -29403,6 +29473,90 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/reactors/elementary01a_modArrhenius_chemkin": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/elementary01b_modArrhenius_arrhenius": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/elementary02a_thirdBody_chemkin": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/elementary02b_thirdBody_arrhenius": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/elementary03a_falloff_chemkin": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/elementary03b_falloff_arrhenius": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/reactors/equil01_reforming": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -29554,6 +29708,62 @@
    "hasGolden": true
   },
   "tutorials/steady/reactors/pfr_polyesterification": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/plog01_onePressure": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/plog02_atTabulated": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/plog03_midway": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/plog04_sameP": {
    "application": "choupoSolve",
    "unitTypes": [
     "pfr"
@@ -30566,8 +30776,12 @@
     "tutorials/batch/adsorber/batch29_pulse_two_schemes",
     "tutorials/batch/combustion/ignition01_h2o2",
     "tutorials/batch/combustion/ignition01_h2o2_eulersi",
+    "tutorials/batch/combustion/ignition01_h2o2_jac",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
+    "tutorials/batch/combustion/ignition01_h2o2_rop",
     "tutorials/batch/combustion/ignition02_h2air_slack",
+    "tutorials/batch/combustion/ignition03_h2air_constp",
+    "tutorials/batch/combustion/ignition04_h2air_sensitivity",
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
     "tutorials/batch/crystallisation/batch13_nacl_pitzer",
     "tutorials/batch/crystallisation/batch14_nacl_pitzer_antisolvent",
@@ -31985,6 +32199,7 @@
     "tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways",
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff",
+    "tutorials/props/gibbs/thermoTable01_propane_radicals",
     "tutorials/props/heat/bellDelaware01_hewitt_example62",
     "tutorials/props/heat/bellDelaware02_serth_example61",
     "tutorials/props/heat/htbench01_correlations",
@@ -32387,6 +32602,12 @@
     "tutorials/steady/reactors/cstr06_jacketed",
     "tutorials/steady/reactors/cstr07_lhhw_methylAcetate",
     "tutorials/steady/reactors/cstr08_furusawa_bistable",
+    "tutorials/steady/reactors/elementary01a_modArrhenius_chemkin",
+    "tutorials/steady/reactors/elementary01b_modArrhenius_arrhenius",
+    "tutorials/steady/reactors/elementary02a_thirdBody_chemkin",
+    "tutorials/steady/reactors/elementary02b_thirdBody_arrhenius",
+    "tutorials/steady/reactors/elementary03a_falloff_chemkin",
+    "tutorials/steady/reactors/elementary03b_falloff_arrhenius",
     "tutorials/steady/reactors/equil01_reforming",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
@@ -32398,6 +32619,10 @@
     "tutorials/steady/reactors/pfr04_adiabatic",
     "tutorials/steady/reactors/pfr05_cooled_multitubular",
     "tutorials/steady/reactors/pfr_polyesterification",
+    "tutorials/steady/reactors/plog01_onePressure",
+    "tutorials/steady/reactors/plog02_atTabulated",
+    "tutorials/steady/reactors/plog03_midway",
+    "tutorials/steady/reactors/plog04_sameP",
     "tutorials/steady/reactors/screen01_methanol_routes",
     "tutorials/steady/rotating/compressor01_air",
     "tutorials/steady/rotating/compressor02_designspec_pout",
@@ -32545,8 +32770,12 @@
    "batchReactor": [
     "tutorials/batch/combustion/ignition01_h2o2",
     "tutorials/batch/combustion/ignition01_h2o2_eulersi",
+    "tutorials/batch/combustion/ignition01_h2o2_jac",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
+    "tutorials/batch/combustion/ignition01_h2o2_rop",
     "tutorials/batch/combustion/ignition02_h2air_slack",
+    "tutorials/batch/combustion/ignition03_h2air_constp",
+    "tutorials/batch/combustion/ignition04_h2air_sensitivity",
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
     "tutorials/batch/reactor/batch01_first_order",
     "tutorials/batch/reactor/batch01b_first_order_eulersi",
@@ -33041,13 +33270,23 @@
    "pfr": [
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
+    "tutorials/steady/reactors/elementary01a_modArrhenius_chemkin",
+    "tutorials/steady/reactors/elementary01b_modArrhenius_arrhenius",
+    "tutorials/steady/reactors/elementary02a_thirdBody_chemkin",
+    "tutorials/steady/reactors/elementary02b_thirdBody_arrhenius",
+    "tutorials/steady/reactors/elementary03a_falloff_chemkin",
+    "tutorials/steady/reactors/elementary03b_falloff_arrhenius",
     "tutorials/steady/reactors/ladder01_wgs_three_rungs",
     "tutorials/steady/reactors/pfr01_first_order",
     "tutorials/steady/reactors/pfr02_reversible_wgs",
     "tutorials/steady/reactors/pfr03_series_selectivity",
     "tutorials/steady/reactors/pfr04_adiabatic",
     "tutorials/steady/reactors/pfr05_cooled_multitubular",
-    "tutorials/steady/reactors/pfr_polyesterification"
+    "tutorials/steady/reactors/pfr_polyesterification",
+    "tutorials/steady/reactors/plog01_onePressure",
+    "tutorials/steady/reactors/plog02_atTabulated",
+    "tutorials/steady/reactors/plog03_midway",
+    "tutorials/steady/reactors/plog04_sameP"
    ],
    "phaseChanger": [
     "tutorials/batch/plant/apalutamide01_tablets",
@@ -35486,8 +35725,12 @@
     "tutorials/batch/adsorber/batch29_pulse_two_schemes",
     "tutorials/batch/combustion/ignition01_h2o2",
     "tutorials/batch/combustion/ignition01_h2o2_eulersi",
+    "tutorials/batch/combustion/ignition01_h2o2_jac",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
+    "tutorials/batch/combustion/ignition01_h2o2_rop",
     "tutorials/batch/combustion/ignition02_h2air_slack",
+    "tutorials/batch/combustion/ignition03_h2air_constp",
+    "tutorials/batch/combustion/ignition04_h2air_sensitivity",
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
     "tutorials/batch/drying/dryer01_sucrose_tray",
     "tutorials/batch/drying/dryer02_characteristic_curves",
@@ -35604,6 +35847,7 @@
     "tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways",
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff",
+    "tutorials/props/gibbs/thermoTable01_propane_radicals",
     "tutorials/props/heat/bellDelaware01_hewitt_example62",
     "tutorials/props/heat/bellDelaware02_serth_example61",
     "tutorials/props/heat/htbench01_correlations",
@@ -35855,6 +36099,12 @@
     "tutorials/steady/reactors/cstr05_multiplicity",
     "tutorials/steady/reactors/cstr06_jacketed",
     "tutorials/steady/reactors/cstr08_furusawa_bistable",
+    "tutorials/steady/reactors/elementary01a_modArrhenius_chemkin",
+    "tutorials/steady/reactors/elementary01b_modArrhenius_arrhenius",
+    "tutorials/steady/reactors/elementary02a_thirdBody_chemkin",
+    "tutorials/steady/reactors/elementary02b_thirdBody_arrhenius",
+    "tutorials/steady/reactors/elementary03a_falloff_chemkin",
+    "tutorials/steady/reactors/elementary03b_falloff_arrhenius",
     "tutorials/steady/reactors/equil01_reforming",
     "tutorials/steady/reactors/equil02_methanol_declared_pathways",
     "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways",
@@ -35866,6 +36116,10 @@
     "tutorials/steady/reactors/pfr04_adiabatic",
     "tutorials/steady/reactors/pfr05_cooled_multitubular",
     "tutorials/steady/reactors/pfr_polyesterification",
+    "tutorials/steady/reactors/plog01_onePressure",
+    "tutorials/steady/reactors/plog02_atTabulated",
+    "tutorials/steady/reactors/plog03_midway",
+    "tutorials/steady/reactors/plog04_sameP",
     "tutorials/steady/reactors/screen01_methanol_routes",
     "tutorials/steady/rotating/compressor01_air",
     "tutorials/steady/rotating/compressor02_designspec_pout",
@@ -37978,7 +38232,8 @@
    ],
    "reactionGibbs": [
     "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes",
-    "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff"
+    "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff",
+    "tutorials/props/gibbs/thermoTable01_propane_radicals"
    ],
    "referenceEoS": [
     "tutorials/props/thermo/refEoS01_iapws95_verification"

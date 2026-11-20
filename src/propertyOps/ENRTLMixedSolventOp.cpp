@@ -126,7 +126,7 @@ int ENRTLMixedSolventOp::run(const DictPtr& dict, const ThermoPackage& /*thermo*
     double sumAbsTot = 0.0; int nTot = 0;
     for (const auto& sys : dict->lookupDictList("systems"))
     {
-        const double wt   = sys->lookupScalar("wtAlcohol");
+        const double wt   = sys->lookupScalarIn("wtAlcohol", Dims::dimensionless, "percent");   // bare = wt % (C454 family 14)
         const double Aphi = sys->lookupScalar("Aphi");
         const double we   = wt / 100.0;
         const double yAlc = (we / model.MwAlcohol)
@@ -135,7 +135,7 @@ int ENRTLMixedSolventOp::run(const DictPtr& dict, const ThermoPackage& /*thermo*
         double sumAbs = 0.0; int n = 0;
         for (const auto& p : sys->lookupDictList("data"))
         {
-            const double m    = p->lookupScalar("m");
+            const double m    = p->lookupScalarIn("m", Dims::molality, "mol/kg");   // bare = mol/kg (C454 family 9)
             const double gExp = p->lookupScalar("gamma");
             const double gCal = model.gammaPM(m, yAlc, Aphi);
             const double err  = 100.0 * (gCal - gExp) / gExp;

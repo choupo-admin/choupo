@@ -1044,7 +1044,7 @@ DcfTimeline readTimeline(const DictPtr& d, int projectLife)
 {
     DcfTimeline tl;
 
-    const scalar cp = d->lookupScalarOrDefault("constructionPeriod", 1.0);
+    const scalar cp = d->lookupScalarInOrDefault("constructionPeriod", 1.0, Dims::time, "yr");
     if (!(cp >= 1.0) || std::fabs(cp - std::round(cp)) > 1e-9)
     {
         std::ostringstream m;
@@ -2868,10 +2868,10 @@ int EconomicsPass::run(SimulationResult& result)
     }
 
     // ---- 1.  Dict knobs (cited teaching defaults, Turton §10/§8) --------
-    const scalar projectLife       = econDict_->lookupScalarOrDefault("projectLife",        10.0);
+    const scalar projectLife       = econDict_->lookupScalarInOrDefault("projectLife", 10.0, Dims::time, "yr");
     const scalar discountRate      = econDict_->lookupScalarOrDefault("discountRate",        0.10);
     const scalar taxRate           = econDict_->lookupScalarOrDefault("taxRate",             0.21);
-    const scalar depreciableLife   = econDict_->lookupScalarOrDefault("depreciableLife",      9.0);
+    const scalar depreciableLife   = econDict_->lookupScalarInOrDefault("depreciableLife", 9.0, Dims::time, "yr");
     const scalar salvageFraction   = econDict_->lookupScalarOrDefault("salvageFraction",      0.0);
     //  `workingCapital` IS EITHER A FRACTION OF FCI OR A MODEL (C44 slice
     //  4): a number keeps the rule it always was, a BLOCK builds the working
@@ -3472,7 +3472,7 @@ int EconomicsPass::run(SimulationResult& result)
     // each operator the full 7884 plant-hours, a ~4x overstatement: the bug
     // this guards against.  Turton Sec. 8 cross-check: ~66 kUSD/yr/operator.)
     const scalar operatorAnnualHours =
-        econDict_->lookupScalarOrDefault("operatorAnnualHours", 1960.0);
+        econDict_->lookupScalarInOrDefault("operatorAnnualHours", 1960.0, Dims::time, "h");
     baseIn.labourRate          = labourRate;
     baseIn.operatorsTotal      = operatorsTotal;
     baseIn.operatorAnnualHours = operatorAnnualHours;

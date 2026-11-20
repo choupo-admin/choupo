@@ -52,6 +52,15 @@ Class
     declaration is audited against a dense Jacobian on the first step and
     refused by name if false.  ODEStats::hNext carries the controller's
     proposal for the next interval (see ODEIntegrator.H).
+
+    A model may instead SUPPLY its Jacobian analytically
+    (ODEControls::analytic, see ODEAnalyticJacobian): no n-evaluation
+    difference per step.  Rosenbrock methods are NOT W-methods -- their
+    order conditions hold only with the true Jacobian in W, so an
+    incomplete analytic J would degrade the method SILENTLY (the steps
+    still pass the error test, slower or less accurate).  That is why the
+    supplied J is AUDITED against the dense difference at the 1st, 2nd,
+    4th, ... Jacobian and a false one is refused by name.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

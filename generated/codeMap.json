@@ -151,6 +151,9 @@
   "Attribution": [
    "src/streams/AnalysisReconciler.H"
   ],
+  "Audit": [
+   "src/solver/ODE/ODEIntegrator.H"
+  ],
   "AuditFinding": [
    "src/thermo/PackageAudit.H"
   ],
@@ -397,6 +400,9 @@
   ],
   "ClosureVariable": [
    "src/result/ClosureVariable.H"
+  ],
+  "Coefficients": [
+   "src/unitOperations/hydraulics/packedBed/ErgunEquation.H"
   ],
   "ColoredODEJacobian": [
    "src/solver/ODE/Jacobian.H"
@@ -790,6 +796,9 @@
   ],
   "ElementalResolution": [
    "src/thermo/ElementComposition.H"
+  ],
+  "ElementaryRate": [
+   "src/thermo/reaction/ElementaryRate.H"
   ],
   "EnergyBalanceReport": [
    "src/reporting/EnergyBalanceReport.H"
@@ -1567,6 +1576,9 @@
   "NusseltFilm": [
    "src/unitOperations/heatTransfer/htc/NusseltFilm.H"
   ],
+  "ODEAnalyticJacobian": [
+   "src/solver/ODE/ODEIntegrator.H"
+  ],
   "ODEBlockStructure": [
    "src/solver/ODE/ODEIntegrator.H"
   ],
@@ -1679,6 +1691,9 @@
   "PassThroughDeclaration": [
    "src/unitOperations/UnitAcceptance.H"
   ],
+  "PathSplit": [
+   "src/unitOperations/batch/BatchReactor.H"
+  ],
   "Pause": [
    "src/core/ReadLog.H"
   ],
@@ -1738,6 +1753,9 @@
   ],
   "PlantLayoutRecord": [
    "src/core/ResultRecords.H"
+  ],
+  "PlogArr": [
+   "src/thermo/reaction/ElementaryRate.H"
   ],
   "PneumaticConveyor": [
    "src/unitOperations/hydraulics/PneumaticConveyor.H"
@@ -3354,6 +3372,22 @@
    },
    {
     "key": "LHHW",
+    "type": ""
+   },
+   {
+    "key": "modifiedArrhenius",
+    "type": ""
+   },
+   {
+    "key": "thirdBody",
+    "type": ""
+   },
+   {
+    "key": "falloff",
+    "type": ""
+   },
+   {
+    "key": "plog",
     "type": ""
    },
    {
@@ -7285,6 +7319,7 @@
    "src/core/PublishedTable.H",
    "src/core/ReadLog.H",
    "src/core/Types.H",
+   "src/core/Units.H",
    "src/propertyOps/ConstantEstimator.H",
    "src/propertyOps/EstimateComponent.H",
    "src/propertyOps/EvidencePartition.H",
@@ -10028,6 +10063,7 @@
    "src/thermo/AtomicWeights.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/DerivedClosures.H",
    "src/thermo/ElementComposition.H",
    "src/thermo/FitGrade.H",
    "src/thermo/PairAudit.H",
@@ -11743,6 +11779,32 @@
    "src/thermo/pureFluid/SaturationCurve.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
+  "src/thermo/reaction/ElementaryRate.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ReadLog.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/PinCheck.H",
+   "src/thermo/RecordLaws.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoAnnounce.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/thermo/reaction/ElementaryRate.H",
+   "src/thermo/reaction/Reaction.H",
+   "src/thermo/reaction/ReactionRate.H",
+   "src/thermo/transport/FlowCurve.H",
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
+  ],
   "src/thermo/reaction/ExpressionRate.cpp": [
    "src/core/Advisory.H",
    "src/core/DictAudit.H",
@@ -11828,6 +11890,7 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/reaction/ElementaryRate.H",
    "src/thermo/reaction/ExpressionRate.H",
    "src/thermo/reaction/RateLaw.H",
    "src/thermo/reaction/ReactionRate.H",
@@ -12808,6 +12871,7 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/ElementComposition.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PinCheck.H",
    "src/thermo/PropertyDomainError.H",
@@ -12981,7 +13045,8 @@
    "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
-   "src/unitOperations/batch/FixedBedAdsorber.H"
+   "src/unitOperations/batch/FixedBedAdsorber.H",
+   "src/unitOperations/hydraulics/packedBed/ErgunEquation.H"
   ],
   "src/unitOperations/crystallisation/CrystallisationHeat.cpp": [
    "src/core/Advisory.H",
@@ -14462,6 +14527,10 @@
    "src/core/Types.H",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
   ],
+  "src/unitOperations/hydraulics/packedBed/ErgunEquation.cpp": [
+   "src/core/Types.H",
+   "src/unitOperations/hydraulics/packedBed/ErgunEquation.H"
+  ],
   "src/unitOperations/membrane/AqueousSplit.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
@@ -15184,6 +15253,7 @@
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
+   "src/unitOperations/hydraulics/packedBed/ErgunEquation.H",
    "src/unitOperations/reactor/CatalystPellet.H",
    "src/unitOperations/reactor/PFR.H",
    "src/unitOperations/reactor/PolymerKPIs.H",
@@ -16825,6 +16895,7 @@
    "src/thermo/phase/SaturatedVapour.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
@@ -17340,6 +17411,7 @@
    "src/thermo/phase/SaturatedVapour.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -17741,6 +17813,7 @@
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
@@ -18182,6 +18255,7 @@
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
@@ -18685,6 +18759,7 @@
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -19129,6 +19204,7 @@
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -19804,6 +19880,7 @@
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -20528,6 +20605,7 @@
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
@@ -20631,6 +20709,7 @@
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp",
+   "src/unitOperations/hydraulics/packedBed/ErgunEquation.cpp",
    "src/unitOperations/membrane/AqueousSplit.cpp",
    "src/unitOperations/membrane/RatedTestInversion.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
@@ -20720,6 +20799,7 @@
    "src/postProcessing/views/RunPublications.cpp",
    "src/postProcessing/views/Views.cpp",
    "src/propertyOps/DataReconciliation.cpp",
+   "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
@@ -22322,6 +22402,7 @@
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -23222,6 +23303,7 @@
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -23549,6 +23631,7 @@
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -23668,6 +23751,7 @@
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/PetroleumCuts.cpp",
    "src/propertyOps/RiaziDaubert.cpp",
+   "src/thermo/Component.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/transport/SurfaceTensionMixingRule.cpp"
   ],
@@ -23691,6 +23775,7 @@
    "src/thermo/ElementComposition.cpp",
    "src/thermo/PinCheck.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
+   "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/reactor/PureSolidPhase.cpp"
   ],
   "src/thermo/EnthalpyDatum.H": [
@@ -23947,6 +24032,7 @@
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -24293,6 +24379,7 @@
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -24737,6 +24824,7 @@
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -25063,6 +25151,7 @@
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -25526,6 +25615,7 @@
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -25794,6 +25884,7 @@
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -26077,6 +26168,7 @@
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -27061,6 +27153,10 @@
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp"
   ],
+  "src/thermo/reaction/ElementaryRate.H": [
+   "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/ReactionRate.cpp"
+  ],
   "src/thermo/reaction/ExpressionRate.H": [
    "src/propertyOps/RateLawBench.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
@@ -27076,6 +27172,7 @@
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/unitOperations/UnitOperation.cpp",
@@ -27099,6 +27196,7 @@
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/RateLawBench.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -27359,6 +27457,7 @@
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -27676,6 +27775,7 @@
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -28082,6 +28182,7 @@
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -28981,6 +29082,11 @@
    "src/propertyOps/FrictionBench.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp"
+  ],
+  "src/unitOperations/hydraulics/packedBed/ErgunEquation.H": [
+   "src/unitOperations/batch/FixedBedAdsorber.cpp",
+   "src/unitOperations/hydraulics/packedBed/ErgunEquation.cpp",
+   "src/unitOperations/reactor/PFR.cpp"
   ],
   "src/unitOperations/membrane/AqueousSplit.H": [
    "src/unitOperations/membrane/AqueousSplit.cpp",

@@ -68,7 +68,7 @@ AmbroseWalton::AmbroseWalton(const DictPtr& dict)
     // (the EoS does the same c.Pc()*1e5); convert to Pa here so psat() works in
     // pure SI.  Fail loud + remedy-bearing if missing.
     Tc_    = dict->lookupScalarOrDefault("Tc",    0.0);
-    Pc_    = dict->lookupScalarOrDefault("Pc",    0.0) * 1.0e5;   // bar -> Pa
+    Pc_    = dict->lookupScalarInOrDefault("Pc", 0.0, Dims::pressure, "bar") * 1.0e5;   // bar -> Pa (C454)
     omega_ = dict->lookupScalarOrDefault("omega", 0.0);
 
     if (Tc_ <= 0.0 || Pc_ <= 0.0)
