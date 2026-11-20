@@ -4897,6 +4897,30 @@ accepts today, and that is a policy call.
 > catalogue record and the case that uses it.  The page's scope goes to Vitor
 > before dispatch.  Size M, "rest" group.
 
+> **C458 CLARIFIED (Vitor, 2026-11-20, after seeing the 858 NASA records on
+> the site: "Eu queria ter as espécies com as constantes cinéticas desses
+> radicais!!! Aquela lista é só de parâmetros thermo!!!"; then "Sabes se há
+> listas públicas enormes com essas cinéticas?").**  What he expects from
+> C458's second half is the RATE CONSTANTS of the radical reactions as a
+> browsable list (pick OH, see every reaction it enters, A b Ea, k(T), source),
+> not only the machinery to run one mechanism.  The cloud session built the
+> machinery (import, standard state, PLOG, analytic Jacobian, sensitivity; one
+> 10-species mechanism against Cantera) and read his "lista de radicais" as the
+> thermo table instead of asking what he expected to see -- the defect is
+> that, not his phrasing.  Next, in order: (1) a general verifies on the web the
+> licence of each candidate source and returns a table with the page it was read
+> on (NIST SRD 17 as the route to primary sources; Baulch et al. 2005 JPCRD 34;
+> IUPAC and JPL-19 atmospheric evaluations; mechanisms AramcoMech 3.0, LLNL,
+> CRECK, UCSD, FFCM-1, USC II, MCM, RMG-database; GRI-Mech stays refused);
+> (2) a standards home for elementary reactions, one record per reaction with
+> its form, A b Ea, efficiencies and source page, seeded with the 21 verified
+> O Conaire 2004 reactions and Zeldovich, the ignition cases reading it with
+> identical results; (3) the Explorer view per species; (4) growth to C1 from
+> evaluated sources only.  A large mechanism of unverified licence goes to the
+> private data/local/ tier through chemkin_to_choupo.py, never public.  Also: the
+> 858 thermoTables records are on main but neither the GUI (catalogue.ts globs
+> components/ only) nor release_inventory.py reads them -- the site shows none.
+
 > **C460 (Vitor, 2026-11-19: "E outra sobre heurísticas de selecção de secadores?
 > Também estilo Pareto e com os esquemas mais comuns pelos quais são
 > esquematicamente conhecidos").**  WEIGHED, agreed: the few dryer types that
