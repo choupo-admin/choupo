@@ -110,18 +110,18 @@ THE TANKS (DEV.md 4c C87). The methanol is BOUGHT and held in a feed tank before
 \tutreadme{$\ast$ Reactor: the Gibbs reactor of rung 1 --- equilibrium at 460 K, 30 bar, 10 K approach. No catalyst, no rate. Its liquid is ideal by construction (elementPotential: gas plus one ideal condensable); the 10 K barely moves the main product (see rung 1). $\ast$ Separations: UNIFAC, which is predictive --- the catalogue has no regressed pair for most of this system. Every activity coefficient is an estimate from structure. $\ast$ Vapour: ideal gas. Acetic acid is largely dimerised in real vapour. The engine models that dimer only on its REACTIVE-equilibrium path (a vapourDimerisation block on the acid's gas-liquid chemistry record; see tutorials/steady/flash/flash12\_nh3\_acetic\_ethanol\_reactive and flash13); a gamma-phi package like this one (UNIFAC liquid, ideal-gas vapour) has no vapour-association fugacity model, so this case does not use it and the condenser and degasser splits are indicative. $\ast$ CO has no UNIFAC group, so it sits outside the activity model (approximations block, announced as a $\ast$substitution$\ast$ on every run). $\ast$ Battery limits: the methanol arrives as a liquid at 1 atm into its feed tank, and methanolPump (efficiency 0.65, assumed) lifts it to 30 bar. The CO arrives by pipeline, declared at 30 bar; no CO compressor is modelled. $\ast$ M1 is a mixer AND a heat exchanger in one box. It merges a liquid (the pumped methanol) with two gases at a DECLARED 320 K, because a gas + liquid merge has no well-posed adiabatic temperature, and it publishes the duty that temperature implies (Q\_kW, priced like every other duty; about +81 kW, allocated to LP steam). Without that duty the plant's first law was open by about 80 kW (DEV.md 4c C71, C74). The mixer does not flash: its outlet carries the dominant label (vapour), and the energy report says on every run that mixedFeed cannot hold that label at 320 K and 30 bar (the methanol's partial pressure is far above its vapour pressure there). That label decides how the methanol's latent heat is SHARED between M1 and the preheater; the plant's total heat does not depend on it, the utility bill does. An exercise: put an isothermal flash after M1 and see where the duty goes. $\ast$ The pump's own energy balance closes. The liquid enthalpy of this package carries the pressure term v (1 - alpha T) dP from the reference pressure (C390), so the 3.29 kW of useful work v$\cdot$dP the pump puts into the liquid (5.06 kW of shaft work at eta = 0.65) shows in the outlet enthalpy as well as the 1.44 K temperature rise that is the dissipation. Before that leg the 3.28 kW was invisible to the energy report and the plant's first-law residual was 3.40 kW instead of the 0.12 kW above. tutorials/steady/rotating/pump01\_water is the same lesson on one pump. $\ast$ Data: dimethyl ether is reviewStatus interim with a Joback formation enthalpy (see rung 1); it is nil in every stream here. $\ast$ Antoine ranges are exceeded at 460 K (dozens of announcements per run) and the column prints [distillate] WARNING lines (47 in the base case): the distillate's bubble point does not converge because CO and dimethyl ether have no real saturation curve at those temperatures, so the distillate temperature is reported at the top tray. Neither changes a flow.}
 \tutreadme{Decision variables (all in system/flowsheetDict unless noted):}
 \begin{tutgolden}
-\goldrow{stream}{acidProduct}{F}{0.0272384503839}
-\goldrow{stream}{acidProduct}{T}{404.14378852}
-\goldrow{stream}{coGas}{F}{0.0242908586518}
+\goldrow{stream}{acidProduct}{F}{0.0272425626008}
+\goldrow{stream}{acidProduct}{T}{404.208807112}
+\goldrow{stream}{coGas}{F}{0.0241418872548}
 \goldrow{stream}{coGas}{T}{330}
-\goldrow{stream}{coRecycle}{F}{0.0230763157192}
+\goldrow{stream}{coRecycle}{F}{0.022934792892}
 \goldrow{stream}{coRecycle}{T}{330}
-\goldrow{stream}{columnFeed}{F}{0.0275162281617}
+\goldrow{stream}{columnFeed}{F}{0.0275203403786}
 \goldrow{stream}{columnFeed}{T}{380}
-\goldrow{stream}{condensate}{F}{0.00612628730575}
+\goldrow{stream}{condensate}{F}{0.00606359465894}
 \goldrow{stream}{condensate}{T}{330}
-\goldrow{stream}{crudeAcid}{F}{0.0279741495607}
-\goldrow{stream}{crudeAcid}{T}{432.000102888}
+\goldrow{stream}{crudeAcid}{F}{0.0279721681365}
+\goldrow{stream}{crudeAcid}{T}{432.276957225}
 \goldrow{stream}{freshCO}{F}{0.0291666666667}
 \goldrow{stream}{freshCO}{T}{300}
 \goldmore{749}

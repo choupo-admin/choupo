@@ -2231,7 +2231,7 @@ Everything else in `expected` is self-recorded (regression, not truth).
 \goldrow{diag}{olsson\_table}{BPE\_exact\_w20\_T100}{7.74563628303}
 \goldrow{diag}{olsson\_table}{BPE\_exact\_w20\_T150}{8.98805178435}
 \goldrow{diag}{olsson\_table}{BPE\_exact\_w20\_T200}{9.96035298372}
-\goldrow{diag}{olsson\_table}{BPE\_exact\_w30\_T025}{12.8329697955}
+\goldrow{diag}{olsson\_table}{BPE\_exact\_w30\_T025}{12.8328177117}
 \goldrow{diag}{olsson\_table}{BPE\_exact\_w30\_T060}{14.6216332356}
 \goldrow{diag}{olsson\_table}{BPE\_exact\_w30\_T100}{16.3784696947}
 \goldrow{diag}{olsson\_table}{BPE\_exact\_w30\_T150}{18.0673102339}
@@ -3471,6 +3471,32 @@ The "$^\circ$" fixes the standard state (1 bar, ideal gas); it does not fix the 
 \goldrow{diag}{haberT}{haberBosch\_T600K\_dG\_kJ\_mol}{31.6629415717}
 \goldrow{diag}{haberT}{haberBosch\_T600K\_dH\_kJ\_mol}{-102.826551039}
 \goldmore{14}
+\end{tutgolden}
+
+\clearpage
+\tutentry{thermoTable01\_propane\_radicals}{tutorials/props/gibbs/thermoTable01\_propane\_radicals}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{pyrolysis}\\[-1pt]{\tiny reactionGibbs}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Propane's two C-H bonds and the n-propyl beta-scission, priced on species the case reads from the NASA thermoTables home (the first witness of the species-table home)}
+\begin{tutgolden}
+\goldrow{diag}{pyrolysis}{betaScission\_T1100K\_dG\_kJ\_mol}{-39.703257309}
+\goldrow{diag}{pyrolysis}{betaScission\_T1100K\_dH\_kJ\_mol}{97.5115598885}
+\goldrow{diag}{pyrolysis}{betaScission\_T1100K\_dS\_J\_molK}{124.740742907}
+\goldrow{diag}{pyrolysis}{betaScission\_T1100K\_lnK}{4.34109478138}
+\goldrow{diag}{pyrolysis}{betaScission\_T298K\_dG\_kJ\_mol}{61.54406455}
+\goldrow{diag}{pyrolysis}{betaScission\_T298K\_dH\_kJ\_mol}{98.43804}
+\goldrow{diag}{pyrolysis}{betaScission\_T298K\_dS\_J\_molK}{123.743}
+\goldrow{diag}{pyrolysis}{betaScission\_T298K\_lnK}{-24.8265959499}
+\goldrow{diag}{pyrolysis}{betaScission\_T800K\_dG\_kJ\_mol}{-2.00661070527}
+\goldrow{diag}{pyrolysis}{betaScission\_T800K\_dH\_kJ\_mol}{99.2133029213}
+\goldrow{diag}{pyrolysis}{betaScission\_T800K\_dS\_J\_molK}{126.524892033}
+\goldrow{diag}{pyrolysis}{betaScission\_T800K\_lnK}{0.301674743976}
+\goldrow{diag}{pyrolysis}{isomerisation\_T1100K\_dG\_kJ\_mol}{-3.45226389779}
+\goldrow{diag}{pyrolysis}{isomerisation\_T1100K\_dH\_kJ\_mol}{-11.1607433454}
+\goldmore{34}
 \end{tutgolden}
 
 \subsection{heat}

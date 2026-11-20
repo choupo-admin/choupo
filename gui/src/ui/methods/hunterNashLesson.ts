@@ -157,8 +157,10 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
     title: "Then it is the same alternation you already know",
     body: "Equilibrium, then balance, then equilibrium again.  A tie line "
       + "carries you from a raffinate to the extract in equilibrium with it; "
-      + "a line through Δ carries you from that extract to the raffinate of "
-      + "the next stage.  Alternate, and you have walked the cascade — the "
+      + "a line through Δ carries you on to the previous stage's raffinate: "
+      + "since Δ = R_j − E_{j+1}, the line through Δ joins E_{j+1} to R_j, "
+      + "so the walk runs from stage N back toward stage 1 (R_N, tie line, "
+      + "E_N, line through Δ, R_{N−1}, and so on).  Alternate, and you have walked the cascade — the "
       + "McCabe staircase, on a triangle, with the operating line replaced by "
       + "the pencil through the difference point.",
   },

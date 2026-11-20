@@ -32,11 +32,11 @@
                                       eps, u, T, P} -- FixedBedAdsorber.cpp:209-214
     rho_b from the adsorbent record   Adsorbent.cpp:42 (`rho_bulk`),
                                       FixedBedAdsorber.cpp:262
-    the pre-run t_st claim            FixedBedAdsorber.cpp:845-846, printed at
-                                      996-1002
-    the engine's own trapezoid        FixedBedAdsorber.cpp:2012
-    the engine's own 5 % crossing     FixedBedAdsorber.cpp:2013-2020
-    the KPIs the tool reads           FixedBedAdsorber.cpp:3192-3203, 3240
+    the pre-run t_st claim            FixedBedAdsorber.cpp:873-874, printed at
+                                      1025-1031
+    the engine's own trapezoid        FixedBedAdsorber.cpp:2040
+    the engine's own 5 % crossing     FixedBedAdsorber.cpp:2041-2048
+    the KPIs the tool reads           FixedBedAdsorber.cpp:3295-3303, 3341
     the witness's numbers             tutorials/batch/adsorber/
                                         batch13_breakthrough_co2/{system,expected}
 \*---------------------------------------------------------------------------*/
@@ -109,7 +109,7 @@ export const LUB_SCALEUP_STEPS: readonly LessonStep[] = [
       + "velocity, temperature or particle size has a different zone: the "
       + "number carried across is only valid at the conditions it was "
       + "measured under.  The classroom witness is a Langmuir (favourable) "
-      + "isotherm on a 0.5 m bed with a zone about 0.05 m long, so the "
+      + "isotherm on a 0.5 m bed with a zone about 0.04 m long (the 5-95 % front, 231 s wide at u/R_f, is 0.038 m), so the "
       + "premise holds there.  A real data set has to be checked against "
       + "the premise by other means: step 3's equilibrium check catches a "
       + "cut tail, not a spreading front (see the limits below).",
@@ -138,7 +138,7 @@ t_\mathrm{st} &= \int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \
         + "outlet reaches the declared fraction f_b, found by linear "
         + "interpolation between the two samples that bracket it, which is "
         + "the engine's own rule for its 5 % crossing "
-        + "(FixedBedAdsorber.cpp:2013-2020)", unit: "s" },
+        + "(FixedBedAdsorber.cpp:2041-2048)", unit: "s" },
       { sym: "f_b", means: "the breakthrough criterion, c_out/c_in at which "
         + "you switch beds -- a specification you declare (the knob), never "
         + "a datum the curve carries" },
@@ -154,7 +154,7 @@ t_\mathrm{st} &= \int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \
       { sym: "f_k,\\ f_{k+1}", means: "c_out/c_in at those two samples -- the "
         + "trapezoid rule applied to the data, which is exactly the "
         + "quadrature the engine runs on its own outlet "
-        + "(FixedBedAdsorber.cpp:2012)" },
+        + "(FixedBedAdsorber.cpp:2040)" },
     ],
     note: "The tail is handled honestly rather than extrapolated.  The sum "
       + "runs to the last sample; whatever the curve would still have "
@@ -169,10 +169,10 @@ t_\mathrm{st} &= \int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \
       + "makes the bed look worse than it is.  Do not size from it; extend the curve first.  "
       + "The engine publishes its own t_st for the same "
       + "curve -- the analytic (L/u)·R_f it announced before integrating "
-      + "(t_stoichiometric_<i>, FixedBedAdsorber.cpp:845-846) -- and the "
+      + "(t_stoichiometric_<i>, FixedBedAdsorber.cpp:873-874) -- and the "
       + "tool prints it beside the trapezoid: two readings of one quantity, "
       + "and the gap between them is the mesh plus the dropped tail, nothing "
-      + "else.  On the witness they agree to about seven digits.",
+      + "else.  On the witness they agree to about four digits (3040.7 s against 3040.5 s): the tool integrates the samples the trajectory is written at, 100 s apart, and the engine its own steps.",
   },
   {
     n: 3,
@@ -203,11 +203,11 @@ q^*_\mathrm{isotherm} &= \frac{(R_f - \varepsilon)\, c_\mathrm{in}}{\rho_b}
       { sym: "q^*_\\mathrm{isotherm}",
         means: "the same loading as the isotherm gives "
         + "it, recovered from the engine's own retention factor "
-        + "(retention_factor_<i>, FixedBedAdsorber.cpp:3192-3193) by "
+        + "(retention_factor_<i>, FixedBedAdsorber.cpp:3295-3296) by "
         + "inverting the definition the engine prints", unit: "mol/kg" },
       { sym: "R_f", means: "the retention factor, how many empty-tube "
         + "transit times the front lags the gas -- defined at "
-        + "FixedBedAdsorber.cpp:994 exactly as written here" },
+        + "FixedBedAdsorber.cpp:1025-1027 exactly as written here" },
     ],
     note: "A disagreement is the diagnostic, and it points at the data, not "
       + "at the isotherm.  If q*_curve falls short, the curve's tail was cut "
@@ -219,7 +219,7 @@ q^*_\mathrm{isotherm} &= \frac{(R_f - \varepsilon)\, c_\mathrm{in}}{\rho_b}
       + "recorded is not the one the column saw.  Neither is something to "
       + "tune away; both are reasons to go back to the column.  The tool "
       + "also prints the bed-average loading the run actually reached at "
-      + "its end (qbar_<i>_final, FixedBedAdsorber.cpp:3240), which equals "
+      + "its end (qbar_<i>_final, FixedBedAdsorber.cpp:3341), which equals "
       + "q* only on a saturated bed.",
   },
   {
@@ -255,9 +255,14 @@ L_\mathrm{MTZ} &\approx 2\, \mathrm{LUB} \qquad \text{(a symmetric front only)}
     note: "The plot marks both areas: above the curve up to t_b is the "
       + "capacity you used, between t_b and t_st is the capacity you paid "
       + "for and switched away.  The two vertical lines are the two times "
-      + "of step 2.  On the witness's own numbers, t_b(5 %) = 2934 s against "
-      + "t_st = 3041 s, so about 3.5 % of the half-metre column -- some "
-      + "1.75 cm -- is unused.  Move the criterion knob and watch LUB move "
+      + "of step 2.  On the engine's own KPIs (its fine internal steps), t_b(5 %) = 2934 s "
+      + "against t_st = 3041 s, so about 3.5 % of the half-metre column -- some "
+      + "1.75 cm -- is unused.  The tool works from the samples the trajectory "
+      + "is written at, 100 s apart across a front 231 s wide, and "
+      + "interpolates linearly between them: its t_b is about 2913 s and its "
+      + "LUB about 2.1 cm (measured natively on the witness's own trajectory), "
+      + "so the plotted numbers differ from the KPIs by the sampling, not by "
+      + "the physics; a finer writeInterval closes the gap.  Move the criterion knob and watch LUB move "
       + "with it: a stricter specification switches earlier and wastes more "
       + "bed, which is the trade the specification buys.",
   },

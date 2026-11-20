@@ -28,7 +28,7 @@ kpi     NF                     solute_closure_rel 0                1e-4
 boundary global                 H_feeds_kW       -15965.0121168   1e-4
 boundary global                 Q_boundary_kW    -0.571065476252  abs:0.0001
 boundary global                 H_products_kW    -15965.5831823   1e-4
-boundary global                 residual_kW      -2.69210431725e-08 abs:0.001
+boundary global                 residual_kW      -2.69210431725e-08 abs:5.711e-06
 source  NF                     liquidDensity    idealMixing[referenceEquation.IAPWS95+flatVliq] exact
 kpi     MIX                    Q_kW             0                abs:0.0001
 boundary global                 noBoundary       false            exact

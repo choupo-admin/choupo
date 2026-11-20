@@ -166,7 +166,9 @@ export const LETDOWN_STEPS: readonly LessonStep[] = [
       + "and nitrogen the separator dissolved in the ammonia: because the "
       + "separator liquid is initially in equilibrium with the loop gas, "
       + "even a small pressure reduction can begin to release dissolved "
-      + "gas, and the temperature hardly moves.  The second "
+      + "gas; the temperature barely moves, and the liquid, which is not an ideal "
+      + "fluid, warms slightly (about 2 K in the engine's run: the pressure term "
+      + "v(1 - alpha T) dP of the liquid enthalpy).  The second "
       + "throttle goes below the ammonia's own vapour pressure, and the "
       + "ammonia boils.  The heat for that boiling has nowhere to come from "
       + "but the liquid, which cools until the stream reaches its two-phase "
@@ -223,7 +225,7 @@ u &= \frac{4\,Q}{\pi D^2}
     note: "src/unitOperations/valve/Valve.cpp:264 is where the valve "
       + "builds Q at each end: the liquid density from the record's Vliq "
       + "carried in temperature by Rackett, the vapour density from the "
-      + "equation of state (src/thermo/ThermoPackage.cpp:2429).  The "
+      + "equation of state (src/thermo/ThermoPackage.cpp:2522).  The "
       + "dissolved hydrogen, nitrogen and argon have no liquid density at "
       + "-20 °C and are priced at the density of the rest; the run says so.",
   },
@@ -424,7 +426,7 @@ F_L^2 &= \frac{P_1 - P_2}{P_1 - P_\mathrm{vc}}\\
       + "pressure can begin to release dissolved gas, whatever the regime, "
       + "and it leaves carrying ammonia vapour at the ammonia's partial "
       + "pressure -- which is why the engine's outlet still shows some "
-      + "vapour and a small cooling with the storage pressure above Pv.  A "
+      + "vapour, with a small temperature change whose sign depends on that pressure term and on the vapour leaving, with the storage pressure above Pv.  A "
       + "bubble of permanent gas does not collapse on recovery the way a "
       + "vapour bubble does.",
   },

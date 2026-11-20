@@ -152,7 +152,7 @@ Y(\varphi, T) &= \frac{M_v}{M_c} \cdot \frac{\varphi\, P_\mathrm{sat}(T)}{P - \v
       + "that floor is the adiabatic-saturation temperature of the next "
       + "step, and the two coincide only when the Lewis number is close to "
       + "one, as it happens to be for air and water.  Enthalpy "
-      + "is why the adiabatic-saturation lines are straight.  Counted per kilogram of the same "
+      + "is why the adiabatic-saturation lines nearly coincide with the isenthalps (neither is exactly straight in T-Y, since the humid heat depends on Y).  Counted per kilogram of the same "
       + "dry carrier, moist-gas enthalpy is sensible plus latent, and along "
       + "an adiabatic-saturation line the sensible heat given up is very "
       + "nearly the latent heat taken in — so the constant-enthalpy lines and "
@@ -382,12 +382,12 @@ export const PSYCHRO_LIMITS: readonly { id: string; title: string; body: string 
     title: "The default carrier is nitrogen, not air.",
     body: "Y is proportional to M_v/M_c, so the carrier's molar mass scales "
       + "the whole chart: nitrogen at 28.013 against air at 28.96 puts every "
-      + "humidity ratio about 3 % above a printed air chart.  Nitrogen is "
+      + "humidity ratio about 3.4 % above a printed air chart.  Nitrogen is "
       + "only the default: the carrier list offers every component whose "
       + "record declares “noncondensable true;”, and the catalogue's air "
       + "record declares it (together with the ideal-gas Cp the "
       + "adiabatic and wet-bulb families need).  Pick "
       + "air and the chart moves onto the printed one — Y_sat at 60 °C goes "
-      + "from 0.1586 to 0.1534, against the ~0.152 a handbook reads.",
+      + "from 0.1576 to 0.1525, against the ~0.152 a handbook reads.",
   },
 ];

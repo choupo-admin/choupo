@@ -191,7 +191,7 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the state is priced here}
       + "equilibrium on the package's own surface, and evaluates the reaction "
       + "at T + ΔT when that transformation is exothermic and at T − ΔT when "
       + "it is endothermic (GibbsReactor.cpp:69–162, `approachDirection`; "
-      + "the isothermal reactor calls it at 375 and the gibbsMap at every "
+      + "the isothermal reactor calls it at 425 and the gibbsMap at every "
       + "cell).  An adiabatic bed has no physical T to read at until it is "
       + "solved, so the engine solves it once with no approach and reads the "
       + "thermicity at that dT = 0 outlet (GibbsReactor.cpp:573–584) — never "
@@ -237,7 +237,9 @@ H &= \sum_i n_i\, h_i(T,\, P) && \text{the state is priced here}
     where: [
       { sym: "\\Delta H_\\mathrm{rxn}",
         means: "the enthalpy change of the overall transformation from the "
-        + "feed to its equilibrium at the physical T — negative when it "
+        + "feed to its equilibrium at the physical T, per mole of feed (the "
+        + "engine reads (H_eq − H_in)/N_in, GibbsReactor.cpp:103; the sign is "
+        + "what matters here) — negative when it "
         + "releases heat.  A Gibbs reactor never sees this as an input, "
         + "because it is told no reactions; the engine reads it, isothermally "
         + "and on the package's surface, to assign the direction "

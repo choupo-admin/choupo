@@ -573,6 +573,17 @@ public:
     // reconcile from one sourced value.
     std::optional<scalar> dHsolnForSolute(std::size_t i) const;
 
+    // C377: the electrolyte SOLVENT's liquid enthalpy above its liquid-Cp
+    // record's declared window, from the component's reference equation
+    // (IAPWS-95 for water) on the elements datum: the polynomial's own value
+    // at the window top plus the integral of the equation's isobaric heat
+    // capacity of the saturated liquid from there to T.  nullopt = not
+    // applicable (no window, T inside it, no reference equation, no liquid).
+    std::optional<scalar> solventLiquidAboveWindow(std::size_t i, scalar T) const;
+    // The entropy on the same path (C377): s(Tcap) + INT cp_ref/T dT.
+    std::optional<scalar> solventLiquidEntropyAboveWindow(std::size_t i, scalar T) const;
+    std::optional<std::pair<scalar, scalar>> solventLiquidAboveWindowHS(std::size_t i, scalar T) const;
+
     // Electrolyte (ionic) activity model.  It is just the activity model when an
     // electrolyte one (pitzer) was selected -- recovered by an interface downcast
     // over activity_, null for molecular cases.  (This MI bridge is Workstream
@@ -1163,6 +1174,7 @@ private:
     //  has no term, the exact leg is taken.
     struct PressureLegNode { bool ok = false; scalar h = 0.0, s = 0.0; };
     mutable std::map<std::pair<std::size_t, scalar>, std::map<long, PressureLegNode>> pressureLegGrid_;
+    mutable std::map<std::size_t, const PureFluidModel*> solventRefModel_;   // C377; nullptr = none
     mutable std::map<std::size_t, std::pair<scalar, scalar>> pressureRef_;   // i -> (Tref, Pref)
     mutable std::map<std::size_t, std::string> pressureLegExpensive_;   // "": cheap; else the volume method
     mutable bool        associationResolved_ = false;

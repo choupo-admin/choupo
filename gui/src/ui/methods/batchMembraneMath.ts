@@ -36,7 +36,7 @@
 
   THE ENGINE IS THE JUDGE, NOT THE SOURCE.  `batchDiafilter` publishes its own
   `washoutActual_<s>` and `washoutIdeal_<s>` in constant-volume mode
-  (src/unitOperations/batch/BatchDiafilter.cpp:658-661), and the idealisation
+  (src/unitOperations/batch/BatchDiafilter.cpp:658-662), and the idealisation
   is built from THIS RUN's own initial rejection R_initial_<s>
   (BatchDiafilter.cpp:284, 607) -- so the gap between them cannot have been
   arranged by a case.  `washoutIdeal` below must REPRODUCE that KPI from the
@@ -68,7 +68,7 @@ export type KpiMap = NonNullable<RunResult["kpis"]>;
 export type UnitKpis = KpiMap[string];
 
 /** m/s -> L/(m2.h).  The engine's own conversion, at
- *  BatchDiafilter.cpp:567 and 586; kept here so the tool and the engine
+ *  BatchDiafilter.cpp:575 and 586; kept here so the tool and the engine
  *  cannot disagree about what "LMH" means. */
 export const LMH_PER_MS = 3.6e6;
 
@@ -620,7 +620,7 @@ export interface FoulingDeclaration {
   /** The declared constant; null when the case's value is not a number. */
   k: number | null;
   /** The author's REQUIRED statement of the mechanism
-   *  (BatchDiafilter.cpp:191-199); null when the key is absent, which the
+   *  (BatchDiafilter.cpp:181-188); null when the key is absent, which the
    *  engine refuses -- so a null here means the case would not run. */
   reason: string | null;
 }
@@ -632,7 +632,7 @@ export interface VesselDeclaration {
   mode: string | null;
   membrane: string | null;
   transport: string | null;
-  /** Membrane area [m2] (BatchDiafilter.cpp:118). */
+  /** Membrane area [m2] (BatchDiafilter.cpp:121). */
   area: number | null;
   /** Feed and permeate pressures [Pa], and their difference. */
   Pfeed: number | null;
@@ -642,9 +642,10 @@ export interface VesselDeclaration {
    *  refuses without it (BatchDiafilter.cpp:129-137), so a null here is a
    *  case that does not run. */
   kFilm: number | null;
-  /** Solution density [kg/m3].  Null when the case declares none: the engine
-   *  then defaults to 1000 and ANNOUNCES it (BatchDiafilter.cpp:140-158), and
-   *  this reader reports the absence rather than repeating the default. */
+  /** Solution density [kg/m3].  Null when the case declares none, the only
+   *  form the engine accepts now: it takes the density from the package and
+   *  REFUSES a typed one by name (C402; BatchDiafilter.cpp:148-150, 262-278),
+   *  so a non-null here is a case that does not run. */
   rho: number | null;
   fouling: FoulingDeclaration | null;
   missing: string[];

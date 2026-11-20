@@ -69,6 +69,32 @@ LINKED = ["src", "gui", "build", "thirdParty", ".claude",
           "data/standards", "data/groupEstimative"]
 
 
+# 2026-11-19 (DEV.md 4c C167 slice 4): `build` is no longer ONE symlink to the real
+# build tree but a SHADOW two levels deep: slot/build and slot/build/<platform>
+# are real directories whose entries are symlinks to the real ones, so a gate
+# that builds a probe (`build/<platform>/xProbe`) writes it into the slot, the
+# binaries and object trees it links against are the real ones, and nothing
+# escapes.  A gate that runs `make` (it would write the real object trees
+# through the symlinked directories) stays SERIAL.
+SHADOW_BUILD = "build"
+
+
+def shadow_dir(src, dst, depth):
+    """dst = a real directory of symlinks to src's entries (recursing `depth`-1)."""
+    if os.path.lexists(dst):
+        if os.path.islink(dst) or os.path.isfile(dst):
+            os.unlink(dst)
+        else:
+            shutil.rmtree(dst)
+    os.makedirs(dst)
+    for name in os.listdir(src):
+        s_, d_ = os.path.join(src, name), os.path.join(dst, name)
+        if depth > 1 and os.path.isdir(s_) and not os.path.islink(s_):
+            shadow_dir(s_, d_, depth - 1)
+        else:
+            os.symlink(s_, d_)
+
+
 def slot_base(root):
     h = hashlib.sha1(os.path.realpath(root).encode()).hexdigest()[:10]
     return os.path.join("/tmp", "choupo-gatetrees-%d" % os.getuid(), h)
@@ -102,6 +128,9 @@ def sync_slot(root, slot):
         if not os.path.lexists(src):
             if os.path.islink(dst):
                 os.unlink(dst)
+            continue
+        if d == SHADOW_BUILD:
+            shadow_dir(src, dst, 2)        # rebuilt every sync: drops stale probes
             continue
         if os.path.islink(dst) and os.readlink(dst) == src:
             continue

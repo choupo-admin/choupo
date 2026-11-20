@@ -63,6 +63,7 @@ Description
 
 #pragma once
 
+#include <map>
 #include "thermo/reaction/ReactionRate.H"
 #include "solver/ODE/ODEIntegrator.H"
 

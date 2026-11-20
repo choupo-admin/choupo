@@ -19,7 +19,7 @@ stream  reactorOut             T                333.15           1e-4
 boundary global                 H_feeds_kW       -99.4314268645   1e-4
 boundary global                 Q_boundary_kW    0.150642906162   1e-4
 boundary global                 H_products_kW    -99.2807839583   1e-4
-boundary global                 residual_kW      6.84963197273e-12 abs:6.025e-07
+boundary global                 residual_kW      6.84963197273e-12 abs:1.506e-06
 source  reactor                liquidDensity    idealMixing[anchoredRackett] exact
 boundary global                 noBoundary       false            exact
 boundary global                 residual_denom_kW 0.150642906162   1e-4

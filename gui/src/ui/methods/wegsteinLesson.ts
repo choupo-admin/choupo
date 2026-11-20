@@ -114,7 +114,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
       { step: "The newton branch avoids the redundancy by tearing on "
           + "component molar flows instead, which are mutually independent, "
           + "followed by the temperature and the pressure "
-          + "(Flowsheet.cpp:3741-3750, the pressure at Flowsheet.cpp:3747). "
+          + "(Flowsheet.cpp:3753-3762, the pressure, in pascals, at Flowsheet.cpp:3760). "
           + "The total and the fractions are recovered afterwards.",
         eq: String.raw`x = ( F_1,\ \ldots,\ F_{N_c},\ T,\ P ), \qquad F_i = F z_i`},
     ],
@@ -133,7 +133,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
         means: "molar flow of component i alone, "
         + "numbered 1 to Nc", unit: "kmol/s" },
       { sym: "T", means: "temperature of the torn stream", unit: "K" },
-      { sym: "P", means: "pressure of the torn stream", unit: "bar" },
+      { sym: "P", means: "pressure of the torn stream (bar in the Wegstein vector; the Newton vector below packs it in pascals)", unit: "bar" },
       { sym: "N_c", means: "number of components in the flowsheet" },
     ],
     note: "So the Wegstein tear vector really does hold a flow of order "
@@ -216,8 +216,8 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
         + "second point the secant needs" },
       { sym: "x_k", means: "the assumption used on the current pass" },
     ],
-    note: "Where you meet it: Wegstein is the default recycle accelerator "
-      + "of every sequential-modular simulator. The source is Wegstein, "
+    note: "Where you meet it: Wegstein is a classic recycle accelerator "
+      + "of sequential-modular simulators (Choupo's own default is Newton). The source is Wegstein, "
       + "J. H. (1958), Accelerating convergence of iterative processes, "
       + "Comm. ACM 1(6), 9-13. Step 5 of the previous page, Relaxation, "
       + "shows that this update is a relaxation x+ = (1 - w) x + w G(x) with "
@@ -309,7 +309,8 @@ x_{i,\mathrm{next}} &= q_i x_i + (1 - q_i) g_i(x) \qquad \text{one } i \text{ at
       + "negative number, which throws the iterate far past anywhere the "
       + "straight line was ever a good description of the plant. So the "
       + "coefficient is clamped to a declared interval, and two further "
-      + "cases are caught by name rather than by arithmetic.",
+      + "cases are caught by name rather than by arithmetic (a third guard, "
+      + "an entry that must stay positive, such as the pressure, is in Wegstein.cpp:84-88).",
     derivation: [
       { step: "The clamp, read from the case's own solverDict "
           + "(recycleWegsteinQmin / recycleWegsteinQmax).",
@@ -350,7 +351,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       + "of them and they are not the same number. The Wegstein class "
       + "defaults to [-5, 0] (src/solver/Wegstein.H:74-75); the recycle loop "
       + "constructs it with [-1, 0] "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3540-3541). A Choupo "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3539-3540). A Choupo "
       + "recycle that declares nothing therefore runs at the gentler clamp.",
   },
   {
@@ -425,11 +426,11 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
           + "divides each residual by a characteristic scale — the tear's "
           + "own total flow for a flow entry, the temperature itself for the "
           + "temperature entry, the pressure itself for the pressure entry "
-          + "(Flowsheet.cpp:3805-3824, applied at Flowsheet.cpp:3847).",
+          + "(Flowsheet.cpp:3817-3836, applied at Flowsheet.cpp:3859).",
         eq: String.raw`r_i = \frac{g_i(x) - x_i}{\mathrm{scale}_i}`},
       { step: "The engine's own comment on that scaling names what its "
           + "absence costs, in those words: the latent under-convergence the "
-          + "old Wegstein default also had (Flowsheet.cpp:3807-3808)." },
+          + "old Wegstein default also had (Flowsheet.cpp:3819-3820)." },
       { step: "And for the convergence plot the engine publishes neither "
           + "norm. It computes two physical residuals instead — the recycle "
           + "mass imbalance and the recycle energy imbalance, each divided "
@@ -476,8 +477,9 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
       + "secant slope or coefficient can be read. So the coefficients you "
       + "can watch above are computed here, over a two-variable map this "
       + "page declares in full — a straight line with a coupling knob, not a "
-      + "reactor. The recursion that consumes it is a line-for-line "
-      + "transcription of Wegstein::step and is pinned against "
+      + "reactor. The recursion that consumes it transcribes Wegstein::step "
+      + "line for line, except the third guard (no step toward a negative "
+      + "pressure, Wegstein.cpp:84-88; the toy has no pressure), and is pinned against "
       + "hand-computable values; the map it is applied to is not a Choupo "
       + "model and no number in it came from one.",
   },
@@ -498,11 +500,10 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
     body: "recycleWegsteinQmin and recycleWegsteinQmax are real engine keys "
       + "read from the case's solverDict, but a knob on this page can only "
       + "replace a value a case already declares — it cannot add a key. "
-      + "Measured across the corpus on 2026-09-12: ten cases select "
-      + "recycleSolver Wegstein, eight of them carry the two clamp keys "
-      + "commented out, and of the two that declare them live one converges "
-      + "in a single iteration and the other returns the same twelve "
-      + "iterations for every clamp between 0 and -5. So the engine panel "
+      + "Counted on the corpus on 2026-11-19: seven cases select "
+      + "recycleSolver Wegstein and four declare the clamp live "
+      + "(swro01 -5, evaporator05 -0.7, membrane27 -100, rankine02 0); the "
+      + "witness of this page, process03, carries them commented out. So the engine panel "
       + "drives the choice of solver and the tolerance instead, and the "
       + "clamp is turned where its effect on each coefficient is visible "
       + "anyway.",
@@ -521,7 +522,7 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
       + "not torn: the vapour fraction sitting on the torn stream is whatever "
       + "the previous sweep left there — the engine says so in its own words "
       + "on the Newton side, calling it the phase proxy "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3930-3931). So the state "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3942-3943). So the state "
       + "handed to the first consumer of a tear is an assumption about four "
       + "quantities carrying a fifth along for the ride, and only at "
       + "convergence, when the assumption and its image agree, is it a state "

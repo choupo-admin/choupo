@@ -275,6 +275,25 @@ describe("the lesson", () => {
       expect(line, `${c.file}:${c.line}`).toContain(c.contains);
     }
   });
+  it("every line number typed into the prose lands on a held citation", () => {
+    //  EM_CITATIONS held the lines; the numbers written in the student-visible
+    //  prose drifted by 10-30 lines without any test noticing (C453).  Every
+    //  `File.ext, line N` / `lines N-M [and N-M]` in the lesson text must contain
+    //  a citation of that file.
+    const src = repo("gui/src/ui/methods/electrolyteModelsLesson.ts").split("export const EM_STEPS")[1] ?? "";
+    const re = /([A-Za-z]+\.(?:H|cpp)), lines? ([0-9]+(?:-[0-9]+)?(?: and [0-9]+(?:-[0-9]+)?)?)/g;
+    let n = 0;
+    for (const m of src.matchAll(re)) {
+      const held = EM_CITATIONS.filter((c) => c.file.endsWith("/" + m[1])).map((c) => c.line);
+      for (const r of (m[2] ?? "").split(" and ")) {
+        const [a = 0, b] = r.split("-").map(Number);
+        const hi = b ?? a;
+        expect(held.some((l) => l >= a && l <= hi), `${m[1]} ${r}`).toBe(true);
+        n++;
+      }
+    }
+    expect(n).toBeGreaterThanOrEqual(10);
+  });
   it("has six steps, in order", () => {
     expect(EM_STEPS.map((s) => s.n)).toEqual([1, 2, 3, 4, 5, 6]);
   });

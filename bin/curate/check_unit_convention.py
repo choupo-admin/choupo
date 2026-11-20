@@ -75,6 +75,7 @@ sys.path.insert(0, str(HERE))
 import case_records                                      # noqa: E402
 
 ROOT = HERE.parents[1]
+SCAN_ROOTS = ("tutorials",)  # the rglob walks a private copy of a tutorial case (copied from tutorials/)
 BIN = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 BIN_PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
 LABEL = "check_unit_convention"

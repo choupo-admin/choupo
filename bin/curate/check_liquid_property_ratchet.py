@@ -157,6 +157,10 @@ ZERO_KEYREAD = ("src/unitOperations/membrane/", "src/unitOperations/batch/BatchD
 #  them may catch one of the FIXTURES (the gate checks that too).
 #  (class, regex on the code of the line, reason)
 FALSE_POSITIVES = [
+    ("literal", re.compile(r"(\.|\bscalar\s+)mult\s*=\s*1\.0\b"),
+     "a reaction's rate-constant multiplier reset to 1 (the ignition-delay sensitivity, cloud branch 11-19); no liquid property"),
+    ("literal", re.compile(r"\b(nTotKmol|ntot|nTot)\s*\*\s*1000\.0\s*\*\s*constant::R\b"),
+     "the ideal-gas law P = n R T / V of a gasConstantV/P vessel, kmol -> mol (cloud branch, 11-19); no liquid property"),
     ("conversion", re.compile(r"\b(H_(in|out|mid)|h_(in|out)|Cp_\w+|dHcryst\w*|UA\w*|T_jacket_?|sensibleJ"
                               r"|Q_?(kW|W)\b|Q\w*_(kW|W)\b|\w*KW\b|y\[n\])"),
      "a duty: kW <-> W or kmol <-> mol on an enthalpy, heat-capacity or UA product"),

@@ -147,7 +147,7 @@ export const RUN_LOG_STEPS: readonly LessonStep[] = [
           + at("relativeTest") + "). Here relTol is 0, so only the first can "
           + "decide, and it does — the block says \"criterion absolute "
           + "tolerance\".",
-        eq: String.raw`\tilde r_\mathrm{final} = 1.8432\times10^{-13} \le \tau = 10^{-12}` },
+        eq: String.raw`\tilde r_\mathrm{final} = 4.4550\times10^{-16} \le \tau = 10^{-12}` },
     ],
     formula: String.raw`\tilde r = \frac{\sum_k |r_k|}{\sum_j |t_j - \bar t| + \epsilon}`,
     where: [

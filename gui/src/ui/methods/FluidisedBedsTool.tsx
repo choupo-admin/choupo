@@ -479,7 +479,7 @@ export function FluidisedBedsTool(): JSX.Element {
                 <Table.Tbody>
                   <Table.Tr><Table.Td>u_mf</Table.Td><Table.Td>{fmtU(regimes.umf)}</Table.Td><Table.Td>Ergun = weight (step 1)</Table.Td></Table.Tr>
                   <Table.Tr><Table.Td>u_mb</Table.Td><Table.Td>{fmtU(regimes.umb)}</Table.Td>
-                    <Table.Td>{group === "A" ? `Abrahamsen-Geldart, F = ${fmt(F, 3)} (empirical)` : `= u_mf: a group ${group} powder bubbles as it fluidises`}</Table.Td></Table.Tr>
+                    <Table.Td>{group === "A" ? `Abrahamsen-Geldart, F = ${fmt(F, 3)} (empirical)` : group === "C" ? "cohesive group C powder: it does not fluidise properly (the value shown is u_mf, not an onset of bubbling)" : `= u_mf: a group ${group} powder bubbles as it fluidises`}</Table.Td></Table.Tr>
                   <Table.Tr><Table.Td>u_c</Table.Td><Table.Td>{fmtU(regimes.uc)}</Table.Td><Table.Td>Bi-Grace, Re_c = 1.24 Ar^0.45</Table.Td></Table.Tr>
                   <Table.Tr><Table.Td>u_se</Table.Td><Table.Td>{fmtU(regimes.use)}</Table.Td><Table.Td>Bi-Grace, Re_se = 1.53 Ar^0.5</Table.Td></Table.Tr>
                   <Table.Tr><Table.Td>u_t</Table.Td><Table.Td>{fmtU(term.u)}</Table.Td>
@@ -490,6 +490,7 @@ export function FluidisedBedsTool(): JSX.Element {
             </Wide>
             <Text size="sm">
               At your velocity the bed is <b>{regimes.at}</b>, at {fmt(regimes.ratio, 3)} times u_mf.
+              {group === "C" ? "  This powder is group C (cohesive): it channels and plugs instead of fluidising, so the regime named here, and the bubble bypass of the next panel, describe a bubbling bed it does not form." : ""}
               The terminal velocity was found by bisection on Re in {term.iterations} halvings; drag
               and net weight agree there to a relative {fmt(term.balanceResidual, 2)}.  Stokes&apos; law
               alone would give {fmtU(term.uStokes)}
@@ -538,6 +539,14 @@ export function FluidisedBedsTool(): JSX.Element {
               </Alert>
             ) : (
               <>
+                {group === "C" && (
+                  <Alert color="orange" variant="light" title="Group C: not a bubbling bed">
+                    <Text size="sm">
+                      A cohesive powder of this size does not fluidise properly (step 2): the figures below
+                      are the bubbling-bed model applied to it, not a prediction of what it does.
+                    </Text>
+                  </Alert>
+                )}
                 <Text size="sm">
                   A share (u − u_mf)/u = <b>{fmt(100 * bub.grow.bubbleGasFraction, 3)} %</b> of the gas
                   enters as bubbles.  They grow from {fmt(bub.grow.profile[0]!.db * 100, 3)} cm at the

@@ -414,7 +414,7 @@ batch18's ergun-mode bed (15\% CO2/He, N = 25) with the energy balance DECLARED:
 
 What the engine announces BEFORE integrating (equilibrium theory):
 
-thermal-wave velocity of the LOADED bed u\_th = u c\_tot cpg / (eps c\_tot cpg + rho\_b (cp\_s + sum q$\ast$ cpg)) and the time L/u\_th the heat needs to LEAVE the bed; the adiabatic LIMIT DT\_ad = q$\ast$(-dH\_ads)/(cp\_s + q$\ast$ cpg\_CO2 + eps c\_tot cpg/rho\_b) -- the all-heat-retained BOUND (the loaded solid carries the adsorbate's own Cp). Here u\_th < u\_sh: the heat LAGS the front, so the observed outlet-T rise sits well BELOW the bound (\textasciitilde{} +36 K vs the 126 K limit) while the WARM bed breaks through far earlier than batch18's isothermal front (t\_50 \textasciitilde{} 812 s vs 3042 s -- q$\ast$(T) falls via the van't Hoff b(T), the SAME datum the energy state carries; one dH\_ads, three readers).
+pure thermal-wave velocity u\_th = u c\_tot cpg / (eps c\_tot cpg + rho\_b cp\_s) and the time L/u\_th the heat needs to LEAVE the bed; the adiabatic LIMIT DT\_ad = q$\ast$(-dH\_ads)/(cp\_s + q$\ast$ cpg\_CO2 + eps c\_tot cpg/rho\_b) -- the all-heat-retained BOUND (the loaded solid carries the adsorbate's own Cp). Here u\_th < u\_sh: the heat LAGS the front, so the observed outlet-T rise sits well BELOW the bound (\textasciitilde{} +36 K vs the 126 K limit) while the WARM bed breaks through far earlier than batch18's isothermal front (t\_50 \textasciitilde{} 812 s vs 3042 s -- q$\ast$(T) falls via the van't Hoff b(T), the SAME datum the energy state carries; one dH\_ads, three readers).
 
 The golden pins T\_out/T\_max, both anchors, the early crossings, and the campaign ENERGY closure -- claimed, adiabatically, on the vessel's internal energy against the boundary streams alone, and closed to round-off: the bed's energy rows are conservative finite volumes (each cell's internal energy U\_j, the faces carrying the enthalpy of the species fluxes; DEV.md 4c C258).
 
@@ -745,7 +745,7 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \tutreadme{See it fail on purpose --- two siblings run the same problem at the same step with other integrators:}
 \tutreadme{(Both ship a .expect-nonconvergence marker --- their whole point is to fail.) $\ast$See, then decide$\ast$, applied to numerics.}
 \begin{tutgolden}
-\goldrow{kpi}{bomb}{P\_final}{500000}
+\goldrow{kpi}{bomb}{P\_final}{1135148.06413}
 \goldrow{kpi}{bomb}{T\_final}{3076.31278179}
 \goldrow{kpi}{bomb}{n\_H2O2\_final}{9.60661475471e-11}
 \goldrow{kpi}{bomb}{n\_H2\_final}{1.6749742078e-06}
@@ -806,7 +806,7 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \tutreadme{Rosenbrock23 is not a W-method: its order conditions assume the $\ast$true$\ast$ Jacobian. A Jacobian with a missing term does not crash anything --- the steps still pass the error test, just smaller, or less accurate --- so nobody would see it. The run therefore measures its claim: at analytic Jacobians 1, 2, 4, 8, ... it also builds a central finite-difference one at the same state, and prints}
 \tutreadme{A column that differs by more than 1e-4 of its own scale refuses the run by name (row, column, both numbers).}
 \begin{tutgolden}
-\goldrow{kpi}{bomb}{P\_final}{500000}
+\goldrow{kpi}{bomb}{P\_final}{1135148.06413}
 \goldrow{kpi}{bomb}{T\_final}{3076.31278179}
 \goldrow{kpi}{bomb}{n\_H2O2\_final}{9.60661475471e-11}
 \goldrow{kpi}{bomb}{n\_H2\_final}{1.67497420779e-06}
@@ -875,7 +875,7 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \tutreadme{Definitions: r\_j is the net rate of reaction $\ast$j$\ast$ (kmol/m$^3$/s, the very number the integrator uses, third-body concentration and fall-off included), c\_ij = $\nu$\_ij r\_j V (kmol/s) is what reaction $\ast$j$\ast$ does to species $\ast$i$\ast$, and $\Sigma$\_j c\_ij equals the integrator's dn$_i$/dt exactly (held by bin/curate/check\_rate\_of\_production.py). Theory Guide: $\ast$Rates of production of a reaction mechanism$\ast$.}
 \tutreadme{The solver is Rosenbrock23, as in ignition01\_h2o2, whose \_rk4 and \_eulersi siblings show the explicit integrators failing on this chemistry; this case adds nothing to that lesson and only reads the state the integrator reaches.}
 \begin{tutgolden}
-\goldrow{kpi}{bomb}{P\_final}{500000}
+\goldrow{kpi}{bomb}{P\_final}{1135148.06413}
 \goldrow{kpi}{bomb}{T\_final}{3076.31278179}
 \goldrow{kpi}{bomb}{n\_H2O2\_final}{9.60661475471e-11}
 \goldrow{kpi}{bomb}{n\_H2\_final}{1.6749742078e-06}
@@ -909,7 +909,7 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \tutreadme{Two lessons: 1. No seed. This mechanism self-initiates, and the 43 $\mu$s delay is the chain-BRANCHING chemistry (R1-R3), not the dissociation R5 (H$_2$ + M = 2H, Ea = 105 kcal/mol): MEASURED 2026-10-31, when R5-R8 first ran at their true rate (DEV.md 4c C185 item 9 -- they had run at ZERO), the delay stayed 43 $\mu$s, and removing R5 from the mechanism leaves it at 43 $\mu$s too. (This paragraph used to credit R5 with the induction; that was written while R5 ran at zero and was never true.) With the ignition01-style trace-H seed the delay collapses to 12 $\mu$s: initial conditions are physics, not knobs. 2. The engine now prints tau\_ign in the epilogue (time of max dT/dt on the write grid) whenever a vessel ignites --- no CSV spelunking.}
 \tutreadme{Run ignition01\_h2o2 (the same kinetics, 5 bar, trace-H seeded) for the sibling case and the stiffness lesson (\_rk4).}
 \begin{tutgolden}
-\goldrow{kpi}{bomb}{P\_final}{202650}
+\goldrow{kpi}{bomb}{P\_final}{562410.632114}
 \goldrow{kpi}{bomb}{T\_final}{3040.05307724}
 \goldrow{kpi}{bomb}{n\_H2O2\_final}{3.48411611466e-11}
 \goldrow{kpi}{bomb}{n\_H2\_final}{9.81287128429e-07}
@@ -1025,7 +1025,7 @@ with tau = the time T first exceeds T0 + 400 K, linearly interpolated between th
 \tutreadme{1. The cross-engine pin. The kinetic plateau lands on the Gibbs equilibrium computed by a $\ast$different engine$\ast$ (steady Gibbs minimisation vs stiff batch integration). Kinetics choose the path and the clock; the destination belongs to the thermodynamics. Reverse rates come from the same equilibrium constants --- so this agreement is a genuine consistency check of the mechanism transcription + thermo, not a tautology. 2. NOx forms in engineering time. Ignition takes microseconds (ignition02: 43 $\mu$s); thermal NO takes seconds at 2125 K. That timescale gap is the whole basis of NOx control by quench: cool the gas before the Zeldovich clock runs.}
 \tutreadme{The burnt-gas initial pool was computed by a gibbsReactor at 2125 K/1 atm (14 species on 2026-07-02; it still agrees with the current 13-species thermo to the printed digits) (25 \% H$_2$ / 17.5 \% O$_2$ / 57.5 \% N$_2$ feed); the equilibrium NO share was returned to N$_2$/O$_2$ elementally.}
 \begin{tutgolden}
-\goldrow{kpi}{postflame}{P\_final}{101325}
+\goldrow{kpi}{postflame}{P\_final}{100709.267593}
 \goldrow{kpi}{postflame}{T\_final}{2125}
 \goldrow{kpi}{postflame}{n\_H2O2\_final}{1.0369853342e-12}
 \goldrow{kpi}{postflame}{n\_H2\_final}{4.84698059975e-09}
@@ -2001,7 +2001,7 @@ The forward A is the illustrative value tuned for stable RK4 (see constant/react
 \tutreadme{Q = extent x dH\_rxn(600 K) = 0.4207158 x (-38.94107) = -16.38312 kJ (heat removed by the jacket; the reaction is exothermic).}
 \tutreadme{The engine's campaign ledger (energy\_Q\_ledger\_kJ, E\_reaction\_total\_kJ) prints -16.3831222515 kJ: the hand value to the digits above.}
 \begin{tutgolden}
-\goldrow{kpi}{reactor}{P\_final}{1000000}
+\goldrow{kpi}{reactor}{P\_final}{4988677.5708}
 \goldrow{kpi}{reactor}{T\_final}{600}
 \goldrow{kpi}{reactor}{n\_CO2\_final}{0.000420715762123}
 \goldrow{kpi}{reactor}{n\_CO\_final}{7.92842378768e-05}
@@ -2171,12 +2171,12 @@ The vessel runs isothermal at 333.15 K, the top of the authors' data range. Do n
 \goldrow{kpi}{reactor}{n\_water\_final}{0.00708545291502}
 \goldrow{kpi}{reactor}{t\_end}{3600}
 \goldrow{kpi}{reactor}{totalMoles\_final}{0.0185}
-\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{2.00040184617e-15}
-\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.87537673079e-15}
-\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{2.12542696156e-15}
-\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{2.12542696156e-15}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{1.50030138463e-15}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.50030138463e-15}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{1.62532650001e-15}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{1.62532650001e-15}
 \goldrow{kpi}{campaign}{energy\_H\_external\_kJ}{0}
-\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{-50.6006288442}
+\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{-28.6543189573}
 \goldmore{26}
 \end{tutgolden}
 

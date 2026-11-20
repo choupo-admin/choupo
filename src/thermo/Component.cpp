@@ -1753,6 +1753,7 @@ public:
     scalar H(scalar T, scalar Tref) const override { used(); return inner_->H(T, Tref); }
     scalar S(scalar T, scalar Tref) const override { used(); return inner_->S(T, Tref); }
     const std::string& modelName() const override { return inner_->modelName(); }
+    scalar windowTmax() const override { return inner_->windowTmax(); }
 private:
     void used() const { if (firstUse_) { const auto f = std::move(firstUse_); firstUse_ = nullptr; f(*inner_); } }
     std::unique_ptr<HeatCapacityModel> inner_;

@@ -860,8 +860,11 @@ function LoopComparison({ loops }: { loops: Loops }): JSX.Element {
             <Table.Tr>
               <Table.Td>hydrogen and ammonia held in the loop</Table.Td>
               <Table.Td colSpan={3}>
-                not computed: these cases size no vessel, so there is no
-                volume to hold anything (lesson step 15)
+                only a partial inventory: the converter gas (193 kg at
+                150 bar, 115 kg at 50 bar) and the separator liquid (4.3 t,
+                23.4 t) from the cases' own declared holds; the pipes, the
+                exchangers and the stored energy are not computed (lesson
+                step 15)
               </Table.Td>
             </Table.Tr>
           </Table.Tbody>

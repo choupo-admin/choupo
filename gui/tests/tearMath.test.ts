@@ -148,6 +148,14 @@ describe("the tear set is FORCED by the declared order", () => {
     expect(v.tears).toContain("recycleA");
   });
 
+  it("THE BLURB'S INSTRUCTION: moving the reactor above the mixer is NOT the fix; the mixer last is",
+    () => {
+      const g = byId("shared");
+      expect(judgePlan(g, [1, 0, 2, 3, 4]).tears.length).toBe(3);
+      expect(judgePlan(g, [1, 2, 3, 4, 0]).tears).toEqual(["toReactor"]);
+      expect(g.blurb ?? "").not.toMatch(/reactor above\s+the mixer/);
+    });
+
   it("THE PAGE'S CLAIM: the shared graph needs two tears, and one after a reorder",
     () => {
       const g = byId("shared");

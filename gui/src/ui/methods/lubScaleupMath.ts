@@ -32,9 +32,9 @@
 
   THE ENGINE IS THE JUDGE, NOT THE SOURCE.  The fixed-bed unit publishes its
   OWN stoichiometric time (`t_stoichiometric_<i>`, analytic, announced
-  BEFORE the run -- src/unitOperations/batch/FixedBedAdsorber.cpp:845-846)
+  BEFORE the run -- src/unitOperations/batch/FixedBedAdsorber.cpp:873-874)
   and its OWN retention factor (`retention_factor_<i>`, the isotherm's
-  q*(c_in) folded in -- FixedBedAdsorber.cpp:3192-3193).  The tool draws the
+  q*(c_in) folded in -- FixedBedAdsorber.cpp:3295-3296).  The tool draws the
   hand method's numbers BESIDE those two, and a disagreement is a finding
   about the curve (a cut tail, a bed not at equilibrium, a coarse mesh),
   never a moved answer.  Nothing here reaches an isotherm, a rate law or a
@@ -240,7 +240,7 @@ export function loadingFromCurve(
 }
 
 /** q*(c_in) from the ENGINE's own retention factor, its definition
- *  R_f = eps + rho_b q*(c_in)/c_in (FixedBedAdsorber.cpp:994) solved for q*. */
+ *  R_f = eps + rho_b q*(c_in)/c_in (FixedBedAdsorber.cpp:1025-1027) solved for q*. */
 export function loadingFromRetention(
   rF: number, eps: number, cIn: number, rhoB: number,
 ): number {

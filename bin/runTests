@@ -454,7 +454,7 @@ gate_segments() {
         w=1; case "$lane" in *\**) w="${lane#*\*}"; lane="${lane%%\**}" ;; esac
         case "$lane" in
             PAR) ;;
-            ISO) [ "$sec" = PRE ] && [ "${CHOUPO_GATE_ISO:-1}" != 0 ] || continue ;;
+            ISO) [ "${CHOUPO_GATE_ISO:-1}" != 0 ] || continue ;;      # PRE and POST (C167 slice 4)
             *) continue ;;
         esac
         argv="${argv#"${argv%%[![:space:]]*}"}"; argv="${argv%"${argv##*[![:space:]]}"}"

@@ -72,8 +72,9 @@ export const ENTU_STEPS: readonly LessonStep[] = [
         means: "the two outlet temperatures — what "
         + "the LMTD route needs and the ε-NTU route does not", unit: "K" },
     ],
-    note: "Choupo's exchanger takes the second route: it solves the duty and "
-      + "both outlets from ε-NTU, and only then computes the LMTD, printing "
+    note: "Choupo's exchanger takes the second route: it takes the duty "
+      + "from ε-NTU, inverts both outlets from the package enthalpy "
+      + "at that duty, and only then computes the LMTD on those outlets, printing "
       + "U·A·LMTD beside the duty as a cross-check.  Two routes to one number "
       + "is worth the arithmetic — but only where the two routes describe the "
       + "same exchanger.  What the method allows: Q = U·A·ΔT_lm holds as "

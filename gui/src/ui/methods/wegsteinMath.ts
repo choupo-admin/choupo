@@ -32,7 +32,7 @@
   recycle loop prints it, and the iteration table's own `γ-info` column
   carries the energy-tear relative change instead
   (src/unitOperations/flowsheet/Flowsheet.cpp:3536, filled at
-  src/unitOperations/flowsheet/Flowsheet.cpp:3665-3666).  So there is no run,
+  src/unitOperations/flowsheet/Flowsheet.cpp:3677-3678).  So there is no run,
   in this tree, from which a student can read the per-variable secant slope
   `s_i` or the coefficient `q_i` that it produces — and those two numbers ARE
   the method.  The page therefore drives the recursion over a DECLARED toy
@@ -41,8 +41,9 @@
 
   WHAT MAKES THE TOY LEGITIMATE RATHER THAN A SECOND HOME.  `wegsteinStep`
   below is a transcription of `Wegstein::step`
-  (src/solver/Wegstein.cpp:49-92), line for line including both degeneracy
-  guards and their literal epsilons, and it is pinned against
+  (src/solver/Wegstein.cpp:49-92), line for line including the two degeneracy
+  guards and their literal epsilons (the third guard, no step toward a
+  negative pressure, Wegstein.cpp:84-88, is omitted: the toy has no pressure), and it is pinned against
   hand-computable values in tests/wegsteinMath.test.ts.  What it is applied
   TO is a two-variable linear map this module declares in full — no
   thermodynamics, no unit operation, nothing the engine could disagree with.
@@ -74,13 +75,13 @@
   temperature in kelvin and a pressure in bar, with no per-variable scale.
   The Newton branch of the same function does NOT do this: it tears on
   component molar flows plus T and P
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3741-3750) and divides each
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3753-3762) and divides each
   residual by a characteristic scale
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3805-3824, applied at
-  src/unitOperations/flowsheet/Flowsheet.cpp:3847), and its own comment names
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3817-3836, applied at
+  src/unitOperations/flowsheet/Flowsheet.cpp:3859), and its own comment names
   what the absence of that scaling costs — "the latent under-convergence the
   old Wegstein default also had"
-  (src/unitOperations/flowsheet/Flowsheet.cpp:3805-3809).
+  (src/unitOperations/flowsheet/Flowsheet.cpp:3817-3821).
 
   NOT HERE, deliberately: any tear-SELECTION heuristic (that is the
   tear-streams page, and the engine deliberately does not choose either), any
@@ -104,7 +105,7 @@ export const EPS_X = 1.0e-14;
 export const EPS_S = 1.0e-10;
 
 /** The engine's RECYCLE clamp defaults — read off the solverDict with these
- *  fallbacks at src/unitOperations/flowsheet/Flowsheet.cpp:3540-3541.
+ *  fallbacks at src/unitOperations/flowsheet/Flowsheet.cpp:3539-3540.
  *
  *  They are NOT the defaults of the `Wegstein` class, which are [-5, 0]
  *  (src/solver/Wegstein.H:74-75) and which the Theory Guide quotes as
@@ -347,7 +348,7 @@ interface DriveOptions {
 }
 
 /** WEGSTEIN — the accelerator, driven exactly as `Flowsheet`'s recycle branch
- *  drives it (src/unitOperations/flowsheet/Flowsheet.cpp:3531-3692): pack,
+ *  drives it (src/unitOperations/flowsheet/Flowsheet.cpp:3531-3704): pack,
  *  sweep, measure `normL2(gx, x)`, test, then accelerate and unpack.  The
  *  test comes BEFORE the acceleration, which is why a converged run's last
  *  recorded step has no coefficients: the loop broke out of it. */
@@ -376,8 +377,9 @@ export function driveWegstein(m: ToyMap, o: DriveOptions): SolveTrace {
 }
 
 /** DIRECT SUBSTITUTION — the same loop with the accelerator switched off.
- *  It is not a separate method in the engine: it is what the Wegstein branch
- *  DOES when `recycleWegsteinQmin` and `Qmax` are both 0, because the clamp
+ *  In the engine it is also a selectable method (`recycleSolver
+ *  directSubstitution;`, taught on the relaxation page); here it is what
+ *  the Wegstein recursion DOES when `recycleWegsteinQmin` and `Qmax` are both 0, because the clamp
  *  interval collapses to {0} and every coefficient is forced to it. */
 export function driveDirect(m: ToyMap, o: DriveOptions): SolveTrace {
   return driveWegstein(m, { ...o, qMin: 0, qMax: 0 });
@@ -393,7 +395,7 @@ export function driveDirect(m: ToyMap, o: DriveOptions): SolveTrace {
  *  tear variables — two full flowsheet sweeps per variable
  *  (Theory Guide §ch:newton-tears) — and tears on component molar flows plus
  *  T and P rather than on (F, z, T, P)
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:3741-3750).  The cost per step
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:3753-3762).  The cost per step
  *  is the whole reason Wegstein is still on offer, and no toy can show it. */
 export function driveNewton(m: ToyMap, o: DriveOptions): SolveTrace {
   const units = o.units ?? SI;
@@ -467,11 +469,11 @@ export const RECYCLE_DEFAULTS: RecycleKnobs = {
  *
  *  WHAT IS NOT HERE, and it is the knob a reader reaches for first: the clamp.
  *  `recycleWegsteinQmin` / `Qmax` are read by the engine
- *  (src/unitOperations/flowsheet/Flowsheet.cpp:3540-3541) but this witness
+ *  (src/unitOperations/flowsheet/Flowsheet.cpp:3539-3540) but this witness
  *  carries them COMMENTED OUT, and an override replaces a declared value — it
- *  does not add a key.  Measured on the corpus (2026-09-12): of the ten cases
- *  that select `recycleSolver Wegstein`, only two declare the clamp live, one
- *  converges in a single iteration and the other is insensitive to it.  So
+ *  does not add a key.  Measured on the corpus (2026-09-12): of the cases
+ *  that select `recycleSolver Wegstein` (seven on 2026-11-19), four declare the
+ *  clamp live.  So
  *  the clamp is driven on the transparent recursion above, where every
  *  coefficient it acts on is visible anyway, and this plane drives the
  *  choice of solver.  A case declaring the clamp live would let this plane

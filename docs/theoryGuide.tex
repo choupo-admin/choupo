@@ -14298,7 +14298,11 @@ In \file{system/solverDict}: \code{recycleSolver directSubstitution;} with
 \code{recycleSolver Wegstein;} with \code{recycleWegsteinQmin}/\code{Qmax};
 and, for the default Newton on the tears, an optional
 \code{recycleMaxStep}.  Every declared value is announced, and a value out of
-range is refused by name.  The \emph{relaxation} EduTool draws all of the
+range is refused by name; this includes a Wegstein clamp with
+\code{recycleWegsteinQmin} above \code{recycleWegsteinQmax}, which would
+make the clamp $q = \operatorname{clamp}(s/(s-1), q_{\min}, q_{\max})$
+undefined (a non-default clamp is announced in the run log, default
+$[-1, 0]$).  The \emph{relaxation} EduTool draws all of the
 above with draggable figures and runs \code{process03\_recycle} under three
 factors.
 
@@ -19846,6 +19850,19 @@ $-5.2$\,kW against duties of $1880$, $1076$ and $1294$\,kW, about one percent
 of each: the boiling-point rise (Pitzer $a_w$) agrees with the measured
 partial pressures of Perry's Table~2-19\cite{Perry9} to $0.2$\,K there
 ($3.48/4.00/5.02$ against $3.25/3.79/4.88$\,K).
+
+\paragraph{Water above 373\,K.}
+The solvent's liquid enthalpy in an electrolyte package is the formation-datum
+leg with the record's liquid heat capacity (water: a constant
+$75.5$\,J/(mol\,K), declared window 273--373\,K).  Above the top of that
+window (a 130\,\textdegree C steam chest, a condensate at 401\,K) the engine no
+longer extrapolates the polynomial: the solvent's enthalpy is the polynomial's
+own value at the window top plus $\int_{T_{\max}}^{T} c_{p}^{\mathrm{ref}}\,dT'$,
+where $c_{p}^{\mathrm{ref}}$ is the isobaric heat capacity of the saturated liquid
+from the component's reference equation (IAPWS-95 for water).  The surface stays
+continuous at $T_{\max}$ while $c_p$ steps there (75.5 against the equation's
+value), the run announces it once, and a solvent with no reference equation keeps
+the polynomial.  Only electrolyte packages are affected; molecular water is not.
 
 \paragraph{Past the window.}
 The $L_\phi$ fit of the Na--OH pair is valid to
