@@ -1,73 +1,62 @@
-# ignition01_h2o2 — H₂/O₂ ignition, and why stiff chemistry needs a stiff solver
+# ignition03_h2air_constp — the same ignition at CONSTANT PRESSURE
 
-A closed rigid vessel holds a stoichiometric H₂/O₂ charge diluted in N₂ at
-1100 K and 5 bar. A trace H-radical seed starts chain branching; after a short
-**induction** the radical pool explodes and the mixture **ignites** — a sharp
-temperature jump from 1100 K to ~3078 K.
-
-Run it:
+`ignition01_h2o2` closes the charge in a rigid vessel.  This case lets the
+same charge (1100 K, 5 bar, H₂ : O₂ : N₂ = 2 : 1 : 4, trace-H seed, the same
+Ó Conaire mechanism and thermo) expand against a fixed pressure — the
+adiabatic constant-pressure cell that OpenFOAM's chemistry solver integrates.
 
 ```
-runCase tutorials/batch/combustion/ignition01_h2o2
+runCase tutorials/batch/combustion/ignition03_h2air_constp
 ```
 
-and plot `trajectory.csv` (T and the radicals H/O/OH vs time). You will see:
+## The balance (`energy gasConstantP;`)
 
-| phase | what happens | ~time |
+Closed, adiabatic, ideal gas, P fixed: the first law is dH = 0, so
+
+    dT/dt = − Σᵢ hᵢ(T) ṅᵢ / Σᵢ nᵢ Cpᵢ(T),        V = (Σ nᵢ) R T / P
+
+with hᵢ the ideal-gas molar enthalpy on the formation datum (the datum
+`gasConstantV` takes uᵢ = hᵢ − RT from) and Cpᵢ the ideal-gas heat capacity.
+**V is not an input**: it is derived from (n, T, P) at every state, so the
+holdup declares no `V` (declaring one that disagrees with n R T / P is refused
+by name), and every reader of the vessel — the time directories'
+`internalStates/bomb`, the rate-of-production report — sees the V of its own
+state.  The rates use cᵢ = nᵢ / V with that V.  Theory Guide,
+`sec:batch-gas-constp`.
+
+## What it shows against `ignition01_h2o2` (measured, 0.1 µs grid, 20 µs)
+
+| | constant V | constant P |
 |---|---|---|
-| induction | T almost flat (1100→1220 K); H/O/OH grow **exponentially** from the seed | 0 → ~6 µs |
-| ignition  | chain branching outruns termination; T runs away past 2500 K | ~6 → 8 µs |
-| equilibrium | the radicals recombine (H + OH + M, H + O2 + M, ...); the thermo pins the burned state; net rate → 0 | after ~12 µs |
+| τ_ign (max dT/dt) | 7.1 µs | 7.6 µs |
+| peak dT/dt | 2.26e9 K/s | 9.6e8 K/s |
+| T at 20 µs | 3076 K | 2805 K (2828 K at 200 µs) |
 
-The **ignition delay** τ_ign (the time of maximum dT/dt, printed in the run's
-epilogue on the 1 µs write grid) is ≈ **8 µs** here.  The trace H seed is
-what makes it that short: the same mechanism without a seed, at 2 atm, gives
-the 43 µs of the shock-tube pin in `ignition02_h2air_slack`.
+At constant V the heat release goes into a gas that cannot expand and the
+pressure climbs; at constant P the same heat also does the expansion work
+P dV and is spread over the larger Cp = Cv + R, so the temperature rises less
+and the burned gas is cooler.  The cooler path lowers the rate constants, so
+the runaway is later and slower.
 
-## The lesson: stiffness
+## Hand check
 
-The radical lifetimes are far shorter than the induction — the solver prints
-a stiffness ratio of order 10⁷.  That is **stiffness**.  An explicit method
-(RK4) is stability-limited to a step of order the *fastest* scale, so it cannot
-take the 1 µs steps this case uses.  The solver here is **Rosenbrock23**, an
-L-stable linearly-implicit method that steps by *accuracy*, not stability; at
-verbosity 3 it prints its stiffness verdict and step counts (the no-silent-
-crutch credo).
+At 200 µs the run ends at n = 4.39248e-5 kmol, T = 2828.182 K, P = 5 bar:
+V = n R T / P = 4.39248e-5 × 1000 × 8.314463 × 2828.182 / 5e5 = 2.06577e-3 m³,
+which is the `V` written in `0.0002/internalStates/bomb` (2.065769e-3).  The
+vessel has grown from 1.0 L to 2.07 L at fixed pressure.
 
-See it fail on purpose — two siblings run the **same** problem at the same
-step with other integrators:
+## Witness
 
-```
-runCase tutorials/batch/combustion/ignition01_h2o2_rk4      # explicit RK4: blows up to NaN
-runCase tutorials/batch/combustion/ignition01_h2o2_eulersi  # semi-implicit Euler: refuses by name
-```
+The same balance on the real LLNL H₂ mechanism (O'Connaire 2004, local copy),
+stoichiometric H₂/air, 1100 K, 1 atm, against Cantera's
+`IdealGasConstPressureReactor`, agrees on τ, T_final (to the mK), V_final and the
+final mole fractions — `docs/reviews/2026-11-19-chemkin-real-mechanism/REPORT.md`
+section 8.
 
-(Both ship a `.expect-nonconvergence` marker — their whole point is to fail.)
-*See, then decide*, applied to numerics.
+## Limits
 
-## Provenance — read before you quote a number
-
-- **The reaction rates** are the H₂/O₂ mechanism of Ó Conaire, Curran, Simmie,
-  Pitz & Westbrook, *Int. J. Chem. Kinet.* 36 (2004) 603, Table I, transcribed
-  from the paper — the same `constant/reactions` as `ignition02_h2air_slack`,
-  where the transcription is pinned against the Slack shock-tube delays.
-  Reverse rates come from equilibrium, through the thermo below.
-- **The thermodynamics**: the formation data are the curated catalogue's; the
-  ideal-gas heat capacities of H₂, O₂, N₂ and water are case-local NASA-9
-  polynomials read from NASA/TP-2002-211556 (McBride, Zehe & Gordon 2002,
-  public domain), because the catalogue's process-range Cp does not reach a
-  flame.
-- **What changed on 2026-10-25** (DEV.md §4c C164): until then this case and its
-  two siblings ran the H/O subsystem of GRI-Mech 3.0, copied verbatim, with
-  heat capacities from GRI-Mech's thermo file.  GRI-Mech grants no
-  redistribution, so both were replaced.  The burned temperature moved from
-  2641 K to 3078 K, and the new one is the right one, measured rather than
-  argued: a Gibbs minimisation (`gibbsReactor`, isothermal, this charge's
-  elements) at the run's final T and P reproduces the run's final composition
-  (H 1.152 %, water 26.98 %), while at the old 2641 K it puts H at 0.17 % and
-  water at 31.1 % where the old run had stopped at 3.17 % and 23.1 %.  The old
-  plateau was a radical pool that never recombined, not an equilibrium.  The
-  integrator lesson is unchanged.
-
-The KPI golden pins the burned state; the ignition delay is printed, not
-pinned.
+- `jacobian analytic` is refused for this basis by name (open debt: cₖ = nₖ/V
+  moves with every nⱼ and with T); the finite-difference Jacobian is used.
+- The campaign energy ledger names a gap for any adiabatic vessel (this one
+  included): dH = 0 holds by construction, but it is not ledgered yet.
+- The KPI golden pins the burned state; the delay is printed, not pinned.
