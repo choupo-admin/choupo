@@ -4941,6 +4941,11 @@ accepts today, and that is a policy call.
 > not).  Order: licence survey of the public sources first, then the home seeded
 > with the 21 O Conaire 2004 reactions (ignition cases byte-identical), then the
 > Explorer view (and the 858 thermoTables species on screen), then C1 growth.
+> PFR for radical chemistry (same day): NO axial dispersion with CHEMKIN
+> kinetics (Vitor: "se não faz falta ... não vamos complicar"; a cracking coil
+> runs at Re 1e5-1e6 and L/d in the hundreds, Bo >> 100).  What a cracking coil
+> still needs in `pfr`: friction pressure drop in an empty tube (today Ergun,
+> packed bed only) and an imposed furnace heat-flux or wall-T profile.
 
 > **C460 (Vitor, 2026-11-19: "E outra sobre heurísticas de selecção de secadores?
 > Também estilo Pareto e com os esquemas mais comuns pelos quais são
