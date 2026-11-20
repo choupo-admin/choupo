@@ -128,6 +128,7 @@ public:
     //   nothing (records none).
     void noteTimeAdvanced(scalar t) override;
     void setRunWindow(scalar t0, scalar t1) override;
+    std::map<std::string, scalar> kpis() const override;
     void notifyStateWillChange() override;
     void notifyStateChanged() override;
     std::vector<SimulationResult::EnergyRecord>
@@ -177,6 +178,10 @@ private:
         sVector                  troe;           // (a T*** T* [T**]); empty => Lindemann
         // A Factory law (LHHW, expression, a user law), parsed once.
         std::shared_ptr<const ReactionRate> law;
+        //  Sensitivity multiplier m_j on the NET rate (forward AND reverse
+        //  together, so the equilibrium is untouched).  1 in every normal run;
+        //  only runSensitivity_ ever sets it (Theory Guide sec:ignition-sensitivity).
+        scalar mult = 1.0;
     };
 
     enum class Mode { Isothermal, Adiabatic };
@@ -318,6 +323,25 @@ private:
     std::size_t         ropTop_   = 5;
     bool                ropFileStarted_ = false;
     void reportRatesOfProduction_(scalar tRequested, scalar t);
+
+    // ---- Ignition-delay sensitivity (brute force, opt-in) -----------------
+    //  `sensitivity { response tauIgnition; factor 1.1; reactions all; top 10; }`
+    //  N+1 integrations of the vessel from its initial state, each with one
+    //  reaction's net rate multiplied by `factor`; S_j = d ln tau / d ln k_j.
+    //  Absent = nothing here runs and every existing case is byte-identical.
+    struct SensResult { std::string name; scalar tau = 0.0; scalar S = 0.0; scalar Tend = 0.0; };
+    bool                     sensOn_     = false;
+    scalar                   sensFactor_ = 1.1;
+    scalar                   sensRise_   = 400.0;     // K above T0 that defines tau
+    std::size_t              sensTop_    = 10;
+    std::vector<std::string> sensReactions_;          // empty => all
+    scalar                   sensTau0_   = 0.0;
+    scalar                   sensTend0_  = 0.0;       // T at the run's end, base run
+    std::vector<SensResult>  sensResults_;            // sorted by |S| descending
+    //  tau [s] of one integration from `y0` over [0, tMax]; `why` says why not.
+    bool sensitivityTau_(const sVector& y0, scalar tMax, scalar& tau, scalar& Tend,
+                         std::string& why);
+    void runSensitivity_(scalar tMax);
 
     //  Phase 2: `pathFlux ( H O );` in the same block -- the flux of an
     //  element's atoms from each reactant to each product of every reaction,

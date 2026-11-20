@@ -6270,6 +6270,22 @@ PYEOF
     fi
     rm -f /tmp/plog.$$
 
+    # ignition-sensitivity gate (2026-11-20).  `sensitivity { }` on a batchReactor
+    # multiplies ONE reaction's NET rate and integrates N+1 times.  The defect it
+    # would have caught: a multiplier on the forward rate only, which moves the
+    # equilibrium and still prints a plausible S_j.  Two independent statements:
+    # every multiplied run ends at the base T_end, and S of the top reaction
+    # equals a hand recomputation from two runs with that reaction's A edited.
+    if gate_exec "$ROOT/bin/curate/check_ignition_sensitivity.py" > /tmp/ignsens.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ignition-sensitivity-gate" "$(head -1 /tmp/ignsens.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ignition_sensitivity.py)\n" "ignition-sensitivity-gate"
+        cat /tmp/ignsens.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ignsens.$$
+
     # rate-of-production gate (2026-11-19, glass box of a mechanism, phase 1).
     # `rateOfProduction { times (...); }` on a batchReactor prints, per species,
     # which reactions make and destroy it, from c_ij = nu_ij r_j V computed a

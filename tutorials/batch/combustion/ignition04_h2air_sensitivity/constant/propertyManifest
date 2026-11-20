@@ -1,0 +1,41 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- the case REFERENCES the catalogue
+  (DEV.md 4c C413; context: case root).  Written by
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and, per scanned registry directory, ONE
+  `"<dir>/"  "relevant:<hash>"` line: the hash of the sorted names that
+  EXIST there and are relevant to the case (a Henry or solution pair among
+  its components), so a relevant pair that arrives or leaves is a drift
+  and an unrelated edit is not.  A registry parses a whole directory;
+  only the names the case selects are pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
+  `held` (transitional): a local copy kept IN FORCE, read alone, verified
+  against its own hash -- debt that only shrinks (check_case_records).
+\*----------------------------------------------------------*/
+propertyManifest
+{
+    pins
+    {
+        "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
+        "components/H.dat"  "6e93334697c716cb992113771bf2b1b93e0824a5e8e095af839a707d3ab3e79b";
+        "components/H2O2.dat"  "f78f0fcce721bf25bf788ed9e60ae52c8cc06ea45fe6f813c4df5f3696d509e4";
+        "components/HO2.dat"  "2980e8e9cdcc1b089da7d2ec8d3ceebd31ac5060f465a4bc394ee0c488073ae5";
+        "components/O.dat"  "a97b020aa9e1d9f142335d4b1646d1c93e42422272e3c121865fee4549d992dd";
+        "components/OH.dat"  "a14fd85fb55af40d0555525fd84f0fa2b20809d96261795efa7c09c87fdb2de3";
+        "parameters/Henry/"  "relevant:7837adef0c7b3173ea344ea767d07bd8fbf1b01931a8155acd7c3236e4877c17";
+        "parameters/Henry/H2-water.dat"  "4a3629c5a88f40b2e55f52bf4da05cff92e0c966331cc39b95712c2744fa8c7b";
+        "parameters/Henry/H2O2-water.dat"  "b6e280b4f7e4097d98fbe5d7e5b6733a30a8be7081dbc7c2393e9054e1e98c23";
+        "parameters/Henry/HO2-water.dat"  "28a525e33af32645a8ab2859c7ddfa2fc69e275ec1b339877809e23af535f835";
+        "parameters/Henry/N2-water.dat"  "6e597edbafb3f88076dac89a14cfa53d85b9bc2df19cc088d9b8171fdc5fd765";
+        "parameters/Henry/O2-water.dat"  "7d1943cf41a94ac447b3d7774fef5b62e2e5a7698bee77a48b59dabb022458db";
+        "parameters/Henry/OH-water.dat"  "cf7c83d838a3966d67f7d420131574085908a12969f2a70a49052856d425a2d2";
+        "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+    }
+    held
+    {
+    }
+}
