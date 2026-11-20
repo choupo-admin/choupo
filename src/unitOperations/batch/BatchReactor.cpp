@@ -67,7 +67,10 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
     auto initDict = unitDict->subDict("initial");
     state_.T = initDict->lookupScalar("T");
     state_.P = initDict->lookupScalar("P");
-    state_.V = initDict->lookupScalar("V");
+    //  V is an input for every basis but gasConstantP, where it follows from
+    //  (n, T, P); it is resolved after the energy basis is read (below).
+    const bool vDeclared = initDict->found("V");
+    if (vDeclared) state_.V = initDict->lookupScalar("V");
     const scalar nTot = initDict->lookupScalar("totalMoles");
 
     // Composition: molarComposition / massComposition / composition
@@ -171,8 +174,35 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
         const std::string ebasis = opDict->lookupWordOrDefault("energy", "liquidDH");
         if      (ebasis == "liquidDH")     energy_ = Energy::LiquidDH;
         else if (ebasis == "gasConstantV") energy_ = Energy::GasConstantV;
+        else if (ebasis == "gasConstantP") energy_ = Energy::GasConstantP;
         else throw std::runtime_error("BatchReactor: unknown energy basis '"
-                + ebasis + "' (expected 'liquidDH' or 'gasConstantV')");
+                + ebasis + "' (expected 'liquidDH', 'gasConstantV' or"
+                " 'gasConstantP')");
+        if (energy_ == Energy::GasConstantP)
+        {
+            //  V follows from the ideal-gas law at the declared P.  A declared
+            //  V that disagrees is two answers to one question: refused.
+            scalar nT = 0.0;
+            for (scalar v : state_.n) nT += v;
+            const scalar Vp = constPVolume_(nT, state_.T);
+            if (vDeclared && std::abs(state_.V - Vp) > 1.0e-6 * Vp)
+                throw std::runtime_error("BatchReactor '" + name_ + "': `energy"
+                    " gasConstantP;` fixes P = " + std::to_string(state_.P)
+                    + " Pa, so V = n R T / P = " + std::to_string(Vp)
+                    + " m3, but `initial` declares V = "
+                    + std::to_string(state_.V) + " m3.  Drop `V` (it is"
+                    " derived) or make it consistent.");
+            state_.V = Vp;
+        }
+        else if (!vDeclared)
+            state_.V = initDict->lookupScalar("V");   // refuses by name, as before
+    }
+    if (energy_ == Energy::GasConstantP && jacobianAnalytic_)
+        throw std::runtime_error("BatchReactor '" + name_ + "': `jacobian"
+            " analytic;` is not derived for `energy gasConstantP;` (c_k = n_k/V"
+            " with V = n R T/P depends on every n_j and on T; the extra terms"
+            " are open debt).  Use `jacobian finiteDifference;`.");
+    {
     }
 
     // -----------------------------------------------------------------
@@ -367,7 +397,7 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
             // resolves to "none" (no formation data, no override) does not
             // throw: it POISONS the duty record, named below.
             const std::string phase =
-                (energy_ == Energy::GasConstantV) ? "gas" : "liquid";
+                isGas_() ? "gas" : "liquid";
             std::string heatSource;
             r.dH = reactionHeat(thermo, r.comps, r.nu, state_.T, phase, dictDH,
                                 "BatchReactor '" + name_ + "' reaction '"
@@ -774,8 +804,9 @@ void BatchReactor::requireAdiabaticData_() const
             throw std::runtime_error("BatchReactor (adiabatic, liquidDH):"
                 " component '" + c.name() + "' has no liquidHeatCapacity"
                 " in its.dat file");
-        if (energy_ == Energy::GasConstantV && (!c.hasCpIdealGas() || !c.hasGibbsData()))
-            throw std::runtime_error("BatchReactor (adiabatic, gasConstantV):"
+        if (isGas_() && (!c.hasCpIdealGas() || !c.hasGibbsData()))
+            throw std::runtime_error(std::string("BatchReactor (adiabatic, ")
+                + (energy_ == Energy::GasConstantP ? "gasConstantP" : "gasConstantV") + "):"
                 " component '" + c.name() + "' needs idealGasHeatCapacity +"
                 " standardThermochemistry (for u_i = h_pure_ig − R_uT and Cv) in its"
                 " .dat file");
@@ -970,7 +1001,14 @@ sVector BatchReactor::derivatives_(const sVector& packed) const
     sVector n_vec(n);
     for (std::size_t i = 0; i < n; ++i) n_vec[i] = packed[i];
     const scalar T = (mode_ == Mode::Isothermal) ? T_setpoint_ : packed[n];
-    const scalar V = state_.V;
+    scalar V = state_.V;
+    if (energy_ == Energy::GasConstantP)
+    {
+        //  Fixed P: the volume follows the trial (n, T) the integrator is at.
+        scalar nT = 0.0;
+        for (std::size_t i = 0; i < n; ++i) nT += n_vec[i];
+        V = constPVolume_(nT, T);
+    }
 
     sVector dydt(n + 1, 0.0);
 
@@ -1018,6 +1056,22 @@ sVector BatchReactor::derivatives_(const sVector& packed) const
             CvTot += n_vec[i] * Cv_i;
         }
         dydt[n] = (CvTot < 1.0e-30) ? 0.0 : -uDot / CvTot;
+    }
+    else if (mode_ == Mode::Adiabatic && energy_ == Energy::GasConstantP)
+    {
+        // Closed adiabatic gas at fixed P: the first law is dH = 0, so
+        //     dT/dt = − Σ_i h_i(T)·(dn_i/dt) / Σ_i n_i·Cp_i(T)
+        // with h_i = h_pure_ig_i(T) (formation datum: the SAME datum
+        // gasConstantV takes u_i = h_i − R_u·T from) and Cp_i the ideal-gas
+        // heat capacity.  V = n R T / P above is why no −R_u appears.
+        scalar hDot  = 0.0;   // Σ h_i · dn_i/dt
+        scalar CpTot = 0.0;   // Σ n_i · Cp_i
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            hDot  += thermo_->comp(i).h_pure_ig(T) * dydt[i];
+            CpTot += n_vec[i] * thermo_->comp(i).cpIdealGas().Cp(T);
+        }
+        dydt[n] = (CpTot < 1.0e-30) ? 0.0 : -hDot / CpTot;
     }
     // else: dydt[n] stays 0 (isothermal)
 
@@ -1197,6 +1251,7 @@ void BatchReactor::notifyStateWillChange()
 
 void BatchReactor::notifyStateChanged()
 {
+    if (energy_ == Energy::GasConstantP) syncConstPVolume_();
     // POST-mutation re-base: the next segment starts from the transferred
     // state.  Never close here -- the close happened above, pre-mutation.
     openSegment_(lastTime_);
@@ -1223,6 +1278,10 @@ std::string BatchReactor::energyLedgerGap() const
         return "adiabatic liquidDH ODE conserves a frozen-dH surrogate, not"
                " the canonical H surface (dH_rxn pinned at the charge T);"
                " canonical-H adiabatic integration pending";
+    if (energy_ == Energy::GasConstantP)
+        return "constant-pressure vessel (gasConstantP): dH = 0 holds by"
+               " construction (the ODE is the first law), but no adiabatic"
+               " vessel is ledgered yet; the H-based accounting is pending";
     return "constant-volume vessel (gasConstantV): an H-based balance is"
            " the wrong functional; U-based accounting pending";
 }
@@ -1272,8 +1331,7 @@ void BatchReactor::emitImpulse_(scalar T_old, scalar T_new)
             // Priced on the SAME canonical surface as the duty and the
             // vessel terms (H_stream_formation) -- a second surface would
             // leak a fake residual into the balance.
-            const scalar vf =
-                (energy_ == Energy::GasConstantV) ? 1.0 : 0.0;
+            const scalar vf = isGas_() ? 1.0 : 0.0;
             const scalar P_Pa = state_.P > 0.0 ? state_.P : 1.0e5;   // state_.P is Pa (C390)
             sVector z(state_.n.size());
             for (std::size_t i = 0; i < state_.n.size(); ++i)
@@ -1321,7 +1379,7 @@ scalar BatchReactor::isoMixH_(const sVector& nv) const
     scalar nTot = 0.0;
     for (auto v : nv) nTot += v;
     if (nTot <= 0.0) return 0.0;
-    const scalar vf = (energy_ == Energy::GasConstantV) ? 1.0 : 0.0;
+    const scalar vf = isGas_() ? 1.0 : 0.0;
     const scalar P_Pa = state_.P > 0.0 ? state_.P : 1.0e5;   // state_.P is Pa (C390)
     sVector z(nv.size());
     for (std::size_t i = 0; i < nv.size(); ++i) z[i] = nv[i] / nTot;
@@ -1469,6 +1527,11 @@ static scalar gasConstantVPressure(const BatchState& s)
     return s.V > 0.0 ? nTot * 1000.0 * constant::R * s.T / s.V : s.P;   // kmol -> mol
 }
 
+void BatchReactor::syncConstPVolume_()
+{
+    state_.V = constPVolume_(state_.totalMoles(), state_.T);
+}
+
 void BatchReactor::step(scalar t, scalar dt)
 {
     // Pack state: (n[0..n-1], T).
@@ -1592,6 +1655,7 @@ void BatchReactor::step(scalar t, scalar dt)
     }
     state_.T = (mode_ == Mode::Isothermal) ? T_setpoint_ : y0[n];
     if (energy_ == Energy::GasConstantV) state_.P = gasConstantVPressure(state_);
+    else if (energy_ == Energy::GasConstantP) syncConstPVolume_();
     //  An ACCEPTED state must be physical: a finite but negative or zero
     //  absolute temperature is not an extrapolation, it is a blown
     //  integration, and it used to sail into the thermo (which dutifully
@@ -1641,6 +1705,7 @@ void BatchReactor::setOdeState(const sVector& y)
     }
     state_.T = (mode_ == Mode::Isothermal) ? T_setpoint_ : y[n];
     if (energy_ == Energy::GasConstantV) state_.P = gasConstantVPressure(state_);
+    else if (energy_ == Energy::GasConstantP) syncConstPVolume_();
 }
 
 // -----------------------------------------------------------------------
