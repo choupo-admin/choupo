@@ -498,6 +498,71 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
             }
         }
     }
+
+    // -----------------------------------------------------------------
+    //  Optional ignition-delay sensitivity (opt-in; absent = nothing runs).
+    //      sensitivity { response tauIgnition; factor 1.1; reactions all;
+    //                    top 10; rise 400; }
+    //  The N+1 integrations run in setRunWindow, from the initial state.
+    // -----------------------------------------------------------------
+    sensOn_ = false;
+    sensResults_.clear();
+    sensReactions_.clear();
+    for (auto& r : reactions_) r.mult = 1.0;
+    if (unitDict->found("sensitivity"))
+    {
+        const std::string who = "BatchReactor '" + name_ + "': sensitivity";
+        auto sd = unitDict->subDict("sensitivity");
+        for (const auto& k : sd->keys())
+            if (k != "response" && k != "factor" && k != "reactions"
+                && k != "top" && k != "rise")
+                throw std::runtime_error(who + ": unknown key '" + k
+                    + "' (the block reads `response tauIgnition;`, `factor f;`,"
+                      " `reactions all | ( names );`, `top N;` and `rise K;`)");
+        const std::string resp = sd->lookupWordOrDefault("response", "tauIgnition");
+        if (resp != "tauIgnition")
+            throw std::runtime_error(who + ": response '" + resp
+                + "' is not known; the only response is `tauIgnition` (the"
+                  " time T first exceeds T0 + rise)");
+        sensFactor_ = sd->lookupScalarOrDefault("factor", 1.1);
+        if (!(sensFactor_ > 1.0))
+            throw std::runtime_error(who + ": `factor` must be > 1 (it multiplies"
+                " the rate of one reaction at a time); got "
+                + std::to_string(sensFactor_));
+        sensRise_ = sd->lookupScalarOrDefault("rise", 400.0);
+        if (!(sensRise_ > 0.0))
+            throw std::runtime_error(who + ": `rise` [K] must be > 0");
+        const scalar top = sd->lookupScalarOrDefault("top", 10.0);
+        if (!(top >= 1.0))
+            throw std::runtime_error(who + ": `top` must be >= 1");
+        sensTop_ = static_cast<std::size_t>(top);
+        if (sd->found("reactions"))
+        {
+            std::vector<std::string> names;
+            try { names = { sd->lookupWord("reactions") }; }
+            catch (const std::exception&) { names = sd->lookupWordList("reactions"); }
+            if (!(names.size() == 1 && names[0] == "all"))
+            {
+                for (const auto& nm : names)
+                {
+                    bool ok = false;
+                    for (const auto& r : reactions_) ok = ok || r.name == nm;
+                    if (!ok)
+                        throw std::runtime_error(who + ": reaction '" + nm
+                            + "' is not one of this vessel's reactions");
+                }
+                sensReactions_ = names;
+            }
+        }
+        if (mode_ != Mode::Adiabatic)
+            throw std::runtime_error(who + ": tauIgnition needs `mode adiabatic;`"
+                " (T must rise by itself for an ignition delay to exist)");
+        if (integrator_ != "Rosenbrock23" && integrator_ != "Rodas4")
+            throw std::runtime_error(who + ": the N+1 integrations are stiff;"
+                " declare `solver { integrator Rosenbrock23; }` (or Rodas4) -- "
+                + integrator_ + " is refused");
+        sensOn_ = true;
+    }
 }
 
 // -----------------------------------------------------------------------
@@ -559,6 +624,138 @@ void BatchReactor::setRunWindow(scalar t0, scalar t1)
                << t1 << "] s";
             throw std::runtime_error(os.str());
         }
+    if (sensOn_) runSensitivity_(t1 - t0);
+}
+
+// -----------------------------------------------------------------------
+//  IGNITION-DELAY SENSITIVITY (brute force).  Theory Guide
+//  sec:ignition-sensitivity.
+//
+//      tau(m)  = the time at which T first exceeds T0 + rise, LINEARLY
+//                INTERPOLATED between the two accepted states that bracket it
+//      S_j     = ( ln tau(m_j = factor) - ln tau(m = 1) ) / ln factor
+//              = d ln tau / d ln k_j        (a forward difference in ln k_j)
+//
+//  m_j multiplies the NET rate r_j (forward and reverse together, so K_c and
+//  the final equilibrium are untouched; Cantera's set_multiplier).  The base
+//  run and every perturbed run use the same integrator, tolerances and tau
+//  definition, so the integrator's own bias cancels in the difference.
+// -----------------------------------------------------------------------
+bool BatchReactor::sensitivityTau_(const sVector& y0, scalar tMax,
+                                   scalar& tau, scalar& Tend, std::string& why)
+{
+    const std::size_t n = y0.size() - 1;
+    const scalar Tthr = y0[n] + sensRise_;
+    auto integ = solver::ODEIntegrator::New(integrator_);
+    solver::DerivFn f = [this](scalar, const sVector& y) { return derivatives_(y); };
+    solver::ODEControls ctrl;
+    ctrl.atol.assign(n + 1, 1.0e-18);
+    ctrl.atol[n] = 1.0e-8;
+    ctrl.rtol = 1.0e-9;
+    ctrl.hMax = tMax * 2.0e-4;          // linear interpolation stays inside a short step
+    ctrl.positiveRows.assign(n, true);
+    ctrl.verbosity = 0;
+    solver::ODEAnalyticJacobian audit;
+    if (jacobianAnalytic_)
+    {
+        audit.jacobian = [this](scalar, const sVector& y, const sVector& f0,
+                                const sVector& typ)
+        { return odeJacobian(y, f0, typ); };
+        audit.autonomous = true;
+        audit.owner = "batchReactor '" + name_ + "' sensitivity";
+        audit.rowLabel = [this](std::size_t i) { return odeRowLabel(i); };
+        audit.auditScale = [this](const sVector& y) { return odeJacobianScale(y); };
+        ctrl.analytic = &audit;
+    }
+    //  tau is read at the FIRST accepted state above T0 + rise; the run then
+    //  goes on to tMax so that T_end can be compared across runs (the
+    //  multiplier must leave the equilibrium where it was).
+    scalar tPrev = 0.0, TPrev = y0[n];
+    bool found = false;
+    ctrl.onAcceptState = [&](scalar tEnd, scalar, const sVector& y)
+    {
+        const scalar T = y[n];
+        if (!found && T > Tthr)
+        {
+            tau = tPrev + (Tthr - TPrev) / (T - TPrev) * (tEnd - tPrev);
+            found = true;
+        }
+        tPrev = tEnd; TPrev = T;
+    };
+    sVector y = y0;
+    const auto st = integ->integrate(y, 0.0, tMax, f, ctrl);
+    if (!st.ok) { why = "the integrator gave up: " + st.failure; return false; }
+    if (!found)
+    {
+        why = "T did not exceed T0 + " + std::to_string(sensRise_)
+            + " K within the run's endTime";
+        return false;
+    }
+    Tend = y[n];
+    return true;
+}
+
+void BatchReactor::runSensitivity_(scalar tMax)
+{
+    const std::string who = "BatchReactor '" + name_ + "': sensitivity";
+    if (!solver::ODEIntegrator::known(integrator_)) solver::ODEIntegrator::registerBuiltins();
+    const sVector y0 = odeState();
+    for (auto& r : reactions_) r.mult = 1.0;
+    std::string why;
+    if (!sensitivityTau_(y0, tMax, sensTau0_, sensTend0_, why))
+        throw std::runtime_error(who + ": the base run has no ignition delay: " + why);
+    const scalar lnF = std::log(sensFactor_);
+    sensResults_.clear();
+    for (std::size_t j = 0; j < reactions_.size(); ++j)
+    {
+        if (!sensReactions_.empty()
+            && std::find(sensReactions_.begin(), sensReactions_.end(),
+                         reactions_[j].name) == sensReactions_.end())
+            continue;
+        SensResult r;
+        r.name = reactions_[j].name;
+        reactions_[j].mult = sensFactor_;
+        const bool ok = sensitivityTau_(y0, tMax, r.tau, r.Tend, why);
+        reactions_[j].mult = 1.0;
+        if (!ok)
+            throw std::runtime_error(who + ": the run with reaction '" + r.name
+                + "' multiplied by " + std::to_string(sensFactor_) + " has no"
+                " ignition delay: " + why);
+        r.S = (std::log(r.tau) - std::log(sensTau0_)) / lnF;
+        sensResults_.push_back(r);
+    }
+    std::stable_sort(sensResults_.begin(), sensResults_.end(),
+                     [](const SensResult& a, const SensResult& b)
+                     { return std::abs(a.S) > std::abs(b.S); });
+
+    std::cout << "\n  [sensitivity] batchReactor '" << name_ << "': ignition delay"
+                 " tau = time T first exceeds T0 + " << sensRise_
+              << " K (interpolated),  S_j = d ln tau / d ln k_j by a factor of "
+              << sensFactor_ << " on the net rate of one reaction, "
+              << sensResults_.size() + 1 << " integrations\n"
+              << "      tau_0 = " << std::setprecision(8) << sensTau0_ * 1.0e6
+              << " us\n      reaction                      S_j        tau_j [us]\n";
+    for (const auto& r : sensResults_)
+        std::cout << "      " << std::left << std::setw(26) << r.name << std::right
+                  << std::setw(10) << std::fixed << std::setprecision(4) << r.S
+                  << std::setw(16) << std::setprecision(6) << r.tau * 1.0e6 << "\n";
+    std::cout << std::defaultfloat;
+    std::ofstream f("sensitivity.csv");
+    if (!f) throw std::runtime_error(who + ": cannot open sensitivity.csv for writing");
+    f << std::setprecision(17) << "reaction,S,tau_s,tau0_s,factor,T_end_K,T_end0_K\n";
+    for (const auto& r : sensResults_)
+        f << r.name << ',' << r.S << ',' << r.tau << ',' << sensTau0_ << ',' << sensFactor_
+          << ',' << r.Tend << ',' << sensTend0_ << '\n';
+}
+
+std::map<std::string, scalar> BatchReactor::kpis() const
+{
+    std::map<std::string, scalar> k;
+    if (!sensOn_) return k;
+    k["sens_tau0"] = sensTau0_;
+    for (std::size_t i = 0; i < sensResults_.size() && i < sensTop_; ++i)
+        k["sens_S_" + sensResults_[i].name] = sensResults_[i].S;
+    return k;
 }
 
 // -----------------------------------------------------------------------
@@ -924,7 +1121,7 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
         rs.conc = &conc; rs.x = &x;
         rs.amountPerKmol = 1.0;                       // conc in kmol/m3
         rs.gibbs = (g && !g->empty()) ? g : nullptr;
-        return cf * rxn.law->netRate(*thermo_, rs);
+        return rxn.mult * cf * rxn.law->netRate(*thermo_, rs);
     }
 
     scalar k = 0.0;
@@ -964,6 +1161,9 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
     //  (and announced that the pellet is a point) but never used it, so the
     //  declared bed density changed nothing.  Both legs carry it (k_rev = k/Kc).
     if (catalystLoading_ > 0.0) k *= catalystLoading_;
+    //  The sensitivity multiplier scales k, and so k_rev = k / Kc with it: the
+    //  NET rate is multiplied and the equilibrium is unchanged.  1 otherwise.
+    if (rxn.mult != 1.0) k *= rxn.mult;
 
     scalar r = k;
     for (std::size_t s = 0; s < rxn.comps.size(); ++s)
@@ -1872,6 +2072,11 @@ void BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
     {
         k *= catalystLoading_;
         for (scalar& v : dk) v *= catalystLoading_;
+    }
+    if (rxn.mult != 1.0)                       // the sensitivity multiplier, as in rateOfReaction_
+    {
+        k *= rxn.mult;
+        for (scalar& v : dk) v *= rxn.mult;
     }
 
     // ---- the factors f_s and their derivatives f_s' ----------------------
