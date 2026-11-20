@@ -38697,6 +38697,125 @@ autonomous), the burned state equal to $6\times10^{-12}$ relative.  The
 saving is $N$ evaluations per Jacobian, so it grows with the mechanism.
 \end{example}
 
+\subsection{Which reaction governs an ignition: brute-force sensitivity of the delay}\label{sec:ignition-sensitivity}
+
+A mechanism has dozens of reactions and an ignition delay depends on a handful.
+\code{sensitivity \{ \dots \}} on a \code{batchReactor} says which: it repeats
+the integration once per reaction with that reaction faster by a stated factor
+and reports how much the delay moved.  There is no adjoint and no direct
+(forward-sensitivity) method: the cost is $N_r+1$ integrations of the vessel,
+each exactly the integration the run itself would do, and a student can read it
+in one function.
+
+\paragraph{The response, $\tau$.}  For one integration from the vessel's initial
+state $(\mathbf n_0,T_0)$ the delay is the time at which the temperature first
+exceeds $T_0+\Delta T$ (\code{rise}, default 400~K), \emph{interpolated
+linearly between the two accepted integrator states that bracket it}:
+\begin{equation}
+    \tau \;=\; t_k + \frac{(T_0+\Delta T) - T_k}{T_{k+1}-T_k}\,(t_{k+1}-t_k),
+    \qquad T_k \le T_0+\Delta T < T_{k+1}.
+    \label{eq:ign-tau}
+\end{equation}
+The delay that \code{choupoBatch} prints in the epilogue (the time of maximum
+$\mathrm{d}T/\mathrm{d}t$ on the write grid) has the resolution of the write
+interval, which is the size of the effect for a 10~\% change of a minor
+reaction; Eq.~\eqref{eq:ign-tau} has the resolution of the integrator.  The step
+is capped at $2\times10^{-4}$ of the run's \code{endTime} so that the chord
+stays inside a short step.  After the crossing the integration continues to
+\code{endTime}, only to record $T_{\mathrm{end}}$ (below).
+
+\paragraph{The coefficient.}  With the rate of reaction $j$ multiplied by $m_j$
+and every other reaction untouched, the normalised sensitivity is
+\begin{equation}
+    S_j \;=\; \frac{\partial\ln\tau}{\partial\ln m_j}
+        \;\approx\; \frac{\ln\tau(m_j=f)-\ln\tau(m=\mathbf 1)}{\ln f},
+    \label{eq:ign-S}
+\end{equation}
+a forward difference in $\ln m_j$ with the step $\ln f$ (\code{factor}, default
+1.1).  Its truncation error is $\tfrac12 f'' \ln f$ with $f''=\partial^2\ln\tau/\partial(\ln m_j)^2$:
+for $f=1.1$, $\ln f=0.095$, a coefficient of $-1.02$ carries an error of order $0.05\,f''$, which
+is the reason the factor is a key and not a constant.  A smaller factor reduces it and amplifies the noise in $\tau$ by $1/\ln f$; against Cantera's CVODES, a different integrator on the same problem, $S$ agrees to $2\times10^{-5}$ for $f=1.1$ (below), so the noise is at most that and $f=1.1$ is limited by the finite difference, not by the solver.
+$S_j<0$: a faster reaction shortens the delay (promotes ignition); $S_j>0$: it
+lengthens it (inhibits).  The base and every perturbed run use the \emph{same}
+integrator, tolerances and Eq.~\eqref{eq:ign-tau}, so the bias of the delay
+cancels in the difference.
+
+\paragraph{The multiplier convention.}  $m_j$ multiplies the \emph{net} rate,
+\begin{equation}
+    r_j \;\to\; m_j\,(r_j^{\rightarrow}-r_j^{\leftarrow})
+    \;=\; m_j\,\bigl(k_j\,\Pi_{\mathrm{f}} - (k_j/K_{c,j})\,\Pi_{\mathrm{r}}\bigr),
+    \label{eq:ign-mult}
+\end{equation}
+that is, $k_j\to m_jk_j$ and, because the reverse constant is $k_j/K_{c,j}$
+(Eq.~\eqref{eq:k-rev}), $k_{r,j}\to m_jk_{r,j}$ with it.  This is Cantera's
+\code{Kinetics.set\_multiplier}.  Forward and reverse move together, so $K_{c,j}$
+and the final equilibrium state are those of the unperturbed mechanism.  A
+multiplier on the forward rate alone would change $K_{c,j}$: the perturbed run
+would end in a different state, and the table would still print a plausible $S_j$
+because early in an ignition the reverse leg is small.  The multiplier is a member
+of the reaction record, applied in one place (\code{rateOfReaction\_}) and in the
+same place of the analytic Jacobian (\code{rateGradient\_}), so
+\code{jacobian analytic;} remains audited.
+
+\paragraph{Grammar.}
+\begin{verbatim}
+sensitivity { response tauIgnition; factor 1.1; reactions all; top 6; rise 400; }
+\end{verbatim}
+\code{reactions} is \code{all} or a list of the vessel's reaction names (a name that
+is not one is refused); \code{top} is how many $S_j$ become result KPIs
+(\code{sens\_S\_<name>}), beside \code{sens\_tau0}; every reaction is in
+\code{sensitivity.csv} with its $\tau_j$ and the final temperature of its run.  An
+unknown key, \code{factor}~$\le 1$, an integrator other than Rosenbrock23 or Rodas4
+(the $N_r+1$ integrations are stiff), a vessel that is not \code{mode adiabatic}
+(no delay exists), and a base run that does not reach $T_0+\Delta T$ by
+\code{endTime} are each refused by name.  Absent the block, nothing here runs and
+every output is byte-identical.
+
+\paragraph{What holds it.}  \texttt{bin/curate/check\_ignition\_sensitivity.py}:
+(a) the $N_r$ perturbed runs end at the base run's temperature within $10^{-6}$
+(measured $7\times10^{-12}$), which a forward-only multiplier fails at
+$2.5\times10^{-3}$; (b) $S$ of the top reaction equals $\ln(\tau'/\tau)/\ln f$ from two
+\emph{separate} runs of the case, the second with that reaction's \code{A} multiplied by $f$
+in a copy, to $10^{-6}$ (measured $5\times10^{-13}$; the forward-only multiplier misses by
+$4\times10^{-3}$).
+
+\begin{example}[Stoichiometric H$_2$/air, 1100~K, 2~atm, constant volume]
+\code{ignition04\_h2air\_sensitivity} (the O Conaire 2004 mechanism, 21 reactions
+including the duplicate pairs counted separately), $\tau_0=45.12\ \mu$s:
+\begin{center}\small
+\begin{tabular}{llr}
+\toprule
+reaction & role & $S_j$\\
+\midrule
+R1 \; H + O$_2$ = O + OH & chain branching & $-1.025$\\
+R9 \; H + O$_2$ (+M) = HO$_2$ (+M) & chain termination & $+0.366$\\
+R2 \; O + H$_2$ = H + OH & branching & $-0.150$\\
+R3 \; OH + H$_2$ = H + H$_2$O & propagation & $-0.050$\\
+R10 \; HO$_2$ + H = H$_2$ + O$_2$ & & $-0.049$\\
+R11 \; HO$_2$ + H = 2 OH & & $-0.035$\\
+the other 15 & & $|S|<0.004$\\
+\bottomrule
+\end{tabular}
+\end{center}
+The termination step R9 has the opposite sign to the branching step R1 because it
+takes H atoms from it.  \textbf{Witness.}  The same brute force in Cantera 3.2.0
+(\code{IdealGasReactor}, constant volume, \code{set\_multiplier(1.1, j)}, the same
+Eq.~\eqref{eq:ign-tau}) on the LLNL form of the mechanism imported by
+\texttt{chemkin\_to\_choupo.py} (the reverse from the thermochemistry in both codes),
+same mixture, $T_0$ and $P_0$: $\tau_0$ 44.958570 against 44.958848~$\mu$s (relative
+$-6\times10^{-6}$), the top five in the same order, worst $|S_j^{\mathrm{Choupo}}-S_j^{\mathrm{Cantera}}|$
+over all 21 reactions $2\times10^{-5}$ (\texttt{docs/reviews/2026-11-19-chemkin-real-mechanism/REPORT.md},
+section~10).  The case's own mechanism (Table~I as printed, catalogue thermo) gives the
+numbers above, within 0.006 of the LLNL form for every $|S|>0.03$.
+\end{example}
+
+\paragraph{Limits.}  The response is one: the delay as defined by a temperature rise.
+The derivative is a finite difference at the base point, so a reaction whose
+sensitivity changes sign within a factor of 1.1 is mis-stated, and the table is a
+statement about this initial state ($T_0$, $P_0$, composition), not about the mechanism.
+Constant-pressure vessels (\code{energy gasConstantP}) use the same code
+but are not witnessed.  Cost: $N_r+1$ integrations, about 7~s for the 21 reactions above.
+
 % ---------------------------------------------------------------------
 \section{Polymerisation: chain statistics from conversion}\label{ch:polymers}
 

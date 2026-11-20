@@ -245,3 +245,66 @@ H2 file), PLOG in a pyrolysis network, a reversible PLOG whose forward rate chan
 steeply with P, PLOG in `dynamicCSTR` (refused by name), Cantera's behaviour for a
 negative summed k (Choupo falls back to linear interpolation in ln P of k itself).
 
+
+## 10. Ignition-delay sensitivity: brute force, against Cantera (2026-11-20)
+
+`sensitivity { response tauIgnition; factor 1.1; reactions all; }` on a `batchReactor`
+(Theory Guide `sec:ignition-sensitivity`; case `ignition04_h2air_sensitivity`).  N+1
+integrations; `S_j = (ln tau_j - ln tau_0) / ln 1.1` with every reaction's NET rate
+multiplied (forward and reverse together).  tau = the time T first exceeds T0 + 400 K,
+linearly interpolated between the two accepted integrator states that bracket it.
+
+Setup, identical on both sides: stoichiometric H2/air (H2 : O2 : N2 = 2 : 1 : 3.76),
+1100 K, 2 atm, constant volume, adiabatic, the section 3 mechanism (LLNL files, REV
+lines ignored in both codes: `norev.yaml` for Cantera, `chemkin_to_choupo.py
+--rev-from-thermo` for Choupo, the file's NASA-7 records re-referenced as in section 4).
+Choupo: Rosenbrock23, analytic Jacobian, rtol 1e-9, species atol 1e-18 kmol, step
+capped at 2e-4 of the 3e-4 s window.  Cantera 3.2.0: CVODES, rtol 1e-10, atol 1e-18,
+`max_time_step` the same cap, `gas.set_multiplier(1.1, j)`.
+
+tau_0: Choupo 44.958570 us, Cantera 44.958848 us (relative -6.2e-6).  The ten largest
+|S| (reaction index = Choupo `r<index+1>`):
+
+| # | reaction | S Choupo | S Cantera | difference |
+|---|---|---|---|---|
+| 1 | H + O2 = O + OH | -1.0221 | -1.0221 | -0.00002 |
+| 2 | H + O2 (+M) = HO2 (+M) | +0.3613 | +0.3613 | +0.00000 |
+| 3 | H2 + O = H + OH | -0.1494 | -0.1494 | -0.00000 |
+| 4 | H2 + OH = H + H2O | -0.0492 | -0.0492 | -0.00000 |
+| 5 | H + HO2 = H2 + O2 | -0.0489 | -0.0489 | -0.00000 |
+| 6 | H + HO2 = 2 OH | -0.0341 | -0.0341 | -0.00000 |
+| 7 | HO2 + O = O2 + OH | +0.0034 | +0.0034 | -0.00000 |
+| 8 | HO2 + OH = H2O + O2 | +0.0034 | +0.0034 | +0.00000 |
+| 9 | H + H2O2 = H2 + HO2 | -0.0017 | -0.0017 | -0.00000 |
+| 10 | H2O + M = H + OH + M | -0.0013 | -0.0013 | -0.00000 |
+
+Acceptance: the top five are the same five in the same order; the worst
+|S(Choupo) - S(Cantera)| over all 21 reactions is 2e-5 (reaction 1; 3 reactions have
+|S| > 0.05, the same value).  Final T of a multiplied run equals the base run's in both
+codes (Cantera 2993.9456 K for the base and for R1 x 1.1; Choupo's 21 runs agree to 7.6e-12
+relative on the shipped case).
+
+The shipped case uses the O Conaire Table I as printed in `constant/reactions` and the
+catalogue's NASA-7 thermo, not the LLNL files, so its numbers differ slightly: tau_0
+45.121 us and S(R1) -1.0246, S(R9) +0.3665, S(R2) -0.1496, S(R3) -0.0500, S(R10) -0.0489,
+S(R11) -0.0347 (at most 0.006 from the table above; its final T is 3028.7 K against 2993.9 K
+with the LLNL thermo, a catalogue-thermo difference that this slice did not examine).
+
+**Sabotage (by hand).**  The multiplier removed from the reverse leg, `k_rev = (k/m)/K_c`,
+in the rate and in the Jacobian so the audit does not refuse first: `check_ignition_sensitivity`
+FAILED, (a) the run with R8 multiplied ends 2.45e-3 relative away from the base T_end,
+(b) S(R1) -1.028568 against the hand recomputation -1.024601 (3.97e-3).  Restored: OK,
+max T_end difference 7.6e-12, S(R1) difference 5.1e-13.
+
+**Reproduce.**
+```
+# norev.yaml as in section 6
+python3 scripts/ct_sensitivity.py norev.yaml ct_sens.csv 1100 2 3e-4 1.1 400 1e-10 1e-18
+# Choupo: the section 6 import, in a copy of tutorials/batch/combustion/ignition04_h2air_sensitivity
+# (components h h2 o o2 oh h2o n2 ho2 h2o2 ar, reactions r001..r021, 2.2157448e-5 kmol in 1 L
+# at 1100 K, H2/O2/N2 0.295858/0.147929/0.556213); choupoBatch writes sensitivity.csv
+python3 scripts/cmp_sens.py sensitivity.csv ct_sens.csv
+```
+Not verified: a constant-pressure vessel, a response other than the temperature-rise
+delay, another mechanism, the finite-difference error of the factor 1.1 against a smaller
+factor (S at 1.01 was not run).
