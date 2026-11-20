@@ -146,7 +146,7 @@ describe("the equilibrium-landscapes lesson", () => {
     //  310.15 K, and on a gibbsMap with glucose beside gases.
     expect(s).toContain("h_formation liquid leg needs liquidHeatCapacity");
     expect(s).toContain("wrong by a heat of sublimation");
-    expect(s).toContain("Component.cpp:1656–1668");  // C259: the refusal moved; 1538 is now rung()
+    expect(s).toContain("Component.cpp:1665–1676");  // C259: the refusal moved; 1538 is now rung()
     expect(s).toContain("Reaction.cpp:186–199");
     expect(s).toContain("Formula.cpp:485–496");
   });
@@ -184,9 +184,10 @@ describe("what the page declines to claim", () => {
     expect(prose(l.body)).not.toMatch(/converged and unannounced\.\s+On these/);
   });
 
-  it("says the sugar route is priced at the datum only, as a refusal", () => {
+  it("says the sugar route is asked at the datum by the page's choice, glucose now carrying a Cp (C453 K/L)", () => {
     const l = LANDSCAPE_LIMITS.find((x) => x.id === "biological-routes-at-the-datum-only")!;
-    expect(prose(l.body)).toContain("glucose.dat has no Cp on any rung");
+    expect(prose(l.body)).toContain("liquidHeatCapacity (Kishore 1993");
+    expect(prose(l.body)).not.toContain("glucose.dat has no Cp on any rung");
     expect(prose(l.body)).toContain("not asked at 700 K");
   });
 
