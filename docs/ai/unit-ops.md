@@ -271,6 +271,12 @@ ONE, 300.04 K — a case with three needs a genuinely exothermic reaction, plann
 `thirdBody { species eff; }`, `low { }`, `troe ( ... )`, `reversible true`), so one `reactions` file runs in both.  A is converted to
 the reactor's amount unit (mol/m3 here: 1e-6 per order beyond the first; the batch vessel's kmol/m3: 1e-3).  Refused by name:
 `adsorption`, `basis activity`, `A_rev`/`Ea_rev`.  Witnesses: `elementary01..03` (a pair each, CHEMKIN law vs the Arrhenius law it equals).
+**PLOG (`kinetics { type plog; plog ( { P 1 atm; A; b; Ea; } ... ); units { A "cm3/mol/s"; Ea "kcal/mol"; } }`).**  The CHEMKIN-II
+pressure table: k_i(T) is a modified Arrhenius at each tabulated P (P with its unit, `atm` read as 101325 Pa); between two
+pressures ln k is linear in ln P; below the lowest / above the highest k is that end's value (no extrapolation); lines at
+the SAME P are summed.  The reaction line's own A b Ea is ignored; `reversible true` is detailed balance.  Reads the bed /
+feed pressure (a feed with no P refuses it by name); `thirdBody`/`low`/`troe` on it are refused.  Theory Guide `sec:plog-rate`.
+Witnesses: `plog01..04` (each equals `elementary01a` at 3 bar; gate `check_plog`).
 
 ### `pfr`
 Plug-flow reactor.  Manual RK4 along the axial coordinate; supports reversible
@@ -433,6 +439,12 @@ The single-reaction paths (`reaction <name>;`) of `cstr` and `pfr` read `Arrheni
 `thirdBody { species eff; }`, `low { }`, `troe ( ... )`, `reversible true`), so one `reactions` file runs in both.  A is converted to
 the reactor's amount unit (mol/m3 here: 1e-6 per order beyond the first; the batch vessel's kmol/m3: 1e-3).  Refused by name:
 `adsorption`, `basis activity`, `A_rev`/`Ea_rev`.  Witnesses: `elementary01..03` (a pair each, CHEMKIN law vs the Arrhenius law it equals).
+**PLOG (`kinetics { type plog; plog ( { P 1 atm; A; b; Ea; } ... ); units { A "cm3/mol/s"; Ea "kcal/mol"; } }`).**  The CHEMKIN-II
+pressure table: k_i(T) is a modified Arrhenius at each tabulated P (P with its unit, `atm` read as 101325 Pa); between two
+pressures ln k is linear in ln P; below the lowest / above the highest k is that end's value (no extrapolation); lines at
+the SAME P are summed.  The reaction line's own A b Ea is ignored; `reversible true` is detailed balance.  Reads the bed /
+feed pressure (a feed with no P refuses it by name); `thirdBody`/`low`/`troe` on it are refused.  Theory Guide `sec:plog-rate`.
+Witnesses: `plog01..04` (each equals `elementary01a` at 3 bar; gate `check_plog`).
 
 ### `conversionReactor`
 Stoichiometric reactor: you **specify the per-pass conversion** of the
@@ -3320,8 +3332,8 @@ Witness: `tutorials/steady/hydraulics/agitation01_helical_ribbon_polymer_melt` (
 Closed vessel, RK4 in time.  `mode isothermal` (T held) or `adiabatic`
 (T integrated via Σ rᵢΔH/ΣnᵢCp).  Single or list of reactions
 (`reactions (A B );`).
-`kinetics { type ... }`: `Arrhenius` · `modifiedArrhenius` · `thirdBody` · `falloff`
-(the CHEMKIN gas forms) · **`LHHW`** — the SAME shared `RateLaw` the steady `cstr`/`pfr`
+`kinetics { type ... }`: `Arrhenius` · `modifiedArrhenius` · `thirdBody` · `falloff` · `plog`
+(the CHEMKIN gas forms; `plog` -- the CHEMKIN-II pressure table, ln k linear in ln P, clamped at the ends, same-P lines summed -- reads P = nRT/V and is accepted only with `energy gasConstantV`, refused by name in a liquid vessel; Theory Guide `sec:plog-rate`) · **`LHHW`** — the SAME shared `RateLaw` the steady `cstr`/`pfr`
 evaluate, so a batch vessel and a continuous one cannot disagree about what an
 adsorption denominator means.  With `basis activity` it needs an activity model.
 `operation { catalystLoading <kg/m^3>; }` turns per-gram rate constants volumetric
