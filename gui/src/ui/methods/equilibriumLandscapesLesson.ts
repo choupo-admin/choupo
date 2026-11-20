@@ -399,7 +399,7 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
     ],
     note: "Why the three numbers are on one surface, and why that had to be "
       + "built.  The engine's one route to a reaction's Gibbs energy before "
-      + "this page, `Reaction::equilibrium` (Reaction.cpp:136–149), prices "
+      + "this page, `Reaction::equilibrium` (Reaction.cpp:186–199), prices "
       + "every species with `g_pure_ig` — the ideal-gas rung — and that rung "
       + "refuses a record tabulated on the solid standard state by name "
       + "(Component.cpp:1656–1668).  Measured when this page was written: a "
