@@ -151,6 +151,9 @@
   "Attribution": [
    "src/streams/AnalysisReconciler.H"
   ],
+  "Audit": [
+   "src/solver/ODE/ODEIntegrator.H"
+  ],
   "AuditFinding": [
    "src/thermo/PackageAudit.H"
   ],
@@ -1573,6 +1576,9 @@
   "NusseltFilm": [
    "src/unitOperations/heatTransfer/htc/NusseltFilm.H"
   ],
+  "ODEAnalyticJacobian": [
+   "src/solver/ODE/ODEIntegrator.H"
+  ],
   "ODEBlockStructure": [
    "src/solver/ODE/ODEIntegrator.H"
   ],
@@ -1685,6 +1691,9 @@
   "PassThroughDeclaration": [
    "src/unitOperations/UnitAcceptance.H"
   ],
+  "PathSplit": [
+   "src/unitOperations/batch/BatchReactor.H"
+  ],
   "Pause": [
    "src/core/ReadLog.H"
   ],
@@ -1744,6 +1753,9 @@
   ],
   "PlantLayoutRecord": [
    "src/core/ResultRecords.H"
+  ],
+  "PlogArr": [
+   "src/thermo/reaction/ElementaryRate.H"
   ],
   "PneumaticConveyor": [
    "src/unitOperations/hydraulics/PneumaticConveyor.H"
@@ -3372,6 +3384,10 @@
    },
    {
     "key": "falloff",
+    "type": ""
+   },
+   {
+    "key": "plog",
     "type": ""
    },
    {
@@ -12855,6 +12871,7 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/ElementComposition.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PinCheck.H",
    "src/thermo/PropertyDomainError.H",
@@ -23758,6 +23775,7 @@
    "src/thermo/ElementComposition.cpp",
    "src/thermo/PinCheck.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
+   "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/reactor/PureSolidPhase.cpp"
   ],
   "src/thermo/EnthalpyDatum.H": [
