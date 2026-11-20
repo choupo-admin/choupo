@@ -117,3 +117,36 @@ ho2 h2o2 ar`, reactions r001..r021, holdup 1100 K, 1 L, 1.107872e-05 kmol of
 H2 0.295858 / O2 0.147929 / N2 0.556213), then
 `scripts/runch.py <case> r23 Rosenbrock23 1e-7 1e-7 1e-3` and
 `scripts/cmp.py r23/trajectory.csv ct_norev.csv 1e-7`.
+
+## 7. Speed after caching g
+
+Change: the detailed-balance `K_c` of every reversible reaction used to rebuild
+its Gibbs energies, so a species' `g(T)` was evaluated once per reaction it
+appears in, on every right-hand-side evaluation (a callgrind profile put 57 %
+of the instructions of a batch ignition in `Reaction::equilibriumKc` ->
+`Component::g_pure_ig`).  Now `g_i(T)` is evaluated once per species per
+evaluation (`Reaction::gibbsVector`, for the species of the reversible reactions
+only), handed down as an argument (`RateState::gibbs`, a `const sVector*` on the
+batch paths), and `K_c` does the same arithmetic in the same order on it:
+bit-identical.  The per-factor error-message strings of `rateOfReaction_` are
+built on the refusal path only.  Commit 2385fc7c3 against its parent 4496ae010,
+both built `-O2` on the same machine (shared with other jobs: take the instruction
+count as the measurement, the wall time as the min of 5 repeats).
+
+| case (choupoBatch unless noted) | instructions before | after | ratio | wall min before | after |
+|---|---|---|---|---|---|
+| ignition01_h2o2 (O Conaire, 21 reactions) | 5.239 G | 1.673 G | 3.13x | 0.347 s | 0.141 s |
+| ignition01_h2o2_jac (analytic Jacobian) | 2.160 G | 0.893 G | 2.42x | 0.164 s | 0.087 s |
+| LLNL H2 (O Conaire 2004, 1 ms, Rosenbrock23, 1e-7) | 29.47 G | 10.89 G | 2.70x | 2.631 s | 1.402 s |
+| LLNL H2, `jacobian analytic` | 12.93 G | 6.25 G | 2.07x | 1.507 s | 1.088 s |
+| pfr02_reversible_wgs (choupoSolve) | 274.2 M | 270.7 M | 1.01x | 0.036 s | 0.035 s |
+| elementary03a_falloff_chemkin (choupoSolve) | 225.7 M | 223.6 M | 1.01x | 0.031 s | 0.031 s |
+
+The steady `cstr`/`pfr` cases have one or two reactions and run in tens of
+milliseconds dominated by property set-up, so they gain nothing measurable; the
+caching matters where many reversible reactions share species and the right-hand
+side is called thousands of times (a mechanism).  Every output file of the 180
+cases compared (tutorials/batch, ctrl, unsteady and the steady/plant cases with a
+reactor) is byte-identical to the parent's, 16 of them with reversible reactions.
+After the change the remaining cost of the LLNL run is the rest of the
+right-hand side and the integrator, not `g(T)`.
