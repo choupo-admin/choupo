@@ -927,6 +927,48 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \end{tutgolden}
 
 \clearpage
+\tutentry{ignition03\_h2air\_constp}{tutorials/batch/combustion/ignition03\_h2air\_constp}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bomb) at (0.0,-0.0) {\textbf{bomb}\\[-1pt]{\tiny batchReactor}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Adiabatic constant-P H2/O2 ignition at 1100 K (O Conaire 2004 H2/O2 kinetics, NASA-9 thermo); Rosenbrock23 stiff solver; reports ignition delay}
+\begin{tutnarrative}
+the SAME charge as ignition01\_h2o2, but the vessel is a free-floating adiabatic cell at CONSTANT PRESSURE (5 bar) instead of a rigid one. (This is the cell OpenFOAM's chemistry solver integrates.)
+
+mode adiabatic + energy gasConstantP: the first law is dH = 0 at fixed P, dT/dt = - sum\_i h\_i(T) dn\_i/dt / sum\_i n\_i Cp\_i(T), V = n R T / P, with h\_i the ideal-gas molar enthalpy on the formation datum (the datum gasConstantV takes u\_i = h\_i - R T from). V is NOT an input: it follows from (n, T, P) at every state, so the holdup declares no V.
+
+What it shows, against ignition01\_h2o2 (constant V, same T, P, composition): ignition is SLOWER and the burned gas COOLER. At constant V the heat of reaction raises the temperature of a gas that cannot expand, and the pressure climbs; at constant P the same heat also does the expansion work P dV and is spread over the larger Cp (= Cv + R per mole), so the temperature rises less. The cooler trajectory lowers the rate constants and lengthens the induction. The burned-gas volume is V = n R T / P of its own final state (hand-check in the README).
+
+solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. `jacobian analytic` is refused for this basis by name (debt: c\_k = n\_k/V moves with every n\_j and with T); the finite-difference Jacobian is used.
+
+\end{tutnarrative}
+\tutreadme{ignition01\_h2o2 closes the charge in a rigid vessel. This case lets the same charge (1100 K, 5 bar, H$_2$ : O$_2$ : N$_2$ = 2 : 1 : 4, trace-H seed, the same ? Conaire mechanism and thermo) expand against a fixed pressure --- the adiabatic constant-pressure cell that OpenFOAM's chemistry solver integrates.}
+\tutreadme{Closed, adiabatic, ideal gas, P fixed: the first law is dH = 0, so}
+\tutreadme{with h$_i$ the ideal-gas molar enthalpy on the formation datum (the datum gasConstantV takes u$_i$ = h$_i$ - RT from) and Cp$_i$ the ideal-gas heat capacity. V is not an input: it is derived from (n, T, P) at every state, so the holdup declares no V (declaring one that disagrees with n R T / P is refused by name), and every reader of the vessel --- the time directories' internalStates/bomb, the rate-of-production report --- sees the V of its own state. The rates use c$_i$ = n$_i$ / V with that V. Theory Guide, sec:batch-gas-constp.}
+\tutreadme{At constant V the heat release goes into a gas that cannot expand and the pressure climbs; at constant P the same heat also does the expansion work P dV and is spread over the larger Cp = Cv + R, so the temperature rises less and the burned gas is cooler. The cooler path lowers the rate constants, so the runaway is later and slower.}
+\tutreadme{At 200 $\mu$s the run ends at n = 4.39248e-5 kmol, T = 2828.182 K, P = 5 bar: V = n R T / P = 4.39248e-5 $\times$ 1000 $\times$ 8.314463 $\times$ 2828.182 / 5e5 = 2.06577e-3 m$^3$, which is the V written in 0.0002/internalStates/bomb (2.065769e-3). The vessel has grown from 1.0 L to 2.07 L at fixed pressure.}
+\tutreadme{The same balance on the real LLNL H$_2$ mechanism (O'Connaire 2004, local copy), stoichiometric H$_2$/air, 1100 K, 1 atm, against Cantera's IdealGasConstPressureReactor, agrees on $\tau$, T\_final (to the mK), V\_final and the final mole fractions --- docs/reviews/2026-11-19-chemkin-real-mechanism/REPORT.md section 8.}
+\begin{tutgolden}
+\goldrow{kpi}{bomb}{P\_final}{500000}
+\goldrow{kpi}{bomb}{T\_final}{2828.1824545}
+\goldrow{kpi}{bomb}{n\_H2O2\_final}{3.99799979406e-11}
+\goldrow{kpi}{bomb}{n\_H2\_final}{1.27043440786e-06}
+\goldrow{kpi}{bomb}{n\_HO2\_final}{3.92708428474e-10}
+\goldrow{kpi}{bomb}{n\_H\_final}{3.02059959897e-07}
+\goldrow{kpi}{bomb}{n\_N2\_final}{2.857145e-05}
+\goldrow{kpi}{bomb}{n\_O2\_final}{5.04365094773e-07}
+\goldrow{kpi}{bomb}{n\_OH\_final}{5.7425062816e-07}
+\goldrow{kpi}{bomb}{n\_O\_final}{1.27479841545e-07}
+\goldrow{kpi}{bomb}{n\_water\_final}{1.25743739639e-05}
+\goldrow{kpi}{bomb}{t\_end}{0.0002}
+\goldrow{kpi}{bomb}{totalMoles\_final}{4.39248465846e-05}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{9.26308854886e-14}
+\goldmore{17}
+\end{tutgolden}
+
+\clearpage
 \tutentry{nox01\_zeldovich\_postflame}{tutorials/batch/combustion/nox01\_zeldovich\_postflame}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

@@ -3320,6 +3320,16 @@ Witness: `tutorials/steady/hydraulics/agitation01_helical_ribbon_polymer_melt` (
 Closed vessel, RK4 in time.  `mode isothermal` (T held) or `adiabatic`
 (T integrated via Σ rᵢΔH/ΣnᵢCp).  Single or list of reactions
 (`reactions (A B );`).
+**Adiabatic energy basis** `operation { mode adiabatic; energy liquidDH | gasConstantV | gasConstantP; }`:
+`liquidDH` (default) = sum r V dH over liquid Cp; `gasConstantV` = closed rigid ideal gas, dU = 0,
+dT/dt = -sum u_i ndot_i / sum n_i Cv_i; **`gasConstantP`** = closed ideal gas at the holdup's FIXED P,
+dH = 0, dT/dt = -sum h_i(T) ndot_i / sum n_i Cp_i(T), V = n R T / P at every state (so the holdup
+declares NO `V`; a declared one that disagrees is refused; the time directories and the rate-of-production
+report carry the V of their own state).  Both gas bases take h_i = `h_pure_ig` on the formation datum and
+need `idealGasHeatCapacity` + `standardThermochemistry`.  `jacobian analytic` is refused by name for
+`gasConstantP` (open debt); the campaign energy ledger names a gap for adiabatic vessels.  Theory Guide
+`sec:batch-gas-constp`; example `ignition03_h2air_constp` (constant-P ignition is slower and cooler than
+`ignition01_h2o2`'s constant-V one; witnessed against Cantera's IdealGasConstPressureReactor to 1 mK).
 `kinetics { type ... }`: `Arrhenius` · `modifiedArrhenius` · `thirdBody` · `falloff`
 (the CHEMKIN gas forms) · **`LHHW`** — the SAME shared `RateLaw` the steady `cstr`/`pfr`
 evaluate, so a batch vessel and a continuous one cannot disagree about what an

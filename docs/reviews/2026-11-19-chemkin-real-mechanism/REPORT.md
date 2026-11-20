@@ -150,3 +150,36 @@ cases compared (tutorials/batch, ctrl, unsteady and the steady/plant cases with 
 reactor) is byte-identical to the parent's, 16 of them with reversible reactions.
 After the change the remaining cost of the LLNL run is the rest of the
 right-hand side and the integrator, not `g(T)`.
+
+## 8. The same mechanism at constant pressure (`energy gasConstantP`, 2026-11-20)
+
+New adiabatic basis of `batchReactor` (Theory Guide `sec:batch-gas-constp`):
+closed ideal gas at the holdup's fixed P, dH = 0,
+`dT/dt = -sum h_i ndot_i / sum n_i Cp_i`, `V = n R T / P` at every state, h_i =
+`h_pure_ig` (the datum `gasConstantV` takes u_i = h_i - RT from).  The point of
+the measurement is the independent witness: Cantera's
+`IdealGasConstPressureReactor` on `ck2yaml` of the SAME two files (as published,
+default 1 atm reference), against Choupo's import of the same files as published
+(`--licence "local measurement copy"`, no `--rev-from-thermo`), stoichiometric
+H2/air, 1100 K, 1 atm, 1 L initial, Rosenbrock23 at 0.1 us.
+
+| quantity | Choupo | Cantera | difference |
+|---|---|---|---|
+| tau (max dT/dt, 0.1 us grid) | 81.40 us | 81.40 us | 0.00 |
+| T_final (1 ms) | 2726.875 K | 2726.875 K | < 1 mK |
+| V_final (n R T / P for Choupo) | 2.194515 L | 2.194516 L | -3.4e-7 rel |
+| final mole fractions (h2, o2, h, o, oh, ho2, h2o, n2) | | | 2e-8 to 4e-7 rel |
+| final mole fraction h2o2 | 3.811626e-07 | 3.811676e-07 | -1.3e-5 rel |
+| T at 0.9 / 1.0 / 1.1 tau | 1141.60 / 1542.14 / 2063.77 K | 1141.59 / 1542.00 / 2063.72 K | +0.01 / +0.14 / +0.05 K |
+| max abs T difference over the trajectory | | | 0.14 K (rms 0.01 K) |
+
+Against the constant-V run of section 3 (same start): tau 81.4 us against 79.3 us,
+T_final 2727 K against 2928 K, the volume 2.19 times the initial litre.  The
+agreement is that of section 3 (the 0.14 K at tau is the steepest point's phase
+shift on a 0.1 us grid), so the new basis carries no error of its own beyond
+the shared rate/thermo path.  Reproduce: `ck2yaml` of the published files,
+`scripts/ct_ignite_constp.py h2.yaml ct_p.csv 1100 1 1e-3 1e-7` with
+`/usr/bin/python3` (Cantera 3.2.0), the import's `constant/` in a copy of
+`tutorials/batch/combustion/ignition03_h2air_constp` with `P 1.01325 bar` and no
+`V`, `scripts/runch.py <case> h2p Rosenbrock23 1e-7 1e-7 1e-3`, then
+`scripts/cmp_constp.py h2p/trajectory.csv ct_p.csv 1e-7 101325`.
