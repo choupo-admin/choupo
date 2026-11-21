@@ -137,7 +137,7 @@ LABEL = "check_column_thermo_consistency"
 E_ABS = 1.0e-5        # kW
 E_REL = 1.0e-9        # of sum |terms|
 F_TOL = 1.0e-7        # |ln(y / (x K))|
-RECON_TOL = 1.0e-7    # reconstruction residual, a fraction of the feed
+RECON_TOL = 5.0e-7    # reconstruction residual, a fraction of the feed (the compositions are printed to 6 decimals: the 100-stage propylene splitter c3splitter02 reconstructs to 2.0e-7, rounding, not physics)
 
 
 # ---------------------------------------------------------------- helpers --
