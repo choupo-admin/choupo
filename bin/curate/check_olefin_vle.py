@@ -95,6 +95,8 @@ A_CASE = "tutorials/props/compare/olefins01_propane_propene_laurance1972"
 B_CASE = "tutorials/props/compare/olefins02_ethane_ethylene_fredenslund1976"
 C_CASE = "tutorials/steady/distillation/c3splitter01_propylene_propane"
 STRIP = ("expected", "converged", "reports", "constant/propertyManifest")
+#  Its walk (`c.glob("*.csv")`) reads the gate's OWN scratch copy, never the tree.
+SCAN_ROOTS = ()
 D_CASE = "tutorials/props/compare/olefins03_propane_propene_kij_fit_laurance1972"
 E_CASE = "tutorials/steady/distillation/c3splitter02_propylene_propane_pr_kij"
 STRIP_FIT = STRIP + ("postProcessing", "curation")
