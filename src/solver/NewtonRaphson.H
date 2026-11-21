@@ -38,7 +38,9 @@ Description
 
 #include "core/Types.H"
 
+#include <cmath>
 #include <functional>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -52,6 +54,21 @@ struct NRTrace
     scalar dfdx;
     scalar dx;
 };
+
+//- An iteration budget declared in a dictionary arrives as a scalar.  A
+//  double -> int cast of 0, -1 or 0.5 used to give a budget of zero (a loop
+//  that never ran, published as converged; DEV.md 4c C467 R-001).  The one
+//  home of the refusal: a non-integer or non-positive budget is refused by
+//  the key's name.
+inline int requireIterationBudget(scalar v, const std::string& key)
+{
+    if (!(v >= 1.0) || v != std::floor(v) || v > 1.0e9)
+        throw std::runtime_error("iteration budget '" + key + "' must be a"
+            " positive whole number (at least 1), got "
+            + std::to_string(v) + " -- a budget of zero iterations evaluates"
+            " nothing and a fraction is not a count.");
+    return static_cast<int>(v);
+}
 
 struct NRResult
 {

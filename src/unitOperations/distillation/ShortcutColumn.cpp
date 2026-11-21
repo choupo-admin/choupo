@@ -188,6 +188,35 @@ int ShortcutColumn::solve(const DictPtr& dict,
     //  rather than inventing a theta.
     scalar lo = 1.0 + 1.0e-6, hi = aLK - 1.0e-6, theta = 0.5 * (lo + hi);
     {
+        //  A DISTRIBUTED NON-KEY IS REFUSED BEFORE ANY BISECTION (C467 R-006).
+        //  A component present in the feed whose alpha lies strictly between
+        //  the keys puts a pole of Underwood's function inside (1, alpha_LK).
+        //  The end signs can still differ (they did for benzene / toluene /
+        //  ethylbenzene), the bisection then closes on a pole or on a root of
+        //  one sub-interval, and a plausible R_min is published for a column
+        //  this shortcut does not model.  The refusal does not depend on the
+        //  sign test.
+        {
+            std::string between;
+            for (std::size_t i = 0; i < n; ++i)
+                if (i != iLK && i != iHK && z[i] > 0.0
+                    && alpha[i] > 1.0 && alpha[i] < aLK)
+                {
+                    if (!between.empty()) between += ", ";
+                    between += thermo.comp(i).name() + " (alpha = "
+                             + std::to_string(alpha[i]) + ")";
+                }
+            if (!between.empty())
+                throw std::runtime_error("ShortcutColumn: a distributed"
+                    " non-key lies BETWEEN the keys (relative volatility"
+                    " strictly between 1 and alpha_LK = "
+                    + std::to_string(aLK) + "): " + between
+                    + ".  Underwood's equation then has a pole inside the"
+                      " bracket and needs one root per adjacent alpha pair,"
+                      " which this shortcut does not implement -- use `model"
+                      " simultaneous;` on a rigorous distillationColumn, or"
+                      " choose the keys adjacent in volatility.");
+        }
         scalar glo = gU(lo);
         const scalar ghi = gU(hi);
         if (!(glo * ghi < 0.0))
@@ -221,13 +250,23 @@ int ShortcutColumn::solve(const DictPtr& dict,
                 + "  It will NOT fall back to the bracket midpoint: that"
                   " yields a plausible R_min with nothing behind it.");
         }
+        scalar gFinal = 0.0;
+        bool   rootFound = false;
         for (int it = 0; it < 200; ++it)
         {
             theta = 0.5 * (lo + hi);
             const scalar g = gU(theta);
-            if (std::abs(g) < 1.0e-10) break;
+            gFinal = g;
+            if (std::abs(g) < 1.0e-10) { rootFound = true; break; }
             if (glo * g < 0.0) { hi = theta; } else { lo = theta; glo = g; }
         }
+        //  The iteration cap is not an answer: the residual at the returned
+        //  theta is checked (C467 R-006).
+        if (!rootFound && !(std::abs(gFinal) < 1.0e-8))
+            throw std::runtime_error("ShortcutColumn: Underwood's bisection"
+                " did not reach a root in 200 halvings (residual "
+                + std::to_string(gFinal) + " at theta = "
+                + std::to_string(theta) + ") -- no theta is published.");
     }
     scalar Rmin = 0.0;
     for (std::size_t i = 0; i < n; ++i) Rmin += alpha[i] * xD[i] / (alpha[i] - theta);

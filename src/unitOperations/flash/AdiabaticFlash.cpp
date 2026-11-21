@@ -255,8 +255,9 @@ int AdiabaticFlash::solve(const DictPtr& dict,
 
     solver::NROptions nro;
     nro.tolerance          = 0.01;         // J/mol; keeps published H-flow closure negligible
-    nro.maxIter            = static_cast<int>(
-        operDict->lookupScalarOrDefault("maxOuterIter", 30.0));
+    nro.maxIter            = solver::requireIterationBudget(
+        operDict->lookupScalarOrDefault("maxOuterIter", 30.0),
+        "adiabaticFlash maxOuterIter");
     nro.lower              = 200.0;
     nro.upper              = 700.0;
     nro.bracket            = true;
@@ -342,7 +343,11 @@ int AdiabaticFlash::solve(const DictPtr& dict,
                                            "adiabaticFlash outlet", verbosity);
     const bool innerFinalOk = lastSol.converged;
     scalar Hout = splitH(r.x, Pout, lastSol);
-    const bool allOk = r.converged && innerFinalOk;
+    //  The unit is converged only if the ENERGY balance at the published
+    //  outlet closes to the declared tolerance (C467 R-001: a search that
+    //  never ran was published converged with a 917 kW imbalance).
+    const bool energyClosed = std::abs(Hout - Hin) <= nro.tolerance;
+    const bool allOk = r.converged && innerFinalOk && energyClosed;
 
     // Outlet streams (liquid + vapor) at the converged T_out and the outlet P.
     // The products ARE the point of a flash -- emit them so the flowsheet
@@ -388,7 +393,13 @@ int AdiabaticFlash::solve(const DictPtr& dict,
               << Hin << "  J/mol\n"
               << "  H_out:         " << Hout << "  J/mol\n"
               << "  Energy-balance residual: " << (Hout - Hin)
-              << "  J/mol  (~0; adiabatic, Q = 0 by definition)\n"
+              << "  J/mol  "
+              << (energyClosed ? "(~0; adiabatic, Q = 0 by definition)"
+                               : "(NOT CLOSED: exceeds the tolerance of "
+                                 + std::to_string(nro.tolerance)
+                                 + " J/mol -- the outlet is not an adiabatic"
+                                   " state)")
+              << "\n"
               << "  Regime:        " << lastSol.regime << "\n"
               << "  V/F:           " << std::fixed << std::setprecision(6)
               << lastSol.V_over_F << "\n"

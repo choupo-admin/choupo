@@ -13409,6 +13409,17 @@ whose bisection fallback catches any step that leaves it; the $n$-D
 \code{NewtonND} (\S\ref{ch:nrND}) is the one that backtracks with a
 halving schedule.
 
+\paragraph{What a returned answer means.}  The solver returns a coherent
+pair: the $x$ it hands back together with $|g(x)|$ evaluated \emph{at that
+$x$}, and \code{converged} is true only if that residual is below the
+tolerance.  When the iteration budget runs out the last step has moved $x$ to
+a point not yet evaluated, so $g$ is evaluated there once more rather than
+reporting the previous point's residual.  The budget (\code{maxIter}) must be
+a positive whole number: a budget of zero evaluates nothing and cannot be
+called converged, so a dictionary key that feeds one (for example the
+adiabatic flash's \code{maxOuterIter}) is refused by name when it is zero,
+negative or fractional.
+
 \subsection{Worked example}
 
 \begin{example}[Bubble pressure of benzene/toluene]
@@ -31697,6 +31708,19 @@ not}\label{sec:fug-limits}
         efficiency exists to carry (\S\ref{ch:hydraulics}).
 \end{itemize}
 
+\paragraph{What the shortcut refuses.}  The root that fixes
+$R_{\min}$ is the one trapped between the two key volatilities, and it
+is isolated by bisection on $(1,\alpha_{LK})$ only while no component
+present in the feed has $\alpha$ strictly inside that interval: such a
+component puts a pole of $\sum_i \alpha_i z_i/(\alpha_i-\theta)$ in
+the bracket, and the root Underwood wants lies in another
+sub-interval.  Choupo checks this before any bisection, independently
+of the end signs, and \emph{refuses} the case naming the component
+and its $\alpha$; the one-root-per-adjacent-pair extension is not
+implemented, and a rigorous column (\code{model simultaneous;}) has no
+such restriction.  The bisection's final residual is also checked, so
+the iteration cap is never accepted as a root.
+
 \noindent Because all four are true and none is visible in a stream
 table, Choupo does not leave declaring them to the author's memory.  A
 \code{shortcutColumn} emits a \textbf{declared approximation} on every
@@ -31705,7 +31729,7 @@ requested (``distillation separation''), what was solved
 (``Fenske--Underwood--Gilliland shortcut; constant relative volatility at
 the feed bubble point; no azeotrope representable'') and why (``the case
 declares \code{type shortcutColumn;}'').  It is not a warning and nothing
-is refused: FUG is what the case asked for.  It is a record that the
+is refused on account of the method being a shortcut: FUG is what the case asked for.  It is a record that the
 question answered was the shortcut's question, printed above the
 caveats, emitted above the KPIs, and written to
 \file{converged/problemDivergence}.

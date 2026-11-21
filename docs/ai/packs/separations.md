@@ -37,7 +37,7 @@ Every alpha is taken at the feed bubble point (constant alpha). Recorded on each
 DOF: feed + P fixed; 2 recoveries + 1 reflux = fully specified.
 
 Refusals you will meet:
-- `ShortcutColumn: no operating reflux declared` — give `refluxFactor` or `refluxRatio` (ShortcutColumn.cpp:251).
+- `ShortcutColumn: no operating reflux declared` — give `refluxFactor` or `refluxRatio` (ShortcutColumn.cpp:290).
 - `operating reflux R = … <= R_min` — raise it (:263).
 - `Underwood's equation does not change sign …` — a non-key component has alpha between the keys; FUG cannot do it; go to `simultaneous` (:205).
 - `the FEED BUBBLE POINT did not converge` — feed T is the initial guess; check phase/pressure (:117).
@@ -243,10 +243,10 @@ Result (WangHenke, 333 passes, converged): benzene in distillate 0.99392, toluen
 
 <!-- SOURCES (file:line, read 2026-11-01):
  shortcut keys lightKey/heavyKey/recoveryLK/HK ... src/unitOperations/distillation/ShortcutColumn.cpp:96-98
- refluxRatio / refluxFactor XOR, no default ...... ShortcutColumn.cpp:248-263
- runs at feed P, ports distillate/bottoms ......... ShortcutColumn.cpp:73-76,276-283
- KPIs (no duties) .................................. ShortcutColumn.cpp:305-316
- Underwood / bubble-point refusals ................. ShortcutColumn.cpp:117,205
+ refluxRatio / refluxFactor XOR, no default ...... ShortcutColumn.cpp:287-302
+ runs at feed P, ports distillate/bottoms ......... ShortcutColumn.cpp:73-76,315-322
+ KPIs (no duties) .................................. ShortcutColumn.cpp:344-355
+ Underwood / bubble-point refusals ................. ShortcutColumn.cpp:117,199-221,234
  column model word + default WangHenke ............. DistillationColumn.cpp:1299-1300,2212-2213
  model refusal (accepted words) .................... DistillationColumn.cpp:1315-1320
  multiple feeds / sideDraws need simultaneous ...... DistillationColumn.cpp:1327

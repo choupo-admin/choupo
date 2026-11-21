@@ -1958,7 +1958,8 @@ FlashOptions IsothermalFlash::readOptions(const DictPtr&       dict,
     if (dict->found("compositionTol"))
         opts.compositionTol = dict->lookupScalar("compositionTol");
     if (dict->found("maxOuterIter"))
-        opts.maxOuterIter   = static_cast<int>(dict->lookupScalar("maxOuterIter"));
+        opts.maxOuterIter   = solver::requireIterationBudget(
+            dict->lookupScalar("maxOuterIter"), "flash maxOuterIter");
 
     if (operDict->found("phaseSet"))
     {
