@@ -1083,9 +1083,12 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "bed, tray, belt, drum, freeze), each drawn as a schematic; a selection tree "
       + "from the feed form, the heat sensitivity, the scale and the batch or continuous "
       + "mode to one or two types with the reason and the page of Mujumdar, Perry or van "
-      + "'t Land it was read from; a comparison table of residence time, energy per kg "
-      + "of water and typical products with \"not cited\" where the books are silent; and "
-      + "the tutorial cases of the types the engine models.",
+      + "'t Land or Towler it was read from; a comparison table of residence time, energy "
+      + "per kg of water and typical products with \"not cited\" where the books are "
+      + "silent; the habitual tables transcribed at their pages (Mujumdar's feed-form "
+      + "table with its eleven columns, ha and temperature differences and vendor "
+      + "checklist, van 't Land's lists, Towler's Table 10.7, the drum dryer in Perry "
+      + "and Mujumdar); and the tutorial cases of the types the engine models.",
     theory: "ch:drying",
   },
   //  COMMISSIONED 2026-10-20 (DEV.md 4c C119), Vitor: the Pi theorem only

@@ -134,7 +134,10 @@ batch plan, sizing, clean utilities, costing and economics on top
   product") draws the seven common types (spray, rotary, fluidised bed, tray,
   belt, drum, freeze) and walks a selection tree (feed form, heat sensitivity,
   scale, batch or continuous) to one or two types, each rule read at its page
-  from Mujumdar, Perry and van 't Land, with "not cited" where they are silent;
+  from Mujumdar, Perry, van 't Land and Towler, with "not cited" where they are
+  silent; the habitual tables are transcribed and shown (Mujumdar Tables 1.1,
+  1.5, 1.6, van 't Land Tables 3.1 and 3.2, Towler Table 10.7, the drum dryer in
+  Perry Table 12-46 against Mujumdar);
   the types the engine models open their case
   (`tutorials/steady/drying/sprayDryer01_sugar`,
   `tutorials/steady/drying/convDryer01_sugar_curve`,

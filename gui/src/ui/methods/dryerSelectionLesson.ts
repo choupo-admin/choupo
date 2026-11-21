@@ -37,9 +37,12 @@ License
   are held by tests/dryerSelection.test.ts against the data and the rules of
   dryerSelection.ts, where each carries its source id; a step that prints a
   number the data does not hold fails.  The books are Mujumdar (ed.), Handbook
-  of Industrial Drying, 3rd ed. (2006), Chapter 1; Perry's Chemical
-  Engineers' Handbook, 9th ed. (2019), Section 12; and van 't Land, Drying
-  in the Process Industry (2012), the page numbers being the printed ones.
+  of Industrial Drying, 3rd ed. (2006), Chapter 1 (and, for the drawings,
+  Chapters 7 to 11 and 17); Perry's Chemical Engineers' Handbook, 9th ed.
+  (2019), Section 12; van 't Land, Drying in the Process Industry (2012);
+  and Towler and Sinnott, Chemical Engineering Design (2008), Chapter 10, the
+  page numbers being the printed ones.  The habitual tables of step 6 are
+  transcribed in dryerTables.ts and pinned cell by cell by the test.
   Prose that cites a page of the engine is avoided on purpose: the page
   names the tutorial cases and no engine source line, so there is no citation
   to drift.
@@ -66,8 +69,12 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
       + "higher because the hot gas of a convective dryer carries away a large enthalpy "
       + "(Mujumdar p.22).  The freeze dryer is a special case: the water leaves as ice sublimes "
       + "under vacuum, below the triple point (Mujumdar p.22).  The page draws each type as a "
-      + "schematic made for it, with one colour code: wet feed in blue, hot gas in red, dry "
-      + "product in amber, vapour in grey.",
+      + "schematic made for it, with one colour code: wet feed and wet material in blue, hot "
+      + "gas in red, dry product in amber, vapour in grey, a cold surface in teal.  Each "
+      + "drawing was checked against the chapter of Mujumdar's Handbook that describes the "
+      + "equipment: the rotary shell is inclined so that the feed enters the upper end and "
+      + "the product leaves the lower end, with a burner at the feed end and a cyclone on the "
+      + "exhaust (Mujumdar p.151-152).",
     note: "The drawings carry no dimension: they show where the feed enters, where the gas "
       + "flows and where the product leaves, which is what a selection rule turns on.",
   },
@@ -110,11 +117,20 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
       + "temperature or without oxygen (Mujumdar p.22).  The "
       + "page uses van 't Land's two temperature bands: at a maximum product temperature of "
       + "30 degC or less, or if the product oxidises in air or is toxic, his batch tree goes to "
-      + "vacuum drying (Figure 3.1, p.23); at 75 degC or more his continuous tree opens the "
-      + "spray-dryer branch (Figure 3.2, p.25).",
+      + "vacuum drying (Figure 3.1, p.23).  His continuous tree (Figure 3.2, p.25) is drawn "
+      + "for a particulate solid, and the 75 degC question reaches the spray dryer only "
+      + "together with a second one: if the maximum product temperature is 75 degC or more "
+      + "AND a particle-size increase is required, the answer is re-slurrying additives and a "
+      + "spray dryer; otherwise the tree goes on to the drying time and the particle size.  "
+      + "A liquid feed is outside that tree, and reaches the spray dryer by the feed-form "
+      + "tables of step 2.",
     note: "Freeze drying costs two to three times what spray drying does, for coffee, and "
       + "keeps the flavour better (Mujumdar p.22): the price of protecting a sensitive product "
-      + "is stated by the same book that recommends it.",
+      + "is stated by the same book that recommends it.  The same sentence says the heat of "
+      + "sublimation is severalfold lower than that of evaporation, which is wrong by the book's "
+      + "own Chapter 11: it gives 2840 kJ per kg of ice (p.259), against 2257 kJ per kg of "
+      + "water at 100 degC.  What makes freeze drying dear is the vacuum, the cold condenser "
+      + "and the long cycle, not a lower heat.",
   },
   {
     n: 4,
@@ -178,6 +194,39 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
   },
   {
     n: 6,
+    title: "The habitual tables, as the books print them",
+    body: "The page ends its reading with the tables a drying engineer is shown, each "
+      + "transcribed at its page and printed as the book prints it.  Mujumdar's Table 1.1 "
+      + "(p.21) ticks the dryers against eleven feed forms (solution, slurry, pastes; "
+      + "centrifuge and filter cakes; powder, granule, fragile crystal, pellet, fibre; "
+      + "formed solids), which is wider than the three forms of the tree.  His Table 1.5 "
+      + "(p.27) gives, for a very rough sizing, the volumetric coefficient ha of the "
+      + "convection dryers in kcal/(h degC m3), the log-mean temperature difference and the "
+      + "inlet gas temperature, co-current against counter-current for the rotary, spray and "
+      + "tunnel dryers, and U and t_k - t_m for the drum and the agitated contact dryers.  "
+      + "Towler's Table 10.7 (printed p.571) lists some twenty specific dryers with whether "
+      + "they are jacketed, suit heat-sensitive materials or vacuum service, their retention "
+      + "or cycle time, heat-transfer method, capacity and typical evaporation capacity; it "
+      + "is where the tray (0.15 to 1.0 kg/(h m2) of heat-transfer area, cabinet type) and "
+      + "the belt (1.5 to 35 kg/(h m3), tunnel belt type) get a number the other books do not "
+      + "give.  Before choosing, Mujumdar's Table 1.6 (p.28) is the checklist vendors use to "
+      + "select and quote a dryer, to be read with van 't Land's list of the data to assess "
+      + "(Table 3.1) and of the criteria for judging the dried product (Table 3.2), both on "
+      + "p.22.  Last, the drum dryer is the one place where two books give different "
+      + "numbers: Perry's Table 12-46 (p.12-81) gives a typical specific evaporation of 7 to "
+      + "11 g/(m2 s), which is 25 to 40 kg/(m2 h), and Mujumdar's Table 1.4 gives 6 to 20 "
+      + "kg/(m2 h) for pastes (his Chapter 9, p.206, 10 to 30 for materials difficult to dry "
+      + "and 40 to 50 for easy ones); on the thermal efficiency they agree, 0.4 to 0.7 against "
+      + "the 0.35 to 0.71 that 2257 kJ/kg and Mujumdar's 3,200 to 6,500 kJ/kg imply.  Both are "
+      + "shown, none is averaged.",
+    note: "Two prints are kept as they are: Towler's retention times read '6.48 h' and '3.12 "
+      + "h' in the library copy (a range whose dash is printed as a point), and Mujumdar's ha "
+      + "for a spray dryer reads '20-80 (large five)'.  Towler marks the direct rotary dryer "
+      + "'No' for heat-sensitive materials as a type, where Mujumdar (p.151) and Perry (p.12-36) "
+      + "run it co-current for them: another disagreement to test, not to average.",
+  },
+  {
+    n: 7,
     title: "Which of these the engine models",
     body: "Choupo models some of this equipment, and each model has a tutorial case that the "
       + "page opens in a new tab.  The spray dryer is the engine's sprayDryer unit, and its "
@@ -191,7 +240,7 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
       + "and the page does not pretend otherwise: those rows have no case.",
   },
   {
-    n: 7,
+    n: 8,
     title: "Reading the answer, and what to do when the books disagree",
     body: "The page returns one or two types and the reason for each, with its source.  Treat "
       + "it as a shortlist, which is how Perry uses his own Table 12-11: a preliminary "
@@ -202,7 +251,12 @@ export const DRYER_SELECTION_STEPS: readonly LessonStep[] = [
       + "the choice is a compromise between cost, quality, safety and convenience "
       + "(p.24 and p.27).  Where the books disagree the page says so: Perry marks the batch "
       + "tray dryer not applicable to a free-flowing powder, while van 't Land's batch tree "
-      + "and Mujumdar's Table 1.1 admit it.  A disagreement is not a reason to average the "
+      + "and Mujumdar's Table 1.1 admit it; for a fine powder in a continuous dryer Perry "
+      + "admits a fluidised bed 'if not too dusty' (Table 12-11) while van 't Land's tree and "
+      + "Mujumdar's remark on entrainment (p.152) point to an indirect rotary or a disk "
+      + "dryer; and the drum's evaporation per square metre differs between Perry and "
+      + "Mujumdar (step 6).  A book can also disagree with itself, as Mujumdar does on the heat "
+      + "of sublimation (step 3).  A disagreement is not a reason to average the "
       + "books, it is the thing to test.",
   },
 ];
@@ -236,7 +290,21 @@ export const DRYER_SELECTION_LIMITS: readonly LessonLimit[] = [
       + "some types and per square metre of surface for others, as the book prints them, and "
       + "cannot be compared across a row.  A cell the three books do not give is blank and "
       + "marked 'not cited': the batch tray dryer's energy, the freeze dryer's energy and "
-      + "the evaporation capacity of the fluidised-bed, belt and tray dryers.",
+      + "the evaporation capacity of the fluidised-bed dryer (Towler's Table 10.7 prints a "
+      + "dash for it).  The tray's and the belt's capacity come from Towler's Table 10.7, per "
+      + "square metre of heat-transfer area and per cubic metre of dryer volume respectively, "
+      + "and are not comparable with each other or with Mujumdar's.",
+  },
+  {
+    id: "transcribed",
+    title: "The habitual tables are transcriptions",
+    body: "Every cell of the tables of step 6 was read from the page and is pinned by the "
+      + "test, but a transcription is not a proof that the book is right: Mujumdar's Table "
+      + "1.5 gives ha in kcal/(h degC m3) for a very rough sizing and warns that the volume "
+      + "includes the voids and that the drop in air temperature must be assumed first; "
+      + "Towler's Table 10.7 was adapted by him from an older selection guide and its "
+      + "qualitative columns (high, medium, limited) have no definition in the book.  "
+      + "The page draws no conclusion from them.",
   },
   {
     id: "engine-limits",
@@ -334,7 +402,24 @@ export const DRYER_SELECTION_QUIZ: readonly QuizQuestion[] = [
       + "The price is stated too: freeze drying costs two to three times spray drying.",
   },
   {
-    id: "disagree", steps: [7],
+    id: "sublimation", steps: [3],
+    q: "Mujumdar's Chapter 1 says the heat for sublimation is severalfold lower than for "
+      + "evaporation.  What do his Chapter 11 and Perry's worked example say?",
+    options: [
+      "Sublimating ice takes about 2840 kJ/kg, more than the 2257 kJ/kg of evaporating water "
+        + "at 100 degC",
+      "Sublimating ice takes about 450 kJ/kg, five times less than evaporation",
+      "The two heats are the same, to the digit",
+      "The heat of sublimation is not given by either book",
+    ],
+    correct: 0,
+    feedback: "Chapter 11 (p.259) gives 2840 kJ per kg of ice and Perry's Example 12-19 gives "
+      + "2257 kJ per kg of water at 100 degC, so the sentence of Chapter 1 (p.22) is wrong by "
+      + "its own book; freeze drying is dear because of the vacuum, the cold condenser and the "
+      + "10 to 20 h cycle, not because of the heat (step 3).",
+  },
+  {
+    id: "disagree", steps: [8],
     q: "Perry's table marks the batch tray dryer 'not applicable' to a free-flowing powder; "
       + "van 't Land's tree and Mujumdar's table admit it.  What does the page advise?",
     options: [
@@ -346,6 +431,6 @@ export const DRYER_SELECTION_QUIZ: readonly QuizQuestion[] = [
     correct: 2,
     feedback: "Perry's procedure ends in drying tests on the dryers that remain, and Mujumdar "
       + "says to test the real feed; a disagreement between books is a question for the "
-      + "laboratory, not a vote (step 7).",
+      + "laboratory, not a vote (step 8).",
   },
 ];

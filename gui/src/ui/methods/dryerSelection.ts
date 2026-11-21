@@ -39,7 +39,7 @@ License
   do not give is `null` and the page prints "not cited"; it is never filled
   with a plausible number.
 
-  THE THREE BOOKS (library copies, ~/Choupo-Literature):
+  THE FOUR BOOKS (library copies, ~/Choupo-Literature):
 
     Mujumdar   Mujumdar, A. S. (ed.) (2006), Handbook of Industrial Drying,
                3rd ed., Taylor & Francis / CRC Press.  Chapter 1 (Mujumdar),
@@ -51,16 +51,33 @@ License
                Pages are the printed "12-nn".
     vantLand   van 't Land, C. M. (2012), Drying in the Process Industry,
                Wiley.  Printed page = PDF page - 14.
+    Towler     Towler, G. and Sinnott, R. (2008), Chemical Engineering Design,
+               1st ed., Butterworth-Heinemann, Chapter 10 (section 10.4, Table
+               10.7 and the dryer descriptions, pp. 570-576).  Printed page =
+               PDF page - 18.
+
+  Mujumdar's chapters on the equipment (7 rotary, 8 fluidised bed, 9 drum, 10
+  spray, 11 freeze, 17 conveyor) were read for the drawings of
+  dryerDrawings.tsx and for the notes on the rules; the page numbers of those
+  chapters are the printed ones (PDF page - 26).
 
   WHERE THE BOOKS DISAGREE the page says so (the batch tray for a fine
   powder is the case: Perry's Table 12-11 marks it "not applicable", van 't
-  Land's batch tree and Mujumdar's Table 1.1 admit it); it does not pick one
-  and hide the other.
+  Land's batch tree and Mujumdar's Table 1.1 admit it; a fine powder in a
+  continuous dryer is another: Perry's table admits a fluidised bed "if not
+  too dusty", van 't Land's tree and Mujumdar's remark on entrainment send it
+  to an indirect rotary or a disk dryer; and the drum's evaporation per square
+  metre is a third, where Perry's Table 12-46 and Mujumdar's Table 1.4 differ);
+  it does not pick one and hide the other.  ONE ERROR OF A BOOK is named, not
+  copied: Mujumdar p. 22 says the heat of sublimation is "severalfold lower"
+  than that of evaporation, and his own Chapter 11 (p. 259) gives 2840 kJ/kg
+  of ice against 2257 kJ/kg for water at 100 degC (SUBLIMATION_NOTE).
 
   WHAT IS THE PAGE'S OWN: the ORDER in which the rules are asked (feed form,
   then heat sensitivity, then scale, then batch or continuous, which is the
   order Vitor asked for), the three heat-sensitivity bands (the two product
-  temperatures, 30 and 75 degC, are van 't Land's Figures 3.1 and 3.2), the
+  temperatures, 30 and 75 degC, are van 't Land's Figures 3.1 and 3.2, the
+  second only together with "particle size increase required?"), the
   three scale bands (Perry's two thresholds) and the pairing of a rule with
   its picks.  The comparison table and the energy arithmetic are page
   arithmetic on the cited table.
@@ -70,12 +87,15 @@ License
 
 export type SourceId =
   | "muj-t1.1" | "muj-t1.2" | "muj-t1.3" | "muj-t1.4" | "muj-heat" | "muj-feed" | "muj-batch"
+  | "muj-t1.5" | "muj-t1.6" | "muj-rotary" | "muj-fluid" | "muj-drum" | "muj-spray" | "muj-conv"
+  | "muj-freeze-heat" | "tow-t10.7" | "tow-text" | "perry-t12-46" | "perry-tray-air" | "vtl-t3.1"
+  | "vtl-spray-flow" | "vtl-drum-vac"
   | "perry-t12-11" | "perry-cons" | "perry-proc" | "perry-tray" | "perry-t12-41" | "perry-t12-37"
   | "perry-latent" | "perry-fluid" | "perry-direct"
   | "vtl-batch-tree" | "vtl-cont-tree" | "vtl-text" | "vtl-spray" | "vtl-rotary" | "vtl-fluid"
   | "vtl-conveyor" | "vtl-drum" | "vtl-freeze" | "vtl-freeze-time" | "vtl-freeze-tunnel";
 
-export interface Source { id: SourceId; work: "Mujumdar" | "Perry" | "van 't Land"; where: string }
+export interface Source { id: SourceId; work: "Mujumdar" | "Perry" | "van 't Land" | "Towler"; where: string }
 
 /** Where each fact was read.  `where` is what the student sees; the
  *  reading itself is recorded in lessonReferences.json. */
@@ -87,6 +107,21 @@ export const SOURCES: Readonly<Record<SourceId, Source>> = {
   "muj-heat": { id: "muj-heat", work: "Mujumdar", where: "Ch. 1, sections 1.5.1-1.5.2, p. 21-22" },
   "muj-feed": { id: "muj-feed", work: "Mujumdar", where: "Ch. 1, section 1.5.3, p. 23-24" },
   "muj-batch": { id: "muj-batch", work: "Mujumdar", where: "Ch. 1, section 1.8, p. 28" },
+  "muj-t1.5": { id: "muj-t1.5", work: "Mujumdar", where: "Ch. 1, Table 1.5, p. 27" },
+  "muj-t1.6": { id: "muj-t1.6", work: "Mujumdar", where: "Ch. 1, Table 1.6 and the text before it, pp. 27-28" },
+  "muj-rotary": { id: "muj-rotary", work: "Mujumdar", where: "Ch. 7, sections 7.1-7.2 and Fig. 7.1, pp. 151-152" },
+  "muj-fluid": { id: "muj-fluid", work: "Mujumdar", where: "Ch. 8, section 8.7.3 and Fig. 8.8, p. 184" },
+  "muj-drum": { id: "muj-drum", work: "Mujumdar", where: "Ch. 9, sections 9.2-9.3, pp. 204-208" },
+  "muj-spray": { id: "muj-spray", work: "Mujumdar", where: "Ch. 10, section 10.1 and Fig. 10.1, pp. 216 and 219" },
+  "muj-conv": { id: "muj-conv", work: "Mujumdar", where: "Ch. 17, sections 17.1-17.2 and Fig. 17.2, pp. 411-413" },
+  "muj-freeze-heat": { id: "muj-freeze-heat", work: "Mujumdar", where: "Ch. 11, section 11.2, p. 259 (and Ch. 1, p. 22)" },
+  "tow-t10.7": { id: "tow-t10.7", work: "Towler", where: "Table 10.7, p. 571" },
+  "tow-text": { id: "tow-text", work: "Towler", where: "section 10.4, dryer descriptions and Figs. 10.25-10.28, pp. 570-574" },
+  "perry-t12-46": { id: "perry-t12-46", work: "Perry", where: "Table 12-46, p. 12-81" },
+  "perry-tray-air": { id: "perry-tray-air", work: "Perry", where: "Batch tray dryers, auxiliary equipment, p. 12-39" },
+  "vtl-t3.1": { id: "vtl-t3.1", work: "van 't Land", where: "Tables 3.1 and 3.2, p. 22" },
+  "vtl-spray-flow": { id: "vtl-spray-flow", work: "van 't Land", where: "section 8.1, Fig. 8.2 and text, p. 135" },
+  "vtl-drum-vac": { id: "vtl-drum-vac", work: "van 't Land", where: "section 10.5, p. 205" },
   "perry-t12-11": { id: "perry-t12-11", work: "Perry", where: "Table 12-11, p. 12-33 and 12-34" },
   "perry-cons": { id: "perry-cons", work: "Perry", where: "Selection of drying equipment, p. 12-36" },
   "perry-proc": { id: "perry-proc", work: "Perry", where: "Selection of drying equipment, p. 12-37 and 12-38" },
@@ -154,9 +189,10 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
   spray: {
     id: "spray", label: "Spray dryer",
     idea: "A pumpable liquid is atomised into a hot gas in a tall chamber; each droplet "
-      + "dries into a particle while it falls, and the powder is separated from the gas "
-      + "at the bottom and in a cyclone or bag filter.",
-    ideaSrc: ["vtl-spray", "perry-t12-11"],
+      + "dries into a particle while it falls; the hot gas enters at the roof around the "
+      + "atomiser, and the powder is separated from the gas at the bottom of the cone and "
+      + "in a cyclone or bag filter on the exhaust duct.",
+    ideaSrc: ["vtl-spray", "perry-t12-11", "muj-spray"],
     heat: { value: "convective (hot gas contacts the droplets)", src: ["muj-heat"] },
     mode: { value: "continuous", src: ["muj-feed"] },
     residence: { value: "10-30 s", src: ["muj-t1.2"] },
@@ -185,9 +221,11 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
   rotary: {
     id: "rotary", label: "Rotary dryer (direct-heat)",
     idea: "A slightly inclined rotating cylinder carries the wet particles from the high "
-      + "end to the low end, lifting them on flights so they fall through a stream of hot "
-      + "gas that flows with them (co-current) or against them (counter-current).",
-    ideaSrc: ["vtl-rotary", "perry-cons"],
+      + "end, where the feed enters, to the low end, where the product leaves, lifting them "
+      + "on flights so they fall through a stream of hot gas from a burner or heater at the "
+      + "feed end that flows with them (co-current, the usual choice for heat-sensitive "
+      + "solids) or against them; a cyclone takes the dust from the exhaust.",
+    ideaSrc: ["vtl-rotary", "perry-cons", "muj-rotary"],
     heat: { value: "convective in the direct-heat type; the steam-tube and steam-jacket "
       + "types are conductive", src: ["muj-t1.1", "vtl-rotary"] },
     mode: { value: "continuous", src: ["vtl-rotary"] },
@@ -218,8 +256,9 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
     id: "fluidBed", label: "Fluidised-bed dryer",
     idea: "Hot gas blown up through a perforated plate keeps a deep bed of particles "
       + "suspended and mixed like a boiling liquid; the particles dry in intimate contact "
-      + "with the gas and overflow continuously, or the bed is emptied batchwise.",
-    ideaSrc: ["vtl-fluid", "perry-t12-11"],
+      + "with the gas and overflow a weir continuously, or the bed is emptied batchwise; a "
+      + "cyclone keeps the fines in the exhaust.",
+    ideaSrc: ["vtl-fluid", "perry-t12-11", "muj-fluid", "tow-text"],
     heat: { value: "convective (conduction coils can be added)", src: ["muj-heat", "perry-t12-11"] },
     mode: { value: "continuous or batch", src: ["vtl-fluid", "vtl-batch-tree"] },
     residence: { value: "10-60 min", src: ["muj-t1.2"] },
@@ -250,13 +289,14 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
     id: "tray", label: "Tray dryer (batch)",
     idea: "The wet material lies on trays stacked in an insulated cabinet; hot gas is "
       + "blown across the trays (or the shelves are heated and the cabinet is evacuated), "
-      + "and the batch is unloaded when it is dry.",
-    ideaSrc: ["perry-tray"],
+      + "mostly recirculated through the heater (80 to 95 percent) with a little fresh air "
+      + "in and a small exhaust out, and the batch is unloaded when it is dry.",
+    ideaSrc: ["perry-tray", "perry-tray-air", "tow-text"],
     heat: { value: "convective, or conductive from heated shelves", src: ["muj-t1.1", "perry-tray"] },
     mode: { value: "batch (a continuous tray version exists)", src: ["muj-t1.1", "perry-t12-11"] },
     residence: { value: "1-6 h", src: ["muj-t1.2"] },
     energy: null,
-    capacity: null,
+    capacity: { value: "0.15-1.0 kg water/h per m2 of heat-transfer area (shelf, cabinet or compartment type)", src: ["tow-t10.7"] },
     products: {
       value: "a wide range of pastes and granules (Mujumdar); small multi-product "
         + "operations such as pharmaceuticals (Perry)",
@@ -280,14 +320,15 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
   belt: {
     id: "belt", label: "Belt (band, conveyor) dryer",
     idea: "The material is spread on a slowly moving perforated belt that carries it "
-      + "through a cabinet where warm gas is blown up or down through the layer; the "
+      + "through a cabinet divided into zones, where warm gas is blown up through the layer "
+      + "in one zone and down in the next, with a cooling zone at the end; the "
       + "material is not stirred, so friable pieces survive.",
-    ideaSrc: ["vtl-conveyor", "vtl-text"],
+    ideaSrc: ["vtl-conveyor", "vtl-text", "muj-conv", "tow-text"],
     heat: { value: "convective", src: ["muj-t1.1", "vtl-conveyor"] },
     mode: { value: "continuous", src: ["vtl-conveyor"] },
     residence: { value: "10-60 min", src: ["muj-t1.2"] },
     energy: { value: [4000, 6000], src: ["muj-t1.4"] },
-    capacity: null,
+    capacity: { value: "1.5-35 kg water/h per m3 of dryer volume (tunnel, belt or screen type)", src: ["tow-t10.7"] },
     products: {
       value: "pellets and grains (Mujumdar); diced carrots and pasta (van 't Land)",
       src: ["muj-t1.3", "vtl-text", "vtl-conveyor"],
@@ -305,9 +346,10 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
   drum: {
     id: "drum", label: "Drum dryer",
     idea: "A thin film of liquid or paste is spread on the outside of a slowly rotating "
-      + "steam-heated drum, dries during less than one turn and is scraped off by a "
-      + "knife as flakes; the vapour leaves through a hood.",
-    ideaSrc: ["vtl-drum", "perry-t12-11"],
+      + "steam-heated drum (here by dipping the drum into a pan of the feed), dries during "
+      + "less than one turn and is scraped off by a knife as flakes; the vapour leaves "
+      + "through a hood.",
+    ideaSrc: ["vtl-drum", "perry-t12-11", "muj-drum"],
     heat: { value: "conductive (steam inside the drum)", src: ["muj-t1.1", "vtl-drum"] },
     mode: { value: "continuous (the film is applied and scraped off as the drum turns)", src: ["vtl-drum"] },
     residence: { value: "10-30 s", src: ["muj-t1.2"] },
@@ -358,12 +400,29 @@ export const DRYERS: Readonly<Record<DryerId, DryerInfo>> = {
 };
 
 /** Mujumdar's remark on what freeze drying costs against the spray dryer,
- *  quoted in the table's note because it is a COST, not an energy figure. */
+ *  quoted in the table's note because it is a COST, not an energy figure.
+ *  The same sentence of the book says the sublimation heat is "severalfold
+ *  lower than for evaporation"; that half is NOT repeated here (see
+ *  SUBLIMATION_NOTE). */
 export const FREEZE_COST_NOTE: { text: string; src: readonly SourceId[] } = {
   text: "Freeze drying of coffee costs two to three times what spray drying does, and keeps "
-    + "the flavour better; the sublimation heat is several times lower than the heat of "
-    + "evaporation, but the vacuum is expensive.",
+    + "the flavour better; the cost is the vacuum and the long cycle, not a dearer heat.",
   src: ["muj-heat"],
+};
+
+/** AN ERROR OF A BOOK, NAMED.  Mujumdar p. 22 says the heat required for
+ *  sublimation is "severalfold lower than for evaporation".  His Chapter 11
+ *  (p. 259) gives the heat of sublimation as 2840 kJ/kg of ice, and Perry's
+ *  Example 12-19 (p. 12-71) the heat of vaporisation of water at 100 degC as
+ *  2257 kJ/kg: the sublimation heat is the larger by about a quarter. */
+export const SUBLIMATION_HEAT_KJ_PER_KG = 2840;
+export const SUBLIMATION_NOTE: { text: string; src: readonly SourceId[] } = {
+  text: "Mujumdar's Chapter 1 (p. 22) says the heat for sublimation is severalfold lower than "
+    + "for evaporation; his own Chapter 11 (p. 259) gives 2840 kJ per kg of ice, against 2257 "
+    + "kJ per kg of water evaporated at 100 degC (Perry, Example 12-19), so it is higher, not "
+    + "lower.  The page does not repeat the sentence: what makes freeze drying dear is the "
+    + "vacuum, the cold condenser and the 10-20 h cycle.",
+  src: ["muj-heat", "muj-freeze-heat", "perry-latent"],
 };
 
 // ---- the questions and the tree ------------------------------------------------------
@@ -402,12 +461,41 @@ export interface Rule {
 }
 
 const notLow = (i: Inputs): boolean => i.heat !== "low";
-const cocurrentNote = (i: Inputs): Reason[] => i.heat === "medium"
-  ? [{ text: "With a product limit below 75 degC run the convective types co-current: the gas "
-        + "cools as it dries the wet solid, so the solid leaves far below the inlet gas "
-        + "temperature, while counter-current meets the driest solid with the hottest gas.",
-       src: ["perry-cons", "vtl-cont-tree"] }]
-  : [];
+
+/** What flow direction means for the PICKED types, attached only where it
+ *  does.  Spray and (direct) rotary dryers have a gas stream that meets the
+ *  solid co- or counter-currently; a well-mixed fluidised bed has one
+ *  temperature (the bed's); a belt dryer blows the gas THROUGH the bed, up or
+ *  down by zone; the drum is a conduction dryer with no gas stream at all, so
+ *  nothing is said for it. */
+const flowNotes = (i: Inputs, picks: readonly DryerId[]): Reason[] => {
+  if (i.heat !== "medium") return [];
+  const out: Reason[] = [];
+  if (picks.includes("spray") || picks.includes("rotary")) {
+    out.push({
+      text: "With a product limit below 75 degC run the spray or rotary dryer co-current: the "
+        + "gas cools as it dries the wet solid, so the solid leaves far below the inlet gas "
+        + "temperature (a spray droplet starts at the adiabatic saturation temperature), while "
+        + "counter-current meets the driest solid with the hottest gas.",
+      src: ["perry-cons", "vtl-cont-tree", "vtl-spray-flow", "muj-rotary"] });
+  }
+  if (picks.includes("fluidBed")) {
+    out.push({
+      text: "A well-mixed continuous fluidised bed has one temperature, equal to the product and "
+        + "exhaust gas temperatures, so co-current against counter-current does not arise: the "
+        + "product temperature is the exhaust temperature you choose.",
+      src: ["muj-fluid"] });
+  }
+  if (picks.includes("belt")) {
+    out.push({
+      text: "A belt dryer blows the gas through the bed, up in one zone and down in the next, "
+        + "with a cooling zone at the end; Towler adds that the solids and the air move "
+        + "parallel or, more usually, counter-current overall.  A product limit is held by the "
+        + "zone temperatures, not by a co-current layout.",
+      src: ["tow-text", "muj-conv", "perry-cons"] });
+  }
+  return out;
+};
 
 export const RULES: readonly Rule[] = [
   {
@@ -435,6 +523,7 @@ export const RULES: readonly Rule[] = [
           + "what the table of feed forms assigns to it.",
         src: ["vtl-freeze", "perry-t12-11"] },
       { text: FREEZE_COST_NOTE.text, src: FREEZE_COST_NOTE.src },
+      { text: SUBLIMATION_NOTE.text, src: SUBLIMATION_NOTE.src },
     ],
   },
   {
@@ -446,9 +535,13 @@ export const RULES: readonly Rule[] = [
           + "t of intake per 24 h, but the method is very expensive.",
         src: ["vtl-freeze", "vtl-freeze-tunnel"] },
       { text: "A drum dryer can be run under vacuum to keep the temperature down while the "
-          + "residence time stays at seconds.",
-        src: ["vtl-drum", "muj-feed", "muj-t1.2"] },
+          + "residence time stays at seconds, and van 't Land says only that it is possible; "
+          + "none of the books ties a product limit of 30 degC to a drum, so this is a "
+          + "possibility to check with the vendor (the film still meets a steam-heated "
+          + "surface), not a rule.",
+        src: ["vtl-drum-vac", "muj-drum", "muj-t1.2"] },
       { text: FREEZE_COST_NOTE.text, src: FREEZE_COST_NOTE.src },
+      { text: SUBLIMATION_NOTE.text, src: SUBLIMATION_NOTE.src },
     ],
   },
   {
@@ -479,7 +572,7 @@ export const RULES: readonly Rule[] = [
           + "temperature with a short contact time, a lower energy range in the book's table "
           + "than a spray dryer, and a flaky, usually dusty product with high maintenance.",
         src: ["muj-feed", "muj-t1.4", "perry-t12-11"] },
-      ...cocurrentNote(i),
+      ...flowNotes(i, ["spray", "drum"]),
     ],
   },
   {
@@ -502,8 +595,9 @@ export const RULES: readonly Rule[] = [
     picks: ["drum", "freeze"], outside: null,
     reasons: () => [
       { text: "A drum dryer takes a paste that flows, and can be run under vacuum to keep the "
-          + "temperature down.",
-        src: ["perry-t12-11", "muj-feed", "vtl-drum"] },
+          + "temperature down; the books do not give a limit of 30 degC for it, so a vacuum "
+          + "drum is a possibility to check, not a rule.",
+        src: ["perry-t12-11", "vtl-drum-vac", "muj-drum"] },
       { text: "Freeze drying is the expensive alternative for a heat-sensitive paste of high value.",
         src: ["perry-t12-11", "vtl-freeze"] },
     ],
@@ -537,7 +631,7 @@ export const RULES: readonly Rule[] = [
       { text: "Continuous dryers for pastes and sludges also include fluidised-bed, band and "
           + "rotary types, which need the feed blended with dry product or pre-formed.",
         src: ["muj-feed"] },
-      ...cocurrentNote(i),
+      ...flowNotes(i, ["drum", "spray"]),
     ],
   },
   {
@@ -621,7 +715,7 @@ export const RULES: readonly Rule[] = [
             + "spouted-bed dryers are all suitable; a direct rotary dryer is the usual choice "
             + "for granular crystals above about 300 micrometres.",
         src: i.fragile ? ["vtl-conveyor", "muj-feed", "perry-cons"] : ["perry-cons", "muj-feed"] },
-      ...cocurrentNote(i),
+      ...flowNotes(i, ["belt", "rotary"]),
     ],
   },
   {
@@ -636,23 +730,34 @@ export const RULES: readonly Rule[] = [
       { text: "A fluidised bed suits crystals and granules at high capacities, has no moving "
           + "parts and a fan duty that is high because the fan fluidises the bed.",
         src: ["perry-fluid", "vtl-fluid"] },
-      ...cocurrentNote(i),
+      ...flowNotes(i, ["fluidBed", "rotary"]),
     ],
   },
   {
     id: "gran-cont-fine", label: "Granular, continuous, fine (below 0.1 mm)",
     when: (i) => i.feed === "granular" && i.mode === "continuous" && i.size === "fine",
-    picks: ["rotary"], outside: "a flash dryer, if the drying is done in about 10 s",
-    reasons: (i) => [
-      { text: "Below 0.1 mm the continuous tree leaves the fluidised bed and ends at a "
+    picks: [], outside: "an indirect-heat rotary dryer (steam-tube) or a disk dryer, or a flash "
+      + "dryer if the drying is done in about 10 s",
+    reasons: () => [
+      { text: "Below 0.1 mm van 't Land's continuous tree leaves the fluidised bed and ends at a "
           + "convection or conduction dryer with a rotating shell or agitation (a rotary or "
           + "disk dryer), or at a flash dryer if the drying takes about 10 s or less.",
         src: ["vtl-cont-tree"] },
-      { text: "Fine particles carried by the gas make dust recovery large and costly in a "
-          + "direct dryer; if the feed contains fine particles the indirect mode of heat "
-          + "transfer is normally preferred.",
-        src: ["perry-direct", "muj-feed"] },
-      ...cocurrentNote(i),
+      { text: "The direct-heat rotary dryer of the seven is the wrong kind of rotary dryer for "
+          + "fines: if the solids contain extremely fine particles the large gas volumes and "
+          + "high gas velocities of a direct dryer entrain them in the exit gas, and the "
+          + "indirect types (steam-tube, steam-jacket) need only enough gas to carry the "
+          + "vapour away; Perry likewise advises the indirect mode for a feed with fines, and "
+          + "lists the continuous agitated and rotating dryers, whose chief advantage is low "
+          + "dust loss, for free-flowing powders of 100 mesh or less.",
+        src: ["muj-rotary", "perry-direct", "muj-feed", "perry-t12-11"] },
+      { text: "THE BOOKS DISAGREE here: Perry's Table 12-11 marks a fluidised bed 'suitable, if "
+          + "not too dusty' for free-flowing powders of 100 mesh (150 micrometres) or less, "
+          + "with internal coils for fine powders, while van 't Land's tree stops the fluid "
+          + "bed at 0.1 mm and his batch text says equipment for smaller particles may be too "
+          + "large.  The thresholds differ too (150 against 100 micrometres).  How dusty the "
+          + "powder is decides it: test it.",
+        src: ["perry-t12-11", "vtl-cont-tree", "vtl-text"] },
     ],
   },
 ];

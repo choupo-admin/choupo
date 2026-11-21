@@ -3230,24 +3230,64 @@ the tool reports \emph{which} absence it is rather than drawing a zero.
 \subsection*{Which dryer for which product \quad(\code{tool=dryer-selection})}\label{sec:edu-dryer-selection}
 A \emph{selection} aid: the seven dryer types that do most of the drying ---
 spray, direct-heat rotary, fluidised bed, tray, belt, drum and freeze ---
-each drawn as a schematic made for the page (feed in blue, hot gas in red,
-product in amber, vapour in grey; none copied from a book), and a tree that
+each drawn as a schematic made for the page (wet feed and wet material in
+blue, hot gas in red, product in amber, vapour in grey, a cold surface in
+teal; none copied from a book), and a tree that
 asks, in the order feed form, heat sensitivity, scale, batch or continuous,
 and answers with one or two types, the reason, and the book and page it was
 read from.  Every rule is read from Mujumdar, \emph{Handbook of Industrial
-Drying}, 3rd ed.\ (2006), Chapter~1 (Tables~1.1--1.4, section~1.5.3);
+Drying}, 3rd ed.\ (2006), Chapter~1 (Tables~1.1--1.6, section~1.5.3);
 Perry's \emph{Chemical Engineers' Handbook}, 9th ed.\ (2019), Section~12
-(Table~12-11, the selection considerations on p.~12-36); and van~'t Land,
+(Table~12-11, the selection considerations on p.~12-36); van~'t Land,
 \emph{Drying in the Process Industry} (2012), whose two decision trees
-(Figs.~3.1 and~3.2) supply the 30 and 75~$^\circ$C product-temperature bands.
-The throughput bands are Perry's (batch below about 50~kg/h, continuous
-above 1~t/h); where the books disagree --- Perry marks the batch tray
-`not applicable' to a free-flowing powder, van~'t Land and Mujumdar admit it
---- the page says so.  The comparison table gives residence time, energy per
-kilogram of water (Mujumdar's Table~1.4: 4\,500--11\,500~kJ/kg for a spray
-dryer, 3\,200--6\,500 for a drum dryer) and typical products, and prints
-\emph{not cited} in every cell the three books leave blank (the energy of the
-batch tray and the freeze dryer, three evaporation capacities).  A small
+(Figs.~3.1 and~3.2) supply the 30 and 75~$^\circ$C product-temperature bands
+(the second reaches the spray dryer only together with ``particle size
+increase required?'', and the tree is drawn for a particulate solid); and
+Towler, \emph{Chemical Engineering Design} (2008), Table~10.7.
+
+After an expert review the drawings were checked against the chapter of
+Mujumdar's Handbook that describes each equipment: the rotary shell is inclined
+so that the feed enters the upper end and the product leaves the lower end,
+with a burner and combustion chamber at the feed end and a cyclone on the
+exhaust (Chapter~7); the spray dryer has its hot gas at the roof around the
+atomiser and an exhaust duct from the cone to a cyclone (Chapter~10); the
+fluidised bed has an overflow weir and a cyclone (Chapter~8, Towler); the tray
+cabinet recirculates 80 to 95 per cent of its air past a heater, with fresh air
+in and a small exhaust out (Perry p.~12-39); the belt passes the gas through
+the layer, up in one zone and down in the next, then a cooling zone (Towler
+pp.~572--573, Chapter~17); the drum dips into a pan of the feed, with a knife
+on its surface (Chapter~9).  A test reads the rotary drawing's transform and
+holds the feed end above the discharge end.
+
+Where the books disagree --- Perry marks the batch tray `not applicable' to a
+free-flowing powder, van~'t Land and Mujumdar admit it; for a fine powder in a
+continuous dryer Perry admits a fluidised bed ``if not too dusty'' while van~'t
+Land's tree and Mujumdar's remark on entrainment send it to an indirect rotary
+or a disk dryer (so the rule's answer is \emph{outside the seven}); Perry's
+drum evaporation of 7--11~g/(m$^2$\,s), i.e.\ 25--40~kg/(m$^2$\,h), differs
+from Mujumdar's 6--20 --- the page says so.  One error of a book is named and
+not copied: Mujumdar p.~22 says the heat of sublimation is ``severalfold lower''
+than that of evaporation, while his own Chapter~11 (p.~259) gives
+2840~kJ/kg of ice, against 2257~kJ/kg of water at 100~$^\circ$C.  The
+co-current note is attached only to the spray and rotary picks; a well-mixed
+fluidised bed has one temperature, a belt blows the gas through the bed, and the
+drum has no gas stream.  The throughput bands are Perry's (batch below about
+50~kg/h, continuous above 1~t/h).
+
+The comparison table gives residence time, energy per kilogram of water
+(Mujumdar's Table~1.4: 4\,500--11\,500~kJ/kg for a spray dryer, 3\,200--6\,500
+for a drum dryer), capacity and typical products, and prints \emph{not cited}
+in every cell the four books leave blank (the energy of the batch tray and the
+freeze dryer, the capacity of the fluidised bed; Towler's Table~10.7 fills the
+tray, 0.15--1.0~kg/(h\,m$^2$), and the belt, 1.5--35~kg/(h\,m$^3$)).  Below it come the
+habitual tables, each transcribed at its page, pinned cell by cell by the test
+and rendered as a table: Mujumdar's Table~1.1 with its eleven feed columns, his
+Table~1.5 (ha, log-mean temperature difference and inlet gas temperature,
+co-current against counter-current), his Table~1.6 and minimum-information list
+beside van~'t Land's Tables~3.1 and~3.2 as a ``before you choose'' checklist,
+Towler's Table~10.7 (twenty dryers: feed condition, jacketed, heat-sensitive,
+vacuum, retention time, heat transfer, capacity), and the drum dryer in
+Perry's Table~12-46 and Mujumdar's numbers side by side.  A small
 bench turns a dry-solid rate and two moistures into the water to evaporate and
 the heat duty of each priced type, as the page's own arithmetic on the cited
 range ($\eta \approx \Delta h_\mathrm{vap}/e$ with 2257~kJ/kg).  The four
