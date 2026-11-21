@@ -18642,6 +18642,51 @@ only the inner loop runs once --- the same code, fewer passes.}
 \label{fig:flash-two-loops}
 \end{figure}
 
+\subsection{A two-phase root above every pure critical temperature}\label{sec:flash-above-tc}
+
+Every pure liquid ceases to exist above its own critical temperature, so a
+two-phase root found at a $T$ above the highest $T_c$ of any component present
+is suspect --- but how it is judged depends on which $K$ produced it.
+
+\paragraph{$\gamma$--$\phi$ and Raoult routes (the rule is the pure-$T_c$ test).}
+There $K_i$ is read through $P_i^{\mathrm{sat}}(T)$ or a Henry constant $H_i(T)$,
+and both are correlations fitted below $T_c$.  Above every $T_c$ they are
+extrapolated far outside their window, and a root built on them (measured: an
+ammonia-synthesis converter outlet at 843~K and 200~bar resolving to
+$V/F=0.26$ because $K_{\mathrm{H_2}}$ and $K_{\mathrm{N_2}}$ came out below 1)
+violates no equation and is not physical.  The split is \emph{discarded}: the
+stream is the one fluid phase, read on the vapour leg, and the run says so
+(``resolved TWO-PHASE \ldots{} above the highest critical temperature \ldots{}
+DISCARDED'').
+
+\paragraph{$\phi$--$\phi$ route (the rule is the Gibbs-energy test).}
+Under a $\phi$--$\phi$ package $K_i=\varphi_i^L(x)/\varphi_i^V(y)$ comes from one
+cubic and neither correlation is read.  A converged split can then be real: a
+mixture's critical locus lies above the pure $T_c$ of its lighter component
+(IUPAC 1998 nomenclature; Bolz et al., Pure Appl.\ Chem.\ \textbf{70}, 2233).  The
+split therefore stands when it lowers the Gibbs energy below the best
+homogeneous root at the same $(T,P,z)$,
+\begin{equation}
+  \frac{G_{\mathrm{split}}}{nRT} = \beta\sum_i y_i\bigl[\ln y_i+\ln\varphi_i^V(y)\bigr]
+  +(1-\beta)\sum_i x_i\bigl[\ln x_i+\ln\varphi_i^L(x)\bigr]
+  \;<\;
+  \min_{r\in\{V,L\}}\sum_i z_i\bigl[\ln z_i+\ln\varphi_i^{r}(z)\bigr]-10^{-9},
+  \label{eq:flash-above-tc-gibbs}
+\end{equation}
+with $\beta=V/F$ and equal fugacities $y_i\varphi_i^V=x_i\varphi_i^L$ already
+guaranteed by the converged solve.  If the split does not lower $G$ it is
+discarded with the same advisory.  Witness (synthetic, $k_{ij}=-0.3$ imposed as
+a mathematical probe, not a catalogue value): SRK propane + $n$-butane at 426.12~K
+(highest pure $T_c$ 425.12~K), 39.621~bar, $z_{\mathrm{C_3}}=0.4728$ converges to
+$V/F=0.5$, $x_{\mathrm{C_3}}=0.4552$, $y_{\mathrm{C_3}}=0.4904$, and the
+homogeneous state lies about $8\times10^{-4}$ in $G/nRT$ above it; the pure-$T_c$
+rule used to publish $V/F=1$ there (DEV.md 4c C467, review item R-010).  The
+Michelsen tangent-plane test of the library (\code{StabilityTest}) is written for
+an activity-coefficient phase and is not used on this route; the Gibbs
+comparison is the sufficient condition for instability that a converged split
+provides.  Implemented in \code{flashState::phiPhiSplitLowersGibbs}
+(\code{src/unitOperations/flash/StreamEquilibrium.H}).
+
 \subsection{Diagnostics in the log}
 
 At \code{verbosity 3}, the simulator prints:

@@ -806,3 +806,16 @@ without it.  A utility record may carry `costSource "...";` (its `cost` figure's
 citation; text opening `assumption:` prints `assumption`, any other `published`); without it the utility prints `undeclared`.  The run prints all of
 them under "Prices and where they came from", in `reports/economics/prices.csv`
 and in the GUI Reports view.  Theory Guide, `par:price-origin`.
+
+## A two-phase root above every pure Tc: discarded on gamma-phi, judged by G on phi-phi (C467, 2026-11-21)
+
+A flash whose T is above the highest critical temperature of any component
+present, and whose root is two-phase, prints `resolved TWO-PHASE ... DISCARDED`
+and the stream is one fluid phase -- but ONLY when its K came from Psat or a
+Henry law (gamma-phi, Raoult), which are correlations extrapolated past their
+window there.  Under a `formulation phiPhi;` package (K = phi_L/phi_V from one
+cubic) the split STANDS when it lowers the Gibbs energy below the best
+homogeneous root at the same (T, P, z): a mixture's critical locus lies above
+the pure Tc of its lighter component.  A phi-phi state that is one phase is
+simply one phase.  Theory Guide, `sec:flash-above-tc`; gate
+`check_supercritical_route`.
