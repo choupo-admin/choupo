@@ -351,6 +351,7 @@ describe("the three tools are registered and shelved", () => {
     //  least-squares left for "Property data & parameters" (C332).
     expect(shelf).toEqual(
       [...ids.filter((i) => i !== "least-squares"), "element-potential",
+        "linear-algebra-without-pain",
         "relaxation"].sort());
   });
 

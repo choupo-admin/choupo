@@ -232,6 +232,31 @@
       ]
     },
     {
+      "id": "linear-solves",
+      "title": "Linear solves and the bowl",
+      "intro": "From why every Newton step is a linear system to the bowl, the constrained bowl, and a fit whose damping keeps it a bowl.",
+      "steps": [
+        {
+          "tool": "linear-algebra-without-pain",
+          "label": "Linear algebra without the pain",
+          "why": "Elimination, LU as a receipt, pivoting, conditioning, structure, the positive-definite bowl, conjugate gradient.",
+          "href": "/app/?workspace=methods&tool=linear-algebra-without-pain&path=linear-solves"
+        },
+        {
+          "tool": "active-set-qp",
+          "label": "Quadratic programming with constraints (active set)",
+          "why": "The same bowl under constraints: the inner problem of every SQP step.",
+          "href": "/app/?workspace=methods&tool=active-set-qp&path=linear-solves"
+        },
+        {
+          "tool": "least-squares",
+          "label": "Least squares: what a fitted parameter is worth",
+          "why": "Gauss-Newton's step is a linear solve too, and its damping is what keeps the table a bowl.",
+          "href": "/app/?workspace=methods&tool=least-squares&path=linear-solves"
+        }
+      ]
+    },
+    {
       "id": "recycle-numerics",
       "title": "Recycle numerics",
       "intro": "From why a recycle is iterated to how the cut is chosen: relaxation, Wegstein, and the tear.",
@@ -282,8 +307,8 @@
       ]
     }
   ],
-  "liveTools": 93,
-  "registryTools": 93,
+  "liveTools": 94,
+  "registryTools": 94,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -1108,6 +1133,18 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=tear-streams"
+    },
+    {
+      "id": "linear-algebra-without-pain",
+      "label": "Linear algebra without the pain",
+      "blurb": "Why Newton steps are linear solves: LU, pivoting, the bowl.",
+      "discipline": "Flowsheeting & numerics",
+      "teaches": "Why a simulator is full of matrices: every Newton step solves J dx = -F.  Seven steps in lay language, each a picture first and a small figure you drag: two rulers crossing (the step), elimination and LU as its RECEIPT (keep it, reuse it for a new right-hand side), a tiny pivot losing every digit, the wobbly table of an ill-conditioned system, why a column's block-tridiagonal Jacobian is cheap, the bowl of a positive-definite matrix (and the saddle when it fails), and steepest descent's zigzag against conjugate gradient.  Every claim about the engine carries the file and line it was read at.",
+      "origins": [
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=linear-algebra-without-pain"
     },
     {
       "id": "relaxation",

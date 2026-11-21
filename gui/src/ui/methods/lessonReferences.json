@@ -2154,6 +2154,39 @@
         }
       ]
     },
+    "linear-algebra-without-pain": {
+      "references": [
+        {
+          "text": "Biegler, L. T.; Grossmann, I. E.; Westerberg, A. W. (1997). Systematic Methods of Chemical Process Design. Prentice Hall PTR. ISBN 0-13-492422-3.",
+          "note": "Section 8.3.1, Newton-type methods, pp. 254-256: the Jacobian (Eq. 8.19), the linear system for the step (Eqs. 8.20-8.21) and the Newton algorithm.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/Books/biegler-systematic-methods-chemical-process-design-1ed.pdf (808-page scan, no text layer): PDF pages 268-269 read as images = printed pp. 255-256 (offset 13, from the running head of printed p. 262 on PDF p. 275); Eqs. 8.16-8.21 and the Newton's method Algorithm read; the contents list gives Section 8.3 'Methods for Solving Nonlinear Equations' at p. 254 (C463)",
+            "date": "2026-11-21"
+          }
+        },
+        {
+          "text": "Miller, J. Earliest Known Uses of Some of the Words of Mathematics: Q (entry 'quadratic form'). MacTutor History of Mathematics, University of St Andrews.",
+          "url": "https://mathshistory.st-andrews.ac.uk/Miller/mathword/q/",
+          "note": "Gauss's 'forms' (Disquisitiones Arithmeticae, 1801, Section V, Art. 153), Euler's possible earlier use (a paper read in 1775) and Salmon (1859) for the English 'quadratic form'.",
+          "verified": {
+            "method": "web",
+            "evidence": "page fetched by the commander 2026-11-21 (C463): the entry 'quadratic form' gives Gauss 1801 Section V Art. 153, 'forms of the second degree or simply forms', Euler perhaps in a paper read in 1775, and Salmon 1859 for the English term; the page is a dictionary of first uses, not a primary source",
+            "date": "2026-11-21"
+          }
+        },
+        {
+          "text": "Miller, J. Earliest Known Uses of Some of the Words of Mathematics: D. MacTutor History of Mathematics, University of St Andrews.",
+          "url": "https://mathshistory.st-andrews.ac.uk/Miller/mathword/d/",
+          "note": "The D list has no entry for 'definite' in the sense of a quadratic form: its only 'definite' is 'definite integral' (Laplace, 1782), so the first use of the word here is not documented.",
+          "verified": {
+            "method": "web",
+            "evidence": "page fetched by the commander 2026-11-21 (C463): the D list contains 'definite integral' (Laplace 1782) and no entry for 'definite' as a property of a form or matrix; the page says an ABSENCE of documentation, not a first use",
+            "date": "2026-11-21"
+          }
+        }
+      ]
+    },
     "active-set-qp": {
       "references": [
         {

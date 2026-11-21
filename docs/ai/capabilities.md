@@ -129,6 +129,7 @@ batch plan, sizing, clean utilities, costing and economics on top
   `unit:phaseChanger` (condenser) and `unit:isothermalFlash`.
 * Witnesses: `tutorials/batch/plant/apalutamide01_tablets` (acetone, nitrogen
   loop), `tutorials/steady/drying/sprayDryer01_sugar`.
+* Linear algebra without the pain: the EduTool `linear-algebra-without-pain` (why every Newton step is a linear solve; LU as the receipt of elimination, pivoting, conditioning, a column's block-tridiagonal Jacobian, the positive-definite bowl, steepest descent against conjugate gradient; page arithmetic on toy matrices, engine claims cited by file:line; Choupo has no conjugate-gradient solver)
 * Choosing a dryer type: the EduTool `dryer-selection` ("Which dryer for which
   product") draws the seven common types (spray, rotary, fluidised bed, tray,
   belt, drum, freeze) and walks a selection tree (feed form, heat sensitivity,
