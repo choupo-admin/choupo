@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|        |     O ptimization  |  Tutorial case file -- part of Choupo         |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict -- phi-phi, ONE cubic (SRK, kij = 0) for both phases: the
+  very system tutorials/props/compare/olefins01_propane_propene_laurance1972
+  holds to measured VLE.  No propene-propane kij exists in the catalogue.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+components    ( propylene  propane );
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState { model SRK;  mixingRule vanDerWaalsOneFluid; }
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}

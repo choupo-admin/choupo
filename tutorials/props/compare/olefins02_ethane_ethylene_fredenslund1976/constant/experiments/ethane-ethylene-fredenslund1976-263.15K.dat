@@ -1,0 +1,60 @@
+/*--------------------------------------------------------------------------*\
+  MEASURED vapour-liquid equilibrium of ethylene (1) + ethane (2) at 263.15 K.
+
+  SOURCE (the page, not an archive): Fredenslund, A.; Mollerup, J.; Hall, K.R.
+  "Vapor-liquid equilibria of the CO2-ethylene-ethane system", J. Chem. Eng.
+  Data 21 (1976) 301-303 (the PDF opens on the tail of the previous article),
+  Table I "Vapor-Liquid Equilibrium in the C2H4 + C2H6 System" (p. 302), the
+  EXPERIMENTAL columns P, x and y, read from the page image at 220 dpi.  The
+  paper's footnote: mole fractions are given with four significant figures
+  to avoid round-off, and are "only believed accurate to within 0.003".  The
+  vapour was SAMPLED (vapour-recirculation cell).  Pressure in atm.
+
+  Columns are the props bench's overlay names: x[ethylene], P_bubble,
+  y_eqT_ethylene; `alpha` is alpha = (y1/x1)/(y2/x2) of the measured pair,
+  kept for the gate (bin/curate/check_olefin_vle.py).  Pure ends are not listed
+  (y = x there).  The CALCULATED columns of the paper's Table I are not used.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.P_bubble;
+system       ( ethylene ethane );
+temperature  263.15 K;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Fredenslund, A.; Mollerup, J.; Hall, K.R. (1976). Vapor-liquid equilibria of the carbon dioxide-ethylene-ethane system. J. Chem. Eng. Data 21, 301-303, Table I (p. 302). doi:10.1021/je60070a006";
+    sourceFile   "fredenslund1976-co2-ethylene-ethane-vle.pdf";
+    sha256       "a85b71ce08f2f5ede6d3c3e41daabdef3acf1a1f12de8bdf3bdf5f24c6c4ba07";   // of that PDF
+}
+
+uncertainty
+{
+    x_and_y
+    {
+        kind    statedBound;   // the paper's footnote, a bound not a confidence level
+        unit    -;
+        value   0.003;
+    }
+}
+
+columns
+(
+    { name x[ethylene];  unit -;  }
+    { name P_bubble;  unit atm;  }
+    { name y_eqT_ethylene;  unit -;  }
+    { name alpha;  unit -;  }
+);
+
+data
+(
+    0.0462  19.06  0.0706  1.5683
+    0.1446  20.48  0.2036  1.5123
+    0.2561  22.03  0.3324  1.4463
+    0.3982  23.96  0.4823  1.4080
+    0.6138  26.82  0.6814  1.3457
+    0.7894  29.10  0.8320  1.3212
+    0.8476  29.86  0.8777  1.2904
+    0.9392  31.05  0.9516  1.2728
+);

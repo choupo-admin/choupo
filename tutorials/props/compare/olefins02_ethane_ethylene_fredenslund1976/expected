@@ -1,0 +1,27 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    pxy_srk_263p15K        n_emptyCurves    0                  1e-4
+diag    pxy_srk_263p15K        n_failures       0                  1e-4
+diag    pxy_srk_263p15K        n_points         8                  1e-4
+diag    pxy_pr_263p15K         n_emptyCurves    0                  1e-4
+diag    pxy_pr_263p15K         n_failures       0                  1e-4
+diag    pxy_pr_263p15K         n_points         8                  1e-4
+diag    pxy_srk_293p15K        n_emptyCurves    0                  1e-4
+diag    pxy_srk_293p15K        n_failures       0                  1e-4
+diag    pxy_srk_293p15K        n_points         6                  1e-4
+diag    pxy_pr_293p15K         n_emptyCurves    0                  1e-4
+diag    pxy_pr_293p15K         n_failures       0                  1e-4
+diag    pxy_pr_293p15K         n_points         6                  1e-4
+aad     fredenslund1976_263p15K pxy_srk_263p15K.P_bubble.aadAbs 18223.41875        1e-4
+aad     fredenslund1976_263p15K pxy_srk_263p15K.P_bubble.aadRelPct 0.715819202312     1e-4
+aad     fredenslund1976_263p15K pxy_srk_263p15K.y_eqT_ethylene.aadAbs 0.004136048425     1e-4
+aad     fredenslund1976_263p15K pxy_pr_263p15K.P_bubble.aadAbs 25597.4425         1e-4
+aad     fredenslund1976_263p15K pxy_pr_263p15K.P_bubble.aadRelPct 1.04164464884      1e-4
+aad     fredenslund1976_263p15K pxy_pr_263p15K.y_eqT_ethylene.aadAbs 0.00420237495      1e-4
+aad     fredenslund1976_293p15K pxy_srk_293p15K.P_bubble.aadAbs 49994.52           1e-4
+aad     fredenslund1976_293p15K pxy_srk_293p15K.P_bubble.aadRelPct 1.08669728905      1e-4
+aad     fredenslund1976_293p15K pxy_srk_293p15K.y_eqT_ethylene.aadAbs 0.00169138506667   1e-4
+aad     fredenslund1976_293p15K pxy_pr_293p15K.P_bubble.aadAbs 53067.5133333      1e-4
+aad     fredenslund1976_293p15K pxy_pr_293p15K.P_bubble.aadRelPct 1.14921687821      1e-4
+aad     fredenslund1976_293p15K pxy_pr_293p15K.y_eqT_ethylene.aadAbs 0.00166818555      1e-4

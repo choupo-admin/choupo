@@ -1,0 +1,205 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  olefins01_propane_propene_laurance1972 -- the C3 splitter's thermodynamics,
+  held to measured VLE.  README.md carries the question, the band DECLARED
+  BEFORE the first run, the table of results and what is NOT claimed.
+
+  Each operation asks the engine at the liquid composition the experimenters
+  tabulated (x = 0.1 ... 0.9 of propene, never a smooth curve between
+  neighbours): P_bubble(T, x) and the incipient vapour y_eqT(T, x), once with
+  SRK and once with Peng-Robinson (variant `pr`), kij = 0.  The relative
+  volatility alpha = (y1/x1)/(y2/x2) is NOT a property of the bench; the gate
+  bin/curate/check_olefin_vle.py recomputes it from the y of these runs and
+  compares it with the paper's alpha point by point, against the declared band.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        pxy_srk_100F;
+        type        propertyScan1D;
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 310.9278 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srk_100F.csv; }
+    }
+    {
+        name        pxy_pr_100F;
+        type        propertyScan1D;
+        thermo      pr;
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 310.9278 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_pr_100F.csv; }
+    }
+    {
+        name        pxy_srk_110F;
+        type        propertyScan1D;
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 316.4833 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srk_110F.csv; }
+    }
+    {
+        name        pxy_pr_110F;
+        type        propertyScan1D;
+        thermo      pr;
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 316.4833 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_pr_110F.csv; }
+    }
+    {
+        name        pxy_srk_120F;
+        type        propertyScan1D;
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 322.0389 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srk_120F.csv; }
+    }
+    {
+        name        pxy_pr_120F;
+        type        propertyScan1D;
+        thermo      pr;
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 322.0389 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_pr_120F.csv; }
+    }
+    {
+        name        pxy_srk_130F;
+        type        propertyScan1D;
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 327.5944 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srk_130F.csv; }
+    }
+    {
+        name        pxy_pr_130F;
+        type        propertyScan1D;
+        thermo      pr;
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 327.5944 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_pr_130F.csv; }
+    }
+    {
+        name        pxy_srk_140F;
+        type        propertyScan1D;
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 333.1500 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srk_140F.csv; }
+    }
+    {
+        name        pxy_pr_140F;
+        type        propertyScan1D;
+        thermo      pr;
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 333.1500 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_pr_140F.csv; }
+    }
+    {
+        name        pxy_srk_150F;
+        type        propertyScan1D;
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 338.7056 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srk_150F.csv; }
+    }
+    {
+        name        pxy_pr_150F;
+        type        propertyScan1D;
+        thermo      pr;
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 338.7056 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_pr_150F.csv; }
+    }
+    {
+        name        pxy_srk_160F;
+        type        propertyScan1D;
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 344.2611 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srk_160F.csv; }
+    }
+    {
+        name        pxy_pr_160F;
+        type        propertyScan1D;
+        thermo      pr;
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 344.2611 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_pr_160F.csv; }
+    }
+);
+
+experimental
+(
+    {
+        name      laurance1972_100F;
+        component propylene;
+        kind      pxy;
+        models    ( pxy_srk_100F  pxy_pr_100F );
+        dataset   "constant/experiments/propane-propene-laurance1972-100F.dat";
+        source    "Laurance & Swift, J. Chem. Eng. Data 17 (1972) 333, Table IV (p. 335), T = 100 F";
+    }
+    {
+        name      laurance1972_110F;
+        component propylene;
+        kind      pxy;
+        models    ( pxy_srk_110F  pxy_pr_110F );
+        dataset   "constant/experiments/propane-propene-laurance1972-110F.dat";
+        source    "Laurance & Swift, J. Chem. Eng. Data 17 (1972) 333, Table IV (p. 335), T = 110 F";
+    }
+    {
+        name      laurance1972_120F;
+        component propylene;
+        kind      pxy;
+        models    ( pxy_srk_120F  pxy_pr_120F );
+        dataset   "constant/experiments/propane-propene-laurance1972-120F.dat";
+        source    "Laurance & Swift, J. Chem. Eng. Data 17 (1972) 333, Table IV (p. 335), T = 120 F";
+    }
+    {
+        name      laurance1972_130F;
+        component propylene;
+        kind      pxy;
+        models    ( pxy_srk_130F  pxy_pr_130F );
+        dataset   "constant/experiments/propane-propene-laurance1972-130F.dat";
+        source    "Laurance & Swift, J. Chem. Eng. Data 17 (1972) 333, Table IV (p. 335), T = 130 F";
+    }
+    {
+        name      laurance1972_140F;
+        component propylene;
+        kind      pxy;
+        models    ( pxy_srk_140F  pxy_pr_140F );
+        dataset   "constant/experiments/propane-propene-laurance1972-140F.dat";
+        source    "Laurance & Swift, J. Chem. Eng. Data 17 (1972) 333, Table IV (p. 335), T = 140 F";
+    }
+    {
+        name      laurance1972_150F;
+        component propylene;
+        kind      pxy;
+        models    ( pxy_srk_150F  pxy_pr_150F );
+        dataset   "constant/experiments/propane-propene-laurance1972-150F.dat";
+        source    "Laurance & Swift, J. Chem. Eng. Data 17 (1972) 333, Table IV (p. 335), T = 150 F";
+    }
+    {
+        name      laurance1972_160F;
+        component propylene;
+        kind      pxy;
+        models    ( pxy_srk_160F  pxy_pr_160F );
+        dataset   "constant/experiments/propane-propene-laurance1972-160F.dat";
+        source    "Laurance & Swift, J. Chem. Eng. Data 17 (1972) 333, Table IV (p. 335), T = 160 F";
+    }
+);

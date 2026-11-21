@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|        |     O ptimization  |  Tutorial case file -- part of Choupo         |
+\*-----------------------------------------------------------------------------*/
+/*  ILLUSTRATIVE feed (no published splitter specification is in the literature
+    folder): 100 kmol/h, 70 mol % propylene, saturated liquid at 17 bar.  */
+
+componentMolarFlows
+{
+    propylene  70 kmol/h;
+    propane    30 kmol/h;
+}
+
+T               316.0 K;                   // 0.3 K below the 70/30 bubble point at 17 bar (316.29 K, this case's own SRK)
+P               17 bar;

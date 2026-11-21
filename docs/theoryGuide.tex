@@ -10814,6 +10814,63 @@ methanol & PR  & 1.22117 & $-0.20453$ & $-0.68580$ & 14.7\,\% & 0.06\,\%\\
 \end{table}
 Witness: \code{tutorials/props/molecular/alpha01\_water\_methanol\_psat}.
 
+\subsection{The cubic against measured relative volatility: the two olefin splitters}\label{sec:olefin-vle}
+
+\paragraph{Why.}  A splitter separates two components whose relative volatility
+\begin{equation}\label{eq:olefin-alpha}
+  \alpha_{12} = \frac{y_1/x_1}{y_2/x_2} = \frac{K_1}{K_2}
+\end{equation}
+is close to one, and the Fenske minimum number of stages
+$N_{\min} = \ln\!\bigl[\tfrac{x_{1,D}}{x_{2,D}}\tfrac{x_{2,B}}{x_{1,B}}\bigr]/\ln\alpha_{12}$
+goes as $1/\ln\alpha_{12}\approx 1/(\alpha_{12}-1)$.  For propene (1) and
+propane (2) $\alpha_{12}-1$ is 0.05 to 0.22 and for ethylene and ethane 0.08 to
+0.57 in the tables below, so a model error of $2\,\%$ in $\alpha_{12}$ is close to $20\,\%$ in the tower.  No defect of that
+size is visible to a balance, a convergence test or a golden: the equation of state
+returns a plausible $K$ whichever way it is wrong.  Only a measurement sees it.
+
+\paragraph{Equations as implemented.}  Both phases are priced by ONE cubic
+($\phi$--$\phi$: \code{SRK} with the Soave slope, or \code{PengRobinson}
+(PR78 slope), \code{vanDerWaalsOneFluid} mixing, $k_{ij}=0$ because no
+propene--propane or ethylene--ethane record exists in the catalogue; Section~\ref{sec:cubic-alpha-mc}
+and the mixing rules below).  At a measured liquid composition and temperature the property bench's
+\code{P\_bubble} and \code{y\_eqT\_}$i$ solve $\sum_i K_i x_i = 1$ with the incipient vapour iterated
+to its own composition, $K_i=\phi_i^{L}/\phi_i^{V}$ both from the cubic; $\alpha_{12}$ is then
+Eq.~\eqref{eq:olefin-alpha} from the engine's $x$ and $y$.  The shortcut column's $\alpha_{LK,HK}$ is the same
+ratio at the feed's bubble point.
+
+\paragraph{The evidence.}  \emph{Propene/propane}: Laurance and Swift, \emph{J.\ Chem.\ Eng.\ Data}
+\textbf{17}, 333 (1972), Table~IV (p.~335): seven isotherms 100--160\,$^\circ$F, $x=0.1\ldots0.9$ (63 points).
+The pressures of the paper's Table~I were measured (probable error $0.1\,\%$); the table's $y$, $P$ and $\alpha$
+are computed by the authors from them by integrating the isothermal coexistence equation
+(estimated error $\pm0.005$ in $\alpha$), so no vapour was sampled.
+\emph{Ethylene/ethane}: Fredenslund, Mollerup and Hall, \emph{J.\ Chem.\ Eng.\ Data} \textbf{21}, 301 (1976),
+Table~I (p.~302): 14 SAMPLED points at 263.15 and 293.15\,K ($x$ and $y$ accurate to $\pm0.003$, the footnote).
+Both are transcribed from the page image; the printed slips are named in the dataset headers.
+
+\paragraph{Result.}  The band was declared in each case's README before the first run.
+\emph{Propene/propane}, SRK/PR: bubble pressure inside it (mean $0.40/0.76\,\%$, maximum $1.06/1.73\,\%$ against $1.5/3\,\%$);
+$\alpha$ \emph{outside} it, for both models: mean $1.82/1.80\,\%$ (declared $1.5\,\%$), 10 of the 63 points above the $3\,\%$ limit,
+maximum $4.6\,\%$.  The miss has one shape: the engine's $\alpha$ is too low at the propane-rich end and too high at the propene-rich
+end at every isotherm (at 100\,$^\circ$F the paper's $\alpha$ falls from 1.202 to 1.098 across the composition range, the
+engine's from 1.147 to 1.141), because the measured pair has a small positive deviation from Raoult's law and $k_{ij}=0$ has none.
+No $k_{ij}$ was fitted.
+\emph{Ethylene/ethane}: pressure, $y$ (mean $0.003$ against $0.010$) and the mean $\alpha$ ($2.6\,\%$ against $4\,\%$) inside
+the band; one point of 14 (263.15\,K, $x=0.1446$, $-5.3/-5.5\,\%$) $0.3$--$0.5$ point beyond its per-point limit.
+SRK and PR agree within $0.3$ point in $\alpha$ in both pairs.
+The consequence for a column is in \code{tutorials/steady/distillation/c3splitter01\_propylene\_propane}
+(illustrative specification, 70/30 feed, 17\,bar): the engine's $\alpha=1.1345$ against the measured $1.1105$ at the feed's
+bubble point gives 144.6 theoretical stages and $R=12.51$ against the 173.2 stages and $R=15.23$ the measured $\alpha$ implies
+($-16.5\,\%$ in stages, $-17.9\,\%$ in reflux).
+
+\paragraph{Validity window and in-sample statement.}  Propene/propane 310.9--344.3\,K, liquid propene fraction
+0.1--0.9, 13--31 bar; ethylene/ethane 263.15 and 293.15\,K, 19--48 atm (293.15\,K is above the critical temperature of
+ethylene, 282.34\,K).  Nothing was fitted to these points: Tc, Pc and $\omega$ are the records' own, so the comparison is
+out of sample.  The Antoine records the runs print as outside their $T$ range only seed the incipient-vapour iteration; the answer is the cubic's.
+Gate \code{bin/curate/check\_olefin\_vle.py} pins the declared bands, the propene/propane miss at its measured size and shape,
+and sees a transposed digit in propylene's $\omega$.  Witnesses:
+\code{tutorials/props/compare/olefins01\_propane\_propene\_laurance1972},
+\code{tutorials/props/compare/olefins02\_ethane\_ethylene\_fredenslund1976}.
+
 \subsection{Mixing rules}
 
 A mixture needs single effective $a_{\mathrm{mix}}, b_{\mathrm{mix}}$.
