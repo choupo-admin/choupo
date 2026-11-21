@@ -6,9 +6,20 @@
   Pöpken, Steinigeweg & Gmehling, Ind. Eng. Chem. Res. 40 (2001) 1566
   (methanol + acetic acid <=> methyl acetate + water).
 
-  Primary data: NIST WebBook / DIPPR-class compilations (critical constants,
-  Tb, Hvap); Antoine from Ambrose, Sprake & Townsend, J. Chem. Thermodyn.
-  (P in bar, T in K, log10 form).  UNIFAC decomposition 1 CH3 + 1 CH3COO
+  RE-SOURCED 2026-11-19 (DEV.md 4c C335, source-licence debt): the constants
+  were attributed to an aggregator with no primary named.  Each value below is now read from Poling, Prausnitz & O'Connell,
+  "The Properties of Gases and Liquids", 5th ed. (2001), Appendix A row 91
+  (methyl ethanoate, CAS 79-20-9): Section A (PDF p. 8 of the extract; Tb 330.09 K, Tc 506.80 K,
+  Pc 46.90 bar), Section B (PDF p. 23; dHf0 -408.80 kJ/mol, dGf0 -321.40, DelHb 30.32
+  kJ/mol, Vliq 79.89 cm3/mol at 298.15 K) and Section D (PDF p. 50; Antoine, below).
+  omega: the table prints none for this row; it is COMPUTED from Section D's
+  own Antoine at 0.7 Tc: omega = -log10(Psat(0.7 Tc)/Pc) - 1 = 0.323 (the
+  book's own definition, Section A note on acentric factors).  s_298: the book
+  carries no entropy; derived from its dHf0 and dGf0 (dSf = (dHf - dGf)/298.15
+  = -293.14 J/(mol K)) plus the CODATA Key Values (Cox, Wagman & Medvedev 1989)
+  element entropies, 3 C(graphite) 5.740 + 3 H2 130.680 + O2 205.152
+  J/(mol K): 321.27.  Antoine: Poling Section D (T in K, P in bar, log10; the
+  book's Celsius C 219.69 as -53.461 K).  UNIFAC decomposition 1 CH3 + 1 CH3COO
   (Poling, Prausnitz & O'Connell, "The Properties of Gases and Liquids", 5th ed.,
   Table 8-23 example).
 \*---------------------------------------------------------------------------*/
@@ -18,12 +29,12 @@ formula     C3H6O2;
 CAS         79-20-9;
 
 MW          74.079;
-Tc          506.55;
-Pc          47.50;
-omega       0.3310;
-Tb          330.02;
+Tc          506.80;
+Pc          46.90;
+omega       0.3231;
+Tb          330.09;
 HvapTb      30320;
-Vliq        7.984e-5;
+Vliq        7.989e-5;
 //  ANCHOR, never an input.  The engine DERIVES the Hildebrand
 //  parameter from HvapTb and Vliq (the tree stores no derivative);
 //  this is what ChemSep v8.3 computed independently, so the
@@ -32,8 +43,8 @@ solubilityParameter 19350;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
 
 standardThermochemistry
 {
-    dHf_298   -411900.0;       // J/mol  ideal-gas reference (NIST)
-    s_298      324.40;         // J/(mol·K)  third-law absolute (gas)
+    dHf_298   -408800.0;       // J/mol  ideal-gas reference (Poling 5e App. A Sec. B)
+    s_298      321.27;         // J/(mol·K)  DERIVED (not a table value): dS_f = (dHf - dGf)/298.15 from Poling App. A Sec. B, plus CODATA element entropies
 }
 
 vaporPressure
@@ -67,6 +78,7 @@ liquidHeatCapacity
 groups
 {
     unifac ( { group CH3; count 1; } { group CH3COO; count 1; } );
+    unifacDortmund ( { group CH3; count 1; } { group CH3COO; count 1; } );   // C408 (c): S butyl acetate, Table III p. 182-183
     joback ( { group CH3; count 2; } { group COO; count 1; } );
 }
 
