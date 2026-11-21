@@ -1,0 +1,115 @@
+/*--------------------------------------------------------------------------*\
+  MEASURED-AND-CORRELATED vapour-liquid equilibrium of propene (1) + propane (2),
+  SEVEN ISOTHERMS, 100-160 degF, nine liquid compositions each (63 rows) -- the
+  fit case's evidence file.
+
+  SOURCE (the page, not an archive): Laurance, D.R.; Swift, G.W.  "Relative
+  Volatility of Propane-Propene System from 100-160 F", J. Chem. Eng. Data 17
+  (1972) 333-336, Table IV "Results of Calculations" (p. 335).  The same rows as
+  tutorials/props/compare/olefins01_propane_propene_laurance1972/constant/
+  experiments (seven files there, one per isotherm), here in ONE file with the
+  isotherm as a column, T in K, because a P_bubble fit reads the held
+  temperature from each point and because the engine's guard refuses one
+  sha256 as both fit and validation: THE SPLIT IS BY ROW (`discard` in
+  system/propsDict).  Rows 1-9 are 100 F, 10-18 110 F, 19-27 120 F, 28-36 130 F,
+  37-45 140 F, 46-54 150 F, 55-63 160 F.  FIT = 100, 120, 140, 160 F; HELD OUT =
+  110, 130, 150 F (rows 10-18, 28-36, 46-54).  The check_olefin_vle gate holds
+  these rows equal to olefins01's.
+
+  What the numbers ARE: the vapour pressures of Table I were MEASURED (probable
+  error 0.1 %) and correlated; Table IV COMPUTES y, P and alpha from them by
+  integrating the isothermal coexistence equation (estimated error +-0.005 in
+  alpha).  No vapour was sampled.  So the fit's residual is on P (the quantity
+  the paper measured), and alpha is only what the gate recomputes afterwards.
+  Two printed slips are declared in olefins01's headers (a P at 120 F, a y at
+  110 F); the rows are as printed.  Pressure in psia.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.P_bubble;
+system       ( propylene propane );
+
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Laurance, D.R.; Swift, G.W. (1972). Relative volatility of propane-propene system from 100-160 F. J. Chem. Eng. Data 17, 333-336, Table IV (p. 335). doi:10.1021/je60054a011";
+    sourceFile   "laurance1972-propane-propene-relative-volatility.pdf";
+    sha256       "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";   // of that PDF
+}
+
+columns
+(
+    { name x[propylene];  unit -;  }
+    { name T;  unit K;  }
+    { name P_bubble;  unit psi;  }
+    { name y_eqT_propylene;  unit -;  }
+    { name alpha;  unit -;  }
+);
+
+data
+(
+    0.1000  310.9278  194.01  0.1178  1.2022
+    0.2000  310.9278  199.06  0.2286  1.1855
+    0.3000  310.9278  203.70  0.3338  1.1692
+    0.4000  310.9278  207.97  0.4347  1.1536
+    0.5000  310.9278  211.90  0.5325  1.1390
+    0.6000  310.9278  215.50  0.6281  1.1257
+    0.7000  310.9278  218.84  0.7222  1.1143
+    0.8000  310.9278  221.94  0.8155  1.1048
+    0.9000  310.9278  224.85  0.9081  1.0976
+    0.1000  316.4833  220.17  0.1166  1.1884
+    0.2000  316.4833  225.77  0.2259  1.1739
+    0.3000  316.4833  230.97  0.3320  1.1598
+    0.4000  316.4833  235.79  0.4331  1.1461
+    0.5000  316.4833  240.25  0.5312  1.1331
+    0.6000  316.4833  244.38  0.6271  1.1211
+    0.7000  316.4833  248.22  0.7215  1.1104
+    0.8000  316.4833  251.78  0.8150  1.1012
+    0.9000  316.4833  255.13  0.9078  1.0936
+    0.1000  322.0389  248.84  0.1154  1.1740
+    0.2000  322.0389  255.01  0.2251  1.1617
+    0.3000  322.0389  260.79  0.3300  1.1495
+    0.4000  322.0389  266.19  0.4313  1.1376
+    0.5000  322.0389  271.22  0.5297  1.1262
+    0.6000  322.0389  275.91  0.6259  1.1154
+    0.7000  322.0389  280.27  0.7206  1.1054
+    0.8000  322.0389  284.34  0.8143  1.0965
+    0.9000  322.0389  288.13  0.9074  1.0886
+    0.1000  327.5944  280.17  0.1141  1.1593
+    0.2000  327.5944  286.91  0.2231  1.1489
+    0.3000  327.5944  293.29  0.3279  1.1385
+    0.4000  327.5944  299.29  0.4293  1.1282
+    0.5000  327.5944  304.92  0.5279  1.1182
+    0.6000  327.5944  310.20  0.6245  1.1086
+    0.7000  327.5944  315.12  0.7195  1.0994
+    0.8000  327.5944  319.71  0.8135  1.0908
+    0.9000  327.5944  323.98  0.9069  1.0828
+    0.1000  333.1500  314.27  0.1128  1.1443
+    0.2000  333.1500  321.60  0.2211  1.1357
+    0.3000  333.1500  328.58  0.3257  1.1269
+    0.4000  333.1500  335.21  0.4271  1.1182
+    0.5000  333.1500  341.47  0.5259  1.1095
+    0.6000  333.1500  347.36  0.6228  1.1009
+    0.7000  333.1500  352.87  0.7182  1.0924
+    0.8000  333.1500  358.01  0.8126  1.0842
+    0.9000  333.1500  362.76  0.9064  1.0763
+    0.1000  338.7056  351.29  0.1115  1.1292
+    0.2000  338.7056  359.21  0.2191  1.1222
+    0.3000  338.7056  366.81  0.3233  1.1149
+    0.4000  338.7056  374.07  0.4247  1.1075
+    0.5000  338.7056  380.98  0.5238  1.1000
+    0.6000  338.7056  387.51  0.6210  1.0923
+    0.7000  338.7056  393.63  0.7168  1.0846
+    0.8000  338.7056  399.33  0.8116  1.0769
+    0.9000  338.7056  404.59  0.9059  1.0691
+    0.1000  344.2611  391.36  0.1102  1.1141
+    0.2000  344.2611  399.85  0.2170  1.1085
+    0.3000  344.2611  408.07  0.3209  1.1026
+    0.4000  344.2611  415.99  0.4223  1.0964
+    0.5000  344.2611  423.56  0.5215  1.0899
+    0.6000  344.2611  430.75  0.6190  1.0831
+    0.7000  344.2611  437.50  0.7152  1.0761
+    0.8000  344.2611  443.79  0.8104  1.0689
+    0.9000  344.2611  449.56  0.9052  1.0615
+);

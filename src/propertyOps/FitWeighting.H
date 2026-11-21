@@ -87,3 +87,5 @@ sVector fitWeights(const DictPtr& residualDict,
 
 //  The declared objective of the fit (C280) rides with the declared weighting.
 #include "FitObjective.H"
+//  The alpha residual and its declared weights (C456); here so FitParameters.cpp gained no line.
+#include "FitAlphaRows.H"

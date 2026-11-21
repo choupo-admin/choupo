@@ -6385,6 +6385,25 @@ PYEOF
     fi
     rm -f /tmp/crackyld.$$
 
+    # olefin-VLE gate (2026-11-21, olefins line C456 slice 3).  The engine's SRK and
+    # Peng-Robinson (kij = 0) against the MEASURED relative volatility of the two olefin
+    # splitters: propene/propane (Laurance & Swift 1972, 63 points) and ethylene/ethane
+    # (Fredenslund, Mollerup & Hall 1976, 14 sampled points), with the band declared in
+    # each README before the first run.  The defect it would have caught: alpha - 1 is
+    # 0.05 to 0.2, so a transposed digit in one record's acentric factor, or a kij applied
+    # silently, moves the tray count of a splitter by 20 % at exit 0 with every balance
+    # closed; no case compared either pair with a measurement.  The alpha band the engine
+    # MISSES (propene/propane) is pinned at its measured size, not widened.
+    if gate_exec "$ROOT/bin/curate/check_olefin_vle.py" > /tmp/olefinvle.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "olefin-vle-gate" "$(head -1 /tmp/olefinvle.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_olefin_vle.py)\n" "olefin-vle-gate"
+        cat /tmp/olefinvle.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/olefinvle.$$
+
     # cubic-mixing-rule gate (2026-11-16, DEV.md 4c C408 (b)).  The mixing rule
     # of a cubic is an object (CubicMixingRule): the van der Waals one-fluid
     # arithmetic moved intact, and MHV1 / MHV2 (Michelsen 1990 Eq. 12; Dahl &

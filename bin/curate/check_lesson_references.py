@@ -51,7 +51,7 @@ DATA = METHODS / "lessonReferences.json"
 REGISTRY = METHODS / "registry.ts"
 WORKSPACE = ROOT / "gui" / "src" / "ui" / "MethodsWorkspace.tsx"
 
-METHODS_ALLOWED = ("crossref", "pdf", "catalogue", "official")
+METHODS_ALLOWED = ("crossref", "pdf", "catalogue", "official", "web")
 ENTRY_KEYS = {"text", "doi", "url", "note", "verified"}
 VERIFIED_KEYS = {"method", "evidence", "date"}
 BLOCK_KEYS = {"pageSources", "references"}

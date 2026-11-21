@@ -166,9 +166,9 @@ scalar computeResiduals(const ThermoPackage& thermo,
             //  the bubble PRESSURE at the fixed T, started from the measured
             //  value (a start, never an answer: the solver brackets and
             //  bisects from it); the residual is RELATIVE
-            auto r = BubblePoint::pressure(thermo, x, pData_Pa[k], tData_exp[k]);
+            auto r = BubblePoint::pressure(thermo, x, pData_Pa[k], tData_exp[k]); const bool aRow = fitalpha::isAlphaRow(k);
             ok  = r.converged && !r.belowFloor;
-            res = ok ? (r.P - tData_exp[k]) / tData_exp[k] : 1.0e3;
+            res = ok ? (aRow ? fitalpha::alphaResidual(r, x, i1, i2, k) : (r.P - tData_exp[k]) / tData_exp[k]) * fitalpha::scaleOf(k) : 1.0e3;
         }
         else
         {
@@ -426,7 +426,7 @@ int FitParameters::run(const DictPtr& dict,
     //  MEASURED one (T or P); the names are the T_bubble engine's, and the
     //  swap is said once here rather than renamed in a thousand lines.
     const bool  kindP    = (kind == "P_bubble");
-    s_bubbleP = kindP; const bool lleMode = lle::isMixed(kind); lle::requireFitMode(kind, evalMode, resDict->lookupWordOrDefault("weighting", "equal")); const fitobj::Spec objSpec = fitobj::read(dict, kind, evalMode);
+    s_bubbleP = kindP; const bool lleMode = lle::isMixed(kind); lle::requireFitMode(kind, evalMode, resDict->lookupWordOrDefault("weighting", "equal")); const fitobj::Spec objSpec = fitobj::read(dict, kind, evalMode); const fitalpha::Plan alphaPlan = fitalpha::read(resDict, kind, evalMode); fitalpha::g_rows = nullptr;
     const char* fixedKey = kindP ? "T" : "P";
     const std::string yUnit = kindP ? "rel" : "K";     // the residual's unit
     //  `residual.P` (or `residual.T` for P_bubble) is CONDITIONAL: it is the
@@ -530,7 +530,7 @@ int FitParameters::run(const DictPtr& dict,
     const std::vector<std::string>& zNames = kindP ? tNames : pNames;
 
     std::unique_ptr<EvidencePartition> partPtr;
-    sVector xExp, tExp, pExp;
+    sVector xExp, tExp, pExp, alphaData;
     //  How the fit's pressure was established, for the announcement and for
     //  the arity refusal below.
     bool evidenceCarriesP = false;
@@ -549,9 +549,9 @@ int FitParameters::run(const DictPtr& dict,
         std::size_t nWithP = 0;
         for (const auto& pt : EvidencePartition::loadAll(
                  lle::vleSets(part.fit(), lleMode), xNames, yNames,
-                 "fitParameters(" + kind + ")", zNames))
+                 "fitParameters(" + kind + ")", zNames, fitalpha::wNames(alphaPlan)))
         {
-            xExp.push_back(pt.x); tExp.push_back(pt.y);
+            xExp.push_back(pt.x); tExp.push_back(pt.y); alphaData.push_back(pt.w);
             pExp.push_back(pt.z);
             if (pt.hasZ()) ++nWithP;
         }
@@ -626,7 +626,7 @@ int FitParameters::run(const DictPtr& dict,
     //  The span, for the header and for the identifiability note below.  A
     //  pair regressed over ONE isobar and a pair regressed over three are
     //  different claims about b_ij, and the run must not report them alike.
-    scalar pLo = pExp.empty() ? 0.0 : pExp[0];
+    fitalpha::stack(alphaPlan, fitalpha::fitRows, xExp, tExp, pExp, alphaData, true, "fit"); N = xExp.size(); scalar pLo = pExp.empty() ? 0.0 : pExp[0];
     scalar pHi = pLo;
     for (const scalar pv : pExp) { pLo = std::min(pLo, pv); pHi = std::max(pHi, pv); }
     std::size_t nIsobars = 0;
@@ -1084,7 +1084,7 @@ int FitParameters::run(const DictPtr& dict,
     //  lines by number (gui/tests/numericsLessons.test.ts holds them), and
     //  a slice that moves them breaks a lesson for no gain to the engine.
     tables_.clear();
-    tables_.push_back(bubbleFitPoints(thermo, lle::head(xExp, lleFit), lle::head(pExp, lleFit), lle::head(tExp, lleFit), iF1, iF2,
+    tables_.push_back(bubbleFitPoints(thermo, fitalpha::cut(lle::head(xExp, lleFit), fitalpha::fitRows), fitalpha::cut(lle::head(pExp, lleFit), fitalpha::fitRows), fitalpha::cut(lle::head(tExp, lleFit), fitalpha::fitRows), iF1, iF2,
                                       kindP, parityPath)); if (lleFit.active()) tables_.push_back(lle::fitPointsTable(thermo, lleFit, iF1, iF2));
     //  The parameters' PATHS, so the default parameter table names
     //  fit.<i>.value by what it varied (diagnosticLabel); recorded here,
@@ -1490,13 +1490,13 @@ int FitParameters::run(const DictPtr& dict,
     if (engaged)
     {
         const EvidencePartition& part = *partPtr;
-        sVector xVal, tVal, pVal;
+        sVector xVal, tVal, pVal, alphaVal;
         std::size_t nValWithP = 0;
         for (const auto& pt : EvidencePartition::loadAll(
                  lle::vleSets(part.validation(), lleMode), xNames, yNames,
-                 "fitParameters(" + kind + ")", zNames))
+                 "fitParameters(" + kind + ")", zNames, fitalpha::wNames(alphaPlan)))
         {
-            xVal.push_back(pt.x); tVal.push_back(pt.y); pVal.push_back(pt.z);
+            xVal.push_back(pt.x); tVal.push_back(pt.y); pVal.push_back(pt.z); alphaVal.push_back(pt.w);
             if (pt.hasZ()) ++nValWithP;
         }
         //  THE HELD-OUT SET IS PRICED THE SAME WAY THE FIT SET WAS.  If the
@@ -1535,7 +1535,7 @@ int FitParameters::run(const DictPtr& dict,
             //  The fitted parameters meet evidence the fitter was never
             //  handed.  Same residual routine as the fit -- one evaluator, so
             //  a difference between the two cannot look like a model error.
-            ThermoPackage thV = buildThermo(params); lleScope.set(nullptr);
+            ThermoPackage thV = buildThermo(params); lleScope.set(nullptr); fitalpha::stack(alphaPlan, fitalpha::valRows, xVal, tVal, pVal, alphaVal, false, "held-out");
             sVector rV;
             computeResiduals(thV, pVal, xVal, tVal, rV, nullptr, iF1, iF2);
             for (std::size_t k = 0; k < rV.size(); ++k)
@@ -1555,7 +1555,7 @@ int FitParameters::run(const DictPtr& dict,
             //  comparison, between a fitted pair and the catalogue pair on the
             //  same held-out file.  Both are printed with their unit, always.
             aadHeldOutK_ /= static_cast<scalar>(rV.size());
-            nHeldOut = rV.size(); fitobj::publishBubble(diag_, "heldout", rV); for (const auto& ds : lle::vleSets(part.validation(), lleMode)) { sVector xs, ts, ps; for (const auto& pt : EvidencePartition::loadAll(std::vector<EvidenceDataset>{ds}, xNames, yNames, "fitParameters(" + kind + ")", zNames)) { xs.push_back(pt.x); ts.push_back(pt.y); ps.push_back(pt.hasZ() ? pt.z : pExp[0]); } if (xs.empty()) continue; sVector rd; computeResiduals(thV, ps, xs, ts, rd, nullptr, iF1, iF2); fitobj::DatasetError de; de.name = ds.path; de.n = rd.size(); for (const scalar v : rd) { de.mean += std::fabs(v) / static_cast<scalar>(rd.size()); de.max = std::max(de.max, std::fabs(v)); } heldBubble.push_back(de); } appendHeldOutPoints(tables_, thV, pVal, xVal, tVal, iF1, iF2, kindP);
+            nHeldOut = rV.size(); fitobj::publishBubble(diag_, "heldout", rV); fitalpha::publish(diag_, rV); fitalpha::g_rows = nullptr; for (const auto& ds : lle::vleSets(part.validation(), lleMode)) { sVector xs, ts, ps; for (const auto& pt : EvidencePartition::loadAll(std::vector<EvidenceDataset>{ds}, xNames, yNames, "fitParameters(" + kind + ")", zNames)) { xs.push_back(pt.x); ts.push_back(pt.y); ps.push_back(pt.hasZ() ? pt.z : pExp[0]); } if (xs.empty()) continue; sVector rd; computeResiduals(thV, ps, xs, ts, rd, nullptr, iF1, iF2); fitobj::DatasetError de; de.name = ds.path; de.n = rd.size(); for (const scalar v : rd) { de.mean += std::fabs(v) / static_cast<scalar>(rd.size()); de.max = std::max(de.max, std::fabs(v)); } heldBubble.push_back(de); } appendHeldOutPoints(tables_, thV, fitalpha::cut(pVal, fitalpha::valRows), fitalpha::cut(xVal, fitalpha::valRows), fitalpha::cut(tVal, fitalpha::valRows), iF1, iF2, kindP);
             heldOutXmin = *std::min_element(xVal.begin(), xVal.end());
             heldOutXmax = *std::max_element(xVal.begin(), xVal.end());
         } if (lleVal.active()) { ThermoPackage thL = buildThermo(params); lleHeld = lle::heldOut(thL, lleVal, iF1, iF2, verbosity, partPtr->lleBand()); lle::publishHeldOut(diag_, lleHeld); }
@@ -1846,7 +1846,7 @@ int FitParameters::run(const DictPtr& dict,
             f << "\n    //  IN-SAMPLE: the model reproducing the very points it was\n"
                  "    //  fitted to.  It is NOT a validation; see the block below.\n"
               << "    weighting     " << (wPtr ? "uncertainty" : "equal") << ";"
-              << (kindP ? "   // chi2 is sum ((P_model - P_exp)/P_exp)^2, dimensionless\n"
+              << (alphaPlan.active ? "   // chi2 is sum w ((model - exp)/exp)^2 over the pressure rows and the alpha rows, weights declared in residual.weights\n" : kindP ? "   // chi2 is sum ((P_model - P_exp)/P_exp)^2, dimensionless\n"
                  : wPtr ? "   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless\n"
                         : "   // chi2 is sum (T_model - T_exp)^2, K^2\n")
               << "    chi2          " << std::setprecision(8) << proposal.chi2 << ";\n"

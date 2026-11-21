@@ -1,0 +1,65 @@
+/*--------------------------------------------------------------------------*\
+  MEASURED-AND-CORRELATED vapour-liquid equilibrium of propene (1) + propane (2)
+  at 110 degF = 316.4833 K.
+
+  SOURCE (the page, not an archive): Laurance, D.R.; Swift, G.W.  "Relative
+  Volatility of Propane-Propene System from 100-160 F", J. Chem. Eng. Data 17
+  (1972) 333-336, Table IV "Results of Calculations" (p. 335), the block
+  T = 110 F.  Read from the page image, every digit.  x is the LIQUID mole
+  fraction of PROPENE (the paper's Figure 2 axis).  The paper's own words on
+  what the numbers are: the vapour pressures of Table I were MEASURED (probable
+  error 0.1 %) and correlated (Antoine for the pure fluids, Manley's
+  deviation-from-Raoult form for the mixtures, Tables II and III); Table IV then
+  COMPUTES y, the bubble pressure P, the liquid volume VL, the vapour
+  compressibility Z and the relative volatility alpha by integrating the
+  isothermal general coexistence equation.  No vapour composition was sampled
+  (the method needs none).  So y and alpha here are DERIVED FROM MEASURED
+  PRESSURES, with the paper's stated error of +-0.005 in alpha; P is the
+  correlation of the measured pressures.  Pressure in psia.
+
+  Columns are the props bench's overlay names: x[propylene], P_bubble,
+  y_eqT_propylene; `alpha` is the paper's column alpha = (y1/x1)/(y2/x2), kept
+  for the gate (bin/curate/check_olefin_vle.py), which recomputes it from the
+  engine's y and compares.  The pure ends (x = 0 and 1) are not listed: there
+  y = x and alpha is a limit.
+
+  PRINTED SLIP, kept visible.  At x = 0.2 the paper prints y = 0.2259, but its
+  own alpha (1.1739) gives y = 0.2269, and the neighbours (0.1166, 0.3320) lie
+  on a smooth curve through 0.2269: the printed y is a one-digit slip.  y is
+  left as printed (the residual there is 0.001); the gate compares alpha, which
+  is internally consistent.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.P_bubble;
+system       ( propylene propane );
+temperature  316.4833 K;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Laurance, D.R.; Swift, G.W. (1972). Relative volatility of propane-propene system from 100-160 F. J. Chem. Eng. Data 17, 333-336, Table IV (p. 335). doi:10.1021/je60054a011";
+    sourceFile   "laurance1972-propane-propene-relative-volatility.pdf";
+    sha256       "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";   // of that PDF
+}
+
+columns
+(
+    { name x[propylene];  unit -;  }
+    { name P_bubble;  unit psi;  }
+    { name y_eqT_propylene;  unit -;  }
+    { name alpha;  unit -;  }
+);
+
+data
+(
+    0.1000  220.17  0.1166  1.1884
+    0.2000  225.77  0.2259  1.1739
+    0.3000  230.97  0.3320  1.1598
+    0.4000  235.79  0.4331  1.1461
+    0.5000  240.25  0.5312  1.1331
+    0.6000  244.38  0.6271  1.1211
+    0.7000  248.22  0.7215  1.1104
+    0.8000  251.78  0.8150  1.1012
+    0.9000  255.13  0.9078  1.0936
+);

@@ -70,6 +70,7 @@ export type MethodToolId =
   | "sle-pair"
   | "sour-water" | "rules-of-thumb" | "bode"
   | "tear-streams" | "relaxation" | "wegstein" | "active-set-qp" | "lub-scaleup"
+  | "linear-algebra-without-pain"
   | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
   | "declared-pathways" | "reactor-ladder" | "route-screening"
   | "least-squares" | "element-potential" | "limiting-reactant"
@@ -82,7 +83,7 @@ export type MethodToolId =
   | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves"
   | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
-  | "one-flux-many-units" | "compression";
+  | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -270,6 +271,16 @@ export const METHOD_PATHS: MethodPath[] = [
       { tool: "approach-to-equilibrium", why: "How close a reactor can get to equilibrium, and what a Gibbs reactor assumes." },
       { tool: "declared-pathways", why: "Equilibrium over the reactions you allow, against every pathway the species permit." },
       { tool: "vanheerden", why: "The hazard: heat generated against heat removed gives three steady states and an ignition." },
+    ],
+  },
+  {
+    id: "linear-solves",
+    title: "Linear solves and the bowl",
+    intro: "From why every Newton step is a linear system to the bowl, the constrained bowl, and a fit whose damping keeps it a bowl.",
+    steps: [
+      { tool: "linear-algebra-without-pain", why: "Elimination, LU as a receipt, pivoting, conditioning, structure, the positive-definite bowl, conjugate gradient." },
+      { tool: "active-set-qp", why: "The same bowl under constraints: the inner problem of every SQP step." },
+      { tool: "least-squares", why: "Gauss-Newton's step is a linear solve too, and its damping is what keeps the table a bowl." },
     ],
   },
   {
@@ -1054,6 +1065,29 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "reference plant's make-up compressor, each formula read at its page in Brown (2005).",
     theory: "sec:compressor-design",
   },
+  //  COMMISSIONED 2026-11-19 (DEV.md 4c C460), Vitor: "E outra sobre heuristicas
+  //  de seleccao de secadores? Tambem estilo Pareto e com os esquemas mais
+  //  comuns pelos quais sao esquematicamente conhecidos".  A SELECTION aid in
+  //  the registry's own sense: it constructs nothing and the engine computes
+  //  nothing here; every rule and every table cell is read from Mujumdar,
+  //  Perry or van 't Land at its page, a cell they do not give says "not
+  //  cited", and the seven schematics were drawn for the page.  The types the
+  //  engine models open their tutorial case.  `theory` is the Theory Guide's
+  //  drying chapter.
+  {
+    id: "dryer-selection", blurb: "Choose a dryer type from the feed, heat sensitivity, scale and mode.",
+    label: "Which dryer for which product",
+    discipline: "Separations & phase equilibria", kind: "selection", status: "live",
+    origins: ["page", "reference", "assumption"],
+    teaches: "The seven dryer types that do most of the drying (spray, rotary, fluidised "
+      + "bed, tray, belt, drum, freeze), each drawn as a schematic; a selection tree "
+      + "from the feed form, the heat sensitivity, the scale and the batch or continuous "
+      + "mode to one or two types with the reason and the page of Mujumdar, Perry or van "
+      + "'t Land it was read from; a comparison table of residence time, energy per kg "
+      + "of water and typical products with \"not cited\" where the books are silent; and "
+      + "the tutorial cases of the types the engine models.",
+    theory: "ch:drying",
+  },
   //  COMMISSIONED 2026-10-20 (DEV.md 4c C119), Vitor: the Pi theorem only
   //  reduces the number of variables, and the real gain -- few groups AND a
   //  very simple equation that fits to a design tolerance -- seems to come
@@ -1475,6 +1509,26 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "the film-only answer too optimistic.",
     theory: "sec:batch-adsorption-stirred-tank",
   },
+  //  WHICH ADSORBENT FOR WHICH SEPARATION (2026-11-21, DEV.md 4c C459,
+  //  Vitor 2026-11-19: "nas minhas aulas de adsorcao eu falo dos adsorventes
+  //  mais comuns na industria e a sua utilizacao").  A SELECTION aid: eight
+  //  industrial adsorbents (pore size, polarity, printed heats of adsorption,
+  //  regeneration), a matrix of five separations against them with the
+  //  dominant adsorbent marked and one cited line of why, a COUNT in the
+  //  place of a Pareto (no source in the folder gives tonnes or shares, and
+  //  the page says so), and the three catalogue adsorbents each opened with
+  //  the case that uses it.  Every value sits beside the printed page of
+  //  Perry 9th ed., Ruthven 1984, Ruthven-Farooq-Knaebel 1994 or Wankat
+  //  2nd ed. (gui/src/ui/methods/adsorbentSelectionData.ts); the only
+  //  arithmetic is Wankat's Eq. (17-25), marked page.  No engine run.
+  {
+    id: "adsorbent-selection", blurb: "Match eight industrial adsorbents to five separations, each claim with its page.",
+    label: "Which adsorbent for which separation",
+    discipline: "Separations & phase equilibria", kind: "selection", status: "live",
+    origins: ["page", "reference", "assumption"],
+    teaches: "Why a separation goes to one adsorbent and not another: eight industrial adsorbents (activated carbon, zeolites 3A, 4A, 5A and 13X, silica gel, activated alumina, carbon molecular sieve) by pore size, polarity, heat of adsorption and regeneration, then a matrix of five separations (gas drying, hydrogen PSA, nitrogen and oxygen from air, VOC recovery, water treatment) with each sentence beside the book page it was read at, a count in place of a market Pareto because no source in the folder gives tonnes, and the catalogue records each opened with the case that uses it.",
+    theory: "sec:adsorbent-selection",
+  },
   {
     id: "breakthrough", blurb: "Watch a bed's mass-transfer zone eat capacity before saturation.", label: "Adsorption breakthrough",
     discipline: "Separations & phase equilibria", kind: "construction", status: "live",
@@ -1755,6 +1809,24 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "own refusal when the declaration is withdrawn: it finds the cycle, "
       + "names every unit on it, and still will not choose the cut for you.",
     theory: "ch:newton-tears",
+  },
+  {
+    id: "linear-algebra-without-pain", blurb: "Why Newton steps are linear solves: LU, pivoting, the bowl.",
+    label: "Linear algebra without the pain",
+    discipline: "Flowsheeting & numerics", kind: "construction",
+    status: "live",
+    origins: ["page", "assumption"],
+    teaches: "Why a simulator is full of matrices: every Newton step solves "
+      + "J dx = -F.  Seven steps in lay language, each a picture first and "
+      + "a small figure you drag: two rulers crossing (the step), "
+      + "elimination and LU as its RECEIPT (keep it, reuse it for a new "
+      + "right-hand side), a tiny pivot losing every digit, the wobbly "
+      + "table of an ill-conditioned system, why a column's block-"
+      + "tridiagonal Jacobian is cheap, the bowl of a positive-definite "
+      + "matrix (and the saddle when it fails), and steepest descent's "
+      + "zigzag against conjugate gradient.  Every claim about the engine "
+      + "carries the file and line it was read at.",
+    theory: "ch:linear-algebra-without-pain",
   },
   {
     id: "relaxation", blurb: "Why a recycle is iterated, and how a step factor tames it.",

@@ -1,0 +1,87 @@
+/*---------------------------------------------------------------------------*\
+  Peng-Robinson (PR78) binary interaction parameter kij for PROPYLENE (propene)
+  - PROPANE, regressed by Choupo's own fitParameters to the bubble pressures of
+  Laurance & Swift (1972), Table IV: fit on 100, 120, 140, 160 degF, held out
+  on 110, 130, 150 degF (the held-out pressure verdict is `validated`).  The
+  case that produced it is named below (`fittedInCase`); the gate
+  check_olefin_vle re-runs it and requires this number to reproduce.
+
+  WHAT IT IS AND IS NOT.  It was fitted to PRESSURE; it happens to bring the
+  relative volatility of the pair to 0.7 % of the same paper (held out) where
+  kij = 0 is 1.8 % off, which is what a C3 splitter's tray count depends on.
+  It is IN SAMPLE to that one paper (the hold-out is three isotherms of the same
+  table, not another laboratory) and is valid for Peng-Robinson only, 310-345 K;
+  the record is interim.  The SRK pressure fit of the same case gave kij = 0
+  (-0.00007), so no SRK record exists: see the case's README.
+\*---------------------------------------------------------------------------*/
+
+
+recordType  eosBinaryInteraction;
+schemaVersion 1;
+i           propylene;
+j           propane;
+kij         0.00542979;
+eos         PengRobinson;
+reviewStatus  interim;
+reviewReason  "regressed by Choupo from one transcribed table (transcribedNotCheckedAgainstArticle); held-out criterion declared before the fit and met on pressure; the relative-volatility result is in the case README";
+fittedInCase  "tutorials/props/compare/olefins03_propane_propene_kij_fit_laurance1972";
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(P_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fitDate       "2026-11-21";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/experiments/propane-propene-laurance1972-all.dat";
+            sha256    "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";
+            provenance measured;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/propane-propene-laurance1972-all.dat";
+            sha256    "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";
+            provenance measured;
+        }
+    );
+    fingerprint "834fa5eb5b2ba421";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     equal;   // chi2 is sum ((P_model - P_exp)/P_exp)^2, dimensionless
+    chi2          0.00063181;
+    rms_rel       0.00418929;
+    nDataPoints   36;
+    identifiable  true;
+    maxAbsCorr    0.00000000;
+
+    validity
+    {
+        temperature { min 310.93 K; max 344.26 K; }
+        pressure    { min 1337652 Pa; max 3099607 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validated;
+
+    heldOut
+    {
+        points      27;
+        aad_pct     0.265870;
+        aad_rel     0.002659;
+        domain_x1   ( 0.100000 0.900000 );
+    }
+
+    acceptance
+    {
+        maxAAD      0.500000;   // per cent
+        origin      "declared before the fit (README): the held-out mean relative bubble-pressure deviation must stay at or below 0.5 %";
+    }
+}

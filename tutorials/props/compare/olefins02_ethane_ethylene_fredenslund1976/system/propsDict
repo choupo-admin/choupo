@@ -1,0 +1,77 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  olefins02_ethane_ethylene_fredenslund1976 -- the C2 splitter's thermodynamics,
+  held to measured VLE.  README.md carries the question, the band DECLARED
+  BEFORE the first run, the table of results and what is NOT claimed.
+
+  The engine is asked at the liquid composition the experimenters measured,
+  with SRK and with Peng-Robinson (variant `pr`), kij = 0: P_bubble(T, x) and
+  the incipient vapour y_eqT(T, x).  The relative volatility is recomputed
+  from those y by the gate bin/curate/check_olefin_vle.py.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        pxy_srk_263p15K;
+        type        propertyScan1D;
+        vary        { variable x[ethylene];  points ( 0.0462 0.1446 0.2561 0.3982 0.6138 0.7894 0.8476 0.9392 ); }
+        state       { T 263.15 K;  P 30 atm;  composition { ethylene 0.5;  ethane 0.5; } }
+        properties  ( P_bubble  y_eqT_ethylene );
+        output      { file pxy_srk_263p15K.csv; }
+    }
+    {
+        name        pxy_pr_263p15K;
+        type        propertyScan1D;
+        thermo      pr;
+        vary        { variable x[ethylene];  points ( 0.0462 0.1446 0.2561 0.3982 0.6138 0.7894 0.8476 0.9392 ); }
+        state       { T 263.15 K;  P 30 atm;  composition { ethylene 0.5;  ethane 0.5; } }
+        properties  ( P_bubble  y_eqT_ethylene );
+        output      { file pxy_pr_263p15K.csv; }
+    }
+    {
+        name        pxy_srk_293p15K;
+        type        propertyScan1D;
+        vary        { variable x[ethylene];  points ( 0.0539 0.1537 0.2663 0.3664 0.3988 0.4532 ); }
+        state       { T 293.15 K;  P 30 atm;  composition { ethylene 0.5;  ethane 0.5; } }
+        properties  ( P_bubble  y_eqT_ethylene );
+        output      { file pxy_srk_293p15K.csv; }
+    }
+    {
+        name        pxy_pr_293p15K;
+        type        propertyScan1D;
+        thermo      pr;
+        vary        { variable x[ethylene];  points ( 0.0539 0.1537 0.2663 0.3664 0.3988 0.4532 ); }
+        state       { T 293.15 K;  P 30 atm;  composition { ethylene 0.5;  ethane 0.5; } }
+        properties  ( P_bubble  y_eqT_ethylene );
+        output      { file pxy_pr_293p15K.csv; }
+    }
+);
+
+experimental
+(
+    {
+        name      fredenslund1976_263p15K;
+        component ethylene;
+        kind      pxy;
+        models    ( pxy_srk_263p15K  pxy_pr_263p15K );
+        dataset   "constant/experiments/ethane-ethylene-fredenslund1976-263.15K.dat";
+        source    "Fredenslund, Mollerup & Hall, J. Chem. Eng. Data 21 (1976) 301, Table I (p. 302), 263.15 K";
+    }
+    {
+        name      fredenslund1976_293p15K;
+        component ethylene;
+        kind      pxy;
+        models    ( pxy_srk_293p15K  pxy_pr_293p15K );
+        dataset   "constant/experiments/ethane-ethylene-fredenslund1976-293.15K.dat";
+        source    "Fredenslund, Mollerup & Hall, J. Chem. Eng. Data 21 (1976) 301, Table I (p. 302), 293.15 K";
+    }
+);

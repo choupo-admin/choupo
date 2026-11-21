@@ -16,11 +16,10 @@
   THE REACTOR.  The authors reduced their pilot data to isothermality at a
   reference temperature (the equivalent-reactor-volume concept), so this is one
   isothermal reactor at T_R = 840 C and 1.55 atm, ethane with 0.4 kg steam/kg
-  (Table VIII, pilot column).  The pfr prices its volumetric flow at the INLET
-  and the cracking makes 40 % more moles, so the coil is TWENTY pfr segments in
-  series, each re-pricing Q at its own inlet: the gas expansion is recovered to
-  about 1 % (N = 10 and N = 20 differ by under 1 % in every yield).  The total
-  volume, 14.896 L, is the one number the papers do not print for this run: it
+  (Table VIII, pilot column).  The pfr re-prices its volumetric flow along the bed
+  (the vapour's Q = F_t v(T, P, z), C461), so the 40 % more moles the cracking
+  makes are in the concentrations: ONE pfr, no segmentation.  The total
+  volume, 15.004 L, is the one number the papers do not print for this run: it
   is chosen so the conversion is the published 59.1 %, and the case is judged on
   the product slate AT THAT CONVERSION, which is how the paper plots it.
 
@@ -37,163 +36,11 @@
 units
 (
     {
-        name        seg01;
+        name        coil;
         type        pfr;
         in          feed;
-        outputs     ( s01 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg02;
-        type        pfr;
-        in          s01;
-        outputs     ( s02 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg03;
-        type        pfr;
-        in          s02;
-        outputs     ( s03 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg04;
-        type        pfr;
-        in          s03;
-        outputs     ( s04 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg05;
-        type        pfr;
-        in          s04;
-        outputs     ( s05 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg06;
-        type        pfr;
-        in          s05;
-        outputs     ( s06 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg07;
-        type        pfr;
-        in          s06;
-        outputs     ( s07 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg08;
-        type        pfr;
-        in          s07;
-        outputs     ( s08 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg09;
-        type        pfr;
-        in          s08;
-        outputs     ( s09 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg10;
-        type        pfr;
-        in          s09;
-        outputs     ( s10 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg11;
-        type        pfr;
-        in          s10;
-        outputs     ( s11 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg12;
-        type        pfr;
-        in          s11;
-        outputs     ( s12 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg13;
-        type        pfr;
-        in          s12;
-        outputs     ( s13 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg14;
-        type        pfr;
-        in          s13;
-        outputs     ( s14 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg15;
-        type        pfr;
-        in          s14;
-        outputs     ( s15 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg16;
-        type        pfr;
-        in          s15;
-        outputs     ( s16 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg17;
-        type        pfr;
-        in          s16;
-        outputs     ( s17 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg18;
-        type        pfr;
-        in          s17;
-        outputs     ( s18 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg19;
-        type        pfr;
-        in          s18;
-        outputs     ( s19 );
-        operation   { V_R 0.0007448; nSteps 100; }
-        reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
-    }
-    {
-        name        seg20;
-        type        pfr;
-        in          s19;
         outputs     ( product );
-        operation   { V_R 0.0007448; nSteps 100; }
+        operation   { V_R 0.015004; nSteps 2000; }
         reactions   ( eth_dehydro eth_hydro eth_to_c3h8 c3h6_to_c2h2 c2h2_to_c3h6 c2h2_c2h4_to_c4h6 c2h4_c2h6_to_c3h6 );
     }
 );

@@ -1,0 +1,13 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "Ethylene + ethane bubble pressure and vapour composition at 263.15 K and 293.15 K measured by Fredenslund, Mollerup and Hall (1976), Table I: SRK and Peng-Robinson with kij = 0, the relative volatility compared point by point";
+
+verbosity     2;

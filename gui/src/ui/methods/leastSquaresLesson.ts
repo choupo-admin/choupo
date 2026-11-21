@@ -406,7 +406,7 @@ export const LS_STEPS: readonly LessonStep[] = [
           + "that does not declare one is refused by name." },
       { step: "The fitter reads `part.fit()`; the held-out evidence sits in "
           + "`part.validation()` and is never passed to it "
-          + "(EvidencePartition.H:259-260)." },
+          + "(EvidencePartition.H:260-261)." },
       { step: "After the search, the same residual routine is run on the "
           + "held-out points, so a difference between the two cannot be an "
           + "artefact of two evaluators.",
@@ -414,7 +414,7 @@ export const LS_STEPS: readonly LessonStep[] = [
 \frac{\lvert r_k \rvert}{T_k^{\mathrm{exp}}}` },
       { step: "And the declaration carries a fingerprint, so editing it "
           + "afterwards is detectable rather than invisible "
-          + "(EvidencePartition.H:342)." },
+          + "(EvidencePartition.H:343)." },
     ],
     formula: String.raw`\mathrm{AAD} = \frac{100}{M} \sum_{k=1}^{M}
 \frac{\lvert r_k \rvert}{T_k^{\mathrm{exp}}}
