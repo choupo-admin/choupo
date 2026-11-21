@@ -19037,6 +19037,23 @@ Until 2026-11-21 the vapour case was held at its feed $Q$ as well
 needed about $15\,\%$ too little volume for a given conversion. The
 residence time $\tau = V_R/Q_0$ printed by the unit stays the feed's.
 
+Three consequences of the rule are stated by the run. (i) For a vapour
+feed and a single irreversible reaction first order in the limiting
+reactant, the analytic check printed beside $X$ is Levenspiel's
+expansion-factor form (\emph{Chemical Reaction Engineering}, 3rd ed.,
+Ch.~5, Eq.~21, printed in his Example~5.5),
+$k\tau = -(1+\varepsilon_A)\ln(1-X) - \varepsilon_A X$ with
+$\varepsilon_A = y_{A0}\sum_i\nu_i / |\nu_A|$ (ideal gas, isothermal,
+isobaric); the plain $X = 1 - e^{-k\tau}$ is kept for a liquid feed or
+$\varepsilon_A = 0$. (ii) Ergun's superficial velocity and density use
+the same vapour density as \eqref{eq:pfr-Q-gas}, so a pure-steam bed is
+priced identically by the kinetics and by the pressure drop. (iii) The
+basis is the inlet's: when the non-isothermal march recomputes a vapour
+fraction whose phase differs from the inlet's, the unit prints one
+advisory naming the stage volume where that happened and stating that
+the volumetric flow and the kinetics stay on the inlet's phase (the pfr
+is not phase-aware).
+
 \subsection{Algorithm: RK4 integration}
 
 The simulator integrates \eqref{eq:pfr-balance} from $V = 0$ to

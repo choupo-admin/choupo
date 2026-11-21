@@ -457,14 +457,48 @@ int PFR::solve(const DictPtr& dict,
     const scalar X         = (F_lim_in - F_i[iLim]) / F_lim_in;
     const scalar tau       = V_R / Q;
     const scalar Da        = k * tau;        // for 1st-order, Da = kτ
-    const scalar X_exp_1st = 1.0 - std::exp(-Da);
+    //  THE ANALYTIC CHECK.  Liquid feed or no change in the number of moles:
+    //  X = 1 - exp(-k tau).  A VAPOUR feed whose reaction changes the number of
+    //  moles (the pfr re-prices Q along the bed, C461) has the expansion-factor
+    //  form of Levenspiel, Chemical Reaction Engineering 3rd ed., Ch. 5 Eq. 21
+    //  (printed in his Example 5.5): k tau = -(1 + eps) ln(1 - X) - eps X, with
+    //  eps = y_A0 * sum(nu) / |nu_A| (ideal gas, isothermal, isobaric, linear
+    //  expansion), solved here for X by bisection.  Valid for an irreversible
+    //  law first order in the limiting reactant and zero order in the rest.
+    scalar eps_A = 0.0;
+    bool firstOrderInLim = !reversible && order[iLim] == 1.0;
+    for (std::size_t j = 0; j < n; ++j)
+        if (j != iLim && order[j] != 0.0) firstOrderInLim = false;
+    if (feedIsVapour(vf_in) && firstOrderInLim && nu[iLim] < 0.0)
+    {
+        scalar sumNu = 0.0;
+        for (std::size_t j = 0; j < n; ++j) sumNu += nu[j];
+        eps_A = z_in[iLim] * sumNu / (-nu[iLim]);
+    }
+    const bool expansionForm = std::abs(eps_A) > 1.0e-12;
+    scalar X_exp_1st = 1.0 - std::exp(-Da);
+    if (expansionForm)
+    {
+        scalar lo = 0.0, hi = 1.0 - 1.0e-15;
+        for (int it = 0; it < 200; ++it)
+        {
+            const scalar mid = 0.5 * (lo + hi);
+            const scalar kt = -(1.0 + eps_A) * std::log(1.0 - mid) - eps_A * mid;
+            (kt < Da ? lo : hi) = mid;
+        }
+        X_exp_1st = 0.5 * (lo + hi);
+    }
 
     std::cout << "\n============================  PFR Result  ============================\n"
               << "  Damköhler (kτ): " << std::fixed << std::setprecision(4) << Da << "\n"
               << "  τ (residence):  " << tau << " s\n"
               << "  Conversion X(" << limiting << "):  "
               << std::setprecision(4) << (X * 100) << " %\n"
-              << "  Analytical 1st-order check:  X = 1 - exp(-kτ) = "
+              << (expansionForm
+                    ? "  Analytical 1st-order check:  kτ = -(1+ε)ln(1-X) - εX, ε = "
+                        + [&]{ std::ostringstream o; o << std::setprecision(4) << eps_A;
+                               return o.str(); }() + " (Levenspiel Eq. 5.21)  X = "
+                    : std::string("  Analytical 1st-order check:  X = 1 - exp(-kτ) = "))
               << (X_exp_1st * 100) << " %\n"
               << "  F_out (total):  " << std::fixed << std::setprecision(4)
               << (F_out * 3600.0 / 1000.0) << " kmol/h\n\n";
@@ -951,6 +985,8 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     //  in one phase the inversion is the same Newton on that phase's rung it
     //  always was, confirmed by one resolution at the answer.
     scalar vf_lastGuess = vf_in;                   // the phase the last point resolved to
+    bool   phaseAdvisoryGiven = false;             // C461 S3 (a): once per run
+    scalar V_phase_now = 0.0;                      // the step's end volume, for that advisory
     scalar unmatched_last = 0.0;                   // J/mol, a pure fluid's jump only
     auto T_from_h = [&](scalar h_target, const sVector& zz, scalar Tguess,
                         scalar Pk) -> scalar
@@ -960,6 +996,22 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
                                                  vf_lastGuess, vf_in, thermo);
         vf_lastGuess   = inv.vf;
         unmatched_last = inv.unmatched_J_per_mol;
+        //  C461 S3 (a): the volumetric-flow basis and the kinetics stay on the
+        //  INLET's phase; a bed whose phase changes says so, once per run.
+        if (!phaseAdvisoryGiven && feedIsVapour(vf_in) != feedIsVapour(inv.vf))
+        {
+            phaseAdvisoryGiven = true;
+            std::ostringstream os;
+            os << "the stream's phase changes along the bed: the inlet is "
+               << (feedIsVapour(vf_in) ? "vapour" : "liquid/two-phase")
+               << " (vf = " << vf_in << ") and the vapour fraction recomputed at"
+               << " the stage volume V <= " << V_phase_now << " m3 is " << inv.vf
+               << ".  The volumetric flow and the kinetics stay on the inlet's"
+               << " basis (the pfr is not phase-aware): the concentrations"
+               << " beyond that volume are not the phase's own.";
+            AdvisoryLog::instance().add("model", "warning", "pfr (phase change)", os.str());
+            if (verbosity >= 1) std::cout << "  [pfr] WARNING: " << os.str() << "\n";
+        }
         return inv.T;
     };
 
@@ -1116,6 +1168,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
                   ergunViscous.clear(); ergunInertial.clear(); push(0.0, y, T); }
     for (int m = 0; m < nSteps; ++m)
     {
+        V_phase_now = dV * (m + 1);
         auto k1 = dydV(y);
         auto k2 = dydV(axpy(y, 0.5 * dV, k1));
         auto k3 = dydV(axpy(y, 0.5 * dV, k2));
@@ -1765,11 +1818,12 @@ PFR::BedHydraulics PFR::readBedHydraulics(const DictPtr&       op,
 PFR::ErgunTerms PFR::ergunTerms(const BedHydraulics& h, const ThermoPackage& thermo,
                                 scalar T, scalar P, const sVector& z, scalar Ftot)
 {
-    const scalar vmol = thermo.hasEos() ? thermo.eos().molarVolume(T, P, z)
-                                        : constant::R * T / P;      // m3/mol
+    //  ONE ROUTE with localVolumetricFlow (C461 S3 c): the package's vapour
+    //  density, so a pure-steam bed is priced the same in both.
     scalar MW = 0.0;                                                // kg/kmol
     for (std::size_t i = 0; i < z.size(); ++i) MW += z[i] * thermo.comp(i).MW();
-    const scalar rho = 1.0e-3 * MW / vmol;                          // kg/m3
+    const scalar rho  = thermo.density(T, P, z, DensityPhase::Vapour);   // kg/m3
+    const scalar vmol = 1.0e-3 * MW / rho;                          // m3/mol
     const scalar u   = Ftot * vmol / h.A;                           // m/s, superficial
     const scalar mu  = thermo.viscosityGas(T, z);                   // Pa s
     const ergun::Coefficients k = ergun::coefficients(h.eps, h.dp, mu, rho);   // one home
