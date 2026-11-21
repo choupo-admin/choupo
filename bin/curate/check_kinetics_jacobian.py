@@ -45,6 +45,23 @@ WHAT THIS GATE CHECKS.
       ADAPTIVE sweep (the analytic Jacobian handed to it block by block)
       batch06_adaptive_runaway (adiabatic liquidDH) and batch31_fast_equilibrium_reduced
       (a `type expression` law).
+  (e) THE CLOSED FORMS (2026-11-21).  The T column is no longer a difference: dk/dT of
+      every Arrhenius leg, Troe exactly in [M] and T (F_cent(T) included), PLOG's dk/dT and
+      dk/dP, d ln Kc/dT from the species' h(T), the heat capacities' slope; and
+      `energy gasConstantP` is derived (V = nRT/P: a rank-one term).  Five probes whose
+      every law has a derivative -- ignition01_h2o2_jac on Rosenbrock23 and on Rodas4; the
+      same with GRI-Mech 3.0's H2O2(+M) Troe constants (F_cent moves with T); the same with
+      R2 rewritten as a reversible PLOG bracketing the run's pressure (5 -> ~14 bar at
+      fixed V); ignition03_h2air_constp -- each with every audit after the radical pool has
+      formed (T > T0 + 1 K) at most EXACT_TOL = 1e-8 (measured 2e-10 to 1e-9; the forward-
+      difference T column it replaced read 7e-8 to 6.5e-7).  Earlier audits hold a trace
+      species within the audit's own step of zero, whose column the AUDIT differences
+      forward (5e-9 to 5e-8): judged on GATE_TOL there.
+  (f) THE DEFAULT.  With no `jacobian` key: ignition01_h2o2 and ignition03_h2air_constp run
+      on the audited analytic Jacobian (the first audit line says "the default"), and
+      ignition03's KPIs equal those of `jacobian finiteDifference;` to 1e-6; batch07 (an
+      LHHW law, no derivative) stays on the finite difference (no audit), and with
+      `jacobian analytic;` names the reaction it differences.
   (d) REFUSALS BY NAME.  `jacobian exact;` (an unknown word), `integrator RK4;` beside
       `jacobian analytic;` (a contradiction), and `jacobian analytic;` on a fixed-step run
       that integrates with the default RK4 (a key nothing would read) each exit non-zero
@@ -73,10 +90,21 @@ radicals are few and O(1) at the ramp.  Arm (a)'s GATE_TOL sits 6x under the fir
 those numbers; the correct Jacobian's worst over every audit of this gate is 1e-6 (the
 forward difference the reactor takes for an LHHW law and for the T column, by design).
 
+SABOTAGE-VERIFIED 2026-11-21 (each by hand, rebuilt, gate run, restored, rebuilt):
+  - d ln k/dT without its b/T term (Reaction::dlnModifiedArrheniusdT): (a), (b), (e) and
+    (f) fail -- "d(n_H)/d(T) is -2.27795e-05 against the finite-difference -2.08717e-05
+    (relative difference 0.0755 ...)" at analytic Jacobian #1;
+  - Troe's dF_cent/dT dropped (Reaction::falloffRateDerivs): ONLY the F_cent(T) probe of
+    (e) fails -- d(n_HO2)/d(T) -3.96739e-06 against -4.8755e-06 (0.0359);
+  - PLOG's dk/dP set to 0 (ElementaryRate::kEffDerivs): ONLY the PLOG probe of (e) fails
+    -- d(n_H)/d(n_N2) -97.371 against -96.7629 (0.00138) at analytic Jacobian #4;
+  - the gasConstantP rank-one term s_j set to 0 (BatchReactor::odeJacobianSparse): the
+    gasConstantP probe of (e) and (f) fail -- d(n_H)/d(n_N2) -117.044 against 221.594.
+
 NOT CHECKED: that the rate laws themselves are right (ignition02_h2air_slack's Slack pin,
 check_elementary_rates); a power-law order below one at zero concentration (the reactor
-differences such a reaction instead; no witness has one); the T column's accuracy beyond
-the audit (it is one forward difference, as the dense Jacobian's own); wall time (machine-
+differences such a reaction instead; no witness has one); the heat-capacity slope dC_p/dT
+(a central difference of the record's law: the record offers no derivative); wall time (machine-
 dependent: the right-hand-side count is the deterministic proxy); a sweep that mixes a
 unit with an analytic Jacobian and one without (it falls back to the difference by
 construction; no witness has two ODE units).
@@ -93,6 +121,49 @@ FD = "tutorials/batch/combustion/ignition01_h2o2"
 JAC = "tutorials/batch/combustion/ignition01_h2o2_jac"
 STRIP = ("expected", "latest", "solution.log", "trajectory.csv")
 GATE_TOL = 1.0e-5
+CONSTP = "tutorials/batch/combustion/ignition03_h2air_constp"
+EXACT_TOL = 1.0e-8
+
+#  Troe with a T-dependent F_cent (GRI-Mech 3.0's H2O2 (+M) parameters -- a probe of
+#  the derivative only; the case's own Troe lines have F_cent = 0.5 flat in T).
+TROE_OLD = "troe ( 0.5 1e-30 1e+30 1e+100 );"
+TROE_NEW = "troe ( 0.7346 94 1756 5182 );"
+#  R2 rewritten as a reversible PLOG whose table brackets the run's pressure (5 bar at
+#  the start, about 14 in the burned gas at fixed V): ln k interpolated in ln P, so
+#  dk/dP != 0, and the T column carries (dr/dP) P/T.  A numerical probe, not chemistry.
+PLOG_OLD = """        type modifiedArrhenius;
+        A 5.0800e+04;  b 2.67;  Ea 6.292;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }"""
+PLOG_NEW = """        type plog;
+        plog
+        (
+            { P 2 bar;  A 2.5000e+04;  b 2.67;  Ea 6.292; }
+            { P 10 bar; A 5.0800e+04;  b 2.67;  Ea 6.292; }
+            { P 50 bar; A 1.0000e+05;  b 2.50;  Ea 6.000; }
+        );
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }"""
+
+
+def _troe(c):
+    gatekit.edit(c / "constant/reactions", TROE_OLD, TROE_NEW)
+
+
+def _plog(c):
+    gatekit.edit(c / "constant/reactions", PLOG_OLD, PLOG_NEW)
+
+
+def _rodas(c):
+    set_solver(c, "analytic", integrator="Rodas4")
+
+
+EXACT_PROBES = [   # (label, case, edit of a private copy)
+    ("closed-form T column (ignition01_h2o2_jac)", "tutorials/batch/combustion/ignition01_h2o2_jac", None),
+    ("closed-form T column on Rodas4", "tutorials/batch/combustion/ignition01_h2o2_jac", _rodas),
+    ("Troe with F_cent(T)", "tutorials/batch/combustion/ignition01_h2o2_jac", _troe),
+    ("reversible PLOG in a fixed-V gas", "tutorials/batch/combustion/ignition01_h2o2_jac", _plog),
+    ("gasConstantP (V = nRT/P, rank one)", "tutorials/batch/combustion/ignition03_h2air_constp", None),
+]
+
 PATHS = [   # (case, what it exercises)
     ("tutorials/batch/reactor/batch02_adiabatic", "liquidDH energy row, fixed step"),
     ("tutorials/batch/reactor/batch04_reversible_wgs", "isothermal reversible Arrhenius"),
@@ -250,7 +321,7 @@ def main():
     # ---- (b) the same answer, cheaper --------------------------------------------------
     rows = golden(gatekit.base_case(FD) / "expected")
     runs = {}
-    for name, base, jac in (("finite difference", FD, None), ("analytic", JAC, "analytic")):
+    for name, base, jac in (("finite difference", FD, "finiteDifference"), ("analytic", JAC, "analytic")):
         with gatekit.probe_copy(base, strip=STRIP) as c:
             set_solver(c, jac, verbosity=4)
             rc, out = gatekit.run(batch, c)
@@ -282,13 +353,13 @@ def main():
     for case, what in PATHS:
         adaptive = "adaptive" in what
         got = {}
-        for jac in (None, "analytic"):
+        for jac in ("finiteDifference", "analytic"):
             with gatekit.probe_copy(case, strip=STRIP) as c:
                 set_solver(c, jac, integrator=None if adaptive else "Rosenbrock23")
                 rc, out = gatekit.run(batch, c)
                 if rc != 0:
                     failures.append(f"(c) {Path(case).name} ({what}) with jacobian "
-                                    f"{jac or 'finiteDifference'} exited {rc}: "
+                                    f"{jac} exited {rc}: "
                                     + " | ".join(out.strip().splitlines()[-2:])[:500])
                     continue
                 got[jac] = (kpis(out), audits(out))
@@ -302,11 +373,86 @@ def main():
         wa = max(x[5] for x in a)
         if not wa <= GATE_TOL:
             failures.append(f"(c) {Path(case).name} ({what}): an audit differs by {wa:.3e} (> {GATE_TOL:g})")
-        w, where, missing = kpi_diff(got[None][0], got["analytic"][0])
+        w, where, missing = kpi_diff(got["finiteDifference"][0], got["analytic"][0])
         if missing or w > 1e-6:
             failures.append(f"(c) {Path(case).name} ({what}): the KPIs of the two Jacobians differ by "
                             f"{w:.2e} ({where}){' missing ' + str(missing[:3]) if missing else ''}")
         notes.append(f"{Path(case).name} {len(a)} audits <= {wa:.0e}")
+
+    # ---- (e) the closed-form T column, Troe and PLOG, gasConstantP --------------------
+    #  Every reaction of these probes has an analytic derivative, so NO column of the
+    #  Jacobian is a difference any more: the audits must sit at the rounding of the
+    #  audit's own central difference (measured 1e-10 to 7e-10), EXACT_TOL = 1e-8 --
+    #  60x under the forward-difference T column this replaced (7e-8 to 6.5e-7).
+    exact = []
+    for label, base, edit in EXACT_PROBES:
+        with gatekit.probe_copy(base, strip=STRIP) as c:
+            if edit:
+                edit(c)
+            rc, out = gatekit.run(batch, c)
+            if rc != 0:
+                failures.append(f"(e) {label} exited {rc}: " + " | ".join(out.strip().splitlines()[-2:])[:600])
+                continue
+            a = audits(out)
+            if not a:
+                failures.append(f"(e) {label}: no audit printed -- the analytic Jacobian was not used")
+                continue
+            if "has no analytic derivative" in out:
+                failures.append(f"(e) {label}: a reaction was differenced (no analytic derivative)")
+            w = max(a, key=lambda x: x[5])
+            if not w[5] <= GATE_TOL:
+                failures.append(f"(e) {label}: analytic Jacobian #{w[0]} d({w[3]})/d({w[4]}) differs by "
+                                f"{w[5]:.3e} of the column's scale (> {GATE_TOL:g})")
+            #  Before the radical pool forms a trace species sits within the audit's step
+            #  of zero and its column is a FORWARD difference in the audit itself (5e-9 to
+            #  5e-8, the audit's error, not J's).  Once T has risen 1 K every column of the
+            #  audit is central, and the audit reads J itself.
+            T0 = a[0][2]
+            late = [x for x in a if x[2] is not None and T0 is not None and x[2] > T0 + 1.0]
+            if len(late) < 2:
+                failures.append(f"(e) {label}: only {len(late)} audits after the radical pool formed")
+            elif max(x[5] for x in late) > EXACT_TOL:
+                wl = max(late, key=lambda x: x[5])
+                failures.append(f"(e) {label}: analytic Jacobian #{wl[0]} (T = {wl[2]} K) d({wl[3]})/d({wl[4]}) "
+                                f"differs by {wl[5]:.3e} of the column's scale (> {EXACT_TOL:g}: a closed-form "
+                                "term is wrong)")
+            else:
+                exact.append(f"{label} {len(late)} late audits <= {max(x[5] for x in late):.0e}")
+    notes += exact
+
+    # ---- (f) the DEFAULT: analytic where every law has a derivative ------------------
+    with gatekit.probe_copy(FD, strip=STRIP) as c:          # no `jacobian` key
+        rc, out = gatekit.run(batch, c)
+        if rc != 0 or not audits(out) or "the default" not in out:
+            failures.append(f"(f) ignition01_h2o2 (no `jacobian` key) did not integrate on the audited "
+                            f"analytic Jacobian by default (exit {rc})")
+    with gatekit.probe_copy(CONSTP, strip=STRIP) as c:      # gasConstantP: now derived
+        rc, out = gatekit.run(batch, c)
+        k_def = kpis(out) if rc == 0 else None
+        if rc != 0 or not audits(out):
+            failures.append(f"(f) ignition03_h2air_constp (gasConstantP) did not run on the analytic "
+                            f"Jacobian by default (exit {rc})")
+    with gatekit.probe_copy(CONSTP, strip=STRIP) as c:
+        set_solver(c, "finiteDifference")
+        rc, out = gatekit.run(batch, c)
+        if rc != 0:
+            failures.append(f"(f) ignition03_h2air_constp on `jacobian finiteDifference;` exited {rc}")
+        elif k_def is not None:
+            w, where, missing = kpi_diff(kpis(out), k_def)
+            if missing or w > 1e-6:
+                failures.append(f"(f) gasConstantP: analytic and finite-difference KPIs differ by {w:.2e} ({where})")
+    with gatekit.probe_copy("tutorials/batch/reactor/batch07_lhhw_methylAcetate", strip=STRIP) as c:
+        set_solver(c, None, integrator="Rosenbrock23")
+        rc, out = gatekit.run(batch, c)
+        if rc != 0 or audits(out):
+            failures.append(f"(f) batch07 (an LHHW law, no `jacobian` key) did not stay on the finite "
+                            f"difference (exit {rc}, {len(audits(out))} audits)")
+    with gatekit.probe_copy("tutorials/batch/reactor/batch07_lhhw_methylAcetate", strip=STRIP) as c:
+        set_solver(c, "analytic", integrator="Rosenbrock23")
+        rc, out = gatekit.run(batch, c)
+        if rc != 0 or "has no analytic derivative" not in out:
+            failures.append(f"(f) batch07 with `jacobian analytic;` did not name the differenced LHHW "
+                            f"reaction (exit {rc})")
 
     # ---- (d) refusals by name ----------------------------------------------------------
     probes = [

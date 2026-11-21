@@ -38655,16 +38655,25 @@ licence.  Standard graduate texts for this chapter are C.~K.~Law,
 \subsection{The analytic Jacobian of a batch reactor's kinetics, and its audit}\label{sec:batch-analytic-jacobian}
 
 A Rosenbrock step (Section~\ref{ch:stiff-ode}) factorises
-$\mathbf W = \mathbf I - h\gamma\Jac$ once per step.  By default
-Choupo builds $\Jac$ by forward differences: each of the $N+1$ state
-entries ($N$ mole numbers and $T$) is perturbed in turn and the whole
-right-hand side is evaluated again --- $N+1$ evaluations per Jacobian,
-each one recomputing every rate coefficient and every $K_c$.  The
-\code{batchReactor} key \code{solver \{ jacobian analytic; \}} replaces
-that with the derivatives of the rate laws themselves
-(\code{BatchReactor::odeJacobian},
-\code{src/unitOperations/batch/BatchReactor.cpp}); the default stays
-\code{finiteDifference}, and any other word is refused by name.
+$\mathbf W = \mathbf I - h\gamma\Jac$ once per step.  A forward-difference $\Jac$ perturbs each of the
+$N+1$ state entries ($N$ mole numbers and $T$) in turn and evaluates the
+whole right-hand side again --- $N+1$ evaluations per Jacobian, each one
+recomputing every rate coefficient and every $K_c$, which for a
+mechanism of a thousand species is a thousand right-hand sides per step.
+A \code{batchReactor} builds $\Jac$ instead from the derivatives of the
+rate laws themselves (\code{BatchReactor::odeJacobianSparse},
+\code{src/unitOperations/batch/BatchReactor.cpp}).  This is the
+\emph{default} for a vessel whose every reaction has an analytic
+derivative --- the vessel's own \code{Arrhenius},
+\code{modifiedArrhenius}, \code{thirdBody} and \code{falloff}, and the
+factory's \code{ElementaryRate} (the same three words in a continuous
+reactor and \code{plog}).  \code{solver \{ jacobian finiteDifference; \}}
+selects the difference; \code{jacobian analytic;} forces the analytic
+matrix even beside a law that has no derivative (\code{LHHW},
+\code{type expression}, a case's own law), whose columns are then a
+forward difference of \emph{that reaction's} rate alone, announced once
+by name.  Without the key such a law keeps the whole vessel on the
+difference.  Any other word is refused by name.
 
 \paragraph{Species columns.}  With the state
 $\Yv = (n_1,\dots,n_N,T)$, constant volume $V$ and $c_k = n_k/V$,
@@ -38693,10 +38702,21 @@ $[\mathrm M]$ \eqref{eq:third-body}:
     $\partial k/\partial c_k = k_0\,\varepsilon_k$;
     \item Lindemann fall-off \eqref{eq:falloff} with $F=1$:
     $\partial k/\partial[\mathrm M] = k_0/(1+P_r)^2$, exactly;
-    \item Troe fall-off: $\partial k/\partial[\mathrm M]$ by a central
-    difference of the engine's one fall-off function in $[\mathrm M]$
-    alone, step $\epsilon^{1/3}[\mathrm M]$ --- one scalar per reaction,
-    not a column, and the Troe formula keeps its single home;
+    \item Troe fall-off: with $p=\log_{10}P_r$, $\varphi=\log_{10}F_{\mathrm{cent}}$,
+    $a = p + c$, $x = a/(n-0.14a)$ and $\log_{10}F = \varphi/(1+x^2)$,
+    \begin{equation}
+        \frac{\partial\log_{10}F}{\partial p}
+          = -\frac{2\varphi x}{(1+x^2)^2}\,\frac{n}{(n-0.14a)^2},\qquad
+        \frac{\partial\log_{10}F}{\partial \varphi}
+          = \frac{1}{1+x^2} - \frac{2\varphi x}{(1+x^2)^2}\,
+            \frac{1.27a - 0.67n}{(n-0.14a)^2},
+        \label{eq:troe-derivs}
+    \end{equation}
+    and $\partial k/\partial[\mathrm M] = F\bigl(\partial L/\partial[\mathrm M]
+    + (L/[\mathrm M])\,\partial\log_{10}F/\partial p\bigr)$ with $L$ the
+    Lindemann blend (\code{Reaction::falloffRateDerivs}, branch for branch
+    with the rate: the clamp $P_r\ge10^{-300}$ and the $F_{\mathrm{cent}}\le0$
+    fallback included);
 \end{itemize}
 and then $\partial k/\partial c_k = \varepsilon_k\,\partial k/\partial[\mathrm M]$.
 A reversible leg \eqref{eq:k-rev} is differentiated the same way with
@@ -38711,6 +38731,56 @@ outside its stoichiometry, and $x_i$ moves with every $n_k$); the same
 is done for a power below one at zero concentration, whose one-sided
 derivative is infinite.
 
+\paragraph{The temperature column, in closed form.}  At fixed $c$,
+\begin{equation}
+    \frac{\partial r}{\partial T}
+      = \frac{\mathrm d k}{\mathrm d T}\Bigl(\Pi_f - \frac{\Pi_r}{K_c}\Bigr)
+      + \frac{k}{K_c}\,\Pi_r\,\frac{\mathrm d\ln K_c}{\mathrm dT},\qquad
+    \frac{\mathrm d\ln K_c}{\mathrm dT}
+      = \frac{\sum_s \nu_s h_s(T)}{R T^2} - \frac{\sum_s\nu_s}{T},
+    \label{eq:batch-jac-T}
+\end{equation}
+the second from Eq.~\eqref{eq:Kc} by Gibbs--Helmholtz,
+$\mathrm d(g/T)/\mathrm dT = -h/T^2$, with $h_s(T)$ the species' own
+records; $\mathrm d\ln k/\mathrm dT = b/T + E_a/(RT^2)$ for each
+Arrhenius leg; for a Troe fall-off
+$\partial\ln k/\partial T = \partial\ln L/\partial T
++ \ln 10\,(\partial\log_{10}F/\partial\varphi\;\mathrm d\varphi/\mathrm dT
++ \partial\log_{10}F/\partial p\;\mathrm dp/\mathrm dT)$ with
+$\mathrm d\varphi/\mathrm dT = F_{\mathrm{cent}}'/(F_{\mathrm{cent}}\ln 10)$;
+for PLOG \eqref{eq:plog} between the tabulated pressures $P_1<P<P_2$,
+\begin{equation}
+    \frac{\partial\ln k}{\partial T} = (1-w)\frac{\mathrm d\ln k_1}{\mathrm dT}
+                                      + w\,\frac{\mathrm d\ln k_2}{\mathrm dT},\qquad
+    \frac{\partial\ln k}{\partial P} = \frac{\ln k_2 - \ln k_1}{P\ln(P_2/P_1)},
+    \label{eq:plog-derivs}
+\end{equation}
+and $\partial k/\partial P = 0$ where the table is clamped.  The vessel
+then says how $c$, $P$ and $V$ move with the state.  Per reaction it
+needs the total derivatives $D_{jm} = \partial(r_jV)/\partial n_m$ and
+$E_j = \partial(r_jV)/\partial T$:
+\begin{itemize}
+    \item $V$ fixed (\code{liquidDH}, \code{gasConstantV}):
+    $D_{jm} = g_{jm} + s_j$, $s_j = (\partial r_j/\partial P)\,R_uT$,
+    $E_j = V\bigl(\partial r_j/\partial T + (\partial r_j/\partial P)\,P/T\bigr)$,
+    where $g_{jm} = \partial r_j/\partial c_m$ and $s_j$ is non-zero only for a
+    law that reads $P = nR_uT/V$ (PLOG);
+    \item $P$ fixed (\code{gasConstantP}, $V = nR_uT/P$): from
+    $\partial V/\partial n_m = V/n$ and
+    $\partial c_k/\partial n_m = \delta_{km}/V - c_k/n$,
+    \begin{equation}
+        s_j = \frac{V}{n}\Bigl(r_j - \sum_k g_{jk}c_k\Bigr),\qquad
+        E_j = V\Bigl(\frac{\partial r_j}{\partial T} - \frac1T\sum_k g_{jk}c_k\Bigr)
+              + \frac{r_jV}{T}.
+        \label{eq:batch-jac-constp}
+    \end{equation}
+\end{itemize}
+$s_j$ is the same for every species column $m$: the Jacobian is
+$\Jac = \mathbf S + \mathbf u\mathbf v^{\mathsf T}$, with $\mathbf S$ on the
+pattern of the network,
+$u_i = \sum_j\nu_{ij}s_j$ and $\mathbf v$ the indicator of the species
+columns --- dense, but of rank one.
+
 \paragraph{Energy row.}  By the chain rule on the same columns,
 \begin{align}
     \text{gasConstantV:}\quad
@@ -38723,14 +38793,24 @@ derivative is infinite.
                 {\sum_i n_i C_{p,i}},
     \label{eq:batch-jac-energy}
 \end{align}
-the second term being the derivative of the heat-capacity sum.  The
-\emph{temperature column} is one forward difference of the whole
-right-hand side (one evaluation, the integrator's own step for that
-row): every $k$, $K_c$, $u_i$ and $C_{v,i}$ depends on $T$, and their
-closed-form derivatives would be a second home for the thermodynamics.
+the second term being the derivative of the heat-capacity sum
+(\code{gasConstantP} as \code{gasConstantV} with $h_i$ and $C_{p,i}$).
+With the per-reaction weight $w_j$ ($\Delta H_j$, $\sum_s\nu_s u_s$ or
+$\sum_s\nu_s h_s$), the corner of the matrix is
+\begin{equation}
+    \frac{\partial\dot T}{\partial T}
+      = -\,\frac{[\text{gas}]\sum_i C_i\dot n_i + \sum_j w_j E_j
+                 + \dot T\sum_i n_i\,\mathrm dC_i/\mathrm dT}{\sum_i n_iC_i},
+    \label{eq:batch-jac-TT}
+\end{equation}
+($\mathrm du_i/\mathrm dT = C_{v,i}$, $\mathrm dh_i/\mathrm dT = C_{p,i}$).
+The one derivative still taken by a difference is the heat capacity's
+slope $\mathrm dC_i/\mathrm dT$: a central difference of the record's law
+with step $\epsilon^{1/3}T$ (about $10^{-10}$ of the slope), because the
+law lives in the component record, which offers no derivative.
 Isothermal, the right-hand side reads the set point, not $\Yv_{N+1}$, so
-the column is exactly zero and costs nothing.  A Jacobian therefore
-costs one right-hand side plus the rate derivatives, whatever $N$ is.
+the temperature row and column are exactly zero.  A Jacobian therefore
+costs \emph{no} right-hand side at all, only the rate derivatives.
 
 \paragraph{The audit.}  Rosenbrock23 and Rodas4 are \emph{not}
 W-methods: their order conditions assume the true $\Jac$ in
@@ -38770,10 +38850,25 @@ radical not yet formed, and the rounding of $f$ --- a sum of large terms
 that cancel --- divided by it is larger than the column: on the first
 run the temperature row of the $\mathrm{H_2O_2}$ column came out 1.55 of
 its scale wrong \emph{in the difference}.  The same small step read an
-LHHW column as exactly zero against $-0.058$.  The default
+LHHW column as exactly zero against $-0.058$.  The
 finite-difference Jacobian carries that noise in its trace columns;
 the analytic one does not.
 \end{pitfall}
+
+\paragraph{What the audit measures now.}  With every column in closed
+form, the audits along \code{ignition01\_h2o2\_jac} after the radical pool
+has formed read $2\times10^{-10}$ to $1\times10^{-9}$ of the column's
+scale --- the rounding of the audit's own central difference --- where the
+forward-difference temperature column it replaced read $7\times10^{-8}$
+to $6.5\times10^{-7}$; so do a Troe fall-off with a temperature-dependent
+$F_{\mathrm{cent}}$, a reversible PLOG whose table brackets the run's
+pressure, and the \code{gasConstantP} vessel \code{ignition03\_h2air\_constp}
+(\code{bin/curate/check\_kinetics\_jacobian.py}, which also shows each
+closed-form term dropped by hand --- $b/T$, $F_{\mathrm{cent}}'$,
+$\partial k/\partial P$, the rank-one $s_j$ --- refused by the audit).
+Making the analytic matrix the default moved the shipped batch goldens by
+at most $1.2\times10^{-9}$ relative (\code{ignition04}'s sensitivities),
+round-off at the integrator's tolerance.
 
 \begin{example}[What it buys]
 \code{ignition01\_h2o2} (9 species, 21 reactions, Rosenbrock23) on the
@@ -38782,7 +38877,9 @@ right-hand sides (14 per step: one, ten for the Jacobian, one for
 $\partial f/\partial t$, two stages); on the analytic one
 (\code{ignition01\_h2o2\_jac}): the same steps and 8\,252 right-hand sides
 (4 per step: $\partial f/\partial t$ is skipped because the chemistry is
-autonomous), the burned state equal to $6\times10^{-12}$ relative.  The
+autonomous), the burned state equal to $6\times10^{-12}$ relative.  With
+the temperature column in closed form (2026-11-21) the same run spends
+6\,290 right-hand sides: 3 per step plus the audits.  The
 saving is $N$ evaluations per Jacobian, so it grows with the mechanism.
 \end{example}
 

@@ -32,12 +32,36 @@ License
 #include "EulerSI.H"
 #include "Rosenbrock23.H"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <stdexcept>
 
 namespace Choupo::solver
 {
+
+std::size_t SparsePattern::find(std::size_t i, std::size_t j) const
+{
+    const auto b = col.begin() + static_cast<std::ptrdiff_t>(rowPtr[i]);
+    const auto e = col.begin() + static_cast<std::ptrdiff_t>(rowPtr[i + 1]);
+    const auto it = std::lower_bound(b, e, j);
+    return (it != e && *it == j) ? static_cast<std::size_t>(it - col.begin())
+                                 : static_cast<std::size_t>(-1);
+}
+
+std::vector<sVector> SparseJacobian::dense(const SparsePattern& p) const
+{
+    std::vector<sVector> J(p.n, sVector(p.n, 0.0));
+    for (std::size_t i = 0; i < p.n; ++i)
+        for (std::size_t q = p.rowPtr[i]; q < p.rowPtr[i + 1]; ++q)
+            J[i][p.col[q]] = values[q];
+    if (!u.empty() && !v.empty())
+        for (std::size_t i = 0; i < p.n; ++i)
+            if (u[i] != 0.0)
+                for (std::size_t j = 0; j < p.n; ++j)
+                    if (v[j] != 0.0) J[i][j] += u[i] * v[j];
+    return J;
+}
 
 std::map<std::string, ODEIntegrator::Factory>& ODEIntegrator::registry()
 {

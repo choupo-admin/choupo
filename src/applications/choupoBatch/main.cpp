@@ -1512,12 +1512,17 @@ if (flowsheetDict->found("cycle"))
             //  analytic only when every block is): the declared key is then
             //  read by nothing, and that is announced once, never silent.
             {
-                std::size_t nJac = 0;
+                //  Counted on the DECLARED key: a vessel whose analytic
+                //  Jacobian is its own default says nothing when a neighbour
+                //  without one sends the sweep to the difference.
+                std::size_t nJac = 0, nDeclared = 0;
                 for (const auto& u : odeUnits) nJac += u.jacobian ? 1 : 0;
-                if (nJac > 0 && nJac < odeUnits.size() && !jacMixedAnnounced)
+                for (const auto& unit : units)
+                    if (unit->hasOdeForm() && unit->odeJacobianDeclared()) ++nDeclared;
+                if (nDeclared > 0 && nJac < odeUnits.size() && !jacMixedAnnounced)
                 {
                     jacMixedAnnounced = true;
-                    std::cerr << "  [jacobian] WARNING: " << nJac << " of the "
+                    std::cerr << "  [jacobian] WARNING: " << nDeclared << " of the "
                               << odeUnits.size() << " vessels integrated together"
                                  " declare `jacobian analytic;` and the others"
                                  " supply none, so the adaptive sweep builds its"

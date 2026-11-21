@@ -3343,8 +3343,8 @@ dT/dt = -sum u_i ndot_i / sum n_i Cv_i; **`gasConstantP`** = closed ideal gas at
 dH = 0, dT/dt = -sum h_i(T) ndot_i / sum n_i Cp_i(T), V = n R T / P at every state (so the holdup
 declares NO `V`; a declared one that disagrees is refused; the time directories and the rate-of-production
 report carry the V of their own state).  Both gas bases take h_i = `h_pure_ig` on the formation datum and
-need `idealGasHeatCapacity` + `standardThermochemistry`.  `jacobian analytic` is refused by name for
-`gasConstantP` (open debt); the campaign energy ledger names a gap for adiabatic vessels.  Theory Guide
+need `idealGasHeatCapacity` + `standardThermochemistry`.  The campaign energy ledger names a gap for
+adiabatic vessels.  Theory Guide
 `sec:batch-gas-constp`; example `ignition03_h2air_constp` (constant-P ignition is slower and cooler than
 `ignition01_h2o2`'s constant-V one; witnessed against Cantera's IdealGasConstPressureReactor to 1 mK).
 `kinetics { type ... }`: `Arrhenius` · `modifiedArrhenius` · `thirdBody` · `falloff` · `plog`
@@ -3355,6 +3355,22 @@ adsorption denominator means.  With `basis activity` it needs an activity model.
 (with c in kmol/m³ the factor IS the loading: mol/(g·s)·kg/m³ = kmol/(m³·s)).
 Example: `batch07_lhhw_methylAcetate` (Pöpken 2000 Eq 16 on UNIQUAC activities;
 X → 76.6 %, the activity equilibrium the steady CSTR also reaches).
+
+**Jacobian of the stiff integrators** `solver { integrator Rosenbrock23 | Rodas4; jacobian analytic | finiteDifference; }`.
+Absent `jacobian`: ANALYTIC when every reaction's law has a derivative (the vessel's `Arrhenius`,
+`modifiedArrhenius`, `thirdBody`, `falloff`, and the factory's `plog`/ElementaryRate words), else the
+finite difference (a vessel with an `LHHW`, `type expression`, explicit `A_rev`/`Ea_rev` or case law).
+The analytic matrix is complete in closed form: species columns from the rate laws, the T column from
+dk/dT (every Arrhenius leg, Troe with F_cent(T), PLOG between and clamped), d ln Kc/dT = sum nu h/(RT^2)
+- sum nu/T, the energy row by the chain rule (only the heat capacity's slope dCp/dT is a central
+difference of the record's law); every energy basis, `gasConstantP` included (V = nRT/P makes a
+rank-one term).  It is AUDITED against a central difference at analytic Jacobians 1, 2, 4, 8, ...
+and a column above 1e-4 of its scale refuses the run; the first audit line says whether it is
+the default.  `jacobian analytic;` forces it beside a law without a derivative, whose columns are a
+forward difference of that reaction alone (announced once by name); `jacobian finiteDifference;`
+selects the integrator's dense difference.  Declared `analytic` beside `integrator RK4`/`EulerSI`,
+or on a fixed-step run left on the default RK4, is refused by name.  Theory Guide
+`sec:batch-analytic-jacobian`; gate `bin/curate/check_kinetics_jacobian.py`.
 
 **Rates of production (opt-in, the glass box of a mechanism).**  A block on the
 unit, beside `operation` and `solver`:

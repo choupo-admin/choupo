@@ -84,6 +84,12 @@ scalar ReactionRate::rateConstant(const ThermoPackage&, const RateState&) const
         " constant to report.");
 }
 
+bool ReactionRate::netRateGradient(const ThermoPackage&, const RateState&,
+                                   RateGradient&) const
+{
+    return false;     // no analytic derivative: the caller differences the law
+}
+
 void ReactionRate::checkLoading(bool reactorHasLoading, const std::string& who) const
 {
     const std::string b = declaredBasis();

@@ -195,6 +195,173 @@ scalar ElementaryRate::plogK(const PlogRow& row, scalar T) const
     return k;
 }
 
+scalar ElementaryRate::plogDkDT(const PlogRow& row, scalar T) const
+{
+    scalar d = 0.0;
+    for (const auto& a : row.arr)
+        d += Reaction::modifiedArrheniusRate(a.A, a.b, a.Ea, T)
+           * Reaction::dlnModifiedArrheniusdT(a.b, a.Ea, T);
+    return d;
+}
+
+//  kEff, differentiated branch for branch (Theory Guide,
+//  sec:batch-analytic-jacobian).  PLOG between two tabulated pressures,
+//  ln k = (1 - w) ln k1 + w ln k2,  w = ln(P/P1)/ln(P2/P1):
+//      d ln k / dT = (1 - w) d ln k1/dT + w d ln k2/dT,
+//      d ln k / dP = (ln k2 - ln k1) / (P ln(P2/P1));
+//  clamped at either end, dk/dP = 0 (the law is that end's k(T)).
+ElementaryRate::KDerivs ElementaryRate::kEffDerivs(const RateState& s) const
+{
+    KDerivs d;
+    const scalar perOrder = 1.0e-6 * (1000.0 / s.amountPerKmol);
+    const auto conv = [&](bool cm, scalar A, int extra)
+    { return cm ? A * std::pow(perOrder, molec_ + extra - 1) : A; };
+    if (form_ == Form::plog)
+    {
+        const scalar f = cmA_ ? std::pow(perOrder, molec_ - 1) : 1.0;
+        const scalar P = s.P;
+        if (std::isnan(P))
+            throw std::runtime_error(who_ + ": `type plog` was handed no pressure (an empty vessel?).");
+        if (!(P > plog_.front().P))
+        { d.k = f * plogK(plog_.front(), s.T); d.dkdT = f * plogDkDT(plog_.front(), s.T); return d; }
+        if (!(P < plog_.back().P))
+        { d.k = f * plogK(plog_.back(), s.T);  d.dkdT = f * plogDkDT(plog_.back(), s.T);  return d; }
+        std::size_t j = 1;
+        while (j + 1 < plog_.size() && plog_[j].P < P) ++j;
+        const scalar k1 = plogK(plog_[j - 1], s.T), k2 = plogK(plog_[j], s.T);
+        const scalar d1 = plogDkDT(plog_[j - 1], s.T), d2 = plogDkDT(plog_[j], s.T);
+        const scalar L  = std::log(plog_[j].P / plog_[j - 1].P);
+        const scalar w  = std::log(P / plog_[j - 1].P) / L;
+        if (!(k1 > 0.0) || !(k2 > 0.0))
+        {
+            d.k    = f * (k1 + w * (k2 - k1));
+            d.dkdT = f * ((1.0 - w) * d1 + w * d2);
+            d.dkdP = f * (k2 - k1) / (P * L);
+            return d;
+        }
+        d.k    = f * std::exp(std::log(k1) + w * (std::log(k2) - std::log(k1)));
+        d.dkdT = d.k * ((1.0 - w) * d1 / k1 + w * d2 / k2);
+        d.dkdP = d.k * (std::log(k2) - std::log(k1)) / (P * L);
+        return d;
+    }
+    const scalar kInf = Reaction::modifiedArrheniusRate(
+        conv(cmA_, A_, form_ == Form::thirdBody ? 1 : 0), b_, Ea_, s.T);
+    const scalar dlnInf = Reaction::dlnModifiedArrheniusdT(b_, Ea_, s.T);
+    if (form_ == Form::modifiedArrhenius) { d.k = kInf; d.dkdT = kInf * dlnInf; return d; }
+    const scalar M = Reaction::thirdBodyConcentration(*s.conc, eff_);
+    if (form_ == Form::thirdBody)
+    { d.k = kInf * M; d.dkdM = kInf; d.dkdT = kInf * dlnInf * M; return d; }
+    const scalar kLow = Reaction::modifiedArrheniusRate(
+        conv(cmALow_, ALow_, 1), bLow_, EaLow_, s.T);
+    const auto fd = Reaction::falloffRateDerivs(kLow, kInf, M, s.T, troe_,
+        Reaction::dlnModifiedArrheniusdT(bLow_, EaLow_, s.T), dlnInf);
+    d.k = fd.k; d.dkdM = fd.dkdM; d.dkdT = fd.dkdT;
+    return d;
+}
+
+bool ElementaryRate::rateDependencies(std::vector<std::size_t>& species) const
+{
+    species.clear();
+    const std::size_t n = nu_.size();
+    const bool collider = (form_ == Form::thirdBody || form_ == Form::falloff);
+    for (std::size_t i = 0; i < n; ++i)
+        if (order_[i] != 0.0 || (reversible_ && nu_[i] > 0.0)
+            || (collider && eff_[i] != 0.0))
+            species.push_back(i);
+    return true;
+}
+
+//  netRate, differentiated term by term (the same factors, clamps and order):
+//      r = k F - (k/Kc) R,   F = prod c_i^order_i,  R = prod_{nu>0} c_i^nu_i
+//      dr/dc_i = dk/dc_i (F - R/Kc) + k dF/dc_i - (k/Kc) dR/dc_i,  dk/dc_i = eff_i dk/d[M]
+//      dr/dT   = dk/dT (F - R/Kc) + (k/Kc) R d ln Kc/dT,
+//      d ln Kc/dT = sum nu_i h_i/(R T^2) - sum nu_i / T     (Kc = Kp (P0/R_u T)^sum nu)
+//      dr/dP   = dk/dP (F - R/Kc).
+//  A factor's derivative is the product of the OTHER factors (never r/c).  An
+//  order below one at c = 0 has no finite derivative: false, nothing touched.
+bool ElementaryRate::netRateGradient(const ThermoPackage& thermo, const RateState& s,
+                                     RateGradient& g) const
+{
+    const std::size_t n = nu_.size();
+    const sVector& conc = *s.conc;
+    //  every factor and its derivative first, so a refusal touches nothing
+    std::vector<std::size_t> idxF, idxR;
+    sVector fF, dF, fR, dR;
+    const auto factor = [&](scalar c, scalar p, bool clamp, std::size_t i,
+                            scalar& f, scalar& df) -> bool
+    {
+        const scalar cc = clamp ? std::max<scalar>(c, 0.0) : c;
+        f = clamp ? std::pow(cc, p)
+                  : Reaction::powerLawFactor(cc, p, thermo.comp(i).name(), who_);
+        if (clamp && c < 0.0) { df = 0.0; return true; }
+        if (cc == 0.0)
+        {
+            if (p == 1.0) { df = 1.0; return true; }
+            if (p > 1.0)  { df = 0.0; return true; }
+            return false;
+        }
+        df = p * std::pow(cc, p - 1.0);
+        return true;
+    };
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        if (order_[i] == 0.0) continue;
+        scalar f, df;
+        //  the rate's own factor (powerLawFactor of max(c,0) for p > 0)
+        if (!factor(conc[i], order_[i], order_[i] > 0.0, i, f, df)) return false;
+        if (order_[i] > 0.0)
+            f = Reaction::powerLawFactor(std::max<scalar>(conc[i], 0.0), order_[i],
+                                         thermo.comp(i).name(), who_);
+        idxF.push_back(i); fF.push_back(f); dF.push_back(df);
+    }
+    if (reversible_)
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            if (!(nu_[i] > 0.0)) continue;
+            scalar f, df;
+            if (!factor(conc[i], nu_[i], true, i, f, df)) return false;
+            idxR.push_back(i); fR.push_back(f); dR.push_back(df);
+        }
+    const KDerivs kd = kEffDerivs(s);
+    const scalar k = kd.k;
+    const auto productExcept = [](const sVector& f, std::size_t skip)
+    {
+        scalar p = 1.0;
+        for (std::size_t a = 0; a < f.size(); ++a) if (a != skip) p *= f[a];
+        return p;
+    };
+    const scalar F = productExcept(fF, fF.size());
+    scalar KcInv = 0.0, R = 0.0, dlnKc = 0.0;
+    if (reversible_)
+    {
+        scalar sumNu = 0.0, dH = 0.0;
+        for (std::size_t i = 0; i < n; ++i)
+            if (nu_[i] != 0.0)
+            {
+                sumNu += nu_[i];
+                dH += nu_[i] * (s.enthalpy ? (*s.enthalpy)[i] : thermo.comp(i).h_pure_ig(s.T));
+            }
+        const scalar Kc = (s.gibbs ? Reaction::equilibriumKc(nu_, s.T, *s.gibbs)
+                                   : Reaction::equilibriumKc(thermo, nu_, s.T))
+                        * std::pow(s.amountPerKmol, sumNu);
+        KcInv = (Kc > 0.0) ? 1.0 / Kc : 0.0;
+        R = productExcept(fR, fR.size());
+        dlnKc = dH / (constant::R * s.T * s.T) - sumNu / s.T;
+    }
+    const scalar net = F - R * KcInv;          // r = k * net
+    sVector& dc = *g.dc;
+    if (kd.dkdM != 0.0)
+        for (std::size_t i = 0; i < n; ++i)
+            if (eff_[i] != 0.0) dc[i] += kd.dkdM * eff_[i] * net;
+    for (std::size_t a = 0; a < idxF.size(); ++a)
+        if (dF[a] != 0.0) dc[idxF[a]] += k * dF[a] * productExcept(fF, a);
+    for (std::size_t a = 0; a < idxR.size(); ++a)
+        if (dR[a] != 0.0) dc[idxR[a]] -= k * KcInv * dR[a] * productExcept(fR, a);
+    g.dT = kd.dkdT * net + k * KcInv * R * dlnKc;
+    g.dP = kd.dkdP * net;
+    return true;
+}
+
 scalar ElementaryRate::kEff(const RateState& s) const
 {
     //  CHEMKIN cm3/mol/s -> the caller's amount unit: 1e-6 m3/cm3 per order

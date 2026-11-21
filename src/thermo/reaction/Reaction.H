@@ -96,6 +96,25 @@ public:
     static scalar falloffRate(scalar kLow, scalar kInf, scalar M, scalar T,
                               const sVector& troe);
 
+    // -- The same blend with its EXACT derivatives (the analytic Jacobian) --
+    //    k = falloffRate(kLow, kInf, M, T, troe), bit for bit, and
+    //      dkdM = d k / d [M]          at fixed T,
+    //      dkdT = d k / d T            at fixed [M],
+    //    given dlnkLow = d ln kLow / dT and dlnkInf = d ln kInf / dT (the
+    //    Arrhenius legs' own, b/T + Ea/(R T^2)).  Lindemann and the Troe
+    //    broadening F(Pr, Fcent(T)) are differentiated in closed form,
+    //    branch for branch with falloffRate (the Pr clamp at 1e-300 and the
+    //    Fcent <= 0 fallback included), so the derivative is the derivative
+    //    of the function the rate evaluates.  Theory Guide,
+    //    sec:batch-analytic-jacobian.
+    struct FalloffDerivs { scalar k = 0.0, dkdM = 0.0, dkdT = 0.0; };
+    static FalloffDerivs falloffRateDerivs(scalar kLow, scalar kInf, scalar M,
+                                           scalar T, const sVector& troe,
+                                           scalar dlnkLow, scalar dlnkInf);
+
+    // -- d ln k / dT of a modified Arrhenius leg:  b/T + Ea/(R T^2) ---------
+    static scalar dlnModifiedArrheniusdT(scalar b, scalar Ea, scalar T);
+
     // -- Reaction equilibrium constant Kc(T) on a CONCENTRATION basis ------
     //    used as k_rev = k_fwd / Kc by detailed balance.  Two overloads that
     //    differ only in how the species are addressed (and so preserve each

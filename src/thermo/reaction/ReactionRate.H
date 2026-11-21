@@ -111,6 +111,20 @@ struct RateState
     //  law that asks `gibbsStoichiometry()`; null = the law computes it itself
     //  (bit-identical either way).  Owned by the caller for one evaluation.
     const sVector* gibbs = nullptr;
+    //  h_i(T) = comp(i).h_pure_ig(T) for the same species as `gibbs`, read only
+    //  by netRateGradient (d ln Kc / dT = sum nu h / (R T^2) - sum nu / T);
+    //  null = the law computes it itself.
+    const sVector* enthalpy = nullptr;
+};
+
+//- The analytic derivatives of one law's net rate (netRateGradient).  `dc` is
+//  full length and ACCUMULATED into (the caller zeroes it); only the entries of
+//  the law's `rateDependencies` are ever touched.
+struct RateGradient
+{
+    sVector* dc = nullptr;   // d r / d c_i  at fixed T and P (caller's amount unit)
+    scalar   dT = 0.0;       // d r / d T    at fixed c and P
+    scalar   dP = 0.0;       // d r / d P    at fixed c and T (0 for a law that reads no P)
 };
 
 //- What a reactor can hand a law.
@@ -167,6 +181,24 @@ public:
     //  (Kc from Gibbs energies): the full-length stoichiometry whose species'
     //  g(T) a caller may hand in through RateState::gibbs.  Null otherwise.
     virtual const sVector* gibbsStoichiometry() const { return nullptr; }
+
+    //- ANALYTIC DERIVATIVES (opt-in per law; the batch reactor's Jacobian).
+    //  A law that returns true from hasAnalyticGradient() fills `g` with the
+    //  derivatives of netRate at `s` -- same multiplication order, same clamps
+    //  -- and lists in `rateDependencies` every species whose concentration it
+    //  reads (the sparse pattern of its row of the Jacobian).  A law that does
+    //  not (LHHW, expression, a case's own law) is differenced by the caller.
+    //  netRateGradient returns false, touching nothing, at a state where the
+    //  derivative is not finite (an order below one at zero concentration):
+    //  the caller differences that reaction at that state instead.
+    virtual bool hasAnalyticGradient() const { return false; }
+    virtual bool netRateGradient(const ThermoPackage& thermo, const RateState& s,
+                                 RateGradient& g) const;
+    //- false: the law may read every species (no pattern can be claimed).
+    virtual bool rateDependencies(std::vector<std::size_t>& /*species*/) const
+    { return false; }
+    //- Whether the law reads the pressure (the caller then owes d P / d state).
+    virtual bool readsPressure() const { return false; }
 
     //- The basis the law DECLARES: "reactorVolume", "catalystMass", or ""
     //  when the law does not declare one (Arrhenius / LHHW: the reactor's

@@ -160,6 +160,10 @@ public:
     // supplies one is AUDITED against that difference (solver/ODE/
     // ODEIntegrator.H, ODEAnalyticJacobian) and refused if it is false.
     virtual bool hasOdeJacobian() const { return false; }
+    // Whether the case DECLARED that Jacobian (`jacobian analytic;`), as
+    // against a default the unit chose: the adaptive driver warns about a
+    // declared key it cannot honour, never about a default.
+    virtual bool odeJacobianDeclared() const { return hasOdeJacobian(); }
     virtual std::vector<sVector> odeJacobian(const sVector& /*y*/,
                                              const sVector& /*f0*/,
                                              const sVector& /*typ*/) const

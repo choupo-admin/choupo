@@ -100,6 +100,85 @@ scalar Reaction::falloffRate(scalar kLow, scalar kInf, scalar M, scalar T,
     return lindemann * F;
 }
 
+scalar Reaction::dlnModifiedArrheniusdT(scalar b, scalar Ea, scalar T)
+{
+    return b / T + Ea / (constant::R * T * T);
+}
+
+//  falloffRate, differentiated branch for branch (Theory Guide,
+//  sec:batch-analytic-jacobian).  With Pr = kLow M / kInf and the Lindemann
+//  base L = kInf Pr/(1+Pr):
+//      dL/dM = kLow/(1+Pr)^2,
+//      d ln L/dT = d ln kInf/dT + (d ln Pr/dT)/(1+Pr),
+//      d ln Pr/dT = d ln kLow/dT - d ln kInf/dT.
+//  Troe: log10 F = phi/(1+x^2), phi = log10 Fcent(T), x = a/(n - 0.14 a),
+//  a = log10 Pr + c, c = -0.4 - 0.67 phi, n = 0.75 - 1.27 phi, so
+//      d log10F/dp   = -2 phi x/(1+x^2)^2 * n/(n - 0.14 a)^2      (p = log10 Pr)
+//      d log10F/dphi = 1/(1+x^2) - 2 phi x/(1+x^2)^2
+//                      * (1.27 a - 0.67 n)/(n - 0.14 a)^2,
+//  and k = L F gives d ln k = d ln L + ln(10) d log10 F.
+Reaction::FalloffDerivs Reaction::falloffRateDerivs(scalar kLow, scalar kInf, scalar M,
+                                                    scalar T, const sVector& troe,
+                                                    scalar dlnkLow, scalar dlnkInf)
+{
+    FalloffDerivs d;
+    if (kInf <= 0.0) return d;                          // k = 0 identically
+    const scalar Pr = kLow * M / kInf;
+    const scalar lindemann = kInf * Pr / (1.0 + Pr);
+    const scalar dLdM = kLow / ((1.0 + Pr) * (1.0 + Pr));
+    const scalar dlnPr_dT = dlnkLow - dlnkInf;
+    //  dL/dT written without dividing by L (L = 0 at M = 0):
+    //  dL/dT = L dlnkInf + kInf Pr dlnPr_dT /(1+Pr)^2
+    const scalar dLdT = lindemann * dlnkInf
+                      + kInf * Pr * dlnPr_dT / ((1.0 + Pr) * (1.0 + Pr));
+    d.k = lindemann; d.dkdM = dLdM; d.dkdT = dLdT;
+    if (troe.size() < 3) return d;                      // Lindemann (F = 1)
+
+    const scalar alpha = troe[0];
+    const scalar T3    = troe[1];
+    const scalar T1    = troe[2];
+    const scalar e3 = std::exp(-T / T3), e1 = std::exp(-T / T1);
+    scalar Fcent  = (1.0 - alpha) * e3 + alpha * e1;
+    scalar dFcent = -(1.0 - alpha) / T3 * e3 - alpha / T1 * e1;
+    if (troe.size() >= 4)
+    {
+        const scalar T2 = troe[3];
+        const scalar e2 = std::exp(-T2 / T);
+        Fcent  += e2;
+        dFcent += T2 / (T * T) * e2;
+    }
+    if (Fcent <= 0.0) return d;                         // falloffRate's fallback
+
+    static const scalar ln10 = std::log(10.0);
+    const scalar phi  = std::log10(Fcent);
+    const scalar c    = -0.4 - 0.67 * phi;
+    const scalar nT   =  0.75 - 1.27 * phi;
+    const scalar dT   =  0.14;
+    const bool   clamped = !(Pr > 1.0e-300);            // log10 Pr held constant
+    const scalar logPr = std::log10(std::max(Pr, 1.0e-300));
+    const scalar a    = logPr + c;
+    const scalar den  = nT - dT * a;
+    const scalar x    = a / den;
+    const scalar q    = 1.0 + x * x;
+    const scalar logF = phi / q;
+    const scalar F    = std::pow(10.0, logF);
+    const scalar dlogF_dx   = -2.0 * phi * x / (q * q);
+    const scalar dlogF_dp   = dlogF_dx * nT / (den * den);
+    const scalar dlogF_dphi = 1.0 / q + dlogF_dx * (1.27 * a - 0.67 * nT) / (den * den);
+    //  p = log10 Pr: dp/dM = 1/(M ln10), dp/dT = dlnPr_dT/ln10 (0 when clamped).
+    //  phi: dphi/dT = dFcent/(Fcent ln10).
+    const scalar dphi_dT = dFcent / (Fcent * ln10);
+    const scalar dlnF_dT = ln10 * (dlogF_dphi * dphi_dT
+                                   + (clamped ? 0.0 : dlogF_dp * dlnPr_dT / ln10));
+    //  d(L F)/dM = F dL/dM + L F ln10 dlogF/dp /(M ln10) = F (dL/dM + L dlogF/dp / M);
+    //  L/M = kLow kInf/(kInf + kLow M) stays finite at M = 0.
+    const scalar LoverM = kLow * kInf / (kInf + kLow * M);
+    d.k    = lindemann * F;
+    d.dkdM = F * (dLdM + (clamped ? 0.0 : LoverM * dlogF_dp));
+    d.dkdT = F * dLdT + lindemann * F * dlnF_dT;
+    return d;
+}
+
 // Concentration-basis correction.  Kp = exp(−dG/RT) is the standard-state
 // (1 bar) pressure-basis constant; the reverse rate k_rev = k_fwd/Kc needs the
 // CONCENTRATION-basis Kc.  For an ideal gas Kc = Kp·(P°/(R_u T))^{Σν}, c° in kmol/m³
