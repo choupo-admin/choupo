@@ -1,0 +1,43 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- the case REFERENCES the catalogue
+  (DEV.md 4c C413; context: case root).  Written by
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and, per scanned registry directory, ONE
+  `"<dir>/"  "relevant:<hash>"` line: the hash of the sorted names that
+  EXIST there and are relevant to the case (a Henry or solution pair among
+  its components), so a relevant pair that arrives or leaves is a drift
+  and an unrelated edit is not.  A registry parses a whole directory;
+  only the names the case selects are pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
+  `held` (transitional): a local copy kept IN FORCE, read alone, verified
+  against its own hash -- debt that only shrinks (check_case_records).
+\*----------------------------------------------------------*/
+propertyManifest
+{
+    pins
+    {
+        "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
+        "components/13Butadiene.dat"  "6594fdac282d0f58aaefe0f547ebc36810b97dd90adbcf0e8a9b9005e0a8a3ca";
+        "components/CH4.dat"  "043479100702ebb4d4877777dd3ec967330328fe991421dc1acc86c8cf355e05";
+        "components/H2.dat"  "879162454da7c142677b0029de8484c451f251e8a5e9f1cdb1794522535ae9be";
+        "components/acetylene.dat"  "b275d6552488af2ace7d7b0f687e8334a77b7ac17c0d2289afaf7c90078c4804";
+        "components/ethane.dat"  "874e415da9f07c63e511081c26803579ec8adba01807bb0c39535b17b8993c73";
+        "components/ethylene.dat"  "aa9b77f1a729c01e3770e6416ef5650338b0e1e84090cb908239a2f78ed0b20c";
+        "components/propane.dat"  "26ffaecf82749edb18ccb34a3f18acb0ca45e55e1b461bf94d871ef0ab81358e";
+        "components/propylene.dat"  "4f789d6919240e8da90a40292094785b15175ae4ba1a48eaacbf32d5cac59f64";
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
+        "parameters/Henry/"  "relevant:f5716a43b143309b6f17423a49d8ad3468503a46f9195b20f3ac9e769ef0997b";
+        "parameters/Henry/CH4-water.dat"  "6bc2d4d3828fd1d518cd72bf204a7bd3c4eb1b544bb05dd5aa8ed83202b6ea27";
+        "parameters/Henry/H2-water.dat"  "4a3629c5a88f40b2e55f52bf4da05cff92e0c966331cc39b95712c2744fa8c7b";
+        "parameters/Henry/acetylene-water.dat"  "3e1bf39de11d3e1a96f072adb905ecd1bd93eb894380a8fc0d45917e172a9575";
+        "parameters/Henry/ethane-water.dat"  "c927c294a17ce8087ed27f18c6e43665a6a55b68ccf0c88f3f688723ed6bc5f3";
+        "parameters/Henry/ethylene-water.dat"  "39f81a7fb0ea3d570c22df3996a07f9b48677cc8b4c9b502443d5b543699d5dd";
+        "parameters/Henry/propane-water.dat"  "6d646d44828ef227760e89f5865b65e064bc0a5baeb84ccac8065966c10ee675";
+        "parameters/Henry/propylene-water.dat"  "113b994fba1f5c48ff5712878613b611c820d148ded89e9a640501febf24a177";
+        "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+    }
+}

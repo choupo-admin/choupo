@@ -1,0 +1,49 @@
+/*---------------------------------------------------------------------------*\
+  Sundaram & Froment, Chem. Eng. Sci. 32 (1977) 601, Model III of ethane
+  cracking: Table 1 (the scheme and its rate equations), Table 3 (A, E),
+  Table 1's K_C values.  Quantities in SI: A in s^-1 for a first-order law and
+  in m3/mol/s for a second-order law (the paper's l/mol/s x 1e-3), Ea in J/mol
+  (kcal/mol x 4184 -- the thermochemical calorie).
+\*---------------------------------------------------------------------------*/
+
+eth_dehydro      // (1) C2H6 -> C2H4 + H2 ; k1 = 4.652e13 s^-1, E = 65.20 kcal/mol
+{
+    stoichiometry ( { component ethane; nu -1; order 1; } { component ethylene; nu 1; order 0; } { component H2; nu 1; order 0; } );
+    kinetics { type Arrhenius; A 4.652e13; Ea 272796.8; }
+}
+
+eth_hydro        // (1) reverse leg k1/K_C1, K_C1 van't Hoff fit of the three printed values (775, 800, 825 C)
+{
+    stoichiometry ( { component ethylene; nu -1; order 1; } { component H2; nu -1; order 1; } { component ethane; nu 1; order 0; } );
+    kinetics { type Arrhenius; A 988520.8; Ea 137879.5; }
+}
+
+eth_to_c3h8      // (2) 2 C2H6 -> C3H8 + CH4 ; FIRST order in ethane (Table 1, r2); k2 = 3.850e11 s^-1, E = 65.25
+{
+    stoichiometry ( { component ethane; nu -2; order 1; } { component propane; nu 1; order 0; } { component CH4; nu 1; order 0; } );
+    kinetics { type Arrhenius; A 3.850e11; Ea 273006.0; }
+}
+
+c3h6_to_c2h2     // (5) C3H6 -> C2H2 + CH4 ; k5 = 9.814e8 s^-1, E = 36.92 kcal/mol
+{
+    stoichiometry ( { component propylene; nu -1; order 1; } { component acetylene; nu 1; order 0; } { component CH4; nu 1; order 0; } );
+    kinetics { type Arrhenius; A 9.814e8; Ea 154473.3; }
+}
+
+c2h2_to_c3h6     // (5) reverse leg k5/K_C5, K_C5 van't Hoff fit of the three printed values
+{
+    stoichiometry ( { component acetylene; nu -1; order 1; } { component CH4; nu -1; order 1; } { component propylene; nu 1; order 0; } );
+    kinetics { type Arrhenius; A 60.18175; Ea 29678.5; }
+}
+
+c2h2_c2h4_to_c4h6   // (6) C2H2 + C2H4 -> C4H6 ; k6 = 1.026e12 l/mol/s = 1.026e9 m3/mol/s, E = 41.26
+{
+    stoichiometry ( { component acetylene; nu -1; order 1; } { component ethylene; nu -1; order 1; } { component 13Butadiene; nu 1; order 0; } );
+    kinetics { type Arrhenius; A 1.026e9; Ea 172631.8; }
+}
+
+c2h4_c2h6_to_c3h6   // (8) C2H4 + C2H6 -> C3H6 + CH4 ; k8 = 7.083e13 l/mol/s = 7.083e10 m3/mol/s, E = 60.43
+{
+    stoichiometry ( { component ethylene; nu -1; order 1; } { component ethane; nu -1; order 1; } { component propylene; nu 1; order 0; } { component CH4; nu 1; order 0; } );
+    kinetics { type Arrhenius; A 7.083e10; Ea 252839.1; }
+}

@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  0/feed -- pure ethane + steam at the pilot plant's dilution, 0.4 kg steam per
+  kg of ethane (Froment et al. 1976, Table IV class 1), a basis of 3.6 kmol/h
+  of ethane.  0.4 kg/kg x 30.07/18.015 = 0.6676 mol steam / mol ethane.
+\*---------------------------------------------------------------------------*/
+
+componentMolarFlows
+{
+    ethane    3.6 kmol/h;
+    water     2.4034 kmol/h;
+}
+
+T               1113.15 K;       // the reference temperature T_R = 840 C (Table VIII)
+P               157053.75 Pa;    // 1.55 atm abs, Table VIII
+phase           gas;

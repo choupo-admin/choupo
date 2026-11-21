@@ -445,6 +445,11 @@ pressures ln k is linear in ln P; below the lowest / above the highest k is that
 the SAME P are summed.  The reaction line's own A b Ea is ignored; `reversible true` is detailed balance.  Reads the bed /
 feed pressure (a feed with no P refuses it by name); `thirdBody`/`low`/`troe` on it are refused.  Theory Guide `sec:plog-rate`.
 Witnesses: `plog01..04` (each equals `elementary01a` at 3 bar; gate `check_plog`).
+**Mole-changing gas reactions (a limit).**  The multi-reaction `pfr` prices every concentration as F_i/Q with Q the FEED's volumetric flow
+(held constant along the bed), so a gas reaction that changes the mole count runs too fast; and it has no declared temperature or
+pressure profile (only isothermal, adiabatic, `heatExchange`, Ergun).  `cracking01_ethane_sundaram_froment` works round the first by a
+chain of 20 `pfr` segments, each re-pricing Q at its inlet (expansion recovered to about 1 %); the second is not worked round, so the
+industrial coil of the source paper is not a case.  Theory Guide `sec:cracking-molecular`; gate `check_cracking_yields`.
 
 ### `conversionReactor`
 Stoichiometric reactor: you **specify the per-pass conversion** of the

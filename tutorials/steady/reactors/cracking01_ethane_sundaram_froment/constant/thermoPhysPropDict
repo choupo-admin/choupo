@@ -1,0 +1,27 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T1 ideal gamma-phi mixture, ideal-gas vapour.
+  Steam cracking runs at 1.5-3 atm and 950-1150 K: the gas is ideal to a
+  fraction of a percent, and the molecular scheme of Sundaram & Froment 1977
+  is written in concentrations of an ideal gas (C = P_t F_j / (F_t R T)).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+
+components       ( ethane ethylene H2 CH4 propylene propane acetylene 13Butadiene water );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

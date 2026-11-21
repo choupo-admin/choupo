@@ -6324,6 +6324,25 @@ PYEOF
     fi
     rm -f /tmp/kinjac.$$
 
+    # cracking-yields gate (2026-11-21, olefins line C456 slice 1).  The molecular
+    # scheme of Sundaram & Froment 1977 for ethane cracking, in a chain of pfr
+    # segments, against (A) an independent integration typed in the gate from the
+    # paper's Table 1 / Table 3 and (B) Froment et al. 1976 Table VIII.  The
+    # defect it would have caught: a rate constant in l/mol/s read as m3/mol/s (or
+    # kcal read as kJ) in a case whose volume is sized to a fixed conversion, so
+    # the main step's error is absorbed and only the secondary yields move, at
+    # exit 0 with every balance closed.  The three minor yields that do NOT
+    # reproduce the table are pinned by name, not hidden in a wide band.
+    if gate_exec "$ROOT/bin/curate/check_cracking_yields.py" > /tmp/crackyld.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "cracking-yields-gate" "$(head -1 /tmp/crackyld.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_cracking_yields.py)\n" "cracking-yields-gate"
+        cat /tmp/crackyld.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/crackyld.$$
+
     # cubic-mixing-rule gate (2026-11-16, DEV.md 4c C408 (b)).  The mixing rule
     # of a cubic is an object (CubicMixingRule): the van der Waals one-fluid
     # arithmetic moved intact, and MHV1 / MHV2 (Michelsen 1990 Eq. 12; Dahl &
