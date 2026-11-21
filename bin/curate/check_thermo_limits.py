@@ -225,13 +225,13 @@ def satProbe(unitType, flows, label, word, P="2061600", genuine=None):
         return None
 
 
-for f in (satProbe("bubbleT", ("0.149515816249", "0.850484183751"),
+for f in (satProbe("bubbleT", ("0.150634977322", "0.849365022678"),
                    "(c-genuine) bubble", "bubble", genuine=149.82),
-          satProbe("dewT", ("0.465833270562", "0.534166730281"),
+          satProbe("dewT", ("0.466423667811", "0.533576332189"),
                    "(d-genuine) dew", "dew", genuine=149.82),
-          satProbe("bubbleT", ("0.149515816249", "0.850484183751"),
+          satProbe("bubbleT", ("0.150634977322", "0.849365022678"),
                    "(c) bubble", "bubble", P="5000000"),
-          satProbe("dewT", ("0.465833270562", "0.534166730281"),
+          satProbe("dewT", ("0.466423667811", "0.533576332189"),
                    "(d) dew", "dew", P="5000000")):
     if f:
         fails.append(f)
