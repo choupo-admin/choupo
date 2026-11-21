@@ -439,7 +439,7 @@ students' approved files are the ground truth: **do not regenerate the case.**
 
 <!-- SOURCES (for maintainers; a gate holds each to the engine):
   absorber ports ....... src/unitOperations/separation/Absorber.cpp:70,99,282-289
-  shortcut KPIs ........ src/unitOperations/distillation/ShortcutColumn.cpp:305-316
+  shortcut KPIs ........ src/unitOperations/distillation/ShortcutColumn.cpp:344-355
   turbine keys ......... src/unitOperations/rotating/Turbine.cpp:78-86 (as read by the pressure-pack general)
   tearStreams .......... src/unitOperations/flowsheet/Flowsheet.cpp:342
   ports in/inputs/outputs src/unitOperations/flowsheet/Flowsheet.cpp:835,1075
