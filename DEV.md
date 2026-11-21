@@ -4960,6 +4960,29 @@ accepts today, and that is a policy call.
 > step a small interactive figure on 2x2/3x3 numbers the student can drag;
 > every claim about the engine cited by file:line through managed CLAIMS.
 
+> **C463 LANDED (2026-11-21)**: 8 steps, 11 original diagrams, 9 interactive figures,
+> the history of the name from Miller's dictionary ("form": Euler 1775 / Gauss 1801
+> Art. 153; "definite": no documented first use), Biegler-Grossmann-Westerberg 1997
+> pp. 255-256.  --gui on the merge 43/3: one real (an evidence record without
+> `system`, from C456 slice 4, fixed), two environmental to the primary checkout
+> (untracked MORNING.md, private data/local pairs, an untracked run-output folder);
+> those three tests pass in a clean worktree (19/19).  Two tests C463 left red on
+> main (the pinned path list, three EvidencePartition.H citations moved by the
+> alpha-fit landing) fixed the same hour.
+
+> **C464 (Vitor, 2026-11-21): an EduTool on fault detection and diagnosis.**  Trigger:
+> his home dehumidifier (temperature dips every ~4.5 h that were a slow pump-out
+> pause, not a defrost; a narrow on/off band whose sensor saw the unit's own heat;
+> a humidity sensor 15 points high found only against a second sensor in absolute
+> humidity).  Ruled with him: an EduTool only -- no engine data reconciliation, no
+> dehumidifier case.  Scope: his story as the opening; examples easy to hard (a
+> mass balance accuses a flowmeter, fouling vs a failed sensor in a heat exchanger,
+> a worn pump off its curve); methods each with a picture (limits, residuals,
+> redundancy, reconciliation with the chi-square tests computed in the page, time
+> signatures, a note on PCA); challenge exercises with a hidden randomised fault at
+> the end.  Sources: Seborg 4th ed., Montgomery 6th ed. in the folder; the FDD
+> monographs as further reading only.
+
 > **C458 RULED ON THE HOME OF RADICALS (architect, 2026-11-21, Vitor asking for a
 > second opinion on the cloud's proposal that radicals stay in components/).**
 > MEASURED: 36 records tagged `radical` sit in components/, every one with
