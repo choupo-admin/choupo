@@ -441,6 +441,9 @@ void ThermoPackage::assembleNamedPhases(const std::vector<std::string>& namesIn,
     }
     if (eosRef) eos_ = EquationOfState::New(eosRef, components_);
     bindVapourReference();
+    if (!eosRef)        // C458: no vapour phase anywhere in this package
+        refuseGasOnlyWithoutVapour(sVector(n(), 1.0),
+            "a property system whose declared phases hold no vapour");
 
     auditFindings_ = collectAuditFindings(components_, activity_.get(), eos_.get());
     auditPackage(components_, activity_.get(), eos_.get());
@@ -861,8 +864,9 @@ scalar ThermoPackage::refFactor(std::size_t i, scalar T, scalar P) const
 {
     if (!phiSatActive()) return 1.0;
     if (pureFluid_.count(i) || !components_[i].hasVaporPressure()) return 1.0;
-    const std::string& role = components_[i].role();
-    if (role == "nonvolatile" || role == "radical") return 1.0;
+    //  No liquid reference to correct: a nonvolatile (K = 0) and a gas-only
+    //  species (K = kNoLiquidK) never read one.
+    if (components_[i].isNonvolatile() || components_[i].isGasOnly()) return 1.0;
     return liquidReferenceFactor(*eos_, components_[i], i, n(), T, P,
                                  Psat(i, T),
                                  [this, i](scalar Tx) { return Psat(i, Tx); });
@@ -934,6 +938,7 @@ bool ThermoPackage::vapourFugacityDependsOnComposition() const
 scalar ThermoPackage::K(std::size_t i, scalar T, scalar P,
                         const sVector& x, const sVector& y) const
 {
+    if (components_[i].isGasOnly()) return kNoLiquidK;   // C458: non-condensable
     auto gam = activity_->gamma(T, x);
     auto phi = eos_     ->phi  (T, P, y);
     //  The associated ideal-gas vapour (one home: PsatLiquidReference +
@@ -986,7 +991,8 @@ sVector ThermoPackage::Kvec(scalar T, scalar P,
         const auto phiL = eos_->phiLiquid(T, P, x);
         sVector Kpp(n());
         for (std::size_t i = 0; i < n(); ++i)
-            Kpp[i] = (phiV[i] > 0.0) ? phiL[i] / phiV[i] : 0.0;
+            Kpp[i] = components_[i].isGasOnly() ? kNoLiquidK      // C458
+                   : (phiV[i] > 0.0) ? phiL[i] / phiV[i] : 0.0;
         return Kpp;
     }
     return KvecAtGamma(T, P, x, y, activity_->gamma(T, x));
@@ -1011,11 +1017,11 @@ sVector ThermoPackage::KvecAtGamma(scalar T, scalar P,
     for (std::size_t i = 0; i < n(); ++i)
     {
         // Nonvolatile solutes (NaCl, glucose,...) never enter the
-        // vapour: K = 0 identically.  Radicals are similarly ineligible
-        // for VLE (gas-phase-only species; OH, H, O).
+        // vapour: K = 0 identically.  A GAS-ONLY species (OH, H, O; C458)
+        // never enters the liquid: the non-condensable cap.
         const std::string& role = components_[i].role();
-        if (role == "nonvolatile" || role == "radical")
-        { K[i] = 0.0; continue; }
+        if (components_[i].isNonvolatile()) { K[i] = 0.0; continue; }
+        if (components_[i].isGasOnly())     { K[i] = kNoLiquidK; continue; }
 
         // Solutes (CO2, NH3, O2, H2S,...) follow Henry's law when an
         // entry exists for (solute, solvent).  Otherwise fall back to
@@ -1264,7 +1270,7 @@ sVector ThermoPackage::stageK(scalar T, scalar P, const sVector& zStage,
             //  A volatile exhausted from the liquid has K -> infinity; the
             //  stage K is a FINITE cap, announced once (audit H1, C245
             //  slice 3: an inf poisons a finite-difference Jacobian row).
-            constexpr scalar kCap = 1.0e12;
+            constexpr scalar kCap = kNoLiquidK;   // one cap, two readers (C458)
             if (up > 0.0)
             {
                 static bool capAnnounced = false;
@@ -1293,8 +1299,8 @@ sVector ThermoPackage::Kvec_Raoult(scalar T, scalar P) const
     for (std::size_t i = 0; i < n(); ++i)
     {
         const std::string& role = components_[i].role();
-        if (role == "nonvolatile" || role == "radical")
-        { K[i] = 0.0; continue; }
+        if (components_[i].isNonvolatile()) { K[i] = 0.0; continue; }
+        if (components_[i].isGasOnly())     { K[i] = kNoLiquidK; continue; }
         const bool henrySolute = (role == "solute"
              || std::find(declaredSolutes_.begin(), declaredSolutes_.end(),
                           components_[i].name()) != declaredSolutes_.end());
@@ -1308,6 +1314,30 @@ sVector ThermoPackage::Kvec_Raoult(scalar T, scalar P) const
         K[i] = Psat(i, T) / P;
     }
     return K;
+}
+
+void ThermoPackage::refuseGasOnlyWithoutVapour(const sVector& z,
+                                               const std::string& state) const
+{
+    //  THE ONE HOME of the no-vapour refusal (DEV.md 4c C458).  Until the
+    //  ruling a radical carried `role nonvolatile;` and K = 0 sent it to the
+    //  LIQUID; a gas-only species has no condensed phase and no data for
+    //  one, so a state that offers it none is not a state the model can
+    //  price.  It is named and refused, never re-routed.
+    std::string names;
+    for (std::size_t i = 0; i < n() && i < z.size(); ++i)
+        if (z[i] > 0.0 && components_[i].isGasOnly())
+            names += (names.empty() ? "'" : ", '") + components_[i].name() + "'";
+    if (names.empty()) return;
+    throw std::runtime_error(
+        "gas-only species " + names + " (role radical: it exists only in the"
+        " gas phase, DEV.md 4c C458) present in " + state + ", which has no"
+        " vapour phase to hold it.  A gas-only species is never sent to a"
+        " liquid or a solid, and it has no condensed-phase data to price one."
+        "  Remedy: keep the state above its dew point (raise T or lower P, or"
+        " give the step a vapour outlet), or remove the species from the"
+        " stream before the condensed-phase step (let its mechanism consume"
+        " it).");
 }
 
 scalar ThermoPackage::Hliquid(scalar T, const sVector& x, scalar Tref) const
@@ -1846,6 +1876,7 @@ scalar ThermoPackage::speciesPhaseEnthalpy(std::size_t i, scalar T,
     // above (the dissolved/crystalline rung, a declared liquid Cp) are
     // untouched, and the electrolyte branch of H_liquid_formation prices its
     // salt before this leg is ever asked.
+    if (c.gasOnlyLiquidLeg("formation-datum")) return c.h_pure_ig(T);   // C458
     c.requireWatsonSlopeLiquidFallback("formation-datum");
     if (AdvisoryLog::instance().add("thermo", "warning",
             "speciesPhaseEnthalpy " + c.name(),
@@ -2090,6 +2121,8 @@ scalar ThermoPackage::S_liquid_formation(scalar T, const sVector& x) const
                 " defined on this surface.");
         if (c.hasCpLiquid())
             s += x[i] * c.s_formation(T, "liquid");
+        else if (c.gasOnlyLiquidLeg("formation-datum entropy"))   // C458
+            s += x[i] * c.s_pure_ig(T);
         else
         {
             //  The partner of the Watson-slope enthalpy fallback: the same

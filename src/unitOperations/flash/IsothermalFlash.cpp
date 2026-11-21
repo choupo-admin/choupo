@@ -536,6 +536,8 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         if (allCryst && vapAll.empty() && liqAll.size() == 1
             && opts.phaseSet == PhaseSet::VL)
         {
+            thermo.refuseGasOnlyWithoutVapour(in.z,     // C458
+                "a liquid-solid (SLE) flash");
             sol = solveSLE(in, thermo, opts, liqAll[0], solAll);
             return sol;
         }
@@ -567,6 +569,8 @@ IsothermalFlash::solveCore(const FlashInput&    in,
     std::size_t phaseBeta  = vapAll.empty() ? 1 : vapAll[0];
     if (opts.phaseSet == PhaseSet::LL)
     {
+        thermo.refuseGasOnlyWithoutVapour(in.z,         // C458
+            "a liquid-liquid flash (phaseSet LL)");
         const auto& liqs = liqAll;
         if (liqs.size() < 2)
             throw std::runtime_error("LL flash needs >= 2 liquid phases in "
@@ -1626,6 +1630,10 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                     std::cout << "  Psat = " << std::fixed << std::setprecision(4)
                               << (Psat * 1.0e-5) << " bar";
                 }
+                else if (thermo.comp(i).isGasOnly())        // C458
+                {
+                    std::cout << "  gas-only (non-condensable)   ";
+                }
                 else
                 {
                     std::cout << "  Psat = (nonvolatile)         ";
@@ -1761,6 +1769,11 @@ IsothermalFlash::solveCore(const FlashInput&    in,
 
         if (liquidVerdict)
         {
+            //  C458: unreachable while a gas-only species carries K =
+            //  kNoLiquidK and z above ~1/kNoLiquidK; a trace below that is
+            //  still a gas-only species in a liquid, and is refused.
+            thermo.refuseGasOnlyWithoutVapour(in.z,
+                "a subcooled liquid (the flash's single-phase verdict)");
             sol.regime    = "subcooled liquid";
             sol.V_over_F  = 0.0;
             sol.x         = in.z;

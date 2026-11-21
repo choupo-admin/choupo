@@ -195,6 +195,25 @@ public:
                         const sVector& y, const sVector& gamma) const;
     sVector Kvec_Raoult(scalar T_K, scalar P_Pa) const;
 
+    //  ---- A GAS-ONLY SPECIES (DEV.md 4c C458) ---------------------------
+    //
+    //  A species with `role radical;` (Component::isGasOnly, the one home of
+    //  the fact) exists only in the gas phase.  In a phase split it is a
+    //  NON-CONDENSABLE: its K is this cap at every K-value site, the same
+    //  cap the stage-K path already gives a component absent from the liquid
+    //  but present in the vapour (one number, two readers), so Rachford-Rice
+    //  keeps it in the vapour and a feed carrying it cannot be a subcooled
+    //  liquid.  A `role nonvolatile;` salt or sugar keeps K = 0.
+    static constexpr scalar kNoLiquidK = 1.0e12;
+    //  A state with NO vapour phase to hold a gas-only species -- a
+    //  saturated or subcooled liquid, a liquid-liquid split, a package that
+    //  declares no vapour phase -- is refused HERE, naming the species, the
+    //  state and the remedy.  `z` is the state's overall composition (a
+    //  component at zero is not present); `state` says which state, in the
+    //  caller's words.  Returns normally when no gas-only species is present.
+    void refuseGasOnlyWithoutVapour(const sVector& z,
+                                    const std::string& state) const;
+
     //  ---- STAGE EQUILIBRIUM: the K-values an EQUILIBRIUM STAGE sees -----
     //
     //  `Kvec` is the MOLECULAR K-value surface and has no reactive branch,
