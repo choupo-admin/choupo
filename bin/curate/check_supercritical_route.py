@@ -32,21 +32,28 @@ WHAT THIS GATE CHECKS (choupoSolve, temporary cases built from flash09_n2ch4_str
  (c) a gamma-phi case above every Tc (ammonia03_quench_converter): the discard
      STILL happens and the advisory still names the correlations.
 
-SABOTAGE ARMS.  In the data: (a) rerun with kij = 0, which has no split there, must
-FAIL the (a) comparison; (b) rerun at 420 K (inside the two-phase region) must FAIL
-the (b) comparison.  In the engine (run by hand when the gate was written, recorded in
-the review): restoring the unconditional discard makes (a) fail (V/F = 1, advisory,
-fugacities differ); disabling the discard on every route makes (c) fail (advisory gone).
-Applying the Gibbs test to gamma-phi routes too is NOT seen: on an ideal-gas vapour it
-never accepts a split, so that edit changes nothing observable (measured 2026-11-21).
+SABOTAGE ARMS (ENGINE sabotages, built by the gate itself).  The gate copies src/, make/,
+the Makefile and the object tree to a temporary directory, patches
+src/unitOperations/flash/StreamEquilibrium.H there, rebuilds choupoSolve (only the
+translation units that include it recompile) and reruns the arm that must notice:
+  S1  the unconditional discard restored (the route test never accepts a split):
+      (a) must FAIL -- V/F 1, a DISCARDED advisory, fugacities no longer equal;
+  S2  the discard disabled on every route: (c) must FAIL -- the gamma-phi advisory is gone.
+A sabotage that does not build, or whose arm still passes, FAILS the gate.  (Data
+sabotages -- kij = 0, T = 420 K -- were tried and dropped: neither state is a two-phase
+root above every pure Tc, so neither reaches the new code.)
 
 NOT CHECKED: a phi-phi root the Gibbs test rejects (none is known to be produced by
 the solver; the rejection path is read, not run), PR (same code path), steady cases
 other than the three above (the scope list in the C467 landing covers them).
 """
 import json
+import os
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -167,19 +174,57 @@ def main():
     elif not any("DISCARDED" in json.dumps(x) and "[psat]" in json.dumps(x) for x in j.get("advisories", [])):
         failures.append(f"(c) {GAMMA_PHI}: the gamma-phi discard advisory (naming [henry]/[psat]) is gone")
 
-    # sabotage arms in the data: the comparisons must have teeth.
-    rc, out, s1 = witness(426.12, 0.0)
-    if s1 is None or not split_ok(s1):
-        failures.append("sabotage arm (a): kij = 0 (no split there) passed the split comparison")
-    rc, out, s2 = witness(420.0, -0.3)
-    if s2 is None or abs(s2["VF"] - 1.0) < 1e-3:
-        failures.append("sabotage arm (b): a two-phase state at 420 K passed as 'single phase'")
+    # ENGINE sabotage arms: patch-build a private copy of the tree and rerun the arm.
+    header = "src/unitOperations/flash/StreamEquilibrium.H"
+    gate = 'if (phiPhiRoute && phiPhiSplitLowersGibbs(fs, T, P, z, thermo, &phiWhy))'
+    repo = gatekit.repo
+    with tempfile.TemporaryDirectory(prefix="scroute_") as td:
+        tree = Path(td) / "tree"
+        tree.mkdir()
+        for d in ("src", "make", "build"):
+            shutil.copytree(repo / d, tree / d, symlinks=True)
+        shutil.copy2(repo / "Makefile", tree / "Makefile")
+        plat = next((p.name for p in (repo / "build").iterdir() if (p / "choupoSolve").exists()), None)
+        if plat is None:
+            failures.append("sabotage arms: no built choupoSolve under build/ to copy")
+        text = (tree / header).read_text() if plat else ""
+        if plat and gate not in text:
+            failures.append("sabotage arms: the route test line is gone from the header -- the gate is stale")
+        elif plat:
+            exe = tree / "build" / plat / "choupoSolve"
+            for tag in ("S1 unconditional discard", "S2 no discard on any route"):
+                # S1 must make the split impossible to keep: the discard happens for phi-phi too.
+                patched = text.replace(gate, "if (true)" if tag.startswith("S2") else
+                                       gate.replace("if (", "if (false && ", 1))
+                (tree / header).write_text(patched)
+                os.utime(tree / header, None)
+                r = subprocess.run(["make", "-j2", f"build/{plat}/choupoSolve"], cwd=tree,
+                                   capture_output=True, text=True)
+                if r.returncode != 0 or not exe.exists():
+                    failures.append(f"sabotage {tag}: the patched engine did not build: "
+                                    + " | ".join((r.stdout + r.stderr).strip().splitlines()[-2:]))
+                    continue
+                if tag.startswith("S1"):
+                    with gatekit.probe_copy(BASE, strip=STRIP) as c:
+                        build(c, 426.12, -0.3)
+                        rc2, out2 = gatekit.run(exe, c)
+                    s1 = read(out2) if rc2 == 0 else None
+                    if s1 is None or not split_ok(s1):
+                        failures.append("sabotage S1: under the unconditional discard the witness still passed (a) "
+                                        "-- (a) cannot see the defect")
+                else:
+                    with gatekit.probe_copy(GAMMA_PHI, strip=("expected", "converged", "reports")) as c:
+                        rc2, out2 = gatekit.run(exe, c)
+                    j2 = result(out2) if rc2 == 0 else None
+                    if j2 is not None and any("DISCARDED" in json.dumps(x) for x in j2.get("advisories", [])):
+                        failures.append("sabotage S2: with no discard on any route (c) still saw the advisory "
+                                        "-- (c) cannot see the defect")
 
     return gatekit.verdict(
         "check_supercritical_route", failures,
         f"above every pure Tc a phi-phi split stands when it lowers G (witness V/F {a['VF']:.4f}, x/y "
         f"{a['x']:.5f}/{a['y']:.5f}, |y-Kx| {fug:.1e}, mass {clos:.1e}); a single-phase phi-phi state stays "
-        "single-phase; the gamma-phi discard and its advisory are unchanged; two data sabotages are seen",
+        "single-phase; the gamma-phi discard and its advisory are unchanged; two engine sabotages (built here) are seen",
     )
 
 
