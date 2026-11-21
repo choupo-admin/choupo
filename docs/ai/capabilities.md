@@ -333,9 +333,18 @@ batch plan, sizing, clean utilities, costing and economics on top
 * Computes: in `choupoBatch`, `batchUnit:batchReactor` (kinetics, heat,
   dosing), `batchUnit:batchCrystalliser`, `batchUnit:batchStill`; steady
   `unit:crystalliser` and `unit:cstr`.
-* Missing: a solid-liquid filter, filter press or centrifuge unit (use a
-  `unit:splitter` and say it is a balance); coupling a `choupoBatch` recipe to
-  the batch plan of a `choupoSolve` plant.
+* Isolation: `unit:cakeFilter` (rotary drum or cyclic press, cake and medium
+  resistance, washing) and `unit:sedimentingCentrifuge` (tubular bowl or disc
+  stack, Sigma theory, cut size) exist in `choupoSolve` on cycle-averaged
+  streams (section 2, solid-liquid separation row; witnesses
+  `tutorials/steady/solids/filter02_caco3_pressWashing` and
+  `tutorials/steady/solids/centrifuge01_tubularBowl_geankoplis`).  Their
+  limits are that row's `Missing:` list (no constant-rate or centrifugal
+  filtration, no centrifuge drive power or sizing); a pharmaceutical filter
+  dryer or a basket centrifuge is not modelled, so use `unit:splitter` for
+  those and say it is a balance.
+* Missing: coupling a `choupoBatch` recipe to the batch plan of a
+  `choupoSolve` plant.
 * Witnesses: `tutorials/batch/reactor/batch01_first_order`,
   `tutorials/batch/reactor/batch27_semibatch_dosing`,
   `tutorials/batch/crystallisation/batch13_nacl_pitzer`.

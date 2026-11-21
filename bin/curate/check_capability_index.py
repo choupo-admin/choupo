@@ -131,6 +131,36 @@ def budget_findings():
     return bad
 
 
+def stale_claim_findings(brief_text, caps_text, units):
+    """C467 R-004 (external review): an assistant obeys what these pages say
+    is ABSENT or SHORT.  Two real defects it would have caught: the brief
+    hand-listed nine NRTL pairs as "few" while the catalogue ships hundreds,
+    and the capability index said there was no solid-liquid filter or
+    centrifuge while `cakeFilter` and `sedimentingCentrifuge` are registered.
+    (1) a line about NRTL naming three or more `a-b` pairs in a row is a hand
+    list that goes stale: point at the catalogue instead.  (2) a `Missing:`
+    sentence naming a word of a registered unit's own name (filter,
+    centrifuge, thickener...) is refused unless that sentence also names the
+    typed unit."""
+    bad = []
+    for n, line in enumerate(brief_text.splitlines(), 1):
+        if "NRTL" in line and re.search(r"(?:\w+-\w+, ){3}", line):
+            bad.append("brief.md:%d: a hand-listed set of NRTL pairs; the "
+                       "catalogue is the list" % n)
+    words = {"filter": "cakeFilter", "centrifuge": "sedimentingCentrifuge",
+             "thickener": "thickener"}
+    for n, line in enumerate(caps_text.splitlines(), 1):
+        m = re.match(r"\s*\*\s*Missing:(.*)", line)
+        if not m:
+            continue
+        for w, unit in words.items():
+            if unit in units and re.search(r"\ba (?:solid-liquid )?%s\b" % w, m.group(1)) \
+               and unit not in m.group(1):
+                bad.append("capabilities.md:%d: says a %s is missing but `%s` is registered"
+                           % (n, w, unit))
+    return bad
+
+
 PROMPT_MAX_WORDS = 250
 
 
@@ -289,6 +319,10 @@ def main():
     if index == INDEX:
         bad += budget_findings()
         bad += prompts_findings()
+        bad += stale_claim_findings(
+            (ROOT / "docs" / "ai" / "brief.md").read_text(encoding="utf-8"),
+            index.read_text(encoding="utf-8"),
+            registered("src/unitOperations/UnitOperation.cpp"))
 
     if bad:
         print("check_capability_index: FAIL: %d dead or incomplete reference(s) "
