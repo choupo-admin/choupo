@@ -4258,7 +4258,13 @@ Residual kinds: `T_bubble`, `P_bubble`, `T_bubble+LLE` (bubble temperatures
 AND measured binodal tie lines in one fit, for a partially miscible binary --
 needs `weighting uncertainty`, `residual.liquidLiquid { sigma; origin }`, a
 package with two liquid phases and, for held-out tie lines, `acceptance {
-maxLLE }`; see `patterns.md`), `isotherm`, `membrane`.  The pair models are
+maxLLE }`; see `patterns.md`), `isotherm`, `membrane`.  A `P_bubble` fit can ALSO fit
+the relative volatility alpha = (y1/x1)/(y2/x2) (from the engine's bubble point at each
+(T, x), relative to a dataset column): add `weights { P 1; alpha 1; alphaColumn alpha; }`
+to `residual` -- chi2 = wP sum rP^2 + wA sum rA^2, BOTH weights must be written (no
+default), 0 drops a family; the evidence must carry the column (witness
+`olefins03_propane_propene_kij_fit_laurance1972`, SRK kij on alpha 0.00927; Theory
+Guide `sec:fit-alpha-residual`; held-out AAD is over all held-out rows).  The pair models are
 NRTL, UNIQUAC and Wilson; the proposal record carries each model's own keys.
 
 Supported property keywords (in `propertyPoint.state` selectors and

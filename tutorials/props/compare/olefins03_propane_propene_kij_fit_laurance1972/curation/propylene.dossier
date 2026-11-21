@@ -120,4 +120,102 @@ properties
     }
 }
 
+{
+    property       binaryVLE.P_bubble;
+    operation      kij_srk_alpha;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.equationOfState.binaryInteractions.propane-propylene.kij  0.0092732007241;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "baec089e679309c1";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/propane-propene-laurance1972-all.dat";
+            sha256    "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";
+            provenance measured;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/propane-propene-laurance1972-all.dat";
+            sha256    "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";
+            provenance measured;
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1; max 0.9; n 36; }
+            validation  { min 0.1; max 0.9; n 27; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.18962012549;
+        acceptanceMaxAADPct 1;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit (README, second fit): the held-out mean relative deviation over the alpha rows and the pressure rows stays at or below 1.0 %";
+    }
+}
+
+{
+    property       binaryVLE.P_bubble;
+    operation      kij_srk_alphaP;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.equationOfState.binaryInteractions.propane-propylene.kij  0.00675389008691;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "baec089e679309c1";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/propane-propene-laurance1972-all.dat";
+            sha256    "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";
+            provenance measured;
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/propane-propene-laurance1972-all.dat";
+            sha256    "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";
+            provenance measured;
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.1; max 0.9; n 72; }
+            validation  { min 0.1; max 0.9; n 54; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.763711950049;
+        acceptanceMaxAADPct 1;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit (README, second fit): the held-out mean relative deviation over the alpha rows and the pressure rows stays at or below 1.0 %";
+    }
+}
+
 );

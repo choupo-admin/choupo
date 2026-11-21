@@ -10872,10 +10872,33 @@ mean $0.66\,\%$ (max $1.97\,\%$) against $1.79\,\%$ for $k_{ij}=0$, held-out $P$
 $k_{ij}=-0.00007\pm0.0012$, i.e.\ zero, and held-out $\alpha$ stays $1.82\,\%$ (band missed).  The reason is measured, not assumed: for SRK the pressure
 minimum is at $k_{ij}=0$ while $\alpha$ keeps improving to $k_{ij}\approx0.009$ (held-out $\alpha$ $0.19\,\%$, but $P$ $1.34\,\%$), whereas for PR the two minima
 nearly coincide ($0.005$ and $0.008$); a constant $k_{ij}$ can remove the composition trend (at SRK $0.009$: $-0.30\,\%$ and $-0.28\,\%$ at $x=0.1$ and $0.9$), but a
-pressure objective does not choose it for SRK, and \code{fitParameters} has no relative-volatility residual.  The splitter on PR with this $k_{ij}$
+pressure objective does not choose it for SRK (the relative-volatility residual of the next paragraph can).  The splitter on PR with this $k_{ij}$
 (\code{tutorials/steady/distillation/c3splitter02\_propylene\_propane\_pr\_kij}) has $\alpha=1.1206$, 159.8 stages and $R=13.96$, i.e.\ $-7.7\,\%$ and $-8.4\,\%$
 from the measured-alpha tower (173.2 stages, $R=15.23$) against $-16.5\,\%$ and $-17.9\,\%$ at $k_{ij}=0$; the rigorous column at the shortcut's numbers delivers
 99.03 mol\,\% overhead (the constant-$\alpha$ shortcut's limit) and at the measured-alpha tower 99.51 mol\,\% propylene overhead and 97.71 mol\,\% propane in the bottoms (specification 99.5/97.69).
+
+\paragraph{Relative volatility as a regression residual.}\label{sec:fit-alpha-residual}  \code{fitParameters}
+(\code{kind P\_bubble}) accepts, in its \code{residual} block, a declared pair of weights
+\code{weights \{ P $w_P$; alpha $w_\alpha$; alphaColumn <name>; \}} and then minimises
+\begin{equation}
+\chi^2=w_P\sum_i\Bigl(\frac{P_{\mathrm{model},i}-P_{\mathrm{exp},i}}{P_{\mathrm{exp},i}}\Bigr)^2
+      +w_\alpha\sum_i\Bigl(\frac{\alpha_{\mathrm{model},i}-\alpha_{\mathrm{exp},i}}{\alpha_{\mathrm{exp},i}}\Bigr)^2,
+\qquad \alpha_{12}=\frac{y_1/x_1}{y_2/x_2},
+\end{equation}
+with $P_{\mathrm{model}}$ and $y$ the engine's own bubble point at each point's measured $(T,x)$
+(\code{BubblePoint::pressure}, the incipient vapour iterated) and $\alpha_{\mathrm{exp}}$ the dataset column
+\code{alphaColumn}.  There is NO default weight: the case writes both, a weight of 0 drops that family
+($w_P=0$ is an alpha-only fit), and without the block the operation is exactly the pressure fit of the previous
+paragraph.  Each family is one block of rows carrying $\sqrt{w}$, so the Levenberg--Marquardt step, the Jacobian and
+the $\chi^2$ are those of the least-squares chapter; the held-out rows are the same blocks unweighted, and the held-out
+$\mathrm{AAD}$ is the mean of $|r|$ over all held-out rows (the per-family means are published as
+\code{aad\_heldout\_P\_rel} and \code{aad\_heldout\_alpha\_rel}).  Validity: a binary $P$--$x$ dataset with an
+$\alpha$ column, one liquid, \code{evaluate} mode not supported; source: the combination is Choupo's own, the
+residual of each family is the one already used.  Result on propene/propane (Laurance \& Swift 1972, same
+36/27 split, bands declared in the case README before the run): SRK on $\alpha$ alone $k_{ij}=0.00927\pm0.0004$, held-out
+$\alpha$ $0.19\,\%$ (max $0.55\,\%$) but $P$ $1.38\,\%$; on $\alpha+P$ with equal weights $k_{ij}=0.00675\pm0.0011$,
+$\alpha$ $0.49\,\%$ (max $1.57\,\%$), $P$ $1.04\,\%$ (max $1.44\,\%$).  The $\alpha$ band is met by both and the
+pressure band ($\le1.0\,\%$ mean) by neither, so no SRK record is promoted; both numbers are IN SAMPLE to the same table.
 
 \paragraph{Validity window and in-sample statement.}  Propene/propane 310.9--344.3\,K, liquid propene fraction
 0.1--0.9, 13--31 bar; ethylene/ethane 263.15 and 293.15\,K, 19--48 atm (293.15\,K is above the critical temperature of

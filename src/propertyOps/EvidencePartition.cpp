@@ -618,7 +618,8 @@ EvidencePartition::loadColumns(const EvidenceDataset& ds,
                                const std::vector<std::string>& xNames,
                                const std::vector<std::string>& yNames,
                                const std::string& opLabel,
-                               const std::vector<std::string>& zNames)
+                               const std::vector<std::string>& zNames,
+                               const std::vector<std::string>& wNames)
 {
     const std::string where = opLabel + " dataset '" + ds.path + "'";
     auto d    = Dictionary::fromFile(ds.path);
@@ -629,7 +630,7 @@ EvidencePartition::loadColumns(const EvidenceDataset& ds,
         throw std::runtime_error(where + ": need >= 2 columns and a data grid"
             " whose length is a multiple of the column count.");
 
-    int cx = -1, cy = -1, cz = -1;
+    int cx = -1, cy = -1, cz = -1, cw = -1;
     std::vector<std::string> unit(nc);
     for (std::size_t j = 0; j < nc; ++j)
     {
@@ -641,7 +642,11 @@ EvidencePartition::loadColumns(const EvidenceDataset& ds,
             cy = static_cast<int>(j);
         if (cz < 0 && std::find(zNames.begin(), zNames.end(), name) != zNames.end())
             cz = static_cast<int>(j);
+        if (cw < 0 && std::find(wNames.begin(), wNames.end(), name) != wNames.end())
+            cw = static_cast<int>(j);
     }
+    if (!wNames.empty() && cw < 0)
+        throw std::runtime_error(where + ": needs a column named one of [" + wNames[0] + "] (the declared residual.weights.alphaColumn).");
     auto join = [](const std::vector<std::string>& v) {
         std::string s; for (const auto& e : v) s += (s.empty() ? "" : " | ") + e; return s;
     };
@@ -708,6 +713,7 @@ EvidencePartition::loadColumns(const EvidenceDataset& ds,
         p.y = convUnit(grid[r * nc + cy], unit[cy], where);
         if (cz >= 0) p.z = convUnit(grid[r * nc + cz], unit[cz], where);
         else         p.z = zConst;
+        if (cw >= 0) p.w = convUnit(grid[r * nc + cw], unit[cw], where);
         out.push_back(p);
     }
     return out;
@@ -765,12 +771,13 @@ EvidencePartition::loadAll(const std::vector<EvidenceDataset>& sets,
                            const std::vector<std::string>& xNames,
                            const std::vector<std::string>& yNames,
                            const std::string& opLabel,
-                           const std::vector<std::string>& zNames)
+                           const std::vector<std::string>& zNames,
+                           const std::vector<std::string>& wNames)
 {
     std::vector<EvidencePoint> all;
     for (const auto& s : sets)
     {
-        auto pts = loadColumns(s, xNames, yNames, opLabel, zNames);
+        auto pts = loadColumns(s, xNames, yNames, opLabel, zNames, wNames);
         all.insert(all.end(), pts.begin(), pts.end());
     }
     return all;
