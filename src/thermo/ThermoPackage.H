@@ -206,10 +206,11 @@ public:
     //  liquid.  A `role nonvolatile;` salt or sugar keeps K = 0.
     static constexpr scalar kNoLiquidK = 1.0e12;
     //  A state with NO vapour phase to hold a gas-only species -- a
-    //  saturated or subcooled liquid, a liquid-liquid split, a package that
-    //  declares no vapour phase -- is refused HERE, naming the species, the
-    //  state and the remedy.  `z` is the state's overall composition (a
-    //  component at zero is not present); `state` says which state, in the
+    //  saturated liquid, a liquid-liquid or liquid-solid split, a package
+    //  that declares no vapour phase -- is refused HERE, naming the species,
+    //  the state and the remedy.  `z` is the state's overall composition; a
+    //  gas-only species at or below 1/kNoLiquidK is the trace the cap itself
+    //  leaves in a condensate, not present.  `state` says which state, in the
     //  caller's words.  Returns normally when no gas-only species is present.
     void refuseGasOnlyWithoutVapour(const sVector& z,
                                     const std::string& state) const;

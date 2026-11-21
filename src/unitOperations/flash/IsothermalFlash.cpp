@@ -1769,11 +1769,10 @@ IsothermalFlash::solveCore(const FlashInput&    in,
 
         if (liquidVerdict)
         {
-            //  C458: unreachable while a gas-only species carries K =
-            //  kNoLiquidK and z above ~1/kNoLiquidK; a trace below that is
-            //  still a gas-only species in a liquid, and is refused.
-            thermo.refuseGasOnlyWithoutVapour(in.z,
-                "a subcooled liquid (the flash's single-phase verdict)");
+            //  C458: never reached with a gas-only species above its trace
+            //  (z > 1/kNoLiquidK makes g(V=0) > 0); a condensate holding
+            //  only the cap's own trace is a liquid (ThermoPackage::
+            //  refuseGasOnlyWithoutVapour says why).
             sol.regime    = "subcooled liquid";
             sol.V_over_F  = 0.0;
             sol.x         = in.z;

@@ -384,6 +384,8 @@ int BubblePoint::solve(const DictPtr& dict,
                   << "; normalising.\n";
         for (auto& v : x) v /= xsum;
     }
+    thermo.refuseGasOnlyWithoutVapour(x, "a saturated liquid (a bubble"
+        " point: the liquid that holds the whole feed)");      // C458
 
     std::cout << "Liquid composition (x):\n";
     for (std::size_t i = 0; i < n; ++i)

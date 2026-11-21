@@ -1324,9 +1324,19 @@ void ThermoPackage::refuseGasOnlyWithoutVapour(const sVector& z,
     //  LIQUID; a gas-only species has no condensed phase and no data for
     //  one, so a state that offers it none is not a state the model can
     //  price.  It is named and refused, never re-routed.
+    //
+    //  PRESENT means above the cap's own trace.  A flash that keeps the
+    //  species in its vapour leaves at most z / kNoLiquidK of it in the
+    //  liquid outlet; that condensate is a liquid with a dissolved trace
+    //  (priced on the species' ideal-gas leg, Component::gasOnlyLiquidLeg),
+    //  and a later step that re-flashes or bubble-points it must not refuse
+    //  over a number the model itself put there (found on the witness's
+    //  condensate, flash23).  Above 1/kNoLiquidK the cap alone makes
+    //  g(V=0) > 0, which is why the flash's subcooled verdict never needs
+    //  this call.
     std::string names;
     for (std::size_t i = 0; i < n() && i < z.size(); ++i)
-        if (z[i] > 0.0 && components_[i].isGasOnly())
+        if (z[i] > 1.0 / kNoLiquidK && components_[i].isGasOnly())
             names += (names.empty() ? "'" : ", '") + components_[i].name() + "'";
     if (names.empty()) return;
     throw std::runtime_error(

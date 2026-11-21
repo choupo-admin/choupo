@@ -329,9 +329,11 @@ DictPtr Database::componentDict(const std::string& name) const
     //  components/ holds no record of this name, only in an unsealed case,
     //  and only for a table the case named.  The table's record is then the
     //  base, labelled and announced once per component -- never a fallback
-    //  nobody asked for.
+    //  nobody asked for.  A case-local record of the name outranks the table
+    //  and is read alone (case > components > table, DEV.md 4c C458: found
+    //  when claus01 declared the table and its own S8 met the table's S8).
     std::string tableHit;
-    if (!sealed && !fs::exists(standard))
+    if (!sealed && caseLocal.empty() && !fs::exists(standard))
         for (const auto& t : speciesTables())
         {
             const fs::path cand = fs::path(root_) / "standards" / "thermoTables" / t / (name + ".dat");
