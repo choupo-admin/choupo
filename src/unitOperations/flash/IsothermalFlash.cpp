@@ -1458,37 +1458,219 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         sVector y, xA, xB;
         unpackVLLE(bestV, bV, bA, bB, y, xA, xB);
 
-        // If one of the three phases is vanishingly small, demote to
-        // 2-phase (V+L or LL).  Threshold: 1 %.
-        const scalar PHASE_EPS = 1.0e-2;
-        if (bV < PHASE_EPS)
+        //  A PHASE THE SEARCH CANNOT JUSTIFY IS DROPPED BY RE-SOLVING, NEVER BY
+        //  RENORMALISING (DEV.md 4c C467 slices 3-4; the defect: the three-phase
+        //  answer was truncated to two phases -- the small phase's moles thrown
+        //  onto the others, the compositions kept -- so the published state
+        //  broke the component balance (ethanol 3.6e-6 of F on vlle04, 7e-5 at
+        //  z = 0.3) and the Nelder-Mead "converged" flag certified a state
+        //  nobody had re-solved; and an IDEAL binary, whose Gibbs surface is
+        //  strictly convex, was published as V + two copies of one liquid
+        //  because the objective is flat against splitting one liquid in two).
+        //  Three candidates are tested, each by the narrower solve itself:
+        //    (1) the vapour is below PHASE_EPS            -> LL branch,
+        //    (2) one liquid is below PHASE_EPS            -> VL branch,
+        //    (3) the two liquids are near copies
+        //        (max |x_a - x_b| < SAME_LIQUID)          -> VL branch;
+        //        a CANDIDATE only: the VL answer stands only if its liquid is
+        //        Michelsen-TPD stable (a gap whose TPD minimum is below the
+        //        stability tolerance survives); if it is not, the state is
+        //        refused, never published as two copies of one liquid.
+        //  The re-solved state is published (it closes the balance by
+        //  construction).  An LL answer must carry no favourable vapour; an LL
+        //  answer that is ONE liquid must also be below its bubble point at z
+        //  (otherwise the VL branch is solved).  When the vapour test REFUTES
+        //  the LL split, the answer is a real three-phase state with a small
+        //  vapour: the search is re-run from the LL liquids plus the incipient
+        //  vapour and published only if it passes (component balance by
+        //  construction, no phase at the 1e-4 box floor, equal fugacity of
+        //  every component in the three phases); otherwise it is REFUSED
+        //  (converged = false), never published as converged at the floor.
+        const scalar PHASE_EPS    = 1.0e-2;
+        const scalar SAME_LIQUID  = 5.0e-2;
+        const scalar FLOOR_FRAC   = 1.0e-3;   // 10x the box floor: a fraction below this IS the floor
+        const scalar EQ_TOL       = 2.0e-3;   // max |ln f_i(phase) - ln f_i(phase')|
+        scalar dLiq = 0.0;
+        for (std::size_t i : act) dLiq = std::max(dLiq, std::abs(xA[i] - xB[i]));
+
+        const bool dropVapour = bV < PHASE_EPS;
+        const bool dropLiquid = !dropVapour && (bA < PHASE_EPS || bB < PHASE_EPS);
+        const bool sameLiquid = !dropVapour && !dropLiquid && dLiq < SAME_LIQUID;
+        if (dropVapour || dropLiquid || sameLiquid)
         {
-            // 2-phase LL --- emit as the LL branch normally would.
-            const scalar denom = 1.0 - bV;
-            sol.regime     = "two-phase liquid (LL, VLLE attempt found V β ≈ 0)";
-            sol.liquidLiquid = true;
-            sol.V_over_F   = bB / denom;
-            sol.x          = xA;
-            sol.y          = xB;
-            sol.K          = thermo.Kvec_phases(pAlpha, pBeta, in.T, in.P, xA, xB);
-            sol.iterations = totalEvals;
-            sol.residual   = bestG;
-            sol.converged  = bestConv;
-            return sol;
-        }
-        if (bA < PHASE_EPS || bB < PHASE_EPS)
-        {
-            // 2-phase V+L --- pick the larger liquid as the unique L.
-            const auto& xL = (bA >= bB) ? xA : xB;
-            sol.regime     = "two-phase (VL, VLLE attempt found one L β ≈ 0)";
-            sol.V_over_F   = bV;
-            sol.x          = xL;
-            sol.y          = y;
-            sol.K          = thermo.Kvec(in.T, in.P, xL, y);
-            sol.iterations = totalEvals;
-            sol.residual   = bestG;
-            sol.converged  = bestConv;
-            return sol;
+            //  sum x gamma exp(-ln(P/Psat) - ln phi) of a liquid x; > 1 means a
+            //  vapour is favourable over it.  yI: the incipient vapour.
+            auto bubbleSum = [&](const sVector& x, sVector& yI) -> scalar
+            {
+                const auto gX = thermo.phase(pAlpha).activityCoefficients(in.T, x);
+                yI.assign(n, 0.0);
+                scalar sI = 0.0;
+                for (std::size_t i : act)
+                { yI[i] = x[i] * gX[i] * std::exp(-lnPoverPsat[i]); sI += yI[i]; }
+                for (std::size_t i : act) yI[i] /= sI;
+                const sVector lpI = lnPhiVap(yI);
+                scalar sK = 0.0;
+                for (std::size_t i : act)
+                    sK += x[i] * gX[i] * std::exp(-lnPoverPsat[i] - lpI[i]);
+                return sK;
+            };
+            auto refuse = [&](const std::string& why) -> FlashSolution
+            {
+                std::ostringstream m;
+                m << "VLLE flash: " << why << " -- no answer is published as"
+                     " one; phaseSet LL or VL asks a narrower question this feed"
+                     " may answer";
+                sol.regime    = m.str();
+                sol.V_over_F  = 0.0;
+                sol.x         = in.z;
+                sol.y.assign(n, 0.0);
+                sol.K.assign(n, 1.0);
+                sol.converged = false;
+                if (opts.verbosity >= 1) std::cerr << "WARNING: " << m.str() << ".\n";
+                return sol;
+            };
+            //  max |ln f_i| difference between the three phases of a state
+            auto eqResidual = [&](const sVector& v) -> scalar
+            {
+                scalar b1, b2, b3; sVector yy, xa, xb;
+                if (!unpackVLLE(v, b1, b2, b3, yy, xa, xb)) return INFEAS;
+                const auto gA = thermo.phase(pAlpha).activityCoefficients(in.T, xa);
+                const auto gB = thermo.phase(pBeta ).activityCoefficients(in.T, xb);
+                const sVector lnPhi = lnPhiVap(yy);
+                scalar r = 0.0;
+                for (std::size_t i : act)
+                {
+                    const scalar lnY = std::log(yy[i]) + lnPoverPsat[i] + lnPhi[i];
+                    const scalar lnA = std::log(xa[i]) + std::log(std::max<scalar>(gA[i], 1.0e-30));
+                    const scalar lnB = std::log(xb[i]) + std::log(std::max<scalar>(gB[i], 1.0e-30));
+                    r = std::max(r, std::max(std::abs(lnY - lnA), std::abs(lnA - lnB)));
+                }
+                return r;
+            };
+            //  Re-run the three-phase search from an LL answer + its incipient
+            //  vapour.  On success the outer (bV, bA, bB, y, xA, xB, bestG,
+            //  bestConv) are the verified state.
+            auto reseed = [&](const sVector& xa, const sVector& yInc,
+                              scalar betaFrac) -> bool
+            {
+                solver::NMOptions n2 = nmo;
+                n2.maxIter = 4000;
+                n2.tolX    = 1.0e-10;
+                n2.tolF    = 1.0e-14;
+                n2.simplexInitFactor = 0.05;
+                sVector bestX;
+                scalar  bestR = INFEAS, bestGg = 0.0;
+                for (scalar bV0 : {0.02, 0.10, 0.25})
+                {
+                    const scalar bL = 1.0 - bV0;
+                    sVector x0 = packStart(bV0, bL * (1.0 - betaFrac), yInc, xa);
+                    scalar g = INFEAS;
+                    for (int rep = 0; rep < 5; ++rep)
+                    {
+                        auto res = solver::nelderMead(vlleObjective, x0, lo, hi, n2);
+                        totalEvals += res.evaluations;
+                        x0 = res.x;
+                        g  = res.f;
+                    }
+                    const scalar r = eqResidual(x0);
+                    if (r < bestR) { bestR = r; bestX = x0; bestGg = g; }
+                }
+                if (bestX.empty() || !(bestR < EQ_TOL)) return false;
+                scalar c1, c2, c3; sVector cy, cxa, cxb;
+                if (!unpackVLLE(bestX, c1, c2, c3, cy, cxa, cxb)) return false;
+                if (c1 < FLOOR_FRAC || c2 < FLOOR_FRAC || c3 < FLOOR_FRAC) return false;
+                bV = c1; bA = c2; bB = c3; y = cy; xA = cxa; xB = cxb;
+                bestG = bestGg; bestConv = true;
+                return true;
+            };
+
+            FlashOptions sub = opts;
+            sub.phaseSet  = dropVapour ? PhaseSet::LL : PhaseSet::VL;
+            sub.verbosity = 0;
+            FlashSolution s2 = solveCore(in, thermo, sub);
+            bool holds = false;
+            const char* what = "";
+            if (s2.converged)
+            {
+                if (dropVapour)
+                {
+                    sVector yI;
+                    if (s2.liquidLiquid)
+                    {
+                        if (!(bubbleSum(s2.x, yI) > 1.0 + 1.0e-8))
+                        {
+                            holds = true;
+                            what = "vapour below 1 % of the feed: re-solved as LL";
+                        }
+                        else if (reseed(s2.x, yI, s2.V_over_F))
+                        {
+                            what = "vapour small but favoured over the LL split:"
+                                   " three-phase search re-run from it and verified";
+                            if (opts.verbosity >= 1)
+                                std::cerr << "[flash] VLLE: " << what << " (announced).\n";
+                        }
+                        else
+                            return refuse("the vapour is favoured over the liquid-"
+                                          "liquid split, yet the re-run three-phase"
+                                          " search found no verified state (a phase"
+                                          " at the search floor, or fugacities not"
+                                          " equal)");
+                    }
+                    else
+                    {
+                        //  ONE liquid: below its bubble point at z, or VL.
+                        if (!(bubbleSum(in.z, yI) > 1.0 + 1.0e-8))
+                        {
+                            holds = true;
+                            what = "vapour below 1 % of the feed: re-solved as LL (one liquid)";
+                        }
+                        else
+                        {
+                            FlashOptions sv = opts;
+                            sv.phaseSet  = PhaseSet::VL;
+                            sv.verbosity = 0;
+                            FlashSolution s3 = solveCore(in, thermo, sv);
+                            if (s3.converged && (s3.V_over_F > 1.0 - 1.0e-12
+                                || !solver::michelsenTPD(thermo.phase(pAlpha),
+                                                         in.T, in.P, s3.x).unstable))
+                            {
+                                s2 = s3;
+                                holds = true;
+                                what = "the one liquid is above its bubble point:"
+                                       " re-solved as VL";
+                            }
+                            else
+                                return refuse("the LL re-solve gave one liquid above"
+                                              " its bubble point and the VL solve"
+                                              " did not give a stable liquid");
+                        }
+                    }
+                }
+                else
+                {
+                    holds = s2.V_over_F > 1.0 - 1.0e-12
+                         || !solver::michelsenTPD(thermo.phase(pAlpha),
+                                                  in.T, in.P, s2.x).unstable;
+                    what = dropLiquid
+                        ? "one liquid below 1 % of the feed: re-solved as VL"
+                        : "the two liquids are one phase: re-solved as VL";
+                    if (!holds && sameLiquid)
+                        return refuse("the two liquids are near copies, but the"
+                                      " one-liquid VL answer is TPD-unstable");
+                }
+            }
+            if (holds)
+            {
+                if (opts.verbosity >= 1)
+                    std::cerr << "[flash] VLLE: " << what << " (announced).\n";
+                AdvisoryLog::instance().add("solver", "info",
+                    "isothermalFlash VLLE",
+                    std::string("the three-phase search found ") + what
+                    + "; the published state is the re-solved one.");
+                s2.regime = s2.regime + " -- VLLE: " + what;
+                s2.iterations = totalEvals;
+                return s2;
+            }
         }
 
         // Genuine 3-phase
