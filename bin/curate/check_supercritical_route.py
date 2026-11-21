@@ -63,6 +63,9 @@ BASE = "tutorials/steady/flash/flash09_n2ch4_stryjek"
 GAMMA_PHI = "tutorials/steady/reactors/ammonia03_quench_converter"
 Z_C3 = 0.4728164999111161
 P_PA = 3962103.535596157
+# The walks read only the built binary under build/ (to copy it into the
+# gate's scratch tree) and the gate's own scratch copy.
+SCAN_ROOTS = ("build",)
 STRIP = ("expected", "converged", "constant/propertyManifest", "reports")
 RECORD = """recordType  eosBinaryInteraction;
 schemaVersion 1;
@@ -72,7 +75,7 @@ kij         {kij};
 eos         SRK;
 reviewStatus  interim;
 reviewReason  "SYNTHETIC test value imposed as a mathematical probe (C467); not a measured or fitted kij";
-provenance {{ origin synthetic; }}
+provenance {{ origin assumed; }}
 """
 
 
