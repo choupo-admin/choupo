@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1921,
+  "cases": 1922,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -22909,6 +22909,17 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/compare/n2ch4_kij_fit_stryjek1974_149K": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/compare/olefins01_propane_propene_laurance1972": {
    "application": "choupoProps",
    "ops": [
@@ -32230,6 +32241,7 @@
     "tutorials/props/compare/extractionShortcut01_perry_example15_1",
     "tutorials/props/compare/lkp02_n2_ch4_ar_112K",
     "tutorials/props/compare/lle01_acetic_mibk_perry",
+    "tutorials/props/compare/n2ch4_kij_fit_stryjek1974_149K",
     "tutorials/props/compare/olefins01_propane_propene_laurance1972",
     "tutorials/props/compare/olefins02_ethane_ethylene_fredenslund1976",
     "tutorials/props/compare/olefins03_propane_propene_kij_fit_laurance1972",
@@ -37289,6 +37301,7 @@
     "data/curation/pairs/vinylAcetate-vinylPropionate",
     "tutorials/props/adsorption/isotherm02_fit_jaschik",
     "tutorials/props/adsorption/isotherm03_fit_refusals",
+    "tutorials/props/compare/n2ch4_kij_fit_stryjek1974_149K",
     "tutorials/props/compare/olefins03_propane_propene_kij_fit_laurance1972",
     "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/curation/curate03_thermoml_fixture_bubble",
