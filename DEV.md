@@ -4938,7 +4938,10 @@ accepts today, and that is a policy call.
 > feed Q, which now disagrees for a mole-changing vapour reaction (Levenspiel's
 > epsilon_A form is the right comparison); (c) Ergun's molar volume (eos/RT/P) and
 > localVolumetricFlow (ThermoPackage::density, IF97 first for pure steam) are two
-> routes.
+> routes.  ALL THREE CLOSED the same day (build/c461-s3: Levenspiel Ch. 5 Eq. 21
+> for a vapour first-order check, Ergun on the package's vapour density, a once-per-run
+> phase-change advisory); scope 26/0 over the pfr roots and both Ergun plants, --fast
+> 89/0, no golden moved.  C461 DONE.
 
 > **C458 RULED ON THE HOME OF RADICALS (architect, 2026-11-21, Vitor asking for a
 > second opinion on the cloud's proposal that radicals stay in components/).**
