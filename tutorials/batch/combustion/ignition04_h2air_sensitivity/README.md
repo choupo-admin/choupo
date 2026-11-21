@@ -44,7 +44,7 @@ section 10).
 * **This case is not ignition02's holdup.**  `ignition02` states 2 atm but loads
   2.5·10⁻⁵ kmol into 1 L, which at 1100 K is 2.26 atm; here the moles are
   p V / R T for 2 atm exactly and the air is 2 : 1 : 3.76, so a Cantera run at 2 atm
-  is the same problem.  τ₀ is 45.12 µs here.
+  is the same problem.  τ₀ is 45.07 µs here.
 
 Cost: 22 integrations of an adaptive stiff solver, about 7 s.  No adjoint, no
 direct method: the brute force is what a student can read.  Theory Guide

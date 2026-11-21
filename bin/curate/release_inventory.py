@@ -340,6 +340,14 @@ DOC_SCAN = ["CLAUDE.md", "docs/architecture/settled-contracts.md", "AGENTS.md", 
 #  are named here instead.  The fix is to GENERATE that table, as the site
 #  pages already are; recorded as AR5.
 DOC_COUNT_ALLOW = [
+    ("docs/theoryGuide.tex", "253 species, imported with",
+     "the size of ONE external mechanism (AramcoMech 1.3, Metcalfe et al. 2013) "
+     "measured in sec:sparse-lu -- a property of that file, not a corpus tally"),
+    ("docs/theoryGuide.tex", "1542, where 41 were refused before",
+     "the reaction count of ONE external mechanism (AramcoMech 1.3) and the "
+     "refusals the CHEMKIN-forms slice removed -- a property of that file, not a corpus tally"),
+    ("docs/theoryGuide.tex", "integrations of 253 species",
+     "the same external mechanism's size in the threads measurement, not a corpus tally"),
     #  BOTH OF THESE WERE HIDDEN BY AN EARLIER ARM, and that is worth knowing
     #  before trusting this list's length.  `--check` tests staleness FIRST and
     #  exits; the prose scan below it never ran while the inventory was stale.

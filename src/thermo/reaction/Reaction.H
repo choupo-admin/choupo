@@ -93,8 +93,44 @@ public:
     //    Lindemann base kInf·Pr/(1+Pr), broadened by the Troe factor F.
     //    `troe` = (alpha, T3, T1) or (alpha, T3, T1, T2); EMPTY => Lindemann
     //    (F = 1).  Returns the effective k(T, M).
+    //    `sri` = (a, b, c) or (a, b, c, d, e): the SRI broadening of
+    //    Stewart, Larson & Golden (1989) as CHEMKIN-II and Cantera define it,
+    //        F = d [a exp(-b/T) + exp(-T/c)]^X T^e,  X = 1/(1 + (log10 Pr)^2),
+    //    d = 1 and e = 0 when three numbers are given; log10 Pr is read at
+    //    max(Pr, 1e-300), the same clamp as Troe's.  EMPTY => not SRI.  troe
+    //    and sri together are refused where they are read (checkFalloffShape).
     static scalar falloffRate(scalar kLow, scalar kInf, scalar M, scalar T,
-                              const sVector& troe);
+                              const sVector& troe, const sVector& sri = sVector());
+    //- Refuse by name a broadening that is not one of the forms above:
+    //  `troe` of 3 or 4 numbers, `sri` of 3 or 5 with c > 0 and d > 0, never
+    //  both (the reaction would be read as one and the other silently lost).
+    static void checkFalloffShape(const sVector& troe, const sVector& sri,
+                                  const std::string& who);
+
+    // -- The same blend with its EXACT derivatives (the analytic Jacobian) --
+    //    k = falloffRate(kLow, kInf, M, T, troe), bit for bit, and
+    //      dkdM = d k / d [M]          at fixed T,
+    //      dkdT = d k / d T            at fixed [M],
+    //    given dlnkLow = d ln kLow / dT and dlnkInf = d ln kInf / dT (the
+    //    Arrhenius legs' own, b/T + Ea/(R T^2)).  Lindemann and the Troe
+    //    broadening F(Pr, Fcent(T)) are differentiated in closed form,
+    //    branch for branch with falloffRate (the Pr clamp at 1e-300 and the
+    //    Fcent <= 0 fallback included), so the derivative is the derivative
+    //    of the function the rate evaluates.  Theory Guide,
+    //    sec:batch-analytic-jacobian.
+    struct FalloffDerivs { scalar k = 0.0, dkdM = 0.0, dkdT = 0.0; };
+    //    SRI (non-empty `sri`): ln F = ln d + X ln W + e ln T, W = a exp(-b/T)
+    //    + exp(-T/c), X = 1/(1+p^2), p = log10 Pr, so
+    //      d ln F/dp = -2 p ln W/(1+p^2)^2,
+    //      d ln F/dT = X W'/W + e/T + (d ln F/dp)(d ln Pr/dT)/ln 10,
+    //      W' = (a b/T^2) exp(-b/T) - exp(-T/c)/c.
+    static FalloffDerivs falloffRateDerivs(scalar kLow, scalar kInf, scalar M,
+                                           scalar T, const sVector& troe,
+                                           scalar dlnkLow, scalar dlnkInf,
+                                           const sVector& sri = sVector());
+
+    // -- d ln k / dT of a modified Arrhenius leg:  b/T + Ea/(R T^2) ---------
+    static scalar dlnModifiedArrheniusdT(scalar b, scalar Ea, scalar T);
 
     // -- Reaction equilibrium constant Kc(T) on a CONCENTRATION basis ------
     //    used as k_rev = k_fwd / Kc by detailed balance.  Two overloads that
@@ -164,6 +200,14 @@ public:
     //    DECLARED key can break the rule (a product's `order` and every
     //    `orderRev` default to mass action).  The remedy is
     //    an explicit reverse leg.
+    //    A SPECIES ON BOTH SIDES (CHEMKIN `H + O2 + H2O <=> HO2 + H2O`, or
+    //    `2 A + B <=> A + C`) declares BOTH keys: `order` = its count among
+    //    the reactants, `orderRev` = its count among the products, `nu` = the
+    //    difference.  Detailed balance holds exactly when
+    //        order - orderRev = -nu,   order >= 0,  orderRev >= 0,
+    //    because the net rate k (PROD c^order - PROD c^orderRev / Kc) then
+    //    vanishes at PROD c^nu = Kc (Kc reads the net nu).  That pair is
+    //    accepted; any other declared pair is refused as before.
     static void refuseNonMassActionDetailedBalance(const Dictionary&  reaction,
                                                    const std::string& name,
                                                    const std::string& who);

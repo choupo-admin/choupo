@@ -30,7 +30,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PROBE = ROOT / "bin" / "curate" / "_rodas4OrderProbe.cpp"
-SOURCES = ["src/solver/ODE/Rosenbrock23.cpp", "src/solver/ODE/Jacobian.cpp",
+SOURCES = ["src/solver/SparseLU.cpp", "src/solver/ParallelFor.cpp", "src/solver/ODE/Rosenbrock23.cpp", "src/solver/ODE/Jacobian.cpp",
            "src/solver/ODE/ODEIntegrator.cpp", "src/solver/ODE/EulerSI.cpp",
            "src/solver/ODE/RK4.cpp", "src/solver/LU.cpp",
            "src/solver/BlockTridiagonal.cpp"]

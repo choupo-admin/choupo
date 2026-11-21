@@ -16,7 +16,7 @@
   c_ij = nu_ij r_j V [kmol/s] to rateOfProduction.csv.  The instants were
   read from ignition01_h2o2's own trajectory: 3 us (induction, T 1108 K, the
   radical pool still growing), 7 us (the ramp, T 1766 K, between the 6 and
-  8 us rows where dT/dt peaks) and 15 us (burned gas, T 3076 K, the chain
+  8 us rows where dT/dt peaks) and 15 us (burned gas, T 3037 K, the chain
   reactions and their reverses nearly cancel).  `pathFlux ( H O );` adds, at the
   same instants, where the atoms of H and O go: species-to-species paths (the
   atoms of each reaction shared between its reactants and products in

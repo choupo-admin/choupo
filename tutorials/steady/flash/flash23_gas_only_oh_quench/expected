@@ -1,0 +1,43 @@
+# platform cpu=Intel(R) Xeon(R) Processor @ 2.10GHz; arch=x86_64; libc=glibc 2.39; cxx=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; simd=sse4_1,avx,avx2,fma,avx512f
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  condensate             F                0.00090863783396 1e-4
+stream  condensate             T                330              1e-4
+stream  feed                   F                0.0277777777778  1e-4
+stream  feed                   T                1500             1e-4
+stream  hotLiquid              F                0                1e-4
+stream  hotLiquid              T                1500             1e-4
+stream  hotVapour              F                0.0277777777778  1e-4
+stream  hotVapour              T                1500             1e-4
+stream  offGas                 F                0.0268691399438  1e-4
+stream  offGas                 T                330              1e-4
+kpi     cold                   F_alpha          0.00090863783396 1e-4
+kpi     cold                   F_beta           0.0268691399438  1e-4
+kpi     cold                   F_in             0.0277777777778  1e-4
+kpi     cold                   K_N2             749.519288352    1e-4
+kpi     cold                   K_water          0.172139711833   1e-4
+kpi     cold                   P                100000           1e-4
+kpi     cold                   Q                -1122210.28735   1e-4
+kpi     cold                   Q_kW             -1122.21028735   1e-4
+kpi     cold                   T                330              1e-4
+kpi     cold                   V_over_F         0.967289037977   1e-4
+kpi     cold                   phaseSet         0                1e-4
+kpi     hot                    F_alpha          0                1e-4
+kpi     hot                    F_beta           0.0277777777778  1e-4
+kpi     hot                    F_in             0.0277777777778  1e-4
+kpi     hot                    P                100000           1e-4
+kpi     hot                    Q                0                1e-4
+kpi     hot                    Q_kW             0                1e-4
+kpi     hot                    T                1500             1e-4
+kpi     hot                    V_over_F         1                1e-4
+kpi     hot                    phaseSet         0                1e-4
+boundary global                 H_feeds_kW       -226.144722082   1e-4
+boundary global                 Q_boundary_kW    -1122.21028735   1e-4
+boundary global                 H_products_kW    -1348.35500944   1e-4
+boundary global                 noBoundary       false            exact
+boundary global                 residual_denom_kW 1122.21028735    1e-4
+utility cold                   cooling.coolingWater.duty_kW -1122.21028735   1e-4
+utility cold                   cooling.coolingWater.T 330              1e-4
+utility cold                   cooling.coolingWater.kg_s 26.8471360611    1e-4
+utility cold                   cooling.coolingWater.eur_h 1.61598281379    1e-4

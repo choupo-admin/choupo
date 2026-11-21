@@ -10,7 +10,7 @@ name           Ge2;
 formula        Ge2;
 CAS            n/a;
 MW             145.28;       // kg/kmol, appendix D record line
-role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it
+role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
 tags           ( gasPhase thermoTable );
 nasaEntry      "Ge2";
 reviewStatus   interim;

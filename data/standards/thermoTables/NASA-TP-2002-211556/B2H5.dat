@@ -10,7 +10,7 @@ name           B2H5;
 formula        B2H5;
 CAS            n/a;
 MW             26.6617;       // kg/kmol, appendix D record line
-role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it
+role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
 tags           ( gasPhase thermoTable );
 nasaEntry      "B2H5";
 reviewStatus   interim;

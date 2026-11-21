@@ -130,7 +130,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 BUILD = ROOT / "build" / "linux64Gcc"
 PROBE = ROOT / "bin" / "curate" / "_odeBlockStructureProbe.cpp"
-SOURCES = ["src/solver/ODE/Rosenbrock23.cpp", "src/solver/ODE/Jacobian.cpp",
+SOURCES = ["src/solver/SparseLU.cpp", "src/solver/ParallelFor.cpp", "src/solver/ODE/Rosenbrock23.cpp", "src/solver/ODE/Jacobian.cpp",
+           "src/solver/ODE/ODEIntegrator.cpp", "src/solver/ODE/EulerSI.cpp", "src/solver/ODE/RK4.cpp",
            "src/solver/LU.cpp", "src/solver/BlockTridiagonal.cpp"]
 B13 = ROOT / "tutorials" / "batch" / "adsorber" / "batch13_breakthrough_co2"
 B22 = ROOT / "tutorials" / "batch" / "adsorber" / "batch22_wall_cooled"
@@ -146,7 +147,7 @@ def arm_probe(tmp: Path):
                      "that cannot run must not pass")
         return
     exe = tmp / "probe"
-    r = subprocess.run([cxx, "-std=c++17", "-O2", "-I", str(ROOT / "src"),
+    r = subprocess.run([cxx, "-std=c++17", "-O2", "-ffunction-sections", "-Wl,--gc-sections", "-I", str(ROOT / "src"),
                         str(PROBE)] + [str(ROOT / s) for s in SOURCES]
                        + ["-o", str(exe)], capture_output=True, text=True)
     if r.returncode != 0:

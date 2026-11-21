@@ -10,7 +10,7 @@ name           AL2S2;
 formula        Al2S2;
 CAS            n/a;
 MW             118.0931;       // kg/kmol, appendix D record line
-role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it
+role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
 tags           ( gasPhase thermoTable );
 nasaEntry      "AL2S2";
 reviewStatus   interim;

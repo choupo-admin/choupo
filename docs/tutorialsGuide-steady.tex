@@ -5988,6 +5988,56 @@ flash01's separation at ten times the flow (1000 kmol/h of 40/60 benzene/toluene
 \end{tutgolden}
 
 \clearpage
+\tutentry{flash23\_gas\_only\_oh\_quench}{tutorials/steady/flash/flash23\_gas\_only\_oh\_quench}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (hot) at (0.0,-0.0) {\textbf{hot}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (cold) at (2.9,-0.0) {\textbf{cold}\\[-1pt]{\tiny isothermalFlash}};
+  \draw[->] ($(hot.west)+(-1.05,0.00)$) -- ($(hot.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (hot) -- (cold) node[midway, above, font=\tiny] {hotVapour};
+  \draw[->] ($(hot.east)+(0,0.00)$) -- ($(hot.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {hotLiquid};
+  \draw[->] ($(cold.east)+(0,-0.17)$) -- ($(cold.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {condensate};
+  \draw[->] ($(cold.east)+(0,0.17)$) -- ($(cold.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {offGas};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A gas-only species in two flashes: OH stays in the vapour (DEV.md 4c C458)}
+\begin{tutnarrative}
+the witness of the GAS-ONLY phase rule (DEV.md 4c C458, 2026-11-21).
+
+A hot combustion gas (N2, water and a trace of the hydroxyl radical OH) goes through two isothermal flashes at 1 bar:
+
+hot 1500 K -- above every dew point: one vapour, nothing to split; cold 330 K -- below water's dew point: water condenses.
+
+OH is NOT a component: it is a gas-only species of the NASA table (`role radical;`), resolved by name because the property system declares `speciesTables ( NASA-TP-2002-211556 );`. Gas-only means it has no condensed phase and no data for one, so in every phase split its K is the non-condensable cap ThermoPackage::kNoLiquidK = 1e12: all of it leaves in the vapour, and the condensate carries at most z/1e12 of it. Until C458 a radical was `role nonvolatile;` (K = 0) and the same cold flash sent every OH molecule into the water.
+
+FROZEN COMPOSITION, ON PURPOSE. No reaction runs: in a real quench OH recombines in microseconds, and that is chemistry (a mechanism's job, tutorials/batch/combustion). This case asks only the phase question.
+
+The refusal half -- the same feed declared as a SATURATED LIQUID, a state with no vapour to hold OH, refused by name -- is held by the gate bin/curate/check\_gas\_only.py, which edits a probe copy of this case.
+
+\end{tutnarrative}
+\tutreadme{A hot combustion gas --- 80 kmol/h N$_2$, 19.9 kmol/h water and 0.1 kmol/h of the hydroxyl radical OH --- goes through two isothermal flashes at 1 bar: 1500 K (above every dew point: one vapour, V/F = 1) and 330 K (water condenses: V/F = 0.967).}
+\tutreadme{1. OH is not a component. A radical exists only inside a gas-phase mechanism, so it lives in the gas-species table (data/standards/thermoTables/NASA-TP-2002-211556/OH.dat) and the case asks for it by name: speciesTables ( NASA-TP-2002-211556 ); in constant/thermoPhysPropDict. N$_2$ and water are components. 2. Gas-only means a non-condensable. The table record says role radical;. In every phase split its K is the cap ThermoPackage::kNoLiquidK = 1e12 (the Log prints OH gas-only (non-condensable) K = 1e12), so Rachford-Rice keeps all of it in the vapour: the offgas carries the whole 0.1 kmol/h and the condensate at most 1e-12 of it (here 1e-15). 3. A state with no vapour is refused. The same feed handed to a bubble point --- the liquid that would hold the whole feed --- is refused by name: $\ast$gas-only species 'OH' ... present in a saturated liquid ..., which has no vapour phase to hold it$\ast$. The gate bin/curate/check\_gas\_only.py runs that probe. 4. Until 2026-11-21 the same flash put every OH molecule into the water (2.6 mol \% of the condensate): a radical was role nonvolatile;, K = 0.}
+\tutreadme{The composition is FROZEN: no reaction runs. In a real quench OH recombines in microseconds; that is chemistry, a mechanism's job (tutorials/batch/combustion). This case asks only where a gas-only species goes in a phase split.}
+\tutreadme{OH: NASA/TP-2002-211556 (McBride, Zehe \& Gordon 2002, public domain), entry OH, transcribed by bin/curate/nasa\_tp2002\_to\_choupo.py. Water and N$_2$: the catalogue's records. DEV.md 4c C458.}
+\begin{tutgolden}
+\goldrow{stream}{condensate}{F}{0.00090863783396}
+\goldrow{stream}{condensate}{T}{330}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{feed}{T}{1500}
+\goldrow{stream}{hotLiquid}{F}{0}
+\goldrow{stream}{hotLiquid}{T}{1500}
+\goldrow{stream}{hotVapour}{F}{0.0277777777778}
+\goldrow{stream}{hotVapour}{T}{1500}
+\goldrow{stream}{offGas}{F}{0.0268691399438}
+\goldrow{stream}{offGas}{T}{330}
+\goldrow{kpi}{cold}{F\_alpha}{0.00090863783396}
+\goldrow{kpi}{cold}{F\_beta}{0.0268691399438}
+\goldrow{kpi}{cold}{F\_in}{0.0277777777778}
+\goldrow{kpi}{cold}{K\_N2}{749.519288352}
+\goldmore{25}
+\end{tutgolden}
+
+\clearpage
 \tutentry{flash\_polymer\_devolatilisation}{tutorials/steady/flash/flash\_polymer\_devolatilisation}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -7797,31 +7847,31 @@ Lean methane combustion at $\varphi$ = 0.5 (100 \% excess air): 1 mol CH4 + 4 mo
 \end{tutscheme}
 \tutwhat{Stoichiometric H2/air adiabatic flame -- the radical pool at equilibrium}
 \begin{tutnarrative}
-THE RADICAL DATABASE AT WORK: stoichiometric H2/air adiabatic flame, equilibrium by Gibbs minimisation over the FULL radical pool (H, O, OH, HO2, H2O2 -- the catalogue's NASA-7-derived radical records) plus equilibrium thermal NO.
+THE RADICAL DATABASE AT WORK: stoichiometric H2/air adiabatic flame, equilibrium by Gibbs minimisation over the FULL radical pool (H, O, OH, HO2 -- gas-only species of the NASA table, resolved from data/standards/thermoTables/NASA-TP-2002-211556/ because a radical is not a component, DEV.md 4c C458 -- and the stable H2O2) plus equilibrium thermal NO.
 
 1 H2 + 0.5 O2 + 1.88 N2 at 298.15 K, 1 atm, adiabatic.
 
-THE ANSWER (golden-locked): T\_ad = 2385.8 K -- the literature gives 2380-2390 K (Glassman, Combustion, 4th ed.; Law, Combustion Physics). Equilibrium pool: OH 0.55 \%, H 0.18 \%, O 0.06 \%, NO 0.27 \% -- all inside the published equilibrium ranges. NO here is the Zeldovich CEILING (what kinetics approaches with residence time, never exceeds).
+THE ANSWER (golden-locked): T\_ad = 2378.3 K, 1.7 K below the 2380-2390 K the header has cited (Glassman, Combustion, 4th ed.; Law, Combustion Physics; the range itself not re-read against those books). Equilibrium pool: OH 0.74 \%, H 0.18 \%, O 0.05 \%, NO 0.26 \%. Until 2026-11-21 OH was a hand-fitted cubic Cp (dHf 39.0 kJ/mol) and the flame read 2385.8 K with OH 0.55 \%; the NASA row (dHf 37.28 kJ/mol) makes OH cheaper, so the pool holds more of it and the flame is 7.5 K cooler. NO here is the Zeldovich CEILING (what kinetics approaches with residence time, never exceeds).
 
 TWO LESSONS THIS CASE TEACHES: 1. THE RADICALS' WORK: endothermic dissociation (H2O $\to$ OH + H, O2 $\to$ 2 O) soaks up enthalpy near 2400 K. Without the radical species the same reactor answers \textasciitilde{}2640 K -- the first-year textbook overshoot. 2. THE EXTRAPOLATION TRAP (why constant/components/ overrides exist here): the catalogue's poly3 Cp fits are 250-1500 K PROCESS fits; extrapolated to 2641 K, N2's cubic turns NEGATIVE (-33 J/mol/K) and water's reads 45 instead of \textasciitilde{}56. The case-local overrides switch the four stable species to the NASA-9 polynomials of NASA/TP-2002-211556 (public domain, valid 200-6000 K; until 2026-10-25 they were GRI-Mech 3.0's NASA-7, which grants no redistribution). Run it once with the overrides removed to SEE the 250 K error a silent extrapolation buys.
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{stream}{burnt}{F}{0.000808562123724}
+\goldrow{stream}{burnt}{F}{0.000808897842064}
 \goldrow{stream}{feed}{F}{0.000938888888889}
 \goldrow{kpi}{flame}{F\_in\_kmol\_h}{3.38}
-\goldrow{kpi}{flame}{F\_out\_kmol\_h}{2.91082364541}
+\goldrow{kpi}{flame}{F\_out\_kmol\_h}{2.91203223143}
 \goldrow{kpi}{flame}{N\_in\_mol\_s}{0.938888888889}
-\goldrow{kpi}{flame}{N\_out\_mol\_s}{0.808562123724}
+\goldrow{kpi}{flame}{N\_out\_mol\_s}{0.808897842064}
 \goldrow{kpi}{flame}{P}{101325}
-\goldrow{kpi}{flame}{T}{2385.83679448}
+\goldrow{kpi}{flame}{T}{2378.32090618}
 \goldrow{kpi}{flame}{converged}{1}
-\goldrow{kpi}{flame}{lambda\_H}{-240335.177161}
-\goldrow{kpi}{flame}{lambda\_N}{-277509.500244}
-\goldrow{kpi}{flame}{lambda\_O}{-344071.838893}
+\goldrow{kpi}{flame}{lambda\_H}{-239469.289289}
+\goldrow{kpi}{flame}{lambda\_N}{-276514.922532}
+\goldrow{kpi}{flame}{lambda\_O}{-343734.768554}
 \goldrow{kpi}{flame}{outerIterations}{3}
-\goldrow{kpi}{flame}{y\_H}{0.0018214725634}
-\goldmore{14}
+\goldrow{kpi}{flame}{y\_H}{0.00175504146806}
+\goldmore{15}
 \end{tutgolden}
 
 \clearpage

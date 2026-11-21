@@ -10,7 +10,7 @@ name           GeBr;
 formula        GeBr;
 CAS            n/a;
 MW             152.544;       // kg/kmol, appendix D record line
-role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it
+role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
 tags           ( gasPhase thermoTable );
 nasaEntry      "GeBr";
 reviewStatus   interim;

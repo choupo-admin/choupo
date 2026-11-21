@@ -39,7 +39,7 @@ The three instants were read from `ignition01_h2o2`'s trajectory:
 |---|---|---|
 | 3 µs | 1108 K | induction: the radical pool is growing, almost no heat released |
 | 7 µs | 1766 K | the ramp, between the 6 and 8 µs rows where dT/dt peaks |
-| 15 µs | 3076 K | burned gas: each channel's forward and reverse legs nearly cancel, so net is small against gross |
+| 15 µs | 3037 K | burned gas: each channel's forward and reverse legs nearly cancel, so net is small against gross |
 
 Definitions: `r_j` is the net rate of reaction *j* (kmol/m³/s, the very number
 the integrator uses, third-body concentration and fall-off included),

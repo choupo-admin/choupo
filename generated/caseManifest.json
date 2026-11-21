@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1922,
+  "cases": 1923,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -27279,6 +27279,23 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/flash/flash23_gas_only_oh_quench": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "unitModels": [
+    "rachfordRice"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/flash/flash_polymer_devolatilisation": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -32578,6 +32595,7 @@
     "tutorials/steady/flash/flash21_brine_co2_pitzer",
     "tutorials/steady/flash/flash21_freeze_concentration",
     "tutorials/steady/flash/flash22_drum_sizing_benzene_toluene",
+    "tutorials/steady/flash/flash23_gas_only_oh_quench",
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
     "tutorials/steady/flash/leaf01_flash",
@@ -33325,6 +33343,7 @@
     "tutorials/steady/flash/flash21_brine_co2_pitzer",
     "tutorials/steady/flash/flash21_freeze_concentration",
     "tutorials/steady/flash/flash22_drum_sizing_benzene_toluene",
+    "tutorials/steady/flash/flash23_gas_only_oh_quench",
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
     "tutorials/steady/flash/leaf01_flash",
@@ -36110,6 +36129,7 @@
     "tutorials/steady/flash/flash06_sweep_T",
     "tutorials/steady/flash/flash07_gridsweep_TP",
     "tutorials/steady/flash/flash22_drum_sizing_benzene_toluene",
+    "tutorials/steady/flash/flash23_gas_only_oh_quench",
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
     "tutorials/steady/flash/leaf01_flash",

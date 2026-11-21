@@ -745,20 +745,20 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \tutreadme{See it fail on purpose --- two siblings run the same problem at the same step with other integrators:}
 \tutreadme{(Both ship a .expect-nonconvergence marker --- their whole point is to fail.) $\ast$See, then decide$\ast$, applied to numerics.}
 \begin{tutgolden}
-\goldrow{kpi}{bomb}{P\_final}{1135148.06413}
-\goldrow{kpi}{bomb}{T\_final}{3076.31278179}
-\goldrow{kpi}{bomb}{n\_H2O2\_final}{9.60661475471e-11}
-\goldrow{kpi}{bomb}{n\_H2\_final}{1.6749742078e-06}
-\goldrow{kpi}{bomb}{n\_HO2\_final}{9.12802450492e-10}
-\goldrow{kpi}{bomb}{n\_H\_final}{5.08698565686e-07}
+\goldrow{kpi}{bomb}{P\_final}{1121202.82397}
+\goldrow{kpi}{bomb}{T\_final}{3037.00819983}
+\goldrow{kpi}{bomb}{n\_H2O2\_final}{8.00367416065e-11}
+\goldrow{kpi}{bomb}{n\_H2\_final}{1.62963087713e-06}
+\goldrow{kpi}{bomb}{n\_HO2\_final}{7.19758331359e-10}
+\goldrow{kpi}{bomb}{n\_H\_final}{4.49541510152e-07}
 \goldrow{kpi}{bomb}{n\_N2\_final}{2.857145e-05}
-\goldrow{kpi}{bomb}{n\_O2\_final}{6.5975872805e-07}
-\goldrow{kpi}{bomb}{n\_OH\_final}{7.52547147842e-07}
-\goldrow{kpi}{bomb}{n\_O\_final}{2.34567190793e-07}
-\goldrow{kpi}{bomb}{n\_water\_final}{1.19770504681e-05}
+\goldrow{kpi}{bomb}{n\_O2\_final}{5.33369140811e-07}
+\goldrow{kpi}{bomb}{n\_OH\_final}{1.20519239058e-06}
+\goldrow{kpi}{bomb}{n\_O\_final}{1.86407481061e-07}
+\goldrow{kpi}{bomb}{n\_water\_final}{1.18257622566e-05}
 \goldrow{kpi}{bomb}{t\_end}{0.0002}
-\goldrow{kpi}{bomb}{totalMoles\_final}{4.43789505344e-05}
-\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{6.76051276934e-15}
+\goldrow{kpi}{bomb}{totalMoles\_final}{4.44021534514e-05}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.51815023592e-14}
 \goldmore{17}
 \end{tutgolden}
 
@@ -806,20 +806,20 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \tutreadme{Rosenbrock23 is not a W-method: its order conditions assume the $\ast$true$\ast$ Jacobian. A Jacobian with a missing term does not crash anything --- the steps still pass the error test, just smaller, or less accurate --- so nobody would see it. The run therefore measures its claim: at analytic Jacobians 1, 2, 4, 8, ... it also builds a central finite-difference one at the same state, and prints}
 \tutreadme{A column that differs by more than 1e-4 of its own scale refuses the run by name (row, column, both numbers).}
 \begin{tutgolden}
-\goldrow{kpi}{bomb}{P\_final}{1135148.06413}
-\goldrow{kpi}{bomb}{T\_final}{3076.31278179}
-\goldrow{kpi}{bomb}{n\_H2O2\_final}{9.60661475471e-11}
-\goldrow{kpi}{bomb}{n\_H2\_final}{1.67497420779e-06}
-\goldrow{kpi}{bomb}{n\_HO2\_final}{9.12802450492e-10}
-\goldrow{kpi}{bomb}{n\_H\_final}{5.08698565685e-07}
+\goldrow{kpi}{bomb}{P\_final}{1121202.82397}
+\goldrow{kpi}{bomb}{T\_final}{3037.00819983}
+\goldrow{kpi}{bomb}{n\_H2O2\_final}{8.00367416066e-11}
+\goldrow{kpi}{bomb}{n\_H2\_final}{1.62963087713e-06}
+\goldrow{kpi}{bomb}{n\_HO2\_final}{7.1975833136e-10}
+\goldrow{kpi}{bomb}{n\_H\_final}{4.49541510153e-07}
 \goldrow{kpi}{bomb}{n\_N2\_final}{2.857145e-05}
-\goldrow{kpi}{bomb}{n\_O2\_final}{6.5975872805e-07}
-\goldrow{kpi}{bomb}{n\_OH\_final}{7.52547147841e-07}
-\goldrow{kpi}{bomb}{n\_O\_final}{2.34567190793e-07}
-\goldrow{kpi}{bomb}{n\_water\_final}{1.19770504681e-05}
+\goldrow{kpi}{bomb}{n\_O2\_final}{5.33369140811e-07}
+\goldrow{kpi}{bomb}{n\_OH\_final}{1.20519239058e-06}
+\goldrow{kpi}{bomb}{n\_O\_final}{1.86407481061e-07}
+\goldrow{kpi}{bomb}{n\_water\_final}{1.18257622566e-05}
 \goldrow{kpi}{bomb}{t\_end}{0.0002}
-\goldrow{kpi}{bomb}{totalMoles\_final}{4.43800551768e-05}
-\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.42326584618e-15}
+\goldrow{kpi}{bomb}{totalMoles\_final}{4.44021534514e-05}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.77908230772e-15}
 \goldmore{17}
 \end{tutgolden}
 
@@ -859,7 +859,7 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \begin{tutnarrative}
 ignition01\_h2o2 plus the RATES OF PRODUCTION report.
 
-The case is ignition01\_h2o2 unchanged (closed rigid vessel, stoichiometric H2/O2 in N2 at 1100 K) with ONE added block on the vessel, `rateOfProduction`: at three instants of the 1 us write grid it prints, per species, which reactions make and destroy it, and writes the whole matrix c\_ij = nu\_ij r\_j V [kmol/s] to rateOfProduction.csv. The instants were read from ignition01\_h2o2's own trajectory: 3 us (induction, T 1108 K, the radical pool still growing), 7 us (the ramp, T 1766 K, between the 6 and 8 us rows where dT/dt peaks) and 15 us (burned gas, T 3076 K, the chain reactions and their reverses nearly cancel). `pathFlux ( H O );` adds, at the same instants, where the atoms of H and O go: species-to-species paths (the atoms of each reaction shared between its reactants and products in proportion to the atoms taken), printed, written to pathFlux.csv and drawn as one Graphviz file per element and instant.
+The case is ignition01\_h2o2 unchanged (closed rigid vessel, stoichiometric H2/O2 in N2 at 1100 K) with ONE added block on the vessel, `rateOfProduction`: at three instants of the 1 us write grid it prints, per species, which reactions make and destroy it, and writes the whole matrix c\_ij = nu\_ij r\_j V [kmol/s] to rateOfProduction.csv. The instants were read from ignition01\_h2o2's own trajectory: 3 us (induction, T 1108 K, the radical pool still growing), 7 us (the ramp, T 1766 K, between the 6 and 8 us rows where dT/dt peaks) and 15 us (burned gas, T 3037 K, the chain reactions and their reverses nearly cancel). `pathFlux ( H O );` adds, at the same instants, where the atoms of H and O go: species-to-species paths (the atoms of each reaction shared between its reactants and products in proportion to the atoms taken), printed, written to pathFlux.csv and drawn as one Graphviz file per element and instant.
 
 H2 : O2 : N2 = 2 : 1 : 4 (stoichiometric H2 + 1/2 O2 $\to$ H2O, 57\% N2)
 
@@ -875,20 +875,20 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \tutreadme{Definitions: r\_j is the net rate of reaction $\ast$j$\ast$ (kmol/m$^3$/s, the very number the integrator uses, third-body concentration and fall-off included), c\_ij = $\nu$\_ij r\_j V (kmol/s) is what reaction $\ast$j$\ast$ does to species $\ast$i$\ast$, and $\Sigma$\_j c\_ij equals the integrator's dn$_i$/dt exactly (held by bin/curate/check\_rate\_of\_production.py). Theory Guide: $\ast$Rates of production of a reaction mechanism$\ast$.}
 \tutreadme{The solver is Rosenbrock23, as in ignition01\_h2o2, whose \_rk4 and \_eulersi siblings show the explicit integrators failing on this chemistry; this case adds nothing to that lesson and only reads the state the integrator reaches.}
 \begin{tutgolden}
-\goldrow{kpi}{bomb}{P\_final}{1135148.06413}
-\goldrow{kpi}{bomb}{T\_final}{3076.31278179}
-\goldrow{kpi}{bomb}{n\_H2O2\_final}{9.60661475471e-11}
-\goldrow{kpi}{bomb}{n\_H2\_final}{1.6749742078e-06}
-\goldrow{kpi}{bomb}{n\_HO2\_final}{9.12802450492e-10}
-\goldrow{kpi}{bomb}{n\_H\_final}{5.08698565686e-07}
+\goldrow{kpi}{bomb}{P\_final}{1121202.82397}
+\goldrow{kpi}{bomb}{T\_final}{3037.00819983}
+\goldrow{kpi}{bomb}{n\_H2O2\_final}{8.00367416065e-11}
+\goldrow{kpi}{bomb}{n\_H2\_final}{1.62963087713e-06}
+\goldrow{kpi}{bomb}{n\_HO2\_final}{7.19758331359e-10}
+\goldrow{kpi}{bomb}{n\_H\_final}{4.49541510152e-07}
 \goldrow{kpi}{bomb}{n\_N2\_final}{2.857145e-05}
-\goldrow{kpi}{bomb}{n\_O2\_final}{6.5975872805e-07}
-\goldrow{kpi}{bomb}{n\_OH\_final}{7.52547147842e-07}
-\goldrow{kpi}{bomb}{n\_O\_final}{2.34567190793e-07}
-\goldrow{kpi}{bomb}{n\_water\_final}{1.19770504681e-05}
+\goldrow{kpi}{bomb}{n\_O2\_final}{5.33369140811e-07}
+\goldrow{kpi}{bomb}{n\_OH\_final}{1.20519239058e-06}
+\goldrow{kpi}{bomb}{n\_O\_final}{1.86407481061e-07}
+\goldrow{kpi}{bomb}{n\_water\_final}{1.18257622566e-05}
 \goldrow{kpi}{bomb}{t\_end}{0.0002}
-\goldrow{kpi}{bomb}{totalMoles\_final}{4.43800551768e-05}
-\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{7.94656764115e-15}
+\goldrow{kpi}{bomb}{totalMoles\_final}{4.44021534514e-05}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.51815023592e-14}
 \goldmore{17}
 \end{tutgolden}
 
@@ -909,20 +909,20 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \tutreadme{Two lessons: 1. No seed. This mechanism self-initiates, and the 43 $\mu$s delay is the chain-BRANCHING chemistry (R1-R3), not the dissociation R5 (H$_2$ + M = 2H, Ea = 105 kcal/mol): MEASURED 2026-10-31, when R5-R8 first ran at their true rate (DEV.md 4c C185 item 9 -- they had run at ZERO), the delay stayed 43 $\mu$s, and removing R5 from the mechanism leaves it at 43 $\mu$s too. (This paragraph used to credit R5 with the induction; that was written while R5 ran at zero and was never true.) With the ignition01-style trace-H seed the delay collapses to 12 $\mu$s: initial conditions are physics, not knobs. 2. The engine now prints tau\_ign in the epilogue (time of max dT/dt on the write grid) whenever a vessel ignites --- no CSV spelunking.}
 \tutreadme{Run ignition01\_h2o2 (the same kinetics, 5 bar, trace-H seeded) for the sibling case and the stiffness lesson (\_rk4).}
 \begin{tutgolden}
-\goldrow{kpi}{bomb}{P\_final}{562410.632114}
-\goldrow{kpi}{bomb}{T\_final}{3040.05307724}
-\goldrow{kpi}{bomb}{n\_H2O2\_final}{3.48411611466e-11}
-\goldrow{kpi}{bomb}{n\_H2\_final}{9.81287128429e-07}
-\goldrow{kpi}{bomb}{n\_HO2\_final}{4.05956260885e-10}
-\goldrow{kpi}{bomb}{n\_H\_final}{3.5185653924e-07}
+\goldrow{kpi}{bomb}{P\_final}{555478.877115}
+\goldrow{kpi}{bomb}{T\_final}{3002.22466196}
+\goldrow{kpi}{bomb}{n\_H2O2\_final}{2.91490173643e-11}
+\goldrow{kpi}{bomb}{n\_H2\_final}{9.52635145411e-07}
+\goldrow{kpi}{bomb}{n\_HO2\_final}{3.22097300598e-10}
+\goldrow{kpi}{bomb}{n\_H\_final}{3.11093339693e-07}
 \goldrow{kpi}{bomb}{n\_N2\_final}{1.391515e-05}
-\goldrow{kpi}{bomb}{n\_O2\_final}{3.87335029489e-07}
-\goldrow{kpi}{bomb}{n\_OH\_final}{4.43008103347e-07}
-\goldrow{kpi}{bomb}{n\_O\_final}{1.60397511846e-07}
-\goldrow{kpi}{bomb}{n\_water\_final}{6.01094273099e-06}
+\goldrow{kpi}{bomb}{n\_O2\_final}{3.15344857993e-07}
+\goldrow{kpi}{bomb}{n\_OH\_final}{6.97676339692e-07}
+\goldrow{kpi}{bomb}{n\_O\_final}{1.28141634456e-07}
+\goldrow{kpi}{bomb}{n\_water\_final}{5.93268981723e-06}
 \goldrow{kpi}{bomb}{t\_end}{0.0003}
-\goldrow{kpi}{bomb}{totalMoles\_final}{2.22501764671e-05}
-\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{3.43861059252e-15}
+\goldrow{kpi}{bomb}{totalMoles\_final}{2.22530823808e-05}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{3.78247165177e-15}
 \goldmore{17}
 \end{tutgolden}
 
@@ -948,23 +948,23 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. `jacobian an
 \tutreadme{Closed, adiabatic, ideal gas, P fixed: the first law is dH = 0, so}
 \tutreadme{with h$_i$ the ideal-gas molar enthalpy on the formation datum (the datum gasConstantV takes u$_i$ = h$_i$ - RT from) and Cp$_i$ the ideal-gas heat capacity. V is not an input: it is derived from (n, T, P) at every state, so the holdup declares no V (declaring one that disagrees with n R T / P is refused by name), and every reader of the vessel --- the time directories' internalStates/bomb, the rate-of-production report --- sees the V of its own state. The rates use c$_i$ = n$_i$ / V with that V. Theory Guide, sec:batch-gas-constp.}
 \tutreadme{At constant V the heat release goes into a gas that cannot expand and the pressure climbs; at constant P the same heat also does the expansion work P dV and is spread over the larger Cp = Cv + R, so the temperature rises less and the burned gas is cooler. The cooler path lowers the rate constants, so the runaway is later and slower.}
-\tutreadme{At 200 $\mu$s the run ends at n = 4.39248e-5 kmol, T = 2828.182 K, P = 5 bar: V = n R T / P = 4.39248e-5 $\times$ 1000 $\times$ 8.314463 $\times$ 2828.182 / 5e5 = 2.06577e-3 m$^3$, which is the V written in 0.0002/internalStates/bomb (2.065769e-3). The vessel has grown from 1.0 L to 2.07 L at fixed pressure.}
+\tutreadme{At 200 $\mu$s the run ends at n = 4.39569e-5 kmol, T = 2805.845 K, P = 5 bar: V = n R T / P = 4.39569e-5 $\times$ 1000 $\times$ 8.314463 $\times$ 2805.845 / 5e5 = 2.05095e-3 m$^3$, which is the V written in 0.0002/internalStates/bomb (2.050948e-3). The vessel has grown from 1.0 L to 2.05 L at fixed pressure. (Before 2026-11-21 the burned gas ended 22 K hotter: OH was a hand-fitted cubic Cp, and it is now the NASA row of the gas-species table, DEV.md 4c C458.)}
 \tutreadme{The same balance on the real LLNL H$_2$ mechanism (O'Connaire 2004, local copy), stoichiometric H$_2$/air, 1100 K, 1 atm, against Cantera's IdealGasConstPressureReactor, agrees on $\tau$, T\_final (to the mK), V\_final and the final mole fractions --- docs/reviews/2026-11-19-chemkin-real-mechanism/REPORT.md section 8.}
 \begin{tutgolden}
 \goldrow{kpi}{bomb}{P\_final}{500000}
-\goldrow{kpi}{bomb}{T\_final}{2828.1824545}
-\goldrow{kpi}{bomb}{n\_H2O2\_final}{3.99799979406e-11}
-\goldrow{kpi}{bomb}{n\_H2\_final}{1.27043440786e-06}
-\goldrow{kpi}{bomb}{n\_HO2\_final}{3.92708428474e-10}
-\goldrow{kpi}{bomb}{n\_H\_final}{3.02059959897e-07}
+\goldrow{kpi}{bomb}{T\_final}{2805.84503362}
+\goldrow{kpi}{bomb}{n\_H2O2\_final}{3.52297379621e-11}
+\goldrow{kpi}{bomb}{n\_H2\_final}{1.25269330246e-06}
+\goldrow{kpi}{bomb}{n\_HO2\_final}{3.31508723291e-10}
+\goldrow{kpi}{bomb}{n\_H\_final}{2.776347193e-07}
 \goldrow{kpi}{bomb}{n\_N2\_final}{2.857145e-05}
-\goldrow{kpi}{bomb}{n\_O2\_final}{5.04365094773e-07}
-\goldrow{kpi}{bomb}{n\_OH\_final}{5.7425062816e-07}
-\goldrow{kpi}{bomb}{n\_O\_final}{1.27479841545e-07}
-\goldrow{kpi}{bomb}{n\_water\_final}{1.25743739639e-05}
+\goldrow{kpi}{bomb}{n\_O2\_final}{4.30243577405e-07}
+\goldrow{kpi}{bomb}{n\_OH\_final}{8.50008647441e-07}
+\goldrow{kpi}{bomb}{n\_O\_final}{1.07986690752e-07}
+\goldrow{kpi}{bomb}{n\_water\_final}{1.24664840301e-05}
 \goldrow{kpi}{bomb}{t\_end}{0.0002}
-\goldrow{kpi}{bomb}{totalMoles\_final}{4.39248465846e-05}
-\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{9.26308854886e-14}
+\goldrow{kpi}{bomb}{totalMoles\_final}{4.39568677059e-05}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{9.65448665656e-14}
 \goldmore{17}
 \end{tutgolden}
 
@@ -988,23 +988,23 @@ with tau = the time T first exceeds T0 + 400 K, linearly interpolated between th
 \tutreadme{The engine integrates the vessel N + 1 times (the base run, then once per reaction with that reaction's $\ast$net$\ast$ rate multiplied by 1.1) and prints, sorted by , the normalised sensitivity of the ignition delay}
 \tutreadme{with $\tau$ = the time T first exceeds T$_0$ + 400 K, linearly interpolated between the two accepted states that bracket it (not the write-grid maximum of dT/dt, whose resolution is the write interval). sensitivity.csv carries all 21 reactions; the golden pins $\tau$$_0$ and the six that are not noise.}
 \tutreadme{The signs and sizes are the run's own. They were checked reaction by reaction against Cantera 3.2.0 (set\_multiplier, same definition of $\tau$): on the same mechanism and thermo the two agree to 2$\cdot$10?? in S for every reaction and to 6$\cdot$10?? in $\tau$$_0$ (docs/reviews/2026-11-19-chemkin-real-mechanism/REPORT.md, section 10).}
-\tutreadme{$\ast$ The multiplier scales forward and reverse together (k\_rev = k/K\_c), so every multiplied run ends in the same equilibrium: gate check\_ignition\_sensitivity holds all 21 final temperatures to 10?? of the base run (measured 7$\cdot$10?$^1$$^2$), and S of R1 to a hand recomputation from two runs of the case with R1's A edited. $\ast$ This case is not ignition02's holdup. ignition02 states 2 atm but loads 2.5$\cdot$10?? kmol into 1 L, which at 1100 K is 2.26 atm; here the moles are p V / R T for 2 atm exactly and the air is 2 : 1 : 3.76, so a Cantera run at 2 atm is the same problem. $\tau$$_0$ is 45.12 $\mu$s here.}
+\tutreadme{$\ast$ The multiplier scales forward and reverse together (k\_rev = k/K\_c), so every multiplied run ends in the same equilibrium: gate check\_ignition\_sensitivity holds all 21 final temperatures to 10?? of the base run (measured 7$\cdot$10?$^1$$^2$), and S of R1 to a hand recomputation from two runs of the case with R1's A edited. $\ast$ This case is not ignition02's holdup. ignition02 states 2 atm but loads 2.5$\cdot$10?? kmol into 1 L, which at 1100 K is 2.26 atm; here the moles are p V / R T for 2 atm exactly and the air is 2 : 1 : 3.76, so a Cantera run at 2 atm is the same problem. $\tau$$_0$ is 45.07 $\mu$s here.}
 \tutreadme{Cost: 22 integrations of an adaptive stiff solver, about 7 s. No adjoint, no direct method: the brute force is what a student can read. Theory Guide sec:ignition-sensitivity.}
 \begin{tutgolden}
-\goldrow{kpi}{bomb}{P\_final}{496999.870102}
-\goldrow{kpi}{bomb}{T\_final}{3028.71898412}
-\goldrow{kpi}{bomb}{n\_H2O2\_final}{2.86707503031e-11}
-\goldrow{kpi}{bomb}{n\_H2\_final}{8.82315463674e-07}
-\goldrow{kpi}{bomb}{n\_HO2\_final}{3.45275919647e-10}
-\goldrow{kpi}{bomb}{n\_H\_final}{3.23080218315e-07}
+\goldrow{kpi}{bomb}{P\_final}{490941.728141}
+\goldrow{kpi}{bomb}{T\_final}{2991.58757699}
+\goldrow{kpi}{bomb}{n\_H2O2\_final}{2.4034952022e-11}
+\goldrow{kpi}{bomb}{n\_H2\_final}{8.56640617167e-07}
+\goldrow{kpi}{bomb}{n\_HO2\_final}{2.7469237546e-10}
+\goldrow{kpi}{bomb}{n\_H\_final}{2.86010657238e-07}
 \goldrow{kpi}{bomb}{n\_N2\_final}{1.23242606244e-05}
-\goldrow{kpi}{bomb}{n\_O2\_final}{3.48560017729e-07}
-\goldrow{kpi}{bomb}{n\_OH\_final}{3.98864848156e-07}
-\goldrow{kpi}{bomb}{n\_O\_final}{1.46756528666e-07}
-\goldrow{kpi}{bomb}{n\_water\_final}{5.31196894476e-06}
-\goldrow{kpi}{bomb}{sens\_S\_R10\_HO2\_H\_H2\_O2}{-0.0489325865178}
-\goldrow{kpi}{bomb}{sens\_S\_R11\_HO2\_H\_2OH}{-0.0346634082221}
-\goldrow{kpi}{bomb}{sens\_S\_R1\_H\_O2\_O\_OH}{-1.02460116838}
+\goldrow{kpi}{bomb}{n\_O2\_final}{2.84485169167e-07}
+\goldrow{kpi}{bomb}{n\_OH\_final}{6.25381238756e-07}
+\goldrow{kpi}{bomb}{n\_O\_final}{1.1754891456e-07}
+\goldrow{kpi}{bomb}{n\_water\_final}{5.24296030408e-06}
+\goldrow{kpi}{bomb}{sens\_S\_R10\_HO2\_H\_H2\_O2}{-0.049033738442}
+\goldrow{kpi}{bomb}{sens\_S\_R11\_HO2\_H\_2OH}{-0.0346645937846}
+\goldrow{kpi}{bomb}{sens\_S\_R1\_H\_O2\_O\_OH}{-1.02673194138}
 \goldmore{24}
 \end{tutgolden}
 
@@ -1025,20 +1025,20 @@ with tau = the time T first exceeds T0 + 400 K, linearly interpolated between th
 \tutreadme{1. The cross-engine pin. The kinetic plateau lands on the Gibbs equilibrium computed by a $\ast$different engine$\ast$ (steady Gibbs minimisation vs stiff batch integration). Kinetics choose the path and the clock; the destination belongs to the thermodynamics. Reverse rates come from the same equilibrium constants --- so this agreement is a genuine consistency check of the mechanism transcription + thermo, not a tautology. 2. NOx forms in engineering time. Ignition takes microseconds (ignition02: 43 $\mu$s); thermal NO takes seconds at 2125 K. That timescale gap is the whole basis of NOx control by quench: cool the gas before the Zeldovich clock runs.}
 \tutreadme{The burnt-gas initial pool was computed by a gibbsReactor at 2125 K/1 atm (14 species on 2026-07-02; it still agrees with the current 13-species thermo to the printed digits) (25 \% H$_2$ / 17.5 \% O$_2$ / 57.5 \% N$_2$ feed); the equilibrium NO share was returned to N$_2$/O$_2$ elementally.}
 \begin{tutgolden}
-\goldrow{kpi}{postflame}{P\_final}{100709.267593}
+\goldrow{kpi}{postflame}{P\_final}{100741.759342}
 \goldrow{kpi}{postflame}{T\_final}{2125}
-\goldrow{kpi}{postflame}{n\_H2O2\_final}{1.0369853342e-12}
-\goldrow{kpi}{postflame}{n\_H2\_final}{4.84698059975e-09}
-\goldrow{kpi}{postflame}{n\_HO2\_final}{1.63158546297e-11}
-\goldrow{kpi}{postflame}{n\_H\_final}{6.02497983071e-10}
-\goldrow{kpi}{postflame}{n\_N2O\_final}{1.37920927884e-12}
-\goldrow{kpi}{postflame}{n\_N2\_final}{3.72502026938e-06}
-\goldrow{kpi}{postflame}{n\_NH\_final}{2.49316863832e-15}
-\goldrow{kpi}{postflame}{n\_NO\_final}{2.95155572717e-08}
-\goldrow{kpi}{postflame}{n\_N\_final}{2.26202033201e-14}
-\goldrow{kpi}{postflame}{n\_O2\_final}{3.06816002144e-07}
-\goldrow{kpi}{postflame}{n\_OH\_final}{2.03894930621e-08}
-\goldrow{kpi}{postflame}{n\_O\_final}{2.17476316564e-09}
+\goldrow{kpi}{postflame}{n\_H2O2\_final}{1.03158641521e-12}
+\goldrow{kpi}{postflame}{n\_H2\_final}{4.85008397878e-09}
+\goldrow{kpi}{postflame}{n\_HO2\_final}{1.62257148216e-11}
+\goldrow{kpi}{postflame}{n\_H\_final}{6.02690833353e-10}
+\goldrow{kpi}{postflame}{n\_N2O\_final}{1.37519144211e-12}
+\goldrow{kpi}{postflame}{n\_N2\_final}{3.72506317809e-06}
+\goldrow{kpi}{postflame}{n\_NH\_final}{2.49395194269e-15}
+\goldrow{kpi}{postflame}{n\_NO\_final}{2.9429747874e-08}
+\goldrow{kpi}{postflame}{n\_N\_final}{2.26203990434e-14}
+\goldrow{kpi}{postflame}{n\_O2\_final}{3.0502331009e-07}
+\goldrow{kpi}{postflame}{n\_OH\_final}{2.77512944532e-08}
+\goldrow{kpi}{postflame}{n\_O\_final}{2.16840040834e-09}
 \goldmore{29}
 \end{tutgolden}
 
@@ -1994,14 +1994,14 @@ Equimolar CO + H2O charged at 600 K. The forward Arrhenius rate drives conversio
 The forward A is the illustrative value tuned for stable RK4 (see constant/reactions); the equilibrium X\_eq is A-independent.
 
 \end{tutnarrative}
-\tutreadme{CO + H2O <$\to$ CO2 + H2, equimolar charge, 600 K, 10 bar, 1 litre, isothermal, reversible Arrhenius kinetics (k\_rev = k\_fwd / K\_eq from the species' ideal-gas Gibbs functions). The conversion relaxes onto the thermodynamic ceiling X\_eq \textasciitilde{} 0.84 (n\_CO 5e-4 $\to$ 7.93e-5 kmol) and stays there.}
+\tutreadme{CO + H2O <$\to$ CO2 + H2, equimolar charge, 600 K, 10 bar (4.989 litres: V = n R T / P for 1 mol), isothermal, reversible Arrhenius kinetics (k\_rev = k\_fwd / K\_eq from the species' ideal-gas Gibbs functions). The conversion relaxes onto the thermodynamic ceiling X\_eq \textasciitilde{} 0.84 (n\_CO 5e-4 $\to$ 7.93e-5 kmol) and stays there.}
 \tutreadme{At 600 K and 10 bar all four species are vapours (water's saturation pressure at 600 K is above 10 bar; CO, CO2 and H2 are far above their critical temperatures). The vessel therefore declares energy gasConstantV;, which puts its heat of reaction, its jacket-duty record, its campaign vessel enthalpies and its impulse pricing on the ideal-gas enthalpy surface. Before C448 the case ran without it, and the campaign heat ledger was priced on liquid surfaces for gases (a "liquid" CO or H2 at 600 K), giving -0.299 kJ and then +0.001 kJ for an extent of 0.42 mol of a reaction whose heat is tens of kJ/mol: non-physical both times.}
 \tutreadme{dH\_rxn(T) = dH\_rxn(298.15 K) + integral from 298.15 K to T of dCp dT, from the catalogue's own records (data/standards/components):}
 \tutreadme{$\ast$ formation enthalpies (J/mol): CO -110530, H2O(g) -241826, CO2 -393520, H2 0, so dH\_rxn(298.15 K) = -393520 - (-110530 - 241826) = -41164 J/mol. $\ast$ ideal-gas Cp polynomials a + bT + cT\textasciicircum{}2 + dT\textasciicircum{}3 (J/mol/K); dCp = Cp(CO2) + Cp(H2) - Cp(CO) - Cp(H2O) has a = -16.173, b = 0.09364, c = -1.08275e-4, d = 4.1111e-8. $\ast$ integrating to 600 K: dH\_rxn(600 K) = -38941.07 J/mol. $\ast$ extent = n\_CO(0) - n\_CO(end) = 0.5 mol - 0.0792842 mol = 0.4207158 mol (from the trajectory below).}
 \tutreadme{Q = extent x dH\_rxn(600 K) = 0.4207158 x (-38.94107) = -16.38312 kJ (heat removed by the jacket; the reaction is exothermic).}
 \tutreadme{The engine's campaign ledger (energy\_Q\_ledger\_kJ, E\_reaction\_total\_kJ) prints -16.3831222515 kJ: the hand value to the digits above.}
 \begin{tutgolden}
-\goldrow{kpi}{reactor}{P\_final}{4988677.5708}
+\goldrow{kpi}{reactor}{P\_final}{999999.994147}
 \goldrow{kpi}{reactor}{T\_final}{600}
 \goldrow{kpi}{reactor}{n\_CO2\_final}{0.000420715762123}
 \goldrow{kpi}{reactor}{n\_CO\_final}{7.92842378768e-05}
@@ -2009,10 +2009,10 @@ The forward A is the illustrative value tuned for stable RK4 (see constant/react
 \goldrow{kpi}{reactor}{n\_water\_final}{7.92842378768e-05}
 \goldrow{kpi}{reactor}{t\_end}{1200}
 \goldrow{kpi}{reactor}{totalMoles\_final}{0.001}
-\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{1.95156391047e-15}
-\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.95156391047e-15}
-\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{1.95156391047e-15}
-\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{1.95156391047e-15}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{2.16840434497e-15}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{2.16840434497e-15}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{2.16840434497e-15}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{2.16840434497e-15}
 \goldrow{kpi}{campaign}{energy\_H\_external\_kJ}{0}
 \goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{-16.3831222515}
 \goldmore{26}

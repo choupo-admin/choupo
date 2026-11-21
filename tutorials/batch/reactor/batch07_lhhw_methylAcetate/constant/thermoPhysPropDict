@@ -7,12 +7,17 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  thermoPhysPropDict (v2) -- T2 gamma-phi mixture with a REAL activity model.
-  The builder VERIFIES the declared route against what actually runs and
-  prints the resolved plan ([v2 plan] in the log); pairs without an explicit
-  binaryParameters block resolve from the pair catalogue, exactly as before.
-  Migrated mechanically from the v1 flat form (physics identical);
-  v2 contract 2026-07-17.
+  thermoPhysPropDict (v2) -- T2 gamma-phi, UNIQUAC liquid.
+
+  The activity model is NOT a free choice here.  A rate constant is meaningless
+  without the activity model it was regressed with: Popken, Gotze & Gmehling
+  fitted their kinetics on UNIQUAC activities, with the binary parameters they
+  themselves regressed (Table 3, Delta u = a + b T + c T^2).  Three of the six
+  pairs are in the standard catalogue under parameters/UNIQUAC/; the other three
+  (aceticAcid-water, aceticAcid-methanol, methanol-water) are this case's own
+  constant/parameters/UNIQUAC/, read from the same table, identical to
+  cstr07's.  Until 2026-11-21 those three were DECHEMA values from another
+  regression, so the rate law was evaluated on activities it was not fitted on.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
@@ -26,10 +31,7 @@ equilibrium
 
     liquid
     {
-        activityModel
-        {
-            model UNIQUAC;
-        }
+        activityModel { model UNIQUAC; }  // the authors' pairs (Popken Table 3)
         standardState pureLiquid;
     }
 

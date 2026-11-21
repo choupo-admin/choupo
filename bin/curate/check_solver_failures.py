@@ -130,7 +130,7 @@ PROBE = ROOT / "bin" / "curate" / "_solverFailureProbe.cpp"
 SOURCES = ["src/solver/ActiveSetQP.cpp", "src/solver/SQP.cpp",
            "src/solver/NewtonND.cpp", "src/solver/LU.cpp",
            "src/solver/BlockTridiagonal.cpp",
-           "src/solver/ODE/Rosenbrock23.cpp", "src/solver/ODE/Jacobian.cpp",
+           "src/solver/SparseLU.cpp", "src/solver/ParallelFor.cpp", "src/solver/ODE/Rosenbrock23.cpp", "src/solver/ODE/Jacobian.cpp",
            "src/solver/ODE/ODEIntegrator.cpp", "src/solver/ODE/RK4.cpp",
            "src/solver/ODE/EulerSI.cpp", "src/streams/AnalysisReconciler.cpp"]
 CASES = [
@@ -351,7 +351,7 @@ def arm_source():
         code = strip_comments(path.read_text(errors="replace"))
         for m in re.finditer(r"->integrate\(", code):
             n += 1
-            window = code[m.end():m.end() + 1500]
+            window = code[m.end():m.end() + 3000]   # 1500 -> 3000: the cloud put the Jacobian-audit announcement between the call and the .ok read (BatchReactor.cpp:1892 -> 1929)
             line = code[:m.start()].rsplit("\n", 1)[-1]
             bound = re.search(r"(\w+)\s*=\s*\w+$", line.strip().split("->")[0])
             var = bound.group(1) if bound else None

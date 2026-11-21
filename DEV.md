@@ -4870,6 +4870,22 @@ accepts today, and that is a policy call.
 > a test that reads it; (5) knob ranges from the validity the engine
 > declares.  Each with the real defect it would have caught named in its
 > header (rule 4e).
+> **C455 classes 2, 4, 5 BUILT (general, branch c455, 2026-11-21; class 1 was
+> check_lesson_prose_citations, class 3 dropped).**  Three gates, one shared
+> reader (bin/curate/lesson_scan.py), each with a registry in the gate, a
+> RATCHET in debt_registry.py for the unclassified remainder, and `--selftest`
+> sabotage arms (not wired: they test the gate): (2) check_lesson_absence_claims
+> -- an absence sentence is CLAIMED with probes of the tree, KNOWN_FALSE
+> (listed on every run) or pinned per file (LESSON_ABSENCE_UNCLASSIFIED); (4)
+> check_lesson_typed_numbers -- TYPED (file, literal, case, golden row) held to
+> half a unit of the last digit; a scan pins what it could not attribute
+> (LESSON_TYPED_CANDIDATES, empty at the seed; a fall of an unregistered pin
+> may be DRIFT); (5) check_lesson_knob_domains -- DOMAINS (file, knob, validity
+> from a record, an expression or physics), KNOWN violations that must still
+> violate, LESSON_KNOBS_UNDECLARED per file.  Not covered, on purpose: a number
+> derived from several rows (stream compositions are not golden rows), a
+> validity that is a model output (saltMixing eutonic molality, the
+> overpressure relieving pressure).  The lesson fixes it lists are C453's.
 
 > **C456, C457, C458 (Vitor, 2026-11-19, through the cloud session's board;
 > SESSIONS.md, the three notes "an olefins line", "the olefins commission,
@@ -4896,6 +4912,74 @@ accepts today, and that is a policy call.
 > review if Vitor files one), never from memory; each adsorbent opens the
 > catalogue record and the case that uses it.  The page's scope goes to Vitor
 > before dispatch.  Size M, "rest" group.
+
+> **C458 CLARIFIED (Vitor, 2026-11-20, after seeing the 858 NASA records on
+> the site: "Eu queria ter as espécies com as constantes cinéticas desses
+> radicais!!! Aquela lista é só de parâmetros thermo!!!"; then "Sabes se há
+> listas públicas enormes com essas cinéticas?").**  What he expects from
+> C458's second half is the RATE CONSTANTS of the radical reactions as a
+> browsable list (pick OH, see every reaction it enters, A b Ea, k(T), source),
+> not only the machinery to run one mechanism.  The cloud session built the
+> machinery (import, standard state, PLOG, analytic Jacobian, sensitivity; one
+> 10-species mechanism against Cantera) and read his "lista de radicais" as the
+> thermo table instead of asking what he expected to see -- the defect is
+> that, not his phrasing.  Next, in order: (1) a general verifies on the web the
+> licence of each candidate source and returns a table with the page it was read
+> on (NIST SRD 17 as the route to primary sources; Baulch et al. 2005 JPCRD 34;
+> IUPAC and JPL-19 atmospheric evaluations; mechanisms AramcoMech 3.0, LLNL,
+> CRECK, UCSD, FFCM-1, USC II, MCM, RMG-database; GRI-Mech stays refused);
+> (2) a standards home for elementary reactions, one record per reaction with
+> its form, A b Ea, efficiencies and source page, seeded with the 21 verified
+> O Conaire 2004 reactions and Zeldovich, the ignition cases reading it with
+> identical results; (3) the Explorer view per species; (4) growth to C1 from
+> evaluated sources only.  A large mechanism of unverified licence goes to the
+> private data/local/ tier through chemkin_to_choupo.py, never public.  Also: the
+> 858 thermoTables records are on main but neither the GUI (catalogue.ts globs
+> components/ only) nor release_inventory.py reads them -- the site shows none.
+> DECIDED THE SAME DAY, in conversation with Vitor (to start 2026-11-21):
+> (a) a gas-phase reaction library built like the binary pairs: one record per
+> elementary reaction (form, A b Ea, efficiencies, source page), the same
+> precedence case > standards > data/local, named sets a case can ask for; the
+> radicals are the thermoTables species (no second list).  (b) Elementary rate
+> constants are REUSABLE across mechanisms by default (Vitor: a high-T radical
+> step's k(T) is a property of the reaction -- the hierarchical build of
+> combustion mechanisms); a record marked "optimised within set X" (GRI-Mech,
+> FFCM-1 style) is announced when used outside X, nothing else is.  (c) Identity:
+> no universal naming exists (CHEMKIN and Cantera key a reaction by its equation
+> string and file position; PrIMe ids never became standard); Choupo keys a
+> species by catalogue/thermoTables name tied to formula (+ InChI for isomers,
+> mechanism names as aliases mapped by the importer) and a reaction by its
+> canonical equation (sorted sides, reverse = same reaction, +M and (+M)
+> distinct); the mechanism's own label (R1) is kept as an alias in its set.
+> (d) The reverse: one thermochemistry (the catalogue's) prices K_c; a reverse
+> given as its own record (CHEMKIN REV, or two irreversibles) is allowed, and the
+> engine prints k_f/k_r against K_c(T) at the run temperature (today it does
+> not).  Order: licence survey of the public sources first, then the home seeded
+> with the 21 O Conaire 2004 reactions (ignition cases byte-identical), then the
+> Explorer view (and the 858 thermoTables species on screen), then C1 growth.
+> PFR for radical chemistry (same day): NO axial dispersion with CHEMKIN
+> kinetics (Vitor: "se não faz falta ... não vamos complicar"; a cracking coil
+> runs at Re 1e5-1e6 and L/d in the hundreds, Bo >> 100).  What a cracking coil
+> still needs in `pfr`: friction pressure drop in an empty tube (today Ergun,
+> packed bed only) and an imposed furnace heat-flux or wall-T profile.
+
+> **C462 (Vitor, 2026-11-21, on the cloud board; renumbered from C461, which
+> the laptop gave the same day to the pfr volumetric flow: "como é que os engenheiros químicos
+> conseguiram isolar cada reação individual e calibrar as constantes cinéticas?!
+> ... a pergunta que devia ficar num EduTool").**  WEIGHED, agreed: an EduTool
+> "How do we know k?".  The student RUNS the measurement on the engine: (1) a
+> pseudo-first-order experiment (a radical made in a trace, the partner in
+> large excess, the batch reactor as the cell): ln[radical] against t is a
+> line, its slope against the excess concentration gives k, compared with the
+> library record; (2) a shock-tube-like hot cell where the sensitivity tool
+> (check_ignition_sensitivity) picks the conditions in which ONE reaction
+> governs the observable -- how H + O2 = O + OH is measured; (3) an Arrhenius
+> plot assembled from the "measurements" at several T, the fit giving A, b, Ea
+> and their uncertainty, compared with the evaluated record (Baulch 2005).
+> Theory beside it in prose (transition state theory, Lindemann/RRKM for the
+> fall-off, the evaluation panels, optimised sets).  Every historical and
+> numerical claim read from a source.  Depends on the reaction library
+> (C458 slice 1) and the sensitivity (landed).  Scope to Vitor before dispatch.
 
 > **C460 (Vitor, 2026-11-19: "E outra sobre heurísticas de selecção de secadores?
 > Também estilo Pareto e com os esquemas mais comuns pelos quais são

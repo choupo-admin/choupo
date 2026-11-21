@@ -39,10 +39,13 @@ function must(n: string) {
 }
 
 describe("compound groups", () => {
-  it("OH is a radical and a combustion species (tags on the record)", () => {
-    const m = must("OH");
-    expect(m.isRadical).toBe(true);
-    expect(m.isCombustion).toBe(true);
+  it("a radical is not a component (DEV.md 4c C458): OH is not in the catalogue, H2O2 stays", () => {
+    //  The 34 radicals moved to the gas-species table on 2026-11-21; the
+    //  stable H2O2 stays a component, a combustion species, no longer tagged
+    //  a radical.
+    expect(metaByName("OH")).toBeUndefined();
+    expect(metaByName("HO2")).toBeUndefined();
+    expect(must("H2O2").isCombustion).toBe(true);
   });
   it("NaCl is a salt/mineral and still an electrolyte", () => {
     const m = must("NaCl");
@@ -58,7 +61,6 @@ describe("compound groups", () => {
     const m = must("benzene");
     expect(m.vleAble).toBe(true);
     expect(m.isRoomTemperatureGas).toBe(false);
-    expect(m.isRadical).toBe(false);
     expect(m.isSaltOrMineral).toBe(false);
   });
   it("a record with no Tb is never a room-temperature gas", () => {

@@ -45,6 +45,55 @@ WHAT THIS GATE CHECKS.
       ADAPTIVE sweep (the analytic Jacobian handed to it block by block)
       batch06_adaptive_runaway (adiabatic liquidDH) and batch31_fast_equilibrium_reduced
       (a `type expression` law).
+  (e) THE CLOSED FORMS (2026-11-21).  The T column is no longer a difference: dk/dT of
+      every Arrhenius leg, Troe exactly in [M] and T (F_cent(T) included), PLOG's dk/dT and
+      dk/dP, d ln Kc/dT from the species' h(T), the heat capacities' slope; and
+      `energy gasConstantP` is derived (V = nRT/P: a rank-one term).  Five probes whose
+      every law has a derivative -- ignition01_h2o2_jac on Rosenbrock23 and on Rodas4; the
+      same with GRI-Mech 3.0's H2O2(+M) Troe constants (F_cent moves with T); the same with
+      R2 rewritten as a reversible PLOG bracketing the run's pressure (5 -> ~14 bar at
+      fixed V); ignition03_h2air_constp -- each with every audit after the radical pool has
+      formed (T > T0 + 1 K) at most EXACT_TOL = 1e-8 (measured 2e-10 to 1e-9; the forward-
+      difference T column it replaced read 7e-8 to 6.5e-7).  Earlier audits hold a trace
+      species within the audit's own step of zero, whose column the AUDIT differences
+      forward (5e-9 to 5e-8): judged on GATE_TOL there.
+      THE CHEMKIN FORMS (2026-11-21, sec:elementary-rate), four more probes of the same kind
+      on ignition01_h2o2_jac: R9's Troe replaced by SRI with five numbers (F = d W^X T^e,
+      Reaction::falloffRateDerivs); R9 on a single collider (`thirdBody { N2 1; }
+      defaultEfficiency 0;`, CHEMKIN's `(+N2)`); R8 with N2 on BOTH sides (order 1, orderRev 1,
+      nu 0, reversible); R10 irreversible with explicit orders HO2 1.5 and a non-reactant N2
+      0.5 (what FORD writes).  Measured: late audits <= 6e-10 on all four.
+      SABOTAGE-VERIFIED 2026-11-21 (by hand in a copy of the tree, rebuilt, restored):
+      SRI's d ln F/dp set to 0 (Reaction::falloffRateDerivs) -- the SRI probe refused at
+      analytic Jacobian #1, d(n_H)/d(T) -1.99934e-05 against -2.01633e-05 (0.00673);
+      a zero-efficiency species treated as a collider in the derivative only
+      (BatchReactor::rateGradient_) -- the single-collider probe refused at #1,
+      d(n_HO2)/d(n_H2) -100.307 against 0.00251685 (0.114); the reverse factor of the
+      derivative read on nu instead of orderRev -- the both-sides probe refused at #2048,
+      d(n_H)/d(T) -0.0354183 against -0.0430142 (0.177).  FORD adds no derivative code.
+  (f) THE DEFAULT.  With no `jacobian` key: ignition01_h2o2 and ignition03_h2air_constp run
+      on the audited analytic Jacobian (the first audit line says "the default"), and
+      ignition03's KPIs equal those of `jacobian finiteDifference;` to 1e-6; batch07 (an
+      LHHW law, no derivative) stays on the finite difference (no audit), and with
+      `jacobian analytic;` names the reaction it differences.
+  (g) THE SPARSE FACTORISATION OF W (2026-11-21, solver/SparseLU, sec:sparse-lu).
+      (g1) test/sparse_lu.cpp, built here: SparseLU against the dense LU (partial
+      pivoting) on eight families of random sparse matrices with dense rows and columns,
+      n = 5 to 1000, two refactorisations of each pattern: x equal to 1e-12 of |x|
+      (measured 7e-15), residual at round-off, and a zero pivot that only a row exchange
+      cures REFUSED.  (g2) the six combustion cases on Rosenbrock (ignition04's 22
+      integrations included) with `linearSolver sparse` against `dense`: KPIs equal to
+      SPARSE_TOL = 1e-10 (measured 1.4e-11: the round-off of a different elimination
+      order, amplified through an ignition) and NOT ONE factorisation refactored dense
+      (a factor is accepted on its backward error on W_s, <= 1e-12).
+      (g3) an adaptive sweep of one vessel factors sparse.  (g4) `linearSolver banded;`
+      and `linearSolver sparse;` beside `jacobian finiteDifference;` refused by name.
+      THE REAL DEFECT (g2) CAUGHT, in the first build: the threshold pivot test ran on the
+      UNSCALED rows, the temperature row's entries (K/s per kmol) dwarfed every pivot of
+      its column, and ignition03 refactored 2155 of 2155 matrices dense -- every KPI
+      equal, the run correct, the sparse path never taken.  Row equilibration fixed it
+      (and the threshold test was then replaced by the backward-error test, which a
+      synthetic 50-species mechanism showed to be the right instrument).
   (d) REFUSALS BY NAME.  `jacobian exact;` (an unknown word), `integrator RK4;` beside
       `jacobian analytic;` (a contradiction), and `jacobian analytic;` on a fixed-step run
       that integrates with the default RK4 (a key nothing would read) each exit non-zero
@@ -73,17 +122,48 @@ radicals are few and O(1) at the ramp.  Arm (a)'s GATE_TOL sits 6x under the fir
 those numbers; the correct Jacobian's worst over every audit of this gate is 1e-6 (the
 forward difference the reactor takes for an LHHW law and for the T column, by design).
 
+SABOTAGE-VERIFIED 2026-11-21 (each by hand, rebuilt, gate run, restored, rebuilt):
+  - d ln k/dT without its b/T term (Reaction::dlnModifiedArrheniusdT): (a), (b), (e) and
+    (f) fail -- "d(n_H)/d(T) is -2.27795e-05 against the finite-difference -2.08717e-05
+    (relative difference 0.0755 ...)" at analytic Jacobian #1;
+  - Troe's dF_cent/dT dropped (Reaction::falloffRateDerivs): ONLY the F_cent(T) probe of
+    (e) fails -- d(n_HO2)/d(T) -3.96739e-06 against -4.8755e-06 (0.0359);
+  - PLOG's dk/dP set to 0 (ElementaryRate::kEffDerivs): ONLY the PLOG probe of (e) fails
+    -- d(n_H)/d(n_N2) -97.371 against -96.7629 (0.00138) at analytic Jacobian #4;
+  - the gasConstantP rank-one term s_j set to 0 (BatchReactor::odeJacobianSparse): the
+    gasConstantP probe of (e) and (f) fail -- d(n_H)/d(n_N2) -117.044 against 221.594.
+
+SABOTAGE-VERIFIED 2026-11-21, arm (g) (by hand, rebuilt, restored, rebuilt):
+  - FIRST BUILD (a KLU-style threshold pivot test, tau = 1e-3), SparseLU without row
+    equilibration: (g2) failed on the five adiabatic cases -- "1962 of 1962
+    factorisations refused a pivot and were refactored dense" (2155 of 2155 on
+    ignition03); (g1) and every KPI passed: only the count saw it.  The threshold test
+    was then replaced by the backward-error test (it refused 9549 of 12749 factors of a
+    synthetic 50-species mechanism whose factors all solve to 1.4e-19), and against
+    THAT test the same sabotage is harmless and is NOT caught: 0 dense refactorisations,
+    every KPI equal (measured).  Equilibration now only scales the breakdown guard;
+  - the last update of every L column dropped in SparseLU::factor (a wrong factor):
+    (g1) fails on all eight families (|xs-xd|/|x| 4e-3 to 0.15); in the integrator the
+    backward-error probe rejects the wrong factor and refactors dense (1938 of 1962 on
+    ignition01_h2o2, 2063 of 2064 on ignition02), and (g2) fails on that count and on
+    the KPIs the 24 accepted wrong factors move (n_O_final 8.4e-9).  Before the probe
+    existed the same sabotage moved the KPIs by 9e-7, INSIDE every golden's 1e-4: a
+    Rosenbrock step with a wrong factor is still accepted by its error estimate.
+
 NOT CHECKED: that the rate laws themselves are right (ignition02_h2air_slack's Slack pin,
 check_elementary_rates); a power-law order below one at zero concentration (the reactor
-differences such a reaction instead; no witness has one); the T column's accuracy beyond
-the audit (it is one forward difference, as the dense Jacobian's own); wall time (machine-
+differences such a reaction instead; no witness has one); the heat-capacity slope dC_p/dT
+(a central difference of the record's law: the record offers no derivative); wall time (machine-
 dependent: the right-hand-side count is the deterministic proxy); a sweep that mixes a
 unit with an analytic Jacobian and one without (it falls back to the difference by
 construction; no witness has two ODE units).
 """
 import json
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -93,6 +173,124 @@ FD = "tutorials/batch/combustion/ignition01_h2o2"
 JAC = "tutorials/batch/combustion/ignition01_h2o2_jac"
 STRIP = ("expected", "latest", "solution.log", "trajectory.csv")
 GATE_TOL = 1.0e-5
+CONSTP = "tutorials/batch/combustion/ignition03_h2air_constp"
+SPARSE_TOL = 1.0e-10
+SPARSE_CASES = [
+    "tutorials/batch/combustion/ignition01_h2o2",
+    "tutorials/batch/combustion/ignition01_h2o2_rop",
+    "tutorials/batch/combustion/ignition02_h2air_slack",
+    "tutorials/batch/combustion/ignition03_h2air_constp",
+    "tutorials/batch/combustion/ignition04_h2air_sensitivity",
+    "tutorials/batch/combustion/nox01_zeldovich_postflame",
+]
+EXACT_TOL = 1.0e-8
+
+#  Troe with a T-dependent F_cent (GRI-Mech 3.0's H2O2 (+M) parameters -- a probe of
+#  the derivative only; the case's own Troe lines have F_cent = 0.5 flat in T).
+TROE_OLD = "troe ( 0.5 1e-30 1e+30 1e+100 );"
+TROE_NEW = "troe ( 0.7346 94 1756 5182 );"
+#  R2 rewritten as a reversible PLOG whose table brackets the run's pressure (5 bar at
+#  the start, about 14 in the burned gas at fixed V): ln k interpolated in ln P, so
+#  dk/dP != 0, and the T column carries (dr/dP) P/T.  A numerical probe, not chemistry.
+PLOG_OLD = """        type modifiedArrhenius;
+        A 5.0800e+04;  b 2.67;  Ea 6.292;
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }"""
+PLOG_NEW = """        type plog;
+        plog
+        (
+            { P 2 bar;  A 2.5000e+04;  b 2.67;  Ea 6.292; }
+            { P 10 bar; A 5.0800e+04;  b 2.67;  Ea 6.292; }
+            { P 50 bar; A 1.0000e+05;  b 2.50;  Ea 6.000; }
+        );
+        units { A "cm3/mol/s"; Ea "kcal/mol"; }"""
+
+
+#  The CHEMKIN forms of 2026-11-21 (Theory Guide sec:elementary-rate), each a numerical probe of
+#  the derivative on R8 / R9 / R10 of the shipped case, not chemistry:
+#  SRI with five numbers in place of R9's Troe (d and e exercised: F = d W^X T^e);
+SRI_NEW = "sri ( 0.45 797 979 0.9 0.02 );"
+#  R9 on a SINGLE collider, N2 (CHEMKIN `(+N2)`: efficiency 1 for N2, 0 for every other species);
+COLL_OLD = "thirdBody { H2 1.3; water 14.0; }"
+COLL_NEW = "thirdBody { N2 1.0; }  defaultEfficiency 0;"
+#  R8 with N2 on BOTH sides (H + OH + N2 <=> H2O + N2: order 1, orderRev 1, nu 0), reversible;
+R8_OLD = """        { component H;      nu -1;  order 1; }
+        { component OH;     nu -1;  order 1; }
+        { component water;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 4.5000e+22;  b -2.0;  Ea 0.0;
+        thirdBody { water 12.0; H2 0.73; }"""
+R8_BOTH = """        { component H;      nu -1;  order 1; }
+        { component N2;     nu  0;  order 1;  orderRev 1; }
+        { component OH;     nu -1;  order 1; }
+        { component water;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 4.5000e+22;  b -2.0;  Ea 0.0;"""
+#  R10 irreversible with explicit (FORD-style) orders: HO2 1.5 and a non-reactant N2 0.5.
+R10_HEAD_OLD = """R10_HO2_H_H2_O2
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;"""
+R10_HEAD_NEW = """R10_HO2_H_H2_O2
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)"""
+R10_ST_OLD = """        { component H;      nu -1;  order 1; }
+        { component H2;     nu  1;  order 0; }
+        { component HO2;    nu -1;  order 1; }
+        { component O2;     nu  1;  order 0; }"""
+R10_ST_NEW = """        { component H;      nu -1;  order 1; }
+        { component H2;     nu  1;  order 0; }
+        { component HO2;    nu -1;  order 1.5; }
+        { component N2;     nu  0;  order 0.5; }
+        { component O2;     nu  1;  order 0; }"""
+
+
+def _sri(c):
+    gatekit.edit(c / "constant/reactions", TROE_OLD, SRI_NEW)
+
+
+def _collider(c):
+    gatekit.edit(c / "constant/reactions", COLL_OLD, COLL_NEW)
+
+
+def _both(c):
+    gatekit.edit(c / "constant/reactions", R8_OLD, R8_BOTH)
+
+
+def _ford(c):
+    gatekit.edit(c / "constant/reactions", R10_HEAD_OLD, R10_HEAD_NEW)
+    gatekit.edit(c / "constant/reactions", R10_ST_OLD, R10_ST_NEW)
+
+
+def _troe(c):
+    gatekit.edit(c / "constant/reactions", TROE_OLD, TROE_NEW)
+
+
+def _plog(c):
+    gatekit.edit(c / "constant/reactions", PLOG_OLD, PLOG_NEW)
+
+
+def _rodas(c):
+    set_solver(c, "analytic", integrator="Rodas4")
+
+
+EXACT_PROBES = [   # (label, case, edit of a private copy)
+    ("closed-form T column (ignition01_h2o2_jac)", "tutorials/batch/combustion/ignition01_h2o2_jac", None),
+    ("closed-form T column on Rodas4", "tutorials/batch/combustion/ignition01_h2o2_jac", _rodas),
+    ("Troe with F_cent(T)", "tutorials/batch/combustion/ignition01_h2o2_jac", _troe),
+    ("reversible PLOG in a fixed-V gas", "tutorials/batch/combustion/ignition01_h2o2_jac", _plog),
+    ("gasConstantP (V = nRT/P, rank one)", "tutorials/batch/combustion/ignition03_h2air_constp", None),
+    ("SRI fall-off (a b c d e)", "tutorials/batch/combustion/ignition01_h2o2_jac", _sri),
+    ("single collider (+N2) on a fall-off", "tutorials/batch/combustion/ignition01_h2o2_jac", _collider),
+    ("species on both sides (H + OH + N2 <=> H2O + N2)", "tutorials/batch/combustion/ignition01_h2o2_jac", _both),
+    ("explicit orders (HO2 1.5, non-reactant N2 0.5), irreversible", "tutorials/batch/combustion/ignition01_h2o2_jac", _ford),
+]
+
 PATHS = [   # (case, what it exercises)
     ("tutorials/batch/reactor/batch02_adiabatic", "liquidDH energy row, fixed step"),
     ("tutorials/batch/reactor/batch04_reversible_wgs", "isothermal reversible Arrhenius"),
@@ -115,7 +313,7 @@ def audits(out):
              m.group(4), m.group(5), float(m.group(6))) for m in AUDIT.finditer(out)]
 
 
-def set_solver(case, jacobian, integrator=None, verbosity=None):
+def set_solver(case, jacobian, integrator=None, verbosity=None, linear=None):
     """Write `jacobian`/`integrator`/`verbosity` into the (first) batchReactor's solver block,
     creating the block after `type batchReactor;` when there is none."""
     p = case / "system/flowsheetDict"
@@ -132,6 +330,8 @@ def set_solver(case, jacobian, integrator=None, verbosity=None):
         keys.append(f"verbosity {verbosity};")
     if jacobian:
         keys.append(f"jacobian {jacobian};")
+    if linear:
+        keys.append(f"linearSolver {linear};")
     if blk:
         body_start = blk.end()
         body_end = s.index("}", body_start)
@@ -250,7 +450,7 @@ def main():
     # ---- (b) the same answer, cheaper --------------------------------------------------
     rows = golden(gatekit.base_case(FD) / "expected")
     runs = {}
-    for name, base, jac in (("finite difference", FD, None), ("analytic", JAC, "analytic")):
+    for name, base, jac in (("finite difference", FD, "finiteDifference"), ("analytic", JAC, "analytic")):
         with gatekit.probe_copy(base, strip=STRIP) as c:
             set_solver(c, jac, verbosity=4)
             rc, out = gatekit.run(batch, c)
@@ -282,13 +482,13 @@ def main():
     for case, what in PATHS:
         adaptive = "adaptive" in what
         got = {}
-        for jac in (None, "analytic"):
+        for jac in ("finiteDifference", "analytic"):
             with gatekit.probe_copy(case, strip=STRIP) as c:
                 set_solver(c, jac, integrator=None if adaptive else "Rosenbrock23")
                 rc, out = gatekit.run(batch, c)
                 if rc != 0:
                     failures.append(f"(c) {Path(case).name} ({what}) with jacobian "
-                                    f"{jac or 'finiteDifference'} exited {rc}: "
+                                    f"{jac} exited {rc}: "
                                     + " | ".join(out.strip().splitlines()[-2:])[:500])
                     continue
                 got[jac] = (kpis(out), audits(out))
@@ -302,11 +502,167 @@ def main():
         wa = max(x[5] for x in a)
         if not wa <= GATE_TOL:
             failures.append(f"(c) {Path(case).name} ({what}): an audit differs by {wa:.3e} (> {GATE_TOL:g})")
-        w, where, missing = kpi_diff(got[None][0], got["analytic"][0])
+        w, where, missing = kpi_diff(got["finiteDifference"][0], got["analytic"][0])
         if missing or w > 1e-6:
             failures.append(f"(c) {Path(case).name} ({what}): the KPIs of the two Jacobians differ by "
                             f"{w:.2e} ({where}){' missing ' + str(missing[:3]) if missing else ''}")
         notes.append(f"{Path(case).name} {len(a)} audits <= {wa:.0e}")
+
+    # ---- (e) the closed-form T column, Troe and PLOG, gasConstantP --------------------
+    #  Every reaction of these probes has an analytic derivative, so NO column of the
+    #  Jacobian is a difference any more: the audits must sit at the rounding of the
+    #  audit's own central difference (measured 1e-10 to 7e-10), EXACT_TOL = 1e-8 --
+    #  60x under the forward-difference T column this replaced (7e-8 to 6.5e-7).
+    exact = []
+    for label, base, edit in EXACT_PROBES:
+        with gatekit.probe_copy(base, strip=STRIP) as c:
+            if edit:
+                edit(c)
+            rc, out = gatekit.run(batch, c)
+            if rc != 0:
+                failures.append(f"(e) {label} exited {rc}: " + " | ".join(out.strip().splitlines()[-2:])[:600])
+                continue
+            a = audits(out)
+            if not a:
+                failures.append(f"(e) {label}: no audit printed -- the analytic Jacobian was not used")
+                continue
+            if "has no analytic derivative" in out:
+                failures.append(f"(e) {label}: a reaction was differenced (no analytic derivative)")
+            w = max(a, key=lambda x: x[5])
+            if not w[5] <= GATE_TOL:
+                failures.append(f"(e) {label}: analytic Jacobian #{w[0]} d({w[3]})/d({w[4]}) differs by "
+                                f"{w[5]:.3e} of the column's scale (> {GATE_TOL:g})")
+            #  Before the radical pool forms a trace species sits within the audit's step
+            #  of zero and its column is a FORWARD difference in the audit itself (5e-9 to
+            #  5e-8, the audit's error, not J's).  Once T has risen 1 K every column of the
+            #  audit is central, and the audit reads J itself.
+            T0 = a[0][2]
+            late = [x for x in a if x[2] is not None and T0 is not None and x[2] > T0 + 1.0]
+            if len(late) < 2:
+                failures.append(f"(e) {label}: only {len(late)} audits after the radical pool formed")
+            elif max(x[5] for x in late) > EXACT_TOL:
+                wl = max(late, key=lambda x: x[5])
+                failures.append(f"(e) {label}: analytic Jacobian #{wl[0]} (T = {wl[2]} K) d({wl[3]})/d({wl[4]}) "
+                                f"differs by {wl[5]:.3e} of the column's scale (> {EXACT_TOL:g}: a closed-form "
+                                "term is wrong)")
+            else:
+                exact.append(f"{label} {len(late)} late audits <= {max(x[5] for x in late):.0e}")
+    notes += exact
+
+    # ---- (f) the DEFAULT: analytic where every law has a derivative ------------------
+    with gatekit.probe_copy(FD, strip=STRIP) as c:          # no `jacobian` key
+        rc, out = gatekit.run(batch, c)
+        if rc != 0 or not audits(out) or "the default" not in out:
+            failures.append(f"(f) ignition01_h2o2 (no `jacobian` key) did not integrate on the audited "
+                            f"analytic Jacobian by default (exit {rc})")
+    with gatekit.probe_copy(CONSTP, strip=STRIP) as c:      # gasConstantP: now derived
+        rc, out = gatekit.run(batch, c)
+        k_def = kpis(out) if rc == 0 else None
+        if rc != 0 or not audits(out):
+            failures.append(f"(f) ignition03_h2air_constp (gasConstantP) did not run on the analytic "
+                            f"Jacobian by default (exit {rc})")
+    with gatekit.probe_copy(CONSTP, strip=STRIP) as c:
+        set_solver(c, "finiteDifference")
+        rc, out = gatekit.run(batch, c)
+        if rc != 0:
+            failures.append(f"(f) ignition03_h2air_constp on `jacobian finiteDifference;` exited {rc}")
+        elif k_def is not None:
+            w, where, missing = kpi_diff(kpis(out), k_def)
+            if missing or w > 1e-6:
+                failures.append(f"(f) gasConstantP: analytic and finite-difference KPIs differ by {w:.2e} ({where})")
+    with gatekit.probe_copy("tutorials/batch/reactor/batch07_lhhw_methylAcetate", strip=STRIP) as c:
+        set_solver(c, None, integrator="Rosenbrock23")
+        rc, out = gatekit.run(batch, c)
+        if rc != 0 or audits(out):
+            failures.append(f"(f) batch07 (an LHHW law, no `jacobian` key) did not stay on the finite "
+                            f"difference (exit {rc}, {len(audits(out))} audits)")
+    with gatekit.probe_copy("tutorials/batch/reactor/batch07_lhhw_methylAcetate", strip=STRIP) as c:
+        set_solver(c, "analytic", integrator="Rosenbrock23")
+        rc, out = gatekit.run(batch, c)
+        if rc != 0 or "has no analytic derivative" not in out:
+            failures.append(f"(f) batch07 with `jacobian analytic;` did not name the differenced LHHW "
+                            f"reaction (exit {rc})")
+
+    # ---- (g) the SPARSE factorisation of W (solver/SparseLU, sec:sparse-lu) ------------
+    #  (g1) the factorisation itself, against the dense LU, on random sparse matrices
+    exe = Path(tempfile.mkdtemp(prefix="sparse_lu_")) / "sparse_lu"
+    cxx = shutil.which("g++") or shutil.which("clang++")
+    if not cxx:
+        failures.append("(g1) no C++ compiler to build test/sparse_lu.cpp")
+    else:
+        root = gatekit.repo
+        r = subprocess.run([cxx, "-std=c++17", "-O2", "-I", str(root / "src"),
+                            str(root / "test/sparse_lu.cpp"), str(root / "src/solver/SparseLU.cpp"),
+                            str(root / "src/solver/LU.cpp"), "-o", str(exe)],
+                           capture_output=True, text=True, timeout=600)
+        if r.returncode != 0:
+            failures.append("(g1) test/sparse_lu.cpp did not compile: " + r.stderr[-400:])
+        else:
+            r = subprocess.run([str(exe)], capture_output=True, text=True, timeout=600)
+            if r.returncode != 0 or "SPARSE_LU_OK" not in r.stdout:
+                failures.append("(g1) SparseLU differs from the dense LU on random sparse matrices:\n"
+                                + r.stdout[-1500:])
+            else:
+                worst = max(float(x) for x in re.findall(r"\|xs-xd\|/\|x\| (\S+)", r.stdout))
+                notes.append(f"SparseLU = dense LU on 8 random families to {worst:.0e} "
+                             "(n 5..1000), a zero pivot refused")
+        shutil.rmtree(exe.parent, ignore_errors=True)
+    #  (g2) every combustion case on Rosenbrock: `linearSolver sparse` against `dense`,
+    #  KPIs equal to SPARSE_TOL and NO step refactored dense (the threshold test).
+    sp_worst, sp_n = 0.0, 0
+    for case in SPARSE_CASES:
+        got = {}
+        for ls in ("dense", "sparse"):
+            with gatekit.probe_copy(case, strip=STRIP) as c:
+                set_solver(c, None, verbosity=4, linear=ls)
+                rc, out = gatekit.run(batch, c)
+                if rc != 0:
+                    failures.append(f"(g2) {Path(case).name} with linearSolver {ls} exited {rc}: "
+                                    + " | ".join(out.strip().splitlines()[-2:])[:500])
+                    continue
+                got[ls] = (kpis(out), out)
+        if len(got) != 2:
+            continue
+        m = re.findall(r"W factored SPARSE \((\d+) factorisations, (\d+) refactored dense", got["sparse"][1])
+        if not m or int(m[-1][0]) == 0:
+            failures.append(f"(g2) {Path(case).name}: the sparse run printed no sparse factorisation")
+        elif int(m[-1][1]) != 0:
+            failures.append(f"(g2) {Path(case).name}: {m[-1][1]} of {m[-1][0]} factorisations were "
+                            "refactored dense -- the sparse path is not the one taken")
+        #  every KPI on its relative scale (the trace radicals' 1e-7 kmol included);
+        #  the balance-closure rows are round-off themselves (1e-16..1e-15 absolute)
+        #  and are compared absolutely, to 1e-12
+        def split(k, closure):
+            return {u: {key: v for key, v in d.items()
+                        if (("closure" in key or "residual" in key) == closure)}
+                    for u, d in (k or {}).items() if isinstance(d, dict)}
+        w, where, missing = kpi_diff(split(got["dense"][0], False), split(got["sparse"][0], False),
+                                     abs_floor=0.0)
+        wc, wherec, _ = kpi_diff(split(got["dense"][0], True), split(got["sparse"][0], True),
+                                 abs_floor=1e-12)
+        if wc > 0.0:
+            failures.append(f"(g2) {Path(case).name}: a balance closure differs by more than 1e-12 "
+                            f"absolute between sparse and dense: {wherec}")
+        if missing or w > SPARSE_TOL:
+            failures.append(f"(g2) {Path(case).name}: sparse and dense KPIs differ by {w:.2e} "
+                            f"(> {SPARSE_TOL:g}): {where}")
+        sp_worst, sp_n = max(sp_worst, w), sp_n + 1
+    notes.append(f"sparse = dense on {sp_n} combustion cases to {sp_worst:.1e}, 0 dense refactorisations")
+    #  (g3) the adaptive sweep of ONE vessel factors sparse too
+    with gatekit.probe_copy("tutorials/batch/reactor/batch32_fast_intermediate_full", strip=STRIP) as c:
+        set_solver(c, None, linear="sparse")
+        rc, out = gatekit.run(batch, c)
+        if rc != 0 or "factored SPARSE on the unit's pattern" not in out:
+            failures.append(f"(g3) batch32 (adaptive sweep, one vessel) with linearSolver sparse did not "
+                            f"factor W sparse (exit {rc})")
+    #  (g4) refusals by name
+    for ls, jac, word in (("banded", None, "banded"), ("sparse", "finiteDifference", "linearSolver sparse")):
+        with gatekit.probe_copy(JAC, strip=STRIP) as c:
+            set_solver(c, jac, linear=ls)
+            rc, out = gatekit.run(batch, c)
+            if rc == 0 or word not in out or "bomb" not in out:
+                failures.append(f"(g4) `linearSolver {ls};`{' beside jacobian ' + jac if jac else ''} "
+                                f"was not refused by name (exit {rc})")
 
     # ---- (d) refusals by name ----------------------------------------------------------
     probes = [

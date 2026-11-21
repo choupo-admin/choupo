@@ -3292,6 +3292,48 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/lpc.$$
 
+    #  Lesson absence-claims gate (DEV.md 4c C455 class 2): a "we do not have
+    #  X" sentence in gui/src/ui/methods is held to the tree by a probe, or
+    #  counted in a ratchet; the known-false ones are listed.  File reading.
+    gate_exec "$ROOT/bin/curate/check_lesson_absence_claims.py" > /tmp/lac.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "lesson-absence-claims-gate" "$(grep -m1 '^check_lesson_absence_claims: OK' /tmp/lac.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_lesson_absence_claims.py)\n" "lesson-absence-claims-gate"
+        cat /tmp/lac.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lac.$$
+
+    #  Lesson typed-numbers gate (DEV.md 4c C455 class 4): a number a lesson
+    #  types from a case equals the case's golden row to half a unit of its
+    #  last digit.  File reading.
+    gate_exec "$ROOT/bin/curate/check_lesson_typed_numbers.py" > /tmp/ltn.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "lesson-typed-numbers-gate" "$(grep -m1 '^check_lesson_typed_numbers: OK' /tmp/ltn.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_lesson_typed_numbers.py)\n" "lesson-typed-numbers-gate"
+        cat /tmp/ltn.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ltn.$$
+
+    #  Lesson knob-domains gate (DEV.md 4c C455 class 5): a slider's coded
+    #  range stays inside the validity the engine, a record or physics
+    #  declares; known violations are listed.  File reading.
+    gate_exec "$ROOT/bin/curate/check_lesson_knob_domains.py" > /tmp/lkd.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "lesson-knob-domains-gate" "$(grep -m1 '^check_lesson_knob_domains: OK' /tmp/lkd.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_lesson_knob_domains.py)\n" "lesson-knob-domains-gate"
+        cat /tmp/lkd.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lkd.$$
+
     #  Unit-convention gate (DEV.md 4c C454): a key whose bare number is in a
     #  working unit (`Pc`, `pressureDesign`: bar) is read through
     #  Dictionary::lookupScalarIn, and writing its unit gives the same answer
@@ -6301,6 +6343,21 @@ PYEOF
     fi
     rm -f /tmp/ignsens.$$
 
+    # gas-only gate (2026-11-21, DEV.md 4c C458).  A radical is a GAS-ONLY
+    # species (`role radical;`): K = kNoLiquidK in every phase split, and a
+    # state with no vapour to hold it refused by name.  The defect it would
+    # have caught: until C458 a radical had K = 0, and flash23's 330 K quench
+    # sent all of its OH into the water condensate with every golden green.
+    if gate_exec "$ROOT/bin/curate/check_gas_only.py" > /tmp/gasonly.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "gas-only-gate" "$(head -1 /tmp/gasonly.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_gas_only.py)\n" "gas-only-gate"
+        cat /tmp/gasonly.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gasonly.$$
+
     # rate-of-production gate (2026-11-19, glass box of a mechanism, phase 1).
     # `rateOfProduction { times (...); }` on a batchReactor prints, per species,
     # which reactions make and destroy it, from c_ij = nu_ij r_j V computed a
@@ -6328,7 +6385,12 @@ PYEOF
     # -- Rodas4 took 3317 steps instead of 602 and every golden KPI still
     # passed.  The engine's own audits along the ignition (pre-ignition, ramp,
     # burned), the same answer at half the right-hand sides, every path on six
-    # shipped cases, and the refusals by name.
+    # shipped cases, and the refusals by name.  Since 2026-11-21 also the
+    # closed-form T column / Troe / PLOG / gasConstantP (audits <= 1e-8), the
+    # analytic default, and the SPARSE factorisation of W (test/sparse_lu.cpp
+    # against the dense LU; sparse = dense on six combustion cases with no
+    # dense refactorisation -- the unscaled pivot test had refactored 2155 of
+    # 2155 matrices dense, every KPI equal).
     if gate_exec "$ROOT/bin/curate/check_kinetics_jacobian.py" > /tmp/kinjac.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "kinetics-jacobian-gate" "$(head -1 /tmp/kinjac.$$)"
         pass=$((pass+1))

@@ -10,7 +10,7 @@ name           Be2OF2;
 formula        Be2OF2;
 CAS            n/a;
 MW             72.02057;       // kg/kmol, appendix D record line
-role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it
+role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
 tags           ( gasPhase thermoTable );
 nasaEntry      "Be2OF2";
 reviewStatus   interim;

@@ -1967,6 +1967,9 @@
   "RampSignal": [
    "src/control/signal/Signals.H"
   ],
+  "RateGradient": [
+   "src/thermo/reaction/ReactionRate.H"
+  ],
   "RateLaw": [
    "src/thermo/reaction/RateLaw.H"
   ],
@@ -2330,6 +2333,15 @@
   "Span": [
    "src/thermo/PairAudit.H"
   ],
+  "SparseJacobian": [
+   "src/solver/ODE/ODEIntegrator.H"
+  ],
+  "SparseLU": [
+   "src/solver/SparseLU.H"
+  ],
+  "SparsePattern": [
+   "src/solver/ODE/ODEIntegrator.H"
+  ],
   "Spec": [
    "src/propertyOps/FitObjective.H",
    "src/unitOperations/heatTransfer/htc/BellDelaware.H"
@@ -2461,6 +2473,9 @@
   ],
   "Symbol": [
    "src/core/Formula.H"
+  ],
+  "Symbolic": [
+   "src/solver/SparseLU.H"
   ],
   "SystemClassification": [
    "src/thermo/SystemClassifier.H"
@@ -3982,6 +3997,7 @@
    "src/solver/Convergence.H",
    "src/solver/ODE/AdaptiveTimeStep.H",
    "src/solver/ODE/ODEIntegrator.H",
+   "src/solver/SparseLU.H",
    "src/streams/Carried.H",
    "src/streams/ProcessStream.H",
    "src/thermo/ChemistrySystem.H",
@@ -9904,14 +9920,23 @@
    "src/core/Types.H",
    "src/solver/BlockTridiagonal.H",
    "src/solver/ODE/../LU.H",
+   "src/solver/ODE/../SparseLU.H",
    "src/solver/ODE/Jacobian.H",
    "src/solver/ODE/ODEIntegrator.H",
    "src/solver/ODE/Rosenbrock23.H"
+  ],
+  "src/solver/ParallelFor.cpp": [
+   "src/solver/ParallelFor.H"
   ],
   "src/solver/SQP.cpp": [
    "src/core/Types.H",
    "src/solver/ActiveSetQP.H",
    "src/solver/SQP.H"
+  ],
+  "src/solver/SparseLU.cpp": [
+   "src/core/Types.H",
+   "src/solver/ODE/ODEIntegrator.H",
+   "src/solver/SparseLU.H"
   ],
   "src/solver/StabilityTest.cpp": [
    "src/core/Dictionary.H",
@@ -12897,6 +12922,8 @@
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/solver/ODE/ODEIntegrator.H",
+   "src/solver/ParallelFor.H",
+   "src/solver/SparseLU.H",
    "src/streams/Carried.H",
    "src/streams/Composition.H",
    "src/streams/ProcessStream.H",
@@ -20545,6 +20572,7 @@
    "src/solver/ODE/RK4.cpp",
    "src/solver/ODE/Rosenbrock23.cpp",
    "src/solver/SQP.cpp",
+   "src/solver/SparseLU.cpp",
    "src/solver/StabilityTest.cpp",
    "src/solver/Wegstein.cpp",
    "src/streams/AnalysisReconciler.cpp",
@@ -22626,6 +22654,9 @@
    "src/solver/ODE/EulerSI.cpp",
    "src/solver/ODE/Rosenbrock23.cpp"
   ],
+  "src/solver/ODE/../SparseLU.H": [
+   "src/solver/ODE/Rosenbrock23.cpp"
+  ],
   "src/solver/ODE/AdaptiveTimeStep.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp"
@@ -22647,6 +22678,7 @@
    "src/solver/ODE/ODEIntegrator.cpp",
    "src/solver/ODE/RK4.cpp",
    "src/solver/ODE/Rosenbrock23.cpp",
+   "src/solver/SparseLU.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
    "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
@@ -22660,9 +22692,18 @@
    "src/solver/ODE/ODEIntegrator.cpp",
    "src/solver/ODE/Rosenbrock23.cpp"
   ],
+  "src/solver/ParallelFor.H": [
+   "src/solver/ParallelFor.cpp",
+   "src/unitOperations/batch/BatchReactor.cpp"
+  ],
   "src/solver/SQP.H": [
    "src/outerDriver/OptimizationDriver.cpp",
    "src/solver/SQP.cpp"
+  ],
+  "src/solver/SparseLU.H": [
+   "src/applications/choupoBatch/main.cpp",
+   "src/solver/SparseLU.cpp",
+   "src/unitOperations/batch/BatchReactor.cpp"
   ],
   "src/solver/StabilityTest.H": [
    "src/propertyOps/HansenMixture.cpp",

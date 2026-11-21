@@ -41,7 +41,10 @@ shows the refusal is not crying wolf.
   HOMONYM PIN  a pin for a record the case reads ALONE (a declared variation):
              check_case_records names it.
   SPELLING   the two catalogue formulas the record named (Cl, HOCl) read as
-             chlorine.
+             chlorine.  Atomic chlorine left components/ on 2026-11-21 (a
+             radical is not a component, DEV.md 4c C458): its home is the
+             gas-species table, where the record is CL.dat (the report's own
+             entry name) and its formula must still read Cl.
 Exit 1 listing failures."""
 import json
 import os
@@ -336,7 +339,7 @@ def main():
             failures.append(f"HOMONYM PIN control: the witness is judged {probs!r}")
 
     # ---- the respelled catalogue formulas ----------------------------------
-    for rel, want in (("components/Cl.dat", "Cl"), ("components/HOCl.dat", "HOCl")):
+    for rel, want in (("thermoTables/NASA-TP-2002-211556/CL.dat", "Cl"), ("components/HOCl.dat", "HOCl")):
         t = (ROOT / "data" / "standards" / rel).read_text()
         m = re.search(r"(?m)^formula\s+(\S+);", t)
         if not m or m.group(1) != want:

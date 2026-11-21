@@ -95,6 +95,7 @@ Description
 #include "io/InternalStateIO.H"
 #include "io/SolutionWriter.H"
 #include "solver/ODE/AdaptiveTimeStep.H"
+#include "solver/SparseLU.H"
 #include "result/ComponentIdentity.H"
 #include "result/ResultEmitter.H"
 #include "postProcessing/panel/PanelPass.H"
@@ -1491,7 +1492,7 @@ if (flowsheetDict->found("cycle"))
                         [up](const sVector& y){ return up->odeDerivative(y); },
                         up->odeNPositive(),
                         up->name(), [up](std::size_t i){ return up->odeRowLabel(i); },
-                        {}, {} });   // the analytic Jacobian, if any, below
+                        {}, {}, false, {}, {} });   // the analytic Jacobian, if any, below
                     //  The unit's analytic Jacobian, when it declared one
                     //  (`solver { jacobian analytic; }`); the sweep uses it
                     //  only if every unit of the sweep has one.
@@ -1502,6 +1503,14 @@ if (flowsheetDict->found("cycle"))
                             { return up->odeJacobian(y, f0, typ); };
                         odeUnits.back().jacobianScale =
                             [up](const sVector& y) { return up->odeJacobianScale(y); };
+                        //  ... and its sparse form, used when it is the
+                        //  sweep's only unit (`linearSolver sparse | auto`).
+                        odeUnits.back().sparse = up->odeSparseLinear();
+                        odeUnits.back().pattern = up->odeSparsePattern();
+                        odeUnits.back().sparseJacobian =
+                            [up](const sVector& y, const sVector& f0, const sVector& typ,
+                                 solver::SparseJacobian& J)
+                            { up->odeJacobianSparse(y, f0, typ, J); };
                     }
                 }
                 else
@@ -1512,12 +1521,17 @@ if (flowsheetDict->found("cycle"))
             //  analytic only when every block is): the declared key is then
             //  read by nothing, and that is announced once, never silent.
             {
-                std::size_t nJac = 0;
+                //  Counted on the DECLARED key: a vessel whose analytic
+                //  Jacobian is its own default says nothing when a neighbour
+                //  without one sends the sweep to the difference.
+                std::size_t nJac = 0, nDeclared = 0;
                 for (const auto& u : odeUnits) nJac += u.jacobian ? 1 : 0;
-                if (nJac > 0 && nJac < odeUnits.size() && !jacMixedAnnounced)
+                for (const auto& unit : units)
+                    if (unit->hasOdeForm() && unit->odeJacobianDeclared()) ++nDeclared;
+                if (nDeclared > 0 && nJac < odeUnits.size() && !jacMixedAnnounced)
                 {
                     jacMixedAnnounced = true;
-                    std::cerr << "  [jacobian] WARNING: " << nJac << " of the "
+                    std::cerr << "  [jacobian] WARNING: " << nDeclared << " of the "
                               << odeUnits.size() << " vessels integrated together"
                                  " declare `jacobian analytic;` and the others"
                                  " supply none, so the adaptive sweep builds its"
@@ -1557,10 +1571,14 @@ if (flowsheetDict->found("cycle"))
                        << " of the column's scale from the finite difference (tolerance "
                        << aj.tolerance << ")\n";
                     if (jacAnnounced == 0)
-                        os << "             the sweep's Jacobian is ANALYTIC (every unit declares"
-                              " `jacobian analytic;`), block-diagonal over the units; audited"
+                        os << "             the sweep's Jacobian is ANALYTIC (every unit supplies"
+                              " one), block-diagonal over the units; audited"
                               " against the dense finite difference at analytic Jacobians 1, 2,"
                               " 4, 8, ...; a column above the tolerance refuses the run\n";
+                    if (jacAnnounced == 0 && aj.sparse && aj.lu)
+                        os << "             W = I - h d J is factored SPARSE on the unit's pattern: "
+                           << aj.pattern->n << " rows, " << aj.lu->nnzPattern() << " entries, "
+                           << aj.lu->nnzFactor() << " in L+U after minimum-degree ordering\n";
                     std::cout << os.str();
                 }
             }

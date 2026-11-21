@@ -229,7 +229,6 @@ KNOWN_UNCITED = {
     "ch:dyn-cstr-level",
     "ch:dyn-tank",
     "ch:extractor",
-    "ch:gas-kinetics",
     "ch:gentle",
     "ch:gibbs-reactor",
     "ch:heat",

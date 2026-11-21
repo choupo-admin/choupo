@@ -16,7 +16,7 @@ holdup
 {
     T            600.0 K;
     P              10.0 bar;
-    V            0.001;              // m³ (1 litre)
+    V            0.0049886776;       // m³ (4.989 L) = n R T / P for the declared 10 bar: 1 mol, 600 K
     totalMoles   0.001;             // kmol  (0.5 CO + 0.5 H2O)
     molarComposition  { CO 0.5;  water 0.5;  CO2 0.0;  H2 0.0; }
 }

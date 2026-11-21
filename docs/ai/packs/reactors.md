@@ -47,7 +47,7 @@ Name every reaction; units select it with `reaction <name>;` (one) or
 `reactions ( r1 r2 );` (many).  Balance the equation (atoms) before you write it;
 the mass and element balance reports will show a bad one.
 Kinetic `order` on a reactant is REQUIRED for Arrhenius/LHHW laws; if missing:
-`reactant 'X' has nu = -1 but declares no `order`` (thermo/reaction/Reaction.cpp:254).
+`reactant 'X' has nu = -1 but declares no `order`` (thermo/reaction/Reaction.cpp:464).
 
 ### 2.1 conversionReactor
 
@@ -363,7 +363,7 @@ kinetic 52 % is below it; the irreversible law has no knowledge of this ceiling,
  pfr: PFR.cpp:100-105 (F,T,nSteps), 154-168 (single path Arrhenius only), 216/616 (catalystLoading), 597-613 (thermalMode), 629-647 (needs standardThermochemistry),
    660-672 (Vliq basis, Q = F * sum z Vliq), 734/893 (mol basis), 1844-1846 (U, areaPerVolume, T_coolant), KPIs 1168-1220.
  rate laws: thermo/reaction/RateLaw.cpp:40-130 (Arrhenius/LHHW keys, basis concentration|activity, A_rev, reversible, adsorption), 135-170 (net rate);
-   Reaction.cpp:45 (A exp(-Ea/RT)), 245-275 (order required), 202-237 (detailed balance refusal);
+   Reaction.cpp:45 (A exp(-Ea/RT)), 444-482 (order required), 381-442 (detailed balance refusal);
    ExpressionRate.cpp:112-166 (no order/reversible; source, basis, rateOf required), 202-215 (parameters), 287-293 (definitions), 374-385 (rate/forward/reverse), 431 (rateConstant), 460 (validity).
  expression symbols/units: docs/ai/unit-ops.md section "A RATE LAW WRITTEN IN THE CASE" cross-checked by the run; unit table src/core/Units.cpp:265-287.
  ports/in/outputs: the brief; flowsheet usage in the four run cases.

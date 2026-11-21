@@ -688,7 +688,9 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
         for (std::size_t i = 0; i < n; ++i)
         {
             const Component& c = pkg.comp(i);
-            if (!c.hasVaporPressure()) { d.push_back(c.name() + " [vaporPressure]: none (nonvolatile)"); continue; }
+            if (!c.hasVaporPressure()) { d.push_back(c.name() + (c.isGasOnly()      // C458
+                ? " [vaporPressure]: none (gas-only: a non-condensable, K = ThermoPackage::kNoLiquidK)"
+                : " [vaporPressure]: none (nonvolatile)")); continue; }
             d.push_back(lawText(c, "vaporPressure"));
             if (!otherLaws(c, "vaporPressure").empty()) d.push_back(otherLaws(c, "vaporPressure"));
             vpTypes.insert(c.lawChoice("vaporPressure").type);

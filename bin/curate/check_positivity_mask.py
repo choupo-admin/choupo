@@ -430,7 +430,10 @@ def main():
         s = re.sub(r"/\*.*?\*/", "", s, flags=re.S)
         return re.sub(r"//[^\n]*", "", s)
     ats = code("src/solver/ODE/AdaptiveTimeStep.H")
-    if "units.size() == 1" in ats:
+    # the sparse-Jacobian route (cloud, d033be5a5) is single-unit by design and
+    # is not the positivity prefix: only `units.size() == 1` NOT followed by
+    # `&& units[0].sparse` is the defect.
+    if re.search(r"units\.size\(\) == 1(?!\s*&&\s*units\[0\]\.sparse)", ats):
         failures.append("(d) AdaptiveTimeStep.H still carries the single-unit"
                         " prefix logic `units.size() == 1`")
     if "positiveRows" not in ats:

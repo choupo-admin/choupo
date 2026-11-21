@@ -1,6 +1,6 @@
 # batch04_reversible_wgs -- the water-gas shift in a closed GAS vessel
 
-CO + H2O <-> CO2 + H2, equimolar charge, 600 K, 10 bar, 1 litre, isothermal,
+CO + H2O <-> CO2 + H2, equimolar charge, 600 K, 10 bar (4.989 litres: V = n R T / P for 1 mol), isothermal,
 reversible Arrhenius kinetics (k_rev = k_fwd / K_eq from the species' ideal-gas
 Gibbs functions).  The conversion relaxes onto the thermodynamic ceiling
 X_eq ~ 0.84 (n_CO 5e-4 -> 7.93e-5 kmol) and stays there.

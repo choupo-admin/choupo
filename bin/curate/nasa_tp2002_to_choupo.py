@@ -320,7 +320,12 @@ def cmd_verify():
 #  file.  Left out, each LISTED in the home's INDEX with its reason, never
 #  dropped in silence:
 #    * a species components/ already holds (one home per species: the
-#      curated record wins; moving it is a separate decision);
+#      curated record wins; moving it is a separate decision -- taken for the
+#      34 radicals on 2026-11-21, DEV.md 4c C458: a radical is NOT a
+#      component, so they left components/ and are written here);
+#  Every record written here is GAS-ONLY, `role radical;` (C458): the engine
+#  keeps it in the vapour in any phase split and refuses a state with no
+#  vapour to hold it (ThermoPackage::refuseGasOnlyWithoutVapour).
 #    * an entry whose own sources name Burcat (the NonCommercial compilation
 #      CLAUDE.md 7 rules out as a value's origin; whether a NASA reprint frees
 #      it is RESERVED for Vitor);
@@ -364,6 +369,20 @@ def _safe(name):
     return name.replace(",", "_").replace("-", "")
 
 
+_CONDENSED_OR_SYNTHETIC = re.compile(r"(?m)^\s*referenceState\s+pure(?:Solid|Liquid)\s*;|^CAS\s+00-00-0\s*;")
+
+
+def not_a_gas_home(text):
+    """A components/ record of the same formula is NOT a second home for a
+    gas species when it is a condensed phase (`referenceState pureSolid` or
+    `pureLiquid`: graphite for C, silica for SiO2) or a synthetic stand-in
+    (CAS 00-00-0: compB, compC).  C(g) and C(gr) are two species, which the
+    report itself lists apart; found when the C458 move of atomic carbon
+    out of components/ was refused by graphite's formula (2026-11-21).
+    check_thermo_tables arm (c) imports this function: one rule, two readers."""
+    return bool(_CONDENSED_OR_SYNTHETIC.search(text))
+
+
 def cmd_table():
     lines = report_lines()
     ad, b1 = parse(lines)
@@ -388,6 +407,8 @@ def cmd_table():
             m = re.search(r"(?m)^formula\s+([A-Za-z0-9]+)\s*;", open(os.path.join(comp_dir, f), errors="ignore").read())
             if m:
                 t = open(os.path.join(comp_dir, f), errors="ignore").read()
+                if not_a_gas_home(t):
+                    continue
                 me = _ENTRY.search(t) if "TP-2002-211556" in t else None
                 by_formula.setdefault(m.group(1), []).append((f[:-4], me.group(1) if me else None))
     os.makedirs(TABLE_HOME, exist_ok=True)
@@ -445,7 +466,7 @@ def cmd_table():
             f"formula        {formula};",
             "CAS            n/a;",
             f"MW             {e['MW']:.7g};       // kg/kmol, appendix D record line",
-            "role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it",
+            "role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it",
             "tags           ( gasPhase thermoTable );",
             f"nasaEntry      \"{name}\";",
             "reviewStatus   interim;",

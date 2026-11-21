@@ -29,8 +29,8 @@ state.  The rates use cᵢ = nᵢ / V with that V.  Theory Guide,
 | | constant V | constant P |
 |---|---|---|
 | τ_ign (max dT/dt) | 7.1 µs | 7.6 µs |
-| peak dT/dt | 2.26e9 K/s | 9.6e8 K/s |
-| T at 20 µs | 3076 K | 2805 K (2828 K at 200 µs) |
+| peak dT/dt | 2.44e9 K/s | 1.00e9 K/s |
+| T at 20 µs | 3037 K | 2795 K (2806 K at 200 µs) |
 
 At constant V the heat release goes into a gas that cannot expand and the
 pressure climbs; at constant P the same heat also does the expansion work
@@ -40,10 +40,12 @@ the runaway is later and slower.
 
 ## Hand check
 
-At 200 µs the run ends at n = 4.39248e-5 kmol, T = 2828.182 K, P = 5 bar:
-V = n R T / P = 4.39248e-5 × 1000 × 8.314463 × 2828.182 / 5e5 = 2.06577e-3 m³,
-which is the `V` written in `0.0002/internalStates/bomb` (2.065769e-3).  The
-vessel has grown from 1.0 L to 2.07 L at fixed pressure.
+At 200 µs the run ends at n = 4.39569e-5 kmol, T = 2805.845 K, P = 5 bar:
+V = n R T / P = 4.39569e-5 × 1000 × 8.314463 × 2805.845 / 5e5 = 2.05095e-3 m³,
+which is the `V` written in `0.0002/internalStates/bomb` (2.050948e-3).  The
+vessel has grown from 1.0 L to 2.05 L at fixed pressure.  (Before 2026-11-21
+the burned gas ended 22 K hotter: OH was a hand-fitted cubic Cp, and it is
+now the NASA row of the gas-species table, DEV.md 4c C458.)
 
 ## Witness
 

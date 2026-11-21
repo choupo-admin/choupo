@@ -277,6 +277,13 @@ pressures ln k is linear in ln P; below the lowest / above the highest k is that
 the SAME P are summed.  The reaction line's own A b Ea is ignored; `reversible true` is detailed balance.  Reads the bed /
 feed pressure (a feed with no P refuses it by name); `thirdBody`/`low`/`troe` on it are refused.  Theory Guide `sec:plog-rate`.
 Witnesses: `plog01..04` (each equals `elementary01a` at 3 bar; gate `check_plog`).
+**CHEMKIN forms read since 2026-11-21 (Theory Guide `sec:chemkin-forms`), here and in `batchReactor`.**  A species on BOTH sides of a
+reversible reaction: one stoichiometry entry with `nu` = the net, `order` = its reactant count, `orderRev` = its product count
+(`{ component H2O; nu 0; order 1; orderRev 1; }`; accepted when order - orderRev = -nu).  A single collider (CHEMKIN `(+AR)`):
+`thirdBody { AR 1; }  defaultEfficiency 0;` (unlisted species take `defaultEfficiency`, 1 when absent; thirdBody/falloff only).
+SRI fall-off: `sri ( a b c [d e] );` instead of `troe` (F = d [a e^(-b/T) + e^(-T/c)]^X T^e).  Explicit (FORD) orders: a declared
+`order` on an IRREVERSIBLE reaction, a species outside the reaction listed with `nu 0`; A converts by the sum of the orders.
+Gate `check_elementary_rates` (s, d, b, B).
 
 ### `pfr`
 Plug-flow reactor.  Manual RK4 along the axial coordinate; supports reversible
@@ -446,6 +453,13 @@ pressures ln k is linear in ln P; below the lowest / above the highest k is that
 the SAME P are summed.  The reaction line's own A b Ea is ignored; `reversible true` is detailed balance.  Reads the bed /
 feed pressure (a feed with no P refuses it by name); `thirdBody`/`low`/`troe` on it are refused.  Theory Guide `sec:plog-rate`.
 Witnesses: `plog01..04` (each equals `elementary01a` at 3 bar; gate `check_plog`).
+**CHEMKIN forms read since 2026-11-21 (Theory Guide `sec:chemkin-forms`), here and in `batchReactor`.**  A species on BOTH sides of a
+reversible reaction: one stoichiometry entry with `nu` = the net, `order` = its reactant count, `orderRev` = its product count
+(`{ component H2O; nu 0; order 1; orderRev 1; }`; accepted when order - orderRev = -nu).  A single collider (CHEMKIN `(+AR)`):
+`thirdBody { AR 1; }  defaultEfficiency 0;` (unlisted species take `defaultEfficiency`, 1 when absent; thirdBody/falloff only).
+SRI fall-off: `sri ( a b c [d e] );` instead of `troe` (F = d [a e^(-b/T) + e^(-T/c)]^X T^e).  Explicit (FORD) orders: a declared
+`order` on an IRREVERSIBLE reaction, a species outside the reaction listed with `nu 0`; A converts by the sum of the orders.
+Gate `check_elementary_rates` (s, d, b, B).
 **Mole-changing gas reactions (C461).**  A `pfr` fed all-vapour prices every concentration as F_i/Q with Q the LOCAL
 volumetric flow, F_t v_vapour(T, P, z) from the case's equation of state at each RK4 stage, so a gas reaction that changes the mole
 count (cracking +40 %, ammonia synthesis falling), a moving T or an Ergun pressure drop changes the concentrations as it must; a liquid
@@ -3345,18 +3359,47 @@ dT/dt = -sum u_i ndot_i / sum n_i Cv_i; **`gasConstantP`** = closed ideal gas at
 dH = 0, dT/dt = -sum h_i(T) ndot_i / sum n_i Cp_i(T), V = n R T / P at every state (so the holdup
 declares NO `V`; a declared one that disagrees is refused; the time directories and the rate-of-production
 report carry the V of their own state).  Both gas bases take h_i = `h_pure_ig` on the formation datum and
-need `idealGasHeatCapacity` + `standardThermochemistry`.  `jacobian analytic` is refused by name for
-`gasConstantP` (open debt); the campaign energy ledger names a gap for adiabatic vessels.  Theory Guide
+need `idealGasHeatCapacity` + `standardThermochemistry`.  The campaign energy ledger names a gap for
+adiabatic vessels.  Theory Guide
 `sec:batch-gas-constp`; example `ignition03_h2air_constp` (constant-P ignition is slower and cooler than
 `ignition01_h2o2`'s constant-V one; witnessed against Cantera's IdealGasConstPressureReactor to 1 mK).
 `kinetics { type ... }`: `Arrhenius` · `modifiedArrhenius` · `thirdBody` · `falloff` · `plog`
-(the CHEMKIN gas forms; `plog` -- the CHEMKIN-II pressure table, ln k linear in ln P, clamped at the ends, same-P lines summed -- reads P = nRT/V and is accepted with `energy gasConstantV` (the rising pressure) or `gasConstantP` (the fixed P), refused by name in a liquid vessel; Theory Guide `sec:plog-rate`) · **`LHHW`** — the SAME shared `RateLaw` the steady `cstr`/`pfr`
+(the CHEMKIN gas forms; a species on both sides as `order` + `orderRev`, a single collider as `thirdBody { AR 1; }
+defaultEfficiency 0;`, SRI as `sri ( a b c [d e] );`, FORD orders as declared `order`s on an irreversible reaction --
+Theory Guide `sec:chemkin-forms`; `plog` -- the CHEMKIN-II pressure table, ln k linear in ln P, clamped at the ends, same-P lines summed -- reads P = nRT/V and is accepted with `energy gasConstantV` (the rising pressure) or `gasConstantP` (the fixed P), refused by name in a liquid vessel; Theory Guide `sec:plog-rate`) · **`LHHW`** — the SAME shared `RateLaw` the steady `cstr`/`pfr`
 evaluate, so a batch vessel and a continuous one cannot disagree about what an
 adsorption denominator means.  With `basis activity` it needs an activity model.
 `operation { catalystLoading <kg/m^3>; }` turns per-gram rate constants volumetric
 (with c in kmol/m³ the factor IS the loading: mol/(g·s)·kg/m³ = kmol/(m³·s)).
 Example: `batch07_lhhw_methylAcetate` (Pöpken 2000 Eq 16 on UNIQUAC activities;
 X → 76.6 %, the activity equilibrium the steady CSTR also reaches).
+
+**Jacobian of the stiff integrators** `solver { integrator Rosenbrock23 | Rodas4; jacobian analytic | finiteDifference; }`.
+Absent `jacobian`: ANALYTIC when every reaction's law has a derivative (the vessel's `Arrhenius`,
+`modifiedArrhenius`, `thirdBody`, `falloff`, and the factory's `plog`/ElementaryRate words), else the
+finite difference (a vessel with an `LHHW`, `type expression`, explicit `A_rev`/`Ea_rev` or case law).
+The analytic matrix is complete in closed form: species columns from the rate laws, the T column from
+dk/dT (every Arrhenius leg, Troe with F_cent(T), PLOG between and clamped), d ln Kc/dT = sum nu h/(RT^2)
+- sum nu/T, the energy row by the chain rule (only the heat capacity's slope dCp/dT is a central
+difference of the record's law); every energy basis, `gasConstantP` included (V = nRT/P makes a
+rank-one term).  It is AUDITED against a central difference at analytic Jacobians 1, 2, 4, 8, ...
+and a column above 1e-4 of its scale refuses the run; the first audit line says whether it is
+the default.  `jacobian analytic;` forces it beside a law without a derivative, whose columns are a
+forward difference of that reaction alone (announced once by name); `jacobian finiteDifference;`
+selects the integrator's dense difference.  Declared `analytic` beside `integrator RK4`/`EulerSI`,
+or on a fixed-step run left on the default RK4, is refused by name.  Theory Guide
+`sec:batch-analytic-jacobian`; gate `bin/curate/check_kinetics_jacobian.py`.
+**`linearSolver dense | sparse | auto`** (same block, default `auto`): how W = I - h d J is factored.
+`sparse` = the in-house SparseLU on the mechanism's pattern (minimum-degree ordering and symbolic
+factorisation once, a left-looking numeric factorisation on diagonal pivots with row
+equilibration every step, each factor accepted on its backward error (<= 1e-12 on W x = 1) or
+refactored dense, counted at verbosity 4; a constant-P gas's rank-one term by Sherman-Morrison); it needs the analytic
+Jacobian and is refused by name beside the finite difference.  `auto` = sparse from 100 packed
+rows (the break-even measured on synthetic networks; on AramcoMech 1.3, 254 rows, the sparse factor
+costs 7.3x fewer multiply-adds and 5.8x less linear-algebra time), dense below, so every small
+tutorial is unchanged.  An adaptive sweep factors
+sparse only when the vessel is its one unit.  Sparse and dense agree to round-off (1.4e-11 on
+the combustion tutorials).  Theory Guide `sec:sparse-lu`.
 
 **Rates of production (opt-in, the glass box of a mechanism).**  A block on the
 unit, beside `operation` and `solver`:
@@ -3415,7 +3458,14 @@ S < 0 means a faster reaction shortens the delay.  Files and KPIs: `sensitivity.
 `sens_tau0`, `sens_S_<reaction>` for the top N.  Refused by name: an unknown key,
 `factor <= 1`, a reaction name the vessel lacks, a non-adiabatic vessel, RK4 or
 another integrator, a base run that never reaches T0 + rise by `endTime`.  Cost: N + 1
-integrations (about 7 s for 21 reactions).  Absent the block nothing changes.
+integrations (about 7 s for 21 reactions).  **Threads**: the N perturbed integrations run side by
+side on `solver { threads N; }` threads (default: allowed CPUs - 2, at least 1; the environment's
+`CHOUPO_THREADS` caps it); the base run goes first and alone; each worker keeps its multiplier in
+thread-local storage, so `sensitivity.csv` is the same bytes on any thread count (gate arm (c));
+the run prints how many threads it used.  The browser build runs them serially.  Measured on 4
+cores: ignition04 1.81x / 2.17x / 3.05x on 2 / 3 / 4 threads; AramcoMech with 7 reactions perturbed
+1.74x / 2.25x on 2 / 3 (the serial base run bounds the gain).
+Absent the block nothing changes.
 Witness `ignition04_h2air_sensitivity`, checked against Cantera 3.2.0 to 2e-5 in S
 and held by `bin/curate/check_ignition_sensitivity.py`; Theory Guide
 `sec:ignition-sensitivity`.  Not available: sensitivity of another response,

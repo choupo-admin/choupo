@@ -188,6 +188,8 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
                                          scalar               T_init)
 {
     const std::size_t n = thermo.n();
+    thermo.refuseGasOnlyWithoutVapour(x, "a saturated liquid (a bubble"
+        " point: the liquid that holds the whole feed)");      // C458
 
     //  THE T SEARCH WALKS, AND SAYS SO (PO-02, 2026-11-12).  The starting guess
     //  (the mole-weighted normal boiling point) and every Newton step are
@@ -272,6 +274,8 @@ BubblePoint::PressureResult BubblePoint::pressure(const ThermoPackage& thermo,
                                                   scalar               P_start)
 {
     const std::size_t n = thermo.n();
+    thermo.refuseGasOnlyWithoutVapour(x, "a saturated liquid (a bubble"
+        " point: the liquid that holds the whole feed)");      // C458
     PressureResult out;
     sVector y(n, 0.0);
 
@@ -380,6 +384,8 @@ int BubblePoint::solve(const DictPtr& dict,
                   << "; normalising.\n";
         for (auto& v : x) v /= xsum;
     }
+    thermo.refuseGasOnlyWithoutVapour(x, "a saturated liquid (a bubble"
+        " point: the liquid that holds the whole feed)");      // C458
 
     std::cout << "Liquid composition (x):\n";
     for (std::size_t i = 0; i < n; ++i)

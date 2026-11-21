@@ -34,10 +34,13 @@ Class
         thirdBody           k = A T^b exp(-Ea/(R T)) [M]
         falloff             k = kInf Pr/(1+Pr) F,  Pr = kLow [M] / kInf
 
-    with [M] = sum_j eff_j c_j (unlisted species: efficiency 1), and F the
-    Troe broadening (F = 1, Lindemann, when no `troe` list is given).  The
-    net rate is  r = k * prod c_i^order_i  minus, for `reversible true`, the
-    detailed-balance reverse leg k/Kc * prod_{nu>0} c_i^nu_i.
+    with [M] = sum_j eff_j c_j (unlisted species: `defaultEfficiency`, 1 when
+    absent -- 0 with one species listed is CHEMKIN's single collider `(+AR)`),
+    and F the Troe broadening, or the SRI one (`sri ( a b c [d e] )`), F = 1
+    (Lindemann) when neither is given.  The net rate is
+    r = k * prod c_i^order_i  minus, for `reversible true`, the detailed-balance
+    reverse leg k/Kc * prod c_i^orderRev_i, orderRev_i = max(nu_i, 0) unless a
+    species on BOTH sides declares its product count (`orderRev`).
 
     THE GRAMMAR is the one `batchReactor` reads for the same words, so one
     reactions file runs in both vessels: `A`, `b`, `Ea`; for thirdBody a
@@ -99,11 +102,26 @@ public:
     { return kEff(s); }
     const std::string& typeName() const override { return type_; }
 
+    //  The analytic derivatives (the batch reactor's Jacobian): every form,
+    //  PLOG included -- d k / d T of each Arrhenius leg, d k / d[M] of the
+    //  third body and the fall-off (Lindemann and Troe exactly), d k / d P of
+    //  the PLOG interpolation (0 where it is clamped), d ln Kc / dT from the
+    //  species' h(T).  Theory Guide, sec:batch-analytic-jacobian.
+    bool hasAnalyticGradient() const override { return true; }
+    bool netRateGradient(const ThermoPackage& thermo, const RateState& s,
+                         RateGradient& g) const override;
+    bool rateDependencies(std::vector<std::size_t>& species) const override;
+    bool readsPressure() const override { return form_ == Form::plog; }
+
 private:
 
     //- The effective forward k (third body and fall-off folded in), in the
     //  caller's amount unit.
     scalar kEff(const RateState& s) const;
+    //- kEff and its derivatives: dkdM (third body / fall-off; 0 otherwise),
+    //  dkdT at fixed [M] and P, dkdP at fixed T (PLOG; 0 otherwise).
+    struct KDerivs { scalar k = 0.0, dkdM = 0.0, dkdT = 0.0, dkdP = 0.0; };
+    KDerivs kEffDerivs(const RateState& s) const;
 
     std::string who_;
     std::string type_;
@@ -116,6 +134,7 @@ private:
     bool   cmA_ = false, cmALow_ = false;
     int    molec_ = 0;
     sVector troe_;
+    sVector sri_;                                  // (a b c [d e]); empty => not SRI
 
     //  PLOG (CHEMKIN-II): one entry per DISTINCT tabulated pressure, ascending;
     //  `arr` holds every Arrhenius line given at that pressure (summed).
@@ -123,9 +142,12 @@ private:
     struct PlogRow { scalar P = 0.0; std::vector<PlogArr> arr; };
     std::vector<PlogRow> plog_;
     scalar plogK(const PlogRow& row, scalar T) const;
+    scalar plogDkDT(const PlogRow& row, scalar T) const;   // d plogK / dT
     sVector eff_;                                  // full-length third-body efficiencies
 
-    sVector nu_, order_;
+    //  orderRev_: the reverse leg's power, max(nu, 0) unless a species on BOTH
+    //  sides declares its product count (`orderRev`).
+    sVector nu_, order_, orderRev_;
     bool    reversible_ = false;
 };
 

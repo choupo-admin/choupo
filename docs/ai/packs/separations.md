@@ -265,6 +265,6 @@ Result (WangHenke, 333 passes, converged): benzene in distillate 0.99392, toluen
  stripper ports (liquid, gas)->(strippedLiquid, richGas) ... Stripper.cpp:70-100,271-276
  extractor inputs/outputs, stages, solvent, temperature ... Extractor.cpp:466,525-549,726-731; header Extractor.H
  extractor needs >=2 liquid phases ................. Extractor.cpp:537-540
- flash phaseSet VL|LL|VLLE|auto, alphaRich/betaRich, model words ... src/unitOperations/flash/IsothermalFlash.cpp:1947-1952,2031-2034,2129-2160
+ flash phaseSet VL|LL|VLLE|auto, alphaRich/betaRich, model words ... src/unitOperations/flash/IsothermalFlash.cpp:1959-1964,2043-2046,2141-2172
  decanter grammar example .......................... tutorials/steady/flash/vlle01_waterButanol (read for grammar only)
 -->

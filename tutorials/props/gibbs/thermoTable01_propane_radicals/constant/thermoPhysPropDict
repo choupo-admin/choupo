@@ -8,16 +8,19 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   The first witness of a DECLARED species table (Vitor's architecture
-  decision of 2026-11-19).  iso-propyl is not in components/; it is read
-  from data/standards/thermoTables/NASA-TP-2002-211556/ because this system
-  declares that table.  propane, n-propyl (C3H7), H, CH3 and ethylene come
-  from components/ as before -- a table never shadows a curated record.
+  decision of 2026-11-19).  The four radicals -- n-propyl, iso-propyl, H
+  and CH3 -- are not components (a radical is NOT a component, DEV.md 4c
+  C458, 2026-11-21); they are read from
+  data/standards/thermoTables/NASA-TP-2002-211556/ because this system
+  declares that table, each under the report's entry name (C3H7,n-propyl ->
+  C3H7_npropyl).  propane and ethylene come from components/ -- a table
+  never shadows a curated record.
 
   What the four reactions show, at 298.15 K, from the records' own dHf_298:
-    primary C-H bond     propane -> C3H7 + H           dH = +423.199 kJ/mol
-    secondary C-H bond   propane -> C3H7_ipropyl + H   dH = +415.999 kJ/mol
-    beta-scission        C3H7 -> ethylene + CH3        dH =  +98.438 kJ/mol
-    isomerisation        C3H7 -> C3H7_ipropyl          dH =   -7.200 kJ/mol
+    primary C-H bond     propane -> C3H7_npropyl + H     dH = +423.199 kJ/mol
+    secondary C-H bond   propane -> C3H7_ipropyl + H     dH = +415.999 kJ/mol
+    beta-scission        C3H7_npropyl -> ethylene + CH3  dH =  +98.438 kJ/mol
+    isomerisation        C3H7_npropyl -> C3H7_ipropyl    dH =   -7.200 kJ/mol
   (hand arithmetic on the printed formation enthalpies; the golden holds the
   engine to them).  The secondary bond is weaker by 7.2 kJ/mol, which is why
   a propane cracker makes iso-propyl radicals faster than n-propyl ones per
@@ -29,7 +32,7 @@
 recordType    thermophysicalPropertySystem;
 schemaVersion 1;
 
-components ( propane C3H7 C3H7_ipropyl H CH3 ethylene );
+components ( propane C3H7_npropyl C3H7_ipropyl H CH3 ethylene );
 
 //  The species-table home this system may resolve a component from when
 //  components/ has none of that name (data/standards/thermoTables/).
