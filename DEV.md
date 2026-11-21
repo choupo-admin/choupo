@@ -4947,6 +4947,24 @@ accepts today, and that is a policy call.
 > still needs in `pfr`: friction pressure drop in an empty tube (today Ergun,
 > packed bed only) and an imposed furnace heat-flux or wall-T profile.
 
+> **C461 (Vitor, 2026-11-21, on the cloud board; number taken by the cloud
+> session, renumber if the laptop used it: "como é que os engenheiros químicos
+> conseguiram isolar cada reação individual e calibrar as constantes cinéticas?!
+> ... a pergunta que devia ficar num EduTool").**  WEIGHED, agreed: an EduTool
+> "How do we know k?".  The student RUNS the measurement on the engine: (1) a
+> pseudo-first-order experiment (a radical made in a trace, the partner in
+> large excess, the batch reactor as the cell): ln[radical] against t is a
+> line, its slope against the excess concentration gives k, compared with the
+> library record; (2) a shock-tube-like hot cell where the sensitivity tool
+> (check_ignition_sensitivity) picks the conditions in which ONE reaction
+> governs the observable -- how H + O2 = O + OH is measured; (3) an Arrhenius
+> plot assembled from the "measurements" at several T, the fit giving A, b, Ea
+> and their uncertainty, compared with the evaluated record (Baulch 2005).
+> Theory beside it in prose (transition state theory, Lindemann/RRKM for the
+> fall-off, the evaluation panels, optimised sets).  Every historical and
+> numerical claim read from a source.  Depends on the reaction library
+> (C458 slice 1) and the sensitivity (landed).  Scope to Vitor before dispatch.
+
 > **C460 (Vitor, 2026-11-19: "E outra sobre heurísticas de selecção de secadores?
 > Também estilo Pareto e com os esquemas mais comuns pelos quais são
 > esquematicamente conhecidos").**  WEIGHED, agreed: the few dryer types that
