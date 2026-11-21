@@ -4947,6 +4947,33 @@ accepts today, and that is a policy call.
 > by default, the reverse rate on the mechanism's own thermo).  Moved goldens:
 > none expected but OH's; cases that pin the 36 are re-pinned.
 
+> **C458 RULING AMENDED ON THE CLOUD'S MEASUREMENT (architect, 2026-11-21; its
+> reply is in SESSIONS.md on its branch, 47fd85f1f; three of its lines checked
+> here: ThermoPackage.cpp:865, Database.cpp:337, the O3/H2O2 tags).**  Accepted,
+> each for its content: (a) 34 radicals move, not 36 -- H2O2 and O3 are stable
+> substances mis-tagged; they stay and lose the tag.  (b) `role radical` does
+> what `nonvolatile` does (K = 0), so the behaviour is BUILT, not renamed: a
+> gas-only species always stays in the vapour (a non-condensable), and a state
+> with no vapour phase to hold it is refused by name -- so a flame's outlet
+> stream (gibbs06_h2_flame_radicals) keeps running and nothing is sent to a
+> liquid; the CHEMKIN importer stops writing `role nonvolatile`.  (c) the 34
+> NASA rows are generated (the gate excluded them), each ambiguous isomer
+> (C3H7, C3H3, CH2) named.  (d) Cl moves LAST: four membrane cases read
+> components/Cl.dat meaning the chloride ion (the C424 homonym); they are
+> pointed at the ion first.  "No golden moves but OH's" was a hope: it is
+> measured, every moved row listed.  Amendment 3 REPLACED by the cloud's form
+> (the premise "constants are fitted together" is true of optimised mechanisms,
+> false of evaluations such as Baulch's, and the H2 core is shared by every C1
+> mechanism): a case asks a set by name; a mixture is always ANNOUNCED,
+> neutrally; it becomes a WARNING only when a constant marked optimised leaves
+> its set.  Amendment 4 WITHDRAWN as written -- it would have put two
+> thermodynamics for one species in one run, against the one-enthalpy-base
+> contract of 2026-06-27: thermo belongs to the SPECIES, one per run; the set
+> declares the thermo it was made with, and where the run's differs the
+> difference is printed per reaction.  Amendment 2 stands (one record type;
+> orders written only on records marked global, refused on elementary ones).
+> Numbering: C461 is the pfr; the cloud's "How do we know k?" EduTool is C462.
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
