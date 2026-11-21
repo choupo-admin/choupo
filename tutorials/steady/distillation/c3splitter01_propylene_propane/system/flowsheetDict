@@ -1,0 +1,83 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  c3splitter01_propylene_propane -- THE C3 SPLITTER, AND WHAT ITS RELATIVE
+  VOLATILITY IS WORTH IN TRAYS.  ILLUSTRATIVE SPECIFICATION.
+
+  THE SPECIFICATION IS NOT A PUBLISHED ONE.  No propylene-splitter
+  specification (feed, purities, pressure) is in the literature folder, so every
+  number below that a plant would set is DECLARED HERE AND MARKED `illustrative`:
+      feed          100 kmol/h, 70 mol % propylene / 30 propane      illustrative
+      feed state    liquid, 316.0 K, 17 bar (0.3 K below its bubble
+                    point, 316.29 K, this case's own SRK)            illustrative
+      column P      17 bar, the feed's                               illustrative
+      distillate    99.0 % of the propylene, 1.16 % of the propane,
+                    i.e. 99.5 mol % propylene                        illustrative
+      reflux        R = 1.2 R_min                                    illustrative
+  What is NOT illustrative is the thermodynamics: SRK, kij = 0, the system that
+  tutorials/props/compare/olefins01_propane_propene_laurance1972 compares with
+  the measured relative volatility of Laurance & Swift (1972).
+
+  TWO UNITS ON TWO IDENTICAL FEEDS (`feed`, `feed2`).
+    fug   the Fenske-Underwood-Gilliland shortcut (constant alpha at the feed's
+          bubble point): N_min, R_min, N, the feed stage.  Its alpha is the
+          engine's, alpha = K_propylene / K_propane = 1.135 at 316.3 K.
+    mesh  the rigorous full-MESH (Naphtali-Sandholm) column at the stage count and reflux
+          the shortcut returned, rounded UP to whole trays: 145 trays plus the
+          reboiler = 146 stages, feed on stage 83 from the top, R = 12.51.  It
+          answers: do the shortcut's numbers deliver the specification when
+          the stages are real?  (99.47 mol % propylene overhead against the declared 99.5, 97.63 against 97.69 mol % propane in the bottoms; the stage energy balances are solved, not CMO.)
+
+  WHAT THE MEASURED ALPHA ADDS (README.md, and the gate check_olefin_vle).
+  Laurance & Swift's Table IV gives alpha = 1.1105 at this temperature
+  (316.29 K = 109.65 degF) and x = 0.7, interpolated linearly in T between their
+  100 and 110 degF blocks; the engine's is 1.1345, 2.2 % higher.  Run through the
+  SAME Fenske-Underwood-Molokanov-Gilliland arithmetic (typed in the gate) the
+  measured alpha implies N_min = 86.2, R_min = 12.69 and N = 173.2 theoretical
+  stages at R = 15.23, against the engine's 71.6, 10.42, 144.6 and 12.51: 20 % more
+  stages and 22 % more reflux than the engine's column.  alpha - 1 is only 0.11,
+  so a 2 % error in alpha is a 20 % error in the tower.  That is the whole case.
+  (The engine's tower is the SMALLER one: its kij = 0 cubic has an alpha too
+  flat in composition, too high at the propylene-rich end.)
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        fug;
+        type        shortcutColumn;
+        in          feed;
+        outputs     ( distillate  bottoms );
+        operation
+        {
+            lightKey      propylene;
+            heavyKey      propane;
+            recoveryLK    0.99;           // illustrative: 99.5 mol % propylene overhead
+            recoveryHK    0.0116;         // illustrative
+            refluxFactor  1.2;            // illustrative
+        }
+    }
+    {
+        name        mesh;
+        type        distillationColumn;
+        model       fullMESH;
+        in          feed2;
+        outputs     ( distillate2  bottoms2 );
+        operation
+        {
+            nStages        146;           // fug's N = 144.6, up to 145 trays + the reboiler
+            feedStage      83;            // fug's 82.5 from the top, rounded up
+            P              17 bar;
+            distillateRate 69.648 kmol/h; // fug's D = 1.9347e-02 kmol/s
+            refluxRatio    12.51;         // fug's R = 1.2 R_min
+        }
+        compositionTol  1e-7;
+        maxOuterIter    200;
+    }
+);

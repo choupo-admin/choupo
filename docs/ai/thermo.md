@@ -504,6 +504,14 @@ liquid root (C410).  Witnesses:
 at 112 K against Miller, Kidnay & Hiza 1973, bubble pressure within 1.6 / 0.75 /
 0.48 %).  Gate: `check_lee_kesler_ploecker`.
 
+A cubic with kij = 0 against a close-boiling pair: `tutorials/props/compare/olefins01_propane_propene_laurance1972`
+and `olefins02_ethane_ethylene_fredenslund1976` hold SRK and Peng-Robinson to the MEASURED relative volatility of
+propene/propane (Laurance & Swift 1972, 63 points) and ethylene/ethane (Fredenslund et al. 1976, 14 points).  Bubble pressure
+is within 1-2 %; the propene/propane alpha misses its declared 3 % band (mean 1.8 %, max 4.6 %: too flat in composition, since
+the measured pair has a small positive deviation from Raoult's law), and alpha - 1 of 0.1 turns that into about 20 % in a splitter's
+tray count (`tutorials/steady/distillation/c3splitter01_propylene_propane`, illustrative specification).  No catalogue kij exists
+for either pair and none was fitted; read `docs/ai/validating-against-data.md` before adding one.  Gate: `check_olefin_vle`.
+
 In a `gammaPhi` system a cubic may still serve the VAPOUR slot alone
 (`vapour { fugacityModel SRK; }`) — that is a γ-φ world with a real-gas φ,
 not φ-φ.

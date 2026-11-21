@@ -1,0 +1,64 @@
+/*--------------------------------------------------------------------------*\
+  MEASURED vapour-liquid equilibrium of ethylene (1) + ethane (2) at 293.15 K.
+
+  SOURCE (the page, not an archive): Fredenslund, A.; Mollerup, J.; Hall, K.R.
+  "Vapor-liquid equilibria of the CO2-ethylene-ethane system", J. Chem. Eng.
+  Data 21 (1976) 301-303 (the PDF opens on the tail of the previous article),
+  Table I "Vapor-Liquid Equilibrium in the C2H4 + C2H6 System" (p. 302), the
+  EXPERIMENTAL columns P, x and y, read from the page image at 220 dpi.  The
+  paper's footnote: mole fractions are given with four significant figures
+  to avoid round-off, and are "only believed accurate to within 0.003".  The
+  vapour was SAMPLED (vapour-recirculation cell).  Pressure in atm.
+  293.15 K is ABOVE the critical temperature of ethylene (282.34 K, the catalogue record): there is no
+  pure liquid ethylene, the paper uses the unsymmetric convention (Henry's
+  constant 38.0 atm) for its own calculation, and the measurements stop at
+  x = 0.4532.  The engine's cubic needs no convention: the mixture is one
+  fluid, its bubble pressure is the pressure at which the liquid composition
+  of the row meets a vapour of its own.
+
+  Columns are the props bench's overlay names: x[ethylene], P_bubble,
+  y_eqT_ethylene; `alpha` is alpha = (y1/x1)/(y2/x2) of the measured pair,
+  kept for the gate (bin/curate/check_olefin_vle.py).  Pure ends are not listed
+  (y = x there).  The CALCULATED columns of the paper's Table I are not used.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.P_bubble;
+system       ( ethylene ethane );
+temperature  293.15 K;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Fredenslund, A.; Mollerup, J.; Hall, K.R. (1976). Vapor-liquid equilibria of the carbon dioxide-ethylene-ethane system. J. Chem. Eng. Data 21, 301-303, Table I (p. 302). doi:10.1021/je60070a006";
+    sourceFile   "fredenslund1976-co2-ethylene-ethane-vle.pdf";
+    sha256       "a85b71ce08f2f5ede6d3c3e41daabdef3acf1a1f12de8bdf3bdf5f24c6c4ba07";   // of that PDF
+}
+
+uncertainty
+{
+    x_and_y
+    {
+        kind    statedBound;   // the paper's footnote, a bound not a confidence level
+        unit    -;
+        value   0.003;
+    }
+}
+
+columns
+(
+    { name x[ethylene];  unit -;  }
+    { name P_bubble;  unit atm;  }
+    { name y_eqT_ethylene;  unit -;  }
+    { name alpha;  unit -;  }
+);
+
+data
+(
+    0.0539  38.46  0.0662  1.2444
+    0.1537  40.85  0.1772  1.1858
+    0.2663  43.57  0.2968  1.1629
+    0.3664  45.98  0.3936  1.1224
+    0.3988  46.85  0.4251  1.1147
+    0.4532  47.85  0.4722  1.0794
+);

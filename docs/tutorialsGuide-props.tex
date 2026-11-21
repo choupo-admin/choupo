@@ -621,6 +621,96 @@ NOT IN THE READING. The all-binary row of Table 15-8 (water / MIBK mutual solubi
 \end{tutgolden}
 
 \clearpage
+\tutentry{olefins01\_propane\_propene\_laurance1972}{tutorials/props/compare/olefins01\_propane\_propene\_laurance1972}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{pxy\_srk\_100F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{pxy\_pr\_100F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{pxy\_srk\_110F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{pxy\_pr\_110F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{pxy\_srk\_120F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{pxy\_pr\_120F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{pxy\_srk\_130F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{pxy\_pr\_130F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{pxy\_srk\_140F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{pxy\_pr\_140F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{pxy\_srk\_150F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-3.9) {\textbf{pxy\_pr\_150F}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Propene + propane bubble pressure and vapour composition at the 7 isotherms 100-160 F of Laurance and Swift (1972), Table IV: SRK and Peng-Robinson with kij = 0, the relative volatility compared point by point}
+\begin{tutnarrative}
+the C3 splitter's thermodynamics, held to measured VLE. README.md carries the question, the band DECLARED BEFORE the first run, the table of results and what is NOT claimed.
+
+Each operation asks the engine at the liquid composition the experimenters tabulated (x = 0.1 ... 0.9 of propene, never a smooth curve between neighbours): P\_bubble(T, x) and the incipient vapour y\_eqT(T, x), once with SRK and once with Peng-Robinson (variant `pr`), kij = 0. The relative volatility alpha = (y1/x1)/(y2/x2) is NOT a property of the bench; the gate bin/curate/check\_olefin\_vle.py recomputes it from the y of these runs and compares it with the paper's alpha point by point, against the declared band.
+
+\end{tutnarrative}
+\tutreadme{runCase tutorials/props/compare/olefins01\_propane\_propene\_laurance1972}
+\tutreadme{Propene and propane boil 5.6 K apart (Tb 225.46 and 231.02 K, the catalogue's records). In the measured table below their relative volatility is 1.05 to 1.22, and a tray count goes as 1/ln(alpha), so a design that is wrong by 0.01 in alpha is wrong by many trays (Laurance \& Swift, p. 333, cite Manley: differences of 35 \% in the design number of trays between data sources). Before the engine's column is believed on this pair, its thermodynamics has to meet a measurement at the splitter's conditions. This case asks: with the catalogue's own Tc, Pc, omega and NO interaction parameter, how close do SRK and Peng-Robinson come to the relative volatility of propene (1) + propane (2) at 100 to 160 degF?}
+\tutreadme{Laurance \& Swift, J. Chem. Eng. Data 17 (1972) 333, Table IV (p. 335): seven isotherms (100, 110, ... 160 degF = 310.93 ... 344.26 K), liquid propene mole fraction 0.1 ... 0.9, the bubble pressure P, the vapour composition y and the relative volatility alpha. What the numbers ARE (the paper's own account, read at p. 333-335): the vapour pressures of pure fluids and mixtures (Table I) were MEASURED, probable error 0.1 \%; Table IV is COMPUTED from them by integrating the isothermal general coexistence equation (Manley \& Swift), with an estimated error of +-0.005 in alpha, so no vapour was sampled. The data are therefore measured pressures turned into y and alpha, not a direct sample of the vapour. Transcribed from the page image, every digit, 63 rows (the pure ends are not listed: there y = x). Two printed slips are declared in the dataset headers (a P at 120 degF, a y at 110 degF).}
+\tutreadme{kij = 0 (the catalogue has no propene-propane kij, so none is used and none is fitted). The band, with its reason:}
+\tutreadme{$\ast$ alpha, every one of the 63 points: <= 3 \%. Reason: the cubic's pure-fluid vapour pressures (Soave / PR78 alpha from the acentric factor alone) were expected good to 1 to 2 \% for these two hydrocarbons, the errors of the two partly cancelling in the ratio, and a 3 \% band on alpha (1.05 to 1.22 in the table) is 0.03 to 0.04 absolute against the paper's own +-0.005. A model that misses by more would change a column's tray count by tens of per cent. $\ast$ alpha, mean over the 63 points: <= 1.5 \%. $\ast$ bubble pressure, every point: <= 3 \%; mean <= 1.5 \% (the paper's P is good to 0.1 \%; the band is the cubic's vapour-pressure accuracy). $\ast$ No band is declared for the SIGN of the miss, and none is relaxed after the run: a model outside the band is reported outside it.}
+\tutreadme{Two systems, same kij = 0: srk (the system's SRK) and pr (variant, PR78). 63 propertyScan1D points each (P\_bubble, y\_eqT\_propylene at the paper's own x). The overlay's aad rows give the mean deviation of P and y; alpha is recomputed from the engine's y and x by the gate check\_olefin\_vle.}
+\begin{tutgolden}
+\goldrow{diag}{pxy\_srk\_100F}{n\_emptyCurves}{0}
+\goldrow{diag}{pxy\_srk\_100F}{n\_failures}{0}
+\goldrow{diag}{pxy\_srk\_100F}{n\_points}{9}
+\goldrow{diag}{pxy\_pr\_100F}{n\_emptyCurves}{0}
+\goldrow{diag}{pxy\_pr\_100F}{n\_failures}{0}
+\goldrow{diag}{pxy\_pr\_100F}{n\_points}{9}
+\goldrow{diag}{pxy\_srk\_110F}{n\_emptyCurves}{0}
+\goldrow{diag}{pxy\_srk\_110F}{n\_failures}{0}
+\goldrow{diag}{pxy\_srk\_110F}{n\_points}{9}
+\goldrow{diag}{pxy\_pr\_110F}{n\_emptyCurves}{0}
+\goldrow{diag}{pxy\_pr\_110F}{n\_failures}{0}
+\goldrow{diag}{pxy\_pr\_110F}{n\_points}{9}
+\goldrow{diag}{pxy\_srk\_120F}{n\_emptyCurves}{0}
+\goldrow{diag}{pxy\_srk\_120F}{n\_failures}{0}
+\goldmore{70}
+\end{tutgolden}
+
+\clearpage
+\tutentry{olefins02\_ethane\_ethylene\_fredenslund1976}{tutorials/props/compare/olefins02\_ethane\_ethylene\_fredenslund1976}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{pxy\_srk\_263p15K}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{pxy\_pr\_263p15K}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{pxy\_srk\_293p15K}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{pxy\_pr\_293p15K}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Ethylene + ethane bubble pressure and vapour composition at 263.15 K and 293.15 K measured by Fredenslund, Mollerup and Hall (1976), Table I: SRK and Peng-Robinson with kij = 0, the relative volatility compared point by point}
+\begin{tutnarrative}
+the C2 splitter's thermodynamics, held to measured VLE. README.md carries the question, the band DECLARED BEFORE the first run, the table of results and what is NOT claimed.
+
+The engine is asked at the liquid composition the experimenters measured, with SRK and with Peng-Robinson (variant `pr`), kij = 0: P\_bubble(T, x) and the incipient vapour y\_eqT(T, x). The relative volatility is recomputed from those y by the gate bin/curate/check\_olefin\_vle.py.
+
+\end{tutnarrative}
+\tutreadme{runCase tutorials/props/compare/olefins02\_ethane\_ethylene\_fredenslund1976}
+\tutreadme{The ethylene splitter is the other close-boiling tower of an olefins plant (Tb 169.42 and 184.55 K, the catalogue's records; in the measurements below the relative volatility is 1.08 to 1.57). Before the engine's column is believed on this pair, its thermodynamics has to meet a measurement. With the catalogue's own Tc, Pc, omega and NO interaction parameter, how close do SRK and Peng-Robinson come to the measured bubble pressures, vapour compositions and relative volatility of ethylene (1) + ethane (2)?}
+\tutreadme{Fredenslund, Mollerup \& Hall, J. Chem. Eng. Data 21 (1976) 301, Table I (p. 302): 8 interior points at 263.15 K (18.34 to 31.94 atm) and 6 at 293.15 K (37.14 to 47.85 atm). A vapour-recirculation cell, the vapour SAMPLED: x, y and P are measurements (mole fractions "only believed accurate to within 0.003", the paper's footnote). The paper's own "calculated" columns are not used. Transcribed from the page image at 220 dpi. 293.15 K is above ethylene's critical temperature (282.34 K, the catalogue's record): the measurements stop at x = 0.4532, and the paper treats ethylene there in the unsymmetric convention.}
+\tutreadme{kij = 0 (no ethylene-ethane kij exists in the catalogue; none is fitted).}
+\tutreadme{$\ast$ alpha, each of the 14 points: <= max(5 \% of alpha\_measured, the point's own measurement uncertainty). The measurement uncertainty is propagated from the paper's +-0.003 on x and on y (the worst of the four corners): 2.4 to 5 \% in the middle of the diagram and 11 to 13 \% at the dilute ends (x = 0.046, 0.054, 0.939), where alpha is a ratio of two small numbers. A comparison tighter than the measurement is not a comparison. $\ast$ alpha, mean over the 14 points: <= 4 \%. $\ast$ bubble pressure, every point: <= 4 \%; mean <= 2 \%. (The cubic's pure vapour pressures at 263 K are good to about 2 \%; at 293 K the mixture is near ethylene's critical region and is held less tight.) $\ast$ vapour mole fraction y, mean absolute deviation: <= 0.010 -- the paper's own statement of its thermodynamic consistency (its Discussion). $\ast$ No band is relaxed after the run: a model outside it is reported outside it.}
+\tutreadme{SRK (the system) and PR78 (variant pr), kij = 0: P\_bubble and y\_eqT\_ethylene at the measured x of each row; alpha recomputed by the gate check\_olefin\_vle from the engine's y.}
+\begin{tutgolden}
+\goldrow{diag}{pxy\_srk\_263p15K}{n\_emptyCurves}{0}
+\goldrow{diag}{pxy\_srk\_263p15K}{n\_failures}{0}
+\goldrow{diag}{pxy\_srk\_263p15K}{n\_points}{8}
+\goldrow{diag}{pxy\_pr\_263p15K}{n\_emptyCurves}{0}
+\goldrow{diag}{pxy\_pr\_263p15K}{n\_failures}{0}
+\goldrow{diag}{pxy\_pr\_263p15K}{n\_points}{8}
+\goldrow{diag}{pxy\_srk\_293p15K}{n\_emptyCurves}{0}
+\goldrow{diag}{pxy\_srk\_293p15K}{n\_failures}{0}
+\goldrow{diag}{pxy\_srk\_293p15K}{n\_points}{6}
+\goldrow{diag}{pxy\_pr\_293p15K}{n\_emptyCurves}{0}
+\goldrow{diag}{pxy\_pr\_293p15K}{n\_failures}{0}
+\goldrow{diag}{pxy\_pr\_293p15K}{n\_points}{6}
+\goldrow{aad}{fredenslund1976\_263p15K}{pxy\_srk\_263p15K.P\_bubble.aadAbs}{18223.41875}
+\goldrow{aad}{fredenslund1976\_263p15K}{pxy\_srk\_263p15K.P\_bubble.aadRelPct}{0.715819202312}
+\goldmore{10}
+\end{tutgolden}
+
+\clearpage
 \tutentry{unifacDortmund01\_ethanol\_water\_reduced\_pressure}{tutorials/props/compare/unifacDortmund01\_ethanol\_water\_reduced\_pressure}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

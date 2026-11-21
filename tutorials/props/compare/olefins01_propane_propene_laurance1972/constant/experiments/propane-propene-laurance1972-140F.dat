@@ -1,0 +1,59 @@
+/*--------------------------------------------------------------------------*\
+  MEASURED-AND-CORRELATED vapour-liquid equilibrium of propene (1) + propane (2)
+  at 140 degF = 333.1500 K.
+
+  SOURCE (the page, not an archive): Laurance, D.R.; Swift, G.W.  "Relative
+  Volatility of Propane-Propene System from 100-160 F", J. Chem. Eng. Data 17
+  (1972) 333-336, Table IV "Results of Calculations" (p. 335), the block
+  T = 140 F.  Read from the page image, every digit.  x is the LIQUID mole
+  fraction of PROPENE (the paper's Figure 2 axis).  The paper's own words on
+  what the numbers are: the vapour pressures of Table I were MEASURED (probable
+  error 0.1 %) and correlated (Antoine for the pure fluids, Manley's
+  deviation-from-Raoult form for the mixtures, Tables II and III); Table IV then
+  COMPUTES y, the bubble pressure P, the liquid volume VL, the vapour
+  compressibility Z and the relative volatility alpha by integrating the
+  isothermal general coexistence equation.  No vapour composition was sampled
+  (the method needs none).  So y and alpha here are DERIVED FROM MEASURED
+  PRESSURES, with the paper's stated error of +-0.005 in alpha; P is the
+  correlation of the measured pressures.  Pressure in psia.
+
+  Columns are the props bench's overlay names: x[propylene], P_bubble,
+  y_eqT_propylene; `alpha` is the paper's column alpha = (y1/x1)/(y2/x2), kept
+  for the gate (bin/curate/check_olefin_vle.py), which recomputes it from the
+  engine's y and compares.  The pure ends (x = 0 and 1) are not listed: there
+  y = x and alpha is a limit.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.P_bubble;
+system       ( propylene propane );
+temperature  333.1500 K;
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Laurance, D.R.; Swift, G.W. (1972). Relative volatility of propane-propene system from 100-160 F. J. Chem. Eng. Data 17, 333-336, Table IV (p. 335). doi:10.1021/je60054a011";
+    sourceFile   "laurance1972-propane-propene-relative-volatility.pdf";
+    sha256       "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";   // of that PDF
+}
+
+columns
+(
+    { name x[propylene];  unit -;  }
+    { name P_bubble;  unit psi;  }
+    { name y_eqT_propylene;  unit -;  }
+    { name alpha;  unit -;  }
+);
+
+data
+(
+    0.1000  314.27  0.1128  1.1443
+    0.2000  321.60  0.2211  1.1357
+    0.3000  328.58  0.3257  1.1269
+    0.4000  335.21  0.4271  1.1182
+    0.5000  341.47  0.5259  1.1095
+    0.6000  347.36  0.6228  1.1009
+    0.7000  352.87  0.7182  1.0924
+    0.8000  358.01  0.8126  1.0842
+    0.9000  362.76  0.9064  1.0763
+);
