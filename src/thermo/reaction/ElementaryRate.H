@@ -99,11 +99,26 @@ public:
     { return kEff(s); }
     const std::string& typeName() const override { return type_; }
 
+    //  The analytic derivatives (the batch reactor's Jacobian): every form,
+    //  PLOG included -- d k / d T of each Arrhenius leg, d k / d[M] of the
+    //  third body and the fall-off (Lindemann and Troe exactly), d k / d P of
+    //  the PLOG interpolation (0 where it is clamped), d ln Kc / dT from the
+    //  species' h(T).  Theory Guide, sec:batch-analytic-jacobian.
+    bool hasAnalyticGradient() const override { return true; }
+    bool netRateGradient(const ThermoPackage& thermo, const RateState& s,
+                         RateGradient& g) const override;
+    bool rateDependencies(std::vector<std::size_t>& species) const override;
+    bool readsPressure() const override { return form_ == Form::plog; }
+
 private:
 
     //- The effective forward k (third body and fall-off folded in), in the
     //  caller's amount unit.
     scalar kEff(const RateState& s) const;
+    //- kEff and its derivatives: dkdM (third body / fall-off; 0 otherwise),
+    //  dkdT at fixed [M] and P, dkdP at fixed T (PLOG; 0 otherwise).
+    struct KDerivs { scalar k = 0.0, dkdM = 0.0, dkdT = 0.0, dkdP = 0.0; };
+    KDerivs kEffDerivs(const RateState& s) const;
 
     std::string who_;
     std::string type_;
@@ -123,6 +138,7 @@ private:
     struct PlogRow { scalar P = 0.0; std::vector<PlogArr> arr; };
     std::vector<PlogRow> plog_;
     scalar plogK(const PlogRow& row, scalar T) const;
+    scalar plogDkDT(const PlogRow& row, scalar T) const;   // d plogK / dT
     sVector eff_;                                  // full-length third-body efficiencies
 
     sVector nu_, order_;

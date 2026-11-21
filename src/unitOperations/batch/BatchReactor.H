@@ -68,6 +68,8 @@ Description
 #include "solver/ODE/ODEIntegrator.H"
 
 #include <memory>
+#include <vector>
+#include <atomic>
 
 #include "BatchUnitOperation.H"
 
@@ -95,14 +97,25 @@ public:
     sVector odeDerivative(const sVector& y) const override { return derivatives_(y); }
     std::size_t odeNPositive() const override { return state_.n.size(); }
     std::string odeRowLabel(std::size_t i) const override;
-    //  The ANALYTIC Jacobian (opt-in, `solver { jacobian analytic; }`):
-    //  the species columns from the rate laws' own derivatives, the energy
-    //  row by the chain rule, the T column by one directional difference.
-    //  See odeJacobian in BatchReactor.cpp and the Theory Guide section
-    //  sec:batch-analytic-jacobian.  Absent the key: none (the default).
+    //  The ANALYTIC Jacobian: the species columns from the rate laws' own
+    //  derivatives, the energy row by the chain rule, the T column in closed
+    //  form (dk/dT, d ln Kc/dT, the heat capacities' slope).  The DEFAULT for
+    //  a vessel whose every reaction has an analytic derivative; `solver {
+    //  jacobian finiteDifference; }` selects the integrator's dense
+    //  difference; `jacobian analytic;` forces it, differencing reaction by
+    //  reaction a law that has none.  See odeJacobian in BatchReactor.cpp and
+    //  the Theory Guide section sec:batch-analytic-jacobian.
     bool hasOdeJacobian() const override { return jacobianAnalytic_; }
+    bool odeJacobianDeclared() const override { return jacobianDeclared_; }
     std::vector<sVector> odeJacobian(const sVector& y, const sVector& f0,
                                      const sVector& typ) const override;
+    //  The same Jacobian on its sparse pattern (J = S + u v^T), built from the
+    //  reaction network once (buildJacobianStructure_).
+    std::shared_ptr<const solver::SparsePattern> odeSparsePattern() const override
+    { return jacPattern_; }
+    bool odeSparseLinear() const override { return sparseLinear_; }
+    void odeJacobianSparse(const sVector& y, const sVector& f0, const sVector& typ,
+                           solver::SparseJacobian& J) const override;
     //  The audit of the analytic Jacobian in the ADAPTIVE sweep is kept by
     //  the stepper; this one serves the fixed-deltaT stiff path (step()).
     const solver::ODEAnalyticJacobian& jacobianAudit() const { return jacAudit_; }
@@ -179,10 +192,6 @@ private:
         sVector                  troe;           // (a T*** T* [T**]); empty => Lindemann
         // A Factory law (LHHW, expression, a user law), parsed once.
         std::shared_ptr<const ReactionRate> law;
-        //  Sensitivity multiplier m_j on the NET rate (forward AND reverse
-        //  together, so the equilibrium is untouched).  1 in every normal run;
-        //  only runSensitivity_ ever sets it (Theory Guide sec:ignition-sensitivity).
-        scalar mult = 1.0;
     };
 
     enum class Mode { Isothermal, Adiabatic };
@@ -253,22 +262,57 @@ private:
     sVector thirdBodyEfficiencies_(const DictPtr& kin,
                                    const ThermoPackage& thermo) const;
 
-    // ---- The analytic Jacobian (opt-in) --------------------------------
-    bool jacobianAnalytic_ = false;         // `solver { jacobian analytic; }`
+    // ---- The analytic Jacobian (the default where every law has one) ----
+    bool jacobianAnalytic_ = false;         // in effect (default or declared)
+    bool jacobianDeclared_ = false;         // `solver { jacobian analytic; }`
+    std::vector<char> fdLaw_;               // per reaction: no analytic derivative
     solver::ODEAnalyticJacobian jacAudit_;  // the step() path's audit record
     std::size_t jacAnnounced_ = 0;          // audits already printed
-    mutable long rhsEvals_ = 0;             // derivatives_ calls (a count only)
-    //  d r / d c_k [kmol/(m3 s) per kmol/m3] of one reaction, accumulated
-    //  into `grad` (full length), mirroring rateOfReaction_ term by term.
-    //  `typ` is the row sizes (odeJacobianScale) for the columns a Factory
-    //  law (or a power below one at zero) differentiates by a difference.
-    void rateGradient_(const ReactionSpec& rxn, scalar T, const sVector& n,
-                       scalar V, const sVector& typ, sVector& grad,
-                       const sVector* g = nullptr) const;
-    //  The per-reaction difference: every species column of ONE reaction.
+    mutable std::atomic<long> rhsEvals_{0};  // derivatives_ calls (a count only; atomic: the sensitivity threads)
+    //  Where the time goes, for the glass box (verbosity >= 4): wall
+    //  nanoseconds in the right-hand side, in the Jacobian and in the whole
+    //  stiff integration of step(); the rest is the linear algebra.
+    mutable std::atomic<long long> nsRhs_{0}, nsJac_{0};
+    long long nsIntegrate_ = 0;
+    //  The pattern of J on the packed state (n_0..n_{N-1}, T) and, per
+    //  reaction, the species its rate reads (deps) and the position in the
+    //  pattern of each (changed species, read species) pair -- built ONCE.
+    std::shared_ptr<const solver::SparsePattern> jacPattern_;
+    std::vector<std::vector<std::size_t>> jacDeps_;
+    std::vector<std::vector<std::size_t>> jacPos_;   // [s * |deps| + d]
+    std::vector<std::size_t> jacPosTrow_;            // (T, k), k = 0..N
+    std::vector<std::size_t> jacPosTcol_;            // (i, T), i < N (or SIZE_MAX)
+    bool jacRankOne_ = false;                        // J = S + u v^T needed
+    //  The linear solver of W = I - h d J (`solver { linearSolver dense |
+    //  sparse | auto; }`, Theory Guide sec:sparse-lu): sparse needs the
+    //  analytic Jacobian (its pattern); auto = sparse from kSparseAutoRows rows.
+    enum class LinearSolver { Dense, Sparse, Auto };
+    LinearSolver linearSolverKey_ = LinearSolver::Auto;
+    bool sparseLinear_ = false;                      // resolved
+    static constexpr std::size_t kSparseAutoRows = 100;  // measured: docs/reviews/2026-11-21-large-mechanism
+    void wireAnalytic_(solver::ODEAnalyticJacobian& A, const std::string& owner) const;
+    void buildJacobianStructure_();
+    //  h_i(T) for the same species as gibbsAt_ (d ln Kc / dT).
+    sVector enthalpyAt_(scalar T) const;
+    //  d r / d c_k [kmol/(m3 s) per kmol/m3] of one reaction of the vessel's
+    //  own forms, accumulated into `grad` (full length; only the reaction's
+    //  dependencies are touched), and d r / d T at fixed c into dT, mirroring
+    //  rateOfReaction_ term by term.  false (nothing touched): a power below
+    //  one at zero concentration -- the caller differences that reaction.
+    bool rateGradient_(const ReactionSpec& rxn, scalar T, const sVector& n,
+                       scalar V, sVector& grad, scalar& dT,
+                       const sVector* g, const sVector* h) const;
+    //  The same for a factory law that has an analytic derivative
+    //  (ElementaryRate: modifiedArrhenius, thirdBody, falloff, plog); dP is
+    //  d r / d P (the PLOG table), false where the law declines.
+    bool rateGradientLaw_(const ReactionSpec& rxn, scalar T, const sVector& n,
+                          scalar V, sVector& grad, scalar& dT, scalar& dP,
+                          const sVector* g, const sVector* h) const;
+    //  The per-reaction difference of the TOTAL derivative of r V (V moving
+    //  with n and T at fixed P): every species column, and dT.
     void rateGradientFD_(const ReactionSpec& rxn, scalar T, const sVector& n,
-                         scalar V, const sVector& typ, sVector& grad,
-                         const sVector* g = nullptr) const;
+                         const sVector& sc, scalar epsT, sVector& D, scalar& E) const;
+    scalar volumeAt_(const sVector& n, scalar T) const;
     void announceJacobianAudits_(scalar tRun);
 
     // Combined derivatives for the packed state.
@@ -331,6 +375,24 @@ private:
     //  reaction's net rate multiplied by `factor`; S_j = d ln tau / d ln k_j.
     //  Absent = nothing here runs and every existing case is byte-identical.
     struct SensResult { std::string name; scalar tau = 0.0; scalar S = 0.0; scalar Tend = 0.0; };
+    //  The sensitivity multiplier m_j on the NET rate of ONE reaction
+    //  (forward AND reverse together, so the equilibrium is untouched),
+    //  applied by multOf_ wherever the rate or its derivative takes k.
+    //  THREAD-LOCAL, because runSensitivity_ integrates the perturbed runs on
+    //  several threads at once, each with its own (reactor, reaction, factor);
+    //  in every other run it is (none, -, 1).
+    static constexpr std::size_t kNoSens = static_cast<std::size_t>(-1);
+    inline static thread_local const BatchReactor* sensOwner_ = nullptr;
+    inline static thread_local std::size_t         sensJ_     = kNoSens;
+    inline static thread_local scalar              sensF_     = 1.0;
+    scalar multOf_(const ReactionSpec& rxn) const
+    {
+        return (sensOwner_ == this
+                && static_cast<std::size_t>(&rxn - reactions_.data()) == sensJ_)
+               ? sensF_ : 1.0;
+    }
+    std::size_t              sensThreads_     = 0;    // `solver { threads N; }`, 0 = default
+    std::size_t              sensThreadsUsed_ = 1;
     bool                     sensOn_     = false;
     scalar                   sensFactor_ = 1.1;
     scalar                   sensRise_   = 400.0;     // K above T0 that defines tau

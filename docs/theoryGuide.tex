@@ -38700,16 +38700,25 @@ licence.  Standard graduate texts for this chapter are C.~K.~Law,
 \subsection{The analytic Jacobian of a batch reactor's kinetics, and its audit}\label{sec:batch-analytic-jacobian}
 
 A Rosenbrock step (Section~\ref{ch:stiff-ode}) factorises
-$\mathbf W = \mathbf I - h\gamma\Jac$ once per step.  By default
-Choupo builds $\Jac$ by forward differences: each of the $N+1$ state
-entries ($N$ mole numbers and $T$) is perturbed in turn and the whole
-right-hand side is evaluated again --- $N+1$ evaluations per Jacobian,
-each one recomputing every rate coefficient and every $K_c$.  The
-\code{batchReactor} key \code{solver \{ jacobian analytic; \}} replaces
-that with the derivatives of the rate laws themselves
-(\code{BatchReactor::odeJacobian},
-\code{src/unitOperations/batch/BatchReactor.cpp}); the default stays
-\code{finiteDifference}, and any other word is refused by name.
+$\mathbf W = \mathbf I - h\gamma\Jac$ once per step.  A forward-difference $\Jac$ perturbs each of the
+$N+1$ state entries ($N$ mole numbers and $T$) in turn and evaluates the
+whole right-hand side again --- $N+1$ evaluations per Jacobian, each one
+recomputing every rate coefficient and every $K_c$, which for a
+mechanism of a thousand species is a thousand right-hand sides per step.
+A \code{batchReactor} builds $\Jac$ instead from the derivatives of the
+rate laws themselves (\code{BatchReactor::odeJacobianSparse},
+\code{src/unitOperations/batch/BatchReactor.cpp}).  This is the
+\emph{default} for a vessel whose every reaction has an analytic
+derivative --- the vessel's own \code{Arrhenius},
+\code{modifiedArrhenius}, \code{thirdBody} and \code{falloff}, and the
+factory's \code{ElementaryRate} (the same three words in a continuous
+reactor and \code{plog}).  \code{solver \{ jacobian finiteDifference; \}}
+selects the difference; \code{jacobian analytic;} forces the analytic
+matrix even beside a law that has no derivative (\code{LHHW},
+\code{type expression}, a case's own law), whose columns are then a
+forward difference of \emph{that reaction's} rate alone, announced once
+by name.  Without the key such a law keeps the whole vessel on the
+difference.  Any other word is refused by name.
 
 \paragraph{Species columns.}  With the state
 $\Yv = (n_1,\dots,n_N,T)$, constant volume $V$ and $c_k = n_k/V$,
@@ -38738,10 +38747,21 @@ $[\mathrm M]$ \eqref{eq:third-body}:
     $\partial k/\partial c_k = k_0\,\varepsilon_k$;
     \item Lindemann fall-off \eqref{eq:falloff} with $F=1$:
     $\partial k/\partial[\mathrm M] = k_0/(1+P_r)^2$, exactly;
-    \item Troe fall-off: $\partial k/\partial[\mathrm M]$ by a central
-    difference of the engine's one fall-off function in $[\mathrm M]$
-    alone, step $\epsilon^{1/3}[\mathrm M]$ --- one scalar per reaction,
-    not a column, and the Troe formula keeps its single home;
+    \item Troe fall-off: with $p=\log_{10}P_r$, $\varphi=\log_{10}F_{\mathrm{cent}}$,
+    $a = p + c$, $x = a/(n-0.14a)$ and $\log_{10}F = \varphi/(1+x^2)$,
+    \begin{equation}
+        \frac{\partial\log_{10}F}{\partial p}
+          = -\frac{2\varphi x}{(1+x^2)^2}\,\frac{n}{(n-0.14a)^2},\qquad
+        \frac{\partial\log_{10}F}{\partial \varphi}
+          = \frac{1}{1+x^2} - \frac{2\varphi x}{(1+x^2)^2}\,
+            \frac{1.27a - 0.67n}{(n-0.14a)^2},
+        \label{eq:troe-derivs}
+    \end{equation}
+    and $\partial k/\partial[\mathrm M] = F\bigl(\partial L/\partial[\mathrm M]
+    + (L/[\mathrm M])\,\partial\log_{10}F/\partial p\bigr)$ with $L$ the
+    Lindemann blend (\code{Reaction::falloffRateDerivs}, branch for branch
+    with the rate: the clamp $P_r\ge10^{-300}$ and the $F_{\mathrm{cent}}\le0$
+    fallback included);
 \end{itemize}
 and then $\partial k/\partial c_k = \varepsilon_k\,\partial k/\partial[\mathrm M]$.
 A reversible leg \eqref{eq:k-rev} is differentiated the same way with
@@ -38756,6 +38776,56 @@ outside its stoichiometry, and $x_i$ moves with every $n_k$); the same
 is done for a power below one at zero concentration, whose one-sided
 derivative is infinite.
 
+\paragraph{The temperature column, in closed form.}  At fixed $c$,
+\begin{equation}
+    \frac{\partial r}{\partial T}
+      = \frac{\mathrm d k}{\mathrm d T}\Bigl(\Pi_f - \frac{\Pi_r}{K_c}\Bigr)
+      + \frac{k}{K_c}\,\Pi_r\,\frac{\mathrm d\ln K_c}{\mathrm dT},\qquad
+    \frac{\mathrm d\ln K_c}{\mathrm dT}
+      = \frac{\sum_s \nu_s h_s(T)}{R T^2} - \frac{\sum_s\nu_s}{T},
+    \label{eq:batch-jac-T}
+\end{equation}
+the second from Eq.~\eqref{eq:Kc} by Gibbs--Helmholtz,
+$\mathrm d(g/T)/\mathrm dT = -h/T^2$, with $h_s(T)$ the species' own
+records; $\mathrm d\ln k/\mathrm dT = b/T + E_a/(RT^2)$ for each
+Arrhenius leg; for a Troe fall-off
+$\partial\ln k/\partial T = \partial\ln L/\partial T
++ \ln 10\,(\partial\log_{10}F/\partial\varphi\;\mathrm d\varphi/\mathrm dT
++ \partial\log_{10}F/\partial p\;\mathrm dp/\mathrm dT)$ with
+$\mathrm d\varphi/\mathrm dT = F_{\mathrm{cent}}'/(F_{\mathrm{cent}}\ln 10)$;
+for PLOG \eqref{eq:plog} between the tabulated pressures $P_1<P<P_2$,
+\begin{equation}
+    \frac{\partial\ln k}{\partial T} = (1-w)\frac{\mathrm d\ln k_1}{\mathrm dT}
+                                      + w\,\frac{\mathrm d\ln k_2}{\mathrm dT},\qquad
+    \frac{\partial\ln k}{\partial P} = \frac{\ln k_2 - \ln k_1}{P\ln(P_2/P_1)},
+    \label{eq:plog-derivs}
+\end{equation}
+and $\partial k/\partial P = 0$ where the table is clamped.  The vessel
+then says how $c$, $P$ and $V$ move with the state.  Per reaction it
+needs the total derivatives $D_{jm} = \partial(r_jV)/\partial n_m$ and
+$E_j = \partial(r_jV)/\partial T$:
+\begin{itemize}
+    \item $V$ fixed (\code{liquidDH}, \code{gasConstantV}):
+    $D_{jm} = g_{jm} + s_j$, $s_j = (\partial r_j/\partial P)\,R_uT$,
+    $E_j = V\bigl(\partial r_j/\partial T + (\partial r_j/\partial P)\,P/T\bigr)$,
+    where $g_{jm} = \partial r_j/\partial c_m$ and $s_j$ is non-zero only for a
+    law that reads $P = nR_uT/V$ (PLOG);
+    \item $P$ fixed (\code{gasConstantP}, $V = nR_uT/P$): from
+    $\partial V/\partial n_m = V/n$ and
+    $\partial c_k/\partial n_m = \delta_{km}/V - c_k/n$,
+    \begin{equation}
+        s_j = \frac{V}{n}\Bigl(r_j - \sum_k g_{jk}c_k\Bigr),\qquad
+        E_j = V\Bigl(\frac{\partial r_j}{\partial T} - \frac1T\sum_k g_{jk}c_k\Bigr)
+              + \frac{r_jV}{T}.
+        \label{eq:batch-jac-constp}
+    \end{equation}
+\end{itemize}
+$s_j$ is the same for every species column $m$: the Jacobian is
+$\Jac = \mathbf S + \mathbf u\mathbf v^{\mathsf T}$, with $\mathbf S$ on the
+pattern of the network (Section~\ref{sec:sparse-lu}),
+$u_i = \sum_j\nu_{ij}s_j$ and $\mathbf v$ the indicator of the species
+columns --- dense, but of rank one.
+
 \paragraph{Energy row.}  By the chain rule on the same columns,
 \begin{align}
     \text{gasConstantV:}\quad
@@ -38768,14 +38838,24 @@ derivative is infinite.
                 {\sum_i n_i C_{p,i}},
     \label{eq:batch-jac-energy}
 \end{align}
-the second term being the derivative of the heat-capacity sum.  The
-\emph{temperature column} is one forward difference of the whole
-right-hand side (one evaluation, the integrator's own step for that
-row): every $k$, $K_c$, $u_i$ and $C_{v,i}$ depends on $T$, and their
-closed-form derivatives would be a second home for the thermodynamics.
+the second term being the derivative of the heat-capacity sum
+(\code{gasConstantP} as \code{gasConstantV} with $h_i$ and $C_{p,i}$).
+With the per-reaction weight $w_j$ ($\Delta H_j$, $\sum_s\nu_s u_s$ or
+$\sum_s\nu_s h_s$), the corner of the matrix is
+\begin{equation}
+    \frac{\partial\dot T}{\partial T}
+      = -\,\frac{[\text{gas}]\sum_i C_i\dot n_i + \sum_j w_j E_j
+                 + \dot T\sum_i n_i\,\mathrm dC_i/\mathrm dT}{\sum_i n_iC_i},
+    \label{eq:batch-jac-TT}
+\end{equation}
+($\mathrm du_i/\mathrm dT = C_{v,i}$, $\mathrm dh_i/\mathrm dT = C_{p,i}$).
+The one derivative still taken by a difference is the heat capacity's
+slope $\mathrm dC_i/\mathrm dT$: a central difference of the record's law
+with step $\epsilon^{1/3}T$ (about $10^{-10}$ of the slope), because the
+law lives in the component record, which offers no derivative.
 Isothermal, the right-hand side reads the set point, not $\Yv_{N+1}$, so
-the column is exactly zero and costs nothing.  A Jacobian therefore
-costs one right-hand side plus the rate derivatives, whatever $N$ is.
+the temperature row and column are exactly zero.  A Jacobian therefore
+costs \emph{no} right-hand side at all, only the rate derivatives.
 
 \paragraph{The audit.}  Rosenbrock23 and Rodas4 are \emph{not}
 W-methods: their order conditions assume the true $\Jac$ in
@@ -38815,10 +38895,25 @@ radical not yet formed, and the rounding of $f$ --- a sum of large terms
 that cancel --- divided by it is larger than the column: on the first
 run the temperature row of the $\mathrm{H_2O_2}$ column came out 1.55 of
 its scale wrong \emph{in the difference}.  The same small step read an
-LHHW column as exactly zero against $-0.058$.  The default
+LHHW column as exactly zero against $-0.058$.  The
 finite-difference Jacobian carries that noise in its trace columns;
 the analytic one does not.
 \end{pitfall}
+
+\paragraph{What the audit measures now.}  With every column in closed
+form, the audits along \code{ignition01\_h2o2\_jac} after the radical pool
+has formed read $2\times10^{-10}$ to $1\times10^{-9}$ of the column's
+scale --- the rounding of the audit's own central difference --- where the
+forward-difference temperature column it replaced read $7\times10^{-8}$
+to $6.5\times10^{-7}$; so do a Troe fall-off with a temperature-dependent
+$F_{\mathrm{cent}}$, a reversible PLOG whose table brackets the run's
+pressure, and the \code{gasConstantP} vessel \code{ignition03\_h2air\_constp}
+(\code{bin/curate/check\_kinetics\_jacobian.py}, which also shows each
+closed-form term dropped by hand --- $b/T$, $F_{\mathrm{cent}}'$,
+$\partial k/\partial P$, the rank-one $s_j$ --- refused by the audit).
+Making the analytic matrix the default moved the shipped batch goldens by
+at most $1.2\times10^{-9}$ relative (\code{ignition04}'s sensitivities),
+round-off at the integrator's tolerance.
 
 \begin{example}[What it buys]
 \code{ignition01\_h2o2} (9 species, 21 reactions, Rosenbrock23) on the
@@ -38827,9 +38922,191 @@ right-hand sides (14 per step: one, ten for the Jacobian, one for
 $\partial f/\partial t$, two stages); on the analytic one
 (\code{ignition01\_h2o2\_jac}): the same steps and 8\,252 right-hand sides
 (4 per step: $\partial f/\partial t$ is skipped because the chemistry is
-autonomous), the burned state equal to $6\times10^{-12}$ relative.  The
+autonomous), the burned state equal to $6\times10^{-12}$ relative.  With
+the temperature column in closed form (2026-11-21) the same run spends
+6\,290 right-hand sides: 3 per step plus the audits.  The
 saving is $N$ evaluations per Jacobian, so it grows with the mechanism.
 \end{example}
+
+\subsection{Factoring $\mathbf W$ on the mechanism's pattern: the sparse LU}\label{sec:sparse-lu}
+
+A Rosenbrock step factors $\mathbf W = \mathbf I - h\gamma\Jac$ once and
+solves with it two (Rosenbrock23) or six (Rodas4) times.  A dense LU with
+partial pivoting costs $N^3/3$ multiply-adds whatever the matrix holds:
+$3\times10^8$ for a mechanism of a thousand species, every step.  But
+species $i$ and $k$ are coupled only when a reaction that changes $i$ reads
+$k$, so a row of $\Jac$ holds a few tens of entries, not a thousand.
+\code{solver \{ linearSolver dense | sparse | auto; \}} on a
+\code{batchReactor} chooses how $\mathbf W$ is factored; \code{sparse}
+needs the analytic Jacobian (it is the Jacobian's pattern that is
+factored) and is refused by name beside the finite difference;
+\code{auto}, the default, is \code{sparse} from 100 rows (measured,
+below) and \code{dense} under it, so every small tutorial factors as
+before.  The solver is \code{solver/SparseLU}, written for Choupo (no
+external library: KLU and SuiteSparse are not used), in three stages.
+
+\paragraph{The pattern, once.}  \code{BatchReactor::buildJacobianStructure\_}
+reads it from the network: row $i$ holds column $m$ when a reaction with
+$\nu_{ij}\neq0$ reads $m$ --- a forward order, a reverse product, a
+collider of non-zero efficiency (every species, for a third body with no
+efficiencies listed), every species for a law with no derivative.  Every
+species row holds the temperature column, the temperature row is full
+($\dot T\,C_m$ reaches every column), every diagonal is stored.  A cooling
+failure that turns the vessel adiabatic rebuilds it.  The rank-one part of
+a constant-pressure gas (Section~\ref{sec:batch-analytic-jacobian}) is not
+in it.
+
+\paragraph{1. Ordering.}  Eliminating a column that touches $d$ rows can
+create $d^2$ new entries (\emph{fill}).  The \emph{minimum-degree} rule
+(Tinney and Walker, 1967; George and Liu, \emph{Computer Solution of Large
+Sparse Positive Definite Systems}, 1981, ch.~5) eliminates at each step the
+node of fewest neighbours in the elimination graph of the symmetrised
+pattern $\mathbf A + \mathbf A^{\mathsf T}$, joining its neighbours into a
+clique.  Choupo runs it on the \emph{explicit} elimination graph with exact
+degrees (ties to the lower index), not on the quotient graph of the
+approximate-minimum-degree code of Amestoy, Davis and Duff (1996): simpler,
+and fast enough because it runs once per pattern.  As in that code, a
+\emph{dense} node --- degree above $\max(16,\,10\sqrt N)$: the temperature,
+a bath gas read by every third body --- is removed first and ordered last,
+where it costs one dense trailing block instead of making every step dense.
+
+\paragraph{2. Symbolic factorisation.}  For that order, and diagonal pivots,
+the pattern of $\mathbf L + \mathbf U$ is the elimination graph once more:
+eliminating column $k$ makes its remaining neighbours column $k$ of
+$\mathbf L$ (and, the pattern being symmetric, row $k$ of $\mathbf U$), and
+joins them.  Stored by columns, with the map from the caller's entries to
+the permuted columns.
+
+\paragraph{3. Numeric factorisation, every step.}  The rows are first
+\emph{equilibrated}, each divided by its largest entry (as KLU does), so
+that every comparison below is between numbers of one size; then a
+left-looking Doolittle elimination runs column by column into a dense work
+vector:
+\begin{equation}
+    \mathbf w = \mathbf A_{:,k};\quad
+    \text{for } j\in\mathcal U_{:,k}\text{ ascending: }
+      u_{jk} = w_j,\;\; w_i \mathrel{-}= l_{ij}\,u_{jk}\;(i\in\mathcal L_{:,j});\quad
+    u_{kk} = w_k,\;\; l_{ik} = w_i/u_{kk},
+    \label{eq:sparse-lu-column}
+\end{equation}
+every update landing inside column $k$'s filled pattern, so no index is
+ever searched.  The pivots stay on the diagonal --- the fixed pattern allows
+no row exchange --- and the factorisation stops only on a breakdown, a pivot
+below $10^{-12}$ of the largest entry under it.  Whether the factor is
+\emph{good} is then measured rather than guessed: the integrator solves
+$\mathbf W_s\mathbf x = \mathbf 1$ with it and accepts it when the backward
+error
+\begin{equation}
+    \eta = \frac{\|\mathbf 1 - \mathbf W_s\mathbf x\|_\infty}
+                {\|\mathbf W_s\|_\infty\,\|\mathbf x\|_\infty + 1} \le 10^{-12}
+    \label{eq:sparse-lu-eta}
+\end{equation}
+(about $4500\,\epsilon$: an element growth that large is what partial
+pivoting exists to prevent); otherwise that one matrix is factored densely
+with partial pivoting and counted (\code{denseFallbacks}, printed at
+verbosity~4 with the worst $\eta$), never silently.  A threshold test of
+KLU's kind, $|u_{kk}|\ge10^{-3}\max_{i>k}|w_i|$, was tried first and is the
+wrong instrument here: on a synthetic 50-species mechanism it refused 9\,549
+of 12\,749 factors, while on the backward-error test all 12\,749 were
+accepted, the worst at $\eta = 1.4\times10^{-19}$.  A species that is
+produced fast and consumed slowly has a small diagonal against its column
+without making the elimination unstable.
+The rank-one part $-h\gamma\,\mathbf u\mathbf v^{\mathsf T}$ is added in the
+solve by Sherman--Morrison: with $\mathbf W_s\mathbf z = \mathbf r$ and
+$\mathbf W_s\mathbf q = -h\gamma\mathbf u$ (one extra solve per
+factorisation),
+\begin{equation}
+    \mathbf x = \mathbf z - \mathbf q\,
+      \frac{\mathbf v^{\mathsf T}\mathbf z}{1 + \mathbf v^{\mathsf T}\mathbf q}.
+    \label{eq:sherman-morrison}
+\end{equation}
+
+\begin{pitfall}
+The first build applied the threshold test to unequilibrated rows: the
+temperature row's entries (kelvin per second per kmol) dwarfed every pivot
+of their column, and \code{ignition03\_h2air\_constp} refactored 2\,155 of
+its 2\,155 matrices dense.  Every KPI was right --- the run was correct,
+only slower --- so no golden saw it; the count did
+(\code{bin/curate/check\_kinetics\_jacobian.py}, arm g, which requires no
+dense refactorisation on the combustion tutorials).
+\end{pitfall}
+
+\paragraph{The same answer.}  \code{test/sparse\_lu.cpp} compares the
+factorisation with the dense LU on random sparse matrices with dense rows
+and columns, $N = 5$ to $1000$, refactored twice on each pattern: the
+solutions agree to $7\times10^{-15}$ of $|\mathbf x|$, and a zero pivot
+that only a row exchange cures is refused.  On the six combustion
+tutorials integrated by Rosenbrock (\code{ignition04}'s 22 integrations
+included) \code{linearSolver sparse} and \code{dense} write the same
+trajectories byte for byte and the same KPIs to $1.4\times10^{-11}$
+relative, the round-off of a different elimination order carried through
+an ignition.  A deliberately wrong factor (the last update of each column
+dropped) moved those KPIs by $10^{-6}$ only --- inside every golden ---
+because a Rosenbrock step with a wrong $\mathbf W$ is still accepted by its
+error estimate; that is why the factor must pass Eq.~\eqref{eq:sparse-lu-eta},
+which rejects such a factor at almost every step (1\,938 of 1\,962 on
+\code{ignition01\_h2o2}, refactored dense and counted), and why the gate
+compares the sparse and the dense runs.
+
+\paragraph{When it pays: the measurement.}  Table~\ref{tab:sparse-lu-scale}
+(\texttt{docs/reviews/2026-11-21-large-mechanism/measurements.tsv}, scripts beside it)
+times one adiabatic constant-volume integration on Rodas4 with the analytic
+Jacobian, dense against sparse, on two kinds of mechanism.  The real one is
+AramcoMech~1.3 (Metcalfe, Burke, Ahmed and Curran, \emph{Int.\ J.\ Chem.\
+Kinet.}\ 45 (2013) 638), 253 species, imported with 1\,501 of its 1\,542
+reactions (the 41 the importer refuses by name dropped: a timing fixture of
+real connectivity, not a validated mechanism), stoichiometric CH$_4$/air at
+1400~K and 10~bar through its ignition.  The synthetic ones are
+\emph{numerical fixtures, not chemistry}: H/C/O ``isomers'' with
+element-conserving random reactions, about five per species, written by a
+generator that is committed with the measurement.  The machine was shared
+(load average about 6 on 4 cores) and each time is the least of three runs.
+\begin{table}[htbp]
+\centering\small
+\caption{Sparse against dense factorisation of $\mathbf W$, one
+integration each (Rodas4, analytic Jacobian, audits included).  ``LA'' is
+the integration's wall time less its right-hand sides and its Jacobians:
+the factorisations, the solves and the bookkeeping.}
+\label{tab:sparse-lu-scale}
+\begin{tabular}{lrrrrrr}
+\toprule
+mechanism & rows & pattern & $\mathbf L+\mathbf U$ & multiply-adds, sparse / dense & LA [s] & wall [s] \\
+\midrule
+synthetic 50   &   51 &  1\,851 (71\,\%) &   2\,381 & $3.5\times10^4$ / $4.4\times10^4$ & 0.06 / 0.05 &  0.39 / 0.35 \\
+synthetic 100  &  101 &  4\,983 (49\,\%) &   8\,819 & $2.4\times10^5$ / $3.4\times10^5$ & 0.13 / 0.16 &  0.59 / 0.45 \\
+AramcoMech 1.3 &  254 & 17\,031 (26\,\%) &  26\,544 & $7.5\times10^5$ / $5.5\times10^6$ & 0.30 / 1.72 &  3.70 / 4.81 \\
+synthetic 300  &  301 & 20\,314 (22\,\%) &  71\,709 & $5.7\times10^6$ / $9.1\times10^6$ & 1.06 / 1.23 &  2.66 / 2.98 \\
+synthetic 1000 & 1001 & 72\,093 (7\,\%)  & 725\,865 & $1.9\times10^8$ / $3.3\times10^8$ & 47.1 / 50.8 & 62.9 / 67.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+Two readings.  On the \emph{real} mechanism the ordering finds structure:
+the factor holds 26\,544 entries, 41\,\% of a dense matrix, the
+factorisation costs 7.3 times fewer multiply-adds and the linear algebra 5.8
+times less time --- but the whole integration only 1.3 times less, because
+the right-hand sides (2.8~s, half of them spent by the audits) dominate a
+mechanism of this size.  On the \emph{synthetic} networks, whose reactions
+join species at random, the fill grows towards a dense factor (73\,\% of
+$n^2$ at 1\,001 rows): a random graph has no good elimination order, and the
+sparse factor gains only what its smaller flop count buys against its
+indirect addressing.  The break-even is about 100 rows on the synthetic
+networks, which is where \code{auto} switches; a real mechanism of a few
+hundred species is where the sparse factor clearly pays.  Every pair of runs
+gives the same KPIs to $3\times10^{-10}$ relative over the values above the
+integrator's absolute tolerance, and no sparse factor was refactored dense.
+
+\begin{pitfall}
+The positivity guard of Rosenbrock23 (a trial step that drives a mole number
+below zero is rejected and halved) could not start AramcoMech from a clean
+charge with the dense factor: the very first trial put a species not yet
+formed a round-off below zero, every halving did the same, and the step fell
+below its floor --- while the sparse factor's round-off happened to fall on
+the other side.  With every species seeded at $10^{-12}$ both failed, on a
+trace radical consumed in about $10^{-12}$~s.  Rodas4, which sets a negative
+within the absolute tolerance to zero, starts both.  This is a property of the
+guard, not of either factorisation, and it is registered as such; the
+measurement above uses Rodas4.
+\end{pitfall}
 
 \subsection{Which reaction governs an ignition: brute-force sensitivity of the delay}\label{sec:ignition-sensitivity}
 
@@ -38942,6 +39219,37 @@ over all 21 reactions $2\times10^{-5}$ (\texttt{docs/reviews/2026-11-19-chemkin-
 section~10).  The case's own mechanism (Table~I as printed, catalogue thermo) gives the
 numbers above, within 0.006 of the LLNL form for every $|S|>0.03$.
 \end{example}
+
+\paragraph{Threads.}  The $N_r$ perturbed integrations share nothing they
+write, so they run side by side: \code{solver \{ threads N; \}} (default:
+the CPUs the process may use, less two, at least one; \code{CHOUPO\_THREADS}
+caps it, as for the parallel Jacobian of the Newton solver), one integration
+per job (\code{solver/ParallelFor}, \code{std::thread} only).  The base run
+goes first and alone: it gives $\tau_0$, and it resolves every lazily built
+piece of the thermodynamics on the path the others follow, so that while the
+threads run the shared data is only read.  Each worker keeps its reaction and
+factor in \emph{thread-local} storage (\code{BatchReactor::multOf\_}), never in
+the shared reaction record, and writes only its own slot of the table; the
+table is therefore the same bytes on any number of threads, and the first
+failure is reported by reaction order, not by which thread met it.  The linear
+algebra of one integration is \emph{not} parallel: a factorisation is a chain
+of dependent column updates, and a mechanism of a few hundred species is
+dominated by its right-hand sides anyway (Table~\ref{tab:sparse-lu-scale});
+the right-hand side itself is not threaded either (one evaluation is about
+0.5~ms on AramcoMech, the scale at which starting threads per call costs a
+noticeable share, and the thermodynamic records would first need a
+thread-safety audit) --- both are registered, not done.  In the browser build
+(WebAssembly, no threads) the loop is the plain serial loop and gives the same
+table.  Measured on a 4-core machine (\texttt{docs/reviews/2026-11-21-large-mechanism/}),
+the table byte-identical on every count: \code{ignition04\_h2air\_sensitivity}
+(22 integrations) 9.51~s on one thread, 5.26 on two (1.81 times), 4.38 on three
+(2.17), 3.12 on four (3.05); AramcoMech with seven reactions perturbed (8
+integrations of 253 species, measured while another session loaded the
+machine) 350~s, 202 (1.74) and 155 (2.25); the 300-species synthetic fixture
+(made exothermic so that it ignites; 8 integrations) 479~s, 333 (1.44) and 278
+(1.72).  The serial base run and the run itself bound the gain: with seven
+perturbed runs on two threads, four rounds plus two serial runs against nine
+is 1.5 at best.
 
 \paragraph{Limits.}  The response is one: the delay as defined by a temperature rise.
 The derivative is a finite difference at the base point, so a reaction whose

@@ -67,6 +67,8 @@ Description
 namespace Choupo::solver
 {
 
+class SparseLU;   // solver/SparseLU.H -- the sparse factorisation of W
+
 // f(t, y) -> dy/dt, same packing as y.
 using DerivFn = std::function<sVector(scalar t, const sVector& y)>;
 
@@ -142,6 +144,37 @@ struct ODEBlockStructure
     long   wideBorderRows   = 0;     // border rows closed by direction
 };
 
+//- The SPARSITY PATTERN of a Jacobian, declared ONCE by the model (CSR):
+//  row i holds the columns col[rowPtr[i] .. rowPtr[i+1]-1], ascending, and
+//  every diagonal (i, i) is present (W = I - h d J needs it even where J_ii
+//  is zero).  A mechanism knows its pattern from its network: species i and
+//  k are coupled when a reaction that changes i reads k.
+struct SparsePattern
+{
+    std::size_t              n = 0;
+    std::vector<std::size_t> rowPtr;     // n + 1 entries
+    std::vector<std::size_t> col;        // rowPtr[n] entries
+    std::size_t nnz() const { return col.size(); }
+    //- The position of (i, j) in `col`, or SIZE_MAX when it is not stored.
+    std::size_t find(std::size_t i, std::size_t j) const;
+};
+
+//- A Jacobian on a SparsePattern, plus an optional RANK-ONE part:
+//      J = S + u v^T,
+//  S on the pattern (`values` in its order), u and v full length (both empty:
+//  no rank-one part).  A closed gas at fixed pressure needs it: V = n R T / P
+//  moves with EVERY mole number, so every concentration does, and the term
+//  that carries it is the same for every species column -- dense, but of
+//  rank one, so the factorisation keeps the sparse S and the solve adds the
+//  rank-one part by Sherman-Morrison (Theory Guide, sec:sparse-lu).
+struct SparseJacobian
+{
+    sVector values;
+    sVector u, v;
+    //- The full n x n matrix (the audit, and the dense path).
+    std::vector<sVector> dense(const SparsePattern& p) const;
+};
+
 //- An ANALYTIC Jacobian supplied by the MODEL (opt-in; the batch reactor's
 //  `solver { jacobian analytic; }`).  Absent (ODEControls::analytic ==
 //  nullptr) the integrator builds the dense forward-difference Jacobian
@@ -207,7 +240,26 @@ struct ODEAnalyticJacobian
     //  and its row scaling).  Empty => max(|y_i|, typ_i).
     std::function<sVector(const sVector& y)>  auditScale;
 
+    //  OPT-IN SPARSE FORM (Theory Guide, sec:sparse-lu).  With `sparse` true,
+    //  a `pattern` and a `sparseJacobian`, the integrator asks for J on the
+    //  pattern (plus its rank-one part, SparseJacobian), factors
+    //  W = I - h d S by SparseLU (ordering and symbolic factorisation once per
+    //  pattern, kept in `lu` across integrate() calls) and adds the rank-one
+    //  part in the solve by Sherman-Morrison.  The audit expands J densely.
+    //  The diagonal-pivot factor is accepted on its BACKWARD ERROR on W_s
+    //  (<= 1e-12); a step whose factor fails it is factored DENSE (partial
+    //  pivoting), counted in denseFallbacks.  `sparse` false: the
+    //  dense path, untouched.
+    bool sparse = false;
+    std::shared_ptr<const SparsePattern> pattern;
+    std::function<void(scalar t, const sVector& y, const sVector& f0,
+                       const sVector& typ, SparseJacobian& J)> sparseJacobian;
+    std::shared_ptr<SparseLU> lu;            // created by the integrator
+
     // ---- written by the integrator --------------------------------------
+    long   sparseFactorisations = 0;  // W factored on the pattern
+    long   denseFallbacks       = 0;  // ... and refactored dense (backward error > 1e-12)
+    scalar sparseBackwardErrorMax = 0.0;  // the largest accepted-or-not probe eta
     struct Audit
     {
         long        jacobian = 0;    // which analytic Jacobian (1-based)

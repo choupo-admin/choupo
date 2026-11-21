@@ -1832,7 +1832,7 @@ try
                         [up](const sVector& y){ return up->odeDerivative(y); },
                         up->odeNPositive(),
                         up->name(), [up](std::size_t i){ return up->odeRowLabel(i); },
-                        {}, {} });   // no analytic Jacobian: the finite difference
+                        {}, {}, false, {}, {} });   // no analytic Jacobian: the finite difference
                 }
                 else
                 {
