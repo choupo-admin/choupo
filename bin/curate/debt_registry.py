@@ -1155,6 +1155,12 @@ LESSON_PROSE_CITATIONS_DEBT = {
 #  count may only fall (a new one needs a claim and a probe), measured at the
 #  commit that introduced the gate.
 LESSON_ABSENCE_UNCLASSIFIED = {
+    "gui/src/ui/methods/AdsorbentSelectionTool.tsx": 1,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
+    "gui/src/ui/methods/DryerSelectionTool.tsx": 1,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
+    "gui/src/ui/methods/LinearAlgebraFigures.tsx": 2,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
+    "gui/src/ui/methods/dryerSelection.ts": 3,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
+    "gui/src/ui/methods/dryerSelectionLesson.ts": 5,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
+    "gui/src/ui/methods/linearAlgebraLesson.ts": 8,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
     "gui/src/ui/methods/AdsorptionIsothermsTool.tsx": 8,
     "gui/src/ui/methods/ApproachToEquilibriumTool.tsx": 1,
     "gui/src/ui/methods/BatchAdsorptionTool.tsx": 15,
@@ -1365,6 +1371,7 @@ LESSON_TYPED_CANDIDATES_DEBT = {
 #  Pitzer validity, overpressure P2 above the relieving pressure).  Per file;
 #  may only fall.
 LESSON_KNOBS_UNDECLARED = {
+    "gui/src/ui/methods/AdsorbentSelectionTool.tsx": 2,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
     "gui/src/ui/methods/ActiveSetQpTool.tsx": 4,
     "gui/src/ui/methods/AdsorptionIsothermsTool.tsx": 1,
     "gui/src/ui/methods/ApproachToEquilibriumTool.tsx": 1,
