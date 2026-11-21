@@ -825,10 +825,12 @@ simply one phase.  Theory Guide, `sec:flash-above-tc`; gate
 `phaseSet VLLE` searches three phases by Gibbs minimisation.  When the answer
 carries a vapour below 1 % of the feed, a liquid below 1 %, or two liquids that
 are one phase (ideal mixtures have a strictly convex Gibbs surface: no second
-liquid, ever; a near-critical pair is merged only if the merged liquid passes
-the Michelsen test), the unit solves the narrower flash (LL or VL) and
+liquid; near copies are merged only if the merged liquid passes the Michelsen
+test, which declares a split only for tm < -1e-3, so a shallower gap IS merged), the unit solves the narrower flash (LL or VL) and
 publishes THAT state; every component balance closes (before: a dropped vapour
 was renormalised away and ethanol was off by up to 7e-5 of F, and an ideal
-binary came out as V plus two copies of one liquid).  The run announces the
+binary came out as V plus two copies of one liquid).  A vapour that is favoured over the LL split gives a three-phase search re-run
+from it, published only if verified (fugacities equal, no phase at the search
+floor) and otherwise REFUSED (converged = false).  The run announces the
 re-solve on stderr and in the advisory log.  The absent port carries F = 0.
 Theory Guide, `sec:vlle-drop-phase`; gate `check_vlle_fallback` arm (k).

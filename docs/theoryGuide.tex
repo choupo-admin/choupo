@@ -21270,28 +21270,48 @@ y - \mathbf z|$.  The engine instead tests three candidates after the
 search and answers each with the narrower flash itself:
 \begin{enumerate}[leftmargin=*,nosep]
   \item $\beta_V < 10^{-2}$: the liquid--liquid branch of the same feed
-        is solved; its answer stands only if no vapour is favourable
-        over it, $\sum_i x_i\gamma_i P_i^{\mathrm{sat}}/(\phi_i P) \le 1$;
+        is solved.  A vapour is favourable over a liquid $\mathbf x$ when
+        $\sum_i x_i\gamma_i\,\exp\!\big(-\ln(P/f^{\mathrm{ref}}_i)
+        -\ln\phi_i\big) > 1$, where $f^{\mathrm{ref}}_i$ is the liquid
+        reference fugacity (saturation pressure with $\phi^{\mathrm{sat}}$
+        and the Poynting factor, \code{liquidReferenceFugacity}).  If the
+        LL answer is two liquids with no favourable vapour it stands; if
+        it is \emph{one} liquid, the same bubble test is applied at
+        $\mathbf z$ and, when it fails, the vapour--liquid branch is
+        solved.  If a vapour is favoured over the LL split, the answer is a
+        genuine three-phase state with a small vapour, and the search is
+        re-run from the LL liquids plus the incipient vapour; the result is
+        published only if no phase sits at the search floor
+        ($\beta<10^{-3}$) and the fugacities of every component agree
+        across the three phases to $2\times10^{-3}$ in $\ln f$, otherwise
+        the flash is refused (\code{converged = false}), never published as
+        converged at the floor;
   \item $\beta_\alpha$ or $\beta_\beta < 10^{-2}$: the vapour--liquid
         branch is solved;
   \item $\max_i|x_{\alpha,i}-x_{\beta,i}| < 5\times10^{-2}$: the two
-        liquids are candidates for being one phase, and the
-        vapour--liquid branch is solved.  The merge is accepted only if
-        the resulting liquid passes the Michelsen tangent-plane test
-        (\S\ref{ch:lle-gibbs}); a real gap close to a critical point
-        therefore survives.  For an ideal mixture $g^{E}=0$, the
-        mixing surface $x\ln x+(1-x)\ln(1-x)$ is strictly convex and
-        two distinct liquids can never coexist, so this test always
-        merges them.
+        liquids are near copies and the vapour--liquid branch is solved.
+        The merge is accepted only if the resulting liquid passes the
+        Michelsen tangent-plane test (\S\ref{ch:lle-gibbs}), which
+        declares instability only for $\mathrm{tm}<-10^{-3}$: a gap whose
+        TPD minimum is below that tolerance survives, a shallower one is
+        merged (symmetric Margules at $z=0.5$: a gap of $0.12$ has
+        $\mathrm{tm}=-1.9\times10^{-5}$ and a gap of $0.27$ has
+        $-4.6\times10^{-4}$, both merged); when the merged liquid is
+        TPD-unstable the flash is refused.  For an ideal mixture
+        $g^{E}=0$, the mixing surface $x\ln x+(1-x)\ln(1-x)$ is strictly
+        convex and two distinct liquids can never coexist, so near copies
+        (here $\Delta x<5\times10^{-2}$, with a converged VL solve) are
+        merged.
 \end{enumerate}
 The re-solved state is the one published, and it closes every component
-balance by construction; if the narrower solve fails or is refuted, the
-untruncated three-phase state (which does close the balance) is
-published.  The decision is announced in the run and in the advisory
-log.  Witnesses: \code{vlle04\_two\_liquids\_decanter} (case (1)), an
-ideal-binary fixture and the positive control
-\code{vlle03\_audit\_artificial} in \code{check\_vlle\_fallback}, arm
-(k).
+balance by construction; if a one-liquid-small case (item 2) cannot be
+re-solved, the untruncated three-phase state (which does close the
+balance) is published.  The decision is announced in the run and in the
+advisory log.  Witnesses: \code{vlle04\_two\_liquids\_decanter} (item 1),
+an ideal-binary fixture, a symmetric-NRTL ternary at
+$\mathbf z=(0.571,0.143,0.286)$ (exact $\beta_V=0.120$) and the positive
+control \code{vlle03\_audit\_artificial}, all in \code{check\_vlle\_fallback},
+arm (k).
 
 \subsection*{Beyond Gibbs-minimisation Nelder-Mead}
 
