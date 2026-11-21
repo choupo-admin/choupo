@@ -4947,8 +4947,8 @@ accepts today, and that is a policy call.
 > still needs in `pfr`: friction pressure drop in an empty tube (today Ergun,
 > packed bed only) and an imposed furnace heat-flux or wall-T profile.
 
-> **C461 (Vitor, 2026-11-21, on the cloud board; number taken by the cloud
-> session, renumber if the laptop used it: "como é que os engenheiros químicos
+> **C462 (Vitor, 2026-11-21, on the cloud board; renumbered from C461, which
+> the laptop gave the same day to the pfr volumetric flow: "como é que os engenheiros químicos
 > conseguiram isolar cada reação individual e calibrar as constantes cinéticas?!
 > ... a pergunta que devia ficar num EduTool").**  WEIGHED, agreed: an EduTool
 > "How do we know k?".  The student RUNS the measurement on the engine: (1) a
