@@ -621,6 +621,40 @@ NOT IN THE READING. The all-binary row of Table 15-8 (water / MIBK mutual solubi
 \end{tutgolden}
 
 \clearpage
+\tutentry{n2ch4\_kij\_fit\_stryjek1974\_149K}{tutorials/props/compare/n2ch4\_kij\_fit\_stryjek1974\_149K}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{kij\_srk}\\[-1pt]{\tiny fitParameters}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Nitrogen + methane: ONE SRK kij fitted to the 149.82 K isotherm of Stryjek, Chappelear and Kobayashi (1974) Table III alone, held-out rows checked}
+\begin{tutnarrative}
+ONE SRK kij for nitrogen + methane, fitted to the 149.82 K isotherm of Stryjek, Chappelear \& Kobayashi (1974) Table III ALONE. README.md carries the question, the split and the bands DECLARED BEFORE THE FIT. FIT rows 1,3,5,7 (179, 249.5, 396.5, 594 psia); HELD OUT rows 2,4,6 (202.5, 299, 495 psia). Residual: relative bubble pressure plus relative alpha (weights P 1, alpha 1), at the point's own T.
+
+\end{tutnarrative}
+\tutreadme{runCase tutorials/props/compare/n2ch4\_kij\_fit\_stryjek1974\_149K}
+\tutreadme{The catalogue's SRK kij for N2-CH4 (0.0289) cited a compilation monograph, not a measurement. flash09\_n2ch4\_stryjek anchors its K-values to Stryjek, Chappelear \& Kobayashi (J. Chem. Eng. Data 19 (1974) 334, Table III), 149.82 K. A kij fitted by Choupo to that same isotherm, alone, makes the record and the anchor come from ONE primary (C335, third pass). A global kij over all eight isotherms (0.0058) misses this isotherm's K\_N2 by 6 \%: kij depends on T in that table, so the record's validity window is this ONE isotherm.}
+\tutreadme{Table III, 149.82 K, p. 338, read from the page image: seven rows kept. Discarded by rule BEFORE the fit: the pure-methane row (extrapolated), the 300 psia row (no liquid composition), the critical point (664 psia) and every row within 3 \% of the critical pressure (649 psia). $\ast$ FIT: 179, 249.5, 396.5, 594 psia (rows 1, 3, 5, 7). $\ast$ HELD OUT: 202.5, 299, 495 psia (rows 2, 4, 6), interleaved. $\ast$ Residual: P\_bubble relative, plus alpha = K\_N2/K\_CH4 relative (weights 1, 1); y is the table's measured vapour composition, so alpha is a measured quantity.}
+\tutreadme{$\ast$ Held-out bubble pressure: mean <= 2 \%, every point <= 4 \%. $\ast$ Held-out alpha: mean <= 4 \%, every point <= 6 \%. $\ast$ The fit's own acceptance (maxAAD, P and alpha rows together): 3 \%. $\ast$ The anchor of flash09: K\_N2 at 299 psia (3.047) within the 3 \% that case declares. $\ast$ No band is relaxed after the run.}
+\begin{tutgolden}
+\goldrow{diag}{kij\_srk}{aad\_heldout\_P\_rel}{0.00306633532215}
+\goldrow{diag}{kij\_srk}{aad\_heldout\_alpha\_rel}{0.0184770205379}
+\goldrow{diag}{kij\_srk}{aad\_heldout\_pct}{1.077167793}
+\goldrow{diag}{kij\_srk}{aad\_heldout\_rel}{0.01077167793}
+\goldrow{diag}{kij\_srk}{bubble\_aad\_fit}{0.00956323165664}
+\goldrow{diag}{kij\_srk}{bubble\_aad\_heldout}{0.01077167793}
+\goldrow{diag}{kij\_srk}{bubble\_max\_fit}{0.0172039441771}
+\goldrow{diag}{kij\_srk}{bubble\_max\_heldout}{0.0328351125864}
+\goldrow{diag}{kij\_srk}{chi2}{0.00100497120106}
+\goldrow{diag}{kij\_srk}{chi2\_in\_sample}{0.00100497120106}
+\goldrow{diag}{kij\_srk}{chi2\_reduced}{0.000143567314437}
+\goldrow{diag}{kij\_srk}{cond\_JtJ}{1}
+\goldrow{diag}{kij\_srk}{converged}{1}
+\goldrow{diag}{kij\_srk}{corr\_computed}{1}
+\goldmore{18}
+\end{tutgolden}
+
+\clearpage
 \tutentry{olefins01\_propane\_propene\_laurance1972}{tutorials/props/compare/olefins01\_propane\_propene\_laurance1972}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -716,16 +750,16 @@ The engine is asked at the liquid composition the experimenters measured, with S
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{kij\_srk}\\[-1pt]{\tiny fitParameters}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{kij\_pr}\\[-1pt]{\tiny fitParameters}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{pxy\_srkfit\_100F}\\[-1pt]{\tiny propertyScan1D}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{pxy\_srkfit\_110F}\\[-1pt]{\tiny propertyScan1D}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{pxy\_srkfit\_120F}\\[-1pt]{\tiny propertyScan1D}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{pxy\_srkfit\_130F}\\[-1pt]{\tiny propertyScan1D}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{pxy\_srkfit\_140F}\\[-1pt]{\tiny propertyScan1D}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{pxy\_srkfit\_150F}\\[-1pt]{\tiny propertyScan1D}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{pxy\_srkfit\_160F}\\[-1pt]{\tiny propertyScan1D}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{pxy\_prfit\_100F}\\[-1pt]{\tiny propertyScan1D}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{pxy\_prfit\_110F}\\[-1pt]{\tiny propertyScan1D}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-3.9) {\textbf{pxy\_prfit\_120F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{kij\_srk\_alpha}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{kij\_srk\_alphaP}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{pxy\_srkfit\_100F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{pxy\_srkfit\_110F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{pxy\_srkfit\_120F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{pxy\_srkfit\_130F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{pxy\_srkfit\_140F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{pxy\_srkfit\_150F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{pxy\_srkfit\_160F}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-3.9) {\textbf{pxy\_prfit\_100F}\\[-1pt]{\tiny propertyScan1D}};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Propene + propane bubble pressure and vapour composition at the 7 isotherms 100-160 F of Laurance and Swift (1972), Table IV: SRK and Peng-Robinson with kij = 0, the relative volatility compared point by point}
@@ -756,7 +790,7 @@ Two fitParameters operations, identical but for the equation of state: the SRK o
 \goldrow{diag}{kij\_srk}{corr\_computed}{1}
 \goldrow{diag}{kij\_srk}{dof}{35}
 \goldrow{diag}{kij\_srk}{identifiable}{1}
-\goldmore{109}
+\goldmore{193}
 \end{tutgolden}
 
 \clearpage
@@ -5000,24 +5034,24 @@ Every term is on the table: the six pair terms of this ternary re-add to the a\_
 
 Two states on purpose, same composition and temperature: a\_mix and b\_mix are IDENTICAL at 30 bar and 1 bar (the rule sees only T and y), while A, B and Z carry the pressure -- at 1 bar the same gas is nearly ideal (Z \textasciitilde{} 0.997) and at 30 bar it is not (Z \textasciitilde{} 0.93), priced by the SAME two numbers through the cubic.
 
-Nothing here is validated against measurement: every number is the engine's own arithmetic, decomposed. The one cited constant is the N2-CH4 kij record (Knapp et al., DECHEMA VI, 1982).
+Nothing here is validated against measurement: every number is the engine's own arithmetic, decomposed. The one cited constant is the N2-CH4 kij record (fitted to Stryjek 1974 Table III, 149.82 K only: used here at 250 K it is an announced extrapolation).
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{diag}{mix\_30bar}{A}{0.140523}
+\goldrow{diag}{mix\_30bar}{A}{0.140535909384}
 \goldrow{diag}{mix\_30bar}{B}{0.0428434}
 \goldrow{diag}{mix\_30bar}{P\_Pa}{3e+06}
 \goldrow{diag}{mix\_30bar}{T\_K}{250}
-\goldrow{diag}{mix\_30bar}{Z\_vapour}{0.901046}
+\goldrow{diag}{mix\_30bar}{Z\_vapour}{0.901030416676}
 \goldrow{diag}{mix\_30bar}{a\_CH4}{0.200506}
 \goldrow{diag}{mix\_30bar}{a\_CO2}{0.429536}
 \goldrow{diag}{mix\_30bar}{a\_N2}{0.0837883}
-\goldrow{diag}{mix\_30bar}{a\_mix}{0.202383}
+\goldrow{diag}{mix\_30bar}{a\_mix}{0.202401832875}
 \goldrow{diag}{mix\_30bar}{b\_CH4}{2.98484e-05}
 \goldrow{diag}{mix\_30bar}{b\_CO2}{2.96742e-05}
 \goldrow{diag}{mix\_30bar}{b\_N2}{2.6754e-05}
 \goldrow{diag}{mix\_30bar}{b\_mix}{2.9685e-05}
-\goldrow{diag}{mix\_30bar}{dadT\_mix}{-0.000515994}
+\goldrow{diag}{mix\_30bar}{dadT\_mix}{-0.000516055903917}
 \goldmore{46}
 \end{tutgolden}
 

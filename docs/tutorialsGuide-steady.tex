@@ -2973,7 +2973,7 @@ solidDryer01's feed -- 3423 kg/h dry sucrose at X\_in = 0.20 kg/kg, and 800 kmol
 
 Along the contact area the air COOLS and HUMIDIFIES as it dries the solid, so the wet bulb, the constant rate and the local equilibrium moisture all move -- what the batch tray (dryer02) cannot show.
 
-co-current counter-current X out [kg/kg] 0.02342 0.00468 water removed [kg/s] 0.0839 0.0929 air out [K] 359.7 353.2 Y out [kg/kg dry] 0.0393 0.0421 X\_c crossed at 6.4 \% of A 12.4 \% of A floor: X\_eq of the air as fed = 0.00110 kg/kg
+co-current counter-current X out [kg/kg] 0.02359 0.00474 water removed [kg/s] 0.0839 0.0929 air out [K] 359.7 353.2 Y out [kg/kg dry] 0.0393 0.0421 X\_c crossed at 6.4 \% of A 12.4 \% of A floor: X\_eq of the air as fed = 0.00117 kg/kg
 
 Counter-current dries five times further on the same area, because the driest solid meets the freshest (hottest, driest) air, where X\_eq is lowest and the falling-rate driving force survives; co-current ends where the used-up air meets the driest solid. That is the textbook result, and here it is computed, not asserted.
 
@@ -5399,31 +5399,31 @@ Soda water at 298 K: 1 bar flash of a CO2-rich feed. The THERMO is not a pile of
 
 \clearpage
 \tutentry{flash09\_n2ch4\_stryjek}{tutorials/steady/flash/flash09\_n2ch4\_stryjek}
-\tutwhat{phi-phi VLE VALIDATION vs Stryjek, Chappelear \& Kobayashi (1974), J. Chem. Eng. Data 19:334 (DOI 10.1021/je60063a023), Table III, -190 F = 149.82 K. The case carries its thermo as an INLINE manifest: liquid+vapour both eos.SRK (one cubic, two roots: K = phi\_L/phi\_V) with the N2-CH4 interaction constant kij = 0.02725 (fitted by Choupo to this same isotherm, valid at 149.82 K only). Measured at 299 psia: x\_N2=0.1503, y\_N2=0.4579 -- compare the Flash Result table in the log with these measured values (agreement \textasciitilde{}2\%).}
+\tutwhat{phi-phi VLE VALIDATION vs Stryjek, Chappelear \& Kobayashi (1974), J. Chem. Eng. Data 19:334 (DOI 10.1021/je60063a023), Table III, -190 F = 149.82 K. The case carries its thermo as an INLINE manifest: liquid+vapour both eos.SRK (one cubic, two roots: K = phi\_L/phi\_V) with the N2-CH4 interaction constant kij = 0.02725 (fitted by Choupo to this same isotherm; valid at 149.82 K only). Measured at 299 psia: x\_N2=0.1503, y\_N2=0.4579 -- compare the Flash Result table in the log with these measured values (agreement \textasciitilde{}2\%).}
 \begin{tutnarrative}
 the phi-phi world pinned to a MEASURED isotherm
 
-Nitrogen-methane at 149.82 K (-190.00 F), 20.616 bar (299 psia) -- a point of Stryjek, Chappelear \& Kobayashi (1974), J. Chem. Eng. Data 19:334, Table III (DOI 10.1021/je60063a023). MEASURED there: x\_N2 = 0.1503 y\_N2 = 0.4579 K\_N2 = 3.047 K\_CH4 = 0.638 The feed z\_N2 = 0.30 sits inside the envelope, so the flash must split into exactly those phases if the thermodynamics is right. The K-values come from K = phi\_L/phi\_V -- the SAME SRK cubic evaluated at its liquid and vapour roots, with kij(N2,CH4) = 0.02725 -- fitted by Choupo to this isotherm alone, valid at 149.82 K only (announced in this log). Neighbouring measured points bracket the model: K\_N2 = 3.047 at 299 psia and 2.241 at 396.5 psia -- the engine interpolates between them consistently (try P 22 bar in this dict: K\_N2 \textasciitilde{} 2.9). This is the quantitative anchor of the phi-phi world, the same standard as Wiebe-1934 for the Henry world.
+Nitrogen-methane at 149.82 K (-190.00 F), 20.616 bar (299 psia) -- a point of Stryjek, Chappelear \& Kobayashi (1974), J. Chem. Eng. Data 19:334, Table III (DOI 10.1021/je60063a023). MEASURED there: x\_N2 = 0.1503 y\_N2 = 0.4579 K\_N2 = 3.047 K\_CH4 = 0.638 The feed z\_N2 = 0.30 sits inside the envelope, so the flash must split into exactly those phases if the thermodynamics is right. The K-values come from K = phi\_L/phi\_V -- the SAME SRK cubic evaluated at its liquid and vapour roots, with kij(N2,CH4) = 0.02725 -- fitted by Choupo to THIS isotherm of Stryjek Table III alone (case n2ch4\_kij\_fit\_stryjek1974\_149K; the record is valid at 149.82 K only; announced in this log). Neighbouring measured points bracket the model: K\_N2 = 3.047 at 299 psia and 2.241 at 396.5 psia -- the engine interpolates between them consistently (try P 22 bar in this dict: K\_N2 \textasciitilde{} 2.9). This is the quantitative anchor of the phi-phi world, the same standard as Wiebe-1934 for the Henry world.
 
-THE AGREEMENT IS EXECUTABLE (2026-08-10). Everything above was prose: the golden pinned F/P/T/Q -- all SELF-RECORDED -- so a model that drifted off Stryjek's isotherm would still have passed while this header went on claiming a measured anchor. `expected` now carries two `anchor` rows holding the PAPER's K\_N2 = 3.047 and K\_CH4 = 0.638; they are compared on every run and are never refreshed by `--record` (a published number is not the model's to rewrite). Measured agreement: K\_N2 +2.25 \%, K\_CH4 -1.56 \%, x\_N2 -0.52 \%, y\_N2 +1.73 \% -- inside the declared 3 \% band, with margin.
+THE AGREEMENT IS EXECUTABLE (2026-08-10). Everything above was prose: the golden pinned F/P/T/Q -- all SELF-RECORDED -- so a model that drifted off Stryjek's isotherm would still have passed while this header went on claiming a measured anchor. `expected` now carries two `anchor` rows holding the PAPER's K\_N2 = 3.047 and K\_CH4 = 0.638; they are compared on every run and are never refreshed by `--record` (a published number is not the model's to rewrite). Measured agreement now (kij 0.02725, 2026-11-21): K\_N2 +1.62 \%, K\_CH4 -1.53 \%; before it (kij 0.0289): K\_N2 +2.25 \%, K\_CH4 -1.56 \%, x\_N2 -0.52 \%, y\_N2 +1.73 \% -- inside the declared 3 \% band, with margin.
 
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.000277777777778}
-\goldrow{stream}{liq}{F}{0.000145628387466}
-\goldrow{stream}{vap}{F}{0.000132149390312}
-\goldrow{kpi}{node}{F\_alpha}{0.000145628387466}
-\goldrow{kpi}{node}{F\_beta}{0.000132149390312}
+\goldrow{stream}{liq}{F}{0.000146391562233}
+\goldrow{stream}{vap}{F}{0.000131386215545}
+\goldrow{kpi}{node}{F\_alpha}{0.000146391562233}
+\goldrow{kpi}{node}{F\_beta}{0.000131386215545}
 \goldrow{kpi}{node}{F\_in}{0.000277777777778}
 \goldrow{kpi}{node}{P}{2061600}
 \goldrow{kpi}{node}{Q}{0}
 \goldrow{kpi}{node}{Q\_kW}{0}
 \goldrow{kpi}{node}{T}{149.82}
-\goldrow{kpi}{node}{V\_over\_F}{0.475737805121}
+\goldrow{kpi}{node}{V\_over\_F}{0.472990375962}
 \goldrow{kpi}{node}{phaseSet}{0}
 \goldrow{kpi}{node}{K\_N2}{3.047}
 \goldrow{kpi}{node}{K\_CH4}{0.638}
-\goldmore{6}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -12311,15 +12311,15 @@ The plateau is not asserted anywhere in the dict. It is where k1 a'\_HOAc a'\_Me
 \goldrow{stream}{reactorOut}{F}{0.000277777777778}
 \goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1}
 \goldrow{kpi}{reactor}{F\_out\_kmol\_h}{1}
-\goldrow{kpi}{reactor}{Q\_kW}{0.150642906162}
+\goldrow{kpi}{reactor}{Q\_kW}{-0.261117514477}
 \goldrow{kpi}{reactor}{T}{333.15}
 \goldrow{kpi}{reactor}{T\_out}{333.15}
 \goldrow{kpi}{reactor}{V\_R}{0.005}
 \goldrow{kpi}{reactor}{k\_esterification\_meoac}{0.00280769603355}
 \goldrow{kpi}{reactor}{nReactions}{1}
-\goldrow{kpi}{reactor}{newtonResidual}{4.16333634234e-17}
+\goldrow{kpi}{reactor}{newtonResidual}{1.2490009027e-16}
 \goldrow{kpi}{reactor}{tau\_s}{349.864256248}
-\goldrow{kpi}{reactor}{xi\_esterification\_meoac\_mol\_per\_s}{0.0680930737737}
+\goldrow{kpi}{reactor}{xi\_esterification\_meoac\_mol\_per\_s}{0.0645674184105}
 \goldrow{stream}{feed}{T}{333.15}
 \goldmore{12}
 \end{tutgolden}
