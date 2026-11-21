@@ -26,6 +26,7 @@
 \*--------------------------------------------------------------------------*/
 
 property     binaryVLE.P_bubble;
+system       ( propylene propane );
 
 
 provenance
