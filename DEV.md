@@ -4983,6 +4983,31 @@ accepts today, and that is a policy call.
 > the end.  Sources: Seborg 4th ed., Montgomery 6th ed. in the folder; the FDD
 > monographs as further reading only.
 
+> **C464 LANDED (2026-11-21)**: 13 steps, each with an original diagram, 12 live
+> figures, reconciliation with the chi-square tests on a splitter, 8 seeded
+> challenges (a rule-based diagnoser names the fault on 3000 seeds); Seborg 4th ed.
+> pp. 163, 397-398, 407-408 and Montgomery 6th ed. pp. 191, 400-401.  --gui in a
+> clean worktree 45/1: the one a missing SPDX line in FitAlphaRows.H (the alpha-fit
+> landing), fixed.  Gap: no Theory Guide section on fault diagnosis or
+> reconciliation (the Theory link opens ch:dyn-tank, the nearest).
+
+> **C465 (Vitor, 2026-11-21): the dryer EduTool reviewed with great care, the usual
+> heuristic tables, and the three continuous-dryer arrangements as a unit model.**
+> He teaches drying and asked for a careful review against the handbook (he found
+> the rotary drawn with its slope reversed).  Opus review done the same day: S1 --
+> the sublimation-heat sentence (copied from an error on Mujumdar p. 22; p. 259
+> gives ~2840 kJ/kg against 2257) and the reversed rotary; five S2 (the fine-powder
+> rule against its own reason, a co-current note on well-mixed and cross-flow
+> types, van 't Land's 75 C branch misstated, an unsupported vacuum-drum claim, the
+> tray dryer without recirculation); drawing polish; missing tables in order:
+> Towler Table 10.7, Mujumdar Table 1.5, a before-you-choose checklist (Mujumdar
+> 1.6, van 't Land 3.1/3.2), Perry Table 12-46 as a disagreement, Mujumdar 1.1 in
+> its ten columns.  A general applies them (build/dryer-review-fixes), reading the
+> four type chapters the reviewer did not.  Second half: `flow crossflow` in the
+> convective dryer beside co- and counter-current, three cases on one feed, a
+> Theory Guide section (build/dryer-crossflow); the EduTool then gets a section on
+> the three arrangements linked to them.
+
 > **C458 RULED ON THE HOME OF RADICALS (architect, 2026-11-21, Vitor asking for a
 > second opinion on the cloud's proposal that radicals stay in components/).**
 > MEASURED: 36 records tagged `radical` sit in components/, every one with
