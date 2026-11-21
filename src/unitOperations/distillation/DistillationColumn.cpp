@@ -1528,7 +1528,7 @@ int DistillationColumn::solve(const DictPtr& dict,
     //  nested well under the outer test: at its old 1e-8 the bubble point
     //  stopped moving once the per-pass change in x put |Sum K x - 1| under
     //  1e-8 at the old T, and the balances stalled at ~4e-9 on column01.
-    const int    maxOuter = static_cast<int>(dict->lookupScalarOrDefault("maxOuterIter", 200));
+    const int    maxOuter = solver::requireIterationBudget(dict->lookupScalarOrDefault("maxOuterIter", 200), "distillationColumn maxOuterIter");
     const scalar tolX     = dict->lookupScalarOrDefault("compositionTol", 1.0e-6);
     constexpr scalar balanceTol     = 1.0e-9;   // a fraction of the feed
     constexpr scalar bubbleTol      = 1.0e-9;   // |Sum_i K_i x_i - 1| on every stage
@@ -2297,8 +2297,8 @@ int DistillationColumn::solveForRecovery(const DictPtr& dict,
     //  co-distilled remainder -- so the pair straddles the answer for any
     //  column that concentrates the named component at all.
     const scalar tol     = specDict->lookupScalarOrDefault("tolerance", 1.0e-6);
-    const int    maxIter = static_cast<int>(
-                               specDict->lookupScalarOrDefault("maxIter", 40));
+    const int    maxIter = solver::requireIterationBudget(
+                               specDict->lookupScalarOrDefault("maxIter", 40), "specification maxIter");
 
     //  D0 is the PURE-DISTILLATE lower bound: if the overhead were the named
     //  component alone, this rate would deliver the target exactly.  Any real
