@@ -4924,6 +4924,22 @@ accepts today, and that is a policy call.
 > radical scheme of Sundaram & Froment 1978 (in the folder) is the next witness;
 > the industrial coil waits for a declared T and P profile in the pfr.
 
+> **C461 LANDED (2026-11-21).**  The pfr re-prices Q = F_total Mbar / rho_vapour(T,P,z)
+> at every RK4 stage for a vapour feed (PFR.cpp localVolumetricFlow); a liquid keeps
+> the feed Q.  MEASURED before the fix (docs/audits/2026-11-21-c461-pfr-volumetric-flow.md):
+> of 23 pfr units only cracking01 moves; the ammonia beds are byte-identical (their
+> laws read p and x, never c).  cracking01 is one pfr again (20 segments retired),
+> V_R 14.896 -> 15.004 L for the same 59.1 % (a re-tuned input, recorded).  Evidence:
+> --scope over the 21 pfr roots 25/0, --fast 89/0, closures held; no full sweep (the
+> reach is the pfr cases, measured byte-identical elsewhere).  Opus review: no S1/S2;
+> three S3 left OPEN on this row: (a) the vapour/liquid basis is decided on the inlet
+> vf only -- a feed that changes phase along the bed is priced on the inlet's branch;
+> (b) the single-reaction analytic check prints X = 1 - exp(-k tau) with tau on the
+> feed Q, which now disagrees for a mole-changing vapour reaction (Levenspiel's
+> epsilon_A form is the right comparison); (c) Ergun's molar volume (eos/RT/P) and
+> localVolumetricFlow (ThermoPackage::density, IF97 first for pure steam) are two
+> routes.
+
 > **C458 RULED ON THE HOME OF RADICALS (architect, 2026-11-21, Vitor asking for a
 > second opinion on the cloud's proposal that radicals stay in components/).**
 > MEASURED: 36 records tagged `radical` sit in components/, every one with
