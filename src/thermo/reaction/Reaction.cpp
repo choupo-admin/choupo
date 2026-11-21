@@ -67,14 +67,56 @@ scalar Reaction::thirdBodyConcentration(const sVector& conc,
     return M;
 }
 
+//  The SRI broadening (Stewart, Larson & Golden 1989; CHEMKIN-II; Cantera's
+//  SriRate): F = d [a exp(-b/T) + exp(-T/c)]^X T^e, X = 1/(1 + (log10 Pr)^2).
+//  Returns ln F; `W` and `p` (log10 Pr after the clamp) for the derivative.
+static scalar sriLnF(scalar Pr, scalar T, const sVector& sri, scalar& W, scalar& p)
+{
+    const scalar a = sri[0], b = sri[1], c = sri[2];
+    const scalar d = (sri.size() >= 5) ? sri[3] : 1.0;
+    const scalar e = (sri.size() >= 5) ? sri[4] : 0.0;
+    W = a * std::exp(-b / T) + std::exp(-T / c);
+    p = std::log10(std::max(Pr, 1.0e-300));
+    const scalar X = 1.0 / (1.0 + p * p);
+    return std::log(d) + X * std::log(W) + e * std::log(T);
+}
+
+void Reaction::checkFalloffShape(const sVector& troe, const sVector& sri,
+                                 const std::string& who)
+{
+    if (!troe.empty() && !sri.empty())
+        throw std::runtime_error(who + ": `troe` and `sri` on one reaction -- a"
+            " fall-off has ONE broadening; keep the one the mechanism prints.");
+    if (!troe.empty() && troe.size() != 3 && troe.size() != 4)
+        throw std::runtime_error(who + ": `troe ( alpha T3 T1 [T2] )` takes three or"
+            " four numbers, got " + std::to_string(troe.size()) + ".");
+    if (sri.empty()) return;
+    if (sri.size() != 3 && sri.size() != 5)
+        throw std::runtime_error(who + ": `sri ( a b c [d e] )` takes three or five"
+            " numbers (CHEMKIN-II), got " + std::to_string(sri.size()) + ".");
+    if (!(sri[2] > 0.0))
+        throw std::runtime_error(who + ": `sri` c must be > 0 (it divides T in"
+            " exp(-T/c)).");
+    if (sri.size() == 5 && !(sri[3] > 0.0))
+        throw std::runtime_error(who + ": `sri` d must be > 0 (F = d [...]^X T^e).");
+    if (!(sri[0] * std::exp(-sri[1] / 300.0) + std::exp(-300.0 / sri[2]) > 0.0))
+        throw std::runtime_error(who + ": `sri` a exp(-b/T) + exp(-T/c) is not"
+            " positive at 300 K: ln of it is undefined.");
+}
+
 scalar Reaction::falloffRate(scalar kLow, scalar kInf, scalar M, scalar T,
-                             const sVector& troe)
+                             const sVector& troe, const sVector& sri)
 {
     // Reduced pressure and the Lindemann blend.
     if (kInf <= 0.0) return 0.0;
     const scalar Pr = kLow * M / kInf;
     const scalar lindemann = kInf * Pr / (1.0 + Pr);
 
+    if (!sri.empty())
+    {
+        scalar W, p;
+        return lindemann * std::exp(sriLnF(Pr, T, sri, W, p));
+    }
     if (troe.size() < 3) return lindemann;          // Lindemann (F = 1)
 
     // Troe broadening factor Fcent and its blending with the reduced pressure.
@@ -119,7 +161,8 @@ scalar Reaction::dlnModifiedArrheniusdT(scalar b, scalar Ea, scalar T)
 //  and k = L F gives d ln k = d ln L + ln(10) d log10 F.
 Reaction::FalloffDerivs Reaction::falloffRateDerivs(scalar kLow, scalar kInf, scalar M,
                                                     scalar T, const sVector& troe,
-                                                    scalar dlnkLow, scalar dlnkInf)
+                                                    scalar dlnkLow, scalar dlnkInf,
+                                                    const sVector& sri)
 {
     FalloffDerivs d;
     if (kInf <= 0.0) return d;                          // k = 0 identically
@@ -132,6 +175,27 @@ Reaction::FalloffDerivs Reaction::falloffRateDerivs(scalar kLow, scalar kInf, sc
     const scalar dLdT = lindemann * dlnkInf
                       + kInf * Pr * dlnPr_dT / ((1.0 + Pr) * (1.0 + Pr));
     d.k = lindemann; d.dkdM = dLdM; d.dkdT = dLdT;
+    if (!sri.empty())
+    {
+        //  SRI, branch for branch with falloffRate (the same clamp of Pr).
+        static const scalar ln10s = std::log(10.0);
+        scalar W, p;
+        const scalar F = std::exp(sriLnF(Pr, T, sri, W, p));
+        const bool clamped = !(Pr > 1.0e-300);
+        const scalar a = sri[0], b = sri[1], c = sri[2];
+        const scalar e = (sri.size() >= 5) ? sri[4] : 0.0;
+        const scalar q = 1.0 + p * p;
+        const scalar X = 1.0 / q;
+        const scalar dW = a * b / (T * T) * std::exp(-b / T) - std::exp(-T / c) / c;
+        const scalar dlnF_dp = clamped ? 0.0 : -2.0 * p * std::log(W) / (q * q);
+        const scalar dlnF_dT = X * dW / W + e / T + dlnF_dp * dlnPr_dT / ln10s;
+        //  d(L F)/dM = F (dL/dM + L dlnF/dp /(M ln10)); L/M finite at M = 0
+        const scalar LoverM = kLow * kInf / (kInf + kLow * M);
+        d.k    = lindemann * F;
+        d.dkdM = F * (dLdM + LoverM * dlnF_dp / ln10s);
+        d.dkdT = F * dLdT + lindemann * F * dlnF_dT;
+        return d;
+    }
     if (troe.size() < 3) return d;                      // Lindemann (F = 1)
 
     const scalar alpha = troe[0];

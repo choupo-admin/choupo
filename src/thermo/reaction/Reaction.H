@@ -93,8 +93,19 @@ public:
     //    Lindemann base kInf·Pr/(1+Pr), broadened by the Troe factor F.
     //    `troe` = (alpha, T3, T1) or (alpha, T3, T1, T2); EMPTY => Lindemann
     //    (F = 1).  Returns the effective k(T, M).
+    //    `sri` = (a, b, c) or (a, b, c, d, e): the SRI broadening of
+    //    Stewart, Larson & Golden (1989) as CHEMKIN-II and Cantera define it,
+    //        F = d [a exp(-b/T) + exp(-T/c)]^X T^e,  X = 1/(1 + (log10 Pr)^2),
+    //    d = 1 and e = 0 when three numbers are given; log10 Pr is read at
+    //    max(Pr, 1e-300), the same clamp as Troe's.  EMPTY => not SRI.  troe
+    //    and sri together are refused where they are read (checkFalloffShape).
     static scalar falloffRate(scalar kLow, scalar kInf, scalar M, scalar T,
-                              const sVector& troe);
+                              const sVector& troe, const sVector& sri = sVector());
+    //- Refuse by name a broadening that is not one of the forms above:
+    //  `troe` of 3 or 4 numbers, `sri` of 3 or 5 with c > 0 and d > 0, never
+    //  both (the reaction would be read as one and the other silently lost).
+    static void checkFalloffShape(const sVector& troe, const sVector& sri,
+                                  const std::string& who);
 
     // -- The same blend with its EXACT derivatives (the analytic Jacobian) --
     //    k = falloffRate(kLow, kInf, M, T, troe), bit for bit, and
@@ -108,9 +119,15 @@ public:
     //    of the function the rate evaluates.  Theory Guide,
     //    sec:batch-analytic-jacobian.
     struct FalloffDerivs { scalar k = 0.0, dkdM = 0.0, dkdT = 0.0; };
+    //    SRI (non-empty `sri`): ln F = ln d + X ln W + e ln T, W = a exp(-b/T)
+    //    + exp(-T/c), X = 1/(1+p^2), p = log10 Pr, so
+    //      d ln F/dp = -2 p ln W/(1+p^2)^2,
+    //      d ln F/dT = X W'/W + e/T + (d ln F/dp)(d ln Pr/dT)/ln 10,
+    //      W' = (a b/T^2) exp(-b/T) - exp(-T/c)/c.
     static FalloffDerivs falloffRateDerivs(scalar kLow, scalar kInf, scalar M,
                                            scalar T, const sVector& troe,
-                                           scalar dlnkLow, scalar dlnkInf);
+                                           scalar dlnkLow, scalar dlnkInf,
+                                           const sVector& sri = sVector());
 
     // -- d ln k / dT of a modified Arrhenius leg:  b/T + Ea/(R T^2) ---------
     static scalar dlnModifiedArrheniusdT(scalar b, scalar Ea, scalar T);

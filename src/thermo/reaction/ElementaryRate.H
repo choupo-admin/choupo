@@ -34,10 +34,13 @@ Class
         thirdBody           k = A T^b exp(-Ea/(R T)) [M]
         falloff             k = kInf Pr/(1+Pr) F,  Pr = kLow [M] / kInf
 
-    with [M] = sum_j eff_j c_j (unlisted species: efficiency 1), and F the
-    Troe broadening (F = 1, Lindemann, when no `troe` list is given).  The
-    net rate is  r = k * prod c_i^order_i  minus, for `reversible true`, the
-    detailed-balance reverse leg k/Kc * prod_{nu>0} c_i^nu_i.
+    with [M] = sum_j eff_j c_j (unlisted species: `defaultEfficiency`, 1 when
+    absent -- 0 with one species listed is CHEMKIN's single collider `(+AR)`),
+    and F the Troe broadening, or the SRI one (`sri ( a b c [d e] )`), F = 1
+    (Lindemann) when neither is given.  The net rate is
+    r = k * prod c_i^order_i  minus, for `reversible true`, the detailed-balance
+    reverse leg k/Kc * prod c_i^orderRev_i, orderRev_i = max(nu_i, 0) unless a
+    species on BOTH sides declares its product count (`orderRev`).
 
     THE GRAMMAR is the one `batchReactor` reads for the same words, so one
     reactions file runs in both vessels: `A`, `b`, `Ea`; for thirdBody a
@@ -131,6 +134,7 @@ private:
     bool   cmA_ = false, cmALow_ = false;
     int    molec_ = 0;
     sVector troe_;
+    sVector sri_;                                  // (a b c [d e]); empty => not SRI
 
     //  PLOG (CHEMKIN-II): one entry per DISTINCT tabulated pressure, ascending;
     //  `arr` holds every Arrhenius line given at that pressure (summed).

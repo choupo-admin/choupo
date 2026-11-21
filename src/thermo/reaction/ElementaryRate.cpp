@@ -191,9 +191,11 @@ ElementaryRate ElementaryRate::fromDict(const DictPtr&       rxn,
         law.bLow_  = low->lookupScalarOrDefault("b", 0.0);
         law.EaLow_ = eaJoulePerMol(low, low->lookupScalar("Ea"), who);
         if (kin->found("troe")) law.troe_ = kin->lookupList("troe");
+        if (kin->found("sri"))  law.sri_  = kin->lookupList("sri");
+        Reaction::checkFalloffShape(law.troe_, law.sri_, who);
     }
-    else if (kin->found("low") || kin->found("troe"))
-        throw std::runtime_error(who + ": `low` / `troe` belong to `type falloff`.");
+    else if (kin->found("low") || kin->found("troe") || kin->found("sri"))
+        throw std::runtime_error(who + ": `low` / `troe` / `sri` belong to `type falloff`.");
 
     return law;
 }
@@ -265,7 +267,7 @@ ElementaryRate::KDerivs ElementaryRate::kEffDerivs(const RateState& s) const
     const scalar kLow = Reaction::modifiedArrheniusRate(
         conv(cmALow_, ALow_, 1), bLow_, EaLow_, s.T);
     const auto fd = Reaction::falloffRateDerivs(kLow, kInf, M, s.T, troe_,
-        Reaction::dlnModifiedArrheniusdT(bLow_, EaLow_, s.T), dlnInf);
+        Reaction::dlnModifiedArrheniusdT(bLow_, EaLow_, s.T), dlnInf, sri_);
     d.k = fd.k; d.dkdM = fd.dkdM; d.dkdT = fd.dkdT;
     return d;
 }
@@ -409,7 +411,7 @@ scalar ElementaryRate::kEff(const RateState& s) const
 
     const scalar kLow = Reaction::modifiedArrheniusRate(
         conv(cmALow_, ALow_, 1), bLow_, EaLow_, s.T);
-    return Reaction::falloffRate(kLow, kInf, M, s.T, troe_);
+    return Reaction::falloffRate(kLow, kInf, M, s.T, troe_, sri_);
 }
 
 scalar ElementaryRate::netRate(const ThermoPackage& thermo, const RateState& s) const

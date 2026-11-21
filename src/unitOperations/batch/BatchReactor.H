@@ -194,6 +194,7 @@ private:
         scalar                   b_low = 0;
         scalar                   Ea_low = 0;
         sVector                  troe;           // (a T*** T* [T**]); empty => Lindemann
+        sVector                  sri;            // (a b c [d e]); empty => not SRI
         // A Factory law (LHHW, expression, a user law), parsed once.
         std::shared_ptr<const ReactionRate> law;
     };

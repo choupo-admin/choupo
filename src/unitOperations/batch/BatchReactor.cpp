@@ -343,6 +343,25 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
         { return usesCm(kin) ? ckA_(kin, A, molec() + extra) : A; };
         const auto convEa = [&](scalar Ea)           { return ckEa_(kin, Ea);     };
 
+        //  Keys only some of the vessel's own words read: refused by name on
+        //  the others (a silently ignored `sri` would run the reaction on
+        //  Lindemann, a silently ignored `defaultEfficiency` on [M] = sum c).
+        if (ownLaw)
+        {
+            if (kin->found("sri") && ktype != "falloff")
+                throw std::runtime_error("BatchReactor: reaction '" + rxnName + "': `sri` is"
+                    " the broadening of a fall-off; `type " + ktype + "` reads none.");
+            if (kin->found("defaultEfficiency") && ktype != "thirdBody" && ktype != "falloff")
+                throw std::runtime_error("BatchReactor: reaction '" + rxnName + "':"
+                    " `defaultEfficiency` belongs to a collider ([M]) -- `type thirdBody` or"
+                    " `falloff`; `type " + ktype + "` has none.");
+            if (kin->found("defaultEfficiency") && !kin->found("thirdBody"))
+                throw std::runtime_error("BatchReactor: reaction '" + rxnName + "':"
+                    " `defaultEfficiency` without a `thirdBody { species eff; }` block --"
+                    " name the colliders it does not cover (`thirdBody { AR 1; }` with"
+                    " `defaultEfficiency 0;` is CHEMKIN's `(+AR)`).");
+        }
+
         if (ktype == "Arrhenius" && !explicitReverse)
         {
             r.form  = RateForm::Arrhenius;
@@ -380,6 +399,9 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
             r.b_low  = low->lookupScalarOrDefault("b", 0.0);
             r.Ea_low = ckEa_(low, low->lookupScalar("Ea"));
             if (kin->found("troe")) r.troe = kin->lookupList("troe");
+            if (kin->found("sri"))  r.sri  = kin->lookupList("sri");
+            Reaction::checkFalloffShape(r.troe, r.sri,
+                                        "BatchReactor: reaction '" + rxnName + "'");
             r.tbEff = kin->found("thirdBody")
                       ? thirdBodyEfficiencies_(kin, thermo) : sVector{};
         }
@@ -1232,7 +1254,7 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
             {
                 const scalar kInf = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
                 const scalar kLow = Reaction::modifiedArrheniusRate(rxn.A_low, rxn.b_low, rxn.Ea_low, T);
-                k = Reaction::falloffRate(kLow, kInf, M, T, rxn.troe);
+                k = Reaction::falloffRate(kLow, kInf, M, T, rxn.troe, rxn.sri);
             }
             break;
         }
@@ -2323,9 +2345,9 @@ bool BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
             {
                 const scalar kInf = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
                 const scalar kLow = Reaction::modifiedArrheniusRate(rxn.A_low, rxn.b_low, rxn.Ea_low, T);
-                k = Reaction::falloffRate(kLow, kInf, M, T, rxn.troe);
+                k = Reaction::falloffRate(kLow, kInf, M, T, rxn.troe, rxn.sri);
                 const auto fd = Reaction::falloffRateDerivs(kLow, kInf, M, T, rxn.troe,
-                    Reaction::dlnModifiedArrheniusdT(rxn.b_low, rxn.Ea_low, T), dlnInf);
+                    Reaction::dlnModifiedArrheniusdT(rxn.b_low, rxn.Ea_low, T), dlnInf, rxn.sri);
                 dkdM = fd.dkdM;
                 dkdT = fd.dkdT;
             }
