@@ -47,8 +47,8 @@ units { A "cm3/mol/s"; Ea "<unit>"; } }`.  A and Ea are written AS PRINTED; the
 engine converts A (cm-mol-s -> kmol-m3-s, ckA_) and Ea (ckEa_) itself, so this
 tool does no A conversion.  Mapping: plain -> modifiedArrhenius (b may be 0, as
 tutorials/batch/combustion/ignition01_h2o2); `+M` -> thirdBody with
-`thirdBody { species eff; }`; `(+M)` with LOW (+TROE) -> falloff (main A/b/Ea =
-kInf, `low {}`, `troe ( ... )`, efficiencies); `=`/`<=>` -> `reversible true`
+`thirdBody { species eff; }`; `(+M)` with LOW (+TROE or +SRI) -> falloff (main A/b/Ea =
+kInf, `low {}`, `troe ( ... )` or `sri ( ... )`, efficiencies); `=`/`<=>` -> `reversible true`
 (detailed balance from the curated thermo), `=>` -> irreversible; DUPLICATE
 reactions are written as separate entries (the engine sums the rates of the
 entries a unit lists, as ignition01's 14a/14b and 19a/19b).  order = reactant
@@ -77,10 +77,22 @@ as printed (P in atm), the reaction line's own A b Ea (nominal) is dropped, line
 pressure are written in file order and SUMMED by the engine; `=` -> reversible (detailed
 balance).  PLOG reads the pressure: the batch vessel offers it only for an ideal gas (`energy gasConstantV` or `gasConstantP`);
 cstr / pfr offer the feed / bed pressure.
-REFUSED BY NAME (listed in mechanismImport.txt): SRI, PLOG with REV or with (+M)/+M/LOW/TROE, FORD/RORD, REV on a
-`(+M)` fall-off, `(+M)` without LOW, `(+species)` colliders, MOLECULES
-(ckA_ has no Avogadro factor), species on both sides of a reversible reaction,
-non-integer molecularity, charged species.
+THE FORMS OF 2026-11-21 (Theory Guide sec:elementary-rate; each read as Cantera 3.2 reads it):
+  - a species on BOTH sides of a reversible reaction (`H+O2+H2O<=>HO2+H2O`, AramcoMech's 38
+    quenching reactions): written once with nu = the difference, `order` = its reactant count and
+    `orderRev` = its product count (the pair the engine's detailed-balance rule accepts);
+  - a single collider `(+AR)`: `thirdBody { AR 1; }  defaultEfficiency 0;` (Cantera: efficiencies
+    {AR: 1}, default-efficiency 0);
+  - SRI (3 or 5 numbers): `sri ( a b c [d e] );` beside the LOW block;
+  - FORD / species order / on an IRREVERSIBLE reaction (or the forward leg of a REV pair, as
+    ck2yaml puts it): that species' forward `order` (a species outside the reaction listed with nu 0);
+    the A conversion follows the sum of the orders, as in Cantera.
+REFUSED BY NAME (listed in mechanismImport.txt): PLOG with REV or with (+M)/+M/LOW/TROE, FORD on a
+reversible reaction (Cantera 3.2: "Reaction orders may only be given for irreversible reactions"),
+FORD on a fall-off or PLOG reaction (not witnessed), FORD orders summing to a non-integer
+molecularity (the engine converts a cm A only for an integer one; Cantera by the real sum), RORD
+(ck2yaml reads none), SRI with TROE, REV on a `(+M)` fall-off, `(+M)` without LOW, `(+X)` with
+efficiencies, MOLECULES (ckA_ has no Avogadro factor), non-integer molecularity, charged species.
 WHO READS THESE TYPES.  modifiedArrhenius / thirdBody / falloff are read by
 batchReactor ONLY (BatchReactor.cpp; ReactionRate.H:56-66 says cstr, pfr and
 dynamicCSTR read Arrhenius and the factory laws): written reactions are
@@ -308,8 +320,17 @@ def parse_reactions(lines, header_words):
             cur.setdefault("plog", []).append(nums(s[4:].replace("/", " ")))
         elif up.startswith("SRI"):
             cur["tags"].add("SRI")
-        elif up.startswith(("FORD", "RORD")):
+            cur["sri"] = nums(s[3:].replace("/", " "))
+        elif up.startswith("FORD"):
+            #  FORD / species order /  (one per line, as ck2yaml reads it)
             cur["tags"].add("FORD")
+            fm = re.fullmatch(r'FORD\s*/\s*(\S+)\s+([-+0-9.eEdD]+)\s*/', s, re.I)
+            if not fm:
+                cur["tags"].add("AUX?")
+            else:
+                cur.setdefault("ford", {})[fm.group(1)] = float(fm.group(2).replace("D", "E").replace("d", "e"))
+        elif up.startswith("RORD"):
+            cur["tags"].add("RORD")
         elif up.startswith("REV"):
             cur["rev"] = tuple(nums(s[3:].replace("/", " "))[:3])
         elif "/" in s:
@@ -335,8 +356,17 @@ def classify(rx, species, molecules=False):
     t = rx["tags"]
     if molecules:
         return "MOLECULES", "units MOLECULES: the engine's cm-mol-s reader has no Avogadro factor (BatchReactor::ckA_)"
+    if "RORD" in t:
+        return "RORD", ("explicit reverse orders (RORD): Cantera's ck2yaml reads none, and on a reversible "
+                        "reaction they move the zero of the net rate away from K_c (detailed balance refuses them)")
     if "SRI" in t:
-        return "SRI", "SRI falloff form is not read by the engine"
+        if "TROE" in t:
+            return "SRI", "SRI and TROE on one reaction: a fall-off has one broadening"
+        if len(rx.get("sri", [])) not in (3, 5):
+            return "SRI", "SRI does not carry three or five numbers"
+        sr = rx["sri"]
+        if not sr[2] > 0 or (len(sr) == 5 and not sr[3] > 0):
+            return "SRI", "SRI with c <= 0 or d <= 0 (the engine refuses it)"
     if "PLOG" in t:
         if any(len(l) != 4 for l in rx.get("plog", [])):
             return "PLOG", "a PLOG line does not carry P A b Ea"
@@ -345,16 +375,17 @@ def classify(rx, species, molecules=False):
                             "reverse is not defined the same way in every CHEMKIN reader; no reading is chosen here")
         if fo is not None or tb or "LOW" in t or "TROE" in t or "EFF" in t:
             return "PLOG", "PLOG together with (+M) / +M / LOW / TROE / efficiencies: no such form is read"
-    if "FORD" in t:
-        return "FORD/RORD", "explicit reaction orders (FORD/RORD) are not read"
     if "AUX?" in t:
         return "unparsed", "unrecognised auxiliary line"
     if rx["rev"] is not None and fo is not None:
         return "REV", ("explicit reverse (REV) on a (+M) fall-off: ck2yaml writes the reverse as a plain "
                        "elementary rate and drops the pressure dependence; no reading is chosen here")
     if fo is not None:
-        if fo != "M":
-            return "falloff", "(+%s): only a (+M) collider is read (per-species efficiencies)" % fo
+        if fo != "M" and fo not in species:
+            return "falloff", "(+%s): not a species of the mechanism" % fo
+        if fo != "M" and "EFF" in t:
+            return "falloff", ("(+%s) with third-body efficiencies: a single collider has efficiency 1 for "
+                               "itself and 0 for every other species, nothing to list" % fo)
         if "LOW" not in t:
             return "falloff", "(+M) without LOW: no low-pressure limit to blend"
         if len(rx.get("low", [])) != 3:
@@ -365,8 +396,25 @@ def classify(rx, species, molecules=False):
         return "falloff", "LOW/TROE without (+M)"
     elif "EFF" in t and not tb:
         return "unparsed", "third-body efficiencies on a reaction without M"
-    if arrow == "<=>" and (set(r) & set(p)):
-        return "bothSides", "species on both sides: order != |nu|, detailed balance refuses it"
+    if "FORD" in t:
+        #  Cantera 3.2 (Reaction::validate): "Reaction orders may only be given for
+        #  irreversible reactions".  A REV line makes the reaction two irreversible legs;
+        #  ck2yaml puts the FORD orders on the forward leg, the REV leg stays mass action.
+        if arrow == "<=>" and rx["rev"] is None:
+            return "FORD", ("explicit orders (FORD) on a reversible reaction: Cantera 3.2 refuses it "
+                            "(\"Reaction orders may only be given for irreversible reactions\"), and detailed "
+                            "balance would not vanish at K_c")
+        if fo is not None or "PLOG" in t:
+            return "FORD", "explicit orders (FORD) on a fall-off or PLOG reaction: not witnessed, not written"
+        if any(sp not in species for sp in rx["ford"]):
+            return "FORD", "FORD names an unknown species"
+        orders = dict(r)
+        orders.update(rx["ford"])
+        tot = sum(orders.values()) + (1 if tb else 0)
+        if abs(tot - round(tot)) > 1e-12:
+            return "FORD", ("explicit orders summing to a non-integer molecularity (%g): the engine converts a "
+                            "cm-mol-s A only for an integer one (Reaction::chemkinMolecularity); Cantera "
+                            "converts by the real sum" % tot)
     if abs(sum(r.values()) - round(sum(r.values()))) > 1e-12:
         return "molecularity", "non-integer molecularity: the engine refuses it for a cm unit"
     if any(sp not in species for sp in rx.get("eff", {})):
@@ -521,8 +569,22 @@ def reaction_text(name, rx, cname, unit):
         nu[s] = nu.get(s, 0.0) - n
     for s, n in rx["p"].items():
         nu[s] = nu.get(s, 0.0) + n
-    st = "\n".join("        { component %s; nu %g; order %g; }" % (cname[s], v, rx["r"].get(s, 0.0))
-                   for s, v in sorted(nu.items(), key=lambda kv: cname[kv[0]]))
+    #  FORD (irreversible only, classify): the forward order of a species is its FORD value;
+    #  a species with a FORD order that is not in the reaction is listed with nu 0.
+    ford = rx.get("ford") or {}
+    for sp in ford:
+        nu.setdefault(sp, 0.0)
+    #  A species on BOTH sides of a reversible reaction (CHEMKIN `H + O2 + H2O <=> HO2 + H2O`):
+    #  `order` = its reactant count, `orderRev` = its product count, nu = the difference (the
+    #  pair the engine's detailed-balance rule accepts, Reaction.H).
+    both = set(rx["r"]) & set(rx["p"]) if rx["arrow"] == "<=>" and rx["rev"] is None else set()
+
+    def entry(s, v):
+        e = "        { component %s; nu %g; order %g;" % (cname[s], v, ford.get(s, rx["r"].get(s, 0.0)))
+        if s in both:
+            e += " orderRev %g;" % rx["p"][s]
+        return e + " }"
+    st = "\n".join(entry(s, v) for s, v in sorted(nu.items(), key=lambda kv: cname[kv[0]]))
     lim = cname[next(iter(rx["r"]))] if rx["r"] else cname[next(iter(rx["p"]))]
     uw, f = EA_WORD[unit]
     ea = lambda x: "%.10g" % (x * f)
@@ -540,7 +602,13 @@ def reaction_text(name, rx, cname, unit):
              "low  { A %.10g;  b %.10g;  Ea %s;  %s }" % (lo[0], lo[1], ea(lo[2]), un)]
         if "troe" in rx:
             k.append("troe ( %s );" % " ".join("%.10g" % x for x in rx["troe"]))
-        if rx.get("eff"):
+        if "sri" in rx:
+            k.append("sri ( %s );" % " ".join("%.10g" % x for x in rx["sri"]))
+        if rx["fo"] != "M":
+            #  a single collider (+AR): efficiency 1 for it, 0 for every other species
+            #  (Cantera: efficiencies {AR: 1}, default-efficiency 0)
+            k.append("thirdBody { %s 1; }  defaultEfficiency 0;" % cname[rx["fo"]])
+        elif rx.get("eff"):
             k.append(tbl())
         k.append(un)
     elif rx["tb"]:
@@ -563,8 +631,8 @@ def reaction_texts(idx, rx, cname, unit):
     if rx["rev"][0] == 0.0:
         return [reaction_text(name, fwd, cname, unit)]
     A, b, Ea = rx["rev"]
-    rv = dict(rx, r=rx["p"], p=rx["r"], A=A, b=b, Ea=Ea, arrow="=>", rev=None,
-              eq=_rev_eq(rx["p"], rx["r"], rx["tb"]))
+    rv = dict(rx, r=rx["p"], p=rx["r"], A=A, b=b, Ea=Ea, arrow="=>", rev=None, ford=None,
+              eq=_rev_eq(rx["p"], rx["r"], rx["tb"]))     # FORD orders belong to the forward leg (ck2yaml)
     return [reaction_text(name + "_f", fwd, cname, unit), reaction_text(name + "_r", rv, cname, unit)]
 
 
@@ -893,6 +961,16 @@ def _fixture():
             "  PLOG / 1.0  3.0E+12 0.5 10.0 /", "  PLOG / 10.0 1.0E+14 0.5 12.0 /",
             "A+B=>C+D            1.0E+13  0.0  10.0   ! 12 PLOG irreversible", "  PLOG / 1.0 1.0E+12 0.0 10.0 /",
             "A+B+M=C+D+M         1.0E+13  0.0  10.0   ! 13 PLOG with +M (refused)", "  PLOG / 1.0 1.0E+12 0.0 10.0 /",
+            "A+B+D=C+D           1.0E+15  0.0   3.0   ! 14 species on both sides",
+            "A+B(+D)=C(+D)       1.0E+13  0.0  10.0   ! 15 single collider (+D)", "  LOW / 1.0E+16 0.0 5.0 /",
+            "A+B(+M)=C(+M)       2.0E+13  0.3  10.0   ! 16 SRI, five numbers", "  LOW / 1.0E+16 -0.5 5.0 /",
+            "  SRI / 0.45 797 979 1.2 0.1 /", "  D/2.0/",
+            "A+B=>C+D            1.0E+13  0.0  10.0   ! 17 FORD, irreversible, a non-reactant order",
+            "  FORD / A 1.5 /", "  FORD / E 0.5 /",
+            "A+B=>C+D            1.0E+13  0.0  10.0   ! 18 FORD summing to 2.5 (refused)", "  FORD / A 1.5 /",
+            "A+B=>C+D            1.0E+13  0.0  10.0   ! 19 RORD (refused)", "  RORD / C 1.0 /",
+            "A+B(+M)=C(+M)       1.0E+13  0.0  10.0   ! 20 SRI with TROE (refused)", "  LOW / 1.0E+16 0.0 5.0 /",
+            "  TROE / 0.5 100 1000 /", "  SRI / 0.45 797 979 /",
             "END", ""]
     return "\n".join(out)
 
@@ -942,8 +1020,8 @@ def selftest():
     case = os.path.join(tmp, "case")
     with contextlib.redirect_stdout(io.StringIO()):
         res = convert(mech, None, case, "parser fixture, no data")
-    check(len(res["ok"]) == 12, "fixture: 12 written (reversible, irreversible, REV, b != 0, third body, third body REV, REV A=0, falloff, 2 DUP, 2 PLOG), got %d" % len(res["ok"]))
-    check(res["counts"] == {"REV": 1, "PLOG": 2, "FORD/RORD": 1},   # REV: the (+M) fall-off one only
+    check(len(res["ok"]) == 16, "fixture: 16 written (reversible, irreversible, REV, b != 0, third body, third body REV, REV A=0, falloff, 2 DUP, 2 PLOG, both sides, (+D), SRI, FORD), got %d" % len(res["ok"]))
+    check(res["counts"] == {"REV": 1, "PLOG": 2, "FORD": 2, "RORD": 1, "SRI": 1},   # REV: the (+M) fall-off one only
           "fixture: not written by kind %s" % dict(sorted(res["counts"].items())))
     # real files print M and (+M) in lower case (the LLNL H2 mechanism of 2004 does)
     r_, p_, _, tb_, fo_ = parse_equation("a+b+m=c+m", {"a", "b", "c"})
@@ -951,7 +1029,7 @@ def selftest():
     check(parse_equation("a+b(+m)=c(+m)", {"a", "b", "c"})[4] == "M", "lower-case `(+m)` is the (+M) collider")
     with contextlib.redirect_stdout(io.StringIO()):
         res2 = convert(mech, None, os.path.join(tmp, "revthermo"), "parser fixture, no data", rev_from_thermo=True)
-    check(len(res2["ok"]) == 14 and "REV" not in res2["counts"],
+    check(len(res2["ok"]) == 18 and "REV" not in res2["counts"],
           "--rev-from-thermo: the REV reactions are written with the reverse from the thermochemistry "
           "(including the fall-off one), the others still refused")
     t2 = open(os.path.join(tmp, "revthermo", "constant", "reactions")).read()
@@ -977,6 +1055,25 @@ def selftest():
           and "A 1e+14;  b 0.5;  Ea 12;" in p11 and re.search(r"reversible\s+true", p11) is not None,
           "PLOG -> plog ( ... ), P in atm as printed, two lines at 1 atm kept, nominal A b Ea dropped, `=` reversible")
     check("type plog;" in blk("012") and "reversible" not in blk("012"), "PLOG with `=>` -> irreversible")
+    #  the forms of 2026-11-21: species on both sides, a single collider, SRI, FORD
+    b13 = blk("013")
+    check(re.search(r"reversible\s+true", b13) and "type modifiedArrhenius" in b13
+          and "component D; nu 0; order 1; orderRev 1;" in b13 and "component A; nu -1; order 1; }" in b13,
+          "species on both sides (A+B+D=C+D): D written nu 0, order 1, orderRev 1 (its counts), reversible")
+    b14 = blk("014")
+    check("type falloff" in b14 and "thirdBody { D 1; }  defaultEfficiency 0;" in b14,
+          "(+D): falloff with thirdBody { D 1; } and defaultEfficiency 0 (Cantera's default-efficiency 0)")
+    b15 = blk("015")
+    check("sri ( 0.45 797 979 1.2 0.1 );" in b15 and "troe" not in b15 and "thirdBody { D 2; }" in b15,
+          "SRI: sri ( a b c d e ) written as printed beside its efficiencies")
+    b16 = blk("016")
+    check("reversible" not in b16 and "component A; nu -1; order 1.5;" in b16
+          and "component E; nu 0; order 0.5;" in b16 and "component B; nu -1; order 1;" in b16,
+          "FORD: forward orders replaced (A 1.5), a non-reactant order listed with nu 0 (E 0.5)")
+    rep0 = open(os.path.join(case, "constant", "mechanismImport.txt")).read()
+    check("[RORD]" in rep0 and "[FORD]" in rep0 and "non-integer molecularity (2.5)" in rep0
+          and "Reaction orders may only be given for irreversible reactions" in rep0 and "[SRI]" in rep0,
+          "refused by name: RORD, FORD on a reversible reaction (Cantera's sentence), FORD summing to 2.5, SRI with TROE")
     # REV -> two irreversible reactions (ck2yaml's reading): names, parameters, orders, units, third body
     f3, r3 = blk("003_f"), blk("003_r")
     check("reversible" not in f3 and "reversible" not in r3, "REV: both legs irreversible")
@@ -1007,7 +1104,7 @@ def selftest():
         f.write(mt.replace("REACTIONS KCAL/MOLE", "REACTIONS KCAL/MOLE MOLECULES"))
     with contextlib.redirect_stdout(io.StringIO()):
         resm = convert(mm, None, os.path.join(tmp, "molecules"), "parser fixture, no data", reactions_only=True)
-    check(len(resm["ok"]) == 0 and resm["counts"].get("MOLECULES") == 16, "MOLECULES: every reaction refused by name")
+    check(len(resm["ok"]) == 0 and resm["counts"].get("MOLECULES") == 23, "MOLECULES: every reaction refused by name")
     _r = dict(name="X", comp={"H": 2}, phase="G", Tlow=300.0, Tcommon=1000.0, Thigh=5000.0,
               low=[3.5, 1e-3, 2e-7, 3e-11, 4e-15, -9e2, 5.0], high=[3.0, 2e-3, 3e-7, 4e-11, 5e-15, -1e3, 6.0])
     _b = to_bar_standard_state(_r, "atm")
