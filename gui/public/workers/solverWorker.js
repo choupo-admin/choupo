@@ -121,6 +121,55 @@ async function loadFactory(binary) {
   return factoryCache[binary];
 }
 
+//  THE CATALOGUE IS ONE PACKAGE, NOT FIVE COPIES (C326, 2026-11-19).
+//  data/standards used to be embedded in every .wasm (20 MB x 5).  It is now
+//  packed once by make/wasm.mk into `choupoData.data` (all file bytes
+//  concatenated) + `choupoData.json` (emscripten file_packager's separate
+//  metadata: [{filename, start, end}] and a package_uuid).  Every binary
+//  needs the same bytes, so they are fetched ONCE per worker (the promise is
+//  cached) and, because the data URL carries the package's uuid, ONCE per
+//  package version by the browser's HTTP cache.  Each module still has its own
+//  MEMFS, so each run writes the files into ITS /data/standards in preRun,
+//  where the engine already looks (main.cpp's fallback; no CHOUPO_HOME).
+let dataPromise = null;
+function loadData() {
+  if (dataPromise) return dataPromise;
+  dataPromise = (async () => {
+    const mres = await fetch(engineUrl("choupoData.json"), { cache: "no-cache" });
+    if (!mres.ok) throw new Error(`HTTP ${mres.status} fetching ${engineUrl("choupoData.json")}`);
+    const meta = await mres.json();
+    const dres = await fetch(engineUrl("choupoData.data") + `?v=${meta.package_uuid}`);
+    if (!dres.ok) throw new Error(`HTTP ${dres.status} fetching choupoData.data`);
+    const bytes = new Uint8Array(await dres.arrayBuffer());
+    if (bytes.length !== meta.remote_package_size)
+      throw new Error(`choupoData.data is ${bytes.length} bytes, its metadata says ${meta.remote_package_size}`);
+    return { files: meta.files, bytes };
+  })().catch((e) => {
+    dataPromise = null;
+    throw e;
+  });
+  return dataPromise;
+}
+
+//  Write the package into a module's MEMFS (call from preRun, with the data
+//  already loaded: preRun cannot await).
+function installData(FS, data) {
+  const made = new Set(["/", "/data", "/data/standards"]);
+  const mkdirP = (dir) => {
+    if (made.has(dir)) return;
+    mkdirP(dir.slice(0, dir.lastIndexOf("/")) || "/");
+    if (!FS.analyzePath(dir).exists) FS.mkdir(dir);
+    made.add(dir);
+  };
+  for (const d of ["/data", "/data/standards"]) {
+    if (!FS.analyzePath(d).exists) FS.mkdir(d);
+  }
+  for (const f of data.files) {
+    mkdirP(f.filename.slice(0, f.filename.lastIndexOf("/")));
+    FS.writeFile(f.filename, data.bytes.subarray(f.start, f.end));
+  }
+}
+
 self.postMessage({ type: "log", line: "[worker] booted, awaiting run message" });
 
 //  THE CATALOGUE A DOWNLOADED CASE CARRIES (contract K4, docs/design/
@@ -139,9 +188,11 @@ async function readCatalogue(msg) {
   const missing = [];
   try {
     const factory = await loadFactory(binary);
+    const data = await loadData();
     const wasmUrl = engineUrl(`${binary}.wasm`);
     const Module = await factory({
       noInitialRun: true,
+      preRun: [(M) => installData(M.FS, data)],
       locateFile: (path) => (path.endsWith(".wasm") ? wasmUrl : path),
       print: () => {},
       printErr: () => {},
@@ -195,7 +246,8 @@ self.addEventListener("message", async (e) => {
   try {
     self.postMessage({ type: "log", line: `[worker] fetching WASM glue (${binary})...` });
     const factory = await loadFactory(binary);
-    self.postMessage({ type: "log", line: "[worker] glue loaded; invoking factory..." });
+    const data = await loadData();
+    self.postMessage({ type: "log", line: "[worker] glue + catalogue loaded; invoking factory..." });
 
     const log = (s) => self.postMessage({ type: "log", line: s });
     factory({
@@ -217,6 +269,7 @@ self.addEventListener("message", async (e) => {
             }
           };
           try {
+            installData(FS, data);
             for (const d of ["/case", "/case/system", "/case/constant"]) {
               if (!FS.analyzePath(d).exists) FS.mkdir(d);
             }

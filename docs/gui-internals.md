@@ -212,8 +212,8 @@ without re-validating.
 * **`ENV` is stripped under `-O2`** despite being whitelisted in
   `EXPORTED_RUNTIME_METHODS=['FS','ENV']`.  Setting `Module.ENV[...]` throws
   `ReferenceError: ENV is not defined`.  **Workaround:** don't rely on `ENV` at
-  all.  Embed the curated reference tree at `/data/standards/` (`--embed-file
-  data/standards@/data/standards`) so `main.cpp`'s fallback
+  all.  Put the curated reference tree at `/data/standards/` in each module's
+  MEMFS (the shared data package, below) so `main.cpp`'s fallback
   (`fs::exists(launchCwd / "data" / "standards" / "components")`) finds it
   without needing `CHOUPO_HOME`.  `FS`, `ccall`, and `cwrap` are safe (heavily
   used internally; never stripped).
@@ -232,6 +232,29 @@ without re-validating.
   static file, and the worker's `import()` of the glue goes straight through the
   browser fetcher, untouched by Vite.
 
+### The shared data package (C326, 2026-11-19)
+
+`data/standards` (20 MB) used to be `--embed-file`d into every `.wasm`, five
+copies.  It is now ONE package: `make/wasm.mk` runs emscripten's
+`file_packager` (`--preload ... --separate-metadata`) and writes, beside the
+binaries,
+
+* `gui/public/wasm/choupoData.data` -- the bytes of every file, concatenated;
+* `gui/public/wasm/choupoData.json` -- `{files:[{filename,start,end}],
+  remote_package_size, package_uuid}`.
+
+No binary embeds data any more.  `solverWorker.js` `loadData()` fetches the
+metadata (revalidated) and then `choupoData.data?v=<package_uuid>` ONCE per
+worker (cached promise) and ONCE per package version by the browser's HTTP
+cache; `installData(FS, data)` writes the files into the module's MEMFS in
+`preRun` (also for `readCatalogue`).  Each module keeps its own MEMFS, so the
+bytes are downloaded once but copied into each module that runs.  We do not
+use file_packager's generated loader JS (it fetches per module and needs
+`Module` hooks that fight MODULARIZE + the blob bridge); the metadata is read
+by the worker itself.  Editing a `.dat` repacks the package and relinks
+nothing (`make wasm-data` alone).  A new consumer of the WASM must load the
+package before `factory(...)`, or the engine finds no `/data/standards`.
+
 ### Build targets
 
 ```makefile
@@ -239,6 +262,7 @@ make wasm-gui                   # the GUI bundle: ALL FIVE binaries
                                 #   (choupoSolve + choupoProps + choupoBatch + choupoCtrl + choupoSemiContinuous)
 make wasm-steady-props          # FAST: just choupoSolve + choupoProps (the common src/ edit)
 make wasm-solve                 # steady-state binary alone (choupoSolve)
+make wasm-data                  # the shared data package alone
 make wasm                       # release -O2, build ALL FIVE binaries (same set as wasm-gui)
 make wasm WASM_MODE=debug       # -O0 -g3, assertions on
 make wasm-clean                 # remove artifacts
