@@ -75,7 +75,31 @@ family by name, a missing `--licence`, and any output under `data/standards`.
 `--reactions-only` keeps the case's own thermo.  `--selftest` runs offline and
 exports `tutorials/batch/combustion/ignition01_h2o2` to CHEMKIN text, imports
 it back and, when `./choupoBatch` is built, runs both and compares the results.
-Role, Tc, Pc, vapour pressure are not in a mechanism and are not written.
+Tc, Pc, vapour pressure are not in a mechanism and are not written; a gas
+species is written `role radical;` (gas-only, below), a solid `role nonvolatile;`.
+
+**A radical is NOT a component (DEV.md 4c C458, 2026-11-21).**  This list holds
+substances a process handles as a pure phase (a liquid, a solid, a stable gas:
+H2, O2, water, CH4, H2O2, O3).  OH, H, O, HO2, CH3, N, NH, S, SO, Cl and the rest of
+the radicals live in the gas-species table
+`data/standards/thermoTables/NASA-TP-2002-211556/` (894 ideal-gas records, one per
+species, listed in its `INDEX.md`) and a case asks for them by name:
+
+```
+components    ( H2 O2 H O OH HO2 H2O2 water N2 );
+speciesTables ( NASA-TP-2002-211556 );   // the radicals are read from here
+```
+
+Precedence: the case's own record > `components/` > the declared table (a table
+never shadows a curated record, and a sealed case reads none).  A labelled isomer
+takes the report's entry name: `C3H7_npropyl`, `C3H7_ipropyl`, `C3H3_2propynl`
+(propargyl), `C2H3_vinyl`, `C6H5_phenyl`, `CH3CO_acetyl`; atomic chlorine is
+`CL` (formula Cl), ClO is `CLO`.  Every table record is **gas-only** (`role
+radical;`): in a phase split its K is the non-condensable cap 1e12, so it always
+leaves in the vapour, and a state with no vapour to hold it (a bubble point, a
+liquid-liquid or liquid-solid flash, a property system with no vapour phase) is
+refused by name.  The chloride ION is `Cl` in `data/standards/species/` (an
+electrolyte case maps a component to it with `aqueousMapping`).
 
 The component COUNT is not written here: this whole section below
 `AUTO-GENERATED` is produced by `bin/regen-llm-docs` from the `.dat` files
@@ -88,7 +112,7 @@ level up.)
 <!-- AUTO-GENERATED below this line by bin/regen-llm-docs. -->
 <!-- Edit the .dat files in data/standards/components/, then re-run. -->
 
-## Components (690 entries)
+## Components (656 entries)
 
 ### Volatile (curated for VLE)
 
@@ -658,40 +682,17 @@ level up.)
 | `acetaldehyde` | 44.053 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `alanine` | 89.094 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
 | `asparticAcid` | 133.103 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
-| `C` | 12.011 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `C2H` | 25.03 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `C2H3` | 27.046 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `C2H5` | 29.062 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `C2O` | 40.021 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `C3H3` | 39.057 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `C3H7` | 43.089 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `C4H2` | 50.06 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `C4H4` | 52.076 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `C6H5` | 77.106 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `CaCl2` | 110.98 | nonvolatile | — | — | — | — | — | — | — | — | ν=3 |
 | `calciumNitrate` | 164.086 | nonvolatile | — | — | — | — | — | — | — | — |   |
-| `CH` | 13.019 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `CH2` | 14.027 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `CH2OH` | 31.034 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `CH3` | 15.0345 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `CH3CO` | 43.045 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `CH3O` | 31.034 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `Cl` | 35.45 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `ClO` | 51.449 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `CN` | 26.018 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `CS` | 44.071 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `CS2` | 76.131 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `dowthermA` | 165.8 | nonvolatile | — | — | ✓ | — | — | — | — | ✓ |   |
 | `glucose` | 180.16 | nonvolatile | — | — | ✓ | ✓ | — | — | — | ✓ |   |
 | `glutamicAcid` | 147.130 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
 | `glycine` | 75.067 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
 | `graphite` | 12.011 | nonvolatile | — | — | — | ✓ | — | — | — | — |   |
-| `H` | 1.008 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `HCCO` | 41.029 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `HCO` | 29.018 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `hitecSalt` | 87.4 | nonvolatile | — | — | ✓ | — | — | — | — | ✓ |   |
-| `HNO` | 31.014 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `HO2` | 33.0067 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `HOCl` | 52.457 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `HONO` | 47.013 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `KBr` | 119.002 | nonvolatile | — | — | — | — | — | — | — | — |   |
@@ -700,20 +701,12 @@ level up.)
 | `LiCl` | 42.394 | nonvolatile | — | — | ✓ | — | — | — | — | — |   |
 | `MgCl2` | 95.205 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `MgSO4` | 120.37 | nonvolatile | — | — | — | — | — | — | — | — |   |
-| `N` | 14.007 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `N2H2` | 30.03 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `N2H4` | 32.046 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `NaBr` | 102.894 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `NaCl` | 58.44 | nonvolatile | — | — | — | — | — | ✓ | — | — | ν=2 |
 | `NaF` | 41.988 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `NaNO3` | 84.994 | nonvolatile | — | — | — | — | — | — | — | — | μ_L |
 | `NaOH` | 39.997 | nonvolatile | — | — | — | — | — | ✓ | — | — | ν=2 |
-| `NCO` | 42.017 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `NH` | 15.0146 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `NH2` | 16.0226 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `NO3` | 62.004 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `O` | 15.999 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `OH` | 17.008 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `PET` | 192.17 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `PMMA` | 100.12 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `polyethylene` | 28.05 | nonvolatile | — | — | — | — | — | — | — | — |   |
@@ -721,10 +714,7 @@ level up.)
 | `polystyrene` | 104.15 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `propyleneGlycol30` | 36.6 | nonvolatile | — | — | ✓ | — | — | — | — | ✓ |   |
 | `PVC` | 62.5 | nonvolatile | — | — | — | — | — | — | — | — |   |
-| `S` | 32.06 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `S2` | 64.12 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `SH` | 33.068 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
-| `SO` | 48.059 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `SO3` | 80.057 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 
 ### Crystallising solute

@@ -71,6 +71,18 @@ Component names are case-sensitive.  `Water` ≠ `water`.  The list of
 shipped components lives in `data/standards/components/` (see
 `components.md`); typos throw "component 'XYZ' not found".
 
+### A radical is not a component: `OH` is "not found" until the table is declared
+Since 2026-11-21 (DEV.md 4c C458) OH, H, O, HO2, CH3, N, NH, S, SO and the
+other radicals live in the gas-species table
+`data/standards/thermoTables/NASA-TP-2002-211556/`, not in `components/`.  A
+case that names one without `speciesTables ( NASA-TP-2002-211556 );` in its
+`thermoPhysPropDict` is refused by name.  Labelled isomers carry the report's
+entry name (`C3H7_npropyl`, not `C3H7`), and atomic chlorine is `CL` -- the
+chloride ion is `Cl` in `species/`.  A table species is GAS-ONLY (`role
+radical;`): it always stays in the vapour of a flash, and a state with no
+vapour to hold it (a bubble point, an LL or SLE flash) is refused -- give the
+step a vapour outlet, or let the mechanism consume the radical first.
+
 ## Unit-op specification
 
 ### `model` goes at unit level, NOT inside `operation`:
