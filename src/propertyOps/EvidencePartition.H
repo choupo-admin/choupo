@@ -204,6 +204,7 @@ struct EvidencePoint
     scalar x = 0.0;
     scalar y = 0.0;
     scalar z = std::numeric_limits<scalar>::quiet_NaN();
+    scalar w = std::numeric_limits<scalar>::quiet_NaN();   // an optional FOURTH column (fitParameters: the measured alpha)
 
     bool hasZ() const { return !std::isnan(z); }
 };
@@ -366,7 +367,8 @@ public:
                 const std::vector<std::string>& xNames,
                 const std::vector<std::string>& yNames,
                 const std::string& opLabel,
-                const std::vector<std::string>& zNames = {});
+                const std::vector<std::string>& zNames = {},
+                const std::vector<std::string>& wNames = {});
 
     //  EVERY column of a dataset, in canonical SI, for a residual whose one
     //  datum is a whole OPERATING POINT rather than an (x, y) pair -- a
@@ -396,7 +398,8 @@ public:
             const std::vector<std::string>& xNames,
             const std::vector<std::string>& yNames,
             const std::string& opLabel,
-            const std::vector<std::string>& zNames = {});
+            const std::vector<std::string>& zNames = {},
+            const std::vector<std::string>& wNames = {});
 
 private:
     //  Fill a dataset's identity from the dataset FILE's own `provenance {}`,

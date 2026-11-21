@@ -118,10 +118,13 @@ C_PIN = {"N_vs_measured_pct": -16.5, "R_vs_measured_pct": -17.9, "drift": 1.0}
 
 # ---- (F): the band DECLARED in olefins03's README before the fit, and what the fits did ----
 D_BAND = {"alpha_mean": 1.0, "alpha_each": 3.0, "P_mean": 0.5, "P_each": 1.5}
-D_PIN = {"kij_pr": 0.0054298, "kij_srk": -0.0000675, "kij_drift": 3.0e-5,
+D_PIN = {"kij_pr": 0.0054298, "kij_srk": -0.0000675, "kij_srkalpha": 0.0092732, "kij_srkalphaP": 0.0067539, "kij_drift": 3.0e-5,
          "prfit":    {"held_alpha_mean": 0.66, "held_alpha_max": 1.97, "fit_alpha_mean": 0.69, "held_P_mean": 0.27},
          "srkfit":   {"held_alpha_mean": 1.82, "held_alpha_max": 4.26, "fit_alpha_mean": 1.84, "held_P_mean": 0.37},
-         "srkalpha": {"held_alpha_mean": 0.19, "held_alpha_max": 0.66, "fit_alpha_mean": 0.24, "held_P_mean": 1.34}}
+         "srkalpha": {"held_alpha_mean": 0.19, "held_alpha_max": 0.55, "fit_alpha_mean": 0.24, "held_P_mean": 1.38},
+         "srkalphaP": {"held_alpha_mean": 0.49, "held_alpha_max": 1.57, "fit_alpha_mean": 0.52, "held_P_mean": 1.04}}
+# the SECOND band (README, "SECOND FIT", declared before the alpha fits were run): alpha as above, P wider
+D2_BAND = {"alpha_mean": 1.0, "alpha_each": 3.0, "P_mean": 1.0, "P_each": 2.0}
 D_DRIFT = 0.05
 FIT_F = (100, 120, 140, 160)
 # ---- (G): the splitter on PR + the fitted kij ----
@@ -303,7 +306,7 @@ def analyse_D(d, tag):
 
 
 def check_D(d, label, failures, numbers):
-    for tag in ("prfit", "srkfit", "srkalpha"):
+    for tag in ("prfit", "srkfit", "srkalpha", "srkalphaP"):
         alpha, pres, ends = analyse_D(d, tag)
         got = {"held_alpha_mean": mean([abs(v) for v in alpha["held"]]), "held_alpha_max": max(abs(v) for v in alpha["held"]),
                "fit_alpha_mean": mean([abs(v) for v in alpha["fit"]]), "held_P_mean": mean([abs(v) for v in pres["held"]]),
@@ -314,8 +317,9 @@ def check_D(d, label, failures, numbers):
             if abs(got[k] - pin) > D_DRIFT:
                 failures.append(f"{label} {tag}: {k} = {got[k]:.3f} (pinned {pin} +- {D_DRIFT}): the fit, a record or the "
                                 "data changed -- re-read olefins03's README")
-        band_met = (got["held_alpha_mean"] <= D_BAND["alpha_mean"] and got["held_alpha_max"] <= D_BAND["alpha_each"]
-                    and got["held_P_mean"] <= D_BAND["P_mean"] and got["held_P_max"] <= D_BAND["P_each"])
+        bd = D2_BAND if tag.startswith("srkalpha") else D_BAND
+        band_met = (got["held_alpha_mean"] <= bd["alpha_mean"] and got["held_alpha_max"] <= bd["alpha_each"]
+                    and got["held_P_mean"] <= bd["P_mean"] and got["held_P_max"] <= bd["P_each"])
         want = (tag == "prfit")        # only PR + its fitted kij meets the band declared before the fit
         if label == "shipped" and band_met != want:
             failures.append(f"{tag}: the declared held-out band is now {'MET' if band_met else 'MISSED'} "
@@ -431,7 +435,7 @@ def main():
     # ---- (F) the fitted kij ------------------------------------------------------------------
     dcase = gatekit.base_case(D_CASE)
     txt = (dcase / "README.md").read_text()
-    for n in ("DECLARED BEFORE THE FIT", "<= 1.0 %", "<= 0.5 %", "<= 3 %", "<= 1.5 %"):
+    for n in ("DECLARED BEFORE THE FIT", "<= 1.0 %", "<= 0.5 %", "<= 3 %", "<= 1.5 %", "SECOND FIT", "<= 2.0 %"):
         if n not in txt:
             failures.append(f"{D_CASE}/README.md no longer states the declared band ({n!r})")
     # the 63 rows equal olefins01's, T = the isotherm
@@ -456,7 +460,7 @@ def main():
         if rc != 0:
             failures.append(f"the olefins03 fit case did not run (exit {rc}): " + " | ".join(out.strip().splitlines()[-2:]))
         else:
-            for tag, key in (("pr", "kij_pr"), ("srk", "kij_srk")):
+            for tag, key in (("pr", "kij_pr"), ("srk", "kij_srk"), ("srkalpha", "kij_srkalpha"), ("srkalphaP", "kij_srkalphaP")):
                 prop = (c / f"propane-propylene.{tag}.proposal.dat").read_text()
                 kij = float(re.search(r"^kij\s+(\S+);", prop, re.M).group(1))
                 numbers[("fit", tag)] = {"kij": kij}
@@ -467,6 +471,26 @@ def main():
                 if tag == "pr" and abs(kij - kij_rec) > 1.5e-6:
                     failures.append(f"the promoted PR record (kij {kij_rec}) is not what the fit reproduces ({kij:.8f})")
             check_D(c, "shipped", failures, numbers)
+
+    # ---- (F2) sabotage of the alpha residual: the combined fit with its alpha weight 0 is a pressure fit, kij -> ~0 ----
+    with gatekit.probe_copy(D_CASE, strip=STRIP_FIT) as c:
+        for f in c.glob("*.csv"):
+            f.unlink()
+        pd = c / "system/propsDict"
+        txt2 = pd.read_text()
+        sab = "weights     { P 1;  alpha 1;  alphaColumn alpha; }"
+        if sab not in txt2:
+            failures.append("sabotage arm (alpha weight): the combined fit's weights line is not where the gate expects it")
+        else:
+            pd.write_text(txt2.replace(sab, "weights     { P 1;  alpha 0;  alphaColumn alpha; }"))
+            rc, out = gatekit.run(props, c, inside=True)
+            if rc != 0:
+                failures.append(f"sabotage arm (alpha weight 0): the fit case did not run (exit {rc})")
+            else:
+                prop = (c / "propane-propylene.srkalphaP.proposal.dat").read_text()
+                kij = float(re.search(r"^kij\s+(\S+);", prop, re.M).group(1))
+                if abs(kij - D_PIN["kij_srkalphaP"]) <= D_PIN["kij_drift"]:
+                    failures.append("sabotage arm: the combined fit with alpha weight 0 still gives the pinned kij -- the gate cannot see the alpha residual")
 
     # ---- (G) the splitter on PR + the fitted kij -----------------------------------------------
     with gatekit.probe_copy(E_CASE, strip=STRIP) as c:
@@ -555,7 +579,7 @@ def main():
         f"({', '.join(outside_names.get('srk', []))}); the engine's C3 tower is "
         f"{sp.get('dN', 0):+.0f} % in stages and {sp.get('dR', 0):+.0f} % in reflux from the one the measured alpha implies; "
         "a transposed omega is seen; ONE kij fitted on bubble pressure (PR "
-        f"{numbers.get(('fit', 'pr'), {}).get('kij', 0):.5f}, SRK {numbers.get(('fit', 'srk'), {}).get('kij', 0):.5f}): held-out alpha "
+        f"{numbers.get(('fit', 'pr'), {}).get('kij', 0):.5f}, SRK {numbers.get(('fit', 'srk'), {}).get('kij', 0):.5f}; on alpha SRK {numbers.get(('fit', 'srkalpha'), {}).get('kij', 0):.5f}, on alpha+P {numbers.get(('fit', 'srkalphaP'), {}).get('kij', 0):.5f}, held-out alpha inside the band and held-out P outside the second band, so no SRK record): held-out alpha "
         f"mean {numbers.get(('shipped', 'prfit'), {}).get('held_alpha_mean', 0):.2f} % with PR+kij (declared band met) against "
         f"{numbers.get(('shipped', 'srkfit'), {}).get('held_alpha_mean', 0):.2f} % with SRK (missed: a pressure fit cannot see it), "
         f"the PR+kij tower {numbers.get('splitter_pr_kij', {}).get('dN', 0):+.1f} % in stages from the measured one",
