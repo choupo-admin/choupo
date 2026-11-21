@@ -275,3 +275,26 @@ describe("eqCurveFromTxyCsv — reuse the engine's T-x-y trio, zero physics", ()
     expect(eqCurveFromTxyCsv("T,Psat\n300,1e4\n310,2e4")).toBeNull();
   });
 });
+
+//  R-005 extension (C467 slice 6): the producer writes `nan` for a refused
+//  node; the reader used to keep the two ends and flashAtVF answered 375 K in
+//  the hole.
+describe("a refused node of the T-x-y table is never bridged", () => {
+  const CSV = "x[a],T_bubble,y_eq_a\n0,400,0\n0.5,nan,nan\n1,350,1\n";
+  const curve = eqCurveFromTxyCsv(CSV)!;
+  it("records the gap", () => {
+    expect(curve.x).toEqual([0, 1]);
+    expect(curve.gaps).toEqual([[0, 1]]);
+  });
+  it("refuses a flash whose feed or tie lines sit in the gap", () => {
+    const s = flashAtVF(curve, 0.5, 0.5);
+    expect(s.regime).toBe("refused");
+    expect(Number.isNaN(s.T)).toBe(true);
+    expect(flashAtT(curve, 0.5, 375).regime).toBe("refused");
+  });
+  it("a gap-free table is unchanged", () => {
+    const c = eqCurveFromTxyCsv("x[a],T_bubble,y_eq_a\n0,400,0\n0.5,370,0.7\n1,350,1\n")!;
+    expect(c.gaps).toBeUndefined();
+    expect(flashAtVF(c, 0.5, 0.5).regime).toBe("two-phase");
+  });
+});

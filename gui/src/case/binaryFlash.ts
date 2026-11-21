@@ -64,6 +64,11 @@ export interface EqCurve
   Tbub: number[];
   /** the indexed component name (for labels) */
   comp: string;
+  /** x-INTERVALS [xLo, xHi] between two valid neighbours where the engine
+   *  refused one or more nodes (nan / empty fields).  Nothing is read,
+   *  interpolated or solved inside one: a flash that needs a state in a gap
+   *  returns regime "refused" instead of a number the engine never made. */
+  gaps?: [number, number][];
 }
 
 /** A solved binary flash at one (T,P,z) or (V/F,P,z) condition. */
@@ -80,7 +85,7 @@ export interface FlashSolution
   /** flash temperature (K) — the input when spec="TP", a result when spec="VF" */
   T: number;
   /** which side of the envelope we are on */
-  regime: "two-phase" | "all-liquid" | "all-vapour";
+  regime: "two-phase" | "all-liquid" | "all-vapour" | "refused";
   /** the bubble-point temperature (K) at the feed z — the lower phase boundary */
   Tbubble: number;
   /** the dew-point temperature (K) at the feed z — the upper phase boundary */
@@ -111,19 +116,33 @@ export function eqCurveFromTxyCsv(csv: string): EqCurve | null
   const iYeq = header.indexOf("y_eq_" + comp);
   if (iTbub < 0 || iYeq < 0) return null;
 
-  const rows: { x: number; y: number; T: number }[] = [];
+  //  Every node in grid order; a node with a finite x and a non-finite y*
+  //  or T was REFUSED by the engine (the producer writes nan).  It is not
+  //  kept as a point, and the interval it leaves is recorded as a gap.
+  const all: { x: number; y: number; T: number; ok: boolean }[] = [];
   for (let r = 1; r < lines.length; r++)
   {
     const cells = lines[r]!.split(",");
-    const x = Number(cells[iX]);
-    const y = Number(cells[iYeq]);
-    const T = Number(cells[iTbub]);
-    if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(T))
-      rows.push({ x, y, T });
+    const x = Number((cells[iX] ?? "").trim() === "" ? NaN : cells[iX]);
+    const y = (cells[iYeq] ?? "").trim() === "" ? NaN : Number(cells[iYeq]);
+    const T = (cells[iTbub] ?? "").trim() === "" ? NaN : Number(cells[iTbub]);
+    if (!Number.isFinite(x)) continue;
+    all.push({ x, y, T, ok: Number.isFinite(y) && Number.isFinite(T) });
+  }
+  all.sort((a, b) => a.x - b.x);
+  const rows: { x: number; y: number; T: number }[] = [];
+  const gaps: [number, number][] = [];
+  let pending = false;
+  for (const p of all)
+  {
+    if (!p.ok) { pending = true; continue; }
+    if (pending && rows.length > 0) gaps.push([rows[rows.length - 1]!.x, p.x]);
+    pending = false;
+    rows.push({ x: p.x, y: p.y, T: p.T });
   }
   if (rows.length < 2) return null;
-  rows.sort((a, b) => a.x - b.x);
   return {
+    ...(gaps.length ? { gaps } : {}),
     comp,
     x: rows.map((p) => p.x),
     yEq: rows.map((p) => p.y),
@@ -241,6 +260,20 @@ export function invertMonotone(xs: number[], ys: number[], target: number): numb
   The flash construction + the lever rule.
 \*---------------------------------------------------------------------------*/
 
+/** True when [lo, hi] touches a refused interval of the curve. */
+export function touchesGap(curve: EqCurve, lo: number, hi: number): boolean
+{
+  const a = Math.min(lo, hi), b = Math.max(lo, hi);
+  return (curve.gaps ?? []).some(([g0, g1]) => a < g1 && b > g0);
+}
+
+function refusedSolution(base: Pick<FlashSolution, "z" | "Tbubble" | "Tdew">, T: number): FlashSolution
+{
+  return { ...base, T, VF: NaN, xLiq: NaN, yVap: NaN, regime: "refused",
+    note: "the engine refused a node of the equilibrium curve that this "
+      + "construction needs; nothing is interpolated across it" };
+}
+
 /** The bubble- and dew-point temperatures (K) at the feed z on this curve.
  *  Bubble: the boiling locus T_bubble(z).  Dew: the temperature whose
  *  equilibrium VAPOUR is z, i.e. T_bubble(x where y*(x)=z) — the first dew of a
@@ -275,6 +308,7 @@ export function flashAtT(curve: EqCurve, z: number, T: number): FlashSolution
 {
   const { Tbubble, Tdew } = envelopeAtFeed(curve, z);
   const base: Pick<FlashSolution, "z" | "T" | "Tbubble" | "Tdew"> = { z, T, Tbubble, Tdew };
+  if (touchesGap(curve, z, z)) return refusedSolution(base, T);
 
   // bubble/dew may be in either T-order depending on which component is lighter
   const Tlo = Math.min(Tbubble, Tdew);
@@ -288,6 +322,8 @@ export function flashAtT(curve: EqCurve, z: number, T: number): FlashSolution
       note: T > Thi + 1e-6 ? "above the dew point — superheated vapour; the tie-line collapses (V/F = 1)" : undefined };
 
   const xLiq = invertMonotone(curve.x, curve.Tbub, T);
+  if (touchesGap(curve, z, xLiq))
+    return refusedSolution(base, T);
   const yVap = yStar(curve, xLiq);
   let VF = leverVF(curve, z, xLiq);
   VF = Math.min(1, Math.max(0, VF));
@@ -303,13 +339,17 @@ export function flashAtVF(curve: EqCurve, z: number, vfTarget: number): FlashSol
 {
   const { Tbubble, Tdew } = envelopeAtFeed(curve, z);
   const base: Pick<FlashSolution, "z" | "Tbubble" | "Tdew"> = { z, Tbubble, Tdew };
+  if (touchesGap(curve, z, z)) return refusedSolution(base, NaN);
   const vf = Math.min(1, Math.max(0, vfTarget));
 
   // the two endpoints of the tie-line family for this feed: at V/F=0 the liquid
   // IS the feed (x=z); at V/F=1 the vapour IS the feed (x = y*⁻¹(z)).
   const xBubble = z;
   const xDew = invertMonotone(curve.x, curve.yEq, z);
+  const needsGap = touchesGap(curve, xBubble, xDew);
 
+  if (needsGap && vf > 1e-9 && vf < 1 - 1e-9)
+    return refusedSolution(base, NaN);
   if (vf <= 1e-9)
     return { ...base, VF: 0, xLiq: z, yVap: yStar(curve, z), T: Tbubble, regime: "all-liquid" };
   if (vf >= 1 - 1e-9)

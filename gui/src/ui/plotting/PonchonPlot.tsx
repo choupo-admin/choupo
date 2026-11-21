@@ -44,16 +44,28 @@ export function PonchonPlot({ rows, xD, R, showTies }: {
   showTies: boolean;
 }): JSX.Element {
   const kJ = (v: number) => v / 1000;
+  //  One value per row, with a null between segments the engine refused to
+  //  join: Plotly then breaks the line instead of drawing through a gap.
+  const breaks = (rs: readonly HxyRow[], f: (r: HxyRow) => number) => {
+    const o: (number | null)[] = [];
+    rs.forEach((r, i) => {
+      if (i > 0 && rs[i - 1]!.seg !== r.seg) o.push(null);
+      o.push(f(r));
+    });
+    return o;
+  };
   const dD = deltaD(rows, xD, R);
 
   const data: unknown[] = [
     {
-      x: rows.map((r) => r.x1), y: rows.map((r) => kJ(r.h)),
+      x: breaks(rows, (r) => r.x1), y: breaks(rows, (r) => kJ(r.h)),
+      connectgaps: false,
       type: "scatter", mode: "lines", name: "saturated liquid  h(x)",
       line: { color: PLOT_COLORS.accent, width: 2 },
     },
     {
-      x: rows.map((r) => r.y1), y: rows.map((r) => kJ(r.H)),
+      x: breaks(rows, (r) => r.y1), y: breaks(rows, (r) => kJ(r.H)),
+      connectgaps: false,
       type: "scatter", mode: "lines", name: "saturated vapour  H(y)",
       line: { color: PLOT_COLORS.warm, width: 2 },
     },
