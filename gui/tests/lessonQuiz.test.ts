@@ -94,6 +94,8 @@ import { DEMAND_QUIZ, DEMAND_STEPS } from "../src/ui/methods/demandForecastLesso
 import { DemandForecastTool } from "../src/ui/methods/DemandForecastTool.js";
 import { PlantCostTool } from "../src/ui/methods/PlantCostTool.js";
 import { PLANT_COST_QUIZ, PLANT_COST_STEPS } from "../src/ui/methods/plantCostLesson.js";
+import { DryerSelectionTool } from "../src/ui/methods/DryerSelectionTool.js";
+import { DRYER_SELECTION_QUIZ, DRYER_SELECTION_STEPS } from "../src/ui/methods/dryerSelectionLesson.js";
 import { STACK_QUIZ, STACK_STEPS } from "../src/ui/methods/stackDispersionLesson.js";
 import { CampaignPlanTool } from "../src/ui/methods/CampaignPlanTool.js";
 import { CAMPAIGN_PLAN_QUIZ, CAMPAIGN_PLAN_STEPS } from "../src/ui/methods/campaignPlanLesson.js";
@@ -196,6 +198,11 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "plant-cost": {
     quiz: PLANT_COST_QUIZ, quizName: "PLANT_COST_QUIZ", lesson: PLANT_COST_STEPS, lessonName: "PLANT_COST_STEPS",
     file: "src/ui/methods/PlantCostTool.tsx", tool: PlantCostTool,
+  },
+  "dryer-selection": {
+    quiz: DRYER_SELECTION_QUIZ, quizName: "DRYER_SELECTION_QUIZ",
+    lesson: DRYER_SELECTION_STEPS, lessonName: "DRYER_SELECTION_STEPS",
+    file: "src/ui/methods/DryerSelectionTool.tsx", tool: DryerSelectionTool,
   },
 };
 

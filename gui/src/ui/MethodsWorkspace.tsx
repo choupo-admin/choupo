@@ -181,6 +181,8 @@ const PinchCompositeTool = lazy(() =>
   import("./methods/PinchCompositeTool.js").then((m) => ({ default: m.PinchCompositeTool })));
 const CompressionTool = lazy(() =>
   import("./methods/CompressionTool.js").then((m) => ({ default: m.CompressionTool })));
+const DryerSelectionTool = lazy(() =>
+  import("./methods/DryerSelectionTool.js").then((m) => ({ default: m.DryerSelectionTool })));
 const PumpSystemTool = lazy(() =>
   import("./methods/PumpSystemTool.js").then((m) => ({ default: m.PumpSystemTool })));
 const MerkelTool = lazy(() =>
@@ -628,6 +630,7 @@ export function MethodsWorkspace() {
             : tool === "pinch-composite" ? <PinchCompositeTool />
             : tool === "pump-system" ? <PumpSystemTool />
             : tool === "compression" ? <CompressionTool />
+            : tool === "dryer-selection" ? <DryerSelectionTool />
             : tool === "merkel" ? <MerkelTool />
             : tool === "rayleigh" ? <RayleighTool />
             : tool === "levenspiel" ? <LevenspielTool />

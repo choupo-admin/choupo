@@ -82,7 +82,7 @@ export type MethodToolId =
   | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves"
   | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
-  | "one-flux-many-units" | "compression" | "adsorbent-selection";
+  | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1053,6 +1053,29 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "engine's staged design of an air compressor (1 to 12 bar, three sections) and of the "
       + "reference plant's make-up compressor, each formula read at its page in Brown (2005).",
     theory: "sec:compressor-design",
+  },
+  //  COMMISSIONED 2026-11-19 (DEV.md 4c C460), Vitor: "E outra sobre heuristicas
+  //  de seleccao de secadores? Tambem estilo Pareto e com os esquemas mais
+  //  comuns pelos quais sao esquematicamente conhecidos".  A SELECTION aid in
+  //  the registry's own sense: it constructs nothing and the engine computes
+  //  nothing here; every rule and every table cell is read from Mujumdar,
+  //  Perry or van 't Land at its page, a cell they do not give says "not
+  //  cited", and the seven schematics were drawn for the page.  The types the
+  //  engine models open their tutorial case.  `theory` is the Theory Guide's
+  //  drying chapter.
+  {
+    id: "dryer-selection", blurb: "Choose a dryer type from the feed, heat sensitivity, scale and mode.",
+    label: "Which dryer for which product",
+    discipline: "Separations & phase equilibria", kind: "selection", status: "live",
+    origins: ["page", "reference", "assumption"],
+    teaches: "The seven dryer types that do most of the drying (spray, rotary, fluidised "
+      + "bed, tray, belt, drum, freeze), each drawn as a schematic; a selection tree "
+      + "from the feed form, the heat sensitivity, the scale and the batch or continuous "
+      + "mode to one or two types with the reason and the page of Mujumdar, Perry or van "
+      + "'t Land it was read from; a comparison table of residence time, energy per kg "
+      + "of water and typical products with \"not cited\" where the books are silent; and "
+      + "the tutorial cases of the types the engine models.",
+    theory: "ch:drying",
   },
   //  COMMISSIONED 2026-10-20 (DEV.md 4c C119), Vitor: the Pi theorem only
   //  reduces the number of variables, and the real gain -- few groups AND a

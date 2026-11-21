@@ -129,6 +129,16 @@ batch plan, sizing, clean utilities, costing and economics on top
   `unit:phaseChanger` (condenser) and `unit:isothermalFlash`.
 * Witnesses: `tutorials/batch/plant/apalutamide01_tablets` (acetone, nitrogen
   loop), `tutorials/steady/drying/sprayDryer01_sugar`.
+* Choosing a dryer type: the EduTool `dryer-selection` ("Which dryer for which
+  product") draws the seven common types (spray, rotary, fluidised bed, tray,
+  belt, drum, freeze) and walks a selection tree (feed form, heat sensitivity,
+  scale, batch or continuous) to one or two types, each rule read at its page
+  from Mujumdar, Perry and van 't Land, with "not cited" where they are silent;
+  the types the engine models open their case
+  (`tutorials/steady/drying/sprayDryer01_sugar`,
+  `tutorials/steady/drying/convDryer01_sugar_curve`,
+  `tutorials/steady/drying/solidDryer01_sugar`,
+  `tutorials/batch/drying/dryer01_sucrose_tray`).
 
 ### Blending, milling, screening, coating, packaging
 * Balances only: blenders and coating pans are `unit:mixer`; mills, screens

@@ -282,8 +282,8 @@
       ]
     }
   ],
-  "liveTools": 92,
-  "registryTools": 92,
+  "liveTools": 93,
+  "registryTools": 93,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -687,6 +687,19 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=compression"
+    },
+    {
+      "id": "dryer-selection",
+      "label": "Which dryer for which product",
+      "blurb": "Choose a dryer type from the feed, heat sensitivity, scale and mode.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "The seven dryer types that do most of the drying (spray, rotary, fluidised bed, tray, belt, drum, freeze), each drawn as a schematic; a selection tree from the feed form, the heat sensitivity, the scale and the batch or continuous mode to one or two types with the reason and the page of Mujumdar, Perry or van 't Land it was read from; a comparison table of residence time, energy per kg of water and typical products with \"not cited\" where the books are silent; and the tutorial cases of the types the engine models.",
+      "origins": [
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=dryer-selection"
     },
     {
       "id": "correlation-simplicity",
