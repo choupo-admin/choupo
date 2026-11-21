@@ -374,8 +374,9 @@ on the unit's own `catalystLoading`.  Without a `coolant {}` block the flat `U;`
 `areaPerVolume;`, `T_coolant;` form runs as before.  Example:
 `tutorials/steady/reactors/pfr05_cooled_multitubular` (o-xylene oxidation; the tube
 count SOLVED for a 665 K hot spot).
-NOTE: `cstr`/`pfr` compute concentration on the **liquid** molar volume
-(Vliq) — a liquid-basis model.  For a GAS-phase reactor prefer
+NOTE: `cstr` computes concentration on the **liquid** molar volume
+(Vliq); the `pfr` does so only for a liquid feed and re-prices Q along the bed from the
+equation of state for a vapour feed (C461).  For a GAS-phase CSTR prefer
 `conversionReactor` (below) — unless its rate law is written in T, P and mole
 fractions (a `type expression` with no `c[i]`, next), which reads no Vliq.
 
@@ -411,7 +412,7 @@ in the run log:
 ```
 Symbols a formula may read — what the REACTOR supplies, nothing chosen by the law:
 `T` [K], `P` [Pa], `x[i]` (mole fraction of the reacting fluid), `p[i]` = x_i P [Pa],
-`c[i]` [kmol/m3, as the reactor forms it — `cstr`/`pfr`: liquid basis F_i/Q;
+`c[i]` [kmol/m3, as the reactor forms it — `cstr`: liquid basis F_i/Q; `pfr`: F_i/Q, Q local for a vapour feed (C461), the feed's for a liquid;
 `batchReactor`/`dynamicCSTR`: n_i/V].  Functions: `exp ln log10 sqrt pow min max`, and
 every table column.  NOT supplied: the package's fugacities or activities (a law fitted
 with its own writes them as definitions; one fitted on the package's activities is
@@ -445,11 +446,12 @@ pressures ln k is linear in ln P; below the lowest / above the highest k is that
 the SAME P are summed.  The reaction line's own A b Ea is ignored; `reversible true` is detailed balance.  Reads the bed /
 feed pressure (a feed with no P refuses it by name); `thirdBody`/`low`/`troe` on it are refused.  Theory Guide `sec:plog-rate`.
 Witnesses: `plog01..04` (each equals `elementary01a` at 3 bar; gate `check_plog`).
-**Mole-changing gas reactions (a limit).**  The multi-reaction `pfr` prices every concentration as F_i/Q with Q the FEED's volumetric flow
-(held constant along the bed), so a gas reaction that changes the mole count runs too fast; and it has no declared temperature or
-pressure profile (only isothermal, adiabatic, `heatExchange`, Ergun).  `cracking01_ethane_sundaram_froment` works round the first by a
-chain of 20 `pfr` segments, each re-pricing Q at its inlet (expansion recovered to about 1 %); the second is not worked round, so the
-industrial coil of the source paper is not a case.  Theory Guide `sec:cracking-molecular`; gate `check_cracking_yields`.
+**Mole-changing gas reactions (C461).**  A `pfr` fed all-vapour prices every concentration as F_i/Q with Q the LOCAL
+volumetric flow, F_t v_vapour(T, P, z) from the case's equation of state at each RK4 stage, so a gas reaction that changes the mole
+count (cracking +40 %, ammonia synthesis falling), a moving T or an Ergun pressure drop changes the concentrations as it must; a liquid
+feed keeps its feed volumetric flow.  `cracking01_ethane_sundaram_froment` is ONE `pfr`.  The bed still has no declared temperature or
+pressure profile (only isothermal, adiabatic, `heatExchange`, Ergun), so the industrial coil of the source paper is not a case.
+Theory Guide `sec:pfr-volumetric-flow`, `sec:cracking-molecular`; gate `check_cracking_yields`.
 
 ### `conversionReactor`
 Stoichiometric reactor: you **specify the per-pass conversion** of the

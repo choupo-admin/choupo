@@ -21,9 +21,9 @@ WHAT THIS GATE CHECKS (tutorials/steady/reactors/cracking01_ethane_sundaram_from
   (A) FIDELITY.  An independent integration written HERE (plain Python, RK4, the
       volumetric flow re-priced at every step from the local mole count, the rate
       constants re-typed from Sundaram & Froment Table 3 and the K_C under Table 1)
-      is compared with the engine's outlet at the case's own volume.  The engine
-      chain re-prices Q at each of 20 segments, so the two differ by the
-      discretisation of the gas expansion (about 1 %); the tolerance is 3 % of each
+      is compared with the engine's outlet at the case's own volume.  The engine's
+      ONE pfr re-prices Q along the bed (C461), so the two agree to the
+      integration error; the tolerance is 3 % of each
       yield above 0.3 wt % and 0.01 wt % absolute below, and 0.6 points of
       conversion.  Two transcriptions agreeing is what the gate holds.
 
@@ -64,7 +64,7 @@ FEED_ETHANE_KMOL_H = 3.6
 FEED_STEAM_KMOL_H = 2.4034
 T = 1113.15            # K, T_R = 840 C
 P_ATM = 1.55           # atm, Table VIII
-V_TOTAL_M3 = 0.014896  # the sum of the twenty segments in the case's flowsheetDict
+V_TOTAL_M3 = 0.015004  # the pfr volume in the case's flowsheetDict (one pfr since C461)
 
 # Table VIII, pilot column, wt %
 PUBLISHED = {"H2": 3.71, "CH4": 2.99, "ethylene": 48.7, "ethane": 39.0, "propylene": 1.05, "13Butadiene": 0.99}

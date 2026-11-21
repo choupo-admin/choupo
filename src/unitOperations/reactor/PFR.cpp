@@ -124,6 +124,31 @@ scalar feedMolarVolume(const ThermoPackage& thermo, scalar T, scalar P,
     return (Mbar * 1.0e-3) / rhoL;                           // m3/mol
 }
 
+//  THE VOLUMETRIC FLOW ALONG THE BED (C461).  A concentration is F_i / Q with Q
+//  the LOCAL volumetric flow.  A LIQUID keeps its feed volumetric flow (the
+//  density change of a liquid reaction is small and its basis is the property
+//  door's liquid density at the feed).  A VAPOUR feed is re-priced at every
+//  point from the local molar flow, T and P and the case's equation of state
+//  (ideal gas where the package is ideal): Q = F_total * v_vapour(T, P, z).
+//  Held at the feed value it was wrong whenever the reaction changes the
+//  number of moles (ethane cracking +40 %, ammonia synthesis falling) or the
+//  temperature / pressure move along the bed.
+scalar localVolumetricFlow(const ThermoPackage& thermo, scalar T, scalar P,
+                           const sVector& Fi, scalar vf_in, scalar Qfeed)
+{
+    if (!feedIsVapour(vf_in)) return Qfeed;
+    const std::size_t n = thermo.n();       // Fi may carry T, P, H states after the n species
+    scalar Ft = 0.0;
+    for (std::size_t i = 0; i < n; ++i) Ft += std::max(Fi[i], 0.0);
+    if (!(Ft > 0.0)) return Qfeed;
+    sVector z(n, 0.0);
+    for (std::size_t i = 0; i < n; ++i) z[i] = std::max(Fi[i], 0.0) / Ft;
+    scalar Mbar = 0.0;
+    for (std::size_t i = 0; i < z.size(); ++i) Mbar += z[i] * thermo.comp(i).MW();
+    const scalar rhoV = thermo.density(T, P, z, DensityPhase::Vapour);   // kg/m3
+    return Ft * (Mbar * 1.0e-3) / rhoV;
+}
+
 } // namespace
 
 int PFR::solve(const DictPtr& dict,
@@ -254,13 +279,15 @@ int PFR::solve(const DictPtr& dict,
     const scalar catFactor = (catLoad > 0.0) ? 1000.0 * catLoad : 1.0;
     announceUnresolvedPellet("pfr", catLoad, verbosity);
 
+    const scalar P_feed1 = feedDict->lookupScalarOrDefault("P", 101325.0);
     auto rate = [&](const sVector& Fi)
     {
+        const scalar Qloc = localVolumetricFlow(thermo, T, P_feed1, Fi, vf_in, Q);
         scalar r = k;
         for (std::size_t j = 0; j < n; ++j)
         {
             if (order[j] == 0.0) continue;
-            scalar Cj = Fi[j] / Q;
+            scalar Cj = Fi[j] / Qloc;
             if (Cj < 0.0) Cj = 0.0;
             r *= std::pow(Cj, order[j]);
         }
@@ -270,7 +297,7 @@ int PFR::solve(const DictPtr& dict,
         for (std::size_t j = 0; j < n; ++j)
         {
             if (nu[j] <= 0.0) continue;
-            scalar Cj = Fi[j] / Q;
+            scalar Cj = Fi[j] / Qloc;
             if (Cj < 0.0) Cj = 0.0;
             r_rev *= std::pow(Cj, nu[j]);
         }
@@ -599,7 +626,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     law.reserve(R);
     RateOffer offer;
     offer.concentrationBasis = feedIsVapour(vf_in)
-        ? "F_i / Q, Q on the gas basis F * v_vapour(T_feed, P_feed) from the case's equation of state"
+        ? "F_i / Q, Q = F_total * v_vapour(T, P, z) re-priced at the LOCAL state of the bed from the case's equation of state"
         : "F_i / Q, Q on the liquid basis F M / rho_liquid at the feed state (the property door's liquid density)";
     //  A law that reads P gets the FEED's declared pressure, never the
     //  1 atm the reactor otherwise assumes for its phase resolution.
@@ -794,7 +821,11 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
         for (std::size_t i = 0; i < n; ++i)
         {
             if (Ft > 0.0) xBuf[i] = std::max(Fi[i], 0.0) / Ft;
-            if (anyConcLaw) concBuf[i] = std::max(Fi[i], 0.0) / Q;
+        }
+        if (anyConcLaw)
+        {
+            const scalar Qloc = localVolumetricFlow(thermo, Tk, Pk, Fi, vf_in, Q);
+            for (std::size_t i = 0; i < n; ++i) concBuf[i] = std::max(Fi[i], 0.0) / Qloc;
         }
         RateState rs;
         rs.T = Tk; rs.P = Pk; rs.conc = &concBuf; rs.x = &xBuf;
@@ -954,7 +985,9 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
 
         sVector dy(y.size(), 0.0);
         sVector conc(n, 0.0);
-        for (std::size_t i = 0; i < n; ++i) conc[i] = std::max(y[i], 0.0) / Q;
+        const scalar Qloc = anyConcLaw
+            ? localVolumetricFlow(thermo, Tk, Pk, y, vf_in, Q) : Q;
+        for (std::size_t i = 0; i < n; ++i) conc[i] = std::max(y[i], 0.0) / Qloc;
         RateState rs;
         rs.T = Tk; rs.P = Pk; rs.conc = &conc; rs.x = &zz;
         rs.amountPerKmol = 1000.0;                   // the march is in mol
