@@ -4870,6 +4870,22 @@ accepts today, and that is a policy call.
 > a test that reads it; (5) knob ranges from the validity the engine
 > declares.  Each with the real defect it would have caught named in its
 > header (rule 4e).
+> **C455 classes 2, 4, 5 BUILT (general, branch c455, 2026-11-21; class 1 was
+> check_lesson_prose_citations, class 3 dropped).**  Three gates, one shared
+> reader (bin/curate/lesson_scan.py), each with a registry in the gate, a
+> RATCHET in debt_registry.py for the unclassified remainder, and `--selftest`
+> sabotage arms (not wired: they test the gate): (2) check_lesson_absence_claims
+> -- an absence sentence is CLAIMED with probes of the tree, KNOWN_FALSE
+> (listed on every run) or pinned per file (LESSON_ABSENCE_UNCLASSIFIED); (4)
+> check_lesson_typed_numbers -- TYPED (file, literal, case, golden row) held to
+> half a unit of the last digit; a scan pins what it could not attribute
+> (LESSON_TYPED_CANDIDATES, empty at the seed; a fall of an unregistered pin
+> may be DRIFT); (5) check_lesson_knob_domains -- DOMAINS (file, knob, validity
+> from a record, an expression or physics), KNOWN violations that must still
+> violate, LESSON_KNOBS_UNDECLARED per file.  Not covered, on purpose: a number
+> derived from several rows (stream compositions are not golden rows), a
+> validity that is a model output (saltMixing eutonic molality, the
+> overpressure relieving pressure).  The lesson fixes it lists are C453's.
 
 > **C456, C457, C458 (Vitor, 2026-11-19, through the cloud session's board;
 > SESSIONS.md, the three notes "an olefins line", "the olefins commission,
