@@ -1102,6 +1102,10 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "chi-square and measurement tests on a splitter, time signatures, and "
       + "control charts.  Every plant is a toy computed in the page; it ends with "
       + "seeded challenges with a hidden fault for you to name.",
+    //  The Theory Guide has no fault-diagnosis or reconciliation chapter yet;
+    //  the nearest real destination is the dynamic tank's mass balance, which
+    //  the page's tank example is.
+    theory: "ch:dyn-tank",
   },
   //  COMMISSIONED 2026-10-20 (DEV.md 4c C119), Vitor: the Pi theorem only
   //  reduces the number of variables, and the real gain -- few groups AND a
