@@ -38,10 +38,16 @@ License
   and the sentence and the page of the book behind each.  Below it, the
   comparison table the three books support, with "not cited" where they are
   silent, and a small energy bench (page arithmetic on the cited table).  The
-  types the engine models open their tutorial case in a new tab.
+  types the engine models open their tutorial case in a new tab.  After the
+  comparison come the habitual tables, as the books print them (dryerTables.ts):
+  Mujumdar's feed-form table with its eleven columns, his ha table and his
+  vendor checklist beside van 't Land's two lists, Towler's Table 10.7, and the
+  drum dryer in Perry's and Mujumdar's numbers side by side.
 
-  NOTHING ON THIS PAGE IS RUN BY THE ENGINE; every fact is a book's at a page
-  (dryerSelection.ts), and the page says which is which.
+  EVERY FACT OF THE SELECTION IS A BOOK'S AT A PAGE (dryerSelection.ts), and
+  the page says which is which.  ONE SECTION RUNS THE ENGINE (C465): the
+  three flow arrangements of a continuous convective dryer, whose profiles and
+  outlets are the in-browser engine's own (DryerArrangements.tsx).
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
@@ -52,12 +58,20 @@ import {
 
 import { caseTabSearch, openAppTab } from "../openInTab.js";
 import { DrawingLegend, DryerDrawing } from "./dryerDrawings.js";
+import { ArrangementCards, ArrangementRuns, ArrangementUses } from "./DryerArrangements.js";
 import {
   DEFAULT_INPUTS, DRYER_IDS, DRYERS, FEED_LABEL, HEAT_LABEL, LATENT_HEAT_KJ_PER_KG, MODE_LABEL,
   SCALE_LABEL, SIZE_LABEL, citeOf, comparisonRows, energyBills, recommend, waterEvaporated,
   type DryerId, type FeedForm, type Heat, type Inputs, type Mode, type Scale, type Size,
+  type SourceId,
 } from "./dryerSelection.js";
 import { DRYER_SELECTION_LIMITS, DRYER_SELECTION_QUIZ, DRYER_SELECTION_STEPS } from "./dryerSelectionLesson.js";
+import {
+  DRUM_BOOKS, MUJ_MINIMUM_INFO, MUJ_T11_COLUMNS, MUJ_T11_ROWS, MUJ_T11_SRC, MUJ_T15_ROWS, MUJ_T15_SRC,
+  MUJ_T16_ROWS, MUJ_T16_SRC, TOW_FEED_KEY, TOW_T107_ROWS, TOW_T107_SRC, VTL_T31_LEFT, VTL_T31_RIGHT,
+  VTL_T32_LEFT, VTL_T32_RIGHT, VTL_T3_SRC, G_PER_M2S_TO_KG_PER_M2H, mujumdarDrumEfficiency,
+  perryDrumEvapKgPerM2h,
+} from "./dryerTables.js";
 import { LessonQuiz } from "./lessonQuiz.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
 import { OriginMark } from "./origin.js";
@@ -236,7 +250,7 @@ function ComparisonTable(): JSX.Element {
   return (
     <Box data-dryer-comparison="">
       <OriginMark of={["reference"]}
-        note="Mujumdar Tables 1.2 and 1.4; van 't Land and Perry for the cells those tables lack" />
+        note="Mujumdar Tables 1.2 and 1.4; van 't Land, Perry and Towler for the cells those tables lack" />
       <Box style={{ overflowX: "auto" }} mt={4}>
         <Table withTableBorder withColumnBorders fz="xs">
           <Table.Thead>
@@ -268,6 +282,241 @@ function ComparisonTable(): JSX.Element {
     </Box>
   );
 }
+
+const CROSS = "\u00d7";
+
+function SourceLine({ src }: { src: readonly SourceId[] }): JSX.Element {
+  return <Text size="xs" c="dimmed" mt={2}>Read in: {citeOf(src)}.</Text>;
+}
+
+/** Mujumdar Table 1.1 as printed: the twelve rows against the eleven feed columns. */
+function FeedTicksTable(): JSX.Element {
+  const groups: { label: string; n: number }[] = [];
+  for (const c of MUJ_T11_COLUMNS) {
+    const last = groups[groups.length - 1];
+    if (last && last.label === c.group) last.n += 1; else groups.push({ label: c.group, n: 1 });
+  }
+  return (
+    <Box data-table="muj-1.1">
+      <Text size="sm" fw={600}>Mujumdar, Table 1.1: dryer selection versus feedstock form</Text>
+      <OriginMark of={["reference"]} note="transcribed at p. 21 from an image of the page" />
+      <Box style={{ overflowX: "auto" }} mt={4}>
+        <Table withTableBorder withColumnBorders fz="xs">
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th rowSpan={2}>Dryer</Table.Th>
+              {groups.map((g) => <Table.Th key={g.label} colSpan={g.n} ta="center">{g.label}</Table.Th>)}
+            </Table.Tr>
+            <Table.Tr>
+              {MUJ_T11_COLUMNS.map((c) => <Table.Th key={c.label}>{c.label}</Table.Th>)}
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {MUJ_T11_ROWS.map((r, k) => (
+              <Table.Tr key={k} data-muj11-row={`${r.group}|${r.dryer}`}>
+                <Table.Td>{r.dryer} <Text span size="xs" c="dimmed">({r.group.toLowerCase().replace(" dryers", "")})</Text></Table.Td>
+                {MUJ_T11_COLUMNS.map((c, j) => (
+                  <Table.Td key={c.label} ta="center">{r.ticks.includes(j) ? CROSS : ""}</Table.Td>
+                ))}
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </Box>
+      <SourceLine src={MUJ_T11_SRC} />
+    </Box>
+  );
+}
+
+/** Mujumdar Table 1.5 as printed. */
+function HaTable(): JSX.Element {
+  return (
+    <Box data-table="muj-1.5">
+      <Text size="sm" fw={600}>
+        Mujumdar, Table 1.5: approximate ha (kcal/(h degC m3)) and the temperature differences
+      </Text>
+      <OriginMark of={["reference"]}
+        note="transcribed at p. 27; ha for the convection dryers, U (kcal/(h degC m2)) for the conduction dryers" />
+      <Box style={{ overflowX: "auto" }} mt={4}>
+        <Table withTableBorder withColumnBorders fz="xs">
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Type</Table.Th><Table.Th>ha (convection) or U (conduction)</Table.Th>
+              <Table.Th>(t - t_m) log-mean (degC), or t_k - t_m for conduction</Table.Th>
+              <Table.Th>Inlet hot air temperature (degC)</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {MUJ_T15_ROWS.map((r) => (
+              <Table.Tr key={r.type} data-ha-row={r.type}>
+                <Table.Td>{r.type} <Text span size="xs" c="dimmed">({r.group.toLowerCase()})</Text></Table.Td>
+                <Table.Td>{r.coefficient}</Table.Td>
+                <Table.Td>{r.lines.map((l, i) => (
+                  <Text key={i} size="xs">{l.flow ? `${l.flow}: ` : ""}{l.dT}</Text>))}</Table.Td>
+                <Table.Td>{r.lines.map((l, i) => (
+                  <Text key={i} size="xs">{l.tIn ?? "-"}</Text>))}</Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </Box>
+      <SourceLine src={MUJ_T15_SRC} />
+    </Box>
+  );
+}
+
+function ListColumns({ left, right }: { left: readonly string[]; right: readonly string[] }): JSX.Element {
+  return (
+    <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+      <Stack gap={0}>{left.map((t) => <Text key={t} size="xs">{"\u2022"} {t}</Text>)}</Stack>
+      <Stack gap={0}>{right.map((t) => <Text key={t} size="xs">{"\u2022"} {t}</Text>)}</Stack>
+    </SimpleGrid>
+  );
+}
+
+/** "Before you choose": Mujumdar Table 1.6 and his minimum information, van 't Land Tables 3.1 and 3.2. */
+function Checklist(): JSX.Element {
+  return (
+    <Box data-table="checklist" px="sm" py={8}
+      style={{ border: "1px solid var(--mantine-color-default-border)", borderRadius: 4 }}>
+      <Title order={5}>Before you choose: what to know about the product</Title>
+      <OriginMark of={["reference"]}
+        note="Mujumdar Table 1.6 (p. 28) and the minimum information (pp. 27-28); van 't Land Tables 3.1 and 3.2 (p. 22)" />
+      <Text size="sm" fw={600} mt={6}>Mujumdar, Table 1.6: typical checklist for the selection of industrial dryers</Text>
+      <Table withTableBorder withColumnBorders fz="xs" mt={4} data-checklist-table="muj-1.6">
+        <Table.Tbody>
+          {MUJ_T16_ROWS.map((r) => (
+            <Table.Tr key={r.factor}>
+              <Table.Td w="35%">{r.items.length === 0 ? <em>{r.factor}</em> : r.factor}</Table.Td>
+              <Table.Td>{r.items.map((it) => <Text key={it} size="xs">{"\u2022"} {it}</Text>)}</Table.Td>
+            </Table.Tr>
+          ))}
+        </Table.Tbody>
+      </Table>
+      <SourceLine src={MUJ_T16_SRC} />
+      <Text size="sm" fw={600} mt={8}>Mujumdar: the minimum quantitative information to arrive at a dryer</Text>
+      <Stack gap={0} mt={2} data-checklist-table="muj-minimum">
+        {MUJ_MINIMUM_INFO.map((t) => <Text key={t} size="xs">{"\u2022"} {t}</Text>)}
+      </Stack>
+      <SourceLine src={MUJ_T16_SRC} />
+      <Text size="sm" fw={600} mt={8}>van 't Land, Table 3.1: data to be assessed before attempting dryer selection</Text>
+      <Box data-checklist-table="vtl-3.1" mt={2}><ListColumns left={VTL_T31_LEFT} right={VTL_T31_RIGHT} /></Box>
+      <Text size="sm" fw={600} mt={8}>van 't Land, Table 3.2: some criteria for judging a dried particulate material</Text>
+      <Box data-checklist-table="vtl-3.2" mt={2}><ListColumns left={VTL_T32_LEFT} right={VTL_T32_RIGHT} /></Box>
+      <SourceLine src={VTL_T3_SRC} />
+    </Box>
+  );
+}
+
+/** Towler Table 10.7 as printed (printed p. 571). */
+function TowlerTable(): JSX.Element {
+  return (
+    <Box data-table="tow-10.7">
+      <Text size="sm" fw={600}>Towler, Table 10.7: dryer selection</Text>
+      <OriginMark of={["reference"]}
+        note="transcribed at p. 571 from an image of the page; feed-condition arrows read from the image" />
+      <Box style={{ overflowX: "auto" }} mt={4}>
+        <Table withTableBorder withColumnBorders fz="xs">
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Mode</Table.Th><Table.Th>Generic type</Table.Th><Table.Th>Specific dryer types</Table.Th>
+              <Table.Th>Feed condition</Table.Th><Table.Th>Jacketed</Table.Th>
+              <Table.Th>Suitable for heat-sensitive materials</Table.Th><Table.Th>Suitable for vacuum service</Table.Th>
+              <Table.Th>Retention or cycle time</Table.Th><Table.Th>Heat transfer method</Table.Th>
+              <Table.Th>Capacity</Table.Th><Table.Th>Typical evaporation capacity</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {TOW_T107_ROWS.map((r) => (
+              <Table.Tr key={r.types.join("|")} data-tow-row={r.types.join(" / ")}>
+                <Table.Td>{r.mode}</Table.Td><Table.Td>{r.generic}</Table.Td>
+                <Table.Td>{r.types.join(", ")}</Table.Td>
+                <Table.Td>{r.feed.join(", ")}</Table.Td>
+                <Table.Td>{r.jacketed}</Table.Td><Table.Td>{r.heatSensitive}</Table.Td>
+                <Table.Td>{r.vacuum}</Table.Td><Table.Td>{r.retention}</Table.Td>
+                <Table.Td>{r.heatTransfer}</Table.Td><Table.Td>{r.capacity}</Table.Td>
+                <Table.Td>{r.evap === null ? <Cell v={null} /> : `${r.evap} ${r.evapUnit}`}</Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </Box>
+      <Text size="xs" mt={4}>Key to the feed conditions:</Text>
+      {TOW_FEED_KEY.map((t, i) => <Text key={i} size="xs">{i + 1}. {t}</Text>)}
+      <Text size="xs" c="dimmed" mt={2}>
+        Retention times are printed as in the library copy ("6.48 h" for a range whose dash is
+        printed as a point).
+      </Text>
+      <SourceLine src={TOW_T107_SRC} />
+    </Box>
+  );
+}
+
+/** The drum dryer in Perry's Table 12-46 and Mujumdar's Table 1.4 and Chapter 9: both shown. */
+function DrumTwoBooks(): JSX.Element {
+  const [pLo, pHi] = perryDrumEvapKgPerM2h();
+  const [eLo, eHi] = mujumdarDrumEfficiency();
+  const b = DRUM_BOOKS;
+  return (
+    <Box data-table="drum-two-books" px="sm" py={8}
+      style={{ border: "1px solid var(--mantine-color-default-border)", borderRadius: 4 }}>
+      <Title order={5}>The drum dryer in two books</Title>
+      <OriginMark of={["reference", "page"]}
+        note="Perry Table 12-46 (p. 12-81), Mujumdar Table 1.4 (p. 26) and Chapter 9 (p. 206); the conversion factor is the page's" />
+      <Table withTableBorder withColumnBorders fz="xs" mt={4}>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Quantity</Table.Th><Table.Th>Perry, Table 12-46</Table.Th>
+            <Table.Th>Mujumdar, Table 1.4 and Chapter 9</Table.Th><Table.Th>Agree?</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          <Table.Tr data-drum-row="evap">
+            <Table.Td>Specific evaporation</Table.Td>
+            <Table.Td>
+              Typical range {b.perry.evapRangeGPerM2s[0]}-{b.perry.evapRangeGPerM2s[1]} g/(m2 s)
+              = {fx(pLo, 1)}-{fx(pHi, 1)} kg/(m2 h) (x {G_PER_M2S_TO_KG_PER_M2H}); "this estimate" {b.perry.evapEstimateGPerM2s} g/(m2 s)
+            </Table.Td>
+            <Table.Td>
+              Table 1.4, drum dryer (for pastes): {b.mujumdar14.evapKgPerM2h[0]}-{b.mujumdar14.evapKgPerM2h[1]} kg/(m2 h);
+              Chapter 9: {b.mujumdar9.evapDifficultKgPerM2h[0]}-{b.mujumdar9.evapDifficultKgPerM2h[1]} for materials
+              difficult to dry, {b.mujumdar9.evapEasyKgPerM2h[0]}-{b.mujumdar9.evapEasyKgPerM2h[1]} for easy ones
+            </Table.Td>
+            <Table.Td><Badge size="xs" color="orange" variant="light">no: they differ</Badge></Table.Td>
+          </Table.Tr>
+          <Table.Tr data-drum-row="eff">
+            <Table.Td>Thermal efficiency</Table.Td>
+            <Table.Td>Typical range {b.perry.effRange[0]}-{b.perry.effRange[1]}; "this estimate" {b.perry.effEstimate}</Table.Td>
+            <Table.Td>
+              {fx(eLo, 2)}-{fx(eHi, 2)} implied by {fmtKJ(b.mujumdar14.energy[0])}-{fmtKJ(b.mujumdar14.energy[1])} kJ/kg
+              and {LATENT_HEAT_KJ_PER_KG} kJ/kg (Chapter 9: {b.mujumdar9.energy[0]}-{b.mujumdar9.energy[1]} kJ/kg)
+            </Table.Td>
+            <Table.Td><Badge size="xs" color="teal" variant="light">yes</Badge></Table.Td>
+          </Table.Tr>
+        </Table.Tbody>
+      </Table>
+      <Text size="xs" c="dimmed" mt={4}>
+        Perry's range lies above Mujumdar's Table 1.4 and meets his Chapter 9 figure for difficult
+        materials only at its top: test the product, as both books advise.
+      </Text>
+      <SourceLine src={[...b.perry.src, ...b.mujumdar14.src, ...b.mujumdar9.src]} />
+    </Box>
+  );
+}
+
+function HabitualTables(): JSX.Element {
+  return (
+    <Stack gap="md" data-habitual-tables="">
+      <FeedTicksTable />
+      <HaTable />
+      <Checklist />
+      <TowlerTable />
+      <DrumTwoBooks />
+    </Stack>
+  );
+}
+
+const fmtKJ = (v: number): string => v.toLocaleString("en-US");
 
 function EnergyBench(): JSX.Element {
   const [ms, setMs] = useState<number | string>(1000);
@@ -329,8 +578,9 @@ export function DryerSelectionTool(): JSX.Element {
             The seven types that do most of the drying, drawn as schematics, and the rules that
             choose between them from the form of the feed, its sensitivity to heat, the scale
             and the mode, each read from Mujumdar's Handbook of Industrial Drying, Perry's
-            Handbook and van 't Land's Drying in the Process Industry, at its page.  A shortlist
-            to take to a drying test, not a design.
+            Handbook, van 't Land's Drying in the Process Industry and Towler's Chemical
+            Engineering Design, at its page.  A shortlist to take to a drying test, not a
+            design.
           </Text>
         </Box>
 
@@ -346,7 +596,21 @@ export function DryerSelectionTool(): JSX.Element {
         <Title order={5}>The seven side by side</Title>
         <ComparisonTable />
         {step(6)}
+        <HabitualTables />
         {step(7)}
+        {step(8)}
+
+        <Title order={4} data-section="arrangements">Co-current, counter-current, cross-flow</Title>
+        <OriginMark of={["engine"]}
+          note="the profiles and outlets below are the engine's own, run in your browser on three tutorial cases" />
+        {step(9)}
+        <ArrangementCards />
+        <Box><DrawingLegend /></Box>
+        {step(10)}
+        {step(11)}
+        <ArrangementRuns />
+        {step(12)}
+        <ArrangementUses />
 
         <LessonQuiz title="Check your understanding" questions={DRYER_SELECTION_QUIZ}
           lesson={DRYER_SELECTION_STEPS} />

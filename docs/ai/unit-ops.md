@@ -3632,8 +3632,8 @@ library (`constant/crystallisation`) the steady MSMPR uses.
 ### `convectiveDryer`
 A CONTINUOUS convective dryer: a wet sorbing solid (a component with a
 `sorption {}` isotherm in `s[]`, its moisture as liquid) and a hot-air
-stream meet over a declared gas–solid contact `area`, `flow cocurrent` or
-`flow countercurrent`.  Along the area the solid dries at the local rate
+stream meet over a declared gas–solid contact `area`, `flow cocurrent`,
+`flow countercurrent` or `flow crossflow`.  Along the area the solid dries at the local rate
 `R = R_c f(Φ)` of its characteristic drying curve (`dryingCurve {}`, as in
 `batchDryer`; absent = linear), with `R_c = k_Y (Y_sat(T_wb) − Y)` and
 `X_eq` (GAB) read at the LOCAL air, which cools and humidifies as it goes.
@@ -3651,7 +3651,8 @@ Lewis = 1, one `k_Y`, no axial mixing, no re-wetting, adiabatic.
   inputs  ( wetSolid  hotAir );  outputs ( drySolid  humidExhaust );
   operation
   {
-      flow              countercurrent;        // or cocurrent
+      flow              countercurrent;        // or cocurrent | crossflow
+      // drivingForce   logMean;             // crossflow only: logMean (default) | inlet
       area              300 m2;                // gas-solid contact area
       k_Y               [1 -2 -1 0 0] 0.05;    // kg/(m2 s) per (kg/kg)
       criticalMoisture  0.12;                  // kg/kg dry solid -- MEASURED
@@ -3663,8 +3664,17 @@ Lewis = 1, one `k_Y`, no axial mixing, no re-wetting, adiabatic.
 KPIs: `X_initial`, `X_final`, `X_equilibrium_inlet_air`, `X_critical`,
 `water_removed_kg_s`, `T_air_out`, `T_solid_out`, `Y_air_in`, `Y_air_out`,
 `energyResidual_kW`, `position_critical`; profile along `position` (area
-fraction).  Witness: `tutorials/steady/drying/convDryer01_sugar_curve`
-(co- beside counter-current; gate `check_convective_dryer`).
+fraction).  Witnesses on the SAME feed and air: `convDryer01_sugar_curve` (co- beside
+counter-current, each on half the feed), `convDryer02_sugar_countercurrent`
+and `convDryer03_sugar_crossflow` (one dryer each on that half; gates
+`check_convective_dryer`, `check_dryer_arrangements`).
+**`flow crossflow`** (Mujumdar 2006 s.3.6.2.3.1, Eq. 3.66-3.78): solid in plug
+flow, EVERY length element fed with the inlet air (uniform, Eq. 3.76), the
+exhaust the mix of the elements; the rate depends on `X` alone, the solid sits
+at the inlet air's wet bulb.  `drivingForce logMean` (default, Eq. 3.73) or
+`inlet` (Eq. 3.72).  Refused by name: `recirculation`, `axialDispersion`, a
+two-dimensional bed, a non-`uniform` `airDistribution`, an element whose air
+would saturate.  Theory: `sec:dryer-flow-arrangements`.
 
 ### `batchDryer`
 A tray of wet solid losing its moisture into air of DECLARED, CONSTANT

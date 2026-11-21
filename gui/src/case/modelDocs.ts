@@ -178,6 +178,7 @@ const THEORY_DEST: Record<string, string> = {
   batchCrystalliser: "ch:crystalliser",
   sprayDryer: "ch:drying",
   solidDryer: "ch:drying",
+  convectiveDryer: "sec:dryer-flow-arrangements",   // co-, counter- and cross-flow: the balances, the driving force, the book's equations
   // batch / control
   batchStill: "ch:rayleigh",
   still: "ch:rayleigh",
@@ -477,6 +478,13 @@ const SLOT_MODEL_DEST: Record<string, ModelDest> = {
   "column.operation.hydraulics.pressureDropModel:Sinnott":         { guide: "theory", dest: "ch:hydraulics" },
   "column.operation.packing.model:RochaBravoFair":                 { guide: "theory", dest: "sec:packing-rbf" },
   "column.operation.packing.model:Delft":                          { guide: "theory", dest: "sec:packing-delft" },
+  //  The continuous convective dryer's FLOW word: each arrangement opens the
+  //  section that derives it (its paragraphs name each arrangement).
+  "convectiveDryer.operation.flow:cocurrent":       { guide: "theory", dest: "sec:dryer-flow-arrangements" },
+  "convectiveDryer.operation.flow:countercurrent":  { guide: "theory", dest: "sec:dryer-flow-arrangements" },
+  "convectiveDryer.operation.flow:crossflow":       { guide: "theory", dest: "sec:dryer-flow-arrangements" },
+  "convectiveDryer.operation.drivingForce:logMean": { guide: "theory", dest: "sec:dryer-flow-arrangements" },
+  "convectiveDryer.operation.drivingForce:inlet":   { guide: "theory", dest: "sec:dryer-flow-arrangements" },
   //  The mill (DEV.md 4c C361): the unit's `model` word is its SELECTION
   //  function, `operation.breakage.model` its BREAKAGE function -- and both
   //  can be `austin`, two different equations.

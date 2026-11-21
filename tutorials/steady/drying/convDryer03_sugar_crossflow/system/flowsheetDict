@@ -1,0 +1,74 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  convDryer03_sugar_crossflow  --  the CROSS-FLOW dryer (belt / plug-flow
+                                   fluid bed).
+
+  THE THREE ARRANGEMENTS ON ONE FEED AND ONE AIR.  convDryer01 sends half of
+  the feed through a co-current and half through a counter-current dryer;
+  this case is the third half-feed (1711.5 kg/h dry sucrose at X_in = 0.20
+  kg/kg, 330 K; 400 kmol/h of air at 420 K, 2 mol% water), the same dryer
+  data (A = 300 m2, k_Y = 0.05 kg/(m2 s), X_c = 0.12, f = Phi^1.5), so the
+  three outlets compare one to one:
+
+                      co-current   counter-current   cross-flow
+    X out [kg/kg]       0.02359       0.00474          0.00902
+    Y out [kg/kg dry]   0.03930       0.04214          0.04149
+    T air out [K]       359.7         353.3            354.7
+    T solid out [K]     316.1         315.7            315.7
+    X_c crossed at      6.4 % of A    12.4 % of A      27.2 % of A
+
+  Theory: Theory Guide sec:dryer-flow-arrangements; gate
+  check_dryer_arrangements (an independent integration of each arrangement).
+
+  The solid travels in plug flow along the length; EVERY length element is
+  fed with the INLET air, which leaves it once, and the exhaust is the mix of
+  the elements (Mujumdar 2006 s.3.6.2.3.1, Eq. 3.66-3.78, Figs. 3.8-3.9).
+  The air never depletes along the length: each element's rate is set by
+  fresh air at 420 K, so the first quarter of the length dries at a CONSTANT
+  rate (the solid sits at the inlet air's wet bulb, 315.7 K; the air that
+  leaves those elements is nearly saturated at 319.7 K) and the falling-rate
+  period then runs against the same fresh-air driving force.  The local air
+  leaving the last element is the hottest and driest (415.6 K), the first the
+  coolest; the exhaust is their mix.
+
+  Driving force: operation.drivingForce logMean (default, Eq. 3.73: the air
+  plugs through the element's area) or inlet (Eq. 3.72, valid for small
+  k_Y A / G; refused by name where an element would leave above Y*).
+  Refused by name: air recirculation, axial dispersion (Eq. 3.79-3.84), a
+  two-dimensional bed, a non-uniform air distribution, too little air.
+  HYPOTHESES (announced): the solid at the inlet air's wet bulb all along;
+  Lewis = 1; one k_Y; uniform air (Eq. 3.76); adiabatic; the solid's step from
+  330 K to that wet bulb is spread over the elements in proportion to their air.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        dryer;
+        type        convectiveDryer;
+        inputs      ( wetSolid  hotAir );
+        outputs     ( drySolid  exhaust );
+        operation
+        {
+            flow              crossflow;
+            area              300 m2;        // gas-solid contact area
+            k_Y               [1 -2 -1 0 0]  0.05;
+            criticalMoisture  0.12;           // kg/kg dry solid
+            dryingCurve
+            {
+                shape     power;
+                exponent  1.5;
+                source    "hypothetical teaching curve -- not a measured material";
+            }
+        }
+    }
+);

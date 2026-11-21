@@ -290,7 +290,7 @@ Condenser — the SAME unit as `phaseChanger` under a name that says which direc
 
 ## `convectiveDryer`  (convectiveDryer operation)
 
-A continuous convective dryer (steady): a wet sorbing solid and a hot-air stream in contact along a declared area, co-current or counter-current. The solid follows its characteristic drying curve — constant rate R_c = k_Y (Y_sat(T_wb) - Y) above the critical moisture, R = R_c f(Phi) below it — and the air's humidity and temperature are ALGEBRAIC in the solid's moisture, from the water and enthalpy balances priced on the package's own formation surface (the surface the plant energy report checks), so the single ODE S dX/dxi = -R A is marched by RK4 over the normalised area. Counter-current is a two-point problem, solved by shooting on the outlet moisture. X_eq is the GAB equilibrium moisture at the local air's water activity, read from the solid component's `sorption {}` record. The air inlet must declare `phase gas;` and the solid inlet must carry no vapour; both are refused by name otherwise. NOT modelled, and announced: the solid's warm-up in the falling-rate period (the solid stays at the local wet-bulb temperature).
+A continuous convective dryer (steady): a wet sorbing solid and a hot-air stream in contact along a declared area, co-current, counter-current or cross-flow. The solid follows its characteristic drying curve — constant rate R_c = k_Y (Y_sat(T_wb) - Y) above the critical moisture, R = R_c f(Phi) below it — and the air's humidity and temperature are ALGEBRAIC in the solid's moisture, from the water and enthalpy balances priced on the package's own formation surface (the surface the plant energy report checks), so the single ODE S dX/dxi = -R A is marched by RK4 over the normalised area. Counter-current is a two-point problem, solved by shooting on the outlet moisture. X_eq is the GAB equilibrium moisture at the local air's water activity, read from the solid component's `sorption {}` record. The air inlet must declare `phase gas;` and the solid inlet must carry no vapour; both are refused by name otherwise. NOT modelled, and announced: the solid's warm-up in the falling-rate period (the solid stays at the local wet-bulb temperature).
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
@@ -299,6 +299,7 @@ A continuous convective dryer (steady): a wet sorbing solid and a hot-air stream
 | `k_Y` | ✓ | number | kg/(m2.s) | Mass flux per unit humidity-ratio driving force, kg/(m2 s) per (kg moisture / kg dry gas). Equipment data — never defaulted. Declare it d… |
 | `criticalMoisture` | ✓ | number | kg/kg dry solid | The break between the constant-rate and the falling-rate periods, dry-solid basis. Measured on the material; it must lie above the equili… |
 | `dryingCurve` |   | object | — | The shape of the falling-rate period on van Meel's (1958) normalised coordinates: Phi = (X - X_eq)/(X_c - X_eq) and f = R/R_c, so R = R_c… |
+| `drivingForce` |   | string | - | flow crossflow only. logMean: the air plugs through the element's area, G ln((Y*-Y1)/(Y*-Y2)) = k_Y A f (Mujumdar Eq. 3.73); inlet: the i… |
 | `nSteps` |   | integer | - | Resolution of the march over the normalised area; the default is announced when used. |
 
 ## `conversionReactor`  (conversionReactor operation)

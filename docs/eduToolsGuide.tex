@@ -3230,24 +3230,64 @@ the tool reports \emph{which} absence it is rather than drawing a zero.
 \subsection*{Which dryer for which product \quad(\code{tool=dryer-selection})}\label{sec:edu-dryer-selection}
 A \emph{selection} aid: the seven dryer types that do most of the drying ---
 spray, direct-heat rotary, fluidised bed, tray, belt, drum and freeze ---
-each drawn as a schematic made for the page (feed in blue, hot gas in red,
-product in amber, vapour in grey; none copied from a book), and a tree that
+each drawn as a schematic made for the page (wet feed and wet material in
+blue, hot gas in red, product in amber, vapour in grey, a cold surface in
+teal; none copied from a book), and a tree that
 asks, in the order feed form, heat sensitivity, scale, batch or continuous,
 and answers with one or two types, the reason, and the book and page it was
 read from.  Every rule is read from Mujumdar, \emph{Handbook of Industrial
-Drying}, 3rd ed.\ (2006), Chapter~1 (Tables~1.1--1.4, section~1.5.3);
+Drying}, 3rd ed.\ (2006), Chapter~1 (Tables~1.1--1.6, section~1.5.3);
 Perry's \emph{Chemical Engineers' Handbook}, 9th ed.\ (2019), Section~12
-(Table~12-11, the selection considerations on p.~12-36); and van~'t Land,
+(Table~12-11, the selection considerations on p.~12-36); van~'t Land,
 \emph{Drying in the Process Industry} (2012), whose two decision trees
-(Figs.~3.1 and~3.2) supply the 30 and 75~$^\circ$C product-temperature bands.
-The throughput bands are Perry's (batch below about 50~kg/h, continuous
-above 1~t/h); where the books disagree --- Perry marks the batch tray
-`not applicable' to a free-flowing powder, van~'t Land and Mujumdar admit it
---- the page says so.  The comparison table gives residence time, energy per
-kilogram of water (Mujumdar's Table~1.4: 4\,500--11\,500~kJ/kg for a spray
-dryer, 3\,200--6\,500 for a drum dryer) and typical products, and prints
-\emph{not cited} in every cell the three books leave blank (the energy of the
-batch tray and the freeze dryer, three evaporation capacities).  A small
+(Figs.~3.1 and~3.2) supply the 30 and 75~$^\circ$C product-temperature bands
+(the second reaches the spray dryer only together with ``particle size
+increase required?'', and the tree is drawn for a particulate solid); and
+Towler, \emph{Chemical Engineering Design} (2008), Table~10.7.
+
+After an expert review the drawings were checked against the chapter of
+Mujumdar's Handbook that describes each equipment: the rotary shell is inclined
+so that the feed enters the upper end and the product leaves the lower end,
+with a burner and combustion chamber at the feed end and a cyclone on the
+exhaust (Chapter~7); the spray dryer has its hot gas at the roof around the
+atomiser and an exhaust duct from the cone to a cyclone (Chapter~10); the
+fluidised bed has an overflow weir and a cyclone (Chapter~8, Towler); the tray
+cabinet recirculates 80 to 95 per cent of its air past a heater, with fresh air
+in and a small exhaust out (Perry p.~12-39); the belt passes the gas through
+the layer, up in one zone and down in the next, then a cooling zone (Towler
+pp.~572--573, Chapter~17); the drum dips into a pan of the feed, with a knife
+on its surface (Chapter~9).  A test reads the rotary drawing's transform and
+holds the feed end above the discharge end.
+
+Where the books disagree --- Perry marks the batch tray `not applicable' to a
+free-flowing powder, van~'t Land and Mujumdar admit it; for a fine powder in a
+continuous dryer Perry admits a fluidised bed ``if not too dusty'' while van~'t
+Land's tree and Mujumdar's remark on entrainment send it to an indirect rotary
+or a disk dryer (so the rule's answer is \emph{outside the seven}); Perry's
+drum evaporation of 7--11~g/(m$^2$\,s), i.e.\ 25--40~kg/(m$^2$\,h), differs
+from Mujumdar's 6--20 --- the page says so.  One error of a book is named and
+not copied: Mujumdar p.~22 says the heat of sublimation is ``severalfold lower''
+than that of evaporation, while his own Chapter~11 (p.~259) gives
+2840~kJ/kg of ice, against 2257~kJ/kg of water at 100~$^\circ$C.  The
+co-current note is attached only to the spray and rotary picks; a well-mixed
+fluidised bed has one temperature, a belt blows the gas through the bed, and the
+drum has no gas stream.  The throughput bands are Perry's (batch below about
+50~kg/h, continuous above 1~t/h).
+
+The comparison table gives residence time, energy per kilogram of water
+(Mujumdar's Table~1.4: 4\,500--11\,500~kJ/kg for a spray dryer, 3\,200--6\,500
+for a drum dryer), capacity and typical products, and prints \emph{not cited}
+in every cell the four books leave blank (the energy of the batch tray and the
+freeze dryer, the capacity of the fluidised bed; Towler's Table~10.7 fills the
+tray, 0.15--1.0~kg/(h\,m$^2$), and the belt, 1.5--35~kg/(h\,m$^3$)).  Below it come the
+habitual tables, each transcribed at its page, pinned cell by cell by the test
+and rendered as a table: Mujumdar's Table~1.1 with its eleven feed columns, his
+Table~1.5 (ha, log-mean temperature difference and inlet gas temperature,
+co-current against counter-current), his Table~1.6 and minimum-information list
+beside van~'t Land's Tables~3.1 and~3.2 as a ``before you choose'' checklist,
+Towler's Table~10.7 (twenty dryers: feed condition, jacketed, heat-sensitive,
+vacuum, retention time, heat transfer, capacity), and the drum dryer in
+Perry's Table~12-46 and Mujumdar's numbers side by side.  A small
 bench turns a dry-solid rate and two moistures into the water to evaporate and
 the heat duty of each priced type, as the page's own arithmetic on the cited
 range ($\eta \approx \Delta h_\mathrm{vap}/e$ with 2257~kJ/kg).  The four
@@ -3257,9 +3297,167 @@ types the engine models open their tutorial case in a new tab:
 family, which has no rotary geometry),
 \code{steady/drying/solidDryer01\_sugar} (nearest to a well-mixed bed) and
 \code{batch/drying/dryer01\_sucrose\_tray}; the drum, belt and freeze dryers
-have no model and say so.  The page computes nothing in the engine and
-replaces no drying test.
+have no model and say so.  The selection computes nothing and replaces no
+drying test.
+
+\paragraph{Co-current, counter-current, cross-flow.}  A closing section (steps
+9 to 12) is about the one choice of a continuous convective dryer that the
+types above do not make: which way the gas meets the solid.  It first says it
+in plain words --- the gas is hot and dry where it enters and cool and humid
+where it leaves, so where it enters decides what each part of the solid sees:
+the wettest solid meets the hottest gas in co-current flow, the driest solid
+meets it in counter-current flow, and every length of the solid meets gas fresh
+from the inlet in cross-flow --- with one original schematic for each (solid and
+gas drawn from primitives in the page's colour code; the gas is red where hot and
+grey where used up, and a test reads each arrow's direction from its own
+coordinates).  It then states the balances as the Theory Guide section
+\code{sec:dryer-flow-arrangements} does and as \file{ConvectiveDryer.H} and
+\file{ConvectiveDryer.cpp} implement them (the water balance that makes the
+gas humidity algebraic in the solid moisture, so that there is one differential
+equation $S\,\mathrm{d}X/\mathrm{d}\xi=-RA$; the shooting on the outlet moisture
+that counter-current flow needs; the log-mean element of cross-flow), each
+engine line cited by file and line and held to its text by the page's test.
+
+The one place the page runs the engine is here.  It runs the three tutorial
+cases \code{convDryer01\_sugar\_curve} (co-current), \code{convDryer02\_sugar\_countercurrent}
+and \code{convDryer03\_sugar\_crossflow} in the browser --- the same sugar, the
+same hot air, the same 300~m$^2$, only the direction changes --- and draws, from
+the engine's own profile of each unit, the solid moisture $X$, the gas humidity
+$Y$ and the gas temperature $T$ along the fraction of the contact area the solid
+has passed, and, from the same runs' KPIs, a table of $X$ out, $Y$ out, $T$ air
+out and the position at which the critical moisture is crossed.  None of it is
+typed into the page: a failed or pending run shows a message, never a number, and
+a test reads the same three runs from this tree's binary and holds the
+profile to the KPIs (the profile begins at the feed moisture and ends at the
+outlet value), the gas humidity to rise along a co-current dryer and fall along a
+counter-current one, and the outlet moistures to order counter-current below
+cross-flow below co-current.  Each case opens from a button on its card.  The
+last table says when each is used, with its page: co-current for a heat-sensitive
+product, because the gas cools along the dryer and the solids leave far below the
+inlet gas temperature (Perry p.~12-36; van~'t Land p.~42); counter-current for
+the lowest final moisture in a solid that stands heat, because the driest solid
+meets the hottest, driest gas (Perry p.~12-36; van~'t Land p.~42); cross-flow for
+a bed the gas can cross, the through-circulation belt and the plug-flow fluid bed
+(van~'t Land p.~42; Mujumdar section~3.6.2.3.1, p.~65).  The page says what its
+model cannot show: the engine holds the solid at the local wet bulb in all three,
+so the heat-sensitivity argument appears in the gas temperature, not in the solid's,
+and the rate coefficient, critical moisture and curve are hypothetical teaching
+values, not a measured dryer.
 \declaredanchor{ch:drying}
+
+\subsection*{How a plant tells you something is wrong \quad(\code{tool=fault-diagnosis})}\label{sec:edu-fault-diagnosis}
+\textit{\small Tool:} \code{tool=fault-diagnosis}.  No engine is run and no
+case is opened: every number is computed in the page, from assumptions the
+page declares, and every plant is a toy.
+
+\subsubsection*{The question}
+
+\emph{A plant behaves oddly.  Which measurement would tell the possible
+explanations apart, what should I compare it with, and what does a given
+disagreement prove and not prove?}
+
+The page opens with a story that happened in the author's house.  A home
+dehumidifier showed a dip of 0.5 to 0.7~$^\circ$C in the room temperature
+every 4.5~h, with humidity spikes; the first guess was auto-defrost; the cause
+was that a full water tank stopped the unit for about 20~min while a slow pump
+emptied it, so its own heating stopped and the house, which stores heat, took
+longer to recover.  Its on/off band of 50 to 55\,\% relative humidity was so
+narrow that its sensor, sitting in the unit's own warm air, mostly read the
+unit's heating and not the moisture; and the sensor read about 15 points high,
+found only by comparing in \emph{absolute} humidity with a second, independent
+sensor (18.4~$^\circ$C and 68\,\% against 22.3~$^\circ$C and 52\,\%, which are
+10.70 and 10.27~g/m$^3$ on the page: the same air).  Setting the unit to 35--40\,\%
+dried the house.  Four lessons are drawn from it: pick the observation that
+\emph{separates} the hypotheses (the length of a stop and the response to a
+change of load, not the period both explanations share); diagnose with
+\emph{conserved} quantities (the mass of water) and not with state-dependent
+ones (relative humidity); redundancy exposes a biased sensor; and a controller
+can measure the wrong thing.
+
+\subsubsection*{What the page shows}
+
+Thirteen steps, each with \textbf{one original diagram} drawn from rectangles,
+lines and text (no image from anywhere) and, for the methods, a live figure.
+After the story: limits and alarms (warning and alarm limits, the trade
+between a false alarm and a late one); the \emph{residual}, measured minus the
+model's prediction, on a tank whose balance accuses a pair of flowmeters but
+not which one; a heat exchanger whose fouling is a slow drift of the estimated
+$UA$ while the hot and cold duties still agree, against a shifted thermometer,
+a step that breaks that agreement; a pump whose worn operating point drops
+below its catalogue curve while a closed valve only moves along it (the figure
+finds the valve that gives a healthy pump the worn pump's flow, so the flow
+alone cannot tell them apart); two sensors, and a vote of three; \emph{data
+reconciliation} by weighted least squares, derived in five moves on a
+three-stream splitter, with the global chi-square test and the measurement
+test.  On the splitter's single balance every meter gets the same score and the
+test cannot choose; a mixer added downstream puts the middle stream in two
+balances and the culprit stands out, while two meters that always appear
+together stay indistinguishable, which the page says.  Then the four \emph{time
+signatures} (step, drift, oscillation, period) with a small classifier whose
+three numbers are printed, and control charts: three-sigma limits, the
+average run length $1/p$ (about 370 points between false alarms), and a note
+that multivariate statistics (Hotelling's $T^2$, PCA and PLS) exist for plants
+with many variables.
+
+\subsubsection*{The challenges}
+
+The last section is a set of \textbf{generated challenges}: a small plant (a
+tank, an exchanger, a flow loop, a draining tank with a pump, a thermostat)
+with a hidden, randomised fault or none --- a flowmeter bias, a drift, fouling,
+a shifted thermometer, a stuck valve, a slow pump, a controller band too
+narrow --- of which the student sees only the logged measurements.  A tick box
+computes the residuals and signatures the methods above use.  The student
+names the fault and the observation that proves it; the page checks both and
+shows the diagnoser's reading.  The same seed always gives the same case, and
+about one in eight is healthy.  The eight numbered buttons give each fault once,
+easy to hard; any seed can be typed.
+
+\subsubsection*{What the page is held to}
+
+The saturation pressure of water is the Wagner equation with the coefficients
+of \code{data/standards/components/water.dat}, and a test reads that record;
+the chi-square and normal probabilities are checked against exact cases
+(two degrees of freedom is an exponential law) and against the three
+probabilities Seborg prints (0.6827, 0.9545 and 0.9973); the run lengths are
+Montgomery's $1/p$; the reconciliation is checked against a hand calculation
+and its least-squares optimality; and the challenge generator is pinned by seed
+and shown \emph{solvable from the data it prints}: a rule-based diagnoser, which
+reads only what the student reads, names the hidden fault on 3000 seeds.
+Sources, read at their pages: Seborg, Edgar, Mellichamp and Doyle,
+\emph{Process Dynamics and Control}, 4th ed.\ (2017), p.~163 and Chapter~21
+(pp.~397--398, 407--408); Montgomery, \emph{Introduction to Statistical Quality
+Control}, 6th ed.\ (2009), p.~191 and pp.~400--401.  The diagnosis literature
+(Venkatasubramanian et al., \emph{Computers and Chemical Engineering}, 2003;
+Chiang, Russell and Braatz; Isermann; the Tennessee Eastman problem) is named
+as further reading only: it was not read for the page and no number is taken
+from it.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+In the room figure make the stop 0~min and then 40~min and watch the dip.  In
+the separation figure double the moisture load: the defrost timer's period does
+not move and the tank's halves.  In the humidistat figure raise the sensor's
+self-heating from 0 to 2.5~K and count the switchings (8, 14, 32 and 73 in
+8~h at 0, 0.8, 1.5 and 2.5~K).  In the reconciliation figure put the error on
+F3 with the mixer and then on F1: F1 and F2 tie, F3 does not.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That a test that fires has found the fault.}  A balance accuses the
+meters in it; one balance cannot choose among them; two sensors cannot say
+which one is wrong.  Naming the fault takes one more independent piece of
+information, and some faults cannot be told apart from the measurements at
+hand.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+Every plant is a toy with assumed numbers and generated noise: no real plant
+data, no engine run, and the thresholds (six standard errors, thirty
+switchings an hour) are teaching values, not plant settings.  Multivariate
+monitoring, model-based observers and learning-based diagnosis are named, not
+built.
 
 \subsection*{Cooling tower, Merkel \quad(\code{tool=merkel})}
 The saturated-air enthalpy curve above, the operating line below, and the

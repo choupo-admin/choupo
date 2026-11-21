@@ -1,0 +1,27 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  drySolid               F                0.00151409969232   1e-4
+stream  drySolid               T                315.717727297      1e-4
+stream  exhaust                F                0.116263690261     1e-4
+stream  exhaust                T                353.263328011      1e-4
+stream  hotAir                 F                0.111111111115     1e-4
+stream  hotAir                 T                420                1e-4
+stream  wetSolid               F                0.00666667883889   1e-4
+stream  wetSolid               T                330                1e-4
+kpi     dryer                  T_air_out        353.263328011      1e-4
+kpi     dryer                  T_solid_out      315.717727297      1e-4
+kpi     dryer                  X_critical       0.12               1e-4
+kpi     dryer                  X_equilibrium_inlet_air 0.00116558884515   1e-4
+kpi     dryer                  X_final          0.00474416128024   1e-4
+kpi     dryer                  X_initial        0.199991235822     1e-4
+kpi     dryer                  Y_air_in         0.0127007206027    1e-4
+kpi     dryer                  Y_air_out        0.042137601796     1e-4
+kpi     dryer                  position_critical 0.123654457658     1e-4
+kpi     dryer                  shootingEvaluations 41                 1e-4
+kpi     dryer                  water_removed_kg_s 0.0928237133254    1e-4
+boundary global               H_feeds_kW       -4711.87000882     1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    -4711.87000882     1e-4
+boundary global               noBoundary       false              exact
+# energyResidual_kW row REMOVED by hand 2026-11-21 (round-off ~1e-10 kW, as convDryer01; held by check_dryer_arrangements to 1e-3 kW)

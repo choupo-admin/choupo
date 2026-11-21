@@ -30,7 +30,7 @@ propertyManifest
         "parameters/Henry/aceticAcid-water.dat"  "2f8bd145544e6613d408306a238adc2980f185e6d805833a684381211c004cad";
         "parameters/Henry/methanol-water.dat"  "054ff87b724b4dceab73ab2c5a0ae65fea700b6a5965cebb67bafc4c6891ca5d";
         "parameters/Henry/methylAcetate-water.dat"  "da3026539216956a36f86db6dfcb87efd64683cfbfd18845f550c623918515d8";
-        "parameters/UNIQUAC/aceticAcid-methylAcetate.dat"  "411b21ebd8872cb023e177a36d63c625af7bf14c20f7128220d9fc74d58af327";
+        "parameters/UNIQUAC/aceticAcid-methylAcetate.dat"  "7935a35cefa92b3fc1f28c5199088dca9c887a5ca8bb0b7748d31062f735b6f0";
         "parameters/UNIQUAC/methanol-methylAcetate.dat"  "a906e2f8b8b81986f6fff54ce3a31ceb6323eae32b7b805e10e6f8771d5baf19";
         "parameters/UNIQUAC/methylAcetate-water.dat"  "eeab569f3396a066943ae47757f69fa6fffe19d76bf6588629292e0f772fcec3";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";

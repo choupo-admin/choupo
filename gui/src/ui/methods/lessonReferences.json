@@ -3262,28 +3262,59 @@
       "references": [
         {
           "text": "Mujumdar, A. S. (ed.) (2006). Handbook of Industrial Drying, 3rd ed. Taylor & Francis / CRC Press, Boca Raton.",
-          "note": "Chapter 1 (Principles, classification and selection of dryers): the feed-form table (Table 1.1, p. 21), residence times (Table 1.2, p. 21), heating methods and the vacuum and freeze-drying remarks (sections 1.5.1-1.5.2, pp. 21-22), handling methods (Table 1.3, p. 23), selection by feed form (section 1.5.3, pp. 23-24), typical evaporation capacity and energy consumption (Table 1.4, p. 26), the batch-dryer feed-rate remark and the selection guidelines (section 1.8, pp. 26-28) and the call for tests on the real feed (p. 27).",
+          "note": "Chapter 1 (Principles, classification and selection of dryers): the feed-form table (Table 1.1, p. 21, eleven feed columns), residence times (Table 1.2, p. 21), heating methods and the vacuum and freeze-drying remarks (sections 1.5.1-1.5.2, pp. 21-22; the sentence on the heat of sublimation on p. 22 is contradicted by Chapter 11, p. 259, and the page says so), handling methods (Table 1.3, p. 23), selection by feed form (section 1.5.3, pp. 23-24), typical evaporation capacity and energy consumption (Table 1.4, p. 26), approximate ha and temperature differences (Table 1.5, p. 27), the selection checklist (Table 1.6 and the minimum information, pp. 27-28), the batch-dryer feed-rate remark and the selection guidelines (section 1.8, pp. 26-28) and the call for tests on the real feed (p. 27).  For the drawings and the notes on the rules: Chapter 7 rotary drying (pp. 151-152 and Fig. 7.1), Chapter 8 fluidised bed dryers (section 8.7.3 and Fig. 8.8, p. 184), Chapter 9 drum dryers (pp. 203-208, dip feeding), Chapter 10 spray drying (p. 216 and Fig. 10.1, p. 219), Chapter 11 freeze drying (p. 259) and Chapter 17 conveyor dryers (pp. 411-413).",
           "verified": {
             "method": "pdf",
-            "evidence": "Library copy Handbooks-DataCompilations/mujumdar-handbook-industrial-drying-3ed.pdf: title and the 2006 Taylor & Francis footer read in the text layer; PDF pp. 47-54 read in the text layer, Tables 1.1, 1.2 and 1.4 read as page images (printed page = PDF page - 26; the contents list puts section 1.8 on p. 26, PDF p. 52) (dryer-selection, C460)",
+            "evidence": "Library copy Handbooks-DataCompilations/mujumdar-handbook-industrial-drying-3ed.pdf: title and the 2006 Taylor & Francis footer read in the text layer; PDF pp. 47-54 read in the text layer, Tables 1.1, 1.2, 1.4, 1.5 and 1.6 read as page images (Table 1.1 at 220 dpi, cell by cell) (printed page = PDF page - 26; the contents list puts section 1.8 on p. 26, PDF p. 52); PDF pp. 177-179 (Chapter 7, Fig. 7.1 viewed), 210 (Fig. 8.8 viewed), 229-234 (Chapter 9), 241-262 (Chapter 10, Figs. 10.1 and 10.8 viewed), 285 (Chapter 11) and 437-439 (Chapter 17, Figs. 17.1-17.3 viewed) read (dryer-selection, expert review 2026-11-21)",
             "date": "2026-11-21"
           }
         },
         {
           "text": "Green, D. W.; Southard, M. Z. (eds.) (2019). Perry's Chemical Engineers' Handbook, 9th ed. McGraw-Hill Education.",
-          "note": "Section 12, Solids drying: the classification of commercial dryers by the feed materials handled (Table 12-11, pp. 12-33 and 12-34), direct and indirect dryers (p. 12-35), flow patterns and the selection considerations and procedure (pp. 12-36 to 12-38), batch tray dryers (p. 12-38), rotary and fluidised-bed dryers (pp. 12-62 and 12-63), products that have been spray-dried (Table 12-41, p. 12-72) and the heat of vaporisation of water in Example 12-19 (p. 12-71).",
+          "note": "Section 12, Solids drying: the classification of commercial dryers by the feed materials handled (Table 12-11, pp. 12-33 and 12-34), direct and indirect dryers (p. 12-35), flow patterns and the selection considerations and procedure (pp. 12-36 to 12-38), batch tray dryers and their air recirculation (pp. 12-38 and 12-39), rotary and fluidised-bed dryers (pp. 12-62 and 12-63), products that have been spray-dried (Table 12-41, p. 12-72), the heat of vaporisation of water in Example 12-19 (p. 12-71) and the drum dryer operating information (Table 12-46, p. 12-81).",
           "verified": {
             "method": "pdf",
-            "evidence": "Library copy Handbooks-DataCompilations/perry-chemical-engineers-handbook-9ed.pdf: copyright 2019 McGraw-Hill Education and the ISBNs printed there read in the text layer of PDF p. 5; PDF pp. 1076-1083, 1105-1106 and 1114-1118 read in the text layer, Table 12-11 read in the layout text layer (printed page 12-n = PDF page - 1043) (dryer-selection, C460)",
+            "evidence": "Library copy Handbooks-DataCompilations/perry-chemical-engineers-handbook-9ed.pdf: copyright 2019 McGraw-Hill Education and the ISBNs printed there read in the text layer of PDF p. 5; PDF pp. 1076-1083, 1105-1106, 1114-1118 and 1124 read in the text layer, Tables 12-11 and 12-46 read as page images (printed page 12-n = PDF page - 1043) (dryer-selection, expert review 2026-11-21)",
             "date": "2026-11-21"
           }
         },
         {
           "text": "van 't Land, C. M. (2012). Drying in the Process Industry. Wiley.",
-          "note": "Chapter 3, Procedures for choosing a dryer: the batch-dryer tree (Figure 3.1, p. 23) and the continuous-dryer tree (Figure 3.2, p. 25) with their text (pp. 21-28); the descriptions of fluid-bed (section 5.1, pp. 67-68), rotary (section 6.1, pp. 99-100) and spray (section 8.1, pp. 133-134) dryers, conveyor dryers (section 9.1, pp. 164-165), drum dryers (section 10.5, pp. 204-205) and freeze-drying (section 11.2, pp. 232-242).",
+          "note": "Chapter 3, Procedures for choosing a dryer: the batch-dryer tree (Figure 3.1, p. 23) and the continuous-dryer tree (Figure 3.2, p. 25), drawn for a particulate solid, with their text (pp. 21-28) and the lists of the data to assess and the criteria for the dried material (Tables 3.1 and 3.2, p. 22); the descriptions of fluid-bed (section 5.1, pp. 67-68), rotary (section 6.1, pp. 99-100) and spray (section 8.1, pp. 133-135, Fig. 8.2 on the flow modes) dryers, conveyor dryers (section 9.1, pp. 164-165), drum dryers (section 10.5, pp. 204-205, vacuum operation on p. 205) and freeze-drying (section 11.2, pp. 232-242).",
           "verified": {
             "method": "pdf",
-            "evidence": "Library copy Books/vantland-drying-in-the-process-industry-1ed.pdf (proofs of October 2011): title, author and the 'First Edition, 2012 John Wiley & Sons' footer read in the text layer; PDF pp. 35-42 read, the two decision trees read as page images (printed page = PDF page - 14) (dryer-selection, C460)",
+            "evidence": "Library copy Books/vantland-drying-in-the-process-industry-1ed.pdf (proofs of October 2011): title, author and the 'First Edition, 2012 John Wiley & Sons' footer read in the text layer; PDF pp. 34-43 read, Tables 3.1 and 3.2 read in the text layer and Figure 3.2 read as a page image; PDF pp. 147-150 (section 8.1) and 215-219 (section 10.5) read (printed page = PDF page - 14) (dryer-selection, expert review 2026-11-21)",
+            "date": "2026-11-21"
+          }
+        },
+        {
+          "text": "Towler, G.; Sinnott, R. (2008). Chemical Engineering Design: Principles, Practice and Economics of Plant and Process Design, 1st ed. Butterworth-Heinemann (Elsevier), Amsterdam.",
+          "note": "Chapter 10, section 10.4, drying: the factors for selecting a dryer and Table 10.7, dryer selection (printed p. 571), the dryer descriptions on pp. 570-576 and the sketches of the tray, conveyor, rotary and fluidised-bed dryers (Figs. 10.25-10.28, pp. 573-574).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/towler-chemical-engineering-design-1ed.pdf: title, authors, 'Copyright 2008, Elsevier Inc.' and ISBN 978-0-7506-8423-1 read in the text layer of PDF pp. 1-5; PDF pp. 588-593 read in the text layer, Table 10.7 read as a 300 dpi page image, row by row, and Figs. 10.25-10.28 viewed (printed page = PDF page - 18) (dryer-selection, expert review 2026-11-21)",
+            "date": "2026-11-21"
+          }
+        }
+      ]
+    },
+    "fault-diagnosis": {
+      "references": [
+        {
+          "text": "Seborg, D. E.; Edgar, T. F.; Mellichamp, D. A.; Doyle III, F. J. (2017). Process Dynamics and Control, 4th ed. Wiley, Hoboken.",
+          "note": "Section 10.1.2, Process alarms (p. 163): warning and alarm limits, and the alarm with its own sensor that detects drifts and failures. Chapter 21, Process Monitoring: limit checking (high and low limits, rate-of-change limit, low-variance limit; the low-low 5 % and 15 % and high-high 85 % and 95 % tank example) and performance calculations (the closure of mass balances, Fig. 21.2 with errors of closure of 25 %, -34 % and 4 %, and data reconciliation) on pp. 397-398; the normal-distribution probabilities of Eq. 21-6 (p. 398); the multivariate Hotelling T squared statistic and the mention of PCA and PLS on pp. 407-408; control performance monitoring and sticking valves (p. 408).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/seborg-process-dynamics-control-4ed.pdf: title page and the copyright line (2017, 2011, 2004, 1990 John Wiley & Sons) read in the text layer; PDF pp. 175, 409-410 and 419-420 read in the text layer (printed page = PDF page - 12) (fault-diagnosis, C464)",
+            "date": "2026-11-21"
+          }
+        },
+        {
+          "text": "Montgomery, D. C. (2009). Introduction to Statistical Quality Control, 6th ed. Wiley, Hoboken.",
+          "note": "Section 5.3, the statistical basis of the control chart and the average run length, ARL = 1/p (Eq. 5.2) with ARL0 = 370 for three-sigma limits (p. 191); Chapter 9, the cumulative sum control chart and the insensitivity of the Shewhart chart to small shifts (pp. 400-401).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/montgomery-introduction-to-statistical-quality-control-6ed.pdf: title page (Sixth Edition) and the copyright line (2009 John Wiley & Sons) read in the text layer; PDF pp. 207 and 416-417 read in the text layer (printed page = PDF page - 16) (fault-diagnosis, C464)",
             "date": "2026-11-21"
           }
         }

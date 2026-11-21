@@ -1863,8 +1863,8 @@
     },
     "check_lesson_absence_claims": {
       "exit": 0,
-      "claim": "check_lesson_absence_claims: OK 11 absence claim(s) held by 14 probe(s) of the tree, 2 KNOWN FALSE listed for the lesson's fixer, 797 unclassified sentence(s) in 163 file(s) each at its pin (ratchet: may only fall).  NOT checked: a sentence in other words, whether a grep probe proves a capability absent, or a page's own 'this page does not model' (counted, not judged).",
-      "seconds": 2.3
+      "claim": "check_lesson_absence_claims: OK 11 absence claim(s) held by 14 probe(s) of the tree, 2 KNOWN FALSE listed for the lesson's fixer, 822 unclassified sentence(s) in 170 file(s) each at its pin (ratchet: may only fall).  NOT checked: a sentence in other words, whether a grep probe proves a capability absent, or a page's own 'this page does not model' (counted, not judged).",
+      "seconds": 1.8
     },
     "check_lesson_typed_numbers": {
       "exit": 0,
@@ -1873,8 +1873,13 @@
     },
     "check_lesson_knob_domains": {
       "exit": 0,
-      "claim": "check_lesson_knob_domains: OK 5 knob(s) held inside a declared validity, 3 KNOWN violation(s) still violating (the page fixer's list), 214 undeclared knob(s) in 54 file(s) each at its pin (ratchet: may only fall).  NOT checked: a validity that is the model's output (a saturation molality, a relieving pressure), a corner of the box other than the declared one, a knob built in code the scan does not read.",
+      "claim": "check_lesson_knob_domains: OK 5 knob(s) held inside a declared validity, 3 KNOWN violation(s) still violating (the page fixer's list), 217 undeclared knob(s) in 56 file(s) each at its pin (ratchet: may only fall).  NOT checked: a validity that is the model's output (a saturation molality, a relieving pressure), a corner of the box other than the declared one, a knob built in code the scan does not read.",
       "seconds": 0.3
+    },
+    "check_dryer_arrangements": {
+      "exit": 0,
+      "claim": "check_dryer_arrangements: OK -- co-, counter- and cross-flow on one feed and one air: every dryer closes its water balance (1e-9) and first law (1e-3 kW); the cross-flow equals an independent RK4 of Mujumdar Eq. 3.66-3.73 (2e-3), also with the inlet driving force (3.72), and its exhaust a constant-cp hand balance (2 K); the co/counter profiles re-derive their rate law and water balance outside the unit; counter < co as the book says (van 't Land p. 42) and counter < cross < co as these conditions give; five refusals by name.  NOT checked: a measured dryer.",
+      "seconds": 9.3
     }
   }
 }

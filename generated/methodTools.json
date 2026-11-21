@@ -307,8 +307,8 @@
       ]
     }
   ],
-  "liveTools": 94,
-  "registryTools": 94,
+  "liveTools": 95,
+  "registryTools": 95,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -718,13 +718,27 @@
       "label": "Which dryer for which product",
       "blurb": "Choose a dryer type from the feed, heat sensitivity, scale and mode.",
       "discipline": "Separations & phase equilibria",
-      "teaches": "The seven dryer types that do most of the drying (spray, rotary, fluidised bed, tray, belt, drum, freeze), each drawn as a schematic; a selection tree from the feed form, the heat sensitivity, the scale and the batch or continuous mode to one or two types with the reason and the page of Mujumdar, Perry or van 't Land it was read from; a comparison table of residence time, energy per kg of water and typical products with \"not cited\" where the books are silent; and the tutorial cases of the types the engine models.",
+      "teaches": "The seven dryer types that do most of the drying (spray, rotary, fluidised bed, tray, belt, drum, freeze), each drawn as a schematic; a selection tree from the feed form, the heat sensitivity, the scale and the batch or continuous mode to one or two types with the reason and the page of Mujumdar, Perry or van 't Land or Towler it was read from; a comparison table of residence time, energy per kg of water and typical products with \"not cited\" where the books are silent; the habitual tables transcribed at their pages (Mujumdar's feed-form table with its eleven columns, ha and temperature differences and vendor checklist, van 't Land's lists, Towler's Table 10.7, the drum dryer in Perry and Mujumdar); the tutorial cases of the types the engine models; and co-current, counter-current and cross-flow, each drawn, with the moisture, humidity and gas temperature along the dryer and the three outlets read from the engine's own run of the three convective-dryer cases, and where each is used with the page of Perry, van 't Land and Mujumdar that says so.",
       "origins": [
+        "engine",
         "page",
         "reference",
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=dryer-selection"
+    },
+    {
+      "id": "fault-diagnosis",
+      "label": "How a plant tells you something is wrong",
+      "blurb": "Find what is wrong with a plant from its measurements.",
+      "discipline": "Hydraulics & control",
+      "teaches": "Fault detection and diagnosis from a true story: a dehumidifier that cooled a house every 4.5 hours.  Pick the observation that separates the explanations, diagnose with conserved quantities (absolute humidity, mass) rather than state-dependent ones, let redundancy expose a biased sensor, and beware a controller that measures its own effect.  Then limits and alarms, residuals (a tank balance, a fouling exchanger against a shifted thermometer, a pump off its curve), data reconciliation with the global chi-square and measurement tests on a splitter, time signatures, and control charts.  Every plant is a toy computed in the page; it ends with seeded challenges with a hidden fault for you to name.",
+      "origins": [
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=fault-diagnosis"
     },
     {
       "id": "correlation-simplicity",

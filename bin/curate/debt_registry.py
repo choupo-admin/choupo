@@ -79,13 +79,13 @@ SOURCE_LICENCE = {
         "'Curated from DECHEMA by V. Geraldes' over the VLE-IG bank -- direct "
         "transcription, the form the protocol names.  The bulk of the pair "
         "catalogue already moved to data/local/ in the legal scrub; this one "
-        "survived and should follow.  What would discharge it: a published NRTL parameter set for ethanol+water in the engine's tau = a + b/T form covering 298-373 K (Voutsas 2011 Table 8 is quadratic in T and Kamihama 2012 Table 8 is 1 atm only, both in ~/Choupo-Literature), or a refit of the pair with its ~180 consumers re-recorded.",
+        "survived and should follow.  What would discharge it: a published NRTL parameter set for ethanol+water in the engine's tau = a + b/T form covering 298-373 K (Voutsas 2011 Table 8 is quadratic in T and Kamihama 2012 Table 8 is 1 atm only, both in ~/Choupo-Literature), or a refit of the pair with its consumers re-recorded.  MEASURED 2026-11-21 (C335): bin/choupo-curate pair ethanol water fits 16 laboratories / 256 points (b_ij -38.5 K, b_ji 580.2 K, mean |dT| 0.48 K, max 2.53 K, grade severe); promoting it moves 15 of the 18 cases that pin the record and GROWS flash20_ethanol_water_pcsaft's pinned first-law residual from 53.21 to 61.47 kW, which check_energy_closure refuses (the ratchet only falls), so it did not land; it needs a decision on that pin, or a better-graded form (a_ij, a_ji free) than the pipeline's fixed one.",
     "data/standards/parameters/SRK/N2-CH4.dat":
         "BORDERLINE, awaiting a ruling: cites Knapp, Doering, Oellrich, "
         "Ploecker & Prausnitz (1982) -- named authors of a published monograph "
         "that happens to appear in the DECHEMA series.  A named monograph is "
         "arguably a primary publication, not a databank transcription.  Ruled "
-        "either way it should be explicit, not incidental.  What would discharge it: a ruling that the named monograph is a primary, or a kij fitted by Choupo to a measured N2-CH4 VLE set (Stryjek, Chappelear & Kobayashi 1974 is in ~/Choupo-Literature) and cited as such.",
+        "either way it should be explicit, not incidental.  What would discharge it: a ruling that the named monograph is a primary, or a kij fitted by Choupo to a measured N2-CH4 VLE set (Stryjek, Chappelear & Kobayashi 1974 is in ~/Choupo-Literature) and cited as such.  MEASURED 2026-11-21 (C335): a kij fitted by Choupo to 81 transcribed Stryjek 1974 Table III points (fit 5 isotherms, held out 3, near-critical rows by a rule) is 0.0058, not 0.0289, on pressure alone or pressure plus alpha; it puts K_N2 of flash09_n2ch4_stryjek at 2.864 against the cited 3.047 (6 %, the case's anchor band is 3 %) and misses the declared 5 % held-out criterion once alpha is weighed (5.45 %), so it did not land.  Only a ruling that the named monograph is a primary frees it.",
 }
 
 #  NC_COMPILATION -- values whose ORIGIN is a NonCommercially-licensed
@@ -164,7 +164,7 @@ SOURCE_LICENCE = {
 #  not a grant (CLAUDE.md 6, the sigma-profile rule).  The seven left:
 NC_COMPILATION = {
     "data/standards/components/C4H4.dat":
-        "the record is VINYLACETYLENE; the report's only C4H4 entry is 1,3-cyclobutadiene, a different molecule (C335, 2026-11-12).  Remedy: a clean primary for vinylacetylene, or removal (no shipped case reads this record).",
+        "the record is VINYLACETYLENE; the report's only C4H4 entry is 1,3-cyclobutadiene, a different molecule (C335, 2026-11-12).  Remedy: a clean primary for vinylacetylene (none in ~/Choupo-Literature, listed whole 2026-11-21), or removal, which cascades through the route-bench hash tables, the henry_sander batch (Henry/C4H4-water reads the record) and the generated dossier (measured 2026-11-21, not done: a simple fix lands simply).",
 }
 
 #  basis01_two_unit_chain LEFT 2026-11-12 (C335): the importer's validator
@@ -1159,7 +1159,8 @@ LESSON_ABSENCE_UNCLASSIFIED = {
     "gui/src/ui/methods/DryerSelectionTool.tsx": 1,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
     "gui/src/ui/methods/LinearAlgebraFigures.tsx": 2,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
     "gui/src/ui/methods/dryerSelection.ts": 3,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
-    "gui/src/ui/methods/dryerSelectionLesson.ts": 5,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
+    "gui/src/ui/methods/DryerArrangements.tsx": 1,  # arrived from main 2026-11-21 (C465), unclassified at seeding
+    "gui/src/ui/methods/dryerSelectionLesson.ts": 9,  # arrived from main 2026-11-21 (C459/C460/C463: 5; C465 arrangements section: +4), unclassified at seeding
     "gui/src/ui/methods/linearAlgebraLesson.ts": 8,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
     "gui/src/ui/methods/AdsorptionIsothermsTool.tsx": 8,
     "gui/src/ui/methods/ApproachToEquilibriumTool.tsx": 1,
@@ -1372,6 +1373,7 @@ LESSON_TYPED_CANDIDATES_DEBT = {
 #  may only fall.
 LESSON_KNOBS_UNDECLARED = {
     "gui/src/ui/methods/AdsorbentSelectionTool.tsx": 2,  # arrived from main 2026-11-21 (C459/C460/C463), unclassified at seeding
+    "gui/src/ui/methods/FaultDiagnosisTool.tsx": 1,  # arrived from main 2026-11-21, undeclared at seeding
     "gui/src/ui/methods/ActiveSetQpTool.tsx": 4,
     "gui/src/ui/methods/AdsorptionIsothermsTool.tsx": 1,
     "gui/src/ui/methods/ApproachToEquilibriumTool.tsx": 1,

@@ -187,6 +187,7 @@ PRE  | PAR    | bin/curate/check_rules_of_thumb.py                 | traced: wri
 PRE  | ISO*2  | bin/curate/check_diafiltration.py                  | ISO (private slot tree; measured: writes tutorials/batch/membrane/diafilter01_nf_desalting/.tmp_10 (+560 more))
 PRE  | ISO    | bin/curate/check_drying_curve.py                   | ISO (private slot tree; measured: writes trajectory.csv)
 PRE  | PAR    | bin/curate/check_convective_dryer.py               | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_dryer_arrangements.py              | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_evaporative_dryer.py              | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_spray_dryer_solvents.py           | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO    | bin/curate/check_quasi_steady.py                   | ISO (private slot tree; measured: writes balanceTrajectory.csv (+2 more))
