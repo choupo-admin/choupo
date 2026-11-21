@@ -61,6 +61,8 @@ Description
 
 namespace Choupo {
 
+namespace solver { struct SparsePattern; struct SparseJacobian; }
+
 // -------------------------------------------------------------------------
 //  Vessel state.  Mole numbers (not fractions --- batch is closed by
 //  default and ΣN evolves with reaction stoichiometry).  Temperature,
@@ -172,6 +174,15 @@ public:
     // difference step sqrt(eps) * s_i, and its row scaling).  Empty =>
     // the integrator's scale max(|y_i|, atol).
     virtual sVector odeJacobianScale(const sVector& /*y*/) const { return {}; }
+    // OPT-IN sparse form of that Jacobian (solver/SparseLU, Theory Guide
+    // sec:sparse-lu): the pattern, declared once, and the values on it.
+    // odeSparseLinear() true asks the stiff integrator to factor W on it.
+    virtual bool odeSparseLinear() const { return false; }
+    virtual std::shared_ptr<const solver::SparsePattern> odeSparsePattern() const
+    { return nullptr; }
+    virtual void odeJacobianSparse(const sVector& /*y*/, const sVector& /*f0*/,
+                                   const sVector& /*typ*/,
+                                   solver::SparseJacobian& /*J*/) const {}
 
     // Inspect current state (for trajectory writeout).
     virtual const BatchState& state() const = 0;

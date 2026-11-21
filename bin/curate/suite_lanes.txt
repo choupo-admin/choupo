@@ -320,7 +320,7 @@ PRE  | PAR    | bin/curate/check_element_balance.py                | traced: wri
 PRE  | ISO    | bin/curate/check_ctrl_balance.py                   | ISO (private slot tree; measured: writes balanceTrajectory.csv (+124 more))
 PRE  | PAR    | bin/curate/check_flash_model.py                    | on the kit (DEV.md 4c C420 batch 2): every run is in a private gatekit.probe_copy under /tmp; writes nothing in the tree (checked: no file in the tree newer than the run)
 PRE  | PAR    | bin/curate/check_rate_of_production.py             | on the kit: every run (two choupoBatch cases, two refusal probes) is in a private gatekit.probe_copy under /tmp; writes nothing in the tree
-PRE  | PAR    | bin/curate/check_kinetics_jacobian.py              | on the kit: every run (ignition01 pair, six shipped batch cases twice, refusal probes) is in a private gatekit.probe_copy under /tmp; writes nothing in the tree
+PRE  | PAR    | bin/curate/check_kinetics_jacobian.py              | on the kit: every run (ignition01 pair, six shipped batch cases twice, closed-form and sparse probes, refusal probes) is in a private gatekit.probe_copy under /tmp, test/sparse_lu.cpp built in a mkdtemp; writes nothing in the tree
 PRE  | PAR    | bin/curate/check_cracking_yields.py                | on the kit: both runs (the case and its k6 sabotage) are in a private gatekit.probe_copy under /tmp; writes nothing in the tree
 PRE  | PAR    | bin/curate/check_vlle_fallback.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | ISO    | bin/curate/check_charge_balance.py                 | ISO (private slot tree; measured: writes tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate/scan_davies.csv (+57 more))

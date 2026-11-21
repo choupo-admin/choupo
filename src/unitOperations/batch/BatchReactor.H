@@ -110,10 +110,11 @@ public:
                                      const sVector& typ) const override;
     //  The same Jacobian on its sparse pattern (J = S + u v^T), built from the
     //  reaction network once (buildJacobianStructure_).
-    const std::shared_ptr<const solver::SparsePattern>& odeJacobianPattern() const
+    std::shared_ptr<const solver::SparsePattern> odeSparsePattern() const override
     { return jacPattern_; }
+    bool odeSparseLinear() const override { return sparseLinear_; }
     void odeJacobianSparse(const sVector& y, const sVector& f0, const sVector& typ,
-                           solver::SparseJacobian& J) const;
+                           solver::SparseJacobian& J) const override;
     //  The audit of the analytic Jacobian in the ADAPTIVE sweep is kept by
     //  the stepper; this one serves the fixed-deltaT stiff path (step()).
     const solver::ODEAnalyticJacobian& jacobianAudit() const { return jacAudit_; }
@@ -280,6 +281,14 @@ private:
     std::vector<std::size_t> jacPosTrow_;            // (T, k), k = 0..N
     std::vector<std::size_t> jacPosTcol_;            // (i, T), i < N (or SIZE_MAX)
     bool jacRankOne_ = false;                        // J = S + u v^T needed
+    //  The linear solver of W = I - h d J (`solver { linearSolver dense |
+    //  sparse | auto; }`, Theory Guide sec:sparse-lu): sparse needs the
+    //  analytic Jacobian (its pattern); auto = sparse from kSparseAutoRows rows.
+    enum class LinearSolver { Dense, Sparse, Auto };
+    LinearSolver linearSolverKey_ = LinearSolver::Auto;
+    bool sparseLinear_ = false;                      // resolved
+    static constexpr std::size_t kSparseAutoRows = 40;
+    void wireAnalytic_(solver::ODEAnalyticJacobian& A, const std::string& owner) const;
     void buildJacobianStructure_();
     //  h_i(T) for the same species as gibbsAt_ (d ln Kc / dT).
     sVector enthalpyAt_(scalar T) const;

@@ -62,6 +62,24 @@ WHAT THIS GATE CHECKS.
       ignition03's KPIs equal those of `jacobian finiteDifference;` to 1e-6; batch07 (an
       LHHW law, no derivative) stays on the finite difference (no audit), and with
       `jacobian analytic;` names the reaction it differences.
+  (g) THE SPARSE FACTORISATION OF W (2026-11-21, solver/SparseLU, sec:sparse-lu).
+      (g1) test/sparse_lu.cpp, built here: SparseLU against the dense LU (partial
+      pivoting) on eight families of random sparse matrices with dense rows and columns,
+      n = 5 to 1000, two refactorisations of each pattern: x equal to 1e-12 of |x|
+      (measured 7e-15), residual at round-off, and a zero pivot that only a row exchange
+      cures REFUSED.  (g2) the six combustion cases on Rosenbrock (ignition04's 22
+      integrations included) with `linearSolver sparse` against `dense`: KPIs equal to
+      SPARSE_TOL = 1e-10 (measured 1.4e-11: the round-off of a different elimination
+      order, amplified through an ignition) and NOT ONE factorisation refactored dense
+      (a factor is accepted on its backward error on W_s, <= 1e-12).
+      (g3) an adaptive sweep of one vessel factors sparse.  (g4) `linearSolver banded;`
+      and `linearSolver sparse;` beside `jacobian finiteDifference;` refused by name.
+      THE REAL DEFECT (g2) CAUGHT, in the first build: the threshold pivot test ran on the
+      UNSCALED rows, the temperature row's entries (K/s per kmol) dwarfed every pivot of
+      its column, and ignition03 refactored 2155 of 2155 matrices dense -- every KPI
+      equal, the run correct, the sparse path never taken.  Row equilibration fixed it
+      (and the threshold test was then replaced by the backward-error test, which a
+      synthetic 50-species mechanism showed to be the right instrument).
   (d) REFUSALS BY NAME.  `jacobian exact;` (an unknown word), `integrator RK4;` beside
       `jacobian analytic;` (a contradiction), and `jacobian analytic;` on a fixed-step run
       that integrates with the default RK4 (a key nothing would read) each exit non-zero
@@ -101,6 +119,23 @@ SABOTAGE-VERIFIED 2026-11-21 (each by hand, rebuilt, gate run, restored, rebuilt
   - the gasConstantP rank-one term s_j set to 0 (BatchReactor::odeJacobianSparse): the
     gasConstantP probe of (e) and (f) fail -- d(n_H)/d(n_N2) -117.044 against 221.594.
 
+SABOTAGE-VERIFIED 2026-11-21, arm (g) (by hand, rebuilt, restored, rebuilt):
+  - FIRST BUILD (a KLU-style threshold pivot test, tau = 1e-3), SparseLU without row
+    equilibration: (g2) failed on the five adiabatic cases -- "1962 of 1962
+    factorisations refused a pivot and were refactored dense" (2155 of 2155 on
+    ignition03); (g1) and every KPI passed: only the count saw it.  The threshold test
+    was then replaced by the backward-error test (it refused 9549 of 12749 factors of a
+    synthetic 50-species mechanism whose factors all solve to 1.4e-19), and against
+    THAT test the same sabotage is harmless and is NOT caught: 0 dense refactorisations,
+    every KPI equal (measured).  Equilibration now only scales the breakdown guard;
+  - the last update of every L column dropped in SparseLU::factor (a wrong factor):
+    (g1) fails on all eight families (|xs-xd|/|x| 4e-3 to 0.15); in the integrator the
+    backward-error probe rejects the wrong factor and refactors dense (1938 of 1962 on
+    ignition01_h2o2, 2063 of 2064 on ignition02), and (g2) fails on that count and on
+    the KPIs the 24 accepted wrong factors move (n_O_final 8.4e-9).  Before the probe
+    existed the same sabotage moved the KPIs by 9e-7, INSIDE every golden's 1e-4: a
+    Rosenbrock step with a wrong factor is still accepted by its error estimate.
+
 NOT CHECKED: that the rate laws themselves are right (ignition02_h2air_slack's Slack pin,
 check_elementary_rates); a power-law order below one at zero concentration (the reactor
 differences such a reaction instead; no witness has one); the heat-capacity slope dC_p/dT
@@ -111,7 +146,10 @@ construction; no witness has two ODE units).
 """
 import json
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -122,6 +160,15 @@ JAC = "tutorials/batch/combustion/ignition01_h2o2_jac"
 STRIP = ("expected", "latest", "solution.log", "trajectory.csv")
 GATE_TOL = 1.0e-5
 CONSTP = "tutorials/batch/combustion/ignition03_h2air_constp"
+SPARSE_TOL = 1.0e-10
+SPARSE_CASES = [
+    "tutorials/batch/combustion/ignition01_h2o2",
+    "tutorials/batch/combustion/ignition01_h2o2_rop",
+    "tutorials/batch/combustion/ignition02_h2air_slack",
+    "tutorials/batch/combustion/ignition03_h2air_constp",
+    "tutorials/batch/combustion/ignition04_h2air_sensitivity",
+    "tutorials/batch/combustion/nox01_zeldovich_postflame",
+]
 EXACT_TOL = 1.0e-8
 
 #  Troe with a T-dependent F_cent (GRI-Mech 3.0's H2O2 (+M) parameters -- a probe of
@@ -186,7 +233,7 @@ def audits(out):
              m.group(4), m.group(5), float(m.group(6))) for m in AUDIT.finditer(out)]
 
 
-def set_solver(case, jacobian, integrator=None, verbosity=None):
+def set_solver(case, jacobian, integrator=None, verbosity=None, linear=None):
     """Write `jacobian`/`integrator`/`verbosity` into the (first) batchReactor's solver block,
     creating the block after `type batchReactor;` when there is none."""
     p = case / "system/flowsheetDict"
@@ -203,6 +250,8 @@ def set_solver(case, jacobian, integrator=None, verbosity=None):
         keys.append(f"verbosity {verbosity};")
     if jacobian:
         keys.append(f"jacobian {jacobian};")
+    if linear:
+        keys.append(f"linearSolver {linear};")
     if blk:
         body_start = blk.end()
         body_end = s.index("}", body_start)
@@ -453,6 +502,87 @@ def main():
         if rc != 0 or "has no analytic derivative" not in out:
             failures.append(f"(f) batch07 with `jacobian analytic;` did not name the differenced LHHW "
                             f"reaction (exit {rc})")
+
+    # ---- (g) the SPARSE factorisation of W (solver/SparseLU, sec:sparse-lu) ------------
+    #  (g1) the factorisation itself, against the dense LU, on random sparse matrices
+    exe = Path(tempfile.mkdtemp(prefix="sparse_lu_")) / "sparse_lu"
+    cxx = shutil.which("g++") or shutil.which("clang++")
+    if not cxx:
+        failures.append("(g1) no C++ compiler to build test/sparse_lu.cpp")
+    else:
+        root = gatekit.repo
+        r = subprocess.run([cxx, "-std=c++17", "-O2", "-I", str(root / "src"),
+                            str(root / "test/sparse_lu.cpp"), str(root / "src/solver/SparseLU.cpp"),
+                            str(root / "src/solver/LU.cpp"), "-o", str(exe)],
+                           capture_output=True, text=True, timeout=600)
+        if r.returncode != 0:
+            failures.append("(g1) test/sparse_lu.cpp did not compile: " + r.stderr[-400:])
+        else:
+            r = subprocess.run([str(exe)], capture_output=True, text=True, timeout=600)
+            if r.returncode != 0 or "SPARSE_LU_OK" not in r.stdout:
+                failures.append("(g1) SparseLU differs from the dense LU on random sparse matrices:\n"
+                                + r.stdout[-1500:])
+            else:
+                worst = max(float(x) for x in re.findall(r"\|xs-xd\|/\|x\| (\S+)", r.stdout))
+                notes.append(f"SparseLU = dense LU on 8 random families to {worst:.0e} "
+                             "(n 5..1000), a zero pivot refused")
+        shutil.rmtree(exe.parent, ignore_errors=True)
+    #  (g2) every combustion case on Rosenbrock: `linearSolver sparse` against `dense`,
+    #  KPIs equal to SPARSE_TOL and NO step refactored dense (the threshold test).
+    sp_worst, sp_n = 0.0, 0
+    for case in SPARSE_CASES:
+        got = {}
+        for ls in ("dense", "sparse"):
+            with gatekit.probe_copy(case, strip=STRIP) as c:
+                set_solver(c, None, verbosity=4, linear=ls)
+                rc, out = gatekit.run(batch, c)
+                if rc != 0:
+                    failures.append(f"(g2) {Path(case).name} with linearSolver {ls} exited {rc}: "
+                                    + " | ".join(out.strip().splitlines()[-2:])[:500])
+                    continue
+                got[ls] = (kpis(out), out)
+        if len(got) != 2:
+            continue
+        m = re.findall(r"W factored SPARSE \((\d+) factorisations, (\d+) refactored dense", got["sparse"][1])
+        if not m or int(m[-1][0]) == 0:
+            failures.append(f"(g2) {Path(case).name}: the sparse run printed no sparse factorisation")
+        elif int(m[-1][1]) != 0:
+            failures.append(f"(g2) {Path(case).name}: {m[-1][1]} of {m[-1][0]} factorisations were "
+                            "refactored dense -- the sparse path is not the one taken")
+        #  every KPI on its relative scale (the trace radicals' 1e-7 kmol included);
+        #  the balance-closure rows are round-off themselves (1e-16..1e-15 absolute)
+        #  and are compared absolutely, to 1e-12
+        def split(k, closure):
+            return {u: {key: v for key, v in d.items()
+                        if (("closure" in key or "residual" in key) == closure)}
+                    for u, d in (k or {}).items() if isinstance(d, dict)}
+        w, where, missing = kpi_diff(split(got["dense"][0], False), split(got["sparse"][0], False),
+                                     abs_floor=0.0)
+        wc, wherec, _ = kpi_diff(split(got["dense"][0], True), split(got["sparse"][0], True),
+                                 abs_floor=1e-12)
+        if wc > 0.0:
+            failures.append(f"(g2) {Path(case).name}: a balance closure differs by more than 1e-12 "
+                            f"absolute between sparse and dense: {wherec}")
+        if missing or w > SPARSE_TOL:
+            failures.append(f"(g2) {Path(case).name}: sparse and dense KPIs differ by {w:.2e} "
+                            f"(> {SPARSE_TOL:g}): {where}")
+        sp_worst, sp_n = max(sp_worst, w), sp_n + 1
+    notes.append(f"sparse = dense on {sp_n} combustion cases to {sp_worst:.1e}, 0 dense refactorisations")
+    #  (g3) the adaptive sweep of ONE vessel factors sparse too
+    with gatekit.probe_copy("tutorials/batch/reactor/batch32_fast_intermediate_full", strip=STRIP) as c:
+        set_solver(c, None, linear="sparse")
+        rc, out = gatekit.run(batch, c)
+        if rc != 0 or "factored SPARSE on the unit's pattern" not in out:
+            failures.append(f"(g3) batch32 (adaptive sweep, one vessel) with linearSolver sparse did not "
+                            f"factor W sparse (exit {rc})")
+    #  (g4) refusals by name
+    for ls, jac, word in (("banded", None, "banded"), ("sparse", "finiteDifference", "linearSolver sparse")):
+        with gatekit.probe_copy(JAC, strip=STRIP) as c:
+            set_solver(c, jac, linear=ls)
+            rc, out = gatekit.run(batch, c)
+            if rc == 0 or word not in out or "bomb" not in out:
+                failures.append(f"(g4) `linearSolver {ls};`{' beside jacobian ' + jac if jac else ''} "
+                                f"was not refused by name (exit {rc})")
 
     # ---- (d) refusals by name ----------------------------------------------------------
     probes = [

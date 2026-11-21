@@ -117,6 +117,13 @@ struct OdeUnit
     //  Optional: the unit's row sizes for the audit of that Jacobian
     //  (ODEAnalyticJacobian::auditScale).  Empty => max(|y_i|, atol).
     std::function<sVector(const sVector& y)> jacobianScale;
+    //  Optional SPARSE form of that Jacobian (ODEAnalyticJacobian::sparse):
+    //  a sweep of ONE unit factors W on the unit's pattern; a sweep of several
+    //  assembles the dense block-diagonal matrix, as before.
+    bool                                     sparse = false;
+    std::shared_ptr<const SparsePattern>     pattern;
+    std::function<void(const sVector& y, const sVector& f0, const sVector& typ,
+                       SparseJacobian& J)>   sparseJacobian;
 };
 
 //  THE ONE HOME of the per-row positivity mask over a vector packed from
@@ -336,6 +343,16 @@ public:
                 }
                 return sc;
             };
+            analytic_.sparse = false;
+            if (units.size() == 1 && units[0].sparse && units[0].pattern
+                && units[0].sparseJacobian)
+            {
+                analytic_.sparse = true;
+                analytic_.pattern = units[0].pattern;
+                analytic_.sparseJacobian = [&units](scalar, const sVector& yg,
+                    const sVector& fg, const sVector& tg, SparseJacobian& J)
+                { units[0].sparseJacobian(yg, fg, tg, J); };
+            }
             ctrl.analytic = &analytic_;
         }
         // State-aware ledger hook: commit the ACCEPTED state into the units
@@ -359,6 +376,7 @@ public:
         analytic_.jacobian = nullptr;
         analytic_.rowLabel = nullptr;
         analytic_.auditScale = nullptr;
+        analytic_.sparseJacobian = nullptr;
 
         // --- a FAILED interval is refused, never handed back as a step ----
         //  The partial vector is NOT scattered: nothing may describe the

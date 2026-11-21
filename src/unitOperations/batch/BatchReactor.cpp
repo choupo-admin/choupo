@@ -38,6 +38,7 @@ License
 #include "unitOperations/reactor/CatalystPellet.H"
 #include "thermo/ThermoAnnounce.H"
 #include "solver/ODE/ODEIntegrator.H"
+#include "solver/SparseLU.H"
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
 #include <sstream>
@@ -129,6 +130,7 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
     std::string jacKey;                    // `jacobian` as declared ("" = absent)
     jacobianDeclared_ = false;
     jacobianAnalytic_ = false;
+    linearSolverKey_  = LinearSolver::Auto;
     if (unitDict->found("solver"))
     {
         auto solverDict = unitDict->subDict("solver");
@@ -160,6 +162,20 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
                 + registryRefusal::message("jacobian", jacKey,
                       { "finiteDifference", "analytic" }, "Accepted"));
         jacobianAnalytic_ = jacobianDeclared_;
+        //  The linear solver of W = I - h d J: `dense` (LU with partial
+        //  pivoting, the default for a small vessel), `sparse` (SparseLU on
+        //  the network's pattern, Theory Guide sec:sparse-lu) or `auto`
+        //  (sparse from kSparseAutoRows packed rows, the size at which it was
+        //  MEASURED to pay).  Sparse needs the analytic Jacobian's pattern.
+        const std::string ls = solverDict->lookupWordOrDefault("linearSolver", "auto");
+        if      (ls == "dense")  linearSolverKey_ = LinearSolver::Dense;
+        else if (ls == "sparse") linearSolverKey_ = LinearSolver::Sparse;
+        else if (ls == "auto")   linearSolverKey_ = LinearSolver::Auto;
+        else
+            throw std::runtime_error("BatchReactor '" + name_ + "': solver"
+                " { linearSolver " + ls + "; } -- "
+                + registryRefusal::message("linearSolver", ls,
+                      { "dense", "sparse", "auto" }, "Accepted"));
         if (jacobianDeclared_ && solverDict->found("integrator")
             && integrator_ != "Rosenbrock23" && integrator_ != "Rodas4")
             throw std::runtime_error("BatchReactor '" + name_ + "': solver"
@@ -471,6 +487,16 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
                     std::cout << "  [jacobian] batchReactor '" << name_ << "': " << m << "\n";
             }
     if (jacobianAnalytic_) buildJacobianStructure_();
+    if (linearSolverKey_ == LinearSolver::Sparse && !jacobianAnalytic_)
+        throw std::runtime_error("BatchReactor '" + name_ + "': solver { linearSolver"
+            " sparse; } factors W on the pattern of the ANALYTIC Jacobian, and this vessel"
+            " integrates on the finite difference ("
+            + std::string(jacKey == "finiteDifference" ? "`jacobian finiteDifference;`"
+                          : "a law without an analytic derivative; declare `jacobian analytic;`")
+            + ").  Drop `linearSolver sparse;` or use the analytic Jacobian.");
+    sparseLinear_ = jacobianAnalytic_
+        && (linearSolverKey_ == LinearSolver::Sparse
+            || (linearSolverKey_ == LinearSolver::Auto && thermo.n() + 1 >= kSparseAutoRows));
 
     // -----------------------------------------------------------------
     //  Optional rates-of-production report (opt-in; absent = nothing runs).
@@ -687,13 +713,7 @@ bool BatchReactor::sensitivityTau_(const sVector& y0, scalar tMax,
     solver::ODEAnalyticJacobian audit;
     if (jacobianAnalytic_)
     {
-        audit.jacobian = [this](scalar, const sVector& y, const sVector& f0,
-                                const sVector& typ)
-        { return odeJacobian(y, f0, typ); };
-        audit.autonomous = true;
-        audit.owner = "batchReactor '" + name_ + "' sensitivity";
-        audit.rowLabel = [this](std::size_t i) { return odeRowLabel(i); };
-        audit.auditScale = [this](const sVector& y) { return odeJacobianScale(y); };
+        wireAnalytic_(audit, "batchReactor '" + name_ + "' sensitivity");
         ctrl.analytic = &audit;
     }
     //  tau is read at the FIRST accepted state above T0 + rise; the run then
@@ -1830,13 +1850,7 @@ void BatchReactor::step(scalar t, scalar dt)
         //  across steps so the doubling schedule spans the whole run.
         if (jacobianAnalytic_ && (integrator_ == "Rosenbrock23" || integrator_ == "Rodas4"))
         {
-            jacAudit_.jacobian = [this](scalar, const sVector& y,
-                                        const sVector& f0, const sVector& typ)
-            { return odeJacobian(y, f0, typ); };
-            jacAudit_.autonomous = true;           // derivatives_ ignores t
-            jacAudit_.owner = "batchReactor '" + name_ + "'";
-            jacAudit_.rowLabel = [this](std::size_t i) { return odeRowLabel(i); };
-            jacAudit_.auditScale = [this](const sVector& y) { return odeJacobianScale(y); };
+            wireAnalytic_(jacAudit_, "batchReactor '" + name_ + "'");
             ctrl.analytic = &jacAudit_;
         }
         const auto st = integ->integrate(y0, 0.0, dt, f, ctrl);
@@ -1851,6 +1865,15 @@ void BatchReactor::step(scalar t, scalar dt)
                               + " built, " + std::to_string(jacAudit_.auditEvals)
                               + " right-hand sides spent on audits)"
                                             : std::string("finite difference"))
+                      << ", W factored "
+                      << (ctrl.analytic && jacAudit_.sparse
+                              ? "SPARSE (" + std::to_string(jacAudit_.sparseFactorisations)
+                                + " factorisations, " + std::to_string(jacAudit_.denseFallbacks)
+                                + " refactored dense, worst probe backward error "
+                                + [this] { char b[32]; std::snprintf(b, sizeof b, "%.1e",
+                                      jacAudit_.sparseBackwardErrorMax); return std::string(b); }()
+                                + ")"
+                              : std::string("dense"))
                       << "\n";
         //  The integrator REPORTS when it gave up (maxSteps / hMin / a
         //  positivity or finiteness violation on a fixed step) -- and until
@@ -2500,6 +2523,26 @@ void BatchReactor::odeJacobianSparse(const sVector& y, const sVector& f0,
     }
 }
 
+//  The analytic Jacobian handed to a Rosenbrock integrator: the dense form
+//  always (the dense path), the sparse form and the pattern when the vessel
+//  factors W sparse (sparseLinear_).  The pattern is re-read every call: a
+//  cooling failure rebuilds it with the T row and column.
+void BatchReactor::wireAnalytic_(solver::ODEAnalyticJacobian& A,
+                                 const std::string& owner) const
+{
+    A.jacobian = [this](scalar, const sVector& y, const sVector& f0, const sVector& typ)
+    { return odeJacobian(y, f0, typ); };
+    A.autonomous = true;                   // derivatives_ ignores t
+    A.owner = owner;
+    A.rowLabel = [this](std::size_t i) { return odeRowLabel(i); };
+    A.auditScale = [this](const sVector& y) { return odeJacobianScale(y); };
+    A.sparse = sparseLinear_;
+    A.pattern = jacPattern_;
+    A.sparseJacobian = [this](scalar, const sVector& y, const sVector& f0,
+                              const sVector& typ, solver::SparseJacobian& J)
+    { odeJacobianSparse(y, f0, typ, J); };
+}
+
 std::vector<sVector> BatchReactor::odeJacobian(const sVector& y,
                                                const sVector& f0,
                                                const sVector& typ) const
@@ -2558,6 +2601,16 @@ void BatchReactor::announceJacobianAudits_(scalar tRun)
                   " chain rule, the T column in closed form; audited against"
                   " the dense finite difference at analytic Jacobians 1, 2, 4,"
                   " 8, ...; a column above the tolerance refuses the run\n";
+        if (first && A.sparse && A.lu)
+            os << "             W = I - h d J is factored SPARSE (`linearSolver "
+               << (linearSolverKey_ == LinearSolver::Sparse ? "sparse" : "auto")
+               << "`): " << A.pattern->n << " rows, " << A.lu->nnzPattern()
+               << " entries on the network's pattern, " << A.lu->nnzFactor()
+               << " in L+U after minimum-degree ordering (" << A.lu->denseNodes()
+               << " dense node(s) ordered last), " << A.lu->flopsFactor()
+               << " multiply-adds per factorisation against n^3/3 = "
+               << static_cast<double>(A.pattern->n) * A.pattern->n * A.pattern->n / 3.0
+               << " dense\n";
         std::cout << os.str();
     }
 }

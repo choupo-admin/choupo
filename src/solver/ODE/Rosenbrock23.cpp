@@ -30,6 +30,7 @@ License
 #include "Jacobian.H"
 #include "../LU.H"
 #include "../BlockTridiagonal.H"
+#include "../SparseLU.H"
 
 #include <algorithm>
 #include <cmath>
@@ -531,6 +532,25 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
             " declared block structure were both given -- they are two"
             " different claims about J, and only one can be used.  Refusing.");
 
+    //  The OPT-IN sparse form of that Jacobian (ODEAnalyticJacobian::sparse).
+    const bool SP = A && A->sparse && A->pattern && A->sparseJacobian;
+    if (SP && A->pattern->n != n)
+        throw std::runtime_error((A->owner.empty() ? std::string("Rosenbrock23") : A->owner)
+            + ": the sparse Jacobian's pattern is " + std::to_string(A->pattern->n)
+            + " x " + std::to_string(A->pattern->n) + " for a state of "
+            + std::to_string(n) + ".  Refusing.");
+    std::vector<std::size_t> diagPos;
+    if (SP)
+    {
+        diagPos.resize(n);
+        for (std::size_t i = 0; i < n; ++i) diagPos[i] = A->pattern->find(i, i);
+        if (!A->lu || A->lu->analysedFor() != A->pattern.get())
+        {
+            A->lu = std::make_shared<SparseLU>();
+            A->lu->analyse(A->pattern);           // ordering + symbolic, once per pattern
+        }
+    }
+
     // The step the controller proposes for the NEXT interval (ODEStats).
     scalar hNext = h;
 
@@ -556,7 +576,118 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
         std::vector<std::size_t> piv;
         BlockThomasLU            Wbt;        // structured path
         ColoredODEJacobian       colored;
-        if (!S)
+        bool    spUsed = false;              // sparse path: W factored on the pattern
+        bool    spR1   = false;              // ... with a rank-one part (Sherman-Morrison)
+        sVector spQ, spV;                    // q = Ws^{-1} a,  v
+        scalar  spDen  = 1.0;                // 1 + v.q
+        if (SP)
+        {
+            //  J = S + u v^T on the model's pattern; the audit expands it.
+            SparseJacobian SJ;
+            A->sparseJacobian(t, y, f0, typ, SJ);
+            const SparsePattern& P = *A->pattern;
+            if (SJ.values.size() != P.nnz())
+                throw std::runtime_error((A->owner.empty() ? std::string("Rosenbrock23")
+                    : A->owner) + ": the sparse Jacobian has " + std::to_string(SJ.values.size())
+                    + " values for a pattern of " + std::to_string(P.nnz()) + ".  Refusing.");
+            ++A->jacobians;
+            if (A->jacobians >= A->nextAudit)
+            {
+                sVector sc(n);
+                if (A->auditScale) sc = A->auditScale(y);
+                if (sc.size() != n)
+                    for (std::size_t i = 0; i < n; ++i)
+                        sc[i] = std::max(std::abs(y[i]), typ[i]);
+                long evals = 0;
+                const auto Jd = auditDifference(f, t, y, f0, sc, ctrl, evals);
+                A->auditEvals += evals;
+                A->nextAudit *= 2;
+                auditAnalytic(SJ.dense(P), Jd, t, y, sc, *A);   // may refuse
+            }
+            Td = A->autonomous ? sVector(n, 0.0)
+                               : fdDfDt(f, t, y, f0, std::max(span, 1.0));
+            spR1 = !SJ.u.empty() && !SJ.v.empty();
+            scalar vsum = 0.0;
+            if (spR1) for (scalar v : SJ.v) vsum += std::abs(v);
+            for (std::size_t i = 0; i < n; ++i)              // Gershgorin, as the dense path
+            {
+                scalar rs = spR1 ? std::abs(SJ.u[i]) * vsum : 0.0;
+                for (std::size_t q = P.rowPtr[i]; q < P.rowPtr[i + 1]; ++q)
+                    rs += std::abs(SJ.values[q]);
+                stiffPeak = std::max(stiffPeak, rs);
+            }
+            //  W = I - h d S on the pattern, factored on it; the rank-one part
+            //  -h d u v^T enters the solve: with Ws z = r and Ws q = -h d u,
+            //  x = z - q (v.z) / (1 + v.q).
+            sVector Wv(P.nnz());
+            for (std::size_t q = 0; q < P.nnz(); ++q) Wv[q] = -h * d * SJ.values[q];
+            for (std::size_t i = 0; i < n; ++i) Wv[diagPos[i]] += 1.0;
+            spUsed = A->lu->factor(Wv);
+            ++A->sparseFactorisations;
+            //  THE FACTOR IS ACCEPTED ON ITS BACKWARD ERROR.  The pivots were
+            //  taken on the diagonal (the fixed pattern allows no exchange), so
+            //  the factor is checked on its own matrix: x = W_s^{-1} 1, and
+            //  eta = |1 - W_s x|_inf / (|W_s|_inf |x|_inf + 1) must be at most
+            //  1e-12 (about 4500 machine epsilons -- an element growth that
+            //  large is what partial pivoting exists to prevent).  Above it,
+            //  this matrix is factored dense.
+            if (spUsed)
+            {
+                const sVector xp = A->lu->solve(sVector(n, 1.0));
+                scalar rmax = 0.0, wnorm = 0.0, xnorm = 0.0;
+                for (std::size_t i = 0; i < n; ++i)
+                {
+                    scalar s = 0.0, rs = 0.0;
+                    for (std::size_t q = P.rowPtr[i]; q < P.rowPtr[i + 1]; ++q)
+                    {
+                        s  += Wv[q] * xp[P.col[q]];
+                        rs += std::abs(Wv[q]);
+                    }
+                    rmax  = std::max(rmax, std::abs(1.0 - s));
+                    wnorm = std::max(wnorm, rs);
+                    xnorm = std::max(xnorm, std::abs(xp[i]));
+                }
+                const scalar eta = rmax / (wnorm * xnorm + 1.0);
+                if (std::isfinite(eta)) A->sparseBackwardErrorMax = std::max(A->sparseBackwardErrorMax, eta);
+                if (!(eta <= 1.0e-12)) spUsed = false;
+            }
+            if (spUsed && spR1)
+            {
+                sVector a(n);
+                for (std::size_t i = 0; i < n; ++i) a[i] = -h * d * SJ.u[i];
+                spQ = A->lu->solve(a);
+                spV = SJ.v;
+                spDen = 1.0;
+                for (std::size_t i = 0; i < n; ++i) spDen += spV[i] * spQ[i];
+                if (!std::isfinite(spDen) || !(std::abs(spDen) > 1.0e-12)) spUsed = false;
+            }
+            if (!spUsed)
+            {
+                //  A pivot broke down, the backward error is above 1e-12, or the
+                //  rank-one update is singular: THIS matrix is factored dense,
+                //  partial pivoting.
+                ++A->denseFallbacks;
+                const auto J = SJ.dense(P);
+                W.assign(n, sVector(n, 0.0));
+                for (std::size_t i = 0; i < n; ++i)
+                    for (std::size_t j = 0; j < n; ++j)
+                        W[i][j] = (i == j ? 1.0 : 0.0) - h * d * J[i][j];
+                try { luFactor(W, piv); }
+                catch (...)
+                {
+                    h *= 0.5; ++st.rejected;
+                    if (h < hMin)
+                    {
+                        st.ok = false;
+                        st.failure = "hMin: the step fell below the floor while"
+                                     " W = I - h d J stayed singular";
+                        break;
+                    }
+                    continue;
+                }
+            }
+        }
+        else if (!S)
         {
             //  The model's ANALYTIC Jacobian when it supplied one (audited
             //  on the doubling schedule), else the dense forward difference.
@@ -672,6 +803,18 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
         //  component is sqrt(machine eps)).
         auto solveW = [&](const sVector& r) -> sVector
         {
+            if (spUsed)
+            {
+                sVector x = A->lu->solve(r);
+                if (spR1)
+                {
+                    scalar vz = 0.0;
+                    for (std::size_t i = 0; i < n; ++i) vz += spV[i] * x[i];
+                    const scalar c = vz / spDen;
+                    for (std::size_t i = 0; i < n; ++i) x[i] -= c * spQ[i];
+                }
+                return x;
+            }
             if (!S) return luSolve(W, piv, r);
             const std::size_t nv = S->blockSize;
             sVector rb(nb);

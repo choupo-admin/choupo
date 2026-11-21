@@ -67,6 +67,8 @@ Description
 namespace Choupo::solver
 {
 
+class SparseLU;   // solver/SparseLU.H -- the sparse factorisation of W
+
 // f(t, y) -> dy/dt, same packing as y.
 using DerivFn = std::function<sVector(scalar t, const sVector& y)>;
 
@@ -238,7 +240,26 @@ struct ODEAnalyticJacobian
     //  and its row scaling).  Empty => max(|y_i|, typ_i).
     std::function<sVector(const sVector& y)>  auditScale;
 
+    //  OPT-IN SPARSE FORM (Theory Guide, sec:sparse-lu).  With `sparse` true,
+    //  a `pattern` and a `sparseJacobian`, the integrator asks for J on the
+    //  pattern (plus its rank-one part, SparseJacobian), factors
+    //  W = I - h d S by SparseLU (ordering and symbolic factorisation once per
+    //  pattern, kept in `lu` across integrate() calls) and adds the rank-one
+    //  part in the solve by Sherman-Morrison.  The audit expands J densely.
+    //  The diagonal-pivot factor is accepted on its BACKWARD ERROR on W_s
+    //  (<= 1e-12); a step whose factor fails it is factored DENSE (partial
+    //  pivoting), counted in denseFallbacks.  `sparse` false: the
+    //  dense path, untouched.
+    bool sparse = false;
+    std::shared_ptr<const SparsePattern> pattern;
+    std::function<void(scalar t, const sVector& y, const sVector& f0,
+                       const sVector& typ, SparseJacobian& J)> sparseJacobian;
+    std::shared_ptr<SparseLU> lu;            // created by the integrator
+
     // ---- written by the integrator --------------------------------------
+    long   sparseFactorisations = 0;  // W factored on the pattern
+    long   denseFallbacks       = 0;  // ... and refactored dense (backward error > 1e-12)
+    scalar sparseBackwardErrorMax = 0.0;  // the largest accepted-or-not probe eta
     struct Audit
     {
         long        jacobian = 0;    // which analytic Jacobian (1-based)

@@ -6313,7 +6313,12 @@ PYEOF
     # -- Rodas4 took 3317 steps instead of 602 and every golden KPI still
     # passed.  The engine's own audits along the ignition (pre-ignition, ramp,
     # burned), the same answer at half the right-hand sides, every path on six
-    # shipped cases, and the refusals by name.
+    # shipped cases, and the refusals by name.  Since 2026-11-21 also the
+    # closed-form T column / Troe / PLOG / gasConstantP (audits <= 1e-8), the
+    # analytic default, and the SPARSE factorisation of W (test/sparse_lu.cpp
+    # against the dense LU; sparse = dense on six combustion cases with no
+    # dense refactorisation -- the unscaled pivot test had refactored 2155 of
+    # 2155 matrices dense, every KPI equal).
     if gate_exec "$ROOT/bin/curate/check_kinetics_jacobian.py" > /tmp/kinjac.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "kinetics-jacobian-gate" "$(head -1 /tmp/kinjac.$$)"
         pass=$((pass+1))

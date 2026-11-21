@@ -38777,7 +38777,7 @@ $E_j = \partial(r_jV)/\partial T$:
 \end{itemize}
 $s_j$ is the same for every species column $m$: the Jacobian is
 $\Jac = \mathbf S + \mathbf u\mathbf v^{\mathsf T}$, with $\mathbf S$ on the
-pattern of the network,
+pattern of the network (Section~\ref{sec:sparse-lu}),
 $u_i = \sum_j\nu_{ij}s_j$ and $\mathbf v$ the indicator of the species
 columns --- dense, but of rank one.
 
@@ -38882,6 +38882,126 @@ the temperature column in closed form (2026-11-21) the same run spends
 6\,290 right-hand sides: 3 per step plus the audits.  The
 saving is $N$ evaluations per Jacobian, so it grows with the mechanism.
 \end{example}
+
+\subsection{Factoring $\mathbf W$ on the mechanism's pattern: the sparse LU}\label{sec:sparse-lu}
+
+A Rosenbrock step factors $\mathbf W = \mathbf I - h\gamma\Jac$ once and
+solves with it two (Rosenbrock23) or six (Rodas4) times.  A dense LU with
+partial pivoting costs $N^3/3$ multiply-adds whatever the matrix holds:
+$3\times10^8$ for a mechanism of a thousand species, every step.  But
+species $i$ and $k$ are coupled only when a reaction that changes $i$ reads
+$k$, so a row of $\Jac$ holds a few tens of entries, not a thousand.
+\code{solver \{ linearSolver dense | sparse | auto; \}} on a
+\code{batchReactor} chooses how $\mathbf W$ is factored; \code{sparse}
+needs the analytic Jacobian (it is the Jacobian's pattern that is
+factored) and is refused by name beside the finite difference;
+\code{auto}, the default, is \code{sparse} from 40 rows (provisional)
+and \code{dense} under it, so every small tutorial factors as
+before.  The solver is \code{solver/SparseLU}, written for Choupo (no
+external library: KLU and SuiteSparse are not used), in three stages.
+
+\paragraph{The pattern, once.}  \code{BatchReactor::buildJacobianStructure\_}
+reads it from the network: row $i$ holds column $m$ when a reaction with
+$\nu_{ij}\neq0$ reads $m$ --- a forward order, a reverse product, a
+collider of non-zero efficiency (every species, for a third body with no
+efficiencies listed), every species for a law with no derivative.  Every
+species row holds the temperature column, the temperature row is full
+($\dot T\,C_m$ reaches every column), every diagonal is stored.  A cooling
+failure that turns the vessel adiabatic rebuilds it.  The rank-one part of
+a constant-pressure gas (Section~\ref{sec:batch-analytic-jacobian}) is not
+in it.
+
+\paragraph{1. Ordering.}  Eliminating a column that touches $d$ rows can
+create $d^2$ new entries (\emph{fill}).  The \emph{minimum-degree} rule
+(Tinney and Walker, 1967; George and Liu, \emph{Computer Solution of Large
+Sparse Positive Definite Systems}, 1981, ch.~5) eliminates at each step the
+node of fewest neighbours in the elimination graph of the symmetrised
+pattern $\mathbf A + \mathbf A^{\mathsf T}$, joining its neighbours into a
+clique.  Choupo runs it on the \emph{explicit} elimination graph with exact
+degrees (ties to the lower index), not on the quotient graph of the
+approximate-minimum-degree code of Amestoy, Davis and Duff (1996): simpler,
+and fast enough because it runs once per pattern.  As in that code, a
+\emph{dense} node --- degree above $\max(16,\,10\sqrt N)$: the temperature,
+a bath gas read by every third body --- is removed first and ordered last,
+where it costs one dense trailing block instead of making every step dense.
+
+\paragraph{2. Symbolic factorisation.}  For that order, and diagonal pivots,
+the pattern of $\mathbf L + \mathbf U$ is the elimination graph once more:
+eliminating column $k$ makes its remaining neighbours column $k$ of
+$\mathbf L$ (and, the pattern being symmetric, row $k$ of $\mathbf U$), and
+joins them.  Stored by columns, with the map from the caller's entries to
+the permuted columns.
+
+\paragraph{3. Numeric factorisation, every step.}  The rows are first
+\emph{equilibrated}, each divided by its largest entry (as KLU does), so
+that every comparison below is between numbers of one size; then a
+left-looking Doolittle elimination runs column by column into a dense work
+vector:
+\begin{equation}
+    \mathbf w = \mathbf A_{:,k};\quad
+    \text{for } j\in\mathcal U_{:,k}\text{ ascending: }
+      u_{jk} = w_j,\;\; w_i \mathrel{-}= l_{ij}\,u_{jk}\;(i\in\mathcal L_{:,j});\quad
+    u_{kk} = w_k,\;\; l_{ik} = w_i/u_{kk},
+    \label{eq:sparse-lu-column}
+\end{equation}
+every update landing inside column $k$'s filled pattern, so no index is
+ever searched.  The pivots stay on the diagonal --- the fixed pattern allows
+no row exchange --- and the factorisation stops only on a breakdown, a pivot
+below $10^{-12}$ of the largest entry under it.  Whether the factor is
+\emph{good} is then measured rather than guessed: the integrator solves
+$\mathbf W_s\mathbf x = \mathbf 1$ with it and accepts it when the backward
+error
+\begin{equation}
+    \eta = \frac{\|\mathbf 1 - \mathbf W_s\mathbf x\|_\infty}
+                {\|\mathbf W_s\|_\infty\,\|\mathbf x\|_\infty + 1} \le 10^{-12}
+    \label{eq:sparse-lu-eta}
+\end{equation}
+(about $4500\,\epsilon$: an element growth that large is what partial
+pivoting exists to prevent); otherwise that one matrix is factored densely
+with partial pivoting and counted (\code{denseFallbacks}, printed at
+verbosity~4 with the worst $\eta$), never silently.  A threshold test of
+KLU's kind, $|u_{kk}|\ge10^{-3}\max_{i>k}|w_i|$, was tried first and is the
+wrong instrument here: on a synthetic 50-species mechanism it refused 9\,549
+of 12\,749 factors, while on the backward-error test all 12\,749 were
+accepted, the worst at $\eta = 1.4\times10^{-19}$.  A species that is
+produced fast and consumed slowly has a small diagonal against its column
+without making the elimination unstable.
+The rank-one part $-h\gamma\,\mathbf u\mathbf v^{\mathsf T}$ is added in the
+solve by Sherman--Morrison: with $\mathbf W_s\mathbf z = \mathbf r$ and
+$\mathbf W_s\mathbf q = -h\gamma\mathbf u$ (one extra solve per
+factorisation),
+\begin{equation}
+    \mathbf x = \mathbf z - \mathbf q\,
+      \frac{\mathbf v^{\mathsf T}\mathbf z}{1 + \mathbf v^{\mathsf T}\mathbf q}.
+    \label{eq:sherman-morrison}
+\end{equation}
+
+\begin{pitfall}
+The first build applied the threshold test to unequilibrated rows: the
+temperature row's entries (kelvin per second per kmol) dwarfed every pivot
+of their column, and \code{ignition03\_h2air\_constp} refactored 2\,155 of
+its 2\,155 matrices dense.  Every KPI was right --- the run was correct,
+only slower --- so no golden saw it; the count did
+(\code{bin/curate/check\_kinetics\_jacobian.py}, arm g, which requires no
+dense refactorisation on the combustion tutorials).
+\end{pitfall}
+
+\paragraph{The same answer.}  \code{test/sparse\_lu.cpp} compares the
+factorisation with the dense LU on random sparse matrices with dense rows
+and columns, $N = 5$ to $1000$, refactored twice on each pattern: the
+solutions agree to $7\times10^{-15}$ of $|\mathbf x|$, and a zero pivot
+that only a row exchange cures is refused.  On the six combustion
+tutorials integrated by Rosenbrock (\code{ignition04}'s 22 integrations
+included) \code{linearSolver sparse} and \code{dense} write the same
+trajectories byte for byte and the same KPIs to $1.4\times10^{-11}$
+relative, the round-off of a different elimination order carried through
+an ignition.  A deliberately wrong factor (the last update of each column
+dropped) moved those KPIs by $10^{-6}$ only --- inside every golden ---
+because a Rosenbrock step with a wrong $\mathbf W$ is still accepted by its
+error estimate; that is why the factor must pass Eq.~\eqref{eq:sparse-lu-eta},
+which rejects such a factor at almost every step (1\,938 of 1\,962 on
+\code{ignition01\_h2o2}, refactored dense and counted), and why the gate
+compares the sparse and the dense runs.
 
 \subsection{Which reaction governs an ignition: brute-force sensitivity of the delay}\label{sec:ignition-sensitivity}
 

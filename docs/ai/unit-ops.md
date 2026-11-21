@@ -3371,6 +3371,15 @@ forward difference of that reaction alone (announced once by name); `jacobian fi
 selects the integrator's dense difference.  Declared `analytic` beside `integrator RK4`/`EulerSI`,
 or on a fixed-step run left on the default RK4, is refused by name.  Theory Guide
 `sec:batch-analytic-jacobian`; gate `bin/curate/check_kinetics_jacobian.py`.
+**`linearSolver dense | sparse | auto`** (same block, default `auto`): how W = I - h d J is factored.
+`sparse` = the in-house SparseLU on the mechanism's pattern (minimum-degree ordering and symbolic
+factorisation once, a left-looking numeric factorisation on diagonal pivots with row
+equilibration every step, each factor accepted on its backward error (<= 1e-12 on W x = 1) or
+refactored dense, counted at verbosity 4; a constant-P gas's rank-one term by Sherman-Morrison); it needs the analytic
+Jacobian and is refused by name beside the finite difference.  `auto` = sparse from 40 packed
+rows (provisional until the scale measurement), dense below, so every small tutorial is unchanged.  An adaptive sweep factors
+sparse only when the vessel is its one unit.  Sparse and dense agree to round-off (1.4e-11 on
+the combustion tutorials).  Theory Guide `sec:sparse-lu`.
 
 **Rates of production (opt-in, the glass box of a mechanism).**  A block on the
 unit, beside `operation` and `solver`:
