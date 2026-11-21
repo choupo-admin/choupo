@@ -57,6 +57,20 @@ WHAT THIS GATE CHECKS.
       difference T column it replaced read 7e-8 to 6.5e-7).  Earlier audits hold a trace
       species within the audit's own step of zero, whose column the AUDIT differences
       forward (5e-9 to 5e-8): judged on GATE_TOL there.
+      THE CHEMKIN FORMS (2026-11-21, sec:elementary-rate), four more probes of the same kind
+      on ignition01_h2o2_jac: R9's Troe replaced by SRI with five numbers (F = d W^X T^e,
+      Reaction::falloffRateDerivs); R9 on a single collider (`thirdBody { N2 1; }
+      defaultEfficiency 0;`, CHEMKIN's `(+N2)`); R8 with N2 on BOTH sides (order 1, orderRev 1,
+      nu 0, reversible); R10 irreversible with explicit orders HO2 1.5 and a non-reactant N2
+      0.5 (what FORD writes).  Measured: late audits <= 6e-10 on all four.
+      SABOTAGE-VERIFIED 2026-11-21 (by hand in a copy of the tree, rebuilt, restored):
+      SRI's d ln F/dp set to 0 (Reaction::falloffRateDerivs) -- the SRI probe refused at
+      analytic Jacobian #1, d(n_H)/d(T) -1.99934e-05 against -2.01633e-05 (0.00673);
+      a zero-efficiency species treated as a collider in the derivative only
+      (BatchReactor::rateGradient_) -- the single-collider probe refused at #1,
+      d(n_HO2)/d(n_H2) -100.307 against 0.00251685 (0.114); the reverse factor of the
+      derivative read on nu instead of orderRev -- the both-sides probe refused at #2048,
+      d(n_H)/d(T) -0.0354183 against -0.0430142 (0.177).  FORD adds no derivative code.
   (f) THE DEFAULT.  With no `jacobian` key: ignition01_h2o2 and ignition03_h2air_constp run
       on the audited analytic Jacobian (the first audit line says "the default"), and
       ignition03's KPIs equal those of `jacobian finiteDifference;` to 1e-6; batch07 (an
@@ -191,6 +205,68 @@ PLOG_NEW = """        type plog;
         units { A "cm3/mol/s"; Ea "kcal/mol"; }"""
 
 
+#  The CHEMKIN forms of 2026-11-21 (Theory Guide sec:elementary-rate), each a numerical probe of
+#  the derivative on R8 / R9 / R10 of the shipped case, not chemistry:
+#  SRI with five numbers in place of R9's Troe (d and e exercised: F = d W^X T^e);
+SRI_NEW = "sri ( 0.45 797 979 0.9 0.02 );"
+#  R9 on a SINGLE collider, N2 (CHEMKIN `(+N2)`: efficiency 1 for N2, 0 for every other species);
+COLL_OLD = "thirdBody { H2 1.3; water 14.0; }"
+COLL_NEW = "thirdBody { N2 1.0; }  defaultEfficiency 0;"
+#  R8 with N2 on BOTH sides (H + OH + N2 <=> H2O + N2: order 1, orderRev 1, nu 0), reversible;
+R8_OLD = """        { component H;      nu -1;  order 1; }
+        { component OH;     nu -1;  order 1; }
+        { component water;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 4.5000e+22;  b -2.0;  Ea 0.0;
+        thirdBody { water 12.0; H2 0.73; }"""
+R8_BOTH = """        { component H;      nu -1;  order 1; }
+        { component N2;     nu  0;  order 1;  orderRev 1; }
+        { component OH;     nu -1;  order 1; }
+        { component water;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 4.5000e+22;  b -2.0;  Ea 0.0;"""
+#  R10 irreversible with explicit (FORD-style) orders: HO2 1.5 and a non-reactant N2 0.5.
+R10_HEAD_OLD = """R10_HO2_H_H2_O2
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
+    reversible        true;"""
+R10_HEAD_NEW = """R10_HO2_H_H2_O2
+{
+    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)"""
+R10_ST_OLD = """        { component H;      nu -1;  order 1; }
+        { component H2;     nu  1;  order 0; }
+        { component HO2;    nu -1;  order 1; }
+        { component O2;     nu  1;  order 0; }"""
+R10_ST_NEW = """        { component H;      nu -1;  order 1; }
+        { component H2;     nu  1;  order 0; }
+        { component HO2;    nu -1;  order 1.5; }
+        { component N2;     nu  0;  order 0.5; }
+        { component O2;     nu  1;  order 0; }"""
+
+
+def _sri(c):
+    gatekit.edit(c / "constant/reactions", TROE_OLD, SRI_NEW)
+
+
+def _collider(c):
+    gatekit.edit(c / "constant/reactions", COLL_OLD, COLL_NEW)
+
+
+def _both(c):
+    gatekit.edit(c / "constant/reactions", R8_OLD, R8_BOTH)
+
+
+def _ford(c):
+    gatekit.edit(c / "constant/reactions", R10_HEAD_OLD, R10_HEAD_NEW)
+    gatekit.edit(c / "constant/reactions", R10_ST_OLD, R10_ST_NEW)
+
+
 def _troe(c):
     gatekit.edit(c / "constant/reactions", TROE_OLD, TROE_NEW)
 
@@ -209,6 +285,10 @@ EXACT_PROBES = [   # (label, case, edit of a private copy)
     ("Troe with F_cent(T)", "tutorials/batch/combustion/ignition01_h2o2_jac", _troe),
     ("reversible PLOG in a fixed-V gas", "tutorials/batch/combustion/ignition01_h2o2_jac", _plog),
     ("gasConstantP (V = nRT/P, rank one)", "tutorials/batch/combustion/ignition03_h2air_constp", None),
+    ("SRI fall-off (a b c d e)", "tutorials/batch/combustion/ignition01_h2o2_jac", _sri),
+    ("single collider (+N2) on a fall-off", "tutorials/batch/combustion/ignition01_h2o2_jac", _collider),
+    ("species on both sides (H + OH + N2 <=> H2O + N2)", "tutorials/batch/combustion/ignition01_h2o2_jac", _both),
+    ("explicit orders (HO2 1.5, non-reactant N2 0.5), irreversible", "tutorials/batch/combustion/ignition01_h2o2_jac", _ford),
 ]
 
 PATHS = [   # (case, what it exercises)
