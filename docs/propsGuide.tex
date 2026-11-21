@@ -1383,6 +1383,14 @@ objective
     maxEvaluations 1500;   // minimax stage only
 }
 \end{verbatim}
+A \code{P\_bubble} fit may add a \emph{relative-volatility} residual to the pressure one, with weights the case
+declares (there is no default): \code{residual \{ kind P\_bubble; weights \{ P 1; alpha 1; alphaColumn alpha; \} \}}
+minimises $w_P\sum_i r_{P,i}^2+w_\alpha\sum_i r_{\alpha,i}^2$ with $r_\alpha=(\alpha_{\mathrm{model}}-\alpha)/\alpha$,
+$\alpha=(y_1/x_1)/(y_2/x_2)$ from the engine's bubble point at each measured $(T,x)$ and the measured $\alpha$ read from
+the dataset column named by \code{alphaColumn}; a weight of 0 drops that family.  Equations and the propene/propane
+result: Theory Guide, section~\ref{sec:fit-alpha-residual}.  Witness:
+\code{tutorials/props/compare/olefins03\_propane\_propene\_kij\_fit\_laurance1972}.
+
 \code{leastSquares} is the Levenberg--Marquardt search of this chapter.
 \code{minimax} minimises the \emph{largest} scaled residual,
 $\min_\theta \max_k |r_k(\theta)|$, by a derivative-free Nelder--Mead simplex.

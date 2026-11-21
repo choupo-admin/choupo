@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict -- phi-phi, ONE cubic (Peng-Robinson, PR78) for both
+  phases, WITH the propene-propane kij regressed by fitParameters in
+  tutorials/props/compare/olefins03_propane_propene_kij_fit_laurance1972 (kij
+  = 0.00543, fit on the bubble pressures at 100/120/140/160 degF, held out at
+  110/130/150).  The record is the catalogue's (data/standards/parameters/PengRobinson/
+  propane-propylene.dat, found by name), which names that case.  The same
+  system olefins03 holds to Laurance & Swift's relative volatility.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+components    ( propylene  propane );
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState
+    {
+        model PengRobinson;  mixingRule vanDerWaalsOneFluid;
+        binaryInteractions { propane-propylene { } }
+    }
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}

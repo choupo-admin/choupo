@@ -18,11 +18,16 @@
 #  discarded (Choupo registers builtins EXPLICITLY), the link still uses
 #  the explicit object list, never an archive.
 #
-#  The curated `data/standards/` tree (components, materials, pairs) is
-#  embedded into every .wasm at LINK time; a stamp file depends on every
-#  FILE under data/standards, so editing a .dat relinks all five and
-#  refreshes the embedded MEMFS (the directory-mtime gap is closed).
-#  Case dicts are written into MEMFS by JS at runtime.
+#  The curated `data/standards/` tree (components, materials, pairs) is NOT
+#  embedded in the binaries (C326, 2026-11-19: it was 20 MB inside each of the
+#  five .wasm).  It is packed ONCE by emscripten's file_packager into
+#      gui/public/wasm/choupoData.data      the bytes of every file, concatenated
+#      gui/public/wasm/choupoData.json      {files:[{filename,start,end}], package_uuid}
+#  and the worker (gui/public/workers/solverWorker.js) fetches the package once,
+#  then writes each file into the MODULE's MEMFS in preRun, at the same path
+#  /data/standards/ the engine already looks in.  The stamp below depends on
+#  every FILE under data/standards, so editing a .dat repacks the one package
+#  and relinks NOTHING.  Case dicts are written into MEMFS by JS at runtime.
 #
 #  Outputs (gui/public/wasm/):
 #      choupoSolve.{js,wasm}    steady-state solver
@@ -37,6 +42,9 @@
 # =============================================================================
 
 EMXX       ?= em++
+#  file_packager lives beside emcc in the emscripten tree (3.1.6: a python
+#  script, not on PATH).
+EM_FILE_PACKAGER ?= $(shell dirname $$(readlink -f $$(command -v $(EMXX))))/tools/file_packager.py
 WASM_MODE  ?= release
 WASM_DIR   := gui/public/wasm
 WASM_BUILD := build/wasm/$(WASM_MODE)
@@ -55,10 +63,11 @@ endif
 #  block (DEV.md 4c C171 B), while wasm/version.json beside it did.
 WASM_CXXFLAGS := -std=c++17 -fexceptions $(WASM_OPT) -Isrc -I. -MMD -MP
 
-# INITIAL_MEMORY 64 MiB (2026-11-11): --embed-file puts all of data/standards in
-# the binary's data segment; it passed the 16 MiB default once the pair
-# catalogues grew (19 MB: wasm-ld "initial memory too small, 20009744 bytes
-# needed").  Growth stays on; this only moves the floor above the embedded data.
+# INITIAL_MEMORY 64 MiB (2026-11-11): the catalogue (20 MB) used to be embedded
+# in the data segment and passed the 16 MiB default.  It is now written into
+# MEMFS at run time (C326), so the data segment no longer needs the floor, but
+# the MEMFS copy still lives in the heap; the floor is kept to avoid growth
+# during the load.  Growth stays on.
 # Link-time flags.  See CLAUDE.md §13 for the load-bearing rationale of
 # each flag (Emscripten 3.1.6 quirks documented there).
 WASM_LDFLAGS := \
@@ -71,10 +80,9 @@ WASM_LDFLAGS := \
 	-sENVIRONMENT=web \
 	-sINVOKE_RUN=0 \
 	"-sEXPORTED_FUNCTIONS=['_run_case','_malloc','_free']" \
-	"-sEXPORTED_RUNTIME_METHODS=['FS','ccall','cwrap']" \
-	--embed-file data/standards@/data/standards
+	"-sEXPORTED_RUNTIME_METHODS=['FS','ccall','cwrap']"
 
-.PHONY: wasm wasm-gui wasm-steady-props wasm-solve wasm-clean
+.PHONY: wasm wasm-gui wasm-steady-props wasm-solve wasm-data wasm-clean
 
 # Immediate (`:=`) and SELF-CONTAINED: wasm.mk is included BEFORE the
 # top-level Makefile defines SRCS, and rule PREREQUISITES expand at parse
@@ -104,7 +112,10 @@ WASM_PROPS_JS := $(WASM_DIR)/choupoProps.js
 # Aggregate targets ask for BOTH group members explicitly: GNU make only
 # examines the member it is asked to build, so a deleted .wasm beside a
 # fresh .js would otherwise never be noticed.
-WASM_ALL_OUT := $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) \
+WASM_DATA      := $(WASM_DIR)/choupoData.data
+WASM_DATA_META := $(WASM_DIR)/choupoData.json
+WASM_ALL_OUT := $(WASM_DATA) $(WASM_DATA_META) \
+                $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) \
                 $(WASM_BATCH_JS) $(WASM_BATCH_JS:.js=.wasm) \
                 $(WASM_CTRL_JS)  $(WASM_CTRL_JS:.js=.wasm) \
                 $(WASM_SEMI_JS)  $(WASM_SEMI_JS:.js=.wasm) \
@@ -160,12 +171,15 @@ wasm: $(WASM_ALL_OUT)
 wasm-gui: $(WASM_ALL_OUT)
 	@$(MAKE) --no-print-directory wasm-version
 
+# The shared data package alone.
+wasm-data: $(WASM_DATA) $(WASM_DATA_META)
+
 # The steady + props pair alone -- the fast relink when the dynamic
 # binaries are already current in gui/public/wasm/.
-wasm-steady-props: $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) $(WASM_PROPS_JS) $(WASM_PROPS_JS:.js=.wasm)
+wasm-steady-props: $(WASM_DATA) $(WASM_DATA_META) $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) $(WASM_PROPS_JS) $(WASM_PROPS_JS:.js=.wasm)
 
 # Steady-state binary alone (choupoSolve only).
-wasm-solve: $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm)
+wasm-solve: $(WASM_DATA) $(WASM_DATA_META) $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm)
 
 # ---- content stamps: the fingerprint lives in the FILENAME ------------------
 #  A prerequisite LIST captured at parse time misses DELETIONS (the removed
@@ -253,20 +267,33 @@ endef
 #  result -- a missing/corrupted .wasm beside a fresh .js re-runs the link
 #  instead of declaring everything current.  See WASM_LINK above for what that
 #  re-run used to produce.
-$(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_SOLVE_OBJS) $(WASM_STANDARDS_STAMP) $(WASM_LD_STAMP) | $(WASM_DIR)
+$(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_SOLVE_OBJS) $(WASM_LD_STAMP) | $(WASM_DIR)
 	$(call WASM_LINK,createChoupoSolve,$(WASM_SOLVE_EXTRA_EXPORTS))
 
-$(WASM_BATCH_JS) $(WASM_BATCH_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_BATCH_OBJS) $(WASM_STANDARDS_STAMP) $(WASM_LD_STAMP) | $(WASM_DIR)
+$(WASM_BATCH_JS) $(WASM_BATCH_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_BATCH_OBJS) $(WASM_LD_STAMP) | $(WASM_DIR)
 	$(call WASM_LINK,createChoupoBatch)
 
-$(WASM_CTRL_JS) $(WASM_CTRL_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_CTRL_OBJS) $(WASM_STANDARDS_STAMP) $(WASM_LD_STAMP) | $(WASM_DIR)
+$(WASM_CTRL_JS) $(WASM_CTRL_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_CTRL_OBJS) $(WASM_LD_STAMP) | $(WASM_DIR)
 	$(call WASM_LINK,createChoupoCtrl)
 
-$(WASM_SEMI_JS) $(WASM_SEMI_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_SEMI_OBJS) $(WASM_STANDARDS_STAMP) $(WASM_LD_STAMP) | $(WASM_DIR)
+$(WASM_SEMI_JS) $(WASM_SEMI_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_SEMI_OBJS) $(WASM_LD_STAMP) | $(WASM_DIR)
 	$(call WASM_LINK,createChoupoSemiContinuous)
 
-$(WASM_PROPS_JS) $(WASM_PROPS_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_PROPS_OBJS) $(WASM_STANDARDS_STAMP) $(WASM_LD_STAMP) | $(WASM_DIR)
+$(WASM_PROPS_JS) $(WASM_PROPS_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_PROPS_OBJS) $(WASM_LD_STAMP) | $(WASM_DIR)
 	$(call WASM_LINK,createChoupoProps)
+
+#  The shared data package: ONE grouped rule, the same shape as the links.
+#  file_packager writes the loader JS it is told to; we never ship it (the
+#  worker reads the metadata itself), so it goes to the build tree, and the
+#  metadata it writes beside it is moved next to the package.
+$(WASM_DATA) $(WASM_DATA_META) &: $(WASM_STANDARDS_STAMP) | $(WASM_DIR)
+	@printf "  PACK  %s  (data/standards)\n" $(WASM_DATA)
+	@mkdir -p $(WASM_BUILD)
+	@python3 $(EM_FILE_PACKAGER) $(WASM_DATA) \
+		--preload data/standards@/data/standards \
+		--js-output=$(WASM_BUILD)/choupoData.js --separate-metadata --no-node >/dev/null
+	@mv $(WASM_BUILD)/choupoData.js.metadata $(WASM_DATA_META)
+	@printf "  -->   data: %s (%s bytes)\n" $(WASM_DATA) $$(stat -c%s $(WASM_DATA))
 
 $(WASM_DIR):
 	@mkdir -p $@
@@ -276,5 +303,6 @@ $(WASM_DIR):
 
 wasm-clean:
 	@rm -f $(WASM_DIR)/choupo*.js $(WASM_DIR)/choupo*.wasm \
+	       $(WASM_DIR)/choupoData.data $(WASM_DIR)/choupoData.json \
 	       $(WASM_DIR)/choupo*.js.map
 	@rm -rf build/wasm

@@ -181,6 +181,8 @@ const PinchCompositeTool = lazy(() =>
   import("./methods/PinchCompositeTool.js").then((m) => ({ default: m.PinchCompositeTool })));
 const CompressionTool = lazy(() =>
   import("./methods/CompressionTool.js").then((m) => ({ default: m.CompressionTool })));
+const DryerSelectionTool = lazy(() =>
+  import("./methods/DryerSelectionTool.js").then((m) => ({ default: m.DryerSelectionTool })));
 const PumpSystemTool = lazy(() =>
   import("./methods/PumpSystemTool.js").then((m) => ({ default: m.PumpSystemTool })));
 const MerkelTool = lazy(() =>
@@ -357,6 +359,9 @@ const AdsorptionIsothermsTool = lazy(() =>
 const BatchAdsorptionTool = lazy(() =>
   import("./methods/BatchAdsorptionTool.js")
     .then((m) => ({ default: m.BatchAdsorptionTool })));
+const AdsorbentSelectionTool = lazy(() =>
+  import("./methods/AdsorbentSelectionTool.js")
+    .then((m) => ({ default: m.AdsorbentSelectionTool })));
 const ChromatographyTool = lazy(() =>
   import("./methods/ChromatographyTool.js")
     .then((m) => ({ default: m.ChromatographyTool })));
@@ -405,6 +410,9 @@ const SolventMixtureTool = lazy(() =>
 const MaterialsTool = lazy(() =>
   import("./methods/MaterialsTool.js")
     .then((m) => ({ default: m.MaterialsTool })));
+const LinearAlgebraTool = lazy(() =>
+  import("./methods/LinearAlgebraTool.js")
+    .then((m) => ({ default: m.LinearAlgebraTool })));
 const RelaxationTool = lazy(() =>
   import("./methods/RelaxationTool.js")
     .then((m) => ({ default: m.RelaxationTool })));
@@ -625,6 +633,7 @@ export function MethodsWorkspace() {
             : tool === "pinch-composite" ? <PinchCompositeTool />
             : tool === "pump-system" ? <PumpSystemTool />
             : tool === "compression" ? <CompressionTool />
+            : tool === "dryer-selection" ? <DryerSelectionTool />
             : tool === "merkel" ? <MerkelTool />
             : tool === "rayleigh" ? <RayleighTool />
             : tool === "levenspiel" ? <LevenspielTool />
@@ -688,6 +697,7 @@ export function MethodsWorkspace() {
             : tool === "adsorption-isotherms" ? <AdsorptionIsothermsTool />
             : tool === "electrolyte-models" ? <ElectrolyteModelsTool />
             : tool === "batch-adsorption" ? <BatchAdsorptionTool />
+            : tool === "adsorbent-selection" ? <AdsorbentSelectionTool />
             : tool === "chromatography" ? <ChromatographyTool />
             : tool === "operator-panels" ? <OperatorPanelsTool />
             : tool === "fluidised-beds" ? <FluidisedBedsTool />
@@ -703,6 +713,7 @@ export function MethodsWorkspace() {
             : tool === "correlation-simplicity" ? <CorrelationSimplicityTool />
             : tool === "data-reconciliation" ? <DataReconciliationTool />
             : tool === "solvent-mixture" ? <SolventMixtureTool />
+            : tool === "linear-algebra-without-pain" ? <LinearAlgebraTool />
             : tool === "relaxation" ? <RelaxationTool />
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />

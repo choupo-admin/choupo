@@ -232,6 +232,31 @@
       ]
     },
     {
+      "id": "linear-solves",
+      "title": "Linear solves and the bowl",
+      "intro": "From why every Newton step is a linear system to the bowl, the constrained bowl, and a fit whose damping keeps it a bowl.",
+      "steps": [
+        {
+          "tool": "linear-algebra-without-pain",
+          "label": "Linear algebra without the pain",
+          "why": "Elimination, LU as a receipt, pivoting, conditioning, structure, the positive-definite bowl, conjugate gradient.",
+          "href": "/app/?workspace=methods&tool=linear-algebra-without-pain&path=linear-solves"
+        },
+        {
+          "tool": "active-set-qp",
+          "label": "Quadratic programming with constraints (active set)",
+          "why": "The same bowl under constraints: the inner problem of every SQP step.",
+          "href": "/app/?workspace=methods&tool=active-set-qp&path=linear-solves"
+        },
+        {
+          "tool": "least-squares",
+          "label": "Least squares: what a fitted parameter is worth",
+          "why": "Gauss-Newton's step is a linear solve too, and its damping is what keeps the table a bowl.",
+          "href": "/app/?workspace=methods&tool=least-squares&path=linear-solves"
+        }
+      ]
+    },
+    {
       "id": "recycle-numerics",
       "title": "Recycle numerics",
       "intro": "From why a recycle is iterated to how the cut is chosen: relaxation, Wegstein, and the tear.",
@@ -282,8 +307,8 @@
       ]
     }
   ],
-  "liveTools": 91,
-  "registryTools": 91,
+  "liveTools": 94,
+  "registryTools": 94,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -689,6 +714,19 @@
       "href": "/app/?workspace=methods&tool=compression"
     },
     {
+      "id": "dryer-selection",
+      "label": "Which dryer for which product",
+      "blurb": "Choose a dryer type from the feed, heat sensitivity, scale and mode.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "The seven dryer types that do most of the drying (spray, rotary, fluidised bed, tray, belt, drum, freeze), each drawn as a schematic; a selection tree from the feed form, the heat sensitivity, the scale and the batch or continuous mode to one or two types with the reason and the page of Mujumdar, Perry or van 't Land it was read from; a comparison table of residence time, energy per kg of water and typical products with \"not cited\" where the books are silent; and the tutorial cases of the types the engine models.",
+      "origins": [
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=dryer-selection"
+    },
+    {
       "id": "correlation-simplicity",
       "label": "Why engineering correlations are simple",
       "blurb": "Understand why engineering correlations stay simple.",
@@ -930,6 +968,19 @@
       "href": "/app/?workspace=methods&tool=batch-adsorption"
     },
     {
+      "id": "adsorbent-selection",
+      "label": "Which adsorbent for which separation",
+      "blurb": "Match eight industrial adsorbents to five separations, each claim with its page.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "Why a separation goes to one adsorbent and not another: eight industrial adsorbents (activated carbon, zeolites 3A, 4A, 5A and 13X, silica gel, activated alumina, carbon molecular sieve) by pore size, polarity, heat of adsorption and regeneration, then a matrix of five separations (gas drying, hydrogen PSA, nitrogen and oxygen from air, VOC recovery, water treatment) with each sentence beside the book page it was read at, a count in place of a market Pareto because no source in the folder gives tonnes, and the catalogue records each opened with the case that uses it.",
+      "origins": [
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=adsorbent-selection"
+    },
+    {
       "id": "breakthrough",
       "label": "Adsorption breakthrough",
       "blurb": "Watch a bed's mass-transfer zone eat capacity before saturation.",
@@ -1082,6 +1133,18 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=tear-streams"
+    },
+    {
+      "id": "linear-algebra-without-pain",
+      "label": "Linear algebra without the pain",
+      "blurb": "Why Newton steps are linear solves: LU, pivoting, the bowl.",
+      "discipline": "Flowsheeting & numerics",
+      "teaches": "Why a simulator is full of matrices: every Newton step solves J dx = -F.  Seven steps in lay language, each a picture first and a small figure you drag: two rulers crossing (the step), elimination and LU as its RECEIPT (keep it, reuse it for a new right-hand side), a tiny pivot losing every digit, the wobbly table of an ill-conditioned system, why a column's block-tridiagonal Jacobian is cheap, the bowl of a positive-definite matrix (and the saddle when it fails), and steepest descent's zigzag against conjugate gradient.  Every claim about the engine carries the file and line it was read at.",
+      "origins": [
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=linear-algebra-without-pain"
     },
     {
       "id": "relaxation",

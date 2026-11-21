@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  olefins03_propane_propene_kij_fit_laurance1972 -- the thermophysical system
+  the fit starts from.  phi-phi, ONE cubic for both phases (SRK; the PR fit op
+  overrides the model with its own `thermo {}` fragment).  The binary pair is
+  the ONE inline form the builder accepts, `{ i; j; kij; variedBy
+  <operation>; }`: a number under regression in this case, announced by every
+  run as such.  Its start is 0, the kij = 0 of olefins01; the fit moves it.
+  The finished PR fit is the record data/standards/parameters/PengRobinson/
+  propane-propylene.dat, which the `prfit` scans and c3splitter02 declare BY NAME
+  (`propane-propylene { }`); the SRK fit is not promoted (it found kij = 0).
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+components    ( propylene  propane );
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState
+    {
+        model SRK;  mixingRule vanDerWaalsOneFluid;
+        binaryInteractions
+        {
+            propane-propylene { i propylene;  j propane;  kij 0.0;  variedBy fitParameters; }
+        }
+    }
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}

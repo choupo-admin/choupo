@@ -55,7 +55,7 @@ import data from "./lessonReferences.json";
 import type { MethodToolId } from "./registry.js";
 
 /** How a reference was confirmed to exist and to say what it is cited for. */
-export type VerificationMethod = "crossref" | "pdf" | "catalogue" | "official";
+export type VerificationMethod = "crossref" | "pdf" | "catalogue" | "official" | "web";
 
 export interface ReferenceVerification {
   method: VerificationMethod;

@@ -1464,6 +1464,122 @@ stage: no multistage dosing and no column.  The standard errors rest on the
 chosen error model and on local linearity.
 
 % ---------------------------------------------------------------------
+\subsection{Which adsorbent for which separation}\label{sec:edu-adsorbent-selection}
+
+\declaredanchor{sec:adsorbent-selection}
+
+\noindent\textit{\small Tool:} \code{tool=adsorbent-selection}.
+\textit{\small Case it starts from:} none --- the page reads books and the
+catalogue and runs no engine; it opens the cases that use the adsorbents it
+names.
+
+\subsubsection*{The question}
+
+\emph{I have a separation to make --- drying a gas, purifying hydrogen,
+splitting air, recovering a solvent, treating water; which of the common
+industrial adsorbents does a cited page name for it, and why?}
+
+\subsubsection*{What the page shows}
+
+Eight adsorbents (activated carbon, zeolites 3A, 4A, 5A and 13X, silica gel,
+activated alumina, carbon molecular sieve) with their pore size, polarity,
+printed heats of adsorption and regeneration, every value beside the printed
+page of Perry's 9th edition, Ruthven (1984), Ruthven, Farooq and Knaebel (1994)
+or Wankat's 2nd edition, with the PDF page in the tooltip so the reader can open
+it.  Where the folder prints no value (a heat of adsorption on silica gel, for
+one) the cell says \emph{not in the cited sources}; where two books differ both
+are shown.  Then a matrix of the five separations against the eight adsorbents:
+each cell is \emph{dominant}, \emph{layer} or \emph{named} and opens to one
+sentence of why with its page; a blank cell means the cited pages do not name
+the adsorbent, not that it is never used.
+
+\subsubsection*{What the page computes, and what it does not}
+
+Three pieces of arithmetic, each marked \emph{page}: Wankat's
+Eq.~(17-25), $(\Delta T)_{\max} = y\,|\Delta H_{\mathrm{ads}}|/C_{p,f}$, as a
+sum with two sliders (\theorydest{sec:adsorbent-selection}); the conversion of
+the printed heats from kcal/mol to kJ/mol; and the count that stands in place of
+a Pareto.  \textbf{There is no Pareto of industrial use}, because nothing in the
+literature folder gives tonnes or sales by adsorbent; the bars count the
+separations (of five) for which a cited page names each adsorbent, and the page
+says in so many words that this is breadth in these readings and not market
+share.  A market review filed in the folder would turn the count into a real
+chart.
+
+\subsubsection*{The catalogue}
+
+Three of the eight are records of the standards catalogue: activated carbon,
+zeolite 5A and zeolite 13X.  The page lists every \code{kind adsorbent} record it
+finds, opens each as text, lists its pair records with the model, the saturation
+loading and the heat of adsorption, and sets the record's packed bulk density and
+heat beside the books' (the 5A record's 700~kg/m$^3$ lies outside Perry's
+600--660 and inside Wankat's 670--720).  Zeolite 5A opens
+\code{psa01\_h2\_psa}; zeolite 13X opens \code{isotherm01\_eval\_13x\_co2} and
+\code{batch13\_breakthrough\_co2}.  No tutorial case uses activated carbon, and
+the page says so.
+
+\begin{tryit}
+Open the drying row and read why silica gel and alumina are dominant and 3A is
+only named; then open hydrogen purification and see that no cell is dominant,
+because the bed is layered.  In the heat step, set 1.0~wt\% and 2500~kJ/kg and
+read 25~K, then 0.05~wt\% and read 1.25~K.  In the catalogue, compare the 13X
+CO$_2$ record (45~kJ/mol) with the printed 10.0~kcal/mol (41.8~kJ/mol).
+\end{tryit}
+
+The pair records are marked \code{teachingOnly}; none is design data.
+
+% ---------------------------------------------------------------------
+\subsection{Linear algebra without the pain}\label{sec:edu-linear-algebra-without-pain}
+
+\declaredanchor{ch:linear-algebra-without-pain}
+
+\noindent\textit{\small Tool:} \code{tool=linear-algebra-without-pain}.
+\textit{\small Case it starts from:} none --- the page is arithmetic on toy
+matrices and runs no engine; what is the engine's is each file and line it
+cites.
+
+\subsubsection*{The question}
+
+\emph{Why is a simulator full of matrices, and what are LU, pivoting and the
+conjugate gradient for?}
+
+\subsubsection*{What the page shows}
+
+Eight steps in lay language, each a sketch first, then the symbol, then where
+Choupo does it, with a small figure on $2\times2$ or $3\times3$ numbers you
+drag: two rulers crossing (a Newton step), elimination and LU as its receipt
+beside the cost as growing blocks, a tiny pivot on a few-digit calculator with
+the digits falling off, a wobbly table of two nearly parallel lines whose
+crossing jumps, a full matrix beside a block-tridiagonal band, what ``positive''
+means (the number $x'Ax$, not the entries of the table: two tables side by side
+with a polar plot and a direction arrow you turn), the bowl, saddle and ridge as
+contour plots and perspective sketches, many variables as a fan of parabolas one
+per principal axis beside the elimination pivots that give the same verdict
+(the receipt of step~2 is also the test), the plain-language meaning of
+\emph{definite}, \emph{semi-definite} and \emph{indefinite} with what the
+sources do and do not document about the name, and the zigzag of steepest
+descent against conjugate gradient.  A map links Newton's $J\,\Delta x=-F$ to
+each idea; a glossary, a quiz and the limits close the page.
+
+\subsubsection*{What the page computes, and what it does not}
+
+Everything drawn is the page's own arithmetic (marked \emph{page}); the numbers
+you set are marked \emph{assumption}.  No Choupo run is shown.  Choupo has no
+conjugate-gradient solver, and its LU equilibrates the matrix, which the toy does
+not; the page says both.  The textbook is Biegler, Grossmann and Westerberg
+(1997), pp.~255--256; Shewchuk's 1994 note inspired the page and supplies no number
+(\theorydest{ch:linear-algebra-without-pain}).
+
+\begin{tryit}
+In the first figure drag the guess onto the diagonal $x=y$ and watch the two
+rulers become parallel.  In the pivot figure keep six digits and push
+$\varepsilon$ to $10^{-7}$.  In the bowl figure make $A_{12}$ larger than the
+geometric mean of the diagonal and watch the bowl turn into a saddle.  In the
+many-variables figure raise the coupling of the $3\times3$ table past $c=2$ and
+watch the smallest parabola flip and a pivot go negative.
+\end{tryit}
+
+% ---------------------------------------------------------------------
 \subsection{Batch adsorption in a stirred tank}\label{sec:edu-batch-adsorption}
 
 \declaredanchor{sec:batch-adsorption-stirred-tank}
@@ -3109,6 +3225,40 @@ visible as the corner where a flat rate begins to fall.  The tool is
 careful about one thing that deserves writing up properly: the engine
 omits the break time entirely when the crossing was never observed, and
 the tool reports \emph{which} absence it is rather than drawing a zero.
+\declaredanchor{ch:drying}
+
+\subsection*{Which dryer for which product \quad(\code{tool=dryer-selection})}\label{sec:edu-dryer-selection}
+A \emph{selection} aid: the seven dryer types that do most of the drying ---
+spray, direct-heat rotary, fluidised bed, tray, belt, drum and freeze ---
+each drawn as a schematic made for the page (feed in blue, hot gas in red,
+product in amber, vapour in grey; none copied from a book), and a tree that
+asks, in the order feed form, heat sensitivity, scale, batch or continuous,
+and answers with one or two types, the reason, and the book and page it was
+read from.  Every rule is read from Mujumdar, \emph{Handbook of Industrial
+Drying}, 3rd ed.\ (2006), Chapter~1 (Tables~1.1--1.4, section~1.5.3);
+Perry's \emph{Chemical Engineers' Handbook}, 9th ed.\ (2019), Section~12
+(Table~12-11, the selection considerations on p.~12-36); and van~'t Land,
+\emph{Drying in the Process Industry} (2012), whose two decision trees
+(Figs.~3.1 and~3.2) supply the 30 and 75~$^\circ$C product-temperature bands.
+The throughput bands are Perry's (batch below about 50~kg/h, continuous
+above 1~t/h); where the books disagree --- Perry marks the batch tray
+`not applicable' to a free-flowing powder, van~'t Land and Mujumdar admit it
+--- the page says so.  The comparison table gives residence time, energy per
+kilogram of water (Mujumdar's Table~1.4: 4\,500--11\,500~kJ/kg for a spray
+dryer, 3\,200--6\,500 for a drum dryer) and typical products, and prints
+\emph{not cited} in every cell the three books leave blank (the energy of the
+batch tray and the freeze dryer, three evaporation capacities).  A small
+bench turns a dry-solid rate and two moistures into the water to evaporate and
+the heat duty of each priced type, as the page's own arithmetic on the cited
+range ($\eta \approx \Delta h_\mathrm{vap}/e$ with 2257~kJ/kg).  The four
+types the engine models open their tutorial case in a new tab:
+\code{steady/drying/sprayDryer01\_sugar},
+\code{steady/drying/convDryer01\_sugar\_curve} (the continuous convective
+family, which has no rotary geometry),
+\code{steady/drying/solidDryer01\_sugar} (nearest to a well-mixed bed) and
+\code{batch/drying/dryer01\_sucrose\_tray}; the drum, belt and freeze dryers
+have no model and say so.  The page computes nothing in the engine and
+replaces no drying test.
 \declaredanchor{ch:drying}
 
 \subsection*{Cooling tower, Merkel \quad(\code{tool=merkel})}

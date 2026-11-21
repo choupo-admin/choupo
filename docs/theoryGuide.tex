@@ -10859,6 +10859,104 @@ methanol & PR  & 1.22117 & $-0.20453$ & $-0.68580$ & 14.7\,\% & 0.06\,\%\\
 \end{table}
 Witness: \code{tutorials/props/molecular/alpha01\_water\_methanol\_psat}.
 
+\subsection{The cubic against measured relative volatility: the two olefin splitters}\label{sec:olefin-vle}
+
+\paragraph{Why.}  A splitter separates two components whose relative volatility
+\begin{equation}\label{eq:olefin-alpha}
+  \alpha_{12} = \frac{y_1/x_1}{y_2/x_2} = \frac{K_1}{K_2}
+\end{equation}
+is close to one, and the Fenske minimum number of stages
+$N_{\min} = \ln\!\bigl[\tfrac{x_{1,D}}{x_{2,D}}\tfrac{x_{2,B}}{x_{1,B}}\bigr]/\ln\alpha_{12}$
+goes as $1/\ln\alpha_{12}\approx 1/(\alpha_{12}-1)$.  For propene (1) and
+propane (2) $\alpha_{12}-1$ is 0.05 to 0.22 and for ethylene and ethane 0.08 to
+0.57 in the tables below, so a model error of $2\,\%$ in $\alpha_{12}$ is close to $20\,\%$ in the tower.  No defect of that
+size is visible to a balance, a convergence test or a golden: the equation of state
+returns a plausible $K$ whichever way it is wrong.  Only a measurement sees it.
+
+\paragraph{Equations as implemented.}  Both phases are priced by ONE cubic
+($\phi$--$\phi$: \code{SRK} with the Soave slope, or \code{PengRobinson}
+(PR78 slope), \code{vanDerWaalsOneFluid} mixing, $k_{ij}=0$ because no
+propene--propane or ethylene--ethane record exists in the catalogue; Section~\ref{sec:cubic-alpha-mc}
+and the mixing rules below).  At a measured liquid composition and temperature the property bench's
+\code{P\_bubble} and \code{y\_eqT\_}$i$ solve $\sum_i K_i x_i = 1$ with the incipient vapour iterated
+to its own composition, $K_i=\phi_i^{L}/\phi_i^{V}$ both from the cubic; $\alpha_{12}$ is then
+Eq.~\eqref{eq:olefin-alpha} from the engine's $x$ and $y$.  The shortcut column's $\alpha_{LK,HK}$ is the same
+ratio at the feed's bubble point.
+
+\paragraph{The evidence.}  \emph{Propene/propane}: Laurance and Swift, \emph{J.\ Chem.\ Eng.\ Data}
+\textbf{17}, 333 (1972), Table~IV (p.~335): seven isotherms 100--160\,$^\circ$F, $x=0.1\ldots0.9$ (63 points).
+The pressures of the paper's Table~I were measured (probable error $0.1\,\%$); the table's $y$, $P$ and $\alpha$
+are computed by the authors from them by integrating the isothermal coexistence equation
+(estimated error $\pm0.005$ in $\alpha$), so no vapour was sampled.
+\emph{Ethylene/ethane}: Fredenslund, Mollerup and Hall, \emph{J.\ Chem.\ Eng.\ Data} \textbf{21}, 301 (1976),
+Table~I (p.~302): 14 SAMPLED points at 263.15 and 293.15\,K ($x$ and $y$ accurate to $\pm0.003$, the footnote).
+Both are transcribed from the page image; the printed slips are named in the dataset headers.
+
+\paragraph{Result.}  The band was declared in each case's README before the first run.
+\emph{Propene/propane}, SRK/PR: bubble pressure inside it (mean $0.40/0.76\,\%$, maximum $1.06/1.73\,\%$ against $1.5/3\,\%$);
+$\alpha$ \emph{outside} it, for both models: mean $1.82/1.80\,\%$ (declared $1.5\,\%$), 10 of the 63 points above the $3\,\%$ limit,
+maximum $4.6\,\%$.  The miss has one shape: the engine's $\alpha$ is too low at the propane-rich end and too high at the propene-rich
+end at every isotherm (at 100\,$^\circ$F the paper's $\alpha$ falls from 1.202 to 1.098 across the composition range, the
+engine's from 1.147 to 1.141), because the measured pair has a small positive deviation from Raoult's law and $k_{ij}=0$ has none.
+No $k_{ij}$ was fitted in that case; the paragraph after the column consequence does it.
+\emph{Ethylene/ethane}: pressure, $y$ (mean $0.003$ against $0.010$) and the mean $\alpha$ ($2.6\,\%$ against $4\,\%$) inside
+the band; one point of 14 (263.15\,K, $x=0.1446$, $-5.3/-5.5\,\%$) $0.3$--$0.5$ point beyond its per-point limit.
+SRK and PR agree within $0.3$ point in $\alpha$ in both pairs.
+The consequence for a column is in \code{tutorials/steady/distillation/c3splitter01\_propylene\_propane}
+(illustrative specification, 70/30 feed, 17\,bar): the engine's $\alpha=1.1345$ against the measured $1.1105$ at the feed's
+bubble point gives 144.6 theoretical stages and $R=12.51$ against the 173.2 stages and $R=15.23$ the measured $\alpha$ implies
+($-16.5\,\%$ in stages, $-17.9\,\%$ in reflux).
+
+\paragraph{One fitted $k_{ij}$ for propene/propane, with a hold-out.}  \code{fitParameters} (\code{kind P\_bubble}, residual
+$(P_{\mathrm{model}}-P_{\mathrm{exp}})/P_{\mathrm{exp}}$, Levenberg--Marquardt) regresses ONE constant
+$k_{ij}$ of the one-fluid rule per cubic on the 100, 120, 140 and 160\,$^\circ$F isotherms (36 points) and tests it on 110, 130 and 150\,$^\circ$F (27 points)
+in \code{tutorials/props/compare/olefins03\_propane\_propene\_kij\_fit\_laurance1972}; the band was written before the fit: held-out $\alpha$ mean
+$\le1.0\,\%$, each $\le3\,\%$, held-out $P$ mean $\le0.5\,\%$, each $\le1.5\,\%$.  Peng--Robinson: $k_{ij}=0.00543\pm0.0009$ ($t_{95}$); held-out $\alpha$
+mean $0.66\,\%$ (max $1.97\,\%$) against $1.79\,\%$ for $k_{ij}=0$, held-out $P$ mean $0.27\,\%$ (max $0.58\,\%$): inside every arm, and the record
+\code{data/standards/parameters/PengRobinson/propane-propylene.dat} names its case.  SRK: the same pressure regression returns
+$k_{ij}=-0.00007\pm0.0012$, i.e.\ zero, and held-out $\alpha$ stays $1.82\,\%$ (band missed).  The reason is measured, not assumed: for SRK the pressure
+minimum is at $k_{ij}=0$ while $\alpha$ keeps improving to $k_{ij}\approx0.009$ (held-out $\alpha$ $0.19\,\%$, but $P$ $1.34\,\%$), whereas for PR the two minima
+nearly coincide ($0.005$ and $0.008$); a constant $k_{ij}$ can remove the composition trend (at SRK $0.009$: $-0.30\,\%$ and $-0.28\,\%$ at $x=0.1$ and $0.9$), but a
+pressure objective does not choose it for SRK (the relative-volatility residual of the next paragraph can).  The splitter on PR with this $k_{ij}$
+(\code{tutorials/steady/distillation/c3splitter02\_propylene\_propane\_pr\_kij}) has $\alpha=1.1206$, 159.8 stages and $R=13.96$, i.e.\ $-7.7\,\%$ and $-8.4\,\%$
+from the measured-alpha tower (173.2 stages, $R=15.23$) against $-16.5\,\%$ and $-17.9\,\%$ at $k_{ij}=0$; the rigorous column at the shortcut's numbers delivers
+99.03 mol\,\% overhead (the constant-$\alpha$ shortcut's limit) and at the measured-alpha tower 99.51 mol\,\% propylene overhead and 97.71 mol\,\% propane in the bottoms (specification 99.5/97.69).
+
+\paragraph{Relative volatility as a regression residual.}\label{sec:fit-alpha-residual}  \code{fitParameters}
+(\code{kind P\_bubble}) accepts, in its \code{residual} block, a declared pair of weights
+\code{weights \{ P $w_P$; alpha $w_\alpha$; alphaColumn <name>; \}} and then minimises
+\begin{equation}
+\chi^2=w_P\sum_i\Bigl(\frac{P_{\mathrm{model},i}-P_{\mathrm{exp},i}}{P_{\mathrm{exp},i}}\Bigr)^2
+      +w_\alpha\sum_i\Bigl(\frac{\alpha_{\mathrm{model},i}-\alpha_{\mathrm{exp},i}}{\alpha_{\mathrm{exp},i}}\Bigr)^2,
+\qquad \alpha_{12}=\frac{y_1/x_1}{y_2/x_2},
+\end{equation}
+with $P_{\mathrm{model}}$ and $y$ the engine's own bubble point at each point's measured $(T,x)$
+(\code{BubblePoint::pressure}, the incipient vapour iterated) and $\alpha_{\mathrm{exp}}$ the dataset column
+\code{alphaColumn}.  There is NO default weight: the case writes both, a weight of 0 drops that family
+($w_P=0$ is an alpha-only fit), and without the block the operation is exactly the pressure fit of the previous
+paragraph.  Each family is one block of rows carrying $\sqrt{w}$, so the Levenberg--Marquardt step, the Jacobian and
+the $\chi^2$ are those of the least-squares chapter; the held-out rows are the same blocks unweighted, and the held-out
+$\mathrm{AAD}$ is the mean of $|r|$ over all held-out rows (the per-family means are published as
+\code{aad\_heldout\_P\_rel} and \code{aad\_heldout\_alpha\_rel}).  Validity: a binary $P$--$x$ dataset with an
+$\alpha$ column, one liquid, \code{evaluate} mode not supported; source: the combination is Choupo's own, the
+residual of each family is the one already used.  Result on propene/propane (Laurance \& Swift 1972, same
+36/27 split, bands declared in the case README before the run): SRK on $\alpha$ alone $k_{ij}=0.00927\pm0.0004$, held-out
+$\alpha$ $0.19\,\%$ (max $0.55\,\%$) but $P$ $1.38\,\%$; on $\alpha+P$ with equal weights $k_{ij}=0.00675\pm0.0011$,
+$\alpha$ $0.49\,\%$ (max $1.57\,\%$), $P$ $1.04\,\%$ (max $1.44\,\%$).  The $\alpha$ band is met by both and the
+pressure band ($\le1.0\,\%$ mean) by neither, so no SRK record is promoted; both numbers are IN SAMPLE to the same table.
+
+\paragraph{Validity window and in-sample statement.}  Propene/propane 310.9--344.3\,K, liquid propene fraction
+0.1--0.9, 13--31 bar; ethylene/ethane 263.15 and 293.15\,K, 19--48 atm (293.15\,K is above the critical temperature of
+ethylene, 282.34\,K).  In the comparison cases nothing was fitted to these points: Tc, Pc and $\omega$ are the records' own, so that comparison is
+out of sample; the fitted $k_{ij}$ of the paragraph above is IN SAMPLE to the same table (three isotherms held out, not another laboratory), valid for Peng--Robinson only.  The Antoine records the runs print as outside their $T$ range only seed the incipient-vapour iteration; the answer is the cubic's.
+Gate \code{bin/curate/check\_olefin\_vle.py} pins the declared bands, the propene/propane miss at its measured size and shape,
+sees a transposed digit in propylene's $\omega$, reruns the $k_{ij}$ fit and pins both models' held-out $\alpha$ and $P$, the promoted record and the splitter on it,
+and sees the record's $k_{ij}$ set to zero.  Witnesses:
+\code{tutorials/props/compare/olefins01\_propane\_propene\_laurance1972},
+\code{tutorials/props/compare/olefins03\_propane\_propene\_kij\_fit\_laurance1972},
+\code{tutorials/steady/distillation/c3splitter02\_propylene\_propane\_pr\_kij},
+\code{tutorials/props/compare/olefins02\_ethane\_ethylene\_fredenslund1976}.
+
 \subsection{Mixing rules}
 
 A mixture needs single effective $a_{\mathrm{mix}}, b_{\mathrm{mix}}$.
@@ -14264,6 +14362,115 @@ $\lambda$ knob slides between them automatically based on whether the
 last step worked. The Marquardt diagonal scaling makes the knob
 behave the same regardless of how you re-express the parameters.
 \end{intuition}
+
+% ---------------------------------------------------------------------
+\section{Linear algebra without the pain: the solve inside every Newton step}\label{ch:linear-algebra-without-pain}
+
+\begin{whatyoulllearn}
+Every Newton step of the engine solves one linear system, $J\,\Delta x = -F$.
+This chapter derives what that solve costs and where it can go wrong, in the
+order a student meets it: Gaussian elimination and the LU factorisation as its
+\emph{receipt}, partial pivoting, the condition number, the block-tridiagonal
+structure of a column's Jacobian, the positive-definite quadratic (the
+\emph{bowl}), and the conjugate-gradient method that finishes an
+$n$-unknown bowl in $n$ steps.  The EduTool \code{linear-algebra-without-pain}
+draws each idea first as a picture; the numbers it prints are recomputed by its
+tests.
+\end{whatyoulllearn}
+
+\subsection*{The Newton step is a linear system}
+Linearising $F(x+\Delta x)\approx F(x)+J\,\Delta x$ and asking the
+approximation to vanish gives
+\begin{equation}
+  J\,\Delta x = -F, \qquad x_{\mathrm{new}} = x + \Delta x,
+  \label{eq:la-newton}
+\end{equation}
+with $J_{ij}=\partial F_i/\partial x_j$ (Biegler, Grossmann and Westerberg,
+\emph{Systematic Methods of Chemical Process Design}, 1997, Eqs.~8.18--8.21,
+pp.~255--256).  In the engine the right-hand side $-F$ is built in
+\code{NewtonND.cpp} and handed to the dense solver \code{gaussSolve}, a thin
+wrapper over \code{luFactor} and \code{luSolve} (\code{src/solver/LU.cpp}).
+
+\subsection*{LU is the receipt of elimination}
+Elimination subtracts $m_{ik}=a_{ik}/a_{kk}$ times row $k$ from row $i>k$.
+Keeping the multipliers below a unit diagonal gives
+\begin{equation}
+  PA = LU, \qquad L\,y = Pb, \qquad U\,x = y,
+  \label{eq:la-lu}
+\end{equation}
+with $P$ the row permutation of pivoting.  The factorisation costs
+$(n^3-n)/3$ multiply-adds and each solve $n^2$, counted in the loops, so one
+factorisation serves several right-hand sides (the stiff integrator factors its
+iteration matrix once per step and back-solves it for several).
+
+\subsection*{Pivoting}
+A multiplier larger than one magnifies the rounding already in a row.  Partial
+pivoting swaps into the diagonal the entry of largest magnitude at or below it,
+which keeps $|m_{ik}|\le 1$.  The engine additionally equilibrates the matrix
+before judging a pivot and refuses a pivot that is zero to working precision;
+the page's toy does neither.
+
+\subsection*{Conditioning}
+For $A(x+\delta x)=b+\delta b$,
+\begin{equation}
+  \frac{\lVert\delta x\rVert}{\lVert x\rVert}\le
+  \kappa\,\frac{\lVert\delta b\rVert}{\lVert b\rVert},
+  \qquad \kappa=\lVert A\rVert\,\lVert A^{-1}\rVert .
+  \label{eq:la-cond}
+\end{equation}
+$\kappa$ belongs to the problem, not the algorithm; it is the two-norm one here.
+
+\subsection*{Structure}
+A matrix of $N$ blocks of $n_v\times n_v$ coupling only neighbouring blocks is
+solved by block-Thomas in $O(N n_v^3)$ against $O((N n_v)^3)$ dense
+(\code{src/solver/BlockTridiagonal.H}); pivoting is inside each block only, the
+method's stated limit.
+
+\subsection*{What ``positive'' means, and many variables}
+Near a point, $f(x_0+x)\approx f(x_0)+\tfrac12\,x'Ax$ (for a quadratic, exactly):
+``positive'' is a statement about the \emph{number} $x'Ax$ for every direction
+$x$, not about the entries of $A$.  $\bigl[\begin{smallmatrix}1&2\\2&1\end{smallmatrix}\bigr]$
+has only positive entries and gives $-2$ along $(1,-1)$; $\bigl[\begin{smallmatrix}2&-1\\-1&2\end{smallmatrix}\bigr]$
+has negative entries and gives $6$ there, positive everywhere.  A symmetric $A$
+has $n$ perpendicular principal axes $q_k$ with $Aq_k=\lambda_kq_k$, and for
+$v=\sum_k u_kq_k$
+\begin{equation}
+  v'Av=\sum_{k=1}^{n}\lambda_k\,u_k^2 = \sum_{k=1}^{n} d_k\,w_k^2 ,
+  \label{eq:la-axes}
+\end{equation}
+the second sum from $A=LDL'$ (the elimination of Eq.~\eqref{eq:la-lu} on a
+symmetric table, no row swaps, $w=L'v$): $A$ is positive definite exactly when
+all $\lambda_k>0$, exactly when all pivots $d_k>0$.  One negative $\lambda_k$ is
+an \emph{indefinite} table (a saddle); a zero one, with none negative, a
+\emph{semi-definite} one.  The stability of a mixture is this statement for the
+Hessian of its Gibbs energy; Choupo's Michelsen test (\code{StabilityTest.H},
+\code{StabilityTest.cpp}) asks the global question, whether any composition at all
+lies below the tangent plane.  The words: a \emph{quadratic form} is $x'Ax$; Gauss
+(\emph{Disquisitiones Arithmeticae}, 1801, Section V, Art.~153) calls such
+functions of two unknowns ``forms of the second degree or simply forms'', and
+Miller's dictionary of first uses (MacTutor) says Euler perhaps used ``form'' in
+this sense in a paper read in 1775 and gives Salmon (1859) for the English
+``quadratic form''; the first use of \emph{definite} in this sense is not
+documented there.  Sylvester's law of inertia (1852) counts the upward and
+downward directions.
+
+\subsection*{The bowl and the conjugate gradient}
+The quadratic $f(x)=\tfrac12x'Ax-g'x$ is stationary where $Ax^*=g$; it is a
+bowl exactly when $A$ is positive definite, equivalently every eigenvalue is
+positive, every elimination pivot is positive, or a Cholesky factor
+$A=R'R$ exists.  The engine's QP solver requires it (\code{ActiveSetQP.H}) and
+its SQP driver keeps it by construction with a damped BFGS update.
+Steepest descent with the exact step $\alpha=r'r/(r'Ar)$, $r=g-Ax$, contracts
+the error in the norm $\sqrt{e'Ae}$ by at most $(\kappa-1)/(\kappa+1)$ per step
+and its steps are at right angles; conjugate gradient chooses directions with
+$d_i'Ad_j=0$ and finishes in at most $n$ steps in exact arithmetic.  Choupo has
+no conjugate-gradient solver; the method is taught here because the bowl is where
+it lives.
+
+\paragraph{Validity.}  Toy $2\times2$ and $3\times3$ tables; exact arithmetic for
+the $n$-step claim; no in-sample fit is involved.  Inspired by Shewchuk, \emph{An
+Introduction to the Conjugate Gradient Method Without the Agonizing Pain} (1994),
+from which no number is taken.
 
 % ---------------------------------------------------------------------
 \section{Relaxation: the first rung of recycle numerics}\label{ch:relaxation}
@@ -19050,6 +19257,54 @@ conditions evolve from inlet to outlet --- mathematically a
 The CSTR's algebraic equation becomes the PFR's ODE because the time
 the plug spends between $V$ and $V + \mathrm{d}V$ is $\mathrm{d}V/Q$.
 \end{intuition}
+
+\subsection{The volumetric flow along the bed}\label{sec:pfr-volumetric-flow}
+
+A rate law written in concentrations reads $c_i = F_i / Q$, and $Q$ is
+the \emph{local} volumetric flow. The pfr applies one rule, chosen by
+the phase of the feed:
+\begin{description}
+\item[Vapour feed.] $Q$ is re-priced at every point of the bed, at every
+  Runge-Kutta stage, from the local molar flow, temperature, pressure
+  and composition:
+  \begin{equation}
+     Q(V) \;=\; F_t(V)\, v^{\mathrm V}(T, P, \zv),
+     \qquad v^{\mathrm V} = \frac{\bar M}{\rho^{\mathrm V}},
+     \label{eq:pfr-Q-gas}
+  \end{equation}
+  with $\rho^{\mathrm V}$ the vapour density of the case's equation of
+  state (the ideal gas $P/RT$ where the package is ideal). A reaction
+  that changes the number of moles ($+40\,\%$ in the cracking of ethane,
+  a falling count in ammonia synthesis) therefore changes $Q$ and the
+  concentrations with it; so do a moving $T$ (adiabatic or cooled bed)
+  and a falling $P$ (Ergun). A law written in $T$, $P$ and mole fractions
+  only is not affected.
+\item[Liquid feed.] $Q = F_0 \bar M / \rho^{\mathrm L}$ at the feed
+  state, held along the bed: the density change of a liquid reaction is
+  small against the model's other uncertainties, and the liquid density
+  is the property door's.
+\end{description}
+Until 2026-11-21 the vapour case was held at its feed $Q$ as well
+(DEV.md 4c C461), which overstated the secondary yields of cracking and
+needed about $15\,\%$ too little volume for a given conversion. The
+residence time $\tau = V_R/Q_0$ printed by the unit stays the feed's.
+
+Three consequences of the rule are stated by the run. (i) For a vapour
+feed and a single irreversible reaction first order in the limiting
+reactant, the analytic check printed beside $X$ is Levenspiel's
+expansion-factor form (\emph{Chemical Reaction Engineering}, 3rd ed.,
+Ch.~5, Eq.~21, printed in his Example~5.5),
+$k\tau = -(1+\varepsilon_A)\ln(1-X) - \varepsilon_A X$ with
+$\varepsilon_A = y_{A0}\sum_i\nu_i / |\nu_A|$ (ideal gas, isothermal,
+isobaric); the plain $X = 1 - e^{-k\tau}$ is kept for a liquid feed or
+$\varepsilon_A = 0$. (ii) Ergun's superficial velocity and density use
+the same vapour density as \eqref{eq:pfr-Q-gas}, so a pure-steam bed is
+priced identically by the kinetics and by the pressure drop. (iii) The
+basis is the inlet's: when the non-isothermal march recomputes a vapour
+fraction whose phase differs from the inlet's, the unit prints one
+advisory naming the stage volume where that happened and stating that
+the volumetric flow and the kinetics stay on the inlet's phase (the pfr
+is not phase-aware).
 
 \subsection{Algorithm: RK4 integration}
 
@@ -27213,6 +27468,68 @@ None of this is the engine's arithmetic: the engine's \code{batchAdsorber}
 pressure.  The EduTool \code{batch-adsorption} carries it on the page; the
 design record \file{docs/design/batch-adsorption-in-a-stirred-tank.md}
 proposes the engine side.
+
+\subsection{Which adsorbent for which separation}\label{sec:adsorbent-selection}
+
+Three properties of an adsorbent decide most choices, and none of them is
+computed by the simulator: the \emph{size} of its pores against the molecule
+(molecular sieving, or a difference in diffusion rate), the \emph{polarity} of
+its surface (a hydrophilic surface holds water, a hydrophobic one holds
+organics), and the \emph{strength} of the bonding, which is the heat of
+adsorption and fixes both how hard the bed is to regenerate and how hot it gets
+while it works.  Perry classifies sorptive separations as equilibrium, rate or
+molecular sieving (Table~16-1) and the common adsorbents as hydrophobic or
+hydrophilic and amorphous or structured (Table~16-3): activated carbon and the
+carbon molecular sieves are hydrophobic, silica gel, activated alumina and the
+zeolites 3A, 4A, 5A and 13X are hydrophilic.  The four zeolites differ chiefly
+in their window, nominally 0.3, 0.4, 0.5 and 1.0~nm for the K, Na, Ca and Na
+forms of types A and X (Perry p.~16-7 and Table~16-5; Ruthven and Ruthven,
+Farooq and Knaebel give the free apertures of the eight- and twelve-membered
+rings, about 4.3 and 7.5~\AA).
+
+The heat released by adsorption warms the bed.  For a dilute adsorbate in a
+gas, with no heat lost to the wall or the solid, the energy balance per kilogram
+of gas is $y\,|\Delta H_{\mathrm{ads}}| = C_{p,f}\,\Delta T$, so
+\begin{equation}
+(\Delta T)_{\max} = \frac{y\,|\Delta H_{\mathrm{ads}}|}{C_{p,f}},
+\label{eq:adsorbent-selection-rise}
+\end{equation}
+with $y$ the mass fraction of adsorbate in the feed, $|\Delta H_{\mathrm{ads}}|$
+in kJ per kg of adsorbate and $C_{p,f}$ the heat capacity of the feed gas, about
+1~kJ/(kg\,K).  This is Wankat's Eq.~(17-25), after Basmadjian; his typical heat
+of adsorption is 1000 to 4000~kJ/kg (about 2500), which gives 25~$^\circ$C for
+1.0~wt\% adsorbate and 1.25~$^\circ$C for 0.05~wt\%.  It is an upper bound for
+a dilute feed: with a concentrated one the temperature and concentration waves
+couple and the bed must be treated non-isothermally, as the fixed-bed adsorber
+does (Eq.~\eqref{eq:ldf} and the sections around it).
+
+The matrix of the EduTool, five separations against eight adsorbents, is a
+reading and not a computation.  Each cell is a sentence of a cited page --- Perry's
+section~16, Ruthven (1984), Ruthven, Farooq and Knaebel (1994) or Wankat's
+chapter~17 --- and carries its page.  Drying is done by silica gel and activated
+alumina where capacity and cheap regeneration matter and by zeolites where a
+very low dew point or the exclusion of hydrocarbons does (3A, pore-closed 4A);
+hydrogen purification uses a layered bed of alumina, activated carbon and
+zeolite; nitrogen from air by pressure swing uses a carbon molecular sieve, a
+\emph{rate}-selective separation in which oxygen diffuses in much faster; solvent
+and VOC recovery uses activated carbon regenerated with steam, which pays between
+about 500 and 15\,000~ppm; and water treatment uses activated carbon, with
+activated alumina for fluoride.  \emph{Validity}: these are the duties the
+sources name and the adsorbents among the eight; LiLSX, mordenite, ETS-4, polymeric
+resins and MOFs are named in the same pages and are not treated.  Where two
+books print different figures (the pore size of alumina, the bulk density of 5A,
+silica gel in pressure-swing dryers) both are shown.
+
+No ranking of industrial use is given, because no source in the project's
+literature folder prints tonnes or sales by adsorbent.  The EduTool counts, for
+each adsorbent, the separations a cited page names it for; that is breadth in
+these readings and not volume of use.  The EduTool \code{adsorbent-selection}
+carries all of this on the page; it runs no engine.  The catalogue holds three of
+the eight as records under \file{data/standards/assets/} (activated carbon, zeolites
+5A and 13X) with their pair records under
+\file{data/standards/parameters/adsorption/equilibria/}, marked
+\code{teachingOnly}; the page sets each record's bulk density and heat of
+adsorption beside the printed values.
 
 \subsection{Elution chromatography: retention, plates and
 resolution}\label{sec:chromatography}
@@ -38599,12 +38916,11 @@ kcal $\to4184$\,J).  \emph{Validity window}: the paper's data are
 extrapolated 15~K above its printed range at 840\,$^\circ$C.
 
 \paragraph{The gas expansion.}  Ethane cracking makes about 40 \% more moles,
-and the scheme's concentrations follow the local $F_t$.  The \code{pfr} holds
-its volumetric flow at the value of the feed (\code{F\_i/Q}), so
-\code{cracking01\_ethane\_sundaram\_froment} is twenty \code{pfr} segments in
-series, each pricing $Q$ at its own inlet; ten and twenty segments differ by
-under 1\,\% in every yield and twenty sit within 1\,\% of an independent exact
-integration.
+and the scheme's concentrations follow the local $F_t$.  The \code{pfr} re-prices
+its volumetric flow along the bed (\S\ref{sec:pfr-volumetric-flow}), so
+\code{cracking01\_ethane\_sundaram\_froment} is one \code{pfr}, in agreement
+with an independent exact integration. (Before C461 the pfr held $Q$ at the feed
+value and the case was twenty segments in series.)
 
 \paragraph{What is reproduced.}  The witness is Table~VIII of Froment et al.,
 pilot column (59.1 \% conversion, 1.55 atm, 0.4 kg/kg, $T_R=840\,^\circ$C):

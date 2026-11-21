@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  olefins02_ethane_ethylene_fredenslund1976 -- the thermophysical system.
+  phi-phi, ONE cubic for both phases: the original Soave-Redlich-Kwong
+  (Soave alpha), kij = 0.  Peng-Robinson (PR78 slope) is the `pr` variant.
+  `binaryInteractions` is not declared, so kij = 0 and every run says so
+  ("predictive-degraded").  No kij record exists for ethylene + ethane in the
+  catalogue (data/standards/parameters/SRK holds N2-CH4 only), so there is no
+  "catalogue kij" run in this case; a kij FITTED to the measured points would
+  be a different question and is NOT made here.  Tc, Pc and omega are each
+  component's own record.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+components    ( ethylene  ethane );
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState { model SRK;  mixingRule vanDerWaalsOneFluid; }
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}
+
+variants
+{
+    pr                                      // Peng-Robinson (PR78), kij = 0
+    {
+        equilibrium
+        {
+            formulation phiPhi;
+            equationOfState { model PengRobinson;  mixingRule vanDerWaalsOneFluid; }
+            liquid { fugacityRoute equationOfState; root liquid; }
+            vapour { fugacityRoute equationOfState; root vapour; }
+        }
+    }
+}
