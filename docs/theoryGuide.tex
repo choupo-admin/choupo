@@ -19006,6 +19006,37 @@ The CSTR's algebraic equation becomes the PFR's ODE because the time
 the plug spends between $V$ and $V + \mathrm{d}V$ is $\mathrm{d}V/Q$.
 \end{intuition}
 
+\subsection{The volumetric flow along the bed}\label{sec:pfr-volumetric-flow}
+
+A rate law written in concentrations reads $c_i = F_i / Q$, and $Q$ is
+the \emph{local} volumetric flow. The pfr applies one rule, chosen by
+the phase of the feed:
+\begin{description}
+\item[Vapour feed.] $Q$ is re-priced at every point of the bed, at every
+  Runge-Kutta stage, from the local molar flow, temperature, pressure
+  and composition:
+  \begin{equation}
+     Q(V) \;=\; F_t(V)\, v^{\mathrm V}(T, P, \zv),
+     \qquad v^{\mathrm V} = \frac{\bar M}{\rho^{\mathrm V}},
+     \label{eq:pfr-Q-gas}
+  \end{equation}
+  with $\rho^{\mathrm V}$ the vapour density of the case's equation of
+  state (the ideal gas $P/RT$ where the package is ideal). A reaction
+  that changes the number of moles ($+40\,\%$ in the cracking of ethane,
+  a falling count in ammonia synthesis) therefore changes $Q$ and the
+  concentrations with it; so do a moving $T$ (adiabatic or cooled bed)
+  and a falling $P$ (Ergun). A law written in $T$, $P$ and mole fractions
+  only is not affected.
+\item[Liquid feed.] $Q = F_0 \bar M / \rho^{\mathrm L}$ at the feed
+  state, held along the bed: the density change of a liquid reaction is
+  small against the model's other uncertainties, and the liquid density
+  is the property door's.
+\end{description}
+Until 2026-11-21 the vapour case was held at its feed $Q$ as well
+(DEV.md 4c C461), which overstated the secondary yields of cracking and
+needed about $15\,\%$ too little volume for a given conversion. The
+residence time $\tau = V_R/Q_0$ printed by the unit stays the feed's.
+
 \subsection{Algorithm: RK4 integration}
 
 The simulator integrates \eqref{eq:pfr-balance} from $V = 0$ to
@@ -38554,12 +38585,11 @@ kcal $\to4184$\,J).  \emph{Validity window}: the paper's data are
 extrapolated 15~K above its printed range at 840\,$^\circ$C.
 
 \paragraph{The gas expansion.}  Ethane cracking makes about 40 \% more moles,
-and the scheme's concentrations follow the local $F_t$.  The \code{pfr} holds
-its volumetric flow at the value of the feed (\code{F\_i/Q}), so
-\code{cracking01\_ethane\_sundaram\_froment} is twenty \code{pfr} segments in
-series, each pricing $Q$ at its own inlet; ten and twenty segments differ by
-under 1\,\% in every yield and twenty sit within 1\,\% of an independent exact
-integration.
+and the scheme's concentrations follow the local $F_t$.  The \code{pfr} re-prices
+its volumetric flow along the bed (\S\ref{sec:pfr-volumetric-flow}), so
+\code{cracking01\_ethane\_sundaram\_froment} is one \code{pfr}, in agreement
+with an independent exact integration. (Before C461 the pfr held $Q$ at the feed
+value and the case was twenty segments in series.)
 
 \paragraph{What is reproduced.}  The witness is Table~VIII of Froment et al.,
 pilot column (59.1 \% conversion, 1.55 atm, 0.4 kg/kg, $T_R=840\,^\circ$C):

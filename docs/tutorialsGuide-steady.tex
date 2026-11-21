@@ -11809,47 +11809,9 @@ This is the honest reactor when you have neither rate data (cstr/pfr) nor an equ
 \tutentry{cracking01\_ethane\_sundaram\_froment}{tutorials/steady/reactors/cracking01\_ethane\_sundaram\_froment}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg01) at (0.0,-0.0) {\textbf{seg01}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg02) at (2.9,-0.0) {\textbf{seg02}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg03) at (5.8,-0.0) {\textbf{seg03}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg04) at (8.7,-0.0) {\textbf{seg04}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg05) at (11.6,-0.0) {\textbf{seg05}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg06) at (14.5,-0.0) {\textbf{seg06}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg07) at (17.4,-0.0) {\textbf{seg07}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg08) at (20.3,-0.0) {\textbf{seg08}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg09) at (23.2,-0.0) {\textbf{seg09}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg10) at (26.1,-0.0) {\textbf{seg10}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg11) at (29.0,-0.0) {\textbf{seg11}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg12) at (31.9,-0.0) {\textbf{seg12}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg13) at (34.8,-0.0) {\textbf{seg13}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg14) at (37.7,-0.0) {\textbf{seg14}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg15) at (40.6,-0.0) {\textbf{seg15}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg16) at (43.5,-0.0) {\textbf{seg16}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg17) at (46.4,-0.0) {\textbf{seg17}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg18) at (49.3,-0.0) {\textbf{seg18}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg19) at (52.2,-0.0) {\textbf{seg19}\\[-1pt]{\tiny pfr}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (seg20) at (55.1,-0.0) {\textbf{seg20}\\[-1pt]{\tiny pfr}};
-  \draw[->] ($(seg01.west)+(-1.05,0.00)$) -- ($(seg01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
-  \draw[->] (seg01) -- (seg02) node[midway, above, font=\tiny] {s01};
-  \draw[->] (seg02) -- (seg03) node[midway, above, font=\tiny] {s02};
-  \draw[->] (seg03) -- (seg04) node[midway, above, font=\tiny] {s03};
-  \draw[->] (seg04) -- (seg05) node[midway, above, font=\tiny] {s04};
-  \draw[->] (seg05) -- (seg06) node[midway, above, font=\tiny] {s05};
-  \draw[->] (seg06) -- (seg07) node[midway, above, font=\tiny] {s06};
-  \draw[->] (seg07) -- (seg08) node[midway, above, font=\tiny] {s07};
-  \draw[->] (seg08) -- (seg09) node[midway, above, font=\tiny] {s08};
-  \draw[->] (seg09) -- (seg10) node[midway, above, font=\tiny] {s09};
-  \draw[->] (seg10) -- (seg11) node[midway, above, font=\tiny] {s10};
-  \draw[->] (seg11) -- (seg12) node[midway, above, font=\tiny] {s11};
-  \draw[->] (seg12) -- (seg13) node[midway, above, font=\tiny] {s12};
-  \draw[->] (seg13) -- (seg14) node[midway, above, font=\tiny] {s13};
-  \draw[->] (seg14) -- (seg15) node[midway, above, font=\tiny] {s14};
-  \draw[->] (seg15) -- (seg16) node[midway, above, font=\tiny] {s15};
-  \draw[->] (seg16) -- (seg17) node[midway, above, font=\tiny] {s16};
-  \draw[->] (seg17) -- (seg18) node[midway, above, font=\tiny] {s17};
-  \draw[->] (seg18) -- (seg19) node[midway, above, font=\tiny] {s18};
-  \draw[->] (seg19) -- (seg20) node[midway, above, font=\tiny] {s19};
-  \draw[->] ($(seg20.east)+(0,0.00)$) -- ($(seg20.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (coil) at (0.0,-0.0) {\textbf{coil}\\[-1pt]{\tiny pfr}};
+  \draw[->] ($(coil.west)+(-1.05,0.00)$) -- ($(coil.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(coil.east)+(0,0.00)$) -- ($(coil.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Ethane steam cracking: Sundaram-Froment 1977 molecular scheme vs the Froment 1976 pilot (Table VIII)}
@@ -11858,7 +11820,7 @@ STEAM CRACKING OF ETHANE with the molecular scheme of Sundaram \& Froment (1977)
 
 THE SCHEME (Sundaram \& Froment, Chem. Eng. Sci. 32:601, Model III of ethane cracking: Table 1 for the reactions and rate equations, Table 3 for A and E, the K\_C values printed under Table 1; the same five reactions are Table XII of Froment et al.): (1) C2H6 $\rightleftharpoons$ C2H4 + H2 (2) 2 C2H6 $\to$ C3H8 + CH4 (first order) (5) C3H6 $\rightleftharpoons$ C2H2 + CH4 (6) C2H2 + C2H4 $\to$ C4H6 (8) C2H4 + C2H6 $\to$ C3H6 + CH4 The reversible steps are written as a forward and a reverse law, k\_f/K\_C, with K\_C of a van't Hoff fit to the three printed values (775, 800, 825 C).
 
-THE REACTOR. The authors reduced their pilot data to isothermality at a reference temperature (the equivalent-reactor-volume concept), so this is one isothermal reactor at T\_R = 840 C and 1.55 atm, ethane with 0.4 kg steam/kg (Table VIII, pilot column). The pfr prices its volumetric flow at the INLET and the cracking makes 40 \% more moles, so the coil is TWENTY pfr segments in series, each re-pricing Q at its own inlet: the gas expansion is recovered to about 1 \% (N = 10 and N = 20 differ by under 1 \% in every yield). The total volume, 14.896 L, is the one number the papers do not print for this run: it is chosen so the conversion is the published 59.1 \%, and the case is judged on the product slate AT THAT CONVERSION, which is how the paper plots it.
+THE REACTOR. The authors reduced their pilot data to isothermality at a reference temperature (the equivalent-reactor-volume concept), so this is one isothermal reactor at T\_R = 840 C and 1.55 atm, ethane with 0.4 kg steam/kg (Table VIII, pilot column). The pfr re-prices its volumetric flow along the bed (the vapour's Q = F\_t v(T, P, z), C461), so the 40 \% more moles the cracking makes are in the concentrations: ONE pfr, no segmentation. The total volume, 15.004 L, is the one number the papers do not print for this run: it is chosen so the conversion is the published 59.1 \%, and the case is judged on the product slate AT THAT CONVERSION, which is how the paper plots it.
 
 WHAT IT REPRODUCES, AND WHAT IT DOES NOT. Published against engine, wt \% of the ethane fed: C2H4 48.7 / 49.7 (+2 \%, band 3 \%), H2 3.71 / 3.77 (+1.6 \%, band 6 \%) -- inside the band declared before the run. CH4 2.99 / 2.12, C3H6 1.05 / 0.43, C4H6 0.99 / 1.91 are OUTSIDE the declared bands (15, 35, 35 \%): the scheme as printed, integrated exactly, does not give the table's methane, propylene and butadiene, and bin/curate/check\_cracking\_yields.py pins those three distances by name. The table's ethane (39.0) and its own conversion (59.1 $\to$ 40.9) disagree and are not compared. See README.md.
 
@@ -11866,25 +11828,25 @@ WHAT IT REPRODUCES, AND WHAT IT DOES NOT. Published against engine, wt \% of the
 \tutreadme{Steam cracking of ethane with the molecular scheme of Sundaram \& Froment (1977), against the pilot-plant product distribution of Froment, Van de Steene \& Van Damme (1976). Backlog C456 slice 1.}
 \tutreadme{$\ast$ Model: Sundaram \& Froment, Chem. Eng. Sci. 32 (1977) 601, Model III of ethane cracking: Table 1 (the five reactions and their rate equations, p. 603), Table 3 (A and E, p. 604), the K\_C1 and K\_C5 values under Table 1 (p. 603). Froment et al., Ind. Eng. Chem. Process Des. Dev. 15 (1976) 495, Table XII repeats the same five reactions (E\_1 is 65 210 there, 65 20 in Table 3: the Table 3 value is used; the difference is 0.01 kcal/mol). $\ast$ Witness: Froment et al. 1976, Table VIII, "Pilot plant" column: ethane cracked at P\_t = 1.55 atm abs, steam dilution 0.4 kg/kg, reference temperature T\_R = 840 C, conversion 59.1 \%: yields (wt \%) H2 3.71, CH4 2.99, C2H4 48.7, C2H6 39.0, C3H6 1.05, C4H6 0.99.}
 \tutreadme{The authors reduced the pilot data "to isothermality by the equivalent reactor volume concept" at a reference temperature. This case is that isothermal reactor: T = T\_R = 840 C, constant P = 1.55 atm (the outlet pressure Table VIII lists; the real coil's pressure profile is not reproduced), pure ethane plus steam (the pilot feed was 98.6-99.9 wt \% ethane; the 0.1-1.4 \% ethylene impurity is neglected). The volume is the one thing NOT published for Table VIII (the equivalent volume of that run), so it is chosen so the engine's conversion equals the published 59.1 \%, and the comparison is of the PRODUCT DISTRIBUTION AT EQUAL CONVERSION, which is how the paper plots it (Figures 4-10: yield against conversion, "the influence of temperature is negligible"). The scheme's own conversion-versus-volume prediction is therefore not tested here.}
-\tutreadme{The pfr holds its volumetric flow at the inlet value (F\_i/Q, Q = F v(T,P) of the feed, PFR.cpp lines 737/957), and this cracking makes 40 \% more moles (6.0 to 8.4 kmol/h). A single pfr therefore runs about 15 \% too fast and overshoots every secondary yield. The case is twenty pfr segments in series, each pricing Q at its own inlet; N = 10 and N = 20 differ by under 1 \% in every yield, and N = 20 sits within 1 \% of an independent exact integration. A pfr option that re-prices Q along the bed (and a declared temperature and pressure profile, which the industrial coil of Froment et al. needs) is the missing engine piece; it is not built here.}
+\tutreadme{The pfr re-prices its volumetric flow along the bed (F\_i/Q, Q = F\_t v(T,P,z) at each RK4 stage from the equation of state, C461), and this cracking makes 40 \% more moles (6.0 to 8.4 kmol/h). The case is ONE pfr. Until C461 the pfr held Q at the feed value, so a single pfr ran about 15 \% too fast and overshot every secondary yield, and the case was twenty pfr segments in series as a workaround (volume 14.896 L). The exact integration needs 15.004 L for the published 59.1 \% conversion. A declared temperature and pressure profile, which the industrial coil of Froment et al. needs, is still not built.}
 \tutreadme{The paper's reversible steps (1) and (5) use K\_C printed at 775, 800 and 825 C only; the reverse legs are k\_forward / K\_C with K\_C from a van't Hoff fit of the three printed values (residual < 2e-4 in ln K; the fitted reaction enthalpy, 134.9 kJ/mol for ethane dehydrogenation, agrees with the thermochemical value). It is used at 840 C, 15 K outside the printed range.}
 \tutreadme{Relative deviation of the engine's outlet yield (wt \% of the hydrocarbon fed, steam excluded) from Table VIII's pilot value, at conversion 59.1 \%:}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.00166761111111}
 \goldrow{stream}{feed}{T}{1113.15}
-\goldrow{stream}{product}{F}{0.00223506359325}
+\goldrow{stream}{product}{F}{0.00223517862333}
 \goldrow{stream}{product}{T}{1113.15}
-\goldrow{stream}{s01}{F}{0.00172183672367}
-\goldrow{stream}{s01}{T}{1113.15}
-\goldrow{stream}{s02}{F}{0.00177146951924}
-\goldrow{stream}{s02}{T}{1113.15}
-\goldrow{stream}{s03}{F}{0.00181707675355}
-\goldrow{stream}{s03}{T}{1113.15}
-\goldrow{stream}{s04}{F}{0.00185909817491}
-\goldrow{stream}{s04}{T}{1113.15}
-\goldrow{stream}{s05}{F}{0.00189788978651}
-\goldrow{stream}{s05}{T}{1113.15}
-\goldmore{393}
+\goldrow{boundary}{global}{H\_feeds\_kW}{-146.706820581}
+\goldrow{boundary}{global}{Q\_boundary\_kW}{81.1443779792}
+\goldrow{boundary}{global}{H\_products\_kW}{-65.5624426014}
+\goldrow{boundary}{global}{noBoundary}{false}
+\goldrow{boundary}{global}{residual\_denom\_kW}{81.1443779792}
+\goldrow{kpi}{coil}{F\_in\_kmol\_h}{6.0034}
+\goldrow{kpi}{coil}{F\_out\_kmol\_h}{8.046643044}
+\goldrow{kpi}{coil}{Q\_kW}{81.1443779792}
+\goldrow{kpi}{coil}{T}{1113.15}
+\goldrow{kpi}{coil}{T\_out}{1113.15}
+\goldmore{13}
 \end{tutgolden}
 
 \clearpage

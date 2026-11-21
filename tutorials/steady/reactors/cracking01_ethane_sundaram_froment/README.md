@@ -31,15 +31,13 @@ DISTRIBUTION AT EQUAL CONVERSION, which is how the paper plots it (Figures 4-10:
 yield against conversion, "the influence of temperature is negligible").  The
 scheme's own conversion-versus-volume prediction is therefore not tested here.
 
-**The `pfr` holds its volumetric flow at the inlet value** (`F_i/Q`, Q = F v(T,P)
-of the feed, PFR.cpp lines 737/957), and this cracking makes 40 % more moles
-(6.0 to 8.4 kmol/h).  A single `pfr` therefore runs about 15 % too fast and
-overshoots every secondary yield.  The case is twenty `pfr` segments in series,
-each pricing Q at its own inlet; N = 10 and N = 20 differ by under 1 % in every
-yield, and N = 20 sits within 1 % of an independent exact integration.  A
-`pfr` option that re-prices Q along the bed (and a declared temperature and
-pressure profile, which the industrial coil of Froment et al. needs) is the
-missing engine piece; it is not built here.
+**The `pfr` re-prices its volumetric flow along the bed** (`F_i/Q`, Q = F_t v(T,P,z) at
+each RK4 stage from the equation of state, C461), and this cracking makes 40 % more moles
+(6.0 to 8.4 kmol/h).  The case is ONE `pfr`.  Until C461 the pfr held Q at the feed value,
+so a single pfr ran about 15 % too fast and overshot every secondary yield, and the case was
+twenty `pfr` segments in series as a workaround (volume 14.896 L).  The exact integration
+needs 15.004 L for the published 59.1 % conversion.  A declared temperature and pressure
+profile, which the industrial coil of Froment et al. needs, is still not built.
 
 The paper's reversible steps (1) and (5) use K_C printed at 775, 800 and 825 C
 only; the reverse legs are `k_forward / K_C` with K_C from a van't Hoff fit of
