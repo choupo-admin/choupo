@@ -81,6 +81,7 @@ Description
 #include <iostream>
 #include <limits>
 #include <optional>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -162,22 +163,39 @@ inline bool aboveEveryCriticalT(scalar T, const sVector& z,
 //  The sentence "a correlation evaluated outside its window" is true for the
 //  gamma-phi routes (Psat or a Henry H(T) extrapolated above Tc).  Under a
 //  phi-phi package K = phi_L/phi_V from ONE cubic and neither correlation is
-//  read; a converged split there can be real (mixture critical loci lie above
-//  every pure Tc: IUPAC 1998, Bolz et al., Pure Appl. Chem. 70, 2233).  So
-//  the pure-Tc rule is kept for gamma-phi and, under phi-phi, replaced by the
-//  Gibbs-energy test `phiPhiSplitLowersGibbs`: the split stands when it
-//  lowers G/nRT below the best homogeneous root at (T, P, z).
-//  `P` is in Pa, like FlashInput::P.
+//  read; a converged split there can be real: a mixture's critical locus
+//  normally lies between the pure Tc, but it CAN pass above the heavier
+//  component's Tc (a strongly negative kij does it; IUPAC 1998, Bolz et al.,
+//  Pure Appl. Chem. 70, 2233).  So the pure-Tc rule is kept for gamma-phi
+//  and, under phi-phi, replaced by a judgement of the split itself: it stands
+//  when neither phase sits on a cubic PSEUDO-root and it lowers G/nRT below
+//  the best homogeneous root at (T, P, z).  `P` is in Pa, like FlashInput::P.
+//  `why` receives the reason when the split is NOT kept (the G values, the
+//  pseudo-root, or the exception), for the advisory.
 inline bool phiPhiSplitLowersGibbs(const FlashSolution& fs,
                                    scalar               T,
                                    scalar               P,
                                    const sVector&       z,
-                                   const ThermoPackage& thermo)
+                                   const ThermoPackage& thermo,
+                                   std::string*         why = nullptr)
 {
     const std::size_t n = z.size();
-    if (fs.x.size() != n || fs.y.size() != n) return false;
+    if (fs.x.size() != n || fs.y.size() != n)
+    {
+        if (why) *why = "the split carries no phase compositions";
+        return false;
+    }
     try
     {
+        if (thermo.eos().vapourRootIsPseudo(T, P, fs.y)
+            || thermo.eos().liquidRootIsPseudo(T, P, fs.x))
+        {
+            if (why) *why = std::string("the ")
+                + (thermo.eos().vapourRootIsPseudo(T, P, fs.y) ? "vapour" : "liquid")
+                + " phase of the split sits on a cubic PSEUDO-root (no real root of"
+                  " that kind exists there), so the split is not a physical one";
+            return false;
+        }
         auto gOf = [&](const sVector& c, const sVector& lnphi)
         {
             scalar g = 0.0;
@@ -197,9 +215,22 @@ inline bool phiPhiSplitLowersGibbs(const FlashSolution& fs,
         const scalar  Gvap = gOf(z, ln(thermo.eos().phi(T, P, z)));
         const scalar  Gliq = gOf(z, ln(thermo.eos().phiLiquid(T, P, z)));
         const scalar  Ghom = std::min(Gvap, Gliq);
-        return Gsplit < Ghom - 1.0e-9;
+        if (Gsplit < Ghom - 1.0e-9) return true;
+        if (why)
+        {
+            std::ostringstream m;
+            m << "the Gibbs-energy test does not keep it: G_split/nRT = " << Gsplit
+              << " is not below the best homogeneous root G_hom/nRT = " << Ghom;
+            *why = m.str();
+        }
+        return false;
     }
-    catch (const std::exception&) { return false; }
+    catch (const std::exception& ex)
+    {
+        if (why) *why = std::string("the Gibbs-energy test could not be evaluated: ")
+                        + ex.what();
+        return false;
+    }
 }
 
 inline std::optional<std::string>
@@ -219,9 +250,20 @@ supercriticalSplitDiscarded(const FlashSolution& fs,
     if (!aboveEveryCriticalT(T, z, thermo, &TcMax))
         return std::nullopt;
     //  phi-phi: the split is judged by Gibbs energy, not by the pure Tc.
-    if (thermo.vleWorld() == "phiPhi" && phiPhiSplitLowersGibbs(fs, T, P, z, thermo))
+    std::string phiWhy;
+    const bool  phiPhiRoute = (thermo.vleWorld() == "phiPhi");
+    if (phiPhiRoute && phiPhiSplitLowersGibbs(fs, T, P, z, thermo, &phiWhy))
         return std::nullopt;
-    const std::string msg =
+    const std::string msg = phiPhiRoute
+      ? std::string("resolved TWO-PHASE ")
+        + (nameT ? "at T = " + std::to_string(T) + " K, which is"
+                 : std::string("at a temperature"))
+        + " above the highest critical temperature of any component present ("
+        + std::to_string(TcMax) + " K) on a phi-phi package, and the split is"
+          " DISCARDED: " + phiWhy + ".  A stream whose state nothing declares"
+          " is the one fluid phase it can be, read on the vapour leg; a"
+          " declared or produced state is priced as it is carried"
+      :
         std::string("resolved TWO-PHASE ")
         + (nameT ? "at T = " + std::to_string(T) + " K, which is"
                  : std::string("at a temperature"))

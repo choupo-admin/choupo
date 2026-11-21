@@ -1898,8 +1898,8 @@
     },
     "check_supercritical_route": {
       "exit": 0,
-      "claim": "check_supercritical_route: OK -- above every pure Tc a phi-phi split stands when it lowers G (witness V/F 0.5000, x/y 0.45520/0.49043, |y-Kx| 7.6e-13, mass 0.0e+00); a single-phase phi-phi state stays single-phase; the gamma-phi discard and its advisory are unchanged; two data sabotages are seen",
-      "seconds": 1.8
+      "claim": "check_supercritical_route: OK -- above every pure Tc a phi-phi split stands when it lowers G (witness V/F 0.5000, x/y 0.45520/0.49043, |y-Kx| 7.6e-13, mass 0.0e+00); a single-phase phi-phi state stays single-phase; the gamma-phi discard and its advisory are unchanged; two engine sabotages (built here) are seen",
+      "seconds": 137.5
     }
   }
 }
