@@ -20,7 +20,7 @@
        dG_rxn(T) = g_CO2 + g_H2 - g_CO - g_H2O  (all g_pure_ig)
 
   At T = 600 K, K_eq ~ 26.5; equilibrium conversion of an equimolar
-  CO + H2O feed (1 + 1, V_R = 1e-3 m^3) ~ 84 % (matches the textbook
+  CO + H2O feed (1 + 1, V_R = 4.9886776e-3 m^3, i.e. 10 bar) ~ 84 % (matches the textbook
   Smith-Van Ness Le Chatelier value).
 \*---------------------------------------------------------------------------*/
 
@@ -40,12 +40,15 @@ wgs_reversible
     kinetics
     {
         type   Arrhenius;
-        A      5.0e5;          // ILLUSTRATIVE rate.  NOTE the batch state is in
+        A      2.4943388e6;        // ILLUSTRATIVE rate.  NOTE the batch state is in
                        // kmol and concentration in kmol/m^3 (vs mol/m^3 in
                        // the steady CSTR/PFR), so the SAME reaction needs a
                        // different A here for a comparable timescale.  Only
                        // the approach SPEED depends on A; K_eq -- hence
                        // X_eq ~ 0.841, identical to the CSTR/PFR -- does not.
+                       // A = 5.0e5 x 4.9886776: the vessel is 4.9886776 times
+                       // larger than the first (1 L) charge, so the concentration is
+                       // 4.99 times lower and A restores the same time-scale.
         Ea     8.0e4;          // J/mol
     }
 }

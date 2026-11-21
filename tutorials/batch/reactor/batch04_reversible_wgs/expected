@@ -1,7 +1,7 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-kpi     reactor                P_final          4988677.5708     1e-4
+kpi     reactor                P_final          999999.994147    1e-4
 kpi     reactor                T_final          600              1e-4
 kpi     reactor                n_CO2_final      0.000420715762123 1e-4
 kpi     reactor                n_CO_final       7.92842378768e-05 1e-4
@@ -9,10 +9,10 @@ kpi     reactor                n_H2_final       0.000420715762123 1e-4
 kpi     reactor                n_water_final    7.92842378768e-05 1e-4
 kpi     reactor                t_end            1200             1e-4
 kpi     reactor                totalMoles_final 0.001            1e-4
-kpi     campaign               element_C_closure_rel 1.95156391047e-15 abs:1e-09
-kpi     campaign               element_H_closure_rel 1.95156391047e-15 abs:1e-09
-kpi     campaign               element_O_closure_rel 1.95156391047e-15 abs:1e-09
-kpi     campaign               element_worst_closure_rel 1.95156391047e-15 abs:1e-09
+kpi     campaign               element_C_closure_rel 2.16840434497e-15 abs:1e-09
+kpi     campaign               element_H_closure_rel 2.16840434497e-15 abs:1e-09
+kpi     campaign               element_O_closure_rel 2.16840434497e-15 abs:1e-09
+kpi     campaign               element_worst_closure_rel 2.16840434497e-15 abs:1e-09
 kpi     campaign               energy_H_external_kJ 0                1e-4
 kpi     campaign               energy_Q_ledger_kJ -16.3831222515   1e-4
 kpi     campaign               energy_balance_available 1                1e-4
@@ -21,11 +21,11 @@ kpi     campaign               energy_dH_vessels_kJ -16.3831222515   1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
 kpi     campaign               energy_records_valid 1                1e-4
 kpi     campaign               energy_residual_kJ 0                abs:1.638e-08
-kpi     campaign               mass_closure_rel 1.82817195295e-05 abs:1.828e-09
+kpi     campaign               mass_closure_rel 1.82817195293e-05 abs:1.828e-09
 kpi     campaign               mass_kg_external_out 0                1e-4
 kpi     campaign               mass_kg_final    0.0230129207158  1e-4
 kpi     campaign               mass_kg_initial  0.0230125        1e-4
-kpi     campaign               mass_residual_kg 4.20715762079e-07 abs:1e-09
+kpi     campaign               mass_residual_kg 4.20715762076e-07 abs:1e-09
 kpi     campaign               moles_kmol_external_out 0                1e-4
 kpi     campaign               moles_kmol_final 0.001            1e-4
 kpi     campaign               moles_kmol_initial 0.001            1e-4
