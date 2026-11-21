@@ -97,6 +97,8 @@ import { PLANT_COST_QUIZ, PLANT_COST_STEPS } from "../src/ui/methods/plantCostLe
 import { STACK_QUIZ, STACK_STEPS } from "../src/ui/methods/stackDispersionLesson.js";
 import { CampaignPlanTool } from "../src/ui/methods/CampaignPlanTool.js";
 import { CAMPAIGN_PLAN_QUIZ, CAMPAIGN_PLAN_STEPS } from "../src/ui/methods/campaignPlanLesson.js";
+import { AdsorbentSelectionTool } from "../src/ui/methods/AdsorbentSelectionTool.js";
+import { ADS_SEL_QUIZ, ADS_SEL_STEPS } from "../src/ui/methods/adsorbentSelectionLesson.js";
 
 const GUI = new URL("../", import.meta.url);
 const read = (rel: string): string => readFileSync(new URL(rel, GUI), "utf-8");
@@ -180,6 +182,10 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "campaign-plan": {
     quiz: CAMPAIGN_PLAN_QUIZ, quizName: "CAMPAIGN_PLAN_QUIZ", lesson: CAMPAIGN_PLAN_STEPS, lessonName: "CAMPAIGN_PLAN_STEPS",
     file: "src/ui/methods/CampaignPlanTool.tsx", tool: CampaignPlanTool,
+  },
+  "adsorbent-selection": {
+    quiz: ADS_SEL_QUIZ, quizName: "ADS_SEL_QUIZ", lesson: ADS_SEL_STEPS, lessonName: "ADS_SEL_STEPS",
+    file: "src/ui/methods/AdsorbentSelectionTool.tsx", tool: AdsorbentSelectionTool,
   },
   //  No `tool`: its figures need Plotly, which does not load under node; the
   //  rendered quiz is checked in stackDispersion.test.ts, with the plot mocked.

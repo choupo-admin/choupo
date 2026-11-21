@@ -357,6 +357,9 @@ const AdsorptionIsothermsTool = lazy(() =>
 const BatchAdsorptionTool = lazy(() =>
   import("./methods/BatchAdsorptionTool.js")
     .then((m) => ({ default: m.BatchAdsorptionTool })));
+const AdsorbentSelectionTool = lazy(() =>
+  import("./methods/AdsorbentSelectionTool.js")
+    .then((m) => ({ default: m.AdsorbentSelectionTool })));
 const ChromatographyTool = lazy(() =>
   import("./methods/ChromatographyTool.js")
     .then((m) => ({ default: m.ChromatographyTool })));
@@ -688,6 +691,7 @@ export function MethodsWorkspace() {
             : tool === "adsorption-isotherms" ? <AdsorptionIsothermsTool />
             : tool === "electrolyte-models" ? <ElectrolyteModelsTool />
             : tool === "batch-adsorption" ? <BatchAdsorptionTool />
+            : tool === "adsorbent-selection" ? <AdsorbentSelectionTool />
             : tool === "chromatography" ? <ChromatographyTool />
             : tool === "operator-panels" ? <OperatorPanelsTool />
             : tool === "fluidised-beds" ? <FluidisedBedsTool />

@@ -3184,6 +3184,46 @@
           }
         }
       ]
+    },
+    "adsorbent-selection": {
+      "references": [
+        {
+          "text": "Green, D. W.; Southard, M. Z. (eds.) (2019). Perry's Chemical Engineers' Handbook, 9th ed. McGraw-Hill, Section 16, Adsorption and Ion Exchange, pp. 16-5 to 16-9, 16-38 to 16-43 and 16-49.",
+          "note": "Tables 16-1, 16-3 and 16-5 and the process-cycle applications behind most of the matrix.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/Handbooks-DataCompilations/perry-chemical-engineers-handbook-9ed.pdf read: printed page 16-N is PDF page 1445+N; Tables 16-3 and 16-5 checked on the page image (C459)",
+            "date": "2026-11-21"
+          }
+        },
+        {
+          "text": "Ruthven, D. M. (1984). Principles of Adsorption and Adsorption Processes. Wiley, New York, pp. 4-13, 30 and 41.",
+          "note": "Practical adsorbents (chapter 1) and the heats of adsorption on NaX and 5A (Tables 2.6 and 2.7).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/Books/ruthven-principles-of-adsorption-and-adsorption-processes-1ed.pdf (a scan with no text layer, read as images): printed page N is PDF page N+20; Tables 2.6 and 2.7 checked on the page image (C459)",
+            "date": "2026-11-21"
+          }
+        },
+        {
+          "text": "Ruthven, D. M.; Farooq, S.; Knaebel, K. S. (1994). Pressure Swing Adsorption. VCH, New York, pp. 16-22, 32 and 85.",
+          "note": "Table 2.2 to 2.4 (classification, physical properties, heats on 4A, 5A and carbon molecular sieve) and the kinetic separation of air.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/Books/ruthven-pressure-swing-adsorption-1ed.pdf (a two-page spread per PDF page, PDF page = (printed + 28) / 2); Tables 2.2, 2.3, 2.4 and the page of section 3.4 checked on the page image (C459)",
+            "date": "2026-11-21"
+          }
+        },
+        {
+          "text": "Wankat, P. C. (2007). Separation Process Engineering, 2nd ed. Prentice Hall, chapter 17, pp. 614, 615, 639 and 640.",
+          "note": "Table 17-1 (reactivation temperatures, bulk densities), the silica gel and alumina paragraphs, carbon in water treatment and Eq. (17-25).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/Books/wankat-separation-process-engineering-2ed.pdf read: printed page N is PDF page N+31; Table 17-1 and pages 615, 639 and 640 checked on the page image (C459)",
+            "date": "2026-11-21"
+          }
+        }
+      ]
     }
   }
 }

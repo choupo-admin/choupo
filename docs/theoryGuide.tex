@@ -27217,6 +27217,68 @@ pressure.  The EduTool \code{batch-adsorption} carries it on the page; the
 design record \file{docs/design/batch-adsorption-in-a-stirred-tank.md}
 proposes the engine side.
 
+\subsection{Which adsorbent for which separation}\label{sec:adsorbent-selection}
+
+Three properties of an adsorbent decide most choices, and none of them is
+computed by the simulator: the \emph{size} of its pores against the molecule
+(molecular sieving, or a difference in diffusion rate), the \emph{polarity} of
+its surface (a hydrophilic surface holds water, a hydrophobic one holds
+organics), and the \emph{strength} of the bonding, which is the heat of
+adsorption and fixes both how hard the bed is to regenerate and how hot it gets
+while it works.  Perry classifies sorptive separations as equilibrium, rate or
+molecular sieving (Table~16-1) and the common adsorbents as hydrophobic or
+hydrophilic and amorphous or structured (Table~16-3): activated carbon and the
+carbon molecular sieves are hydrophobic, silica gel, activated alumina and the
+zeolites 3A, 4A, 5A and 13X are hydrophilic.  The four zeolites differ chiefly
+in their window, nominally 0.3, 0.4, 0.5 and 1.0~nm for the K, Na, Ca and Na
+forms of types A and X (Perry p.~16-7 and Table~16-5; Ruthven and Ruthven,
+Farooq and Knaebel give the free apertures of the eight- and twelve-membered
+rings, about 4.3 and 7.5~\AA).
+
+The heat released by adsorption warms the bed.  For a dilute adsorbate in a
+gas, with no heat lost to the wall or the solid, the energy balance per kilogram
+of gas is $y\,|\Delta H_{\mathrm{ads}}| = C_{p,f}\,\Delta T$, so
+\begin{equation}
+(\Delta T)_{\max} = \frac{y\,|\Delta H_{\mathrm{ads}}|}{C_{p,f}},
+\label{eq:adsorbent-selection-rise}
+\end{equation}
+with $y$ the mass fraction of adsorbate in the feed, $|\Delta H_{\mathrm{ads}}|$
+in kJ per kg of adsorbate and $C_{p,f}$ the heat capacity of the feed gas, about
+1~kJ/(kg\,K).  This is Wankat's Eq.~(17-25), after Basmadjian; his typical heat
+of adsorption is 1000 to 4000~kJ/kg (about 2500), which gives 25~$^\circ$C for
+1.0~wt\% adsorbate and 1.25~$^\circ$C for 0.05~wt\%.  It is an upper bound for
+a dilute feed: with a concentrated one the temperature and concentration waves
+couple and the bed must be treated non-isothermally, as the fixed-bed adsorber
+does (Eq.~\eqref{eq:ldf} and the sections around it).
+
+The matrix of the EduTool, five separations against eight adsorbents, is a
+reading and not a computation.  Each cell is a sentence of a cited page --- Perry's
+section~16, Ruthven (1984), Ruthven, Farooq and Knaebel (1994) or Wankat's
+chapter~17 --- and carries its page.  Drying is done by silica gel and activated
+alumina where capacity and cheap regeneration matter and by zeolites where a
+very low dew point or the exclusion of hydrocarbons does (3A, pore-closed 4A);
+hydrogen purification uses a layered bed of alumina, activated carbon and
+zeolite; nitrogen from air by pressure swing uses a carbon molecular sieve, a
+\emph{rate}-selective separation in which oxygen diffuses in much faster; solvent
+and VOC recovery uses activated carbon regenerated with steam, which pays between
+about 500 and 15\,000~ppm; and water treatment uses activated carbon, with
+activated alumina for fluoride.  \emph{Validity}: these are the duties the
+sources name and the adsorbents among the eight; LiLSX, mordenite, ETS-4, polymeric
+resins and MOFs are named in the same pages and are not treated.  Where two
+books print different figures (the pore size of alumina, the bulk density of 5A,
+silica gel in pressure-swing dryers) both are shown.
+
+No ranking of industrial use is given, because no source in the project's
+literature folder prints tonnes or sales by adsorbent.  The EduTool counts, for
+each adsorbent, the separations a cited page names it for; that is breadth in
+these readings and not volume of use.  The EduTool \code{adsorbent-selection}
+carries all of this on the page; it runs no engine.  The catalogue holds three of
+the eight as records under \file{data/standards/assets/} (activated carbon, zeolites
+5A and 13X) with their pair records under
+\file{data/standards/parameters/adsorption/equilibria/}, marked
+\code{teachingOnly}; the page sets each record's bulk density and heat of
+adsorption beside the printed values.
+
 \subsection{Elution chromatography: retention, plates and
 resolution}\label{sec:chromatography}
 
