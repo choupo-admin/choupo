@@ -1,0 +1,35 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    kij_srk                aad_heldout_P_rel 0.00306633532215   1e-4
+diag    kij_srk                aad_heldout_alpha_rel 0.0184770205379    1e-4
+diag    kij_srk                aad_heldout_pct  1.077167793        1e-4
+diag    kij_srk                aad_heldout_rel  0.01077167793      1e-4
+diag    kij_srk                bubble_aad_fit   0.00956323165664   1e-4
+diag    kij_srk                bubble_aad_heldout 0.01077167793      1e-4
+diag    kij_srk                bubble_max_fit   0.0172039441771    1e-4
+diag    kij_srk                bubble_max_heldout 0.0328351125864    1e-4
+diag    kij_srk                chi2             0.00100497120106   1e-4
+diag    kij_srk                chi2_in_sample   0.00100497120106   1e-4
+diag    kij_srk                chi2_reduced     0.000143567314437  1e-4
+diag    kij_srk                cond_JtJ         1                  1e-4
+diag    kij_srk                converged        1                  1e-4
+diag    kij_srk                corr_computed    1                  1e-4
+diag    kij_srk                dof              7                  1e-4
+diag    kij_srk                identifiable     1                  1e-4
+diag    kij_srk                invertible       1                  1e-4
+diag    kij_srk                iter             4                  1e-4
+diag    kij_srk                max_abs_corr     0                  1e-4
+diag    kij_srk                max_abs_resid    0.0172039441771    1e-4
+diag    kij_srk                n_data           8                  1e-4
+diag    kij_srk                n_heldout        6                  1e-4
+diag    kij_srk                n_params         1                  1e-4
+diag    kij_srk                objective_binodal_relative 1                  1e-4
+diag    kij_srk                objective_method 0                  1e-4
+diag    kij_srk                params_at_bound  0                  1e-4
+diag    kij_srk                penalised_points 0                  1e-4
+diag    kij_srk                rms              0.0112080952946    1e-4
+diag    kij_srk                t_crit95         2.365              1e-4
+diag    kij_srk                weighted         0                  1e-4
+diag    kij_srk                well_conditioned 1                  1e-4
+verdict kij_srk                verdict          validated          exact

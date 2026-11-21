@@ -1,14 +1,89 @@
 /*---------------------------------------------------------------------------*\
-  SRK binary interaction parameter kij for NITROGEN - METHANE.
-  Source: Knapp, H.; Doering, R.; Oellrich, L.; Ploecker, U.; Prausnitz, J.M.
-  "Vapor-Liquid Equilibria for Mixtures of Low Boiling Substances",
-  DECHEMA Chemistry Data Series Vol. VI (1982) -- the standard kij compilation
-  (regressed to the SRK EoS; the same value the SRK.H header example carries).
-  Validity: cryogenic/natural-gas VLE range.
+  SRK binary interaction parameter kij for NITROGEN - METHANE, regressed by
+  Choupo's own fitParameters to the 149.82 K (-190 degF) isotherm of Stryjek,
+  Chappelear & Kobayashi, J. Chem. Eng. Data 19 (1974) 334, Table III (p. 338),
+  ALONE: relative bubble pressure plus relative alpha, fit on 179, 249.5, 396.5
+  and 594 psia, held out on 202.5, 299 and 495 psia (the held-out verdict is
+  `validated`).  The case that produced it is named below (`fittedInCase`).
+
+  WHAT IT IS AND IS NOT.  It REPLACES the value 0.0289 that cited a compilation
+  monograph (C335, licence pin paid 2026-11-21).  A kij over all eight
+  isotherms of the same table (0.0058) misses this isotherm's K_N2 by 6 %: kij
+  depends on temperature there, so THIS record is valid at ONE temperature,
+  149.82 K, and a case that runs the pair at another temperature is announced
+  ([pair-span]: used outside its declared validity span, still used).  It is
+  IN SAMPLE to that one table (the hold-out is three rows of the same
+  isotherm, not another laboratory) and is for the SRK equation of state only.
+  The pressure span below (1.23-4.10 MPa) is documentation: the engine guards
+  the temperature span only.
 \*---------------------------------------------------------------------------*/
-recordType eosBinaryInteraction;
+
+recordType  eosBinaryInteraction;
 schemaVersion 1;
-i    N2;
-j    CH4;
-kij  0.0289;
-eos  SRK;
+i           N2;
+j           CH4;
+kij         0.02725228;
+eos         SRK;
+reviewStatus  interim;
+reviewReason  "regressed by Choupo from one transcribed isotherm (transcribedNotCheckedAgainstArticle); held-out criterion declared before the fit and met; valid at 149.82 K only";
+fittedInCase  "tutorials/props/compare/n2ch4_kij_fit_stryjek1974_149K";
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(P_bubble + alpha), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fitDate       "2026-11-21";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/experiments/n2-ch4-stryjek1974-149K.dat";
+            sha256    "e02c272d31586c6280f9f6c341ff222779f2b830e78bef81806260d9d1c35b1b";
+            provenance measured;
+            system    "N2 + CH4";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/n2-ch4-stryjek1974-149K.dat";
+            sha256    "e02c272d31586c6280f9f6c341ff222779f2b830e78bef81806260d9d1c35b1b";
+            provenance measured;
+            system    "N2 + CH4";
+        }
+    );
+    fingerprint "630c3ce67b11ecc9";   // of the declaration, frozen before the fit
+
+    weighting     equal;   // chi2 is sum w ((model - exp)/exp)^2 over the pressure rows and the alpha rows, weights 1 and 1
+    chi2          0.00100497;
+    rms_rel       0.01120810;
+    nDataPoints   8;
+    identifiable  true;
+    maxAbsCorr    0.00000000;
+
+    validity
+    {
+        temperature { min 149.82 K; max 149.82 K; }
+        pressure    { min 1234162 Pa; max 4095486 Pa; }
+        note        "ONE isotherm of Stryjek, Chappelear & Kobayashi (1974) Table III; kij depends on T in that table, so any other temperature is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validated;
+
+    heldOut
+    {
+        points      6;
+        aad_pct     1.077168;
+        aad_rel     0.010772;
+        domain_x1   ( 0.051400 0.377800 );
+    }
+
+    acceptance
+    {
+        maxAAD      3.000000;   // per cent
+        origin      "declared before the fit (README): held-out mean relative deviation over the pressure and the alpha rows at or below 3 %";
+    }
+}

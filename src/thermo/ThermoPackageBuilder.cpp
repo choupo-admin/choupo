@@ -3355,6 +3355,16 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
             p->insert("i",   rec->entryValue("i"));
             p->insert("j",   rec->entryValue("j"));
             p->insert("kij", rec->entryValue("kij"));
+            //  The record's declared temperature span rides with the pair, so
+            //  the one-fluid rule can announce a use outside it.
+            if (rec->found("provenance")
+                && rec->subDict("provenance")->found("validity")
+                && rec->subDict("provenance")->subDict("validity")->found("temperature"))
+            {
+                auto vt = rec->subDict("provenance")->subDict("validity")->subDict("temperature");
+                p->insert("validityTmin", vt->entryValue("min"));
+                p->insert("validityTmax", vt->entryValue("max"));
+            }
             pairDicts.push_back(p);
             if (thermoAnnounce())
                 std::cout << "[builder] kij pair " << rec->lookupWord("i") << "-"

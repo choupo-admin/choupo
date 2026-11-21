@@ -16,7 +16,7 @@
   The feed z_N2 = 0.30 sits inside the envelope, so the flash must split into
   exactly those phases if the thermodynamics is right.  The K-values come from
   K = phi_L/phi_V -- the SAME SRK cubic evaluated at its liquid and vapour
-  roots, with kij(N2,CH4) = 0.0289 -- a small MEASURED correction to the cubic mixing rule, from the Knapp/DECHEMA VLE data compilation (announced in
+  roots, with kij(N2,CH4) = 0.02725 -- fitted by Choupo to THIS isotherm of Stryjek Table III alone (case n2ch4_kij_fit_stryjek1974_149K; the record is valid at 149.82 K only; announced in
   this log).  Neighbouring measured points bracket the model: K_N2 = 3.047 at
   299 psia and 2.241 at 396.5 psia -- the engine interpolates between them
   consistently (try P 22 bar in this dict: K_N2 ~ 2.9).  This is the quantitative anchor
@@ -28,7 +28,7 @@
   claiming a measured anchor.  `expected` now carries two `anchor` rows
   holding the PAPER's K_N2 = 3.047 and K_CH4 = 0.638; they are compared on
   every run and are never refreshed by `--record` (a published number is not
-  the model's to rewrite).  Measured agreement: K_N2 +2.25 %, K_CH4 -1.56 %,
+  the model's to rewrite).  Measured agreement now (kij 0.02725, 2026-11-21): K_N2 +1.62 %, K_CH4 -1.53 %; before it (kij 0.0289): K_N2 +2.25 %, K_CH4 -1.56 %,
   x_N2 -0.52 %, y_N2 +1.73 % -- inside the declared 3 % band, with margin.
 \*---------------------------------------------------------------------------*/
 type isothermalFlash;

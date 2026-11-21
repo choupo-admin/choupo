@@ -167,6 +167,10 @@ public:
         const std::vector<Component>* comps = nullptr;
         DictPtr                      eosDict;     // the equationOfState block
         std::vector<std::vector<scalar>> kij;     // one-fluid only (read by the cubic)
+        //  The temperature span a kij RECORD declares (provenance.validity),
+        //  per pair; a use outside it is announced (PairSpanGuard), never refused.
+        struct PairSpan { std::size_t i = 0, j = 0; std::string name; scalar lo = 0, hi = 0; };
+        std::vector<PairSpan>            spans;
     };
     using Factory = std::function<std::unique_ptr<CubicMixingRule>(const Context&)>;
     static void registerType(const std::string& name, Factory f);

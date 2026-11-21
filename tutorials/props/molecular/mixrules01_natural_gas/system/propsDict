@@ -23,7 +23,7 @@
 
     Nothing here is validated against measurement: every number is the
     engine's own arithmetic, decomposed.  The one cited constant is the
-    N2-CH4 kij record (Knapp et al., DECHEMA VI, 1982).
+    N2-CH4 kij record (fitted to Stryjek 1974 Table III, 149.82 K only: used here at 250 K it is an announced extrapolation).
 */
 
 operations

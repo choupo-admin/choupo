@@ -1,0 +1,54 @@
+/*--------------------------------------------------------------------------*\
+  MEASURED vapour-liquid equilibrium of nitrogen (1) + methane (2) at 149.82 K
+  (-190.00 degF), seven rows -- the fit case's evidence.
+
+  SOURCE (the page, read from the page image): Stryjek, R.; Chappelear, P.S.;
+  Kobayashi, R.  "Low-Temperature Vapor-Liquid Equilibria of Nitrogen-Methane
+  System", J. Chem. Eng. Data 19 (1974) 334-339, Table III, the isotherm
+  "T = -190.00 F = -123.33 C = 149.82 K", p. 338 (page 5 of the PDF).  Columns
+  as printed: P in psia, nitrogen mole fraction in the liquid and in the vapour.
+  alpha = K_N2/K_CH4 = (y/x)/((1-y)/(1-x)) is computed from those two columns.
+
+  NOT USED, with the reason: the pure-methane row (149.5 psia, the vapour
+  pressure, K_N2 extrapolated, footnote b); the 300 psia row (liquid
+  composition not determined); the 664 psia critical point (x = y = 0.6528);
+  and the 649 psia row (x 0.5866), 2.3 % of the critical pressure below the
+  critical point, where a cubic has no bubble point worth fitting (the rule is
+  declared in the README: rows within 3 % of the isotherm's critical pressure
+  are discarded BEFORE the fit).
+  Rows 1, 3, 5, 7 are the FIT; rows 2, 4, 6 (202.5, 299, 495 psia) are HELD OUT.
+  Row 4 (299 psia, x 0.1503, y 0.4579, K_N2 3.047) is the anchor of
+  tutorials/steady/flash/flash09_n2ch4_stryjek.
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.P_bubble;
+system       ( N2 CH4 );
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Stryjek, R.; Chappelear, P.S.; Kobayashi, R. (1974). Low-temperature vapor-liquid equilibria of nitrogen-methane system. J. Chem. Eng. Data 19, 334-339, Table III (p. 338), isotherm 149.82 K. doi:10.1021/je60063a023";
+    sourceFile   "stryjek1974-nitrogen-methane-vle-low-temperature.pdf";
+    sha256       "e02c272d31586c6280f9f6c341ff222779f2b830e78bef81806260d9d1c35b1b";   // of that PDF
+}
+
+columns
+(
+    { name x[N2];  unit -;  }
+    { name T;  unit K;  }
+    { name P_bubble;  unit psi;  }
+    { name y_eqT_N2;  unit -;  }
+    { name alpha;  unit -;  }
+);
+
+data
+(
+    0.02838  149.82   179.0  0.1529  6.1796
+    0.05140  149.82   202.5  0.2404  5.8408
+    0.09849  149.82   249.5  0.3683  5.3367
+    0.15030  149.82   299.0  0.4579  4.7753
+    0.25790  149.82   396.5  0.5779  3.9396
+    0.37780  149.82   495.0  0.6480  3.0318
+    0.50340  149.82   594.0  0.6867  2.1622
+);

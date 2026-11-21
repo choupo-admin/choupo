@@ -314,7 +314,7 @@ name the model?*
    Pitzer/eNRTL), mirroring `parameters/NRTL/<i>-<j>.dat`, declared in the
    thermoPhysPropDict (a `binaryInteractions { N2-CH4 { } }`
    entry, found by name) and announced
-   at assembly (`[builder] kij(N2,CH4) = 0.0289 --- <file>`), with the
+   at assembly (`[builder] kij(N2,CH4) = 0.02725 --- <file>`), with the
    always-permitted inline override in the package.
 
 **The boundary test (tier-1 vs tier-2):** *could ANY model in principle

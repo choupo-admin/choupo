@@ -1,0 +1,50 @@
+/*---------------------------------------------------------------------------*\
+  n2ch4_kij_fit_stryjek1974_149K -- ONE SRK kij for nitrogen + methane, fitted
+  to the 149.82 K isotherm of Stryjek, Chappelear & Kobayashi (1974) Table III
+  ALONE.  README.md carries the question, the split and the bands DECLARED
+  BEFORE THE FIT.  FIT rows 1,3,5,7 (179, 249.5, 396.5, 594 psia); HELD OUT rows
+  2,4,6 (202.5, 299, 495 psia).  Residual: relative bubble pressure plus
+  relative alpha (weights P 1, alpha 1), at the point's own T.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        kij_srk;
+        type        fitParameters;
+
+        parameters
+        (
+            { path equilibrium.equationOfState.binaryInteractions.N2-CH4.kij;  initial 0;  min -0.2;  max 0.2; }
+        );
+
+        evidence
+        (
+            { dataset "constant/experiments/n2-ch4-stryjek1974-149K.dat"; role fit;        discard ( 2 4 6 ); }
+            { dataset "constant/experiments/n2-ch4-stryjek1974-149K.dat"; role validation; discard ( 1 3 5 7 ); }
+        );
+
+        acceptance
+        {
+            maxAAD  3.0 percent;
+            origin  "declared before the fit (README): held-out mean relative deviation over the pressure and the alpha rows at or below 3 %";
+        }
+
+        objective { method leastSquares; }
+        residual
+        {
+            kind        P_bubble;
+            components  ( N2 CH4 );
+            weights     { P 1;  alpha 1;  alphaColumn alpha; }
+        }
+
+        options { maxIter 60;  tolerance 1.0e-10;  fdStep 1.0e-4;  lambda0 1.0e-3; }
+
+        output
+        {
+            fit_log    fit_history_srk.csv;
+            parity     parity_srk.csv;
+            proposal   N2-CH4.srk.proposal.dat;
+        }
+    }
+);

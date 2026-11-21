@@ -32,6 +32,7 @@ License
 #include "core/Constants.H"
 #include "core/RegistryRefusal.H"
 #include "thermo/ThermoAnnounce.H"
+#include "thermo/PairAudit.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/activityCoefficient/UNIFAC.H"
 #include "thermo/activityCoefficient/UNIQUAC.H"
@@ -118,9 +119,14 @@ namespace {
     {
     public:
         VanDerWaalsOneFluid(std::size_t n,
-                            const std::vector<std::vector<scalar>>& kij)
+                            const std::vector<std::vector<scalar>>& kij,
+                            const std::vector<Context::PairSpan>& spans = {})
           : n_(n)
         {
+            //  A kij record's declared temperature span is guarded: a use
+            //  outside it is announced once per pair per run ([pair-span]),
+            //  still used, no number moves.
+            for (const auto& s : spans) spans_.push_back(s);
             if (kij.empty())
             {
                 kij_.assign(n_, std::vector<scalar>(n_, 0.0));
@@ -147,9 +153,23 @@ namespace {
             return &kij_;
         }
 
-        void mix(scalar /*T*/, const sVector& y, const Pure& pure,
+        void mix(scalar T, const sVector& y, const Pure& pure,
                  Mixed& out, bool partials, bool /*temperature*/) const override
         {
+            for (const auto& s : spans_)
+            {
+                if (T >= s.lo && T <= s.hi) continue;
+                if (s.i >= y.size() || s.j >= y.size()) continue;
+                if (!(y[s.i] > 0.0 && y[s.j] > 0.0)) continue;
+                const std::string key = "pairSpan:cubic kij:" + s.name;
+                if (AdvisoryLog::instance().passHas(key)) continue;
+                PairSpanGuard::announceOutside(key, "cubic kij pair " + s.name,
+                    "cubic kij pair '" + s.name + "'", T, s.lo, s.hi,
+                    "kij depends on temperature, so the mixture's attraction"
+                    " parameter, and every K and fugacity coefficient computed"
+                    " from it, inherits that",
+                    "declared validity span", /*echoUnderTrial=*/false);
+            }
             //  THE ARITHMETIC OF CubicEoS::buildMix, order intact (the
             //  acceptance of this move is byte identity of every phiPhi and
             //  real-gas case).
@@ -213,6 +233,7 @@ namespace {
     private:
         std::size_t                      n_;
         std::vector<std::vector<scalar>> kij_;
+        std::vector<Context::PairSpan>   spans_;
         std::string                      name_ = "vanDerWaalsOneFluid";
     };
 
@@ -437,7 +458,7 @@ namespace {
                 " and the one-fluid rule has no G^E to give it to -- either"
                 " drop the block, or choose an excess-Gibbs rule ("
                 "MHV1 | MHV2) for it to feed");
-        return std::make_unique<VanDerWaalsOneFluid>(c.comps->size(), c.kij);
+        return std::make_unique<VanDerWaalsOneFluid>(c.comps->size(), c.kij, c.spans);
     }
 
     std::unique_ptr<CubicMixingRule> makeGe(const GeRow& row,

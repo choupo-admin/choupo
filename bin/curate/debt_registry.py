@@ -74,18 +74,15 @@ SPECIES_WITHOUT_CITATION = {
 #  methylAcetate.dat LEFT 2026-11-19 (DEV.md 4c C335): re-sourced from Poling 5e
 #  Appendix A row 91 (Tb, Tc, Pc, dHf, Hvap, Vliq, Antoine); omega computed from
 #  its Antoine, s_298 derived from its dHf/dGf and CODATA element entropies.
+#  SRK/N2-CH4.dat LEFT 2026-11-21 (DEV.md 4c C335, third pass): kij refitted by Choupo
+#  to the 149.82 K isotherm of Stryjek, Chappelear & Kobayashi 1974 Table III alone,
+#  validity span that one temperature (case n2ch4_kij_fit_stryjek1974_149K).
 SOURCE_LICENCE = {
     "data/standards/parameters/NRTL/ethanol-water.dat":
         "'Curated from DECHEMA by V. Geraldes' over the VLE-IG bank -- direct "
         "transcription, the form the protocol names.  The bulk of the pair "
         "catalogue already moved to data/local/ in the legal scrub; this one "
         "survived and should follow.  What would discharge it: a published NRTL parameter set for ethanol+water in the engine's tau = a + b/T form covering 298-373 K (Voutsas 2011 Table 8 is quadratic in T and Kamihama 2012 Table 8 is 1 atm only, both in ~/Choupo-Literature), or a refit of the pair with its consumers re-recorded.  MEASURED 2026-11-21 (C335): bin/choupo-curate pair ethanol water fits 16 laboratories / 256 points (b_ij -38.5 K, b_ji 580.2 K, mean |dT| 0.48 K, max 2.53 K, grade severe); promoting it moves 15 of the 18 cases that pin the record and GROWS flash20_ethanol_water_pcsaft's pinned first-law residual from 53.21 to 61.47 kW, which check_energy_closure refuses (the ratchet only falls), so it did not land; it needs a decision on that pin, or a better-graded form (a_ij, a_ji free) than the pipeline's fixed one.",
-    "data/standards/parameters/SRK/N2-CH4.dat":
-        "BORDERLINE, awaiting a ruling: cites Knapp, Doering, Oellrich, "
-        "Ploecker & Prausnitz (1982) -- named authors of a published monograph "
-        "that happens to appear in the DECHEMA series.  A named monograph is "
-        "arguably a primary publication, not a databank transcription.  Ruled "
-        "either way it should be explicit, not incidental.  What would discharge it: a ruling that the named monograph is a primary, or a kij fitted by Choupo to a measured N2-CH4 VLE set (Stryjek, Chappelear & Kobayashi 1974 is in ~/Choupo-Literature) and cited as such.  MEASURED 2026-11-21 (C335): a kij fitted by Choupo to 81 transcribed Stryjek 1974 Table III points (fit 5 isotherms, held out 3, near-critical rows by a rule) is 0.0058, not 0.0289, on pressure alone or pressure plus alpha; it puts K_N2 of flash09_n2ch4_stryjek at 2.864 against the cited 3.047 (6 %, the case's anchor band is 3 %) and misses the declared 5 % held-out criterion once alpha is weighed (5.45 %), so it did not land.  Only a ruling that the named monograph is a primary frees it.",
 }
 
 #  NC_COMPILATION -- values whose ORIGIN is a NonCommercially-licensed

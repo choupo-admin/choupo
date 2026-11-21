@@ -319,7 +319,7 @@ with the line to write and where to put the record (`constant/parameters/<Model>
 ### Omitting `kijPairs` on an EoS package → kij = 0 (announced)
 No `kijPairs` block is legal — the cubic runs predictive with
 `kij = 0`, announced.  Near-critical phase splits will be off (the
-N2-CH4 split needs its DECHEMA kij 0.0289).  Declare the pair file
+N2-CH4 split needs a fitted kij, 0.02725 at 149.82 K).  Declare the pair file
 (`data/standards/parameters/SRK/<i>-<j>.dat`) and watch for the
 `[builder] kij(...)` line confirming it loaded.
 

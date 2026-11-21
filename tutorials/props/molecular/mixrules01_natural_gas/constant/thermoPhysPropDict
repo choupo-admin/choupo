@@ -3,7 +3,7 @@
 |        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
 \*-----------------------------------------------------------------------------*/
 /*  SRK phi-phi over a natural-gas ternary.  ONE binary pair is curated in
-    the public catalogue (N2-CH4, Knapp et al., DECHEMA VI) and is declared
+    the public catalogue (N2-CH4, fitted to Stryjek 1974 Table III) and is declared
     here through its record; the two CO2 pairs are DELIBERATELY left
     undeclared, so they run the kij = 0 predictive default and the engine
     says so at construction -- the declared/defaulted split is the lesson
@@ -24,7 +24,7 @@ equilibrium
         mixingRule vanDerWaalsOneFluid;
         binaryInteractions
         {
-            // Knapp et al., DECHEMA Chemistry Data Series VI (1982)
+            // Stryjek et al. 1974 Table III, 149.82 K isotherm (announced as outside its span here)
             N2-CH4 { }
         }
     }

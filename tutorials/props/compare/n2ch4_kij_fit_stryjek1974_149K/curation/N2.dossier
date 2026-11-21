@@ -1,0 +1,76 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      N2;
+reviewStatus   unreviewed;
+
+properties
+(
+{
+    property       binaryVLE.P_bubble;
+    operation      kij_srk;   // type fitParameters
+    model          "binary pair, relative bubble-P residual at fixed T";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.equationOfState.binaryInteractions.N2-CH4.kij  0.0272522817915;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "630c3ce67b11ecc9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/n2-ch4-stryjek1974-149K.dat";
+            sha256    "e02c272d31586c6280f9f6c341ff222779f2b830e78bef81806260d9d1c35b1b";
+            provenance measured;
+            system    "N2 + CH4";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/n2-ch4-stryjek1974-149K.dat";
+            sha256    "e02c272d31586c6280f9f6c341ff222779f2b830e78bef81806260d9d1c35b1b";
+            provenance measured;
+            system    "N2 + CH4";
+        }
+        );
+
+        domain
+        {
+            coordinate  x1;
+            fit         { min 0.02838; max 0.5034; n 8; }
+            validation  { min 0.0514; max 0.3778; n 6; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     1.077167793;
+        acceptanceMaxAADPct 3;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "declared before the fit (README): held-out mean relative deviation over the pressure and the alpha rows at or below 3 %";
+    }
+}
+
+);

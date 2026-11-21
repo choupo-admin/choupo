@@ -953,7 +953,30 @@ CubicEoS::readMixingRule(const std::string& model, const DictPtr& eosDict,
     //  "all pairs run kij = 0" announcements) under an excess-Gibbs rule would
     //  print a statement about a quantity that rule does not have.
     if (word == "vanDerWaalsOneFluid")
+    {
         ctx.kij = readKij(model, eosDict, comps);
+        //  The span a kij RECORD declared travels with its pair (the builder
+        //  writes it as validityTmin/validityTmax); an inline pair carries none.
+        if (eosDict->found("binaryInteractions"))
+            for (const auto& entry : eosDict->lookupDictList("binaryInteractions"))
+            {
+                if (!entry->found("validityTmin") || !entry->found("validityTmax"))
+                    continue;
+                CubicMixingRule::Context::PairSpan sp;
+                const std::string a = entry->lookupWord("i"), b = entry->lookupWord("j");
+                sp.i = sp.j = comps.size();
+                for (std::size_t k = 0; k < comps.size(); ++k)
+                {
+                    if (comps[k].name() == a) sp.i = k;
+                    if (comps[k].name() == b) sp.j = k;
+                }
+                if (sp.i == comps.size() || sp.j == comps.size()) continue;
+                sp.name = a + "-" + b;
+                sp.lo = entry->lookupScalar("validityTmin", Dims::temperature);
+                sp.hi = entry->lookupScalar("validityTmax", Dims::temperature);
+                ctx.spans.push_back(std::move(sp));
+            }
+    }
     return CubicMixingRule::New(word, ctx);
 }
 

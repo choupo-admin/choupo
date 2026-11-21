@@ -33,7 +33,7 @@ equilibrium
         mixingRule vanDerWaalsOneFluid;
         binaryInteractions
         {
-            // Knapp et al., DECHEMA Chemistry Data Series VI (1982)
+            // fitted to this case's own isotherm, Stryjek 1974 Table III (record SRK/N2-CH4)
             N2-CH4 { }
         }
     }
