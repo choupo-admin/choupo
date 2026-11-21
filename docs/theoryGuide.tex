@@ -6171,7 +6171,10 @@ And because $\alpha$ is held fixed during a fit, a poor $\alpha$ choice
 cannot be repaired by the energy parameters.
 
 \paragraph{When a pair is used outside its data.}\label{sec:pair-span}
-Every catalogue pair record of NRTL, Wilson and UNIQUAC declares the
+Every catalogue pair record of NRTL, Wilson and UNIQUAC, and since
+2026-11-21 every binary interaction parameter $k_{ij}$ of the cubic equations
+of state (SRK, Peng--Robinson; passed by the package builder to the van der
+Waals one-fluid rule, \code{CubicMixingRule}), declares the
 temperatures of the data it was fitted to
 (\code{provenance \{ validity \{ temperature \{ min; max; \} \} \}}).  A pair
 evaluated outside that span is announced once per run (\code{[pair-span]} line,
