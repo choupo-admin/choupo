@@ -4908,6 +4908,22 @@ accepts today, and that is a policy call.
 > type the engine models opens its case.  Scope to Vitor before dispatch.
 > Size M, "rest" group, beside C459.
 
+> **C461 (architect, 2026-11-21, found by the C456 slice-1 general).**  The pfr
+> holds the volumetric flow at its feed value along the bed (PFR.cpp ~737 and
+> ~957 use F_i/Q with Q fixed), so a gas-phase reaction that changes the number
+> of moles is integrated on the wrong concentrations: ethane cracking makes 40 %
+> more moles, and a single pfr overshoots every secondary yield and needs about
+> 15 % less volume for the same conversion.  RULED: measure first which shipped
+> cases a corrected Q (re-priced from the local molar flow, T and P) would move
+> -- the ammonia converter beds are the obvious candidates, the number of moles
+> falling -- then fix it in the pfr as the default for a gas, with every moved
+> golden explained and a full sweep; a liquid keeps its volumetric flow.  The
+> C456 case's 20-segment workaround is retired when it lands.  C456 decisions,
+> same day: the misses of the molecular scheme (CH4 -29 %, C3H6 -59 %, C4H6
+> +93 % against Froment 1976 Table VIII) stay pinned as the scheme's own; the
+> radical scheme of Sundaram & Froment 1978 (in the folder) is the next witness;
+> the industrial coil waits for a declared T and P profile in the pfr.
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
