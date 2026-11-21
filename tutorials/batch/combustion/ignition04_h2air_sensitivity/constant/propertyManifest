@@ -21,11 +21,8 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
-        "components/H.dat"  "6e93334697c716cb992113771bf2b1b93e0824a5e8e095af839a707d3ab3e79b";
-        "components/H2O2.dat"  "f78f0fcce721bf25bf788ed9e60ae52c8cc06ea45fe6f813c4df5f3696d509e4";
-        "components/HO2.dat"  "2980e8e9cdcc1b089da7d2ec8d3ceebd31ac5060f465a4bc394ee0c488073ae5";
-        "components/O.dat"  "a97b020aa9e1d9f142335d4b1646d1c93e42422272e3c121865fee4549d992dd";
-        "components/OH.dat"  "a14fd85fb55af40d0555525fd84f0fa2b20809d96261795efa7c09c87fdb2de3";
+        "components/ALIASES"  "c341953e34718480b8215da2139b8c85cfc29e01092cc7398febddb473320ad0";
+        "components/H2O2.dat"  "88c40cfeccf3caebb75c941f14c1fa8139a64a74e3a99023096924fefce99425";
         "parameters/Henry/"  "relevant:7837adef0c7b3173ea344ea767d07bd8fbf1b01931a8155acd7c3236e4877c17";
         "parameters/Henry/H2-water.dat"  "4a3629c5a88f40b2e55f52bf4da05cff92e0c966331cc39b95712c2744fa8c7b";
         "parameters/Henry/H2O2-water.dat"  "b6e280b4f7e4097d98fbe5d7e5b6733a30a8be7081dbc7c2393e9054e1e98c23";
@@ -34,8 +31,9 @@ propertyManifest
         "parameters/Henry/O2-water.dat"  "7d1943cf41a94ac447b3d7774fef5b62e2e5a7698bee77a48b59dabb022458db";
         "parameters/Henry/OH-water.dat"  "cf7c83d838a3966d67f7d420131574085908a12969f2a70a49052856d425a2d2";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
+        "thermoTables/NASA-TP-2002-211556/H.dat"  "a740ee6470031167ccff33dea627116d06663ebedb72f5488968f7bdc817663f";
+        "thermoTables/NASA-TP-2002-211556/HO2.dat"  "d3caf19fbf8d9fb8857a068c763ca5e9faa4c2c8d50d05402a7b5e2aacdbd2df";
+        "thermoTables/NASA-TP-2002-211556/O.dat"  "4b074aa1356ec944fcc169ec09a2d593474e05e4eaaa44ef753b6d43f3cc0238";
+        "thermoTables/NASA-TP-2002-211556/OH.dat"  "53ace56643e243202e9545e63a2467a1d390f45e9cbcb812294b5b66b49bafd5";
     }
 }

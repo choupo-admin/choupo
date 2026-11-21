@@ -6286,6 +6286,21 @@ PYEOF
     fi
     rm -f /tmp/ignsens.$$
 
+    # gas-only gate (2026-11-21, DEV.md 4c C458).  A radical is a GAS-ONLY
+    # species (`role radical;`): K = kNoLiquidK in every phase split, and a
+    # state with no vapour to hold it refused by name.  The defect it would
+    # have caught: until C458 a radical had K = 0, and flash23's 330 K quench
+    # sent all of its OH into the water condensate with every golden green.
+    if gate_exec "$ROOT/bin/curate/check_gas_only.py" > /tmp/gasonly.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "gas-only-gate" "$(head -1 /tmp/gasonly.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_gas_only.py)\n" "gas-only-gate"
+        cat /tmp/gasonly.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gasonly.$$
+
     # rate-of-production gate (2026-11-19, glass box of a mechanism, phase 1).
     # `rateOfProduction { times (...); }` on a batchReactor prints, per species,
     # which reactions make and destroy it, from c_ij = nu_ij r_j V computed a

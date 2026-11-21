@@ -12,16 +12,21 @@
 
   THE RADICAL DATABASE AT WORK: stoichiometric H2/air adiabatic flame,
   equilibrium by Gibbs minimisation over the FULL radical pool
-  (H, O, OH, HO2, H2O2 -- the catalogue's NASA-7-derived radical records) plus
-  equilibrium thermal NO.
+  (H, O, OH, HO2 -- gas-only species of the NASA table, resolved from
+  data/standards/thermoTables/NASA-TP-2002-211556/ because a radical is not a
+  component, DEV.md 4c C458 -- and the stable H2O2) plus equilibrium thermal NO.
 
       1 H2 + 0.5 O2 + 1.88 N2   at 298.15 K, 1 atm, adiabatic.
 
-  THE ANSWER (golden-locked):  T_ad = 2385.8 K -- the literature gives
-  2380-2390 K (Glassman, Combustion, 4th ed.; Law, Combustion Physics).
-  Equilibrium pool: OH 0.55 %, H 0.18 %, O 0.06 %, NO 0.27 % -- all inside
-  the published equilibrium ranges.  NO here is the Zeldovich CEILING (what
-  kinetics approaches with residence time, never exceeds).
+  THE ANSWER (golden-locked):  T_ad = 2378.3 K, 1.7 K below the 2380-2390 K
+  the header has cited (Glassman, Combustion, 4th ed.; Law, Combustion
+  Physics; the range itself not re-read against those books).
+  Equilibrium pool: OH 0.74 %, H 0.18 %, O 0.05 %, NO 0.26 %.  Until
+  2026-11-21 OH was a hand-fitted cubic Cp (dHf 39.0 kJ/mol) and the flame
+  read 2385.8 K with OH 0.55 %; the NASA row (dHf 37.28 kJ/mol) makes OH
+  cheaper, so the pool holds more of it and the flame is 7.5 K cooler.
+  NO here is the Zeldovich CEILING (what kinetics approaches with residence
+  time, never exceeds).
 
   TWO LESSONS THIS CASE TEACHES:
   1. THE RADICALS' WORK: endothermic dissociation (H2O -> OH + H, O2 -> 2 O)
