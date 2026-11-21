@@ -1855,6 +1855,11 @@
       "exit": 0,
       "claim": "check_ignition_sensitivity: OK -- the multiplier scales the NET rate: 21 multiplied runs end at the base T_end (max relative difference 7.6e-12; tol 1e-06) and S(R1_H_O2_O_OH) = -1.024601 equals the hand recomputation from two runs with its A x 1.1 (difference 5.1e-13; tol 1e-06); a wrong A factor is seen",
       "seconds": 8.9
+    },
+    "check_dryer_arrangements": {
+      "exit": 0,
+      "claim": "check_dryer_arrangements: OK -- co-, counter- and cross-flow on one feed and one air: every dryer closes its water balance (1e-9) and first law (1e-3 kW); the cross-flow equals an independent RK4 of Mujumdar Eq. 3.66-3.73 (2e-3), also with the inlet driving force (3.72), and its exhaust a constant-cp hand balance (2 K); the co/counter profiles re-derive their rate law and water balance outside the unit; counter < co as the book says (van 't Land p. 42) and counter < cross < co as these conditions give; five refusals by name.  NOT checked: a measured dryer.",
+      "seconds": 9.3
     }
   }
 }

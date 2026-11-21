@@ -2,17 +2,18 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/convectiveDryer.schema.json",
   "title": "convectiveDryer operation",
-  "description": "A continuous convective dryer (steady): a wet sorbing solid and a hot-air stream in contact along a declared area, co-current or counter-current. The solid follows its characteristic drying curve — constant rate R_c = k_Y (Y_sat(T_wb) - Y) above the critical moisture, R = R_c f(Phi) below it — and the air's humidity and temperature are ALGEBRAIC in the solid's moisture, from the water and enthalpy balances priced on the package's own formation surface (the surface the plant energy report checks), so the single ODE S dX/dxi = -R A is marched by RK4 over the normalised area. Counter-current is a two-point problem, solved by shooting on the outlet moisture. X_eq is the GAB equilibrium moisture at the local air's water activity, read from the solid component's `sorption {}` record. The air inlet must declare `phase gas;` and the solid inlet must carry no vapour; both are refused by name otherwise. NOT modelled, and announced: the solid's warm-up in the falling-rate period (the solid stays at the local wet-bulb temperature).",
+  "description": "A continuous convective dryer (steady): a wet sorbing solid and a hot-air stream in contact along a declared area, co-current, counter-current or cross-flow. The solid follows its characteristic drying curve — constant rate R_c = k_Y (Y_sat(T_wb) - Y) above the critical moisture, R = R_c f(Phi) below it — and the air's humidity and temperature are ALGEBRAIC in the solid's moisture, from the water and enthalpy balances priced on the package's own formation surface (the surface the plant energy report checks), so the single ODE S dX/dxi = -R A is marched by RK4 over the normalised area. Counter-current is a two-point problem, solved by shooting on the outlet moisture. X_eq is the GAB equilibrium moisture at the local air's water activity, read from the solid component's `sorption {}` record. The air inlet must declare `phase gas;` and the solid inlet must carry no vapour; both are refused by name otherwise. NOT modelled, and announced: the solid's warm-up in the falling-rate period (the solid stays at the local wet-bulb temperature).",
   "type": "object",
   "properties": {
     "flow": {
       "type": "string",
       "enum": [
         "cocurrent",
-        "countercurrent"
+        "countercurrent",
+        "crossflow"
       ],
       "title": "Flow arrangement",
-      "description": "Co-current: air and solid enter at the same end. Counter-current: the air enters where the solid leaves — it ends drier on the same area, and it is solved by shooting.",
+      "description": "Co-current: air and solid enter at the same end. Counter-current: the air enters where the solid leaves — it ends drier on the same area, and it is solved by shooting. Cross-flow (Mujumdar 2006 s.3.6.2.3.1): the solid is in plug flow and EVERY length element is fed with the inlet air, which leaves it once; the exhaust is the mix of the elements.",
       "unit": "-"
     },
     "area": {
@@ -83,6 +84,14 @@
         "shape"
       ],
       "additionalProperties": false
+    },
+    "drivingForce": {
+      "type": "string",
+      "enum": ["logMean", "inlet"],
+      "default": "logMean",
+      "title": "Cross-flow driving force",
+      "description": "flow crossflow only. logMean: the air plugs through the element's area, G ln((Y*-Y1)/(Y*-Y2)) = k_Y A f (Mujumdar Eq. 3.73); inlet: the inlet driving force, Wdot = k_Y A f (Y*-Y1) (Eq. 3.72).",
+      "unit": "-"
     },
     "nSteps": {
       "type": "integer",

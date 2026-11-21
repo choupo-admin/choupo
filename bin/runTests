@@ -5079,6 +5079,21 @@ PYEOF
     fi
     rm -f /tmp/convdry.$$
 
+    # dryer-arrangements gate (2026-11-21).  Co-, counter- and cross-flow on
+    # one feed and one air: water balance and first law per dryer, the
+    # cross-flow against an independent RK4 of Mujumdar Eq. 3.66-3.73, the
+    # co/counter profiles re-derived outside the unit, the ordering the
+    # book gives, six refusals by name.
+    if gate_exec "$ROOT/bin/curate/check_dryer_arrangements.py" > /tmp/dryarr.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "dryer-arrangements-gate" "$(head -1 /tmp/dryarr.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_dryer_arrangements.py)\n" "dryer-arrangements-gate"
+        cat /tmp/dryarr.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/dryarr.$$
+
     # evaporative-dryer gate (2026-10-05, DEV.md C26).  The free-moisture
     # dryer announces the limit its own answer satisfies, evaporates at its
     # floor only what the gas pays for (doubling the gas doubles the water),
