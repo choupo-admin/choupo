@@ -1260,7 +1260,7 @@ LESSON_ABSENCE_UNCLASSIFIED = {
     "gui/src/ui/methods/electrolyteModelsLesson.ts": 7,
     "gui/src/ui/methods/elementPotentialLesson.ts": 6,
     "gui/src/ui/methods/epsilonNtuLesson.ts": 4,
-    "gui/src/ui/methods/equilibriumLandscapesLesson.ts": 16,
+    "gui/src/ui/methods/equilibriumLandscapesLesson.ts": 15,
     "gui/src/ui/methods/equilibriumOrRateBasedLesson.ts": 2,
     "gui/src/ui/methods/fastSlowLesson.ts": 3,
     "gui/src/ui/methods/fluidisedBedsLesson.ts": 5,

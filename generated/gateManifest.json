@@ -1858,8 +1858,8 @@
     },
     "check_lesson_absence_claims": {
       "exit": 0,
-      "claim": "check_lesson_absence_claims: OK 10 absence claim(s) held by 12 probe(s) of the tree, 2 KNOWN FALSE listed for the lesson's fixer, 798 unclassified sentence(s) in 163 file(s) each at its pin (ratchet: may only fall).  NOT checked: a sentence in other words, whether a grep probe proves a capability absent, or a page's own 'this page does not model' (counted, not judged).",
-      "seconds": 1.8
+      "claim": "check_lesson_absence_claims: OK 11 absence claim(s) held by 14 probe(s) of the tree, 2 KNOWN FALSE listed for the lesson's fixer, 797 unclassified sentence(s) in 163 file(s) each at its pin (ratchet: may only fall).  NOT checked: a sentence in other words, whether a grep probe proves a capability absent, or a page's own 'this page does not model' (counted, not judged).",
+      "seconds": 2.3
     },
     "check_lesson_typed_numbers": {
       "exit": 0,

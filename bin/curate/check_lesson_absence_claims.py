@@ -112,6 +112,11 @@ CLAIMS = [
     (M + "equilibriumLandscapesLesson.ts", "glucose beside the gases refused",
      "history: the refusal the engine gave when the page was written is still recorded in ReactionGibbs.H",
      [("present", "src/propertyOps/ReactionGibbs.H", r"heat of sublimation")]),
+    (M + "equilibriumLandscapesLesson.ts", "with no heat capacity at all still refuses",
+     "the engine's refusal of a record with no liquidHeatCapacity (the glucose sentence the sweep found, "
+     "now true as rewritten: glucose carries a Cp, a record with none still refuses)",
+     [("present", "src/thermo/Component.cpp", r"h_formation liquid leg needs liquidHeatCapacity"),
+      ("present", "data/standards/components/glucose.dat", r"^liquidHeatCapacity")]),
     (M + "processSafetyLesson.ts", "No record in Choupo carries decomposition kinetics",
      "decomposition kinetics or a T_D24 in any shipped record",
      [("absent", "data/standards/**/*.dat", r"decompositionKinetics|decompositionActivation|\bT_D24\b|\bSADT\b")]),
