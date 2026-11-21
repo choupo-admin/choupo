@@ -1,0 +1,53 @@
+// Probe for bin/curate/check_iteration_budgets.py (DEV.md 4c C467 R-001/R-002).
+// Compiled against src/solver/NewtonRaphson.cpp alone.  Prints "key value" lines.
+#include "solver/NewtonRaphson.H"
+#include <cmath>
+#include <iostream>
+#include <string>
+
+using namespace Choupo;
+using namespace Choupo::solver;
+
+static scalar f(scalar x)  { return x * x - 2.0; }
+static scalar df(scalar x) { return 2.0 * x; }
+
+static std::string refusal(int maxIter, bool safeguarded)
+{
+    NROptions o; o.maxIter = maxIter; o.lower = 0.0; o.upper = 10.0; o.monotoneIncreasing = true;
+    try
+    {
+        auto r = safeguarded ? newton1DSafeguarded(f, 1.0, 1e-6, o)
+                             : newton1D(f, df, 1.0, o);
+        return std::string("RAN converged=") + (r.converged ? "1" : "0");
+    }
+    catch (const std::exception& e) { return std::string("THREW ") + e.what(); }
+}
+
+int main()
+{
+    for (int mi : {0, -1})
+    {
+        std::cout << "plain_" << (mi < 0 ? "m1" : "0") << " " << refusal(mi, false) << "\n";
+        std::cout << "safe_"  << (mi < 0 ? "m1" : "0") << " " << refusal(mi, true)  << "\n";
+    }
+    for (int safe = 0; safe < 2; ++safe)
+    {
+        NROptions o; o.maxIter = 1; o.tolerance = 1e-12; o.lower = 0.0; o.upper = 10.0; o.monotoneIncreasing = true;
+        NRResult r = safe ? newton1DSafeguarded(f, 1.0, 1e-6, o) : newton1D(f, df, 1.0, o);
+        std::cout << (safe ? "safeOne" : "plainOne") << " x " << r.x
+                  << " residual " << r.residual << " fAtX " << std::abs(f(r.x))
+                  << " converged " << (r.converged ? 1 : 0) << "\n";
+    }
+    NROptions o; o.maxIter = 50; o.tolerance = 1e-12; o.lower = 0.0; o.upper = 10.0; o.monotoneIncreasing = true;
+    NRResult r = newton1D(f, df, 1.0, o);
+    std::cout << "plainFull converged " << (r.converged ? 1 : 0) << " x " << r.x << "\n";
+    for (double v : {0.0, -1.0, 0.5, 30.0})
+    {
+        std::string s;
+        try { s = "RAN " + std::to_string(requireIterationBudget(v, "k")); }
+        catch (const std::exception& e) { s = std::string("THREW ") + e.what(); }
+        std::cout << "budget_" << v << " " << s << "\n";
+    }
+    std::cout << "probeDone 1\n";
+    return 0;
+}

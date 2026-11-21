@@ -6401,6 +6401,21 @@ PYEOF
     fi
     rm -f /tmp/kinjac.$$
 
+    # iteration-budgets gate (2026-11-21, DEV.md 4c C467 R-001/R-002/R-006).  A Newton
+    # budget of zero was published as a converged solve (adiabaticFlash with
+    # `maxOuterIter 0;`: a 917 kW imbalance), an exhausted newton1D returned the new x
+    # with the previous x's residual, and a ternary FUG with a distributed non-key ran
+    # with a pole inside Underwood's bracket.  Probe + two cases + two engine sabotages.
+    if gate_exec "$ROOT/bin/curate/check_iteration_budgets.py" > /tmp/itbud.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "iteration-budgets-gate" "$(head -1 /tmp/itbud.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_iteration_budgets.py)\n" "iteration-budgets-gate"
+        cat /tmp/itbud.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/itbud.$$
+
     # cracking-yields gate (2026-11-21, olefins line C456 slice 1).  The molecular
     # scheme of Sundaram & Froment 1977 for ethane cracking, in a chain of pfr
     # segments, against (A) an independent integration typed in the gate from the
