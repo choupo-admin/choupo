@@ -44,8 +44,10 @@ License
   vendor checklist beside van 't Land's two lists, Towler's Table 10.7, and the
   drum dryer in Perry's and Mujumdar's numbers side by side.
 
-  NOTHING ON THIS PAGE IS RUN BY THE ENGINE; every fact is a book's at a page
-  (dryerSelection.ts), and the page says which is which.
+  EVERY FACT OF THE SELECTION IS A BOOK'S AT A PAGE (dryerSelection.ts), and
+  the page says which is which.  ONE SECTION RUNS THE ENGINE (C465): the
+  three flow arrangements of a continuous convective dryer, whose profiles and
+  outlets are the in-browser engine's own (DryerArrangements.tsx).
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
@@ -56,6 +58,7 @@ import {
 
 import { caseTabSearch, openAppTab } from "../openInTab.js";
 import { DrawingLegend, DryerDrawing } from "./dryerDrawings.js";
+import { ArrangementCards, ArrangementRuns, ArrangementUses } from "./DryerArrangements.js";
 import {
   DEFAULT_INPUTS, DRYER_IDS, DRYERS, FEED_LABEL, HEAT_LABEL, LATENT_HEAT_KJ_PER_KG, MODE_LABEL,
   SCALE_LABEL, SIZE_LABEL, citeOf, comparisonRows, energyBills, recommend, waterEvaporated,
@@ -596,6 +599,18 @@ export function DryerSelectionTool(): JSX.Element {
         <HabitualTables />
         {step(7)}
         {step(8)}
+
+        <Title order={4} data-section="arrangements">Co-current, counter-current, cross-flow</Title>
+        <OriginMark of={["engine"]}
+          note="the profiles and outlets below are the engine's own, run in your browser on three tutorial cases" />
+        {step(9)}
+        <ArrangementCards />
+        <Box><DrawingLegend /></Box>
+        {step(10)}
+        {step(11)}
+        <ArrangementRuns />
+        {step(12)}
+        <ArrangementUses />
 
         <LessonQuiz title="Check your understanding" questions={DRYER_SELECTION_QUIZ}
           lesson={DRYER_SELECTION_STEPS} />

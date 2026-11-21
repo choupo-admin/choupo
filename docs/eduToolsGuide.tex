@@ -3297,8 +3297,52 @@ types the engine models open their tutorial case in a new tab:
 family, which has no rotary geometry),
 \code{steady/drying/solidDryer01\_sugar} (nearest to a well-mixed bed) and
 \code{batch/drying/dryer01\_sucrose\_tray}; the drum, belt and freeze dryers
-have no model and say so.  The page computes nothing in the engine and
-replaces no drying test.
+have no model and say so.  The selection computes nothing and replaces no
+drying test.
+
+\paragraph{Co-current, counter-current, cross-flow.}  A closing section (steps
+9 to 12) is about the one choice of a continuous convective dryer that the
+types above do not make: which way the gas meets the solid.  It first says it
+in plain words --- the gas is hot and dry where it enters and cool and humid
+where it leaves, so where it enters decides what each part of the solid sees:
+the wettest solid meets the hottest gas in co-current flow, the driest solid
+meets it in counter-current flow, and every length of the solid meets gas fresh
+from the inlet in cross-flow --- with one original schematic for each (solid and
+gas drawn from primitives in the page's colour code; the gas is red where hot and
+grey where used up, and a test reads each arrow's direction from its own
+coordinates).  It then states the balances as the Theory Guide section
+\code{sec:dryer-flow-arrangements} does and as \file{ConvectiveDryer.H} and
+\file{ConvectiveDryer.cpp} implement them (the water balance that makes the
+gas humidity algebraic in the solid moisture, so that there is one differential
+equation $S\,\mathrm{d}X/\mathrm{d}\xi=-RA$; the shooting on the outlet moisture
+that counter-current flow needs; the log-mean element of cross-flow), each
+engine line cited by file and line and held to its text by the page's test.
+
+The one place the page runs the engine is here.  It runs the three tutorial
+cases \code{convDryer01\_sugar\_curve} (co-current), \code{convDryer02\_sugar\_countercurrent}
+and \code{convDryer03\_sugar\_crossflow} in the browser --- the same sugar, the
+same hot air, the same 300~m$^2$, only the direction changes --- and draws, from
+the engine's own profile of each unit, the solid moisture $X$, the gas humidity
+$Y$ and the gas temperature $T$ along the fraction of the contact area the solid
+has passed, and, from the same runs' KPIs, a table of $X$ out, $Y$ out, $T$ air
+out and the position at which the critical moisture is crossed.  None of it is
+typed into the page: a failed or pending run shows a message, never a number, and
+a test reads the same three runs from this tree's binary and holds the
+profile to the KPIs (the profile begins at the feed moisture and ends at the
+outlet value), the gas humidity to rise along a co-current dryer and fall along a
+counter-current one, and the outlet moistures to order counter-current below
+cross-flow below co-current.  Each case opens from a button on its card.  The
+last table says when each is used, with its page: co-current for a heat-sensitive
+product, because the gas cools along the dryer and the solids leave far below the
+inlet gas temperature (Perry p.~12-36; van~'t Land p.~42); counter-current for
+the lowest final moisture in a solid that stands heat, because the driest solid
+meets the hottest, driest gas (Perry p.~12-36; van~'t Land p.~42); cross-flow for
+a bed the gas can cross, the through-circulation belt and the plug-flow fluid bed
+(van~'t Land p.~42; Mujumdar section~3.6.2.3.1, p.~65).  The page says what its
+model cannot show: the engine holds the solid at the local wet bulb in all three,
+so the heat-sensitivity argument appears in the gas temperature, not in the solid's,
+and the rate coefficient, critical moisture and curve are hypothetical teaching
+values, not a measured dryer.
 \declaredanchor{ch:drying}
 
 \subsection*{How a plant tells you something is wrong \quad(\code{tool=fault-diagnosis})}\label{sec:edu-fault-diagnosis}

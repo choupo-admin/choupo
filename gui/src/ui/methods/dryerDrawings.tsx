@@ -84,8 +84,11 @@ export const COLD_COLOR = "#16a085";
 const INK = "var(--mantine-color-text)";
 
 /** An arrow from (x1, y1) to (x2, y2) with a small solid head. */
-function Arrow({ x1, y1, x2, y2, color }: {
+function Arrow({ x1, y1, x2, y2, color, flow }: {
   x1: number; y1: number; x2: number; y2: number; color: string;
+  /** Which stream the arrow belongs to; written with its displacement so a test can read
+   *  the direction FROM THE GEOMETRY of the drawing, not from a label. */
+  flow?: "gas" | "solid";
 }): JSX.Element {
   const dx = x2 - x1, dy = y2 - y1;
   const len = Math.hypot(dx, dy) || 1;
@@ -93,7 +96,7 @@ function Arrow({ x1, y1, x2, y2, color }: {
   const hx = x2 - ux * 6, hy = y2 - uy * 6;
   const px = -uy * 3, py = ux * 3;
   return (
-    <g>
+    <g data-flow={flow} data-dx={flow ? dx : undefined} data-dy={flow ? dy : undefined}>
       <line x1={x1} y1={y1} x2={hx} y2={hy} stroke={color} strokeWidth={2} />
       <polygon points={`${x2},${y2} ${hx + px},${hy + py} ${hx - px},${hy - py}`} fill={color} />
     </g>
@@ -486,5 +489,127 @@ export function DrawingLegend(): JSX.Element {
         </span>
       ))}
     </div>
+  );
+}
+
+
+/*---------------------------------------------------------------------------*\
+  THE THREE ARRANGEMENTS (DEV.md 4c C465, Vitor 2026-11-21): the gas and the
+  solid of a continuous convective dryer, drawn once for each way the gas can
+  meet the solid.  ORIGINAL, as the seven above: a duct (rectangle), a bed of
+  solid in four segments that change from the feed's blue to the product's
+  amber as it dries, and arrows.  The gas colour fades from the hot red to the
+  exhaust's grey WHERE THE GAS IS USED UP, so the picture says which end of
+  the solid meets the hot gas.  Where the arrows point is held by the test from
+  the arrows' own coordinates (data-dx), not from the captions.
+\*---------------------------------------------------------------------------*/
+
+export const ARRANGEMENT_IDS = ["cocurrent", "countercurrent", "crossflow"] as const;
+export type ArrangementId = typeof ARRANGEMENT_IDS[number];
+
+const usedUp = (f: number): string => (f < 0.34 ? GAS_COLOR : f < 0.67 ? "#a0675f" : VAPOUR_COLOR);
+const DUCT = { x: 24, y: 40, w: 152, h: 70 } as const;
+const BED_SEGMENTS = [0, 1, 2] as const;
+
+function Bed({ y, h }: { y: number; h: number }): JSX.Element {
+  const w = (DUCT.w - 16) / BED_SEGMENTS.length;
+  return (
+    <g data-bed="">
+      {BED_SEGMENTS.map((k) => (
+        <rect key={k} x={DUCT.x + 8 + k * w} y={y} width={w} height={h}
+          fill={dryness(k / (BED_SEGMENTS.length - 1))} opacity={0.9} />
+      ))}
+    </g>
+  );
+}
+
+/** Gas along the bed: three arrows, hot where the gas enters, grey where it leaves. */
+function AlongArrows({ dir }: { dir: 1 | -1 }): JSX.Element {
+  const starts = [34, 82, 130];
+  return (
+    <g>
+      {starts.map((x0, k) => {
+        const f = dir === 1 ? k / 2 : 1 - k / 2;
+        const a = dir === 1 ? x0 : x0 + 38;
+        const b = dir === 1 ? x0 + 38 : x0;
+        return <Arrow key={x0} x1={a} y1={54} x2={b} y2={54} color={usedUp(f)} flow="gas" />;
+      })}
+    </g>
+  );
+}
+
+function Cocurrent(): JSX.Element {
+  return (
+    <g data-arrangement="cocurrent">
+      <rect x={DUCT.x} y={DUCT.y} width={DUCT.w} height={DUCT.h} rx={3} {...body} />
+      <Bed y={72} h={12} />
+      <AlongArrows dir={1} />
+      <Arrow x1={2} y1={78} x2={DUCT.x + 8} y2={78} color={FEED_COLOR} flow="solid" />
+      <Arrow x1={DUCT.x + DUCT.w - 8} y1={78} x2={198} y2={78} color={PRODUCT_COLOR} flow="solid" />
+      <Arrow x1={2} y1={54} x2={DUCT.x + 8} y2={54} color={GAS_COLOR} flow="gas" />
+      <Arrow x1={DUCT.x + DUCT.w - 8} y1={54} x2={198} y2={54} color={VAPOUR_COLOR} flow="gas" />
+      <Label x={2} y={34}>hot gas in</Label>
+      <Label x={198} y={34} anchor="end">humid exhaust</Label>
+      <Label x={2} y={124}>wet solid in</Label>
+      <Label x={198} y={124} anchor="end">dry solid out</Label>
+      <Label x={100} y={140} anchor="middle">gas and solid go the same way</Label>
+    </g>
+  );
+}
+
+function Countercurrent(): JSX.Element {
+  return (
+    <g data-arrangement="countercurrent">
+      <rect x={DUCT.x} y={DUCT.y} width={DUCT.w} height={DUCT.h} rx={3} {...body} />
+      <Bed y={72} h={12} />
+      <AlongArrows dir={-1} />
+      <Arrow x1={2} y1={78} x2={DUCT.x + 8} y2={78} color={FEED_COLOR} flow="solid" />
+      <Arrow x1={DUCT.x + DUCT.w - 8} y1={78} x2={198} y2={78} color={PRODUCT_COLOR} flow="solid" />
+      <Arrow x1={198} y1={54} x2={DUCT.x + DUCT.w - 8} y2={54} color={GAS_COLOR} flow="gas" />
+      <Arrow x1={DUCT.x + 8} y1={54} x2={2} y2={54} color={VAPOUR_COLOR} flow="gas" />
+      <Label x={2} y={34}>humid exhaust</Label>
+      <Label x={198} y={34} anchor="end">hot gas in</Label>
+      <Label x={2} y={124}>wet solid in</Label>
+      <Label x={198} y={124} anchor="end">dry solid out</Label>
+      <Label x={100} y={140} anchor="middle">gas and solid go opposite ways</Label>
+    </g>
+  );
+}
+
+function Crossflow(): JSX.Element {
+  const xs = [44, 72, 100, 128, 156];
+  return (
+    <g data-arrangement="crossflow">
+      <rect x={DUCT.x} y={DUCT.y} width={DUCT.w} height={DUCT.h} rx={3} {...body} />
+      <path d="M30,110 L170,110 L178,122 L22,122 Z" {...body} />
+      <Bed y={72} h={12} />
+      {xs.map((x) => (
+        <g key={x}>
+          <Arrow x1={x} y1={112} x2={x} y2={87} color={GAS_COLOR} flow="gas" />
+          <Arrow x1={x} y1={69} x2={x} y2={44} color={VAPOUR_COLOR} flow="gas" />
+        </g>
+      ))}
+      <Arrow x1={2} y1={78} x2={DUCT.x + 8} y2={78} color={FEED_COLOR} flow="solid" />
+      <Arrow x1={DUCT.x + DUCT.w - 8} y1={78} x2={198} y2={78} color={PRODUCT_COLOR} flow="solid" />
+      <Label x={100} y={34} anchor="middle">exhaust, mixed from every element</Label>
+      <Label x={100} y={134} anchor="middle">fresh hot gas to every element</Label>
+      <Label x={2} y={96}>wet</Label>
+      <Label x={198} y={96} anchor="end">dry</Label>
+      <Label x={100} y={146} anchor="middle">gas crosses the bed, solid goes along</Label>
+    </g>
+  );
+}
+
+const ARRANGEMENT_DRAWINGS: Readonly<Record<ArrangementId, () => JSX.Element>> = {
+  cocurrent: Cocurrent, countercurrent: Countercurrent, crossflow: Crossflow,
+};
+
+export function ArrangementDrawing({ id, label }: { id: ArrangementId; label: string }): JSX.Element {
+  const Draw = ARRANGEMENT_DRAWINGS[id];
+  return (
+    <svg viewBox="0 0 200 150" width="100%" role="img" aria-label={`Schematic of ${label} flow`}
+      data-arrangement-drawing={id} style={{ display: "block", maxWidth: 300 }}>
+      <Draw />
+    </svg>
   );
 }

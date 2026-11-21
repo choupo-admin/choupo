@@ -336,6 +336,16 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["batchGantt.test.ts", "citation.test.ts", "machineUtilisation.test.ts"],
     stdout: true,
   },
+  //  The three flow arrangements of the dryer-selection EduTool (C465): the
+  //  run logs of the co-current, counter-current and cross-flow witnesses,
+  //  whose result blocks carry the convectiveDryer's profile (X, Y, T along
+  //  the contact area) and its outlet KPIs, which the page draws.
+  ...["convDryer01_sugar_curve", "convDryer02_sugar_countercurrent", "convDryer03_sugar_crossflow"].map((c) => ({
+    caseDir: `tutorials/steady/drying/${c}`,
+    file: "log.choupoSolve",
+    readBy: ["dryerArrangements.test.ts"],
+    stdout: true as const,
+  })),
   //  The total-reflux loop of a column's node (DEV.md 4c C404): the run logs
   //  of one case per model family -- the tray model, the packed bed and the
   //  rate-based bed -- whose published KPIs the loop's numbers are held to.

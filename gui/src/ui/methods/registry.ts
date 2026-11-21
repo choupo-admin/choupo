@@ -1079,7 +1079,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "dryer-selection", blurb: "Choose a dryer type from the feed, heat sensitivity, scale and mode.",
     label: "Which dryer for which product",
     discipline: "Separations & phase equilibria", kind: "selection", status: "live",
-    origins: ["page", "reference", "assumption"],
+    origins: ["engine", "page", "reference", "assumption"],
     teaches: "The seven dryer types that do most of the drying (spray, rotary, fluidised "
       + "bed, tray, belt, drum, freeze), each drawn as a schematic; a selection tree "
       + "from the feed form, the heat sensitivity, the scale and the batch or continuous "
@@ -1089,7 +1089,11 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "silent; the habitual tables transcribed at their pages (Mujumdar's feed-form "
       + "table with its eleven columns, ha and temperature differences and vendor "
       + "checklist, van 't Land's lists, Towler's Table 10.7, the drum dryer in Perry "
-      + "and Mujumdar); and the tutorial cases of the types the engine models.",
+      + "and Mujumdar); the tutorial cases of the types the engine models; and co-current, "
+      + "counter-current and cross-flow, each drawn, with the moisture, humidity and gas "
+      + "temperature along the dryer and the three outlets read from the engine's own run "
+      + "of the three convective-dryer cases, and where each is used with the page of Perry, "
+      + "van 't Land and Mujumdar that says so.",
     theory: "ch:drying",
   },
   //  COMMISSIONED 2026-11-21 (DEV.md 4c C464), Vitor's own story: a home

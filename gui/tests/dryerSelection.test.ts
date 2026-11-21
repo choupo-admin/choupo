@@ -316,8 +316,8 @@ describe("(c) the lesson prints the data's numbers", () => {
     }
     expect(s.where!.length).toBe(8);
   });
-  it("the steps are numbered 1..8 in order, and the limits and the quiz exist", () => {
-    expect(DRYER_SELECTION_STEPS.map((s) => s.n)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+  it("the steps are numbered 1..12 in order, and the limits and the quiz exist", () => {
+    expect(DRYER_SELECTION_STEPS.map((s) => s.n)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
     expect(DRYER_SELECTION_LIMITS.length).toBeGreaterThanOrEqual(5);
     expect(DRYER_SELECTION_QUIZ.length).toBeGreaterThanOrEqual(7);
   });
@@ -357,8 +357,8 @@ describe("(c) the lesson prints the data's numbers", () => {
     expect(e1).toBeCloseTo(0.7053, 4);
     expect(G_PER_M2S_TO_KG_PER_M2H).toBe(3.6);
   });
-  it("the lesson names no page of the engine's source (nothing to drift)", () => {
-    const all = DRYER_SELECTION_STEPS.map((s) => s.body + (s.note ?? "")).join(" ");
+  it("steps 1 to 8 name no page of the engine's source (nothing to drift); steps 9 to 12 do, held by dryerArrangements.test.ts", () => {
+    const all = DRYER_SELECTION_STEPS.filter((s) => s.n <= 8).map((s) => s.body + (s.note ?? "")).join(" ");
     expect(all).not.toMatch(/\.(cpp|H):\d+/);
   });
 });
@@ -748,7 +748,7 @@ describe("(g) the tool is registered and renders", () => {
     expect(t.status).toBe("live");
     expect(t.kind).toBe("selection");
     expect(t.discipline).toBe("Separations & phase equilibria");
-    expect(t.origins).toEqual(["page", "reference", "assumption"]);
+    expect(t.origins).toEqual(["engine", "page", "reference", "assumption"]);
     expect(read("docs/theoryGuide.tex")).toContain(`\\label{${t.theory}}`);
   });
   it("is mounted by the workspace", () => {
