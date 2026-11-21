@@ -163,6 +163,7 @@ Description
 
 #include "core/Dictionary.H"
 #include "core/Types.H"
+#include "solver/NewtonRaphson.H"
 
 #include <cmath>
 #include <cstddef>
@@ -381,8 +382,9 @@ inline ConvergenceControls readConvergenceControls(const DictPtr& solverDict,
 
     c.tolerance = b->lookupScalarOrDefault("tolerance", c.tolerance);
     c.relTol    = b->lookupScalarOrDefault("relTol",    c.relTol);
-    c.maxIter   = static_cast<int>(
-        b->lookupScalarOrDefault("maxIter", static_cast<scalar>(c.maxIter)));
+    c.maxIter   = requireIterationBudget(
+        b->lookupScalarOrDefault("maxIter", static_cast<scalar>(c.maxIter)),
+        blockName + ".maxIter");
 
     if (c.tolerance <= 0.0)
         throw std::runtime_error("solverDict: " + blockName

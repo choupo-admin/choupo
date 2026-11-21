@@ -43,6 +43,16 @@ NRResult newton1D(const std::function<scalar(scalar)>& f,
     const NROptions&                     opts
 )
 {
+    //  A BUDGET OF NO ITERATIONS IS NOT A CONVERGED SOLVE (C467 R-001).  With
+    //  maxIter <= 0 the loop below never runs, `residual` keeps its initial
+    //  0 and the result used to read converged = (0 < tol) = true without f
+    //  ever being evaluated.  No caller means "evaluate only", so the budget
+    //  is refused by name.
+    if (opts.maxIter <= 0)
+        throw std::invalid_argument("newton1D: the iteration budget"
+            " (maxIter) must be a positive integer, got "
+            + std::to_string(opts.maxIter) + " -- a Newton solve with no"
+            " iterations evaluates nothing and cannot be called converged.");
     scalar x_lo = opts.lower;
     scalar x_hi = opts.upper;
     scalar x    = std::clamp(x0, x_lo, x_hi);
@@ -103,6 +113,13 @@ NRResult newton1D(const std::function<scalar(scalar)>& f,
         x = x_new;
     }
 
+    //  A COHERENT (x, |f(x)|) PAIR ON EVERY EXIT (C467 R-002).  When the
+    //  budget runs out the last step has moved x to a point f has not seen;
+    //  the residual reported belonged to the PREVIOUS x.  Evaluate f at the
+    //  x returned, and let the converged flag follow from that residual.
+    if (it >= opts.maxIter && !(residual < opts.tolerance))
+        residual = std::abs(f(x));
+
     return NRResult{x, residual, it, residual < opts.tolerance,
                     seedClamped, stepsLimited, bisections};
 }
@@ -114,6 +131,11 @@ NRResult newton1DSafeguarded(const std::function<scalar(scalar)>& f,
     std::vector<scalar>* infeasible
 )
 {
+    if (opts.maxIter <= 0)
+        throw std::invalid_argument("newton1DSafeguarded: the iteration"
+            " budget (maxIter) must be a positive integer, got "
+            + std::to_string(opts.maxIter) + " -- a solve with no iterations"
+            " evaluates nothing and cannot be called converged.");
     auto tryF = [&](scalar x, scalar& fx) -> bool
     {
         try { fx = f(x); return true; }
@@ -185,6 +207,13 @@ NRResult newton1DSafeguarded(const std::function<scalar(scalar)>& f,
     }
     res.x = x;
     res.iterations = it;
+    //  Budget exhausted: x is the last step, whose residual the loop has
+    //  already answered (nextF) -- report THAT, not the previous x's (R-002).
+    if (!res.converged && haveNext)
+    {
+        res.residual  = std::abs(nextF);
+        res.converged = res.residual < opts.tolerance;
+    }
     return res;
 }
 
