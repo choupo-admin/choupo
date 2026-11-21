@@ -6358,6 +6358,21 @@ PYEOF
     fi
     rm -f /tmp/gasonly.$$
 
+    # supercritical-route gate (2026-11-21, DEV.md 4c C467, review R-010).  A
+    # two-phase root above every pure Tc was discarded whatever its route; under
+    # phi-phi (one cubic, no Psat/Henry) a converged split lowering G is real.
+    # The defect it would have caught: the reviewer's SRK propane + n-butane
+    # witness published V/F = 1 with every closure green.
+    if gate_exec "$ROOT/bin/curate/check_supercritical_route.py" > /tmp/scroute.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "supercritical-route-gate" "$(head -1 /tmp/scroute.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_supercritical_route.py)\n" "supercritical-route-gate"
+        cat /tmp/scroute.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/scroute.$$
+
     # rate-of-production gate (2026-11-19, glass box of a mechanism, phase 1).
     # `rateOfProduction { times (...); }` on a batchReactor prints, per species,
     # which reactions make and destroy it, from c_ij = nu_ij r_j V computed a

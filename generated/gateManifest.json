@@ -1890,6 +1890,11 @@
       "exit": 0,
       "claim": "check_olefin_vle: OK -- alpha of propene/propane vs Laurance & Swift (63 points): SRK mean 1.82 % max 4.6 %, PR 1.80 % / 4.6 % -- OUTSIDE the declared 3 % / 1.5 % band and pinned, bubble P inside it; ethylene/ethane vs Fredenslund (14 points) inside the declared band but for one point (263p15 K x = 0.1446); the engine's C3 tower is -17 % in stages and -18 % in reflux from the one the measured alpha implies; a transposed omega is seen; ONE kij fitted on bubble pressure (PR 0.00543, SRK -0.00007; on alpha SRK 0.00927, on alpha+P 0.00675, held-out alpha inside the band and held-out P outside the second band, so no SRK record): held-out alpha mean 0.66 % with PR+kij (declared band met) against 1.82 % with SRK (missed: a pressure fit cannot see it), the PR+kij tower -7.7 % in stages from the measured one",
       "seconds": 5.3
+    },
+    "check_supercritical_route": {
+      "exit": 0,
+      "claim": "check_supercritical_route: OK -- above every pure Tc a phi-phi split stands when it lowers G (witness V/F 0.5000, x/y 0.45520/0.49043, |y-Kx| 7.6e-13, mass 0.0e+00); a single-phase phi-phi state stays single-phase; the gamma-phi discard and its advisory are unchanged; two data sabotages are seen",
+      "seconds": 1.8
     }
   }
 }
