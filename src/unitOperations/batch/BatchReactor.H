@@ -69,6 +69,7 @@ Description
 
 #include <memory>
 #include <vector>
+#include <atomic>
 
 #include "BatchUnitOperation.H"
 
@@ -191,10 +192,6 @@ private:
         sVector                  troe;           // (a T*** T* [T**]); empty => Lindemann
         // A Factory law (LHHW, expression, a user law), parsed once.
         std::shared_ptr<const ReactionRate> law;
-        //  Sensitivity multiplier m_j on the NET rate (forward AND reverse
-        //  together, so the equilibrium is untouched).  1 in every normal run;
-        //  only runSensitivity_ ever sets it (Theory Guide sec:ignition-sensitivity).
-        scalar mult = 1.0;
     };
 
     enum class Mode { Isothermal, Adiabatic };
@@ -271,7 +268,12 @@ private:
     std::vector<char> fdLaw_;               // per reaction: no analytic derivative
     solver::ODEAnalyticJacobian jacAudit_;  // the step() path's audit record
     std::size_t jacAnnounced_ = 0;          // audits already printed
-    mutable long rhsEvals_ = 0;             // derivatives_ calls (a count only)
+    mutable std::atomic<long> rhsEvals_{0};  // derivatives_ calls (a count only; atomic: the sensitivity threads)
+    //  Where the time goes, for the glass box (verbosity >= 4): wall
+    //  nanoseconds in the right-hand side, in the Jacobian and in the whole
+    //  stiff integration of step(); the rest is the linear algebra.
+    mutable std::atomic<long long> nsRhs_{0}, nsJac_{0};
+    long long nsIntegrate_ = 0;
     //  The pattern of J on the packed state (n_0..n_{N-1}, T) and, per
     //  reaction, the species its rate reads (deps) and the position in the
     //  pattern of each (changed species, read species) pair -- built ONCE.
@@ -287,7 +289,7 @@ private:
     enum class LinearSolver { Dense, Sparse, Auto };
     LinearSolver linearSolverKey_ = LinearSolver::Auto;
     bool sparseLinear_ = false;                      // resolved
-    static constexpr std::size_t kSparseAutoRows = 40;
+    static constexpr std::size_t kSparseAutoRows = 100;  // measured: docs/reviews/2026-11-21-large-mechanism
     void wireAnalytic_(solver::ODEAnalyticJacobian& A, const std::string& owner) const;
     void buildJacobianStructure_();
     //  h_i(T) for the same species as gibbsAt_ (d ln Kc / dT).
@@ -373,6 +375,24 @@ private:
     //  reaction's net rate multiplied by `factor`; S_j = d ln tau / d ln k_j.
     //  Absent = nothing here runs and every existing case is byte-identical.
     struct SensResult { std::string name; scalar tau = 0.0; scalar S = 0.0; scalar Tend = 0.0; };
+    //  The sensitivity multiplier m_j on the NET rate of ONE reaction
+    //  (forward AND reverse together, so the equilibrium is untouched),
+    //  applied by multOf_ wherever the rate or its derivative takes k.
+    //  THREAD-LOCAL, because runSensitivity_ integrates the perturbed runs on
+    //  several threads at once, each with its own (reactor, reaction, factor);
+    //  in every other run it is (none, -, 1).
+    static constexpr std::size_t kNoSens = static_cast<std::size_t>(-1);
+    inline static thread_local const BatchReactor* sensOwner_ = nullptr;
+    inline static thread_local std::size_t         sensJ_     = kNoSens;
+    inline static thread_local scalar              sensF_     = 1.0;
+    scalar multOf_(const ReactionSpec& rxn) const
+    {
+        return (sensOwner_ == this
+                && static_cast<std::size_t>(&rxn - reactions_.data()) == sensJ_)
+               ? sensF_ : 1.0;
+    }
+    std::size_t              sensThreads_     = 0;    // `solver { threads N; }`, 0 = default
+    std::size_t              sensThreadsUsed_ = 1;
     bool                     sensOn_     = false;
     scalar                   sensFactor_ = 1.1;
     scalar                   sensRise_   = 400.0;     // K above T0 that defines tau

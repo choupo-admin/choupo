@@ -3376,8 +3376,10 @@ or on a fixed-step run left on the default RK4, is refused by name.  Theory Guid
 factorisation once, a left-looking numeric factorisation on diagonal pivots with row
 equilibration every step, each factor accepted on its backward error (<= 1e-12 on W x = 1) or
 refactored dense, counted at verbosity 4; a constant-P gas's rank-one term by Sherman-Morrison); it needs the analytic
-Jacobian and is refused by name beside the finite difference.  `auto` = sparse from 40 packed
-rows (provisional until the scale measurement), dense below, so every small tutorial is unchanged.  An adaptive sweep factors
+Jacobian and is refused by name beside the finite difference.  `auto` = sparse from 100 packed
+rows (the break-even measured on synthetic networks; on AramcoMech 1.3, 254 rows, the sparse factor
+costs 7.3x fewer multiply-adds and 5.8x less linear-algebra time), dense below, so every small
+tutorial is unchanged.  An adaptive sweep factors
 sparse only when the vessel is its one unit.  Sparse and dense agree to round-off (1.4e-11 on
 the combustion tutorials).  Theory Guide `sec:sparse-lu`.
 
@@ -3438,7 +3440,14 @@ S < 0 means a faster reaction shortens the delay.  Files and KPIs: `sensitivity.
 `sens_tau0`, `sens_S_<reaction>` for the top N.  Refused by name: an unknown key,
 `factor <= 1`, a reaction name the vessel lacks, a non-adiabatic vessel, RK4 or
 another integrator, a base run that never reaches T0 + rise by `endTime`.  Cost: N + 1
-integrations (about 7 s for 21 reactions).  Absent the block nothing changes.
+integrations (about 7 s for 21 reactions).  **Threads**: the N perturbed integrations run side by
+side on `solver { threads N; }` threads (default: allowed CPUs - 2, at least 1; the environment's
+`CHOUPO_THREADS` caps it); the base run goes first and alone; each worker keeps its multiplier in
+thread-local storage, so `sensitivity.csv` is the same bytes on any thread count (gate arm (c));
+the run prints how many threads it used.  The browser build runs them serially.  Measured on 4
+cores: ignition04 1.81x / 2.17x / 3.05x on 2 / 3 / 4 threads; AramcoMech with 7 reactions perturbed
+1.74x / 2.25x on 2 / 3 (the serial base run bounds the gain).
+Absent the block nothing changes.
 Witness `ignition04_h2air_sensitivity`, checked against Cantera 3.2.0 to 2e-5 in S
 and held by `bin/curate/check_ignition_sensitivity.py`; Theory Guide
 `sec:ignition-sensitivity`.  Not available: sensitivity of another response,

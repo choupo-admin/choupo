@@ -39,9 +39,11 @@ License
 #include "thermo/ThermoAnnounce.H"
 #include "solver/ODE/ODEIntegrator.H"
 #include "solver/SparseLU.H"
+#include "solver/ParallelFor.H"
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
 #include <sstream>
+#include <chrono>
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
@@ -135,6 +137,14 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
     {
         auto solverDict = unitDict->subDict("solver");
         integrator_ = solverDict->lookupWordOrDefault("integrator", "RK4");
+        //  Threads for the independent integrations of a sensitivity block (0 =
+        //  the default rule, allowed CPUs - 2; CHOUPO_THREADS caps it).
+        const scalar thr = solverDict->lookupScalarOrDefault("threads", 0.0);
+        if (!(thr >= 0.0) || thr != std::floor(thr))
+            throw std::runtime_error("BatchReactor '" + name_ + "': solver { threads "
+                + std::to_string(thr) + "; } -- a whole number >= 1 (0 or absent: the"
+                " default, allowed CPUs - 2)");
+        sensThreads_ = static_cast<std::size_t>(thr);
         // The stiff integrators announce their step/stiffness verdict at
         // verbosity>=3 (numerical-honesty credo).  Read it here, default =
         // the run level so a case that opted into a stiff method still gets
@@ -563,7 +573,6 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
     sensOn_ = false;
     sensResults_.clear();
     sensReactions_.clear();
-    for (auto& r : reactions_) r.mult = 1.0;
     if (unitDict->found("sensitivity"))
     {
         const std::string who = "BatchReactor '" + name_ + "': sensitivity";
@@ -749,30 +758,47 @@ void BatchReactor::runSensitivity_(scalar tMax)
     const std::string who = "BatchReactor '" + name_ + "': sensitivity";
     if (!solver::ODEIntegrator::known(integrator_)) solver::ODEIntegrator::registerBuiltins();
     const sVector y0 = odeState();
-    for (auto& r : reactions_) r.mult = 1.0;
     std::string why;
+    //  The BASE run first, alone: besides tau_0 it touches every lazily
+    //  resolved piece of the thermodynamics (a heat-capacity law's first use,
+    //  a datum bridge) on the path the perturbed runs follow, so that while
+    //  the threads below run, the shared data is only READ.
     if (!sensitivityTau_(y0, tMax, sensTau0_, sensTend0_, why))
         throw std::runtime_error(who + ": the base run has no ignition delay: " + why);
     const scalar lnF = std::log(sensFactor_);
-    sensResults_.clear();
+    std::vector<std::size_t> js;
     for (std::size_t j = 0; j < reactions_.size(); ++j)
+        if (sensReactions_.empty()
+            || std::find(sensReactions_.begin(), sensReactions_.end(),
+                         reactions_[j].name) != sensReactions_.end())
+            js.push_back(j);
+    //  The N perturbed runs are independent: one per job, each on its own
+    //  thread with ITS multiplier in thread-local storage (multOf_), each
+    //  writing only its own slot.  The same bits at any thread count.
+    sensThreadsUsed_ = solver::workerThreads(sensThreads_, js.size(),
+                                             "the sensitivity of batchReactor '" + name_ + "'");
+    std::vector<SensResult> res(js.size());
+    std::vector<std::string> fail(js.size());
+    solver::parallelFor(js.size(), sensThreadsUsed_, [&](std::size_t q)
     {
-        if (!sensReactions_.empty()
-            && std::find(sensReactions_.begin(), sensReactions_.end(),
-                         reactions_[j].name) == sensReactions_.end())
-            continue;
-        SensResult r;
+        const std::size_t j = js[q];
+        SensResult& r = res[q];
         r.name = reactions_[j].name;
-        reactions_[j].mult = sensFactor_;
-        const bool ok = sensitivityTau_(y0, tMax, r.tau, r.Tend, why);
-        reactions_[j].mult = 1.0;
-        if (!ok)
-            throw std::runtime_error(who + ": the run with reaction '" + r.name
+        sensOwner_ = this; sensJ_ = j; sensF_ = sensFactor_;
+        std::string whyq;
+        bool ok = false;
+        try { ok = sensitivityTau_(y0, tMax, r.tau, r.Tend, whyq); }
+        catch (...) { sensOwner_ = nullptr; sensJ_ = kNoSens; sensF_ = 1.0; throw; }
+        sensOwner_ = nullptr; sensJ_ = kNoSens; sensF_ = 1.0;
+        if (!ok) fail[q] = whyq;
+        else     r.S = (std::log(r.tau) - std::log(sensTau0_)) / lnF;
+    });
+    for (std::size_t q = 0; q < js.size(); ++q)          // the first failure, by index
+        if (!fail[q].empty())
+            throw std::runtime_error(who + ": the run with reaction '" + res[q].name
                 + "' multiplied by " + std::to_string(sensFactor_) + " has no"
-                " ignition delay: " + why);
-        r.S = (std::log(r.tau) - std::log(sensTau0_)) / lnF;
-        sensResults_.push_back(r);
-    }
+                " ignition delay: " + fail[q]);
+    sensResults_ = std::move(res);
     std::stable_sort(sensResults_.begin(), sensResults_.end(),
                      [](const SensResult& a, const SensResult& b)
                      { return std::abs(a.S) > std::abs(b.S); });
@@ -781,7 +807,9 @@ void BatchReactor::runSensitivity_(scalar tMax)
                  " tau = time T first exceeds T0 + " << sensRise_
               << " K (interpolated),  S_j = d ln tau / d ln k_j by a factor of "
               << sensFactor_ << " on the net rate of one reaction, "
-              << sensResults_.size() + 1 << " integrations\n"
+              << sensResults_.size() + 1 << " integrations ("
+              << sensResults_.size() << " of them on " << sensThreadsUsed_
+              << " thread(s))\n"
               << "      tau_0 = " << std::setprecision(8) << sensTau0_ * 1.0e6
               << " us\n      reaction                      S_j        tau_j [us]\n";
     for (const auto& r : sensResults_)
@@ -1170,7 +1198,7 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
         rs.conc = &conc; rs.x = &x;
         rs.amountPerKmol = 1.0;                       // conc in kmol/m3
         rs.gibbs = (g && !g->empty()) ? g : nullptr;
-        return rxn.mult * cf * rxn.law->netRate(*thermo_, rs);
+        return multOf_(rxn) * cf * rxn.law->netRate(*thermo_, rs);
     }
 
     scalar k = 0.0;
@@ -1212,7 +1240,7 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
     if (catalystLoading_ > 0.0) k *= catalystLoading_;
     //  The sensitivity multiplier scales k, and so k_rev = k / Kc with it: the
     //  NET rate is multiplied and the equilibrium is unchanged.  1 otherwise.
-    if (rxn.mult != 1.0) k *= rxn.mult;
+    if (const scalar m = multOf_(rxn); m != 1.0) k *= m;
 
     scalar r = k;
     for (std::size_t s = 0; s < rxn.comps.size(); ++s)
@@ -1258,6 +1286,13 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
 sVector BatchReactor::derivatives_(const sVector& packed) const
 {
     ++rhsEvals_;                 // a count for the glass box, nothing else
+    const auto tic = std::chrono::steady_clock::now();
+    struct Toc
+    {
+        std::atomic<long long>& acc; std::chrono::steady_clock::time_point t0;
+        ~Toc() { acc += std::chrono::duration_cast<std::chrono::nanoseconds>(
+                     std::chrono::steady_clock::now() - t0).count(); }
+    } toc{nsRhs_, tic};
     const std::size_t n = packed.size() - 1;
     sVector n_vec(n);
     for (std::size_t i = 0; i < n; ++i) n_vec[i] = packed[i];
@@ -1853,14 +1888,17 @@ void BatchReactor::step(scalar t, scalar dt)
             wireAnalytic_(jacAudit_, "batchReactor '" + name_ + "'");
             ctrl.analytic = &jacAudit_;
         }
+        const auto tInt = std::chrono::steady_clock::now();
         const auto st = integ->integrate(y0, 0.0, dt, f, ctrl);
+        nsIntegrate_ += std::chrono::duration_cast<std::chrono::nanoseconds>(
+                            std::chrono::steady_clock::now() - tInt).count();
         if (ctrl.analytic) announceJacobianAudits_(t);
         //  The cost, counted (verbosity >= 4): every right-hand side this
         //  vessel has evaluated -- steps, Jacobians, audits -- so the two
         //  Jacobians can be compared by what they spend, not by a claim.
         if (verbosity_ >= 4)
             std::cout << "  [ODE] batchReactor '" << name_ << "': right-hand"
-                         " sides so far " << rhsEvals_ << ", Jacobian "
+                         " sides so far " << rhsEvals_.load() << ", Jacobian "
                       << (ctrl.analytic ? "analytic (" + std::to_string(jacAudit_.jacobians)
                               + " built, " + std::to_string(jacAudit_.auditEvals)
                               + " right-hand sides spent on audits)"
@@ -1874,6 +1912,14 @@ void BatchReactor::step(scalar t, scalar dt)
                                       jacAudit_.sparseBackwardErrorMax); return std::string(b); }()
                                 + ")"
                               : std::string("dense"))
+                      << [this] {
+                             char b[200];
+                             const double tot = 1e-9 * double(nsIntegrate_), rhs = 1e-9 * double(nsRhs_.load()),
+                                          jac = 1e-9 * double(nsJac_.load());
+                             std::snprintf(b, sizeof b, "; wall %.3f s = right-hand sides %.3f"
+                                           " (audits included) + Jacobian %.3f + linear algebra"
+                                           " and the rest %.3f", tot, rhs, jac, tot - rhs - jac);
+                             return std::string(b); }()
                       << "\n";
         //  The integrator REPORTS when it gave up (maxSteps / hMin / a
         //  positivity or finiteness violation on a fixed step) -- and until
@@ -2221,7 +2267,7 @@ bool BatchReactor::rateGradientLaw_(const ReactionSpec& rxn, scalar T,
     RateGradient rg;
     rg.dc = &grad;
     if (!rxn.law->netRateGradient(*thermo_, rs, rg)) return false;
-    const scalar f = rxn.mult * ((catalystLoading_ > 0.0) ? catalystLoading_ : 1.0);
+    const scalar f = multOf_(rxn) * ((catalystLoading_ > 0.0) ? catalystLoading_ : 1.0);
     if (f != 1.0)
         for (std::size_t k : jacDeps_[&rxn - reactions_.data()]) grad[k] *= f;
     dT = f * rg.dT;
@@ -2277,9 +2323,10 @@ bool BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
             break;
         }
     }
-    const scalar kscale = ((catalystLoading_ > 0.0) ? catalystLoading_ : 1.0) * rxn.mult;
+    const scalar mult = multOf_(rxn);
+    const scalar kscale = ((catalystLoading_ > 0.0) ? catalystLoading_ : 1.0) * mult;
     if (catalystLoading_ > 0.0) k *= catalystLoading_;   // as in rateOfReaction_
-    if (rxn.mult != 1.0) k *= rxn.mult;
+    if (mult != 1.0) k *= mult;
     dkdT *= kscale;
     dkdM *= kscale;
 
@@ -2377,6 +2424,13 @@ void BatchReactor::odeJacobianSparse(const sVector& y, const sVector& f0,
                                      const sVector& typ,
                                      solver::SparseJacobian& J) const
 {
+    const auto tic = std::chrono::steady_clock::now();
+    struct Toc
+    {
+        std::atomic<long long>& acc; std::chrono::steady_clock::time_point t0;
+        ~Toc() { acc += std::chrono::duration_cast<std::chrono::nanoseconds>(
+                     std::chrono::steady_clock::now() - t0).count(); }
+    } toc{nsJac_, tic};
     const std::size_t n = state_.n.size();
     const std::size_t N = n + 1;
     const solver::SparsePattern& P = *jacPattern_;

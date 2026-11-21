@@ -32,11 +32,23 @@ more than 1e-6, so (b) cannot pass by comparing two runs that do not differ.
   gate was written: (a) then failed at 2.5e-3 relative in T_end and (b) at 4e-3 in S
   (docs/reviews/2026-11-19-chemkin-real-mechanism/REPORT.md section 10).
 
+  (c) THE THREADS (2026-11-21).  The N perturbed integrations run on `solver { threads N; }`
+      threads (default allowed CPUs - 2, capped by CHOUPO_THREADS), each with its multiplier
+      in thread-local storage.  On 1 and on 3 threads the sensitivity.csv must be the same
+      bytes.  The defect it would catch: the multiplier kept as a member of the shared
+      reaction record (as it was before the threads) and set by each worker -- the workers
+      then integrate with each other's multipliers and the table changes with the thread
+      count and the timing.  Verified by hand 2026-11-21: the three thread-local variables
+      of BatchReactor (sensOwner_, sensJ_, sensF_) made plain statics, shared by the
+      workers: (c) failed (the csv differs between 1 and 3 threads) and so did (b) on the
+      default two threads (S(R9) 0.3665 against the hand 0.0069); restored, rebuilt, OK.
+
 NOT CHECKED: the agreement with Cantera (section 10, run by hand: Cantera is not a
 dependency), the sign or size of any S as chemistry, a vessel on `energy gasConstantP`.
 """
 import csv
 import math
+import os
 import re
 import sys
 from pathlib import Path
@@ -119,12 +131,32 @@ def main():
         failures.append(str(e))
         dS = float("nan")
 
+    # (c) THE THREADS (2026-11-21): the N perturbed runs on 1 and on 3 threads write the
+    #     same sensitivity.csv byte for byte, and the run says how many it used.
+    csvs = {}
+    for thr in (1, 3):
+        with gatekit.probe_copy(CASE, strip=STRIP) as c:
+            fd = Path(c) / "system/flowsheetDict"
+            gatekit.edit(fd, "integrator  Rosenbrock23;", f"integrator  Rosenbrock23; threads {thr};")
+            env = dict(os.environ, CHOUPO_HOME=str(gatekit.repo), CHOUPO_THREADS=str(thr))
+            rc3, out3 = gatekit.run(batch, c, inside=True, env=env)
+            p3 = Path(c) / "sensitivity.csv"
+            if rc3 != 0 or not p3.exists():
+                failures.append(f"(c) threads {thr}: did not run (exit {rc3})")
+                continue
+            if f"on {thr} thread(s)" not in out3:
+                failures.append(f"(c) threads {thr}: the run did not say it used {thr} thread(s)")
+            csvs[thr] = p3.read_bytes()
+    if len(csvs) == 2 and csvs[1] != csvs[3]:
+        failures.append("(c) sensitivity.csv differs between 1 and 3 threads: the perturbed runs are not "
+                        "independent (a shared multiplier, or a result written outside its own slot)")
+
     return gatekit.verdict(
         "check_ignition_sensitivity", failures,
         f"the multiplier scales the NET rate: {len(rows)} multiplied runs end at the base T_end "
         f"(max relative difference {dT:.1e}; tol {TOL_END:g}) and S({top}) = {S_top:.6f} equals the hand "
         f"recomputation from two runs with its A x {factor:g} (difference {dS:.1e}; tol {TOL_S:g}); "
-        "a wrong A factor is seen",
+        "a wrong A factor is seen; 1 and 3 threads write the same sensitivity.csv byte for byte",
     )
 
 

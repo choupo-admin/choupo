@@ -38895,8 +38895,8 @@ $k$, so a row of $\Jac$ holds a few tens of entries, not a thousand.
 \code{batchReactor} chooses how $\mathbf W$ is factored; \code{sparse}
 needs the analytic Jacobian (it is the Jacobian's pattern that is
 factored) and is refused by name beside the finite difference;
-\code{auto}, the default, is \code{sparse} from 40 rows (provisional)
-and \code{dense} under it, so every small tutorial factors as
+\code{auto}, the default, is \code{sparse} from 100 rows (measured,
+below) and \code{dense} under it, so every small tutorial factors as
 before.  The solver is \code{solver/SparseLU}, written for Choupo (no
 external library: KLU and SuiteSparse are not used), in three stages.
 
@@ -39002,6 +39002,66 @@ error estimate; that is why the factor must pass Eq.~\eqref{eq:sparse-lu-eta},
 which rejects such a factor at almost every step (1\,938 of 1\,962 on
 \code{ignition01\_h2o2}, refactored dense and counted), and why the gate
 compares the sparse and the dense runs.
+
+\paragraph{When it pays: the measurement.}  Table~\ref{tab:sparse-lu-scale}
+(\texttt{docs/reviews/2026-11-21-large-mechanism/measurements.tsv}, scripts beside it)
+times one adiabatic constant-volume integration on Rodas4 with the analytic
+Jacobian, dense against sparse, on two kinds of mechanism.  The real one is
+AramcoMech~1.3 (Metcalfe, Burke, Ahmed and Curran, \emph{Int.\ J.\ Chem.\
+Kinet.}\ 45 (2013) 638), 253 species, imported with 1\,501 of its 1\,542
+reactions (the 41 the importer refuses by name dropped: a timing fixture of
+real connectivity, not a validated mechanism), stoichiometric CH$_4$/air at
+1400~K and 10~bar through its ignition.  The synthetic ones are
+\emph{numerical fixtures, not chemistry}: H/C/O ``isomers'' with
+element-conserving random reactions, about five per species, written by a
+generator that is committed with the measurement.  The machine was shared
+(load average about 6 on 4 cores) and each time is the least of three runs.
+\begin{table}[htbp]
+\centering\small
+\caption{Sparse against dense factorisation of $\mathbf W$, one
+integration each (Rodas4, analytic Jacobian, audits included).  ``LA'' is
+the integration's wall time less its right-hand sides and its Jacobians:
+the factorisations, the solves and the bookkeeping.}
+\label{tab:sparse-lu-scale}
+\begin{tabular}{lrrrrrr}
+\toprule
+mechanism & rows & pattern & $\mathbf L+\mathbf U$ & multiply-adds, sparse / dense & LA [s] & wall [s] \\
+\midrule
+synthetic 50   &   51 &  1\,851 (71\,\%) &   2\,381 & $3.5\times10^4$ / $4.4\times10^4$ & 0.06 / 0.05 &  0.39 / 0.35 \\
+synthetic 100  &  101 &  4\,983 (49\,\%) &   8\,819 & $2.4\times10^5$ / $3.4\times10^5$ & 0.13 / 0.16 &  0.59 / 0.45 \\
+AramcoMech 1.3 &  254 & 17\,031 (26\,\%) &  26\,544 & $7.5\times10^5$ / $5.5\times10^6$ & 0.30 / 1.72 &  3.70 / 4.81 \\
+synthetic 300  &  301 & 20\,314 (22\,\%) &  71\,709 & $5.7\times10^6$ / $9.1\times10^6$ & 1.06 / 1.23 &  2.66 / 2.98 \\
+synthetic 1000 & 1001 & 72\,093 (7\,\%)  & 725\,865 & $1.9\times10^8$ / $3.3\times10^8$ & 47.1 / 50.8 & 62.9 / 67.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+Two readings.  On the \emph{real} mechanism the ordering finds structure:
+the factor holds 26\,544 entries, 41\,\% of a dense matrix, the
+factorisation costs 7.3 times fewer multiply-adds and the linear algebra 5.8
+times less time --- but the whole integration only 1.3 times less, because
+the right-hand sides (2.8~s, half of them spent by the audits) dominate a
+mechanism of this size.  On the \emph{synthetic} networks, whose reactions
+join species at random, the fill grows towards a dense factor (73\,\% of
+$n^2$ at 1\,001 rows): a random graph has no good elimination order, and the
+sparse factor gains only what its smaller flop count buys against its
+indirect addressing.  The break-even is about 100 rows on the synthetic
+networks, which is where \code{auto} switches; a real mechanism of a few
+hundred species is where the sparse factor clearly pays.  Every pair of runs
+gives the same KPIs to $3\times10^{-10}$ relative over the values above the
+integrator's absolute tolerance, and no sparse factor was refactored dense.
+
+\begin{pitfall}
+The positivity guard of Rosenbrock23 (a trial step that drives a mole number
+below zero is rejected and halved) could not start AramcoMech from a clean
+charge with the dense factor: the very first trial put a species not yet
+formed a round-off below zero, every halving did the same, and the step fell
+below its floor --- while the sparse factor's round-off happened to fall on
+the other side.  With every species seeded at $10^{-12}$ both failed, on a
+trace radical consumed in about $10^{-12}$~s.  Rodas4, which sets a negative
+within the absolute tolerance to zero, starts both.  This is a property of the
+guard, not of either factorisation, and it is registered as such; the
+measurement above uses Rodas4.
+\end{pitfall}
 
 \subsection{Which reaction governs an ignition: brute-force sensitivity of the delay}\label{sec:ignition-sensitivity}
 
@@ -39114,6 +39174,37 @@ over all 21 reactions $2\times10^{-5}$ (\texttt{docs/reviews/2026-11-19-chemkin-
 section~10).  The case's own mechanism (Table~I as printed, catalogue thermo) gives the
 numbers above, within 0.006 of the LLNL form for every $|S|>0.03$.
 \end{example}
+
+\paragraph{Threads.}  The $N_r$ perturbed integrations share nothing they
+write, so they run side by side: \code{solver \{ threads N; \}} (default:
+the CPUs the process may use, less two, at least one; \code{CHOUPO\_THREADS}
+caps it, as for the parallel Jacobian of the Newton solver), one integration
+per job (\code{solver/ParallelFor}, \code{std::thread} only).  The base run
+goes first and alone: it gives $\tau_0$, and it resolves every lazily built
+piece of the thermodynamics on the path the others follow, so that while the
+threads run the shared data is only read.  Each worker keeps its reaction and
+factor in \emph{thread-local} storage (\code{BatchReactor::multOf\_}), never in
+the shared reaction record, and writes only its own slot of the table; the
+table is therefore the same bytes on any number of threads, and the first
+failure is reported by reaction order, not by which thread met it.  The linear
+algebra of one integration is \emph{not} parallel: a factorisation is a chain
+of dependent column updates, and a mechanism of a few hundred species is
+dominated by its right-hand sides anyway (Table~\ref{tab:sparse-lu-scale});
+the right-hand side itself is not threaded either (one evaluation is about
+0.5~ms on AramcoMech, the scale at which starting threads per call costs a
+noticeable share, and the thermodynamic records would first need a
+thread-safety audit) --- both are registered, not done.  In the browser build
+(WebAssembly, no threads) the loop is the plain serial loop and gives the same
+table.  Measured on a 4-core machine (\texttt{docs/reviews/2026-11-21-large-mechanism/}),
+the table byte-identical on every count: \code{ignition04\_h2air\_sensitivity}
+(22 integrations) 9.51~s on one thread, 5.26 on two (1.81 times), 4.38 on three
+(2.17), 3.12 on four (3.05); AramcoMech with seven reactions perturbed (8
+integrations of 253 species, measured while another session loaded the
+machine) 350~s, 202 (1.74) and 155 (2.25); the 300-species synthetic fixture
+(made exothermic so that it ignites; 8 integrations) 479~s, 333 (1.44) and 278
+(1.72).  The serial base run and the run itself bound the gain: with seven
+perturbed runs on two threads, four rounds plus two serial runs against nine
+is 1.5 at best.
 
 \paragraph{Limits.}  The response is one: the delay as defined by a temperature rise.
 The derivative is a finite difference at the base point, so a reaction whose
