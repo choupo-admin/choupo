@@ -38504,6 +38504,78 @@ three-line PLOG; not chemistry) gives the same ignition delay to the 0.1~$\mu$s
 grid and $T$ within 0.25~K along the trajectory
 (\file{docs/reviews/2026-11-19-chemkin-real-mechanism/REPORT.md}, section~8).
 
+\subsection{Steam cracking of ethane: the molecular scheme of Sundaram and Froment}\label{sec:cracking-molecular}
+
+A cracking coil is designed on the product slate, and the radical mechanism
+behind it is stiff (hundreds of steps, radicals at $10^{-8}$ of a molecular
+species).  Sundaram and Froment (\emph{Chem.\ Eng.\ Sci.}\ \textbf{32}, 601,
+1977) replaced it by a \emph{molecular} scheme, a few overall reactions among
+stable species whose rate coefficients were estimated by multi-response
+regression on pilot-plant data, with the temperature dependence of each
+checked against its radical origin.  Model~III of ethane cracking (their
+Table~1; the same five reactions are Table~XII of Froment, Van de Steene and
+Van Damme, \emph{Ind.\ Eng.\ Chem.\ Process Des.\ Dev.}\ \textbf{15}, 495, 1976) is
+\begin{align}
+  \text{(1)}\;& \mathrm{C_2H_6} \rightleftharpoons \mathrm{C_2H_4}+\mathrm{H_2}
+      & r_1 &= k_1\Bigl(C_{\mathrm{C_2H_6}} - \frac{C_{\mathrm{C_2H_4}}C_{\mathrm{H_2}}}{K_{C1}}\Bigr)\label{eq:crk-r1}\\
+  \text{(2)}\;& 2\,\mathrm{C_2H_6} \to \mathrm{C_3H_8}+\mathrm{CH_4}
+      & r_2 &= k_2\,C_{\mathrm{C_2H_6}}\quad(\text{first order})\label{eq:crk-r2}\\
+  \text{(5)}\;& \mathrm{C_3H_6} \rightleftharpoons \mathrm{C_2H_2}+\mathrm{CH_4}
+      & r_5 &= k_5\Bigl(C_{\mathrm{C_3H_6}} - \frac{C_{\mathrm{C_2H_2}}C_{\mathrm{CH_4}}}{K_{C5}}\Bigr)\label{eq:crk-r5}\\
+  \text{(6)}\;& \mathrm{C_2H_2}+\mathrm{C_2H_4} \to \mathrm{C_4H_6}
+      & r_6 &= k_6\,C_{\mathrm{C_2H_2}}C_{\mathrm{C_2H_4}}\label{eq:crk-r6}\\
+  \text{(8)}\;& \mathrm{C_2H_4}+\mathrm{C_2H_6} \to \mathrm{C_3H_6}+\mathrm{CH_4}
+      & r_8 &= k_8\,C_{\mathrm{C_2H_4}}C_{\mathrm{C_2H_6}}\label{eq:crk-r8}
+\end{align}
+with $C_j = (F_j/F_t)\,P_t/(\Rgas T)$ the ideal-gas concentration, $F_t$ the total
+molar flow including the steam, and the species balance
+$\mathrm{d}F_j/\mathrm{d}V=\sum_i s_{ji} r_i$ (Sundaram and Froment's Eq.~(19)).
+The rate coefficients are Arrhenius, $k_i = A_i e^{-E_i/\Rgas T}$, with
+(their Table~3; $A$ in s$^{-1}$ for $k_1,k_2,k_5$ and in l\,mol$^{-1}$s$^{-1}$
+for $k_6,k_8$; $E$ in kcal/mol)
+\begin{center}\small
+\begin{tabular}{lrr}
+  $k_1$ & $4.652\times10^{13}$ & $65.20$\\
+  $k_2$ & $3.850\times10^{11}$ & $65.25$\\
+  $k_5$ & $9.814\times10^{8}$  & $36.92$\\
+  $k_6$ & $1.026\times10^{12}$ & $41.26$\\
+  $k_8$ & $7.083\times10^{13}$ & $60.43$
+\end{tabular}
+\end{center}
+and $K_{C1}$, $K_{C5}$ (mol/l) printed only at 775, 800 and 825\,$^\circ$C
+(8.895, 12.76, 18.00 and 9.847, 13.75, 18.90 $\times10^{-3}$).  The engine
+writes each reversible step as a forward and a reverse \code{Arrhenius} law,
+$k_r=k_f/K_C$, with $\ln K_C = a + b/T$ fitted to the three printed values
+(residual below $2\times10^{-4}$; $\Delta H$ of step~1 is 134.9~kJ/mol, of
+step~5 124.8~kJ/mol, both the thermochemical sign and size); the case's
+\code{constant/reactions} carries the converted numbers ($l\to10^{-3}$\,m$^3$,
+kcal $\to4184$\,J).  \emph{Validity window}: the paper's data are
+650--870\,$^\circ$C, 1.2--2.3 atm, 0.2--1.0 kg steam per kg ethane; $K_C$ is
+extrapolated 15~K above its printed range at 840\,$^\circ$C.
+
+\paragraph{The gas expansion.}  Ethane cracking makes about 40 \% more moles,
+and the scheme's concentrations follow the local $F_t$.  The \code{pfr} holds
+its volumetric flow at the value of the feed (\code{F\_i/Q}), so
+\code{cracking01\_ethane\_sundaram\_froment} is twenty \code{pfr} segments in
+series, each pricing $Q$ at its own inlet; ten and twenty segments differ by
+under 1\,\% in every yield and twenty sit within 1\,\% of an independent exact
+integration.
+
+\paragraph{What is reproduced.}  The witness is Table~VIII of Froment et al.,
+pilot column (59.1 \% conversion, 1.55 atm, 0.4 kg/kg, $T_R=840\,^\circ$C):
+the volume (the equivalent volume of that run is not printed) is chosen to reach
+the published conversion, and the yields are compared at that conversion.
+Ethylene (+2.0\,\%, band 3\,\%) and hydrogen (+1.6\,\%, band 6\,\%) fall inside
+the band declared before the run.  Methane ($-29$\,\%), propylene ($-59$\,\%) and
+butadiene ($+93$\,\%) do \emph{not}: an independent integration of the scheme as
+printed gives the same figures, and the paper's own industrial coil integrated
+the same way gives 5.6 wt\,\% butadiene against the plant's 1.12.  The
+misses are therefore the scheme's, not the implementation's;
+\code{bin/curate/check\_cracking\_yields.py} holds the engine against the
+independent integration and pins the three distances by name.  The scheme is
+in-sample for the ethylene and hydrogen yields (they were regressed on the same
+pilot plant) and is not a predictor of the minor products.
+
 \subsection{Reversible reactions: the reverse rate from thermodynamics}
 
 A reversible reaction must relax to chemical equilibrium, so its

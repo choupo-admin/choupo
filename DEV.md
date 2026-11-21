@@ -4976,6 +4976,45 @@ accepts today, and that is a policy call.
 > type the engine models opens its case.  Scope to Vitor before dispatch.
 > Size M, "rest" group, beside C459.
 
+> **C461 (architect, 2026-11-21, found by the C456 slice-1 general).**  The pfr
+> holds the volumetric flow at its feed value along the bed (PFR.cpp ~737 and
+> ~957 use F_i/Q with Q fixed), so a gas-phase reaction that changes the number
+> of moles is integrated on the wrong concentrations: ethane cracking makes 40 %
+> more moles, and a single pfr overshoots every secondary yield and needs about
+> 15 % less volume for the same conversion.  RULED: measure first which shipped
+> cases a corrected Q (re-priced from the local molar flow, T and P) would move
+> -- the ammonia converter beds are the obvious candidates, the number of moles
+> falling -- then fix it in the pfr as the default for a gas, with every moved
+> golden explained and a full sweep; a liquid keeps its volumetric flow.  The
+> C456 case's 20-segment workaround is retired when it lands.  C456 decisions,
+> same day: the misses of the molecular scheme (CH4 -29 %, C3H6 -59 %, C4H6
+> +93 % against Froment 1976 Table VIII) stay pinned as the scheme's own; the
+> radical scheme of Sundaram & Froment 1978 (in the folder) is the next witness;
+> the industrial coil waits for a declared T and P profile in the pfr.
+
+> **C458 RULED ON THE HOME OF RADICALS (architect, 2026-11-21, Vitor asking for a
+> second opinion on the cloud's proposal that radicals stay in components/).**
+> MEASURED: 36 records tagged `radical` sit in components/, every one with
+> `role nonvolatile` (OH.dat:27, H.dat:25) although the role word `radical`
+> exists (Component.cpp:463) and nonvolatile means "stays in the liquid"; the
+> other gas species live in the thermoTables home, and check_thermo_tables arm
+> (c) keeps the two apart by exclusion.  So which home a radical has is decided
+> by the date it was imported, not by a rule.  RULED: a radical is NOT a
+> component.  components/ holds substances a process handles as a pure phase
+> (a liquid, a solid or a stable gas: H2, O2, water, CH4, H2O2 stay); a species
+> that exists only as an intermediate inside a gas-phase mechanism lives in the
+> gas-species home and is resolved by name when a case's mechanism names it
+> (case > components > the gas-species table), exactly as an ion lives in
+> species/ and not in components/ (settled 2026-06-30).  The 36 move there on
+> their NASA row (which retires OH's hand-fitted cubic), `role nonvolatile`
+> leaves them, and a flash handed such a species refuses by name instead of
+> sending it to the liquid.  components/ stays flat: nothing is relitigated,
+> the set is made smaller.  This replaces amendment 1 of the same day (which
+> assumed duplicated coefficients; the gate already forbids them); amendments
+> 2-4 stand (global-order records for molecular schemes, a mechanism used whole
+> by default, the reverse rate on the mechanism's own thermo).  Moved goldens:
+> none expected but OH's; cases that pin the 36 are re-pinned.
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say
