@@ -1860,6 +1860,16 @@
       "exit": 0,
       "claim": "check_dryer_arrangements: OK -- co-, counter- and cross-flow on one feed and one air: every dryer closes its water balance (1e-9) and first law (1e-3 kW); the cross-flow equals an independent RK4 of Mujumdar Eq. 3.66-3.73 (2e-3), also with the inlet driving force (3.72), and its exhaust a constant-cp hand balance (2 K); the co/counter profiles re-derive their rate law and water balance outside the unit; counter < co as the book says (van 't Land p. 42) and counter < cross < co as these conditions give; five refusals by name.  NOT checked: a measured dryer.",
       "seconds": 9.3
+    },
+    "check_cracking_yields": {
+      "exit": 0,
+      "claim": "check_cracking_yields: OK -- Sundaram-Froment ethane scheme in a pfr: the engine matches an independent integration of Table 1 / Table 3 (conversion 59.1 %, reference 59.0 %); against Froment 1976 Table VIII ethylene +2.1 %, H2 +1.6 %, CH4 -29 % (known out of band), propylene -59 % (known out of band), 13Butadiene +91 % (known out of band); a unit factor 10^3 on k6 is seen",
+      "seconds": 0.2
+    },
+    "check_olefin_vle": {
+      "exit": 0,
+      "claim": "check_olefin_vle: OK -- alpha of propene/propane vs Laurance & Swift (63 points): SRK mean 1.82 % max 4.6 %, PR 1.80 % / 4.6 % -- OUTSIDE the declared 3 % / 1.5 % band and pinned, bubble P inside it; ethylene/ethane vs Fredenslund (14 points) inside the declared band but for one point (263p15 K x = 0.1446); the engine's C3 tower is -17 % in stages and -18 % in reflux from the one the measured alpha implies; a transposed omega is seen; ONE kij fitted on bubble pressure (PR 0.00543, SRK -0.00007; on alpha SRK 0.00927, on alpha+P 0.00675, held-out alpha inside the band and held-out P outside the second band, so no SRK record): held-out alpha mean 0.66 % with PR+kij (declared band met) against 1.82 % with SRK (missed: a pressure fit cannot see it), the PR+kij tower -7.7 % in stages from the measured one",
+      "seconds": 5.3
     }
   }
 }
