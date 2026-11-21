@@ -86,7 +86,7 @@ describe("the family order and the corpus", () => {
     // (this test's first draft said "most" and asserted > 0.5 -- the corpus
     // said no on the first run).  The floor pins that the derivation still
     // reaches the records; the ceiling is not a target.
-    const vol = CATALOGUE.filter((m) => m.vleAble && !m.isRadical && !m.isCombustion && !m.isSynthetic);
+    const vol = CATALOGUE.filter((m) => m.vleAble && !m.isCombustion && !m.isSynthetic);
     const declared = vol.filter((m) => familyOf(m).basis === "unifac").length;
     expect(vol.length).toBeGreaterThan(0);
     expect(declared / vol.length).toBeGreaterThan(0.4);

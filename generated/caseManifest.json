@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1913,
+  "cases": 1915,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -27176,6 +27176,23 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/flash/flash23_gas_only_oh_quench": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "unitModels": [
+    "rachfordRice"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/flash/flash_polymer_devolatilisation": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -29348,6 +29365,20 @@
    "application": "choupoSolve",
    "unitTypes": [
     "conversionReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/cracking01_ethane_sundaram_froment": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -32453,6 +32484,7 @@
     "tutorials/steady/flash/flash21_brine_co2_pitzer",
     "tutorials/steady/flash/flash21_freeze_concentration",
     "tutorials/steady/flash/flash22_drum_sizing_benzene_toluene",
+    "tutorials/steady/flash/flash23_gas_only_oh_quench",
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
     "tutorials/steady/flash/leaf01_flash",
@@ -32594,6 +32626,7 @@
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/reactors/conversion01_hda",
     "tutorials/steady/reactors/conversion02_parallel_selectivity",
+    "tutorials/steady/reactors/cracking01_ethane_sundaram_froment",
     "tutorials/steady/reactors/cstr01_first_order",
     "tutorials/steady/reactors/cstr02_reversible_wgs",
     "tutorials/steady/reactors/cstr03_series_selectivity",
@@ -33195,6 +33228,7 @@
     "tutorials/steady/flash/flash21_brine_co2_pitzer",
     "tutorials/steady/flash/flash21_freeze_concentration",
     "tutorials/steady/flash/flash22_drum_sizing_benzene_toluene",
+    "tutorials/steady/flash/flash23_gas_only_oh_quench",
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
     "tutorials/steady/flash/leaf01_flash",
@@ -33270,6 +33304,7 @@
    "pfr": [
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
+    "tutorials/steady/reactors/cracking01_ethane_sundaram_froment",
     "tutorials/steady/reactors/elementary01a_modArrhenius_chemkin",
     "tutorials/steady/reactors/elementary01b_modArrhenius_arrhenius",
     "tutorials/steady/reactors/elementary02a_thirdBody_chemkin",
@@ -35975,6 +36010,7 @@
     "tutorials/steady/flash/flash06_sweep_T",
     "tutorials/steady/flash/flash07_gridsweep_TP",
     "tutorials/steady/flash/flash22_drum_sizing_benzene_toluene",
+    "tutorials/steady/flash/flash23_gas_only_oh_quench",
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
     "tutorials/steady/flash/leaf01_flash",
@@ -36092,6 +36128,7 @@
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/reactors/conversion01_hda",
     "tutorials/steady/reactors/conversion02_parallel_selectivity",
+    "tutorials/steady/reactors/cracking01_ethane_sundaram_froment",
     "tutorials/steady/reactors/cstr01_first_order",
     "tutorials/steady/reactors/cstr02_reversible_wgs",
     "tutorials/steady/reactors/cstr03_series_selectivity",

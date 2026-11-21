@@ -1,0 +1,65 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Species OH (NASA/TP-2002-211556 appendix D entry "OH"):
+  ideal-gas formation data and heat capacity transcribed by machine with
+  bin/curate/nasa_tp2002_to_choupo.py table, which holds H and S at
+  298.15 K recomputed from the printed coefficients to the printed
+  values.  Not read back against the page by a curator.
+  The report's own description and sources: D0(H-OH): Ruscic,2002. Gurvich,1978 pt1 p110 pt2 p37.
+\*---------------------------------------------------------------------------*/
+name           OH;
+formula        OH;
+CAS            n/a;
+MW             17.00734;       // kg/kmol, appendix D record line
+role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+tags           ( gasPhase thermoTable );
+nasaEntry      "OH";
+reviewStatus   interim;
+reviewReason   "transcribed by machine from NASA/TP-2002-211556 into the thermoTables home and checked against the report itself; not yet read back against the page by a curator";
+standardThermochemistry
+{
+    dHf_298    37278.206;   // J/mol  -- ideal gas; NASA/TP-2002-211556 appendix D, p. 165, entry OH
+    s_298      183.740;     // J/(mol·K) -- third-law absolute; Table B1, p. 26
+}
+
+idealGasHeatCapacity
+{
+    //  NASA/TP-2002-211556 eq. (1), Cp/R = a1/T^2 + a2/T + a3 + a4 T + a5 T^2
+    //  + a6 T^3 + a7 T^4; appendix D, p. 165, entry OH, a1..a7 as printed.
+    //  The report's 6000-20000 K interval is not transcribed.
+    model    NASA9;
+    Tlow     200;
+    Tcommon  1000;
+    Thigh    6000;
+    low      ( -1.998858990e+03 9.300136160e+01 3.050854229e+00 1.529529288e-03 -3.157890998e-06 3.315446180e-09 -1.138762683e-12 );
+    high     ( 1.017393379e+06 -2.509957276e+03 5.116547860e+00 1.305299930e-04 -8.284322260e-08 2.006475941e-11 -1.556993656e-15 );
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 165, entry OH, record-line H(298.15) (elements reference, so = dHf)";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "Table B1 p. 26 prints 37.278 kJ/mol; the report's own sources: D0(H-OH): Ruscic,2002. Gurvich,1978 pt1 p110 pt2 p37.";
+    }
+    s_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 Table B1, p. 26, entry OH";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "appendix D's coefficients with b2 integrate to 183.740";
+    }
+    idealGasHeatCapacity
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 165, entry OH, a1..a7 of the 200-1000 K and 1000-6000 K intervals, as printed";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "read by bin/curate/nasa_tp2002_to_choupo.py, which holds H and S at 298.15 K to the printed values";
+    }
+    source   "McBride, Zehe & Gordon, NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species, NASA/TP-2002-211556 (2002)";
+    licence  publicDomain;    // US government work (NASA), 17 U.S.C. 105
+}

@@ -22,7 +22,7 @@ formula     H2O2;
 CAS         7722-84-1;
 
 MW          34.0147;       // kg/kmol
-tags           ( radical gasPhase combustion );
+tags           ( gasPhase combustion );   // a stable substance, not a radical (C458: the tag was a mis-filing)
 reviewStatus   interim;
 reviewReason   "transcribed by machine from NASA/TP-2002-211556 and checked against the report itself; not yet read back against the page by a curator";
 Tc          730.15;         // K

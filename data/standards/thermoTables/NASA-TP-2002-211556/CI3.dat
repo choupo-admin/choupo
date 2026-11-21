@@ -10,7 +10,7 @@ name           CI3;
 formula        CI3;
 CAS            n/a;
 MW             392.7241;       // kg/kmol, appendix D record line
-role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it
+role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
 tags           ( gasPhase thermoTable );
 nasaEntry      "CI3";
 reviewStatus   interim;

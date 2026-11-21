@@ -74,10 +74,6 @@ export interface ComponentMeta {
   /** A permanent / non-condensable carrier gas (declared `noncondensable true;`
    *  — air/N2/O2/CO2) — gates the psychrometric view (carrier + condensable). */
   isPermanentGas: boolean;
-  /** `tags ( radical ... )` on the record: an open-shell species (OH, CH3,
-   *  HO2, ...) -- never a substance a student would charge to a vessel, and
-   *  filed as its own group so a browser does not list it among liquids. */
-  isRadical: boolean;
   /** A salt or mineral: the record declares its own solid (`solidPhases{}`),
    *  an `electrolyte{}` block, an ion stoichiometry (`dissociatesTo`) or a
    *  van't Hoff `dissociation > 1`.  Declared facts, never a name test. */
@@ -243,7 +239,10 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
   //  `tags ( a b c )` renders as a string[] through toJson; a record with
   //  no tags line has j.tags undefined, which reads as "no tags".
   const tags: string[] = Array.isArray(j.tags) ? (j.tags as unknown[]).map(String) : [];
-  const isRadical = tags.includes("radical");
+  //  No `isRadical` (2026-11-21, DEV.md 4c C458): a radical is NOT a
+  //  component.  The 34 radicals left data/standards/components/ for the
+  //  gas-species table (data/standards/thermoTables/), which this glob does
+  //  not read; their view in the Explorer is C458's own later slice.
   const isCombustion = tags.includes("combustion");
   const present = (v: unknown) => v !== undefined && v !== null;
   const isSaltOrMineral = present(j.solidPhases) || present(j.electrolyte)
@@ -271,7 +270,7 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
     && typeof j.HvapTb === "number" && j.HvapTb > 0
     && typeof j.Vliq === "number" && j.Vliq > 0
     && !nonvol;
-  return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, isRadical, isSaltOrMineral, isCombustion, isRoomTemperatureGas, isSynthetic, aliases, hasThermochem, isPureSolid, hasUnifac, unifacGroups,
+  return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, isSaltOrMineral, isCombustion, isRoomTemperatureGas, isSynthetic, aliases, hasThermochem, isPureSolid, hasUnifac, unifacGroups,
     deltaAble, origin, tc: num(j.Tc), pc: num(j.Pc), tb: num(j.Tb) };
 }
 

@@ -118,6 +118,8 @@ BubbleTSolve bubbleTSolve(const ThermoPackage& thermo,
                           scalar tolerance,
                           const sVector* yVapour)
 {
+    thermo.refuseGasOnlyWithoutVapour(x, "a saturated liquid (a bubble"
+        " point: the liquid that holds the whole feed)");      // C458
     const sVector& y = yVapour ? *yVapour : x;
     auto f = [&](scalar T)
     {

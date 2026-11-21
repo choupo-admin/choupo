@@ -119,8 +119,31 @@ def record_path(case, sub, std=None):
     m = manifest_of(case)
     if m is not None and read_manifest(m)["sealed"]:
         return None
-    cat = Path(std) / sub if std else STD / sub
-    return cat if cat.exists() else None
+    root = Path(std) if std else STD
+    cat = root / sub
+    if cat.exists():
+        return cat
+    #  A component components/ does not hold is read from a gas-species table
+    #  the case DECLARES (`speciesTables ( ... );`, Database.cpp; DEV.md 4c
+    #  C458: the radicals live there since 2026-11-21) -- the engine's own
+    #  order, case > components > table.
+    if sub.startswith("components/"):
+        for t in declared_species_tables(case):
+            cand = root / "thermoTables" / t / sub[len("components/"):]
+            if cand.exists():
+                return cand
+    return None
+
+
+def declared_species_tables(case):
+    """The gas-species tables `case`'s constant/thermoPhysPropDict declares
+    (`speciesTables ( A B );`), in declared order; [] when none."""
+    p = Path(case) / "constant" / "thermoPhysPropDict"
+    if not p.is_file():
+        return []
+    txt = re.sub(r"//[^\n]*", "", p.read_text(errors="replace"))
+    mm = re.search(r"(?m)^\s*speciesTables\s*\(([^)]*)\)\s*;", txt)
+    return mm.group(1).split() if mm else []
 
 
 def copy_constant(case, dest):

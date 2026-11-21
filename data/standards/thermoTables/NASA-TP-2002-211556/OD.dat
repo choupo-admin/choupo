@@ -10,7 +10,7 @@ name           OD;
 formula        OD;
 CAS            n/a;
 MW             18.0135;       // kg/kmol, appendix D record line
-role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it
+role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
 tags           ( gasPhase thermoTable );
 nasaEntry      "OD";
 reviewStatus   interim;

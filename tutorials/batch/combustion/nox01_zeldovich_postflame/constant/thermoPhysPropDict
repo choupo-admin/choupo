@@ -18,6 +18,10 @@ schemaVersion 1;
 
 components       ( H2 O2 H O OH HO2 H2O2 water N2 NO N N2O NH );
 
+//  The radicals (H, O, OH, HO2, N, NH, S, SO, ...) are not components: they are
+//  GAS-ONLY species of the NASA table, resolved from it by name (DEV.md 4c C458).
+speciesTables ( NASA-TP-2002-211556 );
+
 equilibrium
 {
     formulation gammaPhi;

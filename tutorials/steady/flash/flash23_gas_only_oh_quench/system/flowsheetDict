@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flash23_gas_only_oh_quench  --  the witness of the GAS-ONLY phase rule
+  (DEV.md 4c C458, 2026-11-21).
+
+  A hot combustion gas (N2, water and a trace of the hydroxyl radical OH)
+  goes through two isothermal flashes at 1 bar:
+
+    hot    1500 K  -- above every dew point: one vapour, nothing to split;
+    cold    330 K  -- below water's dew point: water condenses.
+
+  OH is NOT a component: it is a gas-only species of the NASA table
+  (`role radical;`), resolved by name because the property system declares
+  `speciesTables ( NASA-TP-2002-211556 );`.  Gas-only means it has no
+  condensed phase and no data for one, so in every phase split its K is the
+  non-condensable cap ThermoPackage::kNoLiquidK = 1e12: all of it leaves in
+  the vapour, and the condensate carries at most z/1e12 of it.  Until C458
+  a radical was `role nonvolatile;` (K = 0) and the same cold flash sent
+  every OH molecule into the water.
+
+  FROZEN COMPOSITION, ON PURPOSE.  No reaction runs: in a real quench OH
+  recombines in microseconds, and that is chemistry (a mechanism's job,
+  tutorials/batch/combustion).  This case asks only the phase question.
+
+  The refusal half -- the same feed declared as a SATURATED LIQUID, a state
+  with no vapour to hold OH, refused by name -- is held by the gate
+  bin/curate/check_gas_only.py, which edits a probe copy of this case.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        hot;
+        type        isothermalFlash;
+        model       rachfordRice;
+        in          feed;
+        outputs     ( hotLiquid  hotVapour );
+
+        operation   { T 1500.0 K;  P 1.0 bar; }
+    }
+    {
+        name        cold;
+        type        isothermalFlash;
+        model       rachfordRice;
+        in          hotVapour;
+        outputs     ( condensate  offGas );
+
+        operation   { T 330.0 K;  P 1.0 bar; }
+    }
+);

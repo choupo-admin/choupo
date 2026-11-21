@@ -782,7 +782,7 @@ PROVENANCE_OUTSIDE_BLOCK_DEBT = {
 #  check_record_law_values: laws WITHOUT a check value, per property block,
 #  counted 2026-11-14; a count may only shrink.
 LAWS_WITHOUT_CHECK = {
-    "idealGasHeatCapacity":      586,
+    "idealGasHeatCapacity":      552,   # 586 -> 552 on 2026-11-21: the 34 radicals left components/ (C458)
     "vaporPressure":             543,
     "liquidHeatCapacity":        514,
     "liquidViscosity":           407,

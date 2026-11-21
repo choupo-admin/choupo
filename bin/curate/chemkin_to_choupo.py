@@ -98,10 +98,14 @@ reading graphite.dat's header uses), on the interval that contains 298.15 K;
 `idealGasHeatCapacity` (gas) or `solidHeatCapacity` (solid) with `model NASA7`
 and Tlow/Tcommon/Thigh (NASA7Cp.cpp reads all three, refuses without).  Not
 written, because nothing in a mechanism supplies them: Tc, Pc, omega,
-vapour pressure, CAS; every species is written `role nonvolatile;` (the
-convention of data/standards/thermoTables/), because a gamma-phi package
-otherwise asks each component for a vapour pressure (Component.cpp, found by
-the first engine load of an import, 2026-11-19).  A liquid ('L') record is refused by name.  Species names
+vapour pressure, CAS.  A GAS species is written `role radical;` -- GAS-ONLY
+(DEV.md 4c C458, the convention of data/standards/thermoTables/): a mechanism
+gives it no condensed-phase data, so the engine keeps it in the vapour in any
+phase split (a non-condensable) and refuses a state with no vapour to hold it.
+Until C458 every species was written `role nonvolatile;` (K = 0), which sent
+it to the LIQUID.  A SOLID ('S') record is written `role nonvolatile;` (it
+never enters the vapour).  Either word stops a gamma-phi package asking the
+species for a vapour pressure (Component.cpp).  A liquid ('L') record is refused by name.  Species names
 are sanitised for the dictionary grammar ('(' -> '_', ')' dropped, '-' and ','
 -> '_', '*' -> 'star'); a collision is refused and the original name stays in
 the record's comment.  Charged species (a '+' in the name) are not supported
@@ -467,7 +471,7 @@ def species_record(rec, cname, aw, source, licence, p_std="bar"):
 name        %s;
 formula     %s;
 MW          %.4f;            // kg/kmol, from the composition with src/thermo/AtomicWeights.cpp
-role        nonvolatile;     // a mechanism species: no vapour pressure is asked of it (the thermoTables convention)
+role        %s
 %sreviewStatus interim;
 reviewReason "imported mechanically from a CHEMKIN thermo record; not read back by a curator";
 
@@ -492,7 +496,10 @@ provenance
     standardThermochemistry { origin literature; method "H and S at 298.15 K integrated from the NASA-7 coefficients; %s"; }
     %s { origin literature; method "NASA-7 record imported unchanged; %s"; }
 }
-""" % (cname, rec["name"], cname, formula_of(rec["comp"]), mw, catalogue_identity(cname, rec["comp"]), H, S,
+""" % (cname, rec["name"], cname, formula_of(rec["comp"]), mw,
+       ("nonvolatile;     // a solid: never in the vapour" if solid else
+        "radical;         // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it"),
+       catalogue_identity(cname, rec["comp"]), H, S,
        "    referenceState pureSolid;\n" if solid else "",
        blk, fmt_list(rec["low"]), fmt_list(rec["high"]),
        rec["Tlow"], rec["Tcommon"], rec["Thigh"], prov, blk, prov)

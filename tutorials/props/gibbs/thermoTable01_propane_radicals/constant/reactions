@@ -16,7 +16,7 @@ primaryCH           // C3H8 -> n-C3H7 + H
     stoichiometry
     (
         { component propane;      nu -1; }
-        { component C3H7;         nu  1; }
+        { component C3H7_npropyl; nu  1; }
         { component H;            nu  1; }
     );
 }
@@ -35,7 +35,7 @@ betaScission        // n-C3H7 -> C2H4 + CH3
 {
     stoichiometry
     (
-        { component C3H7;         nu -1; }
+        { component C3H7_npropyl; nu -1; }
         { component ethylene;     nu  1; }
         { component CH3;          nu  1; }
     );
@@ -45,7 +45,7 @@ isomerisation       // n-C3H7 -> i-C3H7
 {
     stoichiometry
     (
-        { component C3H7;         nu -1; }
+        { component C3H7_npropyl; nu -1; }
         { component C3H7_ipropyl; nu  1; }
     );
 }

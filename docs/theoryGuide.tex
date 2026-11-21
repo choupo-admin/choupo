@@ -5230,7 +5230,22 @@ trusting an equilibrium prediction.
 A reaction mechanism names radicals and intermediates by the hundred, most of
 which no flowsheet will ever carry.  They do not belong in
 \file{data/standards/components/}, which stays flat and curated
-(Section~\ref{sec:gibbs-nasa-import}).  Two routes bring them in, and both keep
+(Section~\ref{sec:gibbs-nasa-import}).
+
+\paragraph{What is a component, what is a gas species (DEV.md 4c C458).}
+A \emph{component} is a substance a process handles as a pure phase: a
+liquid, a solid or a stable gas (H$_2$, O$_2$, water, CH$_4$, H$_2$O$_2$,
+O$_3$).  A species that exists only as an intermediate inside a gas-phase
+mechanism --- OH, H, O, HO$_2$, CH$_3$, every radical --- is \emph{not} a
+component: it lives in a gas-species table and is resolved by name when a
+case's mechanism names it, with the precedence
+\[
+  \text{the case's own record} \;>\; \file{components/} \;>\; \text{the declared gas-species table},
+\]
+exactly as an ion lives in \file{species/} and not in \file{components/}.
+The 34 radicals that sat in \file{components/} until 2026-11-21 moved to the
+NASA table on that report's own rows (which retired the hand-fitted cubic
+$C_p$ of OH).  Two routes bring such species into a case, and both keep
 the identity of the previous subsection: an element-referenced polynomial gives
 $\Delta h^{\circ}_{f} = H^{0}(298.15)$ and $s^{\circ}_{298} = S^{0}(298.15)$
 directly.
@@ -5247,11 +5262,39 @@ speciesTables ( NASA-TP-2002-211556 );
 and then only for a name \file{components/} does not hold, and only while the
 case is unsealed; every such read is announced \code{[thermoTable]}.  A curated
 component therefore always wins, and an undeclared name is refused as before.
-A table species is written \code{role nonvolatile;}: it is an ideal-gas
-species, and no vapour pressure is asked of it.  The witness
+A labelled isomer takes the report's entry name (\code{C3H7,n-propyl} is
+\code{C3H7\_npropyl}).  The witness
 \file{tutorials/props/gibbs/thermoTable01\_propane\_radicals} prices the two
 C--H scissions of propane on records read this way (gate
 \code{check\_thermo\_tables}).
+
+\paragraph{A gas species is gas-only.}  Every table record is written
+\code{role radical;}, the one fact the engine reads
+(\code{Component::isGasOnly}): the species has no condensed phase and no data
+for one.  In every phase split it is therefore a \emph{non-condensable},
+\begin{equation}
+  K_i = K_{\max} = 10^{12} \qquad (i \text{ gas-only}),
+  \label{eq:gas-only-K}
+\end{equation}
+the same cap the stage-$K$ path gives a component absent from the liquid
+(\code{ThermoPackage::kNoLiquidK}; Section~\ref{ch:flash} for the
+Rachford--Rice solve it enters).  With $z_i K_{\max} > 1$ the function
+$g(V{=}0) = \sum_j z_j (K_j - 1)$ is positive whatever the other components
+do, so a feed holding the species is never a subcooled liquid, and the liquid
+of a split holds at most $z_i/K_{\max}$ of it --- a trace priced on its
+ideal-gas leg (zero heat of solution, announced once).  A state that offers it
+\emph{no vapour} is refused by name, with the remedy: a saturated liquid (a
+bubble point), a liquid--liquid or liquid--solid flash, a property system
+that declares no vapour phase (\code{ThermoPackage::refuseGasOnlyWithoutVapour};
+a mole fraction at or below $1/K_{\max}$ is the cap's own trace, not a
+presence).  \code{role nonvolatile} keeps its meaning, $K_i = 0$, for salts
+and sugars.  Until C458 a radical was \code{role nonvolatile} and the same
+flash sent it to the \emph{liquid}: the witness
+\file{tutorials/steady/flash/flash23\_gas\_only\_oh\_quench} (N$_2$, water and
+0.1~kmol/h OH through flashes at 1500~K and 330~K) then put all of the OH into
+the 330~K condensate; now the offgas carries all of it and the condensate
+$10^{-15}$ in mole fraction (gate \code{check\_gas\_only}, which also holds the
+refusal and a \code{role nonvolatile} sabotage).
 
 \paragraph{A mechanism imported from CHEMKIN.}  The curation tool
 \file{bin/curate/chemkin\_to\_choupo.py} reads a CHEMKIN-II mechanism
@@ -5266,7 +5309,9 @@ form, \code{REACTIONS} with its unit header) and writes into a \emph{case's}
         the identity above.  A species named like a catalogue record declares
         what it is: \code{variationOf} when the atoms agree (the mechanism's
         own fit is kept, so that its equilibria match the rate constants it
-        was fitted with) or \code{distinctFrom} when they do not;
+        was fitted with) or \code{distinctFrom} when they do not.  A gas
+        species is written \code{role radical;} (gas-only, above), a solid
+        \code{role nonvolatile;};
   \item the reactions, in the engine's own grammar: \code{modifiedArrhenius},
         \code{thirdBody} with its efficiencies, \code{falloff} with its
         \code{low} block and Troe parameters, \code{plog} with its pressure

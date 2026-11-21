@@ -21,13 +21,13 @@ propertyManifest
     pins
     {
         "components/ALIASES"  "c341953e34718480b8215da2139b8c85cfc29e01092cc7398febddb473320ad0";
-        "components/C3H7.dat"  "4f2f880c6a047c05b427c21d420794dd430eb106e3124cba8e0d86042ed83346";
-        "components/CH3.dat"  "e1f6350ae2773afba15922971361c0dd592177b957db6191cec6d5561f1d2d6e";
-        "components/H.dat"  "6e93334697c716cb992113771bf2b1b93e0824a5e8e095af839a707d3ab3e79b";
         "components/ethylene.dat"  "aa9b77f1a729c01e3770e6416ef5650338b0e1e84090cb908239a2f78ed0b20c";
         "components/propane.dat"  "26ffaecf82749edb18ccb34a3f18acb0ca45e55e1b461bf94d871ef0ab81358e";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-        "thermoTables/NASA-TP-2002-211556/C3H7_ipropyl.dat"  "664f380eef03104c80b31a38819d39e332937b5ee6b65ac0b2a300abec74160b";
+        "thermoTables/NASA-TP-2002-211556/C3H7_ipropyl.dat"  "ba417c0b134789250f26ec31edc8721342689510d09c9484875c87f2cc513b13";
+        "thermoTables/NASA-TP-2002-211556/C3H7_npropyl.dat"  "1c4a8ec935886dafd3d670c8e2c07cef30852d9368f34f8ef080fa3b2d64492a";
+        "thermoTables/NASA-TP-2002-211556/CH3.dat"  "cabd057c41d532d68d2483b0dab15cf530b50fa5856a503f583d9724a96f2092";
+        "thermoTables/NASA-TP-2002-211556/H.dat"  "a740ee6470031167ccff33dea627116d06663ebedb72f5488968f7bdc817663f";
     }
 }

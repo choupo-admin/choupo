@@ -10,7 +10,7 @@ name           CuF2;
 formula        CuF2;
 CAS            n/a;
 MW             101.5428;       // kg/kmol, appendix D record line
-role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it
+role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
 tags           ( gasPhase thermoTable );
 nasaEntry      "CuF2";
 reviewStatus   interim;

@@ -588,14 +588,26 @@ public:
     //                             entry exists for (this, solvent); else
     //                             falls back to the "volatile" path
     //   "nonvolatile"             K_i = 0  identically (NaCl, glucose, MgSO4)
-    //   "radical"                 gas-phase-only species; like nonvolatile
-    //                             for flash purposes but allowed in
-    //                             gas-phase Gibbs equilibrium (OH, H, O,...)
+    //   "radical"                 GAS-ONLY (DEV.md 4c C458): the species
+    //                             exists only in the gas phase (OH, H, O and
+    //                             every record of the gas-species table
+    //                             data/standards/thermoTables/).  It stays
+    //                             in the vapour in every phase split, a
+    //                             non-condensable (K = ThermoPackage::
+    //                             kNoLiquidK), and a state with no vapour to
+    //                             hold it is REFUSED by name
+    //                             (ThermoPackage::refuseGasOnlyWithoutVapour).
     //
     // Legacy compat: a.dat with `nonvolatile true;` and no `role` keyword
     // is mapped to role = "nonvolatile".  When both are present, an
     // explicit `role` takes precedence.
     const std::string& role() const { return role_; }
+    //  THE ONE HOME of "is this species gas-only?" (C458).  The fact is the
+    //  RECORD's `role radical;`, which the gas-species importer writes on
+    //  every table record, so it travels with the record into a sealed or
+    //  held case copy, where the home it was resolved from is no longer
+    //  known.  Every K-value site and every no-vapour refusal reads THIS.
+    bool isGasOnly() const { return role_ == "radical"; }
 
     // ---- Ebulioscopic / cryoscopic --------------------------------
     // Solvent-only properties: the molal boiling-point elevation constant
@@ -729,6 +741,9 @@ public:
     //  caller's leg in the message ("sensible" / "formation-datum"), so a
     //  reader can tell which surface refused.
     void   requireWatsonSlopeLiquidFallback(const char* leg) const;
+    //  C458: true for a gas-only species, whose liquid trace is priced on its
+    //  ideal-gas leg (announced once); asked by every liquid leg first.
+    bool   gasOnlyLiquidLeg(const char* leg) const;
     scalar Hliq_pure   (scalar T_K, scalar Tref_K = 298.15) const;
     scalar Hvap_pure   (scalar T_K, scalar Tref_K = 298.15) const;
     scalar Hvap_latent (scalar T_K) const;

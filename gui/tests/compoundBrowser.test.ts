@@ -56,8 +56,8 @@ describe("compound browser reading order", () => {
 
   it("opens on the first-path substances and ends on the mechanism library", () => {
     expect(DISPLAY_ORDER[0]).toBe("firstPath");
-    expect(at("gases25")).toBeLessThan(at("radicals"));
-    expect(at("salts")).toBeLessThan(at("radicals"));
+    expect(at("gases25")).toBeLessThan(at("combustion"));
+    expect(at("salts")).toBeLessThan(at("combustion"));
     expect(at("synthetic")).toBe(DISPLAY_ORDER.length - 1);
   });
 
@@ -75,7 +75,7 @@ describe("compound browser reading order", () => {
     //  The families sit between the state classes and the mechanism library.
     for (const f of families) {
       expect(at(f)).toBeGreaterThan(at("salts"));
-      expect(at(f)).toBeLessThan(at("radicals"));
+      expect(at(f)).toBeLessThan(at("combustion"));
     }
   });
 

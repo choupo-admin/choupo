@@ -1524,6 +1524,26 @@ const Component::DatumBridge298& Component::datumBridge298() const
     return bridge_;
 }
 
+bool Component::gasOnlyLiquidLeg(const char* leg) const
+{
+    //  C458: a GAS-ONLY species has no condensed phase, so it has no liquid
+    //  rung and no latent heat to subtract.  The non-condensable K
+    //  (ThermoPackage::kNoLiquidK) leaves at most a trace of order
+    //  z / kNoLiquidK in a liquid; that trace carries its IDEAL-GAS enthalpy
+    //  and entropy -- zero heat of solution -- announced once per species.
+    //  The three liquid legs (sensible, formation-datum enthalpy, entropy)
+    //  ask THIS before any other rung, so they cannot disagree.
+    if (!isGasOnly()) return false;
+    if (AdvisoryLog::instance().add("thermo", "info",
+            "gasOnlyLiquidLeg " + name_,
+            "gas-only species: the trace its non-condensable K leaves in a"
+            " liquid carries its ideal-gas enthalpy (zero heat of solution)"))
+        std::cerr << "[thermo] " << name_ << ": gas-only (role radical) -- a"
+                     " liquid trace is priced on its ideal-gas leg (" << leg
+                  << "), zero heat of solution\n";
+    return true;
+}
+
 void Component::requireWatsonSlopeLiquidFallback(const char* leg) const
 {
     //  THE ONE HOME of "may this component's LIQUID leg fall back to the
@@ -1590,6 +1610,7 @@ scalar Component::Hliq_pure(scalar T, scalar Tref) const
         //
         //  Both refusals live in ONE home, `requireWatsonSlopeLiquidFallback`
         //  above, which the formation-datum leg calls too (DEV.md 4c C162).
+        if (gasOnlyLiquidLeg("sensible")) return cpIdealGas().H(T, Tref);
         requireWatsonSlopeLiquidFallback("sensible");
 
         //  DEDUP THROUGH THE SINK, not through a flag on this object -- and

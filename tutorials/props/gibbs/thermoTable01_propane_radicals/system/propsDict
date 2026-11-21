@@ -12,7 +12,7 @@ operations
         name         pyrolysis;
         type         reactionGibbs;
         reactions    ( primaryCH secondaryCH betaScission isomerisation );
-        phases       { propane idealGas; C3H7 idealGas; C3H7_ipropyl idealGas; H idealGas; CH3 idealGas; ethylene idealGas; }
+        phases       { propane idealGas; C3H7_npropyl idealGas; C3H7_ipropyl idealGas; H idealGas; CH3 idealGas; ethylene idealGas; }
         temperatures ( 298.15 800 1100 );   // K: the datum, and two cracking-coil temperatures
         output       { file pyrolysis.csv; }
     }

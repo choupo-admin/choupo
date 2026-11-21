@@ -189,7 +189,7 @@ void emitGapReport(const ThermoPackage& thermo, std::ostream& os)
                              || status.find("ESTIMATE")   != std::string::npos;
         std::vector<std::string> missing;
         if (!criticals)            missing.push_back("criticals");
-        if (!psat && !nonvol)      missing.push_back("vaporPressure");
+        if (!psat && !nonvol && !c.isGasOnly()) missing.push_back("vaporPressure");   // C458: gas-only asks none
         if (!cpig)                 missing.push_back("cpIdealGas");
         if (!gibbs)                missing.push_back("standardThermochemistry");
         if (!missing.empty() || unverified) anyGap = true;
