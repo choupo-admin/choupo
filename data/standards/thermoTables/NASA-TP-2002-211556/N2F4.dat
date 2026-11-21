@@ -10,7 +10,7 @@ name           N2F4;
 formula        N2F4;
 CAS            n/a;
 MW             104.007;       // kg/kmol, appendix D record line
-role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it
+role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
 tags           ( gasPhase thermoTable );
 nasaEntry      "N2F4";
 reviewStatus   interim;

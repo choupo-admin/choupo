@@ -10,7 +10,7 @@ name           CrO2;
 formula        CrO2;
 CAS            n/a;
 MW             83.9949;       // kg/kmol, appendix D record line
-role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it
+role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
 tags           ( gasPhase thermoTable );
 nasaEntry      "CrO2";
 reviewStatus   interim;

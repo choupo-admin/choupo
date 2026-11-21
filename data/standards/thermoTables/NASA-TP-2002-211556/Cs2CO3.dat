@@ -10,7 +10,7 @@ name           Cs2CO3;
 formula        Cs2CO3;
 CAS            n/a;
 MW             325.8198;       // kg/kmol, appendix D record line
-role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it
+role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
 tags           ( gasPhase thermoTable );
 nasaEntry      "Cs2CO3";
 reviewStatus   interim;

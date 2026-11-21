@@ -10,7 +10,10 @@ when a case DECLARES it, and never outranks a curated record.
 
 WHY THIS EXISTS.  858 gas species were written into
 data/standards/thermoTables/NASA-TP-2002-211556/ by machine
-(bin/curate/nasa_tp2002_to_choupo.py table).  A home of that size is outside
+(bin/curate/nasa_tp2002_to_choupo.py table); 894 since 2026-11-21 (C458:
+the 34 radicals moved in from components/, and B and SiO2 joined when the
+condensed-phase rule stopped compB and silica from blocking their gases).
+Every record is gas-only, `role radical;`.  A home of that size is outside
 every golden: a record edited by hand, a species silently added to or dropped
 from the folder, a duplicate of a curated component, or an engine that starts
 reading the home without being asked would each leave the suite green, because
@@ -29,12 +32,18 @@ ARMS.
   (c) ONE HOME: no record's name or formula is also a components/ record's,
       except the tool's own isomer rule (cmd_table): the table record's
       nasaEntry carries an isomer label (a comma) and every components/
-      record of that formula is itself NASA-sourced under a different entry.
-      A name collision has no exemption.
+      record of that formula is itself NASA-sourced under a different entry;
+      and a components/ record that is a condensed phase or a synthetic
+      stand-in is not a home for a GAS species of its formula (the tool's
+      not_a_gas_home, imported: graphite does not hold atomic carbon C(g),
+      C458).  A name collision has no exemption.  Since C458 (2026-11-21)
+      the 34 radicals that sat in components/ live here: a radical is not a
+      component.
   (d) DECLARED ONLY (behaviour): the witness
       tutorials/props/gibbs/thermoTable01_propane_radicals runs (temp copy,
       CHOUPO_HOME=repo) with `[thermoTable]` announced and exit 0; with the
-      `speciesTables` line removed it must FAIL naming C3H7_ipropyl; with
+      `speciesTables` line removed it must FAIL naming C3H7_npropyl (the
+      first of its four table species, all radicals since C458); with
       `speciesTables ( NoSuchTable );` it must FAIL naming NoSuchTable.
   (e) A CURATED RECORD WINS (source): Database.cpp consults speciesTables()
       only under a guard `!fs::exists(standard)` (and only when not sealed).
@@ -78,6 +87,9 @@ NAME_RE = re.compile(r'(?m)^name\s+(\S+?)\s*;')
 T_ENTRY = re.compile(r'appendix D, pp?\. [\d-]+, entry (\S+?)(?:,\s|\s|;)')
 
 fails = []
+#  the importer's own rule for "a condensed or synthetic record of the same
+#  formula is not a second home for a gas species" (C458): imported, not copied.
+from nasa_tp2002_to_choupo import not_a_gas_home as T_not_a_gas_home
 
 
 def read(p):
@@ -150,7 +162,7 @@ def comp_index():
         if nm:
             by_name[nm.group(1)] = ent
         f = FORMULA_RE.search(t)
-        if f:
+        if f and not T_not_a_gas_home(t):
             by_formula.setdefault(f.group(1), []).append((p.stem, ent))
     return by_name, by_formula
 
@@ -203,9 +215,9 @@ def arm_d():
             fails.append("(d) witness: exit %d, `[thermoTable]` %s" %
                          (rc, "present" if "[thermoTable]" in out else "absent"))
         rc, out = run(mk("undeclared", lambda s: decl.sub("", s)))
-        if rc == 0 or "C3H7_ipropyl" not in out:
-            fails.append("(d) without `speciesTables` the run must fail naming C3H7_ipropyl "
-                         "(exit %d, name %s)" % (rc, "named" if "C3H7_ipropyl" in out else "not named"))
+        if rc == 0 or "C3H7_npropyl" not in out:
+            fails.append("(d) without `speciesTables` the run must fail naming C3H7_npropyl "
+                         "(exit %d, name %s)" % (rc, "named" if "C3H7_npropyl" in out else "not named"))
         rc, out = run(mk("nosuch", lambda s: decl.sub("speciesTables ( NoSuchTable );\n", s)))
         if rc == 0 or "NoSuchTable" not in out:
             fails.append("(d) `speciesTables ( NoSuchTable )` must fail naming it "

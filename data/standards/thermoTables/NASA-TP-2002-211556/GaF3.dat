@@ -10,7 +10,7 @@ name           GaF3;
 formula        GaF3;
 CAS            n/a;
 MW             126.7182;       // kg/kmol, appendix D record line
-role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it
+role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
 tags           ( gasPhase thermoTable );
 nasaEntry      "GaF3";
 reviewStatus   interim;

@@ -10,7 +10,7 @@ name           C7H15_nheptyl;
 formula        C7H15;
 CAS            n/a;
 MW             99.194;       // kg/kmol, appendix D record line
-role           nonvolatile;   // ideal-gas species: no vapour pressure is asked of it
+role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
 tags           ( gasPhase thermoTable );
 nasaEntry      "C7H15,n-heptyl";
 reviewStatus   interim;

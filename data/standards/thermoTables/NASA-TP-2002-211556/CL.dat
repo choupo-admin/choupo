@@ -1,0 +1,65 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Species CL (NASA/TP-2002-211556 appendix D entry "CL"):
+  ideal-gas formation data and heat capacity transcribed by machine with
+  bin/curate/nasa_tp2002_to_choupo.py table, which holds H and S at
+  298.15 K recomputed from the printed coefficients to the printed
+  values.  Not read back against the page by a curator.
+  The report's own description and sources: Hf:Cox,1989. Moore,1971. Moore,1970a. Gordon,1999.
+\*---------------------------------------------------------------------------*/
+name           CL;
+formula        Cl;
+CAS            n/a;
+MW             35.453;       // kg/kmol, appendix D record line
+role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+tags           ( gasPhase thermoTable );
+nasaEntry      "CL";
+reviewStatus   interim;
+reviewReason   "transcribed by machine from NASA/TP-2002-211556 into the thermoTables home and checked against the report itself; not yet read back against the page by a curator";
+standardThermochemistry
+{
+    dHf_298    121301.000;   // J/mol  -- ideal gas; NASA/TP-2002-211556 appendix D, p. 106, entry CL
+    s_298      165.192;     // J/(mol·K) -- third-law absolute; Table B1, p. 18
+}
+
+idealGasHeatCapacity
+{
+    //  NASA/TP-2002-211556 eq. (1), Cp/R = a1/T^2 + a2/T + a3 + a4 T + a5 T^2
+    //  + a6 T^3 + a7 T^4; appendix D, p. 106, entry CL, a1..a7 as printed.
+    //  The report's 6000-20000 K interval is not transcribed.
+    model    NASA9;
+    Tlow     200;
+    Tcommon  1000;
+    Thigh    6000;
+    low      ( 2.276215854e+04 -2.168413293e+02 2.745185115e+00 2.451101694e-03 -5.458011990e-06 4.417986880e-09 -1.288134004e-12 );
+    high     ( -1.697932930e+05 6.081726460e+02 2.128664090e+00 1.307367034e-04 -2.644883596e-08 2.842504775e-12 -1.252911731e-16 );
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 106, entry CL, record-line H(298.15) (elements reference, so = dHf)";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "Table B1 p. 18 prints 121.301 kJ/mol; the report's own sources: Hf:Cox,1989. Moore,1971. Moore,1970a. Gordon,1999.";
+    }
+    s_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 Table B1, p. 18, entry CL";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "appendix D's coefficients with b2 integrate to 165.192";
+    }
+    idealGasHeatCapacity
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 106, entry CL, a1..a7 of the 200-1000 K and 1000-6000 K intervals, as printed";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "read by bin/curate/nasa_tp2002_to_choupo.py, which holds H and S at 298.15 K to the printed values";
+    }
+    source   "McBride, Zehe & Gordon, NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species, NASA/TP-2002-211556 (2002)";
+    licence  publicDomain;    // US government work (NASA), 17 U.S.C. 105
+}
