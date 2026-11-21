@@ -165,7 +165,7 @@ def main():
              "declare `phase gas;`"),
             ("unknown flow word", "system/flowsheetDict",
              fs0.replace("flow              cocurrent;", "flow              parallel;"),
-             "must be cocurrent or countercurrent"),
+             "must be cocurrent, countercurrent or crossflow"),
             ("X_c not above X_eq", "system/flowsheetDict",
              fs0.replace("criticalMoisture  0.12;", "criticalMoisture  0.0005;"),
              "is not above the equilibrium"),

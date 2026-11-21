@@ -209,10 +209,48 @@ int ConvectiveDryer::solve(const DictPtr& dict,
         throw std::runtime_error(who + ": operation.criticalMoisture must be"
             " > 0 kg/kg -- measured on the material, not derivable");
     const std::string flow = op->lookupWord("flow");
-    if (flow != "cocurrent" && flow != "countercurrent")
-        throw std::runtime_error(who + ": operation.flow must be cocurrent or"
-            " countercurrent (got '" + flow + "')");
+    if (flow != "cocurrent" && flow != "countercurrent" && flow != "crossflow")
+        throw std::runtime_error(who + ": operation.flow must be cocurrent,"
+            " countercurrent or crossflow (got '" + flow + "')");
     const bool counter = (flow == "countercurrent");
+    const bool cross   = (flow == "crossflow");
+    //  CROSS-FLOW covers ONE configuration (Mujumdar 2006 s.3.6.2.3.1: solid
+    //  one-dimensional, fresh air to every length element).  What it does not
+    //  cover is refused by the word that asks for it, not ignored.
+    std::string drivingForce = "logMean";
+    if (cross)
+    {
+        for (const char* k : { "recirculation", "airRecycle", "recycle" })
+            if (op->found(k))
+                throw std::runtime_error(who + ": operation." + k + " -- the"
+                    " cross-flow model feeds EVERY length element with the"
+                    " inlet air and does not recirculate air between"
+                    " elements (Mujumdar s.3.6.2.3.1); a recirculating"
+                    " cross-circulation dryer is not modelled");
+        for (const char* k : { "axialDispersion", "Pe", "solidMixing" })
+            if (op->found(k))
+                throw std::runtime_error(who + ": operation." + k + " -- the"
+                    " solid is in PLUG flow along the length; the dispersed"
+                    " (Em, Eh) fluid-bed form, Mujumdar Eq. 3.79-3.84, is not"
+                    " modelled");
+        for (const char* k : { "twoDimensional", "solidDepth", "layerDepth" })
+            if (op->found(k))
+                throw std::runtime_error(who + ": operation." + k + " -- the"
+                    " solid is one-dimensional (uniform across the air path);"
+                    " the two-dimensional cross-flow bed, Mujumdar s.3.6.2.3.2,"
+                    " is not modelled");
+        if (op->found("airDistribution")
+            && op->lookupWord("airDistribution") != "uniform")
+            throw std::runtime_error(who + ": operation.airDistribution must"
+                " be `uniform` -- Mujumdar Eq. 3.76 (dW_B/dl = W_B/L) is the"
+                " only distribution modelled");
+        if (op->found("drivingForce"))
+            drivingForce = op->lookupWord("drivingForce");
+        if (drivingForce != "logMean" && drivingForce != "inlet")
+            throw std::runtime_error(who + ": operation.drivingForce must be"
+                " logMean (Mujumdar Eq. 3.73) or inlet (Eq. 3.72), got '"
+                + drivingForce + "'");
+    }
     const bool nDeclared = op->found("nSteps");
     const int  N = nDeclared ? static_cast<int>(op->lookupScalar("nSteps")) : 100;
     if (N < 10)
@@ -385,7 +423,117 @@ int ConvectiveDryer::solve(const DictPtr& dict,
     std::vector<Row> rows;
     scalar X_out = 0.0, Y_ex = 0.0, T_ex = 0.0, T_sOut = 0.0;
     int shots = 0;
-    if (!counter)
+    if (cross)
+    {
+        //  CROSS-FLOW, Mujumdar (2006) s.3.6.2.3.1, Eq. 3.66-3.78, Fig. 3.8.
+        //  Every length element of the solid's path is fed with the INLET
+        //  air (Eq. 3.76, dW_B/dl = W_B/L: G dxi of the dry gas per element)
+        //  and the air leaves it once.  The air sees the element's solid at
+        //  one moisture X, and the solid sees fresh air at every step, so the
+        //  driving force depends on X ALONE.
+        //      dX/dxi = - Wdot(X) / S                              (3.66, 3.77)
+        //      Y_2 - Y_1 = Wdot(X) / G                             (3.68)
+        //  with the rate of the whole element set by the driving force
+        //      inlet    : Wdot = k_Y A f(Phi) (Y* - Y_1)           (3.70, 3.72)
+        //      logMean  : G ln((Y*-Y_1)/(Y*-Y_2)) = k_Y A f(Phi)   (3.70, 3.73)
+        //                 i.e. Wdot = G (Y*-Y_1)(1 - exp(-k_Y A f/G))
+        //  Y* = Y_sat(T_wb of the INLET air), Phi from the X_eq of the inlet
+        //  air.  The solid sits at that wet bulb (the same hypothesis as the
+        //  other two arrangements, here at ONE temperature).  The air leaving
+        //  each element has its enthalpy from the element's balance (3.69):
+        //      Hair(Y_2, T_2) = Hair(Y_1, T_1) + [Hs(X,Tw) - Hs(X+dX,Tw)]
+        //                       + (solid inlet step)/N
+        //  and the exhaust is the MIX of the N elements, so the whole unit
+        //  closes by summation.  The solid's step from its inlet T to Tw is
+        //  spread over the elements in proportion to the air they receive.
+        const scalar Tw_in = Twb(T_aIn, Y_in);
+        const scalar Ystar = psychrometry::Ysat(thermo, iW, Mv, Mc, P, Tw_in, who);
+        if (!(Ystar > Y_in))
+            throw std::runtime_error(who + ": cross-flow -- the inlet air is"
+                " saturated (Y* = " + std::to_string(Ystar) + " <= Y = "
+                + std::to_string(Y_in) + ") and cannot dry anything");
+        const bool logMean = (drivingForce == "logMean");
+        const scalar Hw_kmol = thermo.H_stream_formation(Tw_in, P, 0.0, zWater);
+        const scalar dHstep  = Hsolid(X_in, T_sIn) - Hsolid(X_in, Tw_in);   // kW
+        auto wdot = [&](scalar X) -> scalar                          // kg/s
+        {
+            if (X <= Xeq_in) return 0.0;
+            const scalar f = curve.f((X - Xeq_in) / (X_c - Xeq_in));
+            const scalar ntu = kY * A * f / G;
+            return logMean ? G * (Ystar - Y_in) * (1.0 - std::exp(-ntu))
+                           : kY * A * f * (Ystar - Y_in);
+        };
+        auto dXdxi = [&](scalar x) { return -wdot(x) / S; };
+        const scalar h = 1.0 / N;
+        std::vector<scalar> Xk(N + 1, X_in);
+        for (int k = 0; k < N; ++k)
+        {
+            const scalar X = Xk[k];
+            const scalar k1 = dXdxi(X);
+            const scalar k2 = dXdxi(std::max(0.0, X + 0.5 * h * k1));
+            const scalar k3 = dXdxi(std::max(0.0, X + 0.5 * h * k2));
+            const scalar k4 = dXdxi(std::max(0.0, X + h * k3));
+            Xk[k + 1] = X + h * (k1 + 2.0 * k2 + 2.0 * k3 + k4) / 6.0;
+            if (Xk[k + 1] < 0.0)
+                throw std::runtime_error(who + ": cross-flow march -- the"
+                    " moisture overshot below zero");
+        }
+        X_out = Xk[N];
+        const scalar Hair_in = Hair(Y_in, T_aIn);
+        auto airT = [&](scalar Y, scalar Htarget) -> scalar
+        {
+            scalar lo = 274.0, hi = std::max(T_aIn, T_sIn) + 30.0;
+            if (Hair(Y, hi) < Htarget || Hair(Y, lo) > Htarget)
+                throw std::runtime_error(who + ": cross-flow -- an air element"
+                    " cannot supply the heat of the drying it is given (no"
+                    " temperature between 274 K and " + std::to_string(hi)
+                    + " K closes its enthalpy balance): too little air for"
+                    " this area.  More air, or less contact area.");
+            for (int it = 0; it < 80 && (hi - lo) > 1.0e-9; ++it)
+            { const scalar m = 0.5 * (lo + hi); (Hair(Y, m) >= Htarget ? hi : lo) = m; }
+            return 0.5 * (lo + hi);
+        };
+        const scalar Wsol = S / Mv;                                  // kmol/s per unit X
+        scalar Hex = 0.0;
+        for (int k = 0; k < N; ++k)
+        {
+            const scalar dW = S * (Xk[k] - Xk[k + 1]);               // kg/s from element k
+            const scalar Yk = Y_in + dW * N / G;
+            if (!logMean && Yk >= Ystar)
+                throw std::runtime_error(who + ": cross-flow drivingForce"
+                    " inlet -- element " + std::to_string(k + 1) + " would"
+                    " leave with Y = " + std::to_string(Yk) + " >= Y* = "
+                    + std::to_string(Ystar) + ": the inlet driving force"
+                    " (Eq. 3.72) over-states the rate when k_Y A / G is not"
+                    " small; use drivingForce logMean (Eq. 3.73)");
+            //  Hs(Xa,Tw) - Hs(Xb,Tw) = (Xa - Xb) S/Mv H_w(Tw): only the water
+            const scalar dHs = (Xk[k] - Xk[k + 1]) * Wsol * Hw_kmol;  // kW
+            const scalar Hk  = Hair_in + N * dHs + dHstep;
+            const scalar Tk  = airT(Yk, Hk);
+            if (psychrometry::airWaterActivity(thermo, iW, Mv, Mc, P, Tk, Yk, who) >= 1.0)
+                throw std::runtime_error(who + ": cross-flow -- the air leaving"
+                    " element " + std::to_string(k + 1) + " of "
+                    + std::to_string(N) + " would be saturated (Y = "
+                    + std::to_string(Yk) + ", T = " + std::to_string(Tk)
+                    + " K): too little air per length for this drying rate."
+                    "  More air, or less contact area.");
+            Hex += Hk / N;
+        }
+        Y_ex = Y_in + S * (X_in - X_out) / G;
+        T_ex = airT(Y_ex, Hex);
+        T_sOut = Tw_in;
+        for (int k = 0; k <= N; ++k)
+        {   //  the profile: the air leaving the element at xi, from the point rate
+            const scalar W  = wdot(Xk[k]);
+            const scalar Yl = Y_in + W / G;
+            const scalar Tl = airT(Yl, Hair_in + W / Mv * Hw_kmol + dHstep);
+            const scalar Rl = W / A;
+            const scalar ph = (Xk[k] > Xeq_in)
+                ? (Xk[k] - Xeq_in) / (X_c - Xeq_in) : 0.0;
+            rows.push_back({ k * h, Xk[k], Yl, Tl, Tw_in, Rl, ph });
+        }
+    }
+    else if (!counter)
     {
         const scalar Hconst = H_sIn + H_aIn;
         try { X_out = march(Y_in, Hconst, &rows); }
@@ -511,6 +659,7 @@ int ConvectiveDryer::solve(const DictPtr& dict,
     kpis_["energyResidual_kW"]  = residual;
     if (xiCrit >= 0.0) kpis_["position_critical"] = xiCrit;
     if (counter) kpis_["shootingEvaluations"] = shots;
+    if (cross) kpis_["T_air_element_first"] = rows.front().T;
 
     if (verbosity >= 1)
     {
@@ -530,16 +679,25 @@ int ConvectiveDryer::solve(const DictPtr& dict,
                         : "characteristic curve " + curve.shapeName()
                           + " (van Meel 1958), source: " + curve.source())
                   << "; X_c = " << std::setprecision(4) << X_c
-                  << " kg/kg MEASURED, X_eq read at the LOCAL air (GAB)\n"
-                  << tag << "HYPOTHESES: the solid at the LOCAL wet bulb in"
-                     " both periods (its falling-rate warm-up NOT modelled);"
-                     " Lewis = 1; one k_Y over the whole area; no axial"
+                  << (cross ? " kg/kg MEASURED, X_eq read at the INLET air (GAB)\n"
+                            : " kg/kg MEASURED, X_eq read at the LOCAL air (GAB)\n")
+                  << tag << (cross ? "HYPOTHESES: the solid at the wet bulb of the"
+                     " INLET air in both periods (its falling-rate warm-up NOT"
+                     " modelled), X_eq and Y* read at the inlet air;"
+                     : "HYPOTHESES: the solid at the LOCAL wet bulb in"
+                     " both periods (its falling-rate warm-up NOT modelled);")
+                  << " Lewis = 1; one k_Y over the whole area; no axial"
                      " mixing; no re-wetting; adiabatic; the bound moisture"
                      " priced as liquid water (no heat of sorption)\n"
                   << tag << (nDeclared ? "nSteps declared: " : "nSteps DEFAULT: ")
                   << N << " RK4 steps along the area"
                   << (counter ? ", counter-current shooting on X_out: "
                               + std::to_string(shots) + " marches" : std::string())
+                  << (cross ? "; cross-flow (Mujumdar s.3.6.2.3.1): inlet air to"
+                              " EVERY element, driving force " + drivingForce
+                              + (drivingForce == "logMean" ? " (Eq. 3.73)" : " (Eq. 3.72)")
+                              + ", exhaust = the mix of the elements"
+                            : std::string())
                   << "\n"
                   << tag << "X: " << std::setprecision(5) << X_in << " -> "
                   << X_out << " kg/kg (floor of the air as fed: " << Xeq_in

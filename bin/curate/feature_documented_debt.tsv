@@ -27,5 +27,4 @@ Report	profiles	catalogue
 Signal	prbs	catalogue
 SizeDistribution	tabular	guide+catalogue
 TransportModel	constantRejection	guide
-UnitOperation	convectiveDryer	guide
 UnitOperation	tsaTwinBed	guide

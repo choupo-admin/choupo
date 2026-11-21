@@ -33597,6 +33597,85 @@ to $N_c$ at $X_c$ --- an honest first approximation that does \emph{not} resolve
 crust diffusion; calibrate $X_c$/the curve against a measured drying curve of the
 real material.
 
+\subsection{Continuous convective dryers: co-current, counter-current and cross-flow}\label{sec:dryer-flow-arrangements}
+
+\code{convectiveDryer} (\file{ConvectiveDryer.cpp}) dries a sorbing solid on its characteristic
+curve ($R=R_c f(\Phi)$, above) along a declared gas--solid contact area $A$.  \code{operation.flow}
+chooses how the air meets the solid; the three arrangements differ in WHICH AIR each part of the
+solid sees, and that alone changes the outlet moisture.  Symbols: $S$ dry-solid flow
+[kg/s]; $G$ dry-gas flow [kg/s]; $X$ solid moisture [kg/kg dry]; $Y$ air humidity [kg/kg dry];
+$\xi\in[0,1]$ the fraction of the area (or length) passed by the solid; $k_Y$ the gas-film
+coefficient; $Y^{*}=Y_{\rm sat}(T_{\rm wb})$ the saturation humidity at the solid's surface
+(the wet bulb); $f(\Phi)$ the drying curve with $\Phi=(X-X_{eq})/(X_c-X_{eq})$;
+$\dot W=$ the water leaving the solid [kg/s].
+
+\paragraph{Parallel flow, the common balances.}  Mujumdar (\emph{Handbook of Industrial Drying},
+3rd ed., 2006, \S3.6.2, Eq.~3.12--3.15, p.~57; printed pages, PDF page $-26$) writes, per unit
+length, $S\,dX/d\xi=-\dot W$ and $\pm G\,dY/d\xi=\dot W$ with the enthalpy balance of the same
+control volume (the minus sign for counter-current).  In Choupo the air's $Y$ and $T$ are
+\emph{algebraic} in $X$: water balance $Y=Y_{in}+S(X_{in}-X)/G$ (co-current) or
+$Y=Y_{ex}-S(X_{in}-X)/G$ (counter-current), and the adiabatic enthalpy balance priced on the
+package's formation surface gives $T$ -- one ODE, $S\,dX/d\xi=-R(X,Y,T)\,A$.
+
+\paragraph{Co-current} (Mujumdar \S3.6.2.1, p.~63, Fig.~3.4): both inlets are at $\xi=0$, so the
+march starts from known states.  The air is used up along the path, the driving force
+$Y^{*}-Y$ falls with it, and the driest solid meets the wettest air.  The fast initial rate is
+the feed's high temperature difference; van~'t~Land (\emph{Drying in the Process Industry},
+2012, p.~42) notes that parallel flow exposes the feed to the highest temperature and that the
+solid cannot rise much above the adiabatic-saturation temperature.
+
+\paragraph{Counter-current} (\S3.6.2.2, p.~64, Figs.~3.6--3.7): the inlets are at opposite ends,
+a two-point problem; Choupo shoots on the outlet moisture $X_{out}$ (bisection) until the air
+arriving at $\xi=1$ is the air fed.  The driest solid meets the freshest, hottest, driest air,
+where $X_{eq}$ is lowest, so the falling-rate driving force survives to the end: van~'t~Land
+p.~42, ``a very low final moisture content'', at the price of the highest solid temperature.
+
+\paragraph{Cross-flow} (\S3.6.2.3.1, Eq.~3.66--3.78, Fig.~3.8, pp.~65--66; the plug-flow fluid
+bed, the through-circulation belt: van~'t~Land p.~42 lists fluid-bed and band dryers as
+cross-flow).  The solid is one-dimensional in plug flow; the air is distributed
+\emph{uniformly} along the length, $dW_B/dl=W_B/L$ (Eq.~3.76), so a length element receives
+$G\,d\xi$ of \emph{inlet} air, passes it through the solid once, and the exhaust is the mix of
+all the elements:
+\begin{align}
+  S\,\frac{dX}{d\xi} &= -\dot W(X), &\qquad Y_2-Y_1 &= \frac{\dot W(X)}{G}
+      && \text{(3.66, 3.68, 3.77)}\\
+  \dot W &= k_Y A f(\Phi)\,(Y^{*}-Y_1)
+      && \text{inlet driving force (3.70, 3.72)}\\
+  G\ln\frac{Y^{*}-Y_1}{Y^{*}-Y_2} &= k_Y A f(\Phi)
+      \;\Rightarrow\; \dot W = G(Y^{*}-Y_1)\bigl(1-e^{-k_YAf/G}\bigr)
+      && \text{log-mean (3.70, 3.73)}
+\end{align}
+with $Y_1=Y_{in}$ and $Y^{*}$, $X_{eq}$ read at the \emph{inlet} air: the rate depends on $X$
+alone, because every element sees fresh air.  The element's leaving air has the enthalpy of its
+balance (3.69),
+$H_{air}(Y_2,T_2)=H_{air}(Y_1,T_1)+[H_s(X,T_w)-H_s(X+dX,T_w)]+\Delta H_{step}/N$, and the unit's
+exhaust is $\sum_{k=1}^{N}$ of the elements (mass and enthalpy), so the first law closes by
+summation (published as \code{energyResidual\_kW}).  \code{drivingForce logMean} (default)
+treats the air as plug flow through the element's area; \code{inlet} is Eq.~3.72, valid for small
+$k_YA/G$ (since $1-e^{-x}\le x$ it dries faster, and the unit refuses by name an element it
+would take above $Y^{*}$).  The local air $Y(\xi)$, $T(\xi)$ of the profile is the air
+\emph{leaving the element at $\xi$} (Fig.~3.9), not one stream running down the length.
+
+\paragraph{What the same dryer gives.}  On convDryer01--03 (one feed, one air, $A=300$~m$^2$,
+$k_Y=0.05$): outlet moisture $X$ of 0.0236 (co-current), 0.0090 (cross-flow) and 0.0047
+(counter-current) kg/kg; exhaust air 359.7, 354.7 and 353.3~K at $Y$ 0.0393, 0.0415, 0.0421.
+The book orders only counter-current below parallel; cross-flow in between is what
+Eq.~3.66--3.78 give for these conditions.  Which to use is mostly decided by the material, not by
+$X_{out}$: counter-current for robust solids needing very low moisture, parallel for heat-sensitive
+feeds, cross-flow (fluid bed, band) for particulate beds that air can traverse.
+
+\paragraph{Validity and refusals.}  Hypotheses (announced at every run): the solid sits at the wet
+bulb in both periods (its falling-rate warm-up is not modelled; in cross-flow, the wet bulb of the
+\emph{inlet} air at every length), Lewis~$=1$, one $k_Y$, adiabatic, no re-wetting, bound moisture
+priced as liquid water; the solid's step from its inlet temperature to $T_w$ is spread over the
+cross-flow elements in proportion to their air.  Cross-flow REFUSES by name: air recirculation
+between elements, axial dispersion of the solid (Eq.~3.79--3.84, the dispersed fluid bed), the
+two-dimensional bed (\S3.6.2.3.2), a non-uniform air distribution, and too little air (an element
+that cannot supply the heat or would saturate).  \emph{In-sample statement:} $k_Y$, $X_c$ and the
+curve of the witnesses are hypothetical teaching values; the arrangements are verified against
+independent integrations of the same equations (gate \code{check\_dryer\_arrangements}), not
+against a measured dryer.
+
 \subsection{Spray drying}
 A spray dryer atomises a solution into a cloud of droplets and dries them in hot
 gas to a powder of controlled particle size --- seconds of residence, because the

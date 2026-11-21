@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1913,
+  "cases": 1921,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -22909,6 +22909,40 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/compare/olefins01_propane_propene_laurance1972": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/compare/olefins02_ethane_ethylene_fredenslund1976": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/compare/olefins03_propane_propene_kij_fit_laurance1972": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/compare/unifacDortmund01_ethanol_water_reduced_pressure": {
    "application": "choupoProps",
    "ops": [
@@ -25459,6 +25493,36 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/distillation/c3splitter01_propylene_propane": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn",
+    "shortcutColumn"
+   ],
+   "unitModels": [
+    "fullMESH"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/c3splitter02_propylene_propane_pr_kij": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn",
+    "shortcutColumn"
+   ],
+   "unitModels": [
+    "fullMESH"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/distillation/column01_benzene_toluene": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -26146,6 +26210,34 @@
    "unitTypes": [
     "convectiveDryer",
     "splitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/drying/convDryer02_sugar_countercurrent": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "convectiveDryer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/drying/convDryer03_sugar_crossflow": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "convectiveDryer"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -29358,6 +29450,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/reactors/cracking01_ethane_sundaram_froment": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/reactors/cstr01_first_order": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -32124,6 +32230,9 @@
     "tutorials/props/compare/extractionShortcut01_perry_example15_1",
     "tutorials/props/compare/lkp02_n2_ch4_ar_112K",
     "tutorials/props/compare/lle01_acetic_mibk_perry",
+    "tutorials/props/compare/olefins01_propane_propene_laurance1972",
+    "tutorials/props/compare/olefins02_ethane_ethylene_fredenslund1976",
+    "tutorials/props/compare/olefins03_propane_propene_kij_fit_laurance1972",
     "tutorials/props/compare/unifacDortmund01_ethanol_water_reduced_pressure",
     "tutorials/props/compare/unifacDortmund02_butanol_water_gamma_infinity",
     "tutorials/props/curation/curate01_water_evidence_partition",
@@ -32344,6 +32453,8 @@
     "tutorials/steady/crystallisation/overlay02_nacl_calorimetric",
     "tutorials/steady/distillation/acetone06_luyben_column_C1",
     "tutorials/steady/distillation/acetone07_luyben_column_C2",
+    "tutorials/steady/distillation/c3splitter01_propylene_propane",
+    "tutorials/steady/distillation/c3splitter02_propylene_propane_pr_kij",
     "tutorials/steady/distillation/column01_benzene_toluene",
     "tutorials/steady/distillation/column02_simultaneous",
     "tutorials/steady/distillation/column03_azeotrope_mesh",
@@ -32385,6 +32496,8 @@
     "tutorials/steady/distillation/trayEfficiency06_syedaChuang_yanagi14",
     "tutorials/steady/distillation/trayEfficiency07_syedaChuang_yanagi08",
     "tutorials/steady/drying/convDryer01_sugar_curve",
+    "tutorials/steady/drying/convDryer02_sugar_countercurrent",
+    "tutorials/steady/drying/convDryer03_sugar_crossflow",
     "tutorials/steady/drying/evapDryer01_nacl",
     "tutorials/steady/drying/evapDryer02_energy_limited",
     "tutorials/steady/drying/solidDryer01_sugar",
@@ -32594,6 +32707,7 @@
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/reactors/conversion01_hda",
     "tutorials/steady/reactors/conversion02_parallel_selectivity",
+    "tutorials/steady/reactors/cracking01_ethane_sundaram_froment",
     "tutorials/steady/reactors/cstr01_first_order",
     "tutorials/steady/reactors/cstr02_reversible_wgs",
     "tutorials/steady/reactors/cstr03_series_selectivity",
@@ -32844,7 +32958,9 @@
     "tutorials/steady/power/rankine02_water"
    ],
    "convectiveDryer": [
-    "tutorials/steady/drying/convDryer01_sugar_curve"
+    "tutorials/steady/drying/convDryer01_sugar_curve",
+    "tutorials/steady/drying/convDryer02_sugar_countercurrent",
+    "tutorials/steady/drying/convDryer03_sugar_crossflow"
    ],
    "conversionReactor": [
     "tutorials/plant/acetonePlant",
@@ -32922,6 +33038,8 @@
     "tutorials/steady/crystallisation/crystalliser09_KHT_KCl_series",
     "tutorials/steady/distillation/acetone06_luyben_column_C1",
     "tutorials/steady/distillation/acetone07_luyben_column_C2",
+    "tutorials/steady/distillation/c3splitter01_propylene_propane",
+    "tutorials/steady/distillation/c3splitter02_propylene_propane_pr_kij",
     "tutorials/steady/distillation/column01_benzene_toluene",
     "tutorials/steady/distillation/column02_simultaneous",
     "tutorials/steady/distillation/column03_azeotrope_mesh",
@@ -33270,6 +33388,7 @@
    "pfr": [
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/reactors/ammoniaReactor04_kineticSizing",
+    "tutorials/steady/reactors/cracking01_ethane_sundaram_froment",
     "tutorials/steady/reactors/elementary01a_modArrhenius_chemkin",
     "tutorials/steady/reactors/elementary01b_modArrhenius_arrhenius",
     "tutorials/steady/reactors/elementary02a_thirdBody_chemkin",
@@ -33362,6 +33481,8 @@
     "tutorials/steady/solids/centrifuge02_discStack_sigmaIdentity"
    ],
    "shortcutColumn": [
+    "tutorials/steady/distillation/c3splitter01_propylene_propane",
+    "tutorials/steady/distillation/c3splitter02_propylene_propane_pr_kij",
     "tutorials/steady/distillation/shortcut01_benzene_toluene"
    ],
    "sinusoidal": [
@@ -35939,6 +36060,8 @@
     "tutorials/steady/distillation/trayEfficiency06_syedaChuang_yanagi14",
     "tutorials/steady/distillation/trayEfficiency07_syedaChuang_yanagi08",
     "tutorials/steady/drying/convDryer01_sugar_curve",
+    "tutorials/steady/drying/convDryer02_sugar_countercurrent",
+    "tutorials/steady/drying/convDryer03_sugar_crossflow",
     "tutorials/steady/drying/evapDryer01_nacl",
     "tutorials/steady/drying/evapDryer02_energy_limited",
     "tutorials/steady/drying/solidDryer01_sugar",
@@ -36092,6 +36215,7 @@
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/reactors/conversion01_hda",
     "tutorials/steady/reactors/conversion02_parallel_selectivity",
+    "tutorials/steady/reactors/cracking01_ethane_sundaram_froment",
     "tutorials/steady/reactors/cstr01_first_order",
     "tutorials/steady/reactors/cstr02_reversible_wgs",
     "tutorials/steady/reactors/cstr03_series_selectivity",
@@ -37165,6 +37289,7 @@
     "data/curation/pairs/vinylAcetate-vinylPropionate",
     "tutorials/props/adsorption/isotherm02_fit_jaschik",
     "tutorials/props/adsorption/isotherm03_fit_refusals",
+    "tutorials/props/compare/olefins03_propane_propene_kij_fit_laurance1972",
     "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/curation/curate03_thermoml_fixture_bubble",
     "tutorials/props/curation/curate04_nrtl_methanol_water",
@@ -38181,6 +38306,9 @@
     "tutorials/props/compare/compare_vle_etoh_water",
     "tutorials/props/compare/evidence01_methanol_water_points",
     "tutorials/props/compare/lkp02_n2_ch4_ar_112K",
+    "tutorials/props/compare/olefins01_propane_propene_laurance1972",
+    "tutorials/props/compare/olefins02_ethane_ethylene_fredenslund1976",
+    "tutorials/props/compare/olefins03_propane_propene_kij_fit_laurance1972",
     "tutorials/props/compare/unifacDortmund01_ethanol_water_reduced_pressure",
     "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/curation/curate04_nrtl_methanol_water",
