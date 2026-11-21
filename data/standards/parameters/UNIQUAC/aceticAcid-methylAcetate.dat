@@ -13,7 +13,7 @@ parameters
     j      methylAcetate;
     a_ij   -62.186;    a_ji   81.848;     // K
     b_ij   -0.43637;    b_ji   1.1162;
-    c_ij   2.7235e-3;    c_ji   -1.3309e-3;
+    c_ij   2.7235e-4;    c_ji   -1.3309e-3;
 }
 
 provenance
