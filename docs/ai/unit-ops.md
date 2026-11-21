@@ -70,6 +70,14 @@ the incipient-vapour test decide, and when only one fires the narrower LL or
 VL solve is used, announced (C173).  `phaseSet auto` on a package with no
 vapour goes to LL (one stable liquid, or the split).
 
+**A NEARLY PURE FEED AT THE EDGE OF THE WINDOW** can make the Rachford-Rice
+equation almost flat, so the residual tolerance fixes V/F only to
+`tolerance / |dg/dV|`.  When that width exceeds 1e-4 the flash prints and
+records a warning ("Rachford-Rice is ILL-CONDITIONED"), locates V/F by
+bisection of g(V) alone (never the silent seed 0.5), and the split is to be
+read as determined by differences far below what the K-values carry (Theory
+Guide `sec:rr-ill-conditioned`).
+
 **When the answer is SINGLE-PHASE** (the (T, P) sits outside the two-phase
 band), the flash does not refuse: it reports the regime (`Regime:
 superheated vapor` / `subcooled liquid`), the absent phase leaves with

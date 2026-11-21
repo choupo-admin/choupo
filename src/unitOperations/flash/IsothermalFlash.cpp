@@ -1527,6 +1527,11 @@ IsothermalFlash::solveCore(const FlashInput&    in,
     solver::Wegstein accel(n, opts.wegsteinQmin, opts.wegsteinQmax);
 
     bool   phaseTrivial = false;
+    //  R-007: set when a pass met the residual test on a flat g(V) (see below)
+    bool   illConditioned = false;
+    scalar illGp = 0.0, illWidth = 0.0;
+    //  V/F uncertainty tolerance/|g'| above which the state is declared
+    constexpr scalar illConditionedBand = 1.0e-4;
     int    outerIt      = 0;
     scalar compDelta    = 0.0;
 
@@ -1829,7 +1834,42 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         scalar V0 = (outerIt == 0) ? 0.5 : sol.V_over_F;
         auto r = solver::newton1D(fres, dres, V0, nro);
 
-        sol.V_over_F   = r.x;
+        //  A FLAT RACHFORD-RICE FUNCTION FIXES V/F ONLY TO tolerance/|g'|
+        //  (external review R-007, DEV.md 4c C467).  Near the pure-component
+        //  limit g(V) is almost flat (the review's z = 1e-8 benzene state has
+        //  |g'| = 8e-9): the residual test g < tolerance is then met by the
+        //  SEED V = 0.5, the Newton step does nothing, and V/F = 0.5 was
+        //  published as converged when the root is 0.275.  The residual says
+        //  nothing about V/F there; the width of the interval it accepts,
+        //  tolerance/|g'|, does.  When that width exceeds illConditionedBand
+        //  the state is DECLARED ill-conditioned (advisory below) and V/F is
+        //  located by bisection of g alone, which needs no slope.
+        scalar Vroot = r.x;
+        if (r.converged)
+        {
+            const scalar gp = std::abs(dres(r.x));
+            const scalar width = (gp > 0.0) ? opts.tolerance / gp
+                                            : std::numeric_limits<scalar>::infinity();
+            if (width > illConditionedBand)
+            {
+                illConditioned = true;
+                illGp          = gp;
+                illWidth       = width;
+                scalar lo = 0.0, hi = 1.0;
+                const scalar glo = fres(lo), ghi = fres(hi);
+                if (glo > 0.0 && ghi < 0.0)   // RR falls from g(0) > 0 to g(1) < 0
+                {
+                    for (int bi = 0; bi < 200; ++bi)
+                    {
+                        const scalar mid = 0.5 * (lo + hi);
+                        (fres(mid) > 0.0 ? lo : hi) = mid;
+                    }
+                    Vroot = 0.5 * (lo + hi);
+                }
+            }
+        }
+
+        sol.V_over_F   = Vroot;
         sol.iterations += r.iterations;   // CUMULATIVE across outer passes (pass-4: 14-vs-1 confusion)
         sol.residual   = r.residual;
         sol.converged  = r.converged;
@@ -1913,6 +1953,25 @@ IsothermalFlash::solveCore(const FlashInput&    in,
     //  inner verdict standing and print "converged after N iterations": on
     //  flash02 with `maxOuterIter 1;` it published V/F 0.890 against the
     //  converged 0.798, "Converged: yes", exit 0.
+    if (illConditioned && !phaseTrivial)
+    {
+        std::ostringstream msg;
+        msg << "flash: the Rachford-Rice equation is ILL-CONDITIONED at T = "
+            << in.T << " K, P = " << in.P << " Pa (|dg/dV| = " << std::scientific
+            << std::setprecision(2) << illGp << "): the declared residual"
+               " tolerance " << opts.tolerance << " fixes the vapour fraction"
+               " only to +-" << illWidth << ", so V/F = "
+            << std::fixed << std::setprecision(6) << sol.V_over_F
+            << " was located by bisection of g(V) and is determined by"
+               " differences far below what the K-values carry; the state is"
+               " at the edge of the two-phase window (a nearly pure feed or a"
+               " pressure within a few ppm of a phase boundary)";
+        AdvisoryLog::instance().add("solver", "warning",
+                                    "flash Rachford-Rice ill-conditioned", msg.str());
+        if (opts.verbosity >= 1)
+            std::cout << "\n  [flash] " << msg.str() << ".\n";
+    }
+
     const bool outerExhausted = !phaseTrivial && !(compDelta < opts.compositionTol);
     if (outerExhausted)
     {
