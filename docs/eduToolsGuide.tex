@@ -1529,6 +1529,57 @@ CO$_2$ record (45~kJ/mol) with the printed 10.0~kcal/mol (41.8~kJ/mol).
 The pair records are marked \code{teachingOnly}; none is design data.
 
 % ---------------------------------------------------------------------
+\subsection{Linear algebra without the pain}\label{sec:edu-linear-algebra-without-pain}
+
+\declaredanchor{ch:linear-algebra-without-pain}
+
+\noindent\textit{\small Tool:} \code{tool=linear-algebra-without-pain}.
+\textit{\small Case it starts from:} none --- the page is arithmetic on toy
+matrices and runs no engine; what is the engine's is each file and line it
+cites.
+
+\subsubsection*{The question}
+
+\emph{Why is a simulator full of matrices, and what are LU, pivoting and the
+conjugate gradient for?}
+
+\subsubsection*{What the page shows}
+
+Eight steps in lay language, each a sketch first, then the symbol, then where
+Choupo does it, with a small figure on $2\times2$ or $3\times3$ numbers you
+drag: two rulers crossing (a Newton step), elimination and LU as its receipt
+beside the cost as growing blocks, a tiny pivot on a few-digit calculator with
+the digits falling off, a wobbly table of two nearly parallel lines whose
+crossing jumps, a full matrix beside a block-tridiagonal band, what ``positive''
+means (the number $x'Ax$, not the entries of the table: two tables side by side
+with a polar plot and a direction arrow you turn), the bowl, saddle and ridge as
+contour plots and perspective sketches, many variables as a fan of parabolas one
+per principal axis beside the elimination pivots that give the same verdict
+(the receipt of step~2 is also the test), the plain-language meaning of
+\emph{definite}, \emph{semi-definite} and \emph{indefinite} with what the
+sources do and do not document about the name, and the zigzag of steepest
+descent against conjugate gradient.  A map links Newton's $J\,\Delta x=-F$ to
+each idea; a glossary, a quiz and the limits close the page.
+
+\subsubsection*{What the page computes, and what it does not}
+
+Everything drawn is the page's own arithmetic (marked \emph{page}); the numbers
+you set are marked \emph{assumption}.  No Choupo run is shown.  Choupo has no
+conjugate-gradient solver, and its LU equilibrates the matrix, which the toy does
+not; the page says both.  The textbook is Biegler, Grossmann and Westerberg
+(1997), pp.~255--256; Shewchuk's 1994 note inspired the page and supplies no number
+(\theorydest{ch:linear-algebra-without-pain}).
+
+\begin{tryit}
+In the first figure drag the guess onto the diagonal $x=y$ and watch the two
+rulers become parallel.  In the pivot figure keep six digits and push
+$\varepsilon$ to $10^{-7}$.  In the bowl figure make $A_{12}$ larger than the
+geometric mean of the diagonal and watch the bowl turn into a saddle.  In the
+many-variables figure raise the coupling of the $3\times3$ table past $c=2$ and
+watch the smallest parabola flip and a pivot go negative.
+\end{tryit}
+
+% ---------------------------------------------------------------------
 \subsection{Batch adsorption in a stirred tank}\label{sec:edu-batch-adsorption}
 
 \declaredanchor{sec:batch-adsorption-stirred-tank}

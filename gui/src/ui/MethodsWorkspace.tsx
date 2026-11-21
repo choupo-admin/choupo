@@ -410,6 +410,9 @@ const SolventMixtureTool = lazy(() =>
 const MaterialsTool = lazy(() =>
   import("./methods/MaterialsTool.js")
     .then((m) => ({ default: m.MaterialsTool })));
+const LinearAlgebraTool = lazy(() =>
+  import("./methods/LinearAlgebraTool.js")
+    .then((m) => ({ default: m.LinearAlgebraTool })));
 const RelaxationTool = lazy(() =>
   import("./methods/RelaxationTool.js")
     .then((m) => ({ default: m.RelaxationTool })));
@@ -710,6 +713,7 @@ export function MethodsWorkspace() {
             : tool === "correlation-simplicity" ? <CorrelationSimplicityTool />
             : tool === "data-reconciliation" ? <DataReconciliationTool />
             : tool === "solvent-mixture" ? <SolventMixtureTool />
+            : tool === "linear-algebra-without-pain" ? <LinearAlgebraTool />
             : tool === "relaxation" ? <RelaxationTool />
             : tool === "wegstein" ? <WegsteinTool />
             : tool === "active-set-qp" ? <ActiveSetQpTool />

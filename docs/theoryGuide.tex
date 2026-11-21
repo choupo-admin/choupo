@@ -14221,6 +14221,115 @@ behave the same regardless of how you re-express the parameters.
 \end{intuition}
 
 % ---------------------------------------------------------------------
+\section{Linear algebra without the pain: the solve inside every Newton step}\label{ch:linear-algebra-without-pain}
+
+\begin{whatyoulllearn}
+Every Newton step of the engine solves one linear system, $J\,\Delta x = -F$.
+This chapter derives what that solve costs and where it can go wrong, in the
+order a student meets it: Gaussian elimination and the LU factorisation as its
+\emph{receipt}, partial pivoting, the condition number, the block-tridiagonal
+structure of a column's Jacobian, the positive-definite quadratic (the
+\emph{bowl}), and the conjugate-gradient method that finishes an
+$n$-unknown bowl in $n$ steps.  The EduTool \code{linear-algebra-without-pain}
+draws each idea first as a picture; the numbers it prints are recomputed by its
+tests.
+\end{whatyoulllearn}
+
+\subsection*{The Newton step is a linear system}
+Linearising $F(x+\Delta x)\approx F(x)+J\,\Delta x$ and asking the
+approximation to vanish gives
+\begin{equation}
+  J\,\Delta x = -F, \qquad x_{\mathrm{new}} = x + \Delta x,
+  \label{eq:la-newton}
+\end{equation}
+with $J_{ij}=\partial F_i/\partial x_j$ (Biegler, Grossmann and Westerberg,
+\emph{Systematic Methods of Chemical Process Design}, 1997, Eqs.~8.18--8.21,
+pp.~255--256).  In the engine the right-hand side $-F$ is built in
+\code{NewtonND.cpp} and handed to the dense solver \code{gaussSolve}, a thin
+wrapper over \code{luFactor} and \code{luSolve} (\code{src/solver/LU.cpp}).
+
+\subsection*{LU is the receipt of elimination}
+Elimination subtracts $m_{ik}=a_{ik}/a_{kk}$ times row $k$ from row $i>k$.
+Keeping the multipliers below a unit diagonal gives
+\begin{equation}
+  PA = LU, \qquad L\,y = Pb, \qquad U\,x = y,
+  \label{eq:la-lu}
+\end{equation}
+with $P$ the row permutation of pivoting.  The factorisation costs
+$(n^3-n)/3$ multiply-adds and each solve $n^2$, counted in the loops, so one
+factorisation serves several right-hand sides (the stiff integrator factors its
+iteration matrix once per step and back-solves it for several).
+
+\subsection*{Pivoting}
+A multiplier larger than one magnifies the rounding already in a row.  Partial
+pivoting swaps into the diagonal the entry of largest magnitude at or below it,
+which keeps $|m_{ik}|\le 1$.  The engine additionally equilibrates the matrix
+before judging a pivot and refuses a pivot that is zero to working precision;
+the page's toy does neither.
+
+\subsection*{Conditioning}
+For $A(x+\delta x)=b+\delta b$,
+\begin{equation}
+  \frac{\lVert\delta x\rVert}{\lVert x\rVert}\le
+  \kappa\,\frac{\lVert\delta b\rVert}{\lVert b\rVert},
+  \qquad \kappa=\lVert A\rVert\,\lVert A^{-1}\rVert .
+  \label{eq:la-cond}
+\end{equation}
+$\kappa$ belongs to the problem, not the algorithm; it is the two-norm one here.
+
+\subsection*{Structure}
+A matrix of $N$ blocks of $n_v\times n_v$ coupling only neighbouring blocks is
+solved by block-Thomas in $O(N n_v^3)$ against $O((N n_v)^3)$ dense
+(\code{src/solver/BlockTridiagonal.H}); pivoting is inside each block only, the
+method's stated limit.
+
+\subsection*{What ``positive'' means, and many variables}
+Near a point, $f(x_0+x)\approx f(x_0)+\tfrac12\,x'Ax$ (for a quadratic, exactly):
+``positive'' is a statement about the \emph{number} $x'Ax$ for every direction
+$x$, not about the entries of $A$.  $\bigl[\begin{smallmatrix}1&2\\2&1\end{smallmatrix}\bigr]$
+has only positive entries and gives $-2$ along $(1,-1)$; $\bigl[\begin{smallmatrix}2&-1\\-1&2\end{smallmatrix}\bigr]$
+has negative entries and gives $6$ there, positive everywhere.  A symmetric $A$
+has $n$ perpendicular principal axes $q_k$ with $Aq_k=\lambda_kq_k$, and for
+$v=\sum_k u_kq_k$
+\begin{equation}
+  v'Av=\sum_{k=1}^{n}\lambda_k\,u_k^2 = \sum_{k=1}^{n} d_k\,w_k^2 ,
+  \label{eq:la-axes}
+\end{equation}
+the second sum from $A=LDL'$ (the elimination of Eq.~\eqref{eq:la-lu} on a
+symmetric table, no row swaps, $w=L'v$): $A$ is positive definite exactly when
+all $\lambda_k>0$, exactly when all pivots $d_k>0$.  One negative $\lambda_k$ is
+an \emph{indefinite} table (a saddle); a zero one, with none negative, a
+\emph{semi-definite} one.  The stability of a mixture is this statement for the
+Hessian of its Gibbs energy; Choupo's Michelsen test (\code{StabilityTest.H},
+\code{StabilityTest.cpp}) asks the global question, whether any composition at all
+lies below the tangent plane.  The words: a \emph{quadratic form} is $x'Ax$; Gauss
+(\emph{Disquisitiones Arithmeticae}, 1801, Section V, Art.~153) calls such
+functions of two unknowns ``forms of the second degree or simply forms'', and
+Miller's dictionary of first uses (MacTutor) says Euler perhaps used ``form'' in
+this sense in a paper read in 1775 and gives Salmon (1859) for the English
+``quadratic form''; the first use of \emph{definite} in this sense is not
+documented there.  Sylvester's law of inertia (1852) counts the upward and
+downward directions.
+
+\subsection*{The bowl and the conjugate gradient}
+The quadratic $f(x)=\tfrac12x'Ax-g'x$ is stationary where $Ax^*=g$; it is a
+bowl exactly when $A$ is positive definite, equivalently every eigenvalue is
+positive, every elimination pivot is positive, or a Cholesky factor
+$A=R'R$ exists.  The engine's QP solver requires it (\code{ActiveSetQP.H}) and
+its SQP driver keeps it by construction with a damped BFGS update.
+Steepest descent with the exact step $\alpha=r'r/(r'Ar)$, $r=g-Ax$, contracts
+the error in the norm $\sqrt{e'Ae}$ by at most $(\kappa-1)/(\kappa+1)$ per step
+and its steps are at right angles; conjugate gradient chooses directions with
+$d_i'Ad_j=0$ and finishes in at most $n$ steps in exact arithmetic.  Choupo has
+no conjugate-gradient solver; the method is taught here because the bowl is where
+it lives.
+
+\paragraph{Validity.}  Toy $2\times2$ and $3\times3$ tables; exact arithmetic for
+the $n$-step claim; no in-sample fit is involved.  Inspired by Shewchuk, \emph{An
+Introduction to the Conjugate Gradient Method Without the Agonizing Pain} (1994),
+from which no number is taken.
+
+% ---------------------------------------------------------------------
 \section{Relaxation: the first rung of recycle numerics}\label{ch:relaxation}
 
 \begin{whatyoulllearn}

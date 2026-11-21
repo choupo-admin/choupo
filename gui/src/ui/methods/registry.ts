@@ -70,6 +70,7 @@ export type MethodToolId =
   | "sle-pair"
   | "sour-water" | "rules-of-thumb" | "bode"
   | "tear-streams" | "relaxation" | "wegstein" | "active-set-qp" | "lub-scaleup"
+  | "linear-algebra-without-pain"
   | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
   | "declared-pathways" | "reactor-ladder" | "route-screening"
   | "least-squares" | "element-potential" | "limiting-reactant"
@@ -270,6 +271,16 @@ export const METHOD_PATHS: MethodPath[] = [
       { tool: "approach-to-equilibrium", why: "How close a reactor can get to equilibrium, and what a Gibbs reactor assumes." },
       { tool: "declared-pathways", why: "Equilibrium over the reactions you allow, against every pathway the species permit." },
       { tool: "vanheerden", why: "The hazard: heat generated against heat removed gives three steady states and an ignition." },
+    ],
+  },
+  {
+    id: "linear-solves",
+    title: "Linear solves and the bowl",
+    intro: "From why every Newton step is a linear system to the bowl, the constrained bowl, and a fit whose damping keeps it a bowl.",
+    steps: [
+      { tool: "linear-algebra-without-pain", why: "Elimination, LU as a receipt, pivoting, conditioning, structure, the positive-definite bowl, conjugate gradient." },
+      { tool: "active-set-qp", why: "The same bowl under constraints: the inner problem of every SQP step." },
+      { tool: "least-squares", why: "Gauss-Newton's step is a linear solve too, and its damping is what keeps the table a bowl." },
     ],
   },
   {
@@ -1798,6 +1809,24 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "own refusal when the declaration is withdrawn: it finds the cycle, "
       + "names every unit on it, and still will not choose the cut for you.",
     theory: "ch:newton-tears",
+  },
+  {
+    id: "linear-algebra-without-pain", blurb: "Why Newton steps are linear solves: LU, pivoting, the bowl.",
+    label: "Linear algebra without the pain",
+    discipline: "Flowsheeting & numerics", kind: "construction",
+    status: "live",
+    origins: ["page", "assumption"],
+    teaches: "Why a simulator is full of matrices: every Newton step solves "
+      + "J dx = -F.  Seven steps in lay language, each a picture first and "
+      + "a small figure you drag: two rulers crossing (the step), "
+      + "elimination and LU as its RECEIPT (keep it, reuse it for a new "
+      + "right-hand side), a tiny pivot losing every digit, the wobbly "
+      + "table of an ill-conditioned system, why a column's block-"
+      + "tridiagonal Jacobian is cheap, the bowl of a positive-definite "
+      + "matrix (and the saddle when it fails), and steepest descent's "
+      + "zigzag against conjugate gradient.  Every claim about the engine "
+      + "carries the file and line it was read at.",
+    theory: "ch:linear-algebra-without-pain",
   },
   {
     id: "relaxation", blurb: "Why a recycle is iterated, and how a step factor tames it.",
