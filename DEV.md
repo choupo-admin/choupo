@@ -5008,6 +5008,36 @@ accepts today, and that is a policy call.
 > Theory Guide section (build/dryer-crossflow); the EduTool then gets a section on
 > the three arrangements linked to them.
 
+> **C466 (architect, 2026-11-21): the debts the full sweep of 11-21 left.**  The
+> sweep of integ/sweep-1121 (C335 N2-CH4 kij + span guard, C167 slice 5) ran 1985
+> PASS, no case failed, 19 gates red; fixed and landed (d51c61c71e) after each was
+> re-run alone and a fresh --fast (89/0).  One was the branch (thermo-limits: flash09's
+> saturated state moved with the kij, probe compositions updated); the rest stale
+> generated files, defects already on main (K3's pair-source ban broke two probes;
+> new chapters), pool-only flakes, a passed date, and the batch07 band (1e-9 of the
+> reaction heat the c_ij fix moved: 2.865e-8 -> 2.63e-8, a tolerance, no value).
+> Left, and this item pays them: ch:drying and ch:linear-algebra-without-pain pinned
+> in KNOWN_UNCITED (a shrinking list grew -- give them their sources and unpin); the
+> olefins03 and curate08 dossiers stale against the engine's `system` line;
+> RECON_TOL of check_column_thermo_consistency raised 1e-7 -> 5e-7 (c3splitter02 at
+> 2.03e-7, rounding of printed digits -- confirm or restore); the gate manifest
+> re-observed only for the two new gates.  thermo-tables needs the NASA PDF in
+> thirdParty (private, environmental).
+
+> **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
+> mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
+> into the cloud branch, one full sweep ALONE (reason: the gas-only rule changes the
+> K path every flash goes through and the Database search order; the analytic
+> Jacobian is on by default in every batch case), then wasm and PDFs.  RULED: `role
+> radical` is renamed `gasOnly` (the word now states a phase rule, and stable gases
+> such as AL2O3(g) carry it), with `radical` read as an announced old synonym so no
+> record breaks; the Henry pair OH-water is retired if no case reads it (a pair the
+> engine can never use misleads the catalogue reader).  Both are a NEW cloud slice
+> after this integration, not added to the block.  The C453 leftovers it found (two
+> false sentences, operatorPanelsLesson.ts:179 and FastSlowTool.tsx:449; three knobs
+> out of domain: DryingCurveTool airY, MerkelTool airMoisture, LevenspielTool T) stay
+> with the laptop.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
