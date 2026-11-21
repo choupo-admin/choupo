@@ -1894,7 +1894,7 @@
     "check_iteration_budgets": {
       "exit": 0,
       "claim": "check_iteration_budgets: OK -- an iteration budget of 0, -1 or 0.5 is refused by name and never published converged; an exhausted Newton returns |f| at the x it returns; a ternary FUG with a distributed non-key is refused naming it; shipped shortcut01 and adiabaticFlash01 unchanged; two engine sabotages and the converged control are seen",
-      "seconds": 1.8
+      "seconds": 3.9
     }
   }
 }
