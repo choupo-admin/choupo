@@ -158,9 +158,18 @@ ElementaryRate ElementaryRate::fromDict(const DictPtr&       rxn,
                                                       : kin->lookupScalarOrDefault("b", 0.0);
     law.Ea_ = eaJoulePerMol(kin, kin->lookupScalar("Ea"), who);
 
-    // third-body efficiencies: unlisted species 1.0
-    law.eff_.assign(n, 1.0);
+    // third-body efficiencies: unlisted species take `defaultEfficiency` (1.0)
     const bool tbBlock = kin->found("thirdBody");
+    if (kin->found("defaultEfficiency"))
+    {
+        if (law.form_ == Form::modifiedArrhenius)
+            throw std::runtime_error(who + ": `defaultEfficiency` belongs to a collider"
+                " ([M]) -- `type thirdBody` or `falloff`.");
+        if (!tbBlock)
+            throw std::runtime_error(who + ": `defaultEfficiency` without a `thirdBody"
+                " { species eff; }` block -- name the colliders it does not cover.");
+    }
+    law.eff_.assign(n, kin->lookupScalarOrDefault("defaultEfficiency", 1.0));
     if (law.form_ == Form::thirdBody && !tbBlock)
         throw std::runtime_error(who + ": `type thirdBody` needs a `thirdBody"
             " { species efficiency; }` block (an empty block means all 1).");

@@ -1145,7 +1145,8 @@ sVector
 BatchReactor::thirdBodyEfficiencies_(const DictPtr& kin,
                                      const ThermoPackage& thermo) const
 {
-    sVector eff(thermo.n(), 1.0);            // unlisted species => 1.0
+    //  unlisted species => defaultEfficiency (1.0 when absent)
+    sVector eff(thermo.n(), kin->lookupScalarOrDefault("defaultEfficiency", 1.0));
     auto tb = kin->subDict("thirdBody");
     for (const auto& sp : tb->keys())
         eff[thermo.indexOf(sp)] = tb->lookupScalar(sp);

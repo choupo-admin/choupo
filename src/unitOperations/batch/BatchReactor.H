@@ -262,7 +262,9 @@ private:
     scalar ckA_ (const DictPtr& kin, scalar A,  int molecularity) const;
     scalar ckEa_(const DictPtr& kin, scalar Ea) const;
     // Full-length third-body efficiency vector from a `thirdBody { sp eff; }`
-    // sub-dict (unlisted species => 1.0).
+    // sub-dict; an unlisted species takes `defaultEfficiency` (1.0 when the
+    // key is absent; 0 with one species listed = a single collider, CHEMKIN's
+    // `(+AR)`, Cantera's `default-efficiency: 0`).
     sVector thirdBodyEfficiencies_(const DictPtr& kin,
                                    const ThermoPackage& thermo) const;
 
