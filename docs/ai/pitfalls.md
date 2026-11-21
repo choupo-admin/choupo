@@ -819,3 +819,16 @@ homogeneous root at the same (T, P, z): a mixture's critical locus lies above
 the pure Tc of its lighter component.  A phi-phi state that is one phase is
 simply one phase.  Theory Guide, `sec:flash-above-tc`; gate
 `check_supercritical_route`.
+
+## A VLLE answer drops a phase by RE-SOLVING, never by renormalising (C467, 2026-11-21)
+
+`phaseSet VLLE` searches three phases by Gibbs minimisation.  When the answer
+carries a vapour below 1 % of the feed, a liquid below 1 %, or two liquids that
+are one phase (ideal mixtures have a strictly convex Gibbs surface: no second
+liquid, ever; a near-critical pair is merged only if the merged liquid passes
+the Michelsen test), the unit solves the narrower flash (LL or VL) and
+publishes THAT state; every component balance closes (before: a dropped vapour
+was renormalised away and ethanol was off by up to 7e-5 of F, and an ideal
+binary came out as V plus two copies of one liquid).  The run announces the
+re-solve on stderr and in the advisory log.  The absent port carries F = 0.
+Theory Guide, `sec:vlle-drop-phase`; gate `check_vlle_fallback` arm (k).

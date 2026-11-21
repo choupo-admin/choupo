@@ -119,6 +119,26 @@ WHAT THIS CHECKS:
            one liquid): exit 0, one liquid.  Before: auto -> VL, then Kvec
            refused the package ("declares NO vapour phase"), exit 2.
 
+  (k) A PHASE THE SEARCH CANNOT JUSTIFY IS DROPPED BY RE-SOLVING (DEV.md 4c
+      C467 slices 3-4; the external review's R-008 and R-009).  The real
+      defect: the VLLE block took the Nelder-Mead minimiser's "converged" as
+      an equilibrium certificate and published a state nobody had re-solved.
+      (k1) R-008, on a fresh run of a COPY of the witness vlle04 (ethanol +
+           cyclohexane, vapour below 1 %): the vapour was dropped and the
+           liquid fractions RENORMALISED with the three-phase compositions
+           kept, so ethanol was off the balance by 3.6271e-6 of F on this witness (6.9997e-5 at z = 0.3; the plant
+           report's closure read 100.0004 %).  Each component's feed flow
+           must equal the sum of the three ports' within 1e-9 of F.
+      (k2) R-009, on a FIXTURE copy of vlle03 reduced to the IDEAL binary
+           compB + compC (tau = 0, 0.5 bar, 350 K, z = 40/60): a Gibbs
+           surface that is strictly convex has no second liquid, yet the
+           search published V + two copies of one liquid (x_B 0.909205 and
+           0.909119, 10.86 and 27.09 kmol/h).  Exactly ONE liquid port may
+           carry flow, and the three ports must sum to the feed.
+      (k3) THE POSITIVE CONTROL: vlle03 unchanged must still publish THREE
+           phases, its two liquids differing in x_A by more than 0.5 -- the
+           repair must not switch the multiphase search off.
+
 WHAT THIS DOES NOT CHECK.  Whether the split is RIGHT: the witness's NRTL
 pair is Choupo's own case-local regression and predicts a second liquid its
 own evidence does not show (that is why the witness can reach the fallback at
@@ -175,6 +195,10 @@ SABOTAGES (by hand, 2026-10-05; each restored with `git checkout` and
       each other on the wrong state, which is why the arm reads the
       PRODUCER's row.  (f2) passes: it reads the source, which still calls
       the rule.
+  S11 (arm (k), C467) the re-solve removed (the VLLE block returns the
+      truncated three-phase state again) -> (k1) FAILS on the component
+      imbalance and (k2) FAILS with two liquid ports carrying flow
+      (numbers: see the sabotage record in the C467 commit).
 """
 import json
 import pathlib
@@ -589,6 +613,107 @@ def main() -> int:
                         f"stable feed: exit {rc}, waterRich {fa}, butanolRich "
                         f"{fb} -- must publish ONE converged liquid")
 
+
+    # (k) C467 slices 3-4: a dropped phase is RE-SOLVED, never renormalised ---
+    with tempfile.TemporaryDirectory() as td:
+        ignore = shutil.ignore_patterns("converged", "reports", "log.*",
+                                        "iterations", "expected")
+
+        def flows_k(path):
+            if not path.is_file():
+                return {}
+            blk = re.search(r"componentMolarFlows\s*\{(.*?)\}",
+                            path.read_text(), re.S)
+            return {k: float(v) for k, v in
+                    re.findall(r"(\w+)\s+([0-9.eE+-]+)", blk.group(1))} \
+                if blk else {}
+
+        # (k1) R-008 on the ethanol + cyclohexane witness
+        case = pathlib.Path(td) / "k1"
+        shutil.copytree(ROOT / WITNESS, case, ignore=ignore)
+        mp = case / "constant" / "propertyManifest"
+        if mp.exists():
+            mp.unlink()
+        rc, log = run(case)
+        fd = flows_k(case / "0" / "feed")
+        ports = [flows_k(case / "converged" / n)
+                 for n in ("vapour", "liquidAlpha", "liquidBeta")]
+        if rc != 0 or not fd or not ports[1]:
+            fail.append(f"(k1) the witness did not run (exit {rc})")
+        else:
+            F = sum(fd.values())
+            worst = max(abs(fd[c] - sum(p.get(c, 0.0) for p in ports))
+                        for c in fd) / F
+            if worst > 1.0e-9:
+                fail.append(f"(k1) a component is off the balance by "
+                            f"{worst:.3e} of F (tolerance 1e-9): the dropped "
+                            "phase was renormalised away instead of the "
+                            "reduced problem being re-solved (3.6e-6 "
+                            "before C467)")
+
+        # (k2) R-009 on the ideal binary
+        case = pathlib.Path(td) / "k2"
+        shutil.copytree(ROOT / WITNESS3, case, ignore=ignore)
+        for sub in ("constant/propertyManifest", "0/liquidA", "0/liquidB",
+                    "0/vapor"):
+            f = case / sub
+            if f.exists():
+                f.unlink()
+        tp = case / "constant" / "thermoPhysPropDict"
+        tp.write_text(tp.read_text()
+                      .replace("( compA  compB  compC )", "( compB  compC )")
+                      .replace("                compA-compB { }\n", "")
+                      .replace("                compA-compC { }\n", ""))
+        ff = case / "0" / "feed"
+        ff.write_text(re.sub(r"componentMolarFlows\s*\{.*?\}",
+                             "componentMolarFlows\n{\n    compB 40 kmol/h;\n"
+                             "    compC 60 kmol/h;\n}", ff.read_text(),
+                             flags=re.S))
+        fs = case / "system" / "flowsheetDict"
+        s = fs.read_text()
+        fs.write_text(s.replace("alphaRich  compA;", "alphaRich  compB;")
+                       .replace("betaRich   compB;", "betaRich   compC;")
+                       .replace("P          1.0 bar;", "P          0.5 bar;"))
+        subprocess.run([str(ROOT / "bin" / "choupo-init0"), str(case)],
+                       capture_output=True, text=True, timeout=300,
+                       env={"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"})
+        rc, log = run(case)
+        la = flows_k(case / "converged" / "liquidA")
+        lb = flows_k(case / "converged" / "liquidB")
+        vp = flows_k(case / "converged" / "vapor")
+        na, nb = sum(la.values()), sum(lb.values())
+        if rc != 0 or not vp or sum(vp.values()) <= 0.0:
+            fail.append(f"(k2) the ideal binary did not run to a vapour (exit "
+                        f"{rc}): the fixture moved")
+        elif min(na, nb) > 1.0e-12:
+            fail.append(f"(k2) an IDEAL binary (strictly convex Gibbs "
+                        f"surface) was published as V + TWO liquids "
+                        f"({na:.4g} and {nb:.4g} kmol/h): two copies of one "
+                        "liquid are one phase")
+        elif abs(na + nb + sum(vp.values()) - 100.0) > 1.0e-6:
+            fail.append("(k2) the three ports do not sum to the feed")
+
+        # (k3) THE POSITIVE CONTROL: a real VLLE still finds three phases
+        case = pathlib.Path(td) / "k3"
+        shutil.copytree(ROOT / WITNESS3, case, ignore=ignore)
+        mp = case / "constant" / "propertyManifest"
+        if mp.exists():
+            mp.unlink()
+        rc, log = run(case)
+        la = flows_k(case / "converged" / "liquidA")
+        lb = flows_k(case / "converged" / "liquidB")
+        vp = flows_k(case / "converged" / "vapor")
+        if rc != 0 or not (la and lb and vp) or min(
+                sum(la.values()), sum(lb.values()), sum(vp.values())) <= 1e-9:
+            fail.append("(k3) the genuine three-phase witness vlle03 no "
+                        "longer publishes vapour + two liquids")
+        else:
+            xa = la["compA"] / sum(la.values())
+            xb = lb["compA"] / sum(lb.values())
+            if abs(xa - xb) < 0.5:
+                fail.append(f"(k3) vlle03's two liquids differ in x_A by only "
+                            f"{abs(xa - xb):.3f}: the real gap was merged")
+
     if fail:
         print("check_vlle_fallback: FAILED")
         for f in fail:
@@ -614,7 +739,7 @@ def main() -> int:
           "`consumerSearchApplies` in one home, called by the stamp and the "
           "unit, the three VLLE ports marked as published by a three-phase "
           "search).  "
-          "NOT checked: whether the split is right (a structural witness), "
+          "AND (C467): a dropped phase is RE-SOLVED, not renormalised (vlle04 closes every component to 1e-9 of F), an ideal binary is never published as two liquids, and vlle03 still finds its three phases.  NOT checked: whether the split is right (a structural witness), "
           "the VL fallback (no witness), the fallback's own material imbalance (the dropped sub-1 % vapour, inside the band), a VLLE port "
           "fed to a second VLLE unit (source only), and the "
           "ternary scan's VL / one-phase classification (still the string).  "

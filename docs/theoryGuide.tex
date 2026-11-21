@@ -21257,6 +21257,42 @@ coexistence is a one-dimensional curve in $(T, P)$ by Gibbs phase
 rule ($F = 2 + 2 - 3 = 1$); ternaries give a two-dimensional region
 ($F = 2$) and are pedagogically more robust.
 
+\paragraph{A phase the search cannot justify is re-solved, not
+renormalised.}\label{sec:vlle-drop-phase}
+The simplex minimises $G/RT$ over the three-phase variables and returns
+a state that may carry a phase the physics does not.  The minimiser's
+``converged'' flag says only that the simplex stopped moving; it is not
+an equilibrium certificate.  Dropping a phase by deleting it and
+renormalising the others would publish the overall composition
+$(\mathbf z - \beta_V \mathbf y)/(1-\beta_V) \neq \mathbf z$, so the
+component balance would fail by a quantity of order $\beta_V\,|\mathbf
+y - \mathbf z|$.  The engine instead tests three candidates after the
+search and answers each with the narrower flash itself:
+\begin{enumerate}[leftmargin=*,nosep]
+  \item $\beta_V < 10^{-2}$: the liquid--liquid branch of the same feed
+        is solved; its answer stands only if no vapour is favourable
+        over it, $\sum_i x_i\gamma_i P_i^{\mathrm{sat}}/(\phi_i P) \le 1$;
+  \item $\beta_\alpha$ or $\beta_\beta < 10^{-2}$: the vapour--liquid
+        branch is solved;
+  \item $\max_i|x_{\alpha,i}-x_{\beta,i}| < 5\times10^{-2}$: the two
+        liquids are candidates for being one phase, and the
+        vapour--liquid branch is solved.  The merge is accepted only if
+        the resulting liquid passes the Michelsen tangent-plane test
+        (\S\ref{ch:lle-gibbs}); a real gap close to a critical point
+        therefore survives.  For an ideal mixture $g^{E}=0$, the
+        mixing surface $x\ln x+(1-x)\ln(1-x)$ is strictly convex and
+        two distinct liquids can never coexist, so this test always
+        merges them.
+\end{enumerate}
+The re-solved state is the one published, and it closes every component
+balance by construction; if the narrower solve fails or is refuted, the
+untruncated three-phase state (which does close the balance) is
+published.  The decision is announced in the run and in the advisory
+log.  Witnesses: \code{vlle04\_two\_liquids\_decanter} (case (1)), an
+ideal-binary fixture and the positive control
+\code{vlle03\_audit\_artificial} in \code{check\_vlle\_fallback}, arm
+(k).
+
 \subsection*{Beyond Gibbs-minimisation Nelder-Mead}
 
 Nelder-Mead works well up to about ten dimensions.  For very

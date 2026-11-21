@@ -1458,37 +1458,79 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         sVector y, xA, xB;
         unpackVLLE(bestV, bV, bA, bB, y, xA, xB);
 
-        // If one of the three phases is vanishingly small, demote to
-        // 2-phase (V+L or LL).  Threshold: 1 %.
-        const scalar PHASE_EPS = 1.0e-2;
-        if (bV < PHASE_EPS)
+        //  A PHASE THE SEARCH CANNOT JUSTIFY IS DROPPED BY RE-SOLVING, NEVER BY
+        //  RENORMALISING (DEV.md 4c C467 slices 3-4; the defect: the three-phase
+        //  answer was truncated to two phases -- the small phase's moles thrown
+        //  onto the others, the compositions kept -- so the published state
+        //  broke the component balance (ethanol 7e-5 of F) and the Nelder-Mead
+        //  "converged" flag certified a state nobody had re-solved; and an
+        //  IDEAL binary, whose Gibbs surface is strictly convex, was published
+        //  as V + two copies of one liquid because the objective is flat
+        //  against splitting one liquid in two).
+        //  Three candidates are tested, each by the narrower solve itself:
+        //    (1) the vapour is below PHASE_EPS            -> LL branch,
+        //    (2) one liquid is below PHASE_EPS            -> VL branch,
+        //    (3) the two liquids are the same phase
+        //        (max |x_a - x_b| < SAME_LIQUID)          -> VL branch;
+        //        a CANDIDATE only: the VL answer stands only if its liquid is
+        //        Michelsen-TPD stable, so a real gap near a critical point is
+        //        not merged away.
+        //  The re-solved state is published (it closes the balance by
+        //  construction); the LL answer must also carry no favourable vapour.
+        //  If the narrower solve fails, or its answer is refuted, the
+        //  UNTRUNCATED three-phase state -- which does close the balance -- is
+        //  published, and nothing is renormalised.
+        const scalar PHASE_EPS    = 1.0e-2;
+        const scalar SAME_LIQUID  = 5.0e-2;
+        scalar dLiq = 0.0;
+        for (std::size_t i : act) dLiq = std::max(dLiq, std::abs(xA[i] - xB[i]));
+
+        const bool dropVapour = bV < PHASE_EPS;
+        const bool dropLiquid = !dropVapour && (bA < PHASE_EPS || bB < PHASE_EPS);
+        const bool sameLiquid = !dropVapour && !dropLiquid && dLiq < SAME_LIQUID;
+        if (dropVapour || dropLiquid || sameLiquid)
         {
-            // 2-phase LL --- emit as the LL branch normally would.
-            const scalar denom = 1.0 - bV;
-            sol.regime     = "two-phase liquid (LL, VLLE attempt found V β ≈ 0)";
-            sol.liquidLiquid = true;
-            sol.V_over_F   = bB / denom;
-            sol.x          = xA;
-            sol.y          = xB;
-            sol.K          = thermo.Kvec_phases(pAlpha, pBeta, in.T, in.P, xA, xB);
-            sol.iterations = totalEvals;
-            sol.residual   = bestG;
-            sol.converged  = bestConv;
-            return sol;
-        }
-        if (bA < PHASE_EPS || bB < PHASE_EPS)
-        {
-            // 2-phase V+L --- pick the larger liquid as the unique L.
-            const auto& xL = (bA >= bB) ? xA : xB;
-            sol.regime     = "two-phase (VL, VLLE attempt found one L β ≈ 0)";
-            sol.V_over_F   = bV;
-            sol.x          = xL;
-            sol.y          = y;
-            sol.K          = thermo.Kvec(in.T, in.P, xL, y);
-            sol.iterations = totalEvals;
-            sol.residual   = bestG;
-            sol.converged  = bestConv;
-            return sol;
+            FlashOptions sub = opts;
+            sub.phaseSet  = dropVapour ? PhaseSet::LL : PhaseSet::VL;
+            sub.verbosity = 0;
+            FlashSolution s2 = solveCore(in, thermo, sub);
+            bool holds = s2.converged;
+            if (holds && dropVapour && s2.liquidLiquid)
+            {
+                //  a vapour over the split?  (as the narrower-solve test above)
+                const auto gX = thermo.phase(pAlpha).activityCoefficients(in.T, s2.x);
+                sVector yI(n, 0.0);
+                scalar sI = 0.0;
+                for (std::size_t i : act)
+                { yI[i] = s2.x[i] * gX[i] * std::exp(-lnPoverPsat[i]); sI += yI[i]; }
+                for (std::size_t i : act) yI[i] /= sI;
+                const sVector lpI = lnPhiVap(yI);
+                scalar sK = 0.0;
+                for (std::size_t i : act)
+                    sK += s2.x[i] * gX[i] * std::exp(-lnPoverPsat[i] - lpI[i]);
+                holds = !(sK > 1.0 + 1.0e-8);
+            }
+            else if (holds && !dropVapour && s2.V_over_F < 1.0 - 1.0e-12)
+            {
+                holds = !solver::michelsenTPD(thermo.phase(pAlpha),
+                                              in.T, in.P, s2.x).unstable;
+            }
+            if (holds)
+            {
+                const char* what = dropVapour
+                    ? "vapour below 1 % of the feed: re-solved as LL"
+                    : (dropLiquid ? "one liquid below 1 % of the feed: re-solved as VL"
+                                  : "the two liquids are one phase: re-solved as VL");
+                if (opts.verbosity >= 1)
+                    std::cerr << "[flash] VLLE: " << what << " (announced).\n";
+                AdvisoryLog::instance().add("solver", "info",
+                    "isothermalFlash VLLE",
+                    std::string("the three-phase search found ") + what
+                    + "; the published state is the re-solved one.");
+                s2.regime = s2.regime + " -- VLLE: " + what;
+                s2.iterations = totalEvals;
+                return s2;
+            }
         }
 
         // Genuine 3-phase
