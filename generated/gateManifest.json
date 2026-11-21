@@ -1903,8 +1903,8 @@
     },
     "check_flash_ill_conditioned": {
       "exit": 0,
-      "claim": "check_flash_ill_conditioned: OK -- a flat Rachford-Rice function is declared and V/F is bisected, not left at the seed: 0.275308 and 0.724692 against the references 0.275308 / 0.724692; an ordinary flash prints no warning; the pre-fix V/F = 0.5 output is refused",
-      "seconds": 0.1
+      "claim": "check_flash_ill_conditioned: OK -- a flat Rachford-Rice function is declared and V/F is bisected, not left at the seed: 0.275308 and 0.724692 against the references 0.275308 / 0.724692; an ordinary flash and a close boiler (|g'| 7e-5) print no warning; the pre-fix V/F = 0.5 output is refused",
+      "seconds": 0.2
     }
   }
 }
