@@ -55,7 +55,7 @@ import { describe, expect, it } from "vitest";
 import {
   DISPLAY_UNITS, EPS_S, EPS_X, RECYCLE_QMAX_DEFAULT, RECYCLE_QMIN_DEFAULT,
   TOY_DEFAULTS, TOY_F_STAR, TOY_T_STAR, WEGSTEIN_WITNESS, WITNESS_SOLVER_DICT,
-  driveDirect, driveNewton, driveWegstein, normL2, recycleOverrides,
+  driveDirect, driveNewton, driveWegstein, driveWegsteinInUnits, normL2, recycleOverrides,
   recycleResidual, toyEigenvalues, toyG, toySpectralRadius, wegsteinStep,
   type DisplayUnits, type ToyMap,
 } from "../src/ui/methods/wegsteinMath.js";
@@ -330,5 +330,58 @@ describe("reading the engine's own residual curves", () => {
     expect(recycleResidual(undefined, "mass")).toBeNull();
     expect(recycleResidual([{ label: "Mass balance (global)", residuals: [] }],
       "mass")).toBeNull();
+  });
+});
+
+describe("invariance computed in the other units, not asserted (R-003, C467)", () => {
+  const map: ToyMap = { a: 0.88, b: 0.6, c: 0.08 };
+
+  it("a run whose state LIVES in the display units reproduces the SI coefficients", () => {
+    const si = driveWegstein(map, { ...OPTS, qMin: -5, qMax: 0 });
+    for (const u of DISPLAY_UNITS) {
+      const r = driveWegsteinInUnits(map, { ...OPTS, qMin: -5, qMax: 0, units: u });
+      const n = Math.min(r.iterates.length, si.iterates.length, 6);
+      expect(n).toBeGreaterThan(2);
+      for (let k = 0; k < n; ++k)
+        for (let i = 0; i < 2; ++i) {
+          //  Different floating-point operations (A x + B, then back), so
+          //  agreement is to rounding, not to the bit.
+          expect(r.iterates[k]!.vars[i]!.q).toBeCloseTo(si.iterates[k]!.vars[i]!.q, 6);
+          expect(r.iterates[k]!.x[i]).toBeCloseTo(si.iterates[k]!.x[i]!, 8);
+        }
+    }
+  });
+
+  it("and it is a different computation: the bits differ in a scaled unit", () => {
+    const si = driveWegstein(map, { ...OPTS, qMin: -5, qMax: 0 });
+    const hr = driveWegsteinInUnits(map,
+      { ...OPTS, qMin: -5, qMax: 0, units: DISPLAY_UNITS[1]! });
+    let differs = false;
+    for (let k = 1; k < Math.min(si.iterates.length, hr.iterates.length); ++k)
+      if (si.iterates[k]!.vars[0]!.q !== hr.iterates[k]!.vars[0]!.q) differs = true;
+    expect(differs).toBe(true);
+  });
+
+  it("the epsX caveat: a step below 1e-14 in one unit and above it in another", () => {
+    //  g(x) = 0.5 x + 5e-15, x0 = 0, clamp [-5, 0], two Wegstein updates run
+    //  in SI and in a unit 3600 times larger.  Same algebra, different q,
+    //  because |dx| < epsX in one scale and not in the other.
+    const run = (A: number) => {
+      const g = (x: number) => A * (0.5 * (x / A) + 5e-15);
+      let x = 0;
+      let prev: { x: number[]; gx: number[] } | null = null;
+      let last = 0;
+      for (let k = 0; k < 3; ++k) {
+        const gx = g(x);
+        const v = wegsteinStep([x], [gx], prev, -5, 0)[0]!;
+        last = v.q;
+        prev = { x: [x], gx: [gx] };
+        x = v.next;
+      }
+      return { q: last, xOverA: x / A };
+    };
+    const si = run(1), big = run(3600);
+    expect(si.q).toBe(0);                     // |dx| < epsX: the guard fires
+    expect(big.q).toBeLessThan(-0.5);         // the same step, seen in larger units, does not
   });
 });

@@ -6358,6 +6358,20 @@ PYEOF
     fi
     rm -f /tmp/gasonly.$$
 
+    # flat Rachford-Rice gate (2026-11-21, DEV.md 4c C467, review R-007).  A
+    # state whose g(V) is almost flat meets the residual test at the SEED: the
+    # defect it would have caught is benzene/toluene at z = 1e-8 published as
+    # "Converged: yes, V/F = 0.5" against a root of 0.2753, every golden green.
+    if gate_exec "$ROOT/bin/curate/check_flash_ill_conditioned.py" > /tmp/flashill.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "flash-ill-conditioned-gate" "$(head -1 /tmp/flashill.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_flash_ill_conditioned.py)\n" "flash-ill-conditioned-gate"
+        cat /tmp/flashill.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/flashill.$$
+
     # supercritical-route gate (2026-11-21, DEV.md 4c C467, review R-010).  A
     # two-phase root above every pure Tc was discarded whatever its route; under
     # phi-phi (one cubic, no Psat/Henry) a converged split lowering G is real.

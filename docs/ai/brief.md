@@ -210,7 +210,7 @@ Activity model: replace the `liquid` block with
     }
 ```
 
-NRTL pairs shipped are few: 1Propanol-water, acetone-ethanol, acetonitrile-water, benzene-toluene, ethanol-ethylAcetate, ethanol-water, isopropanol-water, methanol-methylAcetate, methanol-water.
+NRTL pairs: catalogue `data/standards/parameters/NRTL/` (count in `generated/releaseInventory.json`). Look the pair up first with `op:pairLookup`; a record is no validity certificate for your range.
 For a pair NOT in the catalogue, in this order (pack `properties` has the fit grammar):
 
 1. UNIFAC (`activityModel { model UNIFAC; }`), and SAY to the student that it
@@ -447,7 +447,7 @@ students' approved files are the ground truth: **do not regenerate the case.**
   material forms ....... src/streams/StreamStateIO.cpp:1069-1103
   two-variable rule .... docs/ai/stream-state.md §2; gate check_overspecified_stream
   heater takes Q only .. src/unitOperations/heatTransfer/Heater.cpp:70-79
-  NRTL catalogue pairs . data/standards/parameters/NRTL/ (9 files, 2026-11-01)
+  NRTL catalogue pairs . data/standards/parameters/NRTL/ (count: generated/releaseInventory.json)
   units incl. degC ..... src/core/Units.cpp:62,107,132,189
   SRK / PengRobinson ... src/thermo/equationOfState/EquationOfState.cpp:72-81
   unit operation keys .. each unit's own .cpp under src/unitOperations/ (unit-ops.md is NOT authoritative)

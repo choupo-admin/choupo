@@ -258,6 +258,15 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
           + "So the slope is unchanged, hence so is the coefficient, hence "
           + "so is the entire trajectory.",
         eq: String.raw`s_i \to \frac{A g_i}{A x_i} = s_i`},
+      { step: "That is the algebra of an exact secant. In floating point the "
+          + "engine has one absolute threshold, epsX = 1e-14, below which a "
+          + "variable that moved is treated as not having moved and keeps "
+          + "q = 0 (src/solver/Wegstein.cpp:64). It is written in the "
+          + "variable's own unit, so it is not invariant: a step of 5e-15 in "
+          + "one unit system is 1.8e-11 in a unit 3600 times larger, and only "
+          + "the second forms a secant. The page's comparison below runs the "
+          + "iteration in the selected units as a separate computation and "
+          + "agrees to rounding for any step that is not that small." },
     ],
     formula: String.raw`\begin{aligned}
 s_i &= \frac{g_i(x_k) - g_i(x_\mathrm{prev})}{x_{i,k} - x_{i,\mathrm{prev}}}\\[4pt]

@@ -42,7 +42,7 @@ License
 
 import { describe, expect, it } from "vitest";
 import {
-  readHxy, hAt, vapourEnthalpyAt, deltaD, leverLV,
+  readHxy, hAt, vapourEnthalpyAt, deltaD, leverLV, segments,
 } from "../src/case/ponchonSavarit.js";
 
 //  x1, y1, T, h_liquid, H_vapour.  H rises steeply with y so that H(y = x_D)
@@ -126,4 +126,37 @@ describe("ponchon-savarit geometry", () => {
       const dWrong = { x: xD, y: h + (R + 1) * (-32000 - h) };
       expect(leverLV(dWrong, -32000, h)!).toBeCloseTo(R / (R + 1), 12);
     });
+});
+
+//  R-005 (external review, C467 slice 6): the refused node at x = 0.5 used to
+//  be dropped and the curve interpolated straight across it.  This is the
+//  review's own synthetic input.
+describe("a refused node is never bridged", () => {
+  const REV = [
+    "x1,y1,T_K,h_liquid_J_per_mol,H_vapour_J_per_mol,role,status",
+    "0,0,350,0,100,bubble,ok",
+    "0.5,,,,,bubble,bubbleNotConverged",
+    "1,1,400,10,120,bubble,ok",
+  ].join("\n");
+  const rows = readHxy(REV);
+
+  it("keeps two nodes but in two segments", () => {
+    expect(rows).toHaveLength(2);
+    expect(rows[0]!.seg).not.toBe(rows[1]!.seg);
+    expect(segments(rows)).toHaveLength(2);
+  });
+  it("answers null inside the gap, not 5 J/mol", () => {
+    expect(hAt(rows, 0.5)).toBeNull();
+    expect(deltaD(rows, 0.5, 2)).toBeNull();
+    expect(vapourEnthalpyAt(rows, 0.5)).toBeNull();
+  });
+  it("still answers at a node and clamps outside the data", () => {
+    expect(hAt(rows, 0)).toBe(0);
+    expect(hAt(rows, 1)).toBe(10);
+  });
+  it("interpolates normally inside one segment", () => {
+    const r = readHxy(CSV);
+    expect(hAt(r, 0.1)).toBeCloseTo(-99000, 6);
+    expect(hAt(r, 0.5)).toBeNull();
+  });
 });

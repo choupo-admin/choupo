@@ -12752,6 +12752,35 @@ $K_i$ (Antoine outside its range; $\gamma_i$ blowing up; $T$ below
 the lower phase boundary).
 \end{keyidea}
 
+\subsection{When $g$ is almost flat: an ill-conditioned state}\label{sec:rr-ill-conditioned}
+
+A small residual does not by itself fix $\beta$.  Near a pure-component
+limit every term of $g$ is nearly constant in $\beta$, so
+$|g'(\beta^\ast)|$ can be many orders of magnitude below one, and the
+residual test $|g(\beta)|<\varepsilon$ (the flash's \texttt{tolerance},
+$10^{-8}$) is met by an interval of width
+\[
+   \delta\beta \;\approx\; \frac{\varepsilon}{\lvert g'(\beta^\ast)\rvert}
+\]
+rather than by a point.  A feed with $z_1 = 10^{-8}$ of one component of a
+benzene/toluene pair, at a pressure inside the narrow two-phase
+window (a few $10^{-4}$\,Pa wide), has $|g'|\approx 8\times10^{-9}$, so $\delta\beta\approx1$: the
+starting guess $\beta^{(0)}=0.5$ already satisfies the test and a Newton
+step that did nothing was published as converged, with $\beta=0.5$ against
+a root near $0.275$.  An external review found this state (C467, R-007).
+
+Choupo therefore computes $\delta\beta$ at every converged inner solve.
+When $\delta\beta>10^{-4}$ the state is declared
+\emph{ill-conditioned}: $\beta$ is located by bisection of $g(\beta)$ on
+$[0,1]$ (which needs the sign of $g$, not its slope, and $g$ is strictly
+decreasing), and a warning that names the state, $|g'|$ and
+$\delta\beta$ is printed and recorded in the run's advisories.  The
+warning is not an error: the split is a legitimate numerical answer, but
+it is determined by differences far below what the $K$-values carry
+(Antoine data, an activity model), and it sits at the edge of the
+two-phase window.  Ordinary states have $\delta\beta\sim10^{-8}$ and are
+untouched.
+
 \subsection{Initialisation: the Wilson $K$-value}
 
 A robust initial guess for $\Kv$ before any activity-coefficient

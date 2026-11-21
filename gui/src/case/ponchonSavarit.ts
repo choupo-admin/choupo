@@ -51,6 +51,10 @@ export interface HxyRow {
   T: number;       // K, shared by the pair
   h: number;       // J/mol, saturated liquid at x1
   H: number;       // J/mol, saturated vapour at y1
+  /** CONTINUOUS SEGMENT index: it grows by one at every node the engine
+   *  refused, so two rows with different `seg` have a refusal between them
+   *  and NOTHING may be interpolated across that pair. */
+  seg: number;
 }
 
 /** Read the op's CSV.  HEADER EQUALITY, not a prefix test: a drifted header
@@ -68,22 +72,40 @@ export function readHxy(csv: string): HxyRow[] {
   const iS = head.indexOf("status");
   if (iX < 0 || iY < 0 || iT < 0 || iH < 0 || iV < 0) return [];
 
-  const out: HxyRow[] = [];
+  //  Every node, refused or not, in grid order: a refused node keeps its
+  //  grid coordinate x1 and empty solved fields, so sorting by x1 puts it
+  //  exactly where the gap is.  The refused node is NOT kept as a row; it
+  //  bumps the segment counter, so a later interpolation can see that a
+  //  refusal lies between two neighbours and refuse to bridge them.
+  const recs: { x: number; ok: boolean; cells: string[] }[] = [];
   for (let i = 1; i < lines.length; ++i) {
     const c = lines[i]!.split(",");
-    //  A REFUSED NODE KEEPS ITS GRID COORDINATE AND EMPTY SOLVED FIELDS, so
-    //  a gap stays visible rather than being silently bridged.  Dropping the
-    //  row here is what keeps the curve honest: an interpolation across a
-    //  refusal would draw a line through a state the engine declined to
-    //  compute.
-    if (iS >= 0 && (c[iS] ?? "").trim() !== "ok") continue;
+    const refused = iS >= 0 && (c[iS] ?? "").trim() !== "ok";
+    recs.push({ x: Number(c[iX]), ok: !refused, cells: c });
+  }
+  recs.sort((a, b) => a.x - b.x);
+  const out: HxyRow[] = [];
+  let seg = 0;
+  for (const rec of recs) {
+    const c = rec.cells;
     const r: HxyRow = {
       x1: Number(c[iX]), y1: Number(c[iY]), T: Number(c[iT]),
-      h: Number(c[iH]), H: Number(c[iV]),
+      h: Number(c[iH]), H: Number(c[iV]), seg,
     };
-    if ([r.x1, r.y1, r.T, r.h, r.H].every(Number.isFinite)) out.push(r);
+    if (rec.ok && [r.x1, r.y1, r.T, r.h, r.H].every(Number.isFinite)) out.push(r);
+    else ++seg;   // a refusal (or an unreadable node) ends the segment
   }
-  out.sort((a, b) => a.x1 - b.x1);
+  return out;
+}
+
+/** The rows split into the continuous segments readHxy marked: draw each
+ *  one as its own line, never one line through all of them. */
+export function segments(rows: readonly HxyRow[]): HxyRow[][] {
+  const out: HxyRow[][] = [];
+  for (const r of rows) {
+    const last = out[out.length - 1];
+    if (last && last[0]!.seg === r.seg) last.push(r); else out.push([r]);
+  }
   return out;
 }
 
@@ -100,6 +122,7 @@ export function hAt(rows: readonly HxyRow[], x: number): number | null {
   for (let i = 1; i < rows.length; ++i) {
     const a = rows[i - 1]!, b = rows[i]!;
     if (x <= b.x1) {
+      if (a.seg !== b.seg) return x === b.x1 ? b.h : null;   // a refused node lies between
       const t = (x - a.x1) / (b.x1 - a.x1 || 1);
       return a.h + t * (b.h - a.h);
     }
@@ -172,6 +195,7 @@ export function vapourEnthalpyAt(
   for (let i = 1; i < byY.length; ++i) {
     const a = byY[i - 1]!, b = byY[i]!;
     if (y <= b.y1) {
+      if (a.seg !== b.seg) return y === b.y1 ? b.H : null;   // a refused node lies between
       const t = (y - a.y1) / (b.y1 - a.y1 || 1);
       return a.H + t * (b.H - a.H);
     }

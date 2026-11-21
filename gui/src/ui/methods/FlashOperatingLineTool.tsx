@@ -202,7 +202,18 @@ function Diagram({ curve, sol, z, comp }: {
     }
     if (pts.length >= 2) { ax = pts[0]!.x; ay = pts[0]!.y; bx = pts[1]!.x; by = pts[1]!.y; }
   }
-  const eq = curve.x.map((x, i) => `${sx(x)},${sy(curve.yEq[i]!)}`).join(" ");
+  //  One polyline per continuous run of nodes: a withheld interval is a hole
+  //  in the curve, never a chord.
+  const eqRuns: string[] = [];
+  {
+    let cur: string[] = [];
+    curve.x.forEach((x, i) => {
+      const g = (curve.gaps ?? []).some(([a, b]) => i > 0 && curve.x[i - 1]! <= a && x >= b);
+      if (g && cur.length) { eqRuns.push(cur.join(" ")); cur = []; }
+      cur.push(`${sx(x)},${sy(curve.yEq[i]!)}`);
+    });
+    if (cur.length) eqRuns.push(cur.join(" "));
+  }
   const two = sol.regime === "two-phase";
   const tick = (v: number): string => v.toFixed(2);
 
@@ -230,7 +241,9 @@ function Diagram({ curve, sol, z, comp }: {
         strokeWidth={1} strokeDasharray="3 3" />
       <text x={sx(0.86)} y={sy(0.90)} fontSize={10} fill={INK}>y = x</text>
 
-      <polyline points={eq} fill="none" stroke={ACCENT} strokeWidth={2} />
+      {eqRuns.map((pts, k) => (
+        <polyline key={k} points={pts} fill="none" stroke={ACCENT} strokeWidth={2} />
+      ))}
       <text x={sx(0.30)} y={sy(0.62)} fontSize={11} fill={ACCENT}>y*(x)</text>
 
       <line x1={sx(ax)} y1={sy(ay)} x2={sx(bx)} y2={sy(by)} stroke={HOT}
@@ -379,7 +392,14 @@ export function FlashOperatingLineTool(): JSX.Element {
 
           <Box style={{ minWidth: 0 }}>
             <OriginMark of={["engine", "page"]} note="the T-x-y curve is a choupoProps run in this browser; the operating line and its intersection are this page's geometry on it" />
-            {curve && sol
+            {curve && sol && sol.regime === "withheld"
+              ? (
+                <Alert variant="light" color="red"
+                  title="The engine withheld part of this curve">
+                  <Text size="sm">{sol.note}.  Change z or the pressure.</Text>
+                </Alert>
+              )
+              : curve && sol
               ? <Diagram curve={curve} sol={sol} z={z} comp={curve.comp} />
               : (
                 <Text size="sm" c={INK}>
@@ -390,7 +410,7 @@ export function FlashOperatingLineTool(): JSX.Element {
           </Box>
         </Box>
 
-        {sol && sol.regime !== "two-phase" && (
+        {sol && sol.regime !== "two-phase" && sol.regime !== "withheld" && (
           <Alert variant="light" color="yellow"
             title="At this setting the feed does not split">
             <Text size="sm">
