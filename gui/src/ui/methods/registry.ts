@@ -83,7 +83,8 @@ export type MethodToolId =
   | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves"
   | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
-  | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection";
+  | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection"
+  | "fault-diagnosis";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1087,6 +1088,35 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "of water and typical products with \"not cited\" where the books are silent; and "
       + "the tutorial cases of the types the engine models.",
     theory: "ch:drying",
+  },
+  //  COMMISSIONED 2026-11-21 (DEV.md 4c C464), Vitor's own story: a home
+  //  dehumidifier whose temperature dips every ~4.5 h turned out to be a full
+  //  tank stopping the unit, a narrow band on a sensor that watched the
+  //  unit's own heating, and a sensor reading ~15 points high, found by
+  //  comparing in ABSOLUTE humidity.  Fault detection and diagnosis in lay
+  //  language, one original diagram per step and a live figure per method,
+  //  every computation in TypeScript in the page (no engine run), and
+  //  seeded CHALLENGES with a hidden fault at the end.  The sources are two
+  //  textbooks read at the page; the diagnosis literature is named only.
+  {
+    id: "fault-diagnosis", blurb: "Find what is wrong with a plant from its measurements.",
+    label: "How a plant tells you something is wrong",
+    discipline: "Hydraulics & control", kind: "construction", status: "live",
+    origins: ["page", "reference", "assumption"],
+    teaches: "Fault detection and diagnosis from a true story: a dehumidifier that "
+      + "cooled a house every 4.5 hours.  Pick the observation that separates the "
+      + "explanations, diagnose with conserved quantities (absolute humidity, mass) "
+      + "rather than state-dependent ones, let redundancy expose a biased sensor, "
+      + "and beware a controller that measures its own effect.  Then limits and "
+      + "alarms, residuals (a tank balance, a fouling exchanger against a shifted "
+      + "thermometer, a pump off its curve), data reconciliation with the global "
+      + "chi-square and measurement tests on a splitter, time signatures, and "
+      + "control charts.  Every plant is a toy computed in the page; it ends with "
+      + "seeded challenges with a hidden fault for you to name.",
+    //  The Theory Guide has no fault-diagnosis or reconciliation chapter yet;
+    //  the nearest real destination is the dynamic tank's mass balance, which
+    //  the page's tank example is.
+    theory: "ch:dyn-tank",
   },
   //  COMMISSIONED 2026-10-20 (DEV.md 4c C119), Vitor: the Pi theorem only
   //  reduces the number of variables, and the real gain -- few groups AND a

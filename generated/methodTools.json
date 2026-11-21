@@ -307,8 +307,8 @@
       ]
     }
   ],
-  "liveTools": 94,
-  "registryTools": 94,
+  "liveTools": 95,
+  "registryTools": 95,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -725,6 +725,19 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=dryer-selection"
+    },
+    {
+      "id": "fault-diagnosis",
+      "label": "How a plant tells you something is wrong",
+      "blurb": "Find what is wrong with a plant from its measurements.",
+      "discipline": "Hydraulics & control",
+      "teaches": "Fault detection and diagnosis from a true story: a dehumidifier that cooled a house every 4.5 hours.  Pick the observation that separates the explanations, diagnose with conserved quantities (absolute humidity, mass) rather than state-dependent ones, let redundancy expose a biased sensor, and beware a controller that measures its own effect.  Then limits and alarms, residuals (a tank balance, a fouling exchanger against a shifted thermometer, a pump off its curve), data reconciliation with the global chi-square and measurement tests on a splitter, time signatures, and control charts.  Every plant is a toy computed in the page; it ends with seeded challenges with a hidden fault for you to name.",
+      "origins": [
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=fault-diagnosis"
     },
     {
       "id": "correlation-simplicity",
