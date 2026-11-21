@@ -3292,6 +3292,48 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/lpc.$$
 
+    #  Lesson absence-claims gate (DEV.md 4c C455 class 2): a "we do not have
+    #  X" sentence in gui/src/ui/methods is held to the tree by a probe, or
+    #  counted in a ratchet; the known-false ones are listed.  File reading.
+    gate_exec "$ROOT/bin/curate/check_lesson_absence_claims.py" > /tmp/lac.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "lesson-absence-claims-gate" "$(grep -m1 '^check_lesson_absence_claims: OK' /tmp/lac.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_lesson_absence_claims.py)\n" "lesson-absence-claims-gate"
+        cat /tmp/lac.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lac.$$
+
+    #  Lesson typed-numbers gate (DEV.md 4c C455 class 4): a number a lesson
+    #  types from a case equals the case's golden row to half a unit of its
+    #  last digit.  File reading.
+    gate_exec "$ROOT/bin/curate/check_lesson_typed_numbers.py" > /tmp/ltn.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "lesson-typed-numbers-gate" "$(grep -m1 '^check_lesson_typed_numbers: OK' /tmp/ltn.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_lesson_typed_numbers.py)\n" "lesson-typed-numbers-gate"
+        cat /tmp/ltn.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ltn.$$
+
+    #  Lesson knob-domains gate (DEV.md 4c C455 class 5): a slider's coded
+    #  range stays inside the validity the engine, a record or physics
+    #  declares; known violations are listed.  File reading.
+    gate_exec "$ROOT/bin/curate/check_lesson_knob_domains.py" > /tmp/lkd.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "lesson-knob-domains-gate" "$(grep -m1 '^check_lesson_knob_domains: OK' /tmp/lkd.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_lesson_knob_domains.py)\n" "lesson-knob-domains-gate"
+        cat /tmp/lkd.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lkd.$$
+
     #  Unit-convention gate (DEV.md 4c C454): a key whose bare number is in a
     #  working unit (`Pc`, `pressureDesign`: bar) is read through
     #  Dictionary::lookupScalarIn, and writing its unit gives the same answer

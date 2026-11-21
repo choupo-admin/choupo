@@ -1138,3 +1138,294 @@ LESSON_PROSE_CITATIONS_DEBT = {
               "lower the file's count in the same commit.",
     "blocked": None,   # writing, file by file (C453 is fixing the lessons)
 }
+
+
+# ---------------------------------------------------------------------------
+#  LESSON ABSENCE SENTENCES NO PROBE KEEPS (DEV.md 4c C455 class 2, 2026-11-21)
+# ---------------------------------------------------------------------------
+
+#  A line of gui/src/ui/methods outside comments that says something is
+#  absent ("not built", "has no", "does not have", "refuses", "missing" ...)
+#  and is neither CLAIMED with a probe of the tree nor listed KNOWN_FALSE in
+#  check_lesson_absence_claims.py.  The 2026-11-19 sweep found such sentences
+#  outliving the capability they denied (boron, glucose Cp, vendor quotes,
+#  severe fits, weighting, falling-rate tables).  Most of these count a page
+#  saying what IT does not model, which no probe of the tree verifies; the
+#  count may only fall (a new one needs a claim and a probe), measured at the
+#  commit that introduced the gate.
+LESSON_ABSENCE_UNCLASSIFIED = {
+    "gui/src/ui/methods/AdsorptionIsothermsTool.tsx": 8,
+    "gui/src/ui/methods/ApproachToEquilibriumTool.tsx": 1,
+    "gui/src/ui/methods/BatchAdsorptionTool.tsx": 15,
+    "gui/src/ui/methods/BatchMembraneTool.tsx": 8,
+    "gui/src/ui/methods/BjerrumTool.tsx": 1,
+    "gui/src/ui/methods/BodeTool.tsx": 5,
+    "gui/src/ui/methods/BreakthroughTool.tsx": 8,
+    "gui/src/ui/methods/BundTool.tsx": 1,
+    "gui/src/ui/methods/CampaignPlanTool.tsx": 1,
+    "gui/src/ui/methods/CaseAssemblyTool.tsx": 12,
+    "gui/src/ui/methods/ClausGibbsTool.tsx": 9,
+    "gui/src/ui/methods/ColumnControlTool.tsx": 5,
+    "gui/src/ui/methods/CompressionTool.tsx": 2,
+    "gui/src/ui/methods/CorrelationSimplicityTool.tsx": 1,
+    "gui/src/ui/methods/CosmoSacTheoryTool.tsx": 3,
+    "gui/src/ui/methods/DatabaseToParametersTool.tsx": 5,
+    "gui/src/ui/methods/DemandForecastTool.tsx": 1,
+    "gui/src/ui/methods/DryingCurveTool.tsx": 4,
+    "gui/src/ui/methods/EconomicsErrorsTool.tsx": 5,
+    "gui/src/ui/methods/ElectrolyteModelsTool.tsx": 2,
+    "gui/src/ui/methods/ElementPotentialTool.tsx": 5,
+    "gui/src/ui/methods/EpsilonNtuTool.tsx": 2,
+    "gui/src/ui/methods/EquilibriumLandscapesTool.tsx": 1,
+    "gui/src/ui/methods/FastSlowTool.tsx": 1,
+    "gui/src/ui/methods/FlashOperatingLineTool.tsx": 7,
+    "gui/src/ui/methods/FluidisationLabTab.tsx": 11,
+    "gui/src/ui/methods/FluidisedBedsTool.tsx": 16,
+    "gui/src/ui/methods/FourWaysMixtureTool.tsx": 3,
+    "gui/src/ui/methods/FugShortcutTool.tsx": 6,
+    "gui/src/ui/methods/GmpLayoutTool.tsx": 3,
+    "gui/src/ui/methods/KremserTool.tsx": 1,
+    "gui/src/ui/methods/LeastSquaresTool.tsx": 3,
+    "gui/src/ui/methods/LetdownTool.tsx": 1,
+    "gui/src/ui/methods/LevenspielTool.tsx": 3,
+    "gui/src/ui/methods/LocalCompositionTool.tsx": 4,
+    "gui/src/ui/methods/LubScaleupTool.tsx": 8,
+    "gui/src/ui/methods/MaterialsTool.tsx": 3,
+    "gui/src/ui/methods/MerkelTool.tsx": 4,
+    "gui/src/ui/methods/OneFluxManyUnitsTool.tsx": 14,
+    "gui/src/ui/methods/OverpressureTool.tsx": 1,
+    "gui/src/ui/methods/PcSaftTheoryTool.tsx": 5,
+    "gui/src/ui/methods/PinchCompositeTool.tsx": 4,
+    "gui/src/ui/methods/PlantLayoutTool.tsx": 1,
+    "gui/src/ui/methods/PonchonSavaritTool.tsx": 5,
+    "gui/src/ui/methods/PoolFireTool.tsx": 1,
+    "gui/src/ui/methods/ProcessSafetyTool.tsx": 1,
+    "gui/src/ui/methods/PropertyTrustTool.tsx": 1,
+    "gui/src/ui/methods/PumpSystemTool.tsx": 2,
+    "gui/src/ui/methods/RayleighTool.tsx": 5,
+    "gui/src/ui/methods/RelaxationFigures.tsx": 2,
+    "gui/src/ui/methods/RelaxationTool.tsx": 1,
+    "gui/src/ui/methods/ResidueCurvesTool.tsx": 3,
+    "gui/src/ui/methods/RulesOfThumbTool.tsx": 1,
+    "gui/src/ui/methods/RunLogTool.tsx": 6,
+    "gui/src/ui/methods/SinesPtaTool.tsx": 2,
+    "gui/src/ui/methods/SlePairTool.tsx": 1,
+    "gui/src/ui/methods/SolventMixtureTool.tsx": 1,
+    "gui/src/ui/methods/SourWaterTool.tsx": 2,
+    "gui/src/ui/methods/StackDispersionTool.tsx": 2,
+    "gui/src/ui/methods/StandardStateTool.tsx": 1,
+    "gui/src/ui/methods/SyngasTool.tsx": 1,
+    "gui/src/ui/methods/TearStreamsTool.tsx": 8,
+    "gui/src/ui/methods/ThermometerTrustTool.tsx": 5,
+    "gui/src/ui/methods/ThielePelletTool.tsx": 10,
+    "gui/src/ui/methods/TieTriangleTool.tsx": 5,
+    "gui/src/ui/methods/TreeOfChemistryTool.tsx": 1,
+    "gui/src/ui/methods/UnifacTheoryTool.tsx": 3,
+    "gui/src/ui/methods/VanHeerdenTool.tsx": 4,
+    "gui/src/ui/methods/WegsteinCobweb.tsx": 2,
+    "gui/src/ui/methods/WegsteinTool.tsx": 4,
+    "gui/src/ui/methods/WhatIsEntropyTool.tsx": 5,
+    "gui/src/ui/methods/WhatIsExergyTool.tsx": 11,
+    "gui/src/ui/methods/adsorptionIsothermsLesson.ts": 3,
+    "gui/src/ui/methods/approachToEquilibriumLesson.ts": 12,
+    "gui/src/ui/methods/batchAdsorptionLesson.ts": 3,
+    "gui/src/ui/methods/batchMembraneLesson.ts": 9,
+    "gui/src/ui/methods/batchMembraneMath.ts": 6,
+    "gui/src/ui/methods/bjerrumLesson.ts": 5,
+    "gui/src/ui/methods/bodeLesson.ts": 7,
+    "gui/src/ui/methods/breakthroughLesson.ts": 2,
+    "gui/src/ui/methods/bund.ts": 1,
+    "gui/src/ui/methods/bundLesson.ts": 1,
+    "gui/src/ui/methods/campaignPlanLesson.ts": 5,
+    "gui/src/ui/methods/campaignPlanMath.ts": 3,
+    "gui/src/ui/methods/caseAssembly.ts": 11,
+    "gui/src/ui/methods/caseAssemblyLesson.ts": 10,
+    "gui/src/ui/methods/chromatographyLesson.ts": 2,
+    "gui/src/ui/methods/columnControlLesson.ts": 6,
+    "gui/src/ui/methods/columnControlRecords.ts": 1,
+    "gui/src/ui/methods/compression.ts": 2,
+    "gui/src/ui/methods/compressionLesson.ts": 2,
+    "gui/src/ui/methods/correlationSimplicityLesson.ts": 11,
+    "gui/src/ui/methods/correlationSimplicityMath.ts": 1,
+    "gui/src/ui/methods/dataReconciliationLesson.ts": 11,
+    "gui/src/ui/methods/dataSourcesLesson.ts": 2,
+    "gui/src/ui/methods/databaseToParametersFit.ts": 5,
+    "gui/src/ui/methods/databaseToParametersLesson.ts": 6,
+    "gui/src/ui/methods/declaredPathwaysLesson.ts": 5,
+    "gui/src/ui/methods/demandForecastLesson.ts": 3,
+    "gui/src/ui/methods/dryingLesson.ts": 8,
+    "gui/src/ui/methods/economicsErrorsLesson.ts": 6,
+    "gui/src/ui/methods/economicsErrorsMath.ts": 17,
+    "gui/src/ui/methods/electrolyteModelsData.ts": 1,
+    "gui/src/ui/methods/electrolyteModelsLesson.ts": 7,
+    "gui/src/ui/methods/elementPotentialLesson.ts": 6,
+    "gui/src/ui/methods/epsilonNtuLesson.ts": 4,
+    "gui/src/ui/methods/equilibriumLandscapesLesson.ts": 16,
+    "gui/src/ui/methods/equilibriumOrRateBasedLesson.ts": 2,
+    "gui/src/ui/methods/fastSlowLesson.ts": 3,
+    "gui/src/ui/methods/fluidisedBedsLesson.ts": 5,
+    "gui/src/ui/methods/frontEndLoadingLesson.ts": 1,
+    "gui/src/ui/methods/fugLesson.ts": 7,
+    "gui/src/ui/methods/gmpLayoutExercise.ts": 5,
+    "gui/src/ui/methods/gmpLayoutLesson.ts": 10,
+    "gui/src/ui/methods/hunterNashLesson.ts": 4,
+    "gui/src/ui/methods/ipStrategyLesson.ts": 15,
+    "gui/src/ui/methods/knobPanel.tsx": 1,
+    "gui/src/ui/methods/kremserLesson.ts": 1,
+    "gui/src/ui/methods/layoutExercise.ts": 1,
+    "gui/src/ui/methods/leastSquaresLesson.ts": 6,
+    "gui/src/ui/methods/letdownLesson.ts": 2,
+    "gui/src/ui/methods/levenspielLesson.ts": 7,
+    "gui/src/ui/methods/limitingReactantLesson.ts": 2,
+    "gui/src/ui/methods/lubScaleupMath.ts": 10,
+    "gui/src/ui/methods/materialsLesson.ts": 8,
+    "gui/src/ui/methods/mccabeLesson.ts": 1,
+    "gui/src/ui/methods/merkelLesson.ts": 9,
+    "gui/src/ui/methods/oneFluxManyUnitsLesson.ts": 2,
+    "gui/src/ui/methods/operatorPanelsLesson.ts": 1,
+    "gui/src/ui/methods/overpressure.ts": 1,
+    "gui/src/ui/methods/overpressureLesson.ts": 6,
+    "gui/src/ui/methods/patentExpiryLesson.ts": 6,
+    "gui/src/ui/methods/patentExpiryMath.ts": 1,
+    "gui/src/ui/methods/pinchLesson.ts": 4,
+    "gui/src/ui/methods/plantCostLesson.ts": 2,
+    "gui/src/ui/methods/plantLayoutLesson.ts": 21,
+    "gui/src/ui/methods/plantRunLesson.ts": 2,
+    "gui/src/ui/methods/plantRunMath.ts": 2,
+    "gui/src/ui/methods/processSafety.ts": 1,
+    "gui/src/ui/methods/processSafetyLesson.ts": 2,
+    "gui/src/ui/methods/psychroLesson.ts": 3,
+    "gui/src/ui/methods/pumpSystemLesson.ts": 14,
+    "gui/src/ui/methods/rayleighLesson.ts": 3,
+    "gui/src/ui/methods/reactorLadderLesson.ts": 3,
+    "gui/src/ui/methods/registry.ts": 17,
+    "gui/src/ui/methods/relaxationLesson.ts": 7,
+    "gui/src/ui/methods/runLog.ts": 16,
+    "gui/src/ui/methods/runLogLesson.ts": 5,
+    "gui/src/ui/methods/saltMixingData.ts": 2,
+    "gui/src/ui/methods/sinesPta.ts": 1,
+    "gui/src/ui/methods/sinesPtaLesson.ts": 2,
+    "gui/src/ui/methods/slePairLesson.ts": 2,
+    "gui/src/ui/methods/solventMixtureLesson.ts": 5,
+    "gui/src/ui/methods/solventMixtureRead.ts": 2,
+    "gui/src/ui/methods/stackDispersionLesson.ts": 5,
+    "gui/src/ui/methods/standardStateLesson.ts": 2,
+    "gui/src/ui/methods/syngasExercise.ts": 3,
+    "gui/src/ui/methods/syngasLesson.ts": 7,
+    "gui/src/ui/methods/tearLesson.ts": 15,
+    "gui/src/ui/methods/tearMath.ts": 7,
+    "gui/src/ui/methods/treeOfChemistryLesson.ts": 6,
+    "gui/src/ui/methods/vanHeerdenLesson.ts": 7,
+    "gui/src/ui/methods/wegsteinLesson.ts": 13,
+}
+
+LESSON_ABSENCE_UNCLASSIFIED_DEBT = {
+    "why": "A 'we do not have X' sentence outlives X and a student reads it as "
+           "a fact about the engine.",
+    "remedy": "CLAIM the sentence in check_lesson_absence_claims.CLAIMS with a "
+              "probe of the tree (or rewrite it), and lower the file's count "
+              "in the same commit.",
+    "blocked": None,   # file by file, with C453's lesson slices
+}
+
+# ---------------------------------------------------------------------------
+#  LESSON NUMBERS EQUAL TO A GOLDEN ROW BUT NOT REGISTERED (DEV.md 4c C455 class 4, 2026-11-21)
+# ---------------------------------------------------------------------------
+
+#  A number of four or more significant digits typed in a lesson that names a
+#  case, equal to a golden row of that case to the typed precision, and not
+#  registered in check_lesson_typed_numbers.TYPED (the registered ones are
+#  held to half a unit of their last digit).  Per file; may only fall, and a
+#  fall may be DRIFT (a re-record moved the golden and the literal stopped
+#  matching).  The 2026-11-19 sweep found limitingReactant (3.589 against
+#  3.584), runLog (1.8432e-13 against 4.4550e-16) and psychro drifted.
+LESSON_TYPED_CANDIDATES = {
+}
+
+LESSON_TYPED_CANDIDATES_DEBT = {
+    "why": "A number typed from a witness run is the engine's answer on the "
+           "day it was typed; a re-record moves the golden and not the page.",
+    "remedy": "Register the literal in check_lesson_typed_numbers.TYPED "
+              "(file, literal, case, golden row) so it is held to the "
+              "golden, and lower the file's count in the same commit.",
+    "blocked": None,
+}
+
+# ---------------------------------------------------------------------------
+#  LESSON KNOBS WITH NO DECLARED VALIDITY (DEV.md 4c C455 class 5, 2026-11-21)
+# ---------------------------------------------------------------------------
+
+#  A slider or knob of an EduTool page (an object with id/key, min and max, or
+#  a JSX Slider/KnobNumber/NumberInput with numeric min and max) whose coded
+#  range is not declared in check_lesson_knob_domains.DOMAINS against a
+#  validity the engine, a record or physics states.  The 2026-11-19 sweep
+#  found sliders leaving the model's domain (Merkel and drying humidity into
+#  supersaturated air, Levenspiel into the vapour, saltMixing past the KCl
+#  Pitzer validity, overpressure P2 above the relieving pressure).  Per file;
+#  may only fall.
+LESSON_KNOBS_UNDECLARED = {
+    "gui/src/ui/methods/ActiveSetQpTool.tsx": 4,
+    "gui/src/ui/methods/AdsorptionIsothermsTool.tsx": 1,
+    "gui/src/ui/methods/ApproachToEquilibriumTool.tsx": 1,
+    "gui/src/ui/methods/BatchAdsorptionTool.tsx": 1,
+    "gui/src/ui/methods/BatchMembraneTool.tsx": 5,
+    "gui/src/ui/methods/BjerrumTool.tsx": 2,
+    "gui/src/ui/methods/BodeTool.tsx": 7,
+    "gui/src/ui/methods/BreakthroughTool.tsx": 5,
+    "gui/src/ui/methods/BundTool.tsx": 12,
+    "gui/src/ui/methods/CampaignPlanTool.tsx": 5,
+    "gui/src/ui/methods/ChromatographyTool.tsx": 14,
+    "gui/src/ui/methods/ColumnControlTool.tsx": 4,
+    "gui/src/ui/methods/CompressionTool.tsx": 2,
+    "gui/src/ui/methods/DeclaredPathwaysTool.tsx": 3,
+    "gui/src/ui/methods/DryingCurveTool.tsx": 5,
+    "gui/src/ui/methods/EpsilonNtuTool.tsx": 7,
+    "gui/src/ui/methods/EquilibriumLandscapesTool.tsx": 2,
+    "gui/src/ui/methods/FastSlowTool.tsx": 1,
+    "gui/src/ui/methods/FlashOperatingLineTool.tsx": 1,
+    "gui/src/ui/methods/FluidisedBedsTool.tsx": 2,
+    "gui/src/ui/methods/FrontEndLoadingTool.tsx": 3,
+    "gui/src/ui/methods/FugShortcutTool.tsx": 4,
+    "gui/src/ui/methods/KremserTool.tsx": 7,
+    "gui/src/ui/methods/LeastSquaresTool.tsx": 3,
+    "gui/src/ui/methods/LetdownTool.tsx": 7,
+    "gui/src/ui/methods/LevenspielTool.tsx": 3,
+    "gui/src/ui/methods/LimitingReactantTool.tsx": 3,
+    "gui/src/ui/methods/LubScaleupTool.tsx": 3,
+    "gui/src/ui/methods/MerkelTool.tsx": 5,
+    "gui/src/ui/methods/OneFluxManyUnitsTool.tsx": 6,
+    "gui/src/ui/methods/OperatorPanelsTool.tsx": 2,
+    "gui/src/ui/methods/OverpressureTool.tsx": 10,
+    "gui/src/ui/methods/PatentExpiryTool.tsx": 1,
+    "gui/src/ui/methods/PlantLayoutTool.tsx": 1,
+    "gui/src/ui/methods/PonchonSavaritTool.tsx": 1,
+    "gui/src/ui/methods/PoolFireTool.tsx": 5,
+    "gui/src/ui/methods/ProcessSafetyTool.tsx": 2,
+    "gui/src/ui/methods/PumpSystemTool.tsx": 1,
+    "gui/src/ui/methods/RayleighTool.tsx": 5,
+    "gui/src/ui/methods/ReactionEnthalpyTool.tsx": 1,
+    "gui/src/ui/methods/ReactorLadderTool.tsx": 4,
+    "gui/src/ui/methods/RouteScreeningTool.tsx": 3,
+    "gui/src/ui/methods/SaltMixingTool.tsx": 3,
+    "gui/src/ui/methods/SlePairTool.tsx": 1,
+    "gui/src/ui/methods/SolventMixtureTool.tsx": 1,
+    "gui/src/ui/methods/StandardStateTool.tsx": 1,
+    "gui/src/ui/methods/ThermometerTrustTool.tsx": 1,
+    "gui/src/ui/methods/VanHeerdenTool.tsx": 5,
+    "gui/src/ui/methods/WegsteinTool.tsx": 7,
+    "gui/src/ui/methods/WhatIsEntropyTool.tsx": 1,
+    "gui/src/ui/methods/WhatIsExergyTool.tsx": 2,
+    "gui/src/ui/methods/elementPotentialRun.ts": 2,
+    "gui/src/ui/methods/sinesPta.ts": 15,
+    "gui/src/ui/methods/syngasExercise.ts": 11,
+}
+
+LESSON_KNOBS_UNDECLARED_DEBT = {
+    "why": "A slider range is typed by the page's builder; nothing tied it to "
+           "the validity the engine declares, and the student met refusals "
+           "the page invited.",
+    "remedy": "Declare the knob in check_lesson_knob_domains.DOMAINS with a "
+              "validity bound from the engine, a record or physics (or None "
+              "with a reason), and lower the file's count in the same commit.",
+    "blocked": None,
+}
