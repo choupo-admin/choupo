@@ -5145,6 +5145,15 @@ accepts today, and that is a policy call.
 >     centrifuge (cakeFilter, sedimentingCentrifuge exist).  Remove hand lists, point at the catalogue.
 > (9) R-007: Rachford-Rice accepts the 0.5 seed on a flat g(V) near the pure limit; a
 >     declared ill-conditioned state instead.
+>
+> LANDED 2026-11-21 (7f1decb217): slices (1), (2), (5).  Full sweep on integ/c467-a (reason:
+> NewtonRaphson and the flash route are paths every case goes through): 2003 PASS, 0 case
+> FAIL, 1 KNOWN-BROKEN, 13 EXPECTED-FAIL, 296 REUSED; 8 gate FAILs, all housekeeping (codeMap,
+> BRAIN facts, a probe header, a scan root, an origin word, a Theory paragraph citing nothing,
+> one lesson line 1021 -> 1114) fixed and re-run alone, plus hansen-teas red in the pool and
+> green alone (C466).  An IUPAC reference a general wrote into sec:flash-above-tc could not
+> be verified and was removed; Michelsen (1982), already in the bibliography, is cited for
+> the Gibbs test.  Next: (3)+(4) one general, Opus first review; (6)-(9) one general.
 
 > **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
 > mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
