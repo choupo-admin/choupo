@@ -461,9 +461,9 @@ def main() -> int:
                 (c / "constant" / "parameters" / "PengRobinson").mkdir(parents=True)
                 (c / "0").mkdir()
                 (c / "system" / "controlDict").write_text("application choupoSolve;\nverbosity 2;\n")
-                (c / "constant" / "parameters" / "PengRobinson" / "pair.dat").write_text(text)
+                (c / "constant" / "parameters" / "PengRobinson" / "CO2-methanol.dat").write_text(text)
                 (c / "constant" / "thermoPhysPropDict").write_text(SYSTEM_PHIPHI % (
-                    "methanol CO2", 'binaryInteractions { p { source "constant/parameters/PengRobinson/pair.dat"; } }'))
+                    "methanol CO2", 'binaryInteractions { CO2-methanol { } }'))
                 (c / "system" / "flowsheetDict").write_text(
                     "units\n(\n    { name F; type isothermalFlash; in feed; outputs ( L V ); operation { T 320 K; P 30 bar; } }\n);\n")
                 (c / "0" / "feed").write_text(

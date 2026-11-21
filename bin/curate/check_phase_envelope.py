@@ -257,13 +257,12 @@ def unit_point(td, name, utype, pbar, flows, kij=None):
     (d / f"{name}.cho").write_text("")
     bi = ""
     if kij is not None:
-        pd = d / "constant" / "parameters" / "PR"
+        pd = d / "constant" / "parameters" / "PengRobinson"
         pd.mkdir(parents=True)
         (pd / "CO2-ethane.dat").write_text(
             "recordType eosBinaryInteraction;\nschemaVersion 1;\ni    CO2;\n"
             f"j    ethane;\nkij  {kij};\neos  PengRobinson;\n")
-        bi = ('binaryInteractions { CO2-ethane { source '
-              '"constant/parameters/PR/CO2-ethane.dat"; } }')
+        bi = 'binaryInteractions { CO2-ethane { } }'   # found by name, case folder first
     comps = " ".join(c for c, _ in flows)
     (d / "constant" / "thermoPhysPropDict").write_text(
         _PHIPHI_THERMO % {"comps": comps, "bi": bi})
