@@ -37,8 +37,10 @@ Laurance & Swift's alpha at this temperature and composition (Table IV, x = 0.7,
 
 A 2 % error in alpha is a **20 % error in the tower** (the measured tower is 20 % taller and needs 22 % more reflux):
 the engine's column is the optimistic one.  The reason is in olefins01: the kij = 0 cubic gives an alpha almost flat
-in composition, too high at the propylene-rich end where this feed sits.  The deviation is the result; **no kij was
-fitted** to remove it (the slice reports what the model does).
+in composition, too high at the propylene-rich end where this feed sits.  The deviation is the result; **no kij is
+used here** (the slice reports what the model does).  The sibling `c3splitter02_propylene_propane_pr_kij` runs the same specification
+on Peng-Robinson with a propene-propane kij fitted to Laurance & Swift's pressures (held-out alpha 0.66 %): its tower is 7.7 %
+short of the measured one in stages instead of 16.5 %.  SRK keeps kij = 0 because the same pressure regression returns zero for SRK.
 
 ## What is NOT claimed
 

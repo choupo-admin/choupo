@@ -1,0 +1,310 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  olefins03_propane_propene_kij_fit_laurance1972 -- ONE kij for propene +
+  propane per cubic.  README.md carries the question, the split and the band
+  DECLARED BEFORE THE FIT.
+
+  Two fitParameters operations, identical but for the equation of state: the
+  SRK one uses the case's own system, the PR one a `thermo {}` fragment that
+  selects Peng-Robinson (PR78).  Evidence: the seven isotherms of Laurance &
+  Swift Table IV, each its own file with its own T column; role fit = 100,
+  120, 140, 160 degF, role validation = 110, 130, 150 degF.  Residual: the
+  relative bubble pressure at the point's own T.  The proposals are written to
+  the case's own folder; the promoted PR record is
+  data/standards/parameters/PengRobinson/propane-propylene.dat.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        kij_srk;
+        type        fitParameters;
+
+        parameters
+        (
+            { path equilibrium.equationOfState.binaryInteractions.propane-propylene.kij;  initial 0;  min -0.05;  max 0.05; }
+        );
+
+        evidence
+        (
+            //  ONE file, split by row: 110, 130, 150 degF (rows 10-18, 28-36, 46-54) held out.
+            { dataset "constant/experiments/propane-propene-laurance1972-all.dat"; role fit;        discard ( 10 11 12 13 14 15 16 17 18  28 29 30 31 32 33 34 35 36  46 47 48 49 50 51 52 53 54 ); }
+            { dataset "constant/experiments/propane-propene-laurance1972-all.dat"; role validation; discard ( 1 2 3 4 5 6 7 8 9  19 20 21 22 23 24 25 26 27  37 38 39 40 41 42 43 44 45  55 56 57 58 59 60 61 62 63 ); }
+        );
+
+        acceptance
+        {
+            maxAAD  0.5 percent;
+            origin  "declared before the fit (README): the held-out mean relative bubble-pressure deviation must stay at or below 0.5 %, the level kij = 0 SRK already meets";
+        }
+
+        objective { method leastSquares; }
+        residual
+        {
+            kind        P_bubble;
+            components  ( propylene propane );
+        }
+
+        options { maxIter 60;  tolerance 1.0e-10;  fdStep 1.0e-4;  lambda0 1.0e-3; }
+
+        output
+        {
+            fit_log    fit_history_srk.csv;
+            parity     parity_srk.csv;
+            proposal   propane-propylene.srk.proposal.dat;
+        }
+    }
+    {
+        name        kij_pr;
+        type        fitParameters;
+        //  the fragment REPLACES the equationOfState slot, so it carries the inline pair too
+        thermo
+        {
+            equilibrium
+            {
+                equationOfState
+                {
+                    model PengRobinson;  mixingRule vanDerWaalsOneFluid;
+                    binaryInteractions { propane-propylene { i propylene;  j propane;  kij 0.0;  variedBy fitParameters; } }
+                }
+            }
+        }
+
+        parameters
+        (
+            { path equilibrium.equationOfState.binaryInteractions.propane-propylene.kij;  initial 0;  min -0.05;  max 0.05; }
+        );
+
+        evidence
+        (
+            //  ONE file, split by row: 110, 130, 150 degF (rows 10-18, 28-36, 46-54) held out.
+            { dataset "constant/experiments/propane-propene-laurance1972-all.dat"; role fit;        discard ( 10 11 12 13 14 15 16 17 18  28 29 30 31 32 33 34 35 36  46 47 48 49 50 51 52 53 54 ); }
+            { dataset "constant/experiments/propane-propene-laurance1972-all.dat"; role validation; discard ( 1 2 3 4 5 6 7 8 9  19 20 21 22 23 24 25 26 27  37 38 39 40 41 42 43 44 45  55 56 57 58 59 60 61 62 63 ); }
+        );
+
+        acceptance
+        {
+            maxAAD  0.5 percent;
+            origin  "declared before the fit (README): the held-out mean relative bubble-pressure deviation must stay at or below 0.5 %";
+        }
+
+        objective { method leastSquares; }
+        residual
+        {
+            kind        P_bubble;
+            components  ( propylene propane );
+        }
+
+        options { maxIter 60;  tolerance 1.0e-10;  fdStep 1.0e-4;  lambda0 1.0e-3; }
+
+        output
+        {
+            fit_log    fit_history_pr.csv;
+            parity     parity_pr.csv;
+            proposal   propane-propylene.pr.proposal.dat;
+        }
+    }
+    //  AFTER THE FIT: the 7 isotherms at the nine compositions of the paper, three ways.
+    //  srkfit    SRK at the kij the SRK fit above found (inline: it is not promoted, see README)
+    //  prfit     PR78 with the PROMOTED record, found by name in data/standards/parameters/PengRobinson/
+    //  srkalpha  SRK at kij = 0.009, the value where alpha is closest (a DIAGNOSTIC read off the
+    //            README's sensitivity table; not a fit, not a record)
+    //  alpha = (y1/x1)/(y2/x2) is recomputed from y by check_olefin_vle.
+    {
+        name        pxy_srkfit_100F;
+        type        propertyScan1D;
+        thermo { equilibrium { equationOfState { model SRK; mixingRule vanDerWaalsOneFluid; binaryInteractions { propane-propylene { i propylene;  j propane;  kij -0.00006754;  variedBy fitParameters; } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 310.9278 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srkfit_100F.csv; }
+    }
+    {
+        name        pxy_srkfit_110F;
+        type        propertyScan1D;
+        thermo { equilibrium { equationOfState { model SRK; mixingRule vanDerWaalsOneFluid; binaryInteractions { propane-propylene { i propylene;  j propane;  kij -0.00006754;  variedBy fitParameters; } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 316.4833 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srkfit_110F.csv; }
+    }
+    {
+        name        pxy_srkfit_120F;
+        type        propertyScan1D;
+        thermo { equilibrium { equationOfState { model SRK; mixingRule vanDerWaalsOneFluid; binaryInteractions { propane-propylene { i propylene;  j propane;  kij -0.00006754;  variedBy fitParameters; } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 322.0389 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srkfit_120F.csv; }
+    }
+    {
+        name        pxy_srkfit_130F;
+        type        propertyScan1D;
+        thermo { equilibrium { equationOfState { model SRK; mixingRule vanDerWaalsOneFluid; binaryInteractions { propane-propylene { i propylene;  j propane;  kij -0.00006754;  variedBy fitParameters; } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 327.5944 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srkfit_130F.csv; }
+    }
+    {
+        name        pxy_srkfit_140F;
+        type        propertyScan1D;
+        thermo { equilibrium { equationOfState { model SRK; mixingRule vanDerWaalsOneFluid; binaryInteractions { propane-propylene { i propylene;  j propane;  kij -0.00006754;  variedBy fitParameters; } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 333.1500 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srkfit_140F.csv; }
+    }
+    {
+        name        pxy_srkfit_150F;
+        type        propertyScan1D;
+        thermo { equilibrium { equationOfState { model SRK; mixingRule vanDerWaalsOneFluid; binaryInteractions { propane-propylene { i propylene;  j propane;  kij -0.00006754;  variedBy fitParameters; } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 338.7056 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srkfit_150F.csv; }
+    }
+    {
+        name        pxy_srkfit_160F;
+        type        propertyScan1D;
+        thermo { equilibrium { equationOfState { model SRK; mixingRule vanDerWaalsOneFluid; binaryInteractions { propane-propylene { i propylene;  j propane;  kij -0.00006754;  variedBy fitParameters; } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 344.2611 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srkfit_160F.csv; }
+    }
+    {
+        name        pxy_prfit_100F;
+        type        propertyScan1D;
+        thermo      { equilibrium { equationOfState { model PengRobinson;  mixingRule vanDerWaalsOneFluid;  binaryInteractions { propane-propylene { } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 310.9278 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_prfit_100F.csv; }
+    }
+    {
+        name        pxy_prfit_110F;
+        type        propertyScan1D;
+        thermo      { equilibrium { equationOfState { model PengRobinson;  mixingRule vanDerWaalsOneFluid;  binaryInteractions { propane-propylene { } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 316.4833 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_prfit_110F.csv; }
+    }
+    {
+        name        pxy_prfit_120F;
+        type        propertyScan1D;
+        thermo      { equilibrium { equationOfState { model PengRobinson;  mixingRule vanDerWaalsOneFluid;  binaryInteractions { propane-propylene { } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 322.0389 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_prfit_120F.csv; }
+    }
+    {
+        name        pxy_prfit_130F;
+        type        propertyScan1D;
+        thermo      { equilibrium { equationOfState { model PengRobinson;  mixingRule vanDerWaalsOneFluid;  binaryInteractions { propane-propylene { } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 327.5944 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_prfit_130F.csv; }
+    }
+    {
+        name        pxy_prfit_140F;
+        type        propertyScan1D;
+        thermo      { equilibrium { equationOfState { model PengRobinson;  mixingRule vanDerWaalsOneFluid;  binaryInteractions { propane-propylene { } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 333.1500 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_prfit_140F.csv; }
+    }
+    {
+        name        pxy_prfit_150F;
+        type        propertyScan1D;
+        thermo      { equilibrium { equationOfState { model PengRobinson;  mixingRule vanDerWaalsOneFluid;  binaryInteractions { propane-propylene { } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 338.7056 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_prfit_150F.csv; }
+    }
+    {
+        name        pxy_prfit_160F;
+        type        propertyScan1D;
+        thermo      { equilibrium { equationOfState { model PengRobinson;  mixingRule vanDerWaalsOneFluid;  binaryInteractions { propane-propylene { } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 344.2611 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_prfit_160F.csv; }
+    }
+    {
+        name        pxy_srkalpha_100F;
+        type        propertyScan1D;
+        thermo { equilibrium { equationOfState { model SRK; mixingRule vanDerWaalsOneFluid; binaryInteractions { propane-propylene { i propylene;  j propane;  kij 0.009;  variedBy fitParameters; } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 310.9278 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srkalpha_100F.csv; }
+    }
+    {
+        name        pxy_srkalpha_110F;
+        type        propertyScan1D;
+        thermo { equilibrium { equationOfState { model SRK; mixingRule vanDerWaalsOneFluid; binaryInteractions { propane-propylene { i propylene;  j propane;  kij 0.009;  variedBy fitParameters; } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 316.4833 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srkalpha_110F.csv; }
+    }
+    {
+        name        pxy_srkalpha_120F;
+        type        propertyScan1D;
+        thermo { equilibrium { equationOfState { model SRK; mixingRule vanDerWaalsOneFluid; binaryInteractions { propane-propylene { i propylene;  j propane;  kij 0.009;  variedBy fitParameters; } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 322.0389 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srkalpha_120F.csv; }
+    }
+    {
+        name        pxy_srkalpha_130F;
+        type        propertyScan1D;
+        thermo { equilibrium { equationOfState { model SRK; mixingRule vanDerWaalsOneFluid; binaryInteractions { propane-propylene { i propylene;  j propane;  kij 0.009;  variedBy fitParameters; } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 327.5944 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srkalpha_130F.csv; }
+    }
+    {
+        name        pxy_srkalpha_140F;
+        type        propertyScan1D;
+        thermo { equilibrium { equationOfState { model SRK; mixingRule vanDerWaalsOneFluid; binaryInteractions { propane-propylene { i propylene;  j propane;  kij 0.009;  variedBy fitParameters; } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 333.1500 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srkalpha_140F.csv; }
+    }
+    {
+        name        pxy_srkalpha_150F;
+        type        propertyScan1D;
+        thermo { equilibrium { equationOfState { model SRK; mixingRule vanDerWaalsOneFluid; binaryInteractions { propane-propylene { i propylene;  j propane;  kij 0.009;  variedBy fitParameters; } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 338.7056 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srkalpha_150F.csv; }
+    }
+    {
+        name        pxy_srkalpha_160F;
+        type        propertyScan1D;
+        thermo { equilibrium { equationOfState { model SRK; mixingRule vanDerWaalsOneFluid; binaryInteractions { propane-propylene { i propylene;  j propane;  kij 0.009;  variedBy fitParameters; } } } } }
+        vary        { variable x[propylene];  points ( 0.1000 0.2000 0.3000 0.4000 0.5000 0.6000 0.7000 0.8000 0.9000 ); }
+        state       { T 344.2611 K;  P 15 bar;  composition { propylene 0.5;  propane 0.5; } }
+        properties  ( P_bubble  y_eqT_propylene );
+        output      { file pxy_srkalpha_160F.csv; }
+    }
+);

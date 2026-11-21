@@ -54,7 +54,29 @@ WHAT THIS GATE CHECKS.
   (E) SABOTAGE.  The Laurance case copy is rerun with propylene's omega transposed
       (0.142 -> 0.124, a case-local overlay); (A)'s pins must then fail.
 
-NOT CHECKED: any kij (none exists for these pairs and none was fitted); the vapour
+  (F) tutorials/props/compare/olefins03_propane_propene_kij_fit_laurance1972 (C456 slice 4).
+      THE DEFECT: with kij = 0 the cubics miss alpha by 1.8 % and the C3 tower by 17 %; a kij
+      regressed with Choupo's own fitParameters (bubble pressure, fit on 100/120/140/160 degF,
+      held out on 110/130/150) is held to what it does to alpha on BOTH sets.  The case is rerun
+      here and: its 63 rows equal olefins01's (x, P, y, alpha, and T = the isotherm); the fits
+      reproduce the pinned kij (PR 0.00543, SRK -0.00007, i.e. zero); the README's band, declared
+      before the fit (held-out alpha mean <= 1.0 %, each <= 3 %, P mean <= 0.5 %, each <= 1.5 %),
+      is MET by PR+kij and MISSED by SRK (a pressure regression cannot see the alpha miss: the
+      P-optimal SRK kij is zero); the SRK kij = 0.009 that the alpha sensitivity points to is
+      pinned as the diagnostic it is (alpha 0.2 %, P 1.3 %: the pressure arm fails, so it is no
+      record).  The promoted PR record (data/standards/parameters/PengRobinson/, one home, found by name)
+      carries `fittedInCase`, and its kij is the fit's; it lives in ONE place, the catalogue, found by name.  SABOTAGE: the record's kij set to 0 in a
+      copy must break the PR pins.
+
+  (G) tutorials/steady/distillation/c3splitter02_propylene_propane_pr_kij.  The splitter on
+      PR + the fitted kij: the shortcut equals the textbook arithmetic on its own alpha (0.5 %), the
+      tower against the measured-alpha tower is pinned (-7.7 % stages, -8.3 % reflux, against
+      -16.5 % / -17.9 % with SRK kij = 0), the rigorous column at the shortcut's numbers is pinned
+      short of the specification (constant alpha is the shortcut's limit: 99.03 mol % overhead)
+      and the rigorous column at the MEASURED-alpha tower meets it within 0.002.
+
+NOT CHECKED: a kij against anything but this one table (the hold-out is three isotherms of the
+SAME paper, not an independent laboratory); the vapour
 pressures of the pure fluids separately (they enter through alpha at x -> 0, 1,
 which the dataset does not list); the C2 or C3 column against a published plant
 (no splitter specification is in the literature folder -- the steady case's
@@ -73,6 +95,9 @@ A_CASE = "tutorials/props/compare/olefins01_propane_propene_laurance1972"
 B_CASE = "tutorials/props/compare/olefins02_ethane_ethylene_fredenslund1976"
 C_CASE = "tutorials/steady/distillation/c3splitter01_propylene_propane"
 STRIP = ("expected", "converged", "reports", "constant/propertyManifest")
+D_CASE = "tutorials/props/compare/olefins03_propane_propene_kij_fit_laurance1972"
+E_CASE = "tutorials/steady/distillation/c3splitter02_propylene_propane_pr_kij"
+STRIP_FIT = STRIP + ("postProcessing", "curation")
 
 TEMPS_F = (100, 110, 120, 130, 140, 150, 160)
 B_TAGS = ("263p15", "293p15")
@@ -89,6 +114,20 @@ A_DRIFT = {"alpha_mean": 0.04, "alpha_max": 0.15, "P_max": 0.15, "P_mean": 0.06}
 B_PIN = {"srk": {"alpha_mean": 2.58, "n_outside": 1}, "pr": {"alpha_mean": 2.59, "n_outside": 1}}
 B_DRIFT_MEAN = 0.05
 C_PIN = {"N_vs_measured_pct": -16.5, "R_vs_measured_pct": -17.9, "drift": 1.0}
+
+
+# ---- (F): the band DECLARED in olefins03's README before the fit, and what the fits did ----
+D_BAND = {"alpha_mean": 1.0, "alpha_each": 3.0, "P_mean": 0.5, "P_each": 1.5}
+D_PIN = {"kij_pr": 0.0054298, "kij_srk": -0.0000675, "kij_drift": 3.0e-5,
+         "prfit":    {"held_alpha_mean": 0.66, "held_alpha_max": 1.97, "fit_alpha_mean": 0.69, "held_P_mean": 0.27},
+         "srkfit":   {"held_alpha_mean": 1.82, "held_alpha_max": 4.26, "fit_alpha_mean": 1.84, "held_P_mean": 0.37},
+         "srkalpha": {"held_alpha_mean": 0.19, "held_alpha_max": 0.66, "fit_alpha_mean": 0.24, "held_P_mean": 1.34}}
+D_DRIFT = 0.05
+FIT_F = (100, 120, 140, 160)
+# ---- (G): the splitter on PR + the fitted kij ----
+E_PIN = {"N_vs_measured_pct": -7.7, "R_vs_measured_pct": -8.3, "drift": 0.6,
+         "xD_mesh_shortcut": 0.9903, "xD_drift": 0.0015}
+RECORD = "data/standards/parameters/PengRobinson/propane-propylene.dat"
 
 
 def num(s):
@@ -231,6 +270,58 @@ def check_A(d, label, failures, numbers):
     return r
 
 
+def laurance_rows():
+    """The 63 rows of olefins01's seven files: (F, x, P_psi, y, alpha)."""
+    d = gatekit.base_case(A_CASE) / "constant/experiments"
+    out = []
+    for F in TEMPS_F:
+        body = (d / f"propane-propene-laurance1972-{F}F.dat").read_text().split("data\n(")[1].split(");")[0]
+        for line in body.strip().splitlines():
+            x, P, y, a = (float(t) for t in line.split())
+            out.append((F, x, P, y, a))
+    return out
+
+
+def analyse_D(d, tag):
+    """alpha and bubble-P deviations (%) of the scans pxy_<tag>_<F>F.csv against the paper, split fit / held-out."""
+    rows = laurance_rows()
+    alpha = {"fit": [], "held": []}
+    pres = {"fit": [], "held": []}
+    ends = {0.1: [], 0.9: []}
+    i = 0
+    for F in TEMPS_F:
+        for g in read_csv(d / f"pxy_{tag}_{F}F.csv"):
+            _, x, P, y, a = rows[i]
+            i += 1
+            grp = "fit" if F in FIT_F else "held"
+            da = 100.0 * (alpha_of(x, num(g["y_eqT_propylene"])) / a - 1.0)
+            alpha[grp].append(da)
+            pres[grp].append(100.0 * (num(g["P_bubble"]) / (P * 6894.757) - 1.0))
+            if x in ends:
+                ends[x].append(da)
+    return alpha, pres, ends
+
+
+def check_D(d, label, failures, numbers):
+    for tag in ("prfit", "srkfit", "srkalpha"):
+        alpha, pres, ends = analyse_D(d, tag)
+        got = {"held_alpha_mean": mean([abs(v) for v in alpha["held"]]), "held_alpha_max": max(abs(v) for v in alpha["held"]),
+               "fit_alpha_mean": mean([abs(v) for v in alpha["fit"]]), "held_P_mean": mean([abs(v) for v in pres["held"]]),
+               "held_P_max": max(abs(v) for v in pres["held"]),
+               "x01": mean(ends[0.1]), "x09": mean(ends[0.9])}
+        numbers[(label, tag)] = got
+        for k, pin in D_PIN[tag].items():
+            if abs(got[k] - pin) > D_DRIFT:
+                failures.append(f"{label} {tag}: {k} = {got[k]:.3f} (pinned {pin} +- {D_DRIFT}): the fit, a record or the "
+                                "data changed -- re-read olefins03's README")
+        band_met = (got["held_alpha_mean"] <= D_BAND["alpha_mean"] and got["held_alpha_max"] <= D_BAND["alpha_each"]
+                    and got["held_P_mean"] <= D_BAND["P_mean"] and got["held_P_max"] <= D_BAND["P_each"])
+        want = (tag == "prfit")        # only PR + its fitted kij meets the band declared before the fit
+        if label == "shipped" and band_met != want:
+            failures.append(f"{tag}: the declared held-out band is now {'MET' if band_met else 'MISSED'} "
+                            f"(README says {'met' if want else 'missed'}) -- update the README, a claim gone stale")
+
+
 def main():
     failures = []
     numbers = {}
@@ -337,7 +428,102 @@ def main():
                 failures.append(f"splitter: the rigorous column at the shortcut's N and R gives {xd:.4f} propylene overhead "
                                 f"and {xb:.4f} propane in the bottoms (illustrative spec 0.995 / 0.9769, tolerance 0.002)")
 
+    # ---- (F) the fitted kij ------------------------------------------------------------------
+    dcase = gatekit.base_case(D_CASE)
+    txt = (dcase / "README.md").read_text()
+    for n in ("DECLARED BEFORE THE FIT", "<= 1.0 %", "<= 0.5 %", "<= 3 %", "<= 1.5 %"):
+        if n not in txt:
+            failures.append(f"{D_CASE}/README.md no longer states the declared band ({n!r})")
+    # the 63 rows equal olefins01's, T = the isotherm
+    body = (dcase / "constant/experiments/propane-propene-laurance1972-all.dat").read_text().split("data\n(")[1].split(");")[0]
+    mine = [tuple(float(t) for t in line.split()) for line in body.strip().splitlines()]
+    ref = laurance_rows()
+    if len(mine) != len(ref):
+        failures.append(f"olefins03 evidence has {len(mine)} rows, olefins01 {len(ref)}")
+    else:
+        for (x, T, P, y, a), (F, x1, P1, y1, a1) in zip(mine, ref):
+            if (x, P, y, a) != (x1, P1, y1, a1) or abs(T - ((F - 32.0) / 1.8 + 273.15)) > 6e-4:
+                failures.append(f"olefins03 evidence row (x = {x}, T = {T}) differs from olefins01's {F} degF row")
+                break
+    rec_d = (gatekit.repo / RECORD).read_text()      # ONE home: the catalogue; both cases find it by name
+    if D_CASE not in rec_d or "origin        fitted;" not in rec_d or "eos         PengRobinson;" not in rec_d:
+        failures.append("the promoted PR record does not name its case (`fittedInCase`), its origin or its eos")
+    kij_rec = float(re.search(r"^kij\s+(\S+);", rec_d, re.M).group(1))
+    with gatekit.probe_copy(D_CASE, strip=STRIP_FIT) as c:
+        for f in c.glob("*.csv"):
+            f.unlink()
+        rc, out = gatekit.run(props, c, inside=True)
+        if rc != 0:
+            failures.append(f"the olefins03 fit case did not run (exit {rc}): " + " | ".join(out.strip().splitlines()[-2:]))
+        else:
+            for tag, key in (("pr", "kij_pr"), ("srk", "kij_srk")):
+                prop = (c / f"propane-propylene.{tag}.proposal.dat").read_text()
+                kij = float(re.search(r"^kij\s+(\S+);", prop, re.M).group(1))
+                numbers[("fit", tag)] = {"kij": kij}
+                if abs(kij - D_PIN[key]) > D_PIN["kij_drift"]:
+                    failures.append(f"the {tag.upper()} fit gave kij = {kij:.7f} (pinned {D_PIN[key]} +- {D_PIN['kij_drift']})")
+                if "verdict     validated;" not in prop:
+                    failures.append(f"the {tag.upper()} fit's own verdict (held-out pressure) is no longer `validated`")
+                if tag == "pr" and abs(kij - kij_rec) > 1.5e-6:
+                    failures.append(f"the promoted PR record (kij {kij_rec}) is not what the fit reproduces ({kij:.8f})")
+            check_D(c, "shipped", failures, numbers)
+
+    # ---- (G) the splitter on PR + the fitted kij -----------------------------------------------
+    with gatekit.probe_copy(E_CASE, strip=STRIP) as c:
+        rc, out = gatekit.run(solve, c)
+        js = result(out) if rc == 0 else None
+        if rc != 0:
+            failures.append(f"the PR+kij splitter case did not run (exit {rc}): " + " | ".join(out.strip().splitlines()[-2:]))
+    if js is not None:
+        kp = js.get("kpis", {}).get("fug")
+        a_eng = kp["alpha_LK_HK"]
+        hand = fug(a_eng, 0.7, 0.99, 0.0116, 1.2)
+        eng = (kp["N_min"], kp["R_min"], kp["R"], kp["N_theoretical"])
+        for name, h, e in zip(("N_min", "R_min", "R", "N"), hand, eng):
+            if abs(h / e - 1.0) > 0.005:
+                failures.append(f"PR+kij shortcut {name}: engine {e:.3f} against the textbook arithmetic on its own alpha {h:.3f}")
+        a_meas = laurance_alpha_at(js["streams"]["distillate"]["T"], 0.7)
+        hm = fug(a_meas, 0.7, 0.99, 0.0116, 1.2)
+        dN, dR = 100.0 * (eng[3] / hm[3] - 1.0), 100.0 * (eng[2] / hm[2] - 1.0)
+        numbers["splitter_pr_kij"] = {"alpha_engine": a_eng, "alpha_measured": a_meas, "N_engine": eng[3], "N_measured": hm[3],
+                                      "R_engine": eng[2], "R_measured": hm[2], "dN": dN, "dR": dR}
+        for k, v in (("N_vs_measured_pct", dN), ("R_vs_measured_pct", dR)):
+            if abs(v - E_PIN[k]) > E_PIN["drift"]:
+                failures.append(f"PR+kij splitter: the tower is {v:+.1f} % from the measured-alpha tower "
+                                f"({k}; pinned {E_PIN[k]:+.1f} +- {E_PIN['drift']})")
+        if abs(dN) >= 0.5 * abs(C_PIN["N_vs_measured_pct"]):
+            failures.append(f"PR+kij splitter: the tower is {dN:+.1f} % from the measured one; the fit no longer halves the "
+                            f"SRK kij = 0 distance ({C_PIN['N_vs_measured_pct']:+.1f} %)")
+        st = js["streams"]
+        xd2, xb2 = st["distillate2"]["composition"]["propylene"], st["bottoms2"]["composition"]["propane"]
+        xd3, xb3 = st["distillate3"]["composition"]["propylene"], st["bottoms3"]["composition"]["propane"]
+        numbers["splitter_pr_kij"].update({"xD_mesh": xd2, "xB_mesh": xb2, "xD_meshM": xd3, "xB_meshM": xb3})
+        if abs(xd2 - E_PIN["xD_mesh_shortcut"]) > E_PIN["xD_drift"] or xd2 >= 0.995:
+            failures.append(f"PR+kij splitter: the rigorous column at the shortcut's numbers gives {xd2:.4f} overhead "
+                            f"(pinned {E_PIN['xD_mesh_shortcut']}, SHORT of 0.995: constant alpha is the shortcut's limit)")
+        if abs(xd3 - 0.995) > 0.002 or abs(xb3 - 0.9769) > 0.002:
+            failures.append(f"PR+kij splitter: the rigorous column at the MEASURED-alpha tower gives {xd3:.4f} overhead and "
+                            f"{xb3:.4f} propane in the bottoms (specification 0.995 / 0.9769, tolerance 0.002)")
+
     # ---- (E) sabotage ---------------------------------------------------------------------
+    with gatekit.probe_copy(D_CASE, strip=STRIP_FIT) as c:
+        for f in c.glob("*.csv"):
+            f.unlink()
+        # the case's own record is read BEFORE the catalogue's: a kij = 0 record there is the sabotage
+        (c / "constant/parameters/PengRobinson").mkdir(parents=True, exist_ok=True)
+        (c / "constant/parameters/PengRobinson/propane-propylene.dat").write_text(
+            "recordType eosBinaryInteraction;\nschemaVersion 1;\nvariationOf propane-propylene;\n"
+            'variationReason "gate sabotage arm: the fitted kij replaced by zero";\n'
+            "i    propylene;\nj    propane;\nkij  0.0;\neos  PengRobinson;\n")
+        rc, out = gatekit.run(props, c, inside=True)
+        if rc != 0:
+            failures.append(f"sabotage arm (record kij = 0): the fit case did not run (exit {rc})")
+        else:
+            fl = []
+            check_D(c, "sabotaged", fl, numbers)
+            if not fl:
+                failures.append("sabotage arm: the PR record's kij set to 0 passed every pin -- the gate cannot see the record")
+    # ---- (E) sabotage, the Laurance case ----------------------------------------------------
     with gatekit.probe_copy(A_CASE, strip=STRIP) as c:
         comp = c / "constant/components"
         comp.mkdir(parents=True, exist_ok=True)
@@ -368,7 +554,11 @@ def main():
         f"band and pinned, bubble P inside it; ethylene/ethane vs Fredenslund (14 points) inside the declared band but for one point "
         f"({', '.join(outside_names.get('srk', []))}); the engine's C3 tower is "
         f"{sp.get('dN', 0):+.0f} % in stages and {sp.get('dR', 0):+.0f} % in reflux from the one the measured alpha implies; "
-        "a transposed omega is seen",
+        "a transposed omega is seen; ONE kij fitted on bubble pressure (PR "
+        f"{numbers.get(('fit', 'pr'), {}).get('kij', 0):.5f}, SRK {numbers.get(('fit', 'srk'), {}).get('kij', 0):.5f}): held-out alpha "
+        f"mean {numbers.get(('shipped', 'prfit'), {}).get('held_alpha_mean', 0):.2f} % with PR+kij (declared band met) against "
+        f"{numbers.get(('shipped', 'srkfit'), {}).get('held_alpha_mean', 0):.2f} % with SRK (missed: a pressure fit cannot see it), "
+        f"the PR+kij tower {numbers.get('splitter_pr_kij', {}).get('dN', 0):+.1f} % in stages from the measured one",
     )
 
 

@@ -974,7 +974,7 @@ WHAT THE MEASURED ALPHA ADDS (README.md, and the gate check\_olefin\_vle). Laura
 \tutreadme{No propylene-splitter specification (feed, purities, pressure, trays) is in the literature folder, so every number a plant would set is declared in system/flowsheetDict and marked illustrative: feed 100 kmol/h at 70 mol \% propylene, liquid, 316.0 K (0.3 K below its bubble point), 17 bar; column at the feed's 17 bar; distillate 99.0 \% of the propylene and 1.16 \% of the propane (99.5 mol \% propylene); R = 1.2 R\_min. Nothing here is a published plant, and it is not claimed to be one. What is not illustrative is the thermodynamics: SRK with kij = 0, the system tutorials/props/compare/olefins01\_propane\_propene\_laurance1972 holds to Laurance \& Swift's measured relative volatility.}
 \tutreadme{$\ast$ fug, the Fenske-Underwood-Gilliland shortcut (constant alpha at the feed's bubble point): alpha = 1.1345, N\_min = 71.6, R\_min = 10.42, R = 12.51, N = 144.6 theoretical stages, feed at stage 82.5. $\ast$ mesh, the full MESH column (Naphtali-Sandholm, the stage energy balances solved) at the shortcut's numbers rounded up: 146 stages (145 trays + reboiler), feed on stage 83, R = 12.51, D = 69.648 kmol/h. It delivers 99.47 mol \% propylene overhead and 97.63 mol \% propane in the bottoms (the illustrative specification: 99.5 and 97.69): the constant-alpha shortcut and the rigorous column agree to 0.1 point.}
 \tutreadme{Laurance \& Swift's alpha at this temperature and composition (Table IV, x = 0.7, interpolated in T between the 100 and 110 degF blocks) is 1.1105; the engine's is 1.1345, 2.2 \% higher. The same Fenske-Underwood-Molokanov-Gilliland arithmetic (typed in the gate from the textbook) on the measured alpha gives:}
-\tutreadme{A 2 \% error in alpha is a 20 \% error in the tower (the measured tower is 20 \% taller and needs 22 \% more reflux): the engine's column is the optimistic one. The reason is in olefins01: the kij = 0 cubic gives an alpha almost flat in composition, too high at the propylene-rich end where this feed sits. The deviation is the result; no kij was fitted to remove it (the slice reports what the model does).}
+\tutreadme{A 2 \% error in alpha is a 20 \% error in the tower (the measured tower is 20 \% taller and needs 22 \% more reflux): the engine's column is the optimistic one. The reason is in olefins01: the kij = 0 cubic gives an alpha almost flat in composition, too high at the propylene-rich end where this feed sits. The deviation is the result; no kij is used here (the slice reports what the model does). The sibling c3splitter02\_propylene\_propane\_pr\_kij runs the same specification on Peng-Robinson with a propene-propane kij fitted to Laurance \& Swift's pressures (held-out alpha 0.66 \%): its tower is 7.7 \% short of the measured one in stages instead of 16.5 \%. SRK keeps kij = 0 because the same pressure regression returns zero for SRK.}
 \tutreadme{$\ast$ No published column: the stage count, reflux and purities are an illustrative design problem, not a plant. $\ast$ The tower from the measured alpha is Fenske-Underwood-Gilliland arithmetic on ONE alpha (constant-alpha method): the shape of alpha(x) across a real column and the column pressure drop (none here) are not in it. $\ast$ The measured alpha is Laurance \& Swift's Table IV, computed by the authors from measured pressures, not a sampled vapour; it carries their +-0.005 (0.5 \% at alpha = 1.11, i.e. about 5 \% in alpha - 1 and in the tower). $\ast$ Energy closure of mesh is closed by construction on the reboiler and verified by the unit's second route (the engine's report says so); the shortcut has no energy balance.}
 \begin{tutgolden}
 \goldrow{stream}{bottoms}{F}{0.00843111111111}
@@ -992,6 +992,55 @@ WHAT THE MEASURED ALPHA ADDS (README.md, and the gate check\_olefin\_vle). Laura
 \goldrow{kpi}{fug}{B}{0.00843111111111}
 \goldrow{kpi}{fug}{D}{0.0193466666667}
 \goldmore{40}
+\end{tutgolden}
+
+\clearpage
+\tutentry{c3splitter02\_propylene\_propane\_pr\_kij}{tutorials/steady/distillation/c3splitter02\_propylene\_propane\_pr\_kij}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (fug) at (0.0,-0.0) {\textbf{fug}\\[-1pt]{\tiny shortcutColumn}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (mesh) at (0.0,-1.7) {\textbf{mesh}\\[-1pt]{\tiny distillationColumn}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (meshM) at (0.0,-3.4) {\textbf{meshM}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(fug.west)+(-1.05,0.00)$) -- ($(fug.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(mesh.west)+(-1.05,0.00)$) -- ($(mesh.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed2};
+  \draw[->] ($(meshM.west)+(-1.05,0.00)$) -- ($(meshM.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed3};
+  \draw[->] ($(fug.east)+(0,-0.17)$) -- ($(fug.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate};
+  \draw[->] ($(fug.east)+(0,0.17)$) -- ($(fug.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
+  \draw[->] ($(mesh.east)+(0,-0.17)$) -- ($(mesh.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate2};
+  \draw[->] ($(mesh.east)+(0,0.17)$) -- ($(mesh.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms2};
+  \draw[->] ($(meshM.east)+(0,-0.17)$) -- ($(meshM.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {distillate3};
+  \draw[->] ($(meshM.east)+(0,0.17)$) -- ($(meshM.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {bottoms3};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{C3 splitter (propylene / propane), ILLUSTRATIVE specification, Peng-Robinson with the propene-propane kij fitted to Laurance and Swift (olefins03): the stages and reflux its relative volatility implies, beside the same arithmetic on the measured alpha}
+\begin{tutnarrative}
+THE C3 SPLITTER OF c3splitter01 ON PENG-ROBINSON WITH THE FITTED PROPENE-PROPANE kij. Same ILLUSTRATIVE specification as c3splitter01 (feed 100 kmol/h, 70 mol \% propylene, liquid, 316.0 K, 17 bar, 0.3 K below its bubble point, 316.33 K on this package; distillate 99.0 \% of the propylene and 1.16 \% of the propane; R = 1.2 R\_min). What changes is the thermodynamics: PR78 with kij = 0.00543, the regression of tutorials/props/compare/olefins03\_propane\_propene\_kij\_fit\_laurance1972 (README there: the fit, the held-out isotherms, the alpha it reaches).
+
+THREE UNITS ON THREE IDENTICAL FEEDS (c3splitter01 has two): `fug` (the shortcut, constant alpha at the feed's bubble point) and `mesh` (the full MESH column at the shortcut's numbers rounded up: 160 trays plus the reboiler = 161 stages, feed on stage 92, R = 13.96). The README carries the comparison with the measured-alpha tower and with c3splitter01; the gate check\_olefin\_vle re-derives the shortcut's N and R from the textbook arithmetic. The third, `meshM`, is the rigorous column at the tower the MEASURED alpha implies (173 stages, feed 99, R = 15.23): the question c3splitter01 could not ask, because its kij = 0 cubic was not the thermodynamics the measurement describes.
+
+\end{tutnarrative}
+\tutreadme{runCase tutorials/steady/distillation/c3splitter02\_propylene\_propane\_pr\_kij}
+\tutreadme{c3splitter01\_propylene\_propane with ONE change: the thermodynamics is Peng-Robinson (PR78) with the propene-propane kij = 0.00543 that tutorials/props/compare/olefins03\_propane\_propene\_kij\_fit\_laurance1972 regressed on the bubble pressures of Laurance \& Swift (fit 100/120/140/160 degF, held out 110/130/150; held-out alpha 0.66 \% against 1.8 \% for kij = 0). The record is the catalogue's, data/standards/parameters/PengRobinson/propane-propylene.dat, found by name; it names its case. The specification is the same ILLUSTRATIVE one (feed 100 kmol/h, 70 mol \% propylene, liquid, 316.0 K, 17 bar, distillate 99.0 \% of the propylene and 1.16 \% of the propane, R = 1.2 R\_min); nothing here is a published plant.}
+\tutreadme{$\ast$ fug, Fenske-Underwood-Gilliland at the feed's bubble point (316.33 K on this package): alpha = 1.1206, N\_min = 79.4, R\_min = 11.63, R = 13.96, N = 159.8 theoretical stages, feed at stage 91.2. $\ast$ mesh, the full MESH column at the shortcut's numbers rounded up (161 stages, feed 92, R = 13.96): it delivers 99.03 mol \% propylene overhead and 96.62 mol \% propane in the bottoms, SHORT of the specification (99.5 / 97.69). In c3splitter01 the same comparison agreed to 0.1 point. The reason is the one the kij introduces: the real alpha falls toward the propylene-rich end (the paper's 1.20 at x = 0.1 to 1.10 at x = 0.9), and the shortcut's constant alpha taken at the feed (x = 0.7) is too optimistic for the top section. It is the constant-alpha method's limit, now visible because the thermodynamics has a composition-dependent alpha. $\ast$ meshM, the full MESH column at the tower the MEASURED alpha implies (173 stages, feed 99, R = 15.23; below): it delivers 99.51 mol \% propylene overhead and 97.71 mol \% propane in the bottoms, i.e. the specification (99.5 / 97.69) within 0.02 point.}
+\tutreadme{With kij = 0 the engine's tower is 16.5 \% short in stages and 17.9 \% in reflux; with the fitted kij it is 7.7 \% and 8.4 \% short: the miss is halved, not closed. What remains is the 0.9 \% that alpha still lies above the measurement at x = 0.7 amplified about 8-fold by alpha - 1 = 0.11 (a tower goes as 1 / ln alpha).}
+\tutreadme{$\ast$ No published column: the stage count, reflux and purities are an illustrative design problem. $\ast$ The measured-alpha tower is Fenske-Underwood-Gilliland arithmetic on ONE alpha (constant alpha); meshM shows it is a good design on the rigorous column with this kij, which is a statement about the model, not about a plant. $\ast$ The kij was fitted to pressure on the SAME paper whose alpha it is compared with (the hold-out is three isotherms of it): the closeness to the measured alpha is in sample to that table. The SRK splitter of c3splitter01 keeps kij = 0 because the pressure regression for SRK returns zero (olefins03 README). $\ast$ Energy closure of mesh and meshM is closed by construction on the reboiler and verified by the unit's second route.}
+\tutreadme{Gate: bin/curate/check\_olefin\_vle.py part (G): the shortcut equals the textbook arithmetic on its own alpha to 0.5 \%, the tower against the measured-alpha tower is pinned, mesh is pinned short of the specification and meshM meets it within 0.002.}
+\begin{tutgolden}
+\goldrow{stream}{bottoms}{F}{0.00843111111111}
+\goldrow{stream}{bottoms}{T}{316.32501928}
+\goldrow{stream}{bottoms2}{F}{0.00843111111111}
+\goldrow{stream}{bottoms2}{T}{322.254893223}
+\goldrow{stream}{bottoms3}{F}{0.00843111111111}
+\goldrow{stream}{bottoms3}{T}{322.372172058}
+\goldrow{stream}{distillate}{F}{0.0193466666667}
+\goldrow{stream}{distillate}{T}{316.32501928}
+\goldrow{stream}{distillate2}{F}{0.0193466666667}
+\goldrow{stream}{distillate2}{T}{314.439550797}
+\goldrow{stream}{distillate3}{F}{0.0193466666667}
+\goldrow{stream}{distillate3}{T}{314.412042559}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{feed}{T}{316}
+\goldmore{71}
 \end{tutgolden}
 
 \clearpage

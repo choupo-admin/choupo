@@ -80,8 +80,9 @@ recomputed from the engine's y and x by the gate `check_olefin_vle`.
   1.1414, almost flat.  The measured mixture has a small positive deviation from
   Raoult's law (the paper's Figures 3 to 5: 1000 ln(P/P_r) peaks at about 12 to 14 on the
   plotted curves, i.e. 1.2 to 1.4 % in pressure), a kij = 0 cubic has almost none.  A kij would flatten
-  the misfit; **none was fitted here** (the slice is the deviation; fitting a
-  parameter to the same table would remove the only measurement this pair has in the engine).
+  the misfit; **none was fitted here** -- the sibling `olefins03_propane_propene_kij_fit_laurance1972` does it,
+  on four isotherms of this very table and tests it on the other three (the slice is the deviation; a fit to all 63 points
+  would remove the only measurement this pair has in the engine, which is why the fit keeps a held-out set).
 * **y** is within 0.006 everywhere (mean 0.0028): the paper's own alpha error of +-0.005 is
   the same order, so the y comparison cannot see the alpha miss; alpha is the sensitive quantity.
 
@@ -98,7 +99,7 @@ column and the same arithmetic on the measured alpha: the measured alpha implies
   1, which the dataset does not list; the Antoine records the run prints as "outside Trange" only
   SEED the incipient-vapour iteration of the bubble-pressure solver (`BubblePoint.H`), the answer
   is the cubic's.  The cubic's liquid density is not tested here.
-* No kij: no propene-propane record exists in `data/standards/parameters/SRK`; the PPR78 group
+* No kij in THIS case (olefins03 fits one: PR78 +0.00543, SRK zero); no propene-propane record exists in `data/standards/parameters/SRK`; the PPR78 group
   contribution (`op:ppr78Kij`, Peng-Robinson) is a prediction route this case does not try.
 * y and alpha of Table IV are computed by the authors from measured pressures (integration of the
   coexistence equation with their own vapour-compressibility and liquid-volume correlations), not

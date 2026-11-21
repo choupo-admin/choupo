@@ -1,0 +1,81 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  c3splitter02_propylene_propane_pr_kij -- THE C3 SPLITTER OF c3splitter01 ON
+  PENG-ROBINSON WITH THE FITTED PROPENE-PROPANE kij.  Same ILLUSTRATIVE
+  specification as c3splitter01 (feed 100 kmol/h, 70 mol % propylene, liquid,
+  316.0 K, 17 bar, 0.3 K below its bubble point, 316.33 K on this package;
+  distillate 99.0 % of the propylene and 1.16 % of the propane; R = 1.2 R_min).
+  What changes is the thermodynamics: PR78 with kij = 0.00543, the regression
+  of tutorials/props/compare/olefins03_propane_propene_kij_fit_laurance1972
+  (README there: the fit, the held-out isotherms, the alpha it reaches).
+
+  THREE UNITS ON THREE IDENTICAL FEEDS (c3splitter01 has two): `fug` (the shortcut,
+  constant alpha at the feed's bubble point) and `mesh` (the full MESH column at
+  the shortcut's numbers rounded up: 160 trays plus the reboiler = 161 stages,
+  feed on stage 92, R = 13.96).  The README carries the comparison with the
+  measured-alpha tower and with c3splitter01; the gate check_olefin_vle
+  re-derives the shortcut's N and R from the textbook arithmetic.
+  The third, `meshM`, is the rigorous column at the tower the MEASURED
+  alpha implies (173 stages, feed 99, R = 15.23): the question c3splitter01
+  could not ask, because its kij = 0 cubic was not the thermodynamics the
+  measurement describes.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        fug;
+        type        shortcutColumn;
+        in          feed;
+        outputs     ( distillate  bottoms );
+        operation
+        {
+            lightKey      propylene;
+            heavyKey      propane;
+            recoveryLK    0.99;           // illustrative: 99.5 mol % propylene overhead
+            recoveryHK    0.0116;         // illustrative
+            refluxFactor  1.2;            // illustrative
+        }
+    }
+    {
+        name        mesh;
+        type        distillationColumn;
+        model       fullMESH;
+        in          feed2;
+        outputs     ( distillate2  bottoms2 );
+        operation
+        {
+            nStages        161;           // fug's N = 159.8, up to 160 trays + the reboiler
+            feedStage      92;            // fug's 91.2 from the top, rounded up
+            P              17 bar;
+            distillateRate 69.648 kmol/h; // fug's D = 1.9347e-02 kmol/s
+            refluxRatio    13.96;         // fug's R = 1.2 R_min
+        }
+        compositionTol  1e-7;
+        maxOuterIter    200;
+    }
+    {
+        name        meshM;
+        type        distillationColumn;
+        model       fullMESH;
+        in          feed3;
+        outputs     ( distillate3  bottoms3 );
+        operation
+        {
+            nStages        173;           // the tower the MEASURED alpha implies (Fenske-Underwood-Gilliland on Laurance and Swift's alpha: N = 173.2, R = 15.23)
+            feedStage      99;            // 0.57 of the stages, the shortcut's ratio
+            P              17 bar;
+            distillateRate 69.648 kmol/h;
+            refluxRatio    15.23;
+        }
+        compositionTol  1e-7;
+        maxOuterIter    200;
+    }
+);
