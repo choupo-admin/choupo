@@ -5024,6 +5024,44 @@ accepts today, and that is a policy call.
 > re-observed only for the two new gates.  thermo-tables needs the NASA PDF in
 > thirdParty (private, environmental).
 
+> ADDED the same evening: C167 slice 5 was partly WRONG -- the nine closure gates it moved
+> to ISO read the walk's plant reports, absent in the slot copy, so mass-closure failed in
+> two pooled sweeps and held 17 plants nowhere; they go back to SERIAL with the cloud block.
+> Still unexplained: golden-bands flagging cstr07's round-off band only in the pool.
+
+> **C467 (Vitor, 2026-11-21, an external review handed over "to reflect on, not a to-do list";
+> the architect ruled every finding real after reading R-001, R-004, R-010 on main): a
+> `converged=true` is published only after the FINAL state is verified.**  Ten findings
+> (R-001..R-010, reviewed commit a0e2e84d6f, 11-19); seven are one pattern -- success
+> declared by a criterion that does not check what it claims (a stale residual, a small
+> simplex, a pure-Tc rule, an interpolation across a refusal).  The conservation gates
+> hold the balance on shipped cases; they cannot see a false-success path no case
+> exercises.  Slices, by damage:
+> (1) R-010: `supercriticalSplitDiscarded` (src/unitOperations/flash/StreamEquilibrium.H:160)
+>     discards a two-phase answer above the highest pure Tc whatever the K route; it erased
+>     a converged SRK phi-phi split (V/F 0.5 -> 1, Gibbs higher).  The rule was made against
+>     extrapolated Psat/Henry: keep it there, decide by the stability test on the EoS route.
+>     Shared path: full sweep, Opus first review.
+> (2) R-001 + R-002: newton1D returns converged with maxIter <= 0 (residual starts at 0;
+>     an adiabatic flash with 917 kW imbalance published converged); the returned residual
+>     belongs to the previous iterate.  Refuse a non-positive or non-integer budget by name;
+>     success only from an evaluated residual; the unit's success requires its energy closure.
+> (3) R-008: VLLE phase elimination (IsothermalFlash.cpp ~1452) renormalises without
+>     re-solving; ethanol 7e-5 of F off.  Re-solve the reduced set from the 3-phase start.
+> (4) R-009: an ideal binary reported as V + two copies of one liquid (IsothermalFlash.cpp
+>     ~1490; NelderMead convergence taken as an equilibrium certificate).  Merge equivalent
+>     phases by chemical potential, re-refine; a positive control with real LLE.
+> (5) R-006: FUG accepts a distributed non-key between the keys when the end signs differ
+>     (ShortcutColumn.cpp ~190); the lesson says it refuses.  Refuse before bisection.
+> (6) R-005: ponchonSavarit.ts readHxy and binaryFlash.ts drop refused nodes and interpolate
+>     across them.  Split curves into valid segments.
+> (7) R-003: the Wegstein page compares one computation with itself; recompute in the
+>     scaled units, state the epsX threshold caveat.
+> (8) R-004: docs/ai/brief.md:213 lists 9 NRTL pairs (793 ship) and says no filter or
+>     centrifuge (cakeFilter, sedimentingCentrifuge exist).  Remove hand lists, point at the catalogue.
+> (9) R-007: Rachford-Rice accepts the 0.5 seed on a flat g(V) near the pure limit; a
+>     declared ill-conditioned state instead.
+
 > **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
 > mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
 > into the cloud branch, one full sweep ALONE (reason: the gas-only rule changes the
