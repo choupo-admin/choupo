@@ -5025,6 +5025,19 @@ accepts today, and that is a policy call.
 > 2.7235e-4 (moves cstr07 and batch07; batch07 sits in tutorials/batch, held by the
 > cloud session -- queued, coordinated through SESSIONS.md).
 
+> **C335 THIRD PASS RULED (architect, 2026-11-21; measurements in
+> docs/reviews/2026-11-21-c335-moved-rows.md).**  (a) SRK N2-CH4: flash09's anchor is
+> Stryjek 1974 Table III itself (149.82 K, K_N2 3.047), and the paper's global kij
+> (0.0058) misses its own point by 6 %: kij depends on temperature in that table.
+> RULED: pay the pin with a kij fitted to the 149.82 K isotherm of Stryjek Table III
+> alone, recorded with THAT isotherm as its validity window, so flash09's anchor
+> and the record come from one primary; cases using the pair outside the window are
+> announced, not silently extrapolated.  (b) NRTL ethanol-water: with the temperature
+> terms free the held-out AAD falls 5 % (0.338 -> 0.322 K) but the parameters are
+> not identifiable (corr 0.9987) and flash20's first-law residual grows 1.5 kW.
+> RULED: not promoted; the pin STAYS, written as "not payable from the public data
+> in hand without a worse record"; reopened only by a new measured dataset.
+
 > **C458 RULED ON THE HOME OF RADICALS (architect, 2026-11-21, Vitor asking for a
 > second opinion on the cloud's proposal that radicals stay in components/).**
 > MEASURED: 36 records tagged `radical` sit in components/, every one with
