@@ -51,6 +51,14 @@ a ternary with toluene ABSENT from the feed must not be refused as a
 distributed non-key, so the refusal is shown to follow presence and not the
 component list.
 
+ARM (c) PATH, RECORDED BY HAND 2026-11-21: at 350 K the ternary's end signs of
+Underwood's function DIFFER (glo < 0 < ghi in the bracket (1, alpha_LK)): with the
+new pre-check disabled (`if (false && ...)`, engine rebuilt) the case ran, exit 0,
+printing no "does not change sign" text -- the old refusal never fires on it, so the
+wording asserted here ("non-key lies BETWEEN the keys (relative volatility") belongs
+to the pre-check alone, and that engine sabotage made arm (c) FAIL.  It needs a
+rebuilt binary, so it is not re-run by the gate itself.
+
 NOT CHECKED: other unit keys that feed a loop budget through a cast (the list
 is in the C467 commit), nor whether any corpus case should converge.
 """
@@ -77,7 +85,7 @@ def build_probe(tmp, nr_source, tag):
     if not cxx:
         return None, "no C++ compiler: a check that cannot run must not pass"
     exe = Path(tmp) / ("probe_" + tag)
-    r = subprocess.run([cxx, "-std=c++17", "-O1", "-I", str(ROOT / "src"),
+    r = subprocess.run([cxx, "-std=c++17", "-O1", "-I", str(ROOT / "src"), "-I", str(ROOT / "src" / "solver"),
                         str(PROBE), str(nr_source), "-o", str(exe)],
                        capture_output=True, text=True)
     if r.returncode != 0:
@@ -141,8 +149,8 @@ def main():
             p = Path(td) / "NRsab.cpp"
             p.write_text(src)
             vs, e2 = build_probe(td, p, "sab")
-            if e2 and "compile" not in e2:
-                failures.append(f"sabotage '{what}': {e2}")
+            if e2:
+                failures.append(f"sabotage '{what}': {e2} -- a sabotage that does not build proves nothing")
             elif vs is not None and not probe_failures(vs):
                 failures.append(f"sabotage '{what}' was NOT seen by arm (a)")
 
@@ -186,7 +194,8 @@ def main():
             return gatekit.run(solve, c)
 
     rc, out = fug(True)
-    if rc == 0 or "toluene" not in out or "BETWEEN the keys" not in out:
+    if (rc == 0 or "toluene" not in out or "non-key lies BETWEEN the keys (relative volatility" not in out
+            or "does not change sign" in out):
         failures.append(f"(c) ternary FUG not refused naming toluene (exit {rc}): "
                         + " | ".join(out.strip().splitlines()[-2:]))
     rc, out = fug(False)
