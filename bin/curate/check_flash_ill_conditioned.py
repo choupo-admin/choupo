@@ -23,11 +23,22 @@ tutorials/steady/flash/flash01_benzene_toluene with the two states above).
   (b) the run NAMES the state: the log carries "Rachford-Rice equation is
       ILL-CONDITIONED" and the advisory record carries the locus
       "flash Rachford-Rice ill-conditioned";
-  (c) an ordinary state (flash01 itself, 370 K, 1 bar) prints NO such warning.
+  (c) an ordinary state (flash01 itself, 370 K, 1 bar) prints NO such warning;
+  (d) a NEGATIVE WITNESS near the first criterion's band: p-xylene/m-xylene
+      (alpha 1.019) at 410 K, z = 0.3, P = 95726 Pa has |g'| = 7e-5, which the
+      first criterion (tolerance/|g'| > 1e-4) flagged although Newton had
+      solved it.  It must print NO warning and V/F must equal an independent
+      bisection of g (Antoine from the component files, K = Psat/P) to 1e-6.
+  The criterion is the Newton step on V (dV = g/g' at the accepted V), not the
+  residual: the warning fires only when the V the residual test accepted
+  differs from the located root by more than 1e-6.
   SABOTAGE ARM.  The pre-fix output (V/F = 0.5, no warning) is handed to the
   same checker and must be refused, so the comparison has teeth.
 
-NOT CHECKED: that the refined V/F is physically meaningful (it is determined by
+NOT CHECKED: the path where g(0), g(1) do not bracket a root while Newton
+"converged" (the flash publishes UNCONVERGED with its own message): no
+two-phase state in the corpus reaches it, because the single-phase tests run
+first; that the refined V/F is physically meaningful (it is determined by
 differences far below what the K-values carry, which is what the warning says);
 states whose width exceeds the band but whose g(0), g(1) do not bracket a root
 (the seed is then kept and the warning still names the state).
@@ -41,7 +52,7 @@ import gatekit  # noqa: E402
 
 CASE = "tutorials/steady/flash/flash01_benzene_toluene"
 STRIP = ("expected", "converged", "reports", "constant/propertyManifest")
-MSG = "Rachford-Rice equation is ILL-CONDITIONED"
+MSG = "Rachford-Rice function g(V) is nearly flat"
 LOCUS = "flash Rachford-Rice ill-conditioned"
 # (benzene kmol/h, toluene kmol/h, T K, P Pa, reference V/F from the review)
 STATES = (
@@ -90,6 +101,40 @@ def run_state(solve, state):
     return rc, out
 
 
+def xylene_reference():
+    """Independent root of Rachford-Rice for the negative witness: Antoine
+    from the component records, K = Psat/P, bisection in plain doubles."""
+    def antoine(name):
+        t = (gatekit.repo / "data/standards/components" / (name + ".dat")).read_text()
+        t = t[t.index("vaporPressure"):]
+        a, b, c = map(float, re.search(r"coefficients\s*\(([^)]*)\)", t).group(1).split()[:3])
+        return lambda T: 10 ** (a - b / (T + c)) * 1e5
+    z = (0.3, 0.7)
+    K = [antoine(n)(410.0) / 95726.0 for n in ("pXylene", "mXylene")]
+    g = lambda V: sum(zi * (k - 1) / (1 + V * (k - 1)) for zi, k in zip(z, K))
+    lo, hi = 0.0, 1.0
+    for _ in range(200):
+        mid = 0.5 * (lo + hi)
+        lo, hi = (mid, hi) if g(mid) > 0 else (lo, mid)
+    return 0.5 * (lo + hi)
+
+
+def run_xylene(solve):
+    """flash01's case with the pair swapped for p-xylene / m-xylene (z = 0.3)."""
+    with gatekit.probe_copy(CASE, strip=STRIP) as c:
+        for f in list((c / "0").iterdir()) + [c / "constant" / "thermoPhysPropDict"]:
+            t = f.read_text().replace("benzene", "pXylene").replace("toluene", "mXylene")
+            if f.parent.name == "0" and f.name == "feed":
+                t = re.sub(r"(?m)^(\s*)pXylene\s+.*kmol/h;", r"\g<1>pXylene 30 kmol/h;", t)
+                t = re.sub(r"(?m)^(\s*)mXylene\s+.*kmol/h;", r"\g<1>mXylene 70 kmol/h;", t)
+                t = re.sub(r"(?m)^T\s+.*;", "T 410 K;", t)
+                t = re.sub(r"(?m)^P\s+.*;", "P 95726 Pa;", t)
+            f.write_text(t)
+        fd = c / "system" / "flowsheetDict"
+        fd.write_text(re.sub(r"operation\s*\{[^}]*\}", "operation   { T 410 K;  P 95726 Pa; }", fd.read_text(), count=1))
+        return gatekit.run(solve, c)
+
+
 def main():
     failures = []
     solve = gatekit.binary("choupoSolve")
@@ -110,6 +155,17 @@ def main():
     else:
         failures += ["(c) " + b for b in judge(out, 0.0, want_warning=False)]
 
+    rc, out = run_xylene(solve)
+    ref = xylene_reference()
+    if rc != 0:
+        failures.append(f"(d) the close-boiling witness did not run (exit {rc}): " + " | ".join(out.strip().splitlines()[-2:]))
+    else:
+        vf = vf_of(out)
+        if MSG in out or LOCUS in out:
+            failures.append("(d) a close boiler Newton had solved (|g'| = 7e-5) printed the ill-conditioned warning")
+        if vf is None or abs(vf - ref) > 1e-6:
+            failures.append(f"(d) close-boiling V/F = {vf}, independent bisection {ref:.8f}")
+
     pre_fix = "  V/F:           0.500000\n"
     if not judge(pre_fix, STATES[0][4]):
         failures.append("sabotage arm: the pre-fix output (V/F = 0.5, no warning) passes -- the checker cannot see the defect")
@@ -118,7 +174,7 @@ def main():
         "check_flash_ill_conditioned", failures,
         "a flat Rachford-Rice function is declared and V/F is bisected, not left at the seed: "
         + " and ".join(f"{v:.6f}" for v in seen)
-        + " against the references 0.275308 / 0.724692; an ordinary flash prints no warning; "
+        + " against the references 0.275308 / 0.724692; an ordinary flash and a close boiler (|g'| 7e-5) print no warning; "
         "the pre-fix V/F = 0.5 output is refused",
     )
 

@@ -1711,9 +1711,8 @@ IsothermalFlash::solveCore(const FlashInput&    in,
     bool   phaseTrivial = false;
     //  R-007: set when a pass met the residual test on a flat g(V) (see below)
     bool   illConditioned = false;
+    bool   illBracketLost = false;
     scalar illGp = 0.0, illWidth = 0.0;
-    //  V/F uncertainty tolerance/|g'| above which the state is declared
-    constexpr scalar illConditionedBand = 1.0e-4;
     int    outerIt      = 0;
     scalar compDelta    = 0.0;
 
@@ -2016,45 +2015,64 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         scalar V0 = (outerIt == 0) ? 0.5 : sol.V_over_F;
         auto r = solver::newton1D(fres, dres, V0, nro);
 
-        //  A FLAT RACHFORD-RICE FUNCTION FIXES V/F ONLY TO tolerance/|g'|
-        //  (external review R-007, DEV.md 4c C467).  Near the pure-component
-        //  limit g(V) is almost flat (the review's z = 1e-8 benzene state has
-        //  |g'| = 8e-9): the residual test g < tolerance is then met by the
-        //  SEED V = 0.5, the Newton step does nothing, and V/F = 0.5 was
-        //  published as converged when the root is 0.275.  The residual says
-        //  nothing about V/F there; the width of the interval it accepts,
-        //  tolerance/|g'|, does.  When that width exceeds illConditionedBand
-        //  the state is DECLARED ill-conditioned (advisory below) and V/F is
-        //  located by bisection of g alone, which needs no slope.
+        //  CONVERGENCE ON V, NOT ONLY ON g (external review R-007, DEV.md 4c
+        //  C467; the architect's ruling after the first review).  The residual
+        //  test |g| < tolerance bounds g, and V/F only through the slope:
+        //  the Newton step dV = g/g' at the accepted V is what says how far
+        //  the root can be.  Where g(V) is nearly flat (a nearly pure feed;
+        //  K all close to 1, i.e. a close boiler or a near-azeotrope) the
+        //  seed V = 0.5 passes the residual test with dV of order one, and
+        //  V/F = 0.5 was published as converged against a root of 0.275.
+        //  So: when |dV| > vTol the root is located by bisection of g on
+        //  [0,1] (g falls from g(0) > 0 to g(1) < 0; no slope needed) until
+        //  it is fixed to machine resolution.  A NAMED advisory is raised
+        //  ONLY when the V the residual test accepted differs from the
+        //  located root by more than illMoveTol: that is the defect class,
+        //  and it never fires on a well-solved close boiler, whose Newton
+        //  root already is the located root.
+        constexpr scalar vTol       = 1.0e-10;
+        constexpr scalar illMoveTol = 1.0e-6;
         scalar Vroot = r.x;
+        int    extraIters = 0;
+        bool   bracketLost = false;
+        illConditioned = false;   // per outer pass: describes the published state
         if (r.converged)
         {
             const scalar gp = std::abs(dres(r.x));
-            const scalar width = (gp > 0.0) ? opts.tolerance / gp
-                                            : std::numeric_limits<scalar>::infinity();
-            if (width > illConditionedBand)
+            const scalar dV = (gp > 0.0) ? std::abs(fres(r.x)) / gp
+                                         : std::numeric_limits<scalar>::infinity();
+            if (dV > vTol)
             {
-                illConditioned = true;
-                illGp          = gp;
-                illWidth       = width;
                 scalar lo = 0.0, hi = 1.0;
                 const scalar glo = fres(lo), ghi = fres(hi);
-                if (glo > 0.0 && ghi < 0.0)   // RR falls from g(0) > 0 to g(1) < 0
+                if (glo > 0.0 && ghi < 0.0)
                 {
                     for (int bi = 0; bi < 200; ++bi)
                     {
                         const scalar mid = 0.5 * (lo + hi);
                         (fres(mid) > 0.0 ? lo : hi) = mid;
+                        ++extraIters;
                     }
                     Vroot = 0.5 * (lo + hi);
+                }
+                else
+                    bracketLost = true;
+                if (std::abs(Vroot - r.x) > illMoveTol || (bracketLost && dV > illMoveTol))
+                {
+                    illConditioned = true;
+                    illBracketLost = bracketLost;
+                    const scalar gpRoot = std::abs(dres(Vroot));
+                    illGp    = gpRoot;
+                    illWidth = (gpRoot > 0.0) ? opts.tolerance / gpRoot
+                                              : std::numeric_limits<scalar>::infinity();
                 }
             }
         }
 
         sol.V_over_F   = Vroot;
-        sol.iterations += r.iterations;   // CUMULATIVE across outer passes (pass-4: 14-vs-1 confusion)
-        sol.residual   = r.residual;
-        sol.converged  = r.converged;
+        sol.iterations += r.iterations + extraIters;   // CUMULATIVE across outer passes (pass-4: 14-vs-1 confusion)
+        sol.residual   = (Vroot == r.x) ? r.residual : std::abs(fres(Vroot));
+        sol.converged  = r.converged && !(bracketLost && illConditioned);
 
         // ---- g(x) = direct-substitution image of current x -------------
         sVector x_subst(n), y_new(n);
@@ -2137,21 +2155,31 @@ IsothermalFlash::solveCore(const FlashInput&    in,
     //  converged 0.798, "Converged: yes", exit 0.
     if (illConditioned && !phaseTrivial)
     {
-        std::ostringstream msg;
-        msg << "flash: the Rachford-Rice equation is ILL-CONDITIONED at T = "
-            << in.T << " K, P = " << in.P << " Pa (|dg/dV| = " << std::scientific
-            << std::setprecision(2) << illGp << "): the declared residual"
-               " tolerance " << opts.tolerance << " fixes the vapour fraction"
-               " only to +-" << illWidth << ", so V/F = "
-            << std::fixed << std::setprecision(6) << sol.V_over_F
-            << " was located by bisection of g(V) and is determined by"
-               " differences far below what the K-values carry; the state is"
-               " at the edge of the two-phase window (a nearly pure feed or a"
-               " pressure within a few ppm of a phase boundary)";
-        AdvisoryLog::instance().add("solver", "warning",
-                                    "flash Rachford-Rice ill-conditioned", msg.str());
-        if (opts.verbosity >= 1)
-            std::cout << "\n  [flash] " << msg.str() << ".\n";
+        //  The recorded advisory carries NO per-call number (T, P, V/F, |g'|
+        //  change on every inner solve of an adiabatic loop, and the log
+        //  dedups on the exact message); the detailed line is printed once,
+        //  when the advisory is new.
+        const std::string cause =
+            "flash: the Rachford-Rice function g(V) is nearly flat (a nearly"
+            " pure feed, or K-values all close to 1: a close boiler or a"
+            " near-azeotrope), so the residual test |g| < tolerance accepted a"
+            " vapour fraction that is not the root; ";
+        const std::string general = illBracketLost
+            ? cause + "g(0) and g(1) do not bracket a root, so V/F could not be"
+                      " located and the flash is published UNCONVERGED"
+            : cause + "V/F was located by bisection of g(V) alone";
+        const bool isNew = AdvisoryLog::instance().add(
+            "solver", "warning", "flash Rachford-Rice ill-conditioned", general);
+        if (isNew && opts.verbosity >= 1)
+        {
+            std::ostringstream msg;
+            msg << std::scientific << std::setprecision(2)
+                << "first at T = " << in.T << " K, P = " << in.P
+                << " Pa: |dg/dV| = " << illGp << " at the published state, so the"
+                   " declared tolerance " << opts.tolerance
+                << " alone fixes V/F only to +-" << illWidth;
+            std::cout << "\n  [flash] " << general << " (" << msg.str() << ").\n";
+        }
     }
 
     const bool outerExhausted = !phaseTrivial && !(compDelta < opts.compositionTol);

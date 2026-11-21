@@ -12752,34 +12752,35 @@ $K_i$ (Antoine outside its range; $\gamma_i$ blowing up; $T$ below
 the lower phase boundary).
 \end{keyidea}
 
-\subsection{When $g$ is almost flat: an ill-conditioned state}\label{sec:rr-ill-conditioned}
+\subsection{When $g$ is almost flat: convergence on $\beta$, not only on $g$}\label{sec:rr-ill-conditioned}
 
-A small residual does not by itself fix $\beta$.  Near a pure-component
-limit every term of $g$ is nearly constant in $\beta$, so
-$|g'(\beta^\ast)|$ can be many orders of magnitude below one, and the
-residual test $|g(\beta)|<\varepsilon$ (the flash's \texttt{tolerance},
-$10^{-8}$) is met by an interval of width
-\[
-   \delta\beta \;\approx\; \frac{\varepsilon}{\lvert g'(\beta^\ast)\rvert}
-\]
-rather than by a point.  A feed with $z_1 = 10^{-8}$ of one component of a
-benzene/toluene pair, at a pressure inside the narrow two-phase
-window (a few $10^{-4}$\,Pa wide), has $|g'|\approx 8\times10^{-9}$, so $\delta\beta\approx1$: the
-starting guess $\beta^{(0)}=0.5$ already satisfies the test and a Newton
-step that did nothing was published as converged, with $\beta=0.5$ against
-a root near $0.275$.  An external review found this state (C467, R-007).
+A small residual does not by itself fix $\beta$.  The Newton step
+$\delta\beta=g(\beta)/g'(\beta)$ at the accepted $\beta$ says how far the
+root can be, and where $|g'|$ is tiny the residual test
+$|g(\beta)|<\varepsilon$ (the flash's \texttt{tolerance}, $10^{-8}$) is met
+by an interval of width $\varepsilon/|g'|$ rather than by a point.  $g'$ is
+small in two situations: a nearly pure feed, and $K_i$ all close to $1$ (a
+close-boiling pair or a feed near an azeotrope), because
+$|g'|=\sum_i z_i(K_i-1)^2/[1+\beta(K_i-1)]^2$.
 
-Choupo therefore computes $\delta\beta$ at every converged inner solve.
-When $\delta\beta>10^{-4}$ the state is declared
-\emph{ill-conditioned}: $\beta$ is located by bisection of $g(\beta)$ on
-$[0,1]$ (which needs the sign of $g$, not its slope, and $g$ is strictly
-decreasing), and a warning that names the state, $|g'|$ and
-$\delta\beta$ is printed and recorded in the run's advisories.  The
-warning is not an error: the split is a legitimate numerical answer, but
-it is determined by differences far below what the $K$-values carry
-(Antoine data, an activity model), and it sits at the edge of the
-two-phase window.  Ordinary states have $\delta\beta\sim10^{-8}$ and are
-untouched.
+The extreme case found by an external review (C467, R-007) is benzene/toluene
+with $z_1=10^{-8}$ at a pressure inside a two-phase window a few
+$10^{-4}$\,Pa wide.  There $|g'|\approx8\times10^{-9}$ at the starting guess
+$\beta^{(0)}=0.5$ and about $1.3\times10^{-8}$ at the root, the guess
+already satisfies the residual test, and the flash used to publish
+$\beta=0.5$ as converged against a root near $0.275$.
+
+Choupo therefore requires $|\delta\beta|\le10^{-10}$ at the published
+$\beta$.  When Newton's answer does not meet that, $\beta$ is located by
+bisection of $g$ on $[0,1]$ (the sign of $g$ is enough, and $g$ is strictly
+decreasing).  A named warning ("the Rachford-Rice function g(V) is nearly
+flat") is raised \emph{only} when the $\beta$ the residual test had accepted
+differs from the located root by more than $10^{-6}$; a close boiler that
+Newton solved well (for example $\alpha\approx1.02$, $|g'|\approx10^{-4}$)
+raises nothing and moves no number.  If $g(0)$ and $g(1)$ did not bracket a
+root, the flash is published unconverged with its own message instead.  The
+split is a legitimate numerical answer in the flagged cases, but it is
+determined by differences far below what the $K$-values carry.
 
 \subsection{Initialisation: the Wilson $K$-value}
 
