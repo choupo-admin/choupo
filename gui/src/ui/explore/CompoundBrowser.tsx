@@ -71,10 +71,12 @@ function pushRecent(name: string): string[] {
 // carrier concept.
 //
 // TWO ORDERS, TWO LISTS (2026-09-03).  Classification is first-match and its
-// precedence is a fact about the tests (a radical is also a gas, so radicals
-// must be tested before gases); display is a fact about WHO IS LOOKING.  One
-// list served both until today, so the 44 combustion radicals opened the
-// Explore browser -- the opposite of what was asked for on 2026-09-01.
+// precedence is a fact about the tests; display is a fact about WHO IS
+// LOOKING.  One list served both until 2026-09-03, so the 44 combustion
+// radicals opened the Explore browser -- the opposite of what was asked for
+// on 2026-09-01.  (Since 2026-11-21 there is no radicals group at all: a
+// radical is not a component, DEV.md 4c C458, and lives in the gas-species
+// table this browser does not list.)
 // `groupOf` carries the precedence in its statement order; DISPLAY_ORDER
 // carries the reading order; neither is derived from the other.
 //  CAPABILITY IS A FILTER, NOT A LEVEL (2026-09-03, Vítor: "VLE e nonvolatile
@@ -116,7 +118,6 @@ export const FIRST_PATH_COMPONENTS: ReadonlySet<string> = new Set(
 //  the release, so a student does not meet OH between octane and phenol.
 const FIXED_LABEL: Record<string, string> = {
   firstPath: "Used in the first-path tutorials",
-  radicals: "Radicals (open-shell species)",
   salts: "Salts & minerals",
   gases25: "Gases at 25 °C (Tb below 298.15 K)",
   combustion: "Gas-phase combustion species",
@@ -157,7 +158,7 @@ const FAMILY_LABEL = new Map(CATALOGUE_FAMILIES.map((f) => [f.key, f.label]));
 export const DISPLAY_ORDER: GroupKey[] = [
   "firstPath", "gases25", "salts",
   ...CATALOGUE_FAMILIES.map((f) => `fam:${f.key}`),
-  "combustion", "radicals", "synthetic",
+  "combustion", "synthetic",
 ];
 /** THE BROWSER IS A TREE (2026-09-03, Vítor: "GUI em forma de tree").  Every
  *  group is a node that folds; a group with more members than a screen holds
@@ -188,7 +189,6 @@ const familyNode = (g: GroupKey, f: Family) => `g:${g}/f:${f.key}`;
 export function groupOf(m: ComponentMeta): GroupKey {
   if (m.isSynthetic) return "synthetic";
   if (FIRST_PATH_COMPONENTS.has(m.name)) return "firstPath";
-  if (m.isRadical) return "radicals";
   if (m.isSaltOrMineral) return "salts";
   if (m.isRoomTemperatureGas) return "gases25";
   //  The two branches that used to answer `volatiles` and `nonvolatile` now
