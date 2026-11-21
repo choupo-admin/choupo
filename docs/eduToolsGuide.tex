@@ -3111,6 +3111,40 @@ omits the break time entirely when the crossing was never observed, and
 the tool reports \emph{which} absence it is rather than drawing a zero.
 \declaredanchor{ch:drying}
 
+\subsection*{Which dryer for which product \quad(\code{tool=dryer-selection})}\label{sec:edu-dryer-selection}
+A \emph{selection} aid: the seven dryer types that do most of the drying ---
+spray, direct-heat rotary, fluidised bed, tray, belt, drum and freeze ---
+each drawn as a schematic made for the page (feed in blue, hot gas in red,
+product in amber, vapour in grey; none copied from a book), and a tree that
+asks, in the order feed form, heat sensitivity, scale, batch or continuous,
+and answers with one or two types, the reason, and the book and page it was
+read from.  Every rule is read from Mujumdar, \emph{Handbook of Industrial
+Drying}, 3rd ed.\ (2006), Chapter~1 (Tables~1.1--1.4, section~1.5.3);
+Perry's \emph{Chemical Engineers' Handbook}, 9th ed.\ (2019), Section~12
+(Table~12-11, the selection considerations on p.~12-36); and van~'t Land,
+\emph{Drying in the Process Industry} (2012), whose two decision trees
+(Figs.~3.1 and~3.2) supply the 30 and 75~$^\circ$C product-temperature bands.
+The throughput bands are Perry's (batch below about 50~kg/h, continuous
+above 1~t/h); where the books disagree --- Perry marks the batch tray
+`not applicable' to a free-flowing powder, van~'t Land and Mujumdar admit it
+--- the page says so.  The comparison table gives residence time, energy per
+kilogram of water (Mujumdar's Table~1.4: 4\,500--11\,500~kJ/kg for a spray
+dryer, 3\,200--6\,500 for a drum dryer) and typical products, and prints
+\emph{not cited} in every cell the three books leave blank (the energy of the
+batch tray and the freeze dryer, three evaporation capacities).  A small
+bench turns a dry-solid rate and two moistures into the water to evaporate and
+the heat duty of each priced type, as the page's own arithmetic on the cited
+range ($\eta \approx \Delta h_\mathrm{vap}/e$ with 2257~kJ/kg).  The four
+types the engine models open their tutorial case in a new tab:
+\code{steady/drying/sprayDryer01\_sugar},
+\code{steady/drying/convDryer01\_sugar\_curve} (the continuous convective
+family, which has no rotary geometry),
+\code{steady/drying/solidDryer01\_sugar} (nearest to a well-mixed bed) and
+\code{batch/drying/dryer01\_sucrose\_tray}; the drum, belt and freeze dryers
+have no model and say so.  The page computes nothing in the engine and
+replaces no drying test.
+\declaredanchor{ch:drying}
+
 \subsection*{Cooling tower, Merkel \quad(\code{tool=merkel})}
 The saturated-air enthalpy curve above, the operating line below, and the
 gap between them shaded --- that gap is the driving force the packing has
