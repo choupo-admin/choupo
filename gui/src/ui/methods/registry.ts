@@ -82,7 +82,7 @@ export type MethodToolId =
   | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves"
   | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
-  | "one-flux-many-units" | "compression";
+  | "one-flux-many-units" | "compression" | "adsorbent-selection";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1474,6 +1474,26 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "squared; and the Biot number that says when diffusion inside the particle makes "
       + "the film-only answer too optimistic.",
     theory: "sec:batch-adsorption-stirred-tank",
+  },
+  //  WHICH ADSORBENT FOR WHICH SEPARATION (2026-11-21, DEV.md 4c C459,
+  //  Vitor 2026-11-19: "nas minhas aulas de adsorcao eu falo dos adsorventes
+  //  mais comuns na industria e a sua utilizacao").  A SELECTION aid: eight
+  //  industrial adsorbents (pore size, polarity, printed heats of adsorption,
+  //  regeneration), a matrix of five separations against them with the
+  //  dominant adsorbent marked and one cited line of why, a COUNT in the
+  //  place of a Pareto (no source in the folder gives tonnes or shares, and
+  //  the page says so), and the three catalogue adsorbents each opened with
+  //  the case that uses it.  Every value sits beside the printed page of
+  //  Perry 9th ed., Ruthven 1984, Ruthven-Farooq-Knaebel 1994 or Wankat
+  //  2nd ed. (gui/src/ui/methods/adsorbentSelectionData.ts); the only
+  //  arithmetic is Wankat's Eq. (17-25), marked page.  No engine run.
+  {
+    id: "adsorbent-selection", blurb: "Match eight industrial adsorbents to five separations, each claim with its page.",
+    label: "Which adsorbent for which separation",
+    discipline: "Separations & phase equilibria", kind: "selection", status: "live",
+    origins: ["reference", "page", "assumption"],
+    teaches: "Why a separation goes to one adsorbent and not another: eight industrial adsorbents (activated carbon, zeolites 3A, 4A, 5A and 13X, silica gel, activated alumina, carbon molecular sieve) by pore size, polarity, heat of adsorption and regeneration, then a matrix of five separations (gas drying, hydrogen PSA, nitrogen and oxygen from air, VOC recovery, water treatment) with each sentence beside the book page it was read at, a count in place of a market Pareto because no source in the folder gives tonnes, and the catalogue records each opened with the case that uses it.",
+    theory: "sec:adsorbent-selection",
   },
   {
     id: "breakthrough", blurb: "Watch a bed's mass-transfer zone eat capacity before saturation.", label: "Adsorption breakthrough",

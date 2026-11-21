@@ -1464,6 +1464,71 @@ stage: no multistage dosing and no column.  The standard errors rest on the
 chosen error model and on local linearity.
 
 % ---------------------------------------------------------------------
+\subsection{Which adsorbent for which separation}\label{sec:edu-adsorbent-selection}
+
+\declaredanchor{sec:adsorbent-selection}
+
+\noindent\textit{\small Tool:} \code{tool=adsorbent-selection}.
+\textit{\small Case it starts from:} none --- the page reads books and the
+catalogue and runs no engine; it opens the cases that use the adsorbents it
+names.
+
+\subsubsection*{The question}
+
+\emph{I have a separation to make --- drying a gas, purifying hydrogen,
+splitting air, recovering a solvent, treating water; which of the common
+industrial adsorbents does a cited page name for it, and why?}
+
+\subsubsection*{What the page shows}
+
+Eight adsorbents (activated carbon, zeolites 3A, 4A, 5A and 13X, silica gel,
+activated alumina, carbon molecular sieve) with their pore size, polarity,
+printed heats of adsorption and regeneration, every value beside the printed
+page of Perry's 9th edition, Ruthven (1984), Ruthven, Farooq and Knaebel (1994)
+or Wankat's 2nd edition, with the PDF page in the tooltip so the reader can open
+it.  Where the folder prints no value (a heat of adsorption on silica gel, for
+one) the cell says \emph{not in the cited sources}; where two books differ both
+are shown.  Then a matrix of the five separations against the eight adsorbents:
+each cell is \emph{dominant}, \emph{layer} or \emph{named} and opens to one
+sentence of why with its page; a blank cell means the cited pages do not name
+the adsorbent, not that it is never used.
+
+\subsubsection*{What the page computes, and what it does not}
+
+Three pieces of arithmetic, each marked \emph{page}: Wankat's
+Eq.~(17-25), $(\Delta T)_{\max} = y\,|\Delta H_{\mathrm{ads}}|/C_{p,f}$, as a
+sum with two sliders (\theorydest{sec:adsorbent-selection}); the conversion of
+the printed heats from kcal/mol to kJ/mol; and the count that stands in place of
+a Pareto.  \textbf{There is no Pareto of industrial use}, because nothing in the
+literature folder gives tonnes or sales by adsorbent; the bars count the
+separations (of five) for which a cited page names each adsorbent, and the page
+says in so many words that this is breadth in these readings and not market
+share.  A market review filed in the folder would turn the count into a real
+chart.
+
+\subsubsection*{The catalogue}
+
+Three of the eight are records of the standards catalogue: activated carbon,
+zeolite 5A and zeolite 13X.  The page lists every \code{kind adsorbent} record it
+finds, opens each as text, lists its pair records with the model, the saturation
+loading and the heat of adsorption, and sets the record's packed bulk density and
+heat beside the books' (the 5A record's 700~kg/m$^3$ lies outside Perry's
+600--660 and inside Wankat's 670--720).  Zeolite 5A opens
+\code{psa01\_h2\_psa}; zeolite 13X opens \code{isotherm01\_eval\_13x\_co2} and
+\code{batch13\_breakthrough\_co2}.  No tutorial case uses activated carbon, and
+the page says so.
+
+\begin{tryit}
+Open the drying row and read why silica gel and alumina are dominant and 3A is
+only named; then open hydrogen purification and see that no cell is dominant,
+because the bed is layered.  In the heat step, set 1.0~wt\% and 2500~kJ/kg and
+read 25~K, then 0.05~wt\% and read 1.25~K.  In the catalogue, compare the 13X
+CO$_2$ record (45~kJ/mol) with the printed 10.0~kcal/mol (41.8~kJ/mol).
+\end{tryit}
+
+The pair records are marked \code{teachingOnly}; none is design data.
+
+% ---------------------------------------------------------------------
 \subsection{Batch adsorption in a stirred tank}\label{sec:edu-batch-adsorption}
 
 \declaredanchor{sec:batch-adsorption-stirred-tank}
