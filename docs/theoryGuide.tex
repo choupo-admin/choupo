@@ -18662,9 +18662,12 @@ DISCARDED'').
 \paragraph{$\phi$--$\phi$ route (the rule is the Gibbs-energy test).}
 Under a $\phi$--$\phi$ package $K_i=\varphi_i^L(x)/\varphi_i^V(y)$ comes from one
 cubic and neither correlation is read.  A converged split can then be real: a
-mixture's critical locus lies above the pure $T_c$ of its lighter component
-(IUPAC 1998 nomenclature; Bolz et al., Pure Appl.\ Chem.\ \textbf{70}, 2233).  The
-split therefore stands when it lowers the Gibbs energy below the best
+mixture's critical locus normally lies between the two pure critical
+temperatures, but it \emph{can} pass above the heavier component's $T_c$ (a
+strongly negative $k_{ij}$ does it, as in the witness below; IUPAC 1998
+nomenclature, Bolz et al., Pure Appl.\ Chem.\ \textbf{70}, 2233).  The split
+therefore stands when neither phase sits on a cubic pseudo-root (no real root of
+that kind exists there) and it lowers the Gibbs energy below the best
 homogeneous root at the same $(T,P,z)$,
 \begin{equation}
   \frac{G_{\mathrm{split}}}{nRT} = \beta\sum_i y_i\bigl[\ln y_i+\ln\varphi_i^V(y)\bigr]
@@ -18674,8 +18677,10 @@ homogeneous root at the same $(T,P,z)$,
   \label{eq:flash-above-tc-gibbs}
 \end{equation}
 with $\beta=V/F$ and equal fugacities $y_i\varphi_i^V=x_i\varphi_i^L$ already
-guaranteed by the converged solve.  If the split does not lower $G$ it is
-discarded with the same advisory.  Witness (synthetic, $k_{ij}=-0.3$ imposed as
+guaranteed by the converged solve.  If the split sits on a pseudo-root, does not
+lower $G$, or the test cannot be evaluated, it is discarded and the advisory
+names which (the two $G$ values, the pseudo-root, or the exception), not the
+correlation-window sentence of the $\gamma$--$\phi$ routes.  Witness (synthetic, $k_{ij}=-0.3$ imposed as
 a mathematical probe, not a catalogue value): SRK propane + $n$-butane at 426.12~K
 (highest pure $T_c$ 425.12~K), 39.621~bar, $z_{\mathrm{C_3}}=0.4728$ converges to
 $V/F=0.5$, $x_{\mathrm{C_3}}=0.4552$, $y_{\mathrm{C_3}}=0.4904$, and the
