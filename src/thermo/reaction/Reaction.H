@@ -183,6 +183,14 @@ public:
     //    DECLARED key can break the rule (a product's `order` and every
     //    `orderRev` default to mass action).  The remedy is
     //    an explicit reverse leg.
+    //    A SPECIES ON BOTH SIDES (CHEMKIN `H + O2 + H2O <=> HO2 + H2O`, or
+    //    `2 A + B <=> A + C`) declares BOTH keys: `order` = its count among
+    //    the reactants, `orderRev` = its count among the products, `nu` = the
+    //    difference.  Detailed balance holds exactly when
+    //        order - orderRev = -nu,   order >= 0,  orderRev >= 0,
+    //    because the net rate k (PROD c^order - PROD c^orderRev / Kc) then
+    //    vanishes at PROD c^nu = Kc (Kc reads the net nu).  That pair is
+    //    accepted; any other declared pair is refused as before.
     static void refuseNonMassActionDetailedBalance(const Dictionary&  reaction,
                                                    const std::string& name,
                                                    const std::string& who);

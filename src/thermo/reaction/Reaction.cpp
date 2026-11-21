@@ -330,6 +330,15 @@ void Reaction::refuseNonMassActionDetailedBalance(const Dictionary&  reaction,
         //  Only a declared key can break detailed balance: a reactant's
         //  `order` is required (forwardOrder refuses it absent), a product's
         //  defaults to 0 and `orderRev` to max(nu, 0) -- both mass action.
+        //  A species on BOTH sides declares both keys: accepted when the two
+        //  counts differ by exactly -nu (Reaction.H), so the zero of the net
+        //  rate is still PROD c^nu = Kc.
+        if (s->found("order") && s->found("orderRev"))
+        {
+            const scalar ord = s->lookupScalar("order");
+            const scalar rev = s->lookupScalar("orderRev");
+            if (ord >= 0.0 && rev >= 0.0 && ord - rev == -nu) continue;
+        }
         if (s->found("order"))
         {
             const scalar ord  = s->lookupScalar("order");
@@ -363,7 +372,9 @@ void Reaction::refuseNonMassActionDetailedBalance(const Dictionary&  reaction,
         " explicitly -- a regressed `A_rev` / `Ea_rev` with its `orderRev`"
         " (Arrhenius or LHHW on the `reactions ( ... )` grammar), or a"
         " `type expression` law with its own `forward` and `reverse` -- or"
-        " declare the mass-action orders if the mechanism is elementary.");
+        " declare the mass-action orders if the mechanism is elementary (a species"
+        " on BOTH sides declares `order` = its reactant count and `orderRev` = its"
+        " product count, with nu their difference).");
 }
 
 scalar Reaction::forwardOrder(const Dictionary&  entry,

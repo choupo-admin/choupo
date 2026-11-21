@@ -141,7 +141,9 @@ private:
     scalar plogDkDT(const PlogRow& row, scalar T) const;   // d plogK / dT
     sVector eff_;                                  // full-length third-body efficiencies
 
-    sVector nu_, order_;
+    //  orderRev_: the reverse leg's power, max(nu, 0) unless a species on BOTH
+    //  sides declares its product count (`orderRev`).
+    sVector nu_, order_, orderRev_;
     bool    reversible_ = false;
 };
 

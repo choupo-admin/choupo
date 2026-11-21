@@ -309,6 +309,12 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
             // asymmetry that forced the retreat is gone.
             r.order.push_back(ownLaw ? Reaction::forwardOrder(
                 *s, r.nu.back(), s->lookupWord("component"), "batchReactor") : 0.0);
+            //  The reverse leg's power: the product count, max(nu, 0), unless a
+            //  species on BOTH sides declares it (`orderRev`, its product count;
+            //  the pair is held to order - orderRev = -nu below, by the one
+            //  detailed-balance rule).
+            r.orderRev.push_back(s->lookupScalarOrDefault(
+                "orderRev", r.nu.back() > 0.0 ? r.nu.back() : 0.0));
         }
 
         auto kin = rxn->subDict("kinetics");
@@ -1264,12 +1270,14 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
                        : Reaction::equilibriumKc(*thermo_, rxn.comps, rxn.nu, T);
     const scalar k_rev = k / K_eq;
 
+    //  The products at their counts, orderRev = max(nu, 0) -- or, for a species
+    //  on BOTH sides, its declared product count (nu = 0 for a pure collider).
     scalar r_rev = k_rev;
     for (std::size_t s = 0; s < rxn.comps.size(); ++s)
     {
-        if (rxn.nu[s] <= 0.0) continue;                 // products only
+        if (rxn.orderRev[s] == 0.0) continue;           // products only
         const scalar c_i = n[rxn.comps[s]] / V;
-        r_rev *= std::pow(std::max<scalar>(c_i, 0.0), rxn.nu[s]);
+        r_rev *= std::pow(std::max<scalar>(c_i, 0.0), rxn.orderRev[s]);
     }
     return r - r_rev;
 }
@@ -2170,7 +2178,7 @@ void BatchReactor::buildJacobianStructure_()
             for (std::size_t s = 0; s < r.comps.size(); ++s)
             {
                 if (r.order[s] != 0.0) d.push_back(r.comps[s]);
-                if (r.reversible && r.nu[s] > 0.0) d.push_back(r.comps[s]);
+                if (r.reversible && r.orderRev[s] != 0.0) d.push_back(r.comps[s]);
             }
             if (r.form == RateForm::ThirdBody || r.form == RateForm::Falloff)
             {
@@ -2363,14 +2371,15 @@ bool BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
         if (p == 0.0) continue;
         if (!factor(n[rxn.comps[s]] / V, p, p > 0.0, s, ff[s], dff[s])) return false;
     }
-    // Reverse factors (products only, clamped, exponent nu).
+    // Reverse factors (clamped, exponent orderRev: the products' nu, or a
+    // both-sides species' declared product count).
     sVector fr(m, 1.0), dfr(m, 0.0);
     if (rxn.reversible)
         for (std::size_t s = 0; s < m; ++s)
         {
-            if (rxn.nu[s] <= 0.0) continue;
-            // the rate uses std::pow(max(c,0), nu) -- the same function
-            if (!factor(n[rxn.comps[s]] / V, rxn.nu[s], true, s, fr[s], dfr[s])) return false;
+            if (rxn.orderRev[s] == 0.0) continue;
+            // the rate uses std::pow(max(c,0), orderRev) -- the same function
+            if (!factor(n[rxn.comps[s]] / V, rxn.orderRev[s], true, s, fr[s], dfr[s])) return false;
         }
 
     const auto productExcept = [m](const sVector& f, std::size_t skip)

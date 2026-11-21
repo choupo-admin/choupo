@@ -78,6 +78,7 @@ ElementaryRate ElementaryRate::fromDict(const DictPtr&       rxn,
     law.who_ = who;
     law.nu_.assign(n, 0.0);
     law.order_.assign(n, 0.0);
+    law.orderRev_.assign(n, 0.0);
     std::vector<scalar> orders;
 
     for (const auto& s : rxn->lookupDictList("stoichiometry"))
@@ -87,6 +88,7 @@ ElementaryRate ElementaryRate::fromDict(const DictPtr&       rxn,
         law.order_[i] = Reaction::forwardOrder(
             *s, law.nu_[i], s->lookupWord("component"), who);
         orders.push_back(law.order_[i]);
+        law.orderRev_[i] = s->lookupScalarOrDefault("orderRev", law.nu_[i] > 0.0 ? law.nu_[i] : 0.0);
     }
 
     auto kin = rxn->subDict("kinetics");
@@ -265,14 +267,14 @@ bool ElementaryRate::rateDependencies(std::vector<std::size_t>& species) const
     const std::size_t n = nu_.size();
     const bool collider = (form_ == Form::thirdBody || form_ == Form::falloff);
     for (std::size_t i = 0; i < n; ++i)
-        if (order_[i] != 0.0 || (reversible_ && nu_[i] > 0.0)
+        if (order_[i] != 0.0 || (reversible_ && orderRev_[i] != 0.0)
             || (collider && eff_[i] != 0.0))
             species.push_back(i);
     return true;
 }
 
 //  netRate, differentiated term by term (the same factors, clamps and order):
-//      r = k F - (k/Kc) R,   F = prod c_i^order_i,  R = prod_{nu>0} c_i^nu_i
+//      r = k F - (k/Kc) R,   F = prod c_i^order_i,  R = prod c_i^orderRev_i
 //      dr/dc_i = dk/dc_i (F - R/Kc) + k dF/dc_i - (k/Kc) dR/dc_i,  dk/dc_i = eff_i dk/d[M]
 //      dr/dT   = dk/dT (F - R/Kc) + (k/Kc) R d ln Kc/dT,
 //      d ln Kc/dT = sum nu_i h_i/(R T^2) - sum nu_i / T     (Kc = Kp (P0/R_u T)^sum nu)
@@ -317,9 +319,9 @@ bool ElementaryRate::netRateGradient(const ThermoPackage& thermo, const RateStat
     if (reversible_)
         for (std::size_t i = 0; i < n; ++i)
         {
-            if (!(nu_[i] > 0.0)) continue;
+            if (orderRev_[i] == 0.0) continue;
             scalar f, df;
-            if (!factor(conc[i], nu_[i], true, i, f, df)) return false;
+            if (!factor(conc[i], orderRev_[i], true, i, f, df)) return false;
             idxR.push_back(i); fR.push_back(f); dR.push_back(df);
         }
     const KDerivs kd = kEffDerivs(s);
@@ -425,7 +427,7 @@ scalar ElementaryRate::netRate(const ThermoPackage& thermo, const RateState& s) 
                     * std::pow(s.amountPerKmol, sumNu);
     scalar rr = (Kc > 0.0) ? k / Kc : 0.0;
     for (std::size_t i = 0; i < n; ++i)
-        if (nu_[i] > 0.0) rr *= std::pow(std::max<scalar>(conc[i], 0.0), nu_[i]);
+        if (orderRev_[i] != 0.0) rr *= std::pow(std::max<scalar>(conc[i], 0.0), orderRev_[i]);
     return rf - rr;
 }
 

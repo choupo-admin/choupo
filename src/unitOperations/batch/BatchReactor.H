@@ -178,6 +178,10 @@ private:
         std::vector<std::size_t> comps;   // component indices listed in stoichiometry
         std::vector<scalar>      nu;      // signed stoichiometric coefficients
         std::vector<scalar>      order;   // power-law orders (positive = reactant)
+        // Reverse-leg orders (detailed balance): max(nu, 0) by default; a
+        // species on BOTH sides declares `orderRev` = its product count
+        // (Reaction::refuseNonMassActionDetailedBalance holds the pair).
+        std::vector<scalar>      orderRev;
         RateForm                 form  = RateForm::Arrhenius;
         scalar                   A_pre = 0;     // pre-exponential (SI, kmol-m³-s)
         scalar                   b     = 0;     // temperature exponent (ModArrhenius)
