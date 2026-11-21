@@ -5008,6 +5008,23 @@ accepts today, and that is a policy call.
 > Theory Guide section (build/dryer-crossflow); the EduTool then gets a section on
 > the three arrangements linked to them.
 
+> **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
+> Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
+> & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
+> its steamLP rows become coolingWater rows, five rows re-recorded, listed in
+> docs/reviews/2026-11-21-c335-moved-rows.md); cosmoSAC02 on the catalogue's
+> re-sourced methylAcetate.  NOT paid, RULED by the architect: (a) SRK N2-CH4 --
+> Stryjek 1974 Table III gives kij 0.0058, not 0.0289, and flash09's cited K_N2 then
+> misses its 3 % anchor by 6 %: the band is NOT widened; next step, read where
+> flash09's anchor value comes from (if from the same compilation, the anchor is the
+> debt); (b) NRTL ethanol-water -- the pipeline's fit (a_ij = a_ji = 0 fixed) is
+> graded severe and moves 15 of 18 cases and flash20's pinned first-law residual:
+> NOT promoted, the pin is NOT raised; next step, a fit with the temperature terms
+> free; (c) C4H4 -- no clean primary in the folder; stays pinned.  FOUND:
+> data/standards/parameters/UNIQUAC/aceticAcid-methylAcetate.dat c_ij 2.7235e-3 where Popken Table 3 prints
+> 2.7235e-4 (moves cstr07 and batch07; batch07 sits in tutorials/batch, held by the
+> cloud session -- queued, coordinated through SESSIONS.md).
+
 > **C458 RULED ON THE HOME OF RADICALS (architect, 2026-11-21, Vitor asking for a
 > second opinion on the cloud's proposal that radicals stay in components/).**
 > MEASURED: 36 records tagged `radical` sit in components/, every one with
