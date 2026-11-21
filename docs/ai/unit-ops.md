@@ -277,6 +277,13 @@ pressures ln k is linear in ln P; below the lowest / above the highest k is that
 the SAME P are summed.  The reaction line's own A b Ea is ignored; `reversible true` is detailed balance.  Reads the bed /
 feed pressure (a feed with no P refuses it by name); `thirdBody`/`low`/`troe` on it are refused.  Theory Guide `sec:plog-rate`.
 Witnesses: `plog01..04` (each equals `elementary01a` at 3 bar; gate `check_plog`).
+**CHEMKIN forms read since 2026-11-21 (Theory Guide `sec:chemkin-forms`), here and in `batchReactor`.**  A species on BOTH sides of a
+reversible reaction: one stoichiometry entry with `nu` = the net, `order` = its reactant count, `orderRev` = its product count
+(`{ component H2O; nu 0; order 1; orderRev 1; }`; accepted when order - orderRev = -nu).  A single collider (CHEMKIN `(+AR)`):
+`thirdBody { AR 1; }  defaultEfficiency 0;` (unlisted species take `defaultEfficiency`, 1 when absent; thirdBody/falloff only).
+SRI fall-off: `sri ( a b c [d e] );` instead of `troe` (F = d [a e^(-b/T) + e^(-T/c)]^X T^e).  Explicit (FORD) orders: a declared
+`order` on an IRREVERSIBLE reaction, a species outside the reaction listed with `nu 0`; A converts by the sum of the orders.
+Gate `check_elementary_rates` (s, d, b, B).
 
 ### `pfr`
 Plug-flow reactor.  Manual RK4 along the axial coordinate; supports reversible
@@ -446,6 +453,13 @@ pressures ln k is linear in ln P; below the lowest / above the highest k is that
 the SAME P are summed.  The reaction line's own A b Ea is ignored; `reversible true` is detailed balance.  Reads the bed /
 feed pressure (a feed with no P refuses it by name); `thirdBody`/`low`/`troe` on it are refused.  Theory Guide `sec:plog-rate`.
 Witnesses: `plog01..04` (each equals `elementary01a` at 3 bar; gate `check_plog`).
+**CHEMKIN forms read since 2026-11-21 (Theory Guide `sec:chemkin-forms`), here and in `batchReactor`.**  A species on BOTH sides of a
+reversible reaction: one stoichiometry entry with `nu` = the net, `order` = its reactant count, `orderRev` = its product count
+(`{ component H2O; nu 0; order 1; orderRev 1; }`; accepted when order - orderRev = -nu).  A single collider (CHEMKIN `(+AR)`):
+`thirdBody { AR 1; }  defaultEfficiency 0;` (unlisted species take `defaultEfficiency`, 1 when absent; thirdBody/falloff only).
+SRI fall-off: `sri ( a b c [d e] );` instead of `troe` (F = d [a e^(-b/T) + e^(-T/c)]^X T^e).  Explicit (FORD) orders: a declared
+`order` on an IRREVERSIBLE reaction, a species outside the reaction listed with `nu 0`; A converts by the sum of the orders.
+Gate `check_elementary_rates` (s, d, b, B).
 **Mole-changing gas reactions (C461).**  A `pfr` fed all-vapour prices every concentration as F_i/Q with Q the LOCAL
 volumetric flow, F_t v_vapour(T, P, z) from the case's equation of state at each RK4 stage, so a gas reaction that changes the mole
 count (cracking +40 %, ammonia synthesis falling), a moving T or an Ergun pressure drop changes the concentrations as it must; a liquid
@@ -3350,7 +3364,9 @@ adiabatic vessels.  Theory Guide
 `sec:batch-gas-constp`; example `ignition03_h2air_constp` (constant-P ignition is slower and cooler than
 `ignition01_h2o2`'s constant-V one; witnessed against Cantera's IdealGasConstPressureReactor to 1 mK).
 `kinetics { type ... }`: `Arrhenius` · `modifiedArrhenius` · `thirdBody` · `falloff` · `plog`
-(the CHEMKIN gas forms; `plog` -- the CHEMKIN-II pressure table, ln k linear in ln P, clamped at the ends, same-P lines summed -- reads P = nRT/V and is accepted with `energy gasConstantV` (the rising pressure) or `gasConstantP` (the fixed P), refused by name in a liquid vessel; Theory Guide `sec:plog-rate`) · **`LHHW`** — the SAME shared `RateLaw` the steady `cstr`/`pfr`
+(the CHEMKIN gas forms; a species on both sides as `order` + `orderRev`, a single collider as `thirdBody { AR 1; }
+defaultEfficiency 0;`, SRI as `sri ( a b c [d e] );`, FORD orders as declared `order`s on an irreversible reaction --
+Theory Guide `sec:chemkin-forms`; `plog` -- the CHEMKIN-II pressure table, ln k linear in ln P, clamped at the ends, same-P lines summed -- reads P = nRT/V and is accepted with `energy gasConstantV` (the rising pressure) or `gasConstantP` (the fixed P), refused by name in a liquid vessel; Theory Guide `sec:plog-rate`) · **`LHHW`** — the SAME shared `RateLaw` the steady `cstr`/`pfr`
 evaluate, so a batch vessel and a continuous one cannot disagree about what an
 adsorption denominator means.  With `basis activity` it needs an activity model.
 `operation { catalystLoading <kg/m^3>; }` turns per-gram rate constants volumetric

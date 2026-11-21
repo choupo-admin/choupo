@@ -5314,17 +5314,28 @@ form, \code{REACTIONS} with its unit header) and writes into a \emph{case's}
         \code{role nonvolatile;};
   \item the reactions, in the engine's own grammar: \code{modifiedArrhenius},
         \code{thirdBody} with its efficiencies, \code{falloff} with its
-        \code{low} block and Troe parameters, \code{plog} with its pressure
+        \code{low} block and Troe or SRI parameters, \code{plog} with its pressure
         lines (Section~\ref{sec:plog-rate}), and \code{reversible true} for
-        detailed balance.  $A$ and $E_a$ are written \emph{as printed}, with a
+        detailed balance.  Since 2026-11-21 (Section~\ref{sec:chemkin-forms}):
+        a species on both sides of a reversible reaction is written once with
+        \code{order} and \code{orderRev} (its counts on the two sides); a single
+        collider \code{(+AR)} as \code{thirdBody \{ AR 1; \}  defaultEfficiency 0;};
+        \code{SRI} as \code{sri ( $a$ $b$ $c$ [$d$ $e$] );}; \code{FORD} on an
+        irreversible reaction (or on the forward leg of a \code{REV} pair, as
+        \code{ck2yaml} places it) as that species' forward \code{order}.  $A$ and $E_a$ are written \emph{as printed}, with a
         \code{units} block; the conversion to SI is the engine's
         (Section~\ref{sec:elementary-rate}), so there is one home for it.
 \end{itemize}
 What the engine cannot yet run is listed, reaction by reaction and with the
-reason, in \file{constant/mechanismImport.txt}: \code{SRI}, \code{PLOG} with a \code{REV} line or on a third-body/fall-off reaction,
-explicit orders (\code{FORD}/\code{RORD}), an explicit reverse rate on a
+reason, in \file{constant/mechanismImport.txt}: \code{PLOG} with a \code{REV} line or on a third-body/fall-off reaction,
+\code{FORD} on a reversible reaction (Cantera~3.2 refuses it too), on a fall-off or
+\code{PLOG} reaction, or summing to a non-integer molecularity; \code{RORD};
+\code{SRI} together with \code{TROE}; an explicit reverse rate on a
 \code{(+M)} fall-off, \code{MOLECULES} units, and a pressure-dependent reaction
-without a low-pressure limit.  An explicit reverse rate (\code{REV}) on any other
+without a low-pressure limit.  AramcoMech~1.3 (Metcalfe \emph{et al.}\ 2013; 253
+species, 1542 reactions; a local copy, never in the tree) imports whole: 1542 of
+1542, where 41 were refused before (38 with a species on both sides, three single
+colliders).  An explicit reverse rate (\code{REV}) on any other
 reaction is written the way Cantera's \code{ck2yaml} reads it: two irreversible
 reactions, \code{r}$NNN$\code{\_f} with the main $A,b,E_a$ and \code{r}$NNN$\code{\_r}
 (products to reactants, with the \code{REV} parameters and, for \code{+M}, the same
@@ -38783,6 +38794,75 @@ CHEMKIN law against the plain Arrhenius law it equals at one temperature
 (isothermal, isobaric, no mole change, so $[\mathrm{M}]=P/\Rgas T$ is constant), and
 \code{bin/curate/check\_elementary\_rates.py} holds each pair's outlets to
 $10^{-9}$.
+
+\paragraph{Four CHEMKIN forms read since 2026-11-21.}\label{sec:chemkin-forms}
+Each is read by both readers of a reactions file (the batch vessel's own
+\code{thirdBody}/\code{falloff} and \code{ElementaryRate} in \code{cstr}/\code{pfr}),
+carries its analytic derivative into the batch Jacobian
+(\S\ref{sec:batch-analytic-jacobian}), and is defined as Cantera~3.2 defines
+it (checked numerically, \file{docs/reviews/2026-11-21-aramcomech-validation/}).
+
+\emph{A species on both sides.}  CHEMKIN writes a collider explicitly, e.g.\
+\texttt{OH* + H2O <=> OH + H2O}; the species then enters the forward rate at
+its reactant count $m_i$ and the reverse rate at its product count $m'_i$, while
+$K_c$ reads only the net $\nu_i=m'_i-m_i$.  The stoichiometry entry declares both,
+\code{\{ component H2O; nu 0; order 1; orderRev 1; \}}, and the net rate of
+\eqref{eq:elementary-rate} becomes
+\begin{equation}
+    r = k_{\mathrm{eff}}\Bigl(\prod_i c_i^{\,m_i}
+        - \frac{1}{K_c}\prod_i c_i^{\,m'_i}\Bigr),\qquad
+    m'_i = \max(\nu_i,0)\ \text{unless \code{orderRev} is declared}.
+    \label{eq:both-sides-rate}
+\end{equation}
+The detailed-balance rule (\code{Reaction::refuseNonMassActionDetailedBalance})
+accepts a declared pair exactly when $m_i-m'_i=-\nu_i$ with $m_i,m'_i\ge0$: the
+bracket then vanishes at $\prod c_i^{\nu_i}=K_c$, the equilibrium the reaction
+declares.  Every other declared order on a reversible reaction is still refused.
+The molecularity of \eqref{eq:chemkin-a-conversion} is the sum of the forward
+orders, the colliding species included.
+
+\emph{A single collider.}  \texttt{H + O2 (+AR) <=> HO2 (+AR)} is a fall-off in
+which only argon collides: $[\mathrm M]=c_{\mathrm{AR}}$.  The kinetics block
+writes \code{thirdBody \{ AR 1; \}  defaultEfficiency 0;}: every species the
+\code{thirdBody} block does not list takes \code{defaultEfficiency} (1 when the
+key is absent), so $[\mathrm M]=\sum_j\varepsilon_j c_j$ keeps its form
+(Cantera: \code{efficiencies: \{AR: 1\}, default-efficiency: 0}).  The key is
+read by \code{thirdBody} and \code{falloff} only, and refused without a
+\code{thirdBody} block.  The same reaction written with AR on both sides
+(\eqref{eq:both-sides-rate}) is the same rate law; the two are held equal by
+\code{check\_elementary\_rates} (B) and (b).
+
+\emph{SRI broadening} (Stewart, Larson and Golden, Combust.\ Flame 75 (1989)
+25; CHEMKIN-II; Cantera's \code{SriRate}).  \code{sri ( $a$ $b$ $c$ [$d$ $e$] );}
+in place of \code{troe}:
+\begin{equation}
+    F = d\,\bigl[a\,e^{-b/T}+e^{-T/c}\bigr]^{X}\,T^{e},\qquad
+    X=\frac{1}{1+(\log_{10}P_r)^2},
+    \label{eq:sri}
+\end{equation}
+$d=1$, $e=0$ when three numbers are given; $\log_{10}P_r$ is read at
+$\max(P_r,10^{-300})$, the clamp of the Troe form.  $c>0$ and $d>0$ are required
+and \code{troe} with \code{sri} is refused.  Its derivatives
+(\code{Reaction::falloffRateDerivs}), with $W=a e^{-b/T}+e^{-T/c}$ and
+$p=\log_{10}P_r$: $\partial\ln F/\partial p=-2p\ln W/(1+p^2)^2$ and
+$\partial\ln F/\partial T|_p=X W'/W+e/T$, $W'=(ab/T^2)e^{-b/T}-e^{-T/c}/c$.
+Measured against Cantera~3.2 on a three-reaction fixture at 800--2000~K and
+0.01--100~atm: $k$ equal to $6\times10^{-11}$ relative, the difference of the
+two codes' gas constants, which a Lindemann reaction of the same fixture shows
+at the same size (so $F$ itself agrees to better than $10^{-12}$).
+
+\emph{Explicit orders (FORD).}  \texttt{FORD / CH4 -0.3 /} sets a species'
+forward order; it needs no new engine word, because a declared \code{order} is
+honoured on an irreversible reaction, including a species outside the reaction
+(listed with $\nu=0$) and a negative order.  As in Cantera~3.2 the $A$ conversion
+follows the sum of the declared orders (measured: $k_f$ of an $A{+}B$ reaction with
+FORD $A$~1.5 and $E$~0.5 converted with $n=3$).  Refused by name, as Cantera
+refuses them or because no witness reaches them: FORD on a reversible reaction
+(Cantera: ``Reaction orders may only be given for irreversible reactions''), RORD
+(\code{ck2yaml} reads none), FORD on a fall-off or PLOG reaction, and FORD orders
+whose sum is not an integer (the engine converts a cm-mol-s $A$ only for an integer
+molecularity, \code{Reaction::chemkinMolecularity}; Cantera converts by the real
+sum -- a known difference).  Validity: ideal-gas mass action, as above.
 
 \subsection{Pressure-dependent rate tables: PLOG (\code{plog})}\label{sec:plog-rate}
 

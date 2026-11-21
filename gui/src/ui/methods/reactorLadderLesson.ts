@@ -241,7 +241,7 @@ X_\mathrm{eq} = \frac{\sqrt{K}}{1+\sqrt{K}}`,
       + "the dimensionless thermodynamic K.  For a reaction that changes "
       + "the number of moles, the K in $k_r = k_f / K$ must be written on "
       + "the same basis and standard state as the rate law (the engine "
-      + "converts for an ideal gas, Reaction.cpp:104–112, which is the basis "
+      + "converts for an ideal gas, Reaction.cpp:251–256, which is the basis "
       + "of the batch reactor; this PFR refuses such a reverse "
       + "term by name when the reaction changes the number of moles, PFR.cpp:223–224), and a law whose "
       + "orders are not the stoichiometric ones does not vanish at "

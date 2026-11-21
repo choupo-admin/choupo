@@ -147,7 +147,7 @@ describe("the equilibrium-landscapes lesson", () => {
     expect(s).toContain("h_formation liquid leg needs liquidHeatCapacity");
     expect(s).toContain("wrong by a heat of sublimation");
     expect(s).toContain("Component.cpp:1686–1697");  // C259: the refusal moved; 1538 is now rung()
-    expect(s).toContain("Reaction.cpp:186–199");
+    expect(s).toContain("Reaction.cpp:309–320");
     expect(s).toContain("Formula.cpp:485–496");
   });
 
