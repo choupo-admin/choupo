@@ -22,12 +22,12 @@
   moisture all move -- what the batch tray (dryer02) cannot show.
 
                          co-current      counter-current
-    X out  [kg/kg]       0.02342         0.00468
+    X out  [kg/kg]       0.02359         0.00474
     water removed [kg/s] 0.0839          0.0929
     air out [K]          359.7           353.2
     Y out  [kg/kg dry]   0.0393          0.0421
     X_c crossed at       6.4 % of A      12.4 % of A
-    floor: X_eq of the air as fed = 0.00110 kg/kg
+    floor: X_eq of the air as fed = 0.00117 kg/kg
 
   Counter-current dries five times further on the same area, because the
   driest solid meets the freshest (hottest, driest) air, where X_eq is
