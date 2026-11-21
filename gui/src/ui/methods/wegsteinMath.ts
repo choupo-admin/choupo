@@ -376,6 +376,48 @@ export function driveWegstein(m: ToyMap, o: DriveOptions): SolveTrace {
   return { iterates, converged: false, stop: "cap" };
 }
 
+/** THE SAME WEGSTEIN RUN, GENUINELY COMPUTED IN THE DISPLAY UNITS.
+ *
+ *  `driveWegstein` carries its state in SI and only re-expresses a norm for
+ *  display, so comparing its coefficients with those of a second call to
+ *  itself proves nothing (external review R-003, C467).  This function is the
+ *  other computation: the state is the display vector u = A x + B, the map
+ *  the page iterates is g_u(u) = A g(x) + B with x = (u - B)/A, and
+ *  `wegsteinStep` forms its secants, clamps and updates ON u -- so the
+ *  EPS_X and EPS_S guards see display-unit differences, as they would if the
+ *  engine packed its tear in those units.  The state is converted back to SI
+ *  only to report the trajectory.  Nothing here reads the SI run's q. */
+export function driveWegsteinInUnits(m: ToyMap, o: DriveOptions): SolveTrace {
+  const units = o.units ?? SI;
+  const toU = (x: Vec2): Vec2 => rescale(x, units);
+  const toX = (u: Vec2): Vec2 => [
+    (u[0] - units.offset[0]) / units.scale[0],
+    (u[1] - units.offset[1]) / units.scale[1],
+  ];
+  const gU = (u: Vec2): Vec2 => toU(toyG(m, toX(u)));
+  const iterates: Iterate[] = [];
+  let u: Vec2 = toU([TOY_F_SEED, TOY_T_SEED]);
+  let prev: { x: Vec2; gx: Vec2 } | null = null;
+  for (let k = 0; k < o.maxIter; ++k) {
+    const gu = gU(u);
+    const x = toX(u);
+    const gx = toX(gu);
+    const deltaL2 = normL2(gx, x);
+    const vars = wegsteinStep(u, gu, prev, o.qMin, o.qMax);
+    iterates.push({
+      k, x, gx, vars, deltaL2,
+      deltaL2Display: normL2(gu, u),
+      errScaled: errScaled(x),
+    });
+    if (deltaL2 < o.tol) return { iterates, converged: true, stop: "converged" };
+    if (!Number.isFinite(deltaL2) || errScaled(x) > DIVERGED)
+      return { iterates, converged: false, stop: "diverged" };
+    prev = { x: u, gx: gu };
+    u = [vars[0]?.next ?? u[0], vars[1]?.next ?? u[1]];
+  }
+  return { iterates, converged: false, stop: "cap" };
+}
+
 /** DIRECT SUBSTITUTION — the same loop with the accelerator switched off.
  *  In the engine it is also a selectable method (`recycleSolver
  *  directSubstitution;`, taught on the relaxation page); here it is what

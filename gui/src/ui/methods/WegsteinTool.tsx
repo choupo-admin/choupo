@@ -63,7 +63,7 @@ import {
   DISPLAY_UNITS, RECYCLE_DEFAULTS, RECYCLE_QMAX_DEFAULT,
   RECYCLE_QMIN_DEFAULT, TOY_DEFAULTS, TOY_F_SEED, TOY_F_STAR, TOY_T_SEED,
   TOY_T_STAR, WEGSTEIN_WITNESS, WITNESS_TEAR,
-  driveDirect, driveNewton, driveWegstein, recycleOverrides, recycleResidual,
+  driveDirect, driveNewton, driveWegstein, driveWegsteinInUnits, recycleOverrides, recycleResidual,
   rescale, toyEigenvalues, toySpectralRadius,
   type DisplayUnits, type RecycleKnobs, type RecycleSolver, type SolveTrace,
   type ToyMap,
@@ -343,9 +343,12 @@ export function WegsteinTool(): JSX.Element {
    *  unscaled norm must.  Computed here so the page can PRINT the comparison
    *  rather than assert it. */
   const invariance = useMemo(() => {
+    //  TWO DIFFERENT COMPUTATIONS: the SI run, and a run whose whole state
+    //  (secants, clamp, update, EPS guards) lives in the selected units.
     const si = driveWegstein(map, { ...opts, qMin, qMax, units: SI_UNITS });
-    const k = Math.min(3, si.iterates.length - 1, weg.iterates.length - 1);
-    const a = si.iterates[k], b = weg.iterates[k];
+    const inUnits = driveWegsteinInUnits(map, { ...opts, qMin, qMax, units });
+    const k = Math.min(3, si.iterates.length - 1, inUnits.iterates.length - 1);
+    const a = si.iterates[k], b = inUnits.iterates[k];
     if (k < 0 || !a || !b) return null;
     let worst = 0;
     for (let i = 0; i < 2; ++i)
@@ -533,7 +536,21 @@ export function WegsteinTool(): JSX.Element {
               SI and{" "}
               <Text span ff="monospace">{fmtExp(invariance.displayNorm)}</Text>{" "}
               in the selected units. One of those two numbers is a property of
-              the method; the other is a property of the bookkeeping.
+              the method; the other is a property of the bookkeeping. The
+              second run is a separate computation: its secants, clamps and
+              updates are formed on the variables in the selected units and
+              converted back only to be compared.
+            </Text>
+          )}
+          {invariance && (
+            <Text size="xs" mt={4} c="dimmed">
+              The agreement is the algebra of an exact secant. In floating
+              point there is one absolute threshold, epsX = 1e-14 in the
+              variable&apos;s own unit (src/solver/Wegstein.cpp:64), which is
+              not invariant: a variable that moves by less than that in one
+              unit system and by more in another gets q = 0 in the first and
+              a secant coefficient in the second. It matters only for a step
+              that small, which no recycle near a physical scale takes.
             </Text>
           )}
         </Box>
