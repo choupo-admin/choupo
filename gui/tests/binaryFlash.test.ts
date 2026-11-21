@@ -288,9 +288,9 @@ describe("a refused node of the T-x-y table is never bridged", () => {
   });
   it("refuses a flash whose feed or tie lines sit in the gap", () => {
     const s = flashAtVF(curve, 0.5, 0.5);
-    expect(s.regime).toBe("refused");
+    expect(s.regime).toBe("withheld");
     expect(Number.isNaN(s.T)).toBe(true);
-    expect(flashAtT(curve, 0.5, 375).regime).toBe("refused");
+    expect(flashAtT(curve, 0.5, 375).regime).toBe("withheld");
   });
   it("a gap-free table is unchanged", () => {
     const c = eqCurveFromTxyCsv("x[a],T_bubble,y_eq_a\n0,400,0\n0.5,370,0.7\n1,350,1\n")!;

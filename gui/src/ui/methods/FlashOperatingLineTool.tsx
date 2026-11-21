@@ -202,7 +202,7 @@ function Diagram({ curve, sol, z, comp }: {
     }
     if (pts.length >= 2) { ax = pts[0]!.x; ay = pts[0]!.y; bx = pts[1]!.x; by = pts[1]!.y; }
   }
-  //  One polyline per continuous run of nodes: a refused interval is a hole
+  //  One polyline per continuous run of nodes: a withheld interval is a hole
   //  in the curve, never a chord.
   const eqRuns: string[] = [];
   {
@@ -392,10 +392,10 @@ export function FlashOperatingLineTool(): JSX.Element {
 
           <Box style={{ minWidth: 0 }}>
             <OriginMark of={["engine", "page"]} note="the T-x-y curve is a choupoProps run in this browser; the operating line and its intersection are this page's geometry on it" />
-            {curve && sol && sol.regime === "refused"
+            {curve && sol && sol.regime === "withheld"
               ? (
                 <Alert variant="light" color="red"
-                  title="The engine refused part of this curve">
+                  title="The engine withheld part of this curve">
                   <Text size="sm">{sol.note}.  Change z or the pressure.</Text>
                 </Alert>
               )
@@ -410,7 +410,7 @@ export function FlashOperatingLineTool(): JSX.Element {
           </Box>
         </Box>
 
-        {sol && sol.regime !== "two-phase" && sol.regime !== "refused" && (
+        {sol && sol.regime !== "two-phase" && sol.regime !== "withheld" && (
           <Alert variant="light" color="yellow"
             title="At this setting the feed does not split">
             <Text size="sm">

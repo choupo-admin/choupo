@@ -67,7 +67,7 @@ export interface EqCurve
   /** x-INTERVALS [xLo, xHi] between two valid neighbours where the engine
    *  refused one or more nodes (nan / empty fields).  Nothing is read,
    *  interpolated or solved inside one: a flash that needs a state in a gap
-   *  returns regime "refused" instead of a number the engine never made. */
+   *  returns regime "withheld" instead of a number the engine never made. */
   gaps?: [number, number][];
 }
 
@@ -85,7 +85,7 @@ export interface FlashSolution
   /** flash temperature (K) — the input when spec="TP", a result when spec="VF" */
   T: number;
   /** which side of the envelope we are on */
-  regime: "two-phase" | "all-liquid" | "all-vapour" | "refused";
+  regime: "two-phase" | "all-liquid" | "all-vapour" | "withheld";
   /** the bubble-point temperature (K) at the feed z — the lower phase boundary */
   Tbubble: number;
   /** the dew-point temperature (K) at the feed z — the upper phase boundary */
@@ -269,7 +269,7 @@ export function touchesGap(curve: EqCurve, lo: number, hi: number): boolean
 
 function refusedSolution(base: Pick<FlashSolution, "z" | "Tbubble" | "Tdew">, T: number): FlashSolution
 {
-  return { ...base, T, VF: NaN, xLiq: NaN, yVap: NaN, regime: "refused",
+  return { ...base, T, VF: NaN, xLiq: NaN, yVap: NaN, regime: "withheld",
     note: "the engine refused a node of the equilibrium curve that this "
       + "construction needs; nothing is interpolated across it" };
 }
