@@ -2238,7 +2238,7 @@ int IsothermalFlash::solve(const DictPtr& dict,
     if (opts.phaseSet != PhaseSet::LL)
     {
         std::string scDiscarded;
-        if (flashState::takeSupercriticalAsSinglePhase(sol, in.T, in.z, thermo,
+        if (flashState::takeSupercriticalAsSinglePhase(sol, in.T, in.P, in.z, thermo,
                                                        scDiscarded))
             flashState::reportSupercriticalDiscard(scDiscarded, "flash",
                 "isothermalFlash operating state", opts.verbosity);
@@ -2375,7 +2375,7 @@ int IsothermalFlash::solve(const DictPtr& dict,
                 const std::string feedName =
                     feedDict->lookupWordOrDefault("streamName", "");
                 if (const auto said = flashState::supercriticalSplitDiscarded(
-                        feedSol, T_feed, in.z, thermo,
+                        feedSol, T_feed, P_feed, in.z, thermo,
                         "feed" + (feedName.empty() ? std::string()
                                                    : " '" + feedName + "'")
                             + " of an isothermalFlash",

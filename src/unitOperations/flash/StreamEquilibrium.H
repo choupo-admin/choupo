@@ -69,10 +69,12 @@ Description
 #include "core/Types.H"
 #include "streams/ProcessStream.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/equationOfState/EquationOfState.H"
 #include "thermo/pureFluid/PureFluidModel.H"
 #include "unitOperations/flash/IsothermalFlash.H"
 #include "unitOperations/flash/PureSaturationPlateau.H"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <exception>
@@ -156,9 +158,54 @@ inline bool aboveEveryCriticalT(scalar T, const sVector& z,
 //  each trial T is a new entry -- measured: 18 lines for one fact in
 //  ammoniaReactor04's caveat block on the first build.  Such a caller prints T
 //  at its own site instead and puts the stream's identity in `locus`.
+//  C467 (external review R-010, 2026-11-21): the discard is ROUTE-DEPENDENT.
+//  The sentence "a correlation evaluated outside its window" is true for the
+//  gamma-phi routes (Psat or a Henry H(T) extrapolated above Tc).  Under a
+//  phi-phi package K = phi_L/phi_V from ONE cubic and neither correlation is
+//  read; a converged split there can be real (mixture critical loci lie above
+//  every pure Tc: IUPAC 1998, Bolz et al., Pure Appl. Chem. 70, 2233).  So
+//  the pure-Tc rule is kept for gamma-phi and, under phi-phi, replaced by the
+//  Gibbs-energy test `phiPhiSplitLowersGibbs`: the split stands when it
+//  lowers G/nRT below the best homogeneous root at (T, P, z).
+//  `P` is in Pa, like FlashInput::P.
+inline bool phiPhiSplitLowersGibbs(const FlashSolution& fs,
+                                   scalar               T,
+                                   scalar               P,
+                                   const sVector&       z,
+                                   const ThermoPackage& thermo)
+{
+    const std::size_t n = z.size();
+    if (fs.x.size() != n || fs.y.size() != n) return false;
+    try
+    {
+        auto gOf = [&](const sVector& c, const sVector& lnphi)
+        {
+            scalar g = 0.0;
+            for (std::size_t i = 0; i < n; ++i)
+                if (c[i] > 0.0) g += c[i] * (std::log(c[i]) + lnphi[i]);
+            return g;
+        };
+        auto ln = [](sVector v)
+        {
+            for (auto& e : v) e = (e > 0.0) ? std::log(e) : 0.0;
+            return v;
+        };
+        const sVector lnV_y = ln(thermo.eos().phi(T, P, fs.y));
+        const sVector lnL_x = ln(thermo.eos().phiLiquid(T, P, fs.x));
+        const scalar  b     = fs.V_over_F;
+        const scalar  Gsplit = b * gOf(fs.y, lnV_y) + (1.0 - b) * gOf(fs.x, lnL_x);
+        const scalar  Gvap = gOf(z, ln(thermo.eos().phi(T, P, z)));
+        const scalar  Gliq = gOf(z, ln(thermo.eos().phiLiquid(T, P, z)));
+        const scalar  Ghom = std::min(Gvap, Gliq);
+        return Gsplit < Ghom - 1.0e-9;
+    }
+    catch (const std::exception&) { return false; }
+}
+
 inline std::optional<std::string>
 supercriticalSplitDiscarded(const FlashSolution& fs,
                             scalar               T,
+                            scalar               P,
                             const sVector&       z,
                             const ThermoPackage& thermo,
                             const std::string&   locus,
@@ -170,6 +217,9 @@ supercriticalSplitDiscarded(const FlashSolution& fs,
         return std::nullopt;
     scalar TcMax = 0.0;
     if (!aboveEveryCriticalT(T, z, thermo, &TcMax))
+        return std::nullopt;
+    //  phi-phi: the split is judged by Gibbs energy, not by the pure Tc.
+    if (thermo.vleWorld() == "phiPhi" && phiPhiSplitLowersGibbs(fs, T, P, z, thermo))
         return std::nullopt;
     const std::string msg =
         std::string("resolved TWO-PHASE ")
@@ -210,13 +260,14 @@ supercriticalSplitDiscarded(const FlashSolution& fs,
 //  `reportSupercriticalDiscard`.  Returns whether the root was discarded.
 inline bool takeSupercriticalAsSinglePhase(FlashSolution&       fs,
                                            scalar               T,
+                                           scalar               P,
                                            const sVector&       z,
                                            const ThermoPackage& thermo,
                                            std::string&         discarded)
 {
     if (fs.threePhase) return false;
     std::string said;
-    if (!supercriticalSplitDiscarded(fs, T, z, thermo, "", "", &said,
+    if (!supercriticalSplitDiscarded(fs, T, P, z, thermo, "", "", &said,
                                      /*nameT=*/false))
         return false;
     fs.V_over_F = 1.0;
@@ -237,7 +288,7 @@ inline FlashSolution flashDiscardingSupercriticalSplit(const FlashInput&    in,
                                                        std::string&         discarded)
 {
     FlashSolution fs = IsothermalFlash::solveCore(in, thermo, opts);
-    takeSupercriticalAsSinglePhase(fs, in.T, in.z, thermo, discarded);
+    takeSupercriticalAsSinglePhase(fs, in.T, in.P, in.z, thermo, discarded);
     return fs;
 }
 
@@ -343,7 +394,7 @@ inline std::optional<FlashSolution> equilibriumAt(scalar               T,
     //  misread as a vapour fraction.  It is left alone, as
     //  `takeSupercriticalAsSinglePhase` leaves a three-phase answer alone.
     if (!fs.threePhase && !fs.liquidLiquid
-        && supercriticalSplitDiscarded(fs, T, z, thermo, locus, category, deferTo))
+        && supercriticalSplitDiscarded(fs, T, P, z, thermo, locus, category, deferTo))
     {
         if (discardedOut) *discardedOut = true;
         return std::nullopt;
