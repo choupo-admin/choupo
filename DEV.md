@@ -4943,6 +4943,23 @@ accepts today, and that is a policy call.
 > phase-change advisory); scope 26/0 over the pfr roots and both Ergun plants, --fast
 > 89/0, no golden moved.  C461 DONE.
 
+> **C463 (Vitor, 2026-11-21): an EduTool "Linear algebra without the pain".**  He
+> read Shewchuk's "An Introduction to the Conjugate Gradient Method Without the
+> Agonizing Pain" (CMU, 1994) and still had the pain, and did not see why LU and
+> the rest are there.  Asked: a page that explains, in lay language, the hard
+> parts.  SCOPE (architect, rule 00): start from where a student meets them in
+> Choupo -- every Newton step solves J dx = -F (src/solver/NewtonND.cpp, LU.H,
+> BlockTridiagonal.H) -- and answer the questions in that order: why a linear
+> solve at all; Gaussian elimination as the hand method, LU as the RECEIPT of it
+> (keep the receipt, reuse it for a new right-hand side); why pivot (dividing by a
+> tiny number); conditioning (a wobbly table: small change in, big change out);
+> why a tridiagonal / block-tridiagonal column Jacobian is cheap; then the bowl --
+> a symmetric positive-definite matrix as a quadratic that has one bottom, how to
+> test it, why a Newton or SQP Hessian must be one (link activeSetQp); steepest
+> descent's zigzag and conjugate gradient as "never undo a previous step".  Every
+> step a small interactive figure on 2x2/3x3 numbers the student can drag;
+> every claim about the engine cited by file:line through managed CLAIMS.
+
 > **C458 RULED ON THE HOME OF RADICALS (architect, 2026-11-21, Vitor asking for a
 > second opinion on the cloud's proposal that radicals stay in components/).**
 > MEASURED: 36 records tagged `radical` sit in components/, every one with
