@@ -35,8 +35,10 @@ WHAT THIS GATE CHECKS (choupoSolve, temporary cases built from flash09_n2ch4_str
 SABOTAGE ARMS.  In the data: (a) rerun with kij = 0, which has no split there, must
 FAIL the (a) comparison; (b) rerun at 420 K (inside the two-phase region) must FAIL
 the (b) comparison.  In the engine (run by hand when the gate was written, recorded in
-the review): restoring the unconditional discard makes (a) fail (V/F = 1); letting
-the Gibbs test apply to gamma-phi routes as well makes (c) fail (advisory gone).
+the review): restoring the unconditional discard makes (a) fail (V/F = 1, advisory,
+fugacities differ); disabling the discard on every route makes (c) fail (advisory gone).
+Applying the Gibbs test to gamma-phi routes too is NOT seen: on an ideal-gas vapour it
+never accepts a split, so that edit changes nothing observable (measured 2026-11-21).
 
 NOT CHECKED: a phi-phi root the Gibbs test rejects (none is known to be produced by
 the solver; the rejection path is read, not run), PR (same code path), steady cases
