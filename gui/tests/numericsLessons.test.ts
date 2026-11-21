@@ -535,9 +535,9 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/propertyOps/FitParameters.cpp", 677, "lambda0"],
     // --- least squares: the apparatus around it, which is the actual lesson
     ["src/propertyOps/FitParameters.cpp", 540, "EvidencePartition::read"],
-    ["src/propertyOps/EvidencePartition.H", 259, "fit() const"],
-    ["src/propertyOps/EvidencePartition.H", 260, "validation() const"],
-    ["src/propertyOps/EvidencePartition.H", 342, "fingerprint() const"],
+    ["src/propertyOps/EvidencePartition.H", 260, "fit() const"],
+    ["src/propertyOps/EvidencePartition.H", 261, "validation() const"],
+    ["src/propertyOps/EvidencePartition.H", 343, "fingerprint() const"],
     ["src/propertyOps/FitParameters.cpp", 245, "tCrit95(int dof)"],
     ["src/propertyOps/FitParameters.cpp", 1246, "const bool identifiable ="],
     ["src/propertyOps/FitParameters.cpp", 1582, "curationVerdict"],
