@@ -94,6 +94,8 @@ import { DEMAND_QUIZ, DEMAND_STEPS } from "../src/ui/methods/demandForecastLesso
 import { DemandForecastTool } from "../src/ui/methods/DemandForecastTool.js";
 import { PlantCostTool } from "../src/ui/methods/PlantCostTool.js";
 import { PLANT_COST_QUIZ, PLANT_COST_STEPS } from "../src/ui/methods/plantCostLesson.js";
+import { FaultDiagnosisTool } from "../src/ui/methods/FaultDiagnosisTool.js";
+import { FAULT_DIAGNOSIS_QUIZ, FAULT_DIAGNOSIS_STEPS } from "../src/ui/methods/faultDiagnosisLesson.js";
 import { DryerSelectionTool } from "../src/ui/methods/DryerSelectionTool.js";
 import { DRYER_SELECTION_QUIZ, DRYER_SELECTION_STEPS } from "../src/ui/methods/dryerSelectionLesson.js";
 import { STACK_QUIZ, STACK_STEPS } from "../src/ui/methods/stackDispersionLesson.js";
@@ -203,6 +205,11 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
     quiz: DRYER_SELECTION_QUIZ, quizName: "DRYER_SELECTION_QUIZ",
     lesson: DRYER_SELECTION_STEPS, lessonName: "DRYER_SELECTION_STEPS",
     file: "src/ui/methods/DryerSelectionTool.tsx", tool: DryerSelectionTool,
+  },
+  "fault-diagnosis": {
+    quiz: FAULT_DIAGNOSIS_QUIZ, quizName: "FAULT_DIAGNOSIS_QUIZ",
+    lesson: FAULT_DIAGNOSIS_STEPS, lessonName: "FAULT_DIAGNOSIS_STEPS",
+    file: "src/ui/methods/FaultDiagnosisTool.tsx", tool: FaultDiagnosisTool,
   },
 };
 

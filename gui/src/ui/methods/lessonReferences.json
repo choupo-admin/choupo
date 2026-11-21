@@ -3255,6 +3255,28 @@
           }
         }
       ]
+    },
+    "fault-diagnosis": {
+      "references": [
+        {
+          "text": "Seborg, D. E.; Edgar, T. F.; Mellichamp, D. A.; Doyle III, F. J. (2017). Process Dynamics and Control, 4th ed. Wiley, Hoboken.",
+          "note": "Section 10.1.2, Process alarms (p. 163): warning and alarm limits, and the alarm with its own sensor that detects drifts and failures. Chapter 21, Process Monitoring: limit checking (high and low limits, rate-of-change limit, low-variance limit; the low-low 5 % and 15 % and high-high 85 % and 95 % tank example) and performance calculations (the closure of mass balances, Fig. 21.2 with errors of closure of 25 %, -34 % and 4 %, and data reconciliation) on pp. 397-398; the normal-distribution probabilities of Eq. 21-6 (p. 398); the multivariate Hotelling T squared statistic and the mention of PCA and PLS on pp. 407-408; control performance monitoring and sticking valves (p. 408).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/seborg-process-dynamics-control-4ed.pdf: title page and the copyright line (2017, 2011, 2004, 1990 John Wiley & Sons) read in the text layer; PDF pp. 175, 409-410 and 419-420 read in the text layer (printed page = PDF page - 12) (fault-diagnosis, C464)",
+            "date": "2026-11-21"
+          }
+        },
+        {
+          "text": "Montgomery, D. C. (2009). Introduction to Statistical Quality Control, 6th ed. Wiley, Hoboken.",
+          "note": "Section 5.3, the statistical basis of the control chart and the average run length, ARL = 1/p (Eq. 5.2) with ARL0 = 370 for three-sigma limits (p. 191); Chapter 9, the cumulative sum control chart and the insensitivity of the Shewhart chart to small shifts (pp. 400-401).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/montgomery-introduction-to-statistical-quality-control-6ed.pdf: title page (Sixth Edition) and the copyright line (2009 John Wiley & Sons) read in the text layer; PDF pp. 207 and 416-417 read in the text layer (printed page = PDF page - 16) (fault-diagnosis, C464)",
+            "date": "2026-11-21"
+          }
+        }
+      ]
     }
   }
 }
