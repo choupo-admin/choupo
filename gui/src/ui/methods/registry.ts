@@ -1514,7 +1514,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "adsorbent-selection", blurb: "Match eight industrial adsorbents to five separations, each claim with its page.",
     label: "Which adsorbent for which separation",
     discipline: "Separations & phase equilibria", kind: "selection", status: "live",
-    origins: ["reference", "page", "assumption"],
+    origins: ["page", "reference", "assumption"],
     teaches: "Why a separation goes to one adsorbent and not another: eight industrial adsorbents (activated carbon, zeolites 3A, 4A, 5A and 13X, silica gel, activated alumina, carbon molecular sieve) by pore size, polarity, heat of adsorption and regeneration, then a matrix of five separations (gas drying, hydrogen PSA, nitrogen and oxygen from air, VOC recovery, water treatment) with each sentence beside the book page it was read at, a count in place of a market Pareto because no source in the folder gives tonnes, and the catalogue records each opened with the case that uses it.",
     theory: "sec:adsorbent-selection",
   },

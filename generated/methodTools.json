@@ -949,8 +949,8 @@
       "discipline": "Separations & phase equilibria",
       "teaches": "Why a separation goes to one adsorbent and not another: eight industrial adsorbents (activated carbon, zeolites 3A, 4A, 5A and 13X, silica gel, activated alumina, carbon molecular sieve) by pore size, polarity, heat of adsorption and regeneration, then a matrix of five separations (gas drying, hydrogen PSA, nitrogen and oxygen from air, VOC recovery, water treatment) with each sentence beside the book page it was read at, a count in place of a market Pareto because no source in the folder gives tonnes, and the catalogue records each opened with the case that uses it.",
       "origins": [
-        "reference",
         "page",
+        "reference",
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=adsorbent-selection"
