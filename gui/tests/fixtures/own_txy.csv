@@ -1,0 +1,5 @@
+# own measurements, methanol + water, 101.325 kPa (synthetic fixture)
+x[methanol]/-,T_bubble/C,P/kPa,y[methanol]/-
+0.10,91.2,101.325,0.42
+0.50,72.0,101.325,0.78
+0.90,66.5,101.325,0.95
