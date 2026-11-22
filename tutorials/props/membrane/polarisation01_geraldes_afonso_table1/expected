@@ -74,3 +74,5 @@ csv     postProcessing/table1/rejection_dye37.csv 16:y -1.82601749799 1e-4
 csv     postProcessing/table1/rejection_dye37.csv 17:y -1.03001382181 1e-4
 csv     postProcessing/table1/rejection_dye37.csv 18:y -0.650349113933 1e-4
 csv     postProcessing/table1/rejection_dye37.csv 19:y -0.325072442511 1e-4
+source  operations[0]          liquidDensity    measured.geraldesAfonsoTable1_dyeCl_liquidDensity exact
+source  operations[0]          liquidViscosity  stated.geraldesAfonsoTable1_dyeCl_liquidViscosity exact
