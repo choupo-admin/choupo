@@ -88,9 +88,15 @@ static std::string sci(scalar v)
 // ---------------------------------------------------------------------------
 SolutionControl SolutionWriter::timeDirectoryControl(
     const Dictionary&   controlDict,
-    const std::string&  binaryName)
+    const std::string&  binaryName,
+    bool                honoursInterval)
 {
     const SolutionControl sc = readTimeDirectoryControl(controlDict, binaryName);
+    if (sc.interval > 0.0 && !honoursInterval)
+        throw std::runtime_error(binaryName + ": solutionControl { interval; }"
+            " is the cadence of choupoBatch's <t>/ directories and is not"
+            " honoured here -- this binary writes a <t>/ at every"
+            " writeInterval.  Delete the key, or raise writeInterval.");
     if (sc.write)
         std::cout << "solutionControl:   time directories <t>/ at the case"
                      " root every writeInterval, in the layout of 0/ (the"
@@ -130,6 +136,15 @@ SolutionControl SolutionWriter::readTimeDirectoryControl(
         };
         sc.write     = word("write", true);
         sc.flushEach = word("flushEach", sc.flushEach);
+        if (blk->found("interval"))
+        {
+            sc.interval = blk->lookupScalar("interval");
+            if (!(sc.interval > 0.0))
+                throw std::runtime_error(binaryName + ": solutionControl {"
+                    " interval " + std::to_string(sc.interval) + "; } -- the"
+                    " cadence of the <t>/ directories must be a positive time"
+                    " in seconds.");
+        }
     }
     return sc;
 }

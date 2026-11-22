@@ -997,7 +997,7 @@ explicit; what must NOT exist is a solver option ignored in silence):
 |---|---|---|
 | `system/solverDict` | steady FLOWSHEET numerics (choupoSolve only) | per-unit-TYPE subdicts merged into each unit; `tearStreams (…)`; recycle-driver scalars (`recycleSolver`, tolerances) |
 | unit `solver {}` (inside its flowsheetDict entry) | per-UNIT integrator choice (batch vessel units) | `integrator`, `rtol`, per-unit `verbosity` |
-| `controlDict` `timeStepping` / `timeSteppingControl {}` | TIME control of the transient binaries (choupoBatch/choupoSemiContinuous/choupoCtrl) | `adaptive;` + `rtol/atol/deltaT0/deltaTmax/maxGrowth/maxSteps` |
+| `controlDict` `timeStepping` / `timeSteppingControl {}` | TIME control of the transient binaries (choupoBatch/choupoSemiContinuous/choupoCtrl) | `adaptive;` + `rtol/atol/deltaT0/deltaTmax/maxGrowth/maxSteps`; on batchReactor-only runs `deltaTmax` is uncapped when absent and write points come from dense output; `solutionControl { interval T; }` = cadence of choupoBatch's `<t>/` (default at most 100) |
 | `fixedBedAdsorber` sub-stepping | that unit's own inner discretisation | reads BOTH its `solver{rtol, samplingInterval, jacobian}` and controlDict timing |
 
 The anti-silence contract (probe group `solverdict-lint` of `check_refusal_probes`, all four

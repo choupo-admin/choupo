@@ -256,7 +256,7 @@ RATIFIED state layout, and write restartable time directories by default
 
     0/<stream>                  ONE file per stream (the canonical grammar)
     0/internalStates/<unit>     ONE file per vessel, a `holdup {}` block
-    <t>/                        the SAME layout at every writeInterval
+    <t>/                        the SAME layout at the declared or default cadence (trajectory: every write point)
 
 Arms, each measured from files and runs, never from a docstring:
 
@@ -277,7 +277,7 @@ Arms, each measured from files and runs, never from a docstring:
       0/ files; a second run reports "already migrated"; a path under
       data/standards/ is refused.
   (d) TIME DIRECTORIES BY DEFAULT: unsteady02 (no solutionControl block)
-      and batch01 write every writeInterval a <t>/ in the layout of 0/ --
+      and batch01 write a <t>/ at the default cadence (every writeInterval while at most 100) in the layout of 0/ --
       each declared stream a file, each vessel a holdup record -- and the
       holdup at t equals the trajectory row at t.
   (e) `solutionControl { write false; }` writes NO <t>/ (trajectory.csv

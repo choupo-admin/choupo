@@ -237,6 +237,11 @@ public:
     // REAL time -- notifyStateChanged()/setOperationParameter() carry no
     // time argument of their own.  Default: ignore.
     virtual void noteTimeAdvanced(scalar t) { (void) t; }
+    //  Told by the driver BEFORE noteTimeAdvanced(t): does this instant get a
+    //  `<t>/` directory (solutionControl cadence, DEV.md 4c C471)?  A unit that
+    //  writes its own file into `<t>/` writes it only when this is true, so a
+    //  directory never holds that file alone (not restartable).  Default: no-op.
+    virtual void setDirectoryDue(bool due) { (void) due; }
 
     // The run's declared window [startTime, endTime], told to every vessel by
     // choupoBatch before the first clock call, so a vessel that carries a time
