@@ -84,7 +84,7 @@ export type MethodToolId =
   | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
   | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection"
-  | "fault-diagnosis";
+  | "fault-diagnosis" | "how-do-we-know-k";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -267,6 +267,7 @@ export const METHOD_PATHS: MethodPath[] = [
     steps: [
       { tool: "reaction-enthalpy", why: "The heat of reaction, and how it moves with temperature." },
       { tool: "reactor-ladder", why: "The order of questions: what the atoms allow, what thermodynamics allows, then what the rate delivers." },
+      { tool: "how-do-we-know-k", why: "Where the rate constant of that last rung comes from: a decay, a straight line, an Arrhenius plot and a fall-off." },
       { tool: "limiting-reactant", why: "Feed ratios and the limiting reactant once a recycle closes the loop." },
       { tool: "levenspiel", why: "Sizing: the PFR integral against the CSTR rectangle for the same conversion." },
       { tool: "approach-to-equilibrium", why: "How close a reactor can get to equilibrium, and what a Gibbs reactor assumes." },
@@ -1186,6 +1187,31 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "and its validity window at your tolerance -- which is why engineering "
       + "correlations are simple.",
     theory: "ch:stiff-ode",
+  },
+  //  COMMISSIONED 2026-11-21 (DEV.md 4c C462), the owner's question: "como e que os
+  //  engenheiros quimicos conseguiram isolar cada reacao individual e calibrar as
+  //  constantes cineticas?", scope approved 2026-11-22.  A CONSTRUCTION with one
+  //  witness run in the browser (tutorials/batch/combustion/kinetics01_oh_decay:
+  //  the cell of a flash-photolysis experiment, the O Conaire 2004 mechanism, a
+  //  trace of OH or of H2O2) and the fits of case/knowK.ts on its signals.
+  {
+    id: "how-do-we-know-k", blurb: "Measure a rate constant on the engine: decay, slope, Arrhenius, fall-off.",
+    label: "How do we know k?",
+    discipline: "Reaction engineering", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
+    teaches: "How a rate constant is isolated and read from a signal: a radical made "
+      + "at t = 0 in a hot cell and followed in time, a large excess of its partner "
+      + "turning the decay into a straight line on a log plot, the slope of that "
+      + "line against the excess as k, the same experiment at several temperatures "
+      + "as an Arrhenius plot with its apparent activation energy, and a "
+      + "unimolecular reaction at growing pressure between the Lindemann limits "
+      + "with Troe's broadening.  The engine runs the cell (the O Conaire 2004 "
+      + "hydrogen mechanism, OH + H2 and the decomposition of H2O2), the page fits "
+      + "the signal as a laboratory would and compares each recovered k with the law "
+      + "the engine announced, and the last panel shows where the method breaks: a "
+      + "small excess and the secondary reactions the engine's own rates of "
+      + "production name.",
+    theory: "ch:gas-kinetics",
   },
   //  COMMISSIONED 2026-10-11 (DEV.md 4c C64): "sabes como habitualmente se
   //  da a reducao de pressao de mais de 10x de uma corrente num processo

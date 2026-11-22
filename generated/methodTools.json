@@ -200,6 +200,12 @@
           "href": "/app/?workspace=methods&tool=reactor-ladder&path=reaction-engineering"
         },
         {
+          "tool": "how-do-we-know-k",
+          "label": "How do we know k?",
+          "why": "Where the rate constant of that last rung comes from: a decay, a straight line, an Arrhenius plot and a fall-off.",
+          "href": "/app/?workspace=methods&tool=how-do-we-know-k&path=reaction-engineering"
+        },
+        {
           "tool": "limiting-reactant",
           "label": "Limiting reactant and feed ratio in a recycle loop",
           "why": "Feed ratios and the limiting reactant once a recycle closes the loop.",
@@ -307,8 +313,8 @@
       ]
     }
   ],
-  "liveTools": 95,
-  "registryTools": 95,
+  "liveTools": 96,
+  "registryTools": 96,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -765,6 +771,19 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=fast-and-slow"
+    },
+    {
+      "id": "how-do-we-know-k",
+      "label": "How do we know k?",
+      "blurb": "Measure a rate constant on the engine: decay, slope, Arrhenius, fall-off.",
+      "discipline": "Reaction engineering",
+      "teaches": "How a rate constant is isolated and read from a signal: a radical made at t = 0 in a hot cell and followed in time, a large excess of its partner turning the decay into a straight line on a log plot, the slope of that line against the excess as k, the same experiment at several temperatures as an Arrhenius plot with its apparent activation energy, and a unimolecular reaction at growing pressure between the Lindemann limits with Troe's broadening.  The engine runs the cell (the O Conaire 2004 hydrogen mechanism, OH + H2 and the decomposition of H2O2), the page fits the signal as a laboratory would and compares each recovered k with the law the engine announced, and the last panel shows where the method breaks: a small excess and the secondary reactions the engine's own rates of production name.",
+      "origins": [
+        "engine",
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=how-do-we-know-k"
     },
     {
       "id": "letdown",

@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  kinetics01_oh_decay -- the cell of a flash-photolysis experiment, run by the
+  engine (choupoBatch).  The witness of the EduTool `how-do-we-know-k`.
+
+  WHAT IT IS.  An isothermal closed vessel at 1000 K and 1 bar holds H2 in N2
+  (mole fraction 0.01) and a trace of OH (1e-6) made at t = 0: the radical a
+  flash would leave.  The whole O Conaire et al. 2004 H2/O2 mechanism (Int. J.
+  Chem. Kinet. 36, 603, Table I; the same constant/reactions as
+  ignition01_h2o2) is switched on, so the OH can do everything the mechanism
+  lets it do.  With the H2 in a large excess the OH decays by OH + H2 = H2O + H
+  alone, as a first-order law: ln n_OH falls on a straight line of slope -k',
+  k' = k c_H2, the pseudo-first-order constant of the experimenter's method.
+  The window (100 us) holds about thirteen lifetimes at these conditions.
+
+  WHAT THE PAGE DOES WITH IT.  The EduTool rewrites T, P, the charge, the H2,
+  OH and H2O2 mole fractions and the window (declared numbers of 0/ and of this
+  file), runs the cell, fits the decay and compares the k it recovers with the
+  law the engine announced for the reaction when it loaded it.  The same case
+  seeded with H2O2 instead of OH is the fall-off experiment (R15).
+  `rateOfProduction` (flowsheetDict) prints which reactions make and destroy
+  each species at 5 us: the secondary chemistry that contaminates a measured
+  decay when the OH seed is large.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Flash-photolysis cell: a trace of OH decaying in H2/N2 at 1000 K, 1 bar, isothermal (O Conaire 2004 H2/O2 kinetics); the signal the EduTool how-do-we-know-k fits for k";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;          // s
+endTime         1.0e-4;     // s  (about thirteen OH lifetimes at the defaults)
+deltaT          5.0e-7;     // s  (the stiff integrator sub-steps adaptively within each deltaT)
+writeInterval   5.0e-7;     // s  (200 instants across the window)

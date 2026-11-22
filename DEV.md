@@ -5194,6 +5194,18 @@ accepts today, and that is a policy call.
 > order with H2 in excess, k' against [H2] gives k compared with the record and its code line,
 > Arrhenius, Troe falloff, where the method breaks.
 
+> **C471 and C462 LANDED (2026-11-22).**  C471 043d5feb73: free adaptive stepping with cubic Hermite
+> dense output, species atol relative to each vessel's inventory, `solutionControl { interval; }`
+> cadence for `<t>/` (default <= 100 directories); synthetic 253 species 5.65 -> 0.77 s, 2552 -> 101
+> directories.  No full sweep (written reason: the reach is the three time-integrated binaries,
+> covered by --scope with their closures).  C462 f142701d07: the page "How do we know k?" with
+> kinetics01_oh_decay and kinetics02_h2o2_falloff (k recovered 1.3029e12 vs 1.3027e12; the method
+> breaks as k ratio rises).  Both integrations showed red gates that were MAIN'S, not theirs
+> (exported ignition01 looks for components/H.dat after C458; two stale selftest targets;
+> polarisation01 source rows unpinned) -- landed on that written judgement, debts on C466.  The
+> Jacobian audit refusing an H2O2-only vessel (C462 finding) is added to C468.  C472 registered:
+> the cloud's "from the molecule to the properties" EduTool, asked by Vitor ("Eu pedi!").
+
 > **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
 > mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
 > into the cloud branch, one full sweep ALONE (reason: the gas-only rule changes the
