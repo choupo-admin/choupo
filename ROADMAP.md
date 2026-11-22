@@ -150,3 +150,32 @@ section 4.)
   memory).
 * Vítor's Portuguese view of this plan is a private page updated FROM this
   file, never the other way round.
+
+
+## Programmes moved from the backlog (2026-11-22)
+
+Vítor, 2026-11-22: "agrupa o resto e poe uma backlog que nao me deixe ansioso".  These are
+programmes of months, not tasks that close; each keeps its DEV.md 4c entry and its row in
+BACKLOG.tsv (status ROADMAP), and comes back to the backlog as OPEN when a concrete slice of it
+is commissioned.
+
+- **C6** -- Caso de estudo amoníaco verde para artigo C&CE (asked 2026-09-24).
+- **C129** -- Fase de detalhe final do layout 3D: bombas, válvulas, bocas de visita (asked 2026-10-21).
+- **C130** -- Fluxograma instrumentado: camada P&ID sobre o PFD (asked 2026-10-21).
+- **C131** -- Consolidar e rever tudo contra boas práticas e simulador de referência (asked 2026-10-21).
+- **C132** -- EduTool de diagnóstico de falhas a partir de historiador (asked 2026-10-21).
+- **C133** -- PFD com tabela de correntes e folhas de especificação em PDF (asked 2026-10-21).
+- **C139** -- EduTool da economia da rede de químicos e parques industriais (asked 2026-10-24).
+- **C160** -- Termodinâmica e cinética de topo: programa de paridade com biblioteca aberta (asked 2026-10-25).
+- **C181** -- Modelo de arrefecimento sequencial (asked 2026-10-27).
+- **C195** -- O que falta ao Choupo para os dois grupos farmacêuticos 2026-27 (asked 2026-11-02).
+- **C203** -- Gémeo digital como última forma de um caso de planta (asked 2026-11-02).
+- **C206** -- EduTools de tratamento de efluentes líquidos e gasosos (asked 2026-11-02).
+- **C210** -- Direção: Choupo ferramenta útil ao projeto farmacêutico (asked 2026-11-02).
+- **C215** -- Classes de reação em EduTools, reações da biorrefinaria, brainstorm biotecnologia (asked 2026-11-04).
+- **C262** -- Depósito de casos de estudo autocontidos da comunidade (asked 2026-11-09).
+- **C340** -- Bioprocessos: célula como componente, O2, caso fermentativo, biorrefinaria (asked 2026-11-12).
+- **C412** -- Escolha de testes por assinatura de modelo (asked 2026-11-16).
+- **C417** -- Vias reacionais orgânicas e inorgânicas em EduTools com questionários (asked 2026-11-16).
+- **C418** -- Áreas ainda não cobertas: bioprocesso, lamas ativadas, LCA e outros (asked 2026-11-16).
+- **C422** -- Lei de propriedade como rede neuronal ajustada (asked 2026-11-18).

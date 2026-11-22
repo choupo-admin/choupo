@@ -11,7 +11,7 @@ called a landed EduTool (C247) open.
 
 Fails when: (a) an item C<n> headed in DEV.md 4c (`**C<n>`) has no row, or a
 row names no item there; (b) a status is outside DONE / PARTIAL / OPEN /
-DROPPED / NOT-AN-ITEM; (c) an OPEN or PARTIAL row has no rank or no reason, the
+DROPPED / NOT-AN-ITEM / ROADMAP (a long-term programme moved to ROADMAP.md, Vitor 2026-11-22); (c) an OPEN or PARTIAL row has no rank or no reason, the
 ranks are not 1..N (0 = in progress), or a closed row has a rank; (d) a commit named in a row is not
 in this repository's history; (e) a DROPPED row does not quote Vitor (only he
 drops an item); (f) a row is duplicated or the header is not the agreed one.
@@ -24,7 +24,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SCAN_ROOTS = ("BACKLOG.tsv", "DEV.md")
 HEADER = ["item", "status", "rank", "title_pt", "open_pt", "why_pt", "asked", "size", "commit", "waits_on"]
-STATUSES = {"DONE", "PARTIAL", "OPEN", "DROPPED", "NOT-AN-ITEM"}
+STATUSES = {"DONE", "PARTIAL", "OPEN", "DROPPED", "NOT-AN-ITEM", "ROADMAP"}
 
 
 def items_in_register():
@@ -59,6 +59,8 @@ def main():
                 ranks.append(int(rank))
         elif rank:
             bad.append(f"{c}: {st} carries rank '{rank}'")
+        if st == "ROADMAP" and ("ROADMAP" not in r[4] or ("Vitor" not in r[4] and "Vítor" not in r[4])):
+            bad.append(f"{c}: ROADMAP without the move to ROADMAP.md and Vitor's words in open_pt")
         if st == "DROPPED" and "Vitor" not in r[4] and "Vítor" not in r[4]:
             bad.append(f"{c}: DROPPED without Vitor's words in open_pt")
     pos = sorted(k for k in ranks if k > 0)
@@ -83,10 +85,10 @@ def main():
         return 1
     n = {s: sum(1 for r in body if r[1] == s) for s in STATUSES}
     print("check_backlog: OK -- %d items, every one headed in DEV.md 4c has its row "
-          "(DONE %d, PARTIAL %d, OPEN %d, DROPPED %d, NOT-AN-ITEM %d); every open or "
+          "(DONE %d, PARTIAL %d, OPEN %d, ROADMAP %d, DROPPED %d, NOT-AN-ITEM %d); every open or "
           "partial item has a rank and a reason; %d named commits are in history.  NOT checked: "
           "that a status is true (a landing changes its row in the same commit)."
-          % (len(body), n["DONE"], n["PARTIAL"], n["OPEN"], n["DROPPED"], n["NOT-AN-ITEM"], len(commits)))
+          % (len(body), n["DONE"], n["PARTIAL"], n["OPEN"], n["ROADMAP"], n["DROPPED"], n["NOT-AN-ITEM"], len(commits)))
     return 0
 
 

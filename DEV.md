@@ -5252,9 +5252,34 @@ accepts today, and that is a policy call.
 > **C476 (cloud finding, 2026-11-22): the C471 cubic Hermite dense output errs up to 4e-2 between
 > steps on a stiff system** (choupoBatch/main.cpp, the dense-output block): the interpolated rows of
 > 13 free-stepping batch cases; step ends and final states are right.  Cause documented in
-> docs/reviews/2026-11-22-densesparse/ (on the cloud branch).  Fix: the integrators' own dense
+> the cloud's dense-versus-sparse review (its branch, not yet on main).  Fix: the integrators' own dense
 > output (Hairer & Wanner for Rodas4 and seulex), the cloud's slice in flight; its READY lists the 13
 > cases and every moved row.
+
+> **C477 (Vitor, 2026-11-22, quoting Sherwood: "o que se poe num grafico tem de ser pensado ...
+> representar tudo satura a visao e a analise"): each case answers its question in one or two
+> post-process plots.**  First three, scope ruled by the architect: nox03 "when does it ignite and
+> what NO does it leave" (log time, T and NO/NO2 on two axes, the engine's ignition delay marked) and
+> "where does the NO come from" (cumulative NO by declared route: thermal, prompt, N2O, NNH); nox02
+> "in which temperature window does NH3 remove NO" (final NO against vessel T with Fig. 57).  The
+> GUI/grammar half is built (build/c477-essential-plots: yAxis2, markers from a KPI, the Fig. 57
+> reference data); the engine half (views in choupoBatch, log-spaced sampling, tauIgnition on any
+> adiabatic batchReactor, route integrals) waits for the cloud's second batch in choupoBatch/main.cpp.
+> Then the principle goes across the corpus: which cases lack their essential plot.
+> C91 CLOSED 2026-11-22: Vitor checked the layout window in the browser ("sim ajusta bem").
+> C22 re-read 11-22: the silent R_min cut now throws (ShortcutColumn.cpp:115-128) and the Herington
+> D/J test exists (VleConsistency.cpp:143-193); only the silent Wegstein q_max clamp remains.
+> Backlog shared with the cloud 11-23 (SESSIONS): C458's methane lesson, C245 (Rodas4 constants
+> first), C256, C416; C455, C395, C222 with the laptop's generals; C204 stays with the laptop.
+
+> **THE BACKLOG REGROUPED (Vitor, 2026-11-22: "Despacha o que e facil e agrupa o resto e poe uma
+> backlog que nao me deixe ansioso").**  Twenty long-term programmes (C6, C129, C130, C131, C132,
+> C133, C139, C160, C181, C195, C203, C206, C210, C215, C262, C340, C412, C417, C418, C422) take
+> the new status ROADMAP (listed in ROADMAP.md; each returns as OPEN when a slice of it is
+> commissioned); two duplicates merged (C219 into C218, C228 into C329).  The view shows what is
+> moving, the next ten, and the rest by theme on one line each (bin/curate/backlog_themes.tsv),
+> with the number that only rises at the top: items closed in the last seven days.
+> check_backlog accepts ROADMAP only with the move and Vitor's words in the row.
 
 > **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
 > mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
