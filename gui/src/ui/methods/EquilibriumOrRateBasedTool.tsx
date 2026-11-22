@@ -56,11 +56,12 @@ import {
   Alert, Badge, Box, Button, Group, Loader, SegmentedControl, Slider, Stack, Table, Text, Title,
 } from "@mantine/core";
 
-import { useMethodRunSweep } from "../../case/methodRun.js";
+import { useCaseFilesRun, useMethodRunSweep } from "../../case/methodRun.js";
 import {
-  ASSUMED_EFFICIENCY, COMPARE_FS, EFFICIENCY_STOPS, EFFICIENCY_WITNESSES, MURPHREE_WITNESS,
-  SPECS, SWEEP_CSV, TRAY_STOPS, YANAGI_14_34KPA, atFs, distillateToluene, murphreeOverrides,
-  parseEfficiencySweep, smallestMeeting, type SpecId,
+  ASSUMED_EFFICIENCY, COMPARE_FS, EFFICIENCY_STOPS, EFFICIENCY_WITNESSES, HETP_BED_WITNESS,
+  MURPHREE_WITNESS, SPECS, SWEEP_CSV, TRAY_STOPS, YANAGI_14_34KPA, atFs, bedSingleRunCase,
+  distillateToluene, hetpOverHog, murphreeOverrides, parseEfficiencySweep, readBedProfile,
+  smallestMeeting, type SpecId,
 } from "../../case/equilibriumOrRateBased.js";
 import { Panel, Wide, XYPlot, fmt } from "./AdsorptionIsothermsTool.js";
 import { LessonLimits, LessonReferences, TexText, lessonStepper } from "./lessonStep.js";
@@ -357,6 +358,128 @@ function TrayEfficiencyBlock(): JSX.Element {
   );
 }
 
+// ---- Where HETP fails ---------------------------------------------------------
+
+/** The HETP factor against lambda, with a slider on lambda.  The curve is the
+ *  relation of Seader, Henley and Roper (Eq. 7-87) and nothing else: no run. */
+function LambdaBlock(): JSX.Element {
+  //  The slider is on log10(lambda), so 1/3 and 3 sit symmetrically about 1.
+  const [e, setE] = useState(Math.log10(0.76));
+  const lambda = Math.pow(10, e);
+  const f = hetpOverHog(lambda);
+  const curve: XY[] = Array.from({ length: 121 }, (_, k): XY => {
+    const l = Math.pow(10, -1 + (2 * k) / 120);
+    return [l, hetpOverHog(l)];
+  });
+  return (
+    <Panel title="the factor between HETP and H_OG, against lambda" origin={["reference", "page"]}
+      originNote="Seader, Henley and Roper (2016) Eq. 7-87, for straight equilibrium and operating lines; the page draws the relation and runs nothing">
+      <Box>
+        <Group justify="space-between" gap={6}>
+          <Text size="xs" c="dimmed">lambda = m V / L</Text>
+          <Text size="xs" ff="monospace">lambda = {fmt(lambda, 3)}</Text>
+        </Group>
+        <Slider size="xs" mt={4} value={e} min={-1} max={1} step={0.01} label={null} onChange={setE}
+          marks={[{ value: -1, label: "0.1" }, { value: 0, label: "1" }, { value: 1, label: "10" }]} />
+      </Box>
+      <XYPlot ariaLabel="HETP over H_OG against lambda, logarithmic in lambda" xlog
+        xLabel="lambda = m V / L [-]" yLabel="HETP / H_OG [-]" tight
+        series={[
+          { name: "HETP / H_OG = ln(lambda)/(lambda - 1)", color: "#2a78d6", line: curve },
+          { name: "your lambda", color: "#d4572a", points: [[lambda, f]] },
+        ]} />
+      <Text size="sm">
+        At lambda = {fmt(lambda, 3)} the HETP is <b>{fmt(f, 4)} times</b> H_OG.  Move the slider to
+        1: the factor is exactly 1 and the HETP is the height of a transfer unit.  On either side
+        it is not, though the packing and its H_OG have not changed.  The book's own worked case
+        (Example 7.7, lambda = 0.76) gives HETP = {fmt(1.52 * hetpOverHog(0.76), 3)} ft from H_OG =
+        1.52 ft, the 1.74 ft it prints.
+      </Text>
+    </Panel>
+  );
+}
+
+/** The bed's own segment profile, run once, with lambda and the local HETP. */
+function BedProfileBlock(): JSX.Element {
+  const [guess, setGuess] = useState<string | null>(null);
+  const [started, setStarted] = useState(false);
+  const run = useCaseFilesRun(started ? bedSingleRunCase : null, `hetp-bed:${HETP_BED_WITNESS}`, "choupoSolve");
+  const prof = useMemo(() => readBedProfile(run.result), [run.result]);
+  const n = prof ? prof.z.length : 0;
+  const hMin = prof ? Math.min(...prof.hetpLocal) : NaN, hMax = prof ? Math.max(...prof.hetpLocal) : NaN;
+  const lMin = prof ? Math.min(...prof.lambda) : NaN, lMax = prof ? Math.max(...prof.lambda) : NaN;
+  const hMean = prof ? prof.hetpLocal.reduce((a, b) => a + b, 0) / n : NaN;
+  const spread = prof ? (hMax - hMin) / hMean : NaN;
+  const pts = (ys: readonly number[]): XY[] => (prof ? prof.z.map((z, k): XY => [z, ys[k]!]) : []);
+
+  return (
+    <Stack gap="md">
+      <Panel title="predict before you calculate" origin="assumption"
+        originNote="the guesses are the page's; the bed is the engine's rate-based packed bed">
+        <Text size="sm">
+          A 2.2 m bed of structured packing separates p-xylene from o-xylene at total reflux.  One
+          HETP is quoted for the whole bed.  Computed segment by segment from the relation, how
+          much does the HETP differ between the bottom and the top of the bed?
+        </Text>
+        <SegmentedControl size="xs" value={guess ?? ""} onChange={setGuess}
+          data={["under 2 %", "about 10 %", "more than 30 %"].map((g) => ({ value: g, label: g }))} />
+        <Group gap="sm">
+          <Button size="xs" disabled={guess === null || started} onClick={() => setStarted(true)}>
+            Run the rate-based bed (1 run, 100 segments)
+          </Button>
+          {guess === null && <Text size="xs" c="dimmed">Choose a guess first.</Text>}
+        </Group>
+      </Panel>
+
+      {started && (
+        <Panel title="the reveal: lambda and the local HETP along the bed" origin={["engine", "page"]}
+          originNote={`${HETP_BED_WITNESS} run at its declared F-factor, without its F-factor sweep; m, V, L and H_OG are the segment profile the engine publishes, lambda and the local HETP are the page's arithmetic on them`}>
+          {run.busy && <Group gap={6}><Loader size="xs" /><Text size="xs">the engine is running…</Text></Group>}
+          {run.err && (
+            <Alert color="red" variant="light" title="the run did not finish">
+              <Text size="sm">{run.err}</Text>
+            </Alert>
+          )}
+          {!run.busy && !run.err && run.result && !prof && (
+            <Alert color="gray" variant="light" title="nothing to draw">
+              <Text size="sm">
+                The run finished but publishes no segment profile with m, V, L and H_OG, so nothing
+                is drawn rather than a curve the engine did not publish.
+              </Text>
+            </Alert>
+          )}
+          {prof && (
+            <>
+              <XYPlot ariaLabel="lambda against height in the bed" xLabel="height in the bed z [m]"
+                yLabel="lambda = m V / L [-]" tight
+                series={[{ name: "lambda (engine's m, V, L)", color: "#2a78d6", line: pts(prof.lambda) }]} />
+              <XYPlot ariaLabel="H_OG and the local HETP against height in the bed" xLabel="height in the bed z [m]"
+                yLabel="height [m]" tight
+                series={[
+                  { name: "H_OG (engine)", color: "#8a5cd6", line: pts(prof.hog) },
+                  { name: "local HETP = H_OG ln(lambda)/(lambda - 1) (page)", color: "#d4572a", line: pts(prof.hetpLocal) },
+                  ...(prof.hetpBed !== null ? [{
+                    name: "the bed's HETP, height over Fenske stages (engine)", color: "#444444",
+                    line: [[prof.z[0]!, prof.hetpBed], [prof.z[n - 1]!, prof.hetpBed]] as XY[],
+                  }] : []),
+                ]} />
+              <Text size="sm">
+                Your guess: <b>{guess}</b>.  The engine's m, V and L give lambda from <b>{fmt(lMin, 3)}</b> to{" "}
+                <b>{fmt(lMax, 3)}</b> along the bed: it crosses 1 inside it.  H_OG goes from {fmt(prof.hog[0]!, 3)} m
+                to {fmt(prof.hog[n - 1]!, 3)} m, and the local HETP from {fmt(prof.hetpLocal[0]!, 3)} m to{" "}
+                {fmt(prof.hetpLocal[n - 1]!, 3)} m: a spread of <b>{fmt(100 * spread, 2)} %</b> of its mean.
+                {prof.hetpBed !== null && <> The one number the engine reports for the bed is {fmt(prof.hetpBed, 3)} m.</>}
+                {" "}Where H_OG rises the local HETP falls, because lambda has moved the other way.  One
+                HETP is an average over a bed that works differently at its two ends.
+              </Text>
+            </>
+          )}
+        </Panel>
+      )}
+    </Stack>
+  );
+}
+
 // ---- The page ---------------------------------------------------------------
 
 export function EquilibriumOrRateBasedTool(): JSX.Element {
@@ -413,6 +536,10 @@ export function EquilibriumOrRateBasedTool(): JSX.Element {
             ))}
           </Stack>
         </Panel>
+
+        {step(6)}
+        <LambdaBlock />
+        <BedProfileBlock />
 
         <Panel title="what each choice costs" origin={["engine", "reference"]}
           originNote="each sentence names its origin; papers read by the project's coordinating session, not opened for this page, are marked so">

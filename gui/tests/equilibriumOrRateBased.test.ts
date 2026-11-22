@@ -46,7 +46,10 @@ License
   was built and docs/design/equilibrium-or-rate-based.md holds the table.
 \*---------------------------------------------------------------------------*/
 
-import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { MantineProvider } from "@mantine/core";
@@ -55,9 +58,10 @@ import { describe, expect, it } from "vitest";
 import type { RunResult } from "../src/adapters/SolverAdapter.js";
 import { methodCase } from "../src/case/methodRun.js";
 import {
-  ASSUMED_EFFICIENCY, COMPARE_FS, EFFICIENCY_STOPS, EFFICIENCY_WITNESSES, MURPHREE_WITNESS,
-  SPECS, SWEEP_CSV, TRAY_STOPS, TRACE_STRIPPING_STAGES, YANAGI_14_34KPA, atFs,
-  distillateToluene, murphreeOverrides, parseEfficiencySweep, smallestMeeting,
+  ASSUMED_EFFICIENCY, COMPARE_FS, EFFICIENCY_STOPS, EFFICIENCY_WITNESSES, HETP_BED_WITNESS,
+  MURPHREE_WITNESS, SPECS, SWEEP_CSV, TRAY_STOPS, TRACE_STRIPPING_STAGES, YANAGI_14_34KPA, atFs,
+  bedSingleRunCase, distillateToluene, hetpOverHog, murphreeOverrides, parseEfficiencySweep,
+  readBedProfile, smallestMeeting,
 } from "../src/case/equilibriumOrRateBased.js";
 import { texParses } from "../src/ui/methods/lessonTex.js";
 import {
@@ -68,6 +72,7 @@ import { EquilibriumOrRateBasedTool, asImpurity } from "../src/ui/methods/Equili
 import { METHOD_PATHS, METHOD_TOOLS } from "../src/ui/methods/registry.js";
 import { witnessOutput } from "./witnessRead.js";
 
+const REPO_ROOT = new URL("../../", import.meta.url).pathname;
 const tree = (rel: string): string =>
   readFileSync(new URL(`../../${rel}`, import.meta.url), "utf-8");
 const refs = JSON.parse(tree("gui/src/ui/methods/lessonReferences.json")) as {
@@ -189,26 +194,35 @@ describe("equilibrium-or-rate-based: the lesson", () => {
     }
   });
   it("cites the engine at lines that say what the lesson claims", () => {
-    const all = [EQ_RB_ENGINE_SCOPE, ...EQ_RB_STEPS.flatMap((s) => [s.body, s.note ?? ""])].join("\n");
+    const all = [EQ_RB_ENGINE_SCOPE,
+      ...EQ_RB_STEPS.flatMap((s) => [s.body, s.note ?? "", ...(s.where ?? []).map((w) => w.means)])].join("\n");
     const cited = new Set([...all.matchAll(/([A-Za-z]+\.(?:cpp|H)):(\d+)/g)].map((m) => m[0]));
     const CLAIMS: Record<string, string> = {
       "DistillationColumn.cpp:1600": "lookupScalarOrDefault(\"murphreeEfficiency\", 1.0);",
       "DistillationColumn.cpp:1732": "Keff[j][i] = std::max(0.0, Emv * K[j][i] + (1.0 - Emv) * yDown / xj);",
       "DistillationColumn.cpp:2400": "`murphreeEfficiency` is not ",
       "DistillationColumn.cpp:5103": "tray efficiency is implemented for a BINARY",
+      "PackingDelft.cpp:131": "r.HETP = (std::abs(s.lambda - 1.0) < 1.0e-9) ? r.HOG",
+      "RateBasedSegment.cpp:884": "profile_.columns[\"V\"]",
+      "RateBasedSegment.cpp:885": "profile_.columns[\"L\"]",
+      "RateBasedSegment.cpp:886": "profile_.columns[\"HOG\"]",
+      "RateBasedSegment.cpp:887": "profile_.columns[\"HG\"]",
+      "RateBasedSegment.cpp:888": "profile_.columns[\"HL\"]",
+      "RateBasedSegment.cpp:889": "profile_.columns[\"m\"]",
     };
+    const files: Record<string, string[]> = {};
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
-    const src = tree("src/unitOperations/distillation/DistillationColumn.cpp").split("\n");
     for (const [c, want] of Object.entries(CLAIMS)) {
       expect(cited.has(c), `claim ${c} is no longer cited`).toBe(true);
-      const line = Number(c.split(":")[1]);
-      expect(src[line - 1], c).toContain(want);
+      const [file, ln] = c.split(":") as [string, string];
+      files[file] ??= tree(`src/unitOperations/distillation/${file}`).split("\n");
+      expect(files[file]![Number(ln) - 1], c).toContain(want);
     }
     //  The refusal at 2398 is the MESH one, two lines on.
-    expect(src.slice(2400, 2403).join("\n")).toContain("implemented for `method simultaneous`");
+    expect(files["DistillationColumn.cpp"]!.slice(2400, 2403).join("\n")).toContain("implemented for `method simultaneous`");
   });
   it("names the four witnesses it runs, and each exists in the tree", () => {
-    for (const w of [MURPHREE_WITNESS, ...EFFICIENCY_WITNESSES.map((x) => x.witness)])
+    for (const w of [MURPHREE_WITNESS, HETP_BED_WITNESS, ...EFFICIENCY_WITNESSES.map((x) => x.witness)])
       expect(tree(`tutorials/${w}/system/controlDict`)).toContain("application");
   });
   it("every decision row and cost names a demonstration of this page or a reference it lists", () => {
@@ -227,7 +241,7 @@ describe("equilibrium-or-rate-based: the lesson", () => {
     //  did not open carries no quotation and says who read it.
     expect(REFERENCE_FINDINGS.length).toBe(5);
     expect(DECISION_ROWS.length).toBe(7);
-    expect(list.length).toBe(10);
+    expect(list.length).toBe(11);
     //  The four papers this page did not open: each reference entry says so,
     //  and every place the page uses one of them marks who read it.
     const entries = refs.lessons["equilibrium-or-rate-based"]!.references as
@@ -266,6 +280,73 @@ describe("equilibrium-or-rate-based: the lesson", () => {
   });
 });
 
+describe("equilibrium-or-rate-based: where HETP fails", () => {
+  it("the factor is 1 at lambda = 1 and is Seader's Eq. 7-87 either side of it", () => {
+    expect(hetpOverHog(1)).toBe(1);
+    expect(hetpOverHog(1 + 1e-12)).toBe(1);
+    expect(hetpOverHog(Math.E)).toBeCloseTo(1 / (Math.E - 1), 12);
+    expect(hetpOverHog(0.5)).toBeCloseTo(Math.log(0.5) / -0.5, 12);
+    //  Example 7.7, first row of Table 7.7 (lambda 0.76, H_OG 1.52 ft, HETP 1.74 ft).
+    expect(1.52 * hetpOverHog(0.76)).toBeCloseTo(1.74, 2);
+    expect(Number.isNaN(hetpOverHog(0))).toBe(true);
+    expect(Number.isNaN(hetpOverHog(-1))).toBe(true);
+  });
+  it("the lesson names its source, and the source's equation numbers are in the reference entry", () => {
+    const e = refs.lessons["equilibrium-or-rate-based"]!.references.find((r) => r.text.startsWith("Seader"))!;
+    expect(e).toBeDefined();
+    const note = (e as unknown as { note: string }).note;
+    for (const n of ["7-80", "7-86", "7-87"]) expect(note, n).toContain(n);
+    const st = EQ_RB_STEPS.find((x) => x.n === 6)!;
+    expect(st.title).toContain("Where HETP fails");
+    for (const n of ["7-80", "7-86", "7-87"]) expect(st.body, n).toContain(n);
+    expect(st.body).toContain("component");
+  });
+  it("reads the bed's profile by column name, and refuses what it does not carry", () => {
+    expect(readBedProfile(null)).toBeNull();
+    const fake = (cols: Record<string, number[]>) =>
+      ({ profiles: [{ unit: "column", xAxis: "z", columns: cols }], kpis: { column: { HETP: 0.15 } } }) as unknown as RunResult;
+    const ok = readBedProfile(fake({ z: [0.1, 0.2], m: [0.9, 1.1], V: [2, 2], L: [2, 2], HOG: [0.15, 0.16] }))!;
+    expect(ok.lambda).toEqual([0.9, 1.1]);
+    expect(ok.hetpLocal[0]).toBeCloseTo(0.15 * hetpOverHog(0.9), 12);
+    expect(ok.hetpBed).toBe(0.15);
+    expect(readBedProfile(fake({ z: [0.1], m: [0.9], V: [2], L: [2] }))).toBeNull();
+    expect(readBedProfile(fake({ z: [0.1, 0.2], m: [0.9], V: [2, 2], L: [2, 2], HOG: [1, 1] }))).toBeNull();
+  });
+  it("the page's run drops the sweep and keeps the bed", () => {
+    const c = bedSingleRunCase();
+    expect(c.rawFiles!["system/outerDict"]).toBeUndefined();
+    expect(c.rawFiles!["system/flowsheetDict"]).toContain("model       rateBased;");
+  });
+  it("the engine's own profile has what the page says: lambda crosses 1, H_OG rises while the local HETP falls", () => {
+    const bin = join(REPO_ROOT, "choupoSolve");
+    if (!existsSync(bin))
+      throw new Error(`REFUSED: ${bin} is missing; remedy: make all (this test runs the tree's native engine on the bed)`);
+    const dir = mkdtempSync(join(tmpdir(), "hetpbed-"));
+    try {
+      const c = join(dir, "bed");
+      cpSync(join(REPO_ROOT, "tutorials", HETP_BED_WITNESS), c, { recursive: true });
+      rmSync(join(c, "system", "outerDict"));
+      const out = execFileSync(bin, [c], { encoding: "utf-8", maxBuffer: 1 << 28 });
+      const j = JSON.parse(out.slice(out.indexOf("<<<Choupo:result-begin>>>") + 25, out.indexOf("<<<Choupo:result-end>>>")));
+      const prof = readBedProfile({ profiles: [{ unit: "column", ...j.profiles.column }], kpis: j.kpis } as unknown as RunResult)!;
+      expect(prof).not.toBeNull();
+      expect(prof.z.length).toBe(100);
+      const lmin = Math.min(...prof.lambda), lmax = Math.max(...prof.lambda);
+      expect(lmin).toBeGreaterThan(0.84); expect(lmin).toBeLessThan(0.86);
+      expect(lmax).toBeGreaterThan(1.10); expect(lmax).toBeLessThan(1.12);
+      const n = prof.z.length;
+      expect(prof.hog[n - 1]!).toBeGreaterThan(prof.hog[0]!);
+      expect(prof.hetpLocal[n - 1]!).toBeLessThan(prof.hetpLocal[0]!);
+      //  the engine's own bed HETP lies inside the local range
+      expect(prof.hetpBed!).toBeGreaterThan(Math.min(...prof.hetpLocal));
+      expect(prof.hetpBed!).toBeLessThan(Math.max(...prof.hetpLocal));
+      const mean = prof.hetpLocal.reduce((a, b) => a + b, 0) / n;
+      const spread = (Math.max(...prof.hetpLocal) - Math.min(...prof.hetpLocal)) / mean;
+      expect(spread).toBeGreaterThan(0.05); expect(spread).toBeLessThan(0.15);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  });
+});
+
 describe("equilibrium-or-rate-based: the page", () => {
   it("opens on the question and the task, with no run started", () => {
     const html = renderToStaticMarkup(createElement(MantineProvider, null, createElement(EquilibriumOrRateBasedTool)));
@@ -275,5 +356,8 @@ describe("equilibrium-or-rate-based: the page", () => {
     expect(html).not.toContain("the engine is running");
     for (const s of EQ_RB_STEPS) expect(html).toContain(s.title.slice(0, 18));
     expect(html.toLowerCase()).toContain("the decision aid");
+    expect(html).toContain("the factor between HETP and H_OG, against lambda");
+    expect(html).toContain("Run the rate-based bed");
+    expect(html).not.toContain("1 run, 100 segments…");
   });
 });

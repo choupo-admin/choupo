@@ -168,6 +168,44 @@ export const EQ_RB_STEPS: readonly LessonStep[] = [
       + "from: a demonstration on this page, or a paper you can open.  Rows that could "
       + "not be traced to either were left out, and the design note lists them.",
   },
+  {
+    n: 6,
+    title: "Where HETP fails: it is not a property of the packing alone",
+    body: "A packed bed is often sized with one number, the height equivalent to a "
+      + "theoretical plate.  A catalogue lists it as if it belonged to the packing.  It "
+      + "does not.  For a binary with a straight equilibrium line and a straight "
+      + "operating line the relation below holds (Seader, Henley and Roper, Eqs. 7-80, "
+      + "7-86 and 7-87): the HETP is the height of a transfer unit, which the packing and "
+      + "the flows set, multiplied by a factor that depends only on lambda, the slope of "
+      + "the equilibrium line times the vapour flow over the liquid flow.  The factor is "
+      + "1 at lambda = 1 and moves away from it on either side, so the same packing at "
+      + "the same H_OG has a different HETP in a section where the flows differ, or for a "
+      + "mixture whose equilibrium line is steeper.  Second, lambda is not constant along "
+      + "a bed: the slope m of the equilibrium line changes with composition and "
+      + "temperature, so one HETP for the whole bed is an average that hides where the "
+      + "bed works.  The engine's rate-based bed shows it below, segment by segment.  "
+      + "Third, in a mixture of more than two components each component has its own "
+      + "slope and its own H_OG, so the relation, applied to one component at a time, "
+      + "gives each its own HETP: HETP_i = H_OG,i ln(lambda_i)/(lambda_i-1) with "
+      + "lambda_i = m_i V / L.  The engine's rate-based column is binary, so this last "
+      + "one is not run on the page; it is the binary relation read component by "
+      + "component, which the page assumes and does not derive.  The efficiencies that "
+      + "Taylor, Wilkinson and Kooijman computed for the stripper's components, above, "
+      + "differ in the same way.",
+    formula: String.raw`\begin{aligned} \mathrm{HETP} &= H_{OG}\,\frac{\ln\lambda}{\lambda - 1}, \qquad \lambda = \frac{m\,V}{L} \\ H_{OG} &= H_G + \lambda\,H_L \end{aligned}`,
+    where: [
+      { sym: "\\mathrm{HETP}", means: "height equivalent to a theoretical plate (the engine's relation: PackingDelft.cpp:131)", unit: "m" },
+      { sym: "H_{OG}", means: "height of an overall gas-phase transfer unit; the rate-based bed publishes it per segment (RateBasedSegment.cpp:886)", unit: "m" },
+      { sym: "H_G, H_L", means: "heights of a gas-film and of a liquid-film transfer unit (RateBasedSegment.cpp:887 and RateBasedSegment.cpp:888)", unit: "m" },
+      { sym: "\\lambda", means: "m V / L, the slope of the equilibrium line times the vapour flow over the liquid flow" },
+      { sym: "m", means: "local slope dy/dx of the equilibrium curve, per segment (RateBasedSegment.cpp:889)" },
+      { sym: "V, L", means: "vapour and liquid molar flows in a segment (RateBasedSegment.cpp:884 and RateBasedSegment.cpp:885)", unit: "kmol/s" },
+    ],
+    note: "The relation needs straight lines.  In a bed whose lambda changes, the page "
+      + "applies it segment by segment: the local HETP of the second panel is the page's "
+      + "construction, not a number the engine prints.  The engine's own HETP is the bed "
+      + "height over the Fenske stages.",
+  },
 ];
 
 /** A finding from a paper, drawn in a block marked as taken from a reference. */
@@ -407,6 +445,18 @@ export const EQ_RB_LIMITS: readonly LessonLimit[] = [
       + "review often cited for these recommendations, Taylor, Krishna and Kooijman, "
       + "Real-world modeling of distillation (Chem. Eng. Prog., July 2003), could not be "
       + "opened and is not used; reading it is the next step that could add rows.",
+  },
+  {
+    id: "hetp-local",
+    title: "The local HETP and the per-component HETP are the page's construction.",
+    body: "The relation HETP = H_OG ln(lambda)/(lambda-1) is exact for straight lines; "
+      + "the page applies it to each of the bed's 100 segments, where the lines are "
+      + "locally straight, and the engine prints no local HETP of its own.  The bed is "
+      + "one binary, p-xylene and o-xylene at total reflux, 0.10 bar, whose lambda stays "
+      + "within about 0.85 to 1.11, so how far lambda moves in a bed of another "
+      + "system is not shown.  The relation for the components of a mixture is the "
+      + "binary relation read one component at a time, and no engine run on this page "
+      + "checks it.",
   },
   {
     id: "browser",
