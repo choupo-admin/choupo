@@ -160,8 +160,15 @@ DOMAINS = [
      "the vapour fraction of a two-phase feed lies in [0, 1] (q = 1 - vf: the page's feed is partly vaporised, "
      "never a sub-cooled liquid, which is q > 1)", False),
     (M + "PonchonSavaritTool.tsx", "xD", 0.0, 1.0, "a distillate mole fraction lies in [0, 1]", False),
+    (M + "EquilibriumOrRateBasedTool.tsx", "e", None, None,
+     "log10(lambda), lambda = m V / L, a positive ratio with no physical bound: the relation HETP = "
+     "H_OG ln(lambda)/(lambda-1) holds for every lambda > 0 (Seader, Henley and Roper Eq. 7-87); the "
+     "slider spans 0.1 to 10, the page's own choice", False),
     (M + "OverpressureTool.tsx", "Kd", 0.0, 1.0, "a discharge coefficient lies in (0, 1]", False),
     (M + "OverpressureTool.tsx", "Kb", 0.0, 1.0, "a back-pressure correction factor lies in (0, 1]", False),
+    (M + "TransferUnitTool.tsx", "R", 0.0, 1.0, "a recovery (fraction of the solute absorbed) lies in [0, 1)", False),
+    (M + "TransferUnitTool.tsx", "A", 0.0, None, "an absorption factor L/(mG) is positive and has no upper bound by physics", False),
+    (M + "TransferUnitTool.tsx", "H", 0.0, None, "a height of a transfer unit is positive and has no upper bound by physics", False),
 ]
 
 

@@ -379,7 +379,9 @@ counter-current cascade.}
 \textit{\small Cases it runs:} \file{column11\_murphree} as shipped and with
 four declared numbers rewritten, and the three tray-efficiency witnesses
 \file{trayEfficiency01\_yanagi14}, \file{trayEfficiency05\_chanFair\_yanagi14}
-and \file{trayEfficiency06\_syedaChuang\_yanagi14} (all in
+and \file{trayEfficiency06\_syedaChuang\_yanagi14}, and, for the closing
+section on the HETP, the rate-based packed bed \file{ratebased01\_schulz\_0p10bar}
+run once without its F-factor sweep (all in
 \file{tutorials/steady/distillation/}).
 
 \subsubsection*{The question}
@@ -415,6 +417,30 @@ because the separation is easy.}  On a trace specification the efficiency acts
 once per tray and the error compounds; the uncertain number is the efficiency
 itself, which correlations for the same tray do not agree on.
 \end{pitfall}
+
+\subsubsection*{Where HETP fails}
+
+The last section of the page is about the one number a packed bed is usually
+sized with.  \emph{The HETP is not a property of the packing alone.}  For a
+binary with a straight equilibrium line and a straight operating line,
+$\mathrm{HETP} = H_{OG}\,\ln\lambda/(\lambda-1)$ with $\lambda = mV/L$
+(Seader, Henley and Roper, 4th ed., Eqs.~7-80, 7-86 and 7-87; the engine's own
+relation is \file{PackingDelft.cpp:131}).  A slider on $\lambda$ draws the
+factor between HETP and $H_{OG}$: it is one at $\lambda=1$ and moves away on
+either side, so the same packing has a different HETP where the flows or the
+equilibrium slope differ.  The book's Example~7.7 ($\lambda=0.76$, $H_{OG}=1.52$~ft,
+HETP $=1.74$~ft) is recomputed on the page.  The second panel runs the
+rate-based bed once and reads the segment profile the engine publishes
+($m$, $V$, $L$, $H_{OG}$ in each of 100 segments): $\lambda$ goes from about
+0.85 at the bottom to about 1.11 at the top, so it crosses one inside the bed;
+$H_{OG}$ rises along the bed while the local HETP computed from the relation
+falls, by about a tenth of its mean, so one HETP for the whole bed is an average
+over a bed that works differently at its ends.  The local HETP is the page's
+construction on the engine's numbers; the engine prints none.  Third, for a
+mixture of more than two components the relation read one component at a time
+gives each component its own $\lambda_i = m_iV/L$ and its own HETP, so no single
+HETP exists; the engine's rate-based column is binary, so this is stated and not
+run.  The page asks for a guess before it shows the bed.  It has no quiz.
 
 \subsubsection*{What the page takes from references}
 
@@ -452,7 +478,7 @@ reason to choose a rate-based model.
 \subsubsection*{What this tool does not carry}
 
 No rate-based model of a tray, a feed or three or more components; no
-component efficiencies that differ; demonstration~1
+component efficiencies that differ, and no run of the per-component HETP; demonstration~1
 is a near-ideal binary on constant molar overflow, with the trace column's
 numbers and the targets chosen by the page.  The measured tray efficiencies are
 the tree's transcription, not re-read for the page.  A review often cited for
@@ -567,6 +593,81 @@ counter-current cascade and the absorption factor}; the reason the engine
 does not use the closed form, and the temperature bulge that makes the
 isothermal shortcut optimistic, are in \emph{Why the energy balance
 matters}.}
+
+% ---------------------------------------------------------------------
+\subsection{Why the transfer unit was invented: $Z = H_{OG}N_{OG}$}\label{sec:edu-transfer-unit}
+
+\declaredanchor{sec:packed-bed}
+
+\noindent\textit{\small Tool:} \code{tool=transfer-unit}.  \textit{\small
+Case it starts from:} \code{steady/distillation/ratebased01\_schulz\_0p10bar},
+run in the browser by a button on the page, whose published $H_{OG}$, $m$, $V$,
+$L$ profile and KPIs are read; steps 1 to 4 are the page's own arithmetic and
+run no engine.
+
+\subsubsection*{The question}
+
+\emph{My packed tower is too tall or too short.  How much of its height is the
+fault of the separation and how much of the packing, and how does that connect
+to the stages I counted on the McCabe--Thiele diagram?}
+
+\subsubsection*{Where the derivation lives}
+
+\derivation{Theory Guide, \emph{Packed beds at total reflux}
+(\theorydest{sec:packed-bed}): the transfer-unit equation
+$\mathrm{d}y/\mathrm{d}z = (y^*-y)/H_{OG}$, $H_{OG} = H_G + \lambda H_L$ and
+$\mathrm{HETP} = H_{OG}\ln\lambda/(\lambda-1)$.  The page derives the last of
+these from Colburn's equation and the Kremser count, for two straight lines.}
+
+The page has two halves and says which one you are in.  In the \textbf{page}
+half the height of a dilute absorber with straight lines is written as
+$Z = H_{OG}N_{OG}$: the number of transfer units
+\[
+N_{OG} = \frac{\ln\!\left[(1-1/A)\,y_{\mathrm{in}}/y_{\mathrm{out}} + 1/A\right]}{1-1/A},
+\qquad A = \frac{L}{mG},
+\]
+(Colburn's equation, Treybal Eq.~8.50) depends on the recovery and on $A$ only,
+and the height of a unit $H_{OG} = G/(K_y a)$ on the packing and the flows.
+Three sliders (the recovery, $A$, and $H_{OG}$) move the two halves
+independently, and $N_{OG}$ is drawn against $A$ at the chosen recovery.  In the
+\textbf{engine} half a button runs the shipped rate-based bed, and the page
+takes two sums on what it published: $N_{OG} = \sum \Delta z/H_{OG,k}$ over the
+segments, and the HETP that $H_{OG}$ and $\lambda = mV/L$ give segment by
+segment, beside the KPIs \code{HETP} and \code{theoreticalStages\_bed}.
+
+\subsubsection*{What the engine says}
+
+The segment profile carries the \code{HOG} column
+(\code{RateBasedSegment.cpp}:886) with $\lambda = m v/l$
+(\code{RateBasedSegment.cpp}:456), and the packing models write the HETP
+relation (\code{PackingRBF.cpp}:138--139, \code{PackingDelft.cpp}:131--132).
+The page's test holds the closed form to a numerical integral of
+$\mathrm{d}y/(y-y^*)$, and the HETP relation to the Kremser count.  The
+statement that $G/(F_G a)$ is much more constant than $G$ or $F_G a$ is
+Treybal's, after his Eq.~8.25; the paper that introduced the split is
+Chilton and Colburn, Ind.\ Eng.\ Chem.\ \textbf{27} (1935) 255--260, which is
+cited and not quoted.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+Set the recovery to 0.99 and lower $A$ from 3 to 1: $N_{OG}$ rises to 99 and
+is finite at $A = 1$.  Go on below 1: the number goes to infinity at $A = R$,
+the liquid rate at which the leaving liquid would be in equilibrium with the
+entering gas.  Then move $H_{OG}$ and watch only the height move.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That the pole is at $A = 1$.}  It is at $A = R$.  And that HETP equals
+$H_{OG}$: they are equal only at $\lambda = 1$; above it the HETP is the
+smaller.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+Straight lines, dilute solute, constant flows; a distillation at total reflux
+is the only engine case, so there is no packed absorber to compare with, and no
+curve of $H_{OG}$ against flow.  Plug flow: no axial mixing or maldistribution.
 
 % ---------------------------------------------------------------------
 \subsection{One flux, many units: film coefficients, Henry's law and reaction in the film}\label{sec:edu-one-flux-many-units}

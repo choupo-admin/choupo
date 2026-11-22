@@ -53,6 +53,15 @@ License
      over the F-factor; the page reads the sweep CSV the engine writes and
      draws it beside the measured points the tree already carries.
 
+  3. Where HETP fails (added 2026-11-22, C395).  The relation
+     HETP = H_OG ln(lambda)/(lambda - 1) (Seader, Henley & Roper, 4th ed.,
+     Eq. 7-87) is drawn as a function of lambda alone; and the engine's
+     rate-based packed bed `ratebased01_schulz_0p10bar` is run ONCE, without
+     its F-factor sweep, and the page reads the bed's own segment profile
+     (m, V, L, H_OG per segment) to draw the LOCAL lambda and the local
+     HETP the relation gives.  The local HETP is the page's construction
+     (assumption), not a quantity the engine prints.
+
   The page subtracts nothing and solves nothing: it reads the toluene mole
   fraction of the distillate stream the engine publishes, divides two of
   them, and picks the smallest stage count on the grid that meets a
@@ -60,6 +69,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { RunResult } from "../adapters/SolverAdapter.js";
+import { filesToCaseFiles, tutorialByName } from "../cases/tutorials.js";
+import type { CaseFiles } from "./types.js";
 import type { DictOverride } from "./methodRun.js";
 
 // ---- Demonstration 1: the efficiency against a trace specification ---------
@@ -214,3 +225,59 @@ export const YANAGI_14_34KPA: readonly MeasuredPoint[] = [
 /** The F-factor of the page's comparison row: a point of every sweep's grid,
  *  next to the tabulated run 628 (1.472). */
 export const COMPARE_FS = 1.5;
+
+// ---- Where HETP fails: lambda, and the bed's own profile ------------------
+
+/** HETP / H_OG for a straight equilibrium line and a straight operating
+ *  line, lambda = m V / L: Seader, Henley & Roper (2016) Eq. 7-87.  One at
+ *  lambda = 1, where the limit is taken exactly as the engine does
+ *  (PackingDelft.cpp:131). */
+export function hetpOverHog(lambda: number): number {
+  if (!(lambda > 0) || !Number.isFinite(lambda)) return NaN;
+  return Math.abs(lambda - 1.0) < 1.0e-9 ? 1.0 : Math.log(lambda) / (lambda - 1.0);
+}
+
+/** The rate-based packed bed the page runs, once. */
+export const HETP_BED_WITNESS = "steady/distillation/ratebased01_schulz_0p10bar";
+
+/** The witness's files WITHOUT its `outerDict`: the case's own F-factor
+ *  sweep publishes no segment profile, and the declared single point
+ *  (fFactor 1.5) does. */
+export function bedSingleRunCase(): CaseFiles {
+  const entry = tutorialByName(HETP_BED_WITNESS);
+  if (!entry?.files.rawFiles)
+    throw new Error(`witness '${HETP_BED_WITNESS}' is not in the bundled corpus`);
+  const raw: { [rel: string]: string } = { ...entry.files.rawFiles };
+  delete raw["system/outerDict"];
+  return filesToCaseFiles(HETP_BED_WITNESS, raw);
+}
+
+export interface BedProfile {
+  z: number[]; m: number[]; vOverL: number[]; hog: number[];
+  /** lambda = m V / L per segment. */
+  lambda: number[];
+  /** H_OG ln(lambda)/(lambda - 1) per segment: the page's local HETP. */
+  hetpLocal: number[];
+  /** The bed's own HETP, the KPI `column.HETP` (bed height over the Fenske
+   *  stages), or null when the run does not carry it. */
+  hetpBed: number | null;
+}
+
+/** Read the segment profile by column NAME; null when a column is absent. */
+export function readBedProfile(r: RunResult | null | undefined): BedProfile | null {
+  const prof = r?.profiles?.find((p) => p.unit === "column");
+  const c = prof?.columns;
+  if (!c) return null;
+  const z = c["z"], m = c["m"], V = c["V"], L = c["L"], H = c["HOG"];
+  if (!z || !m || !V || !L || !H) return null;
+  const n = z.length;
+  if (n === 0 || [m, V, L, H].some((a) => a.length !== n)) return null;
+  const lambda = m.map((mk, k) => (mk * V[k]!) / L[k]!);
+  const hetpLocal = lambda.map((l, k) => H[k]! * hetpOverHog(l));
+  if (![...lambda, ...hetpLocal].every(Number.isFinite)) return null;
+  const hb = r?.kpis?.["column"]?.["HETP"];
+  return {
+    z: [...z], m: [...m], vOverL: V.map((v, k) => v / L[k]!), hog: [...H],
+    lambda, hetpLocal, hetpBed: typeof hb === "number" && Number.isFinite(hb) ? hb : null,
+  };
+}

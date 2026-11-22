@@ -1961,6 +1961,29 @@
         }
       ]
     },
+    "transfer-unit": {
+      "references": [
+        {
+          "text": "Chilton, T. H.; Colburn, A. P. (1935). Distillation and Absorption in Packed Columns: A Convenient Design and Correlation Method. Ind. Eng. Chem. 27(3), 255–260.",
+          "doi": "10.1021/ie50303a004",
+          "note": "Where the height of a transfer unit was introduced; the paper itself is not on file, so no equation of it is quoted.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works?query.bibliographic=Chilton+Colburn+1935: authors, title, container, volume, pages and year matched (C222, 2026-11-22); also listed as a reference of Treybal 3rd ed., 'Ind. Eng. Chem., 27, 255 (1935)'",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Treybal, R. E. (1980). Mass-Transfer Operations, 3rd ed. McGraw-Hill. ISBN 0-07-065176-0.",
+          "note": "Eq. (8.24)-(8.25) and the sentence on H_tG being more constant than G or F_G a; Eq. (8.37) H_tOG; Eq. (8.50) N_tOG for a dilute absorber.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/Books/treybal-mass-transfer-operations-3ed.pdf read at Eqs. 8.24, 8.25, 8.37 and 8.50 (C222, 2026-11-22); Open Library ISBN 9780070651760 matched the title, edition, publisher and year (C259 separations/heat/control audit)",
+            "date": "2026-11-22"
+          }
+        }
+      ]
+    },
     "campaign-plan": {
       "references": [
         {
@@ -3150,6 +3173,15 @@
             "method": "crossref",
             "evidence": "api.crossref.org/works/10.1021/ie50187a044: author Murphree, title, container, volume 17, issue 7, pages 747-750, year 1925 matched (equilibrium-or-rate-based commission)",
             "date": "2026-11-13"
+          }
+        },
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2016). Separation Process Principles with Applications Using Process Simulators, 4th ed. Wiley.",
+          "note": "Section 7.6, Rate-Based Method for Packed Distillation Columns, printed p. 217: lambda = mV/L (Eq. 7-80), the local slope m = dy/dx (7-81), H_OG = H_G + lambda H_L (7-86) and HETP = H_OG ln(lambda)/(lambda - 1) (7-87), with Example 7.7 (lambda = 0.76, H_OG = 1.52 ft, HETP = 1.74 ft).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/seader-separation-process-principles-4ed.pdf: authors, title, edition, publisher and year read from the title and copyright pages; Eqs. 7-80 to 7-87 and Example 7.7 read in the text layer on PDF p. 241 (printed page = PDF page - 24); Example 7.7's first row recomputed: ln(0.76)/(0.76 - 1) x 1.52 = 1.74 (C395, where HETP fails)",
+            "date": "2026-11-22"
           }
         }
       ]

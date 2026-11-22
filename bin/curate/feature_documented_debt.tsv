@@ -3,7 +3,6 @@ ActivityModel	cosmoSAC	guide
 AqueousVolumetric	diluteVolume	guide
 AqueousVolumetric	standardStateVolumes	guide
 Atomizer	pressureNozzle	catalogue
-BatchUnitOperation	batchAdsorber	guide+catalogue
 BatchUnitOperation	fixedBedAdsorber	guide
 BedWallHeatTransfer	LiFinlayson	guide
 ConstantEstimator	RiaziDaubert	guide

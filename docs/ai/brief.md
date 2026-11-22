@@ -1,6 +1,6 @@
 # Choupo assistant brief — read this first, all of it
 
-budget: 3350 words (~5360 tokens)
+budget: 3500 words (~5600 tokens)
 
 You are helping a student design a chemical process and write it as a
 **Choupo case** that opens in the browser at https://choupo.org/app and runs.
@@ -183,7 +183,7 @@ Decision rule (write the reason in `DESIGN.md`):
 | polar / non-ideal liquid, low P | `gammaPhi` + `NRTL` if the pair is in the catalogue, else `UNIFAC` |
 | gases, high P, light hydrocarbons, H2/N2/CO2 | `phiPhi` + `SRK` or `PengRobinson` |
 | two liquid phases (extraction) | `gammaGamma` → pack *separations* |
-| salts in water | `electrolyteGammaPhi` (no pack yet: read the cases under `tutorials/props/electrolyte/` and `tutorials/steady/crystallisation/`) |
+| salts in water | `electrolyteGammaPhi` → pack *electrolytes* |
 
 Ideal (Raoult):
 
@@ -334,7 +334,9 @@ pressures unless stated.
   outputs (strippedLiquid richGas).  Pack *separations*.
 * Membranes (`spiralWoundModule`, `pressureExchanger`), electrodialysis,
   evaporators, crystallisers, dryers, cyclones, pipes, storage tanks,
-  adsorption, ion exchange — their packs are not yet written (§9).
+  adsorption, ion exchange — membranes: pack *membranes*; evaporators, crystallisers,
+  dryers, cyclones: packs *heat* and *solids*; pipes and tanks: pack *pressure* and
+  *transient*; adsorption and ion exchange: no pack yet (read the tutorial cases, §9).
   Solid-dose placeholders (blender, press, packaging line) are `mixer` /
   `splitter` units: pack `batch-plant`.
 
@@ -378,15 +380,17 @@ Each pack: keys, degrees of freedom, refusals and one minimal example.
 | `docs/ai/packs/properties.md` | a component or binary pair the catalogue lacks: lookup, labelled estimate, a fit from the student's measured data, the held-out verdict, the phase-split warning |
 | `docs/ai/packs/layout.md` | plot plan (rack, roads, fence, zones), the GMP building: rooms, grades, airlocks, flows |
 | `docs/ai/packs/design-cost.md` | equipment sizing, costing, economics (CAPEX, OPEX, NPV, IRR, sensitivity) |
+| `docs/ai/packs/heat.md` | heaters, exchangers (rating, geometry, Bell-Delaware), boilers and condensers, utilities, pinch targets |
+| `docs/ai/packs/electrolytes.md` | salts in water: Pitzer and eNRTL packages, evaporation of brines, speciation and precipitation, scaling |
+| `docs/ai/packs/membranes.md` | NF/RO modules and plants of stages, transport laws, energy recovery, electrodialysis |
+| `docs/ai/packs/solids.md` | cyclones and filters, size grid and milling, slurry separation, drying, crystallisation |
+| `docs/ai/packs/drivers.md` | `system/outerDict`: sweep, grid sweep, design spec, optimisation, Pareto front |
+| `docs/ai/packs/transient.md` | batch vessels and recipes, start-up and disturbance, controllers (`choupoBatch`, `choupoSemiContinuous`, `choupoCtrl`) |
+| `docs/ai/packs/props.md` | `choupoProps`: evaluate, scan and verify properties and diagrams without a flowsheet |
 
 The same files are served at `https://www.choupo.org/llm/packs/<name>.md`
 (this brief: `https://www.choupo.org/llm/brief.md`; index:
 `https://www.choupo.org/llms.txt`).
-
-NOT YET WRITTEN (say so in `DESIGN.md` if the design needs one, and read
-the tutorial cases of that family instead): heat (exchangers, utilities,
-pinch), electrolytes, membranes, solids, drivers (sweeps, optimisation,
-design specs), transient simulation.
 
 Reference lookups (do not read end to end): `data/standards/components/`
 (names); each unit's accepted keys are in its source file (see SOURCES).
