@@ -1908,8 +1908,8 @@
     },
     "check_batch_dense_output": {
       "exit": 0,
-      "claim": "check_batch_dense_output: OK -- free stepping: 30 accepted steps for 1201 write points against 1208 with the step cut at each; rows equal the cut run's to 7.4e-08 relative in T (tol 1e-5) and 3.3e-05 of the total moles (tol 5e-4); 100 directories by default, 12 at interval 100 x writeInterval, trajectory.csv keeps 1201 rows",
-      "seconds": 0.4
+      "claim": "check_batch_dense_output: OK -- free stepping: 30 accepted steps for 1201 write points against 1208 with the step cut at each; rows equal the cut run's to 7.4e-08 relative in T (tol 1e-5) and 1.1e-06 of the total moles (tol 5e-4); default tolerances: ignition delay within 0.0e+00 s and T(41 us) within 1.4e-03 of a tight reference; interpolated rows keep the atoms to 1.2e-09; fixed-bed and untilCSS directories restartable; 100 directories by default, 12 at interval 100 x writeInterval, trajectory.csv keeps 1201 rows",
+      "seconds": 26.0
     }
   }
 }

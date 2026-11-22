@@ -18,13 +18,27 @@ batch06_adaptive_runaway on a 0.5 s write grid: one batchReactor, 1201 write poi
       one quarter of the write points.  The old code gave exactly one step per write
       point or more.
   (b) THE ROWS ARE RIGHT.  Every trajectory.csv row equals the row of the same case with
-      `deltaTmax` declared at writeInterval (the step cut at each write point: the old
-      behaviour, still available by declaration), T to 1e-5
-      relative, every species to 5e-4 of the total moles.
+      `deltaTmax` declared at writeInterval (the step cut at each write point, the old
+      behaviour; batch06 runs at rtol 1e-6), T to 1e-5 relative, every species to
+      5e-4 of the total moles.
   (c) THE DIRECTORIES HAVE THEIR OWN CADENCE.  The default writes at most 101 `<t>/`
       (1201 write points is the case the cadence is for), trajectory.csv keeps all 1201
       rows, `solutionControl { interval 50; }` (100 write intervals) writes 12, and an
       interval that is not a whole multiple of writeInterval is refused by name.
+
+  (d) THE DEFAULT TOLERANCE WATCHES THE RADICALS.  ignition02 made adaptive at the
+      case's DEFAULT rtol/atol, against a tight reference (rtol 1e-11, atol 1e-20): the
+      ignition delay agrees to one write interval and T at 41 us to 1 %.  The defect:
+      a uniform atol of 1e-9 kmol on a 2.5e-5 kmol vessel left ppm radicals out of the
+      error test (T(41 us) 2418 K against a truth of 1280 K at commit 516fd3c55d).
+  (e) THE INTERPOLATED ROWS CONSERVE THE ELEMENTS.  The same case at rtol 1e-3 (big
+      steps, so most rows are interpolated): the H, O and N atoms of every row equal
+      those of row 0 to 1e-7 relative.  The defect: a log-space interpolant on the
+      species rows broke the atom balance by 7e-5 inside a step.
+  (f) THE DIRECTORIES STAY RESTARTABLE.  batch20 (a fixed bed that writes
+      <t>/<bed>.profile) writes a profile only into a directory the cadence gives, and
+      every directory holds internalStates/; batch24_tsa_until_css writes a directory at
+      the instant `repeat untilCSS` stops.
 
 NOT CHECKED: the order of the interpolant (Theory Guide sec:batch-dense-output), a vessel
 other than batchReactor (those keep the write grid as the step boundary and are covered by
@@ -67,6 +81,13 @@ def run_variant(batch, deltaTmax, solution=""):
         ndirs = len([d for d in Path(c).iterdir()
                      if d.is_dir() and re.fullmatch(r"[0-9.eE+-]+", d.name) and d.name != "0"])
         return rc, out, rows, ndirs
+
+
+def clean(c):
+    """Remove the time directories an earlier run left in the scratch copy."""
+    for d in Path(c).iterdir():
+        if d.is_dir() and re.fullmatch(r"[0-9.eE+-]+", d.name) and d.name != "0":
+            shutil.rmtree(d)
 
 
 def steps_in(out):
@@ -131,10 +152,89 @@ def main():
     if rcB == 0 or "whole multiple of writeInterval" not in outB:
         failures.append("(c) an interval that is not a whole multiple of writeInterval was not refused by name")
 
+    # (d), (e): ignition02 made adaptive
+    def ign(extra):
+        with gatekit.probe_copy("tutorials/batch/combustion/ignition02_h2air_slack", strip=STRIP) as c:
+            clean(c)
+            cd = Path(c) / "system/controlDict"
+            cd.write_text(cd.read_text() + "\ntimeStepping adaptive;\n" + extra
+                          + "\nsolutionControl { write false; }\n")
+            rc_, out_ = gatekit.run(batch, c, inside=True)
+            p = Path(c) / "trajectory.csv"
+            return rc_, out_, (list(csv.reader(open(p))) if p.exists() else [])
+
+    rcR, outR, rowsR = ign("rtol 1e-11; atol 1e-20; deltaT0 1e-9;")
+    rcD, outD, rowsD = ign("")
+    rcL, outL, rowsL = ign("rtol 1e-3;")
+    tauR = tauD = float("nan")
+    dTau = dT41 = clos = float("nan")
+    if rcR or rcD or rcL or len(rowsR) != len(rowsD):
+        failures.append(f"(d) ignition02 probes did not run (exit {rcR}/{rcD}/{rcL})")
+    else:
+        def tau(out):
+            m = re.search(r"tau_ign \(max dT/dt\) = ([0-9.e+-]+) s", out)
+            return float(m.group(1)) if m else float("nan")
+        tauR, tauD = tau(outR), tau(outD)
+        hd = rowsR[0]
+        tc = [i for i, h in enumerate(hd) if h.endswith(".T")][0]
+        dT41 = abs(float(rowsD[42][tc]) - float(rowsR[42][tc])) / float(rowsR[42][tc])
+        dTau = abs(tauD - tauR)
+        if not dTau <= 1.0e-6 + 1e-12:
+            failures.append(f"(d) at default tolerances the ignition delay is {tauD:.4e} s against {tauR:.4e} s of the "
+                            "tight reference (> one write interval)")
+        if not dT41 <= 1.0e-2:
+            failures.append(f"(d) at default tolerances T(41 us) differs from the tight reference by {dT41:.2e} "
+                            "relative (> 1e-2): the species rows' atol does not watch the radicals")
+        # (e) atoms per species column: H2 O2 H O OH HO2 H2O2 water N2
+        atoms = {"H2": (2, 0, 0), "O2": (0, 2, 0), "H": (1, 0, 0), "O": (0, 1, 0), "OH": (1, 1, 0),
+                 "HO2": (1, 2, 0), "H2O2": (2, 2, 0), "water": (2, 1, 0), "N2": (0, 0, 2)}
+        cols = {}
+        for i, h in enumerate(rowsL[0]):
+            if ".n_" in h:
+                nm = h.split(".n_", 1)[1]
+                if nm not in atoms:
+                    failures.append(f"(e) species column {h} has no atom row in the gate: the arm cannot judge it")
+                cols[i] = atoms.get(nm, (0, 0, 0))
+        def inv(row):
+            return [sum(float(row[i]) * a[k] for i, a in cols.items()) for k in range(3)]
+        base = inv(rowsL[1])
+        clos = 0.0
+        for row in rowsL[2:]:
+            v = inv(row)
+            for k in range(3):
+                if base[k] > 0:
+                    clos = max(clos, abs(v[k] - base[k]) / base[k])
+        if clos > 1.0e-7:
+            failures.append(f"(e) an atom balance of an interpolated row is off by {clos:.2e} relative (> 1e-7)")
+        if steps_in(outL) * 2 > len(rowsL) - 1:
+            failures.append("(e) the rtol 1e-3 probe took a step per write point: its rows are not interpolated")
+
+    # (f) restartable directories
+    def beds(case, edit_wi=None):
+        with gatekit.probe_copy(case, strip=STRIP) as c:
+            clean(c)
+            rc_, out_ = gatekit.run(batch, c, inside=True)
+            dirs = sorted((d for d in Path(c).iterdir()
+                           if d.is_dir() and re.fullmatch(r"[0-9.eE+-]+", d.name) and d.name != "0"),
+                          key=lambda d: float(d.name))
+            bad = [d.name for d in dirs if not (d / "internalStates").is_dir()]
+            last = float(list(csv.reader(open(Path(c) / "trajectory.csv")))[-1][0]) if (Path(c) / "trajectory.csv").exists() else -1
+            return rc_, bad, (float(dirs[-1].name) if dirs else -1), last, len(dirs)
+    rc20, bad20, _, _, n20 = beds("tutorials/batch/adsorber/batch20_thermal_breakthrough")
+    if rc20 or bad20 or n20 == 0:
+        failures.append(f"(f) batch20: exit {rc20}, {len(bad20)} of {n20} directories lack internalStates/ "
+                        f"(e.g. {bad20[:3]}): a fixed-bed profile was written into a directory the cadence skipped")
+    rc24, bad24, lastDir, lastT, n24 = beds("tutorials/batch/adsorber/batch24_tsa_until_css")
+    if rc24 or bad24 or abs(lastDir - lastT) > 1e-6 * max(1.0, lastT):
+        failures.append(f"(f) batch24_tsa_until_css: the last directory is t = {lastDir:g} but the run stopped at "
+                        f"t = {lastT:g} (exit {rc24})")
+
     return gatekit.verdict(
         "check_batch_dense_output", failures,
         f"free stepping: {nF} accepted steps for {nWrite} write points against {nC} with the step cut at each; "
         f"rows equal the cut run's to {wT:.1e} relative in T (tol 1e-5) and {wN:.1e} of the total moles (tol 5e-4); "
+        f"default tolerances: ignition delay within {dTau:.1e} s and T(41 us) within {dT41:.1e} of a tight reference; "
+        f"interpolated rows keep the atoms to {clos:.1e}; fixed-bed and untilCSS directories restartable; "
         f"{dirsF} directories by default, 12 at interval 100 x writeInterval, trajectory.csv keeps {nWrite} rows",
     )
 

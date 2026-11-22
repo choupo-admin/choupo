@@ -81,9 +81,17 @@ exactly as it did in `CLAUDE.md`.
   consumed stream with no file, a file naming no stream, an interior for a
   unit that reads none each REFUSE by name; the retired `0/internalState` +
   `0/streamFaces` REFUSE naming the one-shot migrator
-  (`bin/curate/migrate_state_layout.py`) -- NO dual reader.  Every
-  `writeInterval` a `<t>/` with the same layout is written, as OpenFOAM does
-  (`solutionControl { write false; }` opts out); renamed `0/` it restarts
+  (`bin/curate/migrate_state_layout.py`) -- NO dual reader.  A
+  `<t>/` with the same layout is written at the DECLARED cadence
+  (`solutionControl { interval T; }`, choupoBatch, a whole multiple of
+  `writeInterval`) or, by default, at every write point while the run has at
+  most 100 of them and otherwise at the coarsest whole multiple of
+  `writeInterval` that keeps 100 (C471, 2026-11-22: the trajectory is the
+  probe and is written at EVERY write point; a directory is a whole state and
+  is not), the last instant always among them, as OpenFOAM does
+  (`solutionControl { write false; }` opts out; choupoCtrl and
+  choupoSemiContinuous still write every `writeInterval` and refuse
+  `interval`); renamed `0/` it restarts
   the case from t -- EXCEPT for a vessel whose state is more than its holdup
   (a crystal population, an adsorbed loading, a bed profile, the Williams-Otto
   objective integrals), which writes `notRestored "<what>";` and whose

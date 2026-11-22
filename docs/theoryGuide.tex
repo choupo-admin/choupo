@@ -38953,18 +38953,27 @@ $\mathcal{O}(h^4)$ per step, one order above the local error of
 Rosenbrock23 ($\mathcal{O}(h^3)$), so the interpolated rows carry no more
 error than the step that contains them.  The slopes $f(\Yv_n)$ and
 $f(\Yv_{n+1})$ are two extra right-hand sides, evaluated only in a step
-that contains a write point, the second being the first of the next.  A
-species amount runs over decades inside an ignition step and a cubic in
-$n$ cannot follow an exponential, so a species row whose two ends are
-positive is interpolated by Equation~\eqref{eq:dense-output-hermite}
-applied to $\ln n$ (end values $\ln n_n$, $\ln n_{n+1}$ and slopes
-$f/n$), which is exact for exponential growth and positive by
-construction; a row with an end at zero uses the cubic in $n$, and if
-that would go below zero the straight line between the ends, so an
-interpolated state is never a negative amount.  The temperature row is
-always the cubic in $T$.  The vessel is put in the
+that contains a write point, the second being the first of the next.  The
+interpolant is applied to the whole packed vector, so every linear invariant
+of the network (each element's atoms: $\mathbf{a}\cdot f = 0$ at both ends)
+is carried exactly by every interpolated row.  If any species amount of the
+vessel would come out negative, the whole vector takes the straight line
+between the step's ends instead, which is positive and, a convex
+combination of two states with the same atoms, conserves them too.  The vessel is put in the
 interpolated state, \code{trajectory.csv} takes its row, and the accepted
 state is restored before the integration goes on.
+
+\paragraph{The absolute tolerance of the species rows.}  The error test
+weighs each row by $\mathrm{atol}_i + \mathrm{rtol}\,|Y_i|$.  A uniform
+$\mathrm{atol} = 10^{-9}$\,kmol is $4\times10^{-5}$ in mole fraction on a
+$2.5\times10^{-5}$\,kmol vessel, so the radicals of an ignition (ppm) are
+not error-controlled, and an adaptive run fires early (ignition02: the
+vessel at 41\,$\mu$s was at 2418\,K against a truth of 1280\,K).  When the
+case declares no \code{atol}, a \code{batchReactor}'s species rows therefore
+get $10^{-12}$ of that vessel's initial total kmol (printed in the run), and
+the temperature row keeps $10^{-9}$\,K; a declared \code{atol} stays one
+value for every row, and is announced when it is above $10^{-9}$ of the
+inventory.
 
 \paragraph{The cadence of \code{<t>/}.}  \code{trajectory.csv} keeps
 every write point, one cheap row each: it is the probe.  A \code{<t>/}
@@ -38976,7 +38985,11 @@ directories therefore have a cadence of their own:
 run has at most 100 of them (a state a student wants to restart from is
 rarely finer than one in a hundred), otherwise the coarsest whole multiple
 of \code{writeInterval} that keeps the run at 100 directories or fewer.
-\code{endTime} is always written.
+\code{endTime} (or the stop of \code{repeat untilCSS}) is always written.  The
+default applies to every \code{choupoBatch} run, so a shipped case with more
+than 100 write points writes fewer directories than it did.  A \code{<t>/}
+taken inside a free-stepped run is the interpolated state, so a restart from
+it matches the original run within the interpolation error.
 
 \subsection{The Jacobian, and two correctness traps}
 

@@ -344,6 +344,7 @@ try
     const bool adaptive = (timeStepping == "adaptive");
     solver::AdaptiveSettings adaptSet;
     bool deltaTmaxDeclared = false;
+    bool atolDeclared      = false;
     //  The per-interval runaway guard (C178): one reader, which also refuses
     //  it on a fixed-step run.
     adaptSet.maxSteps = solver::readMaxSteps(controlDict, adaptive);
@@ -354,6 +355,7 @@ try
         DictPtr ts = controlDict->found("timeSteppingControl")
             ? controlDict->subDict("timeSteppingControl") : controlDict;
         adaptSet.rtol      = ts->lookupScalarOrDefault("rtol",      1.0e-6);
+        atolDeclared       = ts->found("atol");
         adaptSet.atol      = ts->lookupScalarOrDefault("atol",      1.0e-9);
         adaptSet.deltaT0   = ts->lookupScalarOrDefault("deltaT0",   deltaT);
         //  deltaTmax: declared => a hard cap on the step.  Absent => the
@@ -410,10 +412,13 @@ try
     //  cadence: every dirEvery-th write point.  Declared as
     //  `solutionControl { interval T; }` (a whole multiple of writeInterval,
     //  refused otherwise); absent => every write point while the run has at
-    //  most kMaxDefaultDirs of them (every shipped case but a few), and
-    //  otherwise the coarsest whole multiple of writeInterval that keeps the
-    //  count at kMaxDefaultDirs or below.  The last instant (endTime) is always
-    //  written, and a restart from any `<t>/` is unchanged.
+    //  most kMaxDefaultDirs of them, and otherwise the coarsest whole
+    //  multiple of writeInterval that keeps the count at kMaxDefaultDirs or
+    //  below (this default applies to EVERY choupoBatch run: 20 shipped cases
+    //  write fewer directories than before).  The last instant (endTime, or
+    //  the stop of `repeat untilCSS`) is always written, and a restart from any
+    //  `<t>/` is unchanged -- on a free-stepped run, within the interpolation
+    //  error of the state it was taken from.
     constexpr std::size_t kMaxDefaultDirs = 100;
     std::size_t dirEvery = 1;
     {
@@ -808,6 +813,28 @@ if (flowsheetDict->found("cycle"))
     bool panelExtrasLabelled = false;
 
     std::size_t snapshotCount = 0;     // the t = start snapshot is #0
+    //  Is the snapshot about to be written at t one that gets a <t>/ ?  One
+    //  predicate, asked BEFORE the units' noteTimeAdvanced (the fixed bed's
+    //  axial profile is a file of that directory and follows the same flag)
+    //  and again by writeSnapshot, so the two can never disagree.  `cssStopped`
+    //  is declared with the cycle bookkeeping below, hence the pointer-free
+    //  forward use through a reference to the flag.
+    bool cssStopped_ = false;
+    auto dirDueNow = [&](scalar t) -> bool
+    {
+        return (snapshotCount % dirEvery == 0) || t >= endTime - 1.0e-12
+               || cssStopped_;
+    };
+    //  Every unit's clock note, told first whether this instant gets a <t>/.
+    auto noteAdvanced = [&](scalar t)
+    {
+        const bool due = dirDueNow(t);
+        for (auto& unit : units)
+        {
+            unit->setDirectoryDue(due);
+            unit->noteTimeAdvanced(t);
+        }
+    };
     auto writeSnapshot = [&](scalar t)
     {
         for (std::size_t u = 0; u < units.size(); ++u)
@@ -877,8 +904,8 @@ if (flowsheetDict->found("cycle"))
         // transient snapshots are t > 0 only (50/ 100/ ...).
         //  A directory at every dirEvery-th write point (and always at the
         //  last instant); trajectory.csv above has already taken this one.
-        const std::size_t snapIdx = snapshotCount++;
-        const bool dirDue = (snapIdx % dirEvery == 0) || t >= endTime - 1.0e-12;
+        const bool dirDue = dirDueNow(t);
+        ++snapshotCount;
         if (solWriter && dirDue && std::abs(t) > 1.0e-9)
         {
             std::vector<InternalStateIO::Holdup> holdups;
@@ -1310,7 +1337,7 @@ if (flowsheetDict->found("cycle"))
     // initial events, so a t=0 recipe charge lands on an already-open
     // (empty) segment boundary instead of an unstamped one.
     for (auto& unit : units) unit->setRunWindow(startTime, endTime);
-    for (auto& unit : units) unit->noteTimeAdvanced(startTime);
+    noteAdvanced(startTime);
 
     // ---- A6: per-cycle state snapshots + the CSS verdict ------------------
     //  Captured at each declared cycle boundary, from the unit's OWN
@@ -1384,6 +1411,7 @@ if (flowsheetDict->found("cycle"))
                 if (rel >= 0.0 && rel <= cssTolerance)
                 {
                     cssStopped = true;
+                    cssStopped_ = true;
                     cssStoppedAtCycle = cycleSnaps.size();
                     if (verbosity >= 1)
                         std::cout << "[cycle] CSS reached after "
@@ -1469,7 +1497,7 @@ if (flowsheetDict->found("cycle"))
             for (auto& unit : units) unit->step(t, dt);
             t += dt;
             routeDischarges(t);
-            for (auto& unit : units) unit->noteTimeAdvanced(t);
+            noteAdvanced(t);
             captureCycleBoundary(t);
 
             // Fire any events whose trigger has just elapsed.  Pedagogical
@@ -1504,6 +1532,37 @@ if (flowsheetDict->found("cycle"))
         //  the instant + trajectory rows still land on the clean grid.  ODE-
         //  form units (batchReactor) go through the stiff sweep; any non-ODE
         //  vessel (a still) takes ONE fixed step over the sub-interval.
+        //  The species rows' absolute tolerance (DEV.md 4c C471).  A declared
+        //  `atol` is uniform over every row, as ever.  ABSENT, a batchReactor's
+        //  species rows get 1e-12 of that vessel's initial total kmol (T keeps
+        //  the 1e-9 floor, in K): the old uniform 1e-9 kmol is 4e-5 in mole
+        //  fraction on a 2.5e-5 kmol vessel, leaves ppm radicals out of the
+        //  error test, and let an ignition run fire 2 us early.
+        std::vector<scalar> initTotal(units.size(), 0.0);
+        for (std::size_t i = 0; i < units.size(); ++i)
+            initTotal[i] = units[i]->state().totalMoles();
+        for (std::size_t i = 0; i < units.size(); ++i)
+        {
+            if (units[i]->type() != "batchReactor" || initTotal[i] <= 0.0) continue;
+            if (!atolDeclared)
+            {
+                if (verbosity >= 1)
+                    std::cout << std::defaultfloat << std::setprecision(4)
+                              << "  [adaptive] atol on the species rows of '"
+                              << units[i]->name() << "': " << 1.0e-12 * initTotal[i]
+                              << " kmol = 1e-12 of its initial inventory ("
+                              << initTotal[i] << " kmol); temperature row "
+                              << adaptSet.atol << " K (declare `atol` to set"
+                                 " one value for every row)\n";
+            }
+            else if (adaptSet.atol > 1.0e-9 * initTotal[i] && verbosity >= 1)
+                std::cout << std::defaultfloat << std::setprecision(4)
+                          << "  [adaptive] WARNING: the declared atol "
+                          << adaptSet.atol << " is above 1e-9 of the inventory of '"
+                          << units[i]->name() << "' (" << initTotal[i]
+                          << " kmol): trace species of that vessel are not"
+                             " error-controlled\n";
+        }
         std::size_t jacAnnounced = 0;    // analytic-Jacobian audits printed
         bool jacMixedAnnounced = false;   // the mixed-sweep warning, once
 
@@ -1574,6 +1633,15 @@ if (flowsheetDict->found("cycle"))
                         up->odeNPositive(),
                         up->name(), [up](std::size_t i){ return up->odeRowLabel(i); },
                         {}, {}, false, {}, {} });   // the analytic Jacobian, if any, below
+                    if (!atolDeclared && up->type() == "batchReactor")
+                    {
+                        const std::size_t ui = static_cast<std::size_t>(
+                            std::find_if(units.begin(), units.end(),
+                                [up](const auto& x) { return x.get() == up; })
+                            - units.begin());
+                        if (initTotal[ui] > 0.0)
+                            odeUnits.back().atolSpecies = 1.0e-12 * initTotal[ui];
+                    }
                     //  The unit's analytic Jacobian, when it declared one
                     //  (`solver { jacobian analytic; }`); the sweep uses it
                     //  only if every unit of the sweep has one.
@@ -1671,40 +1739,33 @@ if (flowsheetDict->found("cycle"))
                         {
                             sVector yw = yNew[u];
                             if (!exact)
+                            {
+                                //  The cubic Hermite of the WHOLE vector: every
+                                //  linear invariant of the network (each
+                                //  element's atoms) is carried exactly, since
+                                //  a . f = 0 at both ends.  If any species row
+                                //  comes out negative the whole vector takes the
+                                //  straight line between the ends instead:
+                                //  positive and, being a convex combination of
+                                //  two states with the same atoms, conserving
+                                //  too.
+                                bool negative = false;
                                 for (std::size_t i = 0; i < yw.size(); ++i)
                                 {
-                                    const scalar y0 = yPrev[u][i], y1 = yNew[u][i];
-                                    const bool species = i < odeUnits[u].nPositive;
-                                    if (species && y0 > 0.0 && y1 > 0.0)
-                                    {
-                                        //  A species amount runs over decades
-                                        //  inside an ignition step, and a cubic
-                                        //  in n cannot follow an exponential:
-                                        //  interpolate ln n (slope f / n), which
-                                        //  is exact for exponential growth and
-                                        //  positive by construction.
-                                        const scalar z0 = std::log(y0), z1 = std::log(y1);
-                                        yw[i] = std::exp(
-                                            h00 * z0 + h10 * hTaken * fPrev[u][i] / y0
-                                          + h01 * z1 + h11 * hTaken * fNew[u][i]  / y1);
-                                    }
-                                    else
-                                    {
-                                        yw[i] = h00 * y0 + h10 * hTaken * fPrev[u][i]
-                                              + h01 * y1 + h11 * hTaken * fNew[u][i];
-                                        //  An end at zero: no logarithm, and a
-                                        //  cubic that would go below zero takes
-                                        //  the straight line between the ends
-                                        //  (never a negative amount).
-                                        if (species && yw[i] < 0.0)
-                                            yw[i] = (1.0 - s) * y0 + s * y1;
-                                    }
+                                    yw[i] = h00 * yPrev[u][i] + h10 * hTaken * fPrev[u][i]
+                                          + h01 * yNew[u][i]  + h11 * hTaken * fNew[u][i];
+                                    if (i < odeUnits[u].nPositive && yw[i] < 0.0)
+                                        negative = true;
                                 }
+                                if (negative)
+                                    for (std::size_t i = 0; i < yw.size(); ++i)
+                                        yw[i] = (1.0 - s) * yPrev[u][i] + s * yNew[u][i];
+                            }
                             odeUnits[u].commit(yw);
                         }
                         interpolated = interpolated || !exact;
                         routeDischarges(tw);
-                        for (auto& unit : units) unit->noteTimeAdvanced(tw);
+                        noteAdvanced(tw);
                         writeSnapshot(tw);
                         if (verbosity >= 3) echoLine(tw);
                         nextWrite += writeInterval;
@@ -1757,7 +1818,7 @@ if (flowsheetDict->found("cycle"))
 
             t = tNext;
             routeDischarges(t);
-            for (auto& unit : units) unit->noteTimeAdvanced(t);
+            noteAdvanced(t);
             captureCycleBoundary(t);
             fireDueEvents(t);
 
