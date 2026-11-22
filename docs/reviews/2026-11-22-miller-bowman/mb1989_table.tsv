@@ -105,7 +105,7 @@ A	333	102	O+HCCO=H+2CO	elementary	1.00e+14	0.000	0.
 A	333	103	HCCO+O2=2CO+OH	elementary	1.60e+12	0.000	854.						
 A	333	104	CH+HCCO=C2H2+CO	elementary	5.00e+13	0.000	0.						
 A	333	105	2HCCO=C2H2+2CO	elementary	1.00e+13	0.000	0.						
-A	333	106	1CH2+M=CH2+M	thirdbody	1.00e+13	0.000	0.					H=0.0 (as printed)	"efficiency printed as ""H = 0.0"" (species symbol H as printed; read as H2 would be the natural intent, not assumed here)"
+A	333	106	1CH2+M=CH2+M	thirdbody	1.00e+13	0.000	0.					H=0.0	"efficiency printed as ""H = 0.0"" (species symbol H as printed; read as H2 would be the natural intent, not assumed here)"
 A	333	107	1CH2+CH4=2CH3	elementary	4.00e+13	0.000	0.						
 A	333	108	1CH2+C2H6=CH3+C2H5	elementary	1.20e+14	0.000	0.						
 A	333	109	1CH2+O2=CO+OH+H	elementary	3.00e+13	0.000	0.						

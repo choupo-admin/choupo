@@ -1,0 +1,48 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  0/internalStates/T1200 -- the initial HOLDUP (the single source of truth).
+  Lyon & Hardy data set 1 (Miller & Bowman Fig. 57): NO 225 ppm, NH3 450 ppm, O2 1.23 %, He balance, 1.1 atm, 1 m3.
+\*---------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "T1200";
+equipment   batchReactor;
+
+holdup
+{
+    T            1200.00 K;
+    P            1.1 atm;
+    totalMoles   1.1171046677e-02;         // kmol, n = P V / (R T)
+    molarComposition
+    {
+        NO       0.000225;
+        NH3      0.00045;
+        O2       0.0123;
+        He       0.987025;
+        H2       0;
+        OH       0;
+        water    0;
+        H        0;
+        O        0;
+        HO2      0;
+        N2       0;
+        H2O2     0;
+        NH       0;
+        HNO      0;
+        N2O      0;
+        N        0;
+        NH2      0;
+        NNH      0;
+        NO2      0;
+        N2H2     0;
+    }
+}
