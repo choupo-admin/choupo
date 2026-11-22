@@ -5155,6 +5155,29 @@ accepts today, and that is a policy call.
 > be verified and was removed; Michelsen (1982), already in the bibliography, is cited for
 > the Gibbs test.  Next: (3)+(4) one general, Opus first review; (6)-(9) one general.
 
+> **C467 DONE 2026-11-22 (50a084a11f): slices (3), (4), (6)-(9).**  Opus first reviews found
+> S1 in (3)/(4) (a refuted LL split published an unverified three-phase state at the simplex
+> floor, beta_V 1e-4 against the exact 0.12) and S2 in (9) (the ill-conditioning test compared
+> an absolute residual with |g'| and fired on close boilers); both fixed: the three-phase search
+> is re-run from the LL liquids plus the incipient vapour and verified or refused; Rachford-Rice
+> converges on the Newton step in V (1e-10) and warns only when the residual test had accepted
+> a V more than 1e-6 from the root.  Full sweep (reason in the script: both branches change the
+> flash every case reaches): 2008 PASS, 0 case FAIL, 1 KNOWN-BROKEN, 13 EXPECTED-FAIL; 4 gate
+> FAILs (a scan root, two generated guide texts, hansen-teas in the pool -- C466) fixed and re-run
+> alone; --gui 49/0.
+
+> **C468 (cloud session via Vitor, 2026-11-22): the Jacobian audit refuses a fractional order
+> on a species at zero concentration.**  Found in the gasOnly block; d(c^n)/dc diverges at c = 0
+> for n < 1.  Treat the limit instead of refusing.
+
+> **C469 (cloud session via Vitor, 2026-11-22): the estimate writer stamped `role radical` on
+> 161 groupEstimative records (7791b8256).**  84 lose it in the gasOnly block; fix the writer at
+> its origin so a regeneration does not write it back.
+
+> **C470 (Vitor, 2026-11-22: "Os cores estão parados"): the serial stretch of the gate pool
+> leaves the cores idle for minutes in a full sweep.**  Review the SERIAL lanes in
+> bin/curate/suite_lanes.txt and move to ISO each gate that can run in a private copy.
+
 > **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
 > mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
 > into the cloud branch, one full sweep ALONE (reason: the gas-only rule changes the
