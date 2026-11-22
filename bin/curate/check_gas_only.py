@@ -93,6 +93,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import gatekit  # noqa: E402
 
+# Arm (c) counts the records of the NASA gas-species table.
+SCAN_ROOTS = ("data/standards/thermoTables/NASA-TP-2002-211556",)
 CASE = "tutorials/steady/flash/flash23_gas_only_oh_quench"
 STRIP = ("expected", "converged", "reports", "constant/propertyManifest")
 FEED_OH = 0.1 / 3600.0 * 1000.0      # kmol/h -> mol/s
