@@ -5234,6 +5234,28 @@ accepts today, and that is a policy call.
 > C469 CLOSED the same day: no writer in bin/ writes `role radical` (the lines came from the lake
 > conversion a7585378fc; 3d917a8b25 fixed the records; the 7791b8256 reference was wrong).
 
+> **THE 11-22 STACK LANDED (57bbf6c4a6), one full sweep ALONE** (reason written in the script: NASA-9,
+> Component Gibbs, SparseLU and the chemistry listing are on every case's path; C470's lanes are only
+> proven by a sweep).  C474, the cloud's reaction library (C458 slice 1), C472, C473 a/b/c/e and the
+> start-up cache, C470, the C466 remainder.  Sweep: 1984 PASS, no case failed; 7 gates red, all fixed:
+> two probe builds lacked Seulex.cpp, the seulex capability line, a holdup header, a test that repeated
+> the banned names (one home: check_doctrine), and ONE REAL REGRESSION OF C474 (a): the within-atol clip
+> also clipped an EMPTY row still being consumed, so a zeroth-order A -> B ran to maxSteps instead of
+> refusing by name (check_positivity_mask; neither the general's --scope nor the Opus review ran it).
+> Rule now: the 2(3) pair and seulex do not clip a row with y <= 0 and f0 < 0; a positive row
+> overshooting by round-off, or a zero row being produced, is clipped (nox03's dense start kept,
+> check_kinetics_jacobian h1).  Re-validated: --scope batch/ctrl/unsteady 107/0, vitest 8957 (two
+> horizontal rules in seulex READMEs fixed).  make wasm-gui then failed where native passed:
+> std::to_string of a libc++ __int128 clock count (VapourAssociation.H), cast; check_wasm_dialect had
+> not seen it.  C470: 83 gates in the pool; this sweep is their first and showed no isolation leak.
+
+> **C476 (cloud finding, 2026-11-22): the C471 cubic Hermite dense output errs up to 4e-2 between
+> steps on a stiff system** (choupoBatch/main.cpp, the dense-output block): the interpolated rows of
+> 13 free-stepping batch cases; step ends and final states are right.  Cause documented in
+> docs/reviews/2026-11-22-densesparse/ (on the cloud branch).  Fix: the integrators' own dense
+> output (Hairer & Wanner for Rodas4 and seulex), the cloud's slice in flight; its READY lists the 13
+> cases and every moved row.
+
 > **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
 > mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
 > into the cloud branch, one full sweep ALONE (reason: the gas-only rule changes the
