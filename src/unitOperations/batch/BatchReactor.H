@@ -114,6 +114,11 @@ public:
     std::shared_ptr<const solver::SparsePattern> odeSparsePattern() const override
     { return jacPattern_; }
     bool odeSparseLinear() const override { return sparseLinear_; }
+    int  odeLinearSolverKey() const override
+    { return linearSolverKey_ == LinearSolver::Dense ? 0 : linearSolverKey_ == LinearSolver::Sparse ? 1 : 2; }
+    std::string odeStiffIntegratorDeclared() const override
+    { return (integratorDeclared_ && (integrator_ == "Rosenbrock23" || integrator_ == "Rodas4"))
+             ? integrator_ : std::string(); }
     void odeJacobianSparse(const sVector& y, const sVector& f0, const sVector& typ,
                            solver::SparseJacobian& J) const override;
     //  The audit of the analytic Jacobian in the ADAPTIVE sweep is kept by
@@ -239,6 +244,7 @@ private:
     // method (EulerSI / Rosenbrock23) selected via `solver { integrator … }`.
     // Default RK4 keeps every existing batch tutorial byte-identical.
     std::string                 integrator_ = "RK4";
+    bool                        integratorDeclared_ = false;
     // Set in initialise() from the run's controlDict verbosity (via
     // thermoAnnounceLevel()); `solver { verbosity … }` overrides per unit.
     int                         verbosity_  = 1;

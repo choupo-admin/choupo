@@ -3403,7 +3403,7 @@ or on a fixed-step run left on the default RK4, is refused by name.  Theory Guid
 `sparse` = the in-house SparseLU on the mechanism's pattern (minimum-degree ordering and symbolic
 factorisation once, a left-looking numeric factorisation on diagonal pivots with row
 equilibration every step, each factor accepted on its backward error (<= 1e-12 on W x = 1) or
-refactored dense, counted at verbosity 4; a constant-P gas's rank-one term by Sherman-Morrison); it needs the analytic
+refactored dense, counted at verbosity 4; a constant-P gas's rank-one term by Sherman-Morrison); in a run of several vessels W is factored on the union of their patterns (`dense` on any vessel wins), and the adaptive sweep steps the declared `integrator Rosenbrock23 | Rodas4` (two vessels declaring different ones are refused); it needs the analytic
 Jacobian and is refused by name beside the finite difference.  `auto` = sparse from 100 packed
 rows (the break-even measured on synthetic networks; on AramcoMech 1.3, 254 rows, the sparse factor
 costs 7.3x fewer multiply-adds and 5.8x less linear-algebra time), dense below, so every small

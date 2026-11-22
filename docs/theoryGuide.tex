@@ -39958,6 +39958,22 @@ factorisation),
     \label{eq:sherman-morrison}
 \end{equation}
 
+\paragraph{Several vessels, and the declared scheme.}  A run of several
+\code{batchReactor}s integrates them as one packed system whose $\mathbf W$ is
+block-diagonal.  It factors $\mathbf W$ sparse on the union of the vessels'
+patterns when every vessel has the analytic Jacobian, none says
+\code{linearSolver dense}, and either one says \code{sparse} or the packed rows
+reach 100.  A vessel at constant pressure contributes its own rank-one part;
+the blocks do not overlap, so one extra solve gives every block's
+$\mathbf q$ and Eq.~\ref{eq:sherman-morrison} is applied block by block.
+(Before, the key was read only by a sweep of one vessel: the 17 vessels of
+\code{nox02\_millerbowman\_denox} ran dense, 35~s against 5.5~s.)  The
+integrator of the adaptive sweep is the one the vessels declare in
+\code{solver \{ integrator Rosenbrock23 | Rodas4; \}} (Rosenbrock23 when none
+does; two vessels declaring different ones are refused); it was
+Rosenbrock23 whatever the case said, so a Rodas4 copy of a case reproduced
+the Rosenbrock23 one to every digit printed.
+
 \begin{pitfall}
 The first build applied the threshold test to unequilibrated rows: the
 temperature row's entries (kelvin per second per kmol) dwarfed every pivot
@@ -40039,10 +40055,15 @@ charge with the dense factor: the very first trial put a species not yet
 formed a round-off below zero, every halving did the same, and the step fell
 below its floor --- while the sparse factor's round-off happened to fall on
 the other side.  With every species seeded at $10^{-12}$ both failed, on a
-trace radical consumed in about $10^{-12}$~s.  Rodas4, which sets a negative
-within the absolute tolerance to zero, starts both.  This is a property of the
-guard, not of either factorisation, and it is registered as such; the
-measurement above uses Rodas4.
+trace radical consumed in about $10^{-12}$~s.  The cause was the guard, not
+either factorisation: a row that is exactly zero comes out of the stage
+combination at round-off ($-9\times10^{-33}$~kmol against an absolute
+tolerance of $10^{-18}$), of either sign, and the strict test rejected it.
+Rosenbrock23 now does what Rodas4 always did: a masked row between
+$-\mathrm{atol}$ and zero is set to zero, anything more negative is still a
+real overshoot and is rejected.  \code{nox03\_millerbowman\_large} starts on
+\code{linearSolver dense} and equals the sparse run to every digit printed
+(arm h1 of \code{check\_kinetics\_jacobian}).
 \end{pitfall}
 
 \subsection{Which reaction governs an ignition: brute-force sensitivity of the delay}\label{sec:ignition-sensitivity}
