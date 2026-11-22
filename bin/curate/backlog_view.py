@@ -42,19 +42,55 @@ def day_balance(rows, today):
     return f"hoje: {closed} fechados, {opened} abertos"
 
 
+def week_closed(rows, today):
+    """Items closed in the last seven days: the number Vitor watches go UP
+    (2026-11-23: "uma backlog que nao me deixe ansioso")."""
+    base = subprocess.run(["git", "-C", str(ROOT), "rev-list", "-1", "--before=7.days",
+                           "HEAD", "--", "BACKLOG.tsv"], capture_output=True, text=True).stdout.strip()
+    if not base:   # the file is younger than a week: count from its first version
+        base = subprocess.run(["git", "-C", str(ROOT), "log", "--diff-filter=A", "--format=%H",
+                               "--", "BACKLOG.tsv"], capture_output=True, text=True).stdout.split()[-1:]
+        base = base[0] if base else ""
+    if not base:
+        return 0
+    old = subprocess.run(["git", "-C", str(ROOT), "show", base + ":BACKLOG.tsv"],
+                         capture_output=True, text=True).stdout.splitlines()
+    before = {r["item"]: r["status"] for r in csv.DictReader(old, delimiter="\t")}
+    return sum(1 for r in rows if r["status"] == "DONE" and before.get(r["item"]) != "DONE")
+
+
+def themes():
+    t = {}
+    f = ROOT / "bin" / "curate" / "backlog_themes.tsv"
+    if f.exists():
+        for line in f.read_text().splitlines():
+            if line and not line.startswith("#") and "\t" in line:
+                k, v = line.split("\t", 1)
+                t[k.strip()] = v.strip()
+    return t
+
+
+THEME_ORDER = ["Cinética e reatores", "Termodinâmica e propriedades", "Colunas e separação",
+               "Planta, layout e economia", "EduTools e aplicação", "Núcleo e manutenção", "Outros"]
+
+
 def main():
     if len(sys.argv) != 2:
         print(__doc__); return 2
     rows = list(csv.DictReader((ROOT / "BACKLOG.tsv").open(), delimiter="\t"))
     open_ = [r for r in rows if r["status"] in ("OPEN", "PARTIAL")]
     open_.sort(key=lambda r: (int(r["rank"]), int(r["item"][1:])))
-    count = {s: sum(1 for r in rows if r["status"] == s) for s in ("DONE", "PARTIAL", "OPEN", "DROPPED")}
+    count = {s: sum(1 for r in rows if r["status"] == s) for s in ("DONE", "PARTIAL", "OPEN", "DROPPED", "ROADMAP")}
+    th = themes()
+    week = week_closed(rows, datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d"))
     e = html.escape
     now = datetime.now(timezone.utc)
     stamp = now.astimezone().strftime("%d/%m/%Y %H:%M")
     day = day_balance(rows, now.astimezone().strftime("%Y-%m-%d"))
     if sys.argv[1].endswith(".json"):
         doc = {"ranks": {r["item"]: [r["rank"], r["why_pt"]] for r in open_},
+               "themes": {r["item"]: th.get(r["item"], "Outros") for r in open_},
+               "themeOrder": THEME_ORDER, "week": week, "roadmap": count["ROADMAP"],
                "from": "BACKLOG.tsv", "updated": now.isoformat(timespec="seconds"), "day": day}
         Path(sys.argv[1]).write_text(json.dumps(doc, ensure_ascii=False))
         print(f"backlog_view: wrote {sys.argv[1]} (stamped {stamp})")
@@ -80,17 +116,20 @@ def main():
     if sys.argv[1].endswith(".md"):
         ico = {"S": "🟢", "M": "🟡", "L": "🔴"}
         def mdrow(r):
-            rank = "▶" if r["rank"] == "0" else r["rank"]
-            st = "parcial" if r["status"] == "PARTIAL" else "aberto"
-            return f"| {rank} | {ico.get(r['size'], '')} | **{r['item']}** {r['title_pt']} | {st} |"
-        def mdtab(title, lst):
-            if not lst: return ""
-            return (f"\n### {title} ({len(lst)})\n\n| # | | Item | Estado |\n|---|---|---|---|\n"
-                    + "\n".join(mdrow(r) for r in lst) + "\n")
-        md = (f"# Backlog do Choupo\n\n**Atualizado: {stamp}** · {day}\n\nPor prioridade (valor contra tamanho). ▶ em curso · "
-              f"🟢 horas · 🟡 um dia · 🔴 vários dias.  \nFeitos {count['DONE']} · parciais "
-              f"{count['PARTIAL']} · abertos {count['OPEN']} · largados {count['DROPPED']}.\n"
-              + mdtab("Em curso", now) + mdtab("Próximo lote", nxt) + mdtab("Depois", later))
+            return f"| {ico.get(r['size'], '')} | **{r['item']}** {r['title_pt'].strip(chr(34)).replace(chr(34)*2, chr(34))} |"
+        nxt10 = [r for r in open_ if r["rank"] != "0"][:10]
+        md = (f"# Backlog do Choupo\n\n**Atualizado: {stamp}**\n\n"
+              f"**Fechados nos últimos 7 dias: {week}** · {day} · faltam {len(open_)} "
+              f"(+ {count['ROADMAP']} programas de longo prazo no ROADMAP)\n"
+              f"\n### ▶ A andar agora ({len(now)})\n\n| | Item |\n|---|---|\n" + "\n".join(mdrow(r) for r in now) + "\n"
+              f"\n### A seguir ({len(nxt10)})\n\n| | Item |\n|---|---|\n" + "\n".join(mdrow(r) for r in nxt10) + "\n"
+              "\n### O resto, por tema\n\n")
+        rest = [r for r in open_ if r["rank"] != "0" and r not in nxt10]
+        for t in THEME_ORDER:
+            lst = [r for r in rest if th.get(r["item"], "Outros") == t]
+            if lst:
+                md += f"- **{t}** ({len(lst)}): " + ", ".join(r["item"] for r in lst) + "\n"
+        md += "\n🟢 horas · 🟡 um dia · 🔴 vários dias.  Fonte: BACKLOG.tsv (o histórico de cada item no DEV.md 4c).\n"
         Path(sys.argv[1]).write_text(md)
         print(f"backlog_view: wrote {sys.argv[1]} ({len(open_)} open or partial items)")
         return 0

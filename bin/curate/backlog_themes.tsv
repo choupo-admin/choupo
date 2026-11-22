@@ -1,0 +1,75 @@
+# item	theme -- the group each open backlog item is shown under (a VIEW aid for
+# bin/curate/backlog_view.py and the backlog page; BACKLOG.tsv stays the one home
+# of every item's state).  Vitor, 2026-11-23: "agrupa o resto e poe uma backlog
+# que nao me deixe ansioso".  An open item with no line here is shown under "Outros".
+C458	Cinética e reatores
+C473	Cinética e reatores
+C476	Cinética e reatores
+C468	Cinética e reatores
+C475	Cinética e reatores
+C339	Cinética e reatores
+C452	Cinética e reatores
+C288	Cinética e reatores
+C217	Cinética e reatores
+C205	Cinética e reatores
+C256	Termodinâmica e propriedades
+C135	Termodinâmica e propriedades
+C296	Termodinâmica e propriedades
+C308	Termodinâmica e propriedades
+C309	Termodinâmica e propriedades
+C323	Termodinâmica e propriedades
+C403	Termodinâmica e propriedades
+C405	Termodinâmica e propriedades
+C406	Termodinâmica e propriedades
+C408	Termodinâmica e propriedades
+C409	Termodinâmica e propriedades
+C411	Termodinâmica e propriedades
+C424	Termodinâmica e propriedades
+C428	Termodinâmica e propriedades
+C226	Termodinâmica e propriedades
+C335	Termodinâmica e propriedades
+C274	Termodinâmica e propriedades
+C239	Colunas e separação
+C278	Colunas e separação
+C184	Colunas e separação
+C124	Colunas e separação
+C319	Colunas e separação
+C329	Colunas e separação
+C218	Colunas e separação
+C450	Colunas e separação
+C437	Colunas e separação
+C199	Colunas e separação
+C240	Planta, layout e economia
+C302	Planta, layout e economia
+C440	Planta, layout e economia
+C263	Planta, layout e economia
+C306	Planta, layout e economia
+C110	Planta, layout e economia
+C209	Planta, layout e economia
+C267	Planta, layout e economia
+C270	Planta, layout e economia
+C238	Planta, layout e economia
+C425	Planta, layout e economia
+C222	EduTools e aplicação
+C395	EduTools e aplicação
+C455	EduTools e aplicação
+C477	EduTools e aplicação
+C204	EduTools e aplicação
+C416	EduTools e aplicação
+C457	EduTools e aplicação
+C158	EduTools e aplicação
+C22	EduTools e aplicação
+C127	EduTools e aplicação
+C154	EduTools e aplicação
+C200	EduTools e aplicação
+C289	EduTools e aplicação
+C159	EduTools e aplicação
+C227	EduTools e aplicação
+C266	EduTools e aplicação
+C245	Núcleo e manutenção
+C241	Núcleo e manutenção
+C415	Núcleo e manutenção
+C454	Núcleo e manutenção
+C445	Núcleo e manutenção
+C261	Núcleo e manutenção
+C214	Núcleo e manutenção

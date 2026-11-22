@@ -5272,6 +5272,15 @@ accepts today, and that is a policy call.
 > Backlog shared with the cloud 11-23 (SESSIONS): C458's methane lesson, C245 (Rodas4 constants
 > first), C256, C416; C455, C395, C222 with the laptop's generals; C204 stays with the laptop.
 
+> **THE BACKLOG REGROUPED (Vitor, 2026-11-23: "Despacha o que e facil e agrupa o resto e poe uma
+> backlog que nao me deixe ansioso").**  Twenty long-term programmes (C6, C129, C130, C131, C132,
+> C133, C139, C160, C181, C195, C203, C206, C210, C215, C262, C340, C412, C417, C418, C422) take
+> the new status ROADMAP (listed in ROADMAP.md; each returns as OPEN when a slice of it is
+> commissioned); two duplicates merged (C219 into C218, C228 into C329).  The view shows what is
+> moving, the next ten, and the rest by theme on one line each (bin/curate/backlog_themes.tsv),
+> with the number that only rises at the top: items closed in the last seven days.
+> check_backlog accepts ROADMAP only with the move and Vitor's words in the row.
+
 > **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
 > mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
 > into the cloud branch, one full sweep ALONE (reason: the gas-only rule changes the
