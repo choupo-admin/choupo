@@ -5224,6 +5224,142 @@ which the per-value provenance tag makes the student check before
 trusting an equilibrium prediction.
 \end{intuition}
 
+\subsection{Ideal-gas thermochemistry from molecular constants (RRHO)}
+\label{sec:rrho-thermo}
+
+Nine species of the Miller \& Bowman (1989) nitrogen mechanism --- NNH,
+ketene, singlet CH$_2$, HCCCH, H$_2$CN, HOCN, HCNO, n-C$_4$H$_3$ and ethynol ---
+are in no open table of the tree: the NASA/TP-2002-211556 report has no entry
+for most and prints ketene's $S^{\circ}_{298}$ two ways (251.442 in Table~B1,
+241.889 from its own appendix~D coefficients).  A glass box does not paste
+coefficients it cannot explain, so the tool
+\file{bin/curate/rrho\_thermo.py} \emph{computes} the ideal-gas $c_p$, $h$ and
+$s$ of a molecule from its molecular constants with the textbook
+statistical-mechanics formulas below (McQuarrie, \emph{Statistical
+Mechanics}, chapters 4--8; the JANAF Tables' introduction), reads the inputs
+from a reviewed file (\file{bin/curate/rrho\_species.json}, every number with
+its source) and fits the NASA polynomial the engine reads.  The formulas
+were checked against seven species whose published values are the NASA
+report's, \emph{not} against the books' equation numbers.
+
+\paragraph{The model.}  The molecule is an ideal gas at standard pressure
+$P^{\circ}=1$~bar whose energy separates into translation, rotation,
+vibration and electronic parts, $q = q_{\mathrm{t}}q_{\mathrm{r}}q_{\mathrm{v}}q_{\mathrm{e}}$,
+and each part contributes additively to $c_p/R$ and $s/R$.  With
+$\Theta = hc\tilde{\nu}/k_B$ for a constant $\tilde{\nu}$ in cm$^{-1}$:
+\begin{align}
+  \text{translation:}\quad
+  &\frac{c_p}{R}=\frac52,\quad
+   \frac{s}{R}=\frac52+\ln\!\Big[\Big(\frac{2\pi m k_B T}{h^2}\Big)^{3/2}\frac{k_B T}{P^{\circ}}\Big]
+   \label{eq:rrho-trans}\\[2pt]
+  \text{linear rotor:}\quad
+  &\frac{c_p}{R}=1,\quad
+   \frac{s}{R}=1+\ln\frac{T}{\sigma\,\Theta_B},\qquad \Theta_B=\frac{hcB}{k_B}
+   \label{eq:rrho-rot-lin}\\[2pt]
+  \text{non-linear rotor:}\quad
+  &\frac{c_p}{R}=\frac32,\quad
+   \frac{s}{R}=\frac32+\ln\!\Big[\frac{\sqrt{\pi}}{\sigma}\sqrt{\frac{T^3}{\Theta_A\Theta_B\Theta_C}}\Big]
+   \label{eq:rrho-rot-nl}\\[2pt]
+  \text{each vibration, } x=\frac{hc\tilde{\nu}}{k_BT}:\quad
+  &\frac{c_p}{R}=\frac{x^2e^{x}}{(e^{x}-1)^2},\quad
+   \frac{s}{R}=\frac{x}{e^{x}-1}-\ln\!\big(1-e^{-x}\big)
+   \label{eq:rrho-vib}\\[2pt]
+  \text{electronic levels } (E_i,g_i):\quad
+  &\frac{c_p}{R}=\frac{\langle E^2\rangle-\langle E\rangle^2}{(k_BT)^2},\quad
+   \frac{s}{R}=\ln q_{\mathrm{e}}+\frac{\langle E\rangle}{k_BT},\quad
+   q_{\mathrm{e}}=\sum_i g_i e^{-E_i/k_BT}
+   \label{eq:rrho-elec}
+\end{align}
+Symbols: $m$ the molecular mass (standard atomic weights), $\sigma$ the
+rotational symmetry number, $A,B,C$ the rotational constants (cm$^{-1}$),
+$\tilde{\nu}$ the vibrational wavenumbers (observed fundamentals treated as
+harmonic, the JANAF practice), $g_i$ the electronic degeneracies (spin and
+orbital; the spin--orbit levels of a $\Pi$ state are listed separately),
+$k_B, h, c, N_A$ CODATA~2018, $R=k_BN_A$.  The enthalpy is $\Delta h(T)=\int_{298.15}^{T}c_p\,\mathrm dT$.
+$h^{\circ}_{298}=\Delta_f h^{\circ}_{298}$ is not computed: it is the cited
+enthalpy of formation (ATcT, below), exactly as for the NASA records.  Nuclear
+spin entropy is omitted (it cancels against the elements, as in every table).
+
+\paragraph{The NASA fit.}  The engine reads the polynomial of
+NASA/TP-2002-211556 eq.~(1),
+$c_p/R = a_1T^{-2}+a_2T^{-1}+a_3+a_4T+a_5T^2+a_6T^3+a_7T^4$, in two intervals
+(200--1000 and 1000--6000~K).  The tool minimises the sum of squared
+\emph{relative} errors of that polynomial against eqs.~\eqref{eq:rrho-trans}--\eqref{eq:rrho-elec}
+on 10~K and 50~K grids, solving the normal equations in exact rational
+arithmetic (deterministic; no numerical library), and writes the worst
+relative error of each interval in the record.
+
+\paragraph{Validation before use.}  Run on seven species the NASA report
+holds, from their own published constants (NIST CCCBDB / WebBook, Herzberg,
+Jacox), the tool gives:
+\begin{center}\small
+\begin{tabular}{lrrrrrr}
+\toprule
+species & $S_{298}$ tool & $S_{298}$ NASA & $\Delta S$ & max $\Delta c_p$ 300--1000~K & $\Delta c_p$ at 1500~K & at 3000~K\\
+\midrule
+HNCO & 238.262 & 238.265 & -0.003 & +0.01 & -0.00 & -0.00\\
+NCO & 232.239 & 232.229 & +0.010 & +0.64 & +0.23 & +0.05\\
+NH2 & 194.720 & 194.996 & -0.276 & -2.17 & -2.89 & -6.53\\
+HCO & 224.677 & 224.336 & +0.341 & +0.01 & -0.02 & -0.87\\
+CH2 & 194.458 & 194.419 & +0.039 & +0.19 & -0.34 & -0.48\\
+C2H & 213.290 & 213.304 & -0.014 & +1.33 & +3.07 & +2.08\\
+H2O & 188.717 & 188.829 & -0.112 & -0.65 & -1.75 & -4.89\\
+\bottomrule
+\end{tabular}
+\end{center}
+($S$ in J\,mol$^{-1}$K$^{-1}$, $\Delta c_p$ in \%.)  The acceptance, held by
+\code{check\_rrho\_thermo}: $|\Delta S|\le 1$ and $|\Delta c_p|\le 2\,\%$ from 300 to
+1500~K, except NH$_2$ and C$_2$H below.  Above that the rigid-rotor harmonic-oscillator model is
+known to under-count: NH$_2$ (quasi-linear bend, $-2.9\,\%$ at 1500~K) and C$_2$H
+(vibronic $^2\Sigma^+/^2\Pi$ coupling, $+3.1\,\%$) exceed 2\,\% before 1500~K and are
+held to 3 and 3.5\,\% (the table's `max' column is 300--1000~K); at 3000~K every species is within 7\,\%, the
+direction of the error being the missing anharmonic levels.
+
+\paragraph{The nine records.}  They are written to
+\file{data/standards/thermoTables/RRHO-computed/} (a table home beside the NASA
+one, declared by a case with
+\code{speciesTables ( NASA-TP-2002-211556 RRHO-computed );}, resolved by the
+same rule: case $>$ \file{components/} $>$ declared tables) and carry, per
+record, the inputs, their sources, the method, an uncertainty statement and
+\code{reviewStatus interim}.  Roles follow the gas-only rule: \code{gasOnly}
+for a radical (odd electron count) or a listed biradical, \code{gasData} for a
+closed-shell molecule.  Enthalpies of formation are those of the Active
+Thermochemical Tables (Ruscic et al., ATcT version 1.124); where a mechanism's
+own table (Miller \& Bowman 1989, Table~1) gives another value, both are written in the record's notes.
+\begin{center}\small
+\begin{tabular}{lrrrrr}
+\toprule
+species & $\Delta_f h^{\circ}_{298}$ (kJ/mol) & $s^{\circ}_{298}$ & $c_p(298)$ & $c_p(1500)$ & fit error\\
+\midrule
+NNH & 249.23 & 224.28 & 34.61 & 52.3 & 6e-05\\
+CH2CO & -48.42 & 241.96 & 51.79 & 94.4 & 2e-04\\
+1CH2 & 429.13 & 189.08 & 33.78 & 49.8 & 1e-04\\
+H2CN & 238.44 & 224.13 & 37.77 & 71.6 & 2e-04\\
+HOCN & -15.04 & 241.59 & 46.14 & 73.6 & 1e-04\\
+HCNO & 169.26 & 237.46 & 54.72 & 78.9 & 4e-05\\
+HCCOH & 92.81 & 249.71 & 57.60 & 94.1 & 1e-04\\
+C3H2 & 546.49 & 263.65 & 72.84 & 100.6 & 1e-04\\
+C4H3 & 544.74 & 282.87 & 72.93 & 138.3 & 3e-04\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{intuition}
+\textbf{What is approximate.}  The formulas are exact for a rigid rotor and a
+harmonic oscillator; a real molecule is neither.  Observed fundamentals stand
+in for harmonic frequencies (a few per cent in $c_p$ near 1000~K); a
+large-amplitude motion (the OH torsion of ethynol, the quasi-linear bends of
+HCCCH and HCNO) is treated as harmonic, which errs most in $S$ at 298~K; a mode
+with no measured fundamental takes a B3LYP/def2-TZVP harmonic frequency
+(PySCF, \file{bin/curate/rrho\_abinitio\_constants.py}) scaled by the single factor 0.9642,
+fitted on 23 measured fundamentals of six molecules (rms 21~cm$^{-1}$, listed in
+the input file's \code{scale\_calibration} block).  The
+input file marks every number that is calculated, not measured, and each
+record states its own uncertainty in $S$ and $c_p$.
+\textbf{Limit:} not a substitute for a table of measured heat capacities; use
+it where none exists, and say so.
+\end{intuition}
+
 \subsection{Thousands of gas-phase species: the species tables and a CHEMKIN mechanism}
 \label{sec:species-tables-chemkin}
 

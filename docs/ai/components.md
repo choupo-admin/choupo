@@ -101,6 +101,30 @@ liquid-liquid or liquid-solid flash, a property system with no vapour phase) is
 refused by name.  The chloride ION is `Cl` in `data/standards/species/` (an
 electrolyte case maps a component to it with `aqueousMapping`).
 
+**A species with NO tabulated thermochemistry is COMPUTED, not pasted (2026-11-22).**
+`data/standards/thermoTables/RRHO-computed/` is a second table home, beside the
+NASA one, for ideal-gas records computed from molecular constants by
+`bin/curate/rrho_thermo.py` (rigid rotor, harmonic oscillator, electronic
+levels; inputs and their sources in `bin/curate/rrho_species.json`; the Cp
+polynomial is a least-squares fit to the computed curve, its error written in the
+record).  It holds the nine species of the Miller & Bowman (1989) mechanism that no
+other table carries: `NNH`, `CH2CO` (ketene), `1CH2` (singlet methylene, the NASA
+`CH2` is the triplet), `C3H2` (HCCCH triplet, propargylene), `H2CN`, `HOCN`,
+`HCNO` (fulminic acid), `C4H3` (n-C4H3, HC#C-CH=CH) and `HCCOH` (ethynol).  A case
+declares it next to the NASA one:
+
+```
+speciesTables ( NASA-TP-2002-211556 RRHO-computed );
+```
+
+Resolution is the same rule (case > `components/` > the declared tables, announced
+`[thermoTable]`).  Each record states its enthalpy-of-formation source (ATcT 1.124),
+whether each frequency is measured or calculated, an uncertainty and
+`reviewStatus interim`.  The tool is validated on seven species the NASA report
+holds (S298 within 1 J/(mol K), Cp within 2 % to 1000 K), and `bin/curate/check_rrho_thermo.py`
+holds every record equal to the tool's output.  Roles follow the gas-only rule:
+radicals and biradicals `gasOnly`, closed-shell molecules `gasData`.
+
 The component COUNT is not written here: this whole section below
 `AUTO-GENERATED` is produced by `bin/regen-llm-docs` from the `.dat` files
 themselves, and the heading it writes is the count.  (A number typed into this

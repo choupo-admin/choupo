@@ -353,6 +353,16 @@ plant per process under `tutorials/plant/`; ladders, demos and variants under
 - `tutorials/steady/economics/sugarPlantEconomicsSweep`, the economic sweep over
   the sucrose feed of the sugar plant (`tutorials/plant/ChemicalPlantTutorial`).
 
+## Species with no tabulated thermochemistry (2026-11-22; no case yet)
+
+`data/standards/thermoTables/RRHO-computed/` holds nine ideal-gas records COMPUTED from
+molecular constants (rigid rotor, harmonic oscillator, electronic levels) by
+`bin/curate/rrho_thermo.py`: NNH, ketene, singlet CH2, HCCCH, H2CN, HOCN, HCNO, n-C4H3 and
+ethynol, the species of the Miller & Bowman (1989) mechanism that no other table carries.  A
+case declares it with `speciesTables ( NASA-TP-2002-211556 RRHO-computed );`.  The first
+case that reads it is the Miller & Bowman case (not yet written); until then the home is held
+by `bin/curate/check_rrho_thermo.py`, not by a golden.  Theory Guide `sec:rrho-thermo`.
+
 ## Regression-focused cases
 
 Every tutorial doubles as a regression test (golden-master KPIs), but the

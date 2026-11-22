@@ -1,0 +1,90 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Species 1CH2 (singlet methylene (a 1A1 state of CH2; the NASA table's CH2 is the triplet X 3B1)): ideal-gas thermochemistry COMPUTED from molecular
+  constants by bin/curate/rrho_thermo.py (rigid rotor, harmonic
+  oscillator, electronic levels) from the inputs of bin/curate/rrho_species.json,
+  anchored to a cited enthalpy of formation.  NOT a transcription of a
+  published table: the NASA/TP-2002-211556 report holds no entry for it.
+  Re-run `bin/curate/rrho_thermo.py write`; the gate check_rrho_thermo holds this
+  file equal to the tool's output.
+\*---------------------------------------------------------------------------*/
+name           1CH2;
+formula        CH2;
+CAS            2465-56-7;
+MW             14.02658;       // kg/kmol, standard atomic weights
+role           gasOnly;       // listed biradical or transient: singlet carbene, the transient singlet state of methylene
+tags           ( gasPhase thermoTable rrhoComputed );
+reviewStatus   interim;
+reviewReason   "computed by bin/curate/rrho_thermo.py from molecular constants (inputs and sources in bin/curate/rrho_species.json); not read back against the cited papers by a curator"; 
+standardThermochemistry
+{
+    dHf_298    429130.000;   // J/mol  -- ideal gas; ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.11 kJ/mol
+    s_298      189.077;     // J/(mol K) -- RRHO at 298.15 K, P0 = 1 bar (rrho_thermo.py)
+}
+
+idealGasHeatCapacity
+{
+    //  Cp/R = a1/T^2 + a2/T + a3 + a4 T + a5 T^2 + a6 T^3 + a7 T^4 (NASA9 form, as the
+    //  NASA/TP-2002-211556 records), LEAST-SQUARES FIT to the RRHO Cp(T) curve of
+    //  rrho_thermo.py on 200-1000 K (10 K) and 1000-6000 K (50 K).
+    //  Worst relative Cp error of the fit: 1.25e-04 at 1000 K (low), 3.30e-05 at 6000 K (high).
+    model    NASA9;
+    Tlow     200;
+    Tcommon  1000;
+    Thigh    6000;
+    low      ( -1.579623530e+04 2.666312331e+02 2.448890333e+00 3.324210887e-03 -1.397507844e-06 1.363828253e-09 -6.720340336e-13 );
+    high     ( 1.662432662e+06 -5.798156189e+03 1.037853032e+01 -1.115084603e-03 2.119504465e-07 -2.157344341e-11 9.089519082e-16 );
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas";
+        methodVersion "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)";
+        uncertainty   "+-0.11 kJ/mol (ATcT, 95% confidence)";
+        notes         "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. Miller & Bowman 1989, Table 1 (p. 289) lists 101.46 kcal/mol = 424.51 kJ/mol (-4.62 kJ/mol from ATcT); the ATcT value is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose.";
+    }
+    s_298
+    {
+        origin        derived;
+        method        "RRHO from molecular constants via bin/curate/rrho_thermo.py with the inputs of bin/curate/rrho_species.json (Sackur-Tetrode translation, rigid rotor, harmonic oscillator, electronic levels), 1 bar";
+        methodVersion "rrho_thermo.py rrho_species.json";
+        inputs
+        (
+            { quantity "vibrational wavenumber 1 (exp gas)"; value 2806.01; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "vibrational wavenumber 2 (exp gas)"; value 1352.6; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "vibrational wavenumber 3 (exp gas)"; value 2864.97; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "rotational constant A (calc)"; value 20.063; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "rotational constant B (calc)"; value 11.3428; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "rotational constant C (calc)"; value 7.2461; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "rotational symmetry number (point group of the cited structure)"; value 2; unit 1; doi "10.18434/T4D303"; }
+            { quantity "electronic level 1 energy (cited state table)"; value 0; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "electronic level 1 degeneracy (cited state table)"; value 1; unit 1; doi "10.18434/T4D303"; }
+        );
+        uncertainty   "+-0.2 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants)";
+        notes         "constants: NIST Chemistry WebBook (webbook.nist.gov, SRD 69; vibrational/electronic energy levels compiled by M. E. Jacox), fetched 2026-11-22: a 1A1 state fundamentals nu1 2806.01 (CH s-stretch), nu2 1352.6 (bend), nu3 2864.97 (CH a-stretch) cm-1 (Herzberg & Johns 1966; Petek, Nesbitt et al. 1983, 1987, 1989; Hartland et al. 1993); rotational constants CALCULATED (B3LYP/def2-TZVP (density fitted, DFT grid level 3) equilibrium geometry and harmonic frequencies (PySCF 2.15, bin/curate/rrho_abinitio_constants.py, UKS for open shells), frequencies x 0.964 (single factor fitted on 23 measured fundamentals of six molecules (the scale_calibration block of rrho_species.json), rms 21 cm-1 / 1.7 %), rotational constants as computed (equilibrium, not B0; ~1-2 % effect))";
+    }
+    idealGasHeatCapacity
+    {
+        origin        derived;
+        method        "RRHO from molecular constants via bin/curate/rrho_thermo.py with the inputs of bin/curate/rrho_species.json, then a 7-term NASA9 least-squares fit (200-1000 K and 1000-6000 K)";
+        methodVersion "rrho_thermo.py rrho_species.json";
+        inputs
+        (
+            { quantity "vibrational wavenumber 1 (exp gas)"; value 2806.01; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "vibrational wavenumber 2 (exp gas)"; value 1352.6; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "vibrational wavenumber 3 (exp gas)"; value 2864.97; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "rotational constant A (calc)"; value 20.063; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "rotational constant B (calc)"; value 11.3428; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "rotational constant C (calc)"; value 7.2461; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "rotational symmetry number (point group of the cited structure)"; value 2; unit 1; doi "10.18434/T4D303"; }
+            { quantity "electronic level 1 energy (cited state table)"; value 0; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "electronic level 1 degeneracy (cited state table)"; value 1; unit 1; doi "10.18434/T4D303"; }
+        );
+        uncertainty   "+-0.02 J/(mol K) at 298 K, +-0.04 at 1000 K from the same propagation; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)";
+        notes         "Cp(298.15) = 33.781, Cp(1500) = 49.787 J/(mol K) from the RRHO curve; fit error 1.2e-04 (<1000 K) and 3.3e-05 (>=1000 K), relative. Approximations: rigid rotor, harmonic oscillator; the singlet is its own species with g = 1 (its energy above the triplet, 3147 cm-1, is inside the enthalpy of formation, not the partition function)";
+    }
+    source   "Choupo RRHO computation (bin/curate/rrho_thermo.py) from the molecular constants and enthalpy of formation cited in the record's provenance";
+    licence  publicDomain;    // inputs: NIST (US government) data and published spectroscopy; the computation is Choupo's own
+}

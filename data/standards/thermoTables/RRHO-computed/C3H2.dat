@@ -1,0 +1,100 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Species C3H2 (propargylene HCCCH, triplet ground state (quasi-linear 3B1, treated as linear)): ideal-gas thermochemistry COMPUTED from molecular
+  constants by bin/curate/rrho_thermo.py (rigid rotor, harmonic
+  oscillator, electronic levels) from the inputs of bin/curate/rrho_species.json,
+  anchored to a cited enthalpy of formation.  NOT a transcription of a
+  published table: the NASA/TP-2002-211556 report holds no entry for it.
+  Re-run `bin/curate/rrho_thermo.py write`; the gate check_rrho_thermo holds this
+  file equal to the tool's output.
+\*---------------------------------------------------------------------------*/
+name           C3H2;
+formula        C3H2;
+CAS            67152-18-5;
+MW             38.04798;       // kg/kmol, standard atomic weights
+role           gasOnly;       // listed biradical or transient: triplet biradical (propargylene)
+tags           ( gasPhase thermoTable rrhoComputed );
+reviewStatus   interim;
+reviewReason   "computed by bin/curate/rrho_thermo.py from molecular constants (inputs and sources in bin/curate/rrho_species.json); not read back against the cited papers by a curator"; 
+standardThermochemistry
+{
+    dHf_298    546490.000;   // J/mol  -- ideal gas; ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.65 kJ/mol
+    s_298      263.646;     // J/(mol K) -- RRHO at 298.15 K, P0 = 1 bar (rrho_thermo.py)
+}
+
+idealGasHeatCapacity
+{
+    //  Cp/R = a1/T^2 + a2/T + a3 + a4 T + a5 T^2 + a6 T^3 + a7 T^4 (NASA9 form, as the
+    //  NASA/TP-2002-211556 records), LEAST-SQUARES FIT to the RRHO Cp(T) curve of
+    //  rrho_thermo.py on 200-1000 K (10 K) and 1000-6000 K (50 K).
+    //  Worst relative Cp error of the fit: 1.37e-04 at 200 K (low), 8.45e-05 at 1000 K (high).
+    model    NASA9;
+    Tlow     200;
+    Tcommon  1000;
+    Thigh    6000;
+    low      ( -4.621935757e+04 2.127255477e+02 6.376756783e+00 9.492419114e-03 -8.626739923e-06 5.179529675e-09 -1.356642277e-12 );
+    high     ( 1.947643686e+06 -6.737178459e+03 1.679421409e+01 -9.009324457e-04 1.399167104e-07 -1.144453011e-11 3.793613735e-16 );
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas";
+        methodVersion "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)";
+        uncertainty   "+-0.65 kJ/mol (ATcT, 95% confidence)";
+        notes         "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar.";
+    }
+    s_298
+    {
+        origin        derived;
+        method        "RRHO from molecular constants via bin/curate/rrho_thermo.py with the inputs of bin/curate/rrho_species.json (Sackur-Tetrode translation, rigid rotor, harmonic oscillator, electronic levels), 1 bar";
+        methodVersion "rrho_thermo.py rrho_species.json";
+        inputs
+        (
+            { quantity "vibrational wavenumber 1 (exp matrix (Ar))"; value 3266; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "vibrational wavenumber 2 (calc)"; value 3329.2; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "vibrational wavenumber 3 (exp matrix (Ar))"; value 1619.4; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "vibrational wavenumber 4 (calc)"; value 1244.1; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "vibrational wavenumber 5 (calc)"; value 409.2; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "vibrational wavenumber 6 (calc)"; value 409.2; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "vibrational wavenumber 7 (calc (low))"; value 154.1; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "vibrational wavenumber 8 (calc (low))"; value 154.1; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "vibrational wavenumber 9 (exp matrix (Ar, HCC wag))"; value 248.5; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "vibrational wavenumber 10 (exp matrix (Ar, HCC wag))"; value 248.5; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "rotational constant B (calc)"; value 0.342; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "rotational symmetry number (point group of the cited structure)"; value 2; unit 1; doi "10.18434/T4D303"; }
+            { quantity "electronic level 1 energy (cited state table)"; value 0; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "electronic level 1 degeneracy (cited state table)"; value 3; unit 1; doi "10.18434/T4D303"; }
+        );
+        uncertainty   "+-5.1 J/(mol K) (propagated from the stated uncertainty of each frequency, 2.0 % on the rotational constants; plus 3.0 for large-amplitude motion treated as harmonic)";
+        notes         "constants: NIST Chemistry WebBook (webbook.nist.gov, SRD 69; vibrational/electronic energy levels compiled by M. E. Jacox), fetched 2026-11-22: matrix (Ar) fundamentals CH stretch 3266.0, C3 a-stretch 1619.4, HCC wag 248.5 cm-1 (Maier, Reisenauer et al. 1987; Seburg et al. 1995; Jacox & Milligan 1974; their other bends 550.4 and 402.6 are not mapped to a mode here); the other modes and B CALCULATED (B3LYP/def2-TZVP (density fitted, DFT grid level 3) equilibrium geometry and harmonic frequencies (PySCF 2.15, bin/curate/rrho_abinitio_constants.py, UKS for open shells), frequencies x 0.964 (single factor fitted on 23 measured fundamentals of six molecules (the scale_calibration block of rrho_species.json), rms 21 cm-1 / 1.7 %), rotational constants as computed (equilibrium, not B0; ~1-2 % effect); the B3LYP structure is LINEAR, frequencies in the raw output: [0.0, 0.0, 159.8, 424.4, 424.8, 1290.3, 1720.0, 3441.5, 3452.9] cm-1, the soft CCC bend reported as ~0 by the harmonic analysis and replaced by the measured 248.5); isomer: the triplet HCCCH of ATcT (c-C3H2, 50 kJ/mol lower, is a different molecule); sigma = 2 (D-infinity-h treatment), electronic X 3B1/3Sigma-g-, g = 3";
+    }
+    idealGasHeatCapacity
+    {
+        origin        derived;
+        method        "RRHO from molecular constants via bin/curate/rrho_thermo.py with the inputs of bin/curate/rrho_species.json, then a 7-term NASA9 least-squares fit (200-1000 K and 1000-6000 K)";
+        methodVersion "rrho_thermo.py rrho_species.json";
+        inputs
+        (
+            { quantity "vibrational wavenumber 1 (exp matrix (Ar))"; value 3266; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "vibrational wavenumber 2 (calc)"; value 3329.2; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "vibrational wavenumber 3 (exp matrix (Ar))"; value 1619.4; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "vibrational wavenumber 4 (calc)"; value 1244.1; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "vibrational wavenumber 5 (calc)"; value 409.2; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "vibrational wavenumber 6 (calc)"; value 409.2; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "vibrational wavenumber 7 (calc (low))"; value 154.1; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "vibrational wavenumber 8 (calc (low))"; value 154.1; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "vibrational wavenumber 9 (exp matrix (Ar, HCC wag))"; value 248.5; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "vibrational wavenumber 10 (exp matrix (Ar, HCC wag))"; value 248.5; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "rotational constant B (calc)"; value 0.342; unit cm-1; doi "10.1063/5.0006074"; }
+            { quantity "rotational symmetry number (point group of the cited structure)"; value 2; unit 1; doi "10.18434/T4D303"; }
+            { quantity "electronic level 1 energy (cited state table)"; value 0; unit cm-1; doi "10.18434/T4D303"; }
+            { quantity "electronic level 1 degeneracy (cited state table)"; value 3; unit 1; doi "10.18434/T4D303"; }
+        );
+        uncertainty   "+-1.41 J/(mol K) at 298 K, +-1.01 at 1000 K from the same propagation; plus 1.0 for large-amplitude motion; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)";
+        notes         "Cp(298.15) = 72.841, Cp(1500) = 100.560 J/(mol K) from the RRHO curve; fit error 1.4e-04 (<1000 K) and 8.5e-05 (>=1000 K), relative. Approximations: treated as a LINEAR rigid rotor (the true triplet is quasi-linear, bent at the central carbon); the bends below 450 cm-1 are large-amplitude and treated as harmonic; weakest record of the nine";
+    }
+    source   "Choupo RRHO computation (bin/curate/rrho_thermo.py) from the molecular constants and enthalpy of formation cited in the record's provenance";
+    licence  publicDomain;    // inputs: NIST (US government) data and published spectroscopy; the computation is Choupo's own
+}
