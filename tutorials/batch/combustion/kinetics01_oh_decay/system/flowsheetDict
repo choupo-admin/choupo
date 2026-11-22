@@ -1,0 +1,71 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  kinetics01_oh_decay -- the cell of a flash-photolysis experiment: a trace of
+  OH made at t = 0 in a hot H2/N2 bath, followed in time.
+
+  One isothermal closed vessel at constant volume (the "cell"), the whole
+  O Conaire 2004 H2/O2 mechanism (19 reactions, the same constant/reactions as
+  ignition01_h2o2) so that EVERYTHING the radical can do is in the model --
+  not only the reaction under study.  `rateOfProduction` prints, at one
+  instant, which reactions make and destroy each species: the secondary
+  chemistry that contaminates a measured decay, listed by name.
+
+  The page that runs this case (EduTool `how-do-we-know-k`) rewrites T, the
+  charge, the H2 and OH mole fractions, endTime and the instant of the
+  rate-of-production report; this file is the experiment at its defaults.
+
+  THE JACOBIAN.  `jacobian finiteDifference;` is declared on purpose.  The
+  engine audits its analytic Jacobian against a finite difference and refuses
+  a run where they differ by more than 1e-4 of the column's scale; at the
+  first Jacobian of a vessel holding H2O2 alone (every radical at zero, the
+  start of kinetics02_h2o2_falloff) it measured d(n_HO2)/d(n_HO2) = -0.9618
+  against -0.9665 and refused.  Both kinetics cases therefore integrate on the
+  finite-difference Jacobian, which every Rosenbrock step is allowed to use.
+  The disagreement is reported to the engine owner as an open item, not worked
+  around in the engine.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        bomb;
+        type        batchReactor;
+
+        operation
+        {
+            mode      isothermal;           // the cell is held at T
+            energy    gasConstantV;         // closed fixed-V gas
+        }
+
+        rateOfProduction
+        {
+            times  ( 5.0e-6 );              // s -- one instant of the decay
+            top    5;                       // reactions listed per species and side
+        }
+
+        solver
+        {
+            integrator  Rosenbrock23;       // L-stable stiff method
+            jacobian    finiteDifference;   // see THE JACOBIAN in this file's header
+            verbosity   3;
+        }
+
+        reactions
+        (
+            R1_H_O2_O_OH  R2_O_H2_H_OH  R3_OH_H2_H_H2O
+            R4_O_H2O_2OH  R5_H2_M_2H_M  R6_2O_M_O2_M
+            R7_O_H_M_OH_M  R8_H_OH_M_H2O_M  R9_H_O2_M_HO2
+            R10_HO2_H_H2_O2  R11_HO2_H_2OH  R12_HO2_O_OH_O2
+            R13_HO2_OH_H2O_O2  R14a_2HO2_H2O2_O2  R14b_2HO2_H2O2_O2
+            R15_H2O2_M_2OH  R16_H2O2_H_H2O_OH  R17_H2O2_H_H2_HO2
+            R18_H2O2_O_OH_HO2  R19a_H2O2_OH_H2O_HO2  R19b_H2O2_OH_H2O_HO2
+        );
+    }
+);

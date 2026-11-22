@@ -3319,6 +3319,40 @@
           }
         }
       ]
+    },
+    "how-do-we-know-k": {
+      "references": [
+        {
+          "text": "Ó Conaire, M.; Curran, H. J.; Simmie, J. M.; Pitz, W. J.; Westbrook, C. K. (2004). A comprehensive modeling study of hydrogen oxidation. Int. J. Chem. Kinet. 36(11), 603–622.",
+          "doi": "10.1002/kin.20036",
+          "note": "The mechanism the cell runs: its Table I is the case's constant/reactions, with the Troe fall-off lines of H + O2 and of H2O2.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/kin.20036: authors, title, container, volume, pages and year matched; the PDF in ~/Choupo-Literature/Articles/Reactors-Kinetics/oconaire2004-hydrogen-oxidation-mechanism.pdf carries the same title, authors and DOI on its first page",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Gilbert, R. G.; Luther, K.; Troe, J. (1983). Theory of Thermal Unimolecular Reactions in the Fall-off Range. II. Weak Collision Rate Constants. Ber. Bunsenges. Phys. Chem. 87(2), 169–177.",
+          "doi": "10.1002/bbpc.19830870218",
+          "note": "The broadening factor of the fall-off curve: Eqs. (6.3) to (6.7), the form the engine codes in Reaction.cpp.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/bbpc.19830870218: authors, title, container, volume, pages and year matched; the paper was read in ~/Choupo-Literature/bbpc.19830870218.pdf, Eqs. (6.3)-(6.7) on its PDF page 8 (the c, N and d of the engine are Eqs. (6.4)-(6.6))",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Lindemann, F. A. (1922). Discussion on “the radiation theory of chemical action”. Trans. Faraday Soc. 17, 598–606.",
+          "doi": "10.1039/TF9221700598",
+          "note": "The original of the picture of an energised molecule that either reacts or is de-energised, whose blend the page draws as the Lindemann curve.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1039/TF9221700598: author, container, volume, pages and year matched; the same citation is reference [1] of Gilbert, Luther and Troe 1983 in the project's literature folder",
+            "date": "2026-11-22"
+          }
+        }
+      ]
     }
   }
 }

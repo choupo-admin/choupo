@@ -2056,6 +2056,76 @@ isothermal reactors.  Next, named and not built: batch electrodialysis (the
 film against the emptying tank) and a cascade control loop.  The measured
 tables are in \file{docs/design/fast-and-slow.md}.
 
+\subsection{How do we know $k$?}\label{sec:edu-how-do-we-know-k}
+
+\declaredanchor{ch:gas-kinetics}
+
+\noindent\textit{\small Tool:} \code{tool=how-do-we-know-k}.  \textit{\small
+Cases it starts from:} \file{kinetics01\_oh\_decay} (a trace of OH in H$_2$/N$_2$)
+and \file{kinetics02\_h2o2\_falloff} (a trace of H$_2$O$_2$ in N$_2$), both in
+\file{tutorials/batch/combustion/}, with the whole \'O~Conaire 2004 mechanism
+loaded.
+
+\subsubsection*{The question}
+
+\emph{A rate constant in a mechanism is a number somebody measured.  How do you
+isolate one reaction among the dozens that happen in a flame and read its $k$,
+its activation energy and its pressure dependence from a signal?}
+
+The page does the measurement.  The engine's batch reactor is the cell of a
+flash-photolysis experiment: an isothermal closed vessel holding a bath and, at
+$t=0$, a trace of a radical; the amount of the radical against time is the
+signal.  With the partner in large excess the decay is first order,
+$\ln c_\mathrm{OH} = \ln c_{\mathrm{OH},0} - k' t$ with $k' = k\,c_{\mathrm{H}_2}$.  Five panels
+follow, each started by its own button: one decay and its fit over the first
+three lifetimes; $k'$ against five concentrations of H$_2$ (the slope is $k$,
+the intercept the loss that does not depend on H$_2$); the same experiment at
+seven temperatures as an Arrhenius plot, whose straight-line slope is the
+\emph{local} activation energy $E_a + bRT$ because the record has $b\neq0$;
+the decomposition of H$_2$O$_2$ at eight pressures between the Lindemann limits,
+with Troe's broadening drawn beside the points; and the two ways the method
+breaks, a small excess and secondary reactions, the second shown by the
+engine's own rate-of-production table.  Every recovered $k$ is compared with
+the law the engine announced when it loaded the reaction; the optional noise is
+seeded and labelled synthetic.
+
+\subsubsection*{What the engine says, and what the page computes}
+
+Every signal is the engine's (\code{choupoBatch}, the Rosenbrock23 integrator).
+Before each measurement the page does what an experimenter does with a pilot
+run: it changes the observation window and reruns the cell until the signal
+falls by three $e$-folds inside it.  The page fits straight lines to the
+signals, evaluates the record's law with the units the engine announced in the
+\code{[kinetics]} lines of the run's log, and draws the Lindemann and Troe
+laws as labelled checks.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+At the defaults (1000\,K, $x_{\mathrm{H}_2}=0.01$, no noise) the recovered
+$k$ equals the engine's to 0.02\,\%.  Switch the noise to 10\,\% and watch the
+standard errors grow and the recovered $k$ move by a few percent.  In panel 3
+compare the apparent activation energy with the one the record implies at the
+middle of the range, and with the record's $E_a$ alone: the difference is
+$bRT$.  In panel 4 move the temperature and see the knee of the fall-off curve
+move to higher pressure.  In panel 5 watch the recovered $k$ climb as the
+excess falls.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That a straight line on a log plot proves a single reaction.}  The line
+is straight when the loss is first order, not when the loss is one reaction:
+with a large radical seed the secondary reactions of the mechanism feed back
+and the fit still returns a number.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+The engine answers its own question (agreement with the record shows that the
+method recovers $k$, not that the record is right about a real gas); no
+instrument, transport or wall model; one bimolecular reaction and one
+fall-off; the Arrhenius panel takes one excess per temperature.
+
 \subsection{Operator panels and alarms}\label{sec:edu-operator-panels}
 
 \declaredanchor{sec:operatorPanels}

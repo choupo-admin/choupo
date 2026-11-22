@@ -373,6 +373,9 @@ const OperatorPanelsTool = lazy(() =>
 const FastSlowTool = lazy(() =>
   import("./methods/FastSlowTool.js")
     .then((m) => ({ default: m.FastSlowTool })));
+const KnowKTool = lazy(() =>
+  import("./methods/KnowKTool.js")
+    .then((m) => ({ default: m.KnowKTool })));
 const EquilibriumOrRateBasedTool = lazy(() =>
   import("./methods/EquilibriumOrRateBasedTool.js")
     .then((m) => ({ default: m.EquilibriumOrRateBasedTool })));
@@ -705,6 +708,7 @@ export function MethodsWorkspace() {
             : tool === "operator-panels" ? <OperatorPanelsTool />
             : tool === "fluidised-beds" ? <FluidisedBedsTool />
             : tool === "fast-and-slow" ? <FastSlowTool />
+            : tool === "how-do-we-know-k" ? <KnowKTool />
             : tool === "equilibrium-or-rate-based" ? <EquilibriumOrRateBasedTool />
             : tool === "one-flux-many-units" ? <OneFluxManyUnitsTool />
             : tool === "bund" ? <BundTool />

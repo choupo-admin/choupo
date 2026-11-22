@@ -124,7 +124,7 @@ const tickLabel = (v: number): string => {
   return String(Number(v.toPrecision(6)));
 };
 
-export function XYPlot({ series, xLabel, yLabel, xlog = false, ylog = false, span, yZero = false, yFromPoints = false, ariaLabel }: {
+export function XYPlot({ series, xLabel, yLabel, xlog = false, ylog = false, span, yZero = false, yFromPoints = false, tight = false, ariaLabel }: {
   series: readonly Series[];
   xLabel: string;
   yLabel: string;
@@ -137,6 +137,9 @@ export function XYPlot({ series, xLabel, yLabel, xlog = false, ylog = false, spa
   /** Scale y to the POINTS only; the lines are clipped at the frame.  Used
    *  where a model curve far from the data would otherwise flatten them. */
   yFromPoints?: boolean;
+  /** Fit both linear axes to the data instead of extending them to zero
+   *  (an Arrhenius plot's 1/T and ln k are nowhere near zero). */
+  tight?: boolean;
   ariaLabel: string;
 }): JSX.Element {
   const clipId = useId().replace(/:/g, "");
@@ -147,15 +150,15 @@ export function XYPlot({ series, xLabel, yLabel, xlog = false, ylog = false, spa
   const ty = (v: number) => (ylog ? Math.log10(v) : v);
   let x0 = Math.min(...all.map((p) => tx(p[0]))), x1 = Math.max(...all.map((p) => tx(p[0])));
   let y0 = Math.min(...forY.map((p) => ty(p[1]))), y1 = Math.max(...forY.map((p) => ty(p[1])));
-  if (!xlog) x0 = Math.min(0, x0);
-  if (!ylog && !yZero) y0 = Math.min(0, y0);
+  if (!xlog && !tight) x0 = Math.min(0, x0);
+  if (!ylog && !yZero && !tight) y0 = Math.min(0, y0);
   if (yZero) { const m = Math.max(Math.abs(y0), Math.abs(y1), 1e-12); y0 = -m; y1 = m; }
   if (!(x1 > x0)) x1 = x0 + 1;
   if (!(y1 > y0)) y1 = y0 + 1;
   if (yFromPoints && ylog) { y0 -= 0.5; y1 += 0.3; }
   else if (yFromPoints) y1 += 0.25 * (y1 - y0);
   const padY = 0.04 * (y1 - y0);
-  y1 += padY; if (ylog || yZero) y0 -= padY;
+  y1 += padY; if (ylog || yZero || tight) y0 -= padY;
   const X = (v: number) => ML + ((tx(v) - x0) / (x1 - x0)) * (PW - ML - MR);
   const Y = (v: number) => PH - MB - ((ty(v) - y0) / (y1 - y0)) * (PH - MT - MB);
   const xt = xlog ? logTicks(x0, x1) : niceTicks(x0, x1);
