@@ -21,6 +21,7 @@ Read ONLY the one document your task needs.  `docs/ai/<path>` is served at
 | design a process, write a case | `brief.md` (all of it), then only the packs it names |
 | a tablet plant for their own drug and dose | `brief.md`, then `docs/ai/packs/pharmaceutical.md` |
 | a component or a binary pair Choupo lacks, measured data to fit | `brief.md`, then `docs/ai/packs/properties.md` |
+| heat transfer, salts in water, membranes, solids, sweeps and optimisation, transients, a property or a diagram | `brief.md`, then the pack of that name in `docs/ai/packs/` (`heat`, `electrolytes`, `membranes`, `solids`, `drivers`, `transient`, `props`) |
 | change an existing case (feedback, a new number) | `brief.md`, its section 10 |
 | how to run a case, what the files are | the rest of this file |
 
