@@ -143,7 +143,7 @@ describe("how-do-we-know-k: the page's pipeline on the native engine", () => {
 
   it("panel 4: k from the H2O2 decay is the record's Troe law at every pressure and temperature, and Lindemann alone is not", () => {
     for (const T of FALLOFF_T) {
-      let w2 = 1.0e-3;
+      let w2 = FIRST_WINDOW;
       for (const p of FALLOFF_P_BAR) {
         const r = measure("H2O2", { T, P: p * 1e5, xH2: 0, xOH: 0, xH2O2: FALLOFF_XH2O2 }, w2);
         w2 = r.window;
