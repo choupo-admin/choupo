@@ -213,7 +213,7 @@ void auditStructure(const std::vector<sVector>& Jd,
 //  is second order (a mass-action leg, bilinear in c, is differenced
 //  exactly).  A row the positivity mask guards that sits within h_j of zero
 //  cannot be stepped below it (the rate clamps there), so that column is a
-//  FORWARD difference with sqrt(eps) * s_j.  Measured on
+//  ONE-SIDED, second-order difference (-3 f0 + 4 f(h) - f(2h)) / 2h, h = cbrt(eps) s_j.  Measured on
 //  batch04_reversible_wgs (2026-11-19): with the forward difference alone the
 //  CO2 column, whose entries are a reverse leg small against the forward
 //  rate in every row, read 8e-6 of its scale -- the rounding, not the J.
@@ -247,11 +247,21 @@ std::vector<sVector> auditDifference(const DerivFn& f, scalar t,
         }
         else
         {
-            h = kSqrtEpsR * s;
-            yp[j] = y[j] + h;  const sVector fp = f(t, yp);
+            //  ONE-SIDED, SECOND ORDER (C468 defect 2).  The two-point forward
+            //  difference of a rate quadratic in the species at zero (2 HO2 ->,
+            //  2 OH <-, every bimolecular leg of a radical pool) is biased by
+            //  k h: with the audit's row size (1e-2 of the inventory) the step
+            //  h exceeds a trace parent's own amount, and the bias was O(1) --
+            //  kinetics02_h2o2_falloff read d(n_OH)/d(n_OH) -0.206 analytic
+            //  against -0.439 difference, the bias of the reference, not a
+            //  missing term.  The three-point one-sided formula is exact for a
+            //  quadratic and its truncation is O(h^2) f'''.
+            yp[j] = y[j] + h;       const sVector f1 = f(t, yp);
+            yp[j] = y[j] + 2.0 * h; const sVector f2 = f(t, yp);
             yp[j] = y[j];
-            evals += 1;
-            for (std::size_t i = 0; i < n; ++i) J[i][j] = (fp[i] - f0[i]) / h;
+            evals += 2;
+            for (std::size_t i = 0; i < n; ++i)
+                J[i][j] = (-3.0 * f0[i] + 4.0 * f1[i] - f2[i]) / (2.0 * h);
         }
     }
     return J;
@@ -268,10 +278,12 @@ std::vector<sVector> auditDifference(const DerivFn& f, scalar t,
 //  methods are not W-methods: an incomplete J degrades them silently (the
 //  steps still pass the error test, slower or less accurate), so this
 //  comparison is the only place the omission can be seen.
+static const scalar kEps23 = std::pow(2.220446049250313e-16, 2.0 / 3.0);
+
 void auditAnalytic(const std::vector<sVector>& Ja,
                    const std::vector<sVector>& Jd,
                    scalar t, const sVector& y, const sVector& sc,
-                   ODEAnalyticJacobian& A)
+                   ODEAnalyticJacobian& A, const sVector* f0)
 {
     const std::size_t n = Jd.size();
     ODEAnalyticJacobian::Audit rec;
@@ -282,10 +294,13 @@ void auditAnalytic(const std::vector<sVector>& Ja,
     //  row's and the column's own size, so kmol/s rows and a K/s row
     //  compare, and the matrix has ONE scale rho = max |J^|.
     const auto sz = [&](std::size_t i) { return std::max(sc[i], 1.0e-300); };
+    std::vector<char> sing;
+    if (A.auditSingular) sing = A.auditSingular(y, sc);
+    sing.resize(n, 0);
     scalar rho = 0.0;
     for (std::size_t r = 0; r < n; ++r)
         for (std::size_t c = 0; c < n; ++c)
-            if (std::isfinite(Ja[r][c]))
+            if (!sing[c] && std::isfinite(Ja[r][c]))
                 rho = std::max(rho, std::max(std::abs(Ja[r][c]), std::abs(Jd[r][c]))
                                     * sz(c) / sz(r));
     const scalar floor = A.columnFloor * rho;
@@ -294,13 +309,27 @@ void auditAnalytic(const std::vector<sVector>& Ja,
         scalar scale = 0.0, diff = 0.0;
         std::size_t rowMax = 0;
         bool nonFinite = false;
+        if (sing[c])       // a power below one at ~0: finite or nothing (C468)
+        {
+            ++rec.singularColumns;
+            for (std::size_t r = 0; r < n; ++r)
+                if (!std::isfinite(Ja[r][c])) { nonFinite = true; rowMax = r; break; }
+            if (!nonFinite) { if (c == 0) rec.worst = 0.0; continue; }
+        }
         for (std::size_t r = 0; r < n; ++r)
         {
             if (!std::isfinite(Ja[r][c]))            // a NaN/inf entry fails
             { if (!nonFinite) rowMax = r; nonFinite = true; continue; }
             const scalar w = sz(c) / sz(r);
             scale = std::max(scale, w * std::max(std::abs(Ja[r][c]), std::abs(Jd[r][c])));
-            const scalar dd = w * std::abs(Ja[r][c] - Jd[r][c]);
+            //  The reference is a difference of f at steps h_c = cbrt(eps) s_c:
+            //  its own rounding, 8 eps |f0_r| / h_c, in the scaled entry is
+            //  8 eps^(2/3) |f0_r| / s_r.  A disagreement inside it is the
+            //  reference's noise, not a term of the model (C468: an all-zero
+            //  analytic column, a zeroth-order rate, against a difference
+            //  that read -7.6e-13 of the matrix's own 1e-12 scale).
+            const scalar noise = f0 ? 8.0 * kEps23 * std::abs((*f0)[r]) / sz(r) : 0.0;
+            const scalar dd = std::max(0.0, w * std::abs(Ja[r][c] - Jd[r][c]) - noise);
             if (dd > diff && !nonFinite) { diff = dd; rowMax = r; }
         }
         //  A column whose every entry is far below the matrix's scale is
@@ -619,7 +648,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
                 const auto Jd = auditDifference(f, t, y, f0, sc, ctrl, evals);
                 A->auditEvals += evals;
                 A->nextAudit *= 2;
-                auditAnalytic(SJ.dense(P), Jd, t, y, sc, *A);   // may refuse
+                auditAnalytic(SJ.dense(P), Jd, t, y, sc, *A, &f0);   // may refuse
             }
             Td = A->autonomous ? sVector(n, 0.0)
                                : fdDfDt(f, t, y, f0, std::max(span, 1.0));
@@ -746,7 +775,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
                     const auto Jd = auditDifference(f, t, y, f0, sc, ctrl, evals);
                     A->auditEvals += evals;
                     A->nextAudit *= 2;
-                    auditAnalytic(J, Jd, t, y, sc, *A);   // may refuse
+                    auditAnalytic(J, Jd, t, y, sc, *A, &f0);   // may refuse
                 }
             }
             else

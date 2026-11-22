@@ -250,6 +250,12 @@ struct ODEAnalyticJacobian
     //  Optional: the size s_i of each row for the audit (its difference step
     //  and its row scaling).  Empty => max(|y_i|, typ_i).
     std::function<sVector(const sVector& y)>  auditScale;
+    //  Optional (C468): columns whose derivative the audit cannot hold to a
+    //  difference at this state (a power below one on a species within a few
+    //  hundred audit steps of zero: the central difference's truncation
+    //  exceeds the tolerance, and at zero the derivative is infinite).  Such a
+    //  column is judged on being finite, and counted in Audit::singularColumns.
+    std::function<std::vector<char>(const sVector& y, const sVector& sc)> auditSingular;
 
     //  OPT-IN SPARSE FORM (Theory Guide, sec:sparse-lu).  With `sparse` true,
     //  a `pattern` and a `sparseJacobian`, the integrator asks for J on the
@@ -279,6 +285,7 @@ struct ODEAnalyticJacobian
         scalar      worst    = 0.0;  // max_j d_j
         std::size_t row = 0, col = 0;// where the worst column peaks
         scalar      analytic = 0.0, fd = 0.0;   // J_row,col both ways
+        long        singularColumns = 0;        // columns judged on finiteness only
     };
     std::vector<Audit> audits;
     long   jacobians   = 0;          // analytic Jacobians built

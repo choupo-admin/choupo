@@ -52,6 +52,6 @@ std::vector<sVector> auditDifference(const DerivFn& f, scalar t,
 void auditAnalytic(const std::vector<sVector>& Ja,
                    const std::vector<sVector>& Jd,
                    scalar t, const sVector& y, const sVector& sc,
-                   ODEAnalyticJacobian& A);
+                   ODEAnalyticJacobian& A, const sVector* f0 = nullptr);
 
 } // namespace Choupo::solver::detail

@@ -378,7 +378,12 @@ private:
     bool rateGradient_(const ReactionSpec& rxn, scalar T, const sVector& n,
                        scalar V, sVector& grad, scalar& dT,
                        const sVector* g, const sVector* h,
-                       const KinCtx* ctx = nullptr) const;
+                       const KinCtx* ctx = nullptr,
+                       const sVector* cFloor = nullptr) const;
+    //  C468: with `cFloor` (per species, the concentration step the Jacobian
+    //  resolves), a power below one is evaluated for c < cFloor_k at
+    //  c = cFloor_k -- a finite slope p cFloor^(p-1) in the Newton matrix --
+    //  and never returns false for it; without, false as before.
     //  The same for a factory law that has an analytic derivative
     //  (ElementaryRate: modifiedArrhenius, thirdBody, falloff, plog); dP is
     //  d r / d P (the PLOG table), false where the law declines.

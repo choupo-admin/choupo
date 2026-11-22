@@ -2543,7 +2543,7 @@ bool BatchReactor::rateGradientLaw_(const ReactionSpec& rxn, scalar T,
 bool BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
                                  const sVector& n, scalar V, sVector& grad,
                                  scalar& dT, const sVector* g, const sVector* h,
-                                 const KinCtx* ctx) const
+                                 const KinCtx* ctx, const sVector* cFloor) const
 {
     const std::size_t nc = n.size();
     // ---- k_eff, d k_eff / d [M] and d k_eff / d T ---------------------------
@@ -2622,6 +2622,19 @@ bool BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
                         [&]() -> const std::string& { return thermo_->comp(rxn.comps[s]).name(); },
                         [&]() { return "batchReactor reaction '" + rxn.name + "'"; });
         if (clamp && c < 0.0) { df = 0.0; return true; }     // flat clamp
+        //  A POWER BELOW ONE AT (NEAR) ZERO (C468 defect 1).  d(c^p)/dc = p c^(p-1)
+        //  is infinite at c = 0.  The Jacobian is a Newton-matrix approximation,
+        //  so it takes the slope at the smallest concentration it resolves,
+        //  c_floor = sqrt(eps) * (the species' audit size) / V: finite, the same
+        //  at every c below it, continuous above.  (Differencing the reaction,
+        //  the earlier answer, took a step of that same size and so only hid it
+        //  behind a different number, one the audit could not reproduce.)
+        if (p < 1.0 && p > 0.0 && cFloor)
+        {
+            const scalar cf = (*cFloor)[rxn.comps[s]];
+            df = p * orderPow(std::max(cc, cf), p - 1.0);
+            return true;
+        }
         if (cc == 0.0)
         {
             if (p == 1.0) { df = 1.0; return true; }
@@ -2765,6 +2778,9 @@ void BatchReactor::odeJacobianSparse(const sVector& y, const sVector& f0,
     const sVector hT = enthalpyAt_(T);       // memo's references die at the next call at another T
     const scalar Pgas = (ntot > 0.0 && V > 0.0) ? ntot * 1000.0 * constant::R * T / V : 0.0;
     const KinCtx& kctx = kinCtx_(T, y, V);   // c = n/V, [M], the rate-constant tables: once per Jacobian
+    sVector cFloorV(n, 0.0);                 // the concentration floor of a power below one (C468)
+    for (std::size_t k = 0; k < n; ++k)
+        cFloorV[k] = 1.4901161193847656e-8 * sc[k] / std::max(V, 1.0e-300);
     sVector grad(n, 0.0);                    // zero outside the current deps
     scalar sumWS = 0.0, sumWE = 0.0;         // sum_j w_j s_j, sum_j w_j E_j
     for (std::size_t j = 0; j < reactions_.size(); ++j)
@@ -2778,7 +2794,7 @@ void BatchReactor::odeJacobianSparse(const sVector& y, const sVector& f0,
             scalar dT = 0.0, dP = 0.0;
             const bool ok = (rxn.form == RateForm::Factory)
                 ? rateGradientLaw_(rxn, T, nv, V, grad, dT, dP, &gT, &hT, &kctx)
-                : rateGradient_(rxn, T, nv, V, grad, dT, &gT, &hT, &kctx);
+                : rateGradient_(rxn, T, nv, V, grad, dT, &gT, &hT, &kctx, &cFloorV);
             if (ok)
             {
                 done = true;
@@ -2893,6 +2909,27 @@ void BatchReactor::wireAnalytic_(solver::ODEAnalyticJacobian& A,
     A.owner = owner;
     A.rowLabel = [this](std::size_t i) { return odeRowLabel(i); };
     A.auditScale = [this](const sVector& y) { return odeJacobianScale(y); };
+    A.auditSingular = [this](const sVector& y, const sVector& sc)
+    {
+        //  A species read at an order in (0, 1) by some reaction, and so near
+        //  zero that the audit's central step (cbrt(eps) s) is not small
+        //  against it: c^p is not differentiable there, the audit's reference
+        //  has no value to hold the analytic slope to (see the capped slope in
+        //  rateGradient_).  Within 300 steps of zero, truncation of the
+        //  central difference exceeds the audit tolerance.
+        const std::size_t n = state_.n.size();
+        std::vector<char> m(y.size(), 0);
+        const scalar hc = 6.0554544523933395e-6;
+        for (const auto& r : reactions_)
+            for (std::size_t s = 0; s < r.comps.size(); ++s)
+            {
+                const bool frac = (r.order[s] > 0.0 && r.order[s] < 1.0)
+                    || (r.reversible && r.orderRev[s] > 0.0 && r.orderRev[s] < 1.0);
+                const std::size_t k = r.comps[s];
+                if (frac && k < n && y[k] < 300.0 * hc * sc[k]) m[k] = 1;
+            }
+        return m;
+    };
     A.sparse = sparseLinear_;
     A.pattern = jacPattern_;
     A.sparseJacobian = [this](scalar, const sVector& y, const sVector& f0,

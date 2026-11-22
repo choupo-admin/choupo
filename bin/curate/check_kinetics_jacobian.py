@@ -151,8 +151,7 @@ SABOTAGE-VERIFIED 2026-11-21, arm (g) (by hand, rebuilt, restored, rebuilt):
     Rosenbrock step with a wrong factor is still accepted by its error estimate.
 
 NOT CHECKED: that the rate laws themselves are right (ignition02_h2air_slack's Slack pin,
-check_elementary_rates); a power-law order below one at zero concentration (the reactor
-differences such a reaction instead; no witness has one); the heat-capacity slope dC_p/dT
+check_elementary_rates); a power-law order below one near zero is judged on finiteness only (a column within 300 audit steps of zero: the audit has no reference there, C468); the heat-capacity slope dC_p/dT
 (a central difference of the record's law: the record offers no derivative); wall time (machine-
 dependent: the right-hand-side count is the deterministic proxy); a sweep that mixes a
 unit with an analytic Jacobian and one without (it falls back to the difference by
@@ -708,6 +707,68 @@ def main():
             failures.append(f"(h3) nox02 (17 vessels, `linearSolver auto`) did not factor W sparse on the "
                             f"union of the vessels' patterns (exit {rc})")
     notes.append("nox03: dense = sparse, Rodas4 is stepped; nox02 factors sparse over 17 vessels")
+
+
+    # ---- (i) C468: the audit at zero, and a power below one at zero ------------------------
+    #  THE REAL DEFECT (i1) CATCHES (C468 defect 2).  kinetics02_h2o2_falloff, a trace of
+    #  H2O2 with every radical at EXACTLY zero, was refused: d(n_OH)/d(n_OH) -0.206 analytic
+    #  against -0.439 difference (the first report: HO2/HO2 -0.9618 against -0.9665).  The
+    #  analytic derivative was right; the audit's reference was not: a column of a species at
+    #  zero was a two-point FORWARD difference, biased by k h for every rate quadratic in it
+    #  (2 OH, 2 HO2), and the audit's step exceeded the trace parent's own amount.  Both
+    #  kinetics cases declared `jacobian finiteDifference;` to hide it; they now run the
+    #  default.  Sabotage (by hand, rebuilt, restored): the one-sided formula put back to
+    #  (f(h) - f0)/h with h = sqrt(eps) s -- (i1) refuses kinetics02 by name.
+    #  The three-point step also showed the reference's own ROUNDING: an all-zero analytic
+    #  column (a zeroth-order rate, check_positivity_mask (c)) read -7.6e-13 against a matrix
+    #  scale of 1e-12 and was refused; the audit now takes 8 eps^(2/3) |f0_r| / s_r off each
+    #  entry's disagreement (the difference's rounding), and that gate holds it.
+    #  THE REAL DEFECT (i2) CATCHES (C468 defect 1).  A rate of order 1/2 on a species at
+    #  c = 0 (batch34_fractional_order_at_zero: B absent at t = 0): d(c^0.5)/dc is infinite,
+    #  the reaction was differenced at the Jacobian's own step, the audit differenced at its
+    #  own, and the run was refused on every path (-2.678 against -2.671).  SABOTAGE-
+    #  VERIFIED 2026-11-22 (by hand, rebuilt, restored): the audit's singular-column mask
+    #  disabled (BatchReactor::wireAnalytic_) -- (i2) refuses the fixture by name, d(n_compC)/
+    #  d(n_compB) 25.9 against 3.32; the one-sided formula put back to two points -- (i1)
+    #  refuses kinetics01 and kinetics02 (and, beyond them, (g2) and (h3), so cases that
+    #  ship the analytic Jacobian were one unlucky charge from the same refusal).
+    for case in ("tutorials/batch/combustion/kinetics01_oh_decay",
+                 "tutorials/batch/combustion/kinetics02_h2o2_falloff"):
+        with gatekit.probe_copy(case, strip=STRIP) as c:
+            if re.search(r"jacobian\s+finiteDifference", (c / "system/flowsheetDict").read_text()):
+                failures.append(f"(i1) {Path(case).name} still declares `jacobian finiteDifference;`")
+            rc, out = gatekit.run(batch, c)
+            a = audits(out) if rc == 0 else []
+            if rc != 0 or not a or "the default" not in out:
+                failures.append(f"(i1) {Path(case).name} on the DEFAULT analytic Jacobian exited {rc}: "
+                                + " | ".join(out.strip().splitlines()[-2:])[:500])
+            elif max(x[5] for x in a) > GATE_TOL:
+                failures.append(f"(i1) {Path(case).name}: an audit differs by {max(x[5] for x in a):.3e} (> {GATE_TOL:g})")
+            else:
+                notes.append(f"{Path(case).name} analytic, {len(a)} audits <= {max(x[5] for x in a):.0e}")
+    FRAC = "tutorials/batch/reactor/batch34_fractional_order_at_zero"
+    got = {}
+    for tag, integ, jac in (("analytic", "Rosenbrock23", "analytic"), ("rodas", "Rodas4", "analytic"),
+                            ("fd", "Rosenbrock23", "finiteDifference")):
+        with gatekit.probe_copy(FRAC, strip=STRIP) as c:
+            set_solver(c, jac, integrator=integ)
+            rc, out = gatekit.run(batch, c)
+            if rc != 0:
+                failures.append(f"(i2) {Path(FRAC).name} on {integ}, jacobian {jac}, exited {rc}: "
+                                + " | ".join(out.strip().splitlines()[-2:])[:500])
+                continue
+            got[tag] = (kpis(out), audits(out))
+    if "analytic" in got and "fd" in got:
+        if not got["analytic"][1]:
+            failures.append("(i2) the fractional-order fixture printed no audit -- the analytic Jacobian was not used")
+        w, where, missing = kpi_diff(got["fd"][0], got["analytic"][0], rel=1e-4)
+        if missing or w > 1e-4:
+            failures.append(f"(i2) fractional-order fixture: analytic and finite-difference KPIs differ by {w:.2e} ({where})")
+        notes.append("batch34: order 1/2 at c = 0 runs on the analytic Jacobian")
+    if "rodas" in got and "analytic" in got:
+        w, where, _ = kpi_diff(got["rodas"][0], got["analytic"][0], rel=1e-4)
+        if w > 1e-4:
+            failures.append(f"(i2) fractional-order fixture: Rodas4 and Rosenbrock23 differ by {w:.2e} ({where})")
 
     # ---- (d) refusals by name ----------------------------------------------------------
     probes = [

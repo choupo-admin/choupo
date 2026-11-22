@@ -39847,8 +39847,22 @@ case's own law) is differenced reaction by reaction over \emph{every}
 species column, because such a law receives the whole concentration and
 mole-fraction vectors (an adsorption denominator may hold a species
 outside its stoichiometry, and $x_i$ moves with every $n_k$); the same
-is done for a power below one at zero concentration, whose one-sided
-derivative is infinite.
+was done, until 2026-11-22, for a power below one at zero concentration,
+whose one-sided derivative is infinite.
+
+\paragraph{A power below one at $c=0$ (the rule).}  For a reaction order
+$0<p<1$ the slope $p\,c^{p-1}$ is infinite at $c=0$, and the Jacobian is
+only the Newton matrix of a stiff step, not an answer.  It is evaluated at
+the smallest concentration the Jacobian resolves,
+$c_{\mathrm{floor},k}=\sqrt\varepsilon\,s_k/V$ ($s_k$ the species' audit
+size, below): $\partial f/\partial c = p\,\max(c,c_{\mathrm{floor}})^{p-1}$,
+finite, equal for every $c$ below the floor and continuous above it.  The
+audit has no reference there --- the central difference of $c^p$ is biased
+by $O((h/c)^2)$ and across $c=0$ it differences a singularity --- so a
+column whose species is read at such an order and lies within $300$ audit
+steps of zero is judged on being finite alone, and counted in the audit
+record (\code{singularColumns}).  Witness:
+\code{batch34\_fractional\_order\_at\_zero}.
 
 \paragraph{The temperature column, in closed form.}  At fixed $c$,
 \begin{equation}
@@ -39973,6 +39987,21 @@ LHHW column as exactly zero against $-0.058$.  The
 finite-difference Jacobian carries that noise in its trace columns;
 the analytic one does not.
 \end{pitfall}
+
+\paragraph{The audit's difference at zero.}  A column whose species sits
+within one step of zero cannot be differenced centrally (the rate clamps at
+$0$).  It is differenced one-sided of second order,
+$(-3f_0+4f(h)-f(2h))/2h$ with $h=\sqrt[3]{\varepsilon}\,s_k$, exact for a
+rate quadratic in the species.  The two-point forward difference it replaced
+is biased by $k h$ for every bimolecular leg of a radical ($2\,\mathrm{OH}$,
+$2\,\mathrm{HO_2}$), and with $s_k$ a hundredth of the inventory the step
+exceeds a trace parent's own amount: the H$_2$O$_2$ cell
+\code{kinetics02\_h2o2\_falloff} (every radical exactly zero) read
+$\partial n_{\mathrm{OH}}/\partial n_{\mathrm{OH}}$ $-0.206$ analytic against
+$-0.439$ differenced, the bias of the reference and not a missing term.  The reference's own
+rounding, $8\,\varepsilon^{2/3}|f_{0,r}|/s_r$ in the scaled entry, is taken off
+each entry's disagreement, so a column that is exactly zero in the model
+(a zeroth-order rate) is not refused for the noise of its difference.
 
 \paragraph{What the audit measures now.}  With every column in closed
 form, the audits along \code{ignition01\_h2o2\_jac} after the radical pool
