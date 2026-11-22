@@ -63,7 +63,12 @@ Description
          KLU does: a temperature row in K/s next to mole-number rows would
          otherwise dwarf every pivot of its column), then
          LEFT-LOOKING (Doolittle) column by column into a dense work vector,
-         no index search.  The pivots stay on the diagonal (the fixed
+         no index search.  Where a column's rows are stretches of CONSECUTIVE
+         rows (the trailing block of a mechanism's matrix is nearly dense),
+         analyse() records the stretches once and the update w[row] -= l u
+         runs over each as a unit-stride loop, four rows at a time; each
+         element gets the same multiply and subtract in the same order, so
+         the factor is bit for bit that of the indexed loop.  The pivots stay on the diagonal (the fixed
          pattern allows no row exchange); factor() returns false only on a
          BREAKDOWN, a pivot below tau = 1e-12 of the largest entry under it
          (or zero, or not finite).  Whether the factor is GOOD is then
@@ -106,6 +111,10 @@ public:
     bool factor(const sVector& values, scalar pivotTol = 1.0e-12);
     //- x = A^{-1} b, after a successful factor().
     sVector solve(const sVector& b) const;
+    //- The same into a caller's vector (resized to n): no allocation when `x`
+    //  is kept across calls.  The operations, and so the bits, are those of
+    //  the returning form.
+    void solve(const sVector& b, sVector& x) const;
 
     //- The size of the factor, for the glass box: nnz(L) + nnz(U) + n, and the
     //  pattern's own nnz -- the ratio is the fill.
@@ -129,6 +138,20 @@ private:
         //  the permuted matrix by columns: column k holds row Ai[t] whose value
         //  is values[Amap[t]] of the caller's CSR order
         std::vector<std::size_t> Ap, Ai, Amap;
+        //  RUNS: where a column's row list (L or U) is made of stretches of
+        //  consecutive rows -- the trailing block of a mechanism's matrix is
+        //  nearly dense -- the update w[row] -= l * u is a unit-stride loop the
+        //  compiler can vectorise.  Per column: runs Rr[Rp[k] .. Rp[k+1]) =
+        //  (first row, length); `Rn[k]` = 0 when the column is too ragged for
+        //  the run form to pay (the indexed loop is used, unchanged).  Each
+        //  element still receives the same operations in the same order, so
+        //  the result is bit for bit that of the indexed loop.
+        struct Runs
+        {
+            std::vector<std::size_t> ptr, first, len;
+            std::vector<char> use;
+        };
+        Runs Lr, Ur;
         std::size_t nnzPattern = 0, dense = 0;
         double flops = 0.0;
     };

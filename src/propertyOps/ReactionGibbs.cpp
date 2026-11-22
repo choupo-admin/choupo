@@ -31,6 +31,7 @@ License
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "thermo/RecordResolver.H"
+#include "thermo/reaction/KineticsLibrary.H"
 #include "thermo/ThermoPackage.H"
 
 #include <cmath>
@@ -115,7 +116,7 @@ int ReactionGibbs::run(const DictPtr& dict, const ThermoPackage& thermo, int ver
     if (!std::filesystem::exists(libPath))
         throw std::runtime_error("reactionGibbs: constant/reactions not found in the"
             " case directory -- the stoichiometry lives in the library, never here");
-    auto lib = Dictionary::fromFile(libPath.string());
+    auto lib = kineticsLibrary::materialise(Dictionary::fromFile(libPath.string()), thermo);
 
     // ---- the declared standard state of every species -----------------------
     if (!dict->found("phases"))

@@ -1,0 +1,20 @@
+integrator   dtmax  rtol       wall/s  maxreldev      dT/K  counts
+Cantera      -      1e-06       0.029   2.15e-05  6.32e-04  
+Cantera      -      1e-08       0.043   6.71e-07  9.00e-06  
+Cantera      -      1e-10       0.118   5.29e-09  7.17e-08  
+Rodas4       keep   1e-06       0.146   7.99e-04  1.67e-02  steps=194 accepted=147 rejected=47 jacobians=194 factorisations=194 rhs=0 thetaMax=0.00 analyticJacobiansBuilt=194 auditRhs=532
+Rodas4       keep   1e-08       0.395   2.62e-05  6.20e-04  steps=732 accepted=728 rejected=4 jacobians=732 factorisations=732 rhs=0 thetaMax=0.00 analyticJacobiansBuilt=732 auditRhs=678
+Rodas4       keep   1e-10       1.608   4.61e-08  4.96e-06  steps=5395 accepted=5395 rejected=0 jacobians=5395 factorisations=5395 rhs=0 thetaMax=0.00 analyticJacobiansBuilt=5395 auditRhs=881
+Rodas4       keep   1e-12       9.464   1.99e-08  4.96e-06  steps=32989 accepted=32989 rejected=0 jacobians=32989 factorisations=32989 rhs=0 thetaMax=0.00 analyticJacobiansBuilt=32989 auditRhs=1071
+Rodas4       1e-4   1e-06       0.293   1.52e-03  3.60e-02  steps=427 accepted=389 rejected=38 jacobians=427 factorisations=427 rhs=0 thetaMax=0.00 analyticJacobiansBuilt=427 auditRhs=600
+Rodas4       1e-4   1e-08       0.389   2.62e-05  6.20e-04  steps=937 accepted=933 rejected=4 jacobians=937 factorisations=937 rhs=0 thetaMax=0.00 analyticJacobiansBuilt=937 auditRhs=678
+Rodas4       1e-4   1e-10       1.492   4.61e-08  4.96e-06  steps=5502 accepted=5502 rejected=0 jacobians=5502 factorisations=5502 rhs=0 thetaMax=0.00 analyticJacobiansBuilt=5502 auditRhs=881
+Rodas4       1e-4   1e-12       9.954   1.99e-08  4.96e-06  steps=33008 accepted=33008 rejected=0 jacobians=33008 factorisations=33008 rhs=0 thetaMax=0.00 analyticJacobiansBuilt=33008 auditRhs=1071
+seulex       keep   1e-06       0.147   1.47e-01  4.78e+00  steps=109 accepted=90 rejected=19 jacobians=60 factorisations=378 rhs=1245 thetaMax=17.59 analyticJacobiansBuilt=60 auditRhs=406
+seulex       keep   1e-08       0.232   1.92e-01  2.63e-01  steps=110 accepted=100 rejected=10 jacobians=70 factorisations=617 rhs=2858 thetaMax=726.18 analyticJacobiansBuilt=70 auditRhs=481
+seulex       keep   1e-10       0.312   1.99e-05  5.87e-04  steps=168 accepted=167 rejected=1 jacobians=129 factorisations=1238 rhs=7272 thetaMax=0.34 analyticJacobiansBuilt=129 auditRhs=560
+seulex       keep   1e-12       7.382   4.72e-05  1.23e-04  steps=8061 accepted=8058 rejected=3 jacobians=298 factorisations=49915 rhs=192490 thetaMax=3.05 analyticJacobiansBuilt=298 auditRhs=606
+seulex       1e-4   1e-06       0.295   2.43e-01  5.60e+00  steps=359 accepted=342 rejected=17 jacobians=66 factorisations=905 rhs=2125 thetaMax=17787.87 analyticJacobiansBuilt=66 auditRhs=468
+seulex       1e-4   1e-08       0.236   1.13e-04  1.53e-03  steps=358 accepted=351 rejected=7 jacobians=78 factorisations=1348 rhs=4001 thetaMax=7144.57 analyticJacobiansBuilt=78 auditRhs=473
+seulex       1e-4   1e-10       0.437   2.37e-05  3.37e-04  steps=436 accepted=435 rejected=1 jacobians=131 factorisations=2347 rhs=9680 thetaMax=0.34 analyticJacobiansBuilt=131 auditRhs=559
+seulex       1e-4   1e-12      11.265   3.04e-04  2.47e-03  steps=15035 accepted=15031 rejected=4 jacobians=316 factorisations=86748 rhs=291551 thetaMax=0.69 analyticJacobiansBuilt=316 auditRhs=632

@@ -5300,6 +5300,36 @@ accepts today, and that is a policy call.
 > orders written only on records marked global, refused on elementary ones).
 > Numbering: C461 is the pfr; the cloud's "How do we know k?" EduTool is C462.
 
+> **C458 SLICE 1 BUILT -- the gas-phase reaction library (general, branch `reaction-library`, 2026-11-22; architect's decisions (a)-(f) of
+> 2026-11-20/21 implemented as ruled).**  `data/standards/kinetics/`, one `elementaryReaction` record per reaction in the case grammar
+> (`stoichiometry` + `kinetics`) plus `source` (citation, doi, table, PAGE), `provenance` and `sets { <set> <label>; }`; identity is the
+> canonical equation (file stem = `H+O2=O+OH`, `H2+M=H+H+M`, `H+O2(+M)=HO2(+M)`, `~` irreversible, `@n` summed duplicate; the reader refuses a
+> record whose name is not its content's); orders DERIVED (an `order` on an elementary record is refused, `global true;` declares them);
+> sets derived from the records (`kinetics/sets/<name>.dat` holds the set's citation and the thermo it was made with); a case writes
+> `reactionSet` / `reactionSets` / `reactionRecords` in `constant/reactions` and `kineticsLibrary::materialise`
+> (`src/thermo/reaction/KineticsLibrary.{H,cpp}`) hands every reader the entries it would have written inline (BatchReactor, DynamicCSTR,
+> Flowsheet's two walk-ups, UnitInputs, ReactionGibbs); precedence case (`constant/kinetics/`, declared `variationOf "<stem>";`) >
+> standards > `data/local/kinetics` (announced UNVERIFIED).  Pins: only the records of the sets a case asks are consumed, pinned as
+> `kinetics/` = `relevant:<hash>` plus one line each (`PinCheck.cpp noteKineticsAsk`).  Printed (stderr, `[kineticsLibrary]`): the sets and
+> their source; a mixture of sets neutrally; a WARNING only for `optimisedWithin X` used outside X; third-body efficiencies of species the run
+> lacks (Ar, He) dropped, said once; (e) K_c(set)/K_c(run) per reaction when the set declares a catalogue `thermochemistry { home }` (else one sentence);
+> (f) k_f/k_r against K_c(T) for an `A_rev` leg or two irreversible entries that are each other's reverse (batchReactor only).  Seed: the 21
+> O Conaire 2004 entries (values of `docs/reviews/2026-11-21-kinetics-seed/oconaire2004_table.tsv`, journal p. 607) and the 8 Zeldovich/N2O
+> reactions of Glarborg 2018 (`page unrecorded`, interim: nobody read the page).  Ten cases switched (ignition01 x5, 02, 03, 04,
+> kinetics02, nox01); `kinetics01_oh_decay` stays inline; results byte-identical (every golden row, no re-record; `--scope` combustion +
+> reactors 56 PASS / 0 FAIL).  Gate `check_kinetics_library`.  DECIDED ON THE WAY: the seeded records keep Ar/He (the source's) and the
+> reader drops what the run does not carry; `limitingReactant` is kept as the inline entries had it (cstr/pfr/conversion read it);
+> `case_records.as_variation` quotes a name with `(`, `+`, `=` (a canonical equation is not a dictionary word).  OPEN DECISION before a second mechanism is imported: how a library holds SEVERAL alternative rate expressions for one
+> equation (`@n` means summed terms only; a bare stem beside `X@n`, a gap in the numbering and a lone `@1` are refused);
+> not designed in slice 1.  FIX ROUND (review, 2026-11-22): a third-body key written by an alias resolves like
+> `ThermoPackage::indexOf` and is rewritten to the canonical name (gate arm d2); the materialise memo keeps its input
+> alive; the k_f/k_r print skips activity-basis / adsorption legs and non-mass-action legs (batch07 prints nothing);
+> data/local records are announced when consumed and a malformed one the run does not ask for is skipped.  NOT DONE: Explorer view per
+> species (slice 3), growth to Baulch / Tsang-Hampson (slice 4), the sets' own thermo transcribed (Table II of O Conaire is not in the
+> catalogue, so (e) prints a sentence for it), (f) in cstr/pfr/dynamicCSTR (PFR.cpp was reserved to another branch), `plog` records
+> (grammar admits them, none seeded), kinetics01 and the 8 records' pages for Glarborg; PDFs not rebuilt.
+
+
 > **C446 (architect, found 2026-11-18 22:22 while stamping the backlog with
 > the time, as Vitor asked: "no topo põe a data e hora").**  The machine's
 > clock (synchronised, Europe/Lisbon) says 2026-11-18; the registers say

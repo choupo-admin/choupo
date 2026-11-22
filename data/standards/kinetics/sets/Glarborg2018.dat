@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Reaction set Glarborg2018: the extended Zeldovich reactions (Table 2) and
+  the N2O route R15-R19 (Table 5) of the nitrogen mechanism.
+\*---------------------------------------------------------------------------*/
+recordType  kineticsSet;
+citation    "Glarborg, Miller, Ruscic and Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31-68";
+doi         "10.1016/j.pecs.2018.01.002";
+thermochemistry
+{
+    citation "the thermochemistry distributed with the mechanism; not in the catalogue";
+}

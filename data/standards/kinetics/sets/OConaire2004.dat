@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Reaction set OConaire2004: the H2/O2 mechanism of Table I.  Its members
+  are the records whose `sets {}` names it.
+\*---------------------------------------------------------------------------*/
+recordType  kineticsSet;
+citation    "O Conaire, Curran, Simmie, Pitz and Westbrook, Int. J. Chem. Kinet. 36 (2004) 603-622";
+doi         "10.1002/kin.20036";
+thermochemistry
+{
+    citation "the paper's own thermochemistry, its Table II (journal p. 607); not transcribed into the catalogue";
+}

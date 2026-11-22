@@ -45,6 +45,7 @@ License
 #include "core/RegistryRefusal.H"
 #include <sstream>
 #include <chrono>
+#include <cstdint>
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
@@ -190,12 +191,12 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
                 + registryRefusal::message("linearSolver", ls,
                       { "dense", "sparse", "auto" }, "Accepted"));
         if (jacobianDeclared_ && solverDict->found("integrator")
-            && integrator_ != "Rosenbrock23" && integrator_ != "Rodas4")
+            && !solver::ODEIntegrator::readsAnalyticJacobian(integrator_))
             throw std::runtime_error("BatchReactor '" + name_ + "': solver"
                 " { integrator " + integrator_ + "; jacobian analytic; } --"
-                " the analytic Jacobian is read by the Rosenbrock methods"
-                " only (Rosenbrock23, Rodas4); " + integrator_ + " would"
-                " leave it unread.  Choose a Rosenbrock integrator or drop"
+                " the analytic Jacobian is read by the stiff methods"
+                " only (Rosenbrock23, Rodas4, seulex); " + integrator_ + " would"
+                " leave it unread.  Choose a stiff integrator or drop"
                 " `jacobian analytic;`.");
     }
 
@@ -258,7 +259,7 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
     reactions_.reserve(rxnNames.size());
     for (const auto& rxnName : rxnNames)
     {
-        auto rxn = reactionsDict->subDict(rxnName);
+        auto rxn = kineticsLibrary::materialise(reactionsDict, thermo)->subDict(rxnName);   // C458: a set by name, else the dict itself
         ReactionSpec r;
         r.name = rxnName;
 
@@ -498,7 +499,7 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
                 if (!thermo.comp(r.comps[s]).hasGibbsData())
                     dutyByStateDiff_ = false;
     }
-
+    announceLibraryChecks_(kineticsLibrary::materialise(reactionsDict, thermo));   // C458 (e), (f): prints only
     if (mode_ == Mode::Adiabatic) requireAdiabaticData_();
 
     // -----------------------------------------------------------------
@@ -527,6 +528,8 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
                         "numerics", "info", "batchReactor '" + name_ + "'", m))
                     std::cout << "  [jacobian] batchReactor '" << name_ << "': " << m << "\n";
             }
+    buildWantG_();
+    buildTbClasses_();      // the evaluation's shared tables
     if (jacobianAnalytic_) buildJacobianStructure_();
     if (linearSolverKey_ == LinearSolver::Sparse && !jacobianAnalytic_)
         throw std::runtime_error("BatchReactor '" + name_ + "': solver { linearSolver"
@@ -1178,9 +1181,29 @@ BatchReactor::thirdBodyEfficiencies_(const DictPtr& kin,
     return eff;
 }
 
-sVector BatchReactor::gibbsAt_(scalar T) const
+//  c^p for a reaction order.  std::pow(c, 1.0) is c exactly and std::pow(c, 0.0)
+//  is 1 exactly, so those two (the most common orders, and the p - 1 of the
+//  derivative) skip the call; every other order goes to std::pow.
+static inline scalar orderPow(scalar c, scalar p)
 {
-    std::vector<char> want;
+    if (p == 1.0) return c;
+    //  p == 2 is NOT taken as c * c: std::pow(c, 2.0) is within 1 ulp of it and not always equal,
+    //  and the 1-ulp differences moved an accept/reject decision, and the nox03 trajectory by
+    //  3e-9 relative (measured 2026-11-22), so the square stays a pow.
+    if (p == 0.0) return 1.0;
+    return std::pow(c, p);
+}
+
+std::uint64_t BatchReactor::MemoId::next()
+{
+    static std::atomic<std::uint64_t> counter{0};
+    return ++counter;
+}
+
+void BatchReactor::buildWantG_()
+{
+    std::vector<char>& want = wantG_;
+    want.clear();
     for (const auto& rxn : reactions_)
     {
         if (rxn.form == RateForm::Factory)
@@ -1196,15 +1219,105 @@ sVector BatchReactor::gibbsAt_(scalar T) const
             for (std::size_t c : rxn.comps) want[c] = 1;
         }
     }
-    if (want.empty()) return sVector();
-    return Reaction::gibbsVector(*thermo_, want, T);
+}
+
+//  g_i(T) and h_i(T) of the wanted species.  The right-hand side, the Jacobian
+//  and the next step's first evaluation read the SAME T many times (the
+//  accepted step's last right-hand side is the next Jacobian's point), and both
+//  are pure functions of T: the last (vessel, T) a thread asked for is kept and
+//  returned as the identical numbers.  g_i = h_i - T s_i is
+//  Component::g_pure_ig's own expression, so taking h_i once for both is the
+//  same numbers, and the Jacobian's d ln Kc / dT reads the h_i the step's last
+//  right-hand side already computed.  thread_local: the sensitivity block runs
+//  one integration per thread on one vessel.
+namespace
+{
+struct GibbsMemo
+{
+    std::uint64_t id = 0;
+    scalar        T  = 0.0;
+    bool          haveH = false, haveG = false, haveAll = false;
+    sVector       h, g;
+    sVector       hAll, cpAll;          // every species: h_i(T) and Cp_i(T) of the energy equation
+};
+GibbsMemo& gibbsMemo() { static thread_local GibbsMemo m; return m; }
+}
+
+//  The returned reference is the calling thread's memo: valid until the next call on this thread
+//  at another (vessel, T) (see the header).
+const sVector& BatchReactor::gibbsAt_(scalar T) const
+{
+    static const sVector kNone;
+    if (wantG_.empty()) return kNone;
+    GibbsMemo& m = gibbsMemo();
+    if (m.id != memoId_.v || m.T != T)
+    {
+        m.id = memoId_.v; m.T = T; m.haveH = m.haveG = m.haveAll = false;
+    }
+    if (m.haveG) return m.g;
+    const std::size_t n = wantG_.size();
+    m.haveH = m.haveG = false;      // a throw below leaves nothing half-filled
+    sVector h(n, 0.0), g(n, 0.0);
+    for (std::size_t i = 0; i < n; ++i)
+        if (wantG_[i])
+        {
+            const Component& c = thermo_->comp(i);
+            h[i] = c.h_pure_ig(T);
+            g[i] = c.gibbsFromH_ig(T, h[i]);        // = c.g_pure_ig(T), one home
+        }
+    m.h = std::move(h); m.g = std::move(g);
+    m.haveH = m.haveG = true;
+    return m.g;
+}
+
+//  What every reaction of one evaluation shares, in thread-local scratch (the sensitivity block
+//  runs one integration per thread on one vessel).
+struct BatchReactor::KinCtx
+{
+    const BatchReactor* owner = nullptr;   // the vessel this context was built for
+    sVector nvec;                 // the mole numbers of the packed state
+    sVector conc, M;              // n_j / V; [M] per efficiency class
+    sVector concC, x;             // factory laws: max(n,0)/V and the mole fractions
+    sVector expEa, powB, cf;      // exp(-Ea/RT) per distinct Ea, T^b per distinct b, c_std^sumNu
+    scalar  ntot = 0.0, P = 0.0;
+    std::size_t sensJ = static_cast<std::size_t>(-1);   // the sensitivity multiplier of this thread
+    scalar      sensF = 1.0;
+};
+
+scalar BatchReactor::kModArr_(const KinCtx& ctx, scalar A, int bIdx, int eaIdx)
+{
+    return bIdx < 0 ? A * ctx.expEa[eaIdx] : A * ctx.powB[bIdx] * ctx.expEa[eaIdx];
+}
+
+void BatchReactor::factoryState_(const sVector& n, scalar V, scalar T, sVector& conc, sVector& x,
+                                 scalar& ntot, scalar& P)
+{
+    const std::size_t nc = n.size();
+    conc.assign(nc, 0.0); x.assign(nc, 0.0);
+    ntot = 0.0;
+    for (std::size_t j = 0; j < nc; ++j) { conc[j] = std::max<scalar>(n[j], 0.0) / V; ntot += std::max<scalar>(n[j], 0.0); }
+    if (ntot > 0.0) for (std::size_t j = 0; j < nc; ++j) x[j] = std::max<scalar>(n[j], 0.0) / ntot;
+    //  P = n R T / V (kmol -> mol): read only by a law that asked for it (the offer refuses a
+    //  liquid vessel); NaN when the vessel is empty.
+    P = (ntot > 0.0 && V > 0.0) ? ntot * 1000.0 * constant::R * T / V : std::nan("");
+}
+
+scalar BatchReactor::multOf_(const ReactionSpec& rxn, const KinCtx* ctx) const
+{
+    if (!ctx) return multOf_(rxn);
+    if (ctx->owner != this)
+        throw std::logic_error("BatchReactor '" + name_ + "': a KinCtx built for another vessel was"
+                               " handed to this one (internal error: the shared tables belong to"
+                               " one vessel's evaluation)");
+    return (ctx->sensJ == static_cast<std::size_t>(&rxn - reactions_.data())) ? ctx->sensF : 1.0;
 }
 
 scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
                                      scalar               T,
                                      const sVector&       n,
                                      scalar               V,
-                                     const sVector*       g) const
+                                     const sVector*       g,
+                                     const KinCtx*        ctx) const
 {
     // Forward rate constant k_eff(T, c), with third-body [M] and fall-off
     // blending folded in.  Concentration vector c_j = n_j/V (kmol/m³) is only
@@ -1217,46 +1330,58 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
     // itself: mol/(g.s) x kg/m^3 = kmol/(m^3.s), exactly.
     if (rxn.form == RateForm::Factory)
     {
-        const std::size_t nc = n.size();
-        sVector conc(nc, 0.0), x(nc, 0.0);
-        scalar ntot = 0.0;
-        for (std::size_t j = 0; j < nc; ++j) { conc[j] = std::max<scalar>(n[j], 0.0) / V; ntot += std::max<scalar>(n[j], 0.0); }
-        if (ntot > 0.0) for (std::size_t j = 0; j < nc; ++j) x[j] = std::max<scalar>(n[j], 0.0) / ntot;
+        sVector concL, xL;
+        scalar ntot = 0.0, Pg = 0.0;
+        const sVector* concP = nullptr; const sVector* xP = nullptr;
+        if (ctx) { concP = &ctx->concC; xP = &ctx->x; ntot = ctx->ntot; Pg = ctx->P; }
+        else
+        {
+            factoryState_(n, V, T, concL, xL, ntot, Pg);
+            concP = &concL; xP = &xL;
+        }
         const scalar cf = (catalystLoading_ > 0.0) ? catalystLoading_ : 1.0;
         RateState rs;
-        //  P = n R T / V (kmol -> mol): read only by a law that asked for it
-        //  (the offer refuses a liquid vessel); NaN when the vessel is empty.
-        rs.T = T; rs.P = (ntot > 0.0 && V > 0.0) ? ntot * 1000.0 * constant::R * T / V : std::nan("");
-        rs.conc = &conc; rs.x = &x;
+        rs.T = T; rs.P = Pg;
+        rs.conc = concP; rs.x = xP;
         rs.amountPerKmol = 1.0;                       // conc in kmol/m3
         rs.gibbs = (g && !g->empty()) ? g : nullptr;
-        return multOf_(rxn) * cf * rxn.law->netRate(*thermo_, rs);
+        return multOf_(rxn, ctx) * cf * rxn.law->netRate(*thermo_, rs);
     }
 
     scalar k = 0.0;
     switch (rxn.form)
     {
         case RateForm::Arrhenius:
-            k = Reaction::arrheniusRate(rxn.A_pre, rxn.Ea, T);
+            k = ctx ? rxn.A_pre * ctx->expEa[rxn.eaIdx]
+                    : Reaction::arrheniusRate(rxn.A_pre, rxn.Ea, T);
             break;
         case RateForm::ModArrhenius:
+            if (ctx) { k = kModArr_(*ctx, rxn.A_pre, rxn.bIdx, rxn.eaIdx); break; }   // the same expression, tabled
             k = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
             break;
         case RateForm::Factory: break;   // handled above
         case RateForm::ThirdBody:        // k [M], the arm below (C185 (9))
         case RateForm::Falloff:
         {
-            sVector conc(n.size());
-            for (std::size_t j = 0; j < n.size(); ++j) conc[j] = n[j] / V;
-            static const sVector kAll1;
-            const sVector& eff = rxn.tbEff.empty() ? kAll1 : rxn.tbEff;
-            const scalar M = Reaction::thirdBodyConcentration(conc, eff);
-            if (rxn.form == RateForm::ThirdBody)
-                k = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T) * M;
+            scalar M;
+            if (ctx && rxn.tbClass >= 0) M = ctx->M[rxn.tbClass];
             else
             {
-                const scalar kInf = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
-                const scalar kLow = Reaction::modifiedArrheniusRate(rxn.A_low, rxn.b_low, rxn.Ea_low, T);
+                sVector conc(n.size());
+                for (std::size_t j = 0; j < n.size(); ++j) conc[j] = n[j] / V;
+                static const sVector kAll1;
+                const sVector& eff = rxn.tbEff.empty() ? kAll1 : rxn.tbEff;
+                M = Reaction::thirdBodyConcentration(conc, eff);
+            }
+            if (rxn.form == RateForm::ThirdBody)
+                k = (ctx ? kModArr_(*ctx, rxn.A_pre, rxn.bIdx, rxn.eaIdx)
+                         : Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T)) * M;
+            else
+            {
+                const scalar kInf = ctx ? kModArr_(*ctx, rxn.A_pre, rxn.bIdx, rxn.eaIdx)
+                                        : Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
+                const scalar kLow = ctx ? kModArr_(*ctx, rxn.A_low, rxn.bLowIdx, rxn.eaLowIdx)
+                                        : Reaction::modifiedArrheniusRate(rxn.A_low, rxn.b_low, rxn.Ea_low, T);
                 k = Reaction::falloffRate(kLow, kInf, M, T, rxn.troe, rxn.sri, rxn.name);
             }
             break;
@@ -1272,17 +1397,19 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
     if (catalystLoading_ > 0.0) k *= catalystLoading_;
     //  The sensitivity multiplier scales k, and so k_rev = k / Kc with it: the
     //  NET rate is multiplied and the equilibrium is unchanged.  1 otherwise.
-    if (const scalar m = multOf_(rxn); m != 1.0) k *= m;
+    if (const scalar m = multOf_(rxn, ctx); m != 1.0) k *= m;
 
     scalar r = k;
     for (std::size_t s = 0; s < rxn.comps.size(); ++s)
     {
         if (rxn.order[s] == 0.0) continue;              // C190 item 10: a NEGATIVE order is honoured
-        const scalar c_i = n[rxn.comps[s]] / V;
-        r *= Reaction::powerLawFactorLazy(rxn.order[s] > 0.0 ? std::max<scalar>(c_i, 0.0) : c_i,
-                                          rxn.order[s],
-                                          [&]() -> const std::string& { return thermo_->comp(rxn.comps[s]).name(); },
-                                          [&]() { return "batchReactor reaction '" + rxn.name + "'"; });
+        const scalar c_i = ctx ? ctx->conc[rxn.comps[s]] : n[rxn.comps[s]] / V;
+        if (rxn.order[s] > 0.0)
+            r *= orderPow(std::max<scalar>(c_i, 0.0), rxn.order[s]);   // = powerLawFactorLazy's pow
+        else
+            r *= Reaction::powerLawFactorLazy(c_i, rxn.order[s],
+                                              [&]() -> const std::string& { return thermo_->comp(rxn.comps[s]).name(); },
+                                              [&]() { return "batchReactor reaction '" + rxn.name + "'"; });
     }
     if (!rxn.reversible) return r;
 
@@ -1292,7 +1419,9 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
     // k_eff carries [M]/the blend, which cancels at equilibrium (Kc is the
     // gas-species ratio), so this stays consistent.
     const scalar K_eq  = (g && !g->empty())
-                       ? Reaction::equilibriumKc(rxn.comps, rxn.nu, T, *g)
+                       ? ((ctx && rxn.cfIdx >= 0)
+                              ? Reaction::equilibriumKcWithFactor(rxn.comps, rxn.nu, T, *g, ctx->cf[rxn.cfIdx])
+                              : Reaction::equilibriumKc(rxn.comps, rxn.nu, T, *g))
                        : Reaction::equilibriumKc(*thermo_, rxn.comps, rxn.nu, T);
     const scalar k_rev = k / K_eq;
 
@@ -1302,8 +1431,8 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
     for (std::size_t s = 0; s < rxn.comps.size(); ++s)
     {
         if (rxn.orderRev[s] == 0.0) continue;           // products only
-        const scalar c_i = n[rxn.comps[s]] / V;
-        r_rev *= std::pow(std::max<scalar>(c_i, 0.0), rxn.orderRev[s]);
+        const scalar c_i = ctx ? ctx->conc[rxn.comps[s]] : n[rxn.comps[s]] / V;
+        r_rev *= orderPow(std::max<scalar>(c_i, 0.0), rxn.orderRev[s]);
     }
     return r - r_rev;
 }
@@ -1328,15 +1457,13 @@ sVector BatchReactor::derivatives_(const sVector& packed) const
                      std::chrono::steady_clock::now() - t0).count(); }
     } toc{nsRhs_, tic};
     const std::size_t n = packed.size() - 1;
-    sVector n_vec(n);
-    for (std::size_t i = 0; i < n; ++i) n_vec[i] = packed[i];
     const scalar T = (mode_ == Mode::Isothermal) ? T_setpoint_ : packed[n];
     scalar V = state_.V;
     if (energy_ == Energy::GasConstantP)
     {
         //  Fixed P: the volume follows the trial (n, T) the integrator is at.
         scalar nT = 0.0;
-        for (std::size_t i = 0; i < n; ++i) nT += n_vec[i];
+        for (std::size_t i = 0; i < n; ++i) nT += packed[i];
         V = constPVolume_(nT, T);
     }
 
@@ -1346,10 +1473,12 @@ sVector BatchReactor::derivatives_(const sVector& packed) const
     // liquid-ΔH basis) the per-reaction heat release.
     scalar heatRate = 0.0;   // Σ r_r · V · ΔH_r  [J·kmol / (mol·s)]
                              // (the mol/kmol factor cancels in dT/dt --- see header)
-    const sVector gT = gibbsAt_(T);       // g_i(T) once per evaluation, not once per reaction
+    const sVector& gT = gibbsAt_(T);      // g_i(T) once per evaluation, not once per reaction
+    const KinCtx& ctx = kinCtx_(T, packed, V);   // c = n/V, [M], the factory laws' c and x, once
+    const sVector& n_vec = ctx.nvec;
     for (const auto& rxn : reactions_)
     {
-        const scalar r_r = rateOfReaction_(rxn, T, n_vec, V, &gT);   // kmol/(m³·s)
+        const scalar r_r = rateOfReaction_(rxn, T, n_vec, V, &gT, &ctx);   // kmol/(m³·s)
         for (std::size_t s = 0; s < rxn.comps.size(); ++s)
             dydt[rxn.comps[s]] += rxn.nu[s] * r_r * V;          // kmol/s
         heatRate += rxn.dH * r_r * V;                            // J·kmol/(mol·s)
@@ -1378,10 +1507,12 @@ sVector BatchReactor::derivatives_(const sVector& packed) const
         // cancel, as in the liquid path.
         scalar uDot  = 0.0;   // Σ u_i · dn_i/dt
         scalar CvTot = 0.0;   // Σ n_i · Cv_i
+        const sVector *hAll = nullptr, *cpAll = nullptr;
+        energiesAt_(T, hAll, cpAll);          // h_i(T), Cp_i(T): once per T, shared with the Jacobian
         for (std::size_t i = 0; i < n; ++i)
         {
-            const scalar u_i  = thermo_->comp(i).h_pure_ig(T) - constant::R * T;
-            const scalar Cv_i = thermo_->comp(i).cpIdealGas().Cp(T) - constant::R;
+            const scalar u_i  = (*hAll)[i] - constant::R * T;
+            const scalar Cv_i = (*cpAll)[i] - constant::R;
             uDot  += u_i  * dydt[i];
             CvTot += n_vec[i] * Cv_i;
         }
@@ -1396,16 +1527,122 @@ sVector BatchReactor::derivatives_(const sVector& packed) const
         // heat capacity.  V = n R T / P above is why no −R_u appears.
         scalar hDot  = 0.0;   // Σ h_i · dn_i/dt
         scalar CpTot = 0.0;   // Σ n_i · Cp_i
+        const sVector *hAll = nullptr, *cpAll = nullptr;
+        energiesAt_(T, hAll, cpAll);
         for (std::size_t i = 0; i < n; ++i)
         {
-            hDot  += thermo_->comp(i).h_pure_ig(T) * dydt[i];
-            CpTot += n_vec[i] * thermo_->comp(i).cpIdealGas().Cp(T);
+            hDot  += (*hAll)[i] * dydt[i];
+            CpTot += n_vec[i] * (*cpAll)[i];
         }
         dydt[n] = (CpTot < 1.0e-30) ? 0.0 : -hDot / CpTot;
     }
     // else: dydt[n] stays 0 (isothermal)
 
     return dydt;
+}
+
+//  h_i(T) = h_pure_ig(T) and Cp_i(T) = cpIdealGas().Cp(T) for EVERY species, the two sums
+//  of the gas energy equation (u_i = h_i - R T, Cv_i = Cp_i - R).  They were evaluated afresh
+//  by the right-hand side and again by the Jacobian at the same T; they are pure functions of
+//  T, kept with the Gibbs memo (a wanted species' h_i is the one gibbsAt_ already holds).
+void BatchReactor::energiesAt_(scalar T, const sVector*& h, const sVector*& cp) const
+{
+    GibbsMemo& m = gibbsMemo();
+    if (m.id != memoId_.v || m.T != T)
+    {
+        m.id = memoId_.v; m.T = T; m.haveH = m.haveG = m.haveAll = false;
+    }
+    if (!m.haveAll)
+    {
+        const std::size_t n = thermo_->n();
+        sVector hv(n, 0.0), cv(n, 0.0);
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            hv[i] = (m.haveH && i < wantG_.size() && wantG_[i]) ? m.h[i] : thermo_->comp(i).h_pure_ig(T);
+            cv[i] = thermo_->comp(i).cpIdealGas().Cp(T);
+        }
+        m.hAll = std::move(hv); m.cpAll = std::move(cv);
+        m.haveAll = true;
+    }
+    h = &m.hAll; cp = &m.cpAll;
+}
+
+void BatchReactor::buildTbClasses_()
+{
+    tbClasses_.clear();
+    anyFactory_ = false;
+    for (auto& r : reactions_)
+    {
+        r.tbClass = -1;
+        if (r.form == RateForm::Factory) anyFactory_ = true;
+        if (r.form != RateForm::ThirdBody && r.form != RateForm::Falloff) continue;
+        std::size_t k = 0;
+        for (; k < tbClasses_.size(); ++k)
+            if (tbClasses_[k] == r.tbEff) break;
+        if (k == tbClasses_.size()) tbClasses_.push_back(r.tbEff);
+        r.tbClass = static_cast<int>(k);
+    }
+    //  The distinct rate-constant inputs: the same exp(-Ea/(R T)), T^b and c_std^sumNu would be
+    //  evaluated again and again (100 distinct Ea and 41 distinct b among the 235 reactions of
+    //  Miller & Bowman's Appendix A).  Equal values give equal results, so taking each once per
+    //  evaluation changes no bit.
+    arrEa_.clear(); arrB_.clear(); cfSumNu_.clear();
+    const auto slot = [](sVector& v, scalar x) -> int
+    {
+        for (std::size_t i = 0; i < v.size(); ++i) if (v[i] == x) return static_cast<int>(i);
+        v.push_back(x);
+        return static_cast<int>(v.size() - 1);
+    };
+    for (auto& r : reactions_)
+    {
+        r.eaIdx = r.bIdx = r.eaLowIdx = r.bLowIdx = r.cfIdx = -1;
+        if (r.form == RateForm::Arrhenius) r.eaIdx = slot(arrEa_, r.Ea);
+        if (r.form == RateForm::ModArrhenius || r.form == RateForm::ThirdBody || r.form == RateForm::Falloff)
+        {
+            r.eaIdx = slot(arrEa_, r.Ea);
+            if (r.b != 0.0) r.bIdx = slot(arrB_, r.b);
+        }
+        if (r.form == RateForm::Falloff)
+        {
+            r.eaLowIdx = slot(arrEa_, r.Ea_low);
+            if (r.b_low != 0.0) r.bLowIdx = slot(arrB_, r.b_low);
+        }
+        if (r.form != RateForm::Factory && r.reversible)
+        {
+            scalar sumNu = 0.0;
+            for (std::size_t s = 0; s < r.comps.size(); ++s) sumNu += r.nu[s];
+            r.cfIdx = slot(cfSumNu_, sumNu);
+        }
+    }
+}
+
+const BatchReactor::KinCtx& BatchReactor::kinCtx_(scalar T, const sVector& packed, scalar V) const
+{
+    static thread_local KinCtx c;
+    const std::size_t n = thermo_->n();
+    c.owner = this;
+    c.nvec.assign(packed.begin(), packed.begin() + n);
+    c.sensJ = (sensOwner_ == this) ? sensJ_ : kNoSens;
+    c.sensF = sensF_;
+    c.conc.resize(n);
+    for (std::size_t j = 0; j < n; ++j) c.conc[j] = c.nvec[j] / V;
+    c.expEa.resize(arrEa_.size());
+    for (std::size_t i = 0; i < arrEa_.size(); ++i) c.expEa[i] = std::exp(-arrEa_[i] / (constant::R * T));
+    c.powB.resize(arrB_.size());
+    for (std::size_t i = 0; i < arrB_.size(); ++i) c.powB[i] = std::pow(T, arrB_[i]);
+    c.cf.resize(cfSumNu_.size());
+    for (std::size_t i = 0; i < cfSumNu_.size(); ++i) c.cf[i] = Reaction::concentrationBasisFactor(cfSumNu_[i], T);
+    if (!tbClasses_.empty())
+    {
+        c.M.resize(tbClasses_.size());
+        for (std::size_t k = 0; k < tbClasses_.size(); ++k)
+            c.M[k] = Reaction::thirdBodyConcentration(c.conc, tbClasses_[k]);
+    }
+    if (anyFactory_)
+    {
+        factoryState_(c.nvec, V, T, c.concC, c.x, c.ntot, c.P);
+    }
+    return c;
 }
 
 void BatchReactor::setOperationParameter(const std::string& key, scalar value)
@@ -1871,7 +2108,7 @@ void BatchReactor::step(scalar t, scalar dt)
     for (std::size_t i = 0; i < n; ++i) y0[i] = state_.n[i];
     y0[n] = state_.T;
 
-    if (jacobianDeclared_ && integrator_ != "Rosenbrock23" && integrator_ != "Rodas4")
+    if (jacobianDeclared_ && !solver::ODEIntegrator::readsAnalyticJacobian(integrator_))
         throw std::runtime_error("BatchReactor '" + name_ + "': `jacobian"
             " analytic;` is declared but this fixed-step run integrates the"
             " vessel with " + integrator_ + ", which builds no Jacobian --"
@@ -1917,7 +2154,7 @@ void BatchReactor::step(scalar t, scalar dt)
         ctrl.verbosity = verbosity_;
         //  The opt-in analytic Jacobian, its audit record kept on the vessel
         //  across steps so the doubling schedule spans the whole run.
-        if (jacobianAnalytic_ && (integrator_ == "Rosenbrock23" || integrator_ == "Rodas4"))
+        if (jacobianAnalytic_ && solver::ODEIntegrator::readsAnalyticJacobian(integrator_))
         {
             wireAnalytic_(jacAudit_, "batchReactor '" + name_ + "'");
             ctrl.analytic = &jacAudit_;
@@ -2147,29 +2384,24 @@ scalar BatchReactor::volumeAt_(const sVector& n, scalar T) const
     return constPVolume_(nT, T);
 }
 
-sVector BatchReactor::enthalpyAt_(scalar T) const
+//  Same lifetime as gibbsAt_'s reference.
+const sVector& BatchReactor::enthalpyAt_(scalar T) const
 {
-    std::vector<char> want;
-    for (const auto& rxn : reactions_)
+    static const sVector kNone;
+    const std::vector<char>& want = wantG_;     // the same species as gibbsAt_
+    if (want.empty()) return kNone;
+    GibbsMemo& m = gibbsMemo();
+    if (m.id != memoId_.v || m.T != T)
     {
-        if (rxn.form == RateForm::Factory)
-        {
-            const sVector* nuLaw = rxn.law ? rxn.law->gibbsStoichiometry() : nullptr;
-            if (!nuLaw) continue;
-            if (want.empty()) want.assign(thermo_->n(), 0);
-            Reaction::markSpecies(want, *nuLaw);
-        }
-        else if (rxn.reversible)
-        {
-            if (want.empty()) want.assign(thermo_->n(), 0);
-            for (std::size_t c : rxn.comps) want[c] = 1;
-        }
+        m.id = memoId_.v; m.T = T; m.haveH = m.haveG = m.haveAll = false;
     }
-    if (want.empty()) return sVector();
+    if (m.haveH) return m.h;
     sVector h(want.size(), 0.0);
     for (std::size_t i = 0; i < want.size(); ++i)
         if (want[i]) h[i] = thermo_->comp(i).h_pure_ig(T);
-    return h;
+    m.h = std::move(h);
+    m.haveH = true;       // gibbsAt_ at this T refills h and g together, never reads this half-state
+    return m.h;
 }
 
 //  THE PATTERN, from the network, once.  Row i (a species) holds column m
@@ -2284,24 +2516,23 @@ void BatchReactor::rateGradientFD_(const ReactionSpec& rxn, scalar T,
 bool BatchReactor::rateGradientLaw_(const ReactionSpec& rxn, scalar T,
                                     const sVector& n, scalar V, sVector& grad,
                                     scalar& dT, scalar& dP,
-                                    const sVector* g, const sVector* h) const
+                                    const sVector* g, const sVector* h,
+                                    const KinCtx* ctx) const
 {
     //  The state exactly as rateOfReaction_ hands it to the law.
-    const std::size_t nc = n.size();
-    sVector conc(nc, 0.0), x(nc, 0.0);
-    scalar ntot = 0.0;
-    for (std::size_t j = 0; j < nc; ++j) { conc[j] = std::max<scalar>(n[j], 0.0) / V; ntot += std::max<scalar>(n[j], 0.0); }
-    if (ntot > 0.0) for (std::size_t j = 0; j < nc; ++j) x[j] = std::max<scalar>(n[j], 0.0) / ntot;
+    sVector concL, xL;
+    scalar ntotL = 0.0, PL = 0.0;
+    if (!ctx) factoryState_(n, V, T, concL, xL, ntotL, PL);
     RateState rs;
-    rs.T = T; rs.P = (ntot > 0.0 && V > 0.0) ? ntot * 1000.0 * constant::R * T / V : std::nan("");
-    rs.conc = &conc; rs.x = &x;
+    rs.T = T; rs.P = ctx ? ctx->P : PL;
+    rs.conc = ctx ? &ctx->concC : &concL; rs.x = ctx ? &ctx->x : &xL;
     rs.amountPerKmol = 1.0;
     rs.gibbs = (g && !g->empty()) ? g : nullptr;
     rs.enthalpy = (h && !h->empty()) ? h : nullptr;
     RateGradient rg;
     rg.dc = &grad;
     if (!rxn.law->netRateGradient(*thermo_, rs, rg)) return false;
-    const scalar f = multOf_(rxn) * ((catalystLoading_ > 0.0) ? catalystLoading_ : 1.0);
+    const scalar f = multOf_(rxn, ctx) * ((catalystLoading_ > 0.0) ? catalystLoading_ : 1.0);
     if (f != 1.0)
         for (std::size_t k : jacDeps_[&rxn - reactions_.data()]) grad[k] *= f;
     dT = f * rg.dT;
@@ -2311,7 +2542,8 @@ bool BatchReactor::rateGradientLaw_(const ReactionSpec& rxn, scalar T,
 
 bool BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
                                  const sVector& n, scalar V, sVector& grad,
-                                 scalar& dT, const sVector* g, const sVector* h) const
+                                 scalar& dT, const sVector* g, const sVector* h,
+                                 const KinCtx* ctx) const
 {
     const std::size_t nc = n.size();
     // ---- k_eff, d k_eff / d [M] and d k_eff / d T ---------------------------
@@ -2321,33 +2553,43 @@ bool BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
     switch (rxn.form)
     {
         case RateForm::Arrhenius:
-            k = Reaction::arrheniusRate(rxn.A_pre, rxn.Ea, T);
+            k = ctx ? rxn.A_pre * ctx->expEa[rxn.eaIdx]
+                    : Reaction::arrheniusRate(rxn.A_pre, rxn.Ea, T);
             dkdT = k * Reaction::dlnModifiedArrheniusdT(0.0, rxn.Ea, T);
             break;
         case RateForm::ModArrhenius:
-            k = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
+            k = ctx ? kModArr_(*ctx, rxn.A_pre, rxn.bIdx, rxn.eaIdx)
+                    : Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
             dkdT = k * Reaction::dlnModifiedArrheniusdT(rxn.b, rxn.Ea, T);
             break;
         case RateForm::Factory: return false;      // rateGradientLaw_ / rateGradientFD_
         case RateForm::ThirdBody:
         case RateForm::Falloff:
         {
-            sVector conc(nc);
-            for (std::size_t j = 0; j < nc; ++j) conc[j] = n[j] / V;
             eff = rxn.tbEff.empty() ? &kAll1 : &rxn.tbEff;
-            const scalar M = Reaction::thirdBodyConcentration(conc, *eff);
+            scalar M;
+            if (ctx && rxn.tbClass >= 0) M = ctx->M[rxn.tbClass];
+            else
+            {
+                sVector conc(nc);
+                for (std::size_t j = 0; j < nc; ++j) conc[j] = n[j] / V;
+                M = Reaction::thirdBodyConcentration(conc, *eff);
+            }
             const scalar dlnInf = Reaction::dlnModifiedArrheniusdT(rxn.b, rxn.Ea, T);
             if (rxn.form == RateForm::ThirdBody)
             {
-                const scalar k0 = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
+                const scalar k0 = ctx ? kModArr_(*ctx, rxn.A_pre, rxn.bIdx, rxn.eaIdx)
+                                      : Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
                 k    = k0 * M;
                 dkdM = k0;
                 dkdT = k0 * dlnInf * M;
             }
             else
             {
-                const scalar kInf = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
-                const scalar kLow = Reaction::modifiedArrheniusRate(rxn.A_low, rxn.b_low, rxn.Ea_low, T);
+                const scalar kInf = ctx ? kModArr_(*ctx, rxn.A_pre, rxn.bIdx, rxn.eaIdx)
+                                        : Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
+                const scalar kLow = ctx ? kModArr_(*ctx, rxn.A_low, rxn.bLowIdx, rxn.eaLowIdx)
+                                        : Reaction::modifiedArrheniusRate(rxn.A_low, rxn.b_low, rxn.Ea_low, T);
                 k = Reaction::falloffRate(kLow, kInf, M, T, rxn.troe, rxn.sri, rxn.name);
                 const auto fd = Reaction::falloffRateDerivs(kLow, kInf, M, T, rxn.troe,
                     Reaction::dlnModifiedArrheniusdT(rxn.b_low, rxn.Ea_low, T), dlnInf, rxn.sri, rxn.name);
@@ -2357,7 +2599,7 @@ bool BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
             break;
         }
     }
-    const scalar mult = multOf_(rxn);
+    const scalar mult = multOf_(rxn, ctx);
     const scalar kscale = ((catalystLoading_ > 0.0) ? catalystLoading_ : 1.0) * mult;
     if (catalystLoading_ > 0.0) k *= catalystLoading_;   // as in rateOfReaction_
     if (mult != 1.0) k *= mult;
@@ -2375,7 +2617,7 @@ bool BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
     {
         if (p == 0.0) { f = 1.0; df = 0.0; return true; }
         const scalar cc = clamp ? std::max<scalar>(c, 0.0) : c;
-        f = clamp ? std::pow(cc, p)
+        f = clamp ? orderPow(cc, p)
                   : Reaction::powerLawFactorLazy(cc, p,
                         [&]() -> const std::string& { return thermo_->comp(rxn.comps[s]).name(); },
                         [&]() { return "batchReactor reaction '" + rxn.name + "'"; });
@@ -2386,26 +2628,32 @@ bool BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
             if (p > 1.0)  { df = 0.0; return true; }
             return false;                                   // p < 1: infinite
         }
-        df = p * std::pow(cc, p - 1.0);
+        df = p * orderPow(cc, p - 1.0);
         return true;
     };
 
-    sVector ff(m, 1.0), dff(m, 0.0);
+    //  The four per-reaction factor vectors live in thread-local scratch (no allocation after the
+    //  first call on a thread; one reaction at a time per thread, no recursion).
+    struct FactorScratch { sVector ff, dff, fr, dfr; };
+    static thread_local FactorScratch fs;
+    sVector& ff = fs.ff; sVector& dff = fs.dff;
+    ff.assign(m, 1.0); dff.assign(m, 0.0);
     for (std::size_t s = 0; s < m; ++s)
     {
         const scalar p = rxn.order[s];
         if (p == 0.0) continue;
-        if (!factor(n[rxn.comps[s]] / V, p, p > 0.0, s, ff[s], dff[s])) return false;
+        if (!factor(ctx ? ctx->conc[rxn.comps[s]] : n[rxn.comps[s]] / V, p, p > 0.0, s, ff[s], dff[s])) return false;
     }
     // Reverse factors (clamped, exponent orderRev: the products' nu, or a
     // both-sides species' declared product count).
-    sVector fr(m, 1.0), dfr(m, 0.0);
+    sVector& fr = fs.fr; sVector& dfr = fs.dfr;
+    fr.assign(m, 1.0); dfr.assign(m, 0.0);
     if (rxn.reversible)
         for (std::size_t s = 0; s < m; ++s)
         {
             if (rxn.orderRev[s] == 0.0) continue;
             // the rate uses std::pow(max(c,0), orderRev) -- the same function
-            if (!factor(n[rxn.comps[s]] / V, rxn.orderRev[s], true, s, fr[s], dfr[s])) return false;
+            if (!factor(ctx ? ctx->conc[rxn.comps[s]] : n[rxn.comps[s]] / V, rxn.orderRev[s], true, s, fr[s], dfr[s])) return false;
         }
 
     const auto productExcept = [m](const sVector& f, std::size_t skip)
@@ -2431,7 +2679,9 @@ bool BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
 
     // reverse leg: k / Kc, Kc once per reaction at this T
     const scalar Kc = (g && !g->empty())
-                        ? Reaction::equilibriumKc(rxn.comps, rxn.nu, T, *g)
+                        ? ((ctx && rxn.cfIdx >= 0)
+                               ? Reaction::equilibriumKcWithFactor(rxn.comps, rxn.nu, T, *g, ctx->cf[rxn.cfIdx])
+                               : Reaction::equilibriumKc(rxn.comps, rxn.nu, T, *g))
                         : Reaction::equilibriumKc(*thermo_, rxn.comps, rxn.nu, T);
     scalar dH = 0.0, sumNu = 0.0;
     for (std::size_t s = 0; s < m; ++s)
@@ -2489,14 +2739,16 @@ void BatchReactor::odeJacobianSparse(const sVector& y, const sVector& f0,
     if (adiab)
     {
         e.assign(n, 0.0); C.assign(n, 0.0);
+        const sVector *hAll = nullptr, *cpAll = nullptr;
+        if (energy_ != Energy::LiquidDH) energiesAt_(T, hAll, cpAll);   // memo: the right-hand side's own
         for (std::size_t i = 0; i < n; ++i)
         {
             const auto& comp = thermo_->comp(i);
             if (energy_ == Energy::LiquidDH) C[i] = comp.cpLiquid().Cp(T);
             else
             {
-                const scalar Cp = comp.cpIdealGas().Cp(T);
-                const scalar hi = comp.h_pure_ig(T);
+                const scalar Cp = (*cpAll)[i];
+                const scalar hi = (*hAll)[i];
                 e[i] = constP ? hi : hi - constant::R * T;
                 C[i] = constP ? Cp : Cp - constant::R;
             }
@@ -2509,9 +2761,10 @@ void BatchReactor::odeJacobianSparse(const sVector& y, const sVector& f0,
     //  measured 2026-11-19).
     const sVector sc = odeJacobianScale(y);
     const scalar epsT = fdStep(y[n], n < typ.size() ? typ[n] : 1.0);
-    const sVector gT = gibbsAt_(T);          // once per Jacobian, not once per reaction
-    const sVector hT = enthalpyAt_(T);
+    const sVector gT = gibbsAt_(T);          // once per Jacobian, not once per reaction; COPIES: the
+    const sVector hT = enthalpyAt_(T);       // memo's references die at the next call at another T
     const scalar Pgas = (ntot > 0.0 && V > 0.0) ? ntot * 1000.0 * constant::R * T / V : 0.0;
+    const KinCtx& kctx = kinCtx_(T, y, V);   // c = n/V, [M], the rate-constant tables: once per Jacobian
     sVector grad(n, 0.0);                    // zero outside the current deps
     scalar sumWS = 0.0, sumWE = 0.0;         // sum_j w_j s_j, sum_j w_j E_j
     for (std::size_t j = 0; j < reactions_.size(); ++j)
@@ -2524,8 +2777,8 @@ void BatchReactor::odeJacobianSparse(const sVector& y, const sVector& f0,
         {
             scalar dT = 0.0, dP = 0.0;
             const bool ok = (rxn.form == RateForm::Factory)
-                ? rateGradientLaw_(rxn, T, nv, V, grad, dT, dP, &gT, &hT)
-                : rateGradient_(rxn, T, nv, V, grad, dT, &gT, &hT);
+                ? rateGradientLaw_(rxn, T, nv, V, grad, dT, dP, &gT, &hT, &kctx)
+                : rateGradient_(rxn, T, nv, V, grad, dT, &gT, &hT, &kctx);
             if (ok)
             {
                 done = true;
@@ -2723,6 +2976,60 @@ std::string BatchReactor::odeRowLabel(std::size_t i) const
 {
     const std::size_t n = state_.n.size();
     return i < n ? "n_" + thermo_->comp(i).name() : std::string("T");
+}
+
+//  C458 (e) and (f), printed at the vessel's initial temperature, never
+//  changing a number: the K_c of a library set's own thermochemistry against
+//  this run's, and k_f/k_r of every EXPLICIT reverse (a leg with
+//  `A_rev`/`Ea_rev`, or two irreversible entries that are each other's
+//  reverse) against K_c(T).  Silent for a case with neither.
+void BatchReactor::announceLibraryChecks_(const DictPtr& rxnLib) const
+{
+    const ThermoPackage& thermo = *thermo_;
+    std::vector<DictPtr> entries;
+    std::vector<kineticsLibrary::LegProbe> legs;
+    for (std::size_t j = 0; j < reactions_.size(); ++j)
+    {
+        const DictPtr e = rxnLib->subDict(reactions_[j].name);
+        entries.push_back(e);
+        const auto& r = reactions_[j];
+        kineticsLibrary::LegProbe lp;
+        lp.name = r.name; lp.comps = r.comps;
+        lp.nu.assign(r.nu.begin(), r.nu.end());
+        lp.reversible = r.reversible;
+        const scalar T0 = state_.T;
+        if (r.form == RateForm::Arrhenius || r.form == RateForm::ModArrhenius)
+        {
+            lp.plainForm = true;
+            lp.kf = Reaction::arrheniusRate(r.A_pre, r.Ea, T0)
+                  * (r.form == RateForm::ModArrhenius ? std::pow(T0, r.b) : 1.0);
+            //  k_f/k_r = K_c holds for mass action: a declared order that is not the coefficient is not compared
+            for (std::size_t k = 0; k < r.comps.size(); ++k)
+                if (r.order[k] != (r.nu[k] < 0.0 ? -r.nu[k] : 0.0)) lp.massAction = false;
+        }
+        else if (r.form == RateForm::Factory && e->subDict("kinetics")->found("A_rev")
+                 //  only the concentration-basis Arrhenius leg: an activity-basis or adsorption (LHHW)
+                 //  law has constants K_c cannot be held to
+                 && e->subDict("kinetics")->lookupWordOrDefault("type", "") == "Arrhenius"
+                 && e->subDict("kinetics")->lookupWordOrDefault("basis", "concentration") == "concentration"
+                 && !e->subDict("kinetics")->found("adsorption"))
+        {
+            auto kin = e->subDict("kinetics");
+            lp.kf = Reaction::arrheniusRate(kin->lookupScalar("A"), kin->lookupScalar("Ea"), T0);
+            lp.hasKr = true;
+            lp.kr = Reaction::arrheniusRate(kin->lookupScalar("A_rev"), kin->lookupScalar("Ea_rev"), T0);
+            for (const auto& st : e->lookupDictList("stoichiometry"))
+            {
+                const scalar nu = st->lookupScalar("nu");
+                const scalar of = st->lookupScalarOrDefault("order", nu < 0 ? -nu : 0.0);
+                const scalar orv = st->lookupScalarOrDefault("orderRev", nu > 0 ? nu : 0.0);
+                if (of != (nu < 0 ? -nu : 0.0) || orv != (nu > 0 ? nu : 0.0)) lp.massAction = false;
+            }
+        }
+        legs.push_back(std::move(lp));
+    }
+    kineticsLibrary::announceThermoDifference(thermo, entries, state_.T, std::cerr);
+    kineticsLibrary::announceReverseConsistency(thermo, legs, state_.T, std::cerr);
 }
 
 } // namespace Choupo

@@ -31,6 +31,7 @@ License
 #include "RK4.H"
 #include "EulerSI.H"
 #include "Rosenbrock23.H"
+#include "Seulex.H"
 
 #include <algorithm>
 #include <map>
@@ -106,6 +107,8 @@ void ODEIntegrator::registerBuiltins()
     registerType("Rodas4",
         [] { return std::make_unique<Rosenbrock23>(
                  Rosenbrock23::Scheme::Rodas4); });
+    registerType("seulex",
+        [] { return std::make_unique<Seulex>(); });
 }
 
 } // namespace Choupo::solver

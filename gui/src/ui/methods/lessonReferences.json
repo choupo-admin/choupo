@@ -3320,6 +3320,221 @@
         }
       ]
     },
+    "open-molecular-tools": {
+      "pageSources": "The cards",
+      "references": [
+        {
+          "text": "Sun, Q.; Berkelbach, T. C.; Blunt, N. S.; Booth, G. H.; Guo, S.; Li, Z.; Liu, J.; McClain, J. D.; Sayfutyarova, E. R.; Sharma, S.; Wouters, S.; Chan, G. K.-L. (2018). PySCF: the Python-based simulations of chemistry framework. WIREs Comput. Mol. Sci. 8(1), e1340.",
+          "doi": "10.1002/wcms.1340",
+          "note": "The reference for PySCF.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/wcms.1340: authors, title, container, volume, issue and pages matched; the year is the volume's, the article was online on 2017-09-28 (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Smith, D. G. A.; Burns, L. A.; Simmonett, A. C.; Parrish, R. M.; et al.; Crawford, T. D.; Sherrill, C. D. (2020). PSI4 1.4: Open-source software for high-throughput quantum chemistry. J. Chem. Phys. 152(18), 184108.",
+          "doi": "10.1063/5.0006002",
+          "note": "The reference for Psi4 (the author list is shortened here; Crossref lists 34 authors).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1063/5.0006002: authors, title, container, volume, issue and pages matched (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Bannwarth, C.; Ehlert, S.; Grimme, S. (2019). GFN2-xTB: An Accurate and Broadly Parametrized Self-Consistent Tight-Binding Quantum Chemical Method with Multipole Electrostatics and Density-Dependent Dispersion Contributions. J. Chem. Theory Comput. 15(3), 1652–1671.",
+          "doi": "10.1021/acs.jctc.8b01176",
+          "note": "The method behind xtb's default.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/acs.jctc.8b01176: authors, title, container, volume, issue and pages matched (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Bell, I. H.; Mickoleit, E.; Hsieh, C.-M.; Lin, S.-T.; Vrabec, J.; Breitkopf, C.; Jäger, A. (2020). A Benchmark Open-Source Implementation of COSMO-SAC. J. Chem. Theory Comput. 16(4), 2635–2646.",
+          "doi": "10.1021/acs.jctc.9b01016",
+          "note": "The NIST benchmark code, and the source of the note that its bundled profiles came from a commercial quantum-chemistry program under a narrower licence (read on the PMC copy of the paper).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/acs.jctc.9b01016: authors, title, container, volume, issue and pages matched (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Lin, S.-T.; Sandler, S. I. (2002). A Priori Phase Equilibrium Prediction from a Segment Contribution Solvation Model. Ind. Eng. Chem. Res. 41(5), 899–913.",
+          "doi": "10.1021/ie001047w",
+          "note": "The COSMO-SAC equations Choupo implements.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie001047w: authors, title, container, volume, issue and pages matched (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Ferrarini, F.; Flôres, G. B.; Muniz, A. R.; de Soares, R. P. (2018). An open and extensible sigma-profile database for COSMO-based models. AIChE Journal 64(9), 3443–3455.",
+          "doi": "10.1002/aic.16194",
+          "note": "The open sigma-profile database and the refitted constants behind Choupo's second variant.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.16194: authors, title, container, volume, issue and pages matched (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Gerlach, T.; Müller, S.; de Castilla, A. G.; Smirnova, I. (2022). An open source COSMO-RS implementation and parameterization supporting the efficient implementation of multiple segment descriptors. Fluid Phase Equilibria 560, 113472.",
+          "doi": "10.1016/j.fluid.2022.113472",
+          "note": "The paper the TU Hamburg page links for openCOSMO-RS.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.fluid.2022.113472: authors, title, container, volume, issue and pages matched (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Fredenslund, Aa.; Jones, R. L.; Prausnitz, J. M. (1975). Group-contribution estimation of activity coefficients in nonideal liquid mixtures. AIChE Journal 21(6), 1086–1099.",
+          "doi": "10.1002/aic.690210607",
+          "note": "Original UNIFAC.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690210607: authors, title, container, volume, issue and pages matched (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Gmehling, J.; Li, J.; Schiller, M. (1993). A modified UNIFAC model. 2. Present parameter matrix and results for different thermodynamic properties. Ind. Eng. Chem. Res. 32(1), 178–193.",
+          "doi": "10.1021/ie00013a024",
+          "note": "Modified UNIFAC (Dortmund), the source of Choupo's Table XI anchors.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie00013a024: authors, title, container, volume, issue and pages matched (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Gross, J.; Sadowski, G. (2001). Perturbed-Chain SAFT: An Equation of State Based on a Perturbation Theory for Chain Molecules. Ind. Eng. Chem. Res. 40(4), 1244–1260.",
+          "doi": "10.1021/ie0003887",
+          "note": "PC-SAFT.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie0003887: authors, title, container, volume, issue and pages matched (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Walker, P. J.; Yew, H.-W.; Riedemann, A. (2022). Clapeyron.jl: An Extensible, Open-Source Fluid Thermodynamics Toolkit. Ind. Eng. Chem. Res. 61(20), 7130–7153.",
+          "doi": "10.1021/acs.iecr.2c00326",
+          "note": "The reference for Clapeyron.jl.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/acs.iecr.2c00326: authors, title, container, volume, issue and pages matched (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Shah, J. K.; Marin-Rimoldi, E.; Mullen, R. G.; Keene, B. P.; Khan, S.; Paluch, A. S.; Rai, N.; Romanielo, L. L.; Rosch, T. W.; Yoo, B.; Maginn, E. J. (2017). Cassandra: An open source Monte Carlo package for molecular simulation. J. Comput. Chem. 38(19), 1727–1739.",
+          "doi": "10.1002/jcc.24807",
+          "note": "The reference for Cassandra.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/jcc.24807: authors, title, container, volume, issue and pages matched (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Panagiotopoulos, A. Z. (1987). Direct determination of phase coexistence properties of fluids by Monte Carlo simulation in a new ensemble. Mol. Phys. 61(4), 813–826.",
+          "doi": "10.1080/00268978700101491",
+          "note": "The Gibbs ensemble.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1080/00268978700101491: authors, title, container, volume, issue and pages matched (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Nejahi, Y.; Soroush Barhaghi, M.; Mick, J.; Jackman, B.; Rushaidat, K.; Li, Y.; Schwiebert, L.; Potoff, J. (2019). GOMC: GPU Optimized Monte Carlo for the simulation of phase equilibria and physical properties of complex fluids. SoftwareX 9, 20–27.",
+          "doi": "10.1016/j.softx.2018.11.005",
+          "note": "The reference for GOMC.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.softx.2018.11.005: authors, title, container, volume, issue and pages matched (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Dubbeldam, D.; Calero, S.; Ellis, D. E.; Snurr, R. Q. (2016). RASPA: molecular simulation software for adsorption and diffusion in flexible nanoporous materials. Mol. Simul. 42(2), 81–101.",
+          "doi": "10.1080/08927022.2015.1010082",
+          "note": "The reference for RASPA.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1080/08927022.2015.1010082: authors, title, container, volume, issue and pages matched; the article was online on 2015-02-26, the volume is 2016 (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Bell, I. H.; Wronski, J.; Quoilin, S.; Lemort, V. (2014). Pure and Pseudo-pure Fluid Thermophysical Property Evaluation and the Open-Source Thermophysical Property Library CoolProp. Ind. Eng. Chem. Res. 53(6), 2498–2508.",
+          "doi": "10.1021/ie4033999",
+          "note": "The reference for CoolProp.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie4033999: authors, title, container, volume, issue and pages matched (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Bell, C. thermo: Thermodynamics, phase equilibrium and property library for Python. Documentation.",
+          "url": "https://thermo.readthedocs.io/",
+          "note": "The library's own documentation; the library has no journal paper that was found.",
+          "verified": {
+            "method": "official",
+            "evidence": "thermo.readthedocs.io fetched 2026-11-22: description, pip install thermo, MIT licence badge; the UNIFAC example ran with thermo 0.6.1 (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Brandolin, S.; et al. ugropy: get UNIFAC functional groups from a SMILES string or a name. PyPI project page.",
+          "url": "https://pypi.org/project/ugropy/",
+          "note": "The package's own page.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "pypi.org/pypi/ugropy/json read 2026-11-22: version 3.2.6, license field The MIT License, summary; the example ran (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "RDKit: open-source cheminformatics software. Project site.",
+          "url": "https://www.rdkit.org/",
+          "note": "The toolkit's own site.",
+          "verified": {
+            "method": "official",
+            "evidence": "www.rdkit.org fetched 2026-11-22: description and install options; licence read in license.txt of the repository (BSD 3-Clause) and the PyPI licence field (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Cantera: an object-oriented software toolkit for chemical kinetics, thermodynamics, and transport processes. Project site and documentation.",
+          "url": "https://cantera.org/",
+          "note": "The kinetics library Choupo's mechanisms are compared against.",
+          "verified": {
+            "method": "official",
+            "evidence": "cantera.org/stable/index.html fetched 2026-11-22: scope and copyright notice Cantera Developers; licence read in License.txt of the repository (BSD 3-Clause) (open tools page)",
+            "date": "2026-11-22"
+          }
+        },
+        {
+          "text": "Vendor licence statement of the quantum-chemistry program the openCOSMO-RS conformer pipeline calls (product page).",
+          "url": "https://www.faccts.de/orca/",
+          "note": "Free for academic and personal use, commercial licences sold separately; not open source.",
+          "verified": {
+            "method": "official",
+            "evidence": "www.faccts.de/orca fetched 2026-11-22: 'It is free for academic use, while commercial licenses are available through FACCTs' and 'ORCA is and will remain free for academic and personal use'",
+            "date": "2026-11-22"
+          }
+        }
+      ]
+    },
     "how-do-we-know-k": {
       "references": [
         {

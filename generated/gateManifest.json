@@ -1915,6 +1915,16 @@
       "exit": 0,
       "claim": "check_rrho_thermo: OK  (a) 6 validation species, S298 within 1 J/(mol K) and Cp within tolerance [SKIPPED: H2O]; (b) 9 records equal the tool's output; (c) anchors and fits held; (d) one home",
       "seconds": 1.4
+    },
+    "check_kinetics_library": {
+      "exit": 0,
+      "claim": "check_kinetics_library: OK -- 29 records (canonical names, atoms, units, sources with pages; 8 page(s) unrecorded on interim records; 23 O Conaire constants equal journal page 607 as the review read it; the 29 entries the cases carried inline are written back unchanged), 2 sets, 10/10 shipped cases byte-identical to their inline form; a doubled A in a case-tier record or an inline copy is seen; K_c of a set's thermo and k_f/k_r against K_c are printed",
+      "seconds": 19.7
+    },
+    "check_seulex": {
+      "exit": 0,
+      "claim": "check_seulex: OK -- seulex: Robertson, a smooth problem and a wrong-Jacobian run are right, never-refreshing is seen, and nox03 / ignition01 end where their Rosenbrock23 siblings do (dT 1.0e-05 K, dx 2.5e-07, dT 0.0e+00 K, dx 1.0e-08)",
+      "seconds": 26.7
     }
   }
 }

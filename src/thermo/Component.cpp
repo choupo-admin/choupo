@@ -1241,6 +1241,22 @@ void Component::readFromDict(const DictPtr& d)
 // data, never a separately curated route; a leg whose transition datum is
 // absent REFUSES naming the remedy (R-E3/R-E4,
 // docs/design/tp-stream-energy-coherence.md).
+scalar Component::gasLegH_(scalar T) const
+{
+    if (!cpGas_)
+        throw std::runtime_error("Component '" + name_ +
+            "': h_formation gas leg needs idealGasHeatCapacity");
+    return Hf298_ + cpGas_->H(T, 298.15);
+}
+
+scalar Component::gasLegS_(scalar T) const
+{
+    if (!cpGas_)
+        throw std::runtime_error("Component '" + name_ +
+            "': s_formation gas leg needs idealGasHeatCapacity");
+    return S298_ + cpGas_->S(T, 298.15);
+}
+
 scalar Component::h_formation(scalar T, const std::string& targetPhase) const
 {
     if (!hasGibbsData_)
@@ -1293,7 +1309,7 @@ scalar Component::h_formation(scalar T, const std::string& targetPhase) const
 
     if (naturalPhase_ == targetPhase)
     {
-        if (naturalPhase_ == "gas")    return Hf298_ + cpGasIntegral(T);
+        if (naturalPhase_ == "gas")    return gasLegH_(T);
         if (naturalPhase_ == "liquid") return Hf298_ + cpLiqIntegral(T);
         // Solid -> solid: integrate the REAL solid Cp when the .dat carries a
         // solidHeatCapacity{} block; fall back to Cp_liquid otherwise (legacy
@@ -1421,7 +1437,7 @@ scalar Component::s_formation(scalar T_K, const std::string& targetPhase) const
 
     if (naturalPhase_ == targetPhase)
     {
-        if (naturalPhase_ == "gas")    return S298_ + sGasIntegral(T_K);
+        if (naturalPhase_ == "gas")    return gasLegS_(T_K);
         if (naturalPhase_ == "liquid") return S298_ + sLiqIntegral(T_K);
         if (naturalPhase_ == "solid")  return S298_ + sSolidIntegral(T_K);
     }
@@ -1762,7 +1778,10 @@ scalar Component::h_pure_ig(scalar T) const
     //  modelled" -- a true sentence about the wrong problem, since the
     //  reader's actual fault is a mislabelled rung.  A refactor that keeps
     //  the answer and loses the diagnosis has not kept the behaviour.
-    return h_formation(T, "gas");
+    //  The delegation is to the gas leg ITSELF (gasLegH_, which h_formation's gas
+    //  branch also returns), not to the generic entry: the rung guard above
+    //  guarantees the gas branch, and the entry built a std::string per call.
+    return gasLegH_(T);
 }
 
 scalar Component::s_pure_ig(scalar T) const
@@ -1774,12 +1793,17 @@ scalar Component::s_pure_ig(scalar T) const
     if (!cpGas_)
         throw std::runtime_error("Component '" + name_ +
             "': s_pure_ig(T) needs an idealGasHeatCapacity block in its .dat");
-    return s_formation(T, "gas");        // one implementation -- see h_pure_ig
+    return gasLegS_(T);                  // the gas leg s_formation shares -- see h_pure_ig
 }
 
 scalar Component::g_pure_ig(scalar T) const
 {
-    return h_pure_ig(T) - T * s_pure_ig(T);
+    return gibbsFromH_ig(T, h_pure_ig(T));
+}
+
+scalar Component::gibbsFromH_ig(scalar T, scalar h) const
+{
+    return h - T * s_pure_ig(T);
 }
 
 // Saturation concentration c_sat(T) = Σ a_i (T-273.15)^i  [kg solute/kg solvent].

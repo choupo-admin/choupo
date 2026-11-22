@@ -791,6 +791,9 @@ public:
     scalar h_pure_ig(scalar T_K) const;
     scalar s_pure_ig(scalar T_K) const;
     scalar g_pure_ig(scalar T_K) const;
+    //  g = h - T s with h = h_pure_ig(T) already in hand (a caller that needs both
+    //  h and g at one T): g_pure_ig's own expression, in one place.
+    scalar gibbsFromH_ig(scalar T_K, scalar h_pure_ig_T) const;
 
     // ---- Declared elemental composition (optional; validated at read) -------
     //  For a substance WITHOUT a single molecular formula (assay cut,
@@ -936,6 +939,11 @@ private:
     bool        hasVliqT_ = false;
     scalar      solPar_  = 0.0;   // published Hildebrand delta [Pa^0.5]
     DictPtr     liquidCondDict_;  // liquidThermalConductivity{} block, raw
+    //  THE gas leg of the standard-state enthalpy and entropy: Hf298 + int Cp dT,
+    //  S298 + int Cp/T dT, on the ideal-gas heat capacity.  h_formation(T, "gas"),
+    //  s_formation(T, "gas") and h_pure_ig / s_pure_ig all take it from here.
+    scalar gasLegH_(scalar T) const;
+    scalar gasLegS_(scalar T) const;
     scalar      Hf298_   = 0.0;
     scalar      S298_    = 0.0;
     bool        hasGibbsData_ = false;

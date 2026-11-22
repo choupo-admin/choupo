@@ -1,0 +1,35 @@
+# platform cpu=Intel(R) Xeon(R) Processor @ 2.10GHz; arch=x86_64; libc=glibc 2.39; cxx=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; simd=sse4_1,avx,avx2,fma,avx512f
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     bomb                   P_final          1121202.82293    1e-4
+kpi     bomb                   T_final          3037.00819759    1e-4
+kpi     bomb                   n_H2O2_final     8.00367412435e-11 1e-4
+kpi     bomb                   n_H2_final       1.62963087041e-06 1e-4
+kpi     bomb                   n_HO2_final      7.19758326731e-10 1e-4
+kpi     bomb                   n_H_final        4.49541506383e-07 1e-4
+kpi     bomb                   n_N2_final       2.857145e-05     1e-4
+kpi     bomb                   n_O2_final       5.33369138823e-07 1e-4
+kpi     bomb                   n_OH_final       1.20519238467e-06 1e-4
+kpi     bomb                   n_O_final        1.8640747939e-07 1e-4
+kpi     bomb                   n_water_final    1.18257622681e-05 1e-4
+kpi     bomb                   t_end            0.0002           1e-4
+kpi     bomb                   totalMoles_final 4.44021534429e-05 1e-4
+kpi     campaign               element_H_closure_rel 1.23266682828e-12 abs:1e-09
+kpi     campaign               element_N_closure_rel 0                1e-4
+kpi     campaign               element_O_closure_rel 1.48515517355e-12 abs:1e-09
+kpi     campaign               element_worst_closure_rel 1.48515517355e-12 abs:1e-09
+kpi     campaign               energy_balance_available 0                1e-4
+kpi     campaign               energy_records_invalid 0                1e-4
+kpi     campaign               energy_records_valid 0                1e-4
+kpi     campaign               mass_closure_rel 5.81550184181e-06 abs:1e-09
+kpi     campaign               mass_kg_external_out 0                1e-4
+kpi     campaign               mass_kg_final    0.00105772486566 1e-4
+kpi     campaign               mass_kg_initial  0.0010577310169  1e-4
+kpi     campaign               mass_residual_kg 6.15123667692e-09 abs:1e-09
+kpi     campaign               moles_kmol_external_out 0                1e-4
+kpi     campaign               moles_kmol_final 4.44021534429e-05 1e-4
+kpi     campaign               moles_kmol_initial 5e-05            1e-4
+kpi     campaign               transfers_H_invalid 0                1e-4
+kpi     campaign               transfers_H_valid 0                1e-4
+kpi     campaign               transfers_logged 0                1e-4

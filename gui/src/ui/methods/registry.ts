@@ -62,7 +62,7 @@ export type MethodToolId =
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
   | "what-is-temperature" | "flash-operating-line" | "bjerrum" | "salt-mixing"
   | "thermometer-trust" | "property-trust" | "property-data-sources"
-  | "database-to-parameters"
+  | "database-to-parameters" | "open-molecular-tools"
   | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
@@ -524,6 +524,35 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "never the compiler; a real NRTL record's provenance read line by "
       + "line; and an exercise deciding whether six data may be published.",
     theory: "ch:criticals",
+  },
+  {
+    //  FROM A MOLECULE TO A PROPERTY, WITH OPEN PROGRAMS (2026-11-22).  A
+    //  student who knows only process simulation meets, on this shelf, where a
+    //  number comes from and may be published; this page names the open
+    //  programs that start one level lower, from the structure (quantum
+    //  chemistry, COSMO-type models, group contribution, force-field Monte
+    //  Carlo, a cheminformatics toolkit, a reference-fluid and a kinetics
+    //  library), says what each computes, what its licence is and how that
+    //  was read, how to run a first example in a browser, where it meets a
+    //  Choupo record or comparison, and one thesis idea.  Every example says
+    //  whether it was run.  It sits beside `property-data-sources`: that page
+    //  is about measured values, this one about computed ones.
+    id: "open-molecular-tools", blurb: "Find the open program that answers a question about a molecule.",
+    label: "From molecules to properties: the open tools",
+    discipline: "Property data & parameters",
+    kind: "notes", status: "live",
+    origins: ["reference"],
+    teaches: "Which open-source program answers which question about a "
+      + "molecule or a mixture: quantum chemistry (PySCF, Psi4, xtb) to "
+      + "geometry, frequencies and ideal-gas Cp and S; COSMO-SAC and "
+      + "openCOSMO-RS to activity coefficients without mixture data; UNIFAC "
+      + "and PC-SAFT with ugropy, thermo and Clapeyron; Gibbs-ensemble and "
+      + "grand-canonical Monte Carlo (Cassandra, GOMC, RASPA); RDKit from a "
+      + "SMILES string to a structure; CoolProp and Cantera as the reference "
+      + "side of a comparison.  For each: its licence and how it was read, "
+      + "how to run a first example with no installation, where it meets a "
+      + "Choupo record, and one thesis idea.",
+    theory: "ch:cosmosac",
   },
   {
     //  THE PROPERTY-DATA LESSON that used to sit inside the temperature

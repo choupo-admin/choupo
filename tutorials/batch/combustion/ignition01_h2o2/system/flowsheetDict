@@ -16,6 +16,9 @@
   thermo) -- no per-reaction ΔH is supplied.  Temperature, and the radicals
   H/O/OH/HO2, are integrated by the stiff solver until branching runs away.
 
+  The 21 reactions are read from the kinetics library (`reactionSet OConaire2004;`
+  in constant/reactions): one record per reaction, each with its journal page.
+
   solver { integrator Rosenbrock23; }  -- the L-stable stiff method.  Swap to
   RK4 (see the ignition01_h2o2_rk4 sibling) and the same step blows up.
 \*---------------------------------------------------------------------------*/

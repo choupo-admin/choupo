@@ -232,13 +232,13 @@ R8_BOTH = """        { component H;      nu -1;  order 1; }
         type modifiedArrhenius;
         A 4.5000e+22;  b -2.0;  Ea 0.0;"""
 #  R10 irreversible with explicit (FORD-style) orders: HO2 1.5 and a non-reactant N2 0.5.
+#  (the probe copy writes a case that asks the reaction library INLINE, entry for entry, without the
+#  shipped comment line: bin/curate/kinetics_inline.py)
 R10_HEAD_OLD = """R10_HO2_H_H2_O2
 {
-    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)
     reversible        true;"""
 R10_HEAD_NEW = """R10_HO2_H_H2_O2
-{
-    // O Conaire 2004 Table I (verbatim; A cm3-mol-s, Ea kcal/mol)"""
+{"""
 R10_ST_OLD = """        { component H;      nu -1;  order 1; }
         { component H2;     nu  1;  order 0; }
         { component HO2;    nu -1;  order 1; }

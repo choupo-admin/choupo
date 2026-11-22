@@ -37,11 +37,16 @@
 #include <algorithm>
 #include <cmath>
 #include <fstream>
+#include <filesystem>
 #include <map>
+#include <memory>
+#include <mutex>
 #include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <system_error>
+#include <vector>
 
 namespace Choupo {
 namespace vapourAssociation {
@@ -67,11 +72,52 @@ inline Dimerisation dimerisationFrom(const DictPtr& vd)
 //  The dimerisation record of the gas whose formula is `gasSpecies`, from the
 //  case's own resolver view of chemistry/ (a sealed case reads its closure
 //  alone).  Parsed once per file per process.
+//
+//  THE SCAN IS KEYED ON THE IDENTITY OF WHAT IT LISTS (2026-11-22, fair-timing):
+//  this function is asked once per component formula and the scan of chemistry/
+//  (the sorted catalogue listing merged with the case's own, a few hundred files)
+//  is the same answer every time -- re-taking it for each of 17 components was
+//  16 % of the instructions of a start-up.  scanRecordDir reads exactly two
+//  directories (the nearest constant/chemistry walking up from the working
+//  directory, and the catalogue's chemistry/; data/local is not read), so the
+//  key is the working directory, the sealed flag, both directory paths and
+//  their modification times: a record ADDED to or REMOVED from either (a student
+//  editing a case in a browser session whose WASM module stays loaded) moves a
+//  mtime and the listing is taken again.  (The per-file parse cache below is
+//  keyed on the path alone, as it always was.)
 inline std::optional<Dimerisation> find(const std::string& gasSpecies)
 {
     static std::map<std::string,
         std::optional<std::pair<std::string, Dimerisation>>> cache;
-    for (const auto& f : records::scanRecordDir("chemistry"))
+    static std::mutex scanMutex;
+    static std::string scanKey;
+    static std::shared_ptr<const std::vector<std::filesystem::path>> scanFiles;
+    std::shared_ptr<const std::vector<std::filesystem::path>> files;
+    {
+        namespace fs = std::filesystem;
+        bool legacy = false;
+        const fs::path loc = records::localScanDir("chemistry", legacy);
+        const fs::path cat = records::standardsRecord("chemistry");
+        auto stamp = [](const fs::path& d)
+        {
+            std::error_code ec;
+            const auto t = fs::last_write_time(d, ec);
+            return ec ? std::string("-")
+                      : std::to_string(t.time_since_epoch().count());
+        };
+        const std::string key = fs::current_path().string() + "|"
+            + (records::sealedStrict() ? "S" : "U") + "|" + loc.string() + "@"
+            + stamp(loc) + "|" + cat.string() + "@" + stamp(cat);
+        std::lock_guard<std::mutex> lock(scanMutex);
+        if (!scanFiles || key != scanKey)
+        {
+            scanFiles = std::make_shared<const std::vector<fs::path>>(
+                records::scanRecordDir("chemistry"));
+            scanKey = key;
+        }
+        files = scanFiles;
+    }
+    for (const auto& f : *files)
     {
         const std::string key = f.string();
         auto it = cache.find(key);

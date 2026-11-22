@@ -39487,6 +39487,115 @@ three-line PLOG; not chemistry) gives the same ignition delay to the 0.1~$\mu$s
 grid and $T$ within 0.25~K along the trajectory
 (\file{docs/reviews/2026-11-19-chemkin-real-mechanism/REPORT.md}, section~8).
 
+\subsection{The gas-phase reaction library: one record per reaction}\label{sec:kinetics-library}
+The elementary reactions of a gas-phase mechanism have a home of their own,
+\file{data/standards/kinetics/}, built like the binary-pair catalogues: ONE
+record per reaction (\code{recordType elementaryReaction}), a case that asks for
+a \emph{set} by name, and the precedence case $>$ standards $>$ \file{data/local}.
+Before it, the 21 reactions of the H$_2$/O$_2$ mechanism of
+\'O~Conaire, Curran, Simmie, Pitz and Westbrook (Int.\ J.\ Chem.\ Kinet.\ 36
+(2004) 603, Table~I) were written out by copy in eleven case files, so a constant
+edited in one copy moved one ignition delay and left ten cases on the old value.
+
+\emph{The record} is the grammar a case's \code{constant/reactions} already uses
+(the \code{stoichiometry} list with \code{nu}, a \code{kinetics} block of type
+\code{modifiedArrhenius}, \code{thirdBody}, \code{falloff} or \code{plog}, its
+\code{units \{ \}}, \code{thirdBody} efficiencies, \code{troe} or \code{sri}),
+plus a \code{source} block (\code{citation}, \code{doi}, \code{table}, and the
+\code{page} of EACH record; \code{page unrecorded} is admitted only on an
+\code{interim} record and is counted), a \code{provenance} block, and
+\code{sets \{ <set> <label>; \}}:
+\begin{verbatim}
+recordType        elementaryReaction;
+reversible        true;
+limitingReactant  H;
+stoichiometry ( { component H; nu -1; } { component O; nu 1; }
+                { component O2; nu -1; } { component OH; nu 1; } );
+kinetics { type modifiedArrhenius;  A 1.91e14;  b 0.00;  Ea 16.44;
+           units { A "cm3/mol/s"; Ea "kcal/mol"; } }
+sets   { OConaire2004 R1_H_O2_O_OH; }
+source { citation "O Conaire, Curran, Simmie, Pitz and Westbrook, ...";
+         doi "10.1002/kin.20036"; table "Table I"; page 607; reaction 1; }
+\end{verbatim}
+
+\emph{Identity} is the canonical equation.  The species of each side are sorted
+(a species of coefficient two appears twice), a reversible reaction is oriented so
+that the side whose sorted list is smaller comes first (the reverse is the SAME
+reaction), \code{+M} and \code{(+M)} are suffixes of each side and distinct from
+the bare reaction, an irreversible reaction is written \code{A+B\textasciitilde{}C+D}
+as written, and a summed duplicate (CHEMKIN DUPLICATE, the pairs~14 and~19 of
+Table~I) carries \code{@1}, \code{@2}.  The file stem IS that string
+(\code{H+O2=O+OH.dat}, \code{H+O2(+M)=HO2(+M).dat}); the reader refuses a record
+whose name is not the canonical equation of its content.  The mechanism's own
+label (\code{R1\_H\_O2\_O\_OH}) is the record's alias WITHIN a set, so a unit's
+\code{reactions ( R1\_H\_O2\_O\_OH \ldots )} list does not change.
+
+\emph{Orders} of an elementary record are DERIVED, $m_i=-\nu_i$ for a reactant
+and $0$ for a product, and an \code{order} written on one is refused by name; a
+record that declares them (a global rate law) says \code{global true;} and writes
+every order.  An explicit reverse is allowed (below).
+
+\emph{A set} is derived from the records: those whose \code{sets \{\}} names it.
+A case writes \code{reactionSet OConaire2004;} (or \code{reactionSets ( A B );},
+or \code{reactionRecords ( \{ record "H+O2=O+OH"; name myR1; \} );}) in its
+\code{constant/reactions}, and the engine hands every unit the very entries the
+case would have written inline (\code{kineticsLibrary::materialise}), so nothing
+downstream changes: the ten shipped cases that ask the set run byte-identically
+to their inline form (\code{check\_kinetics\_library}).  The third-body
+efficiencies of a species the run does not carry (Ar, He in Table~I) are not
+applied (their concentration is zero) and the run says so.  A mixture of sets is
+announced, neutrally; a WARNING is printed only for a record marked
+\code{optimisedWithin X} used outside the set~$X$ (a constant tuned with its
+set's others, in the style of GRI-Mech or FFCM-1).  A \code{kinetics/sets/<name>.dat}
+record holds the set's own citation and the thermochemistry it was made with.
+
+\emph{One thermochemistry per run} (the species records).  Where the set
+declares a catalogue home (\code{thermochemistry \{ home <thermoTables home>; \}}), the
+engine prints for each reaction of the set, at the vessel's initial temperature,
+\begin{equation}
+    \frac{K_c^{\mathrm{set}}}{K_c^{\mathrm{run}}}
+    \;=\; \exp\!\Bigl[-\frac{\Delta G^{\circ}_{\mathrm{set}}-\Delta G^{\circ}_{\mathrm{run}}}{\Rgas T}\Bigr],
+    \qquad \Delta G^{\circ}=\sum_i\nu_i\,g^{\circ}_{\mathrm{ig},i}(T),
+    \label{eq:kc-set-vs-run}
+\end{equation}
+with $g^{\circ}_{\mathrm{ig}}$ from the set's species records and from the run's;
+a reaction with a species the home does not hold is printed \emph{not compared},
+naming it.  When the set was made with its own thermochemistry that the catalogue
+does not hold (the case of \'O~Conaire's Table~II), one sentence says so.  The
+print is informational and changes no number.  For an EXPLICIT reverse (a leg
+with its own \code{A\_rev}/\code{Ea\_rev}, or two irreversible entries that are
+each other's reverse) the engine prints $k_f/k_r$ against $K_c(T)$ on this run's
+thermochemistry,
+\begin{equation}
+    \frac{k_f}{k_r} \overset{?}{=} K_c(T)
+    = \exp\!\Bigl(-\frac{\Delta G^{\circ}}{\Rgas T}\Bigr)
+      \Bigl(\frac{P^{\circ}}{\Rgas T}\Bigr)^{\sum\nu_i},
+    \label{eq:kfkr-kc}
+\end{equation}
+in kmol/m$^3$ for the species counts of the reaction, with their ratio; it is
+printed only for mass-action legs (a leg whose orders are not its coefficients
+has no $K_c$ to be held to, and the print says so).  Detailed balance holds when
+the ratio is~1; a ratio away from 1 is the mechanism's own thermodynamic
+inconsistency, shown, not corrected.
+
+\emph{Validity and what is not claimed.}  The record's numbers are those of the
+source, as read from its page; the seed holds 21 O~Conaire entries, each equal to
+journal page~607 as the review of 2026-11-21 read it, and the Zeldovich and
+N$_2$O reactions of Glarborg et al.\ (Prog.\ Energy Combust.\ Sci.\ 67 (2018) 31,
+Tables~2 and~5), whose page nobody in this tree has read (\code{page unrecorded},
+\code{interim}).  The library does not choose between two measurements of one
+reaction, does not carry a reaction's validity range beyond the source's, and
+holds no pressure-dependent table yet (\code{plog} records are admitted by the
+grammar and none is seeded).  \emph{Identity of a summed reaction, and an open question.}  The terms of a summed
+reaction are \code{X@1}, \code{X@2}, \ldots, numbered from~1 without a gap and at
+least two; a bare \code{X} beside them, or a lone \code{X@1}, is refused by name.  A
+collider-specific fall-off (\code{(+AR)}) carries the collider in its stem.  What the
+library does NOT decide is how to hold SEVERAL alternative rate expressions for one
+equation (two evaluations of the same reaction, which a case must choose between
+rather than add): the \code{@n} suffix means ``summed'', never ``alternative''.
+That decision is needed before a second mechanism is imported.
+Gate: \code{bin/curate/check\_kinetics\_library.py}.
+
 \subsection{Steam cracking of ethane: the molecular scheme of Sundaram and Froment}\label{sec:cracking-molecular}
 
 A cracking coil is designed on the product slate, and the radical mechanism
@@ -40069,6 +40178,168 @@ real overshoot and is rejected.  \code{nox03\_millerbowman\_large} starts on
 \code{linearSolver dense} and equals the sparse run to every digit printed
 (arm h1 of \code{check\_kinetics\_jacobian}).
 \end{pitfall}
+
+\subsection{Extrapolating the linearly-implicit Euler method: \code{seulex}}\label{sec:seulex}
+
+Rosenbrock23 and Rodas4 build a Jacobian and factor $\mathbf W$ at \emph{every}
+step, because their order conditions assume $\mathbf W=\mathbf I-h\gamma\Jac$
+with the \emph{true} $\Jac$ (Section~\ref{sec:batch-analytic-jacobian}).
+\code{seulex} (\code{src/solver/ODE/Seulex}) is the other family OpenFOAM's
+chemistry uses by default: the extrapolation of the linearly-implicit Euler
+method with variable order (Deuflhard's method), Hairer and
+Wanner~\cite{HairerWanner1996}, Section~IV.9, in the form of Hairer's published
+code \code{seulex.f} (routines \code{SEUCOR} and \code{SEUL}), whose formulas
+and default constants the implementation follows and which it does not copy:
+it is written for this guide's notation, with the analytic audited Jacobian
+(dense or sparse), the sparse LU and the positivity guard of the Rosenbrock
+integrators.  It is selected by \code{solver \{ integrator seulex; \}} on a
+\code{batchReactor} and is the only one of them that tolerates an \emph{old}
+Jacobian.
+
+\paragraph{The step.}  One step of size $H$ from $(t,y_0)$.  Column $j$ takes
+$n_j$ sub-steps of $h_j=H/n_j$ of the linearly-implicit Euler method,
+\begin{equation}\label{eq:seulex-sub}
+(\mathbf I-h_j\Jac)\,\delta_m = h_j\Bigl(f(t_m,y_m)+h_j\,\frac{\partial f}{\partial t}\Bigr),
+\qquad y_{m+1}=y_m+\delta_m,\qquad T_{j,1}=y_{n_j},
+\end{equation}
+($\partial f/\partial t$ is zero for chemistry; a non-autonomous problem is
+made autonomous by adding $t'=1$), with the step-number sequence
+$n_j=1,2,3,4,6,8,12,16,24,32,48,64$ (\code{seulex.f}'s \code{NSEQU}=1; its
+default \code{NSEQU}=2, $2,3,4,6,8,\dots$, was measured against it on three
+cases and was no faster: the two differ by less than the noise of the
+measurement).  Each column factors $\mathbf W_j=\mathbf I-h_j\Jac$ once (a
+sparse LU on the mechanism's pattern, or dense; the rank-one part of a
+constant-pressure gas by Sherman--Morrison, as in
+Section~\ref{sec:sparse-lu}) and back-solves for every sub-step.  The columns
+are combined by the Aitken--Neville recursion in $h$ (the global error has an
+asymptotic expansion in powers of $h$),
+\begin{equation}\label{eq:seulex-extrap}
+T_{j,l}=T_{j,l-1}+\frac{T_{j,l-1}-T_{j-1,l-1}}{n_j/n_{j-l+1}-1},\qquad l=2,\dots,j,
+\end{equation}
+and $T_{j,j}$ has order $j$.
+
+\paragraph{Error, order and step.}  The error of column $j$ is
+$\mathrm{err}_j=\bigl(\tfrac1N\sum_i\min(|T_{j,j,i}-T_{j,j-1,i}|/\mathrm{sc}_i,10^{15})^2\bigr)^{1/2}$
+on the scale $\mathrm{sc}_i=\mathrm{atol}_i+\mathrm{rtol}\,|y_{0,i}|$ of the state
+\emph{at the start of the step}.  The step the column would allow is
+$H_j=H\,/\,\min(f_2/f_1^{1/j},\max(f_1^{1/j},(\mathrm{err}_j/s_1)^{1/j}/s_2))$ with
+$f_1=0.1$, $f_2=4$, $s_1=0.6$, $s_2=0.93$ (the defaults of \code{seulex.f}),
+and its \emph{work per unit step} is $W_j=A_j/H_j$ with the work model of
+\code{seulex.f}: a Jacobian costs 5, a factorisation 1, a sub-step (one $f$
+and one back-solve) 2,
+$A_1=5+2n_1+1$, $A_j=A_{j-1}+2(n_j-1)+1$.  Around the target order $k$ only
+the window of columns $k-1,k,k+1$ is computed: after the columns $1\dots k-1$
+the step is accepted if $\mathrm{err}_{k-1}\le1$ and rejected at once if
+$\mathrm{err}_{k-1}>4n_{k+1}n_k$ (this test is skipped for $k=2$ and after a
+rejection); column $k$ is accepted if $\mathrm{err}_k\le1$ and rejected if
+$\mathrm{err}_k>2n_{k+1}$; otherwise column $k+1$ is computed and accepted if
+$\mathrm{err}_{k+1}\le1$.  The \emph{first} step of an interval and the
+\emph{last} (the one that reaches $t_1$; a step that would stop within 1\,\% of
+$t_1$ is stretched to it) compute all columns $1\dots k$ in turn.  A column
+$j>2$ whose error is not below the previous one ($\mathrm{err}_j\ge
+\max(4\,\mathrm{err}_{j-1},1)$) is \emph{diverging}: the step is abandoned and
+$H$ halved.  After an accepted step at column $c$ the next order is the one
+that minimises $W$ (down when $W_{c-1}<0.7W_c$, up when $W_c<0.9W_{c-1}$), and
+the next step is $H_{k'}$, scaled by $A_{k'}/A_c$ when the order rises; after a
+rejection the order is lowered at the failed column and the step is the one
+that column allows.  The first order is $\max(2,\min(10,\lfloor0.6
+(-\log_{10}(\mathrm{rtol}+\mathrm{atol}))+1.5\rfloor))$.  The order is not
+carried from one output interval to the next (each \code{integrate} call starts
+afresh; the step is carried, through \code{hNext}).
+
+\paragraph{The Jacobian may be old.}  Each sub-step~\eqref{eq:seulex-sub} is a
+consistent linearly-implicit Euler step for \emph{any} matrix $\Jac$: a wrong
+or stale $\Jac$ makes the step less accurate and the error estimate larger, it
+does not make the extrapolated result wrong --- the controller takes a smaller
+step or a lower order.  That is the difference from the Rosenbrock methods,
+which are not W-methods.  The \emph{convergence monitor} decides when $\Jac$
+has aged.  In columns $j\le2$ with $n_j>1$, after the first sub-step $\delta_0$,
+the Newton correction of the backward Euler equation $\delta=hf(y_0+\delta)$ is
+formed,
+\begin{equation}\label{eq:seulex-theta}
+\mathbf x=\mathbf W^{-1}\bigl(h\,f(t+h,y_0+\delta_0)+h^2\,\partial f/\partial t-\delta_0\bigr),\qquad
+\theta=\frac{\lVert\mathbf x\rVert}{\max(1,\lVert\delta_0\rVert)}
+\end{equation}
+(Euclidean norms of the vectors divided by $\mathrm{sc}$, \emph{not} divided
+by $N$).  $\theta>1$ means the step is unstable with this $\Jac$: the step is
+abandoned and $H$ halved.  Every abandoned or rejected attempt sets
+$\theta=2\theta_\mathrm{redo}$, and at the start of an attempt the Jacobian is
+rebuilt if $\theta>\theta_\mathrm{redo}$, unless one has been built since the last
+accepted step (a rejection with a fresh Jacobian shortens the step instead).
+$\theta_\mathrm{redo}$ is $\min(10^{-4},\mathrm{rtol})$ (\code{seulex.f}'s
+\code{THET}; \code{ODEControls::jacobianRedo} overrides it).  At a tight
+tolerance that threshold is below the $\theta$ of almost every step of a
+chemical problem, so the Jacobian is rebuilt on nearly every step
+(\code{nox03}: 92 of 104 attempts); where it stays exact --- a linear problem
+--- it is built once for dozens of steps.  The audit of the analytic Jacobian
+(Section~\ref{sec:batch-analytic-jacobian}) runs, as before, at the 1st, 2nd,
+4th, 8th, \dots Jacobian \emph{built}: a reused Jacobian is not re-audited.
+
+\paragraph{Positivity and bookkeeping.}  As Rosenbrock23/Rodas4: a masked row
+between $-\mathrm{atol}$ and zero is set to zero (unless
+\code{positiveWithinAtol}), a more negative accepted value rejects the step.
+\code{ODEStats} reports the steps, the Jacobians built, the factorisations of
+$\mathbf W$, the right-hand sides evaluated and the largest $\theta$;
+\code{CHOUPO\_ODE\_STATS=1} prints them with the time spent in the right-hand
+side and in the Jacobian.  A declared block structure (the fixed bed) and the
+\code{sensitivity} block refuse seulex by name.  The integrator keeps no state
+between calls, so one instance is safe under \code{solver \{ threads N; \}}.
+
+\paragraph{Output grid and step ends.}  The driver writes the states between two
+accepted steps from a cubic Hermite interpolant of the step.  seulex takes
+steps an order of magnitude longer than Rodas4 at a tight tolerance, and
+then the \emph{interpolant}, not the method, limits the accuracy of a row
+written inside the induction period (a growth rate $\lambda\approx10^{4}$
+s$^{-1}$ over a step of $5\times10^{-5}$~s gives $(\lambda h)^4/384\approx
+1.6\times10^{-4}$): on the write grid the largest species deviation does not
+fall below $10^{-4}$ to $10^{-1}$ however tight the tolerance, and it falls to
+$2\times10^{-7}$ when \code{deltaTmax} is cut to $10^{-5}$ (which hides the
+effect and costs the speed).  Hairer and Wanner's extrapolated dense output is
+not implemented: the interpolant belongs to the driver (\code{choupoBatch}'s
+step callback).  The accuracy of the \emph{method} is read at the step ends, by
+integrating to a single write time.
+
+\paragraph{What was measured.}  \code{nox03\_millerbowman\_large} (235
+reactions, 52 packed rows, analytic sparse Jacobian), against the Cantera 3.2
+CVODES solution at $\mathrm{rtol}=10^{-12}$; CPU seconds of the whole process
+(the machine was shared, so wall times were not used; about 0.09~s is process
+start), $\mathrm{atol}=10^{-7}\mathrm{rtol}$.  Largest relative deviation of a
+species above $x=10^{-6}$ at the step end $t=2$~ms (before the ignition at
+2.4~ms), and on the output grid:
+\begin{center}\small
+\begin{tabular}{lrrrrr}
+\hline
+ & rtol & CPU / s & end 2 ms & grid & steps / J / factorisations\\ \hline
+Rodas4  & $10^{-6}$ & 0.16 & $7\times10^{-5}$ & $1\times10^{-4}$ & 201 / 252 / 252\\
+seulex  & $10^{-6}$ & 0.15 & $2\times10^{-2}$ & $2\times10^{-2}$ & 88 / 79 / 475\\
+Rodas4  & $10^{-8}$ & 0.28 & $2\times10^{-5}$ & $3\times10^{-5}$ & 728 / 732 / 732\\
+seulex  & $10^{-8}$ & 0.20 & $4\times10^{-5}$ & $2\times10^{-4}$ & 95 / 92 / 635\\
+Rodas4  & $10^{-10}$ & 1.20 & $4\times10^{-7}$ & $4\times10^{-7}$ & 3568 / 3569 / 3569\\
+seulex  & $10^{-10}$ & 0.27 & $4\times10^{-7}$ & $2\times10^{-1}$ & 113 / 111 / 872\\ \hline
+\end{tabular}
+\end{center}
+At equal \emph{method} accuracy (step ends, $4\times10^{-7}$ at $10^{-10}$)
+seulex is 4.5 times cheaper than Rodas4 (113 steps against 3\,568); at
+$10^{-8}$ it is 1.4 times cheaper and twice as inaccurate; at $10^{-6}$ it is
+no cheaper and 300 times less accurate (its window accepts a step on an error
+estimate that is far from the true error at a loose tolerance).  On
+\code{nox02\_millerbowman\_denox} (17 vessels in one sweep)
+seulex costs 0.78/1.11~s at $10^{-6}/10^{-8}$ against 1.30/4.33~s for Rodas4
+(1.7 and 3.9 times cheaper; deviation from a Rodas4 $10^{-11}$ run on the grid
+$1\times10^{-3}$ and $1\times10^{-4}$ against $3\times10^{-6}$ and
+$3\times10^{-8}$).  On \code{ignition01\_h2o2} (the small mechanism, fixed
+output step) seulex costs as much as Rodas4 (0.106 against 0.105~s), with the
+same ignition delay.  Cantera takes 2\,137 steps with 38 Jacobians and 239
+factorisations in 0.05~s at $10^{-8}$.  The time per call decides the rest:
+the right-hand side costs 30~$\mu$s here against about 8~$\mu$s in Cantera
+(kinetics core 6.5~$\mu$s), the sparse analytic Jacobian 87~$\mu$s; of a Rodas4
+run 56\,\% is the right-hand side, 23\,\% the Jacobian and the rest the
+factorisations and back-solves, and after seulex the bottleneck is the cost of
+one right-hand side (63\,\% of its time), not the number of Jacobians.  A
+deliberately wrong Jacobian (80\,\% of the true one, Robertson) gives the same
+answer to $10^{-8}$ in 3\,163 steps instead of 121; at 50\,\% the amplification
+factor tends to $-1$ instead of 0, the damping is lost and the run refuses at
+the step floor.
 
 \subsection{Which reaction governs an ignition: brute-force sensitivity of the delay}\label{sec:ignition-sensitivity}
 

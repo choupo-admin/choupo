@@ -151,6 +151,19 @@ std::string helmholtzFluidOf(const fs::path& f)
     return "";
 }
 
+//  C458: the kinetics-library files the run asked for ("kinetics/<file>" and
+//  "kinetics/sets/<file>"), and the member file names of the requested sets.
+std::set<std::string>& kineticsAsked_()
+{
+    static std::set<std::string>* s = new std::set<std::string>();
+    return *s;
+}
+std::set<std::string>& kineticsMembers_()
+{
+    static std::set<std::string>* s = new std::set<std::string>();
+    return *s;
+}
+
 //  What the run would PIN: sub -> computational hash; `<dir>/` -> "relevant:<hash of the set>".
 std::map<std::string, std::string>& proposed_()
 {
@@ -245,6 +258,9 @@ bool consumed(const std::string& sub, const std::set<std::string>& comps,
     }
     if (dir == "assets" || dir == "utilities")
         return words.count(stem) > 0;
+    //  C458: the kinetics library holds every set and a case asks for some.
+    if (dir == "kinetics" || dir == "kinetics/sets")
+        return kineticsAsked_().count(sub) > 0;
     if (startsWith(dir, "parameters/adsorption/equilibria/"))
         return words.count(fs::path(dir).filename().string()) > 0 && comps.count(stem) > 0;
     return true;
@@ -323,6 +339,13 @@ void computeProposed()
     //  a new equation for one of the case's fluids is a record the run consumes
     //  and the manifest does not pin -- a drift, said by name.  A set line would
     //  have put one line into every manifest that scans the directory.
+    if (!kineticsMembers_().empty())
+    {
+        std::vector<std::string> names;
+        for (const auto& n : kineticsMembers_())
+            if (fs::exists(cat / "kinetics" / n)) names.push_back(n);   // a case-tier record is the case's own
+        setLine("kinetics", names);
+    }
     const fs::path eq = cat / "parameters" / "adsorption" / "equilibria";
     if (fs::is_directory(eq, ec))
         for (const auto& e : fs::directory_iterator(eq, ec))
@@ -477,6 +500,14 @@ void noteLoadedAlias(const std::string& name) { loadedAliases_().insert(name); }
 const std::map<std::string, std::string>& proposedPinsSnapshot() { return proposed_(); }
 
 bool pinsActive() { return pinsOf() != nullptr; }
+
+void noteKineticsAsk(const std::vector<std::string>& recordFiles,
+                     const std::vector<std::string>& setFiles)
+{
+    for (const auto& f : recordFiles)
+    { kineticsAsked_().insert("kinetics/" + f); kineticsMembers_().insert(f); }
+    for (const auto& f : setFiles) kineticsAsked_().insert("kinetics/sets/" + f);
+}
 
 bool strictPins()
 {

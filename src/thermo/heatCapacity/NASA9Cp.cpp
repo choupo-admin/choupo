@@ -37,6 +37,18 @@ License
 
 namespace Choupo {
 
+//  ln x for the antiderivatives.  The reference temperature of every caller in
+//  the engine is 298.15 K, and its logarithm used to be recomputed on each
+//  H and S call (half of all the logarithms of a gas-phase reaction run).  The
+//  constant is taken ONCE, by the same runtime std::log (volatile: a compiler
+//  folding the call would round differently from libm), so every value is
+//  bit-for-bit what it was.
+static scalar lnOf(scalar x)
+{
+    static const scalar ln298 = []{ volatile scalar r = 298.15; return std::log(r); }();
+    return (x == 298.15) ? ln298 : std::log(x);
+}
+
 NASA9Cp::NASA9Cp(const DictPtr& dict)
 {
     owner_ = dict->lookupWordOrDefault("owner", "");
@@ -61,7 +73,16 @@ NASA9Cp::NASA9Cp(const DictPtr& dict)
     Thigh_   = dict->lookupScalar("Thigh");
     if (!(0.0 < Tlow_ && Tlow_ < Tcommon_ && Tcommon_ < Thigh_))
         throw std::runtime_error("NASA9Cp (" + who + "): need 0 < Tlow < Tcommon < Thigh");
+    cHLoTc_ = hAnti_(Tcommon_, low_); cHHiTc_ = hAnti_(Tcommon_, high_);
+    cHLoRef_ = hAnti_(298.15, low_);  cHHiRef_ = hAnti_(298.15, high_);
+    cSLoTc_ = sAnti_(Tcommon_, low_); cSHiTc_ = sAnti_(Tcommon_, high_);
+    cSLoRef_ = sAnti_(298.15, low_);  cSHiRef_ = sAnti_(298.15, high_);
 }
+
+scalar NASA9Cp::hLo_(scalar x) const { return x == Tcommon_ ? cHLoTc_ : (x == 298.15 ? cHLoRef_ : hAnti_(x, low_)); }
+scalar NASA9Cp::hHi_(scalar x) const { return x == Tcommon_ ? cHHiTc_ : (x == 298.15 ? cHHiRef_ : hAnti_(x, high_)); }
+scalar NASA9Cp::sLo_(scalar x) const { return x == Tcommon_ ? cSLoTc_ : (x == 298.15 ? cSLoRef_ : sAnti_(x, low_)); }
+scalar NASA9Cp::sHi_(scalar x) const { return x == Tcommon_ ? cSHiTc_ : (x == 298.15 ? cSHiRef_ : sAnti_(x, high_)); }
 
 const scalar* NASA9Cp::coeffsFor(scalar T) const
 {
@@ -85,7 +106,7 @@ scalar NASA9Cp::Cp(scalar T) const
 {
     if (T <= 0)
         throw std::runtime_error("NASA9Cp: Cp asked at T <= 0 K");
-    noteRange(T);
+    if (!(T >= Tlow_ && T <= Thigh_)) noteRange(T);
     const scalar* a = coeffsFor(T);
     const scalar cpR = a[0] / (T * T) + a[1] / T + a[2]
                      + T * (a[3] + T * (a[4] + T * (a[5] + T * a[6])));
@@ -96,7 +117,7 @@ scalar NASA9Cp::Cp(scalar T) const
 scalar NASA9Cp::hAnti_(scalar T, const scalar* a) const
 {
     return constant::R * ( -a[0] / T
-        + a[1] * std::log(T)
+        + a[1] * lnOf(T)
         + a[2] * T
         + a[3] * T * T / 2.0
         + a[4] * T * T * T / 3.0
@@ -109,7 +130,7 @@ scalar NASA9Cp::sAnti_(scalar T, const scalar* a) const
 {
     return constant::R * ( -a[0] / (2.0 * T * T)
         - a[1] / T
-        + a[2] * std::log(T)
+        + a[2] * lnOf(T)
         + a[3] * T
         + a[4] * T * T / 2.0
         + a[5] * T * T * T / 3.0
@@ -120,15 +141,15 @@ scalar NASA9Cp::H(scalar T, scalar Tref) const
 {
     if (T <= 0 || Tref <= 0)
         throw std::runtime_error("NASA9Cp: H asked at T <= 0 K");
-    noteRange(T);
-    noteRange(Tref);
+    if (!(T >= Tlow_ && T <= Thigh_)) noteRange(T);
+    if (!(Tref >= Tlow_ && Tref <= Thigh_)) noteRange(Tref);
     const scalar a = std::min(T, Tref);
     const scalar b = std::max(T, Tref);
     scalar val;
-    if (b <= Tcommon_)       val = hAnti_(b, low_)  - hAnti_(a, low_);
-    else if (a >= Tcommon_)  val = hAnti_(b, high_) - hAnti_(a, high_);
-    else val = (hAnti_(Tcommon_, low_) - hAnti_(a, low_))
-             + (hAnti_(b, high_) - hAnti_(Tcommon_, high_));
+    if (b <= Tcommon_)       val = hLo_(b)  - hLo_(a);
+    else if (a >= Tcommon_)  val = hHi_(b) - hHi_(a);
+    else val = (hLo_(Tcommon_) - hLo_(a))
+             + (hHi_(b) - hHi_(Tcommon_));
     return (T >= Tref) ? val : -val;
 }
 
@@ -136,15 +157,15 @@ scalar NASA9Cp::S(scalar T, scalar Tref) const
 {
     if (T <= 0 || Tref <= 0)
         throw std::runtime_error("NASA9Cp: S asked at T <= 0 K");
-    noteRange(T);
-    noteRange(Tref);
+    if (!(T >= Tlow_ && T <= Thigh_)) noteRange(T);
+    if (!(Tref >= Tlow_ && Tref <= Thigh_)) noteRange(Tref);
     const scalar a = std::min(T, Tref);
     const scalar b = std::max(T, Tref);
     scalar val;
-    if (b <= Tcommon_)       val = sAnti_(b, low_)  - sAnti_(a, low_);
-    else if (a >= Tcommon_)  val = sAnti_(b, high_) - sAnti_(a, high_);
-    else val = (sAnti_(Tcommon_, low_) - sAnti_(a, low_))
-             + (sAnti_(b, high_) - sAnti_(Tcommon_, high_));
+    if (b <= Tcommon_)       val = sLo_(b)  - sLo_(a);
+    else if (a >= Tcommon_)  val = sHi_(b) - sHi_(a);
+    else val = (sLo_(Tcommon_) - sLo_(a))
+             + (sHi_(b) - sHi_(Tcommon_));
     return (T >= Tref) ? val : -val;
 }
 

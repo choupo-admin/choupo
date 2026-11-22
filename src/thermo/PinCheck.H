@@ -99,6 +99,15 @@ void noteLoadedComponent(const std::string& name);
 //  fluid by one of them (C390).
 void noteLoadedAlias(const std::string& name);
 
+//- C458: the kinetics-library records a run asked for -- the file names (in
+//  kinetics/) of the members of the sets it named and of the records it named
+//  one by one, and the names (in kinetics/sets/) of the set records.  Only
+//  those are CONSUMED (a library holds every set; a case uses one), and the
+//  members are pinned as the set line `kinetics/` = relevant:<hash of the
+//  names>, so a member that arrives or leaves a requested set is a drift.
+void noteKineticsAsk(const std::vector<std::string>& recordFiles,
+                     const std::vector<std::string>& setFiles);
+
 //- What the finished run would PIN: sub -> computational hash, or "absent" for
 //  a name that does not exist but whose arrival could change a resolution.
 //  Computed by finalizePins; the consumption ledger writes it (`@ pin ...`).

@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Elementary reaction N+O2=NO+O
+  Glarborg, Miller, Ruscic and Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31-68, Table 2, reaction Z3
+  Written by bin/curate/make_kinetics_seed.py; the file name is the
+  canonical equation (src/thermo/reaction/KineticsLibrary.H).
+\*---------------------------------------------------------------------------*/
+recordType        elementaryReaction;
+reversible        true;
+limitingReactant  N;
+stoichiometry
+(
+        { component N;       nu -1; }
+        { component NO;      nu  1; }
+        { component O;       nu  1; }
+        { component O2;      nu -1; }
+);
+kinetics
+{
+    type modifiedArrhenius;
+    A 5.9000e+09;  b 1.0;  Ea 6280.0;
+    units { A "cm3/mol/s"; Ea "cal/mol"; }
+}
+sets { Glarborg2018 Z3_N_O2_NO_O; }
+source
+{
+    citation "Glarborg, Miller, Ruscic and Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31-68";
+    doi "10.1016/j.pecs.2018.01.002";
+    table "Table 2";
+    page unrecorded;
+    reaction "Z3";
+    note "typed as nox01_zeldovich_postflame carried it (mol-cm-s-cal); the page of the paper was not read in this tree";
+}
+reviewStatus      interim;
+reviewReason      "typed from the case that carried it (nox01_zeldovich_postflame); the journal page was never read here, so no value has a verified page";
+provenance
+{
+    kinetics
+    {
+        origin        literature;
+        method        "Glarborg, Miller, Ruscic and Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31-68, Table 2, reaction Z3, A in cm3 mol-1 s-1, Ea in cal/mol; page not recorded";
+        methodVersion "Prog. Energy Combust. Sci. 67 (2018) 31";
+        uncertainty   "not given by the source";
+    }
+}

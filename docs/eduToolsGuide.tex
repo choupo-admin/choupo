@@ -3040,6 +3040,38 @@ measured, fitted and estimated values; and a real catalogue record read line
 by line.  The page computes nothing: its numbers are the catalogue's own.
 \declaredanchor{ch:criticals}
 
+\subsection*{From molecules to properties: the open tools \quad(\code{tool=open-molecular-tools})}\label{sec:edu-open-molecular-tools}
+Which open-source program answers which question about a molecule or a
+mixture, how to run a first example in a browser with nothing installed,
+and where each program meets Choupo, so that a student can choose a thesis
+topic.  The page computes nothing and runs no case: it is a set of fifteen
+cards under six questions.  \emph{Quantum chemistry} (PySCF, Psi4, xtb)
+gives a structure's energies, frequencies and charge surface, and from the
+frequencies the ideal-gas $C_p$, $S$ and $H$ by statistical thermodynamics;
+\emph{COSMO-type models} (Choupo's own COSMO-SAC beside the NIST benchmark
+code, and openCOSMO-RS) turn a charge surface into activity coefficients
+without mixture data; \emph{group contribution and equations of state}
+(UNIFAC and PC-SAFT in Choupo, ugropy, thermo, Clapeyron.jl) answer the same
+question from groups or molecular parameters; \emph{force-field Monte Carlo}
+(Cassandra, GOMC, RASPA) gives coexistence curves, Henry constants and
+adsorption isotherms; \emph{RDKit} goes from a SMILES string to a structure;
+\emph{CoolProp} and \emph{Cantera} are the reference side of a comparison
+(Choupo already uses both).  Each card states the program's licence and the
+document it was read from on 2026-11-22, an official page, a no-installation
+route, a short example marked \emph{ran} (executed that day, with the version
+printed) or \emph{not run} (copied from the project's own documentation),
+where it meets a Choupo record or comparison with file and line named, and
+one thesis idea.  Two honest cautions are drawn in the page: a restricted
+program can sit beside an open one (openCOSMO-RS's pipeline calls a
+quantum-chemistry program free for academic use only; the NIST benchmark's profiles are narrower in licence
+than its code), and a project's README can disagree with its own LICENSE
+file (openCOSMO-RS\_py does).  Example output is quoted only to show that
+the interface is as written.  Choupo's own tool of this kind, \code{bin/curate/rrho\_thermo.py}
+(rigid rotor, harmonic oscillator, NASA-9 fit), is named with the nine
+species it computed for the Miller \& Bowman mechanism, and a test holds
+that the tool and its records exist in the tree.
+\declaredanchor{ch:cosmosac}
+
 \subsection*{From a database to binary parameters \quad(\code{tool=database-to-parameters})}
 Choupo's curation pipeline as a lesson: a ThermoML file is read in the
 browser (the same reader the curation tool is held to), the usable blocks

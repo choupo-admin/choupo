@@ -70,6 +70,7 @@ Description
 #include <memory>
 #include <vector>
 #include <atomic>
+#include <cstdint>
 
 #include "BatchUnitOperation.H"
 
@@ -117,7 +118,7 @@ public:
     int  odeLinearSolverKey() const override
     { return linearSolverKey_ == LinearSolver::Dense ? 0 : linearSolverKey_ == LinearSolver::Sparse ? 1 : 2; }
     std::string odeStiffIntegratorDeclared() const override
-    { return (integratorDeclared_ && (integrator_ == "Rosenbrock23" || integrator_ == "Rodas4"))
+    { return (integratorDeclared_ && solver::ODEIntegrator::readsAnalyticJacobian(integrator_))
              ? integrator_ : std::string(); }
     void odeJacobianSparse(const sVector& y, const sVector& f0, const sVector& typ,
                            solver::SparseJacobian& J) const override;
@@ -200,6 +201,10 @@ private:
         scalar                   Ea_low = 0;
         sVector                  troe;           // (a T*** T* [T**]); empty => Lindemann
         sVector                  sri;            // (a b c [d e]); empty => not SRI
+        int                      tbClass = -1;   // index into tbClasses_ (third-body / fall-off), else -1
+        //  Indices into the distinct tables of one evaluation (buildTbClasses_): exp(-Ea/RT) per
+        //  distinct Ea, T^b per distinct b != 0, c_std^sumNu per distinct sum(nu); -1: not used.
+        int                      eaIdx = -1, bIdx = -1, eaLowIdx = -1, bLowIdx = -1, cfIdx = -1;
         // A Factory law (LHHW, expression, a user law), parsed once.
         std::shared_ptr<const ReactionRate> law;
     };
@@ -209,6 +214,10 @@ private:
     //- The data the adiabatic energy balance reads; refuses by name.  Called
     //  at initialise (declared adiabatic) and at a recipe cooling failure.
     void requireAdiabaticData_() const;
+
+    //- C458: the reaction library's two prints (K_c of a set's thermo against
+    //  the run's; k_f/k_r of an explicit reverse against K_c).  Output only.
+    void announceLibraryChecks_(const DictPtr& rxnLib) const;
 
     // Adiabatic energy basis:
     //   LiquidDH      Σ r·V·ΔH_rxn over liquid Cp (the legacy, default path).
@@ -252,16 +261,65 @@ private:
     // Rate r [kmol/(m³·s)] of a single reaction at (T, n, V).
     //  `g`, when non-null, is g_i(T) from gibbsAt_(T) for the SAME T: the
     //  detailed-balance Kc reads it instead of rebuilding each g (bit-identical).
+    //  `ctx`, when non-null, carries what every reaction of ONE right-hand-side evaluation
+    //  shares (c = n/V, [M] once per distinct efficiency list, the factory laws' clamped c
+    //  and x): the same numbers the reaction would compute, computed once, not 235 times.
+    struct KinCtx;
+    //  T^b-and-exp tables: A T^b exp(-Ea/RT) as Reaction::modifiedArrheniusRate writes it (b == 0:
+    //  no pow), read from the evaluation's tables.  The ONE home, for the rate and its gradient.
+    static scalar kModArr_(const KinCtx& ctx, scalar A, int bIdx, int eaIdx);
+    //  c = max(n,0)/V, the mole fractions, n_tot and P = n R T / V that a factory law's RateState
+    //  carries: the ONE home (the evaluation's context, the context-less fallback and the gradient).
+    static void factoryState_(const sVector& n, scalar V, scalar T, sVector& conc, sVector& x,
+                              scalar& ntot, scalar& P);
+    //  The sensitivity multiplier of one reaction; `ctx` (non-null) carries this thread's and is
+    //  checked to be the context of THIS vessel.
+    scalar multOf_(const ReactionSpec& rxn, const KinCtx* ctx) const;
     scalar rateOfReaction_(const ReactionSpec& rxn,
                            scalar T,
                            const sVector& n,
                            scalar V,
-                           const sVector* g = nullptr) const;
+                           const sVector* g = nullptr,
+                           const KinCtx* ctx = nullptr) const;
+    //  Fills the evaluation's shared quantities into thread-local scratch (no allocation
+    //  after the first call on a thread).
+    const KinCtx& kinCtx_(scalar T, const sVector& n, scalar V) const;
+    //  The distinct efficiency lists of the third-body / fall-off reactions (class 0: all
+    //  ones), built once; each such reaction carries its class in `tbClass`.
+    std::vector<sVector> tbClasses_;
+    sVector arrEa_, arrB_, cfSumNu_;    // the distinct Ea [J/mol], b != 0 and sum(nu) over the reactions
+    bool anyFactory_ = false;           // some reaction is a factory law (needs the clamped c and x)
+    void buildTbClasses_();
 
     //  g_i(T) = comp(i).g_pure_ig(T) for the species of every reversible
     //  reaction, evaluated ONCE for one right-hand-side evaluation and passed
-    //  down by the caller (no cache keyed on T); empty when nothing is reversible.
-    sVector gibbsAt_(scalar T) const;
+    //  down by the caller; empty when nothing is reversible.  The last (vessel, T)
+    //  a thread asked for is kept (gibbsAt_ in the .cpp).
+    //  INVARIANT (gibbsAt_, enthalpyAt_, energiesAt_): the returned reference points into the
+    //  calling thread's memo and is valid only until the next call, on that thread, at another
+    //  (vessel, T) -- a caller that needs the values across such a call copies them.
+    const sVector& gibbsAt_(scalar T) const;
+    //  h_i(T) and Cp_i(T) of EVERY species at T (the energy equation's u_i and Cv_i), memoised
+    //  beside g_i: the same function values, read once per T instead of once per call site.
+    void energiesAt_(scalar T, const sVector*& h, const sVector*& cp) const;
+    //  The species whose g_i(T) / h_i(T) the reactions read (the union of the
+    //  reversible reactions' and the laws' Gibbs stoichiometries), decided
+    //  once when the reactions are read -- it was rebuilt, reaction by
+    //  reaction, on every right-hand side.  Empty: no reaction reads one.
+    std::vector<char> wantG_;
+    void buildWantG_();
+    //  A vessel's identity for the per-thread memo of gibbsAt_ below: a copy
+    //  is a different vessel (its reactions may differ), so a copy draws a
+    //  fresh number and the memo of the original is never read for it.
+    struct MemoId
+    {
+        std::uint64_t v;
+        MemoId() : v(next()) {}
+        MemoId(const MemoId&) : v(next()) {}
+        MemoId& operator=(const MemoId&) { v = next(); return *this; }
+        static std::uint64_t next();
+    };
+    MemoId memoId_;
 
     // CHEMKIN unit helpers: convert a declared `units { A "cm3/mol/s"; Ea
     // "cal/mol"; }` to SI (kmol-m³-s, J/mol) on load, announcing the factor at
@@ -304,23 +362,30 @@ private:
     bool sparseLinear_ = false;                      // resolved
     static constexpr std::size_t kSparseAutoRows = 100;  // measured: docs/reviews/2026-11-21-large-mechanism
     void wireAnalytic_(solver::ODEAnalyticJacobian& A, const std::string& owner) const;
+    //  The standalone timing program test/rhs_bench.cpp reads the right-hand side and the Jacobian
+    //  through this declared access; nothing in the engine calls it.
+    friend struct BatchReactorBenchAccess;
     void buildJacobianStructure_();
     //  h_i(T) for the same species as gibbsAt_ (d ln Kc / dT).
-    sVector enthalpyAt_(scalar T) const;
+    const sVector& enthalpyAt_(scalar T) const;
     //  d r / d c_k [kmol/(m3 s) per kmol/m3] of one reaction of the vessel's
     //  own forms, accumulated into `grad` (full length; only the reaction's
     //  dependencies are touched), and d r / d T at fixed c into dT, mirroring
     //  rateOfReaction_ term by term.  false (nothing touched): a power below
     //  one at zero concentration -- the caller differences that reaction.
+    //  `ctx` (non-null from the Jacobian) carries the evaluation's shared c = n/V, [M] and
+    //  rate-constant tables, as for rateOfReaction_.
     bool rateGradient_(const ReactionSpec& rxn, scalar T, const sVector& n,
                        scalar V, sVector& grad, scalar& dT,
-                       const sVector* g, const sVector* h) const;
+                       const sVector* g, const sVector* h,
+                       const KinCtx* ctx = nullptr) const;
     //  The same for a factory law that has an analytic derivative
     //  (ElementaryRate: modifiedArrhenius, thirdBody, falloff, plog); dP is
     //  d r / d P (the PLOG table), false where the law declines.
     bool rateGradientLaw_(const ReactionSpec& rxn, scalar T, const sVector& n,
                           scalar V, sVector& grad, scalar& dT, scalar& dP,
-                          const sVector* g, const sVector* h) const;
+                          const sVector* g, const sVector* h,
+                          const KinCtx* ctx = nullptr) const;
     //  The per-reaction difference of the TOTAL derivative of r V (V moving
     //  with n and T at fixed P): every species column, and dT.
     void rateGradientFD_(const ReactionSpec& rxn, scalar T, const sVector& n,

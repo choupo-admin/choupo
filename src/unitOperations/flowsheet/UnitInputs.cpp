@@ -29,6 +29,7 @@ License
 
 #include "unitOperations/flowsheet/UnitInputs.H"
 #include "unitOperations/UnitAcceptance.H"
+#include "thermo/reaction/KineticsLibrary.H"
 #include "unitOperations/UnitOperation.H"
 
 #include <map>
@@ -140,6 +141,9 @@ DictPtr buildAugmentedDict(const DictPtr&                          udict,
     const DictPtr&                          dryingDict,
     const DictPtr&                          crystDict)
 {
+    //  C458: the kinetics library's named sets, written as the inline entries a
+    //  case would have written; the SAME dictionary when the case asks nothing.
+    const DictPtr rxnLib = kineticsLibrary::materialise(reactionsDict, thermo);
     auto out = std::make_shared<Dictionary>(udict->lookupWord("name"));
     out->setSource("flowsheet-augmented");
 
@@ -176,10 +180,10 @@ DictPtr buildAugmentedDict(const DictPtr&                          udict,
         if (std::holds_alternative<std::string>(v))
         {
             const std::string rxnName = std::get<std::string>(v);
-            if (!reactionsDict || !reactionsDict->found(rxnName))
+            if (!rxnLib || !rxnLib->found(rxnName))
                 throw std::runtime_error("Flowsheet: reaction '"
                     + rxnName + "' not in constant/reactions");
-            out->insert("reaction", reactionsDict->entryValue(rxnName));
+            out->insert("reaction", rxnLib->entryValue(rxnName));
         }
     }
 
@@ -196,10 +200,10 @@ DictPtr buildAugmentedDict(const DictPtr&                          udict,
         resolved.reserve(names.size());
         for (const auto& rn : names)
         {
-            if (!reactionsDict || !reactionsDict->found(rn))
+            if (!rxnLib || !rxnLib->found(rn))
                 throw std::runtime_error("Flowsheet: reaction '" + rn
                     + "' (in a `reactions ( ... )` list) not in constant/reactions");
-            auto rd = reactionsDict->subDict(rn);
+            auto rd = rxnLib->subDict(rn);
             if (!rd->found("name")) rd->insert("name", EntryValue(rn));   // for KPI labels
             resolved.push_back(rd);
         }

@@ -6340,6 +6340,39 @@ PYEOF
     fi
     rm -f /tmp/plog.$$
 
+    # kinetics-library gate (2026-11-22, DEV.md 4c C458 slice 1).  The 21 reactions
+    # of O Conaire 2004 were written out by copy in eleven case files; the library
+    # gives each reaction one record named by its canonical equation.  The defect it
+    # would have caught: a constant edited in one copy that moved one ignition delay
+    # and left ten cases on the old value, at exit 0 with every closure green.
+    if gate_exec "$ROOT/bin/curate/check_kinetics_library.py" > /tmp/kinlib.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "kinetics-library-gate" "$(head -1 /tmp/kinlib.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_kinetics_library.py)\n" "kinetics-library-gate"
+        cat /tmp/kinlib.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/kinlib.$$
+
+    # seulex gate (2026-11-22, C473 b).  `integrator seulex` (extrapolated
+    # linearly-implicit Euler, Hairer & Wanner IV.9) tolerates an OLD Jacobian,
+    # so a defect in the convergence monitor that decides when to rebuild it
+    # does not crash and trips no balance: it returns a plausible answer off by
+    # far more than the tolerance, or never reuses.  The standalone test
+    # (Robertson, a smooth problem, a deliberately wrong Jacobian, a monitor
+    # that never refreshes) plus two engine witnesses against their
+    # Rosenbrock23 siblings; invisible to goldens.
+    if gate_exec "$ROOT/bin/curate/check_seulex.py" > /tmp/seulex.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "seulex-gate" "$(head -1 /tmp/seulex.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_seulex.py)\n" "seulex-gate"
+        cat /tmp/seulex.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/seulex.$$
+
     # ignition-sensitivity gate (2026-11-20).  `sensitivity { }` on a batchReactor
     # multiplies ONE reaction's NET rate and integrates N+1 times.  The defect it
     # would have caught: a multiplier on the forward rate only, which moves the

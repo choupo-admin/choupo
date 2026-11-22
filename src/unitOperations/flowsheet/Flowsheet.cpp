@@ -690,7 +690,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                         const std::filesystem::path rp = node / "constant" / "reactions";
                         if (std::filesystem::exists(rp))
                         {
-                            auto rlib = Dictionary::fromFile(rp.string());
+                            auto rlib = kineticsLibrary::materialise(Dictionary::fromFile(rp.string()), thermo);
                             if (rlib->found(rn))
                             {
                                 u->insert("reaction", rlib->entryValue(rn));
@@ -720,7 +720,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                 for (int up = 0; up < 6; ++up)
                 {
                     const std::filesystem::path rp = node / "constant" / "reactions";
-                    if (std::filesystem::exists(rp)) { rlib = Dictionary::fromFile(rp.string()); break; }
+                    if (std::filesystem::exists(rp)) { rlib = kineticsLibrary::materialise(Dictionary::fromFile(rp.string()), thermo); break; }
                     if (!node.has_parent_path() || node.parent_path() == node) break;
                     node = node.parent_path();
                 }

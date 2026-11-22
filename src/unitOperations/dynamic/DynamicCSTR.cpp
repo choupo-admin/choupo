@@ -209,7 +209,7 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
     reactions_.clear();
     for (const auto& rn : rxnNames)
     {
-        auto rxn = reactionsDict->subDict(rn);
+        auto rxn = kineticsLibrary::materialise(reactionsDict, thermo)->subDict(rn);   // C458: a set by name, else the dict itself
         ReactionSpec r;
         r.name = rn;
         //  `Arrhenius` is this vessel's own word and reads a power-law `order`

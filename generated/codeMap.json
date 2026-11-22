@@ -1330,6 +1330,9 @@
   "LeeKeslerPloecker": [
    "src/thermo/equationOfState/LeeKeslerPloecker.H"
   ],
+  "LegProbe": [
+   "src/thermo/reaction/KineticsLibrary.H"
+  ],
   "LeithLicht": [
    "src/unitOperations/separation/cycloneModel/LeithLicht.H"
   ],
@@ -1452,6 +1455,9 @@
   ],
   "Memo": [
    "src/thermo/electrolyte/SaltFromCatalogue.H"
+  ],
+  "MemoId": [
+   "src/unitOperations/batch/BatchReactor.H"
   ],
   "Mill": [
    "src/unitOperations/solids/Mill.H"
@@ -1608,6 +1614,9 @@
   ],
   "OrganicPhase": [
    "src/thermo/electrolyte/ReactiveVLE.H"
+  ],
+  "Origin": [
+   "src/thermo/reaction/KineticsLibrary.H"
   ],
   "OriginInfo": [
    "src/core/Origin.H"
@@ -2149,6 +2158,9 @@
    "src/propertyOps/FitAlphaRows.H",
    "src/propertyOps/LleResidual.H"
   ],
+  "Runs": [
+   "src/solver/SparseLU.H"
+  ],
   "SDEM": [
    "src/unitOperations/membrane/transport/SDEM.H"
   ],
@@ -2224,6 +2236,9 @@
   ],
   "SelectionFunction": [
    "src/unitOperations/solids/millModel/MillModels.H"
+  ],
+  "Seulex": [
+   "src/solver/ODE/Seulex.H"
   ],
   "Shear": [
    "src/thermo/LiquidPropertyDoor.H"
@@ -3242,6 +3257,10 @@
    {
     "key": "Rodas4",
     "type": "Rosenbrock23"
+   },
+   {
+    "key": "seulex",
+    "type": "Seulex"
    }
   ],
   "src/streams/Carried.cpp": [
@@ -4364,6 +4383,7 @@
    "src/thermo/membrane/MembraneRegistry.H",
    "src/thermo/phase/Phase.H",
    "src/thermo/pureFluid/PureFluidModel.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/solution/SolutionPair.H",
@@ -4754,6 +4774,7 @@
    "src/thermo/membrane/MembraneRegistry.H",
    "src/thermo/phase/Phase.H",
    "src/thermo/pureFluid/PureFluidModel.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/solution/SolutionPair.H",
@@ -7781,6 +7802,7 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
@@ -8765,6 +8787,7 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/WilkeReduction.H"
@@ -10037,7 +10060,8 @@
    "src/solver/ODE/EulerSI.H",
    "src/solver/ODE/ODEIntegrator.H",
    "src/solver/ODE/RK4.H",
-   "src/solver/ODE/Rosenbrock23.H"
+   "src/solver/ODE/Rosenbrock23.H",
+   "src/solver/ODE/Seulex.H"
   ],
   "src/solver/ODE/RK4.cpp": [
    "src/core/Types.H",
@@ -10051,7 +10075,18 @@
    "src/solver/ODE/../SparseLU.H",
    "src/solver/ODE/Jacobian.H",
    "src/solver/ODE/ODEIntegrator.H",
+   "src/solver/ODE/ODEJacobianAudit.H",
    "src/solver/ODE/Rosenbrock23.H"
+  ],
+  "src/solver/ODE/Seulex.cpp": [
+   "src/core/Types.H",
+   "src/solver/BlockTridiagonal.H",
+   "src/solver/ODE/../LU.H",
+   "src/solver/ODE/../SparseLU.H",
+   "src/solver/ODE/Jacobian.H",
+   "src/solver/ODE/ODEIntegrator.H",
+   "src/solver/ODE/ODEJacobianAudit.H",
+   "src/solver/ODE/Seulex.H"
   ],
   "src/solver/ParallelFor.cpp": [
    "src/solver/ParallelFor.H"
@@ -12014,6 +12049,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/reaction/ElementaryRate.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/transport/FlowCurve.H",
@@ -12031,6 +12067,32 @@
    "src/core/Units.H",
    "src/thermo/reaction/ExpressionRate.H",
    "src/thermo/reaction/ReactionRate.H"
+  ],
+  "src/thermo/reaction/KineticsLibrary.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ReadLog.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/solver/NewtonRaphson.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/PinCheck.H",
+   "src/thermo/RecordLaws.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoAnnounce.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/thermo/reaction/KineticsLibrary.H",
+   "src/thermo/reaction/Reaction.H",
+   "src/thermo/transport/FlowCurve.H",
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/reaction/RateLaw.cpp": [
    "src/core/Advisory.H",
@@ -12054,6 +12116,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/RateLaw.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
@@ -12081,6 +12144,7 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
@@ -12660,6 +12724,7 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
@@ -13114,6 +13179,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/transport/FlowCurve.H",
@@ -13422,6 +13488,7 @@
    "src/thermo/electrolyte/SpeciationSolver.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/pureFluid/PureFluidModel.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/transport/FlowCurve.H",
@@ -13625,6 +13692,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/transport/FlowCurve.H",
@@ -13733,6 +13801,7 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/WilkeReduction.H",
@@ -14130,6 +14199,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/liquidProperty/ExperimentsFile.H",
    "src/thermo/pureFluid/PureFluidModel.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/WilkeReduction.H",
@@ -14181,6 +14251,7 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/WilkeReduction.H",
@@ -14215,6 +14286,7 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/WilkeReduction.H",
@@ -15343,6 +15415,7 @@
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/reaction/ExpressionRate.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/transport/FlowCurve.H",
@@ -15431,6 +15504,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/pureFluid/PureFluidModel.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
@@ -15475,6 +15549,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/pureFluid/PureFluidModel.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
@@ -15525,6 +15600,7 @@
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/reaction/ExpressionRate.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/transport/FlowCurve.H",
@@ -15582,6 +15658,7 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
@@ -15679,6 +15756,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/equationOfState/EquationOfState.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
@@ -15708,6 +15786,7 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
@@ -15737,6 +15816,7 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
@@ -15768,6 +15848,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/equationOfState/EquationOfState.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
@@ -15798,6 +15879,7 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
@@ -15828,6 +15910,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/thermo/reaction/KineticsLibrary.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/FlowCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
@@ -17224,6 +17307,7 @@
    "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -17740,6 +17824,7 @@
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -18143,6 +18228,7 @@
    "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -18585,6 +18671,7 @@
    "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -19089,6 +19176,7 @@
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -19536,6 +19624,7 @@
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -20214,6 +20303,7 @@
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -20841,6 +20931,7 @@
    "src/solver/ODE/ODEIntegrator.cpp",
    "src/solver/ODE/RK4.cpp",
    "src/solver/ODE/Rosenbrock23.cpp",
+   "src/solver/ODE/Seulex.cpp",
    "src/solver/SQP.cpp",
    "src/solver/SparseLU.cpp",
    "src/solver/StabilityTest.cpp",
@@ -20941,6 +21032,7 @@
    "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -22589,6 +22681,7 @@
    "src/solver/ODE/EulerSI.cpp",
    "src/solver/ODE/Jacobian.cpp",
    "src/solver/ODE/Rosenbrock23.cpp",
+   "src/solver/ODE/Seulex.cpp",
    "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp"
   ],
   "src/solver/Convergence.H": [
@@ -22744,6 +22837,7 @@
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -23045,6 +23139,7 @@
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -23155,10 +23250,12 @@
   ],
   "src/solver/ODE/../LU.H": [
    "src/solver/ODE/EulerSI.cpp",
-   "src/solver/ODE/Rosenbrock23.cpp"
+   "src/solver/ODE/Rosenbrock23.cpp",
+   "src/solver/ODE/Seulex.cpp"
   ],
   "src/solver/ODE/../SparseLU.H": [
-   "src/solver/ODE/Rosenbrock23.cpp"
+   "src/solver/ODE/Rosenbrock23.cpp",
+   "src/solver/ODE/Seulex.cpp"
   ],
   "src/solver/ODE/AdaptiveTimeStep.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -23171,7 +23268,8 @@
   "src/solver/ODE/Jacobian.H": [
    "src/solver/ODE/EulerSI.cpp",
    "src/solver/ODE/Jacobian.cpp",
-   "src/solver/ODE/Rosenbrock23.cpp"
+   "src/solver/ODE/Rosenbrock23.cpp",
+   "src/solver/ODE/Seulex.cpp"
   ],
   "src/solver/ODE/ODEIntegrator.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -23181,11 +23279,16 @@
    "src/solver/ODE/ODEIntegrator.cpp",
    "src/solver/ODE/RK4.cpp",
    "src/solver/ODE/Rosenbrock23.cpp",
+   "src/solver/ODE/Seulex.cpp",
    "src/solver/SparseLU.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
    "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp"
+  ],
+  "src/solver/ODE/ODEJacobianAudit.H": [
+   "src/solver/ODE/Rosenbrock23.cpp",
+   "src/solver/ODE/Seulex.cpp"
   ],
   "src/solver/ODE/RK4.H": [
    "src/solver/ODE/ODEIntegrator.cpp",
@@ -23194,6 +23297,10 @@
   "src/solver/ODE/Rosenbrock23.H": [
    "src/solver/ODE/ODEIntegrator.cpp",
    "src/solver/ODE/Rosenbrock23.cpp"
+  ],
+  "src/solver/ODE/Seulex.H": [
+   "src/solver/ODE/ODEIntegrator.cpp",
+   "src/solver/ODE/Seulex.cpp"
   ],
   "src/solver/ParallelFor.H": [
    "src/solver/ParallelFor.cpp",
@@ -23894,6 +24001,7 @@
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -24223,6 +24331,7 @@
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -24625,6 +24734,7 @@
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -24973,6 +25083,7 @@
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -25420,6 +25531,7 @@
    "src/thermo/phase/VaporPhase.cpp",
    "src/thermo/pureFluid/SaturationCurve.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -25748,6 +25860,7 @@
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -26213,6 +26326,7 @@
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -26483,6 +26597,7 @@
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -26768,6 +26883,7 @@
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -27795,6 +27911,35 @@
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/PFR.cpp"
   ],
+  "src/thermo/reaction/KineticsLibrary.H": [
+   "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
+   "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
+   "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
+   "src/thermo/reaction/RateLaw.cpp",
+   "src/thermo/reaction/Reaction.cpp",
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/batch/BatchReactor.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/dynamic/DynamicCSTR.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
+   "src/unitOperations/flowsheet/UnitInputs.cpp",
+   "src/unitOperations/reactor/CSTR.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
+   "src/unitOperations/reactor/GibbsReactor.cpp",
+   "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/PureSolidPhase.cpp",
+   "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
+   "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsLog.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
+   "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp"
+  ],
   "src/thermo/reaction/RateLaw.H": [
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/ReactionRate.cpp"
@@ -27804,6 +27949,7 @@
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/unitOperations/UnitOperation.cpp",
@@ -28090,6 +28236,7 @@
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -28409,6 +28556,7 @@
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",
@@ -28817,6 +28965,7 @@
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/ElementaryRate.cpp",
+   "src/thermo/reaction/KineticsLibrary.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/reaction/ReactionRate.cpp",

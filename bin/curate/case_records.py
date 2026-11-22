@@ -159,7 +159,7 @@ def copy_constant(case, dest):
     return dst
 
 
-def materialise(dst):
+def materialise(dst, inline_kinetics=False):
     """A COPY of a case that references the catalogue, made self-sufficient for a probe: every
     pinned record the copy does not carry is copied in from the catalogue (the copy then holds
     what the sealed case it replaced held).  The manifest is left for the probe to keep, edit or
@@ -167,11 +167,18 @@ def materialise(dst):
     dst = Path(dst)
     const = dst if (dst / "propertyManifest").exists() or dst.name == "constant" else dst / "constant"
     man = const / "propertyManifest"
+    if inline_kinetics:
+        #  A case that asks the reaction library is written inline in the copy (C458), the form every
+        #  probe that edits a reaction's text was written against.
+        import kinetics_inline
+        kinetics_inline.inline_reactions(dst if dst.name != "constant" else dst.parent)
     if not man.is_file():
         return
     for sub, val in read_manifest(man)["pins"].items():
         if sub.endswith("/") or val.startswith("relevant:") or val == "absent":
             continue
+        if sub.startswith("kinetics/"):
+            continue                 # the reaction library is read from the catalogue, never copied (C458)
         tgt = const / sub
         if not tgt.exists() and (STD / sub).is_file():
             tgt.parent.mkdir(parents=True, exist_ok=True)
@@ -181,11 +188,17 @@ def materialise(dst):
             tgt.write_text(as_variation(tgt.stem, (STD / sub).read_text(), "gate probe copy of the catalogue record"))
 
 
-def copytree(src, dst, *args, **kw):
+def copytree(src, dst, *args, inline_kinetics=False, **kw):
     """shutil.copytree for a probe: the copy is materialised (see materialise())."""
     out = shutil.copytree(src, dst, *args, **kw)
-    materialise(dst)
+    materialise(dst, inline_kinetics=inline_kinetics)
     return out
+
+
+def _word(name):
+    """A record name as a dictionary WORD: quoted when it holds a character the grammar splits on
+    (a kinetics record's name is its canonical equation, `H+O2(+M)=HO2(+M)`)."""
+    return name if re.fullmatch(r"[A-Za-z0-9_.\-]+", name) else '"%s"' % name
 
 
 def as_variation(name, text, why="gate probe: a full record read alone"):
@@ -194,7 +207,7 @@ def as_variation(name, text, why="gate probe: a full record read alone"):
     so a line the probe deletes is truly absent -- no longer supplied again by the catalogue."""
     if re.search(r"(?m)^\s*(overlayOf|variationOf|distinctFrom)\b", text):
         return text                      # already declares what it is (a record copied from a case)
-    return 'variationOf %s;\nvariationReason "%s";\n' % (name, why) + text
+    return 'variationOf %s;\nvariationReason "%s";\n' % (_word(name), why) + text
 
 
 def undeclare(text):
@@ -221,7 +234,7 @@ def declare_homonyms(case_dir, why="gate probe: the copy of a sealed case, unsea
                     ch = re.search(r"(?m)^charge\s+(-?\d+)\s*;", s)
                     return (fm.group(1).strip() if fm else None, int(ch.group(1)) if ch else 0)
                 kind = "variationOf" if ident(txt) == ident((STD / rel).read_text()) else "distinctFrom"
-                f.write_text('%s %s;\nvariationReason "%s";\n' % (kind, f.stem, why) + txt)
+                f.write_text('%s %s;\nvariationReason "%s";\n' % (kind, _word(f.stem), why) + txt)
 
 
 def copy_variation(src, dst, why="gate probe: a full record read alone"):

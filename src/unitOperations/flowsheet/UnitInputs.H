@@ -42,6 +42,8 @@ Description
 
 #pragma once
 
+#include "thermo/reaction/KineticsLibrary.H"
+
 #include "core/Dictionary.H"
 #include "streams/ProcessStream.H"
 #include "thermo/ThermoPackage.H"

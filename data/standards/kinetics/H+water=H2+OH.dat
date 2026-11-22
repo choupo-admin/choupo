@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Elementary reaction H+water=H2+OH
+  O Conaire, Curran, Simmie, Pitz and Westbrook, Int. J. Chem. Kinet. 36 (2004) 603-622, reaction 3 of Table I
+  Written by bin/curate/make_kinetics_seed.py; the file name is the
+  canonical equation (src/thermo/reaction/KineticsLibrary.H).
+\*---------------------------------------------------------------------------*/
+recordType        elementaryReaction;
+reversible        true;
+limitingReactant  OH;
+stoichiometry
+(
+        { component H;       nu  1; }
+        { component H2;      nu -1; }
+        { component OH;      nu -1; }
+        { component water;   nu  1; }
+);
+kinetics
+{
+    type modifiedArrhenius;
+    A 2.1600e+08;  b 1.51;  Ea 3.43;
+    units { A "cm3/mol/s"; Ea "kcal/mol"; }
+}
+sets { OConaire2004 R3_OH_H2_H_H2O; }
+source
+{
+    citation "O Conaire, Curran, Simmie, Pitz and Westbrook, Int. J. Chem. Kinet. 36 (2004) 603-622";
+    doi "10.1002/kin.20036";
+    table "Table I (Revised H2/O2 Reaction Mechanism)";
+    page 607;
+    reaction 3;
+}
+reviewStatus      interim;
+reviewReason      "transcribed by hand from journal page 607 and re-read against the page image by a reviewer (docs/reviews/2026-11-21-kinetics-seed/); not yet read back by the curator";
+provenance
+{
+    kinetics
+    {
+        origin        literature;
+        method        "O Conaire, Curran, Simmie, Pitz and Westbrook, Int. J. Chem. Kinet. 36 (2004) 603-622, Table I, reaction 3 (journal p. 607), A in cm3 mol-1 s-1, Ea in kcal/mol, as printed";
+        methodVersion "Int. J. Chem. Kinet. 36 (2004) 603";
+        uncertainty   "not given by the source";
+    }
+}

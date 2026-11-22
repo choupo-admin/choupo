@@ -56,6 +56,7 @@ Class
 #pragma once
 
 #include "core/Types.H"
+#include "thermo/reaction/KineticsLibrary.H"
 
 #include <cmath>
 #include <cstddef>
@@ -163,6 +164,17 @@ public:
                                 scalar                          T,
                                 const sVector&                  g);
     static scalar equilibriumKc(const sVector& nu, scalar T, const sVector& g);
+    //  (d) the same Kc of (c) with the concentration-basis factor c_std^sumNu handed in: it
+    //      depends on sum(nu) and T only, so a right-hand side evaluates it once per distinct
+    //      sum(nu), not once per reversible reaction.  `concentrationBasisFactor` is the
+    //      factor of (c) (the one definition); the product exp(-dG/RT) * factor is the same
+    //      expression, in the same order, so the result is bit-identical to (c).
+    static scalar concentrationBasisFactor(scalar sumNu, scalar T);
+    static scalar equilibriumKcWithFactor(const std::vector<std::size_t>& comps,
+                                          const sVector&                  nu,
+                                          scalar                          T,
+                                          const sVector&                  g,
+                                          scalar                          concFactor);
 
     //- g_i(T) for every component with want[i] != 0 (others left 0, never
     //  read).  The caller owns the vector for one evaluation at ONE T: there

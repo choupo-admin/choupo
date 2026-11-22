@@ -1,0 +1,52 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ignition01_h2o2_seulex -- the ignition01_h2o2 vessel with `integrator seulex`: closed rigid vessel, stoichiometric H2/O2 in N2 at 1100 K.
+
+    H2 : O2 : N2  =  2 : 1 : 4   (stoichiometric H2 + 1/2 O2 -> H2O, 57% N2)
+
+  mode adiabatic + energy gasConstantV: the first law dU = 0 in a fixed volume,
+  with the heat release coming from the species FORMATION enthalpies (curated
+  thermo) -- no per-reaction ΔH is supplied.  Temperature, and the radicals
+  H/O/OH/HO2, are integrated by the stiff solver until branching runs away.
+
+  solver { integrator Rosenbrock23; }  -- the L-stable stiff method.  Swap to
+  RK4 (see the ignition01_h2o2_rk4 sibling) and the same step blows up.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        bomb;
+        type        batchReactor;
+
+        operation
+        {
+            mode      adiabatic;
+            energy    gasConstantV;         // closed fixed-V gas; heat from Hf
+        }
+
+        solver
+        {
+            integrator  seulex;
+            verbosity   3;                  // announce the stiffness verdict
+        }
+
+        reactions
+        (
+            R1_H_O2_O_OH  R2_O_H2_H_OH  R3_OH_H2_H_H2O
+            R4_O_H2O_2OH  R5_H2_M_2H_M  R6_2O_M_O2_M
+            R7_O_H_M_OH_M  R8_H_OH_M_H2O_M  R9_H_O2_M_HO2
+            R10_HO2_H_H2_O2  R11_HO2_H_2OH  R12_HO2_O_OH_O2
+            R13_HO2_OH_H2O_O2  R14a_2HO2_H2O2_O2  R14b_2HO2_H2O2_O2
+            R15_H2O2_M_2OH  R16_H2O2_H_H2O_OH  R17_H2O2_H_H2_HO2
+            R18_H2O2_O_OH_HO2  R19a_H2O2_OH_H2O_HO2  R19b_H2O2_OH_H2O_HO2
+        );
+    }
+);

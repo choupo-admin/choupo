@@ -259,6 +259,9 @@ const PropertyOriginsTool = lazy(() =>
 const FourWaysMixtureTool = lazy(() =>
   import("./methods/FourWaysMixtureTool.js")
     .then((m) => ({ default: m.FourWaysMixtureTool })));
+const OpenMolecularToolsTool = lazy(() =>
+  import("./methods/OpenMolecularToolsTool.js")
+    .then((m) => ({ default: m.OpenMolecularToolsTool })));
 const CosmoSacTheoryTool = lazy(() =>
   import("./methods/CosmoSacTheoryTool.js")
     .then((m) => ({ default: m.CosmoSacTheoryTool })));
@@ -667,6 +670,7 @@ export function MethodsWorkspace() {
             : tool === "property-origins" ? <PropertyOriginsTool />
             : tool === "property-data-sources" ? <DataSourcesTool />
             : tool === "database-to-parameters" ? <DatabaseToParametersTool />
+            : tool === "open-molecular-tools" ? <OpenMolecularToolsTool />
             : tool === "four-ways-mixture" ? <FourWaysMixtureTool />
             : tool === "cosmo-sac-theory" ? <CosmoSacTheoryTool />
             : tool === "local-composition" ? <LocalCompositionTool />

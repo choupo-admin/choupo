@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Rosenbrock23.H"
+#include "ODEJacobianAudit.H"
 #include <memory>
 #include "Jacobian.H"
 #include "../LU.H"
@@ -216,6 +217,12 @@ void auditStructure(const std::vector<sVector>& Jd,
 //  batch04_reversible_wgs (2026-11-19): with the forward difference alone the
 //  CO2 column, whose entries are a reverse leg small against the forward
 //  rate in every row, read 8e-6 of its scale -- the rounding, not the J.
+}   // namespace (reopened after auditAnalytic)
+
+//  auditDifference and auditAnalytic are DECLARED in ODEJacobianAudit.H and
+//  shared with Seulex: one audit of an analytic Jacobian, not two.
+namespace detail
+{
 std::vector<sVector> auditDifference(const DerivFn& f, scalar t,
                                      const sVector& y, const sVector& f0,
                                      const sVector& sc, const ODEControls& ctrl,
@@ -334,6 +341,12 @@ void auditAnalytic(const std::vector<sVector>& Ja,
             " is the default), or fix the derivative.");
     }
 }
+}   // namespace detail
+
+namespace
+{
+using detail::auditDifference;
+using detail::auditAnalytic;
 //  ---- Rodas4: the six stages --------------------------------------------
 //  Hairer & Wanner, "Solving Ordinary Differential Equations II" (2nd ed.,
 //  Springer 1996), Section IV.7, the method RODAS4 (Table 7.2), in the form
@@ -588,6 +601,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
             //  J = S + u v^T on the model's pattern; the audit expands it.
             SparseJacobian SJ;
             A->sparseJacobian(t, y, f0, typ, SJ);
+            ++st.jacobians;
             const SparsePattern& P = *A->pattern;
             if (SJ.values.size() != P.nnz())
                 throw std::runtime_error((A->owner.empty() ? std::string("Rosenbrock23")
@@ -632,6 +646,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
             for (std::size_t i = 0; i < n; ++i) Wv[diagPos[i]] += 1.0;
             spUsed = A->lu->factor(Wv);
             ++A->sparseFactorisations;
+            ++st.factorisations;
             //  THE FACTOR IS ACCEPTED ON ITS BACKWARD ERROR.  The pivots were
             //  taken on the diagonal (the fixed pattern allows no exchange), so
             //  the factor is checked on its own matrix: x = W_s^{-1} 1, and
@@ -686,6 +701,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
                 for (std::size_t i = 0; i < n; ++i)
                     for (std::size_t j = 0; j < n; ++j)
                         W[i][j] = (i == j ? 1.0 : 0.0) - h * d * J[i][j];
+                ++st.factorisations;
                 try { luFactor(W, piv); }
                 catch (...)
                 {
@@ -735,6 +751,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
             }
             else
                 J = fdJacobianODE(f, t, y, f0, typ);
+            ++st.jacobians;
             Td = (A && A->autonomous) ? sVector(n, 0.0)
                                       : fdDfDt(f, t, y, f0, std::max(span, 1.0));
             stiffPeak = std::max(stiffPeak, spectralBound(J));
@@ -744,6 +761,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
                 for (std::size_t j = 0; j < n; ++j)
                     W[i][j] = (i == j ? 1.0 : 0.0) - h * d * J[i][j];
 
+            ++st.factorisations;
             try { luFactor(W, piv); }
             catch (...)
             {
@@ -762,6 +780,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
         {
             colored = fdJacobianODEColored(f, t, y, f0, typ, *S, narrow);
             ++S->jacobians;
+            ++st.jacobians;
             S->jacobianEvals += colored.evals;
             if (!S->audited)
             {
@@ -791,6 +810,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
                         for (std::size_t k = 0; k < nv; ++k)
                             Wb.b[b][w][i][k] = ((w == 1 && i == k) ? 1.0 : 0.0)
                                              - h * d * colored.bands.b[b][w][i][k];
+            ++st.factorisations;
             try { Wbt = blockThomasFactor(Wb); }
             catch (...)
             {

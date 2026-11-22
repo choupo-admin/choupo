@@ -84,12 +84,14 @@ def base_case(base):
 
 
 @contextlib.contextmanager
-def probe_copy(base, strip=()):
-    """A private, materialised temporary copy of the shipped case `base`."""
+def probe_copy(base, strip=(), keep_library=False):
+    """A private, materialised temporary copy of the shipped case `base`.  A case that asks the
+    reaction library (`reactionSet`) is written INLINE in the copy (the form every probe that edits
+    a reaction's text was written against); `keep_library=True` keeps the library form."""
     src = base_case(base)
     with tempfile.TemporaryDirectory(prefix="gatekit_") as td:
         dst = Path(td) / src.name
-        case_records.copytree(src, dst)
+        case_records.copytree(src, dst, inline_kinetics=not keep_library)
         for rel in strip:
             p = dst / rel
             if p.is_dir():

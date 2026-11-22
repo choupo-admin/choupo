@@ -115,6 +115,60 @@ std::vector<std::size_t> minimumDegree(Adj g, std::size_t& nDense)
     order.insert(order.end(), denseList.begin(), denseList.end());
     return order;
 }
+
+//  Split each column's ascending row list into runs of consecutive rows; the
+//  run form is used for a column only when it has at most half as many runs
+//  as entries.
+template <class R_>
+void buildRuns(const std::vector<std::size_t>& colPtr, const std::vector<std::size_t>& rows, std::size_t n, R_& R)
+{
+    R.ptr.assign(n + 1, 0);
+    R.first.clear(); R.len.clear();
+    R.use.assign(n, 0);
+    for (std::size_t k = 0; k < n; ++k)
+    {
+        const std::size_t a = colPtr[k], b = colPtr[k + 1];
+        const std::size_t r0 = R.first.size();
+        for (std::size_t t = a; t < b; ++t)
+        {
+            if (t > a && rows[t] == rows[t - 1] + 1) ++R.len.back();
+            else { R.first.push_back(rows[t]); R.len.push_back(1); }
+        }
+        const std::size_t nr = R.first.size() - r0;
+        R.use[k] = (b > a && 2 * nr <= b - a) ? 1 : 0;
+        if (!R.use[k]) { R.first.resize(r0); R.len.resize(r0); }
+        R.ptr[k + 1] = R.first.size();
+    }
+}
+
+//  y[row] -= x[s] * a  over column k's rows, indexed or by runs: the same
+//  multiply and subtract on the same elements in the same order.
+template <class Runs>
+inline void subColumn(const Runs& R, const std::vector<std::size_t>& colPtr,
+                      const std::vector<std::size_t>& rows, std::size_t k,
+                      const scalar* __restrict x, scalar a, scalar* __restrict y)
+{
+    if (R.use[k])
+    {
+        std::size_t s = colPtr[k];
+        for (std::size_t q = R.ptr[k]; q < R.ptr[k + 1]; ++q)
+        {
+            scalar* __restrict yy = y + R.first[q];
+            const scalar* __restrict xx = x + s;
+            const std::size_t m = R.len[q];
+            std::size_t r = 0;
+            for (; r + 4 <= m; r += 4)          // four at a time: less loop overhead per update
+            {
+                const scalar t0 = xx[r] * a, t1 = xx[r + 1] * a, t2 = xx[r + 2] * a, t3 = xx[r + 3] * a;
+                yy[r] -= t0; yy[r + 1] -= t1; yy[r + 2] -= t2; yy[r + 3] -= t3;
+            }
+            for (; r < m; ++r) yy[r] -= xx[r] * a;
+            s += m;
+        }
+    }
+    else
+        for (std::size_t s = colPtr[k]; s < colPtr[k + 1]; ++s) y[rows[s]] -= x[s] * a;
+}
 }
 
 void SparseLU::analyse(std::shared_ptr<const SparsePattern> p)
@@ -177,6 +231,8 @@ void SparseLU::analyse(const SparsePattern& p)
     for (std::size_t j = 0; j < n; ++j)
         for (std::size_t t = S->Lp[j]; t < S->Lp[j + 1]; ++t)
             S->Ui[next[S->Li[t]]++] = j;
+    buildRuns(S->Lp, S->Li, n, S->Lr);
+    buildRuns(S->Up, S->Ui, n, S->Ur);
     //  the numeric cost: column k does, for each j in U(:,k), |L(:,j)| updates
     S->flops = 0.0;
     for (std::size_t k = 0; k < n; ++k)
@@ -248,8 +304,7 @@ bool SparseLU::factor(const sVector& values, scalar pivotTol)
             Ux_[t] = ujk;
             w[j] = 0.0;
             if (ujk != 0.0)
-                for (std::size_t s = S.Lp[j]; s < S.Lp[j + 1]; ++s)
-                    w[S.Li[s]] -= Lx_[s] * ujk;
+                subColumn(S.Lr, S.Lp, S.Li, j, Lx_.data(), ujk, w.data());
         }
         const scalar d = w[k];
         w[k] = 0.0;
@@ -274,6 +329,13 @@ bool SparseLU::factor(const sVector& values, scalar pivotTol)
 
 sVector SparseLU::solve(const sVector& b) const
 {
+    sVector x;
+    solve(b, x);
+    return x;
+}
+
+void SparseLU::solve(const sVector& b, sVector& x) const
+{
     const Symbolic& S = *sym_;
     const std::size_t n = S.n;
     sVector& y = work_;
@@ -281,19 +343,16 @@ sVector SparseLU::solve(const sVector& b) const
     for (std::size_t k = 0; k < n; ++k)                 // L y = P b   (unit L)
     {
         const scalar yk = y[k];
-        if (yk != 0.0)
-            for (std::size_t s = S.Lp[k]; s < S.Lp[k + 1]; ++s) y[S.Li[s]] -= Lx_[s] * yk;
+        if (yk != 0.0) subColumn(S.Lr, S.Lp, S.Li, k, Lx_.data(), yk, y.data());
     }
     for (std::size_t k = n; k-- > 0;)                   // U x = y
     {
         const scalar xk = y[k] / D_[k];
         y[k] = xk;
-        if (xk != 0.0)
-            for (std::size_t t = S.Up[k]; t < S.Up[k + 1]; ++t) y[S.Ui[t]] -= Ux_[t] * xk;
+        if (xk != 0.0) subColumn(S.Ur, S.Up, S.Ui, k, Ux_.data(), xk, y.data());
     }
-    sVector x(n);
+    x.resize(n);
     for (std::size_t k = 0; k < n; ++k) { x[S.perm[k]] = y[k]; y[k] = 0.0; }
-    return x;
 }
 
 std::size_t SparseLU::nnzFactor() const

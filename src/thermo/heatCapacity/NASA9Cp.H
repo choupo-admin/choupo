@@ -87,6 +87,17 @@ private:
     scalar hAnti_(scalar T, const scalar* a) const;
     scalar sAnti_(scalar T, const scalar* a) const;
     void   noteRange(scalar T) const;
+    //  The antiderivatives at the two arguments every caller passes -- Tcommon (the interval
+    //  join) and 298.15 K (the reference of H and S) -- are constants of the record: taken
+    //  ONCE at construction by the same hAnti_/sAnti_, so every H(T, Tref) and S(T, Tref) is
+    //  bit-for-bit what it was while it no longer evaluates four antiderivatives (three
+    //  logarithms) per call.
+    scalar hLo_(scalar x) const;
+    scalar hHi_(scalar x) const;
+    scalar sLo_(scalar x) const;
+    scalar sHi_(scalar x) const;
+    scalar cHLoTc_ = 0, cHHiTc_ = 0, cHLoRef_ = 0, cHHiRef_ = 0;
+    scalar cSLoTc_ = 0, cSHiTc_ = 0, cSLoRef_ = 0, cSHiRef_ = 0;
 
     scalar low_[7]  = {0, 0, 0, 0, 0, 0, 0};   // a1..a7, Tlow..Tcommon
     scalar high_[7] = {0, 0, 0, 0, 0, 0, 0};   // a1..a7, Tcommon..Thigh

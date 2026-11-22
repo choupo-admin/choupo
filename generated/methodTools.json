@@ -396,6 +396,17 @@
       "href": "/app/?workspace=methods&tool=property-data-sources"
     },
     {
+      "id": "open-molecular-tools",
+      "label": "From molecules to properties: the open tools",
+      "blurb": "Find the open program that answers a question about a molecule.",
+      "discipline": "Property data & parameters",
+      "teaches": "Which open-source program answers which question about a molecule or a mixture: quantum chemistry (PySCF, Psi4, xtb) to geometry, frequencies and ideal-gas Cp and S; COSMO-SAC and openCOSMO-RS to activity coefficients without mixture data; UNIFAC and PC-SAFT with ugropy, thermo and Clapeyron; Gibbs-ensemble and grand-canonical Monte Carlo (Cassandra, GOMC, RASPA); RDKit from a SMILES string to a structure; CoolProp and Cantera as the reference side of a comparison.  For each: its licence and how it was read, how to run a first example with no installation, where it meets a Choupo record, and one thesis idea.",
+      "origins": [
+        "reference"
+      ],
+      "href": "/app/?workspace=methods&tool=open-molecular-tools"
+    },
+    {
       "id": "property-trust",
       "label": "When a property database lies to you",
       "blurb": "Test a property record for consistency before you believe it.",

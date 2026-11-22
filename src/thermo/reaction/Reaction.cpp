@@ -290,14 +290,10 @@ scalar Reaction::equilibriumKc(const std::vector<std::size_t>& comps,
                                scalar                          T,
                                const sVector&                  g)
 {
-    scalar dG    = 0.0;
     scalar sumNu = 0.0;
     for (std::size_t s = 0; s < comps.size(); ++s)
-    {
-        dG    += nu[s] * g[comps[s]];
         sumNu += nu[s];
-    }
-    return std::exp(-dG / (constant::R * T)) * concentrationFactor(sumNu, T);
+    return equilibriumKcWithFactor(comps, nu, T, g, concentrationFactor(sumNu, T));
 }
 
 scalar Reaction::equilibriumKc(const sVector& nu, scalar T, const sVector& g)
@@ -545,6 +541,23 @@ int Reaction::chemkinMolecularity(const std::vector<scalar>& orders,
         throw std::runtime_error(m.str());
     }
     return static_cast<int>(nearest);
+}
+
+scalar Reaction::concentrationBasisFactor(scalar sumNu, scalar T)
+{
+    return concentrationFactor(sumNu, T);
+}
+
+scalar Reaction::equilibriumKcWithFactor(const std::vector<std::size_t>& comps,
+                                         const sVector&                  nu,
+                                         scalar                          T,
+                                         const sVector&                  g,
+                                         scalar                          concFactor)
+{
+    scalar dG = 0.0;
+    for (std::size_t s = 0; s < comps.size(); ++s)
+        dG += nu[s] * g[comps[s]];
+    return std::exp(-dG / (constant::R * T)) * concFactor;
 }
 
 } // namespace Choupo

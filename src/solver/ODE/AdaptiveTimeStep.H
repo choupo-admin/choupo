@@ -77,7 +77,11 @@ Description
 #include "core/Dictionary.H"
 #include "core/Types.H"
 
+#include <algorithm>
+#include <chrono>
 #include <cmath>
+#include <cstdlib>
+#include <iostream>
 #include <cstddef>
 #include <functional>
 #include <memory>
@@ -240,6 +244,9 @@ public:
         if (!ODEIntegrator::known(settings_.integrator))
             ODEIntegrator::registerBuiltins();
         integ_ = ODEIntegrator::New(settings_.integrator);
+        //  DIAGNOSTIC, off unless asked (C473 b): CHOUPO_ODE_STATS=1 PRINTS the
+        //  run's work counters and timers when the stepper ends; it changes nothing.
+        statsOn_ = std::getenv("CHOUPO_ODE_STATS") != nullptr;
         // Warm step carried across intervals; seed at the LOW deltaT0.
         hCarry_ = settings_.deltaT0;
     }
@@ -279,7 +286,7 @@ public:
         }
 
         // --- the global derivative: scatter Y -> units, gather f ---------
-        DerivFn f = [&](scalar /*t*/, const sVector& yg) -> sVector
+        DerivFn fInner = [&](scalar /*t*/, const sVector& yg) -> sVector
         {
             sVector dy(N);
             for (std::size_t u = 0; u < units.size(); ++u)
@@ -292,6 +299,18 @@ public:
             }
             return dy;
         };
+        //  CHOUPO_ODE_STATS: the time spent in the right-hand side, counted.
+        DerivFn f = fInner;
+        if (statsOn_)
+            f = [this, fInner](scalar t, const sVector& yg)
+            {
+                const auto a = std::chrono::steady_clock::now();
+                sVector r = fInner(t, yg);
+                nsF_ += std::chrono::duration_cast<std::chrono::nanoseconds>(
+                            std::chrono::steady_clock::now() - a).count();
+                ++nF_;
+                return r;
+            };
 
         ODEControls ctrl;
         ctrl.atol      = atol;
@@ -480,7 +499,27 @@ public:
                 onAcceptedState(tEnd, hTaken);
             };
 
+        if (statsOn_ && analytic_.sparseJacobian)
+        {
+            auto inner = analytic_.sparseJacobian;
+            analytic_.sparseJacobian = [this, inner](scalar t, const sVector& yy, const sVector& ff,
+                                                    const sVector& tt, SparseJacobian& J)
+            {
+                const auto a = std::chrono::steady_clock::now();
+                inner(t, yy, ff, tt, J);
+                nsJ_ += std::chrono::duration_cast<std::chrono::nanoseconds>(
+                            std::chrono::steady_clock::now() - a).count();
+                ++nJ_;
+            };
+        }
+        const auto tIntegrate = std::chrono::steady_clock::now();
         st = integ_->integrate(y, t0, t1, f, ctrl);
+        nsIntegrate_ += std::chrono::duration_cast<std::chrono::nanoseconds>(
+                            std::chrono::steady_clock::now() - tIntegrate).count();
+        total_.steps += st.steps; total_.accepted += st.accepted;
+        total_.rejected += st.rejected; total_.jacobians += st.jacobians;
+        total_.factorisations += st.factorisations; total_.rhsEvals += st.rhsEvals;
+        total_.thetaMax = std::max(total_.thetaMax, st.thetaMax);
         //  The closures above read this call's `units` and offsets: drop
         //  them, so the record kept across intervals holds no dangling one.
         analytic_.jacobian = nullptr;
@@ -512,6 +551,22 @@ public:
     }
 
     scalar carriedStep() const { return hCarry_; }
+
+    ~AdaptiveTimeStepper()
+    {
+        if (statsOn_ && total_.steps > 0)
+            std::cout << "[ode-stats] integrator=" << integ_->name()
+                      << " steps=" << total_.steps << " accepted=" << total_.accepted
+                      << " rejected=" << total_.rejected << " jacobians=" << total_.jacobians
+                      << " factorisations=" << total_.factorisations
+                      << " rhs=" << total_.rhsEvals << " thetaMax=" << total_.thetaMax
+                      << " analyticJacobiansBuilt=" << analytic_.jacobians
+                      << " auditRhs=" << analytic_.auditEvals
+                      << " | time[ms]: integrate " << nsIntegrate_ * 1e-6 << ", rhs " << nsF_ * 1e-6
+                      << " (" << nF_ << " calls, " << (nF_ ? nsF_ * 1e-3 / nF_ : 0.0) << " us each), jacobian "
+                      << nsJ_ * 1e-6 << " (" << nJ_ << " calls, " << (nJ_ ? nsJ_ * 1e-3 / nJ_ : 0.0)
+                      << " us each)\n";
+    }
 
     //  The analytic-Jacobian audit record of the run (empty when no sweep
     //  ran on an analytic Jacobian).  The caller announces it.
@@ -577,6 +632,9 @@ private:
     std::unique_ptr<ODEIntegrator>   integ_;
     scalar                           hCarry_ = 0.0;
     ODEAnalyticJacobian              analytic_;
+    ODEStats                         total_;             // summed over the intervals (diagnostic)
+    bool                             statsOn_ = false;
+    long long nsF_ = 0, nsJ_ = 0, nsIntegrate_ = 0; long nF_ = 0, nJ_ = 0;   // diagnostics
     std::shared_ptr<SparsePattern>   multiPattern_;      // block-diagonal, kept across intervals
     std::vector<std::shared_ptr<const SparsePattern>> multiSources_;
 };

@@ -36,6 +36,9 @@ Description
 
     Concrete methods register via the usual explicit factory (no macros):
 
+        Seulex        extrapolation of the linearly-implicit Euler method,
+                      variable order, tolerates an OLD Jacobian (Hairer &
+                      Wanner 1996, IV.9; Theory Guide sec:seulex).
         RK4           classical 4th-order explicit -- the non-stiff default,
                       lifted verbatim from the batch reactors.
         EulerSI       semi-implicit (linearly-implicit) Euler -- the readable
@@ -344,6 +347,13 @@ struct ODEControls
     // => the dense forward-difference path, untouched.  Refused together
     // with a declared structure (the two are different claims about J).
     ODEAnalyticJacobian* analytic = nullptr;
+
+    //  Seulex only (Theory Guide sec:seulex): the convergence monitor
+    //  theta = |Newton correction| / |first increment| above which the
+    //  Jacobian is rebuilt at the next step.  <= 0: the default (1e-3).  A
+    //  larger value reuses the Jacobian longer; the step control, not this
+    //  number, keeps the extrapolated result within tolerance.
+    scalar      jacobianRedo = 0.0;
 };
 
 struct ODEStats
@@ -379,6 +389,14 @@ struct ODEStats
     //  packed several units can name the unit and the state it belongs to.
     //  SIZE_MAX when no row was refused.
     std::size_t negativeRow = static_cast<std::size_t>(-1);
+    //  WORK counters (C473 b): Jacobians built, factorisations of W, and, for
+    //  Seulex, right-hand sides evaluated and the Jacobian refreshes the
+    //  convergence monitor asked for.  Rosenbrock23/Rodas4 fill the first two
+    //  (one of each per attempted step); 0 = not counted.
+    std::size_t jacobians      = 0;
+    std::size_t factorisations = 0;
+    std::size_t rhsEvals       = 0;
+    scalar      thetaMax       = 0.0;   // Seulex: largest monitor value seen
 };
 
 class ODEIntegrator
@@ -399,6 +417,10 @@ public:
     static void registerType(const std::string& name, Factory f);
     static std::unique_ptr<ODEIntegrator> New(const std::string& name);
     static bool known(const std::string& name);
+    //- The integrators that read ODEControls::analytic (the analytic Jacobian,
+    //  audited): Rosenbrock23, Rodas4 and seulex.
+    static bool readsAnalyticJacobian(const std::string& name)
+    { return name == "Rosenbrock23" || name == "Rodas4" || name == "seulex"; }
     static void registerBuiltins();
 
 private:
