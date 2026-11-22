@@ -39858,10 +39858,24 @@ $c_{\mathrm{floor},k}=\sqrt\varepsilon\,s_k/V$ ($s_k$ the species' audit
 size, below): $\partial f/\partial c = p\,\max(c,c_{\mathrm{floor}})^{p-1}$,
 finite, equal for every $c$ below the floor and continuous above it.  The
 audit has no reference there --- the central difference of $c^p$ is biased
-by $O((h/c)^2)$ and across $c=0$ it differences a singularity --- so a
-column whose species is read at such an order and lies within $300$ audit
-steps of zero is judged on being finite alone, and counted in the audit
-record (\code{singularColumns}).  Witness:
+by $O((h/c)^2)$ and across $c=0$ it differences a singularity --- so exactly
+that \emph{term} is taken out and nothing else: for a reaction $j$ that reads
+species $k$ at such an order, with $n_k$ within $300$ audit steps of zero,
+reaction $j$'s share of column $k$ is removed from the analytic Jacobian
+(the Jacobian with $j$ in, minus the Jacobian with $j$ left out) and from the
+reference (the same stencil on $f-f_{(-j)}$), and the remainder is audited at
+the normal tolerance.  Every other reaction's derivative in $n_k$ --- a
+second reaction reading the same trace species at order~2 --- and the energy
+row therefore stay audited.  The rule holds on both integration paths (the
+fixed-step reactor and the adaptive sweep, whose units each hand their share,
+shifted by their offset) and for a law built by the shared factory, which
+names the species it reads at an order in $(0,1)$ and takes the same slope at
+$c_{\mathrm{floor}}$.  A law with no power-law part (\code{LHHW}, \code{type
+expression}) declares none and is not covered.  The reference at zero is the
+one-sided second-order difference of the next paragraph, at the step
+$\sqrt\varepsilon\,s_k$; an order in $(1,2)$ at zero then agrees with it to
+$4.5\cdot10^{-5}$ of the column's scale (order $1.5$, measured).
+Witness:
 \code{batch34\_fractional\_order\_at\_zero}.
 
 \paragraph{The temperature column, in closed form.}  At fixed $c$,
@@ -39991,7 +40005,7 @@ the analytic one does not.
 \paragraph{The audit's difference at zero.}  A column whose species sits
 within one step of zero cannot be differenced centrally (the rate clamps at
 $0$).  It is differenced one-sided of second order,
-$(-3f_0+4f(h)-f(2h))/2h$ with $h=\sqrt[3]{\varepsilon}\,s_k$, exact for a
+$(-3f_0+4f(h)-f(2h))/2h$ with $h=\sqrt{\varepsilon}\,s_k$, exact for a
 rate quadratic in the species.  The two-point forward difference it replaced
 is biased by $k h$ for every bimolecular leg of a radical ($2\,\mathrm{OH}$,
 $2\,\mathrm{HO_2}$), and with $s_k$ a hundredth of the inventory the step
@@ -39999,7 +40013,7 @@ exceeds a trace parent's own amount: the H$_2$O$_2$ cell
 \code{kinetics02\_h2o2\_falloff} (every radical exactly zero) read
 $\partial n_{\mathrm{OH}}/\partial n_{\mathrm{OH}}$ $-0.206$ analytic against
 $-0.439$ differenced, the bias of the reference and not a missing term.  The reference's own
-rounding, $8\,\varepsilon^{2/3}|f_{0,r}|/s_r$ in the scaled entry, is taken off
+rounding, $4\sqrt\varepsilon\,|f_{0,r}|/s_r$ in the scaled entry, is taken off
 each entry's disagreement, so a column that is exactly zero in the model
 (a zeroth-order rate) is not refused for the noise of its difference.
 

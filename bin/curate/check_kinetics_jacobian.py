@@ -151,7 +151,7 @@ SABOTAGE-VERIFIED 2026-11-21, arm (g) (by hand, rebuilt, restored, rebuilt):
     Rosenbrock step with a wrong factor is still accepted by its error estimate.
 
 NOT CHECKED: that the rate laws themselves are right (ignition02_h2air_slack's Slack pin,
-check_elementary_rates); a power-law order below one near zero is judged on finiteness only (a column within 300 audit steps of zero: the audit has no reference there, C468); the heat-capacity slope dC_p/dT
+check_elementary_rates); a power-law order below one near zero (within 300 audit steps of zero): that ONE reaction's share of the column is taken out of the analytic Jacobian and of the reference, the rest audited (C468; a share is exact, but an expression/LHHW law declares no orders and is not covered; order 1.5 at zero passes at 4.5e-5 of the engine's 1e-4, the one-sided difference's truncation); the heat-capacity slope dC_p/dT
 (a central difference of the record's law: the record offers no derivative); wall time (machine-
 dependent: the right-hand-side count is the deterministic proxy); a sweep that mixes a
 unit with an analytic Jacobian and one without (it falls back to the difference by
@@ -726,12 +726,18 @@ def main():
     #  THE REAL DEFECT (i2) CATCHES (C468 defect 1).  A rate of order 1/2 on a species at
     #  c = 0 (batch34_fractional_order_at_zero: B absent at t = 0): d(c^0.5)/dc is infinite,
     #  the reaction was differenced at the Jacobian's own step, the audit differenced at its
-    #  own, and the run was refused on every path (-2.678 against -2.671).  SABOTAGE-
-    #  VERIFIED 2026-11-22 (by hand, rebuilt, restored): the audit's singular-column mask
-    #  disabled (BatchReactor::wireAnalytic_) -- (i2) refuses the fixture by name, d(n_compC)/
-    #  d(n_compB) 25.9 against 3.32; the one-sided formula put back to two points -- (i1)
-    #  refuses kinetics01 and kinetics02 (and, beyond them, (g2) and (h3), so cases that
-    #  ship the analytic Jacobian were one unlucky charge from the same refusal).
+    #  own, and the run was refused on every path (-2.678 against -2.671).  The fix takes out
+    #  EXACTLY the singular term: reaction j's share of column k, from the analytic column
+    #  and from the reference (BatchReactor::odeAuditExclusions; the SAME stencil), and audits
+    #  the remainder -- so a second reaction reading the same trace species at order 2 is
+    #  still audited.  Both paths (fixed step and the adaptive sweep, per-unit hook mapped by
+    #  offset), a factory law (A_rev: the law names its fractional orders) and order 1.5 are
+    #  variants of the fixture.  SABOTAGE-VERIFIED 2026-11-22 (by hand, rebuilt, restored):
+    #  the exclusion returned empty -- (i2) refuses fixed/adaptive base, 25.9 against 66.99
+    #  (the one-sided difference at the small step), and A_rev, 51.8 against 66.99; the
+    #  one-sided formula put back to two points -- (i1) refuses kinetics01 and kinetics02
+    #  (and (g2), (h3), so shipped analytic-Jacobian cases were one unlucky charge from the
+    #  same refusal).
     for case in ("tutorials/batch/combustion/kinetics01_oh_decay",
                  "tutorials/batch/combustion/kinetics02_h2o2_falloff"):
         with gatekit.probe_copy(case, strip=STRIP) as c:
@@ -747,28 +753,53 @@ def main():
             else:
                 notes.append(f"{Path(case).name} analytic, {len(a)} audits <= {max(x[5] for x in a):.0e}")
     FRAC = "tutorials/batch/reactor/batch34_fractional_order_at_zero"
+    ADAPT = ("\ntimeStepping adaptive;\ntimeSteppingControl { rtol 1e-6; atol 1e-9; deltaT0 1e-3;"
+             " deltaTmax 25; maxGrowth 2.0; }\n")
+
+    def frac_variant(c, kind, adaptive):
+        rx = c / "constant/reactions"
+        if kind == "A_rev":      # a factory law (explicit reverse leg): its orders live in the law
+            rx.write_text(rx.read_text().replace("A      2.0e-3;", "A      2.0e-3; A_rev 1e-9; Ea_rev 0;"))
+        elif kind == "order 1.5":
+            rx.write_text(rx.read_text().replace("order 0.5;", "order 1.5;"))
+        if adaptive:
+            cd = c / "system/controlDict"
+            cd.write_text(cd.read_text() + ADAPT)
+
     got = {}
-    for tag, integ, jac in (("analytic", "Rosenbrock23", "analytic"), ("rodas", "Rodas4", "analytic"),
-                            ("fd", "Rosenbrock23", "finiteDifference")):
+    for tag, integ, jac, kind, adaptive in (
+            ("analytic", "Rosenbrock23", "analytic", "", False), ("rodas", "Rodas4", "analytic", "", False),
+            ("fd", "Rosenbrock23", "finiteDifference", "", False),
+            ("adaptive", "Rosenbrock23", "analytic", "", True),
+            ("A_rev", "Rosenbrock23", "analytic", "A_rev", False),
+            ("A_rev adaptive", "Rosenbrock23", "analytic", "A_rev", True),
+            ("order 1.5", "Rosenbrock23", "analytic", "order 1.5", False),
+            ("order 1.5 adaptive", "Rosenbrock23", "analytic", "order 1.5", True)):
         with gatekit.probe_copy(FRAC, strip=STRIP) as c:
             set_solver(c, jac, integrator=integ)
+            frac_variant(c, kind, adaptive)
             rc, out = gatekit.run(batch, c)
             if rc != 0:
-                failures.append(f"(i2) {Path(FRAC).name} on {integ}, jacobian {jac}, exited {rc}: "
+                failures.append(f"(i2) fractional-order fixture [{tag}] exited {rc}: "
                                 + " | ".join(out.strip().splitlines()[-2:])[:500])
                 continue
-            got[tag] = (kpis(out), audits(out))
+            a = audits(out)
+            if not a and jac == "analytic":
+                failures.append(f"(i2) fractional-order fixture [{tag}] printed no audit -- the analytic Jacobian was not used")
+            #  order 1.5 at zero is the reference's own truncation (c^1.5 is not a quadratic):
+            #  measured 4.5e-5, inside the engine's 1e-4 that the exit code already holds
+            if a and kind != "order 1.5" and max(x[5] for x in a) > GATE_TOL:
+                failures.append(f"(i2) fractional-order fixture [{tag}]: an audit differs by {max(x[5] for x in a):.3e}")
+            got[tag] = (kpis(out), a)
     if "analytic" in got and "fd" in got:
-        if not got["analytic"][1]:
-            failures.append("(i2) the fractional-order fixture printed no audit -- the analytic Jacobian was not used")
         w, where, missing = kpi_diff(got["fd"][0], got["analytic"][0], rel=1e-4)
         if missing or w > 1e-4:
             failures.append(f"(i2) fractional-order fixture: analytic and finite-difference KPIs differ by {w:.2e} ({where})")
-        notes.append("batch34: order 1/2 at c = 0 runs on the analytic Jacobian")
     if "rodas" in got and "analytic" in got:
         w, where, _ = kpi_diff(got["rodas"][0], got["analytic"][0], rel=1e-4)
         if w > 1e-4:
             failures.append(f"(i2) fractional-order fixture: Rodas4 and Rosenbrock23 differ by {w:.2e} ({where})")
+    notes.append(f"batch34: order 1/2 at c = 0, fixed and adaptive, a factory law (A_rev) and order 1.5 audited ({len(got)} runs)")
 
     # ---- (d) refusals by name ----------------------------------------------------------
     probes = [

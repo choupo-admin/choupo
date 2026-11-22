@@ -139,6 +139,16 @@ public:
     { return kForward(s.T); }
 
     const std::string& typeName() const override { return type_; }
+    //  the power-law part's orders in (0, 1) (an LHHW adsorption term is not an order)
+    void fractionalOrderSpecies(std::vector<std::size_t>& species) const override
+    {
+        species.clear();
+        if (ads_) return;
+        for (std::size_t i = 0; i < order_.size(); ++i)
+            if ((order_[i] > 0.0 && order_[i] < 1.0)
+                || (orderRev_.size() > i && orderRev_[i] > 0.0 && orderRev_[i] < 1.0))
+                species.push_back(i);
+    }
     bool  isLHHW()        const { return ads_; }
     bool  activityBasis() const { return activity_; }
 

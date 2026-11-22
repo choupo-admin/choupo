@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "BatchReactor.H"
+#include "solver/ODE/ODEJacobianAudit.H"
 #include <memory>
 #include "thermo/PropertyDomainError.H"
 #include "core/Constants.H"
@@ -1476,8 +1477,10 @@ sVector BatchReactor::derivatives_(const sVector& packed) const
     const sVector& gT = gibbsAt_(T);      // g_i(T) once per evaluation, not once per reaction
     const KinCtx& ctx = kinCtx_(T, packed, V);   // c = n/V, [M], the factory laws' c and x, once
     const sVector& n_vec = ctx.nvec;
-    for (const auto& rxn : reactions_)
+    for (std::size_t jr = 0; jr < reactions_.size(); ++jr)
     {
+        if (static_cast<long>(jr) == skipRxn_) continue;   // the audit's exclusion share (C468)
+        const auto& rxn = reactions_[jr];
         const scalar r_r = rateOfReaction_(rxn, T, n_vec, V, &gT, &ctx);   // kmol/(m³·s)
         for (std::size_t s = 0; s < rxn.comps.size(); ++s)
             dydt[rxn.comps[s]] += rxn.nu[s] * r_r * V;          // kmol/s
@@ -2335,8 +2338,9 @@ void BatchReactor::setOdeState(const sVector& y)
 //                  and T (rateGradientFD_), V moving with n and T as the
 //                  vessel's basis says -- the law receives the whole
 //                  concentration and mole-fraction vectors, so its own species
-//                  would not be its whole reach.  So is a power below one at
-//                  zero concentration (an infinite one-sided derivative).
+//                  would not be its whole reach.  (A power below one at zero
+//                  concentration, an infinite one-sided derivative, is NOT
+//                  differenced: it takes the slope at c_floor.)
 //  The energy row, by the chain rule with the per-reaction weight w_j:
 //    liquidDH      Tdot = -sum_j dH_j r_j V / CpTot,   w_j = dH_j,
 //    gasConstantV  Tdot = -sum_i u_i ndot_i / CvTot,   w_j = sum_s nu_s u_s,
@@ -2517,7 +2521,7 @@ bool BatchReactor::rateGradientLaw_(const ReactionSpec& rxn, scalar T,
                                     const sVector& n, scalar V, sVector& grad,
                                     scalar& dT, scalar& dP,
                                     const sVector* g, const sVector* h,
-                                    const KinCtx* ctx) const
+                                    const KinCtx* ctx, const sVector* cFloor) const
 {
     //  The state exactly as rateOfReaction_ hands it to the law.
     sVector concL, xL;
@@ -2529,6 +2533,7 @@ bool BatchReactor::rateGradientLaw_(const ReactionSpec& rxn, scalar T,
     rs.amountPerKmol = 1.0;
     rs.gibbs = (g && !g->empty()) ? g : nullptr;
     rs.enthalpy = (h && !h->empty()) ? h : nullptr;
+    rs.cFloor = cFloor;
     RateGradient rg;
     rg.dc = &grad;
     if (!rxn.law->netRateGradient(*thermo_, rs, rg)) return false;
@@ -2609,8 +2614,8 @@ bool BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
     // ---- the factors f_s and their derivatives f_s' ----------------------
     //  Mirrors rateOfReaction_: a positive order reads max(c, 0); a negative
     //  order reads c (and powerLawFactor refuses c <= 0, as the rate does).
-    //  A power below one at c = 0 has an INFINITE one-sided derivative: that
-    //  reaction is differenced instead (rateGradientFD_), never inf into W.
+    //  A power below one at c = 0 has an INFINITE one-sided derivative: it is
+    //  taken at c_floor (cFloor; the factor lambda below), never inf into W.
     const std::size_t m = rxn.comps.size();
     const auto factor = [&](scalar c, scalar p, bool clamp,
                             std::size_t s, scalar& f, scalar& df) -> bool
@@ -2785,6 +2790,7 @@ void BatchReactor::odeJacobianSparse(const sVector& y, const sVector& f0,
     scalar sumWS = 0.0, sumWE = 0.0;         // sum_j w_j s_j, sum_j w_j E_j
     for (std::size_t j = 0; j < reactions_.size(); ++j)
     {
+        if (static_cast<long>(j) == skipRxn_) continue;   // the audit's exclusion share (C468)
         const auto& rxn = reactions_[j];
         const auto& deps = jacDeps_[j];
         scalar Ej = 0.0, sj = 0.0;
@@ -2793,7 +2799,7 @@ void BatchReactor::odeJacobianSparse(const sVector& y, const sVector& f0,
         {
             scalar dT = 0.0, dP = 0.0;
             const bool ok = (rxn.form == RateForm::Factory)
-                ? rateGradientLaw_(rxn, T, nv, V, grad, dT, dP, &gT, &hT, &kctx)
+                ? rateGradientLaw_(rxn, T, nv, V, grad, dT, dP, &gT, &hT, &kctx, &cFloorV)
                 : rateGradient_(rxn, T, nv, V, grad, dT, &gT, &hT, &kctx, &cFloorV);
             if (ok)
             {
@@ -2909,27 +2915,8 @@ void BatchReactor::wireAnalytic_(solver::ODEAnalyticJacobian& A,
     A.owner = owner;
     A.rowLabel = [this](std::size_t i) { return odeRowLabel(i); };
     A.auditScale = [this](const sVector& y) { return odeJacobianScale(y); };
-    A.auditSingular = [this](const sVector& y, const sVector& sc)
-    {
-        //  A species read at an order in (0, 1) by some reaction, and so near
-        //  zero that the audit's central step (cbrt(eps) s) is not small
-        //  against it: c^p is not differentiable there, the audit's reference
-        //  has no value to hold the analytic slope to (see the capped slope in
-        //  rateGradient_).  Within 300 steps of zero, truncation of the
-        //  central difference exceeds the audit tolerance.
-        const std::size_t n = state_.n.size();
-        std::vector<char> m(y.size(), 0);
-        const scalar hc = 6.0554544523933395e-6;
-        for (const auto& r : reactions_)
-            for (std::size_t s = 0; s < r.comps.size(); ++s)
-            {
-                const bool frac = (r.order[s] > 0.0 && r.order[s] < 1.0)
-                    || (r.reversible && r.orderRev[s] > 0.0 && r.orderRev[s] < 1.0);
-                const std::size_t k = r.comps[s];
-                if (frac && k < n && y[k] < 300.0 * hc * sc[k]) m[k] = 1;
-            }
-        return m;
-    };
+    A.auditExclusions = [this](const sVector& y, const sVector& sc)
+    { return odeAuditExclusions(y, sc); };
     A.sparse = sparseLinear_;
     A.pattern = jacPattern_;
     A.sparseJacobian = [this](scalar, const sVector& y, const sVector& f0,
@@ -2967,6 +2954,85 @@ sVector BatchReactor::odeJacobianScale(const sVector& y) const
     for (std::size_t i = 0; i < n; ++i) s[i] = std::max(std::abs(y[i]), 1.0e-2 * tot);
     s[n] = std::max(std::abs(y[n]), 1.0);
     return s;
+}
+
+//  THE SINGULAR TERMS OF THE JACOBIAN, FOR ITS AUDIT (C468).  A reaction that
+//  reads species k at an order in (0, 1), with n_k within 300 audit steps of
+//  zero: d(c^p)/dc is infinite at zero and the audit's central difference of
+//  c^p is wrong by O((h/c)^2) before that, so no reference can hold the
+//  analytic slope (the Jacobian takes the slope at c_floor, odeJacobianSparse).
+//  Exactly THAT term is taken out: the share of reaction j in column k, as the
+//  analytic Jacobian carries it (J with j in, minus J with j left out) and as
+//  the audit's reference differences it (the SAME stencil, auditColumn, on
+//  f - f_(-j), the reaction's share of the right-hand side).  Every other
+//  reaction's derivative in n_k, and the energy row, stay audited.
+std::vector<solver::ODEAnalyticJacobian::Exclusion>
+BatchReactor::odeAuditExclusions(const sVector& y, const sVector& sc) const
+{
+    std::vector<solver::ODEAnalyticJacobian::Exclusion> out;
+    const std::size_t n = state_.n.size();
+    static const scalar kCbrtEps = std::cbrt(2.220446049250313e-16);
+    std::vector<std::pair<std::size_t, std::size_t>> hits;       // (reaction, species)
+    std::vector<std::size_t> fl;
+    for (std::size_t j = 0; j < reactions_.size(); ++j)
+    {
+        const auto& r = reactions_[j];
+        fl.clear();
+        if (r.form == RateForm::Factory) r.law->fractionalOrderSpecies(fl);
+        else
+            for (std::size_t s = 0; s < r.comps.size(); ++s)
+                if ((r.order[s] > 0.0 && r.order[s] < 1.0)
+                    || (r.reversible && r.orderRev[s] > 0.0 && r.orderRev[s] < 1.0))
+                    fl.push_back(r.comps[s]);
+        for (std::size_t k : fl)
+            if (k < n && y[k] < 300.0 * kCbrtEps * sc[k]) hits.emplace_back(j, k);
+    }
+    if (hits.empty()) return out;
+    struct Skip
+    {
+        const BatchReactor& b; long old;
+        Skip(const BatchReactor& r, long j) : b(r), old(r.skipRxn_) { b.skipRxn_ = j; }
+        ~Skip() { b.skipRxn_ = old; }
+    };
+    const sVector fAll = derivatives_(y);
+    const auto JaAll = odeJacobian(y, fAll, sc);
+    long evals = 0;
+    for (std::size_t j = 0, last = reactions_.size(); j < last; ++j)
+    {
+        bool any = false;
+        for (const auto& h : hits) any = any || h.first == j;
+        if (!any) continue;
+        std::vector<sVector> JaSkip;
+        sVector fSkip;
+        {
+            Skip sk(*this, static_cast<long>(j));
+            fSkip = derivatives_(y);
+            JaSkip = odeJacobian(y, fSkip, sc);
+        }
+        sVector gj0(fAll.size());
+        for (std::size_t i = 0; i < gj0.size(); ++i) gj0[i] = fAll[i] - fSkip[i];
+        const solver::DerivFn gj = [this, j](scalar, const sVector& yy)
+        {
+            const sVector a = derivatives_(yy);
+            sVector b;
+            { Skip sk(*this, static_cast<long>(j)); b = derivatives_(yy); }
+            sVector d(a.size());
+            for (std::size_t i = 0; i < a.size(); ++i) d[i] = a[i] - b[i];
+            return d;
+        };
+        for (const auto& h : hits)
+        {
+            if (h.first != j) continue;
+            solver::ODEAnalyticJacobian::Exclusion e;
+            e.col = h.second;
+            e.dJa.assign(y.size(), 0.0);
+            for (std::size_t i = 0; i < y.size(); ++i)
+                e.dJa[i] = JaAll[i][h.second] - JaSkip[i][h.second];
+            e.dJd = solver::detail::auditColumn(gj, 0.0, y, gj0, h.second, sc[h.second], true, evals);
+            out.push_back(std::move(e));
+        }
+    }
+    return out;
 }
 
 void BatchReactor::announceJacobianAudits_(scalar tRun)

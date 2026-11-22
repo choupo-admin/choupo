@@ -284,6 +284,15 @@ bool ElementaryRate::rateDependencies(std::vector<std::size_t>& species) const
     return true;
 }
 
+void ElementaryRate::fractionalOrderSpecies(std::vector<std::size_t>& species) const
+{
+    species.clear();
+    for (std::size_t i = 0; i < nu_.size(); ++i)
+        if ((order_[i] > 0.0 && order_[i] < 1.0)
+            || (reversible_ && orderRev_[i] > 0.0 && orderRev_[i] < 1.0))
+            species.push_back(i);
+}
+
 //  netRate, differentiated term by term (the same factors, clamps and order):
 //      r = k F - (k/Kc) R,   F = prod c_i^order_i,  R = prod c_i^orderRev_i
 //      dr/dc_i = dk/dc_i (F - R/Kc) + k dF/dc_i - (k/Kc) dR/dc_i,  dk/dc_i = eff_i dk/d[M]
@@ -307,6 +316,10 @@ bool ElementaryRate::netRateGradient(const ThermoPackage& thermo, const RateStat
         f = clamp ? std::pow(cc, p)
                   : Reaction::powerLawFactor(cc, p, thermo.comp(i).name(), who_);
         if (clamp && c < 0.0) { df = 0.0; return true; }
+        //  A power in (0, 1) near zero: the slope at the smallest concentration
+        //  the Jacobian resolves (RateState::cFloor, C468), finite.
+        if (p > 0.0 && p < 1.0 && s.cFloor)
+        { df = p * std::pow(std::max(cc, (*s.cFloor)[i]), p - 1.0); return true; }
         if (cc == 0.0)
         {
             if (p == 1.0) { df = 1.0; return true; }

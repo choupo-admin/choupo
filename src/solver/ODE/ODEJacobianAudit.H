@@ -47,6 +47,12 @@ std::vector<sVector> auditDifference(const DerivFn& f, scalar t,
                                      const sVector& sc, const ODEControls& ctrl,
                                      long& evals);
 
+//- One column of the audit's reference, of any right-hand side g (the whole f,
+//  or one reaction's share of it): the single stencil the reference and the
+//  model's exclusion (ODEAnalyticJacobian::auditExclusions) both use.
+sVector auditColumn(const DerivFn& g, scalar t, const sVector& y, const sVector& g0,
+                    std::size_t j, scalar sj, bool guarded, long& evals);
+
 //- Compare Ja with Jd column by column on each column's scale; record the
 //  result in A.audits and throw (naming owner, row, column) above tolerance.
 void auditAnalytic(const std::vector<sVector>& Ja,

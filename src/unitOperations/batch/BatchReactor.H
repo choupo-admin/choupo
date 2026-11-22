@@ -126,6 +126,8 @@ public:
     //  the stepper; this one serves the fixed-deltaT stiff path (step()).
     const solver::ODEAnalyticJacobian& jacobianAudit() const { return jacAudit_; }
     sVector odeJacobianScale(const sVector& y) const override;
+    std::vector<solver::ODEAnalyticJacobian::Exclusion>
+        odeAuditExclusions(const sVector& y, const sVector& sc) const override;
 
     const BatchState& state() const override { return state_; }
     //- The reactor's whole integrated state IS its holdup (the inventory
@@ -337,6 +339,7 @@ private:
     bool jacobianAnalytic_ = false;         // in effect (default or declared)
     bool jacobianDeclared_ = false;         // `solver { jacobian analytic; }`
     std::vector<char> fdLaw_;               // per reaction: no analytic derivative
+    mutable long skipRxn_ = -1;             // the audit's exclusion: the reaction left out of f and J
     solver::ODEAnalyticJacobian jacAudit_;  // the step() path's audit record
     std::size_t jacAnnounced_ = 0;          // audits already printed
     mutable std::atomic<long> rhsEvals_{0};  // derivatives_ calls (a count only; atomic: the sensitivity threads)
@@ -390,7 +393,8 @@ private:
     bool rateGradientLaw_(const ReactionSpec& rxn, scalar T, const sVector& n,
                           scalar V, sVector& grad, scalar& dT, scalar& dP,
                           const sVector* g, const sVector* h,
-                          const KinCtx* ctx = nullptr) const;
+                          const KinCtx* ctx = nullptr,
+                          const sVector* cFloor = nullptr) const;
     //  The per-reaction difference of the TOTAL derivative of r V (V moving
     //  with n and T at fixed P): every species column, and dT.
     void rateGradientFD_(const ReactionSpec& rxn, scalar T, const sVector& n,

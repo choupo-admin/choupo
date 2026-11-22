@@ -223,46 +223,55 @@ void auditStructure(const std::vector<sVector>& Jd,
 //  shared with Seulex: one audit of an analytic Jacobian, not two.
 namespace detail
 {
+//  ONE COLUMN of the audit's reference, of the function g (the whole right-hand
+//  side, or one reaction's share of it: BatchReactor::auditExclusions): the
+//  central difference, step h = cbrt(eps) s, or -- where a guarded row sits
+//  within h of zero and cannot be stepped below it -- the ONE-SIDED SECOND-ORDER
+//  difference (-3 g0 + 4 g(h) - g(2h)) / 2h at the SMALL step h = sqrt(eps) s
+//  (C468).  Exact for a rate quadratic in the species at zero (2 HO2, 2 OH),
+//  where the two-point forward difference was biased by k h; the small step
+//  keeps an order in (1, 2) at zero (c^1.5) as near its true slope as the
+//  forward difference was.  The audit's reference and the exclusion's share of
+//  it are this ONE function, so what is subtracted is what was differenced.
+sVector auditColumn(const DerivFn& g, scalar t, const sVector& y, const sVector& g0,
+                    std::size_t j, scalar sj, bool guarded, long& evals)
+{
+    static const scalar kCbrtEps = std::cbrt(2.220446049250313e-16);
+    const std::size_t n = y.size();
+    sVector col(n, 0.0), yp = y;
+    const scalar s = std::max(sj, 1.0e-300);
+    const scalar hc = kCbrtEps * s;
+    if (!guarded || y[j] - hc >= 0.0)
+    {
+        yp[j] = y[j] + hc;  const sVector fp = g(t, yp);
+        yp[j] = y[j] - hc;  const sVector fm = g(t, yp);
+        evals += 2;
+        for (std::size_t i = 0; i < n; ++i) col[i] = (fp[i] - fm[i]) / (2.0 * hc);
+    }
+    else
+    {
+        const scalar h = kSqrtEpsR * s;
+        yp[j] = y[j] + h;        const sVector f1 = g(t, yp);
+        yp[j] = y[j] + 2.0 * h;  const sVector f2 = g(t, yp);
+        evals += 2;
+        for (std::size_t i = 0; i < n; ++i)
+            col[i] = (-3.0 * g0[i] + 4.0 * f1[i] - f2[i]) / (2.0 * h);
+    }
+    return col;
+}
+
 std::vector<sVector> auditDifference(const DerivFn& f, scalar t,
                                      const sVector& y, const sVector& f0,
                                      const sVector& sc, const ODEControls& ctrl,
                                      long& evals)
 {
     const std::size_t n = y.size();
-    static const scalar kCbrtEps = std::cbrt(2.220446049250313e-16);
     std::vector<sVector> J(n, sVector(n, 0.0));
-    sVector yp = y;
     for (std::size_t j = 0; j < n; ++j)
     {
-        const scalar s = std::max(sc[j], 1.0e-300);
         const bool guarded = j < ctrl.positiveRows.size() && ctrl.positiveRows[j];
-        scalar h = kCbrtEps * s;
-        if (!guarded || y[j] - h >= 0.0)
-        {
-            yp[j] = y[j] + h;  const sVector fp = f(t, yp);
-            yp[j] = y[j] - h;  const sVector fm = f(t, yp);
-            yp[j] = y[j];
-            evals += 2;
-            for (std::size_t i = 0; i < n; ++i) J[i][j] = (fp[i] - fm[i]) / (2.0 * h);
-        }
-        else
-        {
-            //  ONE-SIDED, SECOND ORDER (C468 defect 2).  The two-point forward
-            //  difference of a rate quadratic in the species at zero (2 HO2 ->,
-            //  2 OH <-, every bimolecular leg of a radical pool) is biased by
-            //  k h: with the audit's row size (1e-2 of the inventory) the step
-            //  h exceeds a trace parent's own amount, and the bias was O(1) --
-            //  kinetics02_h2o2_falloff read d(n_OH)/d(n_OH) -0.206 analytic
-            //  against -0.439 difference, the bias of the reference, not a
-            //  missing term.  The three-point one-sided formula is exact for a
-            //  quadratic and its truncation is O(h^2) f'''.
-            yp[j] = y[j] + h;       const sVector f1 = f(t, yp);
-            yp[j] = y[j] + 2.0 * h; const sVector f2 = f(t, yp);
-            yp[j] = y[j];
-            evals += 2;
-            for (std::size_t i = 0; i < n; ++i)
-                J[i][j] = (-3.0 * f0[i] + 4.0 * f1[i] - f2[i]) / (2.0 * h);
-        }
+        const sVector col = auditColumn(f, t, y, f0, j, sc[j], guarded, evals);
+        for (std::size_t i = 0; i < n; ++i) J[i][j] = col[i];
     }
     return J;
 }
@@ -278,14 +287,12 @@ std::vector<sVector> auditDifference(const DerivFn& f, scalar t,
 //  methods are not W-methods: an incomplete J degrades them silently (the
 //  steps still pass the error test, slower or less accurate), so this
 //  comparison is the only place the omission can be seen.
-static const scalar kEps23 = std::pow(2.220446049250313e-16, 2.0 / 3.0);
-
-void auditAnalytic(const std::vector<sVector>& Ja,
-                   const std::vector<sVector>& Jd,
+void auditAnalytic(const std::vector<sVector>& JaIn,
+                   const std::vector<sVector>& JdIn,
                    scalar t, const sVector& y, const sVector& sc,
                    ODEAnalyticJacobian& A, const sVector* f0)
 {
-    const std::size_t n = Jd.size();
+    const std::size_t n = JdIn.size();
     ODEAnalyticJacobian::Audit rec;
     rec.jacobian = A.jacobians;
     rec.t = t;
@@ -294,13 +301,32 @@ void auditAnalytic(const std::vector<sVector>& Ja,
     //  row's and the column's own size, so kmol/s rows and a K/s row
     //  compare, and the matrix has ONE scale rho = max |J^|.
     const auto sz = [&](std::size_t i) { return std::max(sc[i], 1.0e-300); };
-    std::vector<char> sing;
-    if (A.auditSingular) sing = A.auditSingular(y, sc);
-    sing.resize(n, 0);
+    //  A POWER BELOW ONE NEAR ZERO (C468): the model names the singular terms
+    //  (reaction j's share of column k) and the SAME share is taken out of the
+    //  analytic column and of the reference; the REMAINDER -- every other
+    //  reaction's derivative in n_k, the energy row -- is audited as ever.
+    std::vector<sVector> JaX, JdX;
+    if (A.auditExclusions)
+    {
+        const auto ex = A.auditExclusions(y, sc);
+        if (!ex.empty())
+        {
+            JaX = JaIn; JdX = JdIn;
+            for (const auto& e : ex)
+                for (std::size_t r = 0; r < n; ++r)
+                {
+                    JaX[r][e.col] -= e.dJa[r];
+                    JdX[r][e.col] -= e.dJd[r];
+                }
+            rec.excluded = static_cast<long>(ex.size());
+        }
+    }
+    const std::vector<sVector>& Ja = JaX.empty() ? JaIn : JaX;
+    const std::vector<sVector>& Jd = JdX.empty() ? JdIn : JdX;
     scalar rho = 0.0;
     for (std::size_t r = 0; r < n; ++r)
         for (std::size_t c = 0; c < n; ++c)
-            if (!sing[c] && std::isfinite(Ja[r][c]))
+            if (std::isfinite(Ja[r][c]))
                 rho = std::max(rho, std::max(std::abs(Ja[r][c]), std::abs(Jd[r][c]))
                                     * sz(c) / sz(r));
     const scalar floor = A.columnFloor * rho;
@@ -309,26 +335,19 @@ void auditAnalytic(const std::vector<sVector>& Ja,
         scalar scale = 0.0, diff = 0.0;
         std::size_t rowMax = 0;
         bool nonFinite = false;
-        if (sing[c])       // a power below one at ~0: finite or nothing (C468)
-        {
-            ++rec.singularColumns;
-            for (std::size_t r = 0; r < n; ++r)
-                if (!std::isfinite(Ja[r][c])) { nonFinite = true; rowMax = r; break; }
-            if (!nonFinite) { if (c == 0) rec.worst = 0.0; continue; }
-        }
         for (std::size_t r = 0; r < n; ++r)
         {
             if (!std::isfinite(Ja[r][c]))            // a NaN/inf entry fails
             { if (!nonFinite) rowMax = r; nonFinite = true; continue; }
             const scalar w = sz(c) / sz(r);
             scale = std::max(scale, w * std::max(std::abs(Ja[r][c]), std::abs(Jd[r][c])));
-            //  The reference is a difference of f at steps h_c = cbrt(eps) s_c:
-            //  its own rounding, 8 eps |f0_r| / h_c, in the scaled entry is
-            //  8 eps^(2/3) |f0_r| / s_r.  A disagreement inside it is the
+            //  The reference is a difference of f at steps h_c <= sqrt(eps) s_c (the
+            //  one-sided column's): its own rounding, 4 eps |f0_r| / h_c, in the
+            //  scaled entry is 4 sqrt(eps) |f0_r| / s_r.  A disagreement inside it is the
             //  reference's noise, not a term of the model (C468: an all-zero
             //  analytic column, a zeroth-order rate, against a difference
             //  that read -7.6e-13 of the matrix's own 1e-12 scale).
-            const scalar noise = f0 ? 8.0 * kEps23 * std::abs((*f0)[r]) / sz(r) : 0.0;
+            const scalar noise = f0 ? 4.0 * kSqrtEpsR * std::abs((*f0)[r]) / sz(r) : 0.0;
             const scalar dd = std::max(0.0, w * std::abs(Ja[r][c] - Jd[r][c]) - noise);
             if (dd > diff && !nonFinite) { diff = dd; rowMax = r; }
         }
