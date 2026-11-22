@@ -78,3 +78,29 @@ parameters, third-body efficiencies, notes.  Footnotes 1-3 of Appendix A
   as printed.
 * The SRI row of A2 prints four numbers (0.45 797 979 1.); the fifth SRI
   parameter e is not printed and is taken as 0 in the usual CHEMKIN reading.
+
+## Interpretations (the printed text does not fix them; each is declared in the case too)
+
+* **Troe footnote (A1).**  Printed: F_cent = (1-a) exp(-T/T*) + a exp(-T**/T), a = 0.604, T* = 6927,
+  T** = 132.  Read as the CHEMKIN-II `TROE / a T*** T* /` of the same mechanism family,
+  F_cent = (1-a) exp(-T/6927) + a exp(-T/132); the printed exp(-T**/T) looks like a typesetting
+  inversion, and CHEMKIN's Troe has no form with `a` weighting exp(-T**/T).  A1 is 2CH3 (+M) = C2H6 (+M).
+* **SRI (A2).**  Four numbers printed (0.45 797 979 1.): read as a b c d with e = 0; the engine takes 3 or 5.
+* **Appendix B reaction 10** (2H + M = H2 + M) prints no efficiencies; B11 and B12 supply the H2 and H2O
+  colliders, as A139, where H2 = 0, H2O = 0 (CO2 = 0 too, absent from B's species).  B10 is given H2 = 0, H2O = 0.
+* **Species names.**  The singlet CH2 is `SCH2` in the transcription (CHEMKIN would read `1CH2` as a coefficient)
+  and the component `1CH2` in the case; water, acetylene, ethylene, ethane, HCHO, C2H3_vinyl and
+  C3H3_1propynl are the tree's names for H2O, C2H2, C2H4, C2H6, CH2O, C2H3, C3H3.
+
+## Phase B and C (two cases)
+
+`gen_chemkin.py` writes `mb1989_appA.inp` / `mb1989_appB.inp` from the table; `build_cases.py` runs
+`bin/curate/chemkin_to_choupo.py --reactions-only` on them, renames the reactions to the paper's numbers,
+writes the case-local NASA-9 overrides of the stable species (`build_components.py`) and the dictionaries
+of `tutorials/batch/combustion/nox02_millerbowman_denox` (Fig. 57, Appendix B) and
+`nox03_millerbowman_large` (Appendix A).  All 235 + 73 reactions were imported (0 not written) and Cantera
+loaded all of them (it refuses an unbalanced reaction: every one balances in C, H, O, N).
+`cantera_mech.py` builds the Cantera input from the same transcription with the same NASA-9 Cp (a7 and a8
+set so H(298.15) = dHf and S(298.15) = s_298, as Choupo integrates); `compare_cantera.py` and `timing.py`
+compare the runs; `compare_paper.py` reads Fig. 57 (digitised, +-3 ppm).  Results are in the two case READMEs.
+Not done: the Petersen, Davidson & Hanson 1999 shock-tube point; a PDF rebuild.

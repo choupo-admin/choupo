@@ -1,4 +1,6 @@
-# Phase B stopped: species of Appendix A with no thermochemistry in the tree
+# Phase B stopped (RESOLVED the same day): species of Appendix A with no thermochemistry in the tree
+
+Superseded: a second general computed the nine records (RRHO, `data/standards/thermoTables/RRHO-computed/`, Theory Guide `sec:rrho-thermo`) and the cases below were built on them.  Kept as the record of why the work paused.
 
 Appendix A uses 51 species.  42 resolve today (NASA/TP-2002-211556 table,
 data/standards/components, aliases: C2H2 = acetylene, C2H4 = ethylene,

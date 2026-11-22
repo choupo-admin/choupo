@@ -36196,6 +36196,10 @@ Problems}, 2nd ed., Springer, 1996.
 for atmospheric chemistry problems'', \emph{Atmos.\ Environ.}\
 \textbf{31}, 3151 (1997).
 
+\bibitem{MillerBowman1989} Miller, J. A., \& Bowman, C. T., ``Mechanism and modeling of
+nitrogen chemistry in combustion'', \emph{Prog.\ Energy Combust.\ Sci.}\ \textbf{15} (1989) 287--338,
+doi:10.1016/0360-1285(89)90017-8.
+
 \bibitem{AmestoyDavisDuff1996} Amestoy, P. R., Davis, T. A., \& Duff, I. S.,
 ``An Approximate Minimum Degree Ordering Algorithm'', \emph{SIAM Journal on
 Matrix Analysis and Applications} \textbf{17}(4), 886--905 (1996),
@@ -39312,6 +39316,31 @@ refuses them or because no witness reaches them: FORD on a reversible reaction
 whose sum is not an integer (the engine converts a cm-mol-s $A$ only for an integer
 molecularity, \code{Reaction::chemkinMolecularity}; Cantera converts by the real
 sum -- a known difference).  Validity: ideal-gas mass action, as above.
+
+\paragraph{A mechanism printed in a journal: the large witness (Miller \& Bowman 1989).}\label{sec:mb89-witness}
+Appendix~A of Miller and Bowman~\cite{MillerBowman1989} prints a C/H/O/N
+mechanism of \emph{235 reactions among fifty-one gas species} (five of them fall-offs, 21 with
+a bare third body); its Appendix~B prints the 73-reaction ammonia subset.  Both were
+read from the page images twice (\file{docs/reviews/2026-11-22-miller-bowman/}), written
+as a CHEMKIN transcription, and imported by \file{bin/curate/chemkin\_to\_choupo.py}
+with every reaction named by the paper's own number.  Two readings of the printed
+text are declared, not hidden: the Troe footnote's three numbers are read as the
+CHEMKIN-II \texttt{TROE / a T*** T* /} of the same family, and the SRI line's four
+numbers as $a\,b\,c\,d$ with $e=0$ (Eq.~\eqref{eq:sri}).  Two cases run it:
+\code{nox02\_millerbowman\_denox} (Appendix~B, the paper's own Fig.~57, 17 isothermal
+vessels) reproduces the paper's model curve of the thermal DeNO$_x$ window to 2.9~ppm
+rms (digitised from the page, information only), and
+\code{nox03\_millerbowman\_large} (Appendix~A, adiabatic constant volume) agrees with
+Cantera~3.2 on the same transcription and the same NASA-9 thermochemistry to
+$2\times10^{-7}$ in NO$_x$ and $0.04$~K at the shipped tolerance
+($1.2\times10^{-6}$ at rtol $10^{-11}$).  The nine species no open table carries come
+from Section~\ref{sec:rrho-thermo}; the paper's own heats of formation differ from the
+ATcT values for five of them by $-9$ to $+9$~kJ/mol, and the case keeps one
+thermochemistry.  Recorded limits: the dense linear solve cannot start the clean
+charge (it fails at $t=0$ on a positivity guard at CH$_2$OH) while the sparse one runs
+and agrees with Cantera, and the whole run costs 25 to 300 times the wall time of
+Cantera's CVODES at comparable accuracy (Rosenbrock23, equilibrium constants recomputed
+from NASA-9 at every call).
 
 \subsection{Pressure-dependent rate tables: PLOG (\code{plog})}\label{sec:plog-rate}
 
