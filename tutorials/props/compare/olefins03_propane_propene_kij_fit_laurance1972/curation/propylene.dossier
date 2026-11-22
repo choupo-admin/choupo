@@ -44,12 +44,14 @@ properties
             dataset   "constant/experiments/propane-propene-laurance1972-all.dat";
             sha256    "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";
             provenance measured;
+            system    "propylene + propane";
         }
         {
             role      validation;
             dataset   "constant/experiments/propane-propene-laurance1972-all.dat";
             sha256    "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";
             provenance measured;
+            system    "propylene + propane";
         }
         );
 
@@ -93,12 +95,14 @@ properties
             dataset   "constant/experiments/propane-propene-laurance1972-all.dat";
             sha256    "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";
             provenance measured;
+            system    "propylene + propane";
         }
         {
             role      validation;
             dataset   "constant/experiments/propane-propene-laurance1972-all.dat";
             sha256    "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";
             provenance measured;
+            system    "propylene + propane";
         }
         );
 
@@ -142,12 +146,14 @@ properties
             dataset   "constant/experiments/propane-propene-laurance1972-all.dat";
             sha256    "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";
             provenance measured;
+            system    "propylene + propane";
         }
         {
             role      validation;
             dataset   "constant/experiments/propane-propene-laurance1972-all.dat";
             sha256    "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";
             provenance measured;
+            system    "propylene + propane";
         }
         );
 
@@ -191,12 +197,14 @@ properties
             dataset   "constant/experiments/propane-propene-laurance1972-all.dat";
             sha256    "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";
             provenance measured;
+            system    "propylene + propane";
         }
         {
             role      validation;
             dataset   "constant/experiments/propane-propene-laurance1972-all.dat";
             sha256    "604276ffa5904a88de50eb252f48c98117ec25fe4d7cbfff0e853299d222056b";
             provenance measured;
+            system    "propylene + propane";
         }
         );
 
