@@ -11,7 +11,7 @@ name        isopropoxy;
 formula     C3H7O;
 CAS         3958-66-5;
 InChIKey    ZOAMZFNAPHWBEN-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          59.088;      // g/mol [origin=calculated method=formula-sum]
 Tc          402.59;      // K   [origin=predictive method=joback]
 Pc          52.132;      // bar [origin=predictive method=joback]

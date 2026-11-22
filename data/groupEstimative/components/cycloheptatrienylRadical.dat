@@ -11,7 +11,7 @@ name        cycloheptatrienylRadical;
 formula     C7H7;
 CAS         3551-27-7;
 InChIKey    WIQYRPSOJMHAHR-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          91.133;      // g/mol [origin=calculated method=formula-sum]
 Tc          605.74;      // K   [origin=predictive method=joback]
 Pc          44.385;      // bar [origin=predictive method=joback]

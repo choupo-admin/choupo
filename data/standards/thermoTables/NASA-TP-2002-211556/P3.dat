@@ -10,7 +10,7 @@ name           P3;
 formula        P3;
 CAS            n/a;
 MW             92.92128;       // kg/kmol, appendix D record line
-role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+role           gasOnly;       // free radical (odd electron count 45)
 tags           ( gasPhase thermoTable );
 nasaEntry      "P3";
 reviewStatus   interim;

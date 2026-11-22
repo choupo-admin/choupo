@@ -939,6 +939,7 @@ scalar ThermoPackage::K(std::size_t i, scalar T, scalar P,
                         const sVector& x, const sVector& y) const
 {
     if (components_[i].isGasOnly()) return kNoLiquidK;   // C458: non-condensable
+    if (absentNoLiquidModel(i, x, y)) return kNoLiquidK;
     auto gam = activity_->gamma(T, x);
     auto phi = eos_     ->phi  (T, P, y);
     //  The associated ideal-gas vapour (one home: PsatLiquidReference +
@@ -991,7 +992,15 @@ sVector ThermoPackage::Kvec(scalar T, scalar P,
         const auto phiL = eos_->phiLiquid(T, P, x);
         sVector Kpp(n());
         for (std::size_t i = 0; i < n(); ++i)
-            Kpp[i] = components_[i].isGasOnly() ? kNoLiquidK      // C458
+        {
+            if (components_[i].hasNoLiquidModel() && !pureFluid_.count(i)
+                && !absentNoLiquidModel(i, x, y))
+                components_[i].refuseNoLiquidModel(          // C458 slice 2
+                    "its liquid-root fugacity coefficient (a phi-phi K-value)");
+        }
+        for (std::size_t i = 0; i < n(); ++i)
+            Kpp[i] = (components_[i].isGasOnly() || absentNoLiquidModel(i, x, y))
+                   ? kNoLiquidK      // C458
                    : (phiV[i] > 0.0) ? phiL[i] / phiV[i] : 0.0;
         return Kpp;
     }
@@ -1022,6 +1031,7 @@ sVector ThermoPackage::KvecAtGamma(scalar T, scalar P,
         const std::string& role = components_[i].role();
         if (components_[i].isNonvolatile()) { K[i] = 0.0; continue; }
         if (components_[i].isGasOnly())     { K[i] = kNoLiquidK; continue; }
+        if (absentNoLiquidModel(i, x, y))   { K[i] = kNoLiquidK; continue; }
 
         // Solutes (CO2, NH3, O2, H2S,...) follow Henry's law when an
         // entry exists for (solute, solvent).  Otherwise fall back to
@@ -1293,11 +1303,12 @@ sVector ThermoPackage::stageK(scalar T, scalar P, const sVector& zStage,
     return K;
 }
 
-sVector ThermoPackage::Kvec_Raoult(scalar T, scalar P) const
+sVector ThermoPackage::Kvec_Raoult(scalar T, scalar P, const sVector* z) const
 {
     sVector K(n());
     for (std::size_t i = 0; i < n(); ++i)
     {
+        if (z && absentNoLiquidModel(i, *z, *z)) { K[i] = kNoLiquidK; continue; }
         const std::string& role = components_[i].role();
         if (components_[i].isNonvolatile()) { K[i] = 0.0; continue; }
         if (components_[i].isGasOnly())     { K[i] = kNoLiquidK; continue; }
@@ -1314,6 +1325,26 @@ sVector ThermoPackage::Kvec_Raoult(scalar T, scalar P) const
         K[i] = Psat(i, T) / P;
     }
     return K;
+}
+
+sVector ThermoPackage::saturatedLiquidBasis(const sVector& x,
+                                            const std::string& state) const
+{
+    refuseGasOnlyWithoutVapour(x, state);
+    bool any = false;
+    for (std::size_t i = 0; i < n() && i < x.size(); ++i)
+        if (components_[i].isGasOnly() && x[i] > 0.0) any = true;
+    if (!any) return x;
+    sVector b = x;
+    scalar s = 0.0;
+    for (std::size_t i = 0; i < b.size(); ++i)
+    {
+        if (i < n() && components_[i].isGasOnly()) b[i] = 0.0;
+        s += b[i];
+    }
+    if (!(s > 0.0)) return x;
+    for (auto& v : b) v /= s;
+    return b;
 }
 
 void ThermoPackage::refuseGasOnlyWithoutVapour(const sVector& z,
@@ -1334,13 +1365,33 @@ void ThermoPackage::refuseGasOnlyWithoutVapour(const sVector& z,
     //  condensate, flash23).  Above 1/kNoLiquidK the cap alone makes
     //  g(V=0) > 0, which is why the flash's subcooled verdict never needs
     //  this call.
-    std::string names;
+    //
+    //  THE TRACE LEVEL (point 6, slice 2).  PRESENT means above
+    //  kGasOnlyTrace (1 ppm), not above the cap's own residue: a radical
+    //  trace a mechanism leaves (1e-10) carried into a later bubble point is
+    //  not a state the model should refuse at the edge.  At or below the
+    //  level the species is announced once (saturatedLiquidBasis drops it
+    //  from the bubble sum; an LL/SLE split carries it on its ideal-gas leg).
+    std::string names, traces;
     for (std::size_t i = 0; i < n() && i < z.size(); ++i)
-        if (z[i] > 1.0 / kNoLiquidK && components_[i].isGasOnly())
+    {
+        if (!components_[i].isGasOnly() || !(z[i] > 0.0)) continue;
+        if (z[i] > kGasOnlyTrace)
             names += (names.empty() ? "'" : ", '") + components_[i].name() + "'";
+        else if (z[i] > 1.0 / kNoLiquidK)
+            traces += (traces.empty() ? "'" : ", '") + components_[i].name() + "'";
+    }
+    if (names.empty() && !traces.empty()
+        && AdvisoryLog::instance().add("thermo", "info",
+               "gasOnlyTrace " + traces,
+               "gas-only trace " + traces + " (<= 1e-6) in " + state
+               + ": carried as a trace, not refused"))
+        std::cerr << "[thermo] gas-only trace " << traces << " (mole fraction"
+                     " <= " << kGasOnlyTrace << ") in " << state << ": not"
+                     " refused (announced once)\n";
     if (names.empty()) return;
     throw std::runtime_error(
-        "gas-only species " + names + " (role radical: it exists only in the"
+        "gas-only species " + names + " (role gasOnly: it exists only in the"
         " gas phase, DEV.md 4c C458) present in " + state + ", which has no"
         " vapour phase to hold it.  A gas-only species is never sent to a"
         " liquid or a solid, and it has no condensed-phase data to price one."

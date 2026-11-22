@@ -16,7 +16,7 @@ formula     I3Si;
 CAS         74912-20-2;
 InChIKey    BWOVOXIQSOKSAH-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
+role        gasOnly;
 MW          408.785;      // g/mol [origin=calculated method=formula-sum]
 Tc          795.20;      // K   [origin=predictive method=joback]
 Pc          54.066;      // bar [origin=predictive method=joback]

@@ -11,7 +11,7 @@ name        prenyl;
 formula     C5H9;
 CAS         29791-12-6;
 InChIKey    ICPOKTZORRQGLK-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          69.127;      // g/mol [origin=calculated method=formula-sum]
 Tc          487.17;      // K   [origin=predictive method=joback]
 Pc          37.870;      // bar [origin=predictive method=joback]

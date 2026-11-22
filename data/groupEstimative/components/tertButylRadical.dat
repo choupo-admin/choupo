@@ -11,7 +11,7 @@ name        tertButylRadical;
 formula     C4H9;
 CAS         1605-73-8;
 InChIKey    IIVWHGMLFGNMOW-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          57.116;      // g/mol [origin=calculated method=formula-sum]
 Tc          462.86;      // K   [origin=predictive method=joback]
 Pc          40.518;      // bar [origin=predictive method=joback]

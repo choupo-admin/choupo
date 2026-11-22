@@ -10,7 +10,7 @@ name           BaCL;
 formula        BaCl;
 CAS            n/a;
 MW             172.78;       // kg/kmol, appendix D record line
-role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+role           gasOnly;       // free radical (odd electron count 73)
 tags           ( gasPhase thermoTable );
 nasaEntry      "BaCL";
 reviewStatus   interim;

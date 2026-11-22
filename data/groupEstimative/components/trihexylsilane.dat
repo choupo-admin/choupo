@@ -16,7 +16,6 @@ formula     C18H39Si;
 CAS         2929-52-4;
 InChIKey    ISPSHPOFLYFIRR-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          283.595;      // g/mol [origin=calculated method=formula-sum]
 Tc          772.66;      // K   [origin=predictive method=joback]
 Pc          10.950;      // bar [origin=predictive method=joback]

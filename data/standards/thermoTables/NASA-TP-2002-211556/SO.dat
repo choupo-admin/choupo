@@ -10,7 +10,7 @@ name           SO;
 formula        SO;
 CAS            n/a;
 MW             48.0644;       // kg/kmol, appendix D record line
-role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+role           gasOnly;       // listed (biradical or transient): sulfur monoxide, triplet ground state, a transient that disproportionates when condensed
 tags           ( gasPhase thermoTable );
 nasaEntry      "SO";
 reviewStatus   interim;

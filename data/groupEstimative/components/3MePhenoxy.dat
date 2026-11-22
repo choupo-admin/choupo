@@ -16,7 +16,7 @@ formula     C7H7O;
 CAS         41115-75-7;
 InChIKey    UGRMITBWUVWUEB-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
+role        gasOnly;
 MW          107.132;      // g/mol [origin=calculated method=formula-sum]
 Tc          600.04;      // K   [origin=predictive method=joback]
 Pc          40.986;      // bar [origin=predictive method=joback]

@@ -100,7 +100,8 @@ public:
     //    max(Pr, 1e-300), the same clamp as Troe's.  EMPTY => not SRI.  troe
     //    and sri together are refused where they are read (checkFalloffShape).
     static scalar falloffRate(scalar kLow, scalar kInf, scalar M, scalar T,
-                              const sVector& troe, const sVector& sri = sVector());
+                              const sVector& troe, const sVector& sri = sVector(),
+                              const std::string& who = std::string());
     //- Refuse by name a broadening that is not one of the forms above:
     //  `troe` of 3 or 4 numbers, `sri` of 3 or 5 with c > 0 and d > 0, never
     //  both (the reaction would be read as one and the other silently lost).
@@ -127,7 +128,8 @@ public:
     static FalloffDerivs falloffRateDerivs(scalar kLow, scalar kInf, scalar M,
                                            scalar T, const sVector& troe,
                                            scalar dlnkLow, scalar dlnkInf,
-                                           const sVector& sri = sVector());
+                                           const sVector& sri = sVector(),
+                                           const std::string& who = std::string());
 
     // -- d ln k / dT of a modified Arrhenius leg:  b/T + Ea/(R T^2) ---------
     static scalar dlnModifiedArrheniusdT(scalar b, scalar Ea, scalar T);

@@ -11,7 +11,7 @@ name        2PentylRadical;
 formula     C5H11;
 CAS         2492-34-4;
 InChIKey    HAMMRVGIRNLATI-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          71.143;      // g/mol [origin=calculated method=formula-sum]
 Tc          483.37;      // K   [origin=predictive method=joback]
 Pc          35.771;      // bar [origin=predictive method=joback]

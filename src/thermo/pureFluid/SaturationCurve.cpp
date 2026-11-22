@@ -143,6 +143,9 @@ scalar saturationPressure(const Component& c, const PureFluidModel* pf,
     //  NO MODEL AT ALL: refuse by name, never dereference an absent
     //  correlation (`Component::vp()` does not check, and a null model is a
     //  segmentation fault no caller's `catch` can see).
+    if (c.hasNoLiquidModel())
+        c.refuseNoLiquidModel("its saturation pressure at T = "
+                              + std::to_string(T_K) + " K");
     if (!c.hasVaporPressure())
     {
         std::ostringstream m;

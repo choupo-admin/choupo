@@ -16,7 +16,6 @@ formula     C6H15O3Si;
 CAS         998-30-1;
 InChIKey    PKDCQJMRWCHQOH-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          163.268;      // g/mol [origin=calculated method=formula-sum]
 Tc          573.55;      // K   [origin=predictive method=joback]
 Pc          27.099;      // bar [origin=predictive method=joback]

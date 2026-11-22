@@ -11,7 +11,7 @@ name        methylAminoRadical;
 formula     CH4N;
 CAS         49784-84-1;
 InChIKey    YKPQUSLRUFLVDA-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          30.05;      // g/mol [origin=calculated method=formula-sum]
 Tb          304.86;      // K   [origin=predictive method=joback]
 HvapTb      29842.0;      // J/mol [origin=predictive method=joback]

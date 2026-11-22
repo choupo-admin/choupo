@@ -11,7 +11,7 @@ name        1Methyl2Butenyl;
 formula     C5H9;
 CAS         51685-67-7;
 InChIKey    GSMCDXGKZOUAET-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          69.127;      // g/mol [origin=calculated method=formula-sum]
 Tc          497.20;      // K   [origin=predictive method=joback]
 Pc          38.104;      // bar [origin=predictive method=joback]

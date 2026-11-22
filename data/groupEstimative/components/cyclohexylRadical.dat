@@ -11,7 +11,7 @@ name        cyclohexylRadical;
 formula     C6H11;
 CAS         3170-58-9;
 InChIKey    YUDRVAHLXDBKSR-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          83.154;      // g/mol [origin=calculated method=formula-sum]
 Tc          566.42;      // K   [origin=predictive method=joback]
 Pc          42.275;      // bar [origin=predictive method=joback]

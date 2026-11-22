@@ -16,7 +16,6 @@ formula     Br3Si;
 CAS         7789-57-3;
 InChIKey    KRCZLPQTJDWPKN-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          267.797;      // g/mol [origin=calculated method=formula-sum]
 Tc          642.25;      // K   [origin=predictive method=joback]
 Pc          84.633;      // bar [origin=predictive method=joback]

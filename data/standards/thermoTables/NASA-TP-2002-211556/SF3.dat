@@ -10,7 +10,7 @@ name           SF3;
 formula        SF3;
 CAS            n/a;
 MW             89.06021;       // kg/kmol, appendix D record line
-role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+role           gasOnly;       // free radical (odd electron count 43)
 tags           ( gasPhase thermoTable );
 nasaEntry      "SF3";
 reviewStatus   interim;

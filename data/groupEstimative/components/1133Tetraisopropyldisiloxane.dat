@@ -16,7 +16,6 @@ formula     C12H28OSi2;
 CAS         18043-71-5;
 InChIKey    GSKVLVXXJRJNAN-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          244.525;      // g/mol [origin=calculated method=formula-sum]
 Tc          675.81;      // K   [origin=predictive method=joback]
 Pc          15.911;      // bar [origin=predictive method=joback]

@@ -16,7 +16,7 @@ formula     C6H5O;
 CAS         2122-46-5;
 InChIKey    KHUXNRRPPZOJPT-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
+role        gasOnly;
 MW          93.105;      // g/mol [origin=calculated method=formula-sum]
 Tc          572.06;      // K   [origin=predictive method=joback]
 Pc          47.497;      // bar [origin=predictive method=joback]

@@ -193,7 +193,9 @@ public:
     sVector gammaForK(scalar T_K, const sVector& x) const;
     sVector KvecAtGamma(scalar T_K, scalar P_Pa, const sVector& x,
                         const sVector& y, const sVector& gamma) const;
-    sVector Kvec_Raoult(scalar T_K, scalar P_Pa) const;
+    //  `z`, when given, is the composition: a gasData species absent from it takes the cap K
+    //  (a zero flow never refuses a plant); present, it is refused by name.
+    sVector Kvec_Raoult(scalar T_K, scalar P_Pa, const sVector* z = nullptr) const;
 
     //  ---- A GAS-ONLY SPECIES (DEV.md 4c C458) ---------------------------
     //
@@ -205,13 +207,36 @@ public:
     //  keeps it in the vapour and a feed carrying it cannot be a subcooled
     //  liquid.  A `role nonvolatile;` salt or sugar keeps K = 0.
     static constexpr scalar kNoLiquidK = 1.0e12;
+    //  THE TRACE LEVEL (C458 slice 2, point 6).  A gas-only species at or
+    //  below this mole fraction in a state with no vapour does not make the
+    //  state refuse: it is a trace, announced once.  1e-6 (one ppm) because a
+    //  step that drops it from a saturated liquid and renormalises moves the
+    //  other mole fractions by at most 1e-6 relative -- below the convergence
+    //  tolerances the saturation solvers run at (1e-6 and tighter on T) --
+    //  while the old edge (1/kNoLiquidK = 1e-12, the cap's own residue in a
+    //  condensate) refused a 1e-10 radical trace a mechanism leaves
+    //  (found by review of e537d5766).  Above it the refusal stands.
+    static constexpr scalar kGasOnlyTrace = 1.0e-6;
+    //  A species with NO liquid model (Component::hasNoLiquidModel) that is ABSENT from
+    //  the state (x_i and y_i both <= 0) is a non-condensable at no cost: it takes the cap K
+    //  instead of refusing.  Present, the K site reaches Psat and refuses by name.
+    bool absentNoLiquidModel(std::size_t i, const sVector& x, const sVector& y) const
+    {
+        return components_[i].hasNoLiquidModel() && !pureFluid_.count(i)
+            && !(i < x.size() && x[i] > 0.0) && !(i < y.size() && y[i] > 0.0);
+    }
     //  A state with NO vapour phase to hold a gas-only species -- a
     //  saturated liquid, a liquid-liquid or liquid-solid split, a package
     //  that declares no vapour phase -- is refused HERE, naming the species,
     //  the state and the remedy.  `z` is the state's overall composition; a
-    //  gas-only species at or below 1/kNoLiquidK is the trace the cap itself
-    //  leaves in a condensate, not present.  `state` says which state, in the
+    //  gas-only species at or below kGasOnlyTrace (1e-6) is a trace, announced
+    //  once and not refused (the cap's own residue in a condensate, 1e-12, is far below).  `state` says which state, in the
     //  caller's words.  Returns normally when no gas-only species is present.
+    //  The liquid of a saturation search (bubble point/pressure): refuses
+    //  above kGasOnlyTrace and returns `x` with any gas-only trace dropped and
+    //  renormalised (announced once), so the cap K = 1e12 never enters the
+    //  bubble sum.  Byte-identical to `x` when no gas-only species is there.
+    sVector saturatedLiquidBasis(const sVector& x, const std::string& state) const;
     void refuseGasOnlyWithoutVapour(const sVector& z,
                                     const std::string& state) const;
 

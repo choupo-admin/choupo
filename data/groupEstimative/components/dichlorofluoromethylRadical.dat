@@ -11,7 +11,7 @@ name        dichlorofluoromethylRadical;
 formula     CCl2F;
 CAS         1691-90-3;
 InChIKey    BAPZCSMFCUVUHW-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          101.909;      // g/mol [origin=calculated method=formula-sum]
 Tc          478.21;      // K   [origin=predictive method=joback]
 Pc          50.875;      // bar [origin=predictive method=joback]

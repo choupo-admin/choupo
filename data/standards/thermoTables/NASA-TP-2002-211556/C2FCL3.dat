@@ -10,7 +10,7 @@ name           C2FCL3;
 formula        C2FCl3;
 CAS            n/a;
 MW             149.3788;       // kg/kmol, appendix D record line
-role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+role           gasData;       // closed-shell molecule (or noble gas): ideal-gas data only, no liquid model
 tags           ( gasPhase thermoTable );
 nasaEntry      "C2FCL3";
 reviewStatus   interim;

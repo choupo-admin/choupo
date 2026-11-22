@@ -16,7 +16,7 @@ formula     C3H7S;
 CAS         4985-58-4;
 InChIKey    HKPUZZOQHBYMPZ-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
+role        gasOnly;
 MW          75.149;      // g/mol [origin=calculated method=formula-sum]
 Tc          423.73;      // K   [origin=predictive method=joback]
 Pc          44.802;      // bar [origin=predictive method=joback]

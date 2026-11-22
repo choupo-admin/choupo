@@ -16,7 +16,6 @@ formula     C11H19OSi2;
 CAS         34239-00-4;
 InChIKey    VNZYEAGIMHINPF-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          223.442;      // g/mol [origin=calculated method=formula-sum]
 Tc          719.41;      // K   [origin=predictive method=joback]
 Pc          21.217;      // bar [origin=predictive method=joback]

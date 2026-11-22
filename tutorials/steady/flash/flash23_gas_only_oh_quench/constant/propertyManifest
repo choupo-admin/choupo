@@ -30,7 +30,7 @@ propertyManifest
         "parameters/Henry/N2-water.dat"  "6e597edbafb3f88076dac89a14cfa53d85b9bc2df19cc088d9b8171fdc5fd765";
         "parameters/Henry/OH-water.dat"  "cf7c83d838a3966d67f7d420131574085908a12969f2a70a49052856d425a2d2";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-        "thermoTables/NASA-TP-2002-211556/OH.dat"  "53ace56643e243202e9545e63a2467a1d390f45e9cbcb812294b5b66b49bafd5";
+        "thermoTables/NASA-TP-2002-211556/OH.dat"  "0a01f60adbf955c982080d3c5965e7fee2e947b383fcefc3f589da8207a4dd80";
         "utilities/coolingWater.dat"  "1a102e5d6af04d64dad773826b58c3ceb20d872d98c2cfb39be5641d0aa0f153";
     }
 }

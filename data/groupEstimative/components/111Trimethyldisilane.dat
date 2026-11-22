@@ -16,7 +16,6 @@ formula     C3H9Si2;
 CAS         18365-32-7;
 InChIKey    HUYHHHVTBNJNFM-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          101.275;      // g/mol [origin=calculated method=formula-sum]
 Tc          431.66;      // K   [origin=predictive method=joback]
 Pc          38.388;      // bar [origin=predictive method=joback]

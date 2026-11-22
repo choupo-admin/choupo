@@ -16,7 +16,6 @@ formula     C10H16Si2;
 CAS         17985-72-7;
 InChIKey    MUUXBTFQEXVEEI-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          192.408;      // g/mol [origin=calculated method=formula-sum]
 Tc          674.85;      // K   [origin=predictive method=joback]
 Pc          24.654;      // bar [origin=predictive method=joback]

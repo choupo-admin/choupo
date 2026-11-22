@@ -16,7 +16,6 @@ formula     C5H15OSi2;
 CAS         1438-82-0;
 InChIKey    XUKFPAQLGOOCNJ-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          147.344;      // g/mol [origin=calculated method=formula-sum]
 Tc          512.43;      // K   [origin=predictive method=joback]
 Pc          27.383;      // bar [origin=predictive method=joback]

@@ -16,7 +16,6 @@ formula     BrSi;
 CAS         13465-73-1;
 InChIKey    FTYZKCCJUXJFLT-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          107.989;      // g/mol [origin=calculated method=formula-sum]
 Tc          444.24;      // K   [origin=predictive method=joback]
 Pc          77.353;      // bar [origin=predictive method=joback]

@@ -11,7 +11,7 @@ name        1HeptylRadical;
 formula     C7H15;
 CAS         3356-67-0;
 InChIKey    AQMHNCQZLQUNJI-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          99.197;      // g/mol [origin=calculated method=formula-sum]
 Tc          517.07;      // K   [origin=predictive method=joback]
 Pc          28.475;      // bar [origin=predictive method=joback]

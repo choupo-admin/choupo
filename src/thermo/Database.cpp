@@ -339,6 +339,25 @@ DictPtr Database::componentDict(const std::string& name) const
             const fs::path cand = fs::path(root_) / "standards" / "thermoTables" / t / (name + ".dat");
             if (fs::exists(cand)) { standard = cand; tableHit = t; break; }
         }
+    //  C458 slice 2, point 4.  A case-local record with `overlayOf` patches a
+    //  base record; a species that lives ONLY in a thermo table has a base
+    //  the overlay never merges with (the record would be read alone, its
+    //  `overlayOf` key and all, with the table's data silently absent).
+    //  Refused by name instead.
+    if (!sealed && !caseLocal.empty() && !fs::exists(standard))
+        for (const auto& t : speciesTables())
+        {
+            const fs::path cand = fs::path(root_) / "standards" / "thermoTables" / t / (name + ".dat");
+            if (!fs::exists(cand)) continue;
+            if (Dictionary::fromFile(caseLocal.string())->found("overlayOf"))
+                throw std::runtime_error(
+                    "component overlay " + caseLocal.string() + ": `overlayOf` on '"
+                    + name + "', a species that lives only in the thermo table '"
+                    + t + "'.  An overlay of a table species is not supported"
+                    " (the overlay would not merge with the table record).  Copy"
+                    " the table's record whole into constant/components/ and edit"
+                    " it (drop `overlayOf`), or use the table's record as it is.");
+        }
     if (!tableHit.empty())
     {
         static std::set<std::string> said;

@@ -329,8 +329,9 @@ void auditAnalytic(const std::vector<sVector>& Ja,
             " missing from, or wrong in, its derivative.  A Rosenbrock"
             " method is not a W-method -- with a wrong Jacobian it would"
             " still take steps, silently slower or less accurate.  Refusing;"
-            " drop `jacobian analytic;` to integrate on the finite-difference"
-            " Jacobian, or fix the derivative.");
+            " write `jacobian finiteDifference;` in the unit's `solver {}`"
+            " block to integrate on the finite-difference Jacobian (analytic"
+            " is the default), or fix the derivative.");
     }
 }
 //  ---- Rodas4: the six stages --------------------------------------------

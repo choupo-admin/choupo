@@ -11,7 +11,7 @@ name        pHydroxybenzyl;
 formula     C7H7O;
 CAS         88170-17-6;
 InChIKey    ZVEWFTICTSQBDM-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          107.132;      // g/mol [origin=calculated method=formula-sum]
 Tc          691.14;      // K   [origin=predictive method=joback]
 Pc          51.461;      // bar [origin=predictive method=joback]

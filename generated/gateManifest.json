@@ -1103,8 +1103,8 @@
     },
     "check_spray_dryer_solvents": {
       "exit": 0,
-      "claim": "check_spray_dryer_solvents: OK -- a spray dryer fed several solvents loses none; (a) acetone+water closes, T_out 402.01 K, dew sum 0.0139; (b) ethanol+water closes; (c) starved exhaust saturated at 310.87 K, residual water 68.1 % vs acetone 21.3 % of fed; (d) sorption refused; (e) langrishKockel refused; (f) no-outlet component refused; (g) one solvent keeps its route",
-      "seconds": 0.1
+      "claim": "check_spray_dryer_solvents: OK -- a spray dryer fed several solvents loses none; (a) acetone+water closes, T_out 402.01 K, dew sum 0.0144; (b) ethanol+water closes; (c) starved exhaust saturated at 310.87 K, residual water 68.1 % vs acetone 21.3 % of fed; (d) sorption refused; (e) langrishKockel refused; (f) no-outlet component refused; (g) one solvent keeps its route",
+      "seconds": 1.9
     },
     "check_phase_split_scan": {
       "exit": 0,
@@ -1829,7 +1829,7 @@
     "check_thermo_tables": {
       "exit": 0,
       "claim": "check_thermo_tables: OK  (a) 894 files = INDEX; (b) 894 records held to the report; (c) 894 records, one home vs components/; (d) witness reads the table only when declared, refuses it undeclared and an unknown table; (e) Database.cpp guard present.  Domain: the NASA-TP-2002-211556 home only; not that the report is right, not curator read-back.",
-      "seconds": 1.5
+      "seconds": 1.3
     },
     "check_elementary_rates": {
       "exit": 0,
@@ -1858,8 +1858,8 @@
     },
     "check_gas_only": {
       "exit": 0,
-      "claim": "check_gas_only: OK -- a gas-only species stays in the vapour: flash23's OH leaves whole in the offgas, the 330 K condensate holds it at 1.0e-15 (cap trace <= 1e-12); a bubble point of the feed is refused by name; a `role nonvolatile` OH (the pre-C458 record) is seen",
-      "seconds": 0.4
+      "claim": "check_gas_only: OK -- a gas-only species stays in the vapour: flash23's OH leaves whole in the offgas, the 330 K condensate holds it at 1.0e-15 (cap trace <= 1e-12); a bubble point of the feed is refused by name; a `role nonvolatile` OH (the pre-C458 record) is seen; the roles on disk are the formula's (233 gasOnly of 894); a gasData species is refused where a liquid is asked, by name; VLLE keeps OH wholly in the vapour; a 5e-7 trace is carried, 2e-6 refused; an overlay of a table species and a non-positive SRI W are refused by name",
+      "seconds": 1.4
     },
     "check_lesson_absence_claims": {
       "exit": 0,

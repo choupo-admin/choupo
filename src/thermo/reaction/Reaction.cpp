@@ -70,12 +70,25 @@ scalar Reaction::thirdBodyConcentration(const sVector& conc,
 //  The SRI broadening (Stewart, Larson & Golden 1989; CHEMKIN-II; Cantera's
 //  SriRate): F = d [a exp(-b/T) + exp(-T/c)]^X T^e, X = 1/(1 + (log10 Pr)^2).
 //  Returns ln F; `W` and `p` (log10 Pr after the clamp) for the derivative.
-static scalar sriLnF(scalar Pr, scalar T, const sVector& sri, scalar& W, scalar& p)
+static scalar sriLnF(scalar Pr, scalar T, const sVector& sri, scalar& W, scalar& p,
+                     const std::string& who)
 {
     const scalar a = sri[0], b = sri[1], c = sri[2];
     const scalar d = (sri.size() >= 5) ? sri[3] : 1.0;
     const scalar e = (sri.size() >= 5) ? sri[4] : 0.0;
     W = a * std::exp(-b / T) + std::exp(-T / c);
+    //  W must be positive AT EVALUATION: checkFalloffShape tests it at 300 K
+    //  only, and with a < 0 the sum can cross zero at another T, where ln W
+    //  is NaN and the NaN walks silently through the rate (review of
+    //  e537d5766, point 5).
+    if (!(W > 0.0))
+        throw std::runtime_error((who.empty() ? std::string("SRI fall-off") : who)
+            + ": `sri` W = a exp(-b/T) + exp(-T/c) = " + std::to_string(W)
+            + " is not positive at T = " + std::to_string(T) + " K (a = "
+            + std::to_string(a) + ", b = " + std::to_string(b) + ", c = "
+            + std::to_string(c) + "): ln W, hence the rate, is undefined"
+            " there.  Keep the reaction inside the temperatures where W > 0,"
+            " or correct the SRI coefficients.");
     p = std::log10(std::max(Pr, 1.0e-300));
     const scalar X = 1.0 / (1.0 + p * p);
     return std::log(d) + X * std::log(W) + e * std::log(T);
@@ -105,7 +118,8 @@ void Reaction::checkFalloffShape(const sVector& troe, const sVector& sri,
 }
 
 scalar Reaction::falloffRate(scalar kLow, scalar kInf, scalar M, scalar T,
-                             const sVector& troe, const sVector& sri)
+                             const sVector& troe, const sVector& sri,
+                             const std::string& who)
 {
     // Reduced pressure and the Lindemann blend.
     if (kInf <= 0.0) return 0.0;
@@ -115,7 +129,7 @@ scalar Reaction::falloffRate(scalar kLow, scalar kInf, scalar M, scalar T,
     if (!sri.empty())
     {
         scalar W, p;
-        return lindemann * std::exp(sriLnF(Pr, T, sri, W, p));
+        return lindemann * std::exp(sriLnF(Pr, T, sri, W, p, who));
     }
     if (troe.size() < 3) return lindemann;          // Lindemann (F = 1)
 
@@ -162,7 +176,8 @@ scalar Reaction::dlnModifiedArrheniusdT(scalar b, scalar Ea, scalar T)
 Reaction::FalloffDerivs Reaction::falloffRateDerivs(scalar kLow, scalar kInf, scalar M,
                                                     scalar T, const sVector& troe,
                                                     scalar dlnkLow, scalar dlnkInf,
-                                                    const sVector& sri)
+                                                    const sVector& sri,
+                                                    const std::string& who)
 {
     FalloffDerivs d;
     if (kInf <= 0.0) return d;                          // k = 0 identically
@@ -180,7 +195,7 @@ Reaction::FalloffDerivs Reaction::falloffRateDerivs(scalar kLow, scalar kInf, sc
         //  SRI, branch for branch with falloffRate (the same clamp of Pr).
         static const scalar ln10s = std::log(10.0);
         scalar W, p;
-        const scalar F = std::exp(sriLnF(Pr, T, sri, W, p));
+        const scalar F = std::exp(sriLnF(Pr, T, sri, W, p, who));
         const bool clamped = !(Pr > 1.0e-300);
         const scalar a = sri[0], b = sri[1], c = sri[2];
         const scalar e = (sri.size() >= 5) ? sri[4] : 0.0;

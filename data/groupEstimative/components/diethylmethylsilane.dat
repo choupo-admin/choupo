@@ -16,7 +16,6 @@ formula     C5H13Si;
 CAS         760-32-7;
 InChIKey    JQZUMFHYRULBEN-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          101.244;      // g/mol [origin=calculated method=formula-sum]
 Tc          480.55;      // K   [origin=predictive method=joback]
 Pc          31.776;      // bar [origin=predictive method=joback]

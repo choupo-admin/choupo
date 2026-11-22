@@ -1255,7 +1255,7 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
             {
                 const scalar kInf = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
                 const scalar kLow = Reaction::modifiedArrheniusRate(rxn.A_low, rxn.b_low, rxn.Ea_low, T);
-                k = Reaction::falloffRate(kLow, kInf, M, T, rxn.troe, rxn.sri);
+                k = Reaction::falloffRate(kLow, kInf, M, T, rxn.troe, rxn.sri, rxn.name);
             }
             break;
         }
@@ -2346,9 +2346,9 @@ bool BatchReactor::rateGradient_(const ReactionSpec& rxn, scalar T,
             {
                 const scalar kInf = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
                 const scalar kLow = Reaction::modifiedArrheniusRate(rxn.A_low, rxn.b_low, rxn.Ea_low, T);
-                k = Reaction::falloffRate(kLow, kInf, M, T, rxn.troe, rxn.sri);
+                k = Reaction::falloffRate(kLow, kInf, M, T, rxn.troe, rxn.sri, rxn.name);
                 const auto fd = Reaction::falloffRateDerivs(kLow, kInf, M, T, rxn.troe,
-                    Reaction::dlnModifiedArrheniusdT(rxn.b_low, rxn.Ea_low, T), dlnInf, rxn.sri);
+                    Reaction::dlnModifiedArrheniusdT(rxn.b_low, rxn.Ea_low, T), dlnInf, rxn.sri, rxn.name);
                 dkdM = fd.dkdM;
                 dkdT = fd.dkdT;
             }
@@ -2551,8 +2551,23 @@ void BatchReactor::odeJacobianSparse(const sVector& y, const sVector& f0,
             //  and only deps are stored -- the rest are zero by construction).
             sVector D(n, 0.0);
             rateGradientFD_(rxn, T, nv, sc, epsT, D, Ej);
-            for (std::size_t k : deps) grad[k] = D[k];
+            //  AT CONSTANT PRESSURE the difference is the TOTAL derivative of
+            //  r V, which carries the rank-one volume term s_j in EVERY
+            //  species column -- also the columns the pattern does not store
+            //  for this reaction (a species its law does not read).  Dropped
+            //  there, those columns came out zero where they are s_j
+            //  (review of e537d5766, point 3).  A column outside deps is
+            //  exactly s_j (g_jm = 0 there), so it is read off one such
+            //  column, carried by the rank-one pair like every analytic
+            //  reaction's, and taken out of the stored columns.
             sj = 0.0;
+            if (jacRankOne_ && constP && deps.size() < n)
+            {
+                std::size_t m = 0;
+                while (m < n && std::binary_search(deps.begin(), deps.end(), m)) ++m;
+                if (m < n) sj = D[m];
+            }
+            for (std::size_t k : deps) grad[k] = D[k] - sj;
         }
         //  scatter: J_im += nu_ij D_jm on the pattern, u_i += nu_ij s_j, J_iT += nu_ij E_j
         const std::size_t nd = deps.size();

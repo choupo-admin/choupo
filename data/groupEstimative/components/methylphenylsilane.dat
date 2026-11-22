@@ -16,7 +16,6 @@ formula     C7H8Si;
 CAS         766-08-5;
 InChIKey    LAQFLZHBVPULPL-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          120.226;      // g/mol [origin=calculated method=formula-sum]
 Tc          598.06;      // K   [origin=predictive method=joback]
 Pc          39.506;      // bar [origin=predictive method=joback]

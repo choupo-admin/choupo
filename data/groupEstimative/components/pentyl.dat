@@ -11,7 +11,7 @@ name        pentyl;
 formula     C5H11;
 CAS         2672-01-7;
 InChIKey    BFKVXNPJXXJUGQ-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          71.143;      // g/mol [origin=calculated method=formula-sum]
 Tc          470.08;      // K   [origin=predictive method=joback]
 Pc          35.347;      // bar [origin=predictive method=joback]

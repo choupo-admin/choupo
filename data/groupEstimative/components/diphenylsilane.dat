@@ -16,7 +16,6 @@ formula     C12H10Si;
 CAS         775-12-2;
 InChIKey    BPYFPNZHLXDIGA-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          182.297;      // g/mol [origin=calculated method=formula-sum]
 Tc          777.48;      // K   [origin=predictive method=joback]
 Pc          33.029;      // bar [origin=predictive method=joback]

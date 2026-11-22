@@ -13,7 +13,7 @@ hydroxyl radical OH — goes through two isothermal flashes at 1 bar: **1500 K**
    asks for it by name: `speciesTables ( NASA-TP-2002-211556 );` in
    `constant/thermoPhysPropDict`.  N₂ and water are components.
 2. **Gas-only means a non-condensable.**  The table record says
-   `role radical;`.  In every phase split its K is the cap
+   `role gasOnly;`.  In every phase split its K is the cap
    `ThermoPackage::kNoLiquidK = 1e12` (the **Log** prints
    `OH  gas-only (non-condensable)  K = 1e12`), so Rachford-Rice keeps all of
    it in the vapour: the offgas carries the whole 0.1 kmol/h and the

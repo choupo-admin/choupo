@@ -11,7 +11,7 @@ name        but1Yn3Yl;
 formula     C4H5;
 CAS         3315-42-2;
 InChIKey    ULVFVBQUCTUAPR-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          53.084;      // g/mol [origin=calculated method=formula-sum]
 Tc          461.74;      // K   [origin=predictive method=joback]
 Pc          49.039;      // bar [origin=predictive method=joback]

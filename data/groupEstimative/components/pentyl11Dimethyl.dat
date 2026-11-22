@@ -11,7 +11,7 @@ name        pentyl11Dimethyl;
 formula     C7H15;
 CAS         40626-78-6;
 InChIKey    DFZGGADKGZVOBJ-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          99.197;      // g/mol [origin=calculated method=formula-sum]
 Tc          533.06;      // K   [origin=predictive method=joback]
 Pc          28.936;      // bar [origin=predictive method=joback]

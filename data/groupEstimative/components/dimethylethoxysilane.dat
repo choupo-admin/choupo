@@ -16,7 +16,6 @@ formula     C4H11OSi;
 CAS         14857-34-2;
 InChIKey    DRUOQOFQRYFQGB-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          103.216;      // g/mol [origin=calculated method=formula-sum]
 Tc          481.09;      // K   [origin=predictive method=joback]
 Pc          34.807;      // bar [origin=predictive method=joback]

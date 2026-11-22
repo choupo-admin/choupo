@@ -32,9 +32,9 @@ propertyManifest
         "parameters/Henry/O2-water.dat"  "7d1943cf41a94ac447b3d7774fef5b62e2e5a7698bee77a48b59dabb022458db";
         "parameters/Henry/OH-water.dat"  "cf7c83d838a3966d67f7d420131574085908a12969f2a70a49052856d425a2d2";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-        "thermoTables/NASA-TP-2002-211556/H.dat"  "a740ee6470031167ccff33dea627116d06663ebedb72f5488968f7bdc817663f";
-        "thermoTables/NASA-TP-2002-211556/HO2.dat"  "d3caf19fbf8d9fb8857a068c763ca5e9faa4c2c8d50d05402a7b5e2aacdbd2df";
-        "thermoTables/NASA-TP-2002-211556/O.dat"  "4b074aa1356ec944fcc169ec09a2d593474e05e4eaaa44ef753b6d43f3cc0238";
-        "thermoTables/NASA-TP-2002-211556/OH.dat"  "53ace56643e243202e9545e63a2467a1d390f45e9cbcb812294b5b66b49bafd5";
+        "thermoTables/NASA-TP-2002-211556/H.dat"  "60e7846e232f139519b7f1cd47cde0207b23f08a754af7c061f018b403197b9d";
+        "thermoTables/NASA-TP-2002-211556/HO2.dat"  "17b749e9d51831eef07711679a4ee676244986330ffbbd3ee793dfb653d9a752";
+        "thermoTables/NASA-TP-2002-211556/O.dat"  "8752d0bb2206badb3461454f7aa83f01db79e695d3f3cb00e67001104e4e0c8e";
+        "thermoTables/NASA-TP-2002-211556/OH.dat"  "0a01f60adbf955c982080d3c5965e7fee2e947b383fcefc3f589da8207a4dd80";
     }
 }

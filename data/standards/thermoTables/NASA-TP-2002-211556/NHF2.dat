@@ -10,7 +10,7 @@ name           NHF2;
 formula        NHF2;
 CAS            n/a;
 MW             53.01145;       // kg/kmol, appendix D record line
-role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+role           gasData;       // closed-shell molecule (or noble gas): ideal-gas data only, no liquid model
 tags           ( gasPhase thermoTable );
 nasaEntry      "NHF2";
 reviewStatus   interim;

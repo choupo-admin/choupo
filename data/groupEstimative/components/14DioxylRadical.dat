@@ -11,7 +11,7 @@ name        14DioxylRadical;
 formula     C4H7O2;
 CAS         4598-47-4;
 InChIKey    XTKIUJCPLLOSMW-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          87.098;      // g/mol [origin=calculated method=formula-sum]
 Tc          579.51;      // K   [origin=predictive method=joback]
 Pc          53.749;      // bar [origin=predictive method=joback]

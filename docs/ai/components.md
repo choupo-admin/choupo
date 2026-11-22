@@ -76,7 +76,7 @@ family by name, a missing `--licence`, and any output under `data/standards`.
 exports `tutorials/batch/combustion/ignition01_h2o2` to CHEMKIN text, imports
 it back and, when `./choupoBatch` is built, runs both and compares the results.
 Tc, Pc, vapour pressure are not in a mechanism and are not written; a gas
-species is written `role radical;` (gas-only, below), a solid `role nonvolatile;`.
+species is written `role gasOnly;` (a radical or atom) or `role gasData;` (a closed-shell molecule), both below, a solid `role nonvolatile;`.
 
 **A radical is NOT a component (DEV.md 4c C458, 2026-11-21).**  This list holds
 substances a process handles as a pure phase (a liquid, a solid, a stable gas:
@@ -94,11 +94,21 @@ Precedence: the case's own record > `components/` > the declared table (a table
 never shadows a curated record, and a sealed case reads none).  A labelled isomer
 takes the report's entry name: `C3H7_npropyl`, `C3H7_ipropyl`, `C3H3_2propynl`
 (propargyl), `C2H3_vinyl`, `C6H5_phenyl`, `CH3CO_acetyl`; atomic chlorine is
-`CL` (formula Cl), ClO is `CLO`.  Every table record is **gas-only** (`role
-radical;`): in a phase split its K is the non-condensable cap 1e12, so it always
-leaves in the vapour, and a state with no vapour to hold it (a bubble point, a
-liquid-liquid or liquid-solid flash, a property system with no vapour phase) is
-refused by name.  The chloride ION is `Cl` in `data/standards/species/` (an
+`CL` (formula Cl), ClO is `CLO`.  Every table record carries a role decided FROM ITS FORMULA
+(`bin/curate/nasa_tp2002_to_choupo.py retag`, gate `check_gas_only`):
+**`role gasOnly;`** for a free radical (odd electron count), a free atom or a listed
+biradical or transient (CH2, NH, ND, NF, PH, SO): in a phase split its K is the non-condensable cap
+1e12, so it always leaves in the vapour (VL, and wholly in the vapour in a VLLE
+flash), and a state with no vapour to hold it (a bubble point, a liquid-liquid or
+liquid-solid flash, a property system with no vapour phase) is refused by name
+(a trace at or below mole fraction 1e-6 is announced, not refused; a bubble point
+drops it).  **`role gasData;`** for every closed-shell molecule (S8, AlCl3, SiF4,
+noble gases), free METAL atoms (Hg, Na, ...) and odd-electron d-block/actinide
+compounds (FeCl3, UF5, ...): ideal-gas data only, NO liquid model (absent from a
+state it is harmless, present it is a hard refusal) -- a gas reactor runs, but a K,
+a liquid fugacity or a liquid enthalpy of it is refused by name, saying which record
+would serve.  `role radical;` is the old word of `gasOnly` (read, announced).  An
+`overlayOf` record of a table-only species is refused by name.  The chloride ION is `Cl` in `data/standards/species/` (an
 electrolyte case maps a component to it with `aqueousMapping`).
 
 **A species with NO tabulated thermochemistry is COMPUTED, not pasted (2026-11-22).**
@@ -1522,6 +1532,6 @@ Each carries ρ, F_M (Turton), σ_y, max T, max P.
 - `solubility { coefficients ( a b c ); dHcryst; }` — c_sat(T), for crystalliser.
 - `solid { rho_p; k_v; }` — for solids (cyclone / crystalliser / sprayDryer).  `rho_p` is required where a unit reads it (refused by name, no default); an absent `k_v` is the sphere pi/6, announced.
 - `sorption { Xm; C; K; }` — GAB isotherm, all three required (refused by name), **(typically case-local, axiom 4)**.
-- `role <volatile|solute|nonvolatile|radical>;` — drives K-value choice.
+- `role <volatile|solute|nonvolatile|gasOnly|gasData>;` — drives K-value choice.
 - `dissociation <nu>;` — ions per formula (for osmotic pressure).
 

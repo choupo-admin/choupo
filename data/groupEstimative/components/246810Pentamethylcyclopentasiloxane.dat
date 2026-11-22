@@ -16,7 +16,6 @@ formula     C5H15O5Si5;
 CAS         6166-86-5;
 InChIKey    PUNGSQUVTIDKNU-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          295.595;      // g/mol [origin=calculated method=formula-sum]
 Tc          689.31;      // K   [origin=predictive method=joback]
 Pc          27.412;      // bar [origin=predictive method=joback]

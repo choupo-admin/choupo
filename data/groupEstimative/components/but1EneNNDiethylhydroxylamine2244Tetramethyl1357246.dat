@@ -16,7 +16,6 @@ formula     C12H31NO5Si4;
 CAS         72318-77-5;
 InChIKey    RHHYKTPRRBYICA-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          381.722;      // g/mol [origin=calculated method=formula-sum]
 Tc          895.24;      // K   [origin=predictive method=joback]
 Pc          15.188;      // bar [origin=predictive method=joback]

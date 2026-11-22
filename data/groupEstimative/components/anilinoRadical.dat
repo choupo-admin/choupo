@@ -11,7 +11,7 @@ name        anilinoRadical;
 formula     C6H6N;
 CAS         2348-49-4;
 InChIKey    HSMPSHPWCOOUJH-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          92.121;      // g/mol [origin=calculated method=formula-sum]
 Tb          445.94;      // K   [origin=predictive method=joback]
 HvapTb      43248.0;      // J/mol [origin=predictive method=joback]

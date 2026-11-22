@@ -11,7 +11,7 @@ name        2Methyl2PentylRadical;
 formula     C6H13;
 CAS         21058-26-4;
 InChIKey    RXIKKIVDKYVUDC-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          85.17;      // g/mol [origin=calculated method=formula-sum]
 Tc          510.18;      // K   [origin=predictive method=joback]
 Pc          32.173;      // bar [origin=predictive method=joback]

@@ -16,7 +16,6 @@ formula     C5H11Cl2O2Si;
 CAS         18147-17-6;
 InChIKey    ITPGCYGWDOEMIG-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          202.126;      // g/mol [origin=calculated method=formula-sum]
 Tc          618.43;      // K   [origin=predictive method=joback]
 Pc          28.233;      // bar [origin=predictive method=joback]

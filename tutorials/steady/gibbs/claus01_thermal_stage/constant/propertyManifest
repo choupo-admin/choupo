@@ -43,8 +43,8 @@ propertyManifest
         "parameters/Henry/SO2-water.dat"  "58e4e059cd124dd0e92f72eb8b6d0cbdeeb4c9435881d7b034ccdbace1b005ea";
         "parameters/Henry/carbonylSulfide-water.dat"  "d0249b15d366b70a17e5179b4d4f3a26149c74d419cf576ad6d6f4ff67229f70";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-        "thermoTables/NASA-TP-2002-211556/S.dat"  "df799b10ffc638bfb736f9143e7d365b7f6aa39fead490cf83166e6d966cd730";
-        "thermoTables/NASA-TP-2002-211556/SO.dat"  "ae4c0c2c5c03389a709b1c99776b4944b777a93adcaf0b7286bb6a38bd0f97ea";
+        "thermoTables/NASA-TP-2002-211556/S.dat"  "6d86e7b289a7145e692024540cd0e1bef2943881a5560e3ba0f2d001c935de71";
+        "thermoTables/NASA-TP-2002-211556/SO.dat"  "abf4839253544a273ba4fd617548a4e1ed12e7ae6bcaa2632b878ef5af2d2489";
         "utilities/coolingWater.dat"  "1a102e5d6af04d64dad773826b58c3ceb20d872d98c2cfb39be5641d0aa0f153";
     }
 }

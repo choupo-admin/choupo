@@ -16,7 +16,6 @@ formula     C7H21O3Si4;
 CAS         17082-46-1;
 InChIKey    BGISVIDNIBCUTN-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          265.582;      // g/mol [origin=calculated method=formula-sum]
 Tc          610.10;      // K   [origin=predictive method=joback]
 Pc          19.086;      // bar [origin=predictive method=joback]

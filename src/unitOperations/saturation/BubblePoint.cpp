@@ -80,7 +80,7 @@ sVector bubbleK(const ThermoPackage& thermo, scalar T, scalar P,
         && thermo.vapourFugacityDependsOnComposition())
     {
         const auto r = incipientPhase::vapour(thermo, T, P, x,
-                                              thermo.Kvec_Raoult(T, P));
+                                              thermo.Kvec_Raoult(T, P, &x));
         if (!r.K.empty())
         {
             if (settled) *settled = r.converged;
@@ -183,13 +183,13 @@ scalar weightedBoilingGuess(const ThermoPackage& thermo, const sVector& x,
 //  so a 1-D Newton with bracket [200, 700] K is robust.
 // -----------------------------------------------------------------------
 BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
-                                         const sVector&       x,
+                                         const sVector&       xIn,
                                          scalar               P,
                                          scalar               T_init)
 {
     const std::size_t n = thermo.n();
-    thermo.refuseGasOnlyWithoutVapour(x, "a saturated liquid (a bubble"
-        " point: the liquid that holds the whole feed)");      // C458
+    const sVector x = thermo.saturatedLiquidBasis(xIn, "a saturated liquid (a"
+        " bubble point: the liquid that holds the whole feed)");   // C458
 
     //  THE T SEARCH WALKS, AND SAYS SO (PO-02, 2026-11-12).  The starting guess
     //  (the mole-weighted normal boiling point) and every Newton step are
@@ -269,13 +269,13 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
 //  liquid-like root for the "vapour" (see the relief-valve sizer).
 // -----------------------------------------------------------------------
 BubblePoint::PressureResult BubblePoint::pressure(const ThermoPackage& thermo,
-                                                  const sVector&       x,
+                                                  const sVector&       xIn,
                                                   scalar               T,
                                                   scalar               P_start)
 {
     const std::size_t n = thermo.n();
-    thermo.refuseGasOnlyWithoutVapour(x, "a saturated liquid (a bubble"
-        " point: the liquid that holds the whole feed)");      // C458
+    const sVector x = thermo.saturatedLiquidBasis(xIn, "a saturated liquid (a"
+        " bubble point: the liquid that holds the whole feed)");   // C458
     PressureResult out;
     sVector y(n, 0.0);
 
@@ -290,7 +290,7 @@ BubblePoint::PressureResult BubblePoint::pressure(const ThermoPackage& thermo,
     auto sumKx = [&](scalar P) -> scalar
     {
         const auto r = incipientPhase::vapour(thermo, T, P, x,
-                                              thermo.Kvec_Raoult(T, P));
+                                              thermo.Kvec_Raoult(T, P, &x));
         y = r.trial;
         trivial = !r.K.empty();
         for (std::size_t i = 0; i < n && trivial; ++i)
@@ -384,7 +384,7 @@ int BubblePoint::solve(const DictPtr& dict,
                   << "; normalising.\n";
         for (auto& v : x) v /= xsum;
     }
-    thermo.refuseGasOnlyWithoutVapour(x, "a saturated liquid (a bubble"
+    x = thermo.saturatedLiquidBasis(x, "a saturated liquid (a bubble"
         " point: the liquid that holds the whole feed)");      // C458
 
     std::cout << "Liquid composition (x):\n";

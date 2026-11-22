@@ -64,6 +64,8 @@ ROOT = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 import rrho_thermo as T          # noqa: E402
 
+SCAN_ROOTS = ("data/standards/thermoTables/RRHO-computed",)
+
 LABEL = "check_rrho_thermo"
 fails = []
 

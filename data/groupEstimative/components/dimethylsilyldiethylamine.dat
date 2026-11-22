@@ -16,7 +16,6 @@ formula     C6H16NSi;
 CAS         13686-66-3;
 InChIKey    ADTGAVILDBXARD-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          130.286;      // g/mol [origin=calculated method=formula-sum]
 Tc          515.59;      // K   [origin=predictive method=joback]
 Pc          28.536;      // bar [origin=predictive method=joback]

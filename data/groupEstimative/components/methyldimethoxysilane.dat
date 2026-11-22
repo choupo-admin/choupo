@@ -16,7 +16,6 @@ formula     C3H9O2Si;
 CAS         16881-77-9;
 InChIKey    PKTOVQRKCNPVKY-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          105.188;      // g/mol [origin=calculated method=formula-sum]
 Tc          481.64;      // K   [origin=predictive method=joback]
 Pc          38.293;      // bar [origin=predictive method=joback]

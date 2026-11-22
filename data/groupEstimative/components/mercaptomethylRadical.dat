@@ -11,7 +11,7 @@ name        mercaptomethylRadical;
 formula     CH3S;
 CAS         17032-46-1;
 InChIKey    YYOGAOHWUDJBLM-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          47.095;      // g/mol [origin=calculated method=formula-sum]
 Tc          468.37;      // K   [origin=predictive method=joback]
 Pc          65.670;      // bar [origin=predictive method=joback]

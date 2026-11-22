@@ -55,7 +55,7 @@ WHAT IS CHECKED.
       the solvents and the remedy.
   (e) `model langrishKockel;` with two solvents REFUSES, naming `marshall`.
   (f) a dissolved feed component with neither `role nonvolatile` nor a
-      vapour pressure (a `role radical;` copy of sucrose, `binderX`, 0.01
+      vapour pressure (a `role gasOnly;` copy of sucrose, `binderX`, 0.01
       kmol/h) REFUSES: it used to vanish (3.42 kg/h, with the acetone's 30,
       on the old engine: unit closure 97.8456 %).
   (g) a SINGLE-solvent feed takes the old route: sprayDryer01_sugar itself
@@ -166,14 +166,14 @@ def make(tmp, name, solvent, n_solvent, n_water, keep_sorption=False,
     ex.write_text(et)
     if no_outlet:
         #  A dissolved component the dryer has no outlet for: sucrose's own
-        #  record renamed and given `role radical;` -- the one role that is
+        #  record renamed and given `role gasOnly;` -- the one role that is
         #  neither `nonvolatile` (powder) nor required to carry a vapour
         #  pressure (exhaust).  A NEW name, because a case-local record
         #  OVERLAYS a standards one field by field: stripping acetone's
         #  `vaporPressure` here gives it straight back.
         s = (work / "constant/components/sucrose.dat").read_text()
         s = re.sub(r"(?m)^name\s+sucrose;", "name        binderX;", s)
-        s, k = re.subn(r"(?m)^role\s+nonvolatile;.*$", "role        radical;", s)
+        s, k = re.subn(r"(?m)^role\s+nonvolatile;.*$", "role        gasOnly;", s)
         if k != 1:
             fail(f"{name}: sucrose's role line moved -- update the probe")
         (work / "constant/components/binderX.dat").write_text(s)

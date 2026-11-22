@@ -11,7 +11,7 @@ name        nHexyl;
 formula     C6H13;
 CAS         2679-29-0;
 InChIKey    PQGAHNJECSVDEI-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          85.17;      // g/mol [origin=calculated method=formula-sum]
 Tc          493.81;      // K   [origin=predictive method=joback]
 Pc          31.633;      // bar [origin=predictive method=joback]

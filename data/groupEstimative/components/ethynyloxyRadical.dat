@@ -11,7 +11,7 @@ name        ethynyloxyRadical;
 formula     C2HO;
 CAS         51095-15-9;
 InChIKey    QEJQAPYSVNHDJF-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          41.029;      // g/mol [origin=calculated method=formula-sum]
 Tc          372.57;      // K   [origin=predictive method=joback]
 Pc          75.746;      // bar [origin=predictive method=joback]

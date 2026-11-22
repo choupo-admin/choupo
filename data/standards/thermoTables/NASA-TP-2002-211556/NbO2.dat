@@ -10,7 +10,7 @@ name           NbO2;
 formula        NbO2;
 CAS            n/a;
 MW             124.9052;       // kg/kmol, appendix D record line
-role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+role           gasData;       // odd-electron d-block/actinide compound: stable, has condensed phases (not a radical)
 tags           ( gasPhase thermoTable );
 nasaEntry      "NbO2";
 reviewStatus   interim;

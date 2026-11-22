@@ -11,7 +11,7 @@ name        4MethylbenzylRadical;
 formula     C8H9;
 CAS         2348-52-9;
 InChIKey    GAFBGRBPYCNUCH-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          105.16;      // g/mol [origin=calculated method=formula-sum]
 Tc          619.33;      // K   [origin=predictive method=joback]
 Pc          36.553;      // bar [origin=predictive method=joback]

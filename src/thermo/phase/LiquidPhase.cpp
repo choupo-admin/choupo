@@ -79,6 +79,14 @@ sVector LiquidPhase::fEffective(scalar T, scalar P_Pa, const sVector& x) const
             if (it != pureFluids_->end()) pf = it->second.get();
         }
         const bool hasPsat = pf || (*components_)[i].hasVaporPressure();
+        //  C458 slice 2: the 1 Pa reference below is the NONVOLATILE's and the
+        //  gas-only species' (it cancels in a two-liquid ratio; a gas-only species
+        //  above the trace level never reaches a liquid, the callers refuse it).  A closed-shell table molecule
+        //  (`role gasData`) has no liquid model at all: refuse by name rather
+        //  than invent the reference.
+        if (!hasPsat && (*components_)[i].hasNoLiquidModel() && x[i] > 0.0)
+            (*components_)[i].refuseNoLiquidModel(
+                "its liquid fugacity (a liquid phase of the package holds it)");
         const scalar psat = hasPsat
             ? saturationPressure((*components_)[i], pf, T)
             : 1.0;

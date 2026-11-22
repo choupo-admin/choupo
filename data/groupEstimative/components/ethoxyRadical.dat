@@ -11,7 +11,7 @@ name        ethoxyRadical;
 formula     C2H5O;
 CAS         2154-50-9;
 InChIKey    VOLGAXAGEUPBDM-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          45.061;      // g/mol [origin=calculated method=formula-sum]
 Tc          373.22;      // K   [origin=predictive method=joback]
 Pc          59.446;      // bar [origin=predictive method=joback]

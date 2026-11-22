@@ -11,7 +11,7 @@ name        hydroxymethylRadical;
 formula     CH3O;
 CAS         2597-43-5;
 InChIKey    CBOIHMRHGLHBPB-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          31.034;      // g/mol [origin=calculated method=formula-sum]
 Tc          469.20;      // K   [origin=predictive method=joback]
 Pc          68.755;      // bar [origin=predictive method=joback]

@@ -11,7 +11,7 @@ name        cyclopropenylRadical;
 formula     C3H3;
 CAS         28933-84-8;
 InChIKey    UKPXULFIISGBHG-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          39.057;      // g/mol [origin=calculated method=formula-sum]
 Tc          458.53;      // K   [origin=predictive method=joback]
 Pc          60.186;      // bar [origin=predictive method=joback]

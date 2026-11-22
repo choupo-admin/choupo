@@ -16,7 +16,6 @@ formula     C12H27Si;
 CAS         6485-81-0;
 InChIKey    GEUFMGZEFYJAEJ-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          199.433;      // g/mol [origin=calculated method=formula-sum]
 Tc          647.32;      // K   [origin=predictive method=joback]
 Pc          17.047;      // bar [origin=predictive method=joback]

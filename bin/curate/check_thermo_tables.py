@@ -13,7 +13,8 @@ data/standards/thermoTables/NASA-TP-2002-211556/ by machine
 (bin/curate/nasa_tp2002_to_choupo.py table); 894 since 2026-11-21 (C458:
 the 34 radicals moved in from components/, and B and SiO2 joined when the
 condensed-phase rule stopped compB and silica from blocking their gases).
-Every record is gas-only, `role radical;`.  A home of that size is outside
+Every record carries a role decided from its formula (`gasOnly` for a radical,
+atom or listed biradical, `gasData` for a closed-shell molecule; retag --check).  A home of that size is outside
 every golden: a record edited by hand, a species silently added to or dropped
 from the folder, a duplicate of a curated component, or an engine that starts
 reading the home without being asked would each leave the suite green, because

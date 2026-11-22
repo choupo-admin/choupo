@@ -110,7 +110,9 @@ reading graphite.dat's header uses), on the interval that contains 298.15 K;
 `idealGasHeatCapacity` (gas) or `solidHeatCapacity` (solid) with `model NASA7`
 and Tlow/Tcommon/Thigh (NASA7Cp.cpp reads all three, refuses without).  Not
 written, because nothing in a mechanism supplies them: Tc, Pc, omega,
-vapour pressure, CAS.  A GAS species is written `role radical;` -- GAS-ONLY
+vapour pressure, CAS.  A GAS species is written `role gasOnly;` (a radical, atom or listed biradical)
+or `role gasData;` (a closed-shell molecule: ideal-gas data, no liquid model;
+the decision is nasa_tp2002_to_choupo.py `role_of`, one home) -- GAS-ONLY
 (DEV.md 4c C458, the convention of data/standards/thermoTables/): a mechanism
 gives it no condensed-phase data, so the engine keeps it in the vapour in any
 phase split (a non-condensable) and refuses a state with no vapour to hold it.
@@ -440,6 +442,28 @@ def formula_of(comp):
                    for e, n in comp.items())
 
 
+def gas_role(formula):
+    """`gasOnly;` or `gasData;` + its reason, the table importer's ONE decision
+    (nasa_tp2002_to_choupo.role_of); an unparseable formula stays gas-only."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "nasa_roles", os.path.join(os.path.dirname(os.path.abspath(__file__)), "nasa_tp2002_to_choupo.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    if formula in ("E", "e") or "+" in formula or "-" in formula:
+        #  the electron and charged species: gas-phase ions exist only in the gas
+        role, why = "gasOnly", "electron or ion (named explicitly)"
+    else:
+        try:
+            role, why = mod.role_of(formula)
+        except SystemExit as ex:
+            role, why = "gasOnly", "formula %r NOT classified (%s): kept gas-only -- check it" % (formula, ex)
+            print("chemkin_to_choupo: formula %r is not classified by role_of -- the record is"
+                  " written `role gasOnly;` (check whether it really is gas-only)" % formula,
+                  file=sys.stderr)
+    return "%s;         // %s (DEV.md 4c C458)" % (role, why)
+
+
 def fmt_list(v):
     return "( " + " ".join("%.8e" % x for x in v) + " );"
 
@@ -546,7 +570,7 @@ provenance
 }
 """ % (cname, rec["name"], cname, formula_of(rec["comp"]), mw,
        ("nonvolatile;     // a solid: never in the vapour" if solid else
-        "radical;         // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it"),
+        gas_role(formula_of(rec["comp"]))),
        catalogue_identity(cname, rec["comp"]), H, S,
        "    referenceState pureSolid;\n" if solid else "",
        blk, fmt_list(rec["low"]), fmt_list(rec["high"]),

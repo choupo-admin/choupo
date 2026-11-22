@@ -10,7 +10,7 @@ name           NF2;
 formula        NF2;
 CAS            n/a;
 MW             52.00351;       // kg/kmol, appendix D record line
-role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+role           gasOnly;       // free radical (odd electron count 25)
 tags           ( gasPhase thermoTable );
 nasaEntry      "NF2";
 reviewStatus   interim;

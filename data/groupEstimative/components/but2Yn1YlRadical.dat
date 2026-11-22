@@ -11,7 +11,7 @@ name        but2Yn1YlRadical;
 formula     C4H5;
 CAS         82252-88-8;
 InChIKey    LSOBPYSQSPIQJF-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          53.084;      // g/mol [origin=calculated method=formula-sum]
 Tc          481.96;      // K   [origin=predictive method=joback]
 Pc          49.177;      // bar [origin=predictive method=joback]

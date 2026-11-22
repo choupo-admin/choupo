@@ -11,7 +11,7 @@ name        2NorbornylRadical;
 formula     C7H11;
 CAS         30967-37-4;
 InChIKey    WVKPYYLOFMTDHB-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          95.165;      // g/mol [origin=calculated method=formula-sum]
 Tc          581.22;      // K   [origin=predictive method=joback]
 Pc          39.705;      // bar [origin=predictive method=joback]

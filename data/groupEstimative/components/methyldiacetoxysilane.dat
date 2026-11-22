@@ -16,7 +16,6 @@ formula     C5H9O4Si;
 CAS         3435-15-2;
 InChIKey    AONDIGWFVXEZGD-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          161.208;      // g/mol [origin=calculated method=formula-sum]
 Tc          617.26;      // K   [origin=predictive method=joback]
 Pc          32.137;      // bar [origin=predictive method=joback]

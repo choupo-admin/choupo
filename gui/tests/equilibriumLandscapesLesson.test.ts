@@ -146,8 +146,8 @@ describe("the equilibrium-landscapes lesson", () => {
     //  310.15 K, and on a gibbsMap with glucose beside gases.
     expect(s).toContain("h_formation liquid leg needs liquidHeatCapacity");
     expect(s).toContain("wrong by a heat of sublimation");
-    expect(s).toContain("Component.cpp:1686–1697");  // C259: the refusal moved; 1538 is now rung()
-    expect(s).toContain("Reaction.cpp:309–320");
+    expect(s).toContain("Component.cpp:1729–1697");  // C259: the refusal moved; 1538 is now rung()
+    expect(s).toContain("Reaction.cpp:324–320");
     expect(s).toContain("Formula.cpp:485–496");
   });
 

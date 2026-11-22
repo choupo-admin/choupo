@@ -16,7 +16,6 @@ formula     C11H19O3Si2;
 CAS         33546-28-0;
 InChIKey    LWFAFWGBEMSJQZ-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          255.44;      // g/mol [origin=calculated method=formula-sum]
 Tc          760.03;      // K   [origin=predictive method=joback]
 Pc          20.568;      // bar [origin=predictive method=joback]

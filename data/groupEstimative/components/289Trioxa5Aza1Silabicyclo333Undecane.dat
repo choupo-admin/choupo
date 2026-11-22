@@ -16,7 +16,6 @@ formula     C6H12NO3Si;
 CAS         283-60-3;
 InChIKey    XBRVPWBNRAPVCC-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          174.251;      // g/mol [origin=calculated method=formula-sum]
 Tc          690.82;      // K   [origin=predictive method=joback]
 Pc          44.563;      // bar [origin=predictive method=joback]

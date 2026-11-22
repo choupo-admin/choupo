@@ -16,7 +16,7 @@ formula     C2H3O;
 CAS         3170-69-2;
 InChIKey    TUCNEACPLKLKNU-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
+role        gasOnly;
 MW          43.045;      // g/mol [origin=calculated method=formula-sum]
 Tc          346.02;      // K   [origin=predictive method=joback]
 Pc          65.777;      // bar [origin=predictive method=joback]

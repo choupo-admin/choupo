@@ -11,7 +11,7 @@ name        pent3En1YlRadical;
 formula     C5H9;
 CAS         41182-83-6;
 InChIKey    NPUZFKMKEFBWLV-SNAWJCMRSA-N;
-role        radical;
+role        gasOnly;
 MW          69.127;      // g/mol [origin=calculated method=formula-sum]
 Tc          483.60;      // K   [origin=predictive method=joback]
 Pc          37.638;      // bar [origin=predictive method=joback]

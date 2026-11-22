@@ -11,7 +11,7 @@ name        phenylmethyl;
 formula     C7H7;
 CAS         2154-54-3;
 InChIKey    SLRMQYXOBQWXCR-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          91.133;      // g/mol [origin=calculated method=formula-sum]
 Tc          591.83;      // K   [origin=predictive method=joback]
 Pc          42.002;      // bar [origin=predictive method=joback]

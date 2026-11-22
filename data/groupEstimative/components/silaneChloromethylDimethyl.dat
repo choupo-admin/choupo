@@ -16,7 +16,6 @@ formula     C3H8ClSi;
 CAS         3144-74-9;
 InChIKey    PAJFATIYVLZNFC-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          107.632;      // g/mol [origin=calculated method=formula-sum]
 Tc          481.51;      // K   [origin=predictive method=joback]
 Pc          38.151;      // bar [origin=predictive method=joback]

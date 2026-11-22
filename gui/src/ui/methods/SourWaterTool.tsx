@@ -147,7 +147,7 @@ export const SOURWATER_STEPS = [
     assumes: "That equilibrium holds on each stage.  This is a rigorous MESH "
       + "column, not a shortcut — but it is still an equilibrium column, and "
       + "no tray efficiency is applied anywhere.",
-    cites: "ThermoPackage.cpp:962-966",
+    cites: "ThermoPackage.cpp:963-967",
   },
   {
     n: 4,
