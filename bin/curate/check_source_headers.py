@@ -91,7 +91,7 @@ COVERED_BY_NOTHING = [
     (["site/logo2.png", "site/logo2-mark.png"],
      "brand assets: not licensed by GPL or CC BY-SA (TRADEMARKS.md)"),
     (["bin/curate/helmholtz/*", "bin/curate/svehla1962/*",
-      "bin/curate/fixtures/thermoml/*"],
+      "bin/curate/fixtures/thermoml/*", "bin/curate/rrho_species.json"],
      "published coefficient tables and data files of other authors: their "
      "licence is per record, as for data/"),
     (["bin/curate/fixtures/neutralMasterMineral/*"],
