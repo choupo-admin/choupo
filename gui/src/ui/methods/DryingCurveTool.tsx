@@ -487,7 +487,7 @@ export const DRYING_KNOBS: readonly DryingKnob[] = [
   // `Y        0.010;` -- declared bare (kg/kg lives in the dict's comment).
   { id: "airY", label: String.raw`air humidity \(Y\) (kg/kg dry)`,
     file: FLOWSHEET, key: "Y",
-    def: 0.010, min: 0.001, max: 0.04, step: 0.001, unit: "",
+    def: 0.010, min: 0.001, max: 0.02, step: 0.001, unit: "",
     why: "the air's humidity ratio: it is both ends of the drying problem -- "
       + String.raw`the mass-transfer driving force \(Y_\mathrm{sat}(T_\mathrm{wb}) - Y\) `
       + "and, through the air's water activity, the GAB equilibrium moisture "

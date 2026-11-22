@@ -446,9 +446,9 @@ export function FastSlowTool(): JSX.Element {
         <LessonLimits limits={FAST_SLOW_LIMITS} />
 
         <Text size="xs" c="dimmed">
-          Next on this page, not built yet: batch electrodialysis (the film at the membrane
-          against the emptying tank) and a cascade control loop (a fast inner loop slaved to a
-          slow outer one).
+          Not on this page: a cascade control loop (a fast inner loop slaved to a slow outer
+          one).  Batch electrodialysis, where the film at the membrane races the emptying tank,
+          is built in the engine: run tutorials/batch/electrodialysis/edbatch01_constant_current.
         </Text>
       </Stack>
     </Box>

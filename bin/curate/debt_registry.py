@@ -1287,7 +1287,6 @@ LESSON_ABSENCE_UNCLASSIFIED = {
     "gui/src/ui/methods/mccabeLesson.ts": 1,
     "gui/src/ui/methods/merkelLesson.ts": 9,
     "gui/src/ui/methods/oneFluxManyUnitsLesson.ts": 2,
-    "gui/src/ui/methods/operatorPanelsLesson.ts": 1,
     "gui/src/ui/methods/overpressure.ts": 1,
     "gui/src/ui/methods/overpressureLesson.ts": 6,
     "gui/src/ui/methods/patentExpiryLesson.ts": 6,

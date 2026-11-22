@@ -372,7 +372,7 @@ const BOTH_FEEDS: readonly KnobTarget[] = [
  *  runs (X_out moves with it). */
 export const LEVENSPIEL_KNOBS: readonly LevenspielKnob[] = [
   { id: "T", label: "feed / reactor T", key: "T",
-    def: 350, min: 320, max: 360, step: 1, unit: "K", targets: BOTH_FEEDS },
+    def: 350, min: 320, max: 351, step: 1, unit: "K", targets: BOTH_FEEDS },
   { id: "F_ethanol", label: "feed ethanol (limiting)", key: "ethanol",
     def: 0.5, min: 0.1, max: 2, step: 0.05, unit: "kmol/h",
     targets: BOTH_FEEDS },

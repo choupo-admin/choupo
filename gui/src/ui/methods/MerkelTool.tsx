@@ -223,7 +223,7 @@ export const MERKEL_KNOBS: readonly MerkelKnob[] = [
     why: "The air's dry bulb.  It is not the floor: watch how much less the "
       + "engine's T_wb moves than this knob does." },
   { id: "airMoisture", label: "air moisture (humidity)", file: "0/air", key: "water",
-    def: 1.3, min: 0, max: 5, step: 0.1, unit: "kmol/h",
+    def: 1.3, min: 0, max: 2, step: 0.1, unit: "kmol/h",
     why: "The other half of the wet bulb.  Wetter air at the same "
       + "temperature raises T_wb, and the cold water follows it up." },
   { id: "dryAirFlow", label: "dry air flow G", file: "0/air", key: "N2",
