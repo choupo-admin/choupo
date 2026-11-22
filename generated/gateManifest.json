@@ -203,8 +203,8 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 380 gate script(s) scanned; 12 waiver table(s) all resolve to debt_registry.py, and all 35 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified.",
-      "seconds": 1.6
+      "claim": "check_debt_registry: OK -- 382 gate script(s) scanned; 12 waiver table(s) all resolve to debt_registry.py, and all 35 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified.",
+      "seconds": 0.8
     },
     "check_decision_index": {
       "exit": 0,
@@ -263,8 +263,8 @@
     },
     "check_duplicate_keys": {
       "exit": 0,
-      "claim": "check_duplicate_keys: OK -- each of 11250 TRACKED dict file(s) declares each key once (standards, tutorials, design drafts); NOT judged: data/local/ and untracked files",
-      "seconds": 6.3
+      "claim": "check_duplicate_keys: OK -- each of 11311 TRACKED dict file(s) declares each key once (standards, tutorials, design drafts); NOT judged: data/local/ and untracked files",
+      "seconds": 3.7
     },
     "check_duty_inversion": {
       "exit": 0,
@@ -293,7 +293,7 @@
     },
     "check_edutool_form": {
       "exit": 0,
-      "claim": "check_edutool_form: OK -- all 96 LIVE registry id(s) resolve through the workspace to a source (2 defined inline in MethodsWorkspace.tsx, which the file-glob this gate replaced could not see at all).  95 are scrolling lessons, each with a scroll container and at least one equation block -- and the split is reported because the routes do not prove the same thing: 80 hand their steps to the shared LaTeX step renderer, so their equations are the `formula` and `derivation[].eq` fields check_lesson_symbols holds to a glossed vocabulary; 7 display their own KaTeX equations (what-is-temperature, what-is-entropy, what-is-exergy, thermometer-trust, pcsaft-theory, reactor-ladder, route-screening), parsed by each page's own test but read by no vocabulary gate; while 8 draw their own pre-LaTeX monospace block (property-origins, property-trust, four-ways-mixture, cosmo-sac-theory, local-composition, unifac-theory, claus-gibbs, sour-water) and for those this gate proves only that the TYPEFACE is used -- it cannot tell an equation from a table cell, because the equation is bound in from a data field whose name each tool chooses.  1 are index pages whose equations live in the guide they deep-link (quoting them on the page would be a second home); 0 are instrument panels, every one NAMED in debt_registry.EDUTOOL_STILL_A_PANEL with its remedy, and no pin has outlived its violation.  On the Explorer side, viewsFor() is still gated on a component SELECTION and the pellet is not among its 16 registered view(s).  NOT CHECKED, and it is the half that matters most: whether the prose is any good, whether the equations are the right ones, or whether the steps are in a sensible order -- teaching judgements no gate can make.  This buys only that the SHAPE cannot regress and the debt cannot be forgotten.",
+      "claim": "check_edutool_form: OK -- all 97 LIVE registry id(s) resolve through the workspace to a source (2 defined inline in MethodsWorkspace.tsx, which the file-glob this gate replaced could not see at all).  96 are scrolling lessons, each with a scroll container and at least one equation block -- and the split is reported because the routes do not prove the same thing: 81 hand their steps to the shared LaTeX step renderer, so their equations are the `formula` and `derivation[].eq` fields check_lesson_symbols holds to a glossed vocabulary; 7 display their own KaTeX equations (what-is-temperature, what-is-entropy, what-is-exergy, thermometer-trust, pcsaft-theory, reactor-ladder, route-screening), parsed by each page's own test but read by no vocabulary gate; while 8 draw their own pre-LaTeX monospace block (property-origins, property-trust, four-ways-mixture, cosmo-sac-theory, local-composition, unifac-theory, claus-gibbs, sour-water) and for those this gate proves only that the TYPEFACE is used -- it cannot tell an equation from a table cell, because the equation is bound in from a data field whose name each tool chooses.  1 are index pages whose equations live in the guide they deep-link (quoting them on the page would be a second home); 0 are instrument panels, every one NAMED in debt_registry.EDUTOOL_STILL_A_PANEL with its remedy, and no pin has outlived its violation.  On the Explorer side, viewsFor() is still gated on a component SELECTION and the pellet is not among its 16 registered view(s).  NOT CHECKED, and it is the half that matters most: whether the prose is any good, whether the equations are the right ones, or whether the steps are in a sensible order -- teaching judgements no gate can make.  This buys only that the SHAPE cannot regress and the debt cannot be forgotten.",
       "seconds": 0.0
     },
     "check_edwards_model": {
@@ -448,8 +448,8 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_lesson_references.py [detection] -> exit 1; check_feature_documented.py [detection] -> exit 1; check_lesson_references.py [vacuity] -> exit 1; check_variant_same_values.py [vacuity] -> exit 1; check_variant_same_values.py [detection] -> exit 1; check_golden_comparator.py [detection] -> exit 1; check_golden_comparator.py [detection] -> exit 1; check_golden_bands.py [detection] -> exit 1; check_golden_bands.py [detection] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_property_route_bench.py [detection] -> exit 1; check_liquid_property_ratchet.py [detection] -> exit 1; check_liquid_property_ratchet.py [detection] -> exit 1; check_vliq_datum.py [detection] -> exit 1; check_source_headers.py [detection] -> exit 1; check_liquid_density_entry_callers.py [detection] -> exit 1; check_density_pilot.py [source/unit-keeps-its-own-number] -> exit 1; check_pure_fluid_phase_asked.py [source/phase-dropped] -> exit 1; check_property_route_bench.py [source/route-relabelled] -> exit 1; check_property_source_witnesses.py [source/site-retagged] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1; check_estimated_species_announced.py [detection] -> exit 1; check_ratebased_segment.py [source/interface-energy-dropped] -> exit 1; check_packing_record.py [source/reads-not-carried-back] -> exit 1; check_packing_record.py [source/range-check-off] -> exit 1; check_packing_record.py [source/estimate-mark-dropped] -> exit 1.  COVERAGE IS 28 of 380 gates, and the other 352 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  THE POOL (C394): 37 arms in 4 worker copies of this tree, 2 of them for the source tier, at most 4 jobs and one build at a time (sync 3 s, arms 563 s, 899 s in all), each covered gate first required to PASS unsabotaged in the pool (28 controls); this tree was never edited and its build never rebuilt, verified by sha256 of the 27 sabotage subjects and every built artefact.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express.",
-      "seconds": 899.6
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_lesson_references.py [detection] -> exit 1; check_feature_documented.py [detection] -> exit 1; check_lesson_references.py [vacuity] -> exit 1; check_variant_same_values.py [vacuity] -> exit 1; check_variant_same_values.py [detection] -> exit 1; check_golden_comparator.py [detection] -> exit 1; check_golden_comparator.py [detection] -> exit 1; check_golden_bands.py [detection] -> exit 1; check_golden_bands.py [detection] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_property_route_bench.py [detection] -> exit 1; check_liquid_property_ratchet.py [detection] -> exit 1; check_liquid_property_ratchet.py [detection] -> exit 1; check_vliq_datum.py [detection] -> exit 1; check_source_headers.py [detection] -> exit 1; check_liquid_density_entry_callers.py [detection] -> exit 1; check_density_pilot.py [source/unit-keeps-its-own-number] -> exit 1; check_pure_fluid_phase_asked.py [source/phase-dropped] -> exit 1; check_property_route_bench.py [source/route-relabelled] -> exit 1; check_property_source_witnesses.py [source/site-retagged] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1; check_estimated_species_announced.py [detection] -> exit 1; check_ratebased_segment.py [source/interface-energy-dropped] -> exit 1; check_packing_record.py [source/reads-not-carried-back] -> exit 1; check_packing_record.py [source/range-check-off] -> exit 1; check_packing_record.py [source/estimate-mark-dropped] -> exit 1.  COVERAGE IS 28 of 383 gates, and the other 355 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  THE POOL (C394): 37 arms in 3 worker copies of this tree, 2 of them for the source tier, at most 3 jobs and one build at a time (sync 2 s, arms 607 s, 1064 s in all), each covered gate first required to PASS unsabotaged in the pool (28 controls); this tree was never edited and its build never rebuilt, verified by sha256 of the 27 sabotage subjects and every built artefact.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express.",
+      "seconds": 1064.5
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -468,8 +468,8 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 57043 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 61653 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
-      "seconds": 26.8
+      "claim": "check_glossary_bans: OK -- 57137 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 61757 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
+      "seconds": 46.6
     },
     "check_groups": {
       "exit": 0,
@@ -528,8 +528,8 @@
     },
     "check_ion_pins": {
       "exit": 0,
-      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 1714 component record(s) scanned (data/standards/components + every tutorial constant/components) the 53 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
-      "seconds": 0.3
+      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 1732 component record(s) scanned (data/standards/components + every tutorial constant/components) the 53 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
+      "seconds": 0.4
     },
     "check_layering": {
       "exit": 0,
@@ -543,7 +543,7 @@
     },
     "check_lesson_symbols": {
       "exit": 0,
-      "claim": "check_lesson_symbols: OK -- 90 of 90 lesson module(s) gloss every symbol their 831 LaTeX equation(s) use; 0 are NAMED as unglossed in the debt registry (0 symbol(s) outstanding across them) and none may grow a new one.  The symbols are READ FROM THE LaTeX, not guessed from running text: `\\text{}` is prose and is not scanned, `\\ce{}` is a substance and is not scanned, and every other command must be one of the 123 enumerated operators, 43 symbol commands or 11 accents -- an unknown one REFUSES rather than being classed either way.  THE DOMAIN, because '90 of 90' reads as complete and is not: this is every module whose steps reach the SHARED step renderer, and a live EduTool that draws its own equation block instead is outside it -- how many, and which, is check_edutool_form's OK line, where the fact is derived rather than restated here.  WHAT THIS DOES NOT CHECK, and it is the half that matters: whether a definition is CORRECT, whether it is useful, or whether the symbol needed one -- 'X  the reflux ratio' in the drying lesson would pass here and be nonsense on the page.  Nor whether the EQUATION is right; that it PARSES is gui/tests/lessonTex.test.ts, that it is TRUE is a reader.",
+      "claim": "check_lesson_symbols: OK -- 91 of 91 lesson module(s) gloss every symbol their 832 LaTeX equation(s) use; 0 are NAMED as unglossed in the debt registry (0 symbol(s) outstanding across them) and none may grow a new one.  The symbols are READ FROM THE LaTeX, not guessed from running text: `\\text{}` is prose and is not scanned, `\\ce{}` is a substance and is not scanned, and every other command must be one of the 123 enumerated operators, 43 symbol commands or 11 accents -- an unknown one REFUSES rather than being classed either way.  THE DOMAIN, because '91 of 91' reads as complete and is not: this is every module whose steps reach the SHARED step renderer, and a live EduTool that draws its own equation block instead is outside it -- how many, and which, is check_edutool_form's OK line, where the fact is derived rather than restated here.  WHAT THIS DOES NOT CHECK, and it is the half that matters: whether a definition is CORRECT, whether it is useful, or whether the symbol needed one -- 'X  the reflux ratio' in the drying lesson would pass here and be nonsense on the page.  Nor whether the EQUATION is right; that it PARSES is gui/tests/lessonTex.test.ts, that it is TRUE is a reader.",
       "seconds": 0.1
     },
     "check_liquid_cp_fallback": {
@@ -628,8 +628,8 @@
     },
     "check_origin_vocabulary": {
       "exit": 0,
-      "claim": "check_origin_vocabulary: OK -- 216 `origin <word>;` forms in 99 prose files all use a KNOWN word (16 words imported from check_origin_census, never copied), or one of 2 word(s) pinned in debt_registry with a stated exit (citedHeuristic, teachingSurrogate), or one of 6 sites exempt BY NAME (5 deliberate quotations, 1 English sentence).  SCANNED: docs, src, bin, gui/src, gui/schemas and the root *.md, every text file, read as one string so a line-wrapped form is seen.  NOT CHECKED: records under data/ (the census's domain) and case-local records under tutorials/ (nobody's); the engine's tolerance in core/Origin.H; whether a word is TRUE of its value; the backtick prose form with no semicolon.",
-      "seconds": 2.2
+      "claim": "check_origin_vocabulary: OK -- 218 `origin <word>;` forms in 100 prose files all use a KNOWN word (16 words imported from check_origin_census, never copied), or one of 2 word(s) pinned in debt_registry with a stated exit (citedHeuristic, teachingSurrogate), or one of 6 sites exempt BY NAME (5 deliberate quotations, 1 English sentence).  SCANNED: docs, src, bin, gui/src, gui/schemas and the root *.md, every text file, read as one string so a line-wrapped form is seen.  NOT CHECKED: records under data/ (the census's domain) and case-local records under tutorials/ (nobody's); the engine's tolerance in core/Origin.H; whether a word is TRUE of its value; the backtick prose form with no semicolon.",
+      "seconds": 1.2
     },
     "check_overlay_aad_pinned": {
       "exit": 0,
@@ -728,7 +728,7 @@
     },
     "check_record_self_consistency": {
       "exit": 0,
-      "claim": "check_record_self_consistency: OK -- 3 record(s) ship a permeability set and every one declares its provenance (a fitted set must also name the case it was fitted against).  0 of 33 asset record(s) state header values this gate can compare, and every one agrees with what is shipped within 3x, except 0 pinned contradiction(s) awaiting a ruling.  The other 33 document no comparable number, so they are UNCHECKED, not clean.  The gate reports a disagreement; it does not choose which side is right.",
+      "claim": "check_record_self_consistency: OK -- 3 record(s) ship a permeability set and every one declares its provenance (a fitted set must also name the case it was fitted against).  0 of 35 asset record(s) state header values this gate can compare, and every one agrees with what is shipped within 3x, except 0 pinned contradiction(s) awaiting a ruling.  The other 35 document no comparable number, so they are UNCHECKED, not clean.  The gate reports a disagreement; it does not choose which side is right.",
       "seconds": 0.0
     },
     "check_reference_rung": {
@@ -793,8 +793,8 @@
     },
     "check_seal_drift": {
       "exit": 0,
-      "claim": "check_seal_drift: OK -- 1518 sealed manifest(s) and 6480 embedded record(s) inspected; every sealed case still reproduces its own records under its declared sealSchema (0 cosmetic difference(s), which the parsed-content claim tolerates by design); the 0 copies debt_registry.SEALED_COPIES_ADOPTED lists are still adopted.  NOT CHECKED: whether any sealed value is RIGHT.  And divergence from the LIVE catalogue (1944 record(s), 859 case(s) worth a curator's eye) is HISTORY, not a verdict -- this gate reports it, never fails on it, and never re-seals to make the number smaller.",
-      "seconds": 56.3
+      "claim": "check_seal_drift: OK -- 1520 sealed manifest(s) and 6480 embedded record(s) inspected; every sealed case still reproduces its own records under its declared sealSchema (0 cosmetic difference(s), which the parsed-content claim tolerates by design); the 0 copies debt_registry.SEALED_COPIES_ADOPTED lists are still adopted.  NOT CHECKED: whether any sealed value is RIGHT.  And divergence from the LIVE catalogue (1944 record(s), 859 case(s) worth a curator's eye) is HISTORY, not a verdict -- this gate reports it, never fails on it, and never re-seals to make the number smaller.",
+      "seconds": 31.3
     },
     "check_seal_growth": {
       "exit": 0,
@@ -848,12 +848,12 @@
     },
     "check_source_licence": {
       "exit": 0,
-      "claim": "check_source_licence: OK -- restricted-notice arm: all 4 file(s) naming a listed reuse-restricted origin (1 listed) also carry its reservation in words.  4996 TRACKED record(s) scanned (untracked and data/local files are NOT judged; an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 1 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 1 existing ones do and are pinned.  No-grant mechanism (C164): no line of the 9685 catalogue records and case-local constant/ files names GRI-Mech as a value's origin (none pinned; a cross-check marker before the name is allowed).  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 3121 case-local records under tutorials/**/constant/: 0 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)); NASA/TP-2002-211556 (publicDomain, 905 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 17572 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (8 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.  Facts from a copyrighted paper, by CONTRACT: Geraldes & Alves 2008 (NanoFiltran paper) -- 9 file(s) each citing it and saying what it carries, and none of the 20 PDF/image file(s) under bin, tutorials, docs, data, gui/public, gui/src, thirdParty is the paper or a figure of it.",
-      "seconds": 19.0
+      "claim": "check_source_licence: OK -- restricted-notice arm: all 4 file(s) naming a listed reuse-restricted origin (1 listed) also carry its reservation in words.  5027 TRACKED record(s) scanned (untracked and data/local files are NOT judged; an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 1 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 1 existing ones do and are pinned.  No-grant mechanism (C164): no line of the 9742 catalogue records and case-local constant/ files names GRI-Mech as a value's origin (none pinned; a cross-check marker before the name is allowed).  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 3141 case-local records under tutorials/**/constant/: 0 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)); NASA/TP-2002-211556 (publicDomain, 905 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 17666 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (8 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.  Facts from a copyrighted paper, by CONTRACT: Geraldes & Alves 2008 (NanoFiltran paper) -- 9 file(s) each citing it and saying what it carries, and none of the 20 PDF/image file(s) under bin, tutorials, docs, data, gui/public, gui/src, thirdParty is the paper or a figure of it.",
+      "seconds": 11.7
     },
     "check_species_citation": {
       "exit": 0,
-      "claim": "check_species_citation: OK -- 84 species record(s) declare thermochemistry; every one carries a source, except 18 pinned records awaiting curation.  The gate checks that a citation EXISTS, never that it is right -- that judgement needs a curator reading the primary, and a gate claiming it would be the failure I3 forbids.",
+      "claim": "check_species_citation: OK -- 124 species record(s) declare thermochemistry; every one carries a source, except 18 pinned records awaiting curation.  The gate checks that a citation EXISTS, never that it is right -- that judgement needs a curator reading the primary, and a gate claiming it would be the failure I3 forbids.",
       "seconds": 0.0
     },
     "check_species_identity": {
@@ -1453,8 +1453,8 @@
     },
     "check_brain_fresh": {
       "exit": 0,
-      "claim": "check_brain_fresh: OK -- FACTS block equals a fresh render from the tracked tree; BRAIN.md 158/250 lines; STATE BY AREA has a `judged` column.  Does NOT judge whether a dated judgement is still true.",
-      "seconds": 0.6
+      "claim": "check_brain_fresh: OK -- FACTS block equals a fresh render from the tracked tree; BRAIN.md 160/250 lines; STATE BY AREA has a `judged` column.  Does NOT judge whether a dated judgement is still true.",
+      "seconds": 0.2
     },
     "check_petroleum_cuts": {
       "exit": 0,
@@ -1648,7 +1648,7 @@
     },
     "check_record_law_values": {
       "exit": 0,
-      "claim": "check_record_law_values: OK -- every block of several laws marks one preferred; 1 check value(s) read back within tolerance (water.liquidThermalConductivity.chemsepEq16 (evaluated) rel +0.00644 within 0.007); laws without a check (the pinned debt): 2539; records not loadable alone: 64 (pinned 64, none of them carrying a check)",
+      "claim": "check_record_law_values: OK -- every block of several laws marks one preferred; 1 check value(s) read back within tolerance (water.liquidThermalConductivity.chemsepEq16 (evaluated) rel +0.00644 within 0.007); laws without a check (the pinned debt): 2499; records not loadable alone: 64 (pinned 64, none of them carrying a check)",
       "seconds": 0.9
     },
     "check_record_primitives": {
@@ -1658,8 +1658,8 @@
     },
     "check_provenance_home": {
       "exit": 0,
-      "claim": "check_provenance_home: OK -- 3410 records read; every provenance-shaped entry (a block carrying `origin`, any name, any depth) is in its record's provenance block (4 pinned blocks carry their own `origin`, the debt)",
-      "seconds": 5.4
+      "claim": "check_provenance_home: OK -- 3428 records read; every provenance-shaped entry (a block carrying `origin`, any name, any depth) is in its record's provenance block (4 pinned blocks carry their own `origin`, the debt)",
+      "seconds": 3.2
     },
     "check_record_law_pins": {
       "exit": 0,
@@ -1678,8 +1678,8 @@
     },
     "check_scan_roots": {
       "exit": 0,
-      "claim": "check_scan_roots: OK -- 69 of 381 gates carry a walk the plan cannot see, each pinned by name in debt_registry.SCAN_ROOTS_UNRESOLVED, and none was added.  NOT checked: whether a declared SCAN_ROOTS is complete, or walks inside an imported helper.",
-      "seconds": 5.1
+      "claim": "check_scan_roots: OK -- 69 of 383 gates carry a walk the plan cannot see, each pinned by name in debt_registry.SCAN_ROOTS_UNRESOLVED, and none was added.  NOT checked: whether a declared SCAN_ROOTS is complete, or walks inside an imported helper.",
+      "seconds": 3.3
     },
     "check_table_laws": {
       "exit": 0,
@@ -1688,8 +1688,8 @@
     },
     "check_liquid_diffusivity_declaration": {
       "exit": 0,
-      "claim": "check_liquid_diffusivity_declaration: OK -- the witness returns its declared entry exactly (from a file and inline); each of the four rules equals its value by hand to 1e-11 on a binary whose two infinite-dilution values differ 2.5-fold; the default association factor holds by value and by its words; the column's liquid film and a property operation at its state agree to 1e-10 (ruling 7); a `use check` stated viscosity is printed and not used; a stated mixture value leaves a pure constituent to its law; Leffler-Cullinan by hand where it differs from Vignes; one surface tension per tray, left out only at or above Tc; a sector's file read from the sector's constant/, never the root's; 28 refusals each by name, the old `diffusivity { model <word>; }` form among them.  NOT CHECKED: the migrated cases' numbers (their goldens and the byte-identity run), Wilke-Chang's fitness for a pair, Brock-Bird's fitness for a polar liquid (announced, not judged).  C329 B2a: Kooijman & Taylor's Eq. 23 and Wilke's reduction by hand to 1e-11, the Fick matrix within 1e-4 of the paper's Table IV eq 23 row and Gamma the book's Example 4.2.6 to every digit (tau_21 of the book's p. 61; the paper's printed value pinned 0.002 away), the books' misprint measured (0.0974, pairs evaluated i<j; 0.1002 with the printed tau_21), the binary edge equal to Vignes to 1e-12 and the ternary its limit, order-independence, Example 6.1.1's 50.99 and 16.95 mm2/s, seven refusals by name, Gamma and the Fick matrix refused on a phi-phi package, the gas reduction by hand and a pure gas or liquid refused, and the run saying which component takes the change.",
-      "seconds": 2.0
+      "claim": "check_liquid_diffusivity_declaration: OK -- the witness returns its declared entry exactly (from a file and inline); each of the four rules equals its value by hand to 1e-11 on a binary whose two infinite-dilution values differ 2.5-fold; the default association factor holds by value and by its words; the column's liquid film and a property operation at its state agree to 1e-10 (ruling 7); a `use check` stated viscosity is printed and not used; a stated mixture value leaves a pure constituent to its law; Leffler-Cullinan by hand where it differs from Vignes; one surface tension per tray, left out only at or above Tc; a sector's file read from the sector's constant/, never the root's; 30 refusals each by name, the old `diffusivity { model <word>; }` form among them.  NOT CHECKED: the migrated cases' numbers (their goldens and the byte-identity run), Wilke-Chang's fitness for a pair, Brock-Bird's fitness for a polar liquid (announced, not judged).  C329 B2a: Kooijman & Taylor's Eq. 23 and Wilke's reduction by hand to 1e-11, the Fick matrix within 1e-4 of the paper's Table IV eq 23 row and Gamma the book's Example 4.2.6 to every digit (tau_21 of the book's p. 61; the paper's printed value pinned 0.002 away), the books' misprint measured (0.0974, pairs evaluated i<j; 0.1002 with the printed tau_21), the binary edge equal to Vignes to 1e-12 and the ternary its limit, order-independence, Example 6.1.1's 50.99 and 16.95 mm2/s, seven refusals by name, Gamma and the Fick matrix refused on a phi-phi package, the gas reduction by hand and a pure gas or liquid refused, and the run saying which component takes the change.",
+      "seconds": 9.0
     },
     "check_volume_translation": {
       "exit": 0,
@@ -1818,8 +1818,8 @@
     },
     "check_lesson_prose_citations": {
       "exit": 0,
-      "claim": "check_lesson_prose_citations: OK 463 unmanaged prose citation(s) in 85 file(s), each file at its pin (ratchet: may only fall); 453 managed citation(s) are kept by repoint_lesson_citations.  NOT checked here: whether a managed one is current (repoint --check) or true (the lesson tests).",
-      "seconds": 1.5
+      "claim": "check_lesson_prose_citations: OK 463 unmanaged prose citation(s) in 85 file(s), each file at its pin (ratchet: may only fall); 475 managed citation(s) are kept by repoint_lesson_citations.  NOT checked here: whether a managed one is current (repoint --check) or true (the lesson tests).",
+      "seconds": 1.6
     },
     "check_unit_convention": {
       "exit": 0,
@@ -1863,8 +1863,8 @@
     },
     "check_lesson_absence_claims": {
       "exit": 0,
-      "claim": "check_lesson_absence_claims: OK 11 absence claim(s) held by 14 probe(s) of the tree, 2 KNOWN FALSE listed for the lesson's fixer, 822 unclassified sentence(s) in 170 file(s) each at its pin (ratchet: may only fall).  NOT checked: a sentence in other words, whether a grep probe proves a capability absent, or a page's own 'this page does not model' (counted, not judged).",
-      "seconds": 1.8
+      "claim": "check_lesson_absence_claims: OK 11 absence claim(s) held by 14 probe(s) of the tree, 0 KNOWN FALSE listed for the lesson's fixer, 821 unclassified sentence(s) in 169 file(s) each at its pin (ratchet: may only fall).  NOT checked: a sentence in other words, whether a grep probe proves a capability absent, or a page's own 'this page does not model' (counted, not judged).",
+      "seconds": 1.7
     },
     "check_lesson_typed_numbers": {
       "exit": 0,
@@ -1873,7 +1873,7 @@
     },
     "check_lesson_knob_domains": {
       "exit": 0,
-      "claim": "check_lesson_knob_domains: OK 5 knob(s) held inside a declared validity, 3 KNOWN violation(s) still violating (the page fixer's list), 217 undeclared knob(s) in 56 file(s) each at its pin (ratchet: may only fall).  NOT checked: a validity that is the model's output (a saturation molality, a relieving pressure), a corner of the box other than the declared one, a knob built in code the scan does not read.",
+      "claim": "check_lesson_knob_domains: OK 8 knob(s) held inside a declared validity, 0 KNOWN violation(s) still violating (the page fixer's list), 217 undeclared knob(s) in 56 file(s) each at its pin (ratchet: may only fall).  NOT checked: a validity that is the model's output (a saturation molality, a relieving pressure), a corner of the box other than the declared one, a knob built in code the scan does not read.",
       "seconds": 0.3
     },
     "check_dryer_arrangements": {
