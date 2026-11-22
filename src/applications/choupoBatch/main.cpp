@@ -343,6 +343,7 @@ try
         controlDict->lookupWordOrDefault("timeStepping", "fixed");
     const bool adaptive = (timeStepping == "adaptive");
     solver::AdaptiveSettings adaptSet;
+    bool deltaTmaxDeclared = false;
     //  The per-interval runaway guard (C178): one reader, which also refuses
     //  it on a fixed-step run.
     adaptSet.maxSteps = solver::readMaxSteps(controlDict, adaptive);
@@ -355,6 +356,11 @@ try
         adaptSet.rtol      = ts->lookupScalarOrDefault("rtol",      1.0e-6);
         adaptSet.atol      = ts->lookupScalarOrDefault("atol",      1.0e-9);
         adaptSet.deltaT0   = ts->lookupScalarOrDefault("deltaT0",   deltaT);
+        //  deltaTmax: declared => a hard cap on the step.  Absent => the
+        //  step is capped at writeInterval ONLY where a vessel needs the write
+        //  grid as its step boundary (settled below, `freeStep`); a run of
+        //  batchReactors steps freely and writes by dense output (C471).
+        deltaTmaxDeclared = ts->found("deltaTmax");
         adaptSet.deltaTmax = ts->lookupScalarOrDefault("deltaTmax", writeInterval);
         adaptSet.maxGrowth = ts->lookupScalarOrDefault("maxGrowth", 4.0);
         adaptSet.verbosity = verbosity;
@@ -374,7 +380,9 @@ try
     if (adaptive)
         std::cout << "  rtol=" << adaptSet.rtol << "  atol=" << adaptSet.atol
                   << "  deltaT0=" << adaptSet.deltaT0 << " s"
-                  << "  deltaTmax=" << adaptSet.deltaTmax << " s"
+                  << "  deltaTmax="
+                  << adaptSet.deltaTmax << " s"
+                  << (deltaTmaxDeclared ? " (declared)" : " (default)")
                   << "  maxGrowth=" << adaptSet.maxGrowth
                   << (adaptSet.maxSteps > 0
                         ? "  maxSteps=" + std::to_string(adaptSet.maxSteps)
@@ -392,7 +400,48 @@ try
     //  ALWAYS written.  One home for the reading, shared with the dynamic
     //  driver.
     const SolutionControl solutionCtl =
-        SolutionWriter::timeDirectoryControl(*controlDict, "choupoBatch");
+        SolutionWriter::timeDirectoryControl(*controlDict, "choupoBatch", true);
+
+    //  ---- the cadence of the <t>/ directories (DEV.md 4c C471) ------------
+    //  trajectory.csv keeps EVERY write point (writeInterval: it is the probe,
+    //  one cheap row each).  A `<t>/` directory is a whole restartable state
+    //  (one file per unit, every species), and a 253-species mechanism run on
+    //  a 2500-point grid wrote 2500 of them.  So the directories have their own
+    //  cadence: every dirEvery-th write point.  Declared as
+    //  `solutionControl { interval T; }` (a whole multiple of writeInterval,
+    //  refused otherwise); absent => every write point while the run has at
+    //  most kMaxDefaultDirs of them (every shipped case but a few), and
+    //  otherwise the coarsest whole multiple of writeInterval that keeps the
+    //  count at kMaxDefaultDirs or below.  The last instant (endTime) is always
+    //  written, and a restart from any `<t>/` is unchanged.
+    constexpr std::size_t kMaxDefaultDirs = 100;
+    std::size_t dirEvery = 1;
+    {
+        const scalar nGrid = (endTime - startTime) / writeInterval;
+        if (solutionCtl.interval > 0.0)
+        {
+            const scalar ratio = solutionCtl.interval / writeInterval;
+            const scalar k = std::round(ratio);
+            if (k < 1.0 || std::abs(ratio - k) > 1.0e-6 * std::max(1.0, k))
+                throw std::runtime_error("choupoBatch: solutionControl {"
+                    " interval " + std::to_string(solutionCtl.interval)
+                    + "; } must be a whole multiple of writeInterval ("
+                    + std::to_string(writeInterval) + " s): the <t>/ directories"
+                      " are written at write points, never between them.");
+            dirEvery = static_cast<std::size_t>(k);
+        }
+        else if (nGrid > static_cast<scalar>(kMaxDefaultDirs) + 1.0e-6)
+            dirEvery = static_cast<std::size_t>(
+                std::ceil(nGrid / static_cast<scalar>(kMaxDefaultDirs) - 1.0e-9));
+    }
+    if (solutionCtl.write && dirEvery > 1)
+        std::cout << "solutionControl:   <t>/ every " << dirEvery
+                  << " write points (" << dirEvery * writeInterval
+                  << " s)"
+                  << (solutionCtl.interval > 0.0 ? " (declared interval)"
+                                                 : " (default: at most 100 directories)")
+                  << "; trajectory.csv keeps every write point, and the last"
+                     " instant is always written\n\n";
 
     // ---- Build thermo package ----------------------------------------
     // v2 contract (thermophysicalPropertySystem): the BUILDER owns the ONE
@@ -758,6 +807,7 @@ if (flowsheetDict->found("cycle"))
     }
     bool panelExtrasLabelled = false;
 
+    std::size_t snapshotCount = 0;     // the t = start snapshot is #0
     auto writeSnapshot = [&](scalar t)
     {
         for (std::size_t u = 0; u < units.size(); ++u)
@@ -825,7 +875,11 @@ if (flowsheetDict->found("cycle"))
         // The `0/` directory is the AUTHORED initial state (the single source of
         // truth the seed reads back) -- the writer NEVER overwrites it.  Physical
         // transient snapshots are t > 0 only (50/ 100/ ...).
-        if (solWriter && std::abs(t) > 1.0e-9)
+        //  A directory at every dirEvery-th write point (and always at the
+        //  last instant); trajectory.csv above has already taken this one.
+        const std::size_t snapIdx = snapshotCount++;
+        const bool dirDue = (snapIdx % dirEvery == 0) || t >= endTime - 1.0e-12;
+        if (solWriter && dirDue && std::abs(t) > 1.0e-9)
         {
             std::vector<InternalStateIO::Holdup> holdups;
             holdups.reserve(units.size());
@@ -1450,8 +1504,7 @@ if (flowsheetDict->found("cycle"))
         //  the instant + trajectory rows still land on the clean grid.  ODE-
         //  form units (batchReactor) go through the stiff sweep; any non-ODE
         //  vessel (a still) takes ONE fixed step over the sub-interval.
-        solver::AdaptiveTimeStepper stepper(adaptSet);
-        std::size_t jacAnnounced = 0;     // analytic-Jacobian audits printed
+        std::size_t jacAnnounced = 0;    // analytic-Jacobian audits printed
         bool jacMixedAnnounced = false;   // the mixed-sweep warning, once
 
         // Glass-box step history: print the adaptive step as it grows/shrinks.
@@ -1470,11 +1523,39 @@ if (flowsheetDict->found("cycle"))
                       << "  " << std::setw(11) << hTaken << "\n";
         };
 
+        //  FREE STEPPING (DEV.md 4c C471).  The step used to be cut at every
+        //  write point, so a run of 2500 write points took 2500 steps whatever
+        //  the error asked for.  When every vessel is a batchReactor (a closed
+        //  ODE whose state is exactly the packed vector, and nothing that reads
+        //  the clock between steps) the integrator steps by its error alone,
+        //  stopping exactly only at a recipe event and at endTime, and each
+        //  write point inside an accepted step is produced by DENSE OUTPUT:
+        //  the cubic Hermite interpolant of the step (Theory Guide
+        //  sec:batch-dense-output).  Anything else keeps the write grid as the
+        //  step boundary, as before.
+        bool freeStep = condEvents.empty() && cycleCount == 0;
+        for (std::size_t i = 0; i < units.size(); ++i)
+            freeStep = freeStep && units[i]->type() == "batchReactor"
+                       && units[i]->hasOdeForm() && dischargeToIdx[i] < 0;
+        if (freeStep && !deltaTmaxDeclared) adaptSet.deltaTmax = 0.0;   // no cap
+        solver::AdaptiveTimeStepper stepper(adaptSet);
+        if (verbosity >= 1)
+            std::cout << (freeStep
+                ? "  [adaptive] free stepping: the step is set by the error"
+                  " (deltaTmax "
+                  + std::string(deltaTmaxDeclared ? "declared" : "not capped")
+                  + "); trajectory.csv rows and <t>/ states between steps come"
+                    " from the step's cubic Hermite interpolant (dense output)\n"
+                : "  [adaptive] the write grid is the step boundary (this run"
+                  " has a vessel, an event or a cycle that reads the clock at"
+                  " each write point); deltaTmax defaults to writeInterval\n");
+
         while (t < endTime - 1.0e-12 && !cssStopped)
         {
             // Next clean boundary: the earliest of the next write, the next
             // pending recipe event, and endTime.  The integrator lands HERE.
             scalar tNext = std::min(nextWrite, endTime);
+            if (freeStep) tNext = endTime;      // writes come from dense output
             if (nextEvent < events.size())
                 tNext = std::min(tNext, events[nextEvent].time);
             if (tNext <= t + 1.0e-12) tNext = std::min(t + writeInterval, endTime);
@@ -1545,7 +1626,98 @@ if (flowsheetDict->found("cycle"))
             //  stopped short.
             if (!odeUnits.empty())
             {
-                stepper.advance(odeUnits, t, tNext, onStep);
+                //  Dense output (free stepping only): called by advance() with
+                //  the units already committed to the ACCEPTED state at tEnd.
+                //  Every write point strictly inside the step and short of the
+                //  interval's end (which the code below writes from the
+                //  committed state, as always) is interpolated, written, and
+                //  the accepted state restored.
+                std::vector<sVector> yPrev, fPrev;
+                bool fPrevValid = false;
+                if (freeStep)
+                    for (const auto& ou : odeUnits) yPrev.push_back(ou.pack());
+                const solver::AdaptiveTimeStepper::StepCallback dense =
+                    !freeStep ? solver::AdaptiveTimeStepper::StepCallback{}
+                    : solver::AdaptiveTimeStepper::StepCallback(
+                        [&](scalar tEnd, scalar hTaken)
+                {
+                    const scalar tol   = 1.0e-9 * writeInterval;
+                    const scalar tPrev = tEnd - hTaken;
+                    std::vector<sVector> yNew, fNew;
+                    for (const auto& ou : odeUnits) yNew.push_back(ou.pack());
+                    bool interpolated = false;
+                    while (nextWrite < tNext - tol && nextWrite <= tEnd + tol)
+                    {
+                        const scalar tw = nextWrite;
+                        const bool exact = tw >= tEnd - tol;
+                        if (!exact && fNew.empty())
+                        {
+                            if (!fPrevValid)
+                            {
+                                fPrev.clear();
+                                for (std::size_t u = 0; u < odeUnits.size(); ++u)
+                                    fPrev.push_back(odeUnits[u].derivative(yPrev[u]));
+                            }
+                            for (std::size_t u = 0; u < odeUnits.size(); ++u)
+                                fNew.push_back(odeUnits[u].derivative(yNew[u]));
+                        }
+                        const scalar s  = exact ? 1.0 : (tw - tPrev) / hTaken;
+                        const scalar s2 = s * s, s3 = s2 * s;
+                        const scalar h00 = 2.0 * s3 - 3.0 * s2 + 1.0;
+                        const scalar h10 = s3 - 2.0 * s2 + s;
+                        const scalar h01 = -2.0 * s3 + 3.0 * s2;
+                        const scalar h11 = s3 - s2;
+                        for (std::size_t u = 0; u < odeUnits.size(); ++u)
+                        {
+                            sVector yw = yNew[u];
+                            if (!exact)
+                                for (std::size_t i = 0; i < yw.size(); ++i)
+                                {
+                                    const scalar y0 = yPrev[u][i], y1 = yNew[u][i];
+                                    const bool species = i < odeUnits[u].nPositive;
+                                    if (species && y0 > 0.0 && y1 > 0.0)
+                                    {
+                                        //  A species amount runs over decades
+                                        //  inside an ignition step, and a cubic
+                                        //  in n cannot follow an exponential:
+                                        //  interpolate ln n (slope f / n), which
+                                        //  is exact for exponential growth and
+                                        //  positive by construction.
+                                        const scalar z0 = std::log(y0), z1 = std::log(y1);
+                                        yw[i] = std::exp(
+                                            h00 * z0 + h10 * hTaken * fPrev[u][i] / y0
+                                          + h01 * z1 + h11 * hTaken * fNew[u][i]  / y1);
+                                    }
+                                    else
+                                    {
+                                        yw[i] = h00 * y0 + h10 * hTaken * fPrev[u][i]
+                                              + h01 * y1 + h11 * hTaken * fNew[u][i];
+                                        //  An end at zero: no logarithm, and a
+                                        //  cubic that would go below zero takes
+                                        //  the straight line between the ends
+                                        //  (never a negative amount).
+                                        if (species && yw[i] < 0.0)
+                                            yw[i] = (1.0 - s) * y0 + s * y1;
+                                    }
+                                }
+                            odeUnits[u].commit(yw);
+                        }
+                        interpolated = interpolated || !exact;
+                        routeDischarges(tw);
+                        for (auto& unit : units) unit->noteTimeAdvanced(tw);
+                        writeSnapshot(tw);
+                        if (verbosity >= 3) echoLine(tw);
+                        nextWrite += writeInterval;
+                    }
+                    if (interpolated)
+                        for (std::size_t u = 0; u < odeUnits.size(); ++u)
+                            odeUnits[u].commit(yNew[u]);
+                    // The accepted state ends this step and starts the next.
+                    yPrev = yNew;
+                    if (!fNew.empty()) { fPrev = fNew; fPrevValid = true; }
+                    else fPrevValid = false;
+                });
+                stepper.advance(odeUnits, t, tNext, onStep, dense);
                 //  The analytic-Jacobian audits of this interval, announced
                 //  (the first at verbosity >= 1, the rest at >= 3).
                 const auto& aj = stepper.analyticAudit();

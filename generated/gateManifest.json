@@ -1905,6 +1905,11 @@
       "exit": 0,
       "claim": "check_flash_ill_conditioned: OK -- a flat Rachford-Rice function is declared and V/F is bisected, not left at the seed: 0.275308 and 0.724692 against the references 0.275308 / 0.724692; an ordinary flash and a close boiler (|g'| 7e-5) print no warning; the pre-fix V/F = 0.5 output is refused",
       "seconds": 0.2
+    },
+    "check_batch_dense_output": {
+      "exit": 0,
+      "claim": "check_batch_dense_output: OK -- free stepping: 30 accepted steps for 1201 write points against 1208 with the step cut at each; rows equal the cut run's to 7.4e-08 relative in T (tol 1e-5) and 3.3e-05 of the total moles (tol 5e-4); 100 directories by default, 12 at interval 100 x writeInterval, trajectory.csv keeps 1201 rows",
+      "seconds": 0.4
     }
   }
 }

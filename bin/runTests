@@ -6343,6 +6343,22 @@ PYEOF
     fi
     rm -f /tmp/ignsens.$$
 
+    # batch dense-output gate (2026-11-22, DEV.md 4c C471).  Under `timeStepping
+    # adaptive;` the batch driver cut the step at every write point: 2500 write
+    # points = 2500 steps and 2500 <t>/ directories on an AramcoMech ignition run.
+    # The defect it would have caught: the step count equal to the write-point
+    # count.  Free stepping + dense output must also leave every row equal to the
+    # cut run's, and the directories keep their own cadence.
+    if gate_exec "$ROOT/bin/curate/check_batch_dense_output.py" > /tmp/bdense.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "batch-dense-output-gate" "$(head -1 /tmp/bdense.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_batch_dense_output.py)\n" "batch-dense-output-gate"
+        cat /tmp/bdense.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/bdense.$$
+
     # gas-only gate (2026-11-21, DEV.md 4c C458).  A radical is a GAS-ONLY
     # species (`role radical;`): K = kNoLiquidK in every phase split, and a
     # state with no vapour to hold it refused by name.  The defect it would

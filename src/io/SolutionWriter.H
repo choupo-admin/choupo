@@ -177,6 +177,12 @@ struct SolutionControl
     std::string startFrom     = "startTime"; // startTime (fresh) | latestTime (restart)
     bool        flushEach      = true;       // flush+close each instant (abort-survival)
     bool        byUnit        = true;        // write the per-unit byUnit/<unit>/ projection
+    //  `solutionControl { interval T; }` (DEV.md 4c C471): the cadence of the
+    //  `<t>/` directories of choupoBatch, in seconds, apart from the cadence of
+    //  trajectory.csv (controlDict `writeInterval`).  < 0 => not declared (the
+    //  binary's own default applies).  Read here, honoured by choupoBatch only;
+    //  the other time-integrated drivers refuse it by name.
+    double      interval      = -1.0;
 };
 
 // -------------------------------------------------------------------------
@@ -246,8 +252,11 @@ public:
     // refusal.  `flushEach` defaults to FALSE here (DEV.md 4c C236: per-instant
     // fsync cost 108 s wall for 3 s CPU on ctrl17); the struct default (true)
     // is the steady path's.
+    //  `honoursInterval`: the caller writes `<t>/` at `solutionControl {
+    //  interval T; }` (choupoBatch, C471); any other caller refuses the key.
     static SolutionControl timeDirectoryControl(const Dictionary&   controlDict,
-                                                const std::string&  binaryName);
+                                                const std::string&  binaryName,
+                                                bool                honoursInterval = false);
     //  The same reading WITHOUT the announcement, for a unit that writes
     //  its own files into <t>/ and must obey the same declared switch (the
     //  fixed bed's axial profiles, DEV.md 4c C375): one parser, two readers.
