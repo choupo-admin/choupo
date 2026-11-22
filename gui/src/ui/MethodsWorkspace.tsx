@@ -340,6 +340,9 @@ const DemandForecastTool = lazy(() =>
 const CampaignPlanTool = lazy(() =>
   import("./methods/CampaignPlanTool.js")
     .then((m) => ({ default: m.CampaignPlanTool })));
+const TransferUnitTool = lazy(() =>
+  import("./methods/TransferUnitTool.js")
+    .then((m) => ({ default: m.TransferUnitTool })));
 const PlantCostTool = lazy(() =>
   import("./methods/PlantCostTool.js")
     .then((m) => ({ default: m.PlantCostTool })));
@@ -699,6 +702,7 @@ export function MethodsWorkspace() {
             : tool === "demand-forecast" ? <DemandForecastTool />
             : tool === "plant-cost" ? <PlantCostTool />
             : tool === "campaign-plan" ? <CampaignPlanTool />
+            : tool === "transfer-unit" ? <TransferUnitTool />
             : tool === "process-safety" ? <ProcessSafetyTool />
             : tool === "overpressure" ? <OverpressureTool />
             : tool === "pool-fire" ? <PoolFireTool />

@@ -569,6 +569,81 @@ isothermal shortcut optimistic, are in \emph{Why the energy balance
 matters}.}
 
 % ---------------------------------------------------------------------
+\subsection{Why the transfer unit was invented: $Z = H_{OG}N_{OG}$}\label{sec:edu-transfer-unit}
+
+\declaredanchor{sec:packed-bed}
+
+\noindent\textit{\small Tool:} \code{tool=transfer-unit}.  \textit{\small
+Case it starts from:} \code{steady/distillation/ratebased01\_schulz\_0p10bar},
+run in the browser by a button on the page, whose published $H_{OG}$, $m$, $V$,
+$L$ profile and KPIs are read; steps 1 to 4 are the page's own arithmetic and
+run no engine.
+
+\subsubsection*{The question}
+
+\emph{My packed tower is too tall or too short.  How much of its height is the
+fault of the separation and how much of the packing, and how does that connect
+to the stages I counted on the McCabe--Thiele diagram?}
+
+\subsubsection*{Where the derivation lives}
+
+\derivation{Theory Guide, \emph{Packed beds at total reflux}
+(\theorydest{sec:packed-bed}): the transfer-unit equation
+$\mathrm{d}y/\mathrm{d}z = (y^*-y)/H_{OG}$, $H_{OG} = H_G + \lambda H_L$ and
+$\mathrm{HETP} = H_{OG}\ln\lambda/(\lambda-1)$.  The page derives the last of
+these from Colburn's equation and the Kremser count, for two straight lines.}
+
+The page has two halves and says which one you are in.  In the \textbf{page}
+half the height of a dilute absorber with straight lines is written as
+$Z = H_{OG}N_{OG}$: the number of transfer units
+\[
+N_{OG} = \frac{\ln\!\left[(1-1/A)\,y_{\mathrm{in}}/y_{\mathrm{out}} + 1/A\right]}{1-1/A},
+\qquad A = \frac{L}{mG},
+\]
+(Colburn's equation, Treybal Eq.~8.50) depends on the recovery and on $A$ only,
+and the height of a unit $H_{OG} = G/(K_y a)$ on the packing and the flows.
+Three sliders (the recovery, $A$, and $H_{OG}$) move the two halves
+independently, and $N_{OG}$ is drawn against $A$ at the chosen recovery.  In the
+\textbf{engine} half a button runs the shipped rate-based bed, and the page
+takes two sums on what it published: $N_{OG} = \sum \Delta z/H_{OG,k}$ over the
+segments, and the HETP that $H_{OG}$ and $\lambda = mV/L$ give segment by
+segment, beside the KPIs \code{HETP} and \code{theoreticalStages\_bed}.
+
+\subsubsection*{What the engine says}
+
+The segment profile carries the \code{HOG} column
+(\code{RateBasedSegment.cpp}:886) with $\lambda = m v/l$
+(\code{RateBasedSegment.cpp}:456), and the packing models write the HETP
+relation (\code{PackingRBF.cpp}:138--139, \code{PackingDelft.cpp}:131--132).
+The page's test holds the closed form to a numerical integral of
+$\mathrm{d}y/(y-y^*)$, and the HETP relation to the Kremser count.  The
+statement that $G/(F_G a)$ is much more constant than $G$ or $F_G a$ is
+Treybal's, after his Eq.~8.25; the paper that introduced the split is
+Chilton and Colburn, Ind.\ Eng.\ Chem.\ \textbf{27} (1935) 255--260, which is
+cited and not quoted.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+Set the recovery to 0.99 and lower $A$ from 3 to 1: $N_{OG}$ rises to 99 and
+is finite at $A = 1$.  Go on below 1: the number goes to infinity at $A = R$,
+the liquid rate at which the leaving liquid would be in equilibrium with the
+entering gas.  Then move $H_{OG}$ and watch only the height move.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That the pole is at $A = 1$.}  It is at $A = R$.  And that HETP equals
+$H_{OG}$: they are equal only at $\lambda = 1$; above it the HETP is the
+smaller.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+Straight lines, dilute solute, constant flows; a distillation at total reflux
+is the only engine case, so there is no packed absorber to compare with, and no
+curve of $H_{OG}$ against flow.  Plug flow: no axial mixing or maldistribution.
+
+% ---------------------------------------------------------------------
 \subsection{One flux, many units: film coefficients, Henry's law and reaction in the film}\label{sec:edu-one-flux-many-units}
 
 \declaredanchor{sec:rateBasedSegment}

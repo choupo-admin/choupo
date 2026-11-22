@@ -84,7 +84,7 @@ export type MethodToolId =
   | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
   | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection"
-  | "fault-diagnosis" | "how-do-we-know-k";
+  | "fault-diagnosis" | "how-do-we-know-k" | "transfer-unit";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1032,6 +1032,26 @@ export const METHOD_TOOLS: MethodTool[] = [
     origins: ["engine", "page", "assumption"],
     teaches: "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight in the same basis — judged against the engine's stagewise absorber, which is itself a model (Henry's law, constant total flows), not a general rigorous absorber.",
     theory: "ch:absorber",
+  },
+  //  COMMISSIONED 2026-11-22 (DEV.md 4c C222): why Chilton and Colburn split a
+  //  packed height into N_OG (the separation) and H_OG (the equipment).  TWO
+  //  HALVES, said on the page: Colburn's closed form and the HETP relation
+  //  are the page's arithmetic (held by a test to a numerical integral and
+  //  to the engine's source line); the last step runs the shipped rate-based
+  //  bed ratebased01 and reads its published H_OG, m, V, L and KPIs.
+  {
+    id: "transfer-unit", blurb: "See a packed height split into separation difficulty and packing quality.",
+    label: "Why the transfer unit was invented",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["engine", "page", "reference"],
+    teaches: "Z = H_OG N_OG: the number of transfer units N_OG is fixed by the "
+      + "equilibrium and operating lines alone (Colburn's equation for a dilute "
+      + "absorber, with its true pole at A = R, not at A = 1), the height of a "
+      + "unit H_OG = G/(K_y a) by the packing and the flows, and HETP = H_OG "
+      + "ln(lambda)/(lambda - 1) ties the two ways of counting together. The "
+      + "last step runs the engine's rate-based packed bed and reads the H_OG "
+      + "it publishes.",
+    theory: "sec:packed-bed",
   },
   //  COMMISSIONED 2026-11-14 by Vitor (DEV.md 4c C401: "eu tenho imensas
   //  dificuldades com lidar com a enormidade de formas de unidades com que os
