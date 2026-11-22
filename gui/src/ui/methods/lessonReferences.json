@@ -3174,6 +3174,15 @@
             "evidence": "api.crossref.org/works/10.1021/ie50187a044: author Murphree, title, container, volume 17, issue 7, pages 747-750, year 1925 matched (equilibrium-or-rate-based commission)",
             "date": "2026-11-13"
           }
+        },
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2016). Separation Process Principles with Applications Using Process Simulators, 4th ed. Wiley.",
+          "note": "Section 7.6, Rate-Based Method for Packed Distillation Columns, printed p. 217: lambda = mV/L (Eq. 7-80), the local slope m = dy/dx (7-81), H_OG = H_G + lambda H_L (7-86) and HETP = H_OG ln(lambda)/(lambda - 1) (7-87), with Example 7.7 (lambda = 0.76, H_OG = 1.52 ft, HETP = 1.74 ft).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/seader-separation-process-principles-4ed.pdf: authors, title, edition, publisher and year read from the title and copyright pages; Eqs. 7-80 to 7-87 and Example 7.7 read in the text layer on PDF p. 241 (printed page = PDF page - 24); Example 7.7's first row recomputed: ln(0.76)/(0.76 - 1) x 1.52 = 1.74 (C395, where HETP fails)",
+            "date": "2026-11-22"
+          }
         }
       ]
     },
