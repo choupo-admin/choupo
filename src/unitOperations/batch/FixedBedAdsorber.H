@@ -87,6 +87,20 @@ Description
     D_L = Dax/eps, their ratio and the nCells (> 5 Pe) that would bring it
     under 0.1 -- in the header, on the advisory log, and as KPIs.
 
+    C450 -- TRANSPORT CORRELATIONS (operation.transportCorrelations{},
+    BedTransportCorrelations.H): the literature's Dax (Wakao & Funazkri,
+    Edwards & Richardson, Chung & Wen, Gunn), external film k_f (Wakao &
+    Funazkri, Wilson & Geankoplis) and the LDF constant from resistances in
+    series (Ruthven 1984 eq 8.41, Glueckauf's 15), each a correlation OBJECT
+    with a window, a citation at its page and a verify() anchor.  A declared
+    Dax / kLDF.k.<sp> always WINS; a correlation fills a missing one only when
+    chosen, announced as an ESTIMATE with its window verdict, and every
+    model's estimate is published as KPIs `corr_*` beside the declared value
+    (`compare true`, the default).  Evaluated at the FEED state; Dax stays on
+    the BED basis, Dax = eps D_L (the papers' interstitial D_L is converted).
+    The per-term shares of 1/k_LDF (film / macropore / micropore) are KPIs.
+    Witness: batch30_bed_correlations; gate check_bed_correlations.
+
     Species classification (I = isotherm record on the adsorbent, K = entry
     in operation.kLDF.k), refused without silence -- the A2 pattern:
         I && K>0  ->  adsorbing (integrated, LDF source)
@@ -331,6 +345,9 @@ private:
     //  (interstitial basis, the one the moments obey: D_L = Dax/eps).
     scalar      dNumAnn_ = 0.0;
     scalar      dPhysAnn_ = 0.0;
+    //  C450: the transport-correlation report (empty unless the case
+    //  declares operation.transportCorrelations{}), published as KPIs.
+    std::map<std::string, scalar> corrKpis_;
     scalar cTot_ = 0.0;      // P/(R T) [mol/m3], constant by declaration
     bool   ergun_ = false;    // A4: all species integrated, P derived, u algebraic
     //  A5-T1: adiabatic one-temperature energy balance (ergun mode ONLY --

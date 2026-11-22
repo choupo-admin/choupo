@@ -522,6 +522,15 @@ const SLOT_MODEL_DEST: Record<string, ModelDest> = {
   //  slope that removes it -- both inside the section on the scheme.
   "fixedBedAdsorber.operation.convectionScheme:upwind":  { guide: "theory", dest: "eq:bed-numdisp" },
   "fixedBedAdsorber.operation.convectionScheme:vanLeer": { guide: "theory", dest: "eq:bed-vanleer" },
+  //  The fixed bed's transport correlations (DEV.md 4c C450): each chosen
+  //  word opens its own equation inside the section that derives them.
+  "fixedBedAdsorber.operation.transportCorrelations.dispersion.model:WakaoFunazkri":     { guide: "theory", dest: "eq:bed-dax-wakao" },
+  "fixedBedAdsorber.operation.transportCorrelations.dispersion.model:EdwardsRichardson": { guide: "theory", dest: "eq:bed-dax-edwards" },
+  "fixedBedAdsorber.operation.transportCorrelations.dispersion.model:ChungWen":          { guide: "theory", dest: "eq:bed-dax-chungwen" },
+  "fixedBedAdsorber.operation.transportCorrelations.dispersion.model:Gunn":              { guide: "theory", dest: "eq:bed-dax-gunn" },
+  "fixedBedAdsorber.operation.transportCorrelations.film.model:WakaoFunazkri":           { guide: "theory", dest: "eq:bed-sh-wakao" },
+  "fixedBedAdsorber.operation.transportCorrelations.film.model:WilsonGeankoplis":        { guide: "theory", dest: "eq:bed-sh-wilson" },
+  "fixedBedAdsorber.operation.transportCorrelations.film.model:none":                    { guide: "theory", dest: "eq:bed-ldf-series" },
 };
 
 // The theory link of a word chosen INSIDE a unit block -- `model

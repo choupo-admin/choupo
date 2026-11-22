@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1929,
+  "cases": 1930,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 36
@@ -21340,6 +21340,20 @@
    ],
    "hasGolden": true
   },
+  "tutorials/batch/adsorber/batch30_bed_correlations": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/batch/combustion/ignition01_h2o2": {
    "application": "choupoBatch",
    "unitTypes": [
@@ -30992,6 +31006,7 @@
     "tutorials/batch/adsorber/batch24_tsa_until_css",
     "tutorials/batch/adsorber/batch25_blowdown_thermal",
     "tutorials/batch/adsorber/batch29_pulse_two_schemes",
+    "tutorials/batch/adsorber/batch30_bed_correlations",
     "tutorials/batch/combustion/ignition01_h2o2",
     "tutorials/batch/combustion/ignition01_h2o2_eulersi",
     "tutorials/batch/combustion/ignition01_h2o2_jac",
@@ -33320,7 +33335,8 @@
     "tutorials/batch/adsorber/batch24_blowdown_inert",
     "tutorials/batch/adsorber/batch24_tsa_until_css",
     "tutorials/batch/adsorber/batch25_blowdown_thermal",
-    "tutorials/batch/adsorber/batch29_pulse_two_schemes"
+    "tutorials/batch/adsorber/batch29_pulse_two_schemes",
+    "tutorials/batch/adsorber/batch30_bed_correlations"
    ],
    "gasSolidSplitter": [
     "tutorials/steady/gas-solid/gasSolidSplitter01_ideal",
@@ -35971,6 +35987,7 @@
     "tutorials/batch/adsorber/batch24_tsa_until_css",
     "tutorials/batch/adsorber/batch25_blowdown_thermal",
     "tutorials/batch/adsorber/batch29_pulse_two_schemes",
+    "tutorials/batch/adsorber/batch30_bed_correlations",
     "tutorials/batch/combustion/ignition01_h2o2",
     "tutorials/batch/combustion/ignition01_h2o2_eulersi",
     "tutorials/batch/combustion/ignition01_h2o2_jac",

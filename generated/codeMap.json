@@ -245,6 +245,24 @@
   "BatchUnitOperation": [
    "src/unitOperations/batch/BatchUnitOperation.H"
   ],
+  "BedAnchor": [
+   "src/unitOperations/batch/BedTransportCorrelations.H"
+  ],
+  "BedContext": [
+   "src/unitOperations/batch/BedTransportCorrelations.H"
+  ],
+  "BedDispersionCorrelation": [
+   "src/unitOperations/batch/BedTransportCorrelations.H"
+  ],
+  "BedDispersionResult": [
+   "src/unitOperations/batch/BedTransportCorrelations.H"
+  ],
+  "BedFilmCorrelation": [
+   "src/unitOperations/batch/BedTransportCorrelations.H"
+  ],
+  "BedFilmResult": [
+   "src/unitOperations/batch/BedTransportCorrelations.H"
+  ],
   "BedHydraulics": [
    "src/unitOperations/reactor/PFR.H"
   ],
@@ -1320,6 +1338,12 @@
   ],
   "LayoutZone": [
    "src/core/ResultRecords.H"
+  ],
+  "LdfSeriesInput": [
+   "src/unitOperations/batch/BedTransportCorrelations.H"
+  ],
+  "LdfSeriesResult": [
+   "src/unitOperations/batch/BedTransportCorrelations.H"
   ],
   "Leaf": [
    "src/thermo/LiquidPropertyDoor.H"
@@ -3749,6 +3773,32 @@
    {
     "key": "batchElectrodialysis",
     "type": "BatchElectrodialysis"
+   }
+  ],
+  "src/unitOperations/batch/BedTransportCorrelations.cpp": [
+   {
+    "key": "WakaoFunazkri",
+    "type": "WakaoFunazkriDispersion"
+   },
+   {
+    "key": "EdwardsRichardson",
+    "type": "EdwardsRichardsonDispersion"
+   },
+   {
+    "key": "ChungWen",
+    "type": "ChungWenDispersion"
+   },
+   {
+    "key": "Gunn",
+    "type": "GunnDispersion"
+   },
+   {
+    "key": "WakaoFunazkri",
+    "type": "WakaoFunazkriFilm"
+   },
+   {
+    "key": "WilsonGeankoplis",
+    "type": "WilsonGeankoplisFilm"
    }
   ],
   "src/unitOperations/dynamic/DynamicUnitOperation.cpp": [
@@ -13299,6 +13349,10 @@
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/TransportModel.H"
   ],
+  "src/unitOperations/batch/BedTransportCorrelations.cpp": [
+   "src/core/Types.H",
+   "src/unitOperations/batch/BedTransportCorrelations.H"
+  ],
   "src/unitOperations/batch/FixedBedAdsorber.cpp": [
    "src/core/Advisory.H",
    "src/core/BatchPlanRecords.H",
@@ -13346,6 +13400,7 @@
    "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
+   "src/unitOperations/batch/BedTransportCorrelations.H",
    "src/unitOperations/batch/FixedBedAdsorber.H",
    "src/unitOperations/hydraulics/packedBed/ErgunEquation.H"
   ],
@@ -21086,6 +21141,7 @@
    "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
+   "src/unitOperations/batch/BedTransportCorrelations.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/crystallisation/CrystallisationHeat.cpp",
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
@@ -29429,6 +29485,10 @@
    "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
+   "src/unitOperations/batch/FixedBedAdsorber.cpp"
+  ],
+  "src/unitOperations/batch/BedTransportCorrelations.H": [
+   "src/unitOperations/batch/BedTransportCorrelations.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp"
   ],
   "src/unitOperations/batch/FixedBedAdsorber.H": [

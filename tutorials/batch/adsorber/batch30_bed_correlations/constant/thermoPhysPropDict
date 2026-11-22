@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- batch30: ideal gas, with the gas TRANSPORT the
+  bed correlations need.  The Reynolds number takes the gas viscosity
+  (Chung) and the Schmidt number the CO2-N2 binary diffusivity (Fuller);
+  the carrier is N2 (an inert here: no isotherm record on the beads, and it
+  carries a Fuller diffusion volume, which helium in the catalogue does not).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+
+components       ( CO2 N2 );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+transport
+{
+    vapour
+    {
+        viscosity    { model Chung; }    // gas mu  (Tc, Pc, omega, M)
+        diffusivity  { model Fuller; }   // binary D (diffusion volumes)
+    }
+}

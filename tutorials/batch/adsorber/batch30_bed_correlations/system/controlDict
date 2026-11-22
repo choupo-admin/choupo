@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch30_bed_correlations / system/controlDict
+
+  Time control for the transport-correlation witness: the declared-value
+  front of batch13's bed (the carrier is N2 here), run to saturation, with
+  the correlations' estimates printed in the header and published as KPIs
+  corr_*.  timeStepping adaptive: the L-stable Rosenbrock23 (the LDF is
+  stiff), exactly as batch13.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Where do Dax, k_f and k_LDF come from? -- batch13's CO2/N2 bed with the declared Dax and k_LDF beside the literature correlations (Wakao-Funazkri, Edwards-Richardson, Chung-Wen, Gunn; Wilson-Geankoplis; Ruthven series with Glueckauf's 15), each estimate with its window and page";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         4200;     // s   (> t_st + MTZ: saturates)
+deltaT          0.05;     // s   (only relevant in timeStepping fixed)
+writeInterval   100;      // s
+timeStepping    adaptive; // Rosenbrock23

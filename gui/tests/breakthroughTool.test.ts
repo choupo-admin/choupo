@@ -45,6 +45,7 @@ vi.mock("../src/ui/plotting/plotly.js", () => ({
 import {
   BREAKTHROUGH_KNOBS,
   BREAKTHROUGH_WITNESS,
+  correlationComparison,
   decideNormalisation,
   defaultKnobValues,
   detectBreakthrough,
@@ -56,6 +57,9 @@ import {
 // The classroom feed's mechanics (textual override + witness clone) — pure
 // functions; nothing here touches the WASM adapter (that would need a browser).
 import { applyScalarOverride, methodCase } from "../src/case/methodRun.js";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { REPO } from "./witnessOutputs.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
 
 // The two REAL trajectory header shapes (verbatim from the tutorials' CSVs).
@@ -271,5 +275,60 @@ describe("the classroom witness — batch13 bundled and knob-addressable", () =>
     // The full default set covers every knob, u included.
     expect(knobOverrides(defaultKnobValues()))
       .toHaveLength(BREAKTHROUGH_KNOBS.length);
+  });
+});
+
+// ---- The transport-correlation comparison (DEV.md 4c C450) ------------------
+// The panel reads the KPIs a case with operation.transportCorrelations
+// publishes.  The block below is the GOLDEN of the shipped witness
+// (batch30_bed_correlations/expected, the engine's own recorded numbers), so
+// the test holds the tool to what the engine publishes, not to a copy.
+
+function batch30Kpis(): KpiMap {
+  const txt = readFileSync(join(REPO, "tutorials", "batch", "adsorber",
+    "batch30_bed_correlations", "expected"), "utf8");
+  const bed: { [k: string]: number } = {};
+  for (const line of txt.split("\n")) {
+    const f = line.trim().split(/\s+/);
+    const key = f[2];
+    if (f[0] === "kpi" && f[1] === "bed" && key !== undefined) bed[key] = Number(f[3]);
+  }
+  return { bed };
+}
+
+describe("correlationComparison — the declared value beside each estimate", () => {
+  it("is empty on a case that declares no transportCorrelations (batch13)", () => {
+    expect(correlationComparison(BED_KPIS.bed)).toEqual([]);
+    expect(correlationComparison(undefined)).toEqual([]);
+  });
+
+  it("lays Dax declared against the four estimates with the engine's window verdict", () => {
+    const rows = correlationComparison(batch30Kpis().bed);
+    const dax = rows.filter((r) => r.quantity === "Dax (bed basis)");
+    expect(dax.map((r) => r.model).sort()).toEqual(
+      ["ChungWen", "EdwardsRichardson", "Gunn", "WakaoFunazkri"]);
+    for (const r of dax) expect(r.declared).toBe(1e-4);
+    const win = Object.fromEntries(dax.map((r) => [r.model, r.inWindow]));
+    expect(win).toEqual({ ChungWen: false, EdwardsRichardson: true,
+      Gunn: true, WakaoFunazkri: true });
+    // Edwards & Richardson on the bed basis: eps D_L (8.83e-5 interstitial).
+    const er = dax.find((r) => r.model === "EdwardsRichardson")!;
+    expect(er.value).toBeCloseTo(0.4 * 8.83461224e-5, 9);
+  });
+
+  it("carries the film coefficients and the series with its shares", () => {
+    const rows = correlationComparison(batch30Kpis().bed);
+    const kf = rows.filter((r) => r.quantity === "k_f (CO2)");
+    expect(kf.map((r) => [r.model, r.inWindow]).sort()).toEqual(
+      [["WakaoFunazkri", true], ["WilsonGeankoplis", false]]);
+    const ser = rows.find((r) => r.model === "Ruthven series")!;
+    expect(ser.declared).toBe(0.05);
+    expect(ser.value).toBeCloseTo(0.01134945, 7);
+    expect(ser.shares!.film + ser.shares!.macropore + ser.shares!.micropore)
+      .toBeCloseTo(1, 12);
+    // The micropore resistance controls this bead; the ratio the panel shows
+    // is the engine's two numbers, not a third.
+    expect(ser.shares!.micropore).toBeGreaterThan(ser.shares!.macropore);
+    expect(ser.value / ser.declared!).toBeCloseTo(0.226989, 5);
   });
 });
