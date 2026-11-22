@@ -54,8 +54,8 @@ THE REAL DEFECTS IT WOULD HAVE CAUGHT.  DryingCurveTool airY max 0.04 against
 Y_sat(300 K) = 0.0225; MerkelTool airMoisture max 5 kmol/h against the
 saturation moisture of its default air (2.1 kmol/h); LevenspielTool T max
 360 K against the ethanol normal boiling point 351.44 K (data/standards/
-components/ethanol.dat).  All three are still on main and are KNOWN
-violations below.
+components/ethanol.dat).  All three were KNOWN violations until 2026-11-22, when the
+sliders were clamped and the entries became held bounds.
 """
 import math
 import os
@@ -144,17 +144,17 @@ DOMAINS = [
     (M + "DryingCurveTool.tsx", "airY", 0.0,
      ("expr", "0.622 * psat_water(k('airT').min) / (101325.0 - psat_water(k('airT').min))"),
      "air humidity ratio cannot exceed saturation at the knob box's coldest air temperature "
-     "(Y_sat(300 K) = 0.0225 kg/kg; the knob goes to 0.04, supersaturated air the engine refuses)", True),
+     "(Y_sat(300 K) = 0.0225 kg/kg; the knob goes to 0.04, supersaturated air the engine refuses; clamped to 0.02 on 11-22)", False),
     (M + "MerkelTool.tsx", "airMoisture", 0.0,
      ("expr", "(psat_water(k('airT').dflt) / (101325.0 - psat_water(k('airT').dflt))) * k('dryAirFlow').dflt"),
      "the water vapour carried by the default air cannot exceed saturation at its default temperature "
      "(about 2.1 kmol/h at 25 C and 65 kmol/h of dry air; the knob goes to 5, about 58 % of its range "
-     "supersaturated)", True),
+     "supersaturated; clamped to 2 on 11-22)", False),
     (M + "LevenspielTool.tsx", "T", None,
      ("read", "data/standards/components/ethanol.dat", r"^Tb\s+(" + NUMRX + r");", 1.0),
      "the liquid-phase rate law is only meaningful below the feed's bubble point, and the ethanol-rich end "
-     "of the page's own feed box boils near the ethanol normal boiling point (351.44 K); the knob goes to 360 K",
-     True),
+     "of the page's own feed box boils near the ethanol normal boiling point (351.44 K); the knob was 360 K, now 351 (11-22)",
+     False),
     (M + "FlashOperatingLineTool.tsx", "z", 0.0, 1.0, "a mole fraction lies in [0, 1]", False),
     (M + "FlashOperatingLineTool.tsx", "vf", 0.0, 1.0,
      "the vapour fraction of a two-phase feed lies in [0, 1] (q = 1 - vf: the page's feed is partly vaporised, "
@@ -268,8 +268,8 @@ def selftest():
 
         arm("a mole-fraction slider widened past 1", M + "FlashOperatingLineTool.tsx",
             "<Slider min={0.02} max={0.98}", "<Slider min={0.02} max={1.2}", "leaves the model's domain")
-        arm("a known violation fixed, flag kept", M + "DryingCurveTool.tsx",
-            "def: 0.010, min: 0.001, max: 0.04", "def: 0.010, min: 0.001, max: 0.02", "remove violates=True")
+        arm("a fixed slider widened back to supersaturation", M + "DryingCurveTool.tsx",
+            "def: 0.010, min: 0.001, max: 0.02", "def: 0.010, min: 0.001, max: 0.04", "leaves the model's domain")
         arm("a new slider with no declared validity", M + "FlashOperatingLineTool.tsx", "",
             '\nconst x = <Slider min={0} max={9} step={1} value={newKnob} />;\n', "undeclared knobs")
     return 1 if fails else 0

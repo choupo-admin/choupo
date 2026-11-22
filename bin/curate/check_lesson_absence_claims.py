@@ -55,7 +55,7 @@ reads a `lock` block and a read-only GUI workspace is on main
 case.md): a "not built" sentence with no probe.  The fast/slow page announces
 batch electrodialysis as "not built yet" while BatchElectrodialysis is
 registered (src/unitOperations/batch/BatchUnitOperation.cpp:149) and
-tutorials/batch/electrodialysis ships.  Both are KNOWN_FALSE below; the
+tutorials/batch/electrodialysis ships.  Both were KNOWN_FALSE until 2026-11-22 (rewritten); the
 boron/glucose/vendor-quote sentences of the sweep were fixed by the C453
 slices before this gate, and the same pattern would have refused them.
 """
@@ -134,15 +134,6 @@ CLAIMS = [
 
 #  file, needle, why it is false today (the work list of the lesson's fixer)
 KNOWN_FALSE = [
-    (M + "operatorPanelsLesson.ts", "lock are not built yet",
-     "says 'Today only the first slice exists ... the lock [is] not built yet': the engine reads a `lock` "
-     "block and a `draft` block (src/postProcessing/panel/PanelPass.cpp:431-455) and the read-only GUI "
-     "workspace S2 and the lesson S5 are on main (docs/design/operator-panel-in-the-case.md:4-5); what is "
-     "not built is the drafter, the tuning workspace (S1b, S3, S4)."),
-    (M + "FastSlowTool.tsx", "not built yet: batch electrodialysis",
-     "batch electrodialysis is built and registered (src/unitOperations/batch/BatchUnitOperation.cpp:149, "
-     "tutorials/batch/electrodialysis/edbatch01_constant_current); only the page's use of it is absent -- "
-     "the sentence reads as an engine fact.  A cascade loop IS absent (src/control has none)."),
 ]
 
 
@@ -254,8 +245,8 @@ def selftest():
             "the tree has it")
         arm("claim sentence rewritten", (M + "bjerrumLesson.ts", "knob is not built", "knob is built"),
             "the sentence is gone")
-        arm("false sentence fixed, entry kept", (M + "FastSlowTool.tsx", "not built yet: batch electrodialysis", "batch ED"),
-            "thank you for fixing it")
+        arm("a 'not built yet' sentence put back", (M + "FastSlowTool.tsx", "Not on this page: a cascade", "Not built yet: a cascade"),
+            "a new 'we do not have X'")
     return 1 if fails else 0
 
 

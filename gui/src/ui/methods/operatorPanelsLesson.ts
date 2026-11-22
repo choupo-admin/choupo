@@ -174,9 +174,11 @@ export const PANEL_STEPS: readonly LessonStep[] = [
     note: "The life cycle the design record gives a panel kept in the case is "
       + "DRAFT (the engine proposes one from what the case declares), TUNE "
       + "(the student changes it) and LOCK (it is frozen with a reason).  "
-      + "Today only the first slice exists: the engine reads a declared panel "
-      + "and reports facts about it.  The draft, the tuning workspace and the "
-      + "lock are not built yet.",
+      + "What exists today: the engine reads a declared panel, including its "
+      + "`draft` and `lock` blocks, and reports facts about it, and a "
+      + "read-only workspace draws it.  The drafter that proposes a panel "
+      + "from the case and the tuning workspace in which the student edits "
+      + "one are still to come.",
   },
   {
     n: 7,
@@ -201,12 +203,14 @@ export const PANEL_LIMITS: readonly LessonLimit[] = [
   },
   {
     id: "s1-only",
-    title: "Only the first slice of the panel exists in the engine.",
-    body: "Today the engine reads a declared system/panelDict in a "
-      + "choupoBatch run and reports facts.  There is no panel workspace that "
-      + "draws a case's panel, no draft written by the engine, no tuning and "
-      + "no lock yet; the drawings on this page are the lesson's own "
-      + "illustrations, not that workspace.",
+    title: "What the engine does with a panel today.",
+    body: "The engine reads a declared system/panelDict, with its `draft` "
+      + "and `lock` blocks, in a choupoBatch run and reports facts about it; "
+      + "the app's Panel workspace draws a case's panel from those facts.  "
+      + "The drawings on this page are the lesson's own illustrations, "
+      + "separate from that workspace.  Still to come: the drafter that "
+      + "proposes a panel and the tuning workspace in which the student "
+      + "edits one.",
   },
   {
     id: "no-mid-run",
