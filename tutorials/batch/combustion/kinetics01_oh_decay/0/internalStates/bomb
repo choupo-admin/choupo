@@ -1,0 +1,35 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/bomb -- the cell at t = 0, the SINGLE source of truth.
+
+  The H2/N2 bath at T and P, and a trace of OH made at t = 0 (the flash).
+  One species per line: the EduTool `how-do-we-know-k` rewrites T, P,
+  totalMoles and the mole fractions of H2, OH, H2O2 and N2 by name, and a
+  rewrite that matched twice or not at all would refuse rather than run the
+  wrong experiment.  totalMoles = P V / (R T) keeps the charge consistent with
+  T and P (ideal gas, V = 1 litre).
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "bomb";
+equipment   batchReactor;
+
+holdup
+{
+    T            1000.0 K;
+    P               1.0 bar;
+    V             0.001;            // m3 (1 litre, held constant)
+    totalMoles    1.2027e-5;        // kmol = P V / (R T)
+    molarComposition
+    {
+        H2     0.01;                // the partner, in excess over the radical
+        OH     1.0e-6;              // the trace radical made by the flash
+        N2     0.989999;            // inert bath: 1 - x_H2 - x_OH
+        H2O2   0.0;                 // (the fall-off experiment seeds this instead)
+        O2     0.0;
+        H      0.0;
+        O      0.0;
+        HO2    0.0;
+        water  0.0;
+    }
+}

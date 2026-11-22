@@ -1,0 +1,109 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Water  (H2O, CAS 7732-18-5)
+  Warning: Antoine fit accurate for 273-373 K only.
+           Above ~373 K use steam tables or a proper EoS (IAPWS).
+\*---------------------------------------------------------------------------*/
+
+name        water;
+formula     H2O;
+CAS         7732-18-5;
+
+MW          18.015;
+Tc          647.14;
+Pc          220.64;
+omega       0.3449;
+Tb          373.15;
+HvapTb      40660;
+Vliq        1.807e-5;
+diffusionVolume  13.1;          // Fuller diffusion volume [-]
+
+
+reviewStatus   interim;
+reviewReason   "idealGasHeatCapacity transcribed by machine from NASA/TP-2002-211556 and checked against the report itself, not yet read back against the page by a curator; the rest of this record is unchanged";
+
+standardThermochemistry
+{
+    dHf_298   -241826.0;        // J/mol  -- ideal-gas reference
+    s_298     188.834;         // J/(mol·K)  -- third-law absolute
+}
+vaporPressure
+{
+    //  IAPWS SR1-86(1992) Eq. 1:  ln(p/pc) = (Tc/T) sum a_i u^e_i ,  u = 1 - T/Tc ,
+    //  with the reducing constants of the release, Tc = 647.096 K and
+    //  pc = 22.064 MPa (its Sec. 2), NOT this record's Tc.  Coefficients as
+    //  printed in Wagner & Pruss 2002, Eq. (2.5), p. 399.
+    model         Wagner;
+    reducing      { T 647.096 K;  P 22.064 MPa; }
+    exponents     (1 1.5 3 3.5 4 7.5);
+    coefficients  (-7.85951783  1.84408259  -11.7866497  22.6807411  -15.9618719  1.80122502);
+    Trange        (273.16  647.096);
+}
+
+idealGasHeatCapacity
+{
+    //  CASE-LOCAL OVERRIDE for flame temperatures: the catalogue's Cp is a
+    //  process-range fit that does not reach them.
+    //  NASA/TP-2002-211556 eq. (1), Cp/R = a1/T^2 + a2/T + a3 + a4 T + a5 T^2
+    //  + a6 T^3 + a7 T^4; appendix D, p. 131, entry H2O, a1..a7 as printed.
+    model    NASA9;
+    Tlow     200;
+    Tcommon  1000;
+    Thigh    6000;
+    low      ( -3.947960830e+04 5.755731020e+02 9.317826530e-01 7.222712860e-03 -7.342557370e-06 4.955043490e-09 -1.336933246e-12 );
+    high     ( 1.034972096e+06 -2.412698562e+03 4.646110780e+00 2.291998307e-03 -6.836830480e-07 9.426468930e-11 -4.822380530e-15 );
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (75.5);
+    Trange        (273  373);
+}
+
+// Ebulioscopic / cryoscopic constants for water (v0.28+):
+//   K_b = 0.512 K * kg / mol  (boiling-point elevation, ΔT = K_b · m)
+//   K_f = 1.853 K * kg / mol  (freezing-point depression, ΔT = K_f · m)
+// Reference: individual literature values -- primary re-citation pending (IST review).
+ebulioscopic
+{
+    K_b   0.512;
+    K_f   1.853;
+}
+
+// Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
+// liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
+// fitted to literature mu(T) over ~10-100 degC.
+associationFactor  2.6;
+liquidViscosity
+{
+    andrade { A -13.03; B 1796.1; }
+    vogel   { A -10.5366; B 541.4; C 144.0; }
+}
+
+groups
+{
+    unifac ( { group H2O; count 1; } );
+}
+
+uniquac
+{
+    r   0.9200;
+    q   1.4000;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
+}
+
+provenance
+{
+    idealGasHeatCapacity
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 131, entry H2O, a1..a7 of the 200-1000 K and 1000-6000 K intervals, as printed";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "read by bin/curate/nasa_tp2002_to_choupo.py, which holds H and S at 298.15 K to the printed values";
+    }
+    source   "McBride, Zehe & Gordon, NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species, NASA/TP-2002-211556 (2002)";
+    licence  publicDomain;    // US government work (NASA), 17 U.S.C. 105
+}
+
+variationOf water;
+variationReason "the case's own water record carries the flame-range ideal-gas heat capacity (NASA-9, 200-6000 K, NASA/TP-2002-211556) that the combustion chemistry needs; the catalogue's polynomial stops at 1500 K.";
