@@ -103,7 +103,9 @@ inline std::optional<Dimerisation> find(const std::string& gasSpecies)
             std::error_code ec;
             const auto t = fs::last_write_time(d, ec);
             return ec ? std::string("-")
-                      : std::to_string(t.time_since_epoch().count());
+                      // the count's type is __int128 under emscripten's libc++, where
+                      // to_string has no overload for it: name the width ourselves
+                      : std::to_string(static_cast<long long>(t.time_since_epoch().count()));
         };
         const std::string key = fs::current_path().string() + "|"
             + (records::sealedStrict() ? "S" : "U") + "|" + loc.string() + "@"
