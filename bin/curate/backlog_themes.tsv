@@ -1,6 +1,6 @@
 # item	theme -- the group each open backlog item is shown under (a VIEW aid for
 # bin/curate/backlog_view.py and the backlog page; BACKLOG.tsv stays the one home
-# of every item's state).  Vitor, 2026-11-23: "agrupa o resto e poe uma backlog
+# of every item's state).  Vitor, 2026-11-22: "agrupa o resto e poe uma backlog
 # que nao me deixe ansioso".  An open item with no line here is shown under "Outros".
 C458	Cinética e reatores
 C473	Cinética e reatores

@@ -44,7 +44,7 @@ def day_balance(rows, today):
 
 def week_closed(rows, today):
     """Items closed in the last seven days: the number Vitor watches go UP
-    (2026-11-23: "uma backlog que nao me deixe ansioso")."""
+    (2026-11-22: "uma backlog que nao me deixe ansioso")."""
     base = subprocess.run(["git", "-C", str(ROOT), "rev-list", "-1", "--before=7.days",
                            "HEAD", "--", "BACKLOG.tsv"], capture_output=True, text=True).stdout.strip()
     if not base:   # the file is younger than a week: count from its first version

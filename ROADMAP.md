@@ -152,9 +152,9 @@ section 4.)
   file, never the other way round.
 
 
-## Programmes moved from the backlog (2026-11-23)
+## Programmes moved from the backlog (2026-11-22)
 
-Vítor, 2026-11-23: "agrupa o resto e poe uma backlog que nao me deixe ansioso".  These are
+Vítor, 2026-11-22: "agrupa o resto e poe uma backlog que nao me deixe ansioso".  These are
 programmes of months, not tasks that close; each keeps its DEV.md 4c entry and its row in
 BACKLOG.tsv (status ROADMAP), and comes back to the backlog as OPEN when a concrete slice of it
 is commissioned.

@@ -11,7 +11,7 @@ called a landed EduTool (C247) open.
 
 Fails when: (a) an item C<n> headed in DEV.md 4c (`**C<n>`) has no row, or a
 row names no item there; (b) a status is outside DONE / PARTIAL / OPEN /
-DROPPED / NOT-AN-ITEM / ROADMAP (a long-term programme moved to ROADMAP.md, Vitor 2026-11-23); (c) an OPEN or PARTIAL row has no rank or no reason, the
+DROPPED / NOT-AN-ITEM / ROADMAP (a long-term programme moved to ROADMAP.md, Vitor 2026-11-22); (c) an OPEN or PARTIAL row has no rank or no reason, the
 ranks are not 1..N (0 = in progress), or a closed row has a rank; (d) a commit named in a row is not
 in this repository's history; (e) a DROPPED row does not quote Vitor (only he
 drops an item); (f) a row is duplicated or the header is not the agreed one.
