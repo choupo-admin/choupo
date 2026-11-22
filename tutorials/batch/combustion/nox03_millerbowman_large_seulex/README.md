@@ -17,7 +17,6 @@ method, then limits the accuracy of the rows written inside the induction period
 accurate as Rodas4 (4e-5 at rtol 1e-8, 4e-7 at 1e-10; Cantera comparison in docs/reviews/2026-11-22-seulex).  Tight
 `deltaTmax` hides this; it is not done here on purpose.
 
----
 
 # nox03_millerbowman_large -- 235 reactions from a journal table, one batch vessel
 

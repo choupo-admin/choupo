@@ -6,7 +6,6 @@ extrapolation method could lose to a Rosenbrock one; here it does not (the same 
 0.117 s) and the ignition delay and every printed species
 agree with Rodas4.  Theory Guide, section *Extrapolating the linearly-implicit Euler method*.
 
----
 
 # ignition01_h2o2 — H₂/O₂ ignition, and why stiff chemistry needs a stiff solver
 
