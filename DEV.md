@@ -5178,6 +5178,22 @@ accepts today, and that is a policy call.
 > leaves the cores idle for minutes in a full sweep.**  Review the SERIAL lanes in
 > bin/curate/suite_lanes.txt and move to ISO each gate that can run in a private copy.
 
+> **C471 (Vitor, 2026-11-22: "4000 diretorios?! ... temos de rever isso de escrever os
+> diretorios!"): a fine batch run writes thousands of `<t>/` directories and the integrator's step
+> is capped by the write grid.**  Measured on 11-21 (docs/reviews/2026-11-21-aramcomech-validation):
+> AramcoMech 1.3, 4000-5000 state directories, Choupo 33-49 s (sparse) against Cantera 4-7 s.  Read:
+> src/applications/choupoBatch/main.cpp:358 defaults deltaTmax to writeInterval and the adaptive
+> integrator sub-steps each write interval; main.cpp:389 drops a `<t>/` at every writeInterval.
+> Ruling: measure first (directories off; deltaTmax free); then the integrator steps freely with
+> dense output interpolated at the write points, the trajectory keeps every write point (it is the
+> probe), and directories get their own cadence (OpenFOAM: probes every step, time directories at
+> writeInterval).  "The time-integrated classes write t/ by default" stays true.
+
+> **C462 scope approved by Vitor 2026-11-22** ("Avanca! Depois mais tarde logo revejo eu ou um
+> colega meu!"): the virtual experiment in the engine (O Conaire): a radical at t = 0, pseudo-first
+> order with H2 in excess, k' against [H2] gives k compared with the record and its code line,
+> Arrhenius, Troe falloff, where the method breaks.
+
 > **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
 > mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
 > into the cloud branch, one full sweep ALONE (reason: the gas-only rule changes the
