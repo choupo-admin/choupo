@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Adsorption equilibrium record --- CO2 on zeolite13X_beads (batch30).
+
+  What this IS: the CO2 pair record of the batch30 sample, the same
+  single-site Langmuir teaching fit as batch13 (q_max 5 mol/kg, b_298 9 1/bar,
+  dH_ads -45 kJ/mol; Yang 1987/1997, Cavenati et al. 2004), re-anchored at
+  tRef = 298 K, the case's declared T, so b(T) = 9.0 exactly.
+\*-----------------------------------------------------------------------------*/
+
+recordType      adsorptionIsotherm;
+schemaVersion   1;
+
+adsorbent       zeolite13X_beads;
+adsorbate       CO2;
+
+model           langmuir;
+
+parameters
+{
+    q_max   5.0;      // saturation loading [mol/kg]
+    b_298   9.0;      // affinity at tRef [1/bar]
+    dH_ads  -45000;   // isosteric heat of adsorption [J/mol] (<0, exothermic)
+}
+
+tRef            298;
+loadingBasis    molPerKgAdsorbent;
+pressureBasis   partialPressureBar;
+quality         teachingOnly;
+
+provenance
+{
+    origin    literature;
+    method    "Yang (1987/1997); Cavenati, Grande & Rodrigues, J. Chem. Eng. Data 49 (2004) 1095 -- representative 298 K teaching fit, as batch13; re-fit from the primary before design use";
+}

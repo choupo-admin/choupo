@@ -3564,6 +3564,41 @@ the closed-form moments); Theory Guide, section "The convection scheme and its
 numerical dispersion".  With `solutionControl { write false; }` in controlDict
 the bed writes no `<t>/<unit>.profile`.
 
+`transportCorrelations { }` (in `operation`; DEV.md 4c C450) answers "where
+would `Dax`, `k_f` and `k_LDF` come from?" from the literature, evaluated at
+the FEED state (T, P, feed composition, superficial u; Re = rho u dp / mu with
+dp from the adsorbent identity, so the packed sample's `dParticle` is needed;
+mu from the thermo's gas viscosity or `operation.muGas`; Sc from the carrier
+pair's Fuller diffusivity or a declared `Dm`):
+```
+transportCorrelations {
+  dispersion { model EdwardsRichardson; species CO2; }  // fills Dax ONLY if Dax is absent
+  film       { model WakaoFunazkri; }                   // or WilsonGeankoplis, or `none`
+  series { CO2 { scope "..."; source "..."; epsP 0.35; tauP 3;
+                 micropore { DcOverRc2 1e-3; } } }      // fills kLDF.k.CO2 ONLY if absent
+  Dm { CO2 [0 2 -1 0 0] 1.6e-5; }                       // else Fuller vs the inert carrier
+  compare true;                                         // default: publish EVERY model
+}
+```
+Dispersion models: `WakaoFunazkri` (eq 2), `EdwardsRichardson` (gas, eq 17),
+`ChungWen` (liquids, eqs 15-16), `Gunn` (eq 1 + eq 3, spheres); film models:
+`WakaoFunazkri` (eq 12), `WilsonGeankoplis` (liquids, eqs 8-9); the series is
+Ruthven 1984 eq 8.41 (`1/k = K Rp/(3kf) + K Rp^2/(15 epsP Dp) + rc^2/(15 Dc)`,
+`K = epsP + rho_p q*/c` at the feed, `Dp = Dm/tauP`, Glueckauf's 15 in the
+internal terms).  A declared `Dax` or `kLDF.k.<sp>` always WINS: the estimate
+is announced and published beside it (KPIs `corr_Dax_<Model>`,
+`corr_Dax_inWindow_<Model>`, `corr_Dax_declared`, `corr_Dax_used`,
+`corr_kf_<sp>_<Model>`, `corr_Sh_<sp>_<Model>`, `corr_kLDF_series_<sp>`,
+`corr_kLDF_share_film|macropore|micropore_<sp>`, `corr_K_<sp>`, `corr_Re`,
+`corr_Sc_<sp>`, `corr_anchor_dev_*`).  An estimate outside the author's window
+(or a liquid correlation asked about this gas bed) is ANNOUNCED with the
+reason, not refused.  The basis is stated in the run: `Dax = eps D_L`, the
+correlations' interstitial `D_L` is converted.  A `series` entry needs a
+`film` model (a missing film resistance is never dropped silently: use
+`film { model none; }`) and carries a `scope` and a `source` like `kLDF`.
+Witness: `batch30_bed_correlations`; gate `check_bed_correlations`; Theory
+Guide, section "Where Dax, k_f and k_LDF come from".
+
 Per species the bed publishes its ledger closure `mass_closure_<i>`
 (`|M_in + hold0 - holdup - M_out| / (M_in + hold0)`; the trajectory column
 `model_closure_<i>`) only for a species IN PLAY (fed now or ever, or present

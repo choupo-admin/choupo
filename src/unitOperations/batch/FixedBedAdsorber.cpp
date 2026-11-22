@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "FixedBedAdsorber.H"
+#include "BedTransportCorrelations.H"
 #include "unitOperations/hydraulics/packedBed/ErgunEquation.H"
 
 #include "core/Advisory.H"
@@ -217,7 +218,16 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     //  Dax is on the BED (superficial) basis: Dax = eps * D_L, with D_L the
     //  interstitial dispersion of the textbook correlations.  A D_L pasted
     //  here overstates the dispersion by 1/eps (C451).
-    Dax_ = opDict->lookupScalar("Dax",  Dims::diffusivity);
+    //  C450: a DECLARED Dax always wins.  Absent, a dispersion correlation
+    //  chosen in operation.transportCorrelations.dispersion fills it (after
+    //  the gas state and the adsorbent are known, see "C450" below); absent
+    //  both, the lookup throws exactly as before.
+    const bool daxDeclared = opDict->found("Dax");
+    const bool daxFromCorrelation = !daxDeclared
+        && opDict->found("transportCorrelations")
+        && opDict->subDict("transportCorrelations")->found("dispersion");
+    Dax_ = daxFromCorrelation
+         ? -1.0 : opDict->lookupScalar("Dax",  Dims::diffusivity);
     const std::string flowModel =
         opDict->lookupWordOrDefault("flowModel", "constantVelocity");
     if (flowModel != "constantVelocity" && flowModel != "ergun")
@@ -244,7 +254,7 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
         throw std::runtime_error("fixedBedAdsorber '" + name_
             + "': operation.T and operation.P must be positive"
             " (declared absolute temperature and pressure)");
-    if (Dax_ < 0.0)
+    if (Dax_ < 0.0 && !daxFromCorrelation)
         throw std::runtime_error("fixedBedAdsorber '" + name_
             + "': operation.Dax = " + std::to_string(Dax_)
             + " m2/s -- a negative axial dispersion is anti-diffusion and"
@@ -336,6 +346,7 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     // -----------------------------------------------------------------
     sVector kAll(n, 0.0);
     std::vector<bool> hasK(n, false);
+    std::vector<std::string> kFromSeries;   // C450: species whose k is the series estimate
     if (opDict->found("kLDF"))
     {
         auto kldf = opDict->subDict("kLDF");
@@ -400,6 +411,158 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     }
 
     // -----------------------------------------------------------------
+    //  C450: operation.transportCorrelations{} -- the bed's transport
+    //  numbers from correlations, ONLY when the case chooses them.
+    //
+    //    transportCorrelations
+    //    {
+    //        dispersion { model <Dax correlation>; species <adsorbate>; }
+    //        film       { model <film correlation> | none; }
+    //        series { <adsorbate> { epsP; tauP; micropore { DcOverRc2; } } }
+    //        Dm { <adsorbate> <m2/s>; }       // else the thermo's Fuller pair
+    //        compare true | false;            // default true: every model's
+    //    }                                    // estimate is published
+    //
+    //  A declared Dax or kLDF.k.<sp> keeps winning; a correlation fills a
+    //  missing one, announced as an ESTIMATE with its window verdict, and
+    //  its estimate is published beside the declared value.  Parsed here
+    //  (the series species need a k to be classified as adsorbing); the
+    //  numbers are computed after the gas state is known (see below).
+    // -----------------------------------------------------------------
+    struct SeriesSpec
+    {
+        scalar epsP = 0.0;
+        scalar tauP = 0.0;
+        scalar DcOverRc2 = 0.0;
+        bool   hasMicro = false;
+    };
+    std::map<std::string, SeriesSpec> seriesSpec;
+    std::map<std::string, scalar> declaredDm;
+    std::string dispersionModel, dispersionSpecies, filmModel;
+    bool compareAll = true;
+    const bool hasTC = opDict->found("transportCorrelations");
+    if (hasTC)
+    {
+        auto tc = opDict->subDict("transportCorrelations");
+        static const std::vector<std::string> tcKeys =
+            {"dispersion", "film", "series", "Dm", "compare"};
+        for (const auto& key : tc->keys())
+            if (std::find(tcKeys.begin(), tcKeys.end(), key) == tcKeys.end())
+                throw std::runtime_error("fixedBedAdsorber '" + name_
+                    + "': operation.transportCorrelations." + key
+                    + " is not a key of this block; accepted: dispersion,"
+                      " film, series, Dm, compare");
+        if (tc->found("compare"))
+        {
+            const std::string w = tc->lookupWord("compare");
+            if (w != "true" && w != "false")
+                throw std::runtime_error("fixedBedAdsorber '" + name_ + "': "
+                    + registryRefusal::message(
+                          "operation.transportCorrelations.compare", w,
+                          {"true", "false"}, "Accepted"));
+            compareAll = (w == "true");
+        }
+        if (tc->found("dispersion"))
+        {
+            auto d = tc->subDict("dispersion");
+            dispersionModel = d->lookupWord("model");
+            if (d->found("species")) dispersionSpecies = d->lookupWord("species");
+            const auto av = BedDispersionCorrelation::availableTypes();
+            if (std::find(av.begin(), av.end(), dispersionModel) == av.end())
+                throw std::runtime_error("fixedBedAdsorber '" + name_ + "': "
+                    + registryRefusal::message(
+                          "operation.transportCorrelations.dispersion.model",
+                          dispersionModel, av, "Accepted"));
+        }
+        if (tc->found("film"))
+        {
+            filmModel = tc->subDict("film")->lookupWord("model");
+            auto av = BedFilmCorrelation::availableTypes();
+            av.push_back("none");
+            if (std::find(av.begin(), av.end(), filmModel) == av.end())
+                throw std::runtime_error("fixedBedAdsorber '" + name_ + "': "
+                    + registryRefusal::message(
+                          "operation.transportCorrelations.film.model",
+                          filmModel, av, "Accepted"));
+        }
+        if (tc->found("Dm"))
+        {
+            auto dm = tc->subDict("Dm");
+            for (const auto& sp : dm->keys())
+            {
+                const scalar v = dm->lookupScalar(sp, Dims::diffusivity);
+                if (!(v > 0.0))
+                    throw std::runtime_error("fixedBedAdsorber '" + name_
+                        + "': operation.transportCorrelations.Dm." + sp
+                        + " must be > 0 m2/s");
+                declaredDm[sp] = v;
+            }
+        }
+        if (tc->found("series"))
+        {
+            if (filmModel.empty())
+                throw std::runtime_error("fixedBedAdsorber '" + name_
+                    + "': operation.transportCorrelations.series needs a"
+                      " film model -- the film resistance is never dropped"
+                      " silently.  Declare film { model WakaoFunazkri; } (or"
+                      " WilsonGeankoplis for a liquid bed), or"
+                      " film { model none; } to say there is none");
+            auto sr = tc->subDict("series");
+            for (const auto& sp : sr->keys())
+            {
+                auto it = std::find(compNames_.begin(), compNames_.end(), sp);
+                if (it == compNames_.end() || !ads_->has(sp))
+                    throw std::runtime_error("fixedBedAdsorber '" + name_
+                        + "': transportCorrelations.series lists '" + sp
+                        + "' but it is not a component of this case with an"
+                          " isotherm record on adsorbent '" + adsorbentName_
+                        + "'");
+                auto d = sr->subDict(sp);
+                if (!d->found("scope") || !d->found("source"))
+                    throw std::runtime_error("fixedBedAdsorber '" + name_
+                        + "': transportCorrelations.series." + sp
+                        + " is sample data (porosity, tortuosity, crystal"
+                          " diffusivity of THIS bead) -- declare scope (what"
+                          " pellet it describes) and source (where the"
+                          " numbers came from), the kLDF rule");
+                SeriesSpec ss;
+                ss.epsP = d->lookupScalar("epsP");
+                ss.tauP = d->lookupScalar("tauP");
+                if (!(ss.epsP > 0.0 && ss.epsP < 1.0))
+                    throw std::runtime_error("fixedBedAdsorber '" + name_
+                        + "': series." + sp + ".epsP = "
+                        + std::to_string(ss.epsP)
+                        + " -- the particle (macropore) porosity must lie in"
+                          " (0, 1)");
+                if (!(ss.tauP > 0.0))
+                    throw std::runtime_error("fixedBedAdsorber '" + name_
+                        + "': series." + sp + ".tauP must be > 0 (D_p ="
+                          " D_m/tauP, Ruthven 1984 p. 217)");
+                if (d->found("micropore"))
+                {
+                    ss.DcOverRc2 = d->subDict("micropore")
+                        ->lookupScalar("DcOverRc2", Dims::inverseTime);
+                    if (!(ss.DcOverRc2 > 0.0))
+                        throw std::runtime_error("fixedBedAdsorber '" + name_
+                            + "': series." + sp + ".micropore.DcOverRc2 must"
+                              " be > 0 1/s (omit the micropore block for a"
+                              " macropore-controlled particle)");
+                    ss.hasMicro = true;
+                }
+                seriesSpec[sp] = ss;
+                const std::size_t i =
+                    static_cast<std::size_t>(it - compNames_.begin());
+                if (!hasK[i])
+                {
+                    hasK[i] = true;      // filled from the series below
+                    kAll[i] = 1.0;       // placeholder, never read
+                    kFromSeries.push_back(sp);
+                }
+            }
+        }
+    }
+
+    // -----------------------------------------------------------------
     //  Species classification (I = isotherm record, K = kLDF.k entry) --
     //  the A2 refusal table, plus the ONE-carrier rule of the constant
     //  c_total closure.
@@ -421,8 +584,12 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
                           << compNames_[i] << ": "
                           << ads_->isotherm(compNames_[i])->model()
                           << " isotherm on " << adsorbentName_
-                          << ", k_LDF = " << kAll[i]
-                          << " 1/s (basis solidFilm)";
+                          << ", k_LDF = ";
+                if (std::find(kFromSeries.begin(), kFromSeries.end(),
+                              compNames_[i]) != kFromSeries.end())
+                    std::cout << "(series estimate, see below)";
+                else
+                    std::cout << kAll[i] << " 1/s (basis solidFilm)";
                 if (kAll[i] == 0.0)
                     std::cout << "  -> k = 0 DECLARED: transport-only"
                                  " diagnostic, the solid is frozen (q holds"
@@ -764,6 +931,254 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
         pMap_[compNames_[adsIdx_[a]]] = 0.0;
     for (std::size_t a = 0; a < nAds; ++a)
         pIt_.push_back(pMap_.find(compNames_[adsIdx_[a]]));
+
+    // -----------------------------------------------------------------
+    //  C450: the transport correlations, evaluated at the FEED state
+    //  (T, P, y_feed, u -- the constants of this phase), the one state the
+    //  bed's pre-run announcements already use.  Basis, said once: Dax is
+    //  the BED (superficial) dispersion eps D_L; every textbook D_L below is
+    //  converted (Dax = eps D_L) and both are printed.
+    // -----------------------------------------------------------------
+    corrKpis_.clear();
+    if (hasTC)
+    {
+        auto say = [&](const std::string& msg, bool warn)
+        {
+            const bool fresh = AdvisoryLog::instance().add("model",
+                warn ? "warning" : "info",
+                "fixedBedAdsorber '" + name_ + "'", msg);
+            if (verbosity_ >= 2 || (warn && fresh && verbosity_ >= 1))
+                std::cout << "  [fixedBedAdsorber '" << name_
+                          << "'] correlations: " << msg << "\n";
+        };
+        if (!(dParticle_ > 0.0))
+            throw std::runtime_error("fixedBedAdsorber '" + name_
+                + "': operation.transportCorrelations needs the particle"
+                  " diameter (Re = rho u dp / mu): adsorbent '"
+                + adsorbentName_ + "' carries no dParticle -- curate it"
+                  " case-locally for the packed sample");
+        scalar Mw = 0.0;
+        for (std::size_t i = 0; i < n; ++i)
+            Mw += yFeed[i] * thermo.comp(i).MW() / 1000.0;   // kg/mol
+        const scalar rhoG = cTot_ * Mw;
+        scalar muG = muGas_;
+        if (!(muG > 0.0))
+        {
+            if (!thermo.hasTransport())
+                throw std::runtime_error("fixedBedAdsorber '" + name_
+                    + "': operation.transportCorrelations needs the gas"
+                      " viscosity.  Add a transport viscosity model to"
+                      " thermoPhysPropDict, or declare operation.muGas");
+            muG = thermo.viscosityGas(T_, yFeed);
+        }
+        const scalar Re = rhoG * u_ * dParticle_ / muG;
+        corrKpis_["corr_Re"] = Re;
+        corrKpis_["corr_rho_gas"] = rhoG;
+        corrKpis_["corr_mu_gas"] = muG;
+        {
+            std::ostringstream os;
+            os << std::setprecision(6) << "evaluated at the feed state"
+               << " (T = " << T_ << " K, P = " << P_ << " Pa, u = " << u_
+               << " m/s superficial): rho = " << rhoG << " kg/m3, mu = "
+               << muG << " Pa s, dp = " << dParticle_ << " m, eps = " << eps_
+               << " -> Re = " << Re << ".  Dax is stored on the BED basis"
+                  " Dax = eps D_L; the correlations' interstitial D_L is"
+                  " converted";
+            say(os.str(), false);
+        }
+
+        //  Molecular diffusivity of species i in the carrier: declared, or
+        //  the thermo's binary gas diffusivity against the inert carrier.
+        auto dmOf = [&](std::size_t comp) -> scalar
+        {
+            const std::string& sp = compNames_[comp];
+            auto it = declaredDm.find(sp);
+            if (it != declaredDm.end()) return it->second;
+            if (thermo.hasDiffusivity() && !inertsPresent.empty())
+                return thermo.diffusivityGas(T_, P_, comp, inertsPresent[0]);
+            throw std::runtime_error("fixedBedAdsorber '" + name_
+                + "': the correlations need the molecular diffusivity of '"
+                + sp + "' in the carrier.  Declare"
+                  " operation.transportCorrelations.Dm." + sp
+                + " [m2/s], or add transport { diffusivity { model Fuller; } }"
+                  " to thermoPhysPropDict (and keep one inert carrier)");
+        };
+        auto ctxOf = [&](scalar Dm)
+        {
+            BedContext c;
+            c.Re = Re; c.Sc = muG / (rhoG * Dm); c.eps = eps_;
+            c.dp = dParticle_; c.U = u_; c.Dm = Dm; c.gasPhase = true;
+            return c;
+        };
+
+        // ---- axial dispersion ------------------------------------------
+        if (!dispersionModel.empty() || compareAll)
+        {
+            std::size_t dispComp = adsIdx_.empty() ? 0 : adsIdx_[0];
+            if (!dispersionSpecies.empty())
+            {
+                auto it = std::find(compNames_.begin(), compNames_.end(),
+                                    dispersionSpecies);
+                const std::size_t ci = static_cast<std::size_t>(
+                    it - compNames_.begin());
+                if (it == compNames_.end()
+                    || std::find(adsIdx_.begin(), adsIdx_.end(), ci)
+                       == adsIdx_.end())
+                    throw std::runtime_error("fixedBedAdsorber '" + name_
+                        + "': transportCorrelations.dispersion.species '"
+                        + dispersionSpecies + "' is not an adsorbing species"
+                          " of this bed");
+                dispComp = ci;
+            }
+            else if (adsIdx_.size() != 1)
+                throw std::runtime_error("fixedBedAdsorber '" + name_
+                    + "': the bed has several adsorbing species; name the one"
+                      " whose molecular diffusivity sets the dispersion:"
+                      " transportCorrelations.dispersion.species");
+            const std::string& dsp = compNames_[dispComp];
+            const scalar Dm = dmOf(dispComp);
+            const BedContext c = ctxOf(Dm);
+            corrKpis_["corr_Sc_" + dsp] = c.Sc;
+            corrKpis_["corr_Dm_" + dsp] = Dm;
+            for (const auto& m : BedDispersionCorrelation::availableTypes())
+            {
+                if (!compareAll && m != dispersionModel) continue;
+                auto corr = BedDispersionCorrelation::New(m);
+                const BedDispersionResult r = corr->evaluate(c);
+                corrKpis_["corr_Dax_" + m] = r.Dax;
+                corrKpis_["corr_Dax_inWindow_" + m] = r.inWindow ? 1.0 : 0.0;
+                const BedAnchor an = corr->verify();
+                corrKpis_["corr_anchor_dev_disp_" + m] = an.dev;
+                std::ostringstream os;
+                os << std::setprecision(6) << "Dax[" << m << "] = " << r.Dax
+                   << " m2/s (D_L = " << r.DL << " m2/s interstitial), "
+                   << (r.inWindow ? "inside its window" : "OUTSIDE its window: "
+                       + r.note)
+                   << "; " << corr->citation() << "; anchor (" << an.kind
+                   << ") " << an.anchor << ": dev = " << an.dev;
+                say(os.str(), !r.inWindow && m == dispersionModel);
+            }
+            if (daxDeclared)
+                corrKpis_["corr_Dax_declared"] = Dax_;
+            if (daxFromCorrelation)
+            {
+                auto corr = BedDispersionCorrelation::New(dispersionModel);
+                const BedDispersionResult r = corr->evaluate(c);
+                Dax_ = r.Dax;
+                if (!(Dax_ > 0.0))
+                    throw std::runtime_error("fixedBedAdsorber '" + name_
+                        + "': the " + dispersionModel + " estimate of Dax is"
+                          " not positive");
+                std::ostringstream os;
+                os << std::setprecision(6) << "operation.Dax is absent, so"
+                   << " Dax = " << Dax_ << " m2/s is the " << dispersionModel
+                   << " ESTIMATE (bed basis, species " << dsp << ", "
+                   << (r.inWindow ? "inside its window"
+                                  : "OUTSIDE its window: " + r.note) << ")";
+                say(os.str(), !r.inWindow);
+            }
+            else if (!dispersionModel.empty())
+            {
+                std::ostringstream os;
+                os << std::setprecision(6) << "operation.Dax = " << Dax_
+                   << " m2/s is DECLARED and wins; the " << dispersionModel
+                   << " estimate " << corrKpis_["corr_Dax_" + dispersionModel]
+                   << " m2/s is published beside it, not used";
+                say(os.str(), false);
+            }
+            corrKpis_["corr_Dax_used"] = Dax_;
+        }
+
+        // ---- film coefficient and the LDF series ------------------------
+        std::vector<std::string> filmModels;
+        if (compareAll) filmModels = BedFilmCorrelation::availableTypes();
+        else if (!filmModel.empty() && filmModel != "none")
+            filmModels.push_back(filmModel);
+        const scalar rhoP = rhoB_ / (1.0 - eps_);
+        for (std::size_t a = 0; a < adsIdx_.size(); ++a)
+        {
+            const std::size_t ci = adsIdx_[a];
+            const std::string& sp = compNames_[ci];
+            const bool wantsSeries = seriesSpec.count(sp) > 0;
+            if (!wantsSeries && filmModels.empty()) continue;
+            const scalar Dm = dmOf(ci);
+            const BedContext c = ctxOf(Dm);
+            corrKpis_["corr_Sc_" + sp] = c.Sc;
+            corrKpis_["corr_Dm_" + sp] = Dm;
+            scalar kfChosen = 0.0;
+            for (const auto& m : filmModels)
+            {
+                auto corr = BedFilmCorrelation::New(m);
+                const BedFilmResult r = corr->evaluate(c);
+                corrKpis_["corr_Sh_" + sp + "_" + m] = r.Sh;
+                corrKpis_["corr_kf_" + sp + "_" + m] = r.kf;
+                corrKpis_["corr_kf_inWindow_" + sp + "_" + m] =
+                    r.inWindow ? 1.0 : 0.0;
+                const BedAnchor an = corr->verify();
+                corrKpis_["corr_anchor_dev_film_" + m] = an.dev;
+                if (m == filmModel) kfChosen = r.kf;
+                std::ostringstream os;
+                os << std::setprecision(6) << sp << ": k_f[" << m << "] = "
+                   << r.kf << " m/s (Sh = " << r.Sh << ", Sc = " << c.Sc
+                   << "), " << (r.inWindow ? "inside its window"
+                                           : "OUTSIDE its window: " + r.note)
+                   << "; " << corr->citation() << "; anchor (" << an.kind
+                   << ") " << an.anchor << ": dev = " << an.dev;
+                say(os.str(), !r.inWindow && m == filmModel);
+            }
+            if (!wantsSeries) continue;
+
+            if (!(cIn_[a] > 0.0))
+                throw std::runtime_error("fixedBedAdsorber '" + name_
+                    + "': transportCorrelations.series." + sp + ": the"
+                      " species is absent from the feed, so the equilibrium"
+                      " slope K = q*/c (Ruthven eq 8.41) at the feed state is"
+                      " undefined -- declare operation.kLDF.k." + sp
+                    + " instead");
+            const SeriesSpec& ss = seriesSpec.at(sp);
+            const scalar qs = qStarFeed_(a);
+            LdfSeriesInput in;
+            in.Rp = 0.5 * dParticle_;
+            in.kf = kfChosen;
+            in.epsP = ss.epsP;
+            in.Dp = Dm / ss.tauP;
+            in.DcOverRc2 = ss.hasMicro ? ss.DcOverRc2 : 0.0;
+            in.K = ss.epsP + rhoP * qs / cIn_[a];
+            const LdfSeriesResult sr = ldfSeries(in);
+            const BedAnchor an = ldfSeriesVerify();
+            corrKpis_["corr_anchor_dev_ldf"] = an.dev;
+            corrKpis_["corr_K_" + sp] = in.K;
+            corrKpis_["corr_kLDF_series_" + sp] = sr.k;
+            corrKpis_["corr_kLDF_share_film_" + sp] = sr.shareFilm;
+            corrKpis_["corr_kLDF_share_macropore_" + sp] = sr.shareMacro;
+            corrKpis_["corr_kLDF_share_micropore_" + sp] = sr.shareMicro;
+            const bool filled = std::find(kFromSeries.begin(),
+                kFromSeries.end(), sp) != kFromSeries.end();
+            if (filled) k_[a] = sr.k;
+            else corrKpis_["corr_kLDF_declared_" + sp] = k_[a];
+            std::ostringstream os;
+            os << std::setprecision(6) << sp << ": k_LDF series = " << sr.k
+               << " 1/s from 1/k = K Rp/(3 kf) + K Rp^2/(15 epsP Dp) +"
+                  " rc^2/(15 Dc) with K = epsP + rho_p q*/c = " << in.K
+               << " (rho_p = " << rhoP << " kg/m3, q* = " << qs
+               << " mol/kg at the feed), Dp = Dm/tauP = " << in.Dp
+               << " m2/s; shares of 1/k: film " << 100.0 * sr.shareFilm
+               << " %" << (kfChosen > 0.0 ? "" : " (NO film model: term"
+                                                  " omitted)")
+               << ", macropore " << 100.0 * sr.shareMacro << " %, micropore "
+               << 100.0 * sr.shareMicro << " %"
+               << (ss.hasMicro ? "" : " (no micropore block: term omitted)")
+               << ".  " << (filled ? "operation.kLDF.k." + sp + " is absent:"
+                                     " the series ESTIMATE is used"
+                                   : "operation.kLDF.k." + sp + " is DECLARED"
+                                     " and wins; the estimate is published"
+                                     " beside it, not used")
+               << ".  " << ldfSeriesCitation() << "; anchor (" << an.kind
+               << ") " << an.anchor << ": dev = " << an.dev
+               << ".  Window: " << ldfSeriesWindow();
+            say(os.str(), false);
+        }
+    }
 
     // Per-row absolute tolerances (spec section 2.5): 1e-9*c_in for c rows,
     // 1e-9*q_ref for q rows, 1e-6*A*u*c_in*t_span for the ledger rows.
@@ -3230,6 +3645,7 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
     const std::size_t nAds = adsIdx_.size();
     std::map<std::string, scalar> k;
     if (Dax_ > 0.0) k["Pe"] = u_ * L_ / Dax_;
+    for (const auto& kv : corrKpis_) k[kv.first] = kv.second;   // C450
     //  C375: the scheme's numerical dispersion beside the declared one
     //  (interstitial basis, frozen at initialise).
     k["D_axial_interstitial"] = dPhysAnn_;
