@@ -2346,7 +2346,10 @@ void FixedBedAdsorber::noteTimeAdvanced(scalar t)
     if (!writeProfiles_ || writeInterval_ <= 0.0) return;
     while (t >= nextProfile_ - 1.0e-9)
     {
-        writeProfile_(t);
+        //  The profile is a file OF the <t>/ directory: written only at an
+        //  instant the driver gives a directory (cadence, C471), so a
+        //  directory never holds it alone.
+        if (dirDue_) writeProfile_(t);
         nextProfile_ += writeInterval_;
     }
 }

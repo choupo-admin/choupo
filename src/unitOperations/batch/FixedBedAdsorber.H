@@ -262,6 +262,7 @@ public:
     std::vector<DatumAmendment> takeDatumAmendments() override;
 
     void noteTimeAdvanced(scalar t) override;
+    void setDirectoryDue(bool due) override { dirDue_ = due; }
 
     //  A6: the bed's cyclic state is its FIELDS -- concentrations,
     //  loadings and (thermal) temperatures.  The ledger rows M_in/M_out
@@ -421,6 +422,7 @@ private:
     scalar endTime_         = 0.0;
     scalar writeInterval_   = 0.0;
     scalar nextProfile_     = 0.0;
+    bool   dirDue_          = true;   // the driver's word: this instant gets a <t>/ (C471)
     scalar tNow_            = 0.0;
     int    verbosity_       = 1;
 

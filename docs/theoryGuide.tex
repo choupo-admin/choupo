@@ -39068,6 +39068,69 @@ overflow on the Robertson benchmark.}
 \label{fig:rosenbrock23-step}
 \end{figure}
 
+\subsection{Writing between steps: dense output, and the cadence of \code{<t>/}}\label{sec:batch-dense-output}
+
+Under \code{timeStepping adaptive;} the step $h$ is set by the local
+error, and a run of closed \code{batchReactor} vessels with no
+condition-triggered event, no cycle and no \code{dischargeTo} lets it
+be: the integrator stops \emph{exactly} only at a recipe event and at
+\code{endTime}, never at a write point.  (Before 2026-11-22 the step was
+cut at every \code{writeInterval}, so a run with 2500 write points took
+2500 steps whatever the error asked for; any other run keeps that
+behaviour, announced.)  A write point $t_w$ that falls inside an
+accepted step $[t_n, t_n + h]$ is produced by \emph{dense output}: the
+cubic Hermite interpolant through the two ends of the step and their
+slopes,
+\begin{equation}
+    \Yv(t_w) \;\approx\; h_{00}(s)\,\Yv_n + h_{10}(s)\,h\,f(\Yv_n)
+        + h_{01}(s)\,\Yv_{n+1} + h_{11}(s)\,h\,f(\Yv_{n+1}),
+    \qquad s = \frac{t_w - t_n}{h},
+    \label{eq:dense-output-hermite}
+\end{equation}
+with $h_{00} = 2s^3 - 3s^2 + 1$, $h_{10} = s^3 - 2s^2 + s$,
+$h_{01} = -2s^3 + 3s^2$, $h_{11} = s^3 - s^2$.  Its error is
+$\mathcal{O}(h^4)$ per step, one order above the local error of
+Rosenbrock23 ($\mathcal{O}(h^3)$), so the interpolated rows carry no more
+error than the step that contains them.  The slopes $f(\Yv_n)$ and
+$f(\Yv_{n+1})$ are two extra right-hand sides, evaluated only in a step
+that contains a write point, the second being the first of the next.  The
+interpolant is applied to the whole packed vector, so every linear invariant
+of the network (each element's atoms: $\mathbf{a}\cdot f = 0$ at both ends)
+is carried exactly by every interpolated row.  If any species amount of the
+vessel would come out negative, the whole vector takes the straight line
+between the step's ends instead, which is positive and, a convex
+combination of two states with the same atoms, conserves them too.  The vessel is put in the
+interpolated state, \code{trajectory.csv} takes its row, and the accepted
+state is restored before the integration goes on.
+
+\paragraph{The absolute tolerance of the species rows.}  The error test
+weighs each row by $\mathrm{atol}_i + \mathrm{rtol}\,|Y_i|$.  A uniform
+$\mathrm{atol} = 10^{-9}$\,kmol is $4\times10^{-5}$ in mole fraction on a
+$2.5\times10^{-5}$\,kmol vessel, so the radicals of an ignition (ppm) are
+not error-controlled, and an adaptive run fires early (ignition02: the
+vessel at 41\,$\mu$s was at 2418\,K against a truth of 1280\,K).  When the
+case declares no \code{atol}, a \code{batchReactor}'s species rows therefore
+get $10^{-12}$ of that vessel's initial total kmol (printed in the run), and
+the temperature row keeps $10^{-9}$\,K; a declared \code{atol} stays one
+value for every row, and is announced when it is above $10^{-9}$ of the
+inventory.
+
+\paragraph{The cadence of \code{<t>/}.}  \code{trajectory.csv} keeps
+every write point, one cheap row each: it is the probe.  A \code{<t>/}
+directory is a whole restartable state (one file per unit, every species),
+and a 253-species mechanism on 2500 write points wrote 2500 of them.  The
+directories therefore have a cadence of their own:
+\code{solutionControl \{ interval T; \}}, a whole multiple of
+\code{writeInterval}, and when it is absent every write point while the
+run has at most 100 of them (a state a student wants to restart from is
+rarely finer than one in a hundred), otherwise the coarsest whole multiple
+of \code{writeInterval} that keeps the run at 100 directories or fewer.
+\code{endTime} (or the stop of \code{repeat untilCSS}) is always written.  The
+default applies to every \code{choupoBatch} run, so a shipped case with more
+than 100 write points writes fewer directories than it did.  A \code{<t>/}
+taken inside a free-stepped run is the interpolated state, so a restart from
+it matches the original run within the interpolation error.
+
 \subsection{The Jacobian, and two correctness traps}
 
 The method needs $\Jac = \partial f/\partial\Yv$.  Choupo forms it by

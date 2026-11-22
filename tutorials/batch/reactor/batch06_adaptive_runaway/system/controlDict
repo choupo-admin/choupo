@@ -26,8 +26,10 @@
   printed --- the student SEES h adapt.
 
   The trajectory rows + the time directories (on by default) still land on the
-  CLEAN writeInterval grid (0, 10, 20, ... s): the integrator is clamped so it
-  never overshoots a write time.  The final state agrees with a fine fixed-step
+  CLEAN writeInterval grid (0, 10, 20, ... s): a write point inside an accepted
+  step is produced by dense output (the cubic Hermite interpolant of the step,
+  Theory Guide sec:batch-dense-output), the integrator stopping exactly only at
+  a recipe event and at endTime; deltaTmax stays declared here as a cap.  The final state agrees with a fine fixed-step
   RK4 run to tolerance --- adaptive stepping is an EFFICIENCY/ACCURACY tool,
   not a different physics.
 

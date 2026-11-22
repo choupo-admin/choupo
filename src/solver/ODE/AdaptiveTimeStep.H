@@ -124,6 +124,13 @@ struct OdeUnit
     std::shared_ptr<const SparsePattern>     pattern;
     std::function<void(const sVector& y, const sVector& f0, const sVector& typ,
                        SparseJacobian& J)>   sparseJacobian;
+    //  Optional: the ABSOLUTE tolerance of this unit's leading `nPositive`
+    //  (species) rows, when it differs from the sweep's uniform atol.  < 0 =>
+    //  the sweep's atol (every other caller).  choupoBatch sets it, for a
+    //  batchReactor whose case declares no atol, to 1e-12 of the unit's initial
+    //  total kmol (DEV.md 4c C471): a uniform 1e-9 kmol is 4e-5 in mole
+    //  fraction on a 2.5e-5 kmol vessel and leaves ppm radicals unwatched.
+    scalar                                   atolSpecies = -1.0;
 };
 
 //  THE ONE HOME of the per-row positivity mask over a vector packed from
@@ -248,6 +255,10 @@ public:
         // UNIFORMLY across all rows; each unit's packed state is scattered into Y by
         // its offset.
         sVector atol(N, settings_.atol);
+        for (std::size_t u = 0; u < units.size(); ++u)
+            if (units[u].atolSpecies >= 0.0)
+                for (std::size_t i = 0; i < units[u].nPositive && off[u] + i < N; ++i)
+                    atol[off[u] + i] = units[u].atolSpecies;
         for (std::size_t u = 0; u < units.size(); ++u)
         {
             const sVector yu = units[u].pack();
