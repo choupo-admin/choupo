@@ -5256,6 +5256,22 @@ accepts today, and that is a policy call.
 > output (Hairer & Wanner for Rodas4 and seulex), the cloud's slice in flight; its READY lists the 13
 > cases and every moved row.
 
+> **C477 (Vitor, 2026-11-22, quoting Sherwood: "o que se poe num grafico tem de ser pensado ...
+> representar tudo satura a visao e a analise"): each case answers its question in one or two
+> post-process plots.**  First three, scope ruled by the architect: nox03 "when does it ignite and
+> what NO does it leave" (log time, T and NO/NO2 on two axes, the engine's ignition delay marked) and
+> "where does the NO come from" (cumulative NO by declared route: thermal, prompt, N2O, NNH); nox02
+> "in which temperature window does NH3 remove NO" (final NO against vessel T with Fig. 57).  The
+> GUI/grammar half is built (build/c477-essential-plots: yAxis2, markers from a KPI, the Fig. 57
+> reference data); the engine half (views in choupoBatch, log-spaced sampling, tauIgnition on any
+> adiabatic batchReactor, route integrals) waits for the cloud's second batch in choupoBatch/main.cpp.
+> Then the principle goes across the corpus: which cases lack their essential plot.
+> C91 CLOSED 2026-11-22: Vitor checked the layout window in the browser ("sim ajusta bem").
+> C22 re-read 11-22: the silent R_min cut now throws (ShortcutColumn.cpp:115-128) and the Herington
+> D/J test exists (VleConsistency.cpp:143-193); only the silent Wegstein q_max clamp remains.
+> Backlog shared with the cloud 11-23 (SESSIONS): C458's methane lesson, C245 (Rodas4 constants
+> first), C256, C416; C455, C395, C222 with the laptop's generals; C204 stays with the laptop.
+
 > **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
 > mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
 > into the cloud branch, one full sweep ALONE (reason: the gas-only rule changes the
