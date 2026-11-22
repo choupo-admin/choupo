@@ -39974,6 +39974,10 @@ does; two vessels declaring different ones are refused); it was
 Rosenbrock23 whatever the case said, so a Rodas4 copy of a case reproduced
 the Rosenbrock23 one to every digit printed.
 
+The write points between two steps come from the cubic Hermite interpolant
+of the step, which is third order: with Rodas4's longer steps they are not
+held to the step tolerance the way the step ends are.
+
 \begin{pitfall}
 The first build applied the threshold test to unequilibrated rows: the
 temperature row's entries (kelvin per second per kmol) dwarfed every pivot

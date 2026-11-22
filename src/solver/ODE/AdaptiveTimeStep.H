@@ -303,7 +303,7 @@ public:
         ctrl.verbosity = 0;            // the driver owns the glass-box prints
         //  Every unit's species rows, at that unit's offset: a trial step that
         //  drives any of them negative is REJECTED by the integrator and the
-        //  step shrinks.  Nothing downstream clips -- a negative masked row
+        //  step shrinks.  Nothing downstream clips (the integrator sets a round-off below zero within atol to zero, itself) -- a negative masked row
         //  reaching a unit's commit is a defect the unit refuses by name.
         ctrl.positiveRows = positiveRowMask(units, off);
         if (onStep) ctrl.onAccept = onStep;
@@ -384,6 +384,13 @@ public:
                     all = all && u.pattern && u.sparseJacobian && u.linearKey != 0;
                     anySparse = anySparse || u.linearKey == 1;
                 }
+                if (all)
+                    for (std::size_t u = 0; u < units.size(); ++u)
+                        if (units[u].pattern->n != off[u + 1] - off[u])
+                            throw std::runtime_error("AdaptiveTimeStepper: unit '" + units[u].name
+                                + "' has a sparse pattern of " + std::to_string(units[u].pattern->n)
+                                + " rows for " + std::to_string(off[u + 1] - off[u])
+                                + " packed rows.  Refusing.");
                 if (all && (anySparse || N >= kSparseAutoRows))
                 {
                     //  W = I - h d J is block-diagonal: factor it on the
@@ -427,6 +434,14 @@ public:
                                 sVector(yg.begin() + lo, yg.begin() + hi),
                                 sVector(fg.begin() + lo, fg.begin() + hi),
                                 sVector(tg.begin() + lo, tg.begin() + hi), Ju);
+                            if (Ju.values.size() != units[u].pattern->nnz()
+                                || (!Ju.u.empty() && (Ju.u.size() != hi - lo || Ju.v.size() != hi - lo)))
+                                throw std::runtime_error("AdaptiveTimeStepper: unit '" + units[u].name
+                                    + "' returned a sparse Jacobian of the wrong size (values "
+                                    + std::to_string(Ju.values.size()) + " for a pattern of "
+                                    + std::to_string(units[u].pattern->nnz()) + ", u/v "
+                                    + std::to_string(Ju.u.size()) + "/" + std::to_string(Ju.v.size())
+                                    + " for " + std::to_string(hi - lo) + " rows).  Refusing.");
                             anyR1 = anyR1 || !Ju.u.empty();
                             J.values.insert(J.values.end(), Ju.values.begin(), Ju.values.end());
                         }
