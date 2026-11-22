@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*----------------------------------*\
-  0/internalStates/bomb -- the cell at t = 0, the SINGLE source of truth.
+  0/internalStates/bomb -- the initial HOLDUP of 'bomb', the SINGLE source of truth.
 
   A trace of H2O2 in N2 at T and P: the unimolecular decomposition (R15, a
   Troe fall-off) watched as the first-order decay of the parent.  One species
