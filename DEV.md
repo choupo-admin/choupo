@@ -5252,7 +5252,7 @@ accepts today, and that is a policy call.
 > **C476 (cloud finding, 2026-11-22): the C471 cubic Hermite dense output errs up to 4e-2 between
 > steps on a stiff system** (choupoBatch/main.cpp, the dense-output block): the interpolated rows of
 > 13 free-stepping batch cases; step ends and final states are right.  Cause documented in
-> docs/reviews/2026-11-22-densesparse/ (on the cloud branch).  Fix: the integrators' own dense
+> the cloud's dense-versus-sparse review (its branch, not yet on main).  Fix: the integrators' own dense
 > output (Hairer & Wanner for Rodas4 and seulex), the cloud's slice in flight; its READY lists the 13
 > cases and every moved row.
 
