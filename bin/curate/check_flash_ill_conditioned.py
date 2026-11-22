@@ -51,6 +51,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import gatekit  # noqa: E402
 
 CASE = "tutorials/steady/flash/flash01_benzene_toluene"
+# The only directory walk is over the gate's own probe copy of CASE (gatekit.probe_copy);
+# the tree is read by named path (CASE, the two component records).
+SCAN_ROOTS = ()
 STRIP = ("expected", "converged", "reports", "constant/propertyManifest")
 MSG = "Rachford-Rice function g(V) is nearly flat"
 LOCUS = "flash Rachford-Rice ill-conditioned"
