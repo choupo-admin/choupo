@@ -222,7 +222,18 @@ def main() -> int:
                          " missing data from a missing capability")
         else:
             notes.append("absent triples announced as missing DATA, block named")
-        mags = deltas(CASE)
+        #  The magnitudes are read from a run of THIS gate's own copy of the
+        #  ladder case.  They used to be read from the CSV the shipped case
+        #  leaves behind after the corpus walk: the gate passed alone on a used
+        #  checkout and failed in the pool of a full sweep, whose private slot
+        #  tree has no such file (the gate read a file another job writes).
+        ladder = tmp / "ladder"
+        shutil.copytree(CASE, ladder)
+        (ladder / "solubility.csv").unlink(missing_ok=True)
+        rcL, outL = run(ladder)
+        if rcL != 0:
+            fails.append(f"the ladder case did not run in the gate's own copy (exit {rcL})")
+        mags = deltas(ladder)
         for nm in DIRS:
             if nm not in mags:
                 fails.append(f"could not read a derived delta for {nm} from the"
