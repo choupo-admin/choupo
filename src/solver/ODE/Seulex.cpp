@@ -569,7 +569,8 @@ ODEStats Seulex::integrate(sVector& y, scalar t0, scalar t1,
         bool negative = false;
         if (!ctrl.positiveWithinAtol)
             for (std::size_t i = 0; i < ctrl.positiveRows.size() && i < n; ++i)
-                if (ctrl.positiveRows[i] && ynew[i] < 0.0 && ynew[i] > -atolFor(ctrl, i))
+                if (ctrl.positiveRows[i] && ynew[i] < 0.0 && ynew[i] > -atolFor(ctrl, i)
+                    && (y[i] > 0.0 || f0[i] >= 0.0))  // not an empty row still consumed (as Rosenbrock23)
                     ynew[i] = 0.0;
         for (std::size_t i = 0; i < ctrl.positiveRows.size() && i < n; ++i)
             if (ctrl.positiveRows[i]

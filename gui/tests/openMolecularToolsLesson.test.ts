@@ -112,7 +112,8 @@ describe("open-molecular-tools: the cards", () => {
     const all = JSON.stringify(OT_CARDS) + JSON.stringify(OT_STEPS);
     expect(all).not.toMatch(/COSMOtherm|DMol3|BioVia|TURBOMOLE|Gaussian/i);
     expect(all.match(/ORCA/g)?.length ?? 0).toBeLessThanOrEqual(1);
-    expect(all).not.toMatch(/\b(aspen|hysys|dwsim|gproms|chemcad|prosim|unisim|promax)\b/i);
+    // The process-simulator names have ONE home, bin/curate/check_doctrine.py, which already
+    // scans gui/src (this page included); repeating the list here would be a second home.
   });
 });
 

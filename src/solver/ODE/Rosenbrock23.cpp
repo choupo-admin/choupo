@@ -958,10 +958,18 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
         //  (fixedBedAdsorber, C375: a clip adds mass the ledger never sees), so
         //  the 2(3) pair leaves them alone for it.  Rodas4 keeps the clip it
         //  always had, flag or not (its behaviour for the adsorber is unchanged).
+        //  The 2(3) pair does NOT clip a row that was already at zero at the
+        //  step's start and is still being consumed (y[i] <= 0, f0[i] < 0): a
+        //  model consuming an empty state (a zeroth-order A -> B) is a real
+        //  crossing; clipping it would accept ever-shorter steps there until
+        //  maxSteps instead of refusing by name (check_positivity_mask, 11-22).
+        //  A positive row overshooting by round-off, or a zero row being
+        //  produced, is clipped (nox03's clean charge, check_kinetics_jacobian h1).
         if (rodas || !ctrl.positiveWithinAtol)
             for (std::size_t i = 0; i < ctrl.positiveRows.size() && i < n; ++i)
                 if (ctrl.positiveRows[i] && ynew[i] < 0.0
-                    && ynew[i] > -atolFor(ctrl, i))
+                    && ynew[i] > -atolFor(ctrl, i)
+                    && (rodas || y[i] > 0.0 || f0[i] >= 0.0))
                     ynew[i] = 0.0;
 
         // positivity: a step that drives a masked row negative is unphysical

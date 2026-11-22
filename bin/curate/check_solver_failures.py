@@ -131,7 +131,7 @@ SOURCES = ["src/solver/ActiveSetQP.cpp", "src/solver/SQP.cpp",
            "src/solver/NewtonND.cpp", "src/solver/LU.cpp",
            "src/solver/BlockTridiagonal.cpp",
            "src/solver/SparseLU.cpp", "src/solver/ParallelFor.cpp", "src/solver/ODE/Rosenbrock23.cpp", "src/solver/ODE/Jacobian.cpp",
-           "src/solver/ODE/ODEIntegrator.cpp", "src/solver/ODE/RK4.cpp",
+           "src/solver/ODE/ODEIntegrator.cpp", "src/solver/ODE/RK4.cpp", "src/solver/ODE/Seulex.cpp",
            "src/solver/ODE/EulerSI.cpp", "src/streams/AnalysisReconciler.cpp"]
 CASES = [
     ("batch06", "tutorials/batch/reactor/batch06_adaptive_runaway",
