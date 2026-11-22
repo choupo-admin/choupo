@@ -291,8 +291,8 @@ SABOTAGES += [
         "gate": "check_golden_bands.py",
         "kind": "detection",
         "file": "tutorials/steady/flowsheets/proxy01_gas_loop/expected",
-        "find": "H_closure_gap_kW 1.16937215466e-09 abs:7.012e-08\n",
-        "replace": "H_closure_gap_kW 1.16937215466e-09 1e-4\n",
+        "find": "H_closure_gap_kW -1.26627597297e-11 abs:7.012e-08\n",
+        "replace": "H_closure_gap_kW -1.26627597297e-11 1e-4\n",
         "why": "a closure RESIDUAL with a relative band is a golden over "
                "round-off (C384): it must carry an absolute band written in "
                "the row, and the gate must fail the relative one.",
@@ -377,14 +377,14 @@ SABOTAGES += [
         "gate": "check_liquid_property_ratchet.py",
         "kind": "detection",
         "file": "bin/curate/liquid_property_ratchet_debt.tsv",
-        "find": "src/propertyOps/PolarisationIndex.cpp\tkeyRead\t4",
-        "replace": "src/propertyOps/PolarisationIndex.cpp\tkeyRead\t3",
+        "find": "src/propertyOps/FitParametersMembrane.cpp\tkeyRead\t1",
+        "replace": "src/propertyOps/FitParametersMembrane.cpp\tkeyRead\t0",
         "why": "the ratchet must see a reader pricing a liquid property itself "
                "beyond its pin (C378 slice 0).  Lowering a pin below the reads "
                "its source holds is the same as one new raw read: the gate must "
                "NAME the file, not pass.  The target was the spray dryer's Vliq "
                "row until the door migration paid it (C431, 2026-11-19); it is "
-               "now the polarisation-index bench's four typed reads (C435 (4)).",
+               "now the membrane fit bench's one remaining key read (C435 (4)).",
     },
     {
         "gate": "check_liquid_property_ratchet.py",
