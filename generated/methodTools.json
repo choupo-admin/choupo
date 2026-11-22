@@ -313,8 +313,8 @@
       ]
     }
   ],
-  "liveTools": 97,
-  "registryTools": 97,
+  "liveTools": 98,
+  "registryTools": 98,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -663,6 +663,19 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=kremser"
+    },
+    {
+      "id": "transfer-unit",
+      "label": "Why the transfer unit was invented",
+      "blurb": "See a packed height split into separation difficulty and packing quality.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "Z = H_OG N_OG: the number of transfer units N_OG is fixed by the equilibrium and operating lines alone (Colburn's equation for a dilute absorber, with its true pole at A = R, not at A = 1), the height of a unit H_OG = G/(K_y a) by the packing and the flows, and HETP = H_OG ln(lambda)/(lambda - 1) ties the two ways of counting together. The last step runs the engine's rate-based packed bed and reads the H_OG it publishes.",
+      "origins": [
+        "engine",
+        "page",
+        "reference"
+      ],
+      "href": "/app/?workspace=methods&tool=transfer-unit"
     },
     {
       "id": "one-flux-many-units",
