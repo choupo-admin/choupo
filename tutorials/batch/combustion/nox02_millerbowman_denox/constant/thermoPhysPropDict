@@ -1,0 +1,39 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- ideal gas, ONE thermochemistry per run.
+  Stable species: case-local NASA-9 overrides (constant/components/); radicals and the
+  other species: the NASA/TP-2002-211556 table; the nine species the table lacks (NNH,
+  CH2CO, 1CH2, H2CN, HOCN, HCNO, HCCOH, C3H2, C4H3): RRHO-computed records with dHf
+  from ATcT (data/standards/thermoTables/RRHO-computed, Theory Guide sec:rrho-thermo).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 1;
+
+components       ( H2 O2 OH water H O HO2 N2 H2O2 NH HNO NO N2O N NH2 NNH NH3 NO2 N2H2 He );
+
+speciesTables ( NASA-TP-2002-211556 RRHO-computed );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

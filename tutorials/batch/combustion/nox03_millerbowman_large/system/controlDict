@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  nox03_millerbowman_large / controlDict
+\*---------------------------------------------------------------------------*/
+application   choupoBatch;
+description   "Miller & Bowman 1989 Appendix A (235 reactions, 51 species): lean CH4/air + 100 ppm NO, adiabatic constant volume, 1300 K, 1 atm";
+verbosity     3;
+
+startTime       0;
+endTime         3.0e-2;      // s
+deltaT          1.0e-3;      // s (not used by the adaptive integrator)
+writeInterval   1.0e-3;      // s -- 30 state directories
+
+timeStepping    adaptive;
+timeSteppingControl
+{
+    rtol        1.0e-8;
+    atol        1.0e-15;     // kmol (n of the order of 1e-5 kmol)
+    deltaT0     1.0e-9;      // s
+    deltaTmax   1.0e-3;      // s
+}

@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  0/internalStates/vessel -- the initial HOLDUP (the single source of truth).
+  Lean CH4/air (phi 0.6) with 100 ppm NO, 1300 K, 1 atm, 1 L.
+\*---------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "vessel";
+equipment   batchReactor;
+
+holdup
+{
+    T            1300.00 K;
+    P            1 atm;
+    V            0.001;
+    totalMoles   9.3743049036e-06;         // kmol, n = P V / (R T)
+    molarComposition
+    {
+        CH4      0.05928260929;
+        O2       0.1976086976;
+        N2       0.7430087031;
+        NO       9.9990001e-05;
+        CH3      0;
+        ethane   0;
+        H2       0;
+        CO       0;
+        CO2      0;
+        water    0;
+        H        0;
+        HO2      0;
+        OH       0;
+        O        0;
+        H2O2     0;
+        CH3O     0;
+        HCHO     0;
+        CH2OH    0;
+        CH2      0;
+        CH       0;
+        HCO      0;
+        C        0;
+        CH2CO    0;
+        acetylene 0;
+        C3H2     0;
+        C2H3_vinyl 0;
+        ethylene 0;
+        C2H      0;
+        C2H5     0;
+        HCCO     0;
+        HCCOH    0;
+        C4H2     0;
+        1CH2     0;
+        C3H3_1propynl 0;
+        C4H3     0;
+        HCN      0;
+        N        0;
+        CN       0;
+        NH       0;
+        H2CN     0;
+        HCNO     0;
+        HOCN     0;
+        HNCO     0;
+        NH2      0;
+        NCO      0;
+        C2N2     0;
+        NO2      0;
+        N2O      0;
+        HNO      0;
+        NNH      0;
+        NH3      0;
+    }
+}

@@ -1,0 +1,269 @@
+! Miller & Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, doi:10.1016/0360-1285(89)90017-8
+! Appendix A, pp. 331-336. Our own transcription of the printed table (numbers and reaction
+! strings only), read from the page images twice; see README.md. Units as printed:
+! cm3, mol, s, K, cal/mol; k = A T**n exp(-E/RT).  Reversible reactions, reverse by equilibrium.
+ELEMENTS C H O N END
+SPECIES
+  CH3 ethane H2 CO CO2 water H CH4
+  O2 HO2 OH O H2O2 CH3O HCHO CH2OH
+  CH2 CH HCO C CH2CO acetylene C3H2 C2H3_vinyl
+  ethylene C2H C2H5 HCCO HCCOH C4H2 SCH2 C3H3_1propynl
+  C4H3 N2 HCN N CN NH H2CN NO
+  HCNO HOCN HNCO NH2 NCO C2N2 NO2 N2O
+  HNO NNH NH3
+END
+REACTIONS CAL/MOLE MOLES
+2CH3(+M)=ethane(+M)                          9.03E+16   -1.2     654       ! A1 p.331
+    LOW / 3.18E+41 -7.0 2762 /
+    TROE / 6.04e-01 6927.0 132. /
+    H2/2.0/ CO/2.0/ CO2/3.0/ water/5.0/
+CH3+H(+M)=CH4(+M)                            6.00E+16   -1.0     0.0       ! A2 p.331
+    LOW / 8.00E+26 -3.0 0 /
+    SRI / 4.50e-01 797.0 979. 1. 0.0 /
+    H2/2.0/ CO/2.0/ CO2/3.0/ water/5.0/
+CH4+O2=CH3+HO2                               7.90E+13   0.000    56000     ! A3 p.331
+CH4+H=CH3+H2                                 2.20E+04   3.000    8750      ! A4 p.331
+CH4+OH=CH3+water                             1.60E+06   2.100    2460      ! A5 p.331
+CH4+O=CH3+OH                                 1.02E+09   1.500    8604      ! A5a p.331
+CH4+HO2=CH3+H2O2                             1.80E+11   0.000    18700     ! A6 p.331
+CH3+HO2=CH3O+OH                              2.00E+13   0.000    0.0       ! A7 p.331
+CH3+O2=CH3O+O                                2.05E+19   -1.570   29229     ! A8 p.331
+CH3+O=HCHO+H                                 8.00E+13   0.000    0.0       ! A9 p.331
+CH2OH+H=CH3+OH                               1.00E+14   0.000    0.0       ! A10 p.331
+CH3O+H=CH3+OH                                1.00E+14   0.000    0.0       ! A11 p.331
+CH3+OH=CH2+water                             7.50E+06   2.000    5000      ! A12 p.331
+CH3+H=CH2+H2                                 9.00E+13   0.000    15100     ! A13 p.331
+CH3O+M=HCHO+H+M                              1.00E+14   0.000    25000     ! A14 p.331
+CH2OH+M=HCHO+H+M                             1.00E+14   0.000    25000     ! A15 p.331
+CH3O+H=HCHO+H2                               2.00E+13   0.000    0.0       ! A16 p.331
+CH2OH+H=HCHO+H2                              2.00E+13   0.000    0.0       ! A17 p.331
+CH3O+OH=HCHO+water                           1.00E+13   0.000    0.0       ! A18 p.331
+CH2OH+OH=HCHO+water                          1.00E+13   0.000    0.0       ! A19 p.331
+CH3O+O=HCHO+OH                               1.00E+13   0.000    0.0       ! A20 p.331
+CH2OH+O=HCHO+OH                              1.00E+13   0.000    0.0       ! A21 p.331
+CH3O+O2=HCHO+HO2                             6.30E+10   0.000    2600      ! A22 p.331
+CH2OH+O2=HCHO+HO2                            1.48E+13   0.000    1500      ! A23 p.331
+CH2+H=CH+H2                                  1.00E+18   -1.560   0.0       ! A24 p.331
+CH2+OH=CH+water                              1.13E+07   2.000    3000      ! A25 p.331
+CH2+OH=HCHO+H                                2.50E+13   0.000    0.0       ! A26 p.331
+CH+O2=HCO+O                                  3.30E+13   0.000    0.0       ! A27 p.331
+CH+O=CO+H                                    5.70E+13   0.000    0.0       ! A28 p.331
+CH+OH=HCO+H                                  3.00E+13   0.000    0.0       ! A29 p.331
+CH+CO2=HCO+CO                                3.40E+12   0.000    690       ! A30 p.331
+CH+H=C+H2                                    1.50E+14   0.000    0.0       ! A31 p.331
+CH+water=HCHO+H                              1.17E+15   -0.750   0.0       ! A32 p.331
+CH+HCHO=CH2CO+H                              9.46E+13   0.000    -515      ! A33 p.331
+CH+acetylene=C3H2+H                          1.00E+14   0.000    0.0       ! A34 p.331
+CH+CH2=acetylene+H                           4.00E+13   0.000    0.0       ! A35 p.331
+CH+CH3=C2H3_vinyl+H                          3.00E+13   0.000    0.0       ! A36 p.331
+CH+CH4=ethylene+H                            6.00E+13   0.000    0.0       ! A37 p.331
+C+O2=CO+O                                    2.00E+13   0.000    0.0       ! A38 p.331
+C+OH=CO+H                                    5.00E+13   0.000    0.0       ! A39 p.331
+C+CH3=acetylene+H                            5.00E+13   0.000    0.0       ! A40 p.331
+C+CH2=C2H+H                                  5.00E+13   0.000    0.0       ! A41 p.332
+CH2+CO2=HCHO+CO                              1.10E+11   0.000    1000      ! A42 p.332
+CH2+O=CO+2H                                  5.00E+13   0.000    0.0       ! A43 p.332
+CH2+O=CO+H2                                  3.00E+13   0.000    0.0       ! A44 p.332
+CH2+O2=CO2+2H                                1.60E+12   0.000    1000      ! A45 p.332
+CH2+O2=HCHO+O                                5.00E+13   0.000    9000      ! A46 p.332
+CH2+O2=CO2+H2                                6.90E+11   0.000    500       ! A47 p.332
+CH2+O2=CO+water                              1.90E+10   0.000    -1000     ! A48 p.332
+CH2+O2=CO+OH+H                               8.60E+10   0.000    -500      ! A49 p.332
+CH2+O2=HCO+OH                                4.30E+10   0.000    -500      ! A50 p.332
+HCHO+OH=HCO+water                            3.43E+09   1.180    -447      ! A51 p.332
+HCHO+H=HCO+H2                                2.19E+08   1.770    3000      ! A52 p.332
+HCHO+M=HCO+H+M                               3.31E+16   0.000    81000     ! A53 p.332
+HCHO+O=HCO+OH                                1.80E+13   0.000    3080      ! A54 p.332
+HCO+OH=water+CO                              1.00E+14   0.000    0.0       ! A55 p.332
+HCO+M=H+CO+M                                 2.50E+14   0.000    16802     ! A56 p.332
+    CO/1.9/ H2/1.9/ CH4/2.8/ CO2/3.0/ water/5.0/
+HCO+H=CO+H2                                  1.19E+13   0.250    0.0       ! A57 p.332
+HCO+O=CO+OH                                  3.00E+13   0.000    0.0       ! A58 p.332
+HCO+O=CO2+H                                  3.00E+13   0.000    0.0       ! A59 p.332
+HCO+O2=HO2+CO                                3.30E+13   -0.400   0.0       ! A60 p.332
+CO+O+M=CO2+M                                 6.17E+14   0.000    3000      ! A61 p.332
+CO+OH=CO2+H                                  1.51E+07   1.300    -758      ! A62 p.332
+CO+O2=CO2+O                                  1.60E+13   0.000    41000     ! A63 p.332
+HO2+CO=CO2+OH                                5.80E+13   0.000    22934     ! A64 p.332
+ethane+CH3=C2H5+CH4                          5.50E-01   4.000    8300      ! A65 p.332
+ethane+H=C2H5+H2                             5.40E+02   3.500    5210      ! A66 p.332
+ethane+O=C2H5+OH                             3.00E+07   2.000    5115      ! A67 p.332
+ethane+OH=C2H5+water                         8.70E+09   1.050    1810      ! A68 p.332
+ethylene+H=C2H3_vinyl+H2                     1.10E+14   0.000    8500      ! A69 p.332
+ethylene+O=CH3+HCO                           1.60E+09   1.200    746       ! A70 p.332
+ethylene+OH=C2H3_vinyl+water                 2.02E+13   0.000    5955      ! A71 p.332
+CH2+CH3=ethylene+H                           3.00E+13   0.000    0.0       ! A72 p.332
+H+ethylene(+M)=C2H5(+M)                      2.21E+13   0.0      2066      ! A73 p.332
+    LOW / 6.37E+27 -2.8 -54 /
+    H2/2.0/ CO/2.0/ CO2/3.0/ water/5.0/
+C2H5+H=2CH3                                  1.00E+14   0.000    0.0       ! A74 p.332
+C2H5+O2=ethylene+HO2                         8.43E+11   0.000    3875      ! A75 p.332
+acetylene+O=CH2+CO                           1.02E+07   2.000    1900      ! A76 p.332
+acetylene+O=HCCO+H                           1.02E+07   2.000    1900      ! A77 p.332
+H2+C2H=acetylene+H                           4.09E+05   2.390    864       ! A78 p.332
+H+acetylene(+M)=C2H3_vinyl(+M)               5.54E+12   0.0      2410      ! A79 p.332
+    LOW / 2.67E+27 -3.5 2410 /
+    H2/2.0/ CO/2.0/ CO2/3.0/ water/5.0/
+C2H3_vinyl+H=acetylene+H2                    4.00E+13   0.000    0.0       ! A80 p.332
+C2H3_vinyl+O=CH2CO+H                         3.00E+13   0.000    0.0       ! A81 p.333
+C2H3_vinyl+O2=HCHO+HCO                       4.00E+12   0.000    -250      ! A82 p.333
+C2H3_vinyl+OH=acetylene+water                5.00E+12   0.000    0.0       ! A83 p.333
+C2H3_vinyl+CH2=acetylene+CH3                 3.00E+13   0.000    0.0       ! A84 p.333
+C2H3_vinyl+C2H=2acetylene                    3.00E+13   0.000    0.0       ! A85 p.333
+C2H3_vinyl+CH=CH2+acetylene                  5.00E+13   0.000    0.0       ! A86 p.333
+OH+acetylene=C2H+water                       3.37E+07   2.000    14000     ! A87 p.333
+OH+acetylene=HCCOH+H                         5.04E+05   2.300    13500     ! A88 p.333
+OH+acetylene=CH2CO+H                         2.18E-04   4.500    -1000     ! A89 p.333
+OH+acetylene=CH3+CO                          4.83E-04   4.000    -2000     ! A90 p.333
+HCCOH+H=CH2CO+H                              1.00E+13   0.000    0.0       ! A91 p.333
+acetylene+O=C2H+OH                           3.16E+15   -0.600   15000     ! A92 p.333
+CH2CO+O=CO2+CH2                              1.75E+12   0.000    1350      ! A93 p.333
+CH2CO+H=CH3+CO                               1.13E+13   0.000    3428      ! A94 p.333
+CH2CO+H=HCCO+H2                              5.00E+13   0.000    8000      ! A95 p.333
+CH2CO+O=HCCO+OH                              1.00E+13   0.000    8000      ! A96 p.333
+CH2CO+OH=HCCO+water                          7.50E+12   0.000    2000      ! A97 p.333
+CH2CO(+M)=CH2+CO(+M)                         3.00E+14   0.0      70980     ! A98 p.333
+    LOW / 3.60E+15 0.0 59270 /
+C2H+O2=2CO+H                                 5.00E+13   0.000    1500      ! A99 p.333
+C2H+acetylene=C4H2+H                         3.00E+13   0.000    0.0       ! A100 p.333
+H+HCCO=SCH2+CO                               1.00E+14   0.000    0.0       ! A101 p.333
+O+HCCO=H+2CO                                 1.00E+14   0.000    0.0       ! A102 p.333
+HCCO+O2=2CO+OH                               1.60E+12   0.000    854       ! A103 p.333
+CH+HCCO=acetylene+CO                         5.00E+13   0.000    0.0       ! A104 p.333
+2HCCO=acetylene+2CO                          1.00E+13   0.000    0.0       ! A105 p.333
+SCH2+M=CH2+M                                 1.00E+13   0.000    0.0       ! A106 p.333
+    H/0.0/
+SCH2+CH4=2CH3                                4.00E+13   0.000    0.0       ! A107 p.333
+SCH2+ethane=CH3+C2H5                         1.20E+14   0.000    0.0       ! A108 p.333
+SCH2+O2=CO+OH+H                              3.00E+13   0.000    0.0       ! A109 p.333
+SCH2+H2=CH3+H                                7.00E+13   0.000    0.0       ! A110 p.333
+SCH2+H=CH2+H                                 2.00E+14   0.000    0.0       ! A111 p.333
+C2H+O=CH+CO                                  5.00E+13   0.000    0.0       ! A112 p.333
+C2H+OH=HCCO+H                                2.00E+13   0.000    0.0       ! A113 p.333
+2CH2=acetylene+H2                            4.00E+13   0.000    0.0       ! A114 p.333
+CH2+HCCO=C2H3_vinyl+CO                       3.00E+13   0.000    0.0       ! A115 p.333
+CH2+acetylene=C3H3_1propynl+H                1.20E+13   0.000    6600      ! A116 p.333
+C4H2+OH=C3H2+HCO                             6.66E+12   0.000    -410      ! A117 p.333
+C3H2+O2=HCO+HCCO                             1.00E+13   0.000    0.0       ! A118 p.333
+C3H3_1propynl+O2=CH2CO+HCO                   3.00E+10   0.000    2868      ! A119 p.333
+C3H3_1propynl+O=HCHO+C2H                     2.00E+13   0.000    0.0       ! A120 p.333
+C3H3_1propynl+OH=C3H2+water                  2.00E+13   0.000    0.0       ! A121 p.334
+2acetylene=C4H3+H                            2.00E+12   0.000    45900     ! A122 p.334
+C4H3+M=C4H2+H+M                              1.00E+16   0.000    59700     ! A123 p.334
+SCH2+acetylene=C3H3_1propynl+H               3.00E+13   0.000    0.0       ! A124 p.334
+C4H2+O=C3H2+CO                               1.20E+12   0.000    0.0       ! A125 p.334
+acetylene+O2=HCCO+OH                         2.00E+08   1.500    30100     ! A126 p.334
+acetylene+M=C2H+H+M                          4.20E+16   0.000    107000    ! A127 p.334
+ethylene+M=acetylene+H2+M                    1.50E+15   0.000    55800     ! A128 p.334
+ethylene+M=C2H3_vinyl+H+M                    1.40E+16   0.000    82360     ! A129 p.334
+H2+O2=2OH                                    1.70E+13   0.000    47780     ! A130 p.334
+OH+H2=water+H                                1.17E+09   1.300    3626      ! A131 p.334
+O+OH=O2+H                                    4.00E+14   -0.500   0.0       ! A132 p.334
+O+H2=OH+H                                    5.06E+04   2.670    6290      ! A133 p.334
+H+O2+M=HO2+M                                 3.61E+17   -0.720   0.0       ! A134 p.334
+    water/18.6/ CO2/4.2/ H2/2.9/ CO/2.1/ N2/1.3/
+OH+HO2=water+O2                              7.50E+12   0.000    0.0       ! A135 p.334
+H+HO2=2OH                                    1.40E+14   0.000    1073      ! A136 p.334
+O+HO2=O2+OH                                  1.40E+13   0.000    1073      ! A137 p.334
+2OH=O+water                                  6.00E+08   1.300    0.0       ! A138 p.334
+2H+M=H2+M                                    1.00E+18   -1.000   0.0       ! A139 p.334
+    H2/0.0/ water/0.0/ CO2/0.0/
+2H+H2=2H2                                    9.20E+16   -0.600   0.0       ! A140 p.334
+2H+water=H2+water                            6.00E+19   -1.250   0.0       ! A141 p.334
+2H+CO2=H2+CO2                                5.49E+20   -2.000   0.0       ! A142 p.334
+H+OH+M=water+M                               1.60E+22   -2.000   0.0       ! A143 p.334
+    water/5.0/
+H+O+M=OH+M                                   6.20E+16   -0.600   0.0       ! A144 p.334
+    water/5.0/
+2O+M=O2+M                                    1.89E+13   0.000    -1788     ! A145 p.334
+H+HO2=H2+O2                                  1.25E+13   0.000    0.0       ! A146 p.334
+2HO2=H2O2+O2                                 2.00E+12   0.000    0.0       ! A147 p.334
+H2O2+M=2OH+M                                 1.30E+17   0.000    45500     ! A148 p.334
+H2O2+H=HO2+H2                                1.60E+12   0.000    3800      ! A149 p.334
+H2O2+OH=water+HO2                            1.00E+13   0.000    1800      ! A150 p.334
+CH+N2=HCN+N                                  3.00E+11   0.000    13600     ! A151 p.334
+CN+N=C+N2                                    1.04E+15   -0.500   0.0       ! A152 p.334
+CH2+N2=HCN+NH                                1.00E+13   0.000    74000     ! A153 p.334
+H2CN+N=N2+CH2                                2.00E+13   0.000    0.0       ! A154 p.334
+H2CN+M=HCN+H+M                               3.00E+14   0.000    22000     ! A155 p.334
+C+NO=CN+O                                    6.60E+13   0.000    0.0       ! A156 p.334
+CH+NO=HCN+O                                  1.10E+14   0.000    0.0       ! A157 p.334
+CH2+NO=HCNO+H                                1.39E+12   0.000    -1100     ! A158 p.334
+CH3+NO=HCN+water                             1.00E+11   0.000    15000     ! A159 p.334
+CH3+NO=H2CN+OH                               1.00E+11   0.000    15000     ! A160 p.334
+HCCO+NO=HCNO+CO                              2.00E+13   0.000    0.0       ! A161 p.335
+SCH2+NO=HCN+OH                               2.00E+13   0.000    0.0       ! A162 p.335
+HCNO+H=HCN+OH                                1.00E+14   0.000    12000     ! A163 p.335
+CH2+N=HCN+H                                  5.00E+13   0.000    0.0       ! A164 p.335
+CH+N=CN+H                                    1.30E+13   0.000    0.0       ! A165 p.335
+CO2+N=NO+CO                                  1.90E+11   0.000    3400      ! A166 p.335
+HCCO+N=HCN+CO                                5.00E+13   0.000    0.0       ! A167 p.335
+CH3+N=H2CN+H                                 3.00E+13   0.000    0.0       ! A168 p.335
+C2H3_vinyl+N=HCN+CH2                         2.00E+13   0.000    0.0       ! A169 p.335
+C3H3_1propynl+N=HCN+acetylene                1.00E+13   0.000    0.0       ! A170 p.335
+HCN+OH=CN+water                              1.45E+13   0.000    10929     ! A171 p.335
+OH+HCN=HOCN+H                                5.85E+04   2.400    12500     ! A172 p.335
+OH+HCN=HNCO+H                                1.98E-03   4.000    1000      ! A173 p.335
+OH+HCN=NH2+CO                                7.83E-04   4.000    4000      ! A174 p.335
+HOCN+H=HNCO+H                                1.00E+13   0.000    0.0       ! A175 p.335
+HCN+O=NCO+H                                  1.38E+04   2.640    4980      ! A176 p.335
+HCN+O=NH+CO                                  3.45E+03   2.640    4980      ! A177 p.335
+HCN+O=CN+OH                                  2.70E+09   1.580    26600     ! A178 p.335
+CN+H2=HCN+H                                  2.95E+05   2.450    2237      ! A179 p.335
+CN+O=CO+N                                    1.80E+13   0.000    0.0       ! A180 p.335
+CN+O2=NCO+O                                  5.60E+12   0.000    0.0       ! A181 p.335
+CN+OH=NCO+H                                  6.00E+13   0.000    0.0       ! A182 p.335
+CN+HCN=C2N2+H                                2.00E+13   0.000    0.0       ! A183 p.335
+CN+NO2=NCO+NO                                3.00E+13   0.000    0.0       ! A184 p.335
+CN+N2O=NCO+N2                                1.00E+13   0.000    0.0       ! A185 p.335
+C2N2+O=NCO+CN                                4.57E+12   0.000    8880      ! A186 p.335
+C2N2+OH=HOCN+CN                              1.86E+11   0.000    2900      ! A187 p.335
+HO2+NO=NO2+OH                                2.11E+12   0.000    -479      ! A188 p.335
+NO2+H=NO+OH                                  3.50E+14   0.000    1500      ! A189 p.335
+NO2+O=NO+O2                                  1.00E+13   0.000    600       ! A190 p.335
+NO2+M=NO+O+M                                 1.10E+16   0.000    66000     ! A191 p.335
+NCO+H=NH+CO                                  5.00E+13   0.000    0.0       ! A192 p.335
+NCO+O=NO+CO                                  2.00E+13   0.000    0.0       ! A193 p.335
+NCO+N=N2+CO                                  2.00E+13   0.000    0.0       ! A194 p.335
+NCO+OH=NO+CO+H                               1.00E+13   0.000    0.0       ! A195 p.335
+NCO+M=N+CO+M                                 3.10E+16   -0.500   48000     ! A196 p.335
+NCO+NO=N2O+CO                                1.00E+13   0.000    -390      ! A197 p.335
+NCO+H2=HNCO+H                                8.58E+12   0.000    9000      ! A198 p.335
+HNCO+H=NH2+CO                                2.00E+13   0.000    3000      ! A199 p.335
+NH+O2=HNO+O                                  1.00E+13   0.000    12000     ! A200 p.335
+NH+O2=NO+OH                                  7.60E+10   0.000    1530      ! A201 p.336
+NH+NO=N2O+H                                  2.40E+15   -0.800   0.0       ! A202 p.336
+N2O+OH=N2+HO2                                2.00E+12   0.000    10000     ! A203 p.336
+N2O+H=N2+OH                                  7.60E+13   0.000    15200     ! A204 p.336
+N2O+M=N2+O+M                                 1.60E+14   0.000    51600     ! A205 p.336
+N2O+O=N2+O2                                  1.00E+14   0.000    28200     ! A206 p.336
+N2O+O=2NO                                    1.00E+14   0.000    28200     ! A207 p.336
+NH+OH=HNO+H                                  2.00E+13   0.000    0.0       ! A208 p.336
+NH+OH=N+water                                5.00E+11   0.500    2000      ! A209 p.336
+NH+N=N2+H                                    3.00E+13   0.000    0.0       ! A210 p.336
+NH+H=N+H2                                    1.00E+14   0.000    0.0       ! A211 p.336
+NH2+O=HNO+H                                  6.63E+14   -0.500   0.0       ! A212 p.336
+NH2+O=NH+OH                                  6.75E+12   0.000    0.0       ! A213 p.336
+NH2+OH=NH+water                              4.00E+06   2.000    1000      ! A214 p.336
+NH2+H=NH+H2                                  6.92E+13   0.000    3650      ! A215 p.336
+NH2+NO=NNH+OH                                6.40E+15   -1.250   0.0       ! A216 p.336
+NH2+NO=N2+water                              6.20E+15   -1.250   0.0       ! A217 p.336
+NH3+OH=NH2+water                             2.04E+06   2.040    566       ! A218 p.336
+NH3+H=NH2+H2                                 6.36E+05   2.390    10171     ! A219 p.336
+NH3+O=NH2+OH                                 2.10E+13   0.000    9000      ! A220 p.336
+NNH=N2+H                                     1.00E+04   0.000    0.0       ! A221 p.336
+NNH+NO=N2+HNO                                5.00E+13   0.000    0.0       ! A222 p.336
+NNH+H=N2+H2                                  1.00E+14   0.000    0.0       ! A223 p.336
+NNH+OH=N2+water                              5.00E+13   0.000    0.0       ! A224 p.336
+NNH+NH2=N2+NH3                               5.00E+13   0.000    0.0       ! A225 p.336
+NNH+NH=N2+NH2                                5.00E+13   0.000    0.0       ! A226 p.336
+NNH+O=N2O+H                                  1.00E+14   0.000    0.0       ! A227 p.336
+HNO+M=H+NO+M                                 1.50E+16   0.000    48680     ! A228 p.336
+    water/10.0/ O2/2.0/ N2/2.0/ H2/2.0/
+HNO+OH=NO+water                              3.60E+13   0.000    0.0       ! A229 p.336
+HNO+H=H2+NO                                  5.00E+12   0.000    0.0       ! A230 p.336
+HNO+NH2=NH3+NO                               2.00E+13   0.000    1000      ! A231 p.336
+N+NO=N2+O                                    3.27E+12   0.300    0.0       ! A232 p.336
+N+O2=NO+O                                    6.40E+09   1.000    6280      ! A233 p.336
+N+OH=NO+H                                    3.80E+13   0.000    0.0       ! A234 p.336
+END

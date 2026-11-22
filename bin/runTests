@@ -3362,6 +3362,19 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/ttg.$$
 
+    # RRHO-computed species table: the records equal the tool's output, and the
+    # tool still reproduces published thermochemistry (check_rrho_thermo header).
+    gate_exec "$ROOT/bin/curate/check_rrho_thermo.py" > /tmp/rrg.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "rrho-thermo-gate" "$(grep -m1 '^check_rrho_thermo: OK' /tmp/rrg.$$ | cut -c1-200)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_rrho_thermo.py)\n" "rrho-thermo-gate"
+        cat /tmp/rrg.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rrg.$$
+
     # Tree gate (Migration 6): retired data/standards homes must never come
     # back -- neither as src path-builders nor as resurrected directories.
     if gate_exec "$ROOT/bin/curate/check_tree_gate.py" > /tmp/treegate.$$ 2>&1; then

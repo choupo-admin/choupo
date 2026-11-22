@@ -1,0 +1,95 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Nitric oxide  (NO, CAS 10102-43-9)
+  The principal thermal-NOx pollutant from high-temperature combustion.
+  Formed via the Zeldovich mechanism (N2 + O <-> NO + N, then
+  N + O2 <-> NO + O), reaching equilibrium populations ~ 100-1000 ppm
+  at typical adiabatic flame temperatures.
+  Sources: standardThermochemistry cross-checked vs NASA TM-4513
+  (McBride-Gordon-Reno 1993); constants and idealGasHeatCapacity --
+  individual literature values, primary re-citation pending (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        NO;
+formula     NO;
+CAS         10102-43-9;
+
+MW          30.006;       // kg/kmol
+Tc          180.00;       // K
+Pc          64.85;        // bar
+omega       0.583;        // [-]   (NO is polar -- high omega)
+Tb          121.40;       // K
+HvapTb      13830;        // J/mol
+Vliq        2.30e-5;      // m^3/mol  (23 cm^3/mol at Tb)
+VliqT       121.40;      // K -- the temperature Vliq belongs to: the record's own statement ("at Tb")
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 23120;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
+
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // Poling 5e App. A (via the MIT-licensed `chemicals` 1.5.2 data
+    // distribution; INTERIM pending primary review (Vitor))
+    coefficients  (5.86790   682.939   -4.88);
+    Trange        (107  127.56);      // upper clamped to the source fit range (review 2026-08-24)
+}
+
+reviewStatus   interim;
+reviewReason   "idealGasHeatCapacity transcribed by machine from NASA/TP-2002-211556 and checked against the report itself, not yet read back against the page by a curator; the rest of this record is unchanged";
+variationOf    NO;
+variationReason "the case carries the flame-range ideal-gas heat capacity (NASA-9, 200-6000 K, NASA/TP-2002-211556) that the combustion chemistry needs; the catalogue cubic stops at 1500 K.";
+
+standardThermochemistry
+{
+    dHf_298    91271.310;   // J/mol  -- ideal gas; NASA/TP-2002-211556 appendix D, p. 155, entry NO
+    s_298      210.748;     // J/(mol·K) -- third-law absolute; Table B1, p. 24
+}
+
+idealGasHeatCapacity
+{
+    //  CASE-LOCAL OVERRIDE for flame temperatures (the catalogue Cp is a 250-1500 K process fit).
+    //  NASA/TP-2002-211556 eq. (1), Cp/R = a1/T^2 + a2/T + a3 + a4 T + a5 T^2
+    //  + a6 T^3 + a7 T^4; appendix D, p. 155, entry NO, a1..a7 as printed.
+    //  The report's 6000-20000 K interval is not transcribed.
+    model    NASA9;
+    Tlow     200;
+    Tcommon  1000;
+    Thigh    6000;
+    low      ( -1.143916503e+04 1.536467592e+02 3.431468730e+00 -2.668592368e-03 8.481399120e-06 -7.685111050e-09 2.386797655e-12 );
+    high     ( 2.239018716e+05 -1.289651623e+03 5.433936030e+00 -3.656034900e-04 9.880966450e-08 -1.416076856e-11 9.380184620e-16 );
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 155, entry NO, record-line H(298.15) (elements reference, so = dHf)";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "Table B1 p. 24 prints 91.271 kJ/mol; the report's own sources: Gurvich,1978,1989 pt1 p326 pt2 p203.";
+    }
+    s_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 Table B1, p. 24, entry NO";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "appendix D's coefficients with b2 integrate to 210.748";
+    }
+    idealGasHeatCapacity
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 155, entry NO, a1..a7 of the 200-1000 K and 1000-6000 K intervals, as printed";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "read by bin/curate/nasa_tp2002_to_choupo.py, which holds H and S at 298.15 K to the printed values";
+    }
+    source   "McBride, Zehe & Gordon, NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species, NASA/TP-2002-211556 (2002)";
+    licence  publicDomain;    // US government work (NASA), 17 U.S.C. 105
+}
+
