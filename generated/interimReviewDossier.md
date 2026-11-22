@@ -865,6 +865,35 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
     * L25: values -- primary re-citation pending (IST review).  K_b/K_f
     * L120: // Reference: individual literature values -- primary re-citation pending (IST review).
 * `conventions/MilleroConventional-v1.dat` -- **reviewStatus interim**
+* `kinetics/H+H+M=H2+M.dat` -- **reviewStatus interim**
+* `kinetics/H+H2O2=H2+HO2.dat` -- **reviewStatus interim**
+* `kinetics/H+H2O2=OH+water.dat` -- **reviewStatus interim**
+* `kinetics/H+HO2=H2+O2.dat` -- **reviewStatus interim**
+* `kinetics/H+HO2=OH+OH.dat` -- **reviewStatus interim**
+* `kinetics/H+N2O=N2+OH.dat` -- **reviewStatus interim**
+* `kinetics/H+N2O=NH+NO.dat` -- **reviewStatus interim**
+* `kinetics/H+NO=N+OH.dat` -- **reviewStatus interim**
+* `kinetics/H+O+M=OH+M.dat` -- **reviewStatus interim**
+* `kinetics/H+O2(+M)=HO2(+M).dat` -- **reviewStatus interim**
+* `kinetics/H+O2=O+OH.dat` -- **reviewStatus interim**
+* `kinetics/H+OH+M=water+M.dat` -- **reviewStatus interim**
+* `kinetics/H+OH=H2+O.dat` -- **reviewStatus interim**
+* `kinetics/H+water=H2+OH.dat` -- **reviewStatus interim**
+* `kinetics/H2O2(+M)=OH+OH(+M).dat` -- **reviewStatus interim**
+* `kinetics/H2O2+O2=HO2+HO2@1.dat` -- **reviewStatus interim**
+* `kinetics/H2O2+O2=HO2+HO2@2.dat` -- **reviewStatus interim**
+* `kinetics/H2O2+O=HO2+OH.dat` -- **reviewStatus interim**
+* `kinetics/H2O2+OH=HO2+water@1.dat` -- **reviewStatus interim**
+* `kinetics/H2O2+OH=HO2+water@2.dat` -- **reviewStatus interim**
+* `kinetics/HO2+O=O2+OH.dat` -- **reviewStatus interim**
+* `kinetics/HO2+OH=O2+water.dat` -- **reviewStatus interim**
+* `kinetics/N+NO=N2+O.dat` -- **reviewStatus interim**
+* `kinetics/N+O2=NO+O.dat` -- **reviewStatus interim**
+* `kinetics/N2+O(+M)=N2O(+M).dat` -- **reviewStatus interim**
+* `kinetics/N2+O2=N2O+O.dat` -- **reviewStatus interim**
+* `kinetics/N2O+O=NO+NO.dat` -- **reviewStatus interim**
+* `kinetics/O+O+M=O2+M.dat` -- **reviewStatus interim**
+* `kinetics/O+water=OH+OH.dat` -- **reviewStatus interim**
 * `parameters/Henry/1122Tetrachloroethane-water.dat` -- **reviewStatus autoPromoted**
 * `parameters/Henry/112Trichloroethane-water.dat` -- **reviewStatus autoPromoted**
 * `parameters/Henry/11Dichloroethane-water.dat` -- **reviewStatus autoPromoted**
@@ -1936,6 +1965,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/NRTL/thiophene-toluene.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/triethyleneGlycol-water.dat` -- **reviewStatus autoPromoted**
 * `parameters/NRTL/vinylAcetate-vinylPropionate.dat` -- **reviewStatus autoPromoted**
+* `parameters/PengRobinson/propane-propylene.dat` -- **reviewStatus interim**
 * `parameters/Pitzer/pairs/Ba-I.dat` -- **reviewStatus autoPromoted**
 * `parameters/Pitzer/pairs/Ca-I.dat` -- **reviewStatus autoPromoted**
 * `parameters/Pitzer/pairs/Cd-NO2.dat` -- **reviewStatus autoPromoted**
@@ -1980,6 +2010,7 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `parameters/Pitzer/pairs/Zn-Cl.dat` -- **reviewStatus autoPromoted**
 * `parameters/Pitzer/pairs/Zn-I.dat` -- **reviewStatus autoPromoted**
 * `parameters/Pitzer/pairs/Zn-NO3.dat` -- **reviewStatus autoPromoted**
+* `parameters/SRK/N2-CH4.dat` -- **reviewStatus interim**
 * `parameters/UNIQUAC/1122Tetrachloroethane-1Hexanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/UNIQUAC/1122Tetrachloroethane-2Methyl1Butanol.dat` -- **reviewStatus autoPromoted**
 * `parameters/UNIQUAC/1122Tetrachloroethane-cyclohexane.dat` -- **reviewStatus autoPromoted**
@@ -4142,5 +4173,14 @@ mega-wave.  A record with `reviewStatus interim;` is not promotable.
 * `thermoTables/NASA-TP-2002-211556/ZrN.dat` -- **reviewStatus interim**
 * `thermoTables/NASA-TP-2002-211556/ZrO.dat` -- **reviewStatus interim**
 * `thermoTables/NASA-TP-2002-211556/ZrO2.dat` -- **reviewStatus interim**
+* `thermoTables/RRHO-computed/1CH2.dat` -- **reviewStatus interim**
+* `thermoTables/RRHO-computed/C3H2.dat` -- **reviewStatus interim**
+* `thermoTables/RRHO-computed/C4H3.dat` -- **reviewStatus interim**
+* `thermoTables/RRHO-computed/CH2CO.dat` -- **reviewStatus interim**
+* `thermoTables/RRHO-computed/H2CN.dat` -- **reviewStatus interim**
+* `thermoTables/RRHO-computed/HCCOH.dat` -- **reviewStatus interim**
+* `thermoTables/RRHO-computed/HCNO.dat` -- **reviewStatus interim**
+* `thermoTables/RRHO-computed/HOCN.dat` -- **reviewStatus interim**
+* `thermoTables/RRHO-computed/NNH.dat` -- **reviewStatus interim**
 
-Totals: 3834 record(s) with structured review metadata, 31 detected by text marker only (legacy fallback -- migrate on touch/review).
+Totals: 3874 record(s) with structured review metadata, 31 detected by text marker only (legacy fallback -- migrate on touch/review).
