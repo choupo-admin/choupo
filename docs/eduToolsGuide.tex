@@ -3662,6 +3662,83 @@ switchings an hour) are teaching values, not plant settings.  Multivariate
 monitoring, model-based observers and learning-based diagnosis are named, not
 built.
 
+\subsection*{Where to put a control loop \quad(\code{tool=loop-placement})}\label{sec:edu-loop-placement}
+\textit{\small Tool:} \code{tool=loop-placement}.  The engine runs: three
+gain runs and four wirings of the shipped two-loop reactor
+\code{tutorials/ctrl/ctrl22\_reactor\_level\_and\_temperature} (\code{choupoCtrl},
+in the browser).  The page counts valves and does the $2\times2$ arithmetic.
+
+\subsubsection*{The question}
+
+\emph{A vessel has several things to hold.  How many can I hold, which first,
+and which valve should hold which variable?}
+
+\subsubsection*{What the page shows}
+
+Six steps.  (1)~\textbf{Count the valves}: the control degrees of freedom
+$N_{FC}=N_F-N_D$ are the independent manipulated inputs, so two valves in
+series on one pipe count once (Seborg et al., Sec.~13.1); a counter lets the
+student fit valves and list wishes.  (2)~\textbf{Hold the inventory first}: the
+level integrates the flow imbalance, and the page runs the wiring \emph{without}
+the level loop, which the engine refuses with an overflow rather than clamping
+the level.  (3)~\textbf{Measure the gains}: three engine runs (a base, the
+jacket up by 2~K, the feed up by 2\,\%), the level loop closed, give the
+steady-state gain matrix $K_{ij}=\Delta y_i/\Delta u_j$ of the temperature and
+the product's mole fraction against the jacket and the feed rate; nothing is
+typed.  (4)~\textbf{The relative gain array}: Bristol's
+$\lambda=1/(1-K_{12}K_{21}/K_{11}K_{22})$, rows and columns summing to one,
+computed from those gains; here about 1.9 for temperature on the jacket and
+composition on the feed, and about $-0.9$ for the swap.  (5)~\textbf{The wrong
+pairing, run}: the same recipe on both wirings; the recommended one reaches both
+set points, the swapped one drives the feed to its lower limit and misses the
+temperature by tens of kelvin, and the same happens at half and twice the loop
+gain.  (6)~\textbf{Inventory, then throughput, then quality}: with the feed
+fixed the third valve holds one quality and the other floats, and the run
+reports where.
+
+\subsubsection*{What the page is held to}
+
+A test re-runs every number natively: the array against Seborg's Example~18.3
+closed form ($\lambda=x$), the two routes to the array equal, the signs of the
+gains, the swapped wiring's failure at three loop gains, the overflow
+refusal, and each \texttt{file:line} the prose cites (\code{DynamicCSTR.cpp},
+\code{VariableVolumeHoldup.cpp}, \code{PIDController.cpp}).  Sources, read at
+their pages: Seborg, Edgar, Mellichamp and Doyle, \emph{Process Dynamics and
+Control}, 4th ed.\ (2017), Sec.~13.1 (pp.~230--231), Sec.~13.2.1 Guideline~1
+(p.~232) and Sec.~18.2 (pp.~332--335); Bristol's 1966 paper is cited by that
+book and is not in the library.  The ordering ``inventory, then throughput,
+then quality'' is a design reading: the first move has the Design Guide and
+Guideline~1, the middle move has no source and the page labels it so.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+Fit a second valve in series on the feed line and see the count stay at three;
+then add ``a set product flow'' to the wishes and see one too many.  Run the
+swapped pairing and read the feed rate on its lower limit, then run the
+recommended one and read what the composition loop did to the feed rate (it
+rose by about 16\,\%).
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That a positive relative gain means no trouble.}  Above one the other
+loop weakens this one (the closed-loop gain is the open-loop gain divided by
+$\lambda$); the recommendation is ``positive and close to one'', and 1.9 is
+the first, not the second.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+The array is steady-state arithmetic and says nothing of speed; the gains are at
+one operating point (the relative gain moves from 1.9 to about 2.0 or 1.8 with
+five times the step); the reactor is a toy and the PI recipe (half a unit of loop
+gain, integral time 300~s) is the page's assumption, the same for every
+pairing; controlling a composition with the feed rate is unusual and is here to
+make the system square; the array is $2\times2$ and the level, closed in every
+run, is not in it.  The Theory Guide has no section on pairing; the link opens
+the dynamic reactor chapter whose controller contract the runs use.
+\declaredanchor{ch:dyn-cstr}
+
 \subsection*{Cooling tower, Merkel \quad(\code{tool=merkel})}
 The saturated-air enthalpy curve above, the operating line below, and the
 gap between them shaded --- that gap is the driving force the packing has

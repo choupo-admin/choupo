@@ -185,6 +185,8 @@ const DryerSelectionTool = lazy(() =>
   import("./methods/DryerSelectionTool.js").then((m) => ({ default: m.DryerSelectionTool })));
 const FaultDiagnosisTool = lazy(() =>
   import("./methods/FaultDiagnosisTool.js").then((m) => ({ default: m.FaultDiagnosisTool })));
+const LoopPlacementTool = lazy(() =>
+  import("./methods/LoopPlacementTool.js").then((m) => ({ default: m.LoopPlacementTool })));
 const PumpSystemTool = lazy(() =>
   import("./methods/PumpSystemTool.js").then((m) => ({ default: m.PumpSystemTool })));
 const MerkelTool = lazy(() =>
@@ -646,6 +648,7 @@ export function MethodsWorkspace() {
             : tool === "compression" ? <CompressionTool />
             : tool === "dryer-selection" ? <DryerSelectionTool />
             : tool === "fault-diagnosis" ? <FaultDiagnosisTool />
+            : tool === "loop-placement" ? <LoopPlacementTool />
             : tool === "merkel" ? <MerkelTool />
             : tool === "rayleigh" ? <RayleighTool />
             : tool === "levenspiel" ? <LevenspielTool />
