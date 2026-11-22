@@ -2543,7 +2543,11 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
             for (const auto& t : v2->lookupWordList("speciesTables"))
             {
                 const fs::path home = fs::path(Database::currentRoot()) / "standards" / "thermoTables" / t;
-                if (!fs::is_directory(home))
+                //  A SEALED case carries the table's records as its own
+                //  constant/components/ (bin/choupo-import) and never reads
+                //  the table (Database.cpp: the table lookup is `!sealed`),
+                //  so the installation home need not exist beside it.
+                if (!fs::is_directory(home) && !Choupo::records::sealed())
                     throw std::runtime_error("thermophysicalPropertySystem: speciesTables names '"
                         + t + "', which is not a home under data/standards/thermoTables/.");
                 tables.push_back(t);

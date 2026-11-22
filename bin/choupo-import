@@ -381,6 +381,9 @@ def resolve_dict_variables(text):
     return out
 
 
+_TABLE_ORIGIN = {}   # rel -> thermoTables/<table>/<name>.dat (a table species carried as a component)
+
+
 def closure_of(pp_path, caseDir, std, AQ):
     recs = {}
     ions = set()
@@ -601,6 +604,24 @@ def closure_of(pp_path, caseDir, std, AQ):
                         solute_comps.add(c)
                 if c in AQ:
                     ion_candidates.add(c)
+                continue
+            #  A SPECIES OF A DECLARED THERMO TABLE (C458: the radicals H, O,
+            #  OH ... live in data/standards/thermoTables/<table>/).  The
+            #  engine reads the table only in an UNSEALED case
+            #  (src/thermo/Database.cpp:335-341, `!sealed`), so the seal
+            #  carries the table's record as the case's own
+            #  constant/components/<name>.dat, which outranks the table
+            #  (Database.cpp:328-334) and is read alone.
+            tbl = next((tt for tt in re.findall(
+                            r'[\w.\-]+',
+                            (block(t, "speciesTables") or "")
+                            ) if (std / "thermoTables" / tt / (c + ".dat")).exists()),
+                       None)
+            if tbl is not None:
+                _TABLE_ORIGIN["components/" + c + ".dat"] = "thermoTables/" + tbl + "/" + c + ".dat"
+                recs["components/" + c + ".dat"] = std / "thermoTables" / tbl / (c + ".dat")
+                print("  [thermoTable] component '%s' carried from the declared"
+                      " species table %s." % (c, tbl))
                 continue
             die("component '%s' is declared by the case and resolves to no"
                 " record.\n  Looked for components/%s.dat in the catalogue,"
@@ -2342,8 +2363,8 @@ def main():
             body = strip_install_paths(src.read_text())
             stamp = ('// [imported] origin "data/standards/%s" (%s release) --'
                      ' owned + sha256-verified by constant/propertyManifest\n'
-                     % (rel, release))
-            out[rel] = (stamp + body, "data/standards/" + rel, sha_file(src))
+                     % (_TABLE_ORIGIN.get(rel, rel), release))
+            out[rel] = (stamp + body, "data/standards/" + _TABLE_ORIGIN.get(rel, rel), sha_file(src))
         # ONE typed file per reached species (2026-07-18: the filtered
         # aqueous catalogue is gone -- the student sees exactly the species
         # files the case consumes).
