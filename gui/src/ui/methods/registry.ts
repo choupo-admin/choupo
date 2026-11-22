@@ -84,7 +84,7 @@ export type MethodToolId =
   | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
   | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
   | "one-flux-many-units" | "compression" | "adsorbent-selection" | "dryer-selection"
-  | "fault-diagnosis" | "how-do-we-know-k";
+  | "fault-diagnosis" | "how-do-we-know-k" | "loop-placement";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1154,6 +1154,30 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  the nearest real destination is the dynamic tank's mass balance, which
     //  the page's tank example is.
     theory: "ch:dyn-tank",
+  },
+  //  COMMISSIONED (DEV.md 4c C204; scope decided by the architect): where to
+  //  put a control loop.  The ENGINE runs the shipped two-loop reactor
+  //  (ctrl22) re-wired by the page: three gain runs, the wirings (natural,
+  //  swapped, no level loop, feed fixed).  The page counts valves, writes the
+  //  2x2 relative gain array from the measured gains, and says which move is
+  //  cited (inventory first) and which is its own reading (then throughput).
+  //  The Theory Guide has no section on pairing: the anchor is the dynamic
+  //  reactor chapter whose controller contract the runs use, and a limit
+  //  says so.
+  {
+    id: "loop-placement", blurb: "Count valves, hold the inventory, pair loops by relative gain.",
+    label: "Where to put a control loop",
+    discipline: "Hydraulics & control", kind: "construction", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
+    teaches: "How many things a plant lets you hold (independent valves against "
+      + "variables), why the inventory is held first and what the engine does "
+      + "when it is not, and how to choose which valve holds which variable: "
+      + "the steady-state gain matrix is measured from three engine runs of a "
+      + "jacketed reactor with a level, the relative gain array is computed "
+      + "from it, and the recommended pairing and the swapped one are both run "
+      + "so you see a loop that cannot work. Then the order of the valves: "
+      + "inventory, throughput, quality.",
+    theory: "ch:dyn-cstr",
   },
   //  COMMISSIONED 2026-10-20 (DEV.md 4c C119), Vitor: the Pi theorem only
   //  reduces the number of variables, and the real gain -- few groups AND a

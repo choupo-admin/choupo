@@ -96,6 +96,8 @@ import { PlantCostTool } from "../src/ui/methods/PlantCostTool.js";
 import { PLANT_COST_QUIZ, PLANT_COST_STEPS } from "../src/ui/methods/plantCostLesson.js";
 import { FaultDiagnosisTool } from "../src/ui/methods/FaultDiagnosisTool.js";
 import { FAULT_DIAGNOSIS_QUIZ, FAULT_DIAGNOSIS_STEPS } from "../src/ui/methods/faultDiagnosisLesson.js";
+import { LoopPlacementTool } from "../src/ui/methods/LoopPlacementTool.js";
+import { LOOP_PLACEMENT_QUIZ, LOOP_PLACEMENT_STEPS } from "../src/ui/methods/loopPlacementLesson.js";
 import { DryerSelectionTool } from "../src/ui/methods/DryerSelectionTool.js";
 import { DRYER_SELECTION_QUIZ, DRYER_SELECTION_STEPS } from "../src/ui/methods/dryerSelectionLesson.js";
 import { STACK_QUIZ, STACK_STEPS } from "../src/ui/methods/stackDispersionLesson.js";
@@ -211,6 +213,11 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
     quiz: DRYER_SELECTION_QUIZ, quizName: "DRYER_SELECTION_QUIZ",
     lesson: DRYER_SELECTION_STEPS, lessonName: "DRYER_SELECTION_STEPS",
     file: "src/ui/methods/DryerSelectionTool.tsx", tool: DryerSelectionTool,
+  },
+  "loop-placement": {
+    quiz: LOOP_PLACEMENT_QUIZ, quizName: "LOOP_PLACEMENT_QUIZ",
+    lesson: LOOP_PLACEMENT_STEPS, lessonName: "LOOP_PLACEMENT_STEPS",
+    file: "src/ui/methods/LoopPlacementTool.tsx", tool: LoopPlacementTool,
   },
   "fault-diagnosis": {
     quiz: FAULT_DIAGNOSIS_QUIZ, quizName: "FAULT_DIAGNOSIS_QUIZ",
