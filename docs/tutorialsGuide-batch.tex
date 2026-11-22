@@ -1121,6 +1121,94 @@ THE JACOBIAN. `jacobian finiteDifference;` is declared on purpose. The engine au
 \goldmore{29}
 \end{tutgolden}
 
+\clearpage
+\tutentry{nox02\_millerbowman\_denox}{tutorials/batch/combustion/nox02\_millerbowman\_denox}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T900) at (0.0,-0.0) {\textbf{T900}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1000) at (0.0,-1.7) {\textbf{T1000}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1050) at (0.0,-3.4) {\textbf{T1050}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1100) at (0.0,-5.1) {\textbf{T1100}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1125) at (0.0,-6.8) {\textbf{T1125}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1150) at (0.0,-8.5) {\textbf{T1150}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1175) at (0.0,-10.2) {\textbf{T1175}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1200) at (0.0,-11.9) {\textbf{T1200}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1225) at (0.0,-13.6) {\textbf{T1225}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1250) at (0.0,-15.3) {\textbf{T1250}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1275) at (0.0,-17.0) {\textbf{T1275}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1300) at (0.0,-18.7) {\textbf{T1300}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1325) at (0.0,-20.4) {\textbf{T1325}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1350) at (0.0,-22.1) {\textbf{T1350}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1400) at (0.0,-23.8) {\textbf{T1400}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1450) at (0.0,-25.5) {\textbf{T1450}\\[-1pt]{\tiny batchReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (T1500) at (0.0,-27.2) {\textbf{T1500}\\[-1pt]{\tiny batchReactor}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Miller \& Bowman 1989 Fig. 57 (Lyon \& Hardy flow reactor, data set 1): thermal DeNOx window, Appendix B, 17 isothermal vessels, 0.1 s}
+\begin{tutnarrative}
+/$\ast$---------------------------------------------------------------------------$\ast$ nox02\_millerbowman\_denox / flowsheetDict -- one isothermal vessel per temperature of the Thermal DeNOx window (900-1500 K, 25 K steps through the window), each a plug-flow element held 0.1 s.
+
+\end{tutnarrative}
+\tutreadme{The question. NH3 is injected into hot gas that carries NO and some O2. Between about 1100 and 1400 K it removes NO; below the window nothing reacts, above it the ammonia burns to NO. Where is the window, and how deep? Miller \& Bowman (Prog. Energy Combust. Sci. 15 (1989) 287-338, doi:10.1016/0360-1285(89)90017-8) answer in Fig. 57 (p. 313) against the flow-reactor data of Lyon \& Hardy. This case runs that figure.}
+\tutreadme{Setup (the paper's data set 1). NO 225 ppm, NH3 450 ppm, O2 1.23 \%, balance He, 1.1 atm, isothermal, reaction time 0.1 s, temperature 900-1500 K. A flow reactor held at a wall temperature is a plug-flow element, and a plug-flow element is a batch vessel in its own travel time, so the case is 17 isothermal batchReactor units, one per temperature (energy gasConstantP, mode isothermal), integrated to 0.1 s in one run. The temperature sweep is therefore a list of vessels, not an outerDict: choupoBatch has no outer driver.}
+\tutreadme{Mechanism. Appendix B of the paper, 73 reactions, 19 species plus He, A in cm3-mol-s and E in cal/mol as printed (constant/reactions; the paper's numbers name the reactions, B1...B73, each with its page). The paper computed this figure with Appendix B. Reverse rates come from equilibrium, as the paper does. Thermochemistry: one set per run, the NASA/TP-2002-211556 NASA-9 data (stable species as case-local overrides, radicals from the NASA table); N2H2 and NNH are read from the NASA table and the RRHO-computed table respectively (Theory Guide sec:rrho-thermo; NNH has no NASA entry).}
+\tutreadme{The window opens at 1100 K, reaches 17 ppm (92 \% removal) near 1225 K, and closes by 1400 K, where the ammonia has all burned and NOx is back at 204 ppm. Below 1050 K nothing happens in 0.1 s. The curve is the paper's: root-mean-square difference 2.9 ppm over the model curve's 14 read points, largest 7.8 ppm on the steep flank at 1200 K. The readings are digitised from the page image (thresholded, the axis frame found by pixel, +-3 ppm, more on the steep flank): information, not a pin. Against the Lyon \& Hardy data themselves the model (the paper's and this case's alike) runs about 25-30 K cold on the flank and 25 ppm high above the minimum -- that is the paper's own remaining disagreement with the experiment, not a difference between the two models (docs/reviews/2026-11-22-miller-bowman/compare\_paper.py).}
+\tutreadme{N2O is the intermediate to watch: it peaks at 13.0 ppm near 1325 K and is gone (0.2 ppm) by 1500 K; the ammonia is exhausted from 1275 K up, and from there on the NO that remains is what the ammonia burned to.}
+\tutreadme{Same transcription, same thermodynamics (the NASA-9 coefficients Choupo reads, written into the Cantera input), Cantera 3.2.0, CVODES at rtol 1e-10: the end values of NOx agree to 5 significant digits in all 17 vessels, every species at every write time to 1.7e-3 relative at worst (rtol 1e-6 as shipped; tightening the integration to 1e-8 brings it to 1.7e-4), temperatures identical. docs/reviews/2026-11-22-miller-bowman/compare\_cantera.py denox.}
+\begin{tutgolden}
+\goldrow{kpi}{T1000}{E\_reaction\_seg0\_kJ}{-2.97083033729e-08}
+\goldrow{kpi}{T1000}{E\_reaction\_total\_kJ}{-2.97083033729e-08}
+\goldrow{kpi}{T1000}{P\_final}{111457.5}
+\goldrow{kpi}{T1000}{T\_final}{1000}
+\goldrow{kpi}{T1000}{n\_H2O2\_final}{5.53530635561e-27}
+\goldrow{kpi}{T1000}{n\_H2\_final}{2.55123434121e-16}
+\goldrow{kpi}{T1000}{n\_HNO\_final}{4.74824172212e-14}
+\goldrow{kpi}{T1000}{n\_HO2\_final}{1.10781359851e-17}
+\goldrow{kpi}{T1000}{n\_H\_final}{1.62816829489e-17}
+\goldrow{kpi}{T1000}{n\_He\_final}{0.0132313228152}
+\goldrow{kpi}{T1000}{n\_N2H2\_final}{1.37579981821e-26}
+\goldrow{kpi}{T1000}{n\_N2O\_final}{3.79603540846e-17}
+\goldrow{kpi}{T1000}{n\_N2\_final}{8.77577047532e-14}
+\goldrow{kpi}{T1000}{n\_NH2\_final}{2.29334460102e-16}
+\goldmore{475}
+\end{tutgolden}
+
+\clearpage
+\tutentry{nox03\_millerbowman\_large}{tutorials/batch/combustion/nox03\_millerbowman\_large}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (vessel) at (0.0,-0.0) {\textbf{vessel}\\[-1pt]{\tiny batchReactor}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Miller \& Bowman 1989 Appendix A (235 reactions, 51 species): lean CH4/air + 100 ppm NO, adiabatic constant volume, 1300 K, 1 atm}
+\begin{tutnarrative}
+/$\ast$---------------------------------------------------------------------------$\ast$ nox03\_millerbowman\_large / flowsheetDict -- one adiabatic constant-volume vessel with the 235-reaction Appendix A mechanism.
+
+\end{tutnarrative}
+\tutreadme{What it is. The whole of Appendix A of Miller \& Bowman (Prog. Energy Combust. Sci. 15 (1989) 287-338, doi:10.1016/0360-1285(89)90017-8): 235 elementary reactions among 51 species (C, H, O, N), 5 of them pressure fall-offs (one Troe, one SRI, three Lindemann) and 21 with a bare third body, every rate coefficient read from the page images and every reaction named by the number the paper gives it (A1 ... A234, A5a), with its page, in constant/reactions. It is the case that shows what the engine does with a mechanism of a size nobody types by hand.}
+\tutreadme{The vessel. Lean methane/air (phi = 0.6) with 100 ppm NO, 1300 K, 1 atm, 1 L, closed, adiabatic at constant volume (mode adiabatic; energy gasConstantV, the shock-tube / engine cell). Constant volume is chosen because the analytic Jacobian, audited at run time, is available there (constant pressure integrates on the finite difference, ignition03) and because the burned gas then carries both the heat release and the pressure rise. The mechanism was built for exactly this chemistry: the CH + N2 prompt route (A151), the HCN/NCO/NH chain, the NNH route (A216, A221-A227), N2O (A203-A207), NO2 (A188-A191).}
+\tutreadme{$\ast$ Induction (0-2.4 ms): the methane starts to break down and the radical pool builds, and part of the initial NO becomes NO2 (17 ppm at 1 ms; the mechanism's route to it is HO2 + NO = NO2 + OH, A188 -- not checked here by a rate-of-production report). $\ast$ Ignition at 2.4 ms (Cantera: maximum dT/dt; the write grid of 1 ms says "3 ms"): T jumps to 2612 K, P from 1.0 to 2.0 atm. $\ast$ Thermal NO then grows in the burned gas, 90 \% of its final value within 9 ms of the ignition, to 15008 ppm of NO (NO2 10 ppm) at 30 ms: 99.997 \% of the constant-volume adiabatic equilibrium Cantera computes from the same charge (NOx 15019.0 ppm, 2593.63 K, 2.0457 bar; here 2593.63 K and 2.0457 bar).}
+\tutreadme{Same CHEMKIN transcription, the same NASA-9 coefficients Choupo reads (written into the Cantera input), Cantera 3.2.0 IdealGasReactor, adiabatic, constant volume:}
+\tutreadme{The 1.8e-3 sits at the 2 ms write, in the induction, where the radical pool grows by decades per millisecond; it is the integration error of the second-order Rosenbrock method and shrinks with the tolerance (docs/reviews/2026-11-22-miller-bowman/compare\_cantera.py large). All 235 reactions balance in elements (Cantera refuses an unbalanced reaction on loading; it loaded all of them).}
+\tutreadme{linearSolver sparse (the vessel has 52 rows, the sparse path factors W on the network's pattern), jacobian analytic, Rosenbrock23, adaptive: 12 audits of the analytic Jacobian against the dense finite difference, worst column 1.0e-7 of the column's scale (tolerance 1e-4).}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{1.33365031194e-15}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.14312883881e-15}
+\goldrow{kpi}{campaign}{element\_N\_closure\_rel}{2.55362664321e-15}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{1.14283970056e-15}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{2.55362664321e-15}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{2.16692976861e-06}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_final}{0.000263335416197}
+\goldrow{kpi}{campaign}{mass\_kg\_initial}{0.000263335986828}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{5.70630589005e-10}
+\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
+\goldmore{60}
+\end{tutgolden}
+
 \subsection{crystallisation}
 \grouptheory{crystallisation}
 \clearpage

@@ -1,0 +1,147 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Carbon dioxide  (CO2, CAS 124-38-9)
+  Above its triple point (216.55 K, 5.18 bar) CO2 has a normal liquid
+  range only up to Tc = 304.13 K.  In process work above ambient T it
+  is permanently gaseous.
+  Sources: constants (Tc, Pc, omega, MW, Tb) cross-checked against the
+  CoolProp 7.2.0 reference equation of state (MIT-licensed); ideal-gas
+  formation properties (dHf_298, s_298) from NASA TM-4513 (McBride-
+  Gordon-Reno 1993).
+\*---------------------------------------------------------------------------*/
+
+name        CO2;
+formula     CO2;
+noncondensable true;     // permanent carrier gas (psychrometric carrier)
+CAS         124-38-9;
+
+// role solute (v0.28+): when the thermo package declares a solvent
+// for which a HenrysLaw/CO2-<solvent>.dat entry exists (water,
+// MEA, ...), the K-value comes from Henry's law instead of the
+// Raoult/γ-φ form.  Falls back to Raoult/γ-φ when no Henry entry
+// is available --- backwards-compatible with existing CO2-bearing
+// tutorials (gibbs cases use GibbsReactor, which does not call Kvec).
+role        solute;
+
+MW          44.010;       // kg/kmol
+Tc          304.13;       // K
+Pc          73.83;        // bar
+omega       0.225;        // [-]
+Tb          194.65;       // K  (sublimation point at 1 atm)
+HvapTb      25230;        // J/mol  (estimate at triple-point T)
+Vliq        4.70e-5;      // m^3/mol  (47.0 cm^3/mol at 273 K)
+VliqT       273.15;      // K -- the temperature Vliq belongs to: the record's own statement ("at 273 K"), read as 273.15 K; the reference equation gives 47.45 cm^3/mol there (batch vliq_datum_temperature)
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 14560;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
+diffusionVolume  26.9;          // Fuller diffusion volume [-]
+
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (6.81228   1301.679   -3.494);
+    Trange        (154  204);
+}
+
+
+// Liquid Cp -- physically extrapolated stub (CO2 is gas or solid at
+// normal P; liquid only above 5.18 bar).  Same purpose as the N2 stub.
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (90.0);          // J/(mol·K), constant approximation
+}
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( carbonDioxide );
+
+// ---- Aqueous-speciation FACT (substance-level, classifier-read) ----
+// CO2 + H2O = HCO3- + H+ (CO2aq-formation): the carbonate
+// set, master HCO3.
+aqueousSpeciation  carbonate;
+aqueousMapping ( { species HCO3; nu 1; } { species H; nu 1; } );
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file CARBON_DIOXIDE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey CURLTUGMZLYLDI-UHFFFAOYSA-N (full match); formula CO2; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        65.051554;   // sum of the profile below; GAMESS prints 65.05
+        volume      46.77;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.020733     8.028723     3.887955     5.212609
+               3.104851     0.000000     2.188619     3.095591     0.000000     0.000000
+               4.913383     0.446335     0.000000     2.058378     7.299824     0.743315
+               0.124291     6.008387    10.392759     7.525801     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}
+
+reviewStatus   interim;
+reviewReason   "idealGasHeatCapacity transcribed by machine from NASA/TP-2002-211556 and checked against the report itself, not yet read back against the page by a curator; the rest of this record is unchanged";
+variationOf    CO2;
+variationReason "the case carries the flame-range ideal-gas heat capacity (NASA-9, 200-6000 K, NASA/TP-2002-211556) that the combustion chemistry needs; the catalogue cubic stops at 1500 K.";
+
+standardThermochemistry
+{
+    dHf_298    -393510.000;   // J/mol  -- ideal gas; NASA/TP-2002-211556 appendix D, p. 85, entry CO2
+    s_298      213.787;     // J/(mol·K) -- third-law absolute; Table B1, p. 15
+}
+
+idealGasHeatCapacity
+{
+    //  CASE-LOCAL OVERRIDE for flame temperatures (the catalogue Cp is a 250-1500 K process fit).
+    //  NASA/TP-2002-211556 eq. (1), Cp/R = a1/T^2 + a2/T + a3 + a4 T + a5 T^2
+    //  + a6 T^3 + a7 T^4; appendix D, p. 85, entry CO2, a1..a7 as printed.
+    //  The report's 6000-20000 K interval is not transcribed.
+    model    NASA9;
+    Tlow     200;
+    Tcommon  1000;
+    Thigh    6000;
+    low      ( 4.943650540e+04 -6.264116010e+02 5.301725240e+00 2.503813816e-03 -2.127308728e-07 -7.689988780e-10 2.849677801e-13 );
+    high     ( 1.176962419e+05 -1.788791477e+03 8.291523190e+00 -9.223156780e-05 4.863676880e-09 -1.891053312e-12 6.330036590e-16 );
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 85, entry CO2, record-line H(298.15) (elements reference, so = dHf)";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "Table B1 p. 15 prints -393.51 kJ/mol; the report's own sources: Gurvich,1991 pt1 p27 pt2 p24.";
+    }
+    s_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 Table B1, p. 15, entry CO2";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "appendix D's coefficients with b2 integrate to 213.787";
+    }
+    idealGasHeatCapacity
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 85, entry CO2, a1..a7 of the 200-1000 K and 1000-6000 K intervals, as printed";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "read by bin/curate/nasa_tp2002_to_choupo.py, which holds H and S at 298.15 K to the printed values";
+    }
+    source   "McBride, Zehe & Gordon, NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species, NASA/TP-2002-211556 (2002)";
+    licence  publicDomain;    // US government work (NASA), 17 U.S.C. 105
+}
+

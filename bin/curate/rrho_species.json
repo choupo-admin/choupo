@@ -1,0 +1,869 @@
+{
+ "_comment": "inputs of bin/curate/rrho_thermo.py; validation species first, then the records (built once with the PySCF constants of bin/curate/rrho_abinitio_constants.py); every number carries its source, and vib_source says per mode measured or calculated",
+ "validation": [
+  {
+   "name": "HNCO",
+   "formula": "HNCO",
+   "description": "HNCO",
+   "sigma": 1,
+   "rotor": {
+    "kind": "nonlinear",
+    "A": 30.63777,
+    "B": 0.3693,
+    "C": 0.3641
+   },
+   "vib": [
+    3538,
+    2269,
+    1327,
+    777,
+    577,
+    656
+   ],
+   "electronic": [
+    [
+     0,
+     1
+    ]
+   ],
+   "reference": {
+    "kind": "table",
+    "entry": "HNCO"
+   },
+   "constants_source": "NIST CCCBDB release 22 (cccbdb.nist.gov, SRD 101) experimental page, fetched 2026-11-22: rotational constants Brown, Berghout, Crim 1997 (J. Chem. Phys. 107, 9764); fundamentals Jacox 1994 (NIST WebBook), as listed by CCCBDB"
+  },
+  {
+   "name": "NCO",
+   "formula": "NCO",
+   "description": "NCO",
+   "sigma": 1,
+   "rotor": {
+    "kind": "linear",
+    "B": 0.38952
+   },
+   "vib": [
+    1266.63,
+    1921.28,
+    535.43,
+    535.43
+   ],
+   "electronic": [
+    [
+     0,
+     2
+    ],
+    [
+     95.86,
+     2
+    ]
+   ],
+   "reference": {
+    "kind": "table",
+    "entry": "NCO"
+   },
+   "constants_source": "NIST CCCBDB release 22 experimental page (fetched 2026-11-22): B (NIST triatomic constants), nu1 1266.63, nu2 535.43 (x2), nu3 1921.28 cm-1 as in the NIST WebBook X 2Pi table (Jacox); spin-orbit constant A = -95.86 cm-1 of X 2Pi from the NIST Diatomic/Triatomic Spectral Database table for NCO (physics.nist.gov/PhysRefData/MolSpec/Triatomic/Html/Tables/NCO.html; the same table lists A_eff -95.26), so the two spin-orbit components (g = 2 each) lie at 0 and 95.86 cm-1"
+  },
+  {
+   "name": "NH2",
+   "formula": "NH2",
+   "description": "NH2",
+   "sigma": 2,
+   "rotor": {
+    "kind": "nonlinear",
+    "A": 23.72,
+    "B": 12.94,
+    "C": 8.16
+   },
+   "vib": [
+    3219,
+    1497,
+    3301
+   ],
+   "electronic": [
+    [
+     0,
+     2
+    ]
+   ],
+   "reference": {
+    "kind": "table",
+    "entry": "NH2"
+   },
+   "constants_source": "NIST CCCBDB release 22 (cccbdb.nist.gov, SRD 101) experimental page, fetched 2026-11-22: Herzberg 1966 rotational constants; fundamentals Jacox 1994 / Huber-Herzberg 1979; X 2B1 (A 2A1 at 11122 cm-1 neglected)",
+   "cp_tol_to_1500": 0.03,
+   "cp_tol_reason": "NH2 is quasi-linear in its bend: the harmonic bend under-counts Cp above 1000 K (-2.9 % at 1500 K); the report fits the anharmonic levels"
+  },
+  {
+   "name": "HCO",
+   "formula": "HCO",
+   "description": "HCO",
+   "sigma": 1,
+   "rotor": {
+    "kind": "nonlinear",
+    "A": 22.365,
+    "B": 1.4944,
+    "C": 1.4008
+   },
+   "vib": [
+    2434,
+    1868,
+    1081
+   ],
+   "electronic": [
+    [
+     0,
+     2
+    ]
+   ],
+   "reference": {
+    "kind": "table",
+    "entry": "HCO"
+   },
+   "constants_source": "NIST CCCBDB release 22 (cccbdb.nist.gov, SRD 101) experimental page, fetched 2026-11-22: Herzberg 1966; fundamentals Jacox 1994; X 2A' (A 2A'' at 9294 cm-1 neglected, 4e-20 population at 1000 K ~ 1e-4)"
+  },
+  {
+   "name": "CH2",
+   "formula": "CH2",
+   "description": "CH2",
+   "sigma": 2,
+   "rotor": {
+    "kind": "nonlinear",
+    "A": 73.05775,
+    "B": 8.41517,
+    "C": 7.21927
+   },
+   "vib": [
+    2806,
+    963,
+    3190
+   ],
+   "electronic": [
+    [
+     0,
+     3
+    ],
+    [
+     3147,
+     1
+    ]
+   ],
+   "reference": {
+    "kind": "table",
+    "entry": "CH2"
+   },
+   "constants_source": "NIST CCCBDB release 22 (cccbdb.nist.gov, SRD 101) experimental page, fetched 2026-11-22: triplet X 3B1: Sears & Bunker 1982 rotational constants, fundamentals Jacox 1994 / Das & Whitehead 1999; singlet 1A1 at 3147 cm-1 as electronic level (g = 1, WebBook); NOTE nu1 2806 is the value CCCBDB lists but WebBook assigns it to the SINGLET (a 1A1) state; the triplet nu1 is not tabulated there (effect on Cp at 1500 K below 0.1 J/(mol K))"
+  },
+  {
+   "name": "C2H",
+   "formula": "C2H",
+   "description": "C2H",
+   "sigma": 1,
+   "rotor": {
+    "kind": "linear",
+    "B": 1.45683
+   },
+   "vib": [
+    3299,
+    1841,
+    372,
+    372
+   ],
+   "electronic": [
+    [
+     0,
+     2
+    ],
+    [
+     3692.61,
+     4
+    ]
+   ],
+   "reference": {
+    "kind": "table",
+    "entry": "C2H"
+   },
+   "constants_source": "NIST CCCBDB release 22 (cccbdb.nist.gov, SRD 101) experimental page, fetched 2026-11-22: B Sastry & Veseth 1984; fundamentals Jacox 1994; X 2Sigma+ and A 2Pi at 3692.61 cm-1 (g = 4)",
+   "cp_tol_to_1500": 0.035,
+   "cp_tol_reason": "C2H X 2Sigma+ / A 2Pi vibronic (Renner-Teller) coupling of the 372 cm-1 bend is not a rigid-rotor harmonic effect (+3.1 % at 1500 K)"
+  },
+  {
+   "name": "H2O",
+   "formula": "H2O",
+   "description": "H2O",
+   "sigma": 2,
+   "rotor": {
+    "kind": "nonlinear",
+    "A": 27.877,
+    "B": 14.512,
+    "C": 9.285
+   },
+   "vib": [
+    3657,
+    1595,
+    3756
+   ],
+   "electronic": [
+    [
+     0,
+     1
+    ]
+   ],
+   "reference": {
+    "kind": "report",
+    "entry": "H2O"
+   },
+   "constants_source": "NIST CCCBDB release 22 (cccbdb.nist.gov, SRD 101) experimental page, fetched 2026-11-22: Herzberg 1966 rotational constants; fundamentals Shimanouchi / Huber-Herzberg 1979"
+  }
+ ],
+ "records": [
+  {
+   "name": "NNH",
+   "formula": "NNH",
+   "description": "diazenyl radical N2H (HNN), X 2A'",
+   "CAS": "36882-13-0",
+   "sigma": 1,
+   "rotor": {
+    "kind": "nonlinear",
+    "A": 22.4649,
+    "B": 1.568,
+    "C": 1.4657
+   },
+   "vib": [
+    1079.9,
+    1811.9,
+    2654.8
+   ],
+   "vib_source": [
+    "calc",
+    "calc",
+    "calc"
+   ],
+   "electronic": [
+    [
+     0,
+     2
+    ]
+   ],
+   "dHf_298": {
+    "value_kJ": 249.23,
+    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.45 kJ/mol",
+    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
+    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
+    "uncertainty": "+-0.45 kJ/mol (ATcT, 95% confidence)",
+    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. Miller & Bowman 1989, Table 1 (p. 289) lists 58.5 kcal/mol = 244.76 kJ/mol (-4.47 kJ/mol from ATcT); the ATcT value is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose."
+   },
+   "same_formula_ok": "N2H radical; no other record of this formula and state",
+   "uncertainty_S": "+-0.2 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants)",
+   "uncertainty_Cp": "+-0.07 J/(mol K) at 298 K, +-0.13 at 1000 K from the same propagation; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
+   "constants_source": "no measured gas-phase fundamental or rotational constant is tabulated by CCCBDB or the WebBook for NNH; all constants CALCULATED: B3LYP/def2-TZVP (density fitted, DFT grid level 3) equilibrium geometry and harmonic frequencies (PySCF 2.15, bin/curate/rrho_abinitio_constants.py, UKS for open shells), frequencies x 0.964 (single factor fitted on 23 measured fundamentals of six molecules (the scale_calibration block of rrho_species.json), rms 21 cm-1 / 1.7 %), rotational constants as computed (equilibrium, not B0; ~1-2 % effect); raw harmonic frequencies [1120.0, 1879.2, 2753.4] cm-1",
+   "approximations": "rigid rotor, harmonic oscillator; ground state X 2A' only (the first excited state lies far above 6000 cm-1); all vibrations calculated",
+   "source": "Choupo RRHO computation (bin/curate/rrho_thermo.py) from the molecular constants and enthalpy of formation cited in the record's provenance",
+   "measured_doi": "10.18434/T4D303",
+   "rot_source": "calc"
+  },
+  {
+   "name": "CH2CO",
+   "formula": "CH2CO",
+   "description": "ketene H2C=C=O, X 1A1",
+   "CAS": "463-51-4",
+   "sigma": 2,
+   "rotor": {
+    "kind": "nonlinear",
+    "A": 9.37,
+    "B": 0.34335,
+    "C": 0.33076
+   },
+   "vib": [
+    3070,
+    2152,
+    1388,
+    1118,
+    588,
+    528,
+    3166,
+    977,
+    433
+   ],
+   "vib_source": [
+    "exp gas",
+    "exp gas",
+    "exp gas",
+    "exp gas",
+    "exp gas",
+    "exp gas",
+    "exp gas",
+    "exp gas",
+    "exp gas"
+   ],
+   "electronic": [
+    [
+     0,
+     1
+    ]
+   ],
+   "dHf_298": {
+    "value_kJ": -48.42,
+    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.11 kJ/mol",
+    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
+    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
+    "uncertainty": "+-0.11 kJ/mol (ATcT, 95% confidence)",
+    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar."
+   },
+   "uncertainty_S": "+-0.3 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants)",
+   "uncertainty_Cp": "+-0.17 J/(mol K) at 298 K, +-0.06 at 1000 K from the same propagation; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
+   "constants_source": "NIST CCCBDB release 22 (cccbdb.nist.gov, SRD 101), fetched 2026-11-22 experimental page: rotational constants A,B,C and the nine fundamentals from Herzberg, Electronic Spectra and Electronic Structure of Polyatomic Molecules (1966) as listed there; ground state 1A1 (first excited level 25975 cm-1 neglected)",
+   "approximations": "rigid rotor, harmonic oscillator, observed fundamentals used as harmonic; C2v, sigma 2",
+   "source": "Choupo RRHO computation (bin/curate/rrho_thermo.py) from the molecular constants and enthalpy of formation cited in the record's provenance",
+   "S298_check": 241.88,
+   "S298_check_source": "TRC value quoted by CCCBDB (S298 241.88 J/(mol K)); NASA/TP-2002-211556 appendix D integrates to 241.889 while its Table B1 prints 251.442",
+   "S298_check_tol": 1.0,
+   "measured_doi": "10.18434/T47C7Z",
+   "rot_source": "exp"
+  },
+  {
+   "name": "1CH2",
+   "formula": "CH2",
+   "description": "singlet methylene (a 1A1 state of CH2; the NASA table's CH2 is the triplet X 3B1)",
+   "CAS": "2465-56-7",
+   "sigma": 2,
+   "rotor": {
+    "kind": "nonlinear",
+    "A": 20.063,
+    "B": 11.3428,
+    "C": 7.2461
+   },
+   "vib": [
+    2806.01,
+    1352.6,
+    2864.97
+   ],
+   "vib_source": [
+    "exp gas",
+    "exp gas",
+    "exp gas"
+   ],
+   "electronic": [
+    [
+     0,
+     1
+    ]
+   ],
+   "dHf_298": {
+    "value_kJ": 429.13,
+    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.11 kJ/mol",
+    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
+    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
+    "uncertainty": "+-0.11 kJ/mol (ATcT, 95% confidence)",
+    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. Miller & Bowman 1989, Table 1 (p. 289) lists 101.46 kcal/mol = 424.51 kJ/mol (-4.62 kJ/mol from ATcT); the ATcT value is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose."
+   },
+   "biradical": "singlet carbene, the transient singlet state of methylene",
+   "same_formula_ok": "the NASA table's CH2 is the TRIPLET X 3B1; this is the singlet a 1A1",
+   "uncertainty_S": "+-0.2 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants)",
+   "uncertainty_Cp": "+-0.02 J/(mol K) at 298 K, +-0.04 at 1000 K from the same propagation; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
+   "constants_source": "NIST Chemistry WebBook (webbook.nist.gov, SRD 69; vibrational/electronic energy levels compiled by M. E. Jacox), fetched 2026-11-22: a 1A1 state fundamentals nu1 2806.01 (CH s-stretch), nu2 1352.6 (bend), nu3 2864.97 (CH a-stretch) cm-1 (Herzberg & Johns 1966; Petek, Nesbitt et al. 1983, 1987, 1989; Hartland et al. 1993); rotational constants CALCULATED (B3LYP/def2-TZVP (density fitted, DFT grid level 3) equilibrium geometry and harmonic frequencies (PySCF 2.15, bin/curate/rrho_abinitio_constants.py, UKS for open shells), frequencies x 0.964 (single factor fitted on 23 measured fundamentals of six molecules (the scale_calibration block of rrho_species.json), rms 21 cm-1 / 1.7 %), rotational constants as computed (equilibrium, not B0; ~1-2 % effect))",
+   "approximations": "rigid rotor, harmonic oscillator; the singlet is its own species with g = 1 (its energy above the triplet, 3147 cm-1, is inside the enthalpy of formation, not the partition function)",
+   "source": "Choupo RRHO computation (bin/curate/rrho_thermo.py) from the molecular constants and enthalpy of formation cited in the record's provenance",
+   "measured_doi": "10.18434/T4D303",
+   "rot_source": "calc"
+  },
+  {
+   "name": "H2CN",
+   "formula": "H2CN",
+   "description": "methyleneamidogen radical H2CN, X 2B2 (planar C2v)",
+   "CAS": "15845-29-1",
+   "sigma": 2,
+   "rotor": {
+    "kind": "nonlinear",
+    "A": 9.6219,
+    "B": 1.3212,
+    "C": 1.1617
+   },
+   "vib": [
+    2820,
+    1725.4,
+    1337,
+    954.1,
+    3103.2,
+    912.8
+   ],
+   "vib_source": [
+    "exp gas (T, photoelectron)",
+    "exp matrix (Ar)",
+    "exp gas (T, photoelectron)",
+    "exp matrix (Ar)",
+    "exp matrix (Ar)",
+    "exp matrix (Ar)"
+   ],
+   "electronic": [
+    [
+     0,
+     2
+    ]
+   ],
+   "dHf_298": {
+    "value_kJ": 238.44,
+    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.55 kJ/mol",
+    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
+    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
+    "uncertainty": "+-0.55 kJ/mol (ATcT, 95% confidence)",
+    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. Miller & Bowman 1989, Table 1 (p. 289) lists 59.08 kcal/mol = 247.19 kJ/mol (+8.75 kJ/mol from ATcT); the ATcT value is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose."
+   },
+   "uncertainty_S": "+-0.2 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants)",
+   "uncertainty_Cp": "+-0.20 J/(mol K) at 298 K, +-0.21 at 1000 K from the same propagation; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
+   "constants_source": "NIST Chemistry WebBook (webbook.nist.gov, SRD 69; vibrational/electronic energy levels compiled by M. E. Jacox), fetched 2026-11-22: X state fundamentals nu1 2820 (T, gas photoelectron, Cowles et al. 1991), nu2 1725.4 and nu4 954.1, nu5 3103.2, nu6 912.8 (Ar matrix IR, Jacox 1987), nu3 1337 (T, gas PE); rotational constants CALCULATED (B3LYP/def2-TZVP (density fitted, DFT grid level 3) equilibrium geometry and harmonic frequencies (PySCF 2.15, bin/curate/rrho_abinitio_constants.py, UKS for open shells), frequencies x 0.964 (single factor fitted on 23 measured fundamentals of six molecules (the scale_calibration block of rrho_species.json), rms 21 cm-1 / 1.7 %), rotational constants as computed (equilibrium, not B0; ~1-2 % effect)). The two CH stretches (2820, 3103) differ more than the B3LYP harmonic pair (2963, 3016); the effect on Cp(1500 K) is below 0.5 %",
+   "approximations": "rigid rotor, harmonic oscillator; two measured stretches are tentative; X 2B2 only",
+   "source": "Choupo RRHO computation (bin/curate/rrho_thermo.py) from the molecular constants and enthalpy of formation cited in the record's provenance",
+   "measured_doi": "10.18434/T4D303",
+   "rot_source": "calc"
+  },
+  {
+   "name": "HOCN",
+   "formula": "HOCN",
+   "description": "cyanic acid H-O-C#N, X 1A' (planar, quasi-linear OCN)",
+   "CAS": "420-05-3",
+   "sigma": 1,
+   "rotor": {
+    "kind": "nonlinear",
+    "A": 22.8064,
+    "B": 0.3558,
+    "C": 0.3503
+   },
+   "vib": [
+    3610,
+    2302,
+    1227,
+    1082,
+    460,
+    498.7
+   ],
+   "vib_source": [
+    "exp gas (Ne matrix)",
+    "exp gas",
+    "exp matrix (Ne)",
+    "exp matrix (Ne)",
+    "exp matrix (N2)",
+    "calc"
+   ],
+   "electronic": [
+    [
+     0,
+     1
+    ]
+   ],
+   "dHf_298": {
+    "value_kJ": -15.04,
+    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.43 kJ/mol",
+    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
+    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
+    "uncertainty": "+-0.43 kJ/mol (ATcT, 95% confidence)",
+    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. Miller & Bowman 1989, Table 1 (p. 289) lists -2.28 kcal/mol = -9.54 kJ/mol (+5.50 kJ/mol from ATcT); the ATcT value is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose."
+   },
+   "uncertainty_S": "+-0.9 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants; plus 0.8 for large-amplitude motion treated as harmonic)",
+   "uncertainty_Cp": "+-0.35 J/(mol K) at 298 K, +-0.11 at 1000 K from the same propagation; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
+   "constants_source": "NIST Chemistry WebBook (webbook.nist.gov, SRD 69; vibrational/electronic energy levels compiled by M. E. Jacox), fetched 2026-11-22 and NIST CCCBDB release 22 (cccbdb.nist.gov, SRD 101), fetched 2026-11-22: fundamentals nu1 3610 (Ne matrix), nu2 2302 (gas IR, Su et al. 2000), nu3 1227, nu4 1082 (Ne matrix), nu5 460 (N2 matrix, Jacox & Milligan 1964); nu6 (A'' out-of-plane) not measured, CALCULATED (B3LYP/def2-TZVP (density fitted, DFT grid level 3) equilibrium geometry and harmonic frequencies (PySCF 2.15, bin/curate/rrho_abinitio_constants.py, UKS for open shells), frequencies x 0.964 (single factor fitted on 23 measured fundamentals of six molecules (the scale_calibration block of rrho_species.json), rms 21 cm-1 / 1.7 %), rotational constants as computed (equilibrium, not B0; ~1-2 % effect), raw 517.2 cm-1); rotational constants CALCULATED",
+   "approximations": "rigid rotor, harmonic oscillator; quasi-linear OCN bend and the missing nu6 are the weak points",
+   "source": "Choupo RRHO computation (bin/curate/rrho_thermo.py) from the molecular constants and enthalpy of formation cited in the record's provenance",
+   "measured_doi": "10.18434/T4D303",
+   "rot_source": "calc"
+  },
+  {
+   "name": "HCNO",
+   "formula": "HCNO",
+   "description": "fulminic acid H-C#N-O, X 1Sigma+ (linear)",
+   "CAS": "506-85-4",
+   "sigma": 1,
+   "rotor": {
+    "kind": "linear",
+    "B": 0.38277
+   },
+   "vib": [
+    3336,
+    2196,
+    1254,
+    537,
+    537,
+    224,
+    224
+   ],
+   "vib_source": [
+    "exp gas",
+    "exp gas",
+    "exp gas",
+    "exp gas",
+    "exp gas",
+    "exp gas",
+    "exp gas"
+   ],
+   "electronic": [
+    [
+     0,
+     1
+    ]
+   ],
+   "dHf_298": {
+    "value_kJ": 169.26,
+    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.44 kJ/mol",
+    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
+    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
+    "uncertainty": "+-0.44 kJ/mol (ATcT, 95% confidence)",
+    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. Miller & Bowman 1989, Table 1 (p. 289) lists 38.4 kcal/mol = 160.67 kJ/mol (-8.59 kJ/mol from ATcT); the ATcT value is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose. ATcT labels the HCNO connectivity 'fulminic acid' in its 1.124 table (earlier versions swapped the names of HCNO and HONC); the formula H-C-N-O is what is used."
+   },
+   "uncertainty_S": "+-1.4 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants; plus 0.5 for large-amplitude motion treated as harmonic)",
+   "uncertainty_Cp": "+-0.35 J/(mol K) at 298 K, +-0.06 at 1000 K from the same propagation; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
+   "constants_source": "NIST CCCBDB release 22 (cccbdb.nist.gov, SRD 101), fetched 2026-11-22 experimental page: fundamentals 3336, 2196, 1254, 537 (x2, pi), 224 (x2, pi) cm-1 (Jacox 1994 / WebBook); B = 0.38277 cm-1 DERIVED from the experimental geometry r(CH) 1.027, r(CN) 1.168, r(NO) 1.199 A (Landolt-Bornstein II/7 as listed by CCCBDB) as I = sum m z^2 about the centre of mass, standard atomic weights; treated as LINEAR (the molecule is quasi-linear, bend 224 cm-1)",
+   "approximations": "rigid rotor treated linear, harmonic oscillator; the 224 cm-1 bend is large-amplitude",
+   "source": "Choupo RRHO computation (bin/curate/rrho_thermo.py) from the molecular constants and enthalpy of formation cited in the record's provenance",
+   "measured_doi": "10.18434/T47C7Z",
+   "rot_source": "derived from the experimental geometry"
+  },
+  {
+   "name": "HCCOH",
+   "formula": "HCCOH",
+   "description": "ethynol H-C#C-O-H, X 1A'",
+   "CAS": "32038-79-2",
+   "sigma": 1,
+   "rotor": {
+    "kind": "nonlinear",
+    "A": 22.7969,
+    "B": 0.3266,
+    "C": 0.322
+   },
+   "vib": [
+    3501.3,
+    3339.6,
+    2198.3,
+    1232.1,
+    1072.1,
+    599,
+    523,
+    383,
+    346
+   ],
+   "vib_source": [
+    "exp matrix (Ar)",
+    "exp matrix (Ar)",
+    "exp matrix (Ar)",
+    "exp matrix (Ar)",
+    "exp matrix (Ar)",
+    "exp matrix (Ar, T low)",
+    "exp matrix (Ar, T low)",
+    "exp matrix (Ar, T low)",
+    "exp matrix (Ar, T low)"
+   ],
+   "electronic": [
+    [
+     0,
+     1
+    ]
+   ],
+   "dHf_298": {
+    "value_kJ": 92.81,
+    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.78 kJ/mol",
+    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
+    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
+    "uncertainty": "+-0.78 kJ/mol (ATcT, 95% confidence)",
+    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar."
+   },
+   "uncertainty_S": "+-1.6 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants; plus 1.2 for large-amplitude motion treated as harmonic)",
+   "uncertainty_Cp": "+-0.88 J/(mol K) at 298 K, +-0.53 at 1000 K from the same propagation; plus 0.5 for large-amplitude motion; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
+   "constants_source": "NIST Chemistry WebBook (webbook.nist.gov, SRD 69; vibrational/electronic energy levels compiled by M. E. Jacox), fetched 2026-11-22: nine matrix-isolation (Ar) fundamentals of Hochstrasser & Wirz 1989: 3501.3 (OH), 3339.6 (CH), 2198.3 (CC), 1232.1 (COH bend), 1072.1 (CO) and four bends 599, 523, 383, 346 cm-1 marked tentative (one of them is the OH torsion); rotational constants CALCULATED (B3LYP/def2-TZVP (density fitted, DFT grid level 3) equilibrium geometry and harmonic frequencies (PySCF 2.15, bin/curate/rrho_abinitio_constants.py, UKS for open shells), frequencies x 0.964 (single factor fitted on 23 measured fundamentals of six molecules (the scale_calibration block of rrho_species.json), rms 21 cm-1 / 1.7 %), rotational constants as computed (equilibrium, not B0; ~1-2 % effect))",
+   "approximations": "rigid rotor, harmonic oscillator; the OH torsion (one of the four tentative low modes) is hindered internal rotation treated as a harmonic mode; matrix shifts of the OH stretch (calc. harmonic 3761 vs matrix 3501) not removed",
+   "source": "Choupo RRHO computation (bin/curate/rrho_thermo.py) from the molecular constants and enthalpy of formation cited in the record's provenance",
+   "measured_doi": "10.18434/T4D303",
+   "rot_source": "calc"
+  },
+  {
+   "name": "C3H2",
+   "formula": "C3H2",
+   "description": "propargylene HCCCH, triplet ground state (quasi-linear 3B1, treated as linear)",
+   "CAS": "67152-18-5",
+   "sigma": 2,
+   "rotor": {
+    "kind": "linear",
+    "B": 0.342
+   },
+   "vib": [
+    3266.0,
+    3329.2,
+    1619.4,
+    1244.1,
+    409.2,
+    409.2,
+    154.1,
+    154.1,
+    248.5,
+    248.5
+   ],
+   "vib_source": [
+    "exp matrix (Ar)",
+    "calc",
+    "exp matrix (Ar)",
+    "calc",
+    "calc",
+    "calc",
+    "calc (low)",
+    "calc (low)",
+    "exp matrix (Ar, HCC wag)",
+    "exp matrix (Ar, HCC wag)"
+   ],
+   "electronic": [
+    [
+     0,
+     3
+    ]
+   ],
+   "dHf_298": {
+    "value_kJ": 546.49,
+    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.65 kJ/mol",
+    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
+    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
+    "uncertainty": "+-0.65 kJ/mol (ATcT, 95% confidence)",
+    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar."
+   },
+   "biradical": "triplet biradical (propargylene)",
+   "uncertainty_S": "+-5.1 J/(mol K) (propagated from the stated uncertainty of each frequency, 2.0 % on the rotational constants; plus 3.0 for large-amplitude motion treated as harmonic)",
+   "uncertainty_Cp": "+-1.41 J/(mol K) at 298 K, +-1.01 at 1000 K from the same propagation; plus 1.0 for large-amplitude motion; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
+   "constants_source": "NIST Chemistry WebBook (webbook.nist.gov, SRD 69; vibrational/electronic energy levels compiled by M. E. Jacox), fetched 2026-11-22: matrix (Ar) fundamentals CH stretch 3266.0, C3 a-stretch 1619.4, HCC wag 248.5 cm-1 (Maier, Reisenauer et al. 1987; Seburg et al. 1995; Jacox & Milligan 1974; their other bends 550.4 and 402.6 are not mapped to a mode here); the other modes and B CALCULATED (B3LYP/def2-TZVP (density fitted, DFT grid level 3) equilibrium geometry and harmonic frequencies (PySCF 2.15, bin/curate/rrho_abinitio_constants.py, UKS for open shells), frequencies x 0.964 (single factor fitted on 23 measured fundamentals of six molecules (the scale_calibration block of rrho_species.json), rms 21 cm-1 / 1.7 %), rotational constants as computed (equilibrium, not B0; ~1-2 % effect); the B3LYP structure is LINEAR, frequencies in the raw output: [0.0, 0.0, 159.8, 424.4, 424.8, 1290.3, 1720.0, 3441.5, 3452.9] cm-1, the soft CCC bend reported as ~0 by the harmonic analysis and replaced by the measured 248.5); isomer: the triplet HCCCH of ATcT (c-C3H2, 50 kJ/mol lower, is a different molecule); sigma = 2 (D-infinity-h treatment), electronic X 3B1/3Sigma-g-, g = 3",
+   "approximations": "treated as a LINEAR rigid rotor (the true triplet is quasi-linear, bent at the central carbon); the bends below 450 cm-1 are large-amplitude and treated as harmonic; weakest record of the nine",
+   "source": "Choupo RRHO computation (bin/curate/rrho_thermo.py) from the molecular constants and enthalpy of formation cited in the record's provenance",
+   "measured_doi": "10.18434/T4D303",
+   "rot_source": "calc"
+  },
+  {
+   "name": "C4H3",
+   "formula": "C4H3",
+   "description": "n-C4H3, 1-buten-3-yn-1-yl H-C#C-CH=CH, X 2A'",
+   "CAS": "2810-61-9",
+   "sigma": 1,
+   "rotor": {
+    "kind": "nonlinear",
+    "A": 2.3243,
+    "B": 0.1613,
+    "C": 0.1508
+   },
+   "vib": [
+    218.3,
+    322.5,
+    515.9,
+    625.3,
+    650.2,
+    655.2,
+    772.4,
+    805.8,
+    975.5,
+    1219.8,
+    1582.5,
+    2129.0,
+    2917.5,
+    3133.6,
+    3346.9
+   ],
+   "vib_source": [
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc",
+    "calc"
+   ],
+   "electronic": [
+    [
+     0,
+     2
+    ]
+   ],
+   "dHf_298": {
+    "value_kJ": 544.74,
+    "source_short": "ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.87 kJ/mol",
+    "method": "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas",
+    "version": "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)",
+    "uncertainty": "+-0.87 kJ/mol (ATcT, 95% confidence)",
+    "notes": "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. The mechanism's C4H3 is not an isomer-resolved species; n-C4H3 (H-C#C-CH=CH, the isomer formed by 2 C2H2 = C4H3 + H, reaction A122) is taken because ATcT lists it with a measured-quality enthalpy (the resonance-stabilised i-C4H3 H2C=C=C=CH is lower in energy and is NOT used)."
+   },
+   "uncertainty_S": "+-1.7 J/(mol K) (propagated from the stated uncertainty of each frequency, 1.5 % on the rotational constants; plus 1.5 for large-amplitude motion treated as harmonic)",
+   "uncertainty_Cp": "+-0.68 J/(mol K) at 298 K, +-0.55 at 1000 K from the same propagation; plus 0.5 for large-amplitude motion; above ~1500 K the harmonic model under-counts (anharmonicity, validated deficit up to -3 % at 1500 K and -7 % at 3000 K)",
+   "constants_source": "no measured fundamental or rotational constant is tabulated by CCCBDB or the WebBook for this radical; ALL constants CALCULATED: B3LYP/def2-TZVP (density fitted, DFT grid level 3) equilibrium geometry and harmonic frequencies (PySCF 2.15, bin/curate/rrho_abinitio_constants.py, UKS for open shells), frequencies x 0.964 (single factor fitted on 23 measured fundamentals of six molecules (the scale_calibration block of rrho_species.json), rms 21 cm-1 / 1.7 %), rotational constants as computed (equilibrium, not B0; ~1-2 % effect); raw harmonic frequencies [226.4, 334.5, 535.1, 648.5, 674.3, 679.6, 801.1, 835.7, 1011.8, 1265.1, 1641.3, 2208.0, 3025.9, 3250.0, 3471.2] cm-1",
+   "approximations": "rigid rotor, harmonic oscillator, all 15 vibrations calculated; the trans/cis (E/Z) forms differ by <1 kJ/mol and are not mixed; low CCC/CCH bends are large-amplitude",
+   "source": "Choupo RRHO computation (bin/curate/rrho_thermo.py) from the molecular constants and enthalpy of formation cited in the record's provenance",
+   "measured_doi": "10.18434/T4D303",
+   "rot_source": "calc"
+  }
+ ],
+ "scale_calibration": {
+  "method": "B3LYP/def2-TZVP harmonic frequencies (bin/curate/rrho_abinitio_constants.py, PySCF) against measured fundamentals; one scale factor s = sum(measured*calc)/sum(calc^2) over the pairs below",
+  "scale": 0.9642,
+  "pairs": [
+   {
+    "species": "H2O",
+    "mode": "bend",
+    "calc_cm1": 1617.4,
+    "measured_cm1": 1595,
+    "measured_source": "CCCBDB/Shimanouchi"
+   },
+   {
+    "species": "H2O",
+    "mode": "sym str",
+    "calc_cm1": 3784.4,
+    "measured_cm1": 3657,
+    "measured_source": "CCCBDB/Shimanouchi"
+   },
+   {
+    "species": "H2O",
+    "mode": "asym str",
+    "calc_cm1": 3889.4,
+    "measured_cm1": 3756,
+    "measured_source": "CCCBDB/Huber-Herzberg 1979"
+   },
+   {
+    "species": "NH2",
+    "mode": "bend",
+    "calc_cm1": 1530.2,
+    "measured_cm1": 1497,
+    "measured_source": "CCCBDB/Jacox VEEL5"
+   },
+   {
+    "species": "NH2",
+    "mode": "sym str",
+    "calc_cm1": 3338.6,
+    "measured_cm1": 3219,
+    "measured_source": "CCCBDB/Jacox VEEL5"
+   },
+   {
+    "species": "NH2",
+    "mode": "asym str",
+    "calc_cm1": 3429.8,
+    "measured_cm1": 3301,
+    "measured_source": "CCCBDB/Huber-Herzberg 1979"
+   },
+   {
+    "species": "CH2 (a 1A1)",
+    "mode": "bend",
+    "calc_cm1": 1401.7,
+    "measured_cm1": 1352.6,
+    "measured_source": "WebBook/Herzberg & Johns 1966"
+   },
+   {
+    "species": "CH2 (a 1A1)",
+    "mode": "s-str",
+    "calc_cm1": 2907.0,
+    "measured_cm1": 2806.01,
+    "measured_source": "WebBook/Feldman 1978, Petek 1983"
+   },
+   {
+    "species": "CH2 (a 1A1)",
+    "mode": "a-str",
+    "calc_cm1": 2972.2,
+    "measured_cm1": 2864.97,
+    "measured_source": "WebBook/Petek 1983, 1989"
+   },
+   {
+    "species": "HCNO",
+    "mode": "pi bend",
+    "calc_cm1": 224.6,
+    "measured_cm1": 224,
+    "measured_source": "CCCBDB/Jacox 1994"
+   },
+   {
+    "species": "HCNO",
+    "mode": "pi bend",
+    "calc_cm1": 566.4,
+    "measured_cm1": 537,
+    "measured_source": "CCCBDB/Jacox 1994"
+   },
+   {
+    "species": "HCNO",
+    "mode": "stretch",
+    "calc_cm1": 1292.3,
+    "measured_cm1": 1254,
+    "measured_source": "CCCBDB/Jacox 1994"
+   },
+   {
+    "species": "HCNO",
+    "mode": "stretch",
+    "calc_cm1": 2323.6,
+    "measured_cm1": 2196,
+    "measured_source": "CCCBDB/Jacox 1994"
+   },
+   {
+    "species": "HCNO",
+    "mode": "CH str",
+    "calc_cm1": 3502.4,
+    "measured_cm1": 3336,
+    "measured_source": "CCCBDB/Jacox 1994"
+   },
+   {
+    "species": "HOCN",
+    "mode": "OCN bend",
+    "calc_cm1": 458.5,
+    "measured_cm1": 460,
+    "measured_source": "WebBook/Jacox & Milligan 1964"
+   },
+   {
+    "species": "HOCN",
+    "mode": "CO str",
+    "calc_cm1": 1098.9,
+    "measured_cm1": 1082,
+    "measured_source": "WebBook/Bondybey 1982"
+   },
+   {
+    "species": "HOCN",
+    "mode": "OH def",
+    "calc_cm1": 1239.7,
+    "measured_cm1": 1227,
+    "measured_source": "WebBook/Bondybey 1982"
+   },
+   {
+    "species": "HOCN",
+    "mode": "CN str",
+    "calc_cm1": 2375.5,
+    "measured_cm1": 2302,
+    "measured_source": "WebBook/Su 2000 (gas)"
+   },
+   {
+    "species": "HOCN",
+    "mode": "OH str",
+    "calc_cm1": 3736.3,
+    "measured_cm1": 3610,
+    "measured_source": "WebBook/Bondybey 1982"
+   },
+   {
+    "species": "HCCOH",
+    "mode": "CO str",
+    "calc_cm1": 1083.9,
+    "measured_cm1": 1072.1,
+    "measured_source": "WebBook/Hochstrasser & Wirz 1989"
+   },
+   {
+    "species": "HCCOH",
+    "mode": "COH bend",
+    "calc_cm1": 1248.0,
+    "measured_cm1": 1232.1,
+    "measured_source": "WebBook/Hochstrasser & Wirz 1989"
+   },
+   {
+    "species": "HCCOH",
+    "mode": "CC str",
+    "calc_cm1": 2279.1,
+    "measured_cm1": 2198.3,
+    "measured_source": "WebBook/Hochstrasser & Wirz 1989"
+   },
+   {
+    "species": "HCCOH",
+    "mode": "CH str",
+    "calc_cm1": 3486.9,
+    "measured_cm1": 3339.6,
+    "measured_source": "WebBook/Hochstrasser & Wirz 1989"
+   }
+  ],
+  "note": "HCCOH OH stretch left out: a matrix (Ar) shift, not a method error; the other validation molecules of rrho_thermo.py (HNCO, NCO, HCO, CH2 triplet, ketene) were not run at this level (time), so the set is 23 pairs from H2O, NH2, singlet CH2, HCNO, HOCN, ethynol"
+ }
+}
