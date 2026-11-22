@@ -1053,6 +1053,79 @@ def arm_i(tmp):
     return n
 
 
+def arm_j(tmp):
+    """A VIEW'S RIGHT-HAND AXIS AND ITS MARKERS (C477).  Declared on pfr01's own
+    postDict: a series `axis right;` with a `yAxis2`, and a marker at a KPI.  Held:
+    the sidecar carries `yAxis2`, the series' `axis: right` and the marker only
+    when the unit publishes the key (an absent key draws nothing, no refusal);
+    and the grammar's refusals fire by name -- `axis right` with no `yAxis2`, a
+    `yAxis2` no series uses, an unknown axis word, a marker with no key."""
+    n = {"views": 0, "refusals": 0}
+    if not SOLVE.exists():
+        fails.append("(j) no choupoSolve binary (build first)")
+        return n
+    base_case = ROOT / "tutorials/steady/reactors/pfr01_first_order"
+    view = """
+views
+(
+    {
+        name    two_axes;  type series;  title "two axes";
+        xAxis   { label "V"; unit "-"; scale linear; }
+        yAxis   { label "X"; unit "-"; scale linear; }
+        %(y2)s
+        %(markers)s
+        series
+        (
+            { name X; label "conversion"; unitOp reactor; table profile; x V; y X; style lines; }
+            { name F; label "ethanol"; unitOp reactor; table profile; x V; y F_ethanol; %(axis)s style lines; }
+        );
+    }
+);
+"""
+    y2 = 'yAxis2 { label "F"; unit "kmol/s"; scale linear; }'
+    def attempt(tag, **kw):
+        d = dict(y2=y2, markers="", axis="axis right;")
+        d.update(kw)
+        pc = copy_full(tmp / ("j_" + tag), base_case)
+        for junk in ("reports", "converged", "postProcessing"):
+            shutil.rmtree(pc / junk, ignore_errors=True)
+        (pc / "system" / "postDict").write_text(view % d)
+        return pc, run_solve(pc)
+    pc, (rc, out, res) = attempt("ok", markers='markers ( { label "absent"; unitOp reactor; key noSuchKpi; } );')
+    if rc != 0 or res is None:
+        fails.append("(j) a view with yAxis2 and a marker on an absent key did not run (exit %d):\n%s" % (rc, out[-400:]))
+        return n
+    it = next((i for i in res["postProcessing"]["items"] if i["name"] == "two_axes"), None)
+    if it is None or it.get("yAxis2", {}).get("unit") != "kmol/s":
+        fails.append("(j) the sidecar lacks yAxis2")
+    elif [s.get("axis") for s in it["series"]] != [None, "right"]:
+        fails.append("(j) series sides are %s" % [s.get("axis") for s in it["series"]])
+    elif "markers" in it:
+        fails.append("(j) a marker on an absent key was drawn")
+    else:
+        n["views"] += 1
+    pc, (rc, out, res) = attempt("mark", markers='markers ( { label "bed"; unitOp reactor; key V_R; } );')
+    it = next((i for i in (res or {}).get("postProcessing", {}).get("items", []) if i["name"] == "two_axes"), None)
+    if it is None or [m["x"] for m in it.get("markers", [])] != [res["kpis"]["reactor"]["V_R"]]:
+        fails.append("(j) a marker on the published KPI V_R is not at the run's number")
+    else:
+        n["views"] += 1
+    for tag, kw, want in (
+        ("noy2", dict(y2=""), "no `yAxis2"),
+        ("nouse", dict(axis=""), "no series says `axis right;`"),
+        ("badword", dict(axis="axis up;"), "Accepted: left, right"),
+        ("nokey", dict(markers='markers ( { label "m"; unitOp reactor; } );'), "a marker names"),
+    ):
+        pc, (rc, out, _) = attempt(tag, **kw)
+        if rc == 0:
+            fails.append("(j) `%s` was ACCEPTED" % tag)
+        elif want not in out:
+            fails.append("(j) `%s` exited %d without '%s':\n%s" % (tag, rc, want, out[-400:]))
+        else:
+            n["refusals"] += 1
+    return n
+
+
 def main():
     if not PROPS.exists():
         print("check_postprocessing: FAILED -- no choupoProps binary (build first)")
@@ -1065,6 +1138,7 @@ def main():
         arm_f(tmp)
         hh = arm_h(tmp)
         ii = arm_i(tmp)
+        jj = arm_j(tmp)
     if fails or any(g is None for g in got):
         print("check_postprocessing: FAILED")
         for f in fails:
@@ -1099,6 +1173,11 @@ def main():
           " R_min (%d cells) equal the run's and publish '-'; %d declarations in minutes are refused"
           " naming it (the name-suffix read called them minutes, T_in inches)."
           % (ii["cells"], ii["refusals"]))
+    print("check_postprocessing (j): a view's right-hand axis and markers (C477) -- yAxis2 and the"
+          " series' side ride the sidecar (%d view), a marker on a key the run does not publish"
+          " draws nothing; %d grammar refusals fire by name (axis right with no yAxis2, a yAxis2"
+          " no series uses, an unknown axis word, a marker with no key)."
+          % (jj["views"], jj["refusals"]))
     return 0
 
 

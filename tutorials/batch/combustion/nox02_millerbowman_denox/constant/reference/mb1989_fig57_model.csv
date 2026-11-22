@@ -1,0 +1,23 @@
+# The model curve of Fig. 57 (p. 313) of J.A. Miller, C.T. Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338,
+#   doi:10.1016/0360-1285(89)90017-8: NOx = NO + NO2 [ppm] after 0.1 s against the reactor temperature [K],
+#   data set 1 (NO 225 ppm, NH3 450 ppm, O2 1.23 %, He, 1.1 atm), computed by the authors with their Appendix B.
+# DIGITISED from the page image (thresholded, the axis frame found by pixel, the model line traced and read at
+#   these temperatures) by docs/reviews/2026-11-22-miller-bowman/compare_paper.py: +-3 ppm in NOx, more on the
+#   steep flank (1150-1225 K).  INFORMATION, NOT A PIN: the case reproduces it to 2.9 ppm rms (README).
+#   The paper's curve ends at 1425 K.  The numbers are facts read off a figure, cited above; the figure itself
+#   is the publisher's and is not in the tree.
+T_K,NOx_ppm
+1100,224
+1125,221
+1150,191
+1175,132
+1200,68
+1225,17
+1250,22
+1275,40
+1300,64
+1325,88
+1350,126
+1375,164
+1400,202
+1425,237

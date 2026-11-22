@@ -34,6 +34,7 @@ License
 #include "thermo/RecordResolver.H"
 
 #include <algorithm>
+#include <tuple>
 #include <cctype>
 #include <cmath>
 #include <cstdlib>
@@ -313,6 +314,7 @@ struct Series
     std::string diffA, diffB;
     bool relative = false;
     std::string declaredUnit;      // a series table's column `unit`, optional
+    bool right = false;            // `axis right;`: drawn against the view's yAxis2
     //  resolved
     std::vector<scalar> x, y, e;
     std::string xUnit, yUnit;
@@ -336,6 +338,14 @@ Series readSeries(const DictPtr& d, const std::string& at)
         && s.style != "linesMarkers")
         refuse(where, "`style " + s.style + ";` -- Accepted: lines, markers, linesMarkers");
     if (d->found("unit")) s.declaredUnit = d->lookupWord("unit");
+    //  `axis left|right;` -- which vertical axis the series is read against.
+    //  A drawing choice, never a number; `right` needs the view's `yAxis2`.
+    {
+        const std::string ax = d->lookupWordOrDefault("axis", "left");
+        if (ax != "left" && ax != "right")
+            refuse(where, "`axis " + ax + ";` -- Accepted: left, right");
+        s.right = ax == "right";
+    }
     int n = sourceWords(d);
     if (n > 0)                  { s.kind = "op-table"; }
     if (d->found("ops"))        { ++n; s.kind = "ops"; }
@@ -476,6 +486,11 @@ struct Row
 
 struct Column { std::string name, label, unit; };
 
+//  A VERTICAL LINE at an x the run published: `markers ( { label "ignition
+//  delay"; unitOp vessel; key tauIgnition; } );` -- the engine's own number
+//  (never recomputed here), drawn only when the source publishes the key.
+struct Marker { std::string label, src, key; };
+
 struct Item
 {
     std::string name, title, kind, shape;   // kind plot|table; shape series|rows
@@ -488,6 +503,9 @@ struct Item
     std::string home;                       // the op it is about ("" = the case)
     std::string origin;                     // declared | default
     Axis xAxis, yAxis;                      // plot axes; a series table uses xAxis
+    Axis y2Axis;                            // the right-hand axis (series `axis right;`)
+    bool hasY2 = false;
+    std::vector<Marker> markers;            // vertical lines at published x values
     std::vector<Series> series;             // plot series / series-table columns
     std::vector<Column> columns;            // rows table
     std::vector<Row> rows;                  // rows table
@@ -708,6 +726,25 @@ Item Reader::Impl::parseView(const DictPtr& v, const std::string& at,
         it.kind = "plot";
         it.xAxis = readAxis(v, "xAxis", where, true);
         it.yAxis = readAxis(v, "yAxis", where, true);
+        it.hasY2 = v->found("yAxis2");
+        if (it.hasY2) it.y2Axis = readAxis(v, "yAxis2", where, true);
+        if (v->found("markers"))
+        {
+            const auto ml = v->lookupDictList("markers");
+            for (std::size_t j = 0; j < ml.size(); ++j)
+            {
+                const std::string mw = where + ", markers[" + std::to_string(j) + "]";
+                Marker m;
+                if (!ml[j]->found("label") || !ml[j]->found("key") || sourceWords(ml[j]) != 1)
+                    refuse(mw, "a marker names `label \"...\"; key <diagnostic>;` and ONE of"
+                           " `op <op>;` / `unitOp <name>;` / `stream <name>;`");
+                m.label = ml[j]->lookupWord("label");
+                m.key = ml[j]->lookupWord("key");
+                m.src = sourceKey(ml[j]);
+                checkOp(m.src, mw);
+                it.markers.push_back(std::move(m));
+            }
+        }
         std::vector<DictPtr> sl;
         if (v->found("series")) sl = v->lookupDictList("series");
         std::vector<Series> shorthand = shorthandSeries(v, where);
@@ -739,6 +776,20 @@ Item Reader::Impl::parseView(const DictPtr& v, const std::string& at,
                 checkSeries(s, where + ", overlay '" + s.name + "'", it.series);
                 it.series.push_back(std::move(s));
             }
+        }
+        {
+            const bool anyRight = std::any_of(it.series.begin(), it.series.end(),
+                                              [](const Series& s) { return s.right; });
+            if (anyRight && !it.hasY2)
+                refuse(where, "a series says `axis right;` but the view declares no `yAxis2 {"
+                       " label ...; unit ...; scale ...; }`");
+            if (it.hasY2 && !anyRight)
+                refuse(where, "`yAxis2` is declared and no series says `axis right;`");
+            if (it.hasY2 && it.type != "series" && it.type != "profile")
+                refuse(where, "a " + it.type + " view has one y axis; `yAxis2` belongs to"
+                       " `series` and `profile` views");
+            if (!it.markers.empty() && it.type != "series" && it.type != "profile")
+                refuse(where, "`markers` belong to `series` and `profile` views");
         }
         if (it.series.empty())
             refuse(where, "a " + it.type + " view draws at least one series -- `y ( ... );`,"
@@ -1603,15 +1654,16 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                 //  next series is then held to it like a declared one.
                 if (it.xAxis.unit.empty() && s.xPublished && s.kind != "difference")
                     it.xAxis.unit = s.xUnit;
-                if (it.kind == "plot" && it.yAxis.unit.empty() && s.yPublished
+                Axis& yAx = s.right ? it.y2Axis : it.yAxis;
+                if (it.kind == "plot" && yAx.unit.empty() && s.yPublished
                     && s.kind != "difference")
-                    it.yAxis.unit = s.yUnit;
+                    yAx.unit = s.yUnit;
                 if (it.xAxis.label.empty()) it.xAxis.label = s.xKey;
-                if (it.kind == "plot" && it.yAxis.label.empty())
-                    it.yAxis.label = it.series.size() == 1 ? s.yKey : std::string();
+                if (it.kind == "plot" && yAx.label.empty())
+                    yAx.label = it.series.size() == 1 ? s.yKey : std::string();
                 toAffineTemperature(s.x, s.xUnit, s.xPublished, it.xAxis.unit);
                 checkUnit(s.xUnit, s.xPublished, it.xAxis.unit, "x ('" + s.xKey + "')", sw);
-                const std::string yDecl = it.kind == "plot" ? it.yAxis.unit
+                const std::string yDecl = it.kind == "plot" ? yAx.unit
                                         : (s.declaredUnit.empty() ? s.yUnit : s.declaredUnit);
                 if (it.kind == "table" && s.declaredUnit.empty() && !s.yPublished)
                     refuse(sw, "the source publishes no unit for '" + s.yKey + "' -- declare"
@@ -1627,7 +1679,7 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                     {
                         if (it.xAxis.scale == "log" && !(s.x[i] > 0))
                             refuse(sw, "x = " + jsonNumber(s.x[i]) + " on a log axis");
-                        if (it.yAxis.scale == "log" && !(s.y[i] > 0))
+                        if (yAx.scale == "log" && !(s.y[i] > 0))
                             refuse(sw, "y = " + jsonNumber(s.y[i]) + " at x = "
                                    + jsonNumber(s.x[i]) + " on a log axis");
                     }
@@ -1649,17 +1701,35 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                    + it.xAxis.unit + "' and y in '" + it.yAxis.unit + "'");
         if (it.kind == "plot")
         {
-            if (it.yAxis.label.empty())
+            for (int side = 0; side < 2; ++side)
             {
+                Axis& ax = side ? it.y2Axis : it.yAxis;
+                if (!ax.label.empty() || (side && !it.hasY2)) continue;
                 std::string ys;
-                for (const auto& s : it.series) if (s.kind != "difference") ys += (ys.empty() ? "" : ", ") + s.yKey;
-                it.yAxis.label = ys;
+                for (const auto& s : it.series)
+                    if (s.kind != "difference" && s.right == (side == 1))
+                        ys += (ys.empty() ? "" : ", ") + s.yKey;
+                ax.label = ys;
             }
             csv << "series,x,y,yError\n";
             for (const auto& s : it.series)
                 for (std::size_t i = 0; i < s.x.size(); ++i)
                     csv << s.name << "," << cell(s.x[i]) << "," << cell(s.y[i]) << ","
                         << cell(s.e[i]) << "\n";
+            //  the markers whose KPI the run published (an absent key draws nothing)
+            std::vector<std::tuple<std::string, scalar, std::string>> marks;
+            for (const auto& m : it.markers)
+            {
+                const Publication& pm = pubNamed(pubs, m.src, where);
+                if (!pm.diagnostics.count(m.key)) continue;
+                std::string mu; bool mp = false;
+                const scalar mx = diagOf(pm, m.key, where, &mu, &mp);
+                if (it.xAxis.unit.empty() && mp) it.xAxis.unit = mu;
+                checkUnit(mu, mp, it.xAxis.unit, "marker '" + m.label + "'", where);
+                if (it.xAxis.scale == "log" && !(mx > 0))
+                    refuse(where, "marker '" + m.label + "' at x = " + jsonNumber(mx) + " on a log axis");
+                marks.emplace_back(m.label, mx, sourceText(m.src) + ": " + m.key);
+            }
             auto rangeJson = [](const Axis& a)
             {
                 std::string r;
@@ -1670,8 +1740,21 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
             js << ", \"xAxis\": { \"label\": " << q(it.xAxis.label) << ", \"unit\": "
                << q(it.xAxis.unit) << ", \"scale\": " << q(it.xAxis.scale) << rangeJson(it.xAxis) << " }"
                << ", \"yAxis\": { \"label\": " << q(it.yAxis.label) << ", \"unit\": "
-               << q(it.yAxis.unit) << ", \"scale\": " << q(it.yAxis.scale) << rangeJson(it.yAxis) << " }"
-               << ", \"series\": [";
+               << q(it.yAxis.unit) << ", \"scale\": " << q(it.yAxis.scale) << rangeJson(it.yAxis) << " }";
+            if (it.hasY2)
+                js << ", \"yAxis2\": { \"label\": " << q(it.y2Axis.label) << ", \"unit\": "
+                   << q(it.y2Axis.unit) << ", \"scale\": " << q(it.y2Axis.scale)
+                   << rangeJson(it.y2Axis) << " }";
+            if (!marks.empty())
+            {
+                js << ", \"markers\": [";
+                for (std::size_t k = 0; k < marks.size(); ++k)
+                    js << (k ? ", " : "") << "{ \"label\": " << q(std::get<0>(marks[k]))
+                       << ", \"x\": " << jsonNumber(std::get<1>(marks[k]))
+                       << ", \"source\": " << q(std::get<2>(marks[k])) << " }";
+                js << "]";
+            }
+            js << ", \"series\": [";
             for (std::size_t j = 0; j < it.series.size(); ++j)
             {
                 const auto& s = it.series[j];
@@ -1680,6 +1763,7 @@ std::string Reader::evaluate(const std::vector<Publication>& pubs, int verbosity
                 js << (j ? ", " : "") << "{ \"name\": " << q(s.name) << ", \"label\": "
                    << q(s.label) << ", \"role\": " << q(s.role) << ", \"style\": "
                    << q(s.style) << ", \"group\": " << q(s.group) << ", \"source\": " << q(s.source)
+                   << (s.right ? ", \"axis\": \"right\"" : "")
                    << ", \"x\": " << unitJson(s.xKey, s.xUnit, s.xPublished)
                    << ", \"y\": " << unitJson(s.yKey, s.yUnit, s.yPublished)
                    << ", \"yError\": " << (err ? "true" : "false")
