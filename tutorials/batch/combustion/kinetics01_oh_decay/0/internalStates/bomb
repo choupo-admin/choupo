@@ -25,7 +25,7 @@ holdup
         H2     0.01;                // the partner, in excess over the radical
         OH     1.0e-6;              // the trace radical made by the flash
         N2     0.989999;            // inert bath: 1 - x_H2 - x_OH
-        H2O2   0.0;                 // (the fall-off experiment seeds this instead)
+        H2O2   0.0;                 // (the sibling case kinetics02_h2o2_falloff seeds this instead)
         O2     0.0;
         H      0.0;
         O      0.0;

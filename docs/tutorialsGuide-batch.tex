@@ -1009,6 +1009,85 @@ with tau = the time T first exceeds T0 + 400 K, linearly interpolated between th
 \end{tutgolden}
 
 \clearpage
+\tutentry{kinetics01\_oh\_decay}{tutorials/batch/combustion/kinetics01\_oh\_decay}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bomb) at (0.0,-0.0) {\textbf{bomb}\\[-1pt]{\tiny batchReactor}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Flash-photolysis cell: a trace of OH decaying in H2/N2 at 1000 K, 1 bar, isothermal (O Conaire 2004 H2/O2 kinetics); the signal the EduTool how-do-we-know-k fits for k}
+\begin{tutnarrative}
+the cell of a flash-photolysis experiment: a trace of OH made at t = 0 in a hot H2/N2 bath, followed in time.
+
+One isothermal closed vessel at constant volume (the "cell"), the whole O Conaire 2004 H2/O2 mechanism (19 reactions, the same constant/reactions as ignition01\_h2o2) so that EVERYTHING the radical can do is in the model -- not only the reaction under study. `rateOfProduction` prints, at one instant, which reactions make and destroy each species: the secondary chemistry that contaminates a measured decay, listed by name.
+
+The page that runs this case (EduTool `how-do-we-know-k`) rewrites T, the charge, the H2 and OH mole fractions, endTime and the instant of the rate-of-production report; this file is the experiment at its defaults.
+
+THE JACOBIAN. `jacobian finiteDifference;` is declared on purpose. The engine audits its analytic Jacobian against a finite difference and refuses a run where they differ by more than 1e-4 of the column's scale; at the first Jacobian of a vessel holding H2O2 alone (every radical at zero, the start of kinetics02\_h2o2\_falloff) it measured d(n\_HO2)/d(n\_HO2) = -0.9618 against -0.9665 and refused. Both kinetics cases therefore integrate on the finite-difference Jacobian, which every Rosenbrock step is allowed to use. The disagreement is reported to the engine owner as an open item, not worked around in the engine.
+
+\end{tutnarrative}
+\tutreadme{An isothermal closed vessel (1000 K, 1 bar, 1 litre) holds an H$_2$/N$_2$ bath (H$_2$ mole fraction 0.01) and a trace of OH (1e-6) made at t = 0: the radical a flash would leave. The whole ? Conaire et al. 2004 H$_2$/O$_2$ mechanism is switched on (the constant/reactions of ignition01\_h2o2), so the OH can do everything the mechanism lets it do.}
+\tutreadme{and plot trajectory.csv (bomb.n\_OH against t) on a log axis. With H$_2$ in a large excess the OH decays by OH + H$_2$ = H$_2$O + H alone, as a first-order law: ln n\_OH is a straight line of slope -k?, with k? = k$\cdot$c\_H$_2$, the pseudo-first-order constant of the experimenter's method. Dividing k? by the H$_2$ concentration c = x P / (R T) gives k, which the run's own log announces ([kinetics] A: 2.16e+08 cm3/mol/s $\to$ 216000 (SI ...), the law the engine evaluates, k = A T? exp(-Ea/RT), b = 1.51).}
+\tutreadme{rateOfProduction prints, at 5 $\mu$s, which reactions make and destroy each species. With the trace seed the table says OH is removed by R3 alone; raise the OH seed (0/internalStates/bomb) and the secondary chemistry that contaminates a measured decay appears in it by name.}
+\tutreadme{The EduTool How do we know k? (EduTools, Reaction engineering) runs this case under other temperatures, H$_2$ concentrations and seeds, fits k?, k and the Arrhenius line from the signal, and compares each recovered k with the engine's. Its sibling case is kinetics02\_h2o2\_falloff.}
+\tutreadme{The case declares jacobian finiteDifference; on purpose; the reason is in the header of system/flowsheetDict.}
+\begin{tutgolden}
+\goldrow{kpi}{bomb}{E\_reaction\_seg0\_kJ}{-7.4718269738e-07}
+\goldrow{kpi}{bomb}{E\_reaction\_total\_kJ}{-7.4718269738e-07}
+\goldrow{kpi}{bomb}{P\_final}{99998.0419037}
+\goldrow{kpi}{bomb}{T\_final}{1000}
+\goldrow{kpi}{bomb}{n\_H2O2\_final}{3.02390216516e-17}
+\goldrow{kpi}{bomb}{n\_H2\_final}{1.20257973521e-07}
+\goldrow{kpi}{bomb}{n\_HO2\_final}{4.43350182676e-20}
+\goldrow{kpi}{bomb}{n\_H\_final}{1.20261498562e-11}
+\goldrow{kpi}{bomb}{n\_N2\_final}{1.1906717973e-05}
+\goldrow{kpi}{bomb}{n\_O2\_final}{2.77252517794e-19}
+\goldrow{kpi}{bomb}{n\_OH\_final}{1.68804633753e-17}
+\goldrow{kpi}{bomb}{n\_O\_final}{5.70235034959e-17}
+\goldrow{kpi}{bomb}{n\_water\_final}{1.20268649695e-11}
+\goldrow{kpi}{bomb}{t\_end}{0.0001}
+\goldmore{31}
+\end{tutgolden}
+
+\clearpage
+\tutentry{kinetics02\_h2o2\_falloff}{tutorials/batch/combustion/kinetics02\_h2o2\_falloff}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bomb) at (0.0,-0.0) {\textbf{bomb}\\[-1pt]{\tiny batchReactor}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Fall-off cell: a trace of H2O2 decaying in N2 at 1000 K, 30 bar, isothermal (O Conaire 2004 H2/O2 kinetics, R15 Troe fall-off); the signal the EduTool how-do-we-know-k fits for k}
+\begin{tutnarrative}
+the fall-off cell: a trace of H2O2 in N2 at 1000 K and 30 bar, isothermal, followed as a first-order decay.
+
+The whole O Conaire 2004 H2/O2 mechanism (19 reactions, the same constant/reactions as ignition01\_h2o2) is loaded, so everything the H2O2 and the OH it makes can do is in the model; the reaction under study is R15, H2O2 + M = 2 OH + M, a Troe fall-off. The page that runs this case (EduTool `how-do-we-know-k`) rewrites T, P, the charge, the H2O2 and N2 mole fractions and the window; this file is the experiment at its defaults.
+
+THE JACOBIAN. `jacobian finiteDifference;` is declared on purpose. The engine audits its analytic Jacobian against a finite difference and refuses a run where they differ by more than 1e-4 of the column's scale; at the first Jacobian of a vessel holding H2O2 alone (every radical at zero, the start of kinetics02\_h2o2\_falloff) it measured d(n\_HO2)/d(n\_HO2) = -0.9618 against -0.9665 and refused. Both kinetics cases therefore integrate on the finite-difference Jacobian, which every Rosenbrock step is allowed to use. The disagreement is reported to the engine owner as an open item, not worked around in the engine.
+
+\end{tutnarrative}
+\tutreadme{An isothermal closed vessel (1000 K, 30 bar, 1 litre) holds N$_2$ and a trace of H$_2$O$_2$ (1e-10 mole fraction). The reaction H$_2$O$_2$ + M = 2 OH + M (R15 of the ? Conaire et al. 2004 mechanism) is a Troe fall-off: its first-order constant lies between the low-pressure limit k$_0$[M] and the high-pressure limit k$\infty$, and the reduced pressure P\_r = k$_0$[M]/k$\infty$ is the coordinate of the curve. At these conditions P\_r $\approx$ 0.67, near the middle.}
+\tutreadme{and plot bomb.n\_H2O2 in trajectory.csv on a log axis: a straight line of slope -k. The Lindemann blend k\_L = k$\infty$ P\_r/(1 + P\_r) is too sharp; the engine multiplies it by Troe's broadening factor F (Gilbert, Luther and Troe 1983, Eqs. 6.3 to 6.7), so k = k\_L F with F < 1. The seed is small so that the OH the decomposition makes does not attack the H$_2$O$_2$ (OH + H$_2$O$_2$ = H$_2$O + HO$_2$), which would add a chain contribution to the decay: at a seed of 1e-5 the decay reads about 1.8 times too fast (measured natively at 1000 K, 1 and 30 bar).}
+\tutreadme{The EduTool How do we know k? reruns this cell at other pressures and temperatures and draws the measured k beside the record's Lindemann and Troe laws. Its sibling case is kinetics01\_oh\_decay, where the same page measures a bimolecular rate constant.}
+\tutreadme{The case declares jacobian finiteDifference; on purpose; the reason is in the header of system/flowsheetDict.}
+\begin{tutgolden}
+\goldrow{kpi}{bomb}{E\_reaction\_seg0\_kJ}{7.73058062009e-09}
+\goldrow{kpi}{bomb}{E\_reaction\_total\_kJ}{7.73058062009e-09}
+\goldrow{kpi}{bomb}{P\_final}{3000024.40213}
+\goldrow{kpi}{bomb}{T\_final}{1000}
+\goldrow{kpi}{bomb}{n\_H2O2\_final}{1.13461079795e-17}
+\goldrow{kpi}{bomb}{n\_H2\_final}{1.53561486095e-23}
+\goldrow{kpi}{bomb}{n\_HO2\_final}{3.98850760902e-18}
+\goldrow{kpi}{bomb}{n\_H\_final}{4.84086720312e-19}
+\goldrow{kpi}{bomb}{n\_N2\_final}{0.000360819999964}
+\goldrow{kpi}{bomb}{n\_O2\_final}{5.29311342566e-19}
+\goldrow{kpi}{bomb}{n\_OH\_final}{7.2070981054e-14}
+\goldrow{kpi}{bomb}{n\_O\_final}{2.83640396419e-17}
+\goldrow{kpi}{bomb}{n\_water\_final}{3.29270525034e-17}
+\goldrow{kpi}{bomb}{t\_end}{0.005}
+\goldmore{25}
+\end{tutgolden}
+
+\clearpage
 \tutentry{nox01\_zeldovich\_postflame}{tutorials/batch/combustion/nox01\_zeldovich\_postflame}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

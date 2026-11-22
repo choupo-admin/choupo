@@ -20,6 +20,16 @@
   The page that runs this case (EduTool `how-do-we-know-k`) rewrites T, the
   charge, the H2 and OH mole fractions, endTime and the instant of the
   rate-of-production report; this file is the experiment at its defaults.
+
+  THE JACOBIAN.  `jacobian finiteDifference;` is declared on purpose.  The
+  engine audits its analytic Jacobian against a finite difference and refuses
+  a run where they differ by more than 1e-4 of the column's scale; at the
+  first Jacobian of a vessel holding H2O2 alone (every radical at zero, the
+  start of kinetics02_h2o2_falloff) it measured d(n_HO2)/d(n_HO2) = -0.9618
+  against -0.9665 and refused.  Both kinetics cases therefore integrate on the
+  finite-difference Jacobian, which every Rosenbrock step is allowed to use.
+  The disagreement is reported to the engine owner as an open item, not worked
+  around in the engine.
 \*---------------------------------------------------------------------------*/
 
 units
@@ -43,8 +53,7 @@ units
         solver
         {
             integrator  Rosenbrock23;       // L-stable stiff method
-            jacobian    finiteDifference;   // see the header: the analytic Jacobian's audit refuses the
-                                            // fall-off experiment's start (H2O2 alone, every radical at 0)
+            jacobian    finiteDifference;   // see THE JACOBIAN in this file's header
             verbosity   3;
         }
 

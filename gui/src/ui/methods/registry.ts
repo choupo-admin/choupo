@@ -1195,7 +1195,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  the cell of a flash-photolysis experiment, the O Conaire 2004 mechanism, a
   //  trace of OH or of H2O2) and the fits of case/knowK.ts on its signals.
   {
-    id: "how-do-we-know-k", blurb: "Measure a rate constant on the engine: a decay, a slope, a fall-off.",
+    id: "how-do-we-know-k", blurb: "Measure a rate constant on the engine: decay, slope, Arrhenius, fall-off.",
     label: "How do we know k?",
     discipline: "Reaction engineering", kind: "construction", status: "live",
     origins: ["engine", "page", "assumption"],

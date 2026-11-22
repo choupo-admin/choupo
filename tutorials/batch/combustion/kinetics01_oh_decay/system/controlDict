@@ -18,7 +18,7 @@
   lets it do.  With the H2 in a large excess the OH decays by OH + H2 = H2O + H
   alone, as a first-order law: ln n_OH falls on a straight line of slope -k',
   k' = k c_H2, the pseudo-first-order constant of the experimenter's method.
-  The window (100 us) holds about fifteen lifetimes at these conditions.
+  The window (100 us) holds about thirteen lifetimes at these conditions.
 
   WHAT THE PAGE DOES WITH IT.  The EduTool rewrites T, P, the charge, the H2,
   OH and H2O2 mole fractions and the window (declared numbers of 0/ and of this
@@ -37,6 +37,6 @@ verbosity     3;
 
 // ---- Time integration ----
 startTime       0;          // s
-endTime         1.0e-4;     // s  (about fifteen OH lifetimes at the defaults)
+endTime         1.0e-4;     // s  (about thirteen OH lifetimes at the defaults)
 deltaT          5.0e-7;     // s  (the stiff integrator sub-steps adaptively within each deltaT)
 writeInterval   5.0e-7;     // s  (200 instants across the window)

@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/bomb -- the cell at t = 0, the SINGLE source of truth.
+
+  A trace of H2O2 in N2 at T and P: the unimolecular decomposition (R15, a
+  Troe fall-off) watched as the first-order decay of the parent.  One species
+  per line: the EduTool `how-do-we-know-k` rewrites the same numbers in this
+  file by name.  totalMoles = P V / (R T) (ideal gas, V = 1 litre) at 30 bar
+  and 1000 K.
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "bomb";
+equipment   batchReactor;
+
+holdup
+{
+    T            1000.0 K;
+    P              30.0 bar;
+    V             0.001;            // m3 (1 litre, held constant)
+    totalMoles    3.6082e-4;        // kmol = P V / (R T)
+    molarComposition
+    {
+        H2     0.0;
+        OH     0.0;
+        N2     0.9999999999;        // inert bath: 1 - x_H2O2
+        H2O2   1.0e-10;             // the trace parent: small enough that OH attacking it does not matter
+        O2     0.0;
+        H      0.0;
+        O      0.0;
+        HO2    0.0;
+        water  0.0;
+    }
+}

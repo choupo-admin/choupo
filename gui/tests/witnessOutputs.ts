@@ -663,6 +663,36 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file: "pxy.csv",
     readBy: ["pxyLens.test.ts"],
   },
+  //  The `how-do-we-know-k` EduTool (C462): the signal of each cell (the
+  //  amount of OH, of H2O2), the log whose [kinetics] lines announce the laws
+  //  the page compares its fits with, and the rate-of-production table.
+  {
+    caseDir: "tutorials/batch/combustion/kinetics01_oh_decay",
+    file: "trajectory.csv",
+    readBy: ["knowK.test.ts", "knowKSweep.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/combustion/kinetics01_oh_decay",
+    file: "log.choupoBatch",
+    readBy: ["knowK.test.ts"],
+    stdout: true,
+  },
+  {
+    caseDir: "tutorials/batch/combustion/kinetics01_oh_decay",
+    file: "rateOfProduction.csv",
+    readBy: ["knowK.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/combustion/kinetics02_h2o2_falloff",
+    file: "trajectory.csv",
+    readBy: ["knowK.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/combustion/kinetics02_h2o2_falloff",
+    file: "log.choupoBatch",
+    readBy: ["knowK.test.ts"],
+    stdout: true,
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

@@ -170,13 +170,16 @@ export const KNOW_K_STEPS: readonly LessonStep[] = [
       + "molecule reacts and k grows in proportion to [M], \\(k_0[\\mathrm{M}]\\); at high pressure the "
       + "energising collisions are fast and the reaction of the energised molecule limits, "
       + "k is the constant \\(k_\\infty\\); between them k bends from one to the other, and the "
-      + "engine writes the blend (Reaction.cpp:113) with the reduced pressure "
-      + "(Reaction.cpp:112).  Lindemann's blend is too sharp for real data, so the engine "
+      + "engine writes the blend (Reaction.cpp:127) with the reduced pressure "
+      + "(Reaction.cpp:126).  Lindemann's blend is too sharp for real data, so the engine "
       + "multiplies it by the broadening factor F of Troe, built from Fcent and the reduced "
-      + "pressure (Reaction.cpp:126 and Reaction.cpp:140), as Gilbert, Luther and Troe 1983 "
+      + "pressure (Reaction.cpp:140 and Reaction.cpp:154), as Gilbert, Luther and Troe 1983 "
       + "write in their Eqs. (6.3) to (6.7).  The experiment is the first-order decay of "
       + "H2O2 in a bath of N2 at several pressures: no excess is needed, the decay of the "
-      + "parent is the signal, and k is read at each pressure.",
+      + "parent is the signal, and k is read at each pressure.  The parent is seeded as a "
+      + "trace on purpose: the OH it makes attacks H2O2 (OH + H2O2 = H2O + HO2), which "
+      + "adds a chain loss to the decay and makes k read too fast, and the engine shows "
+      + "it if the seed of the case is raised.",
     derivation: [
       { step: "The reduced pressure compares the low-pressure rate with the high-pressure limit; the Lindemann blend is its hyperbola:",
         eq: String.raw`P_r = \frac{k_0\,[\mathrm{M}]}{k_\infty}, \qquad k_\mathrm{L} = k_\infty\,\frac{P_r}{1 + P_r}` },

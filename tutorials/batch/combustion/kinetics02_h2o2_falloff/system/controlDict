@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  kinetics02_h2o2_falloff -- the fall-off experiment: the first-order decay of
+  a trace of H2O2 in N2 at 1000 K and 30 bar (choupoBatch).  The second witness
+  of the EduTool `how-do-we-know-k`; its sibling is kinetics01_oh_decay.
+
+  WHAT IT IS.  An isothermal closed vessel holds N2 and 1e-10 (mole fraction) of
+  H2O2.  The reaction H2O2 + M = 2 OH + M (R15 of the O Conaire et al. 2004
+  mechanism, Int. J. Chem. Kinet. 36, 603, Table I) is a Troe fall-off: its
+  first-order constant k lies between the low-pressure limit k0 [M] and the
+  high-pressure limit k_inf.  At 30 bar and 1000 K the reduced pressure
+  P_r = k0 [M] / k_inf is about 0.67, near the middle of the curve, and
+  ln n_H2O2 against t is a straight line of slope -k.  The H2O2 seed is small
+  so that the OH it makes does not attack it (OH + H2O2 = H2O + HO2): at a
+  seed of 1e-5 the decay reads about 1.8 times too fast (measured natively at
+  1000 K, 1 and 30 bar, against the record's own k).  The window (5 ms) holds
+  about eight lifetimes.
+
+  WHAT THE PAGE DOES WITH IT.  It reruns the cell at other pressures and
+  temperatures (declared numbers of 0/ and of this file), fits k at each, and
+  draws the Lindemann and Troe laws of the record beside the measured points.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Fall-off cell: a trace of H2O2 decaying in N2 at 1000 K, 30 bar, isothermal (O Conaire 2004 H2/O2 kinetics, R15 Troe fall-off); the signal the EduTool how-do-we-know-k fits for k";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;          // s
+endTime         5.0e-3;     // s  (about eight H2O2 lifetimes at the defaults)
+deltaT          2.5e-5;     // s  (the stiff integrator sub-steps adaptively within each deltaT)
+writeInterval   2.5e-5;     // s  (200 instants across the window)

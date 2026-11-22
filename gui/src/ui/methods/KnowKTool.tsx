@@ -137,7 +137,7 @@ function OneDecayPanel({ T, sigma }: { T: number; sigma: number }): JSX.Element 
     key, species: "OH",
     experiment: { T, P: CELL_PRESSURE, xH2, xOH: SEED_XOH, xH2O2: 0 },
   }] : null), [live, key, T, xH2]);
-  const sw = useDecaySweep(pts, key);
+  const sw = useDecaySweep(pts, live ? key : "off");
   const run = sw.results[0] ?? null;
   const m = measure(run, "OH", sigma, NOISE_SEEDS.one);
   const c = concMolCm3(xH2, T, CELL_PRESSURE);
@@ -197,9 +197,9 @@ function SeriesPanel({ T, sigma }: { T: number; sigma: number }): JSX.Element {
     key: `${key}-${x}`, species: "OH" as const,
     experiment: { T, P: CELL_PRESSURE, xH2: x, xOH: SEED_XOH, xH2O2: 0 },
   })) : null), [live, key, T]);
-  const sw = useDecaySweep(pts, key);
+  const sw = useDecaySweep(pts, live ? key : "off");
   const ms = sw.results.map((r, i) => measure(r, "OH", sigma, NOISE_SEEDS.series + i));
-  const have = ms.every((m) => m?.decay);
+  const have = ms.length === pts?.length && ms.every((m) => m?.decay);
   const cs = SERIES_XH2.map((x) => concMolCm3(x, T, CELL_PRESSURE));
   const kps = ms.map((m) => m?.decay?.kPrime ?? NaN);
   const fit = have ? linearFit(cs, kps) : null;
@@ -261,9 +261,9 @@ function ArrheniusPanel({ sigma }: { sigma: number }): JSX.Element {
     key: `${key}-${T}`, species: "OH" as const,
     experiment: { T, P: CELL_PRESSURE, xH2: ARR_XH2, xOH: SEED_XOH, xH2O2: 0 },
   })) : null), [live]);
-  const sw = useDecaySweep(pts, key);
+  const sw = useDecaySweep(pts, live ? key : "off");
   const ms = sw.results.map((r, i) => measure(r, "OH", sigma, NOISE_SEEDS.arrhenius + i));
-  const have = ms.every((m) => m?.decay);
+  const have = ms.length === pts?.length && ms.every((m) => m?.decay);
   const ks = T_STOPS.map((T, i) => (ms[i]?.decay ? ms[i]!.decay!.kPrime / concMolCm3(ARR_XH2, T, CELL_PRESSURE) : NaN));
   const fit = have ? arrheniusFit(T_STOPS, ks) : null;
   const rec = reactionsText();
@@ -341,9 +341,9 @@ function FalloffPanel({ sigma }: { sigma: number }): JSX.Element {
     key: `${key}-${p}`, species: "H2O2" as const,
     experiment: { T, P: p * 1e5, xH2: 0, xOH: 0, xH2O2: FALLOFF_XH2O2 },
   })) : null), [live, key, T]);
-  const sw = useDecaySweep(pts, key);
+  const sw = useDecaySweep(pts, live ? key : "off");
   const ms = sw.results.map((r, i) => measure(r, "H2O2", sigma, NOISE_SEEDS.falloff + i));
-  const have = ms.every((m) => m?.decay);
+  const have = ms.length === pts?.length && ms.every((m) => m?.decay);
   const rec = reactionsText();
   const first = sw.results[0];
   const M = (pBar: number) => (pBar * 1e5) / (R_GAS * T) * 1e-3;      // kmol/m3, all-N2 bath
@@ -422,7 +422,7 @@ function BreakPanel({ T, sigma }: { T: number; sigma: number }): JSX.Element {
     key: `${key}-${x}`, species: "OH" as const,
     experiment: { T, P: CELL_PRESSURE, xH2: BREAK_XH2, xOH: x, xH2O2: 0 },
   })) : null), [live, key, T]);
-  const sw = useDecaySweep(pts, key);
+  const sw = useDecaySweep(pts, live ? key : "off");
   const ms = sw.results.map((r, i) => measure(r, "OH", sigma, NOISE_SEEDS.breaks + i));
   const rec = reactionsText();
   const first = sw.results[0];
@@ -430,7 +430,7 @@ function BreakPanel({ T, sigma }: { T: number; sigma: number }): JSX.Element {
   const cH2 = concMolCm3(BREAK_XH2, T, CELL_PRESSURE);
   const delta = BREAK_XOH.map((x) => x / BREAK_XH2);
   const kApp = ms.map((m) => (m?.decay ? m.decay.kPrime / cH2 : NaN));
-  const have = ms.every((m) => m?.decay);
+  const have = ms.length === pts?.length && ms.every((m) => m?.decay);
   const demoIx = BREAK_XOH.length - 2;
   const demo = ms[demoIx] ?? null;
   const demoRun = sw.results[demoIx] ?? null;
@@ -493,14 +493,15 @@ function BreakPanel({ T, sigma }: { T: number; sigma: number }): JSX.Element {
             <>
               <Text size="sm">
                 OH made and used, by reaction, at t = {fmt(rop.at, 3)} s in that run (the engine's
-                rateOfProduction block; a negative number removes OH).  Net: {rop.net !== null ? fmt(rop.net, 3) : "—"} kmol/s.
+                rateOfProduction block, the eight largest of {rop.rows.length} reactions; a negative number
+                removes OH).  Net of all of them: {rop.net !== null ? fmt(rop.net, 3) : "—"} kmol/s.
               </Text>
               <Wide>
                 <Table withTableBorder fz="xs" style={{ width: "auto" }}>
                   <Table.Thead><Table.Tr><Table.Th>reaction</Table.Th><Table.Th>nu of OH</Table.Th>
                     <Table.Th>net rate [kmol/(m3 s)]</Table.Th><Table.Th>OH made [kmol/s]</Table.Th></Table.Tr></Table.Thead>
                   <Table.Tbody>
-                    {rop.rows.map((r) => (
+                    {rop.rows.slice(0, 8).map((r) => (
                       <Table.Tr key={r.reaction}>
                         <Table.Td ff="monospace">{r.reaction}</Table.Td>
                         <Table.Td ff="monospace">{r.nu}</Table.Td>
@@ -526,7 +527,7 @@ function BreakPanel({ T, sigma }: { T: number; sigma: number }): JSX.Element {
 export function KnowKTool(): JSX.Element {
   const [ti, setTi] = useState(2);
   const T = T_STOPS[ti]!;
-  const [ni, setNi] = useState(2);
+  const [ni, setNi] = useState(0);
   const sigma = NOISE_STOPS[ni]!.v;
   return (
     <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">

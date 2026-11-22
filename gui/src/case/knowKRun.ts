@@ -33,7 +33,7 @@ import { resolveAdapter } from "../adapters/index.js";
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import { usePublishCaveats } from "./engineCaveats.js";
 import {
-  KNOW_K_BINARY, KNOW_K_WITNESS, PILOT_MAX, adaptWindow, experimentOverrides, signalOf,
+  KNOW_K_BINARY, PILOT_MAX, adaptWindow, experimentOverrides, signalOf, witnessOf,
   type Experiment,
 } from "./knowK.js";
 import { methodCase } from "./methodRun.js";
@@ -110,7 +110,7 @@ export function useDecaySweep(
               trials.push(w);
               const overrides = experimentOverrides({ ...pts[i]!.experiment, endTime: w });
               const r = await resolved.adapter.run(
-                methodCase(KNOW_K_WITNESS, overrides), () => {}, ctrl.signal, KNOW_K_BINARY);
+                methodCase(witnessOf(pts[i]!.species), overrides), () => {}, ctrl.signal, KNOW_K_BINARY);
               if (seq !== runSeq.current || ctrl.signal.aborted) return;
               if (r.status !== "done") {
                 const detail = r.log.split("\n").map((l) => l.trim()).reverse()

@@ -46,7 +46,14 @@ import type { DictOverride } from "./methodRun.js";
 
 /** The bundled witness (the path under tutorials/). */
 export const KNOW_K_WITNESS = "batch/combustion/kinetics01_oh_decay";
+/** The fall-off experiment's witness: the same cell seeded with H2O2. */
+export const KNOW_K_FALLOFF_WITNESS = "batch/combustion/kinetics02_h2o2_falloff";
 export const KNOW_K_BINARY = "choupoBatch" as const;
+
+/** The witness an experiment runs: the cell seeded with OH, or with H2O2. */
+export function witnessOf(species: "OH" | "H2O2"): string {
+  return species === "OH" ? KNOW_K_WITNESS : KNOW_K_FALLOFF_WITNESS;
+}
 
 /** The universal gas constant the engine uses, J/(mol K): src/core/Constants.H. */
 export const R_GAS = 8.314462618;
@@ -68,7 +75,7 @@ export const T_STOPS: readonly number[] = [800, 900, 1000, 1100, 1200, 1300, 140
  *  contaminating the decay). */
 export const FALLOFF_T: readonly number[] = [1000, 1100, 1200];
 export const FALLOFF_P_BAR: readonly number[] = [0.1, 0.3, 1, 3, 10, 30, 100, 300];
-export const FALLOFF_XH2O2 = 1.0e-8;
+export const FALLOFF_XH2O2 = 1.0e-10;
 /** The breaking experiment: a fixed H2 fraction and a growing OH seed. */
 export const BREAK_XH2 = 0.01;
 export const BREAK_XOH: readonly number[] = [1e-6, 1e-5, 1e-4, 1e-3, 3e-3, 1e-2];
