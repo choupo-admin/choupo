@@ -267,6 +267,12 @@ int PropertyScanTernary::run(const DictPtr& dict,
                 continue;        // honest: skip, never fake a classification
             }
 
+            //  A node the flash did not converge is REFUSED, counted in
+            //  `failures` and left out of the map -- never classified (before,
+            //  classify() ignored sol.converged and a refused node was
+            //  printed as a single liquid).
+            if (!sol.converged) { ++failures; continue; }
+
             const Klass k = classify(sol);
             writeNode(x1, x2, x3, k);
             ++nNodes;
