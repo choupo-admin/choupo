@@ -1,0 +1,83 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- the case REFERENCES the catalogue
+  (DEV.md 4c C413; context: case root).  Written by
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and, per scanned registry directory, ONE
+  `"<dir>/"  "relevant:<hash>"` line: the hash of the sorted names that
+  EXIST there and are relevant to the case (a Henry or solution pair among
+  its components), so a relevant pair that arrives or leaves is a drift
+  and an unrelated edit is not.  A registry parses a whole directory;
+  only the names the case selects are pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
+  `held` (transitional): a local copy kept IN FORCE, read alone, verified
+  against its own hash -- debt that only shrinks (check_case_records).
+\*----------------------------------------------------------*/
+propertyManifest
+{
+    pins
+    {
+        "chemistry/aceticAcid-dissolution.dat"  "99bfeeeb65c909aa335d2fae84480c0ccb9a9aaac24b26bee6afdb8091cb08e6";
+        "components/ALIASES"  "c341953e34718480b8215da2139b8c85cfc29e01092cc7398febddb473320ad0";
+        "components/C4H2.dat"  "91ba1dbd81f75105dd00f2637b40073dbbe054923c0175c09072966985c23d98";
+        "components/H2O2.dat"  "88c40cfeccf3caebb75c941f14c1fa8139a64a74e3a99023096924fefce99425";
+        "parameters/Henry/"  "relevant:66155350336d874bcf8da7ade6a786632a580d35724db72e4ad5b714c07bff5c";
+        "parameters/Henry/CH4-water.dat"  "6bc2d4d3828fd1d518cd72bf204a7bd3c4eb1b544bb05dd5aa8ed83202b6ea27";
+        "parameters/Henry/CO-water.dat"  "7e5772418f164af708f397b91073253f5a13cf0f806777414e5d4cfa63506e97";
+        "parameters/Henry/CO2-water.dat"  "84d20cd1fc73ff097ce640d0f6b4b9ad5cc51c9aa11d0ab05af8c64743b6c9ff";
+        "parameters/Henry/H2-NH3.dat"  "46602c525f2c5e776998e0d9c25b7ddadbb2ceaf56255f06eb5b422a6c83b68b";
+        "parameters/Henry/H2-water.dat"  "4a3629c5a88f40b2e55f52bf4da05cff92e0c966331cc39b95712c2744fa8c7b";
+        "parameters/Henry/H2O2-water.dat"  "b6e280b4f7e4097d98fbe5d7e5b6733a30a8be7081dbc7c2393e9054e1e98c23";
+        "parameters/Henry/HCHO-water.dat"  "681be605a1a8448c41aaa57d8b4abe97d6ee716bcc9b986907f829fe3f098d3f";
+        "parameters/Henry/HCN-water.dat"  "094f075a831036196718af27f56dab9cf8847c371ab8fbb23b1df98a03c4d022";
+        "parameters/Henry/HO2-water.dat"  "28a525e33af32645a8ab2859c7ddfa2fc69e275ec1b339877809e23af535f835";
+        "parameters/Henry/N2-NH3.dat"  "2d63474030a5c3b5c0bdc8156e656e32f4391fd60341a162fc98c74dfa1c621c";
+        "parameters/Henry/N2-water.dat"  "6e597edbafb3f88076dac89a14cfa53d85b9bc2df19cc088d9b8171fdc5fd765";
+        "parameters/Henry/N2O-water.dat"  "3f4a480911eb4af73f2ccca19ec5439798869b5149026ff3dd6978eae5fd8d2e";
+        "parameters/Henry/NH3-water.dat"  "5428033d18389bed599de4cb755a48d08b32f30282cde835422b2447b9bea983";
+        "parameters/Henry/NO-water.dat"  "6bd40f68c038db2956978663fa8b2ff61ccb9b6868ce754f34f4a3331dd6e1ae";
+        "parameters/Henry/NO2-water.dat"  "c125454f4aa1ced1a7f4a35bbfec4a0ccc3519f8b879643a118ba103f03d61ab";
+        "parameters/Henry/O2-water.dat"  "7d1943cf41a94ac447b3d7774fef5b62e2e5a7698bee77a48b59dabb022458db";
+        "parameters/Henry/OH-water.dat"  "cf7c83d838a3966d67f7d420131574085908a12969f2a70a49052856d425a2d2";
+        "parameters/Henry/acetylene-water.dat"  "3e1bf39de11d3e1a96f072adb905ecd1bd93eb894380a8fc0d45917e172a9575";
+        "parameters/Henry/ethane-water.dat"  "c927c294a17ce8087ed27f18c6e43665a6a55b68ccf0c88f3f688723ed6bc5f3";
+        "parameters/Henry/ethylene-water.dat"  "39f81a7fb0ea3d570c22df3996a07f9b48677cc8b4c9b502443d5b543699d5dd";
+        "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+        "thermoTables/NASA-TP-2002-211556/C.dat"  "bd049ea8d7de686a649d80606471f3f74e87d4ffde4b63b47e8321eb86a380ee";
+        "thermoTables/NASA-TP-2002-211556/C2H.dat"  "cca2da03372d3ef2f4991ed5af3ff3cef8cf7d1b8e21b5a7c672cd5f0d44708d";
+        "thermoTables/NASA-TP-2002-211556/C2H3_vinyl.dat"  "28e922e09bd218b341ef0ab8654c5a707ac474d8dd283abace51762d0ff6050f";
+        "thermoTables/NASA-TP-2002-211556/C2H5.dat"  "b30a71283d1f8c8b31da5ae43e06257fc4814a1c95cfae5d684ccdc3b5e92812";
+        "thermoTables/NASA-TP-2002-211556/C2N2.dat"  "3be64767769e1a025575b0d92bcc948d449427de5fcd963e80da08beadcf1c17";
+        "thermoTables/NASA-TP-2002-211556/C3H3_1propynl.dat"  "8693bb7b9898c696771f1e725dd1645a2d7aa4fded4759e7ab966137c41731e3";
+        "thermoTables/NASA-TP-2002-211556/CH.dat"  "1ba5a7ec9215994c31ffcb850e0dcb4a46b96f2c5203f56672121dd1314dbc0e";
+        "thermoTables/NASA-TP-2002-211556/CH2.dat"  "6faf93baecb2d4ca75e36cd18ede21ef528775008e6f86bb73cfec52a046a60b";
+        "thermoTables/NASA-TP-2002-211556/CH2OH.dat"  "7ab4baa1c80f76a0e6ed558ad406895d36c02bf385fc75a1789782afb789bdb3";
+        "thermoTables/NASA-TP-2002-211556/CH3.dat"  "6a48af5d8c4dd4963142cb2775ab4ed882578212d5e4e434da2ee4c0a116df0e";
+        "thermoTables/NASA-TP-2002-211556/CH3O.dat"  "8507b970d3def387f28e8ed7b3ba3dddca3ffb1f481d0cdfc9851d6706134393";
+        "thermoTables/NASA-TP-2002-211556/CN.dat"  "f82d80f7d1a1f76b1ce9f6eab4b6e3b5c92611ba05c70a424446692dd07f1e86";
+        "thermoTables/NASA-TP-2002-211556/H.dat"  "60e7846e232f139519b7f1cd47cde0207b23f08a754af7c061f018b403197b9d";
+        "thermoTables/NASA-TP-2002-211556/HCCO.dat"  "f3a7c02f17fa77f377ccf4c7327c1f51f6c077e62aed355a5511824db1502690";
+        "thermoTables/NASA-TP-2002-211556/HCO.dat"  "c321dfd729169dbe28f16e0d99d926f521e121f97638f3baff3b5e6592fc7e59";
+        "thermoTables/NASA-TP-2002-211556/HNCO.dat"  "991809b6624b4ddcb1c14f997226837867c6718137a49aa9fcc5a0020b2ffe50";
+        "thermoTables/NASA-TP-2002-211556/HNO.dat"  "763f69fc8b1d77312756ad08f03346dee19a90f37d3ab5c63a231234f68814d0";
+        "thermoTables/NASA-TP-2002-211556/HO2.dat"  "17b749e9d51831eef07711679a4ee676244986330ffbbd3ee793dfb653d9a752";
+        "thermoTables/NASA-TP-2002-211556/N.dat"  "d8b6defc7c6866204b6ce848c43998fed16d6c2370e15c12b3a000cfdbd8360f";
+        "thermoTables/NASA-TP-2002-211556/NCO.dat"  "d2e07e71552daf7fc7b22dfd4f922fc88977577545feb3b39b533837a6af4936";
+        "thermoTables/NASA-TP-2002-211556/NH.dat"  "873fe3d078db8a16ae75ad121b82f01b61a274f5ac901c7a70d4764402ca7230";
+        "thermoTables/NASA-TP-2002-211556/NH2.dat"  "862d1db5cfe028a67110e7c0b680ca9e925346424f3370c2963771b32764ae9a";
+        "thermoTables/NASA-TP-2002-211556/O.dat"  "8752d0bb2206badb3461454f7aa83f01db79e695d3f3cb00e67001104e4e0c8e";
+        "thermoTables/NASA-TP-2002-211556/OH.dat"  "0a01f60adbf955c982080d3c5965e7fee2e947b383fcefc3f589da8207a4dd80";
+        "thermoTables/RRHO-computed/1CH2.dat"  "da371c48024e63d0a3167eebc411a93567d78c5ec9f29003d850a909848dd9f5";
+        "thermoTables/RRHO-computed/C3H2.dat"  "4e0b4b07347f289c379b926dc1921ca58999543831a2c081b876b0319a279c12";
+        "thermoTables/RRHO-computed/C4H3.dat"  "75fd33548932844da32dc1626ea9db5a0cc511542bed60bd91a609d73b69431a";
+        "thermoTables/RRHO-computed/CH2CO.dat"  "ea53f364f71f5ca8de0dc673993cdaaa0a889069c87e51a212ddc023dcefb8cd";
+        "thermoTables/RRHO-computed/H2CN.dat"  "b447338ad90b9b3f8829aae21ae556ab117190aac5c3131e9fa25469616e9f14";
+        "thermoTables/RRHO-computed/HCCOH.dat"  "f51ecfce45505b47a441ce58d2b381dcb508ac3d57899eaef83919c792439d66";
+        "thermoTables/RRHO-computed/HCNO.dat"  "29f35d268ac6dd53587ab81be5a2c700a75fb013996aa58612d115625bd1617f";
+        "thermoTables/RRHO-computed/HOCN.dat"  "905f649d26700a38d4b50777478baab3c7a132e7bb34c52c3fb2a0b4deb27102";
+        "thermoTables/RRHO-computed/NNH.dat"  "5e7a8ac4c9013afcdb6b62af8d1c091bb1f8bbbc794724e3f75ed186c48cf0ff";
+    }
+}

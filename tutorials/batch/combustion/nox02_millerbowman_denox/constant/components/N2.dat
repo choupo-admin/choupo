@@ -1,0 +1,126 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Nitrogen  (N2, CAS 7727-37-9)
+  Element in its standard state -- dHf_298 = 0; s_298 is the only
+  thermodynamic anchor.  Carries over as the (nearly) inert diluent in
+  air-fed combustion.
+  Sources: constants (Tc, Pc, omega, MW, Tb) cross-checked against the
+  CoolProp 7.2.0 reference equation of state (MIT-licensed); ideal-gas
+  formation properties (dHf_298, s_298) from NASA TM-4513 (McBride-
+  Gordon-Reno 1993).
+\*---------------------------------------------------------------------------*/
+
+name        N2;
+formula     N2;
+noncondensable true;     // permanent carrier gas (psychrometric carrier)
+CAS         7727-37-9;
+
+MW          28.013;       // kg/kmol
+Tc          126.20;       // K
+Pc          33.98;        // bar
+omega       0.039;        // [-]
+Tb          77.35;        // K
+HvapTb      5577;         // J/mol
+Vliq        3.46e-5;      // m^3/mol  (34.6 cm^3/mol at Tb)
+VliqT       77.35;       // K -- the temperature Vliq belongs to: the record's own statement ("at Tb")
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 9082;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
+diffusionVolume  18.5;          // Fuller diffusion volume [-]
+
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // Poling 5e App. A (via the MIT-licensed `chemicals` 1.5.2 data
+    // distribution; INTERIM pending primary review (Vitor))
+    coefficients  (3.61947   255.680   -6.6);
+    Trange        (61  83.65);        // upper clamped to the source fit range (review 2026-08-24)
+}
+
+
+// Liquid Cp -- physically extrapolated stub (N2 is gas at any normal
+// process temperature).  Required so the engine's enthalpy iteration
+// can read a Cp_L for every component in a stream, even when x_N2 = 0
+// in that stream (the multiplication still zeroes the contribution but
+// the lookup must succeed).  Value ~ Cp_L at boiling point 77 K.
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (56.0);          // J/(mol·K), constant approximation
+}
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( nitrogen );
+
+// ---- Aqueous-speciation FACT (substance-level, classifier-read) ----
+// dissolved nitrogen: neutral master, no aqueous equilibria.
+aqueousSpeciation  none;
+
+surfaceTension
+{
+    A     0.02935385676;
+    B     0;
+    Tc    126.2;
+    n     1.255908466;
+    Tmin  80;
+    Tmax  120;
+}
+
+reviewStatus   interim;
+reviewReason   "idealGasHeatCapacity transcribed by machine from NASA/TP-2002-211556 and checked against the report itself, not yet read back against the page by a curator; the rest of this record is unchanged";
+variationOf    N2;
+variationReason "the case carries the flame-range ideal-gas heat capacity (NASA-9, 200-6000 K, NASA/TP-2002-211556) that the combustion chemistry needs; the catalogue cubic stops at 1500 K.";
+
+standardThermochemistry
+{
+    dHf_298    0.000;   // J/mol  -- ideal gas; NASA/TP-2002-211556 appendix D, p. 156, entry N2
+    s_298      191.610;     // J/(mol·K) -- third-law absolute; Table B1, p. 24
+}
+
+idealGasHeatCapacity
+{
+    //  CASE-LOCAL OVERRIDE for flame temperatures (the catalogue Cp is a 250-1500 K process fit).
+    //  NASA/TP-2002-211556 eq. (1), Cp/R = a1/T^2 + a2/T + a3 + a4 T + a5 T^2
+    //  + a6 T^3 + a7 T^4; appendix D, p. 156, entry N2, a1..a7 as printed.
+    //  The report's 6000-20000 K interval is not transcribed.
+    model    NASA9;
+    Tlow     200;
+    Tcommon  1000;
+    Thigh    6000;
+    low      ( 2.210371497e+04 -3.818461820e+02 6.082738360e+00 -8.530914410e-03 1.384646189e-05 -9.625793620e-09 2.519705809e-12 );
+    high     ( 5.877124060e+05 -2.239249073e+03 6.066949220e+00 -6.139685500e-04 1.491806679e-07 -1.923105485e-11 1.061954386e-15 );
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 156, entry N2, record-line H(298.15) (elements reference, so = dHf)";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "Table B1 p. 24 prints 0.0 kJ/mol; the report's own sources: Ref-Elm. Gurvich,1978 pt1 p280 pt2 p207.";
+    }
+    s_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 Table B1, p. 24, entry N2";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "appendix D's coefficients with b2 integrate to 191.610";
+    }
+    idealGasHeatCapacity
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 156, entry N2, a1..a7 of the 200-1000 K and 1000-6000 K intervals, as printed";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "read by bin/curate/nasa_tp2002_to_choupo.py, which holds H and S at 298.15 K to the printed values";
+    }
+    source   "McBride, Zehe & Gordon, NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species, NASA/TP-2002-211556 (2002)";
+    licence  publicDomain;    // US government work (NASA), 17 U.S.C. 105
+}
+

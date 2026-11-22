@@ -1,0 +1,1609 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Miller & Bowman 1989, Appendix B (ammonia / Thermal DeNOx mechanism, 73 reactions)
+
+  Written by bin/curate/chemkin_to_choupo.py from our CHEMKIN transcription of the
+  printed table (docs/reviews/2026-11-22-miller-bowman/mb1989_appB.inp, made by
+  gen_chemkin.py from mb1989_table.tsv), reaction names are the paper numbers.  A stays in
+  cm3-mol-s and Ea in cal/mol as printed; the engine converts and announces
+  (kinetics.units{}).  Reverse rates from equilibrium (the species thermo), as the paper does.
+  Third-body efficiencies as printed.  Interpretations (Troe footnote, SRI e, B10
+  efficiencies): docs/reviews/2026-11-22-miller-bowman/README.md.
+\*-----------------------------------------------------------------------------*/
+
+provenance
+{
+    status  "CURATED -- Miller & Bowman 1989 Appendix B, rate table transcribed from the page images (two readings)";
+    review  { state transcribed; reviewer "session 2026-11-22 (two passes over the page images, Cantera element-balance check of every reaction)"; }
+    kinetics_source  "J.A. Miller, C.T. Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, DOI 10.1016/0360-1285(89)90017-8, Appendix B";
+    thermo_source    "NASA/TP-2002-211556 (NASA-9) via the NASA table and case-local overrides; nine species RRHO-computed (data/standards/thermoTables/RRHO-computed)";
+}
+
+B1
+{
+    // Miller & Bowman Appendix B reaction 1 p.337, as printed: H2+O2=2OH   A=1.70e+13 n=0.000 E=47780 cal/mol
+    reversible        true;
+    limitingReactant  H2;
+    stoichiometry
+    (
+        { component H2; nu -1; order 1; }
+        { component O2; nu -1; order 1; }
+        { component OH; nu 2; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1.7e+13;  b 0;  Ea 47780;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// OH+H2=water+H
+
+B2
+{
+    // Miller & Bowman Appendix B reaction 2 p.337, as printed: OH+H2=H2O+H   A=1.17e+09 n=1.300 E=3626 cal/mol
+    reversible        true;
+    limitingReactant  OH;
+    stoichiometry
+    (
+        { component H; nu 1; order 0; }
+        { component H2; nu -1; order 1; }
+        { component OH; nu -1; order 1; }
+        { component water; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1170000000;  b 1.3;  Ea 3626;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// O+OH=O2+H
+
+B3
+{
+    // Miller & Bowman Appendix B reaction 3 p.337, as printed: O+OH=O2+H   A=4.00e+14 n=-0.500 E=0 cal/mol
+    reversible        true;
+    limitingReactant  O;
+    stoichiometry
+    (
+        { component H; nu 1; order 0; }
+        { component O; nu -1; order 1; }
+        { component O2; nu 1; order 0; }
+        { component OH; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 4e+14;  b -0.5;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// O+H2=OH+H
+
+B4
+{
+    // Miller & Bowman Appendix B reaction 4 p.337, as printed: O+H2=OH+H   A=5.06e+04 n=2.670 E=6290 cal/mol
+    reversible        true;
+    limitingReactant  O;
+    stoichiometry
+    (
+        { component H; nu 1; order 0; }
+        { component H2; nu -1; order 1; }
+        { component O; nu -1; order 1; }
+        { component OH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 50600;  b 2.67;  Ea 6290;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// H+O2+M=HO2+M
+
+B5
+{
+    // Miller & Bowman Appendix B reaction 5 p.337, as printed: H+O2+M=HO2+M   A=3.61e+17 n=-0.720 E=0 cal/mol
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H; nu -1; order 1; }
+        { component HO2; nu 1; order 0; }
+        { component O2; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 3.61e+17;  b -0.72;  Ea 0;
+        thirdBody { water 18.6; H2 2.9; N2 1.3; }
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// OH+HO2=water+O2
+
+B6
+{
+    // Miller & Bowman Appendix B reaction 6 p.337, as printed: OH+HO2=H2O+O2   A=7.50e+12 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  OH;
+    stoichiometry
+    (
+        { component HO2; nu -1; order 1; }
+        { component O2; nu 1; order 0; }
+        { component OH; nu -1; order 1; }
+        { component water; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 7.5e+12;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// H+HO2=2OH
+
+B7
+{
+    // Miller & Bowman Appendix B reaction 7 p.337, as printed: H+HO2=2OH   A=1.40e+14 n=0.000 E=1073 cal/mol
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H; nu -1; order 1; }
+        { component HO2; nu -1; order 1; }
+        { component OH; nu 2; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1.4e+14;  b 0;  Ea 1073;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// O+HO2=O2+OH
+
+B8
+{
+    // Miller & Bowman Appendix B reaction 8 p.337, as printed: O+HO2=O2+OH   A=1.40e+13 n=0.000 E=1073 cal/mol
+    reversible        true;
+    limitingReactant  O;
+    stoichiometry
+    (
+        { component HO2; nu -1; order 1; }
+        { component O; nu -1; order 1; }
+        { component O2; nu 1; order 0; }
+        { component OH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1.4e+13;  b 0;  Ea 1073;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// 2OH=O+water
+
+B9
+{
+    // Miller & Bowman Appendix B reaction 9 p.337, as printed: 2OH=O+H2O   A=6.00e+08 n=1.300 E=0 cal/mol
+    reversible        true;
+    limitingReactant  OH;
+    stoichiometry
+    (
+        { component O; nu 1; order 0; }
+        { component OH; nu -2; order 2; }
+        { component water; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 600000000;  b 1.3;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// 2H+M=H2+M
+
+B10
+{
+    // Miller & Bowman Appendix B reaction 10 p.337, as printed: 2H+M=H2+M   A=1.00e+18 n=-1.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H; nu -2; order 2; }
+        { component H2; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 1e+18;  b -1;  Ea 0;
+        thirdBody { H2 0; water 0; }
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// 2H+H2=2H2
+
+B11
+{
+    // Miller & Bowman Appendix B reaction 11 p.337, as printed: 2H+H2=2H2   A=9.20e+16 n=-0.600 E=0 cal/mol
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H; nu -2; order 2; }
+        { component H2; nu 1; order 1; orderRev 2; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 9.2e+16;  b -0.6;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// 2H+water=H2+water
+
+B12
+{
+    // Miller & Bowman Appendix B reaction 12 p.337, as printed: 2H+H2O=H2+H2O   A=6.00e+19 n=-1.250 E=0 cal/mol
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H; nu -2; order 2; }
+        { component H2; nu 1; order 0; }
+        { component water; nu 0; order 1; orderRev 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 6e+19;  b -1.25;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// H+OH+M=water+M
+
+B13
+{
+    // Miller & Bowman Appendix B reaction 13 p.337, as printed: H+OH+M=H2O+M   A=1.60e+22 n=-2.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H; nu -1; order 1; }
+        { component OH; nu -1; order 1; }
+        { component water; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 1.6e+22;  b -2;  Ea 0;
+        thirdBody { water 5; }
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// H+O+M=OH+M
+
+B14
+{
+    // Miller & Bowman Appendix B reaction 14 p.337, as printed: H+O+M=OH+M   A=6.20e+16 n=-0.600 E=0 cal/mol
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H; nu -1; order 1; }
+        { component O; nu -1; order 1; }
+        { component OH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 6.2e+16;  b -0.6;  Ea 0;
+        thirdBody { water 5; }
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// 2O+M=O2+M
+
+B15
+{
+    // Miller & Bowman Appendix B reaction 15 p.337, as printed: 2O+M=O2+M   A=1.89e+13 n=0.000 E=-1788 cal/mol
+    reversible        true;
+    limitingReactant  O;
+    stoichiometry
+    (
+        { component O; nu -2; order 2; }
+        { component O2; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 1.89e+13;  b 0;  Ea -1788;
+        thirdBody {  }
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// H+HO2=H2+O2
+
+B16
+{
+    // Miller & Bowman Appendix B reaction 16 p.337, as printed: H+HO2=H2+O2   A=1.25e+13 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H; nu -1; order 1; }
+        { component H2; nu 1; order 0; }
+        { component HO2; nu -1; order 1; }
+        { component O2; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1.25e+13;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// 2HO2=H2O2+O2
+
+B17
+{
+    // Miller & Bowman Appendix B reaction 17 p.337, as printed: 2HO2=H2O2+O2   A=2.00e+12 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  HO2;
+    stoichiometry
+    (
+        { component H2O2; nu 1; order 0; }
+        { component HO2; nu -2; order 2; }
+        { component O2; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2e+12;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// H2O2+M=2OH+M
+
+B18
+{
+    // Miller & Bowman Appendix B reaction 18 p.337, as printed: H2O2+M=2OH+M   A=1.30e+17 n=0.000 E=45500 cal/mol
+    reversible        true;
+    limitingReactant  H2O2;
+    stoichiometry
+    (
+        { component H2O2; nu -1; order 1; }
+        { component OH; nu 2; order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 1.3e+17;  b 0;  Ea 45500;
+        thirdBody {  }
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// H2O2+H=HO2+H2
+
+B19
+{
+    // Miller & Bowman Appendix B reaction 19 p.337, as printed: H2O2+H=HO2+H2   A=1.60e+12 n=0.000 E=3800 cal/mol
+    reversible        true;
+    limitingReactant  H2O2;
+    stoichiometry
+    (
+        { component H; nu -1; order 1; }
+        { component H2; nu 1; order 0; }
+        { component H2O2; nu -1; order 1; }
+        { component HO2; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1.6e+12;  b 0;  Ea 3800;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// H2O2+OH=water+HO2
+
+B20
+{
+    // Miller & Bowman Appendix B reaction 20 p.337, as printed: H2O2+OH=H2O+HO2   A=1.00e+13 n=0.000 E=1800 cal/mol
+    reversible        true;
+    limitingReactant  H2O2;
+    stoichiometry
+    (
+        { component H2O2; nu -1; order 1; }
+        { component HO2; nu 1; order 0; }
+        { component OH; nu -1; order 1; }
+        { component water; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1e+13;  b 0;  Ea 1800;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH+O2=HNO+O
+
+B21
+{
+    // Miller & Bowman Appendix B reaction 21 p.337, as printed: NH+O2=HNO+O   A=1.00e+13 n=0.000 E=12000 cal/mol
+    reversible        true;
+    limitingReactant  NH;
+    stoichiometry
+    (
+        { component HNO; nu 1; order 0; }
+        { component NH; nu -1; order 1; }
+        { component O; nu 1; order 0; }
+        { component O2; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1e+13;  b 0;  Ea 12000;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH+O2=NO+OH
+
+B22
+{
+    // Miller & Bowman Appendix B reaction 22 p.337, as printed: NH+O2=NO+OH   A=7.60e+10 n=0.000 E=1530 cal/mol
+    reversible        true;
+    limitingReactant  NH;
+    stoichiometry
+    (
+        { component NH; nu -1; order 1; }
+        { component NO; nu 1; order 0; }
+        { component O2; nu -1; order 1; }
+        { component OH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 7.6e+10;  b 0;  Ea 1530;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH+NO=N2O+H
+
+B23
+{
+    // Miller & Bowman Appendix B reaction 23 p.337, as printed: NH+NO=N2O+H   A=2.40e+15 n=-0.800 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NH;
+    stoichiometry
+    (
+        { component H; nu 1; order 0; }
+        { component N2O; nu 1; order 0; }
+        { component NH; nu -1; order 1; }
+        { component NO; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2.4e+15;  b -0.8;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N2O+H=N2+OH
+
+B24
+{
+    // Miller & Bowman Appendix B reaction 24 p.337, as printed: N2O+H=N2+OH   A=7.60e+13 n=0.000 E=15200 cal/mol
+    reversible        true;
+    limitingReactant  N2O;
+    stoichiometry
+    (
+        { component H; nu -1; order 1; }
+        { component N2; nu 1; order 0; }
+        { component N2O; nu -1; order 1; }
+        { component OH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 7.6e+13;  b 0;  Ea 15200;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N2O+M=N2+O+M
+
+B25
+{
+    // Miller & Bowman Appendix B reaction 25 p.337, as printed: N2O+M=N2+O+M   A=1.62e+14 n=0.000 E=51600 cal/mol
+    reversible        true;
+    limitingReactant  N2O;
+    stoichiometry
+    (
+        { component N2; nu 1; order 0; }
+        { component N2O; nu -1; order 1; }
+        { component O; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 1.62e+14;  b 0;  Ea 51600;
+        thirdBody {  }
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N2O+O=N2+O2
+
+B26
+{
+    // Miller & Bowman Appendix B reaction 26 p.337, as printed: N2O+O=N2+O2   A=1.00e+14 n=0.000 E=28200 cal/mol
+    reversible        true;
+    limitingReactant  N2O;
+    stoichiometry
+    (
+        { component N2; nu 1; order 0; }
+        { component N2O; nu -1; order 1; }
+        { component O; nu -1; order 1; }
+        { component O2; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1e+14;  b 0;  Ea 28200;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N2O+O=2NO
+
+B27
+{
+    // Miller & Bowman Appendix B reaction 27 p.337, as printed: N2O+O=2NO   A=1.00e+14 n=0.000 E=28200 cal/mol
+    reversible        true;
+    limitingReactant  N2O;
+    stoichiometry
+    (
+        { component N2O; nu -1; order 1; }
+        { component NO; nu 2; order 0; }
+        { component O; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1e+14;  b 0;  Ea 28200;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N2O+OH=N2+HO2
+
+B28
+{
+    // Miller & Bowman Appendix B reaction 28 p.337, as printed: N2O+OH=N2+HO2   A=2.00e+12 n=0.000 E=10000 cal/mol
+    reversible        true;
+    limitingReactant  N2O;
+    stoichiometry
+    (
+        { component HO2; nu 1; order 0; }
+        { component N2; nu 1; order 0; }
+        { component N2O; nu -1; order 1; }
+        { component OH; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2e+12;  b 0;  Ea 10000;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH+OH=HNO+H
+
+B29
+{
+    // Miller & Bowman Appendix B reaction 29 p.337, as printed: NH+OH=HNO+H   A=2.00e+13 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NH;
+    stoichiometry
+    (
+        { component H; nu 1; order 0; }
+        { component HNO; nu 1; order 0; }
+        { component NH; nu -1; order 1; }
+        { component OH; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2e+13;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH+OH=N+water
+
+B30
+{
+    // Miller & Bowman Appendix B reaction 30 p.337, as printed: NH+OH=N+H2O   A=5.00e+11 n=0.500 E=2000 cal/mol
+    reversible        true;
+    limitingReactant  NH;
+    stoichiometry
+    (
+        { component N; nu 1; order 0; }
+        { component NH; nu -1; order 1; }
+        { component OH; nu -1; order 1; }
+        { component water; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 5e+11;  b 0.5;  Ea 2000;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH+N=N2+H
+
+B31
+{
+    // Miller & Bowman Appendix B reaction 31 p.337, as printed: NH+N=N2+H   A=3.00e+13 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NH;
+    stoichiometry
+    (
+        { component H; nu 1; order 0; }
+        { component N; nu -1; order 1; }
+        { component N2; nu 1; order 0; }
+        { component NH; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 3e+13;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH+H=N+H2
+
+B32
+{
+    // Miller & Bowman Appendix B reaction 32 p.337, as printed: NH+H=N+H2   A=1.00e+14 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NH;
+    stoichiometry
+    (
+        { component H; nu -1; order 1; }
+        { component H2; nu 1; order 0; }
+        { component N; nu 1; order 0; }
+        { component NH; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1e+14;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH+O=NO+H
+
+B33
+{
+    // Miller & Bowman Appendix B reaction 33 p.337, as printed: NH+O=NO+H   A=2.00e+13 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NH;
+    stoichiometry
+    (
+        { component H; nu 1; order 0; }
+        { component NH; nu -1; order 1; }
+        { component NO; nu 1; order 0; }
+        { component O; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2e+13;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH2+O=HNO+H
+
+B34
+{
+    // Miller & Bowman Appendix B reaction 34 p.337, as printed: NH2+O=HNO+H   A=6.63e+14 n=-0.500 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NH2;
+    stoichiometry
+    (
+        { component H; nu 1; order 0; }
+        { component HNO; nu 1; order 0; }
+        { component NH2; nu -1; order 1; }
+        { component O; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 6.63e+14;  b -0.5;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH2+O=NH+OH
+
+B35
+{
+    // Miller & Bowman Appendix B reaction 35 p.337, as printed: NH2+O=NH+OH   A=6.75e+12 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NH2;
+    stoichiometry
+    (
+        { component NH; nu 1; order 0; }
+        { component NH2; nu -1; order 1; }
+        { component O; nu -1; order 1; }
+        { component OH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 6.75e+12;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH2+OH=NH+water
+
+B36
+{
+    // Miller & Bowman Appendix B reaction 36 p.337, as printed: NH2+OH=NH+H2O   A=4.00e+06 n=2.000 E=1000 cal/mol
+    reversible        true;
+    limitingReactant  NH2;
+    stoichiometry
+    (
+        { component NH; nu 1; order 0; }
+        { component NH2; nu -1; order 1; }
+        { component OH; nu -1; order 1; }
+        { component water; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 4000000;  b 2;  Ea 1000;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH2+H=NH+H2
+
+B37
+{
+    // Miller & Bowman Appendix B reaction 37 p.337, as printed: NH2+H=NH+H2   A=6.92e+13 n=0.000 E=3650 cal/mol
+    reversible        true;
+    limitingReactant  NH2;
+    stoichiometry
+    (
+        { component H; nu -1; order 1; }
+        { component H2; nu 1; order 0; }
+        { component NH; nu 1; order 0; }
+        { component NH2; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 6.92e+13;  b 0;  Ea 3650;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH2+NO=NNH+OH
+
+B38
+{
+    // Miller & Bowman Appendix B reaction 38 p.337, as printed: NH2+NO=NNH+OH   A=6.40e+15 n=-1.250 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NH2;
+    stoichiometry
+    (
+        { component NH2; nu -1; order 1; }
+        { component NNH; nu 1; order 0; }
+        { component NO; nu -1; order 1; }
+        { component OH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 6.4e+15;  b -1.25;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH2+NO=N2+water
+
+B39
+{
+    // Miller & Bowman Appendix B reaction 39 p.337, as printed: NH2+NO=N2+H2O   A=6.20e+15 n=-1.250 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NH2;
+    stoichiometry
+    (
+        { component N2; nu 1; order 0; }
+        { component NH2; nu -1; order 1; }
+        { component NO; nu -1; order 1; }
+        { component water; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 6.2e+15;  b -1.25;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH3+OH=NH2+water
+
+B40
+{
+    // Miller & Bowman Appendix B reaction 40 p.337, as printed: NH3+OH=NH2+H2O   A=2.04e+06 n=2.040 E=566 cal/mol
+    reversible        true;
+    limitingReactant  NH3;
+    stoichiometry
+    (
+        { component NH2; nu 1; order 0; }
+        { component NH3; nu -1; order 1; }
+        { component OH; nu -1; order 1; }
+        { component water; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2040000;  b 2.04;  Ea 566;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH3+H=NH2+H2
+
+B41
+{
+    // Miller & Bowman Appendix B reaction 41 p.338, as printed: NH3+H=NH2+H2   A=6.36e+05 n=2.390 E=10171 cal/mol
+    reversible        true;
+    limitingReactant  NH3;
+    stoichiometry
+    (
+        { component H; nu -1; order 1; }
+        { component H2; nu 1; order 0; }
+        { component NH2; nu 1; order 0; }
+        { component NH3; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 636000;  b 2.39;  Ea 10171;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH3+O=NH2+OH
+
+B42
+{
+    // Miller & Bowman Appendix B reaction 42 p.338, as printed: NH3+O=NH2+OH   A=2.10e+13 n=0.000 E=9000 cal/mol
+    reversible        true;
+    limitingReactant  NH3;
+    stoichiometry
+    (
+        { component NH2; nu 1; order 0; }
+        { component NH3; nu -1; order 1; }
+        { component O; nu -1; order 1; }
+        { component OH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2.1e+13;  b 0;  Ea 9000;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NNH=N2+H
+
+B43
+{
+    // Miller & Bowman Appendix B reaction 43 p.338, as printed: NNH=N2+H   A=1.00e+04 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NNH;
+    stoichiometry
+    (
+        { component H; nu 1; order 0; }
+        { component N2; nu 1; order 0; }
+        { component NNH; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 10000;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NNH+NO=N2+HNO
+
+B44
+{
+    // Miller & Bowman Appendix B reaction 44 p.338, as printed: NNH+NO=N2+HNO   A=5.00e+13 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NNH;
+    stoichiometry
+    (
+        { component HNO; nu 1; order 0; }
+        { component N2; nu 1; order 0; }
+        { component NNH; nu -1; order 1; }
+        { component NO; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 5e+13;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NNH+H=N2+H2
+
+B45
+{
+    // Miller & Bowman Appendix B reaction 45 p.338, as printed: NNH+H=N2+H2   A=1.00e+14 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NNH;
+    stoichiometry
+    (
+        { component H; nu -1; order 1; }
+        { component H2; nu 1; order 0; }
+        { component N2; nu 1; order 0; }
+        { component NNH; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1e+14;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NNH+OH=N2+water
+
+B46
+{
+    // Miller & Bowman Appendix B reaction 46 p.338, as printed: NNH+OH=N2+H2O   A=5.00e+13 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NNH;
+    stoichiometry
+    (
+        { component N2; nu 1; order 0; }
+        { component NNH; nu -1; order 1; }
+        { component OH; nu -1; order 1; }
+        { component water; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 5e+13;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NNH+NH2=N2+NH3
+
+B47
+{
+    // Miller & Bowman Appendix B reaction 47 p.338, as printed: NNH+NH2=N2+NH3   A=5.00e+13 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NNH;
+    stoichiometry
+    (
+        { component N2; nu 1; order 0; }
+        { component NH2; nu -1; order 1; }
+        { component NH3; nu 1; order 0; }
+        { component NNH; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 5e+13;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NNH+NH=N2+NH2
+
+B48
+{
+    // Miller & Bowman Appendix B reaction 48 p.338, as printed: NNH+NH=N2+NH2   A=5.00e+13 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NNH;
+    stoichiometry
+    (
+        { component N2; nu 1; order 0; }
+        { component NH; nu -1; order 1; }
+        { component NH2; nu 1; order 0; }
+        { component NNH; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 5e+13;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NNH+O=N2O+H
+
+B49
+{
+    // Miller & Bowman Appendix B reaction 49 p.338, as printed: NNH+O=N2O+H   A=1.00e+14 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NNH;
+    stoichiometry
+    (
+        { component H; nu 1; order 0; }
+        { component N2O; nu 1; order 0; }
+        { component NNH; nu -1; order 1; }
+        { component O; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1e+14;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// HNO+M=H+NO+M
+
+B50
+{
+    // Miller & Bowman Appendix B reaction 50 p.338, as printed: HNO+M=H+NO+M   A=1.50e+16 n=0.000 E=48680 cal/mol
+    reversible        true;
+    limitingReactant  HNO;
+    stoichiometry
+    (
+        { component H; nu 1; order 0; }
+        { component HNO; nu -1; order 1; }
+        { component NO; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 1.5e+16;  b 0;  Ea 48680;
+        thirdBody { water 10; O2 2; N2 2; H2 2; }
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// HNO+OH=NO+water
+
+B51
+{
+    // Miller & Bowman Appendix B reaction 51 p.338, as printed: HNO+OH=NO+H2O   A=3.60e+13 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  HNO;
+    stoichiometry
+    (
+        { component HNO; nu -1; order 1; }
+        { component NO; nu 1; order 0; }
+        { component OH; nu -1; order 1; }
+        { component water; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 3.6e+13;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// HNO+H=H2+NO
+
+B52
+{
+    // Miller & Bowman Appendix B reaction 52 p.338, as printed: HNO+H=H2+NO   A=5.00e+12 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  HNO;
+    stoichiometry
+    (
+        { component H; nu -1; order 1; }
+        { component H2; nu 1; order 0; }
+        { component HNO; nu -1; order 1; }
+        { component NO; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 5e+12;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// HNO+NH2=NH3+NO
+
+B53
+{
+    // Miller & Bowman Appendix B reaction 53 p.338, as printed: HNO+NH2=NH3+NO   A=2.00e+13 n=0.000 E=1000 cal/mol
+    reversible        true;
+    limitingReactant  HNO;
+    stoichiometry
+    (
+        { component HNO; nu -1; order 1; }
+        { component NH2; nu -1; order 1; }
+        { component NH3; nu 1; order 0; }
+        { component NO; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2e+13;  b 0;  Ea 1000;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// 2HNO=N2O+water
+
+B54
+{
+    // Miller & Bowman Appendix B reaction 54 p.338, as printed: 2HNO=N2O+H2O   A=3.95e+12 n=0.000 E=5000 cal/mol
+    reversible        true;
+    limitingReactant  HNO;
+    stoichiometry
+    (
+        { component HNO; nu -2; order 2; }
+        { component N2O; nu 1; order 0; }
+        { component water; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 3.95e+12;  b 0;  Ea 5000;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// HNO+NO=N2O+OH
+
+B55
+{
+    // Miller & Bowman Appendix B reaction 55 p.338, as printed: HNO+NO=N2O+OH   A=2.00e+12 n=0.000 E=26000 cal/mol
+    reversible        true;
+    limitingReactant  HNO;
+    stoichiometry
+    (
+        { component HNO; nu -1; order 1; }
+        { component N2O; nu 1; order 0; }
+        { component NO; nu -1; order 1; }
+        { component OH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2e+12;  b 0;  Ea 26000;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N+NO=N2+O
+
+B56
+{
+    // Miller & Bowman Appendix B reaction 56 p.338, as printed: N+NO=N2+O   A=3.27e+12 n=0.300 E=0 cal/mol
+    reversible        true;
+    limitingReactant  N;
+    stoichiometry
+    (
+        { component N; nu -1; order 1; }
+        { component N2; nu 1; order 0; }
+        { component NO; nu -1; order 1; }
+        { component O; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 3.27e+12;  b 0.3;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N+O2=NO+O
+
+B57
+{
+    // Miller & Bowman Appendix B reaction 57 p.338, as printed: N+O2=NO+O   A=6.40e+09 n=1.000 E=6280 cal/mol
+    reversible        true;
+    limitingReactant  N;
+    stoichiometry
+    (
+        { component N; nu -1; order 1; }
+        { component NO; nu 1; order 0; }
+        { component O; nu 1; order 0; }
+        { component O2; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 6400000000;  b 1;  Ea 6280;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N+OH=NO+H
+
+B58
+{
+    // Miller & Bowman Appendix B reaction 58 p.338, as printed: N+OH=NO+H   A=3.80e+13 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  N;
+    stoichiometry
+    (
+        { component H; nu 1; order 0; }
+        { component N; nu -1; order 1; }
+        { component NO; nu 1; order 0; }
+        { component OH; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 3.8e+13;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// HO2+NO=NO2+OH
+
+B59
+{
+    // Miller & Bowman Appendix B reaction 59 p.338, as printed: HO2+NO=NO2+OH   A=2.11e+12 n=0.000 E=-479 cal/mol
+    reversible        true;
+    limitingReactant  HO2;
+    stoichiometry
+    (
+        { component HO2; nu -1; order 1; }
+        { component NO; nu -1; order 1; }
+        { component NO2; nu 1; order 0; }
+        { component OH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2.11e+12;  b 0;  Ea -479;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NO2+H=NO+OH
+
+B60
+{
+    // Miller & Bowman Appendix B reaction 60 p.338, as printed: NO2+H=NO+OH   A=3.50e+14 n=0.000 E=1500 cal/mol
+    reversible        true;
+    limitingReactant  NO2;
+    stoichiometry
+    (
+        { component H; nu -1; order 1; }
+        { component NO; nu 1; order 0; }
+        { component NO2; nu -1; order 1; }
+        { component OH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 3.5e+14;  b 0;  Ea 1500;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH2+NH=N2H2+H
+
+B61
+{
+    // Miller & Bowman Appendix B reaction 61 p.338, as printed: NH2+NH=N2H2+H   A=5.00e+13 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NH2;
+    stoichiometry
+    (
+        { component H; nu 1; order 0; }
+        { component N2H2; nu 1; order 0; }
+        { component NH; nu -1; order 1; }
+        { component NH2; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 5e+13;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// 2NH=N2+2H
+
+B62
+{
+    // Miller & Bowman Appendix B reaction 62 p.338, as printed: 2NH=N2+2H   A=2.54e+13 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NH;
+    stoichiometry
+    (
+        { component H; nu 2; order 0; }
+        { component N2; nu 1; order 0; }
+        { component NH; nu -2; order 2; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2.54e+13;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH2+N=N2+2H
+
+B63
+{
+    // Miller & Bowman Appendix B reaction 63 p.338, as printed: NH2+N=N2+2H   A=7.20e+13 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NH2;
+    stoichiometry
+    (
+        { component H; nu 2; order 0; }
+        { component N; nu -1; order 1; }
+        { component N2; nu 1; order 0; }
+        { component NH2; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 7.2e+13;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N2H2+M=NNH+H+M
+
+B64
+{
+    // Miller & Bowman Appendix B reaction 64 p.338, as printed: N2H2+M=NNH+H+M   A=5.00e+16 n=0.000 E=50000 cal/mol
+    reversible        true;
+    limitingReactant  N2H2;
+    stoichiometry
+    (
+        { component H; nu 1; order 0; }
+        { component N2H2; nu -1; order 1; }
+        { component NNH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 5e+16;  b 0;  Ea 50000;
+        thirdBody { water 15; O2 2; N2 2; H2 2; }
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N2H2+H=NNH+H2
+
+B65
+{
+    // Miller & Bowman Appendix B reaction 65 p.338, as printed: N2H2+H=NNH+H2   A=5.00e+13 n=0.000 E=1000 cal/mol
+    reversible        true;
+    limitingReactant  N2H2;
+    stoichiometry
+    (
+        { component H; nu -1; order 1; }
+        { component H2; nu 1; order 0; }
+        { component N2H2; nu -1; order 1; }
+        { component NNH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 5e+13;  b 0;  Ea 1000;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N2H2+O=NH2+NO
+
+B66
+{
+    // Miller & Bowman Appendix B reaction 66 p.338, as printed: N2H2+O=NH2+NO   A=1.00e+13 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  N2H2;
+    stoichiometry
+    (
+        { component N2H2; nu -1; order 1; }
+        { component NH2; nu 1; order 0; }
+        { component NO; nu 1; order 0; }
+        { component O; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1e+13;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N2H2+O=NNH+OH
+
+B67
+{
+    // Miller & Bowman Appendix B reaction 67 p.338, as printed: N2H2+O=NNH+OH   A=2.00e+13 n=0.000 E=1000 cal/mol
+    reversible        true;
+    limitingReactant  N2H2;
+    stoichiometry
+    (
+        { component N2H2; nu -1; order 1; }
+        { component NNH; nu 1; order 0; }
+        { component O; nu -1; order 1; }
+        { component OH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 2e+13;  b 0;  Ea 1000;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N2H2+OH=NNH+water
+
+B68
+{
+    // Miller & Bowman Appendix B reaction 68 p.338, as printed: N2H2+OH=NNH+H2O   A=1.00e+13 n=0.000 E=1000 cal/mol
+    reversible        true;
+    limitingReactant  N2H2;
+    stoichiometry
+    (
+        { component N2H2; nu -1; order 1; }
+        { component NNH; nu 1; order 0; }
+        { component OH; nu -1; order 1; }
+        { component water; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1e+13;  b 0;  Ea 1000;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N2H2+NO=N2O+NH2
+
+B69
+{
+    // Miller & Bowman Appendix B reaction 69 p.338, as printed: N2H2+NO=N2O+NH2   A=3.00e+12 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  N2H2;
+    stoichiometry
+    (
+        { component N2H2; nu -1; order 1; }
+        { component N2O; nu 1; order 0; }
+        { component NH2; nu 1; order 0; }
+        { component NO; nu -1; order 1; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 3e+12;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N2H2+NH=NNH+NH2
+
+B70
+{
+    // Miller & Bowman Appendix B reaction 70 p.338, as printed: N2H2+NH=NNH+NH2   A=1.00e+13 n=0.000 E=1000 cal/mol
+    reversible        true;
+    limitingReactant  N2H2;
+    stoichiometry
+    (
+        { component N2H2; nu -1; order 1; }
+        { component NH; nu -1; order 1; }
+        { component NH2; nu 1; order 0; }
+        { component NNH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1e+13;  b 0;  Ea 1000;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// N2H2+NH2=NH3+NNH
+
+B71
+{
+    // Miller & Bowman Appendix B reaction 71 p.338, as printed: N2H2+NH2=NH3+NNH   A=1.00e+13 n=0.000 E=1000 cal/mol
+    reversible        true;
+    limitingReactant  N2H2;
+    stoichiometry
+    (
+        { component N2H2; nu -1; order 1; }
+        { component NH2; nu -1; order 1; }
+        { component NH3; nu 1; order 0; }
+        { component NNH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 1e+13;  b 0;  Ea 1000;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// 2NH2=N2H2+H2
+
+B72
+{
+    // Miller & Bowman Appendix B reaction 72 p.338, as printed: 2NH2=N2H2+H2   A=5.00e+11 n=0.000 E=0 cal/mol
+    reversible        true;
+    limitingReactant  NH2;
+    stoichiometry
+    (
+        { component H2; nu 1; order 0; }
+        { component N2H2; nu 1; order 0; }
+        { component NH2; nu -2; order 2; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 5e+11;  b 0;  Ea 0;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// NH2+O2=HNO+OH
+
+B73
+{
+    // Miller & Bowman Appendix B reaction 73 p.338, as printed: NH2+O2=HNO+OH   A=4.50e+12 n=0.000 E=25000 cal/mol
+    reversible        true;
+    limitingReactant  NH2;
+    stoichiometry
+    (
+        { component HNO; nu 1; order 0; }
+        { component NH2; nu -1; order 1; }
+        { component O2; nu -1; order 1; }
+        { component OH; nu 1; order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A 4.5e+12;  b 0;  Ea 25000;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+

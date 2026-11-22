@@ -1,0 +1,91 @@
+! Miller & Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, doi:10.1016/0360-1285(89)90017-8
+! Appendix B, pp. 337-338. Our own transcription of the printed table (numbers and reaction
+! strings only), read from the page images twice; see README.md. Units as printed:
+! cm3, mol, s, K, cal/mol; k = A T**n exp(-E/RT).  Reversible reactions, reverse by equilibrium.
+ELEMENTS C H O N HE END
+SPECIES
+  H2 O2 OH water H O HO2 N2
+  H2O2 NH HNO NO N2O N NH2 NNH
+  NH3 NO2 N2H2 He
+END
+REACTIONS CAL/MOLE MOLES
+H2+O2=2OH                                    1.70E+13   0.000    47780     ! B1 p.337
+OH+H2=water+H                                1.17E+09   1.300    3626      ! B2 p.337
+O+OH=O2+H                                    4.00E+14   -0.500   0.0       ! B3 p.337
+O+H2=OH+H                                    5.06E+04   2.670    6290      ! B4 p.337
+H+O2+M=HO2+M                                 3.61E+17   -0.720   0.0       ! B5 p.337
+    water/18.6/ H2/2.9/ N2/1.3/
+OH+HO2=water+O2                              7.50E+12   0.000    0.0       ! B6 p.337
+H+HO2=2OH                                    1.40E+14   0.000    1073      ! B7 p.337
+O+HO2=O2+OH                                  1.40E+13   0.000    1073      ! B8 p.337
+2OH=O+water                                  6.00E+08   1.300    0.0       ! B9 p.337
+2H+M=H2+M                                    1.00E+18   -1.000   0.0       ! B10 p.337
+    H2/0.0/ water/0.0/
+2H+H2=2H2                                    9.20E+16   -0.600   0.0       ! B11 p.337
+2H+water=H2+water                            6.00E+19   -1.250   0.0       ! B12 p.337
+H+OH+M=water+M                               1.60E+22   -2.000   0.0       ! B13 p.337
+    water/5.0/
+H+O+M=OH+M                                   6.20E+16   -0.600   0.0       ! B14 p.337
+    water/5.0/
+2O+M=O2+M                                    1.89E+13   0.000    -1788     ! B15 p.337
+H+HO2=H2+O2                                  1.25E+13   0.000    0.0       ! B16 p.337
+2HO2=H2O2+O2                                 2.00E+12   0.000    0.0       ! B17 p.337
+H2O2+M=2OH+M                                 1.30E+17   0.000    45500     ! B18 p.337
+H2O2+H=HO2+H2                                1.60E+12   0.000    3800      ! B19 p.337
+H2O2+OH=water+HO2                            1.00E+13   0.000    1800      ! B20 p.337
+NH+O2=HNO+O                                  1.00E+13   0.000    12000     ! B21 p.337
+NH+O2=NO+OH                                  7.60E+10   0.000    1530      ! B22 p.337
+NH+NO=N2O+H                                  2.40E+15   -0.800   0.0       ! B23 p.337
+N2O+H=N2+OH                                  7.60E+13   0.000    15200     ! B24 p.337
+N2O+M=N2+O+M                                 1.62E+14   0.000    51600     ! B25 p.337
+N2O+O=N2+O2                                  1.00E+14   0.000    28200     ! B26 p.337
+N2O+O=2NO                                    1.00E+14   0.000    28200     ! B27 p.337
+N2O+OH=N2+HO2                                2.00E+12   0.000    10000     ! B28 p.337
+NH+OH=HNO+H                                  2.00E+13   0.000    0.0       ! B29 p.337
+NH+OH=N+water                                5.00E+11   0.500    2000      ! B30 p.337
+NH+N=N2+H                                    3.00E+13   0.000    0.0       ! B31 p.337
+NH+H=N+H2                                    1.00E+14   0.000    0.0       ! B32 p.337
+NH+O=NO+H                                    2.00E+13   0.000    0.0       ! B33 p.337
+NH2+O=HNO+H                                  6.63E+14   -0.500   0.0       ! B34 p.337
+NH2+O=NH+OH                                  6.75E+12   0.000    0.0       ! B35 p.337
+NH2+OH=NH+water                              4.00E+06   2.000    1000      ! B36 p.337
+NH2+H=NH+H2                                  6.92E+13   0.000    3650      ! B37 p.337
+NH2+NO=NNH+OH                                6.40E+15   -1.250   0.0       ! B38 p.337
+NH2+NO=N2+water                              6.20E+15   -1.250   0.0       ! B39 p.337
+NH3+OH=NH2+water                             2.04E+06   2.040    566       ! B40 p.337
+NH3+H=NH2+H2                                 6.36E+05   2.390    10171     ! B41 p.338
+NH3+O=NH2+OH                                 2.10E+13   0.000    9000      ! B42 p.338
+NNH=N2+H                                     1.00E+04   0.000    0.0       ! B43 p.338
+NNH+NO=N2+HNO                                5.00E+13   0.000    0.0       ! B44 p.338
+NNH+H=N2+H2                                  1.00E+14   0.000    0.0       ! B45 p.338
+NNH+OH=N2+water                              5.00E+13   0.000    0.0       ! B46 p.338
+NNH+NH2=N2+NH3                               5.00E+13   0.000    0.0       ! B47 p.338
+NNH+NH=N2+NH2                                5.00E+13   0.000    0.0       ! B48 p.338
+NNH+O=N2O+H                                  1.00E+14   0.000    0.0       ! B49 p.338
+HNO+M=H+NO+M                                 1.50E+16   0.000    48680     ! B50 p.338
+    water/10.0/ O2/2.0/ N2/2.0/ H2/2.0/
+HNO+OH=NO+water                              3.60E+13   0.000    0.0       ! B51 p.338
+HNO+H=H2+NO                                  5.00E+12   0.000    0.0       ! B52 p.338
+HNO+NH2=NH3+NO                               2.00E+13   0.000    1000      ! B53 p.338
+2HNO=N2O+water                               3.95E+12   0.000    5000      ! B54 p.338
+HNO+NO=N2O+OH                                2.00E+12   0.000    26000     ! B55 p.338
+N+NO=N2+O                                    3.27E+12   0.300    0.0       ! B56 p.338
+N+O2=NO+O                                    6.40E+09   1.000    6280      ! B57 p.338
+N+OH=NO+H                                    3.80E+13   0.000    0.0       ! B58 p.338
+HO2+NO=NO2+OH                                2.11E+12   0.000    -479      ! B59 p.338
+NO2+H=NO+OH                                  3.50E+14   0.000    1500      ! B60 p.338
+NH2+NH=N2H2+H                                5.00E+13   0.000    0.0       ! B61 p.338
+2NH=N2+2H                                    2.54E+13   0.000    0.0       ! B62 p.338
+NH2+N=N2+2H                                  7.20E+13   0.000    0.0       ! B63 p.338
+N2H2+M=NNH+H+M                               5.00E+16   0.000    50000     ! B64 p.338
+    water/15.0/ O2/2.0/ N2/2.0/ H2/2.0/
+N2H2+H=NNH+H2                                5.00E+13   0.000    1000      ! B65 p.338
+N2H2+O=NH2+NO                                1.00E+13   0.000    0.0       ! B66 p.338
+N2H2+O=NNH+OH                                2.00E+13   0.000    1000      ! B67 p.338
+N2H2+OH=NNH+water                            1.00E+13   0.000    1000      ! B68 p.338
+N2H2+NO=N2O+NH2                              3.00E+12   0.000    0.0       ! B69 p.338
+N2H2+NH=NNH+NH2                              1.00E+13   0.000    1000      ! B70 p.338
+N2H2+NH2=NH3+NNH                             1.00E+13   0.000    1000      ! B71 p.338
+2NH2=N2H2+H2                                 5.00E+11   0.000    0.0       ! B72 p.338
+NH2+O2=HNO+OH                                4.50E+12   0.000    25000     ! B73 p.338
+END

@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  nox02_millerbowman_denox / controlDict
+\*---------------------------------------------------------------------------*/
+application   choupoBatch;
+description   "Miller & Bowman 1989 Fig. 57 (Lyon & Hardy flow reactor, data set 1): thermal DeNOx window, Appendix B, 17 isothermal vessels, 0.1 s";
+verbosity     1;
+
+startTime       0;
+endTime         0.1;         // s, the residence time of the experiment
+deltaT          1.0e-3;      // s (not used by the adaptive integrator)
+writeInterval   5.0e-3;      // s -- 20 state directories
+
+timeStepping    adaptive;
+timeSteppingControl
+{
+    rtol        1.0e-6;
+    atol        1.0e-17;     // kmol (V = 1 m3, n of the order of 1e-5 kmol)
+    deltaT0     1.0e-9;      // s
+    deltaTmax   5.0e-3;      // s
+}
