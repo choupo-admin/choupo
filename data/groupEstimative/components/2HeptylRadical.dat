@@ -11,7 +11,7 @@ name        2HeptylRadical;
 formula     C7H15;
 CAS         3474-30-4;
 InChIKey    DOEYHYKYGYGBRH-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          99.197;      // g/mol [origin=calculated method=formula-sum]
 Tc          529.78;      // K   [origin=predictive method=joback]
 Pc          28.781;      // bar [origin=predictive method=joback]

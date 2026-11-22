@@ -5268,10 +5268,34 @@ A labelled isomer takes the report's entry name (\code{C3H7,n-propyl} is
 C--H scissions of propane on records read this way (gate
 \code{check\_thermo\_tables}).
 
-\paragraph{A gas species is gas-only.}  Every table record is written
-\code{role radical;}, the one fact the engine reads
-(\code{Component::isGasOnly}): the species has no condensed phase and no data
-for one.  In every phase split it is therefore a \emph{non-condensable},
+\paragraph{A gas species is gas-only, or it has no liquid model.}\label{sec:gas-only-role}
+Every table record carries one of two roles, decided from its formula by
+\code{nasa\_tp2002\_to\_choupo.py} (\code{role\_of}; \code{retag} writes it,
+\code{retag --check} holds the records to it, gate \code{check\_gas\_only}):
+\begin{itemize}[leftmargin=*]
+  \item \code{role gasOnly;} --- the species is physically gas-only at the
+        conditions a process unit reaches: a free radical (an \emph{odd} total
+        electron count, $\sum_a n_a Z_a$ from the formula), a free \emph{non-metal} atom
+        (H, C, N, O, S, Cl, \dots; not a noble gas), or one of a short listed set of even-electron biradicals
+        whose ground state is a triplet (CH$_2$ methylene, NH, ND, NF, PH), and SO, a
+        transient that disproportionates when condensed.
+        ClO$_2$, a stable odd-electron molecule that is a liquid below 284~K, is listed as
+        an exception (gasData); S$_2$ and O$_2$ are triplets but stable
+        molecules and are not listed.  \code{role radical;} is read as the old
+        word of \code{gasOnly} and announced once per component.
+  \item \code{role gasData;} --- every closed-shell molecule (S$_8$, AlCl$_3$,
+        SiF$_4$, \dots), every noble gas, every free \emph{metal} atom (Hg, Na, K, Zn, \dots:
+        liquid and solid metals exist) and every odd-electron compound of a d-block or
+        actinide metal (FeCl$_3$, TiCl$_3$, CuF$_2$, VO$_2$, UF$_5$, VCl$_4$: stable,
+        with condensed phases): ideal-gas data and nothing for a liquid.  A gasData
+        species \emph{absent} from a state (zero flow) takes the non-condensable cap
+        $K_{\max}$ and never refuses; present, it is refused by name, and the refusal
+        is a \emph{hard} one that the fallbacks (stream pricing on the carried state,
+        energy report) re-raise.
+\end{itemize}
+A \code{gasOnly} species has no condensed phase and no data for one
+(\code{Component::isGasOnly}).  In every phase split it is therefore a
+\emph{non-condensable},
 \begin{equation}
   K_i = K_{\max} = 10^{12} \qquad (i \text{ gas-only}),
   \label{eq:gas-only-K}
@@ -5282,19 +5306,54 @@ Rachford--Rice solve it enters).  With $z_i K_{\max} > 1$ the function
 $g(V{=}0) = \sum_j z_j (K_j - 1)$ is positive whatever the other components
 do, so a feed holding the species is never a subcooled liquid, and the liquid
 of a split holds at most $z_i/K_{\max}$ of it --- a trace priced on its
-ideal-gas leg (zero heat of solution, announced once).  A state that offers it
-\emph{no vapour} is refused by name, with the remedy: a saturated liquid (a
-bubble point), a liquid--liquid or liquid--solid flash, a property system
-that declares no vapour phase (\code{ThermoPackage::refuseGasOnlyWithoutVapour};
-a mole fraction at or below $1/K_{\max}$ is the cap's own trace, not a
-presence).  \code{role nonvolatile} keeps its meaning, $K_i = 0$, for salts
-and sugars.  Until C458 a radical was \code{role nonvolatile} and the same
-flash sent it to the \emph{liquid}: the witness
+ideal-gas leg (zero heat of solution, announced once).  In the three-phase
+(vapour--liquid--liquid) flash the species is not a search variable: it has no
+liquid, so every mole of it sits in the vapour, $y_i = z_i/\beta_V$, and the
+condensable part of the vapour is scaled by $1-\sum_i y_i$; the liquids carry
+exactly zero of it.
+
+\paragraph{The trace level.}\label{sec:gas-only-trace}
+A state that offers a \code{gasOnly} species \emph{no vapour} is refused by
+name, with the remedy: a saturated liquid (a bubble point or bubble pressure),
+a liquid--liquid or liquid--solid flash, a property system that declares no
+vapour phase (\code{ThermoPackage::refuseGasOnlyWithoutVapour}).  Present
+means a mole fraction above $x_{\mathrm{tr}} = 10^{-6}$
+(\code{ThermoPackage::kGasOnlyTrace}).  At or below it the species is a trace,
+announced once and not refused: a bubble point drops it from the liquid and
+renormalises (the cap $K_{\max}$ would otherwise put $K_{\max}x_i \gg 1$ into
+$\sum K_i x_i = 1$), which moves the other mole fractions by at most
+$10^{-6}$ relative, below the tolerance the saturation solvers run at.  The
+level is one ppm because a radical trace a mechanism leaves downstream (of
+order $10^{-10}$) must not make a later bubble point refuse, while anything
+that could move a saturation temperature is still stopped.  \code{role
+nonvolatile} keeps its meaning, $K_i = 0$, for salts and sugars.  Until C458 a
+radical was \code{role nonvolatile} and the same flash sent it to the
+\emph{liquid}: the witness
 \file{tutorials/steady/flash/flash23\_gas\_only\_oh\_quench} (N$_2$, water and
 0.1~kmol/h OH through flashes at 1500~K and 330~K) then put all of the OH into
 the 330~K condensate; now the offgas carries all of it and the condensate
 $10^{-15}$ in mole fraction (gate \code{check\_gas\_only}, which also holds the
 refusal and a \code{role nonvolatile} sabotage).
+
+\paragraph{A closed-shell table species has no liquid model.}\label{sec:no-liquid-model}
+A \code{gasData} species has no vapour-pressure record and no pure-fluid
+method, so nothing prices a liquid of it.  Wherever a computation would need
+one --- its $K$-value ($\mathrm{Psat}/P$ or the liquid root of a cubic), its
+liquid fugacity in a liquid phase of the package (a liquid--liquid or
+liquid--solid split, the three-phase flash), a bubble or dew point, its liquid
+enthalpy --- the engine refuses \emph{by name}: the species, the unit being
+solved and the record that would serve (a \code{vaporPressure \{\}} block, and
+for the enthalpy a \code{liquidHeatCapacity \{\}} block, on a case-local record
+of the species, or a pure-fluid method).  It never substitutes a number: the
+$1$~Pa liquid reference of \code{LiquidPhase} belongs to a \code{role
+nonvolatile} species, where it cancels in a two-liquid ratio, and the Watson
+slope $h^{\mathrm{ig}}-\Delta H_{\mathrm{vap}}$ needs data a table record does
+not have.  A computation that asks no liquid property --- a gas-phase Gibbs
+reactor, an adiabatic gas batch reactor, a plug-flow reactor --- runs without
+it.  An overlay of a table species (\code{overlayOf} in a case-local record of
+a species that lives only in the table) is not supported and is refused by
+name: the overlay would not merge with the table record; copy the record whole
+or use the table's.
 
 \paragraph{A mechanism imported from CHEMKIN.}  The curation tool
 \file{bin/curate/chemkin\_to\_choupo.py} reads a CHEMKIN-II mechanism
@@ -5310,7 +5369,8 @@ form, \code{REACTIONS} with its unit header) and writes into a \emph{case's}
         what it is: \code{variationOf} when the atoms agree (the mechanism's
         own fit is kept, so that its equilibria match the rate constants it
         was fitted with) or \code{distinctFrom} when they do not.  A gas
-        species is written \code{role radical;} (gas-only, above), a solid
+        species is written \code{role gasOnly;} (a radical or atom) or
+        \code{role gasData;} (a closed-shell molecule), both above, a solid
         \code{role nonvolatile;};
   \item the reactions, in the engine's own grammar: \code{modifiedArrhenius},
         \code{thirdBody} with its efficiencies, \code{falloff} with its
@@ -39091,7 +39151,11 @@ in place of \code{troe}:
 \end{equation}
 $d=1$, $e=0$ when three numbers are given; $\log_{10}P_r$ is read at
 $\max(P_r,10^{-300})$, the clamp of the Troe form.  $c>0$ and $d>0$ are required
-and \code{troe} with \code{sri} is refused.  Its derivatives
+and \code{troe} with \code{sri} is refused.  $W>0$ is required at every
+\emph{evaluation}, not only at load: with $a<0$ the sum can cross zero at a
+temperature other than the 300~K the load-time check looks at, where $\ln W$ is
+undefined and would walk through the rate as a NaN; the run is refused by name,
+with the reaction, $T$ and $W$ (\code{check\_gas\_only}, arm (h)).  Its derivatives
 (\code{Reaction::falloffRateDerivs}), with $W=a e^{-b/T}+e^{-T/c}$ and
 $p=\log_{10}P_r$: $\partial\ln F/\partial p=-2p\ln W/(1+p^2)^2$ and
 $\partial\ln F/\partial T|_p=X W'/W+e/T$, $W'=(ab/T^2)e^{-b/T}-e^{-T/c}/c$.

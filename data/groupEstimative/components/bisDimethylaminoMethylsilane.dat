@@ -16,7 +16,6 @@ formula     C5H15N2Si;
 CAS         22705-33-5;
 InChIKey    CHSRTMNPWKRPHT-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          131.274;      // g/mol [origin=calculated method=formula-sum]
 Tc          504.00;      // K   [origin=predictive method=joback]
 Pc          31.633;      // bar [origin=predictive method=joback]

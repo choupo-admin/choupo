@@ -11,7 +11,7 @@ name        1PhenylethylRadical;
 formula     C8H9;
 CAS         2348-51-8;
 InChIKey    OGOPVNZBIWLOIJ-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          105.16;      // g/mol [origin=calculated method=formula-sum]
 Tc          626.52;      // K   [origin=predictive method=joback]
 Pc          37.684;      // bar [origin=predictive method=joback]

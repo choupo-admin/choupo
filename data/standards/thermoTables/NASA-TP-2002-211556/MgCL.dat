@@ -10,7 +10,7 @@ name           MgCL;
 formula        MgCl;
 CAS            n/a;
 MW             59.758;       // kg/kmol, appendix D record line
-role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+role           gasOnly;       // free radical (odd electron count 29)
 tags           ( gasPhase thermoTable );
 nasaEntry      "MgCL";
 reviewStatus   interim;

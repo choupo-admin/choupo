@@ -16,7 +16,6 @@ formula     C5H11Si;
 CAS         3937-30-2;
 InChIKey    ZBMGMUODZNQAQI-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          99.228;      // g/mol [origin=calculated method=formula-sum]
 Tc          480.73;      // K   [origin=predictive method=joback]
 Pc          33.335;      // bar [origin=predictive method=joback]

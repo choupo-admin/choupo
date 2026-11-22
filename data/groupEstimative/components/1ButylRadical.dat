@@ -11,7 +11,7 @@ name        1ButylRadical;
 formula     C4H9;
 CAS         2492-36-6;
 InChIKey    WPWHSFAFEBZWBB-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          57.116;      // g/mol [origin=calculated method=formula-sum]
 Tc          445.75;      // K   [origin=predictive method=joback]
 Pc          39.755;      // bar [origin=predictive method=joback]

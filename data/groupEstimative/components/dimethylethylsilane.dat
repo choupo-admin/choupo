@@ -16,7 +16,6 @@ formula     C4H11Si;
 CAS         758-21-4;
 InChIKey    KJISMKWTHPWHFV-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          87.217;      // g/mol [origin=calculated method=formula-sum]
 Tc          456.46;      // K   [origin=predictive method=joback]
 Pc          35.515;      // bar [origin=predictive method=joback]

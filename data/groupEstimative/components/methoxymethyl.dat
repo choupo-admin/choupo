@@ -11,7 +11,7 @@ name        methoxymethyl;
 formula     C2H5O;
 CAS         16520-04-0;
 InChIKey    AFGPRWUFPLEMTF-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          45.061;      // g/mol [origin=calculated method=formula-sum]
 Tc          421.19;      // K   [origin=predictive method=joback]
 Pc          50.228;      // bar [origin=predictive method=joback]

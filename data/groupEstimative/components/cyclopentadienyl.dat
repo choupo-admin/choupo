@@ -11,7 +11,7 @@ name        cyclopentadienyl;
 formula     C5H5;
 CAS         2143-53-5;
 InChIKey    HPYIUKIBUJFXII-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          65.095;      // g/mol [origin=calculated method=formula-sum]
 Tc          533.62;      // K   [origin=predictive method=joback]
 Pc          51.387;      // bar [origin=predictive method=joback]

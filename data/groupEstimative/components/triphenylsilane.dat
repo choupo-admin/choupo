@@ -16,7 +16,6 @@ formula     C18H15Si;
 CAS         789-25-3;
 InChIKey    BZLZKLMROPIZSR-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          259.403;      // g/mol [origin=calculated method=formula-sum]
 Tc          965.96;      // K   [origin=predictive method=joback]
 Pc          24.290;      // bar [origin=predictive method=joback]

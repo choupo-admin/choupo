@@ -10,7 +10,7 @@ name           C2H;
 formula        C2H;
 CAS            n/a;
 MW             25.02934;       // kg/kmol, appendix D record line
-role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+role           gasOnly;       // free radical (odd electron count 13)
 tags           ( gasPhase thermoTable );
 nasaEntry      "C2H";
 reviewStatus   interim;

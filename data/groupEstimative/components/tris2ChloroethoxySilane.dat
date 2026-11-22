@@ -16,7 +16,6 @@ formula     C6H12Cl3O3Si;
 CAS         10138-79-1;
 InChIKey    QILVDQLVCPVRCN-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          266.594;      // g/mol [origin=calculated method=formula-sum]
 Tc          704.23;      // K   [origin=predictive method=joback]
 Pc          24.219;      // bar [origin=predictive method=joback]

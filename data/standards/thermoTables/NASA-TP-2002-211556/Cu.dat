@@ -10,7 +10,7 @@ name           Cu;
 formula        Cu;
 CAS            n/a;
 MW             63.546;       // kg/kmol, appendix D record line
-role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+role           gasData;       // free metal atom: a liquid or solid metal exists, no liquid model here
 tags           ( gasPhase thermoTable );
 nasaEntry      "Cu";
 reviewStatus   interim;

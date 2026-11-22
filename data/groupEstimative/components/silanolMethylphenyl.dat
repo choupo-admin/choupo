@@ -16,7 +16,6 @@ formula     C7H9OSi;
 CAS         7110-06-7;
 InChIKey    PQPVPZTVJLXQAS-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          137.233;      // g/mol [origin=calculated method=formula-sum]
 Tc          682.90;      // K   [origin=predictive method=joback]
 Pc          42.002;      // bar [origin=predictive method=joback]

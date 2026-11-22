@@ -10,7 +10,7 @@ name           PbI3;
 formula        PbI3;
 CAS            n/a;
 MW             587.9134;       // kg/kmol, appendix D record line
-role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+role           gasOnly;       // free radical (odd electron count 241)
 tags           ( gasPhase thermoTable );
 nasaEntry      "PbI3";
 reviewStatus   interim;

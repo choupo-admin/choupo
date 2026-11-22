@@ -17,7 +17,7 @@
     cold    330 K  -- below water's dew point: water condenses.
 
   OH is NOT a component: it is a gas-only species of the NASA table
-  (`role radical;`), resolved by name because the property system declares
+  (`role gasOnly;`), resolved by name because the property system declares
   `speciesTables ( NASA-TP-2002-211556 );`.  Gas-only means it has no
   condensed phase and no data for one, so in every phase split its K is the
   non-condensable cap ThermoPackage::kNoLiquidK = 1e12: all of it leaves in

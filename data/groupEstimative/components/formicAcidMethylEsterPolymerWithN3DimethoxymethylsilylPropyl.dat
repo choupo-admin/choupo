@@ -16,7 +16,6 @@ formula     C18H48N2O8Si5;
 CAS         168811-63-0;
 InChIKey    WLWASPVYRQGVLN-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          561.013;      // g/mol [origin=calculated method=formula-sum]
 Tc          1096.59;      // K   [origin=predictive method=joback]
 Pc          8.520;      // bar [origin=predictive method=joback]

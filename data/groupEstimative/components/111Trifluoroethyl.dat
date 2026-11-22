@@ -11,7 +11,7 @@ name        111Trifluoroethyl;
 formula     C2H2F3;
 CAS         3248-58-6;
 InChIKey    COLOHWPRNRVWPI-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          83.032;      // g/mol [origin=calculated method=formula-sum]
 Tc          371.77;      // K   [origin=predictive method=joback]
 Pc          43.858;      // bar [origin=predictive method=joback]

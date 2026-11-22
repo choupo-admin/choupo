@@ -11,7 +11,7 @@ name        1AdamantylRadical;
 formula     C10H15;
 CAS         19740-18-2;
 InChIKey    UXBIXOXDACBTDG-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          135.23;      // g/mol [origin=calculated method=formula-sum]
 Tc          673.99;      // K   [origin=predictive method=joback]
 Pc          32.283;      // bar [origin=predictive method=joback]

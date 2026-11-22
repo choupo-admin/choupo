@@ -11,7 +11,7 @@ name        methylethyl;
 formula     C3H7;
 CAS         2025-55-0;
 InChIKey    HNUALPPJLMYHDK-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          43.089;      // g/mol [origin=calculated method=formula-sum]
 Tc          434.62;      // K   [origin=predictive method=joback]
 Pc          45.654;      // bar [origin=predictive method=joback]

@@ -16,7 +16,6 @@ formula     C24H51Si;
 CAS         18765-09-8;
 InChIKey    QTKHQYWRGFZFHG-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          367.757;      // g/mol [origin=calculated method=formula-sum]
 Tc          919.61;      // K   [origin=predictive method=joback]
 Pc          7.725;      // bar [origin=predictive method=joback]

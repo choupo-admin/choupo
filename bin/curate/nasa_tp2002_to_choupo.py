@@ -323,9 +323,15 @@ def cmd_verify():
 #      curated record wins; moving it is a separate decision -- taken for the
 #      34 radicals on 2026-11-21, DEV.md 4c C458: a radical is NOT a
 #      component, so they left components/ and are written here);
-#  Every record written here is GAS-ONLY, `role radical;` (C458): the engine
-#  keeps it in the vapour in any phase split and refuses a state with no
-#  vapour to hold it (ThermoPackage::refuseGasOnlyWithoutVapour).
+#  THE ROLE IS DECIDED FROM THE FORMULA (C458 slice 2, `role_of` below):
+#  `gasOnly` for a free radical (odd total electron count), a free atom and a
+#  short listed set of biradicals; `gasData` for every closed-shell molecule
+#  (ideal-gas data, NO liquid model).  The engine keeps a gasOnly species in
+#  the vapour in any phase split and refuses a state with no vapour to hold it
+#  (ThermoPackage::refuseGasOnlyWithoutVapour); it refuses a gasData species
+#  by name wherever a liquid property is asked (Component::refuseNoLiquidModel).
+#  `retag` re-applies the decision to the records on disk, `retag --check`
+#  (run by bin/curate/check_gas_only.py) fails on any record that disagrees.
 #    * an entry whose own sources name Burcat (the NonCommercial compilation
 #      CLAUDE.md 7 rules out as a value's origin; whether a NASA reprint frees
 #      it is RESERVED for Vitor);
@@ -337,6 +343,113 @@ def cmd_verify():
 #    * an entry checked() refuses (the report disagreeing with itself).
 TABLE_HOME = os.path.join(ROOT, "data", "standards", "thermoTables", "NASA-TP-2002-211556")
 _ELEM = re.compile(r'([A-Z][A-Za-z]?)\s*(-?\d+\.\d\d)')
+
+#  Atomic numbers of every element the table holds (D = deuterium, Z = 1).
+_Z = {"Xe": 54, "H": 1, "D": 1, "He": 2, "Li": 3, "Be": 4, "B": 5, "C": 6, "N": 7, "O": 8,
+      "F": 9, "Ne": 10, "Na": 11, "Mg": 12, "Al": 13, "Si": 14, "P": 15, "S": 16,
+      "Cl": 17, "Ar": 18, "K": 19, "Ca": 20, "Sc": 21, "Ti": 22, "V": 23,
+      "Cr": 24, "Mn": 25, "Fe": 26, "Co": 27, "Ni": 28, "Cu": 29, "Zn": 30,
+      "Ga": 31, "Ge": 32, "Br": 35, "Kr": 36, "Rb": 37, "Sr": 38, "Zr": 40,
+      "Nb": 41, "Mo": 42, "Ag": 47, "Cd": 48, "In": 49, "Sn": 50, "I": 53,
+      "Cs": 55, "Ba": 56, "Ta": 73, "W": 74, "Hg": 80, "Pb": 82, "Rn": 86,
+      "U": 92}
+_NOBLE = {"He", "Ne", "Ar", "Kr", "Xe", "Rn"}
+#  EVEN-ELECTRON BIRADICALS (and one transient, SO) held gas-only, each with its reason.  The
+#  electron count alone calls them closed-shell; their ground state is a
+#  triplet, so they are as reactive as a radical and no liquid exists for
+#  them at a process unit.  S2 and O2 are also triplets but are STABLE
+#  molecules (S2 condenses to S8; O2 is a catalogue component), so they are
+#  not listed.  Keyed by the table's formula.
+BIRADICALS = {
+    "CH2": "methylene, triplet ground state",
+    "NH":  "imidogen, triplet ground state",
+    "ND":  "deuterated imidogen, triplet ground state",
+    "NF":  "fluoronitrene, triplet ground state",
+    "PH":  "phosphinidene, triplet ground state",
+    #  not a biradical by the book but the same case: an even-electron TRANSIENT
+    #  with no condensed phase -- sulfur monoxide (triplet ground state)
+    #  disproportionates to S and SO2 when it is condensed, so a liquid of it
+    #  does not exist for a process unit to hold (S2 and O2 are stable, SO is not)
+    "SO":  "sulfur monoxide, triplet ground state, a transient that disproportionates when condensed",
+}
+
+
+#  ODD-ELECTRON MOLECULES THAT ARE STABLE AND HAVE A LIQUID at a process
+#  unit: the parity rule would call them radicals, and a flash would then
+#  refuse them wrongly.  Each with its reason; keyed by formula.
+STABLE_ODD = {
+    "ClO2": "chlorine dioxide, a liquid below 284 K",
+}
+#  Metals: a free metal ATOM is not "gas-only" (liquid and solid metals exist:
+#  Hg, Na, K, Zn, Cd, Cs, Pb, ...), and a compound of a d-block or actinide metal
+#  with an odd electron count (FeCl3, TiCl3, CuF2, VO2, NbO2, UF3, UF5, VCl4) is a
+#  stable paramagnetic halide or oxide with condensed phases, not a radical.  Both
+#  go `gasData`: no liquid model, refused by name where a liquid is asked.
+_NONMETAL = {"H", "D", "B", "C", "N", "O", "F", "Si", "P", "S", "Cl", "Ge", "Br", "I",
+             "He", "Ne", "Ar", "Kr", "Xe", "Rn"}
+_TRANSITION = {"Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Zr", "Nb", "Mo",
+               "Ag", "Cd", "Ta", "W", "Hg", "U"}
+
+
+def role_of(formula):
+    """`gasOnly` or `gasData`, decided from the formula alone (and why)."""
+    parts = re.findall(r"([A-Z][a-z]?)(\d*)", formula)
+    if "".join(a + b for a, b in parts) != formula:
+        raise SystemExit("role_of: cannot parse formula " + formula)
+    count = {}
+    for el, k in parts:
+        if el not in _Z:
+            raise SystemExit("role_of: no atomic number for " + el + " in " + formula)
+        count[el] = count.get(el, 0) + (int(k) if k else 1)
+    electrons = sum(_Z[el] * k for el, k in count.items())
+    if formula in STABLE_ODD:
+        return "gasData", "stable odd-electron molecule: " + STABLE_ODD[formula]
+    if len(count) == 1 and sum(count.values()) == 1 and next(iter(count)) not in _NOBLE:
+        if next(iter(count)) not in _NONMETAL:
+            return "gasData", "free metal atom: a liquid or solid metal exists, no liquid model here"
+        return "gasOnly", "free atom"
+    if electrons % 2 == 1 and set(count) & _TRANSITION:
+        return "gasData", "odd-electron d-block/actinide compound: stable, has condensed phases (not a radical)"
+    if electrons % 2 == 1:
+        return "gasOnly", "free radical (odd electron count %d)" % electrons
+    if formula in BIRADICALS:
+        return "gasOnly", "listed (biradical or transient): " + BIRADICALS[formula]
+    return "gasData", "closed-shell molecule (or noble gas): ideal-gas data only, no liquid model"
+
+
+def role_line(formula):
+    role, why = role_of(formula)
+    return "role           %s;%s// %s" % (role, " " * max(1, 14 - len(role)), why)
+
+
+def cmd_retag(check):
+    """Apply role_of to every record of the home (or, with --check, only
+    report the records that disagree)."""
+    changed, seen, gas = [], 0, 0
+    for fn in sorted(os.listdir(TABLE_HOME)):
+        if not fn.endswith(".dat"):
+            continue
+        p = os.path.join(TABLE_HOME, fn)
+        t = open(p).read()
+        m = re.search(r"(?m)^formula\s+(\S+);", t)
+        if not m:
+            raise SystemExit(fn + ": no formula line")
+        seen += 1
+        gas += role_of(m.group(1))[0] == "gasOnly"
+        want = role_line(m.group(1))
+        have = re.search(r"(?m)^role\s.*$", t)
+        if have and have.group(0).strip() == want.strip():
+            continue
+        changed.append(fn)
+        if not check:
+            t = (t.replace(have.group(0), want) if have
+                 else re.sub(r"(?m)^(MW\s.*\n)", lambda mm: mm.group(1) + want + "\n", t, 1))
+            open(p, "w").write(t)
+    print("nasa_tp2002_to_choupo retag: %d record(s), %d gasOnly, %d gasData, %d %s"
+          % (seen, gas, seen - gas, len(changed), "disagree" if check else "rewritten"))
+    for fn in changed[:10]:
+        print("  " + fn)
+    return 1 if (check and changed) else 0
 
 
 def _composition(rec2):
@@ -466,7 +579,7 @@ def cmd_table():
             f"formula        {formula};",
             "CAS            n/a;",
             f"MW             {e['MW']:.7g};       // kg/kmol, appendix D record line",
-            "role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it",
+            role_line(formula),
             "tags           ( gasPhase thermoTable );",
             f"nasaEntry      \"{name}\";",
             "reviewStatus   interim;",
@@ -491,7 +604,8 @@ def cmd_table():
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--fetch", action="store_true", help="download the report into thirdParty/nasa-tp2002/")
-    ap.add_argument("cmd", nargs="?", choices=["block", "verify", "table"])
+    ap.add_argument("cmd", nargs="?", choices=["block", "verify", "table", "retag"])
+    ap.add_argument("--check", action="store_true", help="retag: report disagreements, write nothing")
     ap.add_argument("names", nargs="*")
     a = ap.parse_args()
     if a.fetch:
@@ -504,6 +618,8 @@ def main():
         return cmd_verify()
     elif a.cmd == "table":
         return cmd_table()
+    elif a.cmd == "retag":
+        return cmd_retag(a.check)
     return 0
 
 

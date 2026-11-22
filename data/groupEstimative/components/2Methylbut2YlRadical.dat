@@ -11,7 +11,7 @@ name        2Methylbut2YlRadical;
 formula     C5H11;
 CAS         4348-35-0;
 InChIKey    CGERYHYIVJQVLJ-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          71.143;      // g/mol [origin=calculated method=formula-sum]
 Tc          486.82;      // K   [origin=predictive method=joback]
 Pc          35.986;      // bar [origin=predictive method=joback]

@@ -16,7 +16,6 @@ formula     CCl2;
 CAS         1605-72-7;
 InChIKey    PFBUKDPBVNJDEW-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          82.911;      // g/mol [origin=calculated method=formula-sum]
 Tc          454.54;      // K   [origin=predictive method=joback]
 Pc          57.046;      // bar [origin=predictive method=joback]

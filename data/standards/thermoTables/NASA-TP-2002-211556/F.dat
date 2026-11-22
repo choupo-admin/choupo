@@ -10,7 +10,7 @@ name           F;
 formula        F;
 CAS            n/a;
 MW             18.9984;       // kg/kmol, appendix D record line
-role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+role           gasOnly;       // free atom
 tags           ( gasPhase thermoTable );
 nasaEntry      "F";
 reviewStatus   interim;

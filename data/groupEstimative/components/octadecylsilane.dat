@@ -16,7 +16,6 @@ formula     C18H37Si;
 CAS         18623-11-5;
 InChIKey    FUESFIVIIFEDFI-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          281.579;      // g/mol [origin=calculated method=formula-sum]
 Tc          768.06;      // K   [origin=predictive method=joback]
 Pc          11.617;      // bar [origin=predictive method=joback]

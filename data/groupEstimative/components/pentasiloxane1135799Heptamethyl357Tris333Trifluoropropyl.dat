@@ -16,7 +16,6 @@ formula     C16H33F9O4Si5;
 CAS         64426-47-7;
 InChIKey    ZTMLUQNOIYCMDZ-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          600.843;      // g/mol [origin=calculated method=formula-sum]
 Tc          796.04;      // K   [origin=predictive method=joback]
 Pc          7.376;      // bar [origin=predictive method=joback]

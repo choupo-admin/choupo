@@ -16,7 +16,6 @@ formula     C3H6Si;
 CAS         287-29-6;
 InChIKey    TYFUXZBFJIMFON-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          70.166;      // g/mol [origin=calculated method=formula-sum]
 Tc          456.91;      // K   [origin=predictive method=joback]
 Pc          52.893;      // bar [origin=predictive method=joback]

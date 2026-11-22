@@ -11,7 +11,7 @@ name        1NaphthylmethylRadical;
 formula     C11H9;
 CAS         7419-60-5;
 InChIKey    PHRABVHYUHIYGY-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          141.193;      // g/mol [origin=calculated method=formula-sum]
 Tc          730.99;      // K   [origin=predictive method=joback]
 Pc          34.725;      // bar [origin=predictive method=joback]

@@ -11,7 +11,7 @@ name        dichloromethyl;
 formula     CHCl2;
 CAS         3474-12-2;
 InChIKey    ZJULYDCRWUEPTK-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          83.919;      // g/mol [origin=calculated method=formula-sum]
 Tc          486.42;      // K   [origin=predictive method=joback]
 Pc          53.907;      // bar [origin=predictive method=joback]

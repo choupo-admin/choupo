@@ -16,7 +16,6 @@ formula     C4H10O2Si;
 CAS         18165-68-9;
 InChIKey    SOPZLXDKMICEMF-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          118.207;      // g/mol [origin=calculated method=formula-sum]
 Tc          501.29;      // K   [origin=predictive method=joback]
 Pc          35.942;      // bar [origin=predictive method=joback]

@@ -11,7 +11,7 @@ name        nPropoxyRadical;
 formula     C3H7O;
 CAS         16499-18-6;
 InChIKey    JAVBBFXUGDCHLZ-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          59.088;      // g/mol [origin=calculated method=formula-sum]
 Tc          399.44;      // K   [origin=predictive method=joback]
 Pc          51.534;      // bar [origin=predictive method=joback]

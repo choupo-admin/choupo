@@ -10,7 +10,7 @@ name           GaF2;
 formula        GaF2;
 CAS            n/a;
 MW             107.7198;       // kg/kmol, appendix D record line
-role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+role           gasOnly;       // free radical (odd electron count 49)
 tags           ( gasPhase thermoTable );
 nasaEntry      "GaF2";
 reviewStatus   interim;

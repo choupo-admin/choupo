@@ -11,7 +11,6 @@ name        ac1l3htk;
 formula     C10H15;
 CAS         21517-94-2;
 InChIKey    YXXKMTIGKAVJTA-UHFFFAOYSA-N;
-role        radical;
 MW          135.23;      // g/mol [origin=calculated method=formula-sum]
 Tc          662.62;      // K   [origin=predictive method=joback]
 Pc          31.633;      // bar [origin=predictive method=joback]

@@ -11,7 +11,7 @@ name        2Phenyl2PropylRadical;
 formula     C9H11;
 CAS         16804-70-9;
 InChIKey    MIWQHLIBMIMIRX-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          119.187;      // g/mol [origin=calculated method=formula-sum]
 Tc          651.10;      // K   [origin=predictive method=joback]
 Pc          33.802;      // bar [origin=predictive method=joback]

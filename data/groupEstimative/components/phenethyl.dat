@@ -11,7 +11,7 @@ name        phenethyl;
 formula     C8H9;
 CAS         17203-53-1;
 InChIKey    KRTGJZMJJVEKRX-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          105.16;      // g/mol [origin=calculated method=formula-sum]
 Tc          612.75;      // K   [origin=predictive method=joback]
 Pc          37.226;      // bar [origin=predictive method=joback]

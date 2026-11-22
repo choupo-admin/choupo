@@ -16,7 +16,6 @@ formula     C8H15Si;
 CAS         86318-61-8;
 InChIKey    SURMRRDTFIAVRH-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          139.293;      // g/mol [origin=calculated method=formula-sum]
 Tc          593.37;      // K   [origin=predictive method=joback]
 Pc          28.203;      // bar [origin=predictive method=joback]

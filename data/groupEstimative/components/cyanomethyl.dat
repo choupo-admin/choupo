@@ -11,7 +11,7 @@ name        cyanomethyl;
 formula     C2H2N;
 CAS         2932-82-3;
 InChIKey    XSTKDMFTWATIQP-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          40.045;      // g/mol [origin=calculated method=formula-sum]
 Tc          535.22;      // K   [origin=predictive method=joback]
 Pc          49.663;      // bar [origin=predictive method=joback]

@@ -588,15 +588,26 @@ public:
     //                             entry exists for (this, solvent); else
     //                             falls back to the "volatile" path
     //   "nonvolatile"             K_i = 0  identically (NaCl, glucose, MgSO4)
-    //   "radical"                 GAS-ONLY (DEV.md 4c C458): the species
-    //                             exists only in the gas phase (OH, H, O and
-    //                             every record of the gas-species table
-    //                             data/standards/thermoTables/).  It stays
-    //                             in the vapour in every phase split, a
-    //                             non-condensable (K = ThermoPackage::
-    //                             kNoLiquidK), and a state with no vapour to
-    //                             hold it is REFUSED by name
-    //                             (ThermoPackage::refuseGasOnlyWithoutVapour).
+    //   "gasOnly"                 GAS-ONLY (DEV.md 4c C458, renamed from
+    //                             `radical` 2026-11-21): the species is
+    //                             physically gas-only at the conditions a
+    //                             process unit reaches -- a free radical
+    //                             (odd electron count), a free atom, a short
+    //                             listed set of biradicals (OH, H, O, CH2).
+    //                             It stays in the vapour in every phase
+    //                             split, a non-condensable (K =
+    //                             ThermoPackage::kNoLiquidK), and a state
+    //                             with no vapour to hold it is REFUSED by
+    //                             name (ThermoPackage::refuseGasOnlyWithoutVapour).
+    //                             `role radical;` is read as an old synonym
+    //                             and announced once.
+    //   "gasData"                 a CLOSED-SHELL molecule of the gas-species
+    //                             table (S8, AlCl3, SiF4): ideal-gas data
+    //                             only, NO liquid model.  Legal in every
+    //                             computation that asks no liquid property
+    //                             (a gas reactor); a K, a liquid fugacity or a
+    //                             liquid enthalpy is REFUSED by name
+    //                             (Component::refuseNoLiquidModel).
     //
     // Legacy compat: a.dat with `nonvolatile true;` and no `role` keyword
     // is mapped to role = "nonvolatile".  When both are present, an
@@ -607,7 +618,15 @@ public:
     //  every table record, so it travels with the record into a sealed or
     //  held case copy, where the home it was resolved from is no longer
     //  known.  Every K-value site and every no-vapour refusal reads THIS.
-    bool isGasOnly() const { return role_ == "radical"; }
+    bool isGasOnly() const { return role_ == "gasOnly"; }
+    //  A table molecule that carries NO liquid model (role gasData and no
+    //  vaporPressure block): the refusal home asks this (C458 slice 2).
+    bool hasNoLiquidModel() const { return role_ == "gasData" && !vp_; }
+    bool isGasData() const { return role_ == "gasData"; }
+    //  THE ONE HOME of the refusal: `asked` is what the caller needed (a
+    //  K-value, a liquid fugacity, a liquid enthalpy).  Names the species,
+    //  the unit being solved (when one is) and the record that would serve.
+    [[noreturn]] void refuseNoLiquidModel(const std::string& asked) const;
 
     // ---- Ebulioscopic / cryoscopic --------------------------------
     // Solvent-only properties: the molal boiling-point elevation constant
@@ -928,7 +947,7 @@ private:
     // Solute support
     scalar      nu_          = 1.0;       // van't Hoff factor for osmotic pressure
 
-    // Role / category:  volatile (default), solute, nonvolatile, radical.
+    // Role / category:  volatile (default), solute, nonvolatile, gasOnly, gasData.
     // Populated by readFromDict from either `role <word>;` directly or from
     // the legacy `nonvolatile true;` shortcut.
     std::string role_ = "volatile";

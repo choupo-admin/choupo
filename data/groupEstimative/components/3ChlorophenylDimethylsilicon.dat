@@ -16,7 +16,6 @@ formula     C8H10ClSi;
 CAS         2083-13-8;
 InChIKey    IJRZUCTYCBOYNI-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          169.703;      // g/mol [origin=calculated method=formula-sum]
 Tc          674.69;      // K   [origin=predictive method=joback]
 Pc          31.456;      // bar [origin=predictive method=joback]

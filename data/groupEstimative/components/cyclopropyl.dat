@@ -11,7 +11,7 @@ name        cyclopropyl;
 formula     C3H5;
 CAS         2417-82-5;
 InChIKey    XIPUIGPNIDKXJU-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          41.073;      // g/mol [origin=calculated method=formula-sum]
 Tc          457.44;      // K   [origin=predictive method=joback]
 Pc          56.960;      // bar [origin=predictive method=joback]

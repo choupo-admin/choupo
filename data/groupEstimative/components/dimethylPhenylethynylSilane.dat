@@ -16,7 +16,6 @@ formula     C10H11Si;
 CAS         87290-97-9;
 InChIKey    ZDVLZNOBDJHOOW-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          159.283;      // g/mol [origin=calculated method=formula-sum]
 Tc          703.38;      // K   [origin=predictive method=joback]
 Pc          32.173;      // bar [origin=predictive method=joback]

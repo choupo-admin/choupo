@@ -11,7 +11,7 @@ name        2ButylRadical;
 formula     C4H9;
 CAS         2348-55-2;
 InChIKey    ULOIAOPTGWSNHU-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          57.116;      // g/mol [origin=calculated method=formula-sum]
 Tc          459.35;      // K   [origin=predictive method=joback]
 Pc          40.261;      // bar [origin=predictive method=joback]

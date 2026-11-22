@@ -11,7 +11,6 @@ name        methylIodo;
 formula     CH2I;
 CAS         16519-98-5;
 InChIKey    KPJPHPFMCOKUMW-UHFFFAOYSA-N;
-role        radical;
 MW          140.927;      // g/mol [origin=calculated method=formula-sum]
 Tc          516.05;      // K   [origin=predictive method=joback]
 Pc          57.392;      // bar [origin=predictive method=joback]

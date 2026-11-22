@@ -16,7 +16,6 @@ formula     C10H7Si;
 CAS         38274-75-8;
 InChIKey    FWTICCZNRCBKOS-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          155.251;      // g/mol [origin=calculated method=formula-sum]
 Tc          713.16;      // K   [origin=predictive method=joback]
 Pc          38.819;      // bar [origin=predictive method=joback]

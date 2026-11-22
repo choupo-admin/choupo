@@ -16,7 +16,6 @@ formula     C8H11Si;
 CAS         766-77-8;
 InChIKey    OIKHZBFJHONJJB-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          135.261;      // g/mol [origin=calculated method=formula-sum]
 Tc          623.50;      // K   [origin=predictive method=joback]
 Pc          33.374;      // bar [origin=predictive method=joback]

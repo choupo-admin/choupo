@@ -690,6 +690,8 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
             const Component& c = pkg.comp(i);
             if (!c.hasVaporPressure()) { d.push_back(c.name() + (c.isGasOnly()      // C458
                 ? " [vaporPressure]: none (gas-only: a non-condensable, K = ThermoPackage::kNoLiquidK)"
+                : c.isGasData()
+                ? " [vaporPressure]: none (gasData: ideal-gas data only, no liquid model -- a liquid property of it is refused by name)"
                 : " [vaporPressure]: none (nonvolatile)")); continue; }
             d.push_back(lawText(c, "vaporPressure"));
             if (!otherLaws(c, "vaporPressure").empty()) d.push_back(otherLaws(c, "vaporPressure"));

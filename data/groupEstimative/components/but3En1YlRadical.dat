@@ -11,7 +11,7 @@ name        but3En1YlRadical;
 formula     C4H7;
 CAS         2154-62-3;
 InChIKey    UHURJXXAXXMMLW-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          55.1;      // g/mol [origin=calculated method=formula-sum]
 Tc          445.75;      // K   [origin=predictive method=joback]
 Pc          41.947;      // bar [origin=predictive method=joback]

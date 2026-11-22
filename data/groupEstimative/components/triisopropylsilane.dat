@@ -16,7 +16,6 @@ formula     C9H21Si;
 CAS         6485-79-6;
 InChIKey    ZGYICYBLPGRURT-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          157.352;      // g/mol [origin=calculated method=formula-sum]
 Tc          582.41;      // K   [origin=predictive method=joback]
 Pc          21.959;      // bar [origin=predictive method=joback]

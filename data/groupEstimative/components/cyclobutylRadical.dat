@@ -11,7 +11,7 @@ name        cyclobutylRadical;
 formula     C4H7;
 CAS         4548-06-5;
 InChIKey    ZAEBLFKQMDEPDM-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          55.1;      // g/mol [origin=calculated method=formula-sum]
 Tc          494.64;      // K   [origin=predictive method=joback]
 Pc          51.313;      // bar [origin=predictive method=joback]

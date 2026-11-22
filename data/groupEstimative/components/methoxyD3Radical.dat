@@ -16,7 +16,7 @@ formula     CD3O;
 CAS         7263-60-7;
 InChIKey    GRVDJDISBSALJP-FIBGUPNXSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
+role        gasOnly;
 MW          34.052;      // g/mol [origin=calculated method=formula-sum]
 Tc          346.02;      // K   [origin=predictive method=joback]
 Pc          69.329;      // bar [origin=predictive method=joback]

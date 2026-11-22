@@ -16,7 +16,7 @@ formula     C3H5O;
 CAS         15843-24-0;
 InChIKey    UFUASNAHBMBJIX-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
+role        gasOnly;
 MW          57.072;      // g/mol [origin=calculated method=formula-sum]
 Tc          373.22;      // K   [origin=predictive method=joback]
 Pc          56.617;      // bar [origin=predictive method=joback]

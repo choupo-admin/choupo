@@ -112,14 +112,14 @@ scalar pureSaturationTemperature(const ThermoPackage& thermo, std::size_t i,
 }
 
 BubbleTSolve bubbleTSolve(const ThermoPackage& thermo,
-                          const sVector& x,
+                          const sVector& xIn,
                           scalar P,
                           scalar Tguess,
                           scalar tolerance,
                           const sVector* yVapour)
 {
-    thermo.refuseGasOnlyWithoutVapour(x, "a saturated liquid (a bubble"
-        " point: the liquid that holds the whole feed)");      // C458
+    const sVector x = thermo.saturatedLiquidBasis(xIn, "a saturated liquid (a"
+        " bubble point: the liquid that holds the whole feed)");   // C458
     const sVector& y = yVapour ? *yVapour : x;
     auto f = [&](scalar T)
     {

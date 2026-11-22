@@ -11,7 +11,7 @@ name        cyclopentylRadical;
 formula     C5H9;
 CAS         3889-74-5;
 InChIKey    BQOWUDKEXDCGQS-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          69.127;      // g/mol [origin=calculated method=formula-sum]
 Tc          530.94;      // K   [origin=predictive method=joback]
 Pc          46.466;      // bar [origin=predictive method=joback]

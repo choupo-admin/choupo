@@ -10,7 +10,7 @@ name           OHCH2COOH;
 formula        C2H4O3;
 CAS            n/a;
 MW             76.05136;       // kg/kmol, appendix D record line
-role           radical;       // gas-only (DEV.md 4c C458): stays in the vapour, refused where no vapour holds it
+role           gasData;       // closed-shell molecule (or noble gas): ideal-gas data only, no liquid model
 tags           ( gasPhase thermoTable );
 nasaEntry      "OHCH2COOH";
 reviewStatus   interim;

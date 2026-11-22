@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "IsothermalFlash.H"
+#include <algorithm>
 #include "thermo/PropertyDomainError.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -1047,10 +1048,36 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                          " from the declared "
                       << thermo.eos().modelName() << " (not an ideal gas)\n";
 
-        std::vector<std::size_t> act;
+        //  `act` = the present CONDENSABLE components, the ones the three-phase
+        //  simplex searches over; `gasAct` = the present GAS-ONLY species (C458
+        //  slice 2, point 2), which are NOT variables: a gas-only species has
+        //  no liquid, so every mole of it sits in the vapour, y_g = z_g / beta_V
+        //  (the cap K = kNoLiquidK of the VL paths, taken to its limit, the
+        //  liquids carrying exactly zero of it).  With none present `gasAct`
+        //  is empty and every line below is the pre-slice arithmetic.
+        std::vector<std::size_t> act, gasAct;
         for (std::size_t i = 0; i < n; ++i)
-            if (in.z[i] > 1.0e-10) act.push_back(i);
+            if (in.z[i] > 1.0e-10)
+                (thermo.comp(i).isGasOnly() ? gasAct : act).push_back(i);
         const std::size_t nA = act.size();
+        if (!gasAct.empty() && nA == 0)
+        {
+            //  ONLY gas-only species present: one vapour, nothing to split.
+            sol.regime    = "single vapour (only gas-only species present)";
+            sol.V_over_F  = 1.0;
+            sol.y         = in.z;
+            sol.x.assign(n, 0.0);
+            sol.K.assign(n, ThermoPackage::kNoLiquidK);
+            sol.converged = true;
+            return sol;
+        }
+        if (!gasAct.empty() && nA < 2)
+            throw std::runtime_error("VLLE flash with a gas-only species ('"
+                + thermo.comp(gasAct[0]).name() + "'): the three-phase search"
+                " needs at least TWO condensable components present (found "
+                + std::to_string(nA) + ").  A gas-only species is a"
+                " non-condensable in the vapour; with one condensable the"
+                " question is a vapour-liquid flash -- use `phaseSet VL`.");
 
         //  ln(P/f_ref_i), formed exactly as before (one log of the ratio), so
         //  an ideal-gas package's objective is the same number, bit for bit;
@@ -1058,6 +1085,20 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         //  monomer reference, and phi_sat/Poynting on a real vapour -- C235),
         //  so this Gibbs search and `Kvec` cannot disagree about one liquid.
         sVector lnPoverPsat(n, 0.0);
+        //  A GAS-ONLY species (C458 slice 2, point 2) has no liquid reference:
+        //  the VL paths give it K = kNoLiquidK, so here its vapour term
+        //  carries the same cap, ln(P/f_ref) = -ln kNoLiquidK (f_ref = K P).
+        //  It is not searched (see `gasAct`): it stays wholly in the vapour.
+        //  Before, its absent Psat refused the whole VLLE flash with a message
+        //  asking for a vapour-pressure record a radical cannot have (and a
+        //  Nelder-Mead search over it left 3e-4 of it in a liquid and never
+        //  converged).
+        bool gasOnlyHeld = false;         // a gas-only species above the trace level
+        for (std::size_t i : gasAct)
+        {
+            lnPoverPsat[i] = -std::log(ThermoPackage::kNoLiquidK);
+            if (in.z[i] > ThermoPackage::kGasOnlyTrace) gasOnlyHeld = true;
+        }
         for (std::size_t i : act)
             lnPoverPsat[i] = std::log(in.P
                 / std::max<scalar>(thermo.liquidReferenceFugacity(i, in.T, in.P), 1.0e-30));
@@ -1071,10 +1112,13 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             {
                 const sVector la = thermo.vapourAssociationLnPhi(in.T, in.P, y);
                 for (std::size_t i : act) lp[i] = la[i];
+                for (std::size_t i : gasAct) lp[i] = la[i];
             }
             if (!realVapour) return lp;
             const sVector phi = thermo.eos().phi(in.T, in.P, y);
             for (std::size_t i : act)
+                lp[i] = std::log(std::max<scalar>(phi[i], 1.0e-300));
+            for (std::size_t i : gasAct)
                 lp[i] = std::log(std::max<scalar>(phi[i], 1.0e-300));
             return lp;
         };
@@ -1138,6 +1182,16 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             y [last] = 1.0 - sumY;
             xA[last] = 1.0 - sumA;
             if (y[last] < EPS_VLLE || xA[last] < EPS_VLLE) return false;
+            //  The gas-only species, wholly in the vapour (y_g = z_g / beta_V);
+            //  the searched y is the CONDENSABLE part of the vapour, scaled by
+            //  what the gas-only species leave.
+            if (!gasAct.empty())
+            {
+                scalar sumYg = 0.0;
+                for (std::size_t g : gasAct) { y[g] = in.z[g] / bV; sumYg += y[g]; }
+                if (sumYg > 1.0 - EPS_VLLE) return false;
+                for (std::size_t i : act) y[i] *= (1.0 - sumYg);
+            }
 
             xB.assign(n, 0.0);
             for (std::size_t i : act)
@@ -1172,6 +1226,8 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                    + bA * xA[i] * lnA
                    + bB * xB[i] * lnB;
             }
+            for (std::size_t g : gasAct)
+                G += bV * y[g] * (std::log(y[g]) + lnPoverPsat[g] + lnPhi[g]);
             return G;
         };
 
@@ -1183,18 +1239,22 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             for (std::size_t i : act)
                 gFeed += in.z[i] * (std::log(std::max<scalar>(in.z[i], 1.0e-30))
                                   + std::log(std::max<scalar>(gZ[i], 1.0e-30)));
+            for (std::size_t i : gasAct)       // the feed held as ONE liquid: no cap
+                gFeed += in.z[i] * (std::log(std::max<scalar>(in.z[i], 1.0e-30))
+                                  + std::log(std::max<scalar>(gZ[i], 1.0e-30)));
         }
 
         // -----------------------------------------------------------------
         //  Multi-start.  Canonical configurations bracketing the region
         //  where 3-phase coexistence can occur.
         // -----------------------------------------------------------------
-        const std::size_t iA =
-            (opts.llAlphaRichComp == static_cast<std::size_t>(-1))
-            ? 0     : opts.llAlphaRichComp;
-        const std::size_t iB =
-            (opts.llBetaRichComp == static_cast<std::size_t>(-1))
-            ? n - 1 : opts.llBetaRichComp;
+        //  (the default end components must be CONDENSABLE: a gas-only species
+        //  is not in the search, so the defaults fall to the first and last
+        //  present condensable)
+        const bool dfA = (opts.llAlphaRichComp == static_cast<std::size_t>(-1));
+        const bool dfB = (opts.llBetaRichComp == static_cast<std::size_t>(-1));
+        const std::size_t iA = dfA ? (gasAct.empty() ? 0 : act.front()) : opts.llAlphaRichComp;
+        const std::size_t iB = dfB ? (gasAct.empty() ? n - 1 : act.back()) : opts.llBetaRichComp;
 
         // Mass-balance-derived multi-start.  For each candidate
         // (β_V, β_α, x_α, x_β) we solve for y by overall mass balance:
@@ -1225,7 +1285,8 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         //  present this is the pre-C173 vector, entry for entry.
         auto compRich = [&](scalar bias, std::size_t richIdx) {
             sVector c(n, 0.0);
-            const bool richPresent = in.z[richIdx] > 1.0e-10;
+            const bool richPresent = in.z[richIdx] > 1.0e-10
+                && std::find(act.begin(), act.end(), richIdx) != act.end();
             const std::size_t others = richPresent ? nA - 1 : nA;
             for (std::size_t i : act)
                 c[i] = (1.0 - bias) / static_cast<scalar>(std::max<std::size_t>(others, 1));
@@ -1239,14 +1300,18 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             const scalar bB = 1.0 - bV - bA;
             if (bV < 0.02 || bA < 0.02 || bB < 0.02) return;
             sVector y(n, 0.0);
-            scalar sumY = 0.0;
+            scalar sumY = 0.0, sumYg = 0.0;
+            for (std::size_t g : gasAct) sumYg += in.z[g] / bV;   // wholly in the vapour
+            if (sumYg > 1.0 - 1.0e-3) return;
             for (std::size_t i : act)
             {
                 y[i] = (in.z[i] - bA * xA[i] - bB * xB[i]) / bV;
                 if (y[i] < 1.0e-4 || y[i] > 1.0 - 1.0e-4) return;
                 sumY += y[i];
             }
-            if (std::abs(sumY - 1.0) > 1.0e-3) return;
+            if (std::abs(sumY - (1.0 - sumYg)) > 1.0e-3) return;
+            if (!gasAct.empty())                    // the searched y: condensable fractions
+                for (std::size_t i : act) y[i] /= (1.0 - sumYg);
             starts.push_back(packStart(bV, bA, y, xA));
         };
 
@@ -1341,11 +1406,13 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             const sVector lpInc = lnPhiVap(yInc);
             for (std::size_t i : act)
                 sumK += in.z[i] * gZ[i] * std::exp(-lnPoverPsat[i] - lpInc[i]);
-            vapourForms = sumK > 1.0 + 1.0e-8;
+            vapourForms = sumK > 1.0 + 1.0e-8 || gasOnlyHeld;
             tpdUnstable = stab.unstable;
             tmMinFeed   = stab.tmMin;
             if (!tpdUnstable && !vapourForms)
             {
+                thermo.refuseGasOnlyWithoutVapour(in.z,          // C458
+                    "a VLLE flash that found a single liquid");
                 sol.regime    = "single liquid (stable: the TPD finds no second"
                                 " liquid and the feed is below its bubble point)";
                 sol.V_over_F  = 0.0;
@@ -1493,6 +1560,23 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         scalar dLiq = 0.0;
         for (std::size_t i : act) dLiq = std::max(dLiq, std::abs(xA[i] - xB[i]));
 
+        if (bV < PHASE_EPS && !gasAct.empty())
+        {
+            //  A present gas-only species lives in the vapour this demotion would
+            //  discard (it would vanish from the outlets): the vapour-liquid flash
+            //  answers instead, announced (review of 8b0a2df85, S2-d).
+            FlashOptions sub = opts;
+            sub.phaseSet  = PhaseSet::VL;
+            sub.verbosity = 0;
+            FlashSolution s2 = solveCore(in, thermo, sub);
+            s2.regime += " -- VLLE: the three-phase search found a vapour fraction"
+                         " below 1 % with a gas-only species present; the"
+                         " vapour-liquid flash answers (announced)";
+            AdvisoryLog::instance().add("solver", "info", "isothermalFlash VLLE",
+                "VLLE with a gas-only species and a vapour fraction below 1 %: the"
+                " vapour-liquid flash answers, so the species is not lost.");
+            return s2;
+        }
         const bool dropVapour = bV < PHASE_EPS;
         const bool dropLiquid = !dropVapour && (bA < PHASE_EPS || bB < PHASE_EPS);
         const bool sameLiquid = !dropVapour && !dropLiquid && dLiq < SAME_LIQUID;
@@ -1878,7 +1962,7 @@ IsothermalFlash::solveCore(const FlashInput&    in,
             {
                 try
                 {
-                    const sVector Kr = thermo.Kvec_Raoult(in.T, in.P);
+                    const sVector Kr = thermo.Kvec_Raoult(in.T, in.P, &in.z);
                     for (std::size_t i = 0; i < n; ++i)
                         if (std::isfinite(Kr[i]) && Kr[i] > 0.0) K0[i] = Kr[i];
                 }

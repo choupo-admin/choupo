@@ -16,7 +16,7 @@ formula     C6H4FO;
 CAS         2145-21-3;
 InChIKey    QDKWLJJOYIFEBS-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
+role        gasOnly;
 MW          111.095;      // g/mol [origin=calculated method=formula-sum]
 Tc          565.91;      // K   [origin=predictive method=joback]
 Pc          43.800;      // bar [origin=predictive method=joback]

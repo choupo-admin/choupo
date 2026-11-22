@@ -27,6 +27,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Component.H"
+#include "core/PropertySourceLog.H"
+#include "thermo/PropertyDomainError.H"
 #include "thermo/DerivedClosures.H"
 #include "core/Advisory.H"
 #include "thermo/AtomicWeights.H"
@@ -460,18 +462,30 @@ void Component::readFromDict(const DictPtr& d)
     }
 
     // Role / category ----------------------------------------------
-    // `role <word>;` -- volatile (default) / solute / nonvolatile / radical.
+    // `role <word>;` -- volatile (default) / solute / nonvolatile / gasOnly / gasData
+    // (`radical` is the pre-2026-11-21 word of gasOnly, read as a synonym).
     if (d->found("nonvolatile"))
         throw std::runtime_error("Component '" + name_ + "': `nonvolatile` is"
             " not a component key -- the category is `role nonvolatile;`.");
     if (d->found("role"))
     {
         role_ = d->lookupWord("role");
+        if (role_ == "radical")
+        {
+            role_ = "gasOnly";
+            if (AdvisoryLog::instance().add("thermo", "warning",
+                    "roleRadical " + name_,
+                    "`role radical;` is the old word of `role gasOnly;`: check whether this species really is gas-only"))
+                std::cerr << "[thermo] " << name_ << ": `role radical;` is"
+                             " the old word of `role gasOnly;` (DEV.md 4c"
+                             " C458) -- check whether this species really is"
+                             " gas-only (a radical, an atom) before keeping it\n";
+        }
         if (role_ != "volatile" && role_ != "solute"
-         && role_ != "nonvolatile" && role_ != "radical")
+         && role_ != "nonvolatile" && role_ != "gasOnly" && role_ != "gasData")
             throw std::runtime_error("Component '" + name_ +
                 "': role '" + role_ + "' is not one of"
-                " volatile / solute / nonvolatile / radical");
+                " volatile / solute / nonvolatile / gasOnly / gasData");
     }
 
     //  `volatility { class; normalBoilingPoint; }` -- the SUBSTANCE's physics,
@@ -1524,6 +1538,32 @@ const Component::DatumBridge298& Component::datumBridge298() const
     return bridge_;
 }
 
+void Component::refuseNoLiquidModel(const std::string& asked) const
+{
+    //  C458 slice 2.  A closed-shell molecule of the gas-species table
+    //  (`role gasData;`) carries ideal-gas data and nothing for a liquid: no
+    //  vapour-pressure record, no pure-fluid method.  Anything that would put
+    //  it in, or read it from, a liquid would invent the missing number (a 1
+    //  Pa reference, a Watson-slope enthalpy), so it is refused here instead.
+    std::string type, unit, where;
+    if (PropertySourceLog::instance().current(type, unit))
+        where = " in unit '" + unit + "' (" + type + ")";
+    //  A HARD refusal (PropertyDomainError outsideHardDomain): the catch-all
+    //  fallbacks (stream-equilibrium resolver, outlet resolution, energy
+    //  report) rethrow only that kind, and a plain runtime_error was swallowed
+    //  and the stream priced "on the state it CARRIES", silently (review of
+    //  8b0a2df85, S1-a).
+    throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+        "Component '" + name_ + "' (role gasData, a"
+        " closed-shell molecule of the gas-species table) has NO liquid"
+        " model, and the computation" + where + " asked for " + asked +
+        ".  Its record holds ideal-gas data only.  What would be needed: a"
+        " `vaporPressure {}` block (and for a liquid enthalpy a"
+        " `liquidHeatCapacity {}` block) on a case-local record of the"
+        " species, or a pure-fluid method selected for it.  A computation"
+        " that asks no liquid property (a gas-phase reactor) runs without.");
+}
+
 bool Component::gasOnlyLiquidLeg(const char* leg) const
 {
     //  C458: a GAS-ONLY species has no condensed phase, so it has no liquid
@@ -1538,7 +1578,7 @@ bool Component::gasOnlyLiquidLeg(const char* leg) const
             "gasOnlyLiquidLeg " + name_,
             "gas-only species: the trace its non-condensable K leaves in a"
             " liquid carries its ideal-gas enthalpy (zero heat of solution)"))
-        std::cerr << "[thermo] " << name_ << ": gas-only (role radical) -- a"
+        std::cerr << "[thermo] " << name_ << ": gas-only (role gasOnly) -- a"
                      " liquid trace is priced on its ideal-gas leg (" << leg
                   << "), zero heat of solution\n";
     return true;
@@ -1556,6 +1596,9 @@ void Component::requireWatsonSlopeLiquidFallback(const char* leg) const
     //  and went on -- one decision with two homes, the settled rule enforced
     //  on the leg the main path does NOT use.  Why each refusal exists is
     //  written at the call site in `Hliq_pure`.
+    if (hasNoLiquidModel())
+        refuseNoLiquidModel(std::string("its liquid enthalpy (the ") + leg
+                            + " liquid leg)");
     if (isNonvolatile())
         throw std::runtime_error("Component '" + name_ +
             "': liquidHeatCapacity missing, and this component is declared"

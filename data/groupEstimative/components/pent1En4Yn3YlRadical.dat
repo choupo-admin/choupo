@@ -11,7 +11,7 @@ name        pent1En4Yn3YlRadical;
 formula     C5H5;
 CAS         78596-31-3;
 InChIKey    MOHCYMPYDWGDHY-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          65.095;      // g/mol [origin=calculated method=formula-sum]
 Tc          486.48;      // K   [origin=predictive method=joback]
 Pc          45.531;      // bar [origin=predictive method=joback]

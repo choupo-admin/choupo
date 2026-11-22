@@ -16,7 +16,6 @@ formula     C7H6;
 CAS         3101-08-4;
 InChIKey    YJLSVCJDMFHEHC-UHFFFAOYSA-N;
 jobackIncomplete   true;   // group atoms do not close the formula
-role        radical;
 MW          90.125;      // g/mol [origin=calculated method=formula-sum]
 Tc          572.06;      // K   [origin=predictive method=joback]
 Pc          45.469;      // bar [origin=predictive method=joback]

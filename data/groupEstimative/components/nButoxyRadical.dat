@@ -11,7 +11,7 @@ name        nButoxyRadical;
 formula     C4H9O;
 CAS         19062-98-7;
 InChIKey    QOOQLKSEGVNYLA-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          73.115;      // g/mol [origin=calculated method=formula-sum]
 Tc          424.84;      // K   [origin=predictive method=joback]
 Pc          45.104;      // bar [origin=predictive method=joback]

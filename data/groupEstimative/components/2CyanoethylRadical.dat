@@ -11,7 +11,7 @@ name        2CyanoethylRadical;
 formula     C3H4N;
 CAS         25840-11-3;
 InChIKey    WEMXRTXQKRXSIO-UHFFFAOYSA-N;
-role        radical;
+role        gasOnly;
 MW          54.072;      // g/mol [origin=calculated method=formula-sum]
 Tc          557.44;      // K   [origin=predictive method=joback]
 Pc          43.569;      // bar [origin=predictive method=joback]
