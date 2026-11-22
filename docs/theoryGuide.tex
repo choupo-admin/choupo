@@ -14638,12 +14638,13 @@ approximation to vanish gives
 \end{equation}
 with $J_{ij}=\partial F_i/\partial x_j$ (Biegler, Grossmann and Westerberg,
 \emph{Systematic Methods of Chemical Process Design}, 1997, Eqs.~8.18--8.21,
-pp.~255--256).  In the engine the right-hand side $-F$ is built in
+pp.~255--256; \cite{BieglerGrossmannWesterberg1997}).  In the engine the right-hand side $-F$ is built in
 \code{NewtonND.cpp} and handed to the dense solver \code{gaussSolve}, a thin
 wrapper over \code{luFactor} and \code{luSolve} (\code{src/solver/LU.cpp}).
 
 \subsection*{LU is the receipt of elimination}
-Elimination subtracts $m_{ik}=a_{ik}/a_{kk}$ times row $k$ from row $i>k$.
+Elimination subtracts $m_{ik}=a_{ik}/a_{kk}$ times row $k$ from row $i>k$
+(the factorisation, partial pivoting and the condition number of this chapter follow Golub and Van Loan\cite{GVL}; the conjugate gradient is Hestenes and Stiefel's\cite{HestenesStiefel1952}).
 Keeping the multipliers below a unit diagonal gives
 \begin{equation}
   PA = LU, \qquad L\,y = Pb, \qquad U\,x = y,
@@ -30980,7 +30981,7 @@ $d_{32}$ shrinking to the powder $d_p$) gives the particle PSD; the
 \textbf{mass/energy balance} ties the air's cooling to the water
 evaporated; the \textbf{wet-bulb} temperature (a Newton-1D) is the
 wet-surface temperature during constant-rate drying; and the
-\textbf{Ranz--Marshall} transfer coefficients set the drying-rate curve.
+\textbf{Ranz--Marshall}\cite{RanzMarshall1952} transfer coefficients set the drying-rate curve.
 They converge on the \emph{residual moisture} --- and here is the
 lesson: the endpoint is \emph{not} ``everything evaporates''.  The GAB
 sorption isotherm pins the equilibrium moisture $X_e$ to the air's
@@ -30997,7 +30998,7 @@ production.
 
 \paragraph{Atomisation.}  A rotary wheel shears the liquid into
 droplets whose Sauter mean diameter follows a Friedman--Marshall
-correlation in the wheel speed, diameter and liquid properties; the
+correlation\cite{Marshall1954} in the wheel speed, diameter and liquid properties; the
 droplet then shrinks to the powder particle by the solid fraction,
 \begin{equation}
    d_p = d_{32}\,(x_{\text{solid}}\,\rho_L/\rho_{\text{solid}})^{1/3},
@@ -34325,19 +34326,19 @@ droplet near $T_w$ --- gentle, for heat-sensitive foods (milk, coffee);
 \emph{counter-current} (hot gas meets the driest, crusted particle) is thermally
 efficient but harsh --- for robust materials (detergents).
 
-\paragraph{References.}  Marshall, \emph{Atomization and Spray Drying}, AIChE
+\paragraph{References.}  Marshall\cite{Marshall1954}, \emph{Atomization and Spray Drying}, AIChE
 Monograph 2 (1954); Masters, \emph{Spray Drying Handbook}, 5th ed.\ (1991);
 Mujumdar (ed.), \emph{Handbook of Industrial Drying}, 4th ed., CRC Press 2015
-(DOI 10.1201/b17208).  Atomisation: Lefebvre \& McDonell, \emph{Atomization and
+(DOI 10.1201/b17208)\cite{Mujumdar2015}.  Atomisation: Lefebvre \& McDonell, \emph{Atomization and
 Sprays}, 2nd ed.\ 2017 (DOI 10.1201/9781315120911); Wang \& Lefebvre,
 \emph{J.\ Propulsion \& Power} 3 (1987) 11 (DOI 10.2514/3.22946).  Droplet drying
-and axial chamber profiles: Ranz \& Marshall, \emph{Chem.\ Eng.\ Prog.}\ 48 (1952)
-141, 173; Langrish \& Kockel, \emph{Chem.\ Eng.\ J.}\ 84 (2001) 69
+and axial chamber profiles: Ranz \& Marshall\cite{RanzMarshall1952}, \emph{Chem.\ Eng.\ Prog.}\ 48 (1952)
+141, 173; Langrish \& Kockel\cite{LangrishKockel2001}, \emph{Chem.\ Eng.\ J.}\ 84 (2001) 69
 (DOI 10.1016/S1385-8947(00)00384-3, the characteristic drying curve); Mezhericher,
 Levy \& Borde, \emph{Chem.\ Eng.\ \& Processing} 49 (2010) 1205
 (DOI 10.1016/j.cep.2010.09.002).  Falling-rate kinetics --- the two non-CFD schools:
 the \emph{characteristic drying curve} $N/N_c=f(\Phi)$ above (Langrish \& Kockel),
-and the \emph{Reaction Engineering Approach}, Chen \& Xie, \emph{Drying Technology}
+and the \emph{Reaction Engineering Approach}, Chen \& Xie\cite{ChenXie1997}, \emph{Drying Technology}
 15 (1997) 1063 (DOI 10.1080/07373939708917282) and Chen, \emph{Drying Technology}
 26 (2008) 627 (DOI 10.1080/07373930802045922), which replaces the critical-moisture
 break with a smooth apparent activation energy $\Delta E_v(X)$.
@@ -35241,6 +35242,33 @@ Properties of Ammonia, \emph{J. Phys. Chem. Ref. Data} \textbf{52} (2023) 013102
 \emph{Matrix Computations}, 4th ed., Johns Hopkins University Press,
 2013. Reference for the Gauss elimination with partial pivoting used
 in \code{NewtonND}.
+
+\bibitem{HestenesStiefel1952} Hestenes, M. R., \& Stiefel, E., ``Methods of
+Conjugate Gradients for Solving Linear Systems'', \emph{Journal of Research of
+the National Bureau of Standards}, 49(6), 409--436 (1952). The conjugate-gradient
+method taught in the linear-algebra chapter.
+
+\bibitem{Marshall1954} Marshall, W. R., \emph{Atomization and Spray Drying},
+Chemical Engineering Progress Monograph Series No.\ 2, AIChE, 1954.
+The rotary-wheel and nozzle atomiser correlations behind the spray-dryer
+droplet size.
+
+\bibitem{Mujumdar2015} Mujumdar, A. S. (ed.), \emph{Handbook of Industrial
+Drying}, 4th ed., CRC Press, 2015, DOI 10.1201/b17208. Drying-rate curves,
+moisture basis and the dryer arrangements.
+
+\bibitem{RanzMarshall1952} Ranz, W. E., \& Marshall, W. R., ``Evaporation from
+drops'', \emph{Chemical Engineering Progress}, 48, 141 and 173 (1952).
+The Nusselt and Sherwood correlations for a drying droplet.
+
+\bibitem{LangrishKockel2001} Langrish, T. A. G., \& Kockel, T. K.,
+\emph{Chemical Engineering Journal}, 84, 69 (2001),
+DOI 10.1016/S1385-8947(00)00384-3. The characteristic drying curve
+$N/N_c=f(\Phi)$.
+
+\bibitem{ChenXie1997} Chen, X. D., \& Xie, G. Z., \emph{Drying Technology},
+15, 1063 (1997), DOI 10.1080/07373939708917282. The reaction engineering
+approach to falling-rate drying.
 
 \bibitem{Levenberg44} Levenberg, K., ``A Method for the Solution of
 Certain Non-Linear Problems in Least Squares'', \emph{Quarterly of
