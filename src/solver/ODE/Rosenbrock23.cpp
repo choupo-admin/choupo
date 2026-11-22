@@ -581,7 +581,8 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
         bool    spUsed = false;              // sparse path: W factored on the pattern
         bool    spR1   = false;              // ... with a rank-one part (Sherman-Morrison)
         sVector spQ, spV;                    // q = Ws^{-1} a,  v
-        scalar  spDen  = 1.0;                // 1 + v.q
+        std::vector<std::size_t> spBlk;      // rank-one blocks (rows), [0, n] when one
+        std::vector<scalar> spDen;           // 1 + v.q, per block
         if (SP)
         {
             //  J = S + u v^T on the model's pattern; the audit expands it.
@@ -609,11 +610,16 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
             Td = A->autonomous ? sVector(n, 0.0)
                                : fdDfDt(f, t, y, f0, std::max(span, 1.0));
             spR1 = !SJ.u.empty() && !SJ.v.empty();
-            scalar vsum = 0.0;
-            if (spR1) for (scalar v : SJ.v) vsum += std::abs(v);
+            spBlk = SJ.blocks.empty() ? std::vector<std::size_t>{0, n} : SJ.blocks;
+            std::vector<scalar> vsum(spBlk.size() - 1, 0.0);
+            if (spR1)
+                for (std::size_t k = 0; k + 1 < spBlk.size(); ++k)
+                    for (std::size_t i = spBlk[k]; i < spBlk[k + 1]; ++i) vsum[k] += std::abs(SJ.v[i]);
+            std::size_t gk = 0;
             for (std::size_t i = 0; i < n; ++i)              // Gershgorin, as the dense path
             {
-                scalar rs = spR1 ? std::abs(SJ.u[i]) * vsum : 0.0;
+                while (i >= spBlk[gk + 1]) ++gk;
+                scalar rs = spR1 ? std::abs(SJ.u[i]) * vsum[gk] : 0.0;
                 for (std::size_t q = P.rowPtr[i]; q < P.rowPtr[i + 1]; ++q)
                     rs += std::abs(SJ.values[q]);
                 stiffPeak = std::max(stiffPeak, rs);
@@ -659,9 +665,15 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
                 for (std::size_t i = 0; i < n; ++i) a[i] = -h * d * SJ.u[i];
                 spQ = A->lu->solve(a);
                 spV = SJ.v;
-                spDen = 1.0;
-                for (std::size_t i = 0; i < n; ++i) spDen += spV[i] * spQ[i];
-                if (!std::isfinite(spDen) || !(std::abs(spDen) > 1.0e-12)) spUsed = false;
+                //  W_s is block-diagonal over the rank-one blocks and a, v are
+                //  supported block by block, so ONE solve gives every block's q.
+                spDen.assign(spBlk.size() - 1, 1.0);
+                for (std::size_t k = 0; k + 1 < spBlk.size(); ++k)
+                {
+                    for (std::size_t i = spBlk[k]; i < spBlk[k + 1]; ++i)
+                        spDen[k] += spV[i] * spQ[i];
+                    if (!std::isfinite(spDen[k]) || !(std::abs(spDen[k]) > 1.0e-12)) spUsed = false;
+                }
             }
             if (!spUsed)
             {
@@ -810,10 +822,13 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
                 sVector x = A->lu->solve(r);
                 if (spR1)
                 {
-                    scalar vz = 0.0;
-                    for (std::size_t i = 0; i < n; ++i) vz += spV[i] * x[i];
-                    const scalar c = vz / spDen;
-                    for (std::size_t i = 0; i < n; ++i) x[i] -= c * spQ[i];
+                    for (std::size_t k = 0; k + 1 < spBlk.size(); ++k)
+                    {
+                        scalar vz = 0.0;
+                        for (std::size_t i = spBlk[k]; i < spBlk[k + 1]; ++i) vz += spV[i] * x[i];
+                        const scalar c = vz / spDen[k];
+                        for (std::size_t i = spBlk[k]; i < spBlk[k + 1]; ++i) x[i] -= c * spQ[i];
+                    }
                 }
                 return x;
             }
@@ -910,19 +925,19 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
             errNorm = std::sqrt(errNorm / static_cast<scalar>(n));
         }
         else
-        {
             rodas4Stages(f, t, h, hd, y, f0, Td, solveW, ctrl, ynew, errNorm);
-            //  A row that must stay >= 0 and sits at zero (the clean bed
-            //  ahead of a front) comes out of the six-stage combination at
-            //  round-off, -1e-30 rather than 0.  Below the row's own
-            //  absolute tolerance that is the same number as zero: it is
-            //  set to zero.  Anything more negative is a real overshoot and
-            //  is rejected below, as for the 2(3) pair.
-            for (std::size_t i = 0; i < ctrl.positiveRows.size() && i < n; ++i)
-                if (ctrl.positiveRows[i] && ynew[i] < 0.0
-                    && ynew[i] > -atolFor(ctrl, i))
-                    ynew[i] = 0.0;
-        }
+        //  A row that must stay >= 0 and sits at zero (the clean bed ahead of a
+        //  front, a radical not yet formed) comes out of the stage combination
+        //  at round-off, -1e-33 rather than 0.  Below the row's own absolute
+        //  tolerance that is the same number as zero: it is set to zero.
+        //  Anything more negative is a real overshoot and is rejected below.
+        //  BOTH schemes (C474): the dense LU's partial pivoting permutes and
+        //  cancels where the sparse LU's structural zeros do not, and left the
+        //  2(3) pair rejecting a step on -9e-33 kmol until h fell below hMin.
+        for (std::size_t i = 0; i < ctrl.positiveRows.size() && i < n; ++i)
+            if (ctrl.positiveRows[i] && ynew[i] < 0.0
+                && ynew[i] > -atolFor(ctrl, i))
+                ynew[i] = 0.0;
 
         // positivity: a step that drives a masked row negative is unphysical
         // and would feed a fractional pow() a negative base -> NaN.  Reject it

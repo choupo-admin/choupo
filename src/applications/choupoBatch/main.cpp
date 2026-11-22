@@ -949,8 +949,26 @@ if (flowsheetDict->found("cycle"))
         ruleLen += static_cast<std::size_t>(colWidth.back());
     }
 
+    //  The stiff scheme the vessels declared (C474).  Before, the sweep
+    //  was Rosenbrock23 whatever `solver { integrator Rodas4; }` said.
+    //  One sweep, one scheme: two vessels declaring different ones refuse.
+    {
+        std::string declared;
+        for (const auto& u : units)
+        {
+            if (!u->hasOdeForm()) continue;
+            const std::string d = u->odeStiffIntegratorDeclared();
+            if (d.empty()) continue;
+            if (!declared.empty() && declared != d)
+                throw std::runtime_error("the adaptive sweep integrates every ODE vessel"
+                    " with ONE scheme, and the vessels declare `integrator " + declared
+                    + ";` and `integrator " + d + ";`.  Declare the same one on both.");
+            declared = d;
+        }
+        if (!declared.empty()) adaptSet.integrator = declared;
+    }
     std::cout << (adaptive
-                    ? "Time integration  (adaptive Rosenbrock23, deltaT0 = "
+                    ? "Time integration  (adaptive " + adaptSet.integrator + ", deltaT0 = "
                     : "Time integration  (RK4, dt = ")
               << (adaptive ? adaptSet.deltaT0 : deltaT) << " s):\n"
               << "      t [s]  ";
@@ -1655,6 +1673,7 @@ if (flowsheetDict->found("cycle"))
                         //  ... and its sparse form, used when it is the
                         //  sweep's only unit (`linearSolver sparse | auto`).
                         odeUnits.back().sparse = up->odeSparseLinear();
+                        odeUnits.back().linearKey = up->odeLinearSolverKey();
                         odeUnits.back().pattern = up->odeSparsePattern();
                         odeUnits.back().sparseJacobian =
                             [up](const sVector& y, const sVector& f0, const sVector& typ,
@@ -1809,7 +1828,7 @@ if (flowsheetDict->found("cycle"))
                               " against the dense finite difference at analytic Jacobians 1, 2,"
                               " 4, 8, ...; a column above the tolerance refuses the run\n";
                     if (jacAnnounced == 0 && aj.sparse && aj.lu)
-                        os << "             W = I - h d J is factored SPARSE on the unit's pattern: "
+                        os << "             W = I - h d J is factored SPARSE on the vessel pattern (the union of the vessels' patterns when there are several): "
                            << aj.pattern->n << " rows, " << aj.lu->nnzPattern() << " entries, "
                            << aj.lu->nnzFactor() << " in L+U after minimum-degree ordering\n";
                     std::cout << os.str();

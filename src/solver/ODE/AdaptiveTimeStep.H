@@ -131,6 +131,13 @@ struct OdeUnit
     //  total kmol (DEV.md 4c C471): a uniform 1e-9 kmol is 4e-5 in mole
     //  fraction on a 2.5e-5 kmol vessel and leaves ppm radicals unwatched.
     scalar                                   atolSpecies = -1.0;
+    //  (declared LAST: callers initialise this struct positionally)
+    //  The unit's `linearSolver` key (0 dense, 1 sparse, 2 auto).  A sweep of
+    //  SEVERAL units factors W on the BLOCK-DIAGONAL pattern when every unit
+    //  has one, none says `dense`, and either one says `sparse`
+    //  or the packed rows reach kSparseAutoRows (C474: the key used to be
+    //  read by the sweep of one unit only, silently dropped for several).
+    int                                      linearKey = 2;
 };
 
 //  THE ONE HOME of the per-row positivity mask over a vector packed from
@@ -184,6 +191,11 @@ struct AdaptiveSettings
     //  timeSteppingControl.maxSteps so a student can see the guard fire.
     std::size_t maxSteps = 0;
     int    verbosity = 1;
+    //  The stiff scheme of the sweep, by its ODEIntegrator name:
+    //  "Rosenbrock23" (the default, every case that declares nothing) or
+    //  "Rodas4".  choupoBatch sets it from the vessels' `solver { integrator }`
+    //  (C474: it used to be Rosenbrock23 whatever the case declared).
+    std::string integrator = "Rosenbrock23";
 };
 
 //  THE ONE READER of `maxSteps` (DEV.md 4c C178), shared by choupoBatch and
@@ -225,9 +237,9 @@ public:
     explicit AdaptiveTimeStepper(const AdaptiveSettings& s)
         : settings_(s)
     {
-        if (!ODEIntegrator::known("Rosenbrock23"))
+        if (!ODEIntegrator::known(settings_.integrator))
             ODEIntegrator::registerBuiltins();
-        integ_ = ODEIntegrator::New("Rosenbrock23");
+        integ_ = ODEIntegrator::New(settings_.integrator);
         // Warm step carried across intervals; seed at the LOW deltaT0.
         hCarry_ = settings_.deltaT0;
     }
@@ -364,6 +376,78 @@ public:
                     const sVector& fg, const sVector& tg, SparseJacobian& J)
                 { units[0].sparseJacobian(yg, fg, tg, J); };
             }
+            else if (units.size() > 1)
+            {
+                bool all = true, anySparse = false;
+                for (const auto& u : units)
+                {
+                    all = all && u.pattern && u.sparseJacobian && u.linearKey != 0;
+                    anySparse = anySparse || u.linearKey == 1;
+                }
+                if (all && (anySparse || N >= kSparseAutoRows))
+                {
+                    //  W = I - h d J is block-diagonal: factor it on the
+                    //  blocks' union.  The pattern object is kept while the
+                    //  units' own patterns are the ones it was built from.
+                    bool same = multiPattern_ && multiSources_.size() == units.size();
+                    for (std::size_t u = 0; same && u < units.size(); ++u)
+                        same = multiSources_[u] == units[u].pattern;
+                    if (!same)
+                    {
+                        auto P = std::make_shared<SparsePattern>();
+                        P->n = N;
+                        P->rowPtr.assign(1, 0);
+                        multiSources_.clear();
+                        for (std::size_t u = 0; u < units.size(); ++u)
+                        {
+                            const SparsePattern& q = *units[u].pattern;
+                            for (std::size_t i = 0; i < q.n; ++i)
+                            {
+                                for (std::size_t k = q.rowPtr[i]; k < q.rowPtr[i + 1]; ++k)
+                                    P->col.push_back(off[u] + q.col[k]);
+                                P->rowPtr.push_back(P->col.size());
+                            }
+                            multiSources_.push_back(units[u].pattern);
+                        }
+                        multiPattern_ = P;
+                    }
+                    analytic_.sparse = true;
+                    analytic_.pattern = multiPattern_;
+                    analytic_.sparseJacobian = [&units, off](scalar, const sVector& yg,
+                        const sVector& fg, const sVector& tg, SparseJacobian& J)
+                    {
+                        J.values.clear(); J.u.clear(); J.v.clear(); J.blocks.clear();
+                        bool anyR1 = false;
+                        std::vector<SparseJacobian> parts(units.size());
+                        for (std::size_t u = 0; u < units.size(); ++u)
+                        {
+                            const std::size_t lo = off[u], hi = off[u + 1];
+                            SparseJacobian& Ju = parts[u];
+                            units[u].sparseJacobian(
+                                sVector(yg.begin() + lo, yg.begin() + hi),
+                                sVector(fg.begin() + lo, fg.begin() + hi),
+                                sVector(tg.begin() + lo, tg.begin() + hi), Ju);
+                            anyR1 = anyR1 || !Ju.u.empty();
+                            J.values.insert(J.values.end(), Ju.values.begin(), Ju.values.end());
+                        }
+                        //  Each vessel's rank-one part (gasConstantP) on its own
+                        //  rows; a vessel without one contributes zeros.
+                        if (anyR1)
+                        {
+                            const std::size_t Nn = off[units.size()];
+                            J.u.assign(Nn, 0.0); J.v.assign(Nn, 0.0);
+                            J.blocks.assign(off.begin(), off.end());
+                            for (std::size_t u = 0; u < units.size(); ++u)
+                                if (!parts[u].u.empty())
+                                    for (std::size_t i = 0; i < parts[u].u.size(); ++i)
+                                    {
+                                        J.u[off[u] + i] = parts[u].u[i];
+                                        J.v[off[u] + i] = parts[u].v[i];
+                                    }
+                        }
+                    };
+                }
+            }
             ctrl.analytic = &analytic_;
         }
         // State-aware ledger hook: commit the ACCEPTED state into the units
@@ -478,6 +562,8 @@ private:
     std::unique_ptr<ODEIntegrator>   integ_;
     scalar                           hCarry_ = 0.0;
     ODEAnalyticJacobian              analytic_;
+    std::shared_ptr<SparsePattern>   multiPattern_;      // block-diagonal, kept across intervals
+    std::vector<std::shared_ptr<const SparsePattern>> multiSources_;
 };
 
 } // namespace Choupo::solver

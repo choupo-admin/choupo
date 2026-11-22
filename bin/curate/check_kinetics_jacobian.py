@@ -652,7 +652,7 @@ def main():
     with gatekit.probe_copy("tutorials/batch/reactor/batch32_fast_intermediate_full", strip=STRIP) as c:
         set_solver(c, None, linear="sparse")
         rc, out = gatekit.run(batch, c)
-        if rc != 0 or "factored SPARSE on the unit's pattern" not in out:
+        if rc != 0 or "factored SPARSE on the vessel pattern" not in out:
             failures.append(f"(g3) batch32 (adaptive sweep, one vessel) with linearSolver sparse did not "
                             f"factor W sparse (exit {rc})")
     #  (g4) refusals by name
@@ -663,6 +663,51 @@ def main():
             if rc == 0 or word not in out or "bomb" not in out:
                 failures.append(f"(g4) `linearSolver {ls};`{' beside jacobian ' + jac if jac else ''} "
                                 f"was not refused by name (exit {rc})")
+
+    # ---- (h) C474: the clean charge, the declared scheme, the several-vessel sweep ----------
+    NOX3 = "tutorials/batch/combustion/nox03_millerbowman_large"
+    NOX2 = "tutorials/batch/combustion/nox02_millerbowman_denox"
+    got = {}
+    for tag, integ, ls in (("sparse", "Rosenbrock23", "sparse"), ("dense", "Rosenbrock23", "dense"),
+                           ("rodas", "Rodas4", "sparse")):
+        with gatekit.probe_copy(NOX3, strip=STRIP) as c:
+            fd = c / "system/flowsheetDict"      # nox03's solver block is one line
+            fd.write_text(re.sub(r"solver\s*\{[^}]*\}",
+                                 f"solver {{ integrator {integ}; jacobian analytic; linearSolver {ls}; verbosity 3; }}",
+                                 fd.read_text(), count=1))
+            rc, out = gatekit.run(batch, c)
+            if rc != 0:
+                failures.append(f"(h1) nox03 on {integ} with linearSolver {ls} exited {rc}: "
+                                + " | ".join(out.strip().splitlines()[-2:])[:400])
+            else:
+                got[tag] = (kpis(out), out)
+    if "sparse" in got and "dense" in got:
+        #  THE REAL DEFECT (h1) CATCHES: the dense LU's partial pivoting leaves -1e-33 kmol on
+        #  a species row that is exactly zero, and the 2(3) pair rejected the step on it until
+        #  h fell below hMin: a clean charge could not start on `linearSolver dense`, while
+        #  the sparse LU's structural zeros gave an exact 0.
+        w, where, missing = kpi_diff(got["dense"][0], got["sparse"][0], abs_floor=1e-12)
+        if missing or w > SPARSE_TOL:
+            failures.append(f"(h1) nox03: dense and sparse KPIs differ by {w:.2e}: {where}")
+    if "rodas" in got and "sparse" in got:
+        #  THE REAL DEFECT (h2) CATCHES: `solver { integrator Rodas4; }` was accepted by the
+        #  batch reactor and never read by the adaptive sweep, which was always Rosenbrock23
+        #  (a Rodas4 copy of nox03 agreed with Rosenbrock23 to every digit printed).
+        if "adaptive Rodas4" not in got["rodas"][1] or "adaptive Rosenbrock23" not in got["sparse"][1]:
+            failures.append("(h2) the adaptive sweep did not announce the declared integrator")
+        w, where, _ = kpi_diff(got["rodas"][0], got["sparse"][0], abs_floor=1e-12)
+        if w == 0.0 or w > 1e-4:
+            failures.append(f"(h2) nox03 on Rodas4 vs Rosenbrock23: KPIs differ by {w:.2e} -- "
+                            "0 means the declared scheme was not the one stepped, > 1e-4 a wrong one")
+    #  (h3) THE REAL DEFECT: a run of several vessels read `linearSolver` in no vessel (the sweep
+    #  factored sparse for ONE vessel only) -- nox02's 17 gasConstantP vessels, 357 packed rows,
+    #  on `auto`, now factor W on the block-diagonal pattern, each vessel's rank-one part kept.
+    with gatekit.probe_copy(NOX2, strip=STRIP) as c:
+        rc, out = gatekit.run(batch, c)
+        if rc != 0 or not re.search(r"factored SPARSE on the vessel pattern .*: 357 rows", out):
+            failures.append(f"(h3) nox02 (17 vessels, `linearSolver auto`) did not factor W sparse on the "
+                            f"union of the vessels' patterns (exit {rc})")
+    notes.append("nox03: dense = sparse, Rodas4 is stepped; nox02 factors sparse over 17 vessels")
 
     # ---- (d) refusals by name ----------------------------------------------------------
     probes = [

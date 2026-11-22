@@ -56,10 +56,15 @@ std::vector<sVector> SparseJacobian::dense(const SparsePattern& p) const
         for (std::size_t q = p.rowPtr[i]; q < p.rowPtr[i + 1]; ++q)
             J[i][p.col[q]] = values[q];
     if (!u.empty() && !v.empty())
-        for (std::size_t i = 0; i < p.n; ++i)
-            if (u[i] != 0.0)
-                for (std::size_t j = 0; j < p.n; ++j)
-                    if (v[j] != 0.0) J[i][j] += u[i] * v[j];
+    {
+        const std::vector<std::size_t> b = blocks.empty()
+            ? std::vector<std::size_t>{0, p.n} : blocks;
+        for (std::size_t k = 0; k + 1 < b.size(); ++k)
+            for (std::size_t i = b[k]; i < b[k + 1]; ++i)
+                if (u[i] != 0.0)
+                    for (std::size_t j = b[k]; j < b[k + 1]; ++j)
+                        if (v[j] != 0.0) J[i][j] += u[i] * v[j];
+    }
     return J;
 }
 

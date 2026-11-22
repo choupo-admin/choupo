@@ -138,6 +138,7 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
     {
         auto solverDict = unitDict->subDict("solver");
         integrator_ = solverDict->lookupWordOrDefault("integrator", "RK4");
+        integratorDeclared_ = solverDict->found("integrator");
         //  Threads for the independent integrations of a sensitivity block (0 =
         //  the default rule, allowed CPUs - 2; CHOUPO_THREADS caps it).
         const scalar thr = solverDict->lookupScalarOrDefault("threads", 0.0);
@@ -163,7 +164,8 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
         //  explicit RK4 / EulerSI beside a DECLARED `analytic` is a
         //  contradiction refused here, and the default RK4 of a fixed-step run
         //  beside it is refused at the first step (an adaptive run integrates
-        //  every ODE vessel with Rosenbrock23 and reads it there).
+        //  the ODE vessels with the declared Rosenbrock scheme, Rosenbrock23
+        //  when none is, and reads it there).
         jacKey = solverDict->lookupWordOrDefault("jacobian", "");
         if (jacKey == "analytic")               jacobianDeclared_ = true;
         else if (jacKey == "finiteDifference" || jacKey.empty()) {}

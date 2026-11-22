@@ -178,6 +178,13 @@ public:
     // sec:sparse-lu): the pattern, declared once, and the values on it.
     // odeSparseLinear() true asks the stiff integrator to factor W on it.
     virtual bool odeSparseLinear() const { return false; }
+    // The `linearSolver` key (0 dense, 1 sparse, 2 auto): what a sweep of
+    // SEVERAL vessels reads to decide whether it factors W on the blocks' union.
+    virtual int  odeLinearSolverKey() const { return 2; }
+    // The stiff scheme the case DECLARED for this vessel (`solver { integrator
+    // Rosenbrock23 | Rodas4; }`); "" when it declared none (or an explicit
+    // method), which leaves the adaptive sweep on Rosenbrock23.
+    virtual std::string odeStiffIntegratorDeclared() const { return ""; }
     virtual std::shared_ptr<const solver::SparsePattern> odeSparsePattern() const
     { return nullptr; }
     virtual void odeJacobianSparse(const sVector& /*y*/, const sVector& /*f0*/,

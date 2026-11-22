@@ -149,6 +149,10 @@ struct ODEBlockStructure
 //  every diagonal (i, i) is present (W = I - h d J needs it even where J_ii
 //  is zero).  A mechanism knows its pattern from its network: species i and
 //  k are coupled when a reaction that changes i reads k.
+//  The packed size from which `linearSolver auto` factors sparse (measured:
+//  docs/reviews/2026-11-21-large-mechanism).
+constexpr std::size_t kSparseAutoRows = 100;
+
 struct SparsePattern
 {
     std::size_t              n = 0;
@@ -171,6 +175,10 @@ struct SparseJacobian
 {
     sVector values;
     sVector u, v;
+    //  A sweep of several vessels: J = S + sum_k u_k v_k^T, block k being rows
+    //  blocks[k] .. blocks[k+1] (u and v concatenated, each block's own
+    //  rank-one part supported on its own rows).  Empty: one block, all rows.
+    std::vector<std::size_t> blocks;
     //- The full n x n matrix (the audit, and the dense path).
     std::vector<sVector> dense(const SparsePattern& p) const;
 };
