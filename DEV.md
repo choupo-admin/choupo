@@ -5206,6 +5206,34 @@ accepts today, and that is a policy call.
 > Jacobian audit refusing an H2O2-only vessel (C462 finding) is added to C468.  C472 registered:
 > the cloud's "from the molecule to the properties" EduTool, asked by Vitor ("Eu pedi!").
 
+> **C473 (Vitor, 2026-11-22: "Ja vieste se o choupo ficar agora mais rapido que o Cantera?"): batch
+> kinetics speed against Cantera.**  Measured by the cloud after C471 on nox03 (Miller & Bowman, 235
+> reactions): 300-400x slower; callgrind: right-hand side 43 % (pow 19 %, K_c 13 %), Jacobian 34 %,
+> sparse LU 12 %, output < 0.3 %.  Slices built by the cloud on top of C474 (a: NASA-9/Gibbs memo,
+> b: `seulex`, c: per-call kinetic context, e: SparseLU run kernels, start-up listing cache), each
+> bit-identical on the shipped corpus; like-with-like integration time now nox03 2.25-2.5x Cantera,
+> nox02 17x because 17 vessels share one step size.  Ruled 11-22: the per-vessel integration with its
+> own step control, then threads, is the cloud's next slice (it may take choupoBatch/main.cpp and
+> AdaptiveTimeStep.H).  Registered: nox03 seulex dense vs sparse trajectories differ 7.7e-3 (defect
+> first); start-up costs (pin hashing twice, Henry registry read whole, tokenizer).
+
+> **C474 (architect, 2026-11-22, from the cloud's Miller & Bowman findings): three defects in
+> choupoBatch's stiff integration.**  (a) Rosenbrock23 rejected round-off negatives (-9.4e-33) that
+> Rodas4 clipped, so dense could not start nox03; both clip within atol now, except under
+> `positiveWithinAtol` (the fixed-bed adsorber's exact ledger, C375; Opus review S2-1).  (b) Several
+> vessels went silently dense (a single-unit rule); now block-diagonal sparse with block-wise
+> Sherman-Morrison (nox02 34.8 -> 5.5 s, same results).  (c) THE `integrator` KEY WAS IGNORED:
+> AdaptiveTimeStepper hardcoded Rosenbrock23 (AdaptiveTimeStep.H:230), so every Rodas4 run was
+> Rosenbrock23; honoured now.  Witness: check_kinetics_jacobian arm (h).  --scope batch, ctrl,
+> unsteady 105/0, no KPI moved.  DynamicDriver still on its default Rosenbrock23.
+
+> **C475 (Vitor via the cloud, 2026-11-22: "Fica so a microcinetica"): surface microkinetics.**
+> Site fractions, adsorption / surface reaction / desorption, mechanisms in the CHEMKIN surface
+> format, in the PFR and fixed bed beside LHHW, held to a published measured mechanism.  The 1-D
+> laminar flame is DROPPED (a process engineer reads S_u from tables).  Queued after C473.
+> C469 CLOSED the same day: no writer in bin/ writes `role radical` (the lines came from the lake
+> conversion a7585378fc; 3d917a8b25 fixed the records; the 7791b8256 reference was wrong).
+
 > **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
 > mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
 > into the cloud branch, one full sweep ALONE (reason: the gas-only rule changes the
