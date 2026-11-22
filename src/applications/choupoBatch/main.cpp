@@ -965,7 +965,18 @@ if (flowsheetDict->found("cycle"))
                     + ";` and `integrator " + d + ";`.  Declare the same one on both.");
             declared = d;
         }
-        if (!declared.empty()) adaptSet.integrator = declared;
+        if (!declared.empty())
+        {
+            adaptSet.integrator = declared;
+            for (const auto& u : units)
+                if (u->hasOdeForm() && u->odeStiffIntegratorDeclared().empty() && verbosity >= 1)
+                {
+                    std::cerr << "  [integrator] vessel '" << u->name() << "' declares no"
+                                 " stiff scheme and is integrated with " << declared
+                              << ", the one its neighbour declares (one sweep, one scheme).\n";
+                    break;
+                }
+        }
     }
     std::cout << (adaptive
                     ? "Time integration  (adaptive " + adaptSet.integrator + ", deltaT0 = "

@@ -934,10 +934,15 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
         //  BOTH schemes (C474): the dense LU's partial pivoting permutes and
         //  cancels where the sparse LU's structural zeros do not, and left the
         //  2(3) pair rejecting a step on -9e-33 kmol until h fell below hMin.
-        for (std::size_t i = 0; i < ctrl.positiveRows.size() && i < n; ++i)
-            if (ctrl.positiveRows[i] && ynew[i] < 0.0
-                && ynew[i] > -atolFor(ctrl, i))
-                ynew[i] = 0.0;
+        //  A caller that sets positiveWithinAtol accepts those values UNCLIPPED
+        //  (fixedBedAdsorber, C375: a clip adds mass the ledger never sees), so
+        //  the 2(3) pair leaves them alone for it.  Rodas4 keeps the clip it
+        //  always had, flag or not (its behaviour for the adsorber is unchanged).
+        if (rodas || !ctrl.positiveWithinAtol)
+            for (std::size_t i = 0; i < ctrl.positiveRows.size() && i < n; ++i)
+                if (ctrl.positiveRows[i] && ynew[i] < 0.0
+                    && ynew[i] > -atolFor(ctrl, i))
+                    ynew[i] = 0.0;
 
         // positivity: a step that drives a masked row negative is unphysical
         // and would feed a fractional pow() a negative base -> NaN.  Reject it
