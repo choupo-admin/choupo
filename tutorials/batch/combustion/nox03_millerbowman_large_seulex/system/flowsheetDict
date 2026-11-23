@@ -9,7 +9,8 @@
 /*---------------------------------------------------------------------------*\
 /*---------------------------------------------------------------------------*\
   nox03_millerbowman_large / flowsheetDict -- one adiabatic constant-volume vessel with the
-  235-reaction Appendix A mechanism.
+  235-reaction Appendix A mechanism.  The same two declared figures as nox03 (system/postDict),
+  on the seulex integrator's own dense output.
 \*---------------------------------------------------------------------------*/
 units
 (
@@ -18,6 +19,31 @@ units
         type        batchReactor;
         operation   { mode adiabatic; energy gasConstantV; }
         solver      { integrator seulex; jacobian analytic; linearSolver sparse; verbosity 3; }
+        //  WHERE THE NO COMES FROM (DEV.md 4c C477): the net NO made by each declared
+        //  SET OF REACTIONS, integrated in time.  Every reaction of Appendix A that has
+        //  NO in its stoichiometry is listed once (29 of them, labels are the paper's
+        //  reaction numbers); a route is a reaction CLASS, not a traced atom path:
+        //    thermal        the N-atom steps of the extended Zeldovich mechanism (N + O2, N + OH, N + NO, N + CO2)
+        //    nitrousOxide   N2O made from NO and NH, and N2O + O = 2 NO
+        //    nitrogenDioxide  the NO <-> NO2 cycle (HO2 + NO, NO2 + H, NO2 + O, NO2 + M, CN + NO2)
+        //    nitroxylNH     the HNO and NH2/NH/NNH steps (HNO + M, HNO + OH, HNO + H, NH + O2, NH2 + NO, NNH + NO ...)
+        //    cyanideNCO     the HCN/NCO branch that CH + N2 feeds (prompt), and its reburning of NO
+        //                   (C/CH/CH2/CH3/HCCO + NO), with NCO + O and NCO + OH making NO
+        //  A route's total is NET: it counts what its reactions destroy as well as make.
+        //  The reactions in no route would be `other` (none here).  The sum is checked
+        //  against the vessel's own NO inventory in the run's [routes] lines.
+        routeIntegral
+        {
+            species NO;
+            routes
+            {
+                thermal          ( A166 A232 A233 A234 );
+                nitrousOxide     ( A197 A202 A207 );
+                nitrogenDioxide  ( A184 A188 A189 A190 A191 );
+                nitroxylNH       ( A201 A216 A217 A222 A228 A229 A230 A231 );
+                cyanideNCO       ( A156 A157 A158 A159 A160 A161 A162 A193 A195 );
+            }
+        }
         reactions
         (
             A1 A2 A3 A4 A5 A5a
