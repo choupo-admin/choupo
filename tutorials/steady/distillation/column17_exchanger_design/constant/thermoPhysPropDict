@@ -23,6 +23,14 @@
   and the design refuses by name rather than borrow one.  The two estimates
   are what this case can stand on; neither is checked here against measured
   benzene or toluene data.
+
+  VAPOUR (C239 S6, measured 2026-11-23,
+    docs/audits/2026-11-23-c239-s5-vapour-measurement.md): the vapour is
+    IDEAL at 1 atm, where the real one has phi 0.95-0.97.  On an SRK vapour
+    the duties of this column move 0.54 % (the family's measured figure is
+    under 0.7 %) and T_top by +0.45 K at most; at the SAME reflux and stages
+    SRK lowers both product purities, 0.9510 -> 0.9410 (the impurity rises
+    20.5 %), so the purity this case prints is high against a real vapour.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;

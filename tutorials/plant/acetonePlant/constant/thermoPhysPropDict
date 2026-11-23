@@ -10,6 +10,15 @@ equilibrium
     vapour  { fugacityModel idealGas; }
 }
 
+//  VAPOUR (C239 S6, measured 2026-11-23,
+//    docs/audits/2026-11-23-c239-s5-vapour-measurement.md): the vapour is
+//    IDEAL at 1 atm, where the real one has phi 0.95-0.97.  With the WHOLE
+//    plant on SRK the duties of column C1 move 1.10 % (condenser) and 1.15 %
+//    (reboiler).  That is a plant-wide figure, not the column's alone: the
+//    real vapour also changes the hydrogen split in the flash and the recycle,
+//    so C1's feed changes; per mole of C1 feed the duties move 0.74 % and 0.79
+//    %.
+
 //  THE ONE APPROXIMATION THIS CASE BUYS, declared so it can be refused if
 //  nobody wants it and RECORDED in the answer when they do.
 //

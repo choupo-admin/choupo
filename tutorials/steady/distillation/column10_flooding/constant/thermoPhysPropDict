@@ -14,6 +14,15 @@
   holding it together -- so the column simply will not rate its trays without
   it.  Brock-Bird is a corresponding-states estimate from Tc, Pc and Tb; for
   these two non-polar aromatics that is a reasonable place to stand.
+
+  VAPOUR (C239 S6, 2026-11-23, docs/audits/2026-11-23-c239-s5-vapour-
+    measurement.md): the vapour is IDEAL at 1 atm, where the real one has phi
+    0.95-0.97.  On an SRK vapour the duties of the family's MEASURED members
+    (column01, column03, column17, column18, acetone06) move under 0.7 %;
+    that duty figure is theirs, not measured for this case.  The effect on
+    the product purity was measured only on the benzene/toluene column01
+    (0.9510 -> 0.9410 at fixed reflux and stages, SRK against ideal) and was
+    NOT measured for this case: read its purities as ideal-vapour values.
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
