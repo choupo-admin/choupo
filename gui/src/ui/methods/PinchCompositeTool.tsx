@@ -139,7 +139,8 @@ import {
 import {
   KnobField, KnobNumber, PanelNote,
 } from "./knobPanel.js";
-import { PINCH_LIMITS, PINCH_STEPS } from "./pinchLesson.js";
+import { PINCH_LIMITS, PINCH_QUIZ, PINCH_STEPS } from "./pinchLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import {
   PINCH_PASS_EXCERPT, PINCH_CLASS_TEXT, PROBLEM_TABLE_CSV_PATH, SUMMARY_CSV_PATH,
   POPULATION_CSV_PATH, parseProblemTable, parseSummary, parseStreamTable,
@@ -1032,6 +1033,10 @@ export function PinchCompositeTool(
     </Box>
   );
 
+  const lessonQuiz = (
+    <LessonQuiz title="Check your understanding" questions={PINCH_QUIZ} lesson={PINCH_STEPS} />
+  );
+
   const lessonLimits = (
     <Box>
       <Title order={5}>What this does not model</Title>
@@ -1251,6 +1256,7 @@ export function PinchCompositeTool(
           {engineNote}
           {step4}
           {step5}
+          {lessonQuiz}
           {lessonLimits}
           <LessonReferences tool="pinch-composite" />
         </Stack>
@@ -1346,6 +1352,7 @@ export function PinchCompositeTool(
           {streamsBlock}
           {cascadeBlock}
           {engineNote}
+          {lessonQuiz}
           {lessonLimits}
           <LessonReferences tool="pinch-composite" />
         </Moment>

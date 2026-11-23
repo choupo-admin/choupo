@@ -54,6 +54,7 @@ import { Alert, Box, Group, Loader, Stack, Text, Title } from "@mantine/core";
 
 import { useMethodRun } from "../../case/methodRun.js";
 import { OriginMark } from "./origin.js";
+import { LessonQuiz, type QuizQuestion, type QuizStepRef } from "./lessonQuiz.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const TEXT = "var(--mantine-color-text)";
@@ -116,6 +117,89 @@ export function readLadder(
 }
 
 // ---- the page ---------------------------------------------------------------
+
+// ---- the quiz (C158) ---------------------------------------------------------
+
+/** The page's three numbered sections, in the shape the quiz points back to. */
+export const TRUST_SECTIONS: readonly QuizStepRef[] = [
+  { n: 1, title: "The cross-examination" },
+  { n: 2, title: "The two failure modes, named" },
+  { n: 3, title: "The habit, generalised" },
+];
+
+export const TRUST_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "self-check", steps: [1],
+    q: "How can the page find a defect in a record without any outside "
+      + "measurement?",
+    options: [
+      "It compares the record with a second database",
+      "It asks the record's own vapour-pressure correlation for the pressure "
+        + "at the record's own normal boiling point, which must be one "
+        + "atmosphere by definition",
+      "It refits the correlation to new data",
+      "It checks that the numbers are rounded sensibly",
+    ],
+    correct: 1,
+    feedback: "A normal boiling point is the temperature at which the vapour "
+      + "pressure is one atmosphere, so a record can be checked against "
+      + "itself: its correlation evaluated at its own Tb must give that "
+      + "pressure (section 1).",
+  },
+  {
+    id: "water", steps: [1, 2],
+    q: "Water's rung comes out at 1.026 atm.  What does the lesson say that "
+      + "shows?",
+    options: [
+      "That water disobeys its own boiling point",
+      "That the 0.15 K extrapolation outside the window is the whole cause",
+      "That the record does not close: its Tb and its fitted correlation, "
+        + "two homes for one fact, have drifted apart",
+    ],
+    correct: 2,
+    feedback: "Inside the window the same correlation already reads about "
+      + "1.020 atm, so extrapolation explains only a small part; solving "
+      + "the record's own coefficients for one atmosphere gives a "
+      + "temperature that differs from its declared Tb (sections 1 and 2).  "
+      + "The check shows they cannot both be right, not which one is wrong.",
+    origins: ["engine"],
+  },
+  {
+    id: "glycerol", steps: [2],
+    q: "Glycerol's record declares its vapour pressure as predictive and "
+      + "asks to be validated, and the check misses badly.  What is the "
+      + "right reading?",
+    options: [
+      "The record is dishonest",
+      "The record was honest about its origin; a reader who skipped the "
+        + "provenance line would still have been burned",
+      "Predictive correlations are accurate for every substance",
+      "The engine's evaluation of the correlation is faulty",
+    ],
+    correct: 1,
+    feedback: "Glycerol is an extrapolated estimate used far outside where "
+      + "such correlations were fitted, and its record says so (section 2).  "
+      + "The record that admits its origin serves the reader better than a "
+      + "familiar one that says nothing.",
+  },
+  {
+    id: "habit", steps: [3],
+    q: "A record you are about to use cites no source and no validity "
+      + "range.  What does the lesson's habit tell you to conclude?",
+    options: [
+      "It is wrong",
+      "It is right, because it comes from a standard database",
+      "It is unexamined, which for design purposes is the same as "
+        + "untrusted until someone looks",
+    ],
+    correct: 2,
+    feedback: "A database that cannot say where its numbers came from, over "
+      + "what range they hold and whether it agrees with itself is not "
+      + "necessarily wrong, but it is unexamined, and the engine's own "
+      + "habit is to announce extrapolation and label estimates for the "
+      + "same reason (section 3).",
+  },
+];
 
 export function PropertyTrustTool(): JSX.Element {
   //  The ladder takes no knob -- it is the same thirteen questions every
@@ -338,6 +422,8 @@ export function PropertyTrustTool(): JSX.Element {
             deep dive: <em>How do we know a thermometer is right?</em>
           </Text>
         </Box>
+
+        <LessonQuiz title="Check your understanding" questions={TRUST_QUIZ} lesson={TRUST_SECTIONS} />
 
         <Box>
           <Title order={5}>What this page is not</Title>

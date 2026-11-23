@@ -61,7 +61,8 @@ import { readHxy, deltaD, hAt, leverLV, vapourEnthalpyAt }
   from "../../case/ponchonSavarit.js";
 import { PonchonPlot } from "../plotting/PonchonPlot.js";
 import { LessonStepView, LessonReferences, Tex } from "./lessonStep.js";
-import { PONCHON_STEPS } from "./ponchonLesson.js";
+import { PONCHON_QUIZ, PONCHON_STEPS } from "./ponchonLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 
 /** The op's output file, case-root-relative as csvFiles keys are. */
@@ -258,6 +259,8 @@ export function PonchonSavaritTool(): JSX.Element {
           Theory: <Code>ch:ponchon</Code> in the Theory Guide.  Engine:{" "}
           <Code>src/propertyOps/EnthalpyConcentration.{"{H,cpp}"}</Code>.
         </Text>
+
+        <LessonQuiz title="Check your understanding" questions={PONCHON_QUIZ} lesson={PONCHON_STEPS} />
 
         <LessonReferences tool="ponchon-savarit" />
       </Stack>

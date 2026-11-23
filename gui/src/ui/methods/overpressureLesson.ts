@@ -68,6 +68,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 /** Every source the page leans on, with what was taken from it and how it
  *  was reached.  Drawn at the foot of the page. */
@@ -825,4 +826,56 @@ export const OVERPRESSURE_LIMITS: readonly LessonLimit[] = [
     body: "Acetone, N2, H2, NH3 and Ar carry no reviewStatus, and the engine "
       + "says so on every run of the two witnesses; the loop gas runs SRK "
       + "with every kij = 0, also announced." },
+];
+
+/** Four questions that close the lesson (DEV.md 4c C158). */
+export const OVERPRESSURE_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "governing-cause", steps: [1],
+    q: "Several credible causes can overpressure a vessel.  Which one sizes the relief device?",
+    options: [
+      "The cause with the largest mass flow",
+      "The cause that needs the largest area, each taken under its own relieving conditions",
+      "The cause judged most probable",
+      "The first cause on the designer's list",
+    ],
+    correct: 1,
+    feedback: "A kilogram of liquid passes a square millimetre of valve many times faster than a kilogram of vapour, so a smaller vapour load can need the larger valve.  The device is sized for the largest area, not the largest flow (step 1).",
+  },
+  {
+    id: "blocked-hypothesis", steps: [2],
+    q: "The blocked-outlet bench sizes the device for the compressor's nominal feed flow.  What is that flow?",
+    options: [
+      "The relief load of the real loop",
+      "A flow guaranteed to be conservative for every plant",
+      "One didactic hypothesis evaluated; a real load follows from the machine's curve, antisurge recycle, trips and the loop's topology",
+      "The flow measured at the compressor discharge during a trip",
+    ],
+    correct: 2,
+    feedback: "The bench takes the converged feed whatever the pressure it pushes against, and says so.  What a real compressor delivers into a closed outlet is set by its own curve and protection, none of which is modelled there (step 2).",
+  },
+  {
+    id: "choked", steps: [8, 9],
+    q: "A gas relief valve is already in critical (choked) flow.  What happens to the flow if the downstream pressure is lowered further?",
+    options: [
+      "Nothing: the flow depends only on the upstream state",
+      "It keeps rising in proportion to the pressure drop",
+      "It falls, because the gas expands more",
+      "It doubles, because the jet reaches the speed of sound",
+    ],
+    correct: 0,
+    feedback: "At the narrowest section the gas reaches the speed of sound and further lowering of the downstream pressure cannot increase the flow.  Only when the back pressure is above the critical flow pressure does the subcritical form apply (steps 8 and 9).",
+  },
+  {
+    id: "two-phase-vent", steps: [13],
+    q: "A runaway vent passes a mixture in which only a fraction x of the mass leaving is vapour, and the vapour must carry away the reaction's power as latent heat.  How much mass must the vent pass, compared with all-vapour flow?",
+    options: [
+      "The same mass, because the power is the same",
+      "Only the fraction x of it",
+      "Twice as much, whatever x is",
+      "1/x times as much, ten times as much at x = 0.1",
+    ],
+    correct: 3,
+    feedback: "Only the vapour carries latent heat, so to remove the same power the vent must pass 1/x times the mass.  That is why a two-phase vent is sized by a different method from the single-phase equations (step 13).",
+  },
 ];

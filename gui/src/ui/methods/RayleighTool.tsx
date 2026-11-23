@@ -78,6 +78,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Slider, Stack,
@@ -96,7 +97,7 @@ import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 import { BatchStaircasePlot, type StaircaseInstant }
   from "./BatchStaircasePlot.js";
-import { RAYLEIGH_LIMITS, RAYLEIGH_STEPS } from "./rayleighLesson.js";
+import { RAYLEIGH_LIMITS, RAYLEIGH_QUIZ, RAYLEIGH_STEPS } from "./rayleighLesson.js";
 import { KnobNumber, PanelNote } from "./knobPanel.js";
 import { TrajectoryPlot } from "../plotting/TrajectoryPlot.js";
 import { OriginMark } from "./origin.js";
@@ -1111,6 +1112,8 @@ export function RayleighTool(): JSX.Element {
       )}
 
       {lessonStep(4)}
+
+      <LessonQuiz title="Check your understanding" questions={RAYLEIGH_QUIZ} lesson={RAYLEIGH_STEPS} />
 
       <Box>
         <Title order={5}>What this does not model</Title>

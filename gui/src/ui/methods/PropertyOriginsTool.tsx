@@ -54,6 +54,7 @@ import { Alert, Box, Group, Loader, Stack, Text, Title }
 
 import { useMethodRun } from "../../case/methodRun.js";
 import { OriginMark } from "./origin.js";
+import { LessonQuiz, type QuizQuestion, type QuizStepRef } from "./lessonQuiz.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -164,6 +165,82 @@ export const ORIGINS_INTERROGATION = [
   "Is the datum on the rung the record declares (ideal gas / pure liquid / pure solid)?",
   "If the value is an estimate, who reviews it before it enters the catalogue?",
 ] as const;
+
+// ---- the quiz (C158) ---------------------------------------------------------
+
+/** The page's four numbered sections, in the shape the quiz points back to. */
+export const ORIGINS_SECTIONS: readonly QuizStepRef[] = [
+  { n: 1, title: "Three origins, one file" },
+  { n: 2, title: "Estimation, live \u2014 and what it costs" },
+  { n: 3, title: "What each field feeds" },
+  { n: 4, title: "Back to the number" },
+];
+
+export const ORIGINS_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "fitted", steps: [1],
+    q: "Antoine's three coefficients are stored in a component file.  "
+      + "Which kind of number are they?",
+    options: [
+      "Measured: they are properties of the substance",
+      "Fitted: they are the shape a correlation took when pressed against "
+        + "data, valid inside a declared window",
+      "Estimated: nobody measured them",
+    ],
+    correct: 1,
+    feedback: "A fitted number is a parameter of a model regressed to "
+      + "measurements, not a property of the substance, and it is valid "
+      + "inside the window it declares (section 1).  Measured numbers come "
+      + "off an instrument and estimated ones were never measured at all.",
+  },
+  {
+    id: "estimate-trust", steps: [2],
+    q: "How does the page judge an estimation method such as Joback?",
+    options: [
+      "By trusting it because it comes from the engine",
+      "By aiming it at a substance you already know and computing the "
+        + "error against cited reference values",
+      "By checking that it never changes between runs",
+      "By comparing it with another estimation method",
+    ],
+    correct: 1,
+    feedback: "The honest way to trust an estimate is to aim the method at "
+      + "a known substance, so the error has nowhere to hide (section 2).  "
+      + "It is also why a value with no cited reference cannot be judged "
+      + "at all: that is what uncited means.",
+  },
+  {
+    id: "curation-time", steps: [2, 3],
+    q: "When does an estimate of a property enter the data, and what happens "
+      + "to the estimate?",
+    options: [
+      "At run time, silently, whenever a value cannot be read",
+      "At curation time: it is written as a reviewable proposal, and only "
+        + "a person promotes it into the catalogue",
+      "Never: the ideal-gas default stands in for every unsourced value",
+    ],
+    correct: 1,
+    feedback: "Estimation is a curation-time act, never a runtime one: the "
+      + "hot path reads only curated records, so unsourced numbers do not "
+      + "become falsely sourced (sections 2 and 3).  A silent runtime "
+      + "estimate would hand you numbers nobody can defend.",
+  },
+  {
+    id: "consumer", steps: [3, 4],
+    q: "Why does the page describe each record field by what consumes it "
+      + "rather than only by what it is?",
+    options: [
+      "Because the consumer decides the field's units",
+      "Because what consumes a number is what breaks when the number is "
+        + "wrong",
+      "Because the fields are documented nowhere else in the engine",
+    ],
+    correct: 1,
+    feedback: "A table of fields cannot say which calculation stands on "
+      + "each (section 3), and that is what you need when you ask of any "
+      + "value who measured it and what depends on it (section 4).",
+  },
+];
 
 // ---- visual pieces ----------------------------------------------------------
 
@@ -345,6 +422,8 @@ export function PropertyOriginsTool(): JSX.Element {
             are holding at all.
           </Text>
         </Box>
+
+        <LessonQuiz title="Check your understanding" questions={ORIGINS_QUIZ} lesson={ORIGINS_SECTIONS} />
 
       </Stack>
     </Box>

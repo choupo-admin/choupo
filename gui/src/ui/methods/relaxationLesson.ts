@@ -45,6 +45,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const RELAXATION_STEPS: readonly LessonStep[] = [
   {
@@ -344,5 +345,71 @@ export const RELAXATION_LIMITS: readonly LessonLimit[] = [
     body: "recycleRelaxation is refused outside (0, 1]. Over-relaxation "
       + "(w above 1, the strip marked in the third figure) is what an "
       + "unclamped Wegstein does by itself; the key does not offer it.",
+  },
+];
+
+export const RELAXATION_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "mistake-shrinks", steps: [1],
+    q: "Direct substitution is run on a recycle.  What decides whether the "
+      + "mistake in the guess shrinks from pass to pass?",
+    options: [
+      "How good the first guess was",
+      "The loop gain: the fraction of a mistake that survives one trip round the loop",
+      "How many units are inside the recycle loop",
+      "Whether the recycle is solved before or after the flash units",
+    ],
+    correct: 1,
+    feedback: "Each pass multiplies the mistake by the loop gain a, so it "
+      + "shrinks when |a| < 1 and grows otherwise, whatever the starting "
+      + "guess (step 1).  A better guess only shortens the path.",
+  },
+  {
+    id: "runaway", steps: [2, 3],
+    q: "A loop has a gain above 1, so its mistake grows every pass.  Does "
+      + "choosing a relaxation factor between 0 and 1 rescue it?",
+    options: [
+      "Yes, a small enough factor always damps any loop",
+      "Yes, but only if the factor is taken very close to 1",
+      "No: the effective slope 1 + w (a - 1) is never below 1 for a positive w",
+      "No, because relaxation only works on a loop that is already converging",
+    ],
+    correct: 2,
+    feedback: "Relaxation pulls the effective slope toward 1, so it can "
+      + "rescue a gain below -1 (an overshooting loop) but never a gain "
+      + "above 1: substitution cannot settle that loop at all "
+      + "(steps 2 and 3).",
+  },
+  {
+    id: "wegstein", steps: [4, 5],
+    q: "What does Wegstein do that a fixed relaxation factor does not?",
+    options: [
+      "It always under-relaxes more strongly than a user would",
+      "It replaces the plant by a linear model solved exactly",
+      "It uses the whole slope of the residual with a line search",
+      "It estimates the loop gain from the last two guesses and picks the factor itself",
+    ],
+    correct: 3,
+    feedback: "Wegstein is relaxation with w = 1 - q, where q comes from "
+      + "the secant slope of the last two iterates, so it finds the optimal "
+      + "factor 1/(1 - a) without being told a (steps 4 and 5).  Newton "
+      + "with a line search is a different rung (step 6).",
+  },
+  {
+    id: "newton-damping", steps: [6, 7],
+    q: "Why is a fixed damping factor a poor default for a unit solved by "
+      + "Newton, while a CFD pressure-velocity sweep needs one?",
+    options: [
+      "Newton uses the whole slope and a line search shortens only the steps that need it; a segregated sweep keeps the single factor it was given",
+      "Newton never overshoots, so damping would never be needed",
+      "A CFD code is nonlinear and a flowsheet unit is linear",
+      "A fixed factor makes Newton diverge on every problem",
+    ],
+    correct: 0,
+    feedback: "A fixed factor slows every step, including the many that "
+      + "are fine; Newton's line search shortens a step only when the "
+      + "residual does not fall enough.  Segregated solvers sweep with "
+      + "frozen values and rely on a fixed factor for stability (steps 6 "
+      + "and 7).",
   },
 ];

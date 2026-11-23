@@ -225,6 +225,54 @@ import { COSMO_QUIZ, COSMO_STEPS } from "../src/ui/methods/CosmoSacTheoryTool.js
 import { LC_QUIZ, LC_STEPS } from "../src/ui/methods/LocalCompositionTool.js";
 
 import { FLASH_QUIZ, FLASH_STEPS } from "../src/ui/methods/FlashOperatingLineTool.js";
+import { POOL_QUIZ, POOL_STEPS } from "../src/ui/methods/poolFireLesson.js";
+import { SAFETY_QUIZ, SAFETY_STEPS } from "../src/ui/methods/processSafetyLesson.js";
+import { DS_QUIZ, DS_STEPS } from "../src/ui/methods/dataSourcesLesson.js";
+import { DataSourcesTool } from "../src/ui/methods/DataSourcesTool.js";
+import { ORIGINS_QUIZ, ORIGINS_SECTIONS, PropertyOriginsTool } from "../src/ui/methods/PropertyOriginsTool.js";
+import { TRUST_QUIZ, TRUST_SECTIONS, PropertyTrustTool } from "../src/ui/methods/PropertyTrustTool.js";
+import { PSYCHRO_QUIZ, PSYCHRO_STEPS } from "../src/ui/methods/psychroLesson.js";
+import { PUMP_QUIZ, PUMP_STEPS } from "../src/ui/methods/pumpSystemLesson.js";
+import { RAYLEIGH_QUIZ, RAYLEIGH_STEPS } from "../src/ui/methods/rayleighLesson.js";
+import { ENTHALPY_QUIZ, ENTHALPY_STEPS } from "../src/ui/methods/reactionEnthalpyLesson.js";
+import { ReactionEnthalpyTool } from "../src/ui/methods/ReactionEnthalpyTool.js";
+import { RELAXATION_QUIZ, RELAXATION_STEPS } from "../src/ui/methods/relaxationLesson.js";
+import { RCM_QUIZ, RCM_STEPS } from "../src/ui/methods/residueCurvesLesson.js";
+import { ResidueCurvesTool } from "../src/ui/methods/ResidueCurvesTool.js";
+import { SCREEN_QUIZ, SCREEN_SECTIONS } from "../src/ui/methods/routeScreeningLesson.js";
+import { RouteScreeningTool } from "../src/ui/methods/RouteScreeningTool.js";
+import { RULES_OF_THUMB_QUIZ, RULES_OF_THUMB_STEPS } from "../src/ui/methods/rulesOfThumbQuiz.js";
+import { RulesOfThumbTool } from "../src/ui/methods/RulesOfThumbTool.js";
+import { RUN_LOG_QUIZ, RUN_LOG_STEPS } from "../src/ui/methods/runLogLesson.js";
+import { RunLogTool } from "../src/ui/methods/RunLogTool.js";
+import { SALT_MIXING_QUIZ, SALT_MIXING_STEPS } from "../src/ui/methods/saltMixingLesson.js";
+import { SINES_QUIZ, SINES_STEPS } from "../src/ui/methods/sinesPtaLesson.js";
+import { SLE_QUIZ, SLE_STEPS } from "../src/ui/methods/slePairLesson.js";
+import { SOLVENT_QUIZ, SOLVENT_STEPS } from "../src/ui/methods/solventMixtureLesson.js";
+import { SOURWATER_QUIZ, SOURWATER_STEPS, SourWaterTool } from "../src/ui/methods/SourWaterTool.js";
+import { SYNGAS_QUIZ, SYNGAS_STEPS } from "../src/ui/methods/syngasLesson.js";
+import { SyngasTool } from "../src/ui/methods/SyngasTool.js";
+import { TEAR_QUIZ, TEAR_STEPS } from "../src/ui/methods/tearLesson.js";
+import { TearStreamsTool } from "../src/ui/methods/TearStreamsTool.js";
+import { THERMOMETER_QUIZ, THERMOMETER_STEPS } from "../src/ui/methods/ThermometerTrustTool.js";
+import { THIELE_QUIZ, THIELE_STEPS } from "../src/ui/methods/ThielePelletTool.js";
+import { UNIFAC_QUIZ, UNIFAC_STEPS, UnifacTheoryTool } from "../src/ui/methods/UnifacTheoryTool.js";
+import { VAN_HEERDEN_QUIZ, VAN_HEERDEN_STEPS } from "../src/ui/methods/vanHeerdenLesson.js";
+import { WEGSTEIN_QUIZ, WEGSTEIN_STEPS } from "../src/ui/methods/wegsteinLesson.js";
+import { WHAT_IS_ENTROPY_QUIZ, WHAT_IS_ENTROPY_STEPS, WhatIsEntropyTool } from "../src/ui/methods/WhatIsEntropyTool.js";
+import { WHAT_IS_EXERGY_QUIZ, WHAT_IS_EXERGY_STEPS, WhatIsExergyTool } from "../src/ui/methods/WhatIsExergyTool.js";
+import { WHAT_IS_TEMPERATURE_QUIZ, WHAT_IS_TEMPERATURE_STEPS, WhatIsTemperatureTool } from "../src/ui/methods/WhatIsTemperatureTool.js";
+import { MERKEL_QUIZ, MERKEL_STEPS } from "../src/ui/methods/merkelLesson.js";
+import { OFMU_QUIZ, OFMU_STEPS } from "../src/ui/methods/oneFluxManyUnitsLesson.js";
+import { OT_QUIZ, OT_STEPS } from "../src/ui/methods/openMolecularToolsLesson.js";
+import { OpenMolecularToolsTool } from "../src/ui/methods/OpenMolecularToolsTool.js";
+import { PANEL_QUIZ, PANEL_STEPS } from "../src/ui/methods/operatorPanelsLesson.js";
+import { OperatorPanelsTool } from "../src/ui/methods/OperatorPanelsTool.js";
+import { OVERPRESSURE_QUIZ, OVERPRESSURE_STEPS } from "../src/ui/methods/overpressureLesson.js";
+import { PCSAFT_QUIZ, PCSAFT_STEPS, PcSaftTheoryTool } from "../src/ui/methods/PcSaftTheoryTool.js";
+import { PINCH_QUIZ, PINCH_STEPS } from "../src/ui/methods/pinchLesson.js";
+import { PLANT_LAYOUT_QUIZ, PLANT_LAYOUT_STEPS } from "../src/ui/methods/plantLayoutLesson.js";
+import { PONCHON_QUIZ, PONCHON_STEPS } from "../src/ui/methods/ponchonLesson.js";
 
 const GUI = new URL("../", import.meta.url);
 const read = (rel: string): string => readFileSync(new URL(rel, GUI), "utf-8");
@@ -492,6 +540,157 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "flash-operating-line": {
     quiz: FLASH_QUIZ, quizName: "FLASH_QUIZ", lesson: FLASH_STEPS, lessonName: "FLASH_STEPS",
     file: "src/ui/methods/FlashOperatingLineTool.tsx",
+  "pool-fire": {
+    quiz: POOL_QUIZ, quizName: "POOL_QUIZ", lesson: POOL_STEPS, lessonName: "POOL_STEPS",
+    file: "src/ui/methods/PoolFireTool.tsx",
+  },
+  "process-safety": {
+    quiz: SAFETY_QUIZ, quizName: "SAFETY_QUIZ", lesson: SAFETY_STEPS, lessonName: "SAFETY_STEPS",
+    file: "src/ui/methods/ProcessSafetyTool.tsx",
+  },
+  "property-data-sources": {
+    quiz: DS_QUIZ, quizName: "DS_QUIZ", lesson: DS_STEPS, lessonName: "DS_STEPS",
+    file: "src/ui/methods/DataSourcesTool.tsx", tool: DataSourcesTool,
+  },
+  "property-origins": {
+    quiz: ORIGINS_QUIZ, quizName: "ORIGINS_QUIZ", lesson: ORIGINS_SECTIONS, lessonName: "ORIGINS_SECTIONS",
+    file: "src/ui/methods/PropertyOriginsTool.tsx", tool: PropertyOriginsTool,
+  },
+  "property-trust": {
+    quiz: TRUST_QUIZ, quizName: "TRUST_QUIZ", lesson: TRUST_SECTIONS, lessonName: "TRUST_SECTIONS",
+    file: "src/ui/methods/PropertyTrustTool.tsx", tool: PropertyTrustTool,
+  },
+  psychro: {
+    quiz: PSYCHRO_QUIZ, quizName: "PSYCHRO_QUIZ", lesson: PSYCHRO_STEPS, lessonName: "PSYCHRO_STEPS",
+    file: "src/ui/MethodsWorkspace.tsx",
+  },
+  "pump-system": {
+    quiz: PUMP_QUIZ, quizName: "PUMP_QUIZ", lesson: PUMP_STEPS, lessonName: "PUMP_STEPS",
+    file: "src/ui/methods/PumpSystemTool.tsx",
+  },
+  rayleigh: {
+    quiz: RAYLEIGH_QUIZ, quizName: "RAYLEIGH_QUIZ", lesson: RAYLEIGH_STEPS, lessonName: "RAYLEIGH_STEPS",
+    file: "src/ui/methods/RayleighTool.tsx",
+  },
+  "reaction-enthalpy": {
+    quiz: ENTHALPY_QUIZ, quizName: "ENTHALPY_QUIZ", lesson: ENTHALPY_STEPS, lessonName: "ENTHALPY_STEPS",
+    file: "src/ui/methods/ReactionEnthalpyTool.tsx", tool: ReactionEnthalpyTool,
+  },
+  relaxation: {
+    quiz: RELAXATION_QUIZ, quizName: "RELAXATION_QUIZ", lesson: RELAXATION_STEPS, lessonName: "RELAXATION_STEPS",
+    file: "src/ui/methods/RelaxationTool.tsx",
+  },
+  "residue-curves": {
+    quiz: RCM_QUIZ, quizName: "RCM_QUIZ", lesson: RCM_STEPS, lessonName: "RCM_STEPS",
+    file: "src/ui/methods/ResidueCurvesTool.tsx", tool: ResidueCurvesTool,
+  },
+  "route-screening": {
+    quiz: SCREEN_QUIZ, quizName: "SCREEN_QUIZ", lesson: SCREEN_SECTIONS, lessonName: "SCREEN_SECTIONS",
+    file: "src/ui/methods/RouteScreeningTool.tsx", tool: RouteScreeningTool,
+  },
+  "rules-of-thumb": {
+    quiz: RULES_OF_THUMB_QUIZ, quizName: "RULES_OF_THUMB_QUIZ", lesson: RULES_OF_THUMB_STEPS, lessonName: "RULES_OF_THUMB_STEPS",
+    file: "src/ui/methods/RulesOfThumbTool.tsx", tool: RulesOfThumbTool,
+  },
+  "run-log": {
+    quiz: RUN_LOG_QUIZ, quizName: "RUN_LOG_QUIZ", lesson: RUN_LOG_STEPS, lessonName: "RUN_LOG_STEPS",
+    file: "src/ui/methods/RunLogTool.tsx", tool: RunLogTool,
+  },
+  "salt-mixing": {
+    quiz: SALT_MIXING_QUIZ, quizName: "SALT_MIXING_QUIZ", lesson: SALT_MIXING_STEPS, lessonName: "SALT_MIXING_STEPS",
+    file: "src/ui/methods/SaltMixingTool.tsx",
+  },
+  "sines-pta": {
+    quiz: SINES_QUIZ, quizName: "SINES_QUIZ", lesson: SINES_STEPS, lessonName: "SINES_STEPS",
+    file: "src/ui/methods/SinesPtaTool.tsx",
+  },
+  "sle-pair": {
+    quiz: SLE_QUIZ, quizName: "SLE_QUIZ", lesson: SLE_STEPS, lessonName: "SLE_STEPS",
+    file: "src/ui/methods/SlePairTool.tsx",
+  },
+  "solvent-mixture": {
+    quiz: SOLVENT_QUIZ, quizName: "SOLVENT_QUIZ", lesson: SOLVENT_STEPS, lessonName: "SOLVENT_STEPS",
+    file: "src/ui/methods/SolventMixtureTool.tsx",
+  },
+  "sour-water": {
+    quiz: SOURWATER_QUIZ, quizName: "SOURWATER_QUIZ", lesson: SOURWATER_STEPS, lessonName: "SOURWATER_STEPS",
+    file: "src/ui/methods/SourWaterTool.tsx", tool: SourWaterTool,
+  },
+  syngas: {
+    quiz: SYNGAS_QUIZ, quizName: "SYNGAS_QUIZ", lesson: SYNGAS_STEPS, lessonName: "SYNGAS_STEPS",
+    file: "src/ui/methods/SyngasTool.tsx", tool: SyngasTool,
+  },
+  "tear-streams": {
+    quiz: TEAR_QUIZ, quizName: "TEAR_QUIZ", lesson: TEAR_STEPS, lessonName: "TEAR_STEPS",
+    file: "src/ui/methods/TearStreamsTool.tsx", tool: TearStreamsTool,
+  },
+  "thermometer-trust": {
+    quiz: THERMOMETER_QUIZ, quizName: "THERMOMETER_QUIZ", lesson: THERMOMETER_STEPS, lessonName: "THERMOMETER_STEPS",
+    file: "src/ui/methods/ThermometerTrustTool.tsx",
+  },
+  thiele: {
+    quiz: THIELE_QUIZ, quizName: "THIELE_QUIZ", lesson: THIELE_STEPS, lessonName: "THIELE_STEPS",
+    file: "src/ui/methods/ThielePelletTool.tsx",
+  },
+  "unifac-theory": {
+    quiz: UNIFAC_QUIZ, quizName: "UNIFAC_QUIZ", lesson: UNIFAC_STEPS, lessonName: "UNIFAC_STEPS",
+    file: "src/ui/methods/UnifacTheoryTool.tsx", tool: UnifacTheoryTool,
+  },
+  vanheerden: {
+    quiz: VAN_HEERDEN_QUIZ, quizName: "VAN_HEERDEN_QUIZ", lesson: VAN_HEERDEN_STEPS, lessonName: "VAN_HEERDEN_STEPS",
+    file: "src/ui/methods/VanHeerdenTool.tsx",
+  },
+  wegstein: {
+    quiz: WEGSTEIN_QUIZ, quizName: "WEGSTEIN_QUIZ", lesson: WEGSTEIN_STEPS, lessonName: "WEGSTEIN_STEPS",
+    file: "src/ui/methods/WegsteinTool.tsx",
+  },
+  "what-is-entropy": {
+    quiz: WHAT_IS_ENTROPY_QUIZ, quizName: "WHAT_IS_ENTROPY_QUIZ", lesson: WHAT_IS_ENTROPY_STEPS, lessonName: "WHAT_IS_ENTROPY_STEPS",
+    file: "src/ui/methods/WhatIsEntropyTool.tsx", tool: WhatIsEntropyTool,
+  },
+  "what-is-exergy": {
+    quiz: WHAT_IS_EXERGY_QUIZ, quizName: "WHAT_IS_EXERGY_QUIZ", lesson: WHAT_IS_EXERGY_STEPS, lessonName: "WHAT_IS_EXERGY_STEPS",
+    file: "src/ui/methods/WhatIsExergyTool.tsx", tool: WhatIsExergyTool,
+  },
+  "what-is-temperature": {
+    quiz: WHAT_IS_TEMPERATURE_QUIZ, quizName: "WHAT_IS_TEMPERATURE_QUIZ", lesson: WHAT_IS_TEMPERATURE_STEPS, lessonName: "WHAT_IS_TEMPERATURE_STEPS",
+    file: "src/ui/methods/WhatIsTemperatureTool.tsx", tool: WhatIsTemperatureTool,
+  },
+  merkel: {
+    quiz: MERKEL_QUIZ, quizName: "MERKEL_QUIZ", lesson: MERKEL_STEPS, lessonName: "MERKEL_STEPS",
+    file: "src/ui/methods/MerkelTool.tsx",
+  },
+  "one-flux-many-units": {
+    quiz: OFMU_QUIZ, quizName: "OFMU_QUIZ", lesson: OFMU_STEPS, lessonName: "OFMU_STEPS",
+    file: "src/ui/methods/OneFluxManyUnitsTool.tsx",
+  },
+  "open-molecular-tools": {
+    quiz: OT_QUIZ, quizName: "OT_QUIZ", lesson: OT_STEPS, lessonName: "OT_STEPS",
+    file: "src/ui/methods/OpenMolecularToolsTool.tsx", tool: OpenMolecularToolsTool,
+  },
+  "operator-panels": {
+    quiz: PANEL_QUIZ, quizName: "PANEL_QUIZ", lesson: PANEL_STEPS, lessonName: "PANEL_STEPS",
+    file: "src/ui/methods/OperatorPanelsTool.tsx", tool: OperatorPanelsTool,
+  },
+  overpressure: {
+    quiz: OVERPRESSURE_QUIZ, quizName: "OVERPRESSURE_QUIZ", lesson: OVERPRESSURE_STEPS, lessonName: "OVERPRESSURE_STEPS",
+    file: "src/ui/methods/OverpressureTool.tsx",
+  },
+  "pcsaft-theory": {
+    quiz: PCSAFT_QUIZ, quizName: "PCSAFT_QUIZ", lesson: PCSAFT_STEPS, lessonName: "PCSAFT_STEPS",
+    file: "src/ui/methods/PcSaftTheoryTool.tsx", tool: PcSaftTheoryTool,
+  },
+  "pinch-composite": {
+    quiz: PINCH_QUIZ, quizName: "PINCH_QUIZ", lesson: PINCH_STEPS, lessonName: "PINCH_STEPS",
+    file: "src/ui/methods/PinchCompositeTool.tsx",
+  },
+  "plant-layout": {
+    quiz: PLANT_LAYOUT_QUIZ, quizName: "PLANT_LAYOUT_QUIZ", lesson: PLANT_LAYOUT_STEPS, lessonName: "PLANT_LAYOUT_STEPS",
+    file: "src/ui/methods/PlantLayoutTool.tsx",
+  },
+  "ponchon-savarit": {
+    quiz: PONCHON_QUIZ, quizName: "PONCHON_QUIZ", lesson: PONCHON_STEPS, lessonName: "PONCHON_STEPS",
+    file: "src/ui/methods/PonchonSavaritTool.tsx",
   },
 };
 

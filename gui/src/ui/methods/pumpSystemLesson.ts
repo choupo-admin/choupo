@@ -45,6 +45,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const PUMP_STEPS: readonly LessonStep[] = [
@@ -428,5 +429,75 @@ export const PUMP_LIMITS: readonly { id: string; title: string; body: string }[]
       + "outside this picture, and so is a compressible or two-phase "
       + "suction — the pump model's own closed form assumes an "
       + "incompressible liquid.",
+  },
+];
+
+// ---- the quiz (C158) ---------------------------------------------------------
+
+export const PUMP_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "who-sets-flow", steps: [1],
+    q: "The same pump is installed on two different pipe runs.  What "
+      + "happens to the flow?",
+    options: [
+      "It is the same, because the pump sets the flow",
+      "It differs: the flow is where the pump curve and the system curve "
+        + "cross, so the pipework takes part in deciding it",
+      "It differs only if the pump is replaced",
+      "It is set by the suction pressure alone",
+    ],
+    correct: 1,
+    feedback: "A pump is not a flow meter with a motor attached: the flow "
+      + "is decided by two curves at once, what the pipework demands and "
+      + "what the machine delivers, and the operating point is their "
+      + "crossing (step 1).",
+  },
+  {
+    id: "system-curve", steps: [2],
+    q: "Which part of the system curve stays when the flow is stopped "
+      + "entirely?",
+    options: [
+      "The friction head in the pipe wall",
+      "The minor losses in the valves",
+      "The static head, the elevation lift that does not care how fast you "
+        + "push",
+    ],
+    correct: 2,
+    feedback: "The static head is flat in Q, while the friction head and "
+      + "the fitting losses grow roughly as Q squared because they are "
+      + "driven by the velocity head (step 2).",
+  },
+  {
+    id: "throttle", steps: [4],
+    q: "A valve is closed to throttle the flow.  What happens to the "
+      + "operating point and to the head the valve takes?",
+    options: [
+      "The pump curve shifts up, and the head is recovered",
+      "The operating point moves right to a higher flow",
+      "The system curve steepens, the flow falls and the head the valve "
+        + "eats is destroyed as heat while you still pay the pump for it",
+      "Nothing changes, because the pump sets the flow",
+    ],
+    correct: 2,
+    feedback: "Throttling raises the sum of K, so the system curve "
+      + "steepens and the crossing slides to a lower flow at a higher "
+      + "pressure (step 4).  Changing speed instead moves the pump curve "
+      + "and avoids producing the head that a throttle only destroys.",
+  },
+  {
+    id: "npsh", steps: [5],
+    q: "The operating point looks good on the pump and system diagram.  "
+      + "Does that mean the pump will not cavitate?",
+    options: [
+      "Yes: a crossing in the pump's useful range rules cavitation out",
+      "Yes, if the efficiency is high",
+      "No: cavitation is decided on the suction side by NPSH available "
+        + "against NPSH required, which the diagram does not show",
+    ],
+    correct: 2,
+    feedback: "Cavitation depends on how much head the liquid arrives with "
+      + "above its vapour pressure, which falls as flow rises, against "
+      + "the pump's own requirement (step 5).  NPSH required is usually "
+      + "NPSH3, already a 3 per cent head loss, so a margin is needed.",
   },
 ];

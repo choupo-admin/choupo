@@ -85,6 +85,7 @@ import { KnobField } from "./knobPanel.js";
 import { Tex } from "./lessonStep.js";
 import { T_SUBJECT_K } from "./WhatIsTemperatureTool.js";
 import { OriginMark } from "./origin.js";
+import { LessonQuiz, type QuizQuestion } from "./lessonQuiz.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const TEXT = "var(--mantine-color-text)";
@@ -332,6 +333,84 @@ function Check({ q, a }: { q: ReactNode; a: ReactNode }): JSX.Element {
     </Box>
   );
 }
+
+/** The page's four numbered sections, as the quiz points back to them. */
+export const THERMOMETER_STEPS: readonly { n: number; title: string }[] = [
+  { n: 1, title: "The bridge instrument, and where it breaks" },
+  { n: 2, title: "How T90 is realised, across the whole range" },
+  { n: 3, title: "The asymmetry, which is the surprise" },
+  { n: 4, title: "The four circles, and the four ways out" },
+];
+
+export const THERMOMETER_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "ideal-limit", steps: [1],
+    q: "A real gas thermometer reads thermodynamic temperature exactly only "
+      + "in which situation?",
+    options: [
+      "At any pressure, because the ideal gas is a real substance",
+      "In the limit of zero pressure, where no experiment can be done",
+      "Whenever Z happens to equal 1 at some finite pressure",
+      "Above the silver point",
+    ],
+    correct: 1,
+    feedback: "Section 1: the ideal gas is a limit, not a substance, so every "
+      + "real reading is an extrapolation towards P to 0.  Z can equal 1 at "
+      + "one finite state by compensation, but that coincidence does not "
+      + "make the gas ideal.",
+  },
+  {
+    id: "platinum-melting", steps: [2],
+    q: "A table quotes the melting point of platinum as 1768.3 C.  What can "
+      + "you conclude about that number?",
+    options: [
+      "It is exact, since platinum is an ITS-90 fixed point",
+      "It is a measurement made on the scale, not a definition of it, so you "
+        + "must ask where it came from and what its uncertainty budget was",
+      "It is wrong, because nothing above copper can be measured",
+      "It is as good as the silver point, since both are metals",
+    ],
+    correct: 1,
+    feedback: "Section 2: platinum sits above the highest defining fixed "
+      + "point, in the region the scale defines by radiation thermometry.  "
+      + "Being a measurement says nothing, by itself, about how good it is; "
+      + "the quoted figure alone cannot tell you.",
+  },
+  {
+    id: "which-end-leaves", steps: [3],
+    q: "Process temperatures run from liquid hydrogen (20.39 K) up to hot "
+      + "furnaces.  Which end of the range leaves the platinum resistance "
+      + "thermometer's domain?",
+    options: [
+      "Both ends, equally",
+      "Only the cold end, below liquid nitrogen",
+      "Neither: the platinum resistor defines the scale everywhere",
+      "Only the hot end, above 1234.93 K; the cold end essentially does not escape",
+    ],
+    correct: 3,
+    feedback: "Section 3: liquid hydrogen sits above 13.8033 K, so a "
+      + "hydrogen liquefier is still interpolated by the same instrument as "
+      + "a distillation column.  Only above the silver point does radiation "
+      + "thermometry take over, and the calibration chain changes.",
+  },
+  {
+    id: "shared-error", steps: [4],
+    q: "Two sensors agree to 0.02 K, but both were calibrated against the "
+      + "same reference.  What does their agreement prove?",
+    options: [
+      "That both are accurate, since they cannot agree by accident",
+      "That the reference is correct",
+      "Only consistency: comparability cannot catch an error the instruments "
+        + "share, which a fixed point or a different calibration chain could",
+      "That the error is below 0.02 K",
+    ],
+    correct: 2,
+    feedback: "Section 4: Regnault's comparability catches an instrument "
+      + "that disagrees with its peers, not an error they all inherit.  What "
+      + "exposes a shared error is a comparison that does not share their "
+      + "history.",
+  },
+];
 
 export function ThermometerTrustTool(): JSX.Element {
   const [pMaxMPa, setPMaxMPa] = useState(5);
@@ -750,6 +829,8 @@ export function ThermometerTrustTool(): JSX.Element {
           this page is the engine’s; the fixed-point table is declared and
           marked as such.
         </Text>
+
+        <LessonQuiz title="Check your understanding" questions={THERMOMETER_QUIZ} lesson={THERMOMETER_STEPS} />
       </Stack>
     </Box>
   );

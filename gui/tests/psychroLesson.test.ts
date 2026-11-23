@@ -217,7 +217,8 @@ describe("the tool renders it as a scrolling lesson", () => {
     const fn = psychroSlice();
     expect(fn, "the McCabe lesson leaked into the psychrometric chart")
       .not.toContain("MCCABE_");
-    expect((fn.match(/PSYCHRO_STEPS/g) ?? []).length).toBe(1);
+    //  Two: the lesson's own steps, and the quiz that closes them (C158).
+    expect((fn.match(/PSYCHRO_STEPS/g) ?? []).length).toBe(2);
     expect((fn.match(/PSYCHRO_LIMITS/g) ?? []).length).toBe(1);
 
     const i = WS.indexOf("function McCabeTool(");

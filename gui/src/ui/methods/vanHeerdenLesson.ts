@@ -32,6 +32,79 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
+
+export const VAN_HEERDEN_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "two-curves", steps: [1, 2],
+    q: "In the Van Heerden picture, what shape do the heat-generation and "
+      + "heat-removal curves have for one irreversible exothermic reaction "
+      + "in a cooled or adiabatic stirred tank?",
+    options: [
+      "Both are straight lines, so they can cross only once",
+      "Generation is a sigmoid in temperature and removal is (nearly) a "
+        + "straight line, so the line can cut the sigmoid one, two or "
+        + "three times",
+      "Generation is a straight line and removal is a sigmoid",
+      "Both are sigmoids with the same plateau",
+    ],
+    correct: 1,
+    feedback: "Step 2: generation rises with the Arrhenius factor and then "
+      + "plateaus when the limiting reactant runs out; removal is "
+      + "proportional to a temperature difference.  A line can cut a "
+      + "sigmoid up to three times, which is the whole content of the diagram.",
+  },
+  {
+    id: "which-crossing", steps: [3],
+    q: "A steady-state solver converges on the middle of three crossings.  "
+      + "What does the diagram say about running the plant there?",
+    options: [
+      "It is the best operating point, since it lies between the two extremes",
+      "It is stable because the equations are satisfied",
+      "Open loop it cannot hold: generation grows faster than removal "
+        + "there, so any small excursion runs away",
+      "It is stable only if the coolant temperature is lowered",
+    ],
+    correct: 2,
+    feedback: "Step 3: a crossing satisfies the equations, but it can be "
+      + "held only if removal is steeper than generation there.  The middle "
+      + "root fails that test, so the solver converging does not mean "
+      + "the plant can run there.",
+  },
+  {
+    id: "hysteresis", steps: [4],
+    q: "A reactor ignites when a parameter is raised past a critical value.  "
+      + "You then lower the parameter back to that same value.  What "
+      + "happens?",
+    options: [
+      "It returns to the cold state, because the process is reversible",
+      "It stays hot: the extinction point lies at a different parameter "
+        + "value, so a runaway is not the mirror image of a shutdown",
+      "It oscillates around the cold state",
+      "It extinguishes immediately because the tangency is symmetric",
+    ],
+    correct: 1,
+    feedback: "Step 4: the cold pair and the hot pair of crossings vanish at "
+      + "different parameter values, giving hysteresis.  Getting out of a "
+      + "runaway means going well past the point that caused it.",
+  },
+  {
+    id: "removal-line", steps: [5],
+    q: "Which change slides the heat-removal line sideways without "
+      + "changing its slope?",
+    options: [
+      "A larger heat-transfer area",
+      "A higher throughput",
+      "A better heat-transfer coefficient",
+      "A different coolant temperature",
+    ],
+    correct: 3,
+    feedback: "Step 5: coolant temperature enters the intercept only.  UA "
+      + "and the flow enter the slope and tilt the line, and the count of "
+      + "crossings cannot be read off the slope alone, so read it off "
+      + "the intersections.",
+  },
+];
 export type { LessonStep, SymbolGloss };
 
 export const VAN_HEERDEN_STEPS: readonly LessonStep[] = [

@@ -38,7 +38,8 @@ import {
 } from "@mantine/core";
 
 import { LessonLimits, lessonStepper, LessonReferences, Tex } from "./lessonStep.js";
-import { RELAXATION_LIMITS, RELAXATION_STEPS } from "./relaxationLesson.js";
+import { RELAXATION_LIMITS, RELAXATION_QUIZ, RELAXATION_STEPS } from "./relaxationLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { GainMap, RELAXED, SlopeCobweb } from "./RelaxationFigures.js";
 import { DIRECT, ErrorPlot, MEASURED, NEWTON, WEGSTEIN } from "./WegsteinTool.js";
 import { KnobSlider, type PanelKnob } from "./knobPanel.js";
@@ -301,6 +302,8 @@ export function RelaxationTool(): JSX.Element {
             substitution would diverge, which is what the toy above shows.
           </Text>
         </Stack>
+
+        <LessonQuiz title="Check your understanding" questions={RELAXATION_QUIZ} lesson={RELAXATION_STEPS} />
 
         <LessonLimits limits={RELAXATION_LIMITS} />
 

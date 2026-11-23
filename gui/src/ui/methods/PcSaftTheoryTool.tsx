@@ -77,6 +77,7 @@ import type { ReactNode } from "react";
 import { Alert, Box, Code, Stack, Text, Title } from "@mantine/core";
 
 import { Tex } from "./lessonStep.js";
+import { LessonQuiz, type QuizQuestion } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
@@ -262,6 +263,58 @@ export const PCSAFT_STEPS: readonly PcSaftStep[] = [
   },
 ];
 
+/** Four questions that close the lesson (DEV.md 4c C158). */
+export const PCSAFT_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "two-roots", steps: [1],
+    q: "What can one PC-SAFT surface give that an activity-coefficient model on its own cannot?",
+    options: [
+      "A better liquid activity coefficient only",
+      "The liquid and the vapour root, with the density and fugacity of each, from one residual Helmholtz surface",
+      "A pure-component vapour pressure with no parameters",
+      "A mixture's excess Gibbs energy without binary parameters",
+    ],
+    correct: 1,
+    feedback: "Activity models price only the liquid's non-ideality and hand the vapour to another model.  PC-SAFT builds a residual Helmholtz energy of temperature, density and composition, so both roots and both fugacities come from it (step 1).",
+  },
+  {
+    id: "m-parameter", steps: [2],
+    q: "What is the parameter m of a PC-SAFT component?",
+    options: [
+      "The number of atoms in the molecule",
+      "The molar mass in g/mol",
+      "A fitted shape parameter, the number of tangent segments in the chain, which need not be an integer",
+      "The number of hydrogen-bonding sites",
+    ],
+    correct: 2,
+    feedback: "Each component is a chain of m spheres of diameter sigma with an attraction depth epsilon/k.  The three numbers are fitted shape and energy parameters, not a count of atoms (step 2).",
+  },
+  {
+    id: "association", steps: [5],
+    q: "Why does the model add an association term for water and ethanol?",
+    options: [
+      "Dispersion alone does not capture the directional hydrogen bond, which Wertheim's theory describes with bonding sites",
+      "Because their critical temperatures are too high for the cubic term",
+      "Because water and ethanol have non-integer chain lengths",
+      "Because dispersion cannot be used for polar molecules",
+    ],
+    correct: 0,
+    feedback: "Much of the physics of water, alcohols and acids is the directional bond.  Two parameters per component, the bond energy and the bonding volume, plus a site scheme, give the fraction of each site still unbonded (step 5).",
+  },
+  {
+    id: "three-roots", steps: [6],
+    q: "At a given T and P the density scan finds three roots.  Which are used?",
+    options: [
+      "The middle one, because it lies between the two",
+      "All three, one phase each",
+      "The smallest and the largest, and the pair is the equilibrium",
+      "The smallest (vapour-like) and the largest (liquid-like) as candidate phases; the middle one is mechanically unstable",
+    ],
+    correct: 3,
+    feedback: "The middle root has dP/d(rho) below zero, so compressing it lowers its pressure and it cannot exist.  The two outer roots are candidates, not an equilibrium: the flash decides which phases exist (step 6).",
+  },
+];
+
 // ---- visual pieces ----------------------------------------------------------
 
 function M({ t }: { t: string }): JSX.Element {
@@ -425,6 +478,8 @@ export function PcSaftTheoryTool(): JSX.Element {
             component’s fugacity equal across the phases, and that is what
             the flash solves.</>} />
       </Box>
+
+      <LessonQuiz title="Check your understanding" questions={PCSAFT_QUIZ} lesson={PCSAFT_STEPS} />
 
       <Box>
         <Title order={5}>What it does not do</Title>

@@ -108,7 +108,8 @@ import type { ProfileMarker, UnitProfile } from "../../adapters/SolverAdapter.js
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
-import { VAN_HEERDEN_LIMITS, VAN_HEERDEN_STEPS } from "./vanHeerdenLesson.js";
+import { VAN_HEERDEN_LIMITS, VAN_HEERDEN_QUIZ, VAN_HEERDEN_STEPS } from "./vanHeerdenLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 
 // ---- Detection: which engine surface feeds the tool -------------------------
@@ -1026,6 +1027,8 @@ export function VanHeerdenTool(): JSX.Element {
         {lessonStep(3)}
         {lessonStep(4)}
         {lessonStep(5)}
+
+        <LessonQuiz title="Check your understanding" questions={VAN_HEERDEN_QUIZ} lesson={VAN_HEERDEN_STEPS} />
 
         {lessonLimits}
 

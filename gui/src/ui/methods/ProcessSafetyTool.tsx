@@ -58,7 +58,7 @@ import { Plot, PLOT_COLORS, darkLayout } from "../plotting/plotly.js";
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
 import { LessonLimits, LessonStepView, Tex, LessonReferences } from "./lessonStep.js";
 import {
-  SAFETY_LIMITS, SAFETY_STEPS, SAFETY_TECH_NOTES,
+  SAFETY_LIMITS, SAFETY_QUIZ, SAFETY_STEPS, SAFETY_TECH_NOTES,
 } from "./processSafetyLesson.js";
 import {
   BATCH_TABLE_T, BATCH_TF_MAX_S, BUBBLE_P_BAR, CLASS_MEANING, DEFAULT_PORTION,
@@ -73,6 +73,7 @@ import {
   type CriticalityClass, type FeedFailure, type LoopReading, type Series,
   type Side,
 } from "./processSafety.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
 
@@ -1016,6 +1017,8 @@ export function ProcessSafetyTool(): JSX.Element {
             </Accordion.Panel>
           </Accordion.Item>
         </Accordion>
+
+        <LessonQuiz title="Check your understanding" questions={SAFETY_QUIZ} lesson={SAFETY_STEPS} />
 
         <LessonLimits limits={SAFETY_LIMITS} />
 

@@ -51,8 +51,9 @@ import { guideUrl, openGuide } from "../../help/guideLinks.js";
 import { KnobField, KnobNumber, PanelNote } from "./knobPanel.js";
 import { LessonLimits, LessonStepView, LessonReferences, Tex } from "./lessonStep.js";
 import {
-  OVERPRESSURE_LIMITS, OVERPRESSURE_SOURCES, OVERPRESSURE_STEPS,
+  OVERPRESSURE_LIMITS, OVERPRESSURE_QUIZ, OVERPRESSURE_SOURCES, OVERPRESSURE_STEPS,
 } from "./overpressureLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import {
   ACCUMULATION, DESIGN_GUIDE_RELIEF, FIRE_COMPONENT, FIRE_DEFAULT_MAWP_BARG,
   FIRE_OP, FIRE_SHIPPED_T_K, LOOP_OPERATING, LOOP_OPS, PSI_PA, P_ATM_PA,
@@ -716,6 +717,8 @@ export function OverpressureTool(): JSX.Element {
           </Anchor>{" "}for the cooling-failure scenario, the accumulation and
           the criticality classes this vent is the barrier for.
         </Text>
+
+        <LessonQuiz title="Check your understanding" questions={OVERPRESSURE_QUIZ} lesson={OVERPRESSURE_STEPS} />
 
         <LessonLimits limits={OVERPRESSURE_LIMITS} />
         <Box>

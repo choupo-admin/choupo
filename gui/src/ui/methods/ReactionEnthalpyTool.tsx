@@ -43,8 +43,9 @@ import { Alert, Badge, Box, Group, Loader, Stack, Text, Title } from "@mantine/c
 
 import { useMethodRun } from "../../case/methodRun.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
-import { ENTHALPY_LIMITS, ENTHALPY_STEPS } from "./reactionEnthalpyLesson.js";
+import { ENTHALPY_LIMITS, ENTHALPY_QUIZ, ENTHALPY_STEPS } from "./reactionEnthalpyLesson.js";
 import { OriginMark } from "./origin.js";
 
 const INK = "var(--mantine-color-dimmed)";
@@ -221,6 +222,8 @@ export function ReactionEnthalpyTool(): JSX.Element {
         {step(4)}
         {step(5)}
         {step(6)}
+
+        <LessonQuiz title="Check your understanding" questions={ENTHALPY_QUIZ} lesson={ENTHALPY_STEPS} />
 
         <LessonLimits limits={ENTHALPY_LIMITS} />
 
