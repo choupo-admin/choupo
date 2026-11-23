@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.b_ij  316.144982444;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.b_ji  23.7581219;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.b_ij  316.1;   // +/- 7.9 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.b_ji  23.8;   // +/- 5.8 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.b_ij  316.144973815;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.b_ji  23.7581289198;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.b_ij  316.1;   // +/- 7.9 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.b_ji  23.8;   // +/- 5.8 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.A_ij  -582.617129972;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.A_ji  3618.40300426;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.A_ij  -583;   // +/- 33 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.A_ji  3618;   // +/- 51 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.A_ij  -582.617144392;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.A_ji  3618.40300434;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.A_ij  -583;   // +/- 33 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButanol.A_ji  3618;   // +/- 51 (1 sigma, from the fit)
     }
 
     evidence

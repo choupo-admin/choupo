@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.b_ij  725.981028252;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.b_ji  -790.441794391;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.b_ij  700;   // +/- 2300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.b_ji  -790;   // +/- 690 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.b_ij  725.981114569;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.b_ji  -790.441821502;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.b_ij  700;   // +/- 2300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.b_ji  -790;   // +/- 690 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.A_ij  -2815.71220169;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.A_ji  7114.99812525;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.A_ij  -2820;   // +/- 440 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.A_ji  7100;   // +/- 8600 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.A_ij  -2815.71219201;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.A_ji  7114.99795155;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.A_ij  -2820;   // +/- 440 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-nitrobenzene.A_ji  7100;   // +/- 8600 (1 sigma, from the fit)
     }
 
     evidence

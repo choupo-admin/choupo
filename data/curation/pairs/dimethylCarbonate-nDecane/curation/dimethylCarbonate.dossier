@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.b_ij  680.467675129;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.b_ji  124.084944412;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.b_ij  680;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.b_ji  124;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.b_ij  680.467675329;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.b_ji  124.084944376;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.b_ij  680;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.b_ji  124;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.A_ij  4520.12759479;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.A_ji  3720.11392034;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.A_ij  4520;   // +/- 69 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.A_ji  3720;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.A_ij  4520.12759076;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.A_ji  3720.11393678;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.A_ij  4520;   // +/- 69 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-nDecane.A_ji  3720;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence

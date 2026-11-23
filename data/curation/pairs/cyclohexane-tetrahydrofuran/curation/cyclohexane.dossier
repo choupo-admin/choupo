@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.b_ij  71.9728462613;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.b_ji  106.160220182;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.b_ij  72;   // +/- 41 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.b_ji  106;   // +/- 40 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.b_ij  71.9728436334;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.b_ji  106.160223026;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.b_ij  72;   // +/- 41 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.b_ji  106;   // +/- 40 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.A_ij  38.6559378341;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.A_ji  1485.38718396;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.A_ij  40;   // +/- 200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.A_ji  1490;   // +/- 210 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.A_ij  38.655938829;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.A_ji  1485.38718305;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.A_ij  40;   // +/- 200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-tetrahydrofuran.A_ji  1490;   // +/- 210 (1 sigma, from the fit)
     }
 
     evidence

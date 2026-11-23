@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.b_ij  -345.069110367;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.b_ji  67.1391911407;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.b_ij  -345;   // +/- 66 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.b_ji  67;   // +/- 89 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.b_ij  1616.10211286;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.b_ji  -841.905171861;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.b_ij  1620;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.b_ji  -842;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.A_ij  870.648207237;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.A_ji  -3236.84888931;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.A_ij  870;   // +/- 380 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.A_ji  -3240;   // +/- 280 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.A_ij  11349.8091981;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.A_ji  -6398.7530739;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.A_ij  11300;   // +/- 1800 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-pCresol.A_ji  -6400;   // +/- 150 (1 sigma, from the fit)
     }
 
     evidence

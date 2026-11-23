@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.b_ij  513.520140948;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.b_ji  -13.7521179528;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.b_ij  514;   // +/- 17 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.b_ji  -14;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.b_ij  513.52014036;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.b_ji  -13.7521176066;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.b_ij  514;   // +/- 17 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.b_ji  -14;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.A_ij  2695.59551365;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.A_ji  1763.55052098;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.A_ij  2696;   // +/- 52 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.A_ji  1764;   // +/- 84 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.A_ij  2695.59551533;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.A_ji  1763.55051892;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.A_ij  2696;   // +/- 52 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nOctane.A_ji  1764;   // +/- 84 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.b_ij  622.461199019;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.b_ji  -350.041437638;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.b_ij  622;   // +/- 33 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.b_ji  -350;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.b_ij  622.461232761;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.b_ji  -350.041446796;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.b_ij  622;   // +/- 33 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.b_ji  -350;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.A_ij  -2106.80894228;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.A_ji  4729.00271702;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.A_ij  -2107;   // +/- 89 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.A_ji  4730;   // +/- 400 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.A_ij  -2095.73689851;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.A_ji  4667.36729708;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.A_ij  -2096;   // +/- 89 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-nNDimethylacetamide.A_ji  4670;   // +/- 390 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.b_ij  -482.761177986;
-        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.b_ji  344.626797094;
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.b_ij  -480;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.b_ji  340;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.b_ij  1404.23426214;
-        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.b_ji  -820.503563128;
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.b_ij  1404;   // +/- 38 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.b_ji  -820.5;   // +/- 6.3 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.A_ij  -570.222377516;
-        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.A_ji  -1079.49486023;
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.A_ij  -570;   // +/- 270 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.A_ji  -1080;   // +/- 180 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.A_ij  6892.65592613;
-        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.A_ji  -3427.43867897;
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.A_ij  6890;   // +/- 540 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methyl1Butanol-dimethylSulfoxide.A_ji  -3427;   // +/- 69 (1 sigma, from the fit)
     }
 
     evidence

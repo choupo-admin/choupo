@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.b_ij  1420.53099607;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.b_ji  -438.865500923;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.b_ij  1420;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.b_ji  -439;   // +/- 26 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.b_ij  1420.53099759;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.b_ji  -438.865501301;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.b_ij  1420;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.b_ji  -439;   // +/- 26 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.a_ij  532.594082206;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.a_ji  -258.290903416;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.a_ij  533;   // +/- 61 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.a_ji  -258;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.a_ij  532.594081952;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.a_ji  -258.290903299;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.a_ij  533;   // +/- 61 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.a_ji  -258;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.A_ij  -323.125330992;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.A_ji  14780.8134697;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.A_ij  -320;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.A_ji  14800;   // +/- 7800 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.A_ij  -323.125330655;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.A_ji  14780.8134475;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.A_ij  -320;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-nDecane.A_ji  14800;   // +/- 7800 (1 sigma, from the fit)
     }
 
     evidence

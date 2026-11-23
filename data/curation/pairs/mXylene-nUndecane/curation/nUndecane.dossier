@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.b_ij  -343.867877605;
-        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.b_ji  455.565864821;
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.b_ij  -344;   // +/- 37 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.b_ji  456;   // +/- 72 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.b_ij  65.1236261645;
-        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.b_ji  -72.230346189;
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.b_ij  100;   // +/- 6400 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.b_ji  -100;   // +/- 5800 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.a_ij  -170.878208927;
-        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.a_ji  223.440188429;
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.a_ij  -171;   // +/- 20 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.a_ji  223;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.a_ij  -4.2319217137;
-        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.a_ji  4.5106481611;
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.a_ij  0;   // +/- 4700 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.a_ji  0;   // +/- 4800 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.A_ij  1140.56066666;
-        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.A_ji  -351.984186364;
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.A_ij  1140;   // +/- 700 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.A_ji  -350;   // +/- 310 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.A_ij  1140.56068613;
-        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.A_ji  -351.984195626;
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.A_ij  1140;   // +/- 700 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nUndecane-mXylene.A_ji  -350;   // +/- 310 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.b_ij  404.504354702;
-        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.b_ji  -279.890296969;
+        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.b_ij  405;   // +/- 76 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.b_ji  -280;   // +/- 47 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.b_ij  404.504353578;
-        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.b_ji  -279.89029637;
+        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.b_ij  405;   // +/- 76 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.b_ji  -280;   // +/- 47 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.A_ij  -2740.8911673;
-        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.A_ji  3636.90742939;
+        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.A_ij  -2740;   // +/- 370 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.A_ji  3640;   // +/- 650 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.A_ij  -2740.89116538;
-        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.A_ji  3636.90742575;
+        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.A_ij  -2740;   // +/- 370 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylethanolamine-ethyleneGlycol.A_ji  3640;   // +/- 650 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.b_ij  228.175478885;
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.b_ji  353.403826364;
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.b_ij  228;   // +/- 24 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.b_ji  353;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.b_ij  228.175479512;
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.b_ji  353.403825754;
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.b_ij  228;   // +/- 24 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.b_ji  353;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.A_ij  4263.93636108;
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.A_ji  1258.26189519;
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.A_ij  4260;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.A_ji  1260;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.A_ij  4263.93636098;
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.A_ji  1258.26189524;
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.A_ij  4260;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-2Methyl2Propanol.A_ji  1260;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence

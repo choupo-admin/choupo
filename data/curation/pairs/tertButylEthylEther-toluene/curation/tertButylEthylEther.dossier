@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.b_ij  539.329833906;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.b_ji  -300.536074451;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.b_ij  539;   // +/- 48 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.b_ji  -301;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.b_ij  539.329738996;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.b_ji  -300.536029038;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.b_ij  539;   // +/- 48 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.b_ji  -301;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.a_ij  354.730793323;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.a_ji  -222.475333144;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.a_ij  355;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.a_ji  -222.5;   // +/- 8.7 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.a_ij  354.73079384;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.a_ji  -222.475333072;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.a_ij  355;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.a_ji  -222.5;   // +/- 8.7 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.A_ij  -2503.08035935;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.A_ji  4739.00725387;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.A_ij  -2500;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.A_ji  4740;   // +/- 440 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.A_ij  -2503.08029776;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.A_ji  4739.00707287;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.A_ij  -2500;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-toluene.A_ji  4740;   // +/- 440 (1 sigma, from the fit)
     }
 
     evidence

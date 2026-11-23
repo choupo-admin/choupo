@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.b_ij  30.8572104619;
-        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.b_ji  -18.1902257197;
+        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.b_ij  0;   // +/- 2100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.b_ji  0;   // +/- 2000 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.b_ij  38.70935234;
-        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.b_ji  -25.8000986603;
+        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.b_ij  0;   // +/- 2100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.b_ji  0;   // +/- 2000 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.A_ij  53.7255776561;
-        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.A_ji  50.8453508519;
+        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.A_ij  0;   // +/- 10000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.A_ji  0;   // +/- 10000 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.A_ij  -35.9240821263;
-        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.A_ji  139.068223928;
+        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.A_ij  0;   // +/- 11000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pCresol-nitrobenzene.A_ji  0;   // +/- 11000 (1 sigma, from the fit)
     }
 
     evidence

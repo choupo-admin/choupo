@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.b_ij  715.632104794;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.b_ji  -419.598801114;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.b_ij  720;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.b_ji  -420;   // +/- 58 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.b_ij  715.632102669;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.b_ji  -419.598800205;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.b_ij  720;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.b_ji  -420;   // +/- 58 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.a_ij  337.974395776;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.a_ji  -230.559895216;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.a_ij  338;   // +/- 59 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.a_ji  -231;   // +/- 31 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.a_ij  337.974393158;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.a_ji  -230.559893856;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.a_ij  338;   // +/- 59 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.a_ji  -231;   // +/- 31 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.A_ij  -2033.56395764;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.A_ji  4650.64116032;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.A_ij  -2030;   // +/- 370 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.A_ji  4700;   // +/- 1200 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.A_ij  -2033.56400485;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.A_ji  4650.64130173;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.A_ij  -2030;   // +/- 370 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-1Heptanol.A_ji  4700;   // +/- 1200 (1 sigma, from the fit)
     }
 
     evidence

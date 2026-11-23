@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.b_ij  -4.05261249881;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.b_ji  639.05019966;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.b_ij  -4.1;   // +/- 9.9 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.b_ji  639;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.b_ij  -4.05261291342;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.b_ji  639.050200361;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.b_ij  -4.1;   // +/- 9.9 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.b_ji  639;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.a_ij  -57.0712035637;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.a_ji  203.337246797;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.a_ij  -57.1;   // +/- 8.0 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.a_ji  203;   // +/- 13 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.a_ij  -57.0712039567;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.a_ji  203.337247897;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.a_ij  -57.1;   // +/- 8.0 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.a_ji  203;   // +/- 13 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.A_ij  5633.40711905;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.A_ji  671.074434346;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.A_ij  5630;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.A_ji  671;   // +/- 32 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.A_ij  5633.40712276;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.A_ji  671.07443596;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.A_ij  5630;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-cyclohexane.A_ji  671;   // +/- 32 (1 sigma, from the fit)
     }
 
     evidence

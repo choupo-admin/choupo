@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.b_ij  897.108575483;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.b_ji  -442.953895605;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.b_ij  900;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.b_ji  -443;   // +/- 40 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.b_ij  897.108574969;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.b_ji  -442.953895477;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.b_ij  900;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.b_ji  -443;   // +/- 40 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.A_ij  -794.831061773;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.A_ji  4788.289917;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.A_ij  -790;   // +/- 270 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.A_ji  4800;   // +/- 1100 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.A_ij  -794.831066939;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.A_ji  4788.28993989;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.A_ij  -790;   // +/- 270 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-1Hexanol.A_ji  4800;   // +/- 1100 (1 sigma, from the fit)
     }
 
     evidence

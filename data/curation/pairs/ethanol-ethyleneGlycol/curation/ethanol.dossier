@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.b_ij  12.2823200797;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.b_ji  221.780214945;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.b_ij  12;   // +/- 20 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.b_ji  222;   // +/- 26 (1 sigma, from the fit)
     }
 
     evidence
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.b_ij  12.2823193985;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.b_ji  221.780215773;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.b_ij  12;   // +/- 20 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.b_ji  222;   // +/- 26 (1 sigma, from the fit)
     }
 
     evidence
@@ -143,8 +143,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.A_ij  1440.11037134;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.A_ji  558.18858996;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.A_ij  1440;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.A_ji  560;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence
@@ -199,8 +199,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.A_ij  1440.11037866;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.A_ji  558.188583674;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.A_ij  1440;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethyleneGlycol.A_ji  560;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence

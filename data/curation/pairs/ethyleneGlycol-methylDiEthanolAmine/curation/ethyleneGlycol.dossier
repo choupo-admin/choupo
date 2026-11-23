@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.b_ij  -397.820020976;
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.b_ji  301.246806727;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.b_ij  -400;   // +/- 260 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.b_ji  300;   // +/- 410 (1 sigma, from the fit)
     }
 
     evidence
@@ -85,8 +85,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.b_ij  1026.71530577;
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.b_ji  -709.97480217;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.b_ij  1027;   // +/- 74 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.b_ji  -710;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -139,8 +139,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.A_ij  3308.64532968;
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.A_ji  -4557.79473247;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.A_ij  3310;   // +/- 790 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.A_ji  -4560;   // +/- 610 (1 sigma, from the fit)
     }
 
     evidence
@@ -193,8 +193,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.A_ij  3308.64529452;
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.A_ji  -4557.79470557;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.A_ij  3310;   // +/- 790 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-methylDiEthanolAmine.A_ji  -4560;   // +/- 610 (1 sigma, from the fit)
     }
 
     evidence

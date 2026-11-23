@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.b_ij  -89.6046668209;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.b_ji  -93.0967488494;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.b_ij  -90;   // +/- 52 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.b_ji  -93;   // +/- 52 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.b_ij  926.595172851;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.b_ji  -642.501621979;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.b_ij  927;   // +/- 66 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.b_ji  -643;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.A_ij  246.982937057;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.A_ji  -1735.82995382;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.A_ij  250;   // +/- 270 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.A_ji  -1740;   // +/- 270 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.A_ij  8675.63132034;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.A_ji  -5239.13091511;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.A_ij  8700;   // +/- 1100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-ethylBenzene.A_ji  -5240;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence

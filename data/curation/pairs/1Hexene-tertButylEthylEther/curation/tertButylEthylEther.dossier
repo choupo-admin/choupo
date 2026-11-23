@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.b_ij  526.218244921;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.b_ji  -318.229019848;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.b_ij  526;   // +/- 29 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.b_ji  -318;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.b_ij  526.218281215;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.b_ji  -318.229036935;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.b_ij  526;   // +/- 29 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.b_ji  -318;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.a_ij  275.741845846;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.a_ji  -183.674555209;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.a_ij  276;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.a_ji  -183.7;   // +/- 6.6 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.a_ij  275.741852782;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.a_ji  -183.67455864;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.a_ij  276;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.a_ji  -183.7;   // +/- 6.6 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.A_ij  -2212.31431454;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.A_ji  4122.63653437;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.A_ij  -2212;   // +/- 65 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.A_ji  4120;   // +/- 230 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.A_ij  -2212.3142411;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.A_ji  4122.63627952;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.A_ij  -2212;   // +/- 65 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-1Hexene.A_ji  4120;   // +/- 230 (1 sigma, from the fit)
     }
 
     evidence

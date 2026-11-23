@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylIsobutylKetone.b_ij  -127.50095067;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylIsobutylKetone.b_ji  -249.468099299;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylIsobutylKetone.b_ij  -128;   // +/- 17 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylIsobutylKetone.b_ji  -249;   // +/- 14 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylIsobutylKetone.b_ij  1119.89518275;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylIsobutylKetone.b_ji  -719.344473465;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylIsobutylKetone.b_ij  1120;   // +/- 15 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylIsobutylKetone.b_ji  -719.3;   // +/- 2.2 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylIsobutylKetone.A_ij  -620.011159822;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylIsobutylKetone.A_ji  -2386.27008345;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylIsobutylKetone.A_ij  -620;   // +/- 76 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylIsobutylKetone.A_ji  -2386;   // +/- 97 (1 sigma, from the fit)
     }
 
     evidence

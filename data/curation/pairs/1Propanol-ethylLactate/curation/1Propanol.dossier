@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.b_ij  367.317495677;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.b_ji  -243.540511159;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.b_ij  370;   // +/- 350 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.b_ji  -240;   // +/- 210 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.b_ij  367.368633641;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.b_ji  -243.572063847;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.b_ij  370;   // +/- 350 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.b_ji  -240;   // +/- 210 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.a_ij  84.3409270153;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.a_ji  -54.1318121235;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.a_ij  80;   // +/- 270 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.a_ji  -50;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.a_ij  90.7285890465;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.a_ji  -59.3443812993;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.a_ij  90;   // +/- 260 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.a_ji  -60;   // +/- 210 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.A_ij  -1033.34637883;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.A_ji  3987.64901055;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.A_ij  -1030;   // +/- 410 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.A_ji  4000;   // +/- 1600 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.A_ij  -1030.69645033;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.A_ji  3975.54586788;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.A_ij  -1030;   // +/- 410 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-ethylLactate.A_ji  4000;   // +/- 1600 (1 sigma, from the fit)
     }
 
     evidence

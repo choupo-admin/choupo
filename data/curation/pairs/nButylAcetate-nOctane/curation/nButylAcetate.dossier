@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.b_ij  215.047455831;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.b_ji  31.2950623738;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.b_ij  215;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.b_ji  31;   // +/- 10 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.b_ij  215.047457463;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.b_ji  31.2950611279;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.b_ij  215;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.b_ji  31;   // +/- 10 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.a_ij  18.1131110726;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.a_ji  33.7120264034;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.a_ij  18.1;   // +/- 6.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.a_ji  33.7;   // +/- 7.0 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.a_ij  18.1131121422;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.a_ji  33.7120253226;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.a_ij  18.1;   // +/- 6.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.a_ji  33.7;   // +/- 7.0 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.A_ij  1201.82538455;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.A_ji  905.325371146;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.A_ij  1202;   // +/- 57 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.A_ji  905;   // +/- 69 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.A_ij  1201.82538073;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.A_ji  905.325374883;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.A_ij  1202;   // +/- 57 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-nOctane.A_ji  905;   // +/- 69 (1 sigma, from the fit)
     }
 
     evidence

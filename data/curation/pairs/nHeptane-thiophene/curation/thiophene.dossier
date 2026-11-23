@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.b_ij  675.15385554;
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.b_ji  -252.303382759;
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.b_ij  675;   // +/- 37 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.b_ji  -252;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.b_ij  675.153854404;
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.b_ji  -252.303382096;
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.b_ij  675;   // +/- 37 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.b_ji  -252;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.A_ij  731.660133037;
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.A_ji  2693.38875916;
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.A_ij  730;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.A_ji  2690;   // +/- 300 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.A_ij  731.620511036;
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.A_ji  2693.44816448;
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.A_ij  730;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-nHeptane.A_ji  2690;   // +/- 300 (1 sigma, from the fit)
     }
 
     evidence

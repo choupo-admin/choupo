@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.b_ij  -10.6964798277;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.b_ji  -75.7881426237;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.b_ij  -11;   // +/- 70 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.b_ji  -76;   // +/- 66 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.b_ij  650.421653789;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.b_ji  -489.793894281;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.b_ij  650;   // +/- 43 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.b_ji  -490;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.A_ij  927.433144653;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.A_ji  -1642.80558213;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.A_ij  930;   // +/- 410 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.A_ji  -1640;   // +/- 440 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.A_ij  5474.07491078;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.A_ji  -4448.87416412;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.A_ij  5470;   // +/- 300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-1122Tetrachloroethane.A_ji  -4449;   // +/- 95 (1 sigma, from the fit)
     }
 
     evidence

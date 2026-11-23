@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.b_ij  580.182176787;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.b_ji  -629.649147471;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.b_ij  600;   // +/- 1400 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.b_ji  -630;   // +/- 620 (1 sigma, from the fit)
     }
 
     evidence
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.b_ij  580.258273651;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.b_ji  -629.683117987;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.b_ij  600;   // +/- 1400 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.b_ji  -630;   // +/- 620 (1 sigma, from the fit)
     }
 
     evidence
@@ -143,8 +143,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.A_ij  -3629.02213523;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.A_ji  3804.9229646;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.A_ij  -4000;   // +/- 16000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.A_ji  4000;   // +/- 53000 (1 sigma, from the fit)
     }
 
     evidence
@@ -199,8 +199,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.A_ij  30000;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.A_ji  -6379.3124699;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.A_ij  30000;   // +/- 220000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-aniline.A_ji  -6380;   // +/- 150 (1 sigma, from the fit)
     }
 
     evidence

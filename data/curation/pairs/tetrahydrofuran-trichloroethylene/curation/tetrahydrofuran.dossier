@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.b_ij  -95.7729403937;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.b_ji  -37.2186896449;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.b_ij  -96;   // +/- 36 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.b_ji  -37;   // +/- 37 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.b_ij  680.415028313;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.b_ji  -515.381430314;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.b_ij  680;   // +/- 24 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.b_ji  -515.4;   // +/- 8.3 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.A_ij  -111.416954128;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.A_ji  -977.382495296;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.A_ij  -110;   // +/- 180 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.A_ji  -980;   // +/- 180 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.A_ij  7294.47637551;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.A_ji  -3922.97597485;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.A_ij  7290;   // +/- 860 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-trichloroethylene.A_ji  -3923;   // +/- 100 (1 sigma, from the fit)
     }
 
     evidence

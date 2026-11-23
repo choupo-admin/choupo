@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.b_ij  -309.800888973;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.b_ji  527.131099918;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.b_ij  -310;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.b_ji  527;   // +/- 25 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.b_ij  -309.800891822;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.b_ji  527.131105248;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.b_ij  -310;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.b_ji  527;   // +/- 25 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.A_ij  3985.00040108;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.A_ji  -2437.25311923;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.A_ij  3990;   // +/- 180 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.A_ji  -2437;   // +/- 92 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.A_ij  3985.0004049;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.A_ji  -2437.25312104;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.A_ij  3990;   // +/- 180 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-oCresol.A_ji  -2437;   // +/- 92 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-pXylene.b_ij  651.714991339;
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-pXylene.b_ji  148.776653287;
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-pXylene.b_ij  652;   // +/- 34 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-pXylene.b_ji  149;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-pXylene.b_ij  651.714991045;
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-pXylene.b_ji  148.776653582;
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-pXylene.b_ij  652;   // +/- 34 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-pXylene.b_ji  149;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence

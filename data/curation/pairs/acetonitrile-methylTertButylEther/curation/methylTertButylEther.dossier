@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.b_ij  320.330721522;
-        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.b_ji  104.895296658;
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.b_ij  320.3;   // +/- 6.9 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.b_ji  104.9;   // +/- 5.2 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.b_ij  320.330720888;
-        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.b_ji  104.89529717;
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.b_ij  320.3;   // +/- 6.9 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.b_ji  104.9;   // +/- 5.2 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.A_ij  -1060.18364641;
-        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.A_ji  4898.7820015;
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.A_ij  -1060;   // +/- 15 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.A_ji  4899;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.A_ij  -1060.18364556;
-        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.A_ji  4898.78200126;
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.A_ij  -1060;   // +/- 15 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylTertButylEther-acetonitrile.A_ji  4899;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence

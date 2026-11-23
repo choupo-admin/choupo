@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.b_ij  179.479138917;
-        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.b_ji  502.817343114;
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.b_ij  179;   // +/- 55 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.b_ji  503;   // +/- 68 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.b_ij  179.479138466;
-        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.b_ji  502.817343869;
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.b_ij  179;   // +/- 55 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.b_ji  503;   // +/- 68 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.A_ij  2564.94805699;
-        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.A_ji  3628.32445897;
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.A_ij  2560;   // +/- 390 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.A_ji  3630;   // +/- 310 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.A_ij  2564.94805154;
-        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.A_ji  3628.32445974;
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.A_ij  2560;   // +/- 390 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cumene-nNDimethylacetamide.A_ji  3630;   // +/- 310 (1 sigma, from the fit)
     }
 
     evidence

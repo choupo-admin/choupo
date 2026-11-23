@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.b_ij  215.557038499;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.b_ji  38.1221798246;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.b_ij  216;   // +/- 20 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.b_ji  38;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.b_ij  215.557035007;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.b_ji  38.1221824003;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.b_ij  216;   // +/- 20 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.b_ji  38;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.A_ij  -523.941480713;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.A_ji  2697.15283658;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.A_ij  -524;   // +/- 91 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.A_ji  2700;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.A_ij  -523.941477729;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.A_ji  2697.15283298;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.A_ij  -524;   // +/- 91 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.A_ji  2700;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.a_ij  220.222320446;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.a_ji  -89.6233031578;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.a_ij  220.2;   // +/- 9.5 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.a_ji  -89.6;   // +/- 5.9 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.a_ij  220.222320884;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.a_ji  -89.6233033853;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.a_ij  220.2;   // +/- 9.5 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxypropene-acetone.a_ji  -89.6;   // +/- 5.9 (1 sigma, from the fit)
     }
 
     evidence

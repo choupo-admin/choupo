@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.b_ij  -33.7529446348;
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.b_ji  264.664621855;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.b_ij  -34;   // +/- 41 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.b_ji  265;   // +/- 52 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.b_ij  -33.752944605;
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.b_ji  264.664621804;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.b_ij  -34;   // +/- 41 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.b_ji  265;   // +/- 52 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.a_ij  55.6237904233;
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.a_ji  -1.90248191716;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.a_ij  56;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.a_ji  -2;   // +/- 25 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.a_ij  55.6237903904;
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.a_ji  -1.90248188656;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.a_ij  56;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.a_ji  -2;   // +/- 25 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.A_ij  601.365143923;
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.A_ji  1326.49917491;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.A_ij  600;   // +/- 290 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.A_ji  1330;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.A_ij  601.365145823;
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.A_ji  1326.49917335;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.A_ij  600;   // +/- 290 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethylPropionate.A_ji  1330;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.b_ij  -175.997327752;
-        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.b_ji  346.186367931;
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.b_ij  -176;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.b_ji  346;   // +/- 37 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.b_ij  -175.9973274;
-        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.b_ji  346.186367409;
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.b_ij  -176;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.b_ji  346;   // +/- 37 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.A_ij  2255.29293521;
-        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.A_ji  -911.338405935;
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.A_ij  2260;   // +/- 280 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.A_ji  -910;   // +/- 150 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.A_ij  2255.29291642;
-        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.A_ji  -911.3383945;
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.A_ij  2260;   // +/- 280 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.A_ji  -910;   // +/- 150 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.a_ij  -124.44544902;
-        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.a_ji  191.315359693;
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.a_ij  -124;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.a_ji  191;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.a_ij  -124.44544897;
-        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.a_ji  191.315359596;
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.a_ij  -124;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Chlorobutane-cyclohexane.a_ji  191;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence

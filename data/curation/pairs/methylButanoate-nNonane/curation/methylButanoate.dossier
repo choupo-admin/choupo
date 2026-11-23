@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.b_ij  -345.334601974;
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.b_ji  792.899616136;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.b_ij  -345;   // +/- 39 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.b_ji  790;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.b_ij  -346.488532751;
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.b_ji  798.729607204;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.b_ij  -346;   // +/- 38 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.b_ji  800;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.A_ij  6559.02729817;
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.A_ji  -3294.89791737;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.A_ij  6600;   // +/- 1500 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.A_ji  -3290;   // +/- 380 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.A_ij  6528.36613887;
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.A_ji  -3288.6926495;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.A_ij  6500;   // +/- 1500 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.A_ji  -3290;   // +/- 380 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.a_ij  -234.045510091;
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.a_ji  412.952413028;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.a_ij  -234;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.a_ji  413;   // +/- 49 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.a_ij  -234.045507576;
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.a_ji  412.95240587;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.a_ij  -234;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-nNonane.a_ji  413;   // +/- 49 (1 sigma, from the fit)
     }
 
     evidence

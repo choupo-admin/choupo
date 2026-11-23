@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-sulfolane.b_ij  583.690427756;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-sulfolane.b_ji  312.69517845;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-sulfolane.b_ij  584;   // +/- 39 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-sulfolane.b_ji  313;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -86,8 +86,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-sulfolane.b_ij  583.690427614;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-sulfolane.b_ji  312.695178421;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-sulfolane.b_ij  584;   // +/- 39 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-sulfolane.b_ji  313;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence

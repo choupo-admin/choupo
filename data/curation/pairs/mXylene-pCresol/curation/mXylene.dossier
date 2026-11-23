@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.b_ij  -525.629046839;
-        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.b_ji  1112.81227601;
+        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.b_ij  -526;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.b_ji  1113;   // +/- 43 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.b_ij  -525.629046562;
-        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.b_ji  1112.81227579;
+        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.b_ij  -526;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.b_ji  1113;   // +/- 43 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.A_ij  8676.98048302;
-        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.A_ji  -2478.99359452;
+        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.A_ij  8680;   // +/- 170 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.A_ji  -2479;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.A_ij  8676.98047943;
-        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.A_ji  -2478.99359122;
+        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.A_ij  8680;   // +/- 170 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.mXylene-pCresol.A_ji  -2479;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence

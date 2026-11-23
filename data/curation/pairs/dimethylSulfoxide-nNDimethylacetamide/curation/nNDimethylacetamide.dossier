@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.b_ij  -317.540637257;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.b_ji  476.152304343;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.b_ij  -318;   // +/- 62 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.b_ji  480;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.b_ij  -317.540638524;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.b_ji  476.152307125;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.b_ij  -318;   // +/- 62 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.b_ji  480;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.A_ij  2280.76424343;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.A_ji  -926.7021989;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.A_ij  2280;   // +/- 870 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.A_ji  -930;   // +/- 420 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.A_ij  2280.76427573;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.A_ji  -926.702211058;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.A_ij  2280;   // +/- 870 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylacetamide-dimethylSulfoxide.A_ji  -930;   // +/- 420 (1 sigma, from the fit)
     }
 
     evidence

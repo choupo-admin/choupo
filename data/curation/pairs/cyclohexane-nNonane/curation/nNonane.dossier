@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.b_ij  -529.163886655;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.b_ji  881.790689378;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.b_ij  -529;   // +/- 51 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.b_ji  880;   // +/- 180 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.b_ij  78.900943864;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.b_ji  -92.8496612578;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.b_ij  0;   // +/- 19000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.b_ji  0;   // +/- 17000 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.a_ij  -267.427632951;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.a_ji  425.782682381;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.a_ij  -267;   // +/- 36 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.a_ji  426;   // +/- 97 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.a_ij  -267.427632837;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.a_ji  425.782682247;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.a_ij  -267;   // +/- 36 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.a_ji  426;   // +/- 97 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.A_ij  5081.78150422;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.A_ji  -1649.79324682;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.A_ij  5100;   // +/- 2300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.A_ji  -1650;   // +/- 380 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.A_ij  5081.78150291;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.A_ji  -1649.79324577;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.A_ij  5100;   // +/- 2300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-cyclohexane.A_ji  -1650;   // +/- 380 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.b_ij  10.941727319;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.b_ji  80.1667264295;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.b_ij  11;   // +/- 29 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.b_ji  80;   // +/- 31 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.b_ij  10.9417267121;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.b_ji  80.1667270818;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.b_ij  11;   // +/- 29 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.b_ji  80;   // +/- 31 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.A_ij  126.492286749;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.A_ji  637.758494168;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.A_ij  130;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.A_ji  640;   // +/- 150 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.A_ij  126.492283998;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.A_ji  637.758497006;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.A_ij  130;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-dimethylCarbonate.A_ji  640;   // +/- 150 (1 sigma, from the fit)
     }
 
     evidence

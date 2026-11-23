@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.b_ij  150.572893017;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.b_ji  380.052861464;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.b_ij  151;   // +/- 25 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.b_ji  380;   // +/- 32 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.b_ij  150.572884564;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.b_ji  380.05287576;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.b_ij  151;   // +/- 25 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.b_ji  380;   // +/- 32 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.a_ij  40.2400493428;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.a_ji  67.9785170203;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.a_ij  40;   // +/- 23 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.a_ji  68;   // +/- 25 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.a_ij  40.2400504265;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.a_ji  67.9785157106;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.a_ij  40;   // +/- 23 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.a_ji  68;   // +/- 25 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.A_ij  3569.17171844;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.A_ji  1342.60889634;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.A_ij  3570;   // +/- 170 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.A_ji  1340;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.A_ij  3569.17173572;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.A_ji  1342.60889517;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.A_ij  3570;   // +/- 170 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-toluene.A_ji  1340;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence

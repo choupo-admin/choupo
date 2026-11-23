@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.b_ij  -2.14379156323;
-        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.b_ji  220.643531147;
+        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.b_ij  -2;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.b_ji  221;   // +/- 37 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.b_ij  -2.14379156052;
-        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.b_ji  220.643531134;
+        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.b_ij  -2;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.b_ji  221;   // +/- 37 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.A_ij  -316.493231531;
-        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.A_ji  2159.90829112;
+        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.A_ij  -320;   // +/- 200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.A_ji  2160;   // +/- 170 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.A_ij  -316.493227934;
-        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.A_ji  2159.90828798;
+        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.A_ij  -320;   // +/- 200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.hexamethyldisiloxane-isopropylAcetate.A_ji  2160;   // +/- 170 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.b_ij  497.811243222;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.b_ji  11.0222701247;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.b_ij  498;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.b_ji  11;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.b_ij  497.81124256;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.b_ji  11.0222707689;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.b_ij  498;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.b_ji  11;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.A_ij  2452.24978326;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.A_ji  2189.37087922;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.A_ij  2452;   // +/- 48 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.A_ji  2189;   // +/- 81 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.A_ij  2452.24978017;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.A_ji  2189.37089219;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.A_ij  2452;   // +/- 48 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHeptane.A_ji  2189;   // +/- 81 (1 sigma, from the fit)
     }
 
     evidence

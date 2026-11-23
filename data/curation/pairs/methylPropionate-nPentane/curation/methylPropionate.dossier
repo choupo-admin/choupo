@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.b_ij  -8.51378752484;
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.b_ji  354.080786858;
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.b_ij  -8.5;   // +/- 7.9 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.b_ji  354.1;   // +/- 9.9 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.b_ij  -8.5137880434;
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.b_ji  354.080787389;
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.b_ij  -8.5;   // +/- 7.9 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.b_ji  354.1;   // +/- 9.9 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.A_ij  2873.67936029;
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.A_ji  90.9906004091;
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.A_ij  2874;   // +/- 50 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.A_ji  91;   // +/- 42 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.A_ij  2873.67936296;
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.A_ji  90.9905974117;
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.A_ij  2874;   // +/- 50 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-nPentane.A_ji  91;   // +/- 42 (1 sigma, from the fit)
     }
 
     evidence

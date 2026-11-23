@@ -30,8 +30,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ij  429.365695745;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ji  493.205168943;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ij  429;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ji  493;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -74,7 +74,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.113232264022;
+        aadHeldOutPct     0.11323;
         acceptanceMaxAADPct 0.57;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 1.93 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (224Trimethylpentane -0.012 K, ethanol +0.012 K; measured with no pair involved), as a percentage of the held-out mean T (346.81 K) = 0.5600 %, rounded UP to two significant figures";
     }
@@ -88,8 +88,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ij  429.360794812;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ji  493.20973824;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ij  429;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ji  493;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -132,7 +132,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.113231720006;
+        aadHeldOutPct     0.11323;
         acceptanceMaxAADPct 0.57;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 1.93 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (224Trimethylpentane -0.012 K, ethanol +0.012 K; measured with no pair involved), as a percentage of the held-out mean T (346.81 K) = 0.5600 %, rounded UP to two significant figures";
     }

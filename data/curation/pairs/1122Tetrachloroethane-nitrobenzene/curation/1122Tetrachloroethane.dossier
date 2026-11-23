@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.b_ij  99.2565383432;
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.b_ji  -153.409232317;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.b_ij  99;   // +/- 77 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.b_ji  -153;   // +/- 64 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.b_ij  497.56276597;
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.b_ji  -422.951614098;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.b_ij  498;   // +/- 67 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.b_ji  -423;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.A_ij  -947.057481871;
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.A_ji  460.378739031;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.A_ij  -950;   // +/- 290 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.A_ji  460;   // +/- 340 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.A_ij  4336.47654137;
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.A_ji  -3026.18523709;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.A_ij  4340;   // +/- 380 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-nitrobenzene.A_ji  -3030;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence

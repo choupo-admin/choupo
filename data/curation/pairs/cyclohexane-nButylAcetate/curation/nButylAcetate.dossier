@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.b_ij  -267.90830097;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.b_ji  593.574447005;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.b_ij  -268;   // +/- 15 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.b_ji  594;   // +/- 29 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.b_ij  -267.908301483;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.b_ji  593.57444807;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.b_ij  -268;   // +/- 15 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.b_ji  594;   // +/- 29 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.a_ij  -117.439777338;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.a_ji  190.5269916;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.a_ij  -117;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.a_ji  191;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.a_ij  -117.439779711;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.a_ji  190.526995414;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.a_ij  -117;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.a_ji  191;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.A_ij  3347.03450284;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.A_ji  -732.042710528;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.A_ij  3350;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.A_ji  -732;   // +/- 93 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.A_ij  3347.03450115;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.A_ji  -732.042709969;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.A_ij  3350;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-cyclohexane.A_ji  -732;   // +/- 93 (1 sigma, from the fit)
     }
 
     evidence

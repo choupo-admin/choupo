@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.b_ij  327.621803796;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.b_ji  -337.867065639;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.b_ij  300;   // +/- 5000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.b_ji  -300;   // +/- 2700 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.b_ij  327.621557072;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.b_ji  -337.866928714;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.b_ij  300;   // +/- 5000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.b_ji  -300;   // +/- 2700 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.A_ij  -1798.37188509;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.A_ji  2267.18352622;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.A_ij  -1800;   // +/- 2300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.A_ji  2300;   // +/- 6500 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.A_ij  10566.2702126;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.A_ji  -4469.40709719;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.A_ij  10600;   // +/- 2200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-pentanenitrile.A_ji  -4470;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence

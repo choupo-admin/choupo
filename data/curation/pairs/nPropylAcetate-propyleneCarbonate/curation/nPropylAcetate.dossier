@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.b_ij  -172.471254788;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.b_ji  569.371491419;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.b_ij  -172;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.b_ji  569;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.b_ij  -172.4712549;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.b_ji  569.371491617;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.b_ij  -172;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.b_ji  569;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.A_ij  3138.76913524;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.A_ji  364.839601332;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.A_ij  3140;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.A_ji  365;   // +/- 45 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.A_ij  3138.76913508;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.A_ji  364.839601387;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.A_ij  3140;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-propyleneCarbonate.A_ji  365;   // +/- 45 (1 sigma, from the fit)
     }
 
     evidence

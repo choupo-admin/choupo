@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.b_ij  -74.6060151778;
-        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.b_ji  261.01267858;
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.b_ij  -75;   // +/- 35 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.b_ji  261;   // +/- 47 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.b_ij  -74.6060153187;
-        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.b_ji  261.012678723;
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.b_ij  -75;   // +/- 35 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.b_ji  261;   // +/- 47 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.A_ij  -249.481422983;
-        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.A_ji  1781.39518704;
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.A_ij  -250;   // +/- 290 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.A_ji  1780;   // +/- 210 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.A_ij  -249.481426633;
-        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.A_ji  1781.39518984;
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.A_ij  -250;   // +/- 290 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Methoxy2PropylAcetate-nNDimethylformamide.A_ji  1780;   // +/- 210 (1 sigma, from the fit)
     }
 
     evidence

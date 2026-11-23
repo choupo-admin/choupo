@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.b_ij  687.208590863;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.b_ji  -114.823154668;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.b_ij  687;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.b_ji  -114.8;   // +/- 8.8 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.b_ij  687.208591763;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.b_ji  -114.823155033;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.b_ij  687;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.b_ji  -114.8;   // +/- 8.8 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.A_ij  -948.479556267;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.A_ji  6128.0668273;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.A_ij  -948;   // +/- 97 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.A_ji  6130;   // +/- 290 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.A_ij  -948.47955587;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.A_ji  6128.06682658;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.A_ij  -948;   // +/- 97 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-ethanol.A_ji  6130;   // +/- 290 (1 sigma, from the fit)
     }
 
     evidence

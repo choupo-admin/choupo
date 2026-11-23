@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.b_ij  40.9065825276;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.b_ji  82.8101689271;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.b_ij  41;   // +/- 93 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.b_ji  83;   // +/- 97 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.b_ij  40.906582891;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.b_ji  82.8101685774;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.b_ij  41;   // +/- 93 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.b_ji  83;   // +/- 97 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.A_ij  2044.57095631;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.A_ji  -997.981928571;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.A_ij  2040;   // +/- 470 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.A_ji  -1000;   // +/- 450 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.A_ij  2044.57095854;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.A_ji  -997.981929884;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.A_ij  2040;   // +/- 470 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-isobutylAcetate.A_ji  -1000;   // +/- 450 (1 sigma, from the fit)
     }
 
     evidence

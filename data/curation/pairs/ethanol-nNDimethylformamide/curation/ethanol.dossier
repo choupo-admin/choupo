@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylformamide.b_ij  622.758094595;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylformamide.b_ji  -710.670026622;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylformamide.b_ij  1000;   // +/- 12000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylformamide.b_ji  -700;   // +/- 4200 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylformamide.b_ij  622.757908862;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylformamide.b_ji  -710.669960315;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylformamide.b_ij  1000;   // +/- 12000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylformamide.b_ji  -700;   // +/- 4200 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylformamide.A_ij  -4478.60310213;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylformamide.A_ji  7989.72043315;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylformamide.A_ij  -4480;   // +/- 360 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylformamide.A_ji  8000;   // +/- 4700 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.b_ij  285.306470481;
-        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.b_ji  -214.873578042;
+        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.b_ij  290;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.b_ji  -215;   // +/- 75 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.b_ij  285.306471804;
-        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.b_ji  -214.873578873;
+        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.b_ij  290;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.b_ji  -215;   // +/- 75 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.A_ij  -1265.12690517;
-        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.A_ji  1831.93035015;
+        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.A_ij  -1270;   // +/- 520 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.A_ji  1830;   // +/- 860 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.A_ij  -1265.1268498;
-        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.A_ji  1831.93025587;
+        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.A_ij  -1270;   // +/- 520 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Pentanone-2Pentanone.A_ji  1830;   // +/- 860 (1 sigma, from the fit)
     }
 
     evidence

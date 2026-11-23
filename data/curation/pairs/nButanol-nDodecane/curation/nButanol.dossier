@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.b_ij  308.237614504;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.b_ji  477.22950728;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.b_ij  308;   // +/- 17 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.b_ji  477;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.b_ij  308.23761723;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.b_ji  477.22950486;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.b_ij  308;   // +/- 17 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.b_ji  477;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.a_ij  -119.275720503;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.a_ji  342.040823079;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.a_ij  -119.3;   // +/- 5.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.a_ji  342;   // +/- 13 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.a_ij  -119.275720764;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.a_ji  342.040823346;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.a_ij  -119.3;   // +/- 5.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.a_ji  342;   // +/- 13 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.A_ij  7249.01540247;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.A_ji  1268.06275143;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.A_ij  7249;   // +/- 96 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.A_ji  1268;   // +/- 51 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.A_ij  7249.0154011;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.A_ji  1268.06276681;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.A_ij  7249;   // +/- 96 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-nDodecane.A_ji  1268;   // +/- 51 (1 sigma, from the fit)
     }
 
     evidence

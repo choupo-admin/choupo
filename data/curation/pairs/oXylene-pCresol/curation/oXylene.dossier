@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.b_ij  -34.3051173633;
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.b_ji  205.609338044;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.b_ij  -34;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.b_ji  206;   // +/- 13 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.b_ij  -34.3051180954;
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.b_ji  205.609338883;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.b_ij  -34;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.b_ji  206;   // +/- 13 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.A_ij  831.345992114;
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.A_ji  596.052347575;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.A_ij  831;   // +/- 75 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.A_ji  596;   // +/- 62 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.A_ij  831.345982396;
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.A_ji  596.052356157;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.A_ij  831;   // +/- 75 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-pCresol.A_ji  596;   // +/- 62 (1 sigma, from the fit)
     }
 
     evidence

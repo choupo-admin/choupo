@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.b_ij  159.611997549;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.b_ji  82.4702531319;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.b_ij  159.6;   // +/- 8.3 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.b_ji  82.5;   // +/- 7.7 (1 sigma, from the fit)
     }
 
     evidence
@@ -97,8 +97,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.b_ij  159.611997111;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.b_ji  82.4702534517;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.b_ij  159.6;   // +/- 8.3 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.b_ji  82.5;   // +/- 7.7 (1 sigma, from the fit)
     }
 
     evidence
@@ -163,8 +163,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.a_ij  -40.8048665863;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.a_ji  167.548480542;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.a_ij  -40.8;   // +/- 3.3 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.a_ji  167.5;   // +/- 4.5 (1 sigma, from the fit)
     }
 
     evidence
@@ -229,8 +229,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.a_ij  -40.8048667723;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.a_ji  167.548480758;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.a_ij  -40.8;   // +/- 3.3 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.a_ji  167.5;   // +/- 4.5 (1 sigma, from the fit)
     }
 
     evidence
@@ -295,8 +295,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.A_ij  2064.68732252;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.A_ji  28.1712370499;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.A_ij  2065;   // +/- 43 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.A_ji  28;   // +/- 47 (1 sigma, from the fit)
     }
 
     evidence
@@ -361,8 +361,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.A_ij  2064.68732292;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.A_ji  28.1712365179;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.A_ij  2065;   // +/- 43 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-methylEthylKetone.A_ji  28;   // +/- 47 (1 sigma, from the fit)
     }
 
     evidence

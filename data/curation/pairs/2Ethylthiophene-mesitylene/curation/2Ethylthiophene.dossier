@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.b_ij  1530.84698179;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.b_ji  -449.304373413;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.b_ij  1530;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.b_ji  -449;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.b_ij  1530.84698311;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.b_ji  -449.304373664;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.b_ij  1530;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.b_ji  -449;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.a_ij  723.990158375;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.a_ji  -309.053451979;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.a_ij  724;   // +/- 61 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.a_ji  -309;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.a_ij  723.990158391;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.a_ji  -309.053451969;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.a_ij  724;   // +/- 61 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.a_ji  -309;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.A_ij  -1499.19537476;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.A_ji  29999.9972893;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.A_ij  -1500;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.A_ji  30000;   // +/- 440000 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.A_ij  -1499.19537609;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.A_ji  29999.9992129;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.A_ij  -1500;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethylthiophene-mesitylene.A_ji  30000;   // +/- 440000 (1 sigma, from the fit)
     }
 
     evidence

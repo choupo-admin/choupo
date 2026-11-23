@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.b_ij  57.9740373375;
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.b_ji  542.063772533;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.b_ij  58;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.b_ji  542;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.b_ij  57.9740374946;
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.b_ji  542.063772358;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.b_ij  58;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.b_ji  542;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.a_ij  -53.3245307216;
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.a_ji  216.157532213;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.a_ij  -53;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.a_ji  216;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.a_ij  -53.3245304735;
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.a_ji  216.15753186;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.a_ij  -53;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.a_ji  216;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.A_ij  5123.35956849;
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.A_ji  440.353575562;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.A_ij  5120;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.A_ji  440;   // +/- 79 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.A_ij  5123.35956957;
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.A_ji  440.353574812;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.A_ij  5120;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-benzene.A_ji  440;   // +/- 79 (1 sigma, from the fit)
     }
 
     evidence

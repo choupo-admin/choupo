@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.b_ij  273.320297692;
-        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.b_ji  -140.733419159;
+        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.b_ij  273;   // +/- 45 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.b_ji  -141;   // +/- 32 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.b_ij  273.320271666;
-        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.b_ji  -140.733402842;
+        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.b_ij  273;   // +/- 45 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.b_ji  -141;   // +/- 32 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.A_ij  374.990044255;
-        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.A_ji  649.52269395;
+        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.A_ij  370;   // +/- 200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.A_ji  650;   // +/- 300 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.A_ij  374.990035889;
-        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.A_ji  649.522707132;
+        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.A_ij  370;   // +/- 200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Chlorobutane-nHeptane.A_ji  650;   // +/- 300 (1 sigma, from the fit)
     }
 
     evidence

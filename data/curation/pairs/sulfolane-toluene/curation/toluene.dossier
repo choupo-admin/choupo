@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.b_ij  643.459216708;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.b_ji  221.359563315;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.b_ij  643;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.b_ji  221;   // +/- 28 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.b_ij  643.459216561;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.b_ji  221.359563401;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.b_ij  643;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.b_ji  221;   // +/- 28 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.A_ij  3197.8139189;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.A_ji  5751.7170978;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.A_ij  3200;   // +/- 600 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.A_ji  5750;   // +/- 390 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.A_ij  3197.81391002;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.A_ji  5751.71709968;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.A_ij  3200;   // +/- 600 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-sulfolane.A_ji  5750;   // +/- 390 (1 sigma, from the fit)
     }
 
     evidence

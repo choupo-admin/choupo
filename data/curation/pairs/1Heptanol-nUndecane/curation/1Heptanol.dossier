@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.b_ij  786.602266102;
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.b_ji  -88.7644168792;
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.b_ij  787;   // +/- 50 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.b_ji  -89;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.b_ij  786.602265646;
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.b_ji  -88.7644164739;
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.b_ij  787;   // +/- 50 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.b_ji  -89;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.a_ij  229.469347656;
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.a_ji  -109.289541663;
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.a_ij  229;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.a_ji  -109;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.a_ij  229.46934797;
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.a_ji  -109.289541867;
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.a_ij  229;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.a_ji  -109;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.A_ij  1829.33961365;
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.A_ji  4234.01256252;
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.A_ij  1830;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.A_ji  4230;   // +/- 350 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.A_ij  1829.33961399;
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.A_ji  4234.0125623;
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.A_ij  1830;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nUndecane.A_ji  4230;   // +/- 350 (1 sigma, from the fit)
     }
 
     evidence

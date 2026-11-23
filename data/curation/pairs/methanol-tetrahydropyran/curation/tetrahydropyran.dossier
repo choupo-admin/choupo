@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.b_ij  45.1043015621;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.b_ji  329.848610333;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.b_ij  45.1;   // +/- 8.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.b_ji  330;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.b_ij  45.1043020232;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.b_ji  329.848609469;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.b_ij  45.1;   // +/- 8.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.b_ji  330;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.A_ij  619.435751043;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.A_ji  2985.84259612;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.A_ij  620;   // +/- 100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.A_ji  2986;   // +/- 65 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.A_ij  620.042967321;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.A_ji  2985.60625269;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.A_ij  620;   // +/- 100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-methanol.A_ji  2986;   // +/- 65 (1 sigma, from the fit)
     }
 
     evidence

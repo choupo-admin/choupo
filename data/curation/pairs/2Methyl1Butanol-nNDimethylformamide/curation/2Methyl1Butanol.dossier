@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.b_ij  660.780657157;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.b_ji  -422.03430694;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.b_ij  661;   // +/- 61 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.b_ji  -422;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.b_ij  660.780657894;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.b_ji  -422.034307227;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.b_ij  661;   // +/- 61 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.b_ji  -422;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.A_ij  -3794.15532663;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.A_ji  6062.17926734;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.A_ij  -3790;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.A_ji  6060;   // +/- 530 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.A_ij  -3794.15533613;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.A_ji  6062.1792906;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.A_ij  -3790;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-nNDimethylformamide.A_ji  6060;   // +/- 530 (1 sigma, from the fit)
     }
 
     evidence

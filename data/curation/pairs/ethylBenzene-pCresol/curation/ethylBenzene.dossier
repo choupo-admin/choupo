@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.b_ij  -317.817334461;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.b_ji  802.240332995;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.b_ij  -317.8;   // +/- 9.6 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.b_ji  802;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.b_ij  -317.817334215;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.b_ji  802.240332533;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.b_ij  -317.8;   // +/- 9.6 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.b_ji  802;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.A_ij  5122.93326317;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.A_ji  -904.784039826;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.A_ij  5120;   // +/- 250 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.A_ji  -905;   // +/- 81 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.A_ij  5122.93323995;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.A_ji  -904.784034425;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.A_ij  5120;   // +/- 250 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-pCresol.A_ji  -905;   // +/- 81 (1 sigma, from the fit)
     }
 
     evidence

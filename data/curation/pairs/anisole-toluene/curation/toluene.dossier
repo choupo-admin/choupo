@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.b_ij  386.218405765;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.b_ji  -237.218356362;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.b_ij  390;   // +/- 190 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.b_ji  -240;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.b_ij  386.218404936;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.b_ji  -237.218355859;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.b_ij  390;   // +/- 190 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.b_ji  -240;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.A_ij  -1154.0711121;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.A_ji  2278.10304341;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.A_ij  -1150;   // +/- 830 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.A_ji  2300;   // +/- 1300 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.A_ij  -1154.07110606;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.A_ji  2278.10303342;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.A_ij  -1150;   // +/- 830 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-anisole.A_ji  2300;   // +/- 1300 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.b_ij  169.805954508;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.b_ji  144.118442096;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.b_ij  170;   // +/- 23 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.b_ji  144;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -96,8 +96,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.b_ij  169.805954189;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.b_ji  144.118442396;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.b_ij  170;   // +/- 23 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.b_ji  144;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -161,8 +161,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.A_ij  1112.94066098;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.A_ji  1641.64602436;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.A_ij  1110;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.A_ji  1640;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence
@@ -226,8 +226,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.A_ij  1112.94066295;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.A_ji  1641.6460219;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.A_ij  1110;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-dimethylCarbonate.A_ji  1640;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence

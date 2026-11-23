@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.b_ij  -365.107156491;
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.b_ji  548.057139484;
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.b_ij  -365.1;   // +/- 8.6 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.b_ji  548;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.b_ij  -365.107156199;
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.b_ji  548.057138792;
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.b_ij  -365.1;   // +/- 8.6 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.b_ji  548;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.A_ij  4930.57301793;
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.A_ji  -3238.72403415;
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.A_ij  4930;   // +/- 210 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.A_ji  -3239;   // +/- 69 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.A_ij  4930.57302353;
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.A_ji  -3238.72403556;
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.A_ij  4930;   // +/- 210 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-diEthylCarbonate.A_ji  -3239;   // +/- 69 (1 sigma, from the fit)
     }
 
     evidence

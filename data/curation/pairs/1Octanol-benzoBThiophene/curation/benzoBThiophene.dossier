@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.b_ij  -450.852586957;
-        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.b_ji  1175.79896218;
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.b_ij  -451;   // +/- 71 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.b_ji  1180;   // +/- 210 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.b_ij  -450.852587103;
-        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.b_ji  1175.79896285;
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.b_ij  -451;   // +/- 71 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.b_ji  1180;   // +/- 210 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.a_ij  -448.896759597;
-        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.a_ji  879.592240655;
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.a_ij  -449;   // +/- 21 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.a_ji  880;   // +/- 83 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.a_ij  -448.896759488;
-        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.a_ji  879.59224027;
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.a_ij  -449;   // +/- 21 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.a_ji  880;   // +/- 83 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.A_ij  10733.4670282;
-        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.A_ji  -3630.0146711;
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.A_ij  10700;   // +/- 2200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.A_ji  -3630;   // +/- 380 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.A_ij  10733.4670177;
-        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.A_ji  -3630.01466928;
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.A_ij  10700;   // +/- 2200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzoBThiophene-1Octanol.A_ji  -3630;   // +/- 380 (1 sigma, from the fit)
     }
 
     evidence

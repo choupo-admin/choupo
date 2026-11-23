@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.b_ij  121.532070964;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.b_ji  352.74455941;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.b_ij  122;   // +/- 21 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.b_ji  353;   // +/- 26 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.b_ij  121.532071677;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.b_ji  352.744558715;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.b_ij  122;   // +/- 21 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.b_ji  353;   // +/- 26 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.A_ij  4582.06779831;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.A_ji  -271.474623784;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.A_ij  4580;   // +/- 210 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.A_ji  -270;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.A_ij  4582.06780002;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.A_ji  -271.474625277;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.A_ij  4580;   // +/- 210 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.A_ji  -270;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.a_ij  -89.6957122784;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.a_ji  249.218694409;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.a_ij  -90;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.a_ji  249;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.a_ij  -89.695712271;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.a_ji  249.218694414;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.a_ij  -90;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-diNPropylEther.a_ji  249;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence

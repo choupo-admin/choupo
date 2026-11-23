@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.b_ij  588.649061725;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.b_ji  -172.174172456;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.b_ij  589;   // +/- 49 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.b_ji  -172;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.b_ij  588.649059334;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.b_ji  -172.174170707;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.b_ij  589;   // +/- 49 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.b_ji  -172;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.A_ij  -836.709661024;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.A_ji  4287.54370016;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.A_ij  -840;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.A_ji  4290;   // +/- 330 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.A_ij  -836.709660636;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.A_ji  4287.54370242;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.A_ij  -840;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-dimethylSulfoxide.A_ji  4290;   // +/- 330 (1 sigma, from the fit)
     }
 
     evidence

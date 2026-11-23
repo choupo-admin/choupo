@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.b_ij  1.50203188138;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.b_ji  4.33546526127;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.b_ij  0;   // +/- 740 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.b_ji  0;   // +/- 740 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.b_ij  505.751938947;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.b_ji  -368.613687343;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.b_ij  506;   // +/- 28 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.b_ji  -369;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.A_ij  -2128.72666542;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.A_ji  3361.35327951;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.A_ij  -2129;   // +/- 94 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.A_ji  3360;   // +/- 230 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.A_ij  -2128.72657183;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.A_ji  3361.35302492;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.A_ij  -2129;   // +/- 94 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-ethyleneGlycol.A_ji  3360;   // +/- 230 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.b_ij  866.340492419;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.b_ji  -497.435937673;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.b_ij  866;   // +/- 38 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.b_ji  -497;   // +/- 14 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.b_ij  866.340493175;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.b_ji  -497.435937954;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.b_ij  866;   // +/- 38 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.b_ji  -497;   // +/- 14 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.A_ij  -4162.44478248;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.A_ji  7699.80697763;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.A_ij  -4162;   // +/- 71 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.A_ji  7700;   // +/- 310 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.A_ij  -4162.44478024;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.A_ji  7699.80696783;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.A_ij  -4162;   // +/- 71 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexanol-aniline.A_ji  7700;   // +/- 310 (1 sigma, from the fit)
     }
 
     evidence

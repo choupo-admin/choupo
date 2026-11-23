@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.b_ij  580.660407186;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.b_ji  -225.471398392;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.b_ij  581;   // +/- 38 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.b_ji  -225;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.b_ij  580.660406516;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.b_ji  -225.471397977;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.b_ij  581;   // +/- 38 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.b_ji  -225;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.A_ij  -2212.79541818;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.A_ji  5267.43900892;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.A_ij  -2213;   // +/- 91 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.A_ji  5270;   // +/- 240 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.A_ij  -2212.79541752;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.A_ji  5267.43900631;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.A_ij  -2213;   // +/- 91 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-bromobenzene.A_ji  5270;   // +/- 240 (1 sigma, from the fit)
     }
 
     evidence

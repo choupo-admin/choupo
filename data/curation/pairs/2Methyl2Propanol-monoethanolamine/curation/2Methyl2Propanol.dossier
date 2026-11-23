@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.b_ij  726.715234317;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.b_ji  -49.2383787229;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.b_ij  727;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.b_ji  -49.2;   // +/- 9.6 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.b_ij  726.715237738;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.b_ji  -49.2383799445;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.b_ij  727;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.b_ji  -49.2;   // +/- 9.6 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.A_ij  -967.55904459;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.A_ji  7380.74620129;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.A_ij  -968;   // +/- 43 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.A_ji  7380;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.A_ij  -967.559044541;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.A_ji  7380.74620171;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.A_ij  -968;   // +/- 43 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-monoethanolamine.A_ji  7380;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence

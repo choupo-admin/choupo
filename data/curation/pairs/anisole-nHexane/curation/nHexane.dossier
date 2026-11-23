@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-anisole.b_ij  1017.04314971;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-anisole.b_ji  -324.500446268;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-anisole.b_ij  1017;   // +/- 56 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-anisole.b_ji  -324.5;   // +/- 9.3 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-anisole.b_ij  1017.04316745;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-anisole.b_ji  -324.500450249;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-anisole.b_ij  1017;   // +/- 56 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-anisole.b_ji  -324.5;   // +/- 9.3 (1 sigma, from the fit)
     }
 
     evidence

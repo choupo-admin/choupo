@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ij  358.291886326;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ji  555.844174284;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ij  358;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ji  556;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -117,8 +117,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ij  358.291886109;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ji  555.844174597;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ij  358;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.b_ji  556;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -203,8 +203,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.a_ij  -101.649058478;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.a_ji  585.572946409;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.a_ij  -101.6;   // +/- 3.5 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.a_ji  586;   // +/- 10 (1 sigma, from the fit)
     }
 
     evidence
@@ -289,8 +289,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.a_ij  -101.649058467;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.a_ji  585.572946375;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.a_ij  -101.6;   // +/- 3.5 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-224Trimethylpentane.a_ji  586;   // +/- 10 (1 sigma, from the fit)
     }
 
     evidence

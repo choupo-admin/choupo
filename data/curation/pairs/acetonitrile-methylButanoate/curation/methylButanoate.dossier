@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.b_ij  -351.008464962;
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.b_ji  919.812742467;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.b_ij  -351;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.b_ji  920;   // +/- 45 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.b_ij  -351.008464891;
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.b_ji  919.812742161;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.b_ij  -351;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.b_ji  920;   // +/- 45 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.A_ij  5179.42644483;
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.A_ji  392.967921915;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.A_ij  5180;   // +/- 710 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.A_ji  390;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.A_ij  5179.42646468;
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.A_ji  392.96791981;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.A_ij  5180;   // +/- 710 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-acetonitrile.A_ji  390;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence

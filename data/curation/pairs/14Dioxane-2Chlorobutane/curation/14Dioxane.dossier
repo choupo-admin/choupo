@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.b_ij  -64.9571483652;
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.b_ji  276.418126732;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.b_ij  -65;   // +/- 55 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.b_ji  276;   // +/- 78 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.b_ij  -64.9571501584;
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.b_ji  276.41812929;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.b_ij  -65;   // +/- 55 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.b_ji  276;   // +/- 78 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.a_ij  -107.35410104;
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.a_ji  207.488622953;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.a_ij  -107;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.a_ji  207;   // +/- 42 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.a_ij  -107.354100776;
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.a_ji  207.488622549;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.a_ij  -107;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.a_ji  207;   // +/- 42 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.A_ij  2459.27809445;
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.A_ji  -700.60199791;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.A_ij  2460;   // +/- 480 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.A_ji  -700;   // +/- 320 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.A_ij  2459.27809379;
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.A_ji  -700.60199737;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.A_ij  2460;   // +/- 480 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-2Chlorobutane.A_ji  -700;   // +/- 320 (1 sigma, from the fit)
     }
 
     evidence

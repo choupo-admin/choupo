@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.b_ij  449.191709913;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.b_ji  415.542075827;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.b_ij  449.2;   // +/- 9.1 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.b_ji  415.5;   // +/- 6.1 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.b_ij  449.191710316;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.b_ji  415.542078506;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.b_ij  449.2;   // +/- 9.1 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.b_ji  415.5;   // +/- 6.1 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.A_ij  2399.74605996;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.A_ji  6818.69002575;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.A_ij  2400;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.A_ji  6819;   // +/- 90 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.A_ij  2399.7460961;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.A_ji  6818.68991195;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.A_ij  2400;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-nNDimethylacetamide.A_ji  6819;   // +/- 90 (1 sigma, from the fit)
     }
 
     evidence

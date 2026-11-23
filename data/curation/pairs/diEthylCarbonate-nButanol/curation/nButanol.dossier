@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.b_ij  112.623025691;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.b_ji  130.358678164;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.b_ij  113;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.b_ji  130;   // +/- 31 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.b_ij  112.623026296;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.b_ji  130.358677626;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.b_ij  113;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.b_ji  130;   // +/- 31 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.A_ij  2010.47220359;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.A_ji  81.5544870901;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.A_ij  2010;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.A_ji  80;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.A_ij  2010.47220498;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.A_ji  81.5544856138;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.A_ij  2010;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-diEthylCarbonate.A_ji  80;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence

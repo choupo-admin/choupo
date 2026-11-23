@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.b_ij  -57.1746710402;
-        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.b_ji  634.323011564;
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.b_ij  -57.2;   // +/- 7.7 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.b_ji  634;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.b_ij  -57.1746688632;
-        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.b_ji  634.323005299;
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.b_ij  -57.2;   // +/- 7.7 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.b_ji  634;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.a_ij  -92.5992302697;
-        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.a_ji  227.548036371;
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.a_ij  -92.6;   // +/- 8.5 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.a_ji  228;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.a_ij  -92.5992266242;
-        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.a_ji  227.54802904;
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.a_ij  -92.6;   // +/- 8.5 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.a_ji  228;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.A_ij  5728.54897339;
-        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.A_ji  166.924909269;
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.A_ij  5730;   // +/- 310 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.A_ji  167;   // +/- 76 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.A_ij  5728.54897867;
-        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.A_ji  166.924912424;
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.A_ij  5730;   // +/- 310 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Pentanol-toluene.A_ji  167;   // +/- 76 (1 sigma, from the fit)
     }
 
     evidence

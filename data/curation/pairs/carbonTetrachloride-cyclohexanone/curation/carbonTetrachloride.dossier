@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.b_ij  -343.967961302;
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.b_ji  752.534131805;
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.b_ij  -344.0;   // +/- 7.5 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.b_ji  753;   // +/- 20 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.b_ij  -343.967961116;
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.b_ji  752.534131315;
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.b_ij  -344.0;   // +/- 7.5 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.b_ji  753;   // +/- 20 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.A_ij  6088.07301059;
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.A_ji  -2168.7047775;
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.A_ij  6090;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.A_ji  -2169;   // +/- 35 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.A_ij  6088.07232348;
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.A_ji  -2168.70467794;
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.A_ij  6090;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-cyclohexanone.A_ji  -2169;   // +/- 35 (1 sigma, from the fit)
     }
 
     evidence

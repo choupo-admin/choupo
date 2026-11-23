@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.b_ij  248.226305349;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.b_ji  191.825662718;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.b_ij  248;   // +/- 77 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.b_ji  192;   // +/- 81 (1 sigma, from the fit)
     }
 
     evidence
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.b_ij  248.22630306;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.b_ji  191.825665;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.b_ij  248;   // +/- 77 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.b_ji  192;   // +/- 81 (1 sigma, from the fit)
     }
 
     evidence
@@ -143,8 +143,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.a_ij  67.1491037704;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.a_ji  6.51763677724;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.a_ij  67;   // +/- 75 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.a_ji  7;   // +/- 71 (1 sigma, from the fit)
     }
 
     evidence
@@ -199,8 +199,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.a_ij  67.1491038568;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.a_ji  6.51763668913;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.a_ij  67;   // +/- 75 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.a_ji  7;   // +/- 71 (1 sigma, from the fit)
     }
 
     evidence
@@ -255,8 +255,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.A_ij  2949.74015067;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.A_ji  1009.55024845;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.A_ij  2950;   // +/- 490 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.A_ji  1010;   // +/- 420 (1 sigma, from the fit)
     }
 
     evidence
@@ -311,8 +311,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.A_ij  2949.74014575;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.A_ji  1009.55025332;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.A_ij  2950;   // +/- 490 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pXylene.A_ji  1010;   // +/- 420 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.b_ij  1046.45469138;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.b_ji  -109.998746487;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.b_ij  1046;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.b_ji  -110;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.b_ij  1046.45469154;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.b_ji  -109.998746705;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.b_ij  1046;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.b_ji  -110;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.A_ij  -654.12249072;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.A_ji  11747.7449263;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.A_ij  -650;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.A_ji  11750;   // +/- 930 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.A_ij  -654.122491384;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.A_ji  11747.74493;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.A_ij  -650;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nNDimethylacetamide.A_ji  11750;   // +/- 930 (1 sigma, from the fit)
     }
 
     evidence

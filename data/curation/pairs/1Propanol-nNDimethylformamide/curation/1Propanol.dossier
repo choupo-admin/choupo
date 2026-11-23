@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.b_ij  -395.224463913;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.b_ji  310.554891349;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.b_ij  -400;   // +/- 1000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.b_ji  300;   // +/- 1700 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.b_ij  1255.11236261;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.b_ji  -705.704392485;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.b_ij  1255;   // +/- 52 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.b_ji  -705.7;   // +/- 9.0 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.A_ij  2558.37621145;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.A_ji  -2908.06848126;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.A_ij  2600;   // +/- 5600 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.A_ji  -2900;   // +/- 2600 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.A_ij  2558.37842673;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.A_ji  -2908.06949022;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.A_ij  2600;   // +/- 5600 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nNDimethylformamide.A_ji  -2900;   // +/- 2600 (1 sigma, from the fit)
     }
 
     evidence

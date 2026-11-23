@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.b_ij  346.251564258;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.b_ji  347.017067326;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.b_ij  346.3;   // +/- 8.1 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.b_ji  347.0;   // +/- 8.7 (1 sigma, from the fit)
     }
 
     evidence
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.b_ij  346.251564225;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.b_ji  347.017067298;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.b_ij  346.3;   // +/- 8.1 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.b_ji  347.0;   // +/- 8.7 (1 sigma, from the fit)
     }
 
     evidence
@@ -143,8 +143,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.a_ij  -66.7141612431;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.a_ji  269.469602569;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.a_ij  -66.7;   // +/- 3.2 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.a_ji  269.5;   // +/- 5.3 (1 sigma, from the fit)
     }
 
     evidence
@@ -199,8 +199,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.a_ij  -66.714161206;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.a_ji  269.469602498;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.a_ij  -66.7;   // +/- 3.2 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.a_ji  269.5;   // +/- 5.3 (1 sigma, from the fit)
     }
 
     evidence
@@ -255,8 +255,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.A_ij  5897.77237975;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.A_ji  960.240029024;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.A_ij  5898;   // +/- 74 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.A_ji  960;   // +/- 59 (1 sigma, from the fit)
     }
 
     evidence
@@ -311,8 +311,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.A_ij  5897.77237978;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.A_ji  960.240029114;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.A_ij  5898;   // +/- 74 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-224Trimethylpentane.A_ji  960;   // +/- 59 (1 sigma, from the fit)
     }
 
     evidence

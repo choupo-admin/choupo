@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.b_ij  397.426105376;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.b_ji  -24.171552418;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.b_ij  397;   // +/- 25 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.b_ji  -24;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.b_ij  397.426104176;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.b_ji  -24.1715516072;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.b_ij  397;   // +/- 25 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.b_ji  -24;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.A_ij  803.125659668;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.A_ji  2425.83937399;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.A_ij  800;   // +/- 100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.A_ji  2430;   // +/- 170 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.A_ij  803.12565816;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.A_ji  2425.83937628;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.A_ij  800;   // +/- 100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-pCresol.A_ji  2430;   // +/- 170 (1 sigma, from the fit)
     }
 
     evidence

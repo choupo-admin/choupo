@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.b_ij  -218.871550669;
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.b_ji  497.799385719;
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.b_ij  -219;   // +/- 29 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.b_ji  498;   // +/- 53 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.b_ij  -218.871554869;
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.b_ji  497.799396055;
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.b_ij  -219;   // +/- 29 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.b_ji  498;   // +/- 53 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.A_ij  3950.3764014;
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.A_ji  -1716.37377635;
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.A_ij  3950;   // +/- 440 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.A_ji  -1720;   // +/- 200 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.A_ij  3950.37584429;
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.A_ji  -1716.37342444;
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.A_ij  3950;   // +/- 440 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.A_ji  -1720;   // +/- 200 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.a_ij  -169.468375335;
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.a_ji  271.235314174;
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.a_ij  -169;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.a_ji  271;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.a_ij  -169.468375519;
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.a_ji  271.23531475;
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.a_ij  -169;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-nOctane.a_ji  271;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence

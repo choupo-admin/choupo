@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.b_ij  821.215617912;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.b_ji  -240.291415391;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.b_ij  821;   // +/- 42 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.b_ji  -240;   // +/- 13 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.b_ij  821.215651201;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.b_ji  -240.291426531;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.b_ij  821;   // +/- 42 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.b_ji  -240;   // +/- 13 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.a_ij  500.907409725;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.a_ji  -224.608252099;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.a_ij  501;   // +/- 20 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.a_ji  -224.6;   // +/- 5.8 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.a_ij  500.907396378;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.a_ji  -224.608248302;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.a_ij  501;   // +/- 20 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.a_ji  -224.6;   // +/- 5.8 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.A_ij  -1694.19528186;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.A_ji  7596.5591548;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.A_ij  -1694;   // +/- 53 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.A_ji  7600;   // +/- 380 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.A_ij  -1694.19531377;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.A_ji  7596.55945224;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.A_ij  -1694;   // +/- 53 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-toluene.A_ji  7600;   // +/- 380 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.b_ij  -292.425637621;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.b_ji  258.339042833;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.b_ij  -290;   // +/- 470 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.b_ji  260;   // +/- 760 (1 sigma, from the fit)
     }
 
     evidence
@@ -85,8 +85,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.b_ij  1397.80382876;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.b_ji  -566.747715958;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.b_ij  1398;   // +/- 77 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.b_ji  -566.7;   // +/- 8.5 (1 sigma, from the fit)
     }
 
     evidence
@@ -139,8 +139,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.A_ij  2148.502279;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.A_ji  -2083.26735165;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.A_ij  2100;   // +/- 4900 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.A_ji  -2100;   // +/- 2200 (1 sigma, from the fit)
     }
 
     evidence
@@ -193,8 +193,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.A_ij  2148.55480487;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.A_ji  -2083.29136204;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.A_ij  2100;   // +/- 4900 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-styrene.A_ji  -2100;   // +/- 2200 (1 sigma, from the fit)
     }
 
     evidence

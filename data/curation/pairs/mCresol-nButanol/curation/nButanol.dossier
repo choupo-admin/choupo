@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-mCresol.b_ij  1121.56006002;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-mCresol.b_ji  -1346.4767887;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-mCresol.b_ij  1100;   // +/- 2400 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-mCresol.b_ji  -1350;   // +/- 460 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-mCresol.b_ij  1121.54976024;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-mCresol.b_ji  -1346.47485877;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-mCresol.b_ij  1100;   // +/- 2400 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-mCresol.b_ji  -1350;   // +/- 460 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-mCresol.A_ij  -8318.28218063;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-mCresol.A_ji  6514.27263711;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-mCresol.A_ij  -8320;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-mCresol.A_ji  6500;   // +/- 1000 (1 sigma, from the fit)
     }
 
     evidence

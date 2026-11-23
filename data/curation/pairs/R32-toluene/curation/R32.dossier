@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.b_ij  126.693924537;
-        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.b_ji  256.536701394;
+        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.b_ij  0;   // +/- 120000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.b_ji  0;   // +/- 98000 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.b_ij  126.595817174;
-        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.b_ji  256.614423145;
+        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.b_ij  0;   // +/- 120000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.b_ji  0;   // +/- 99000 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.A_ij  3045.54514158;
-        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.A_ji  1118.30252351;
+        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.A_ij  0;   // +/- 410000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.A_ji  0;   // +/- 1200000 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.A_ij  3046.66024496;
-        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.A_ji  1115.01436853;
+        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.A_ij  0;   // +/- 420000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.R32-toluene.A_ji  0;   // +/- 1200000 (1 sigma, from the fit)
     }
 
     evidence

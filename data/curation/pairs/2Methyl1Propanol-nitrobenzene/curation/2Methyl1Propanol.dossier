@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.b_ij  -354.443814641;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.b_ji  600.831636855;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.b_ij  -354;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.b_ji  601;   // +/- 53 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.b_ij  -354.443814304;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.b_ji  600.831636116;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.b_ij  -354;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.b_ji  601;   // +/- 53 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.A_ij  4408.65842735;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.A_ji  -2387.71518332;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.A_ij  4410;   // +/- 420 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.A_ji  -2390;   // +/- 170 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.A_ij  4408.65847626;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.A_ji  -2387.71519715;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.A_ij  4410;   // +/- 420 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-nitrobenzene.A_ji  -2390;   // +/- 170 (1 sigma, from the fit)
     }
 
     evidence

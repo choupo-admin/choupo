@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.b_ij  263.817884773;
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.b_ji  392.632355217;
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.b_ij  264;   // +/- 17 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.b_ji  393;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.b_ij  263.817887666;
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.b_ji  392.63235197;
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.b_ij  264;   // +/- 17 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.b_ji  393;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.a_ij  -53.4413791603;
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.a_ji  259.982940689;
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.a_ij  -53.4;   // +/- 8.0 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.a_ji  260;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.a_ij  -53.4413789344;
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.a_ji  259.982940371;
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.a_ij  -53.4;   // +/- 8.0 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.a_ji  260;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.A_ij  4852.70844791;
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.A_ji  1219.6350986;
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.A_ij  4853;   // +/- 76 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.A_ji  1220;   // +/- 72 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.A_ij  4852.70845032;
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.A_ji  1219.63509771;
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.A_ij  4853;   // +/- 76 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-ethylBenzene.A_ji  1220;   // +/- 72 (1 sigma, from the fit)
     }
 
     evidence

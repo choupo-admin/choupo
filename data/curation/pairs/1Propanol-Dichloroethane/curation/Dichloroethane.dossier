@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.b_ij  569.304234174;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.b_ji  80.1830231462;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.b_ij  569;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.b_ji  80.2;   // +/- 8.0 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.b_ij  569.304229909;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.b_ji  80.1830252915;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.b_ij  569;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.b_ji  80.2;   // +/- 8.0 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.A_ij  1138.55185415;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.A_ji  5308.14179486;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.A_ij  1139;   // +/- 25 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.A_ji  5308;   // +/- 77 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.A_ij  1138.55190418;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.A_ji  5308.14156232;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.A_ij  1139;   // +/- 25 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-1Propanol.A_ji  5308;   // +/- 77 (1 sigma, from the fit)
     }
 
     evidence

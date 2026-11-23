@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.b_ij  466.252630761;
-        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.b_ji  -135.781414046;
+        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.b_ij  466;   // +/- 36 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.b_ji  -136;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.b_ij  466.252625084;
-        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.b_ji  -135.781409843;
+        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.b_ij  466;   // +/- 36 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.b_ji  -136;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.A_ij  1438.19350286;
-        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.A_ji  1153.04755849;
+        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.A_ij  1440;   // +/- 170 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.A_ji  1150;   // +/- 250 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.A_ij  1438.19350727;
-        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.A_ji  1153.04755378;
+        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.A_ij  1440;   // +/- 170 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.furan-nHexane.A_ji  1150;   // +/- 250 (1 sigma, from the fit)
     }
 
     evidence

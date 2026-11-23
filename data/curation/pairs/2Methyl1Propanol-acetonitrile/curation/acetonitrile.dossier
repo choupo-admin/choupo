@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.b_ij  -340.112446145;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.b_ji  731.227243002;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.b_ij  -340;   // +/- 47 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.b_ji  730;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.b_ij  -340.112446458;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.b_ji  731.227244159;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.b_ij  -340;   // +/- 47 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.b_ji  730;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.A_ij  7840.57663264;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.A_ji  -3740.12236205;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.A_ij  7800;   // +/- 2400 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.A_ji  -3740;   // +/- 400 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.A_ij  7840.57665946;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.A_ji  -3740.12236797;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.A_ij  7800;   // +/- 2400 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-2Methyl1Propanol.A_ji  -3740;   // +/- 400 (1 sigma, from the fit)
     }
 
     evidence

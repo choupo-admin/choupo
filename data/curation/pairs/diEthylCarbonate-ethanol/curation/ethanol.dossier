@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.b_ij  434.881970357;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.b_ji  -36.0395115711;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.b_ij  435;   // +/- 23 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.b_ji  -36;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.b_ij  434.881970169;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.b_ji  -36.0395114144;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.b_ij  435;   // +/- 23 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.b_ji  -36;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.A_ij  2609.73773751;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.A_ji  820.843160249;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.A_ij  2610;   // +/- 94 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.A_ji  820;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.A_ij  2609.73773971;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.A_ji  820.843154868;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.A_ij  2610;   // +/- 94 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diEthylCarbonate.A_ji  820;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence

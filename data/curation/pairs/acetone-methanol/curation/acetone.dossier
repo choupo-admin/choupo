@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ij  103.586152881;
-        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ji  112.549705917;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ij  104;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ji  113;   // +/- 14 (1 sigma, from the fit)
     }
 
     evidence
@@ -137,8 +137,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ij  103.586154136;
-        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ji  112.549704752;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ij  104;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.b_ji  113;   // +/- 14 (1 sigma, from the fit)
     }
 
     evidence
@@ -243,8 +243,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.a_ij  228.265776457;
-        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.a_ji  -54.8312239033;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.a_ij  228.3;   // +/- 7.6 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.a_ji  -54.8;   // +/- 5.1 (1 sigma, from the fit)
     }
 
     evidence
@@ -349,8 +349,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.a_ij  228.265775141;
-        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.a_ji  -54.8312231397;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.a_ij  228.3;   // +/- 7.6 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.a_ji  -54.8;   // +/- 5.1 (1 sigma, from the fit)
     }
 
     evidence
@@ -455,8 +455,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.A_ij  -680.619002209;
-        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.A_ji  2542.86546176;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.A_ij  -681;   // +/- 77 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.A_ji  2543;   // +/- 74 (1 sigma, from the fit)
     }
 
     evidence
@@ -561,8 +561,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.A_ij  -680.618990369;
-        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.A_ji  2542.86544774;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.A_ij  -681;   // +/- 77 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetone-methanol.A_ji  2543;   // +/- 74 (1 sigma, from the fit)
     }
 
     evidence

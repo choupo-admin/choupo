@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.b_ij  421.736078625;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.b_ji  -453.038074626;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.b_ij  0;   // +/- 19000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.b_ji  -500;   // +/- 9600 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.b_ij  421.736045203;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.b_ji  -453.038057759;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.b_ij  0;   // +/- 19000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.b_ji  -500;   // +/- 9600 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.A_ij  -1817.87718619;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.A_ji  1976.24568617;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.A_ij  -1800;   // +/- 3100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.A_ji  2000;   // +/- 8800 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.A_ij  30000;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.A_ji  -5934.0778524;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.A_ij  0;   // +/- 1600000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-ethylBenzene.A_ji  -5930;   // +/- 300 (1 sigma, from the fit)
     }
 
     evidence

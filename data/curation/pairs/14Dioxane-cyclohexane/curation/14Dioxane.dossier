@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.b_ij  306.689912733;
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.b_ji  144.310851003;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.b_ij  307;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.b_ji  144;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence
@@ -86,8 +86,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.b_ij  306.689911621;
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.b_ji  144.310852075;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.b_ij  307;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.b_ji  144;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence
@@ -141,8 +141,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.a_ij  15.4100690349;
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.a_ji  141.645808686;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.a_ij  15;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.a_ji  142;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence
@@ -196,8 +196,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.a_ij  15.4100690732;
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.a_ji  141.645808637;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.a_ij  15;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.a_ji  142;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence
@@ -251,8 +251,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.A_ij  2677.06882887;
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.A_ji  1462.74114683;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.A_ij  2680;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.A_ji  1460;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence
@@ -306,8 +306,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.A_ij  2677.06881896;
-        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.A_ji  1462.74115376;
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.A_ij  2680;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.14Dioxane-cyclohexane.A_ji  1460;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence

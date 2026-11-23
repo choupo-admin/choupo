@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-dimethylSulfoxide.b_ij  1416.30186493;
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-dimethylSulfoxide.b_ji  -508.009191987;
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-dimethylSulfoxide.b_ij  1420;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-dimethylSulfoxide.b_ji  -508;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-dimethylSulfoxide.b_ij  1416.3018641;
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-dimethylSulfoxide.b_ji  -508.009191811;
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-dimethylSulfoxide.b_ij  1420;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-dimethylSulfoxide.b_ji  -508;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence

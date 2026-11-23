@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.b_ij  335.137738935;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.b_ji  -468.259463933;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.b_ij  340;   // +/- 260 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.b_ji  -470;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.b_ij  335.137752294;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.b_ji  -468.259470887;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.b_ij  340;   // +/- 260 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.b_ji  -470;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.A_ij  569.794667907;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.A_ji  -1736.42045422;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.A_ij  570;   // +/- 540 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.A_ji  -1700;   // +/- 1200 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.A_ij  569.794662712;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.A_ji  -1736.42044271;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.A_ij  570;   // +/- 540 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diethylethanolamine.A_ji  -1700;   // +/- 1200 (1 sigma, from the fit)
     }
 
     evidence

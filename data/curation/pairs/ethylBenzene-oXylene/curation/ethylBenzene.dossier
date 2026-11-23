@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.b_ij  442.037805494;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.b_ji  -339.247399859;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.b_ij  440;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.b_ji  -339;   // +/- 80 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.b_ij  442.037817079;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.b_ji  -339.247406945;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.b_ij  440;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.b_ji  -339;   // +/- 80 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.a_ij  231.659008921;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.a_ji  -182.222021019;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.a_ij  232;   // +/- 79 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.a_ji  -182;   // +/- 48 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.a_ij  231.659010735;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.a_ji  -182.222022166;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.a_ij  232;   // +/- 79 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.a_ji  -182;   // +/- 48 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.A_ij  -2179.14664153;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.A_ji  3077.20948541;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.A_ij  -2180;   // +/- 570 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.A_ji  3100;   // +/- 1200 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.A_ij  -2179.14662881;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.A_ji  3077.20945991;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.A_ij  -2180;   // +/- 570 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-oXylene.A_ji  3100;   // +/- 1200 (1 sigma, from the fit)
     }
 
     evidence

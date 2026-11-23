@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.b_ij  -414.70570191;
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.b_ji  959.857608471;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.b_ij  -415;   // +/- 20 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.b_ji  960;   // +/- 75 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.b_ij  -414.705702833;
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.b_ji  959.857610194;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.b_ij  -415;   // +/- 20 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.b_ji  960;   // +/- 75 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.A_ij  6810.8617972;
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.A_ji  -1035.56299084;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.A_ij  6800;   // +/- 1500 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.A_ji  -1040;   // +/- 180 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.A_ij  6810.86182598;
-        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.A_ji  -1035.56299388;
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.A_ij  6800;   // +/- 1500 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylButanoate-propionitrile.A_ji  -1040;   // +/- 180 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ij  250.503087732;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ji  207.594272187;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ij  251;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ji  208;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -105,8 +105,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ij  250.503086634;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ji  207.594273213;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ij  251;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ji  208;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -179,8 +179,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.A_ij  402.931431441;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.A_ji  3808.67368506;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.A_ij  400;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.A_ji  3810;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence
@@ -253,8 +253,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.A_ij  402.931435831;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.A_ji  3808.67368031;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.A_ij  400;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.A_ji  3810;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence

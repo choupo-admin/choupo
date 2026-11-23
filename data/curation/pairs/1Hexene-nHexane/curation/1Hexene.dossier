@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.b_ij  1.6515333151;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.b_ji  12.0999338958;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.b_ij  2;   // +/- 93 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.b_ji  12;   // +/- 94 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.b_ij  1.64475366989;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.b_ji  12.1067450103;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.b_ij  2;   // +/- 93 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.b_ji  12;   // +/- 94 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.a_ij  0.422086408965;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.a_ji  3.38864126736;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.a_ij  0;   // +/- 52 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.a_ji  3;   // +/- 53 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.a_ij  0.42046416777;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.a_ji  3.3902669191;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.a_ij  0;   // +/- 52 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.a_ji  3;   // +/- 53 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.A_ij  102.942835519;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.A_ji  13.5749886205;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.A_ij  100;   // +/- 450 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.A_ji  10;   // +/- 460 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.A_ij  102.933109119;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.A_ji  13.5851043949;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.A_ij  100;   // +/- 450 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-nHexane.A_ji  10;   // +/- 460 (1 sigma, from the fit)
     }
 
     evidence

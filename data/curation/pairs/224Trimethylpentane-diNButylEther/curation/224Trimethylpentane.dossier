@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.b_ij  641.378400436;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.b_ji  -400.574204531;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.b_ij  641;   // +/- 40 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.b_ji  -401;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.b_ij  641.378372352;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.b_ji  -400.574190598;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.b_ij  641;   // +/- 40 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.b_ji  -401;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.a_ij  321.780368399;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.a_ji  -221.86268181;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.a_ij  322;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.a_ji  -221.9;   // +/- 9.1 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.a_ij  321.780365446;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.a_ji  -221.862680282;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.a_ij  322;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.a_ji  -221.9;   // +/- 9.1 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.A_ij  -2443.07072219;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.A_ji  4843.07756152;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.A_ij  -2440;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.A_ji  4840;   // +/- 400 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.A_ij  -2443.07072614;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.A_ji  4843.07761209;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.A_ij  -2440;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-diNButylEther.A_ji  4840;   // +/- 400 (1 sigma, from the fit)
     }
 
     evidence

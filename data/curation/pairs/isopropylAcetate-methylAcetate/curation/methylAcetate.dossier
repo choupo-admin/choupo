@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.b_ij  -273.119072812;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.b_ji  418.724191188;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.b_ij  -273;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.b_ji  419;   // +/- 41 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.b_ij  -273.119072648;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.b_ji  418.72419085;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.b_ij  -273;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.b_ji  419;   // +/- 41 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.a_ij  -161.89090561;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.a_ji  239.422631061;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.a_ij  -162;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.a_ji  239;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.a_ij  -161.890905636;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.a_ji  239.422631126;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.a_ij  -162;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.a_ji  239;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.A_ij  3796.35213755;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.A_ji  -2673.2203815;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.A_ij  3800;   // +/- 320 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.A_ji  -2670;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.A_ij  3796.35212764;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.A_ji  -2673.22037754;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.A_ij  3800;   // +/- 320 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-isopropylAcetate.A_ji  -2670;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence

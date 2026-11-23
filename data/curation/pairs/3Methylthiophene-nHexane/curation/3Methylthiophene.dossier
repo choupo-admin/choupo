@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.b_ij  207.302952672;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.b_ji  21.9787312246;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.b_ij  207;   // +/- 25 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.b_ji  22;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.b_ij  207.302952584;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.b_ji  21.9787314748;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.b_ij  207;   // +/- 25 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.b_ji  22;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.A_ij  1387.42711947;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.A_ji  567.265575853;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.A_ij  1390;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.A_ji  570;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.A_ij  1387.42712117;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.A_ji  567.265574294;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.A_ij  1390;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.A_ji  570;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.a_ij  -39.0001439271;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.a_ji  101.67843392;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.a_ij  -39;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.a_ji  102;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.a_ij  -39.0001439033;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.a_ji  101.678433907;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.a_ij  -39;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-nHexane.a_ji  102;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence

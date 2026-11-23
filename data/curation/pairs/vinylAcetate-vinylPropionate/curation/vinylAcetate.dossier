@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.b_ij  -135.871959964;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.b_ji  123.049692816;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.b_ij  -100;   // +/- 9300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.b_ji  0;   // +/- 12000 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.b_ij  635.289341218;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.b_ji  -419.217522693;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.b_ij  635;   // +/- 56 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.b_ji  -419;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.a_ij  -55.133378813;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.a_ji  52.3665860707;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.a_ij  0;   // +/- 13000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.a_ji  0;   // +/- 15000 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.a_ij  372.238671401;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.a_ji  -244.017646001;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.a_ij  372;   // +/- 40 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.a_ji  -244;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.A_ij  1435.01004686;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.A_ji  -1500.34999377;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.A_ij  1000;   // +/- 43000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.A_ji  -2000;   // +/- 31000 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.A_ij  1435.01152114;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.A_ji  -1500.35106079;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.A_ij  1000;   // +/- 43000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-vinylPropionate.A_ji  -2000;   // +/- 31000 (1 sigma, from the fit)
     }
 
     evidence

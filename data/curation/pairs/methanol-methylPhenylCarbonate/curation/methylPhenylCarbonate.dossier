@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPhenylCarbonate-methanol.b_ij  -115.152942389;
-        equilibrium.liquid.activityModel.binaryParameters.methylPhenylCarbonate-methanol.b_ji  1165.09670096;
+        equilibrium.liquid.activityModel.binaryParameters.methylPhenylCarbonate-methanol.b_ij  -115;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPhenylCarbonate-methanol.b_ji  1170;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPhenylCarbonate-methanol.b_ij  -115.154790497;
-        equilibrium.liquid.activityModel.binaryParameters.methylPhenylCarbonate-methanol.b_ji  1165.12144003;
+        equilibrium.liquid.activityModel.binaryParameters.methylPhenylCarbonate-methanol.b_ij  -115;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPhenylCarbonate-methanol.b_ji  1170;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.b_ij  59.8509600352;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.b_ji  213.408257248;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.b_ij  60;   // +/- 45 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.b_ji  213;   // +/- 52 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.b_ij  59.8509605863;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.b_ji  213.408256574;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.b_ij  60;   // +/- 45 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.b_ji  213;   // +/- 52 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.a_ij  66.2191028378;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.a_ji  -10.7897132708;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.a_ij  66;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.a_ji  -11;   // +/- 28 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.a_ij  66.2191026939;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.a_ji  -10.78971314;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.a_ij  66;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.a_ji  -11;   // +/- 28 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.A_ij  121.580548966;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.A_ji  2221.74858589;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.A_ij  120;   // +/- 290 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.A_ji  2220;   // +/- 250 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.A_ij  121.580539297;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.A_ji  2221.74859328;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.A_ij  120;   // +/- 290 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Pentanol.A_ji  2220;   // +/- 250 (1 sigma, from the fit)
     }
 
     evidence

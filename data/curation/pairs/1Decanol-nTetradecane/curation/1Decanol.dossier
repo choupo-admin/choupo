@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.b_ij  185.533616406;
-        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.b_ji  276.185610611;
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.b_ij  186;   // +/- 45 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.b_ji  276;   // +/- 52 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.b_ij  185.533624454;
-        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.b_ji  276.185601121;
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.b_ij  186;   // +/- 45 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.b_ji  276;   // +/- 52 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.A_ij  4264.56259362;
-        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.A_ji  25.6960391205;
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.A_ij  4260;   // +/- 330 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.A_ji  30;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.A_ij  4264.60772477;
-        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.A_ji  25.6669744383;
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.A_ij  4260;   // +/- 330 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.A_ji  30;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.a_ij  -69.2611341293;
-        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.a_ji  136.946701573;
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.a_ij  -69;   // +/- 21 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.a_ji  137;   // +/- 26 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.a_ij  -69.2611400255;
-        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.a_ji  136.946709095;
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.a_ij  -69;   // +/- 21 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Decanol-nTetradecane.a_ji  137;   // +/- 26 (1 sigma, from the fit)
     }
 
     evidence

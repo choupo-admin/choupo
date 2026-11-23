@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.b_ij  -105.613603756;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.b_ji  540.054900929;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.b_ij  -106;   // +/- 42 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.b_ji  540;   // +/- 68 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.b_ij  -105.613591555;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.b_ji  540.054885955;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.b_ij  -106;   // +/- 42 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.b_ji  540;   // +/- 68 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.a_ij  -164.001754541;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.a_ji  333.111296947;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.a_ij  -164;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.a_ji  333;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.a_ij  -164.001755246;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.a_ji  333.111298609;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.a_ij  -164;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.a_ji  333;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.A_ij  4451.61326827;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.A_ji  -861.649354235;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.A_ij  4450;   // +/- 470 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.A_ji  -860;   // +/- 280 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.A_ij  4451.61327324;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.A_ji  -861.649351786;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.A_ij  4450;   // +/- 470 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-pXylene.A_ji  -860;   // +/- 280 (1 sigma, from the fit)
     }
 
     evidence

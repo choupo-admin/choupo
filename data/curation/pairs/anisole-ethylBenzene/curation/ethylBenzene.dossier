@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.b_ij  -226.865062872;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.b_ji  424.04773949;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.b_ij  -227;   // +/- 39 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.b_ji  424;   // +/- 64 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.b_ij  -226.865062736;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.b_ji  424.047739259;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.b_ij  -227;   // +/- 39 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.b_ji  424;   // +/- 64 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.A_ij  2307.97618474;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.A_ji  -747.673814464;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.A_ij  2310;   // +/- 440 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.A_ji  -750;   // +/- 240 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.A_ij  2307.97618959;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.A_ji  -747.673817965;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.A_ij  2310;   // +/- 440 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-anisole.A_ji  -750;   // +/- 240 (1 sigma, from the fit)
     }
 
     evidence

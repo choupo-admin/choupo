@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.b_ij  365.471490231;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.b_ji  36.6439602236;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.b_ij  365.5;   // +/- 5.1 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.b_ji  36.6;   // +/- 3.7 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.b_ij  365.471490326;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.b_ji  36.6439601572;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.b_ij  365.5;   // +/- 5.1 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.b_ji  36.6;   // +/- 3.7 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.A_ij  2318.40629484;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.A_ji  1214.53845589;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.A_ij  2318;   // +/- 28 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.A_ji  1215;   // +/- 41 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.A_ij  2318.4062955;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.A_ji  1214.53845475;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.A_ij  2318;   // +/- 28 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-13Dioxolane.A_ji  1215;   // +/- 41 (1 sigma, from the fit)
     }
 
     evidence

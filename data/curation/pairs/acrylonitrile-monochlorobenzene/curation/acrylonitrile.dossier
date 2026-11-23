@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.b_ij  646.785972656;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.b_ji  -242.190423643;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.b_ij  647;   // +/- 18 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.b_ji  -242.2;   // +/- 8.3 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.b_ij  646.785972623;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.b_ji  -242.190423694;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.b_ij  647;   // +/- 18 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.b_ji  -242.2;   // +/- 8.3 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.A_ij  325.71550208;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.A_ji  2916.45863506;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.A_ij  326;   // +/- 37 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.A_ji  2916;   // +/- 94 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.A_ij  325.715499478;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.A_ji  2916.45863975;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.A_ij  326;   // +/- 37 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-monochlorobenzene.A_ji  2916;   // +/- 94 (1 sigma, from the fit)
     }
 
     evidence

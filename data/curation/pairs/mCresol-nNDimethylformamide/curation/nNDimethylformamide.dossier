@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.b_ij  -675.60042514;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.b_ji  441.697304622;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.b_ij  -680;   // +/- 390 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.b_ji  440;   // +/- 760 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.b_ij  2090.39565233;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.b_ji  -1020.09440522;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.b_ij  2090;   // +/- 64 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.b_ji  -1020.1;   // +/- 4.8 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.A_ij  1107.76014867;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.A_ji  -4107.70667809;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.A_ij  1110;   // +/- 750 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.A_ji  -4110;   // +/- 630 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.A_ij  3711.93712269;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.A_ji  -5917.99242064;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.A_ij  3700;   // +/- 1900 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-mCresol.A_ji  -5920;   // +/- 910 (1 sigma, from the fit)
     }
 
     evidence

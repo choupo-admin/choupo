@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.b_ij  189.382328654;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.b_ji  179.378915764;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.b_ij  189;   // +/- 77 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.b_ji  179;   // +/- 77 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.b_ij  189.38232792;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.b_ji  179.378916703;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.b_ij  189;   // +/- 77 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.b_ji  179;   // +/- 77 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.A_ij  2809.95125363;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.A_ji  417.105882997;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.A_ij  2810;   // +/- 420 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.A_ji  420;   // +/- 410 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.A_ij  2809.95125252;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.A_ji  417.105883043;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.A_ij  2810;   // +/- 420 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-anisole.A_ji  420;   // +/- 410 (1 sigma, from the fit)
     }
 
     evidence

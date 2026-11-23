@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.b_ij  -412.82807388;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.b_ji  1042.93287079;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.b_ij  -413;   // +/- 28 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.b_ji  1043;   // +/- 83 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.b_ij  -412.828073843;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.b_ji  1042.93286953;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.b_ij  -413;   // +/- 28 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.b_ji  1043;   // +/- 83 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.A_ij  6640.13592218;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.A_ji  -1020.15419611;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.A_ij  6640;   // +/- 920 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.A_ji  -1020;   // +/- 180 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.A_ij  6640.13594659;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.A_ji  -1020.1542033;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.A_ij  6640;   // +/- 920 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-4Heptanone.A_ji  -1020;   // +/- 180 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.b_ij  -181.520953287;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.b_ji  102.7659507;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.b_ij  -180;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.b_ji  100;   // +/- 190 (1 sigma, from the fit)
     }
 
     evidence
@@ -86,8 +86,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.b_ij  -181.510012712;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.b_ji  102.752212335;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.b_ij  -180;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.b_ji  100;   // +/- 190 (1 sigma, from the fit)
     }
 
     evidence
@@ -141,8 +141,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.A_ij  1188.19068254;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.A_ji  -1934.65776997;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.A_ij  1190;   // +/- 710 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.A_ji  -1930;   // +/- 620 (1 sigma, from the fit)
     }
 
     evidence
@@ -196,8 +196,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.A_ij  1188.16443278;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.A_ji  -1934.63501671;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.A_ij  1190;   // +/- 710 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.A_ji  -1930;   // +/- 620 (1 sigma, from the fit)
     }
 
     evidence
@@ -251,8 +251,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.a_ij  -11.3585706612;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.a_ji  3.71222216946;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.a_ij  -10;   // +/- 280 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.a_ji  0;   // +/- 290 (1 sigma, from the fit)
     }
 
     evidence
@@ -306,8 +306,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.a_ij  -11.358713637;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.a_ji  3.71236877495;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.a_ij  -10;   // +/- 280 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-ethylLactate.a_ji  0;   // +/- 290 (1 sigma, from the fit)
     }
 
     evidence

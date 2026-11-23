@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.b_ij  -331.078266469;
-        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.b_ji  1172.34113184;
+        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.b_ij  -331;   // +/- 63 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.b_ji  1170;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.b_ij  -331.078269286;
-        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.b_ji  1172.34114302;
+        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.b_ij  -331;   // +/- 63 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.b_ji  1170;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.a_ij  -248.073953611;
-        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.a_ji  388.667797233;
+        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.a_ij  -248;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.a_ji  389;   // +/- 53 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.a_ij  -248.07395864;
-        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.a_ji  388.667807167;
+        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.a_ij  -248;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPalmitate-methylStearate.a_ji  389;   // +/- 53 (1 sigma, from the fit)
     }
 
     evidence

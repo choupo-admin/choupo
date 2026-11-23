@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.b_ij  504.916314024;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.b_ji  -34.320322072;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.b_ij  505;   // +/- 15 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.b_ji  -34.3;   // +/- 8.5 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.b_ij  504.916314105;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.b_ji  -34.3203219716;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.b_ij  505;   // +/- 15 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.b_ji  -34.3;   // +/- 8.5 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.A_ij  154.758705602;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.A_ji  3975.849388;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.A_ij  155;   // +/- 47 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.A_ji  3976;   // +/- 98 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.A_ij  154.758704111;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.A_ji  3975.84939058;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.A_ij  155;   // +/- 47 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-acetonitrile.A_ji  3976;   // +/- 98 (1 sigma, from the fit)
     }
 
     evidence

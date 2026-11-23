@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.b_ij  410.593239715;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.b_ji  5.12489574668;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.b_ij  411;   // +/- 30 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.b_ji  5;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.b_ij  410.593239894;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.b_ji  5.12489564504;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.b_ij  411;   // +/- 30 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.b_ji  5;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.A_ij  1870.21635215;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.A_ji  1744.1040976;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.A_ij  1870;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.A_ji  1740;   // +/- 170 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.A_ij  1870.21635258;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.A_ji  1744.10409673;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.A_ij  1870;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylFormate-nHeptane.A_ji  1740;   // +/- 170 (1 sigma, from the fit)
     }
 
     evidence

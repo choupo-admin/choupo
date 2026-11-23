@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.b_ij  407.932243801;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.b_ji  -21.6607698285;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.b_ij  408;   // +/- 32 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.b_ji  -22;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.b_ij  407.932242648;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.b_ji  -21.6607688046;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.b_ij  408;   // +/- 32 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.b_ji  -22;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.a_ij  309.117595249;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.a_ji  -132.83994117;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.a_ij  309;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.a_ji  -132.8;   // +/- 9.9 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.a_ij  309.117594427;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.a_ji  -132.83994068;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.a_ij  309;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.a_ji  -132.8;   // +/- 9.9 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.A_ij  -788.76535928;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.A_ji  4098.59399552;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.A_ij  -790;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.A_ji  4100;   // +/- 190 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.A_ij  -788.765355317;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.A_ji  4098.59399165;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.A_ij  -790;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-acrylicAcid.A_ji  4100;   // +/- 190 (1 sigma, from the fit)
     }
 
     evidence

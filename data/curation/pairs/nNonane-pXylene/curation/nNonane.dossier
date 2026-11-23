@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.b_ij  190.106089227;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.b_ji  -146.160554376;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.b_ij  190;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.b_ji  -146;   // +/- 92 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.b_ij  190.106084503;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.b_ji  -146.160550693;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.b_ij  190;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.b_ji  -146;   // +/- 92 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.a_ij  172.060499236;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.a_ji  -142.501663678;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.a_ij  172;   // +/- 30 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.a_ji  -143;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.a_ij  172.060499771;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.a_ji  -142.501664043;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.a_ij  172;   // +/- 30 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.a_ji  -143;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.A_ij  -2031.9304093;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.A_ji  2345.43765033;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.A_ij  -2030;   // +/- 610 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.A_ji  2350;   // +/- 790 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.A_ij  -2031.93040062;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.A_ji  2345.43763867;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.A_ij  -2030;   // +/- 610 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-pXylene.A_ji  2350;   // +/- 790 (1 sigma, from the fit)
     }
 
     evidence

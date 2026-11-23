@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.b_ij  -23.8596530036;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.b_ji  215.211151254;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.b_ij  -24;   // +/- 28 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.b_ji  215;   // +/- 35 (1 sigma, from the fit)
     }
 
     evidence
@@ -97,8 +97,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.b_ij  -23.8596535548;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.b_ji  215.211151886;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.b_ij  -24;   // +/- 28 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.b_ji  215;   // +/- 35 (1 sigma, from the fit)
     }
 
     evidence
@@ -163,8 +163,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.A_ij  -357.438309326;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.A_ji  1958.83117113;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.A_ij  -360;   // +/- 200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.A_ji  1960;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence
@@ -229,8 +229,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.A_ij  -357.4383101;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.A_ji  1958.83117155;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.A_ij  -360;   // +/- 200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-acetonitrile.A_ji  1960;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence
