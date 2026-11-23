@@ -10,6 +10,8 @@
     SPDX-License-Identifier: GPL-3.0-or-later
     Credit and attribution: see AUTHORS
     Required legal notices:  see NOTICE
+\*---------------------------------------------------------------------------*/
+
 import type { EquipmentItem } from "../adapters/SolverAdapter.js";
 
 /** A bank of identical parallel items (the H2 buffer's ten pressure vessels) is
