@@ -185,31 +185,32 @@ r_\mathrm{in} &= \nu \left( 1 + \varepsilon\,\frac{D}{p} \right),
     title: "The ammonia loop, measured: 3.0 in, 3.6 at the converter",
     body: "Choupo's green ammonia case (tutorials/plant/"
       + "greenAmmoniaPEQ_baseCase) feeds hydrogen and nitrogen at 3 : 1 and "
-      + "its converter sees H₂/N₂ = 3.584.  Both effects of step 3 are in "
+      + "its converter sees H₂/N₂ = 3.579.  Both effects of step 3 are in "
       + "it, and they can be separated by running it twice.  The selective "
       + "loss first: nitrogen dissolves in liquid ammonia more than hydrogen, "
       + "so the gas released when the product is let down is nitrogen-rich — "
-      + "H₂/N₂ = 2.76 in the let-down gas and 1.70 in the storage flash "
-      + "gas, against 3.90 in the purge.  If the loop sat at 3, its losses "
+      + "H₂/N₂ = 2.75 in the let-down gas and 1.69 in the storage flash "
+      + "gas, against 3.87 in the purge.  If the loop sat at 3, its losses "
       + "would take more nitrogen than the fresh feed brings, hydrogen would "
       + "accumulate, and it does until the losses come back to the fresh "
       + "ratio.  Run with a fresh feed exactly 3 : 1, the converter inlet "
-      + "settles at 3.526.  Then the fresh-ratio error: the case's nitrogen "
+      + "settles at 3.522.  Then the fresh-ratio error: the case's nitrogen "
       + "carries 100 ppm of argon in place of nitrogen, so its fresh H₂/N₂ "
       + "is 3.0003, an ε of one part in ten thousand.  That moves the inlet "
-      + "from 3.526 to 3.584.  The case's purge splitter alone sends 0.085 % of the "
-      + "unreacted gas out; the let-down gas (0.11 %) and the storage flash gas "
-      + "(0.03 %) take more nitrogen, so the loop loses about 0.2 % of its "
-      + "unreacted nitrogen in all (0.22 %), and that total is the p of step 3.  The "
-      + "closed form with p = 0.2 %, X = 0.350 and ε = 0.0001 predicts a shift of "
-      + "0.053; the case shows 0.058.",
+      + "from 3.522 to 3.579.  The case's purge splitter alone sends 0.085 % of the "
+      + "unreacted nitrogen out; the let-down gas (0.10 %) and the storage flash gas "
+      + "(0.02 %) take more nitrogen, so the loop loses about 0.2 % of its "
+      + "unreacted nitrogen in all (0.21 %), and that total is the p of step 3.  The "
+      + "closed form with p = 0.2 %, X = 0.336 and ε = 0.0001 predicts a shift of "
+      + "0.051; the case shows 0.057.",
     note: "What a real loop does about it.  It does not fight the loop with "
       + "the fresh feed held at exactly 3 : 1.  It measures the converter-inlet "
       + "ratio and trims the make-up ratio to bring it where it should be — "
       + "which, by step 2, means a make-up ratio a hair away from "
       + "stoichiometric, by exactly the selectivity of the losses.  (All the "
       + "numbers in this step were read from the case's converged/ streams on "
-      + "2026-10-02; the exact-3 run changed the H₂ feed from 4410 to "
+      + "2026-10-02, and RE-MEASURED on 2026-11-23 when the converter became three "
+      + "kinetic beds (C440); the exact-3 run changed the H₂ feed from 4410 to "
       + "4409.559 kmol/h and nothing else.)",
   },
   {
@@ -265,8 +266,8 @@ r_\mathrm{in} &= \nu \left( 1 + \varepsilon\,\frac{D}{p} \right),
         + "the reaction uses", unit: "—" },
     ],
     note: "Read it as a price.  At the green ammonia converter, "
-      + "with an inlet ratio of 3.584 and X = 0.350 per pass, it is 2.4: "
-      + "for every mole of hydrogen that becomes ammonia, 2.4 more go round "
+      + "with an inlet ratio of 3.579 and X = 0.336 per pass, it is 2.6: "
+      + "for every mole of hydrogen that becomes ammonia, 2.6 more go round "
       + "the loop and through the recycle compressor.",
   },
 ];

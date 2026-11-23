@@ -1,0 +1,55 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+|      \\|//   H eat-transfer |  The CONVERTER: three beds, two exchangers    |
+|     \\\|///  O perations    |  https://choupo.org  --  GPL-3.0-or-later     |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE MULTIBED CONVERTER -- ONE SECTOR, ONE PRESSURE VESSEL (DEV.md 4c C69).
+
+  Three adiabatic catalyst beds with an interbed cooler after each of the
+  first two.  The flowsheet still computes FIVE blocks -- each bed and each
+  cooler is a calculation of its own -- but they are built as ONE piece of
+  equipment: the beds sit in a basket inside a single pressure shell, with
+  the interbed exchange inside the same shell.  That is a fact about the
+  EQUIPMENT, so it is said where the equipment is sized:
+  system/postDict's `converterShell` entry names this sector, stacks its
+  members' geometries into one shell at the loop's design pressure, and the
+  beds' own shells become internal baskets that are not priced twice.
+
+  WHERE THE ARRANGEMENT WAS READ (2026-10-12), and what was not:
+    * The M. W. Kellogg Company, "Ammonia synthesis converter", EP 0 254 936
+      A2 (1988), read on the EPO publication server: "the vertical converter
+      is contained within cylindrical pressure shell 1", three axial-flow
+      catalyst beds "within the cylindrical inner shell", and interbed
+      cooling "supplied entirely by the single indirect heat exchanger"
+      inside it -- ONE interbed exchanger, not two.
+    * Topsoe, "Ammonia converter baskets S-300" (product page, read): three
+      catalyst beds, radial flow, a BASKET installed in a pressure shell, in
+      one version with an integral feed-effluent exchanger after the third
+      bed.  The page does not describe its interbed exchangers.
+  Neither source describes TWO interbed coolers raising steam, as these two
+  do; that arrangement is the base case's, and the one-shell grouping is the
+  sources' general construction applied to it.
+
+  The stream names are the plant's, unchanged: the sector's inlet is the
+  FEHE's preheated feed, its outlet the hot effluent the FEHE cools.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    Bed1
+    InterbedCooler1
+    Bed2
+    InterbedCooler2
+    Bed3
+);
+
+connections
+{
+    PreheatedFeed { to Bed1/Feed; }
+    Bed1Out       { from Bed1/Out;             to InterbedCooler1/Feed; }
+    Bed2Feed      { from InterbedCooler1/Out;  to Bed2/Feed; }
+    Bed2Out       { from Bed2/Out;             to InterbedCooler2/Feed; }
+    Bed3Feed      { from InterbedCooler2/Out;  to Bed3/Feed; }
+    HotEffluent   { from Bed3/Out; }
+}

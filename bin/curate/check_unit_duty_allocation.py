@@ -31,7 +31,7 @@ WHAT THIS CHECKS:
       cooling tower): every boundary heat duty the run publishes (|Q| >= 1 W,
       keys and ports READ from `heatDutyPorts()` in result/EnergyItems.H, never
       typed here) has an allocation row on its port.
-  (c) THE WITNESS.  greenAmmoniaPEQ_baseCase: the Converter's row is the
+  (c) THE WITNESS.  greenAmmoniaPEQ_baseCase: each interbed cooler's row (the converter's heat since C440) is the
       DECLARED steamGenerationHP, allocated, its duty the unit's own Q_kW,
       its cost NEGATIVE (a credit); C_UT_credit equals the credit rows times
       the declared operating hours; and the economics' "N duties could not be
@@ -102,6 +102,10 @@ GIBBS = "tutorials/steady/gibbs/gibbs07_wgs_cooled"
 COOLED = "tutorials/steady/reactors/cstr06_jacketed"
 TSA = "tutorials/steady/separation/tsa01_co2_twin_bed"
 CREDIT = "steamGenerationHP"
+#  The reference plant's steam raisers since C440 (2026-11-23): the converter
+#  is three kinetic beds and its heat leaves in the two interbed coolers.
+STEAM_UNITS = ["CONVERTER.InterbedCooler1", "CONVERTER.InterbedCooler2"]
+STEAM_DIRS = ["CONVERTER/InterbedCooler1", "CONVERTER/InterbedCooler2"]
 
 
 def strip_comments(src: str) -> str:
@@ -192,18 +196,19 @@ def main() -> int:
         else:
             results.append((WITNESS, res))
             rows = res.get("utilityAllocation") or []
-            conv = [r for r in rows if r.get("unit") == "Converter"]
-            qkw = (res.get("kpis") or {}).get("Converter", {}).get("Q_kW")
-            if len(conv) != 1:
-                fail.append(f"(c) the Converter has {len(conv)} allocation"
-                            " row(s); its Q_kW is dropped or doubled")
-            else:
+            for su in STEAM_UNITS:
+                conv = [r for r in rows if r.get("unit") == su]
+                qkw = (res.get("kpis") or {}).get(su, {}).get("Q_kW")
+                if len(conv) != 1:
+                    fail.append(f"(c) {su} has {len(conv)} allocation"
+                                " row(s); its Q_kW is dropped or doubled")
+                    continue
                 c = conv[0]
                 if c.get("utility") != CREDIT or c.get("allocated") is not True:
-                    fail.append(f"(c) the Converter is served by"
+                    fail.append(f"(c) {su} is served by"
                                 f" {c.get('utility')!r}, not the DECLARED {CREDIT}")
                 if not (isinstance(c.get("eur_h"), (int, float)) and c["eur_h"] < 0):
-                    fail.append("(c) the Converter's steam is not a CREDIT"
+                    fail.append(f"(c) {su}'s steam is not a CREDIT"
                                 f" (eur_h {c.get('eur_h')})")
                 if qkw is None or abs(c.get("duty_kW", 0) - qkw) > 1e-9 * abs(qkw):
                     fail.append(f"(c) the allocated duty {c.get('duty_kW')} kW is"
@@ -227,7 +232,7 @@ def main() -> int:
                 fail.append(f"(c) the economics says {said} duty/duties could"
                             f" not be allocated; the run lists {unserved}"
                             " UNSERVED (carried rows are not unpriced)")
-            claims.append(f"witness: Converter -> {CREDIT}, credit"
+            claims.append(f"witness: the interbed coolers -> {CREDIT}, credit"
                           f" {got:.0f} EUR/yr, {unserved} unserved counted"
                           if got is not None else "witness ran")
 
@@ -262,28 +267,33 @@ def main() -> int:
         # ---- (d) a credit is never auto-picked ------------------------------
         (td / "nodecl").mkdir()
         nod = copy(WITNESS, td / "nodecl")
-        cf = nod / "Converter/system/flowsheetDict"
-        txt = cf.read_text()
-        txt2 = re.sub(r"^\s*utility\s+" + CREDIT + r"\s*;\s*$", "", txt, flags=re.M)
-        if txt2 == txt:
-            fail.append("(d) the witness's Converter declares no utility to remove")
+        removed = 0
+        for sd in STEAM_DIRS:
+            cf = nod / sd / "system/flowsheetDict"
+            txt = cf.read_text()
+            txt2 = re.sub(r"^\s*utility\s+" + CREDIT + r"\s*;\s*$", "", txt, flags=re.M)
+            if txt2 != txt:
+                removed += 1
+                cf.write_text(txt2)
+        if removed != len(STEAM_DIRS):
+            fail.append("(d) the witness's interbed coolers declare no utility to remove")
         else:
-            cf.write_text(txt2)
             rc, out, res = run(nod)
             if rc != 0 or res is None:
                 fail.append(f"(d) the undeclared witness does not run (exit {rc})")
             else:
-                conv = [r for r in res.get("utilityAllocation") or []
-                        if r.get("unit") == "Converter"]
-                if not conv or conv[0].get("utility") == CREDIT \
-                        or not conv[0].get("allocated") \
-                        or not conv[0].get("eur_h", 0) > 0:
-                    fail.append("(d) undeclared, the Converter is"
-                                f" {conv[0] if conv else 'MISSING'} -- a credit"
-                                " was picked, or the duty went unserved")
-                else:
-                    claims.append(f"undeclared: auto-pick {conv[0]['utility']},"
-                                  " never the credit")
+                for su in STEAM_UNITS:
+                    conv = [r for r in res.get("utilityAllocation") or []
+                            if r.get("unit") == su]
+                    if not conv or conv[0].get("utility") == CREDIT \
+                            or not conv[0].get("allocated") \
+                            or not conv[0].get("eur_h", 0) > 0:
+                        fail.append(f"(d) undeclared, {su} is"
+                                    f" {conv[0] if conv else 'MISSING'} -- a credit"
+                                    " was picked, or the duty went unserved")
+                    else:
+                        claims.append(f"undeclared: {su} auto-pick {conv[0]['utility']},"
+                                      " never the credit")
 
         # ---- (e) refusals --------------------------------------------------
         def declare(case: str, word: str, sub: str, after: str,

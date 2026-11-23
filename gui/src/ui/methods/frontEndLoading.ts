@@ -275,10 +275,10 @@ export const FEL_STAGES: readonly FelStage[] = [
       + "the economics pass publishes the gross margin before and after the "
       + "energy is priced -- at 150 bar and, as a speculation, at 50 bar.  "
       + "The green-ammonia base case is the project brief's reference case, "
-      + "with different detail in different equipment: a feasibility-stage "
-      + "converter (a Gibbs reactor 5 K short of equilibrium) beside "
-      + "exchangers designed to the next stage's fidelity; its author "
-      + "declares Class 4 too.",
+      + "with different detail in different equipment: a converter of three "
+      + "catalyst beds sized by their kinetics, and exchangers designed by "
+      + "the Kern method, beside compressors sized as a power only; its "
+      + "author declares Class 4 too.",
     choupoCases: [
       "steady/reactors/ammoniaReactor03_equilibriumApproach",
       "plant/greenAmmonia02_feasibility150bar",

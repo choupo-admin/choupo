@@ -81,10 +81,10 @@ describe("tutorials/ALIASES -- a renamed case keeps its shared links", () => {
   });
 
   it("a drilled sub-node of an aliased case resolves through its root", () => {
-    expect(canonicalCaseName("plant/greenAmmoniaIndustrialN2/Converter"))
-      .toBe("plant/greenAmmoniaPEQ_baseCase/Converter");
-    expect(tutorialByName("plant/greenAmmoniaIndustrialN2/Converter")).toBe(
-      tutorialByName("plant/greenAmmoniaPEQ_baseCase/Converter"));
+    expect(canonicalCaseName("plant/greenAmmoniaIndustrialN2/FEHE"))
+      .toBe("plant/greenAmmoniaPEQ_baseCase/FEHE");
+    expect(tutorialByName("plant/greenAmmoniaIndustrialN2/FEHE")).toBe(
+      tutorialByName("plant/greenAmmoniaPEQ_baseCase/FEHE"));
   });
 
   it("a name that is not aliased is left alone", () => {

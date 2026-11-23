@@ -75,8 +75,8 @@ describe("the lesson", () => {
 
   it("quotes the ammonia loop as MEASURED, with both runs", () => {
     const s = all(4);
-    expect(s).toContain("3.584");
-    expect(s).toContain("3.526");
+    expect(s).toContain("3.579");
+    expect(s).toContain("3.522");
     expect(s).toContain("3.0003");
     expect(s).toContain("4409.559");
   });
@@ -112,20 +112,23 @@ describe("the purge-loop arithmetic", () => {
 
   it("the typed ammonia numbers are the committed golden's (inlet ratio and conversion)", () => {
     const g = readFileSync(new URL("../../tutorials/plant/greenAmmoniaPEQ_baseCase/expected", import.meta.url), "utf-8");
-    const v = (k: string): number => Number(new RegExp(`kpi\\s+Converter\\s+${k}\\s+(\\S+)`).exec(g)![1]);
-    const nIn = v("N_in_mol_s"), nOut = v("N_out_mol_s"), yN2 = v("y_N2"), yH2 = v("y_H2");
-    const xi = (nIn - nOut) / 2;                    // N2 + 3 H2 -> 2 NH3 removes 2 mol per extent
-    const rIn = (yH2 * nOut + 3 * xi) / (yN2 * nOut + xi);
-    const X = xi / (yN2 * nOut + xi);
-    expect(rIn.toFixed(3)).toBe("3.584");
-    expect(X.toFixed(3)).toBe("0.350");
+    //  Since C440 the converter is three kinetic beds; each bed publishes the
+    //  conversion of its OWN inlet N2 and H2, so the loop's inlet ratio is the
+    //  first bed's 3 X_N2 / X_H2 (the reaction consumes them 1 : 3) and the
+    //  per-pass N2 conversion is the product of the three bed survivals.
+    const v = (u: string, k: string): number =>
+      Number(new RegExp(`kpi\\s+CONVERTER\\.${u}\\s+${k}\\s+(\\S+)`).exec(g)![1]);
+    const rIn = 3 * v("Bed1", "X_N2") / v("Bed1", "X_H2");
+    const X = 1 - (1 - v("Bed1", "X_N2")) * (1 - v("Bed2", "X_N2")) * (1 - v("Bed3", "X_N2"));
+    expect(rIn.toFixed(3)).toBe("3.579");
+    expect(X.toFixed(3)).toBe("0.336");
     expect(all(4)).toContain(rIn.toFixed(3));
     expect(all(6)).toContain(`X = ${X.toFixed(3)}`);
   });
 
-  it("reproduces step 4's predicted shift of 0.053 for the ammonia loop", () => {
-    const r = purgeLoop(3, 1e-4, 0.35, 0.002)!;
-    expect(r.rIn - 3).toBeCloseTo(0.0527, 3);
+  it("reproduces step 4's predicted shift of 0.051 for the ammonia loop", () => {
+    const r = purgeLoop(3, 1e-4, 0.336, 0.002)!;
+    expect(r.rIn - 3).toBeCloseTo(0.0506, 3);
   });
 
   it("refuses a fresh feed too short of B for the conversion", () => {

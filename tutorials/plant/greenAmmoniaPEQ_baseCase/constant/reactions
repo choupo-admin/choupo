@@ -1,0 +1,197 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  reactions -- the ammonia synthesis rate the three converter beds (Bed1,
+  Bed2, Bed3) integrate.  The feasibility stage (greenAmmonia02_*) carries
+  no reactions library -- its converter minimises Gibbs energy; a rate law
+  is what the basic design adds, and it is the ONE thing this file declares.
+
+  THE RATE LAW IS WRITTEN HERE, every number of it (DEV.md 4c C67, Vitor's
+  ruling of 2026-10-12: the kinetics live in the case).  `type expression;`
+  is a formula over named parameters, the state the reactor supplies (T, P,
+  x[i], p[i], c[i]) and named definitions; the engine compiles it once,
+  checks its dimensions, prints it back as PARSED in the run log, and
+  evaluates it.  Nothing about ammonia is compiled into the engine.
+
+      D. C. Dyson and J. M. Simon, "A kinetic expression with diffusion
+      correction for ammonia synthesis on industrial catalyst", Ind. Eng.
+      Chem. Fundam. 7 (1968) 605-610 -- Eqs 2, 3-8, 18 and 19.
+
+  Each group of numbers below carries its equation number.  The same law is
+  written in tutorials/steady/reactors/ammoniaReactor04_kineticSizing and (with the
+  paper's Eq 39 effectiveness factor, as here) in the props bench
+  tutorials/props/kinetics/ammoniaRate01_dyson_simon -- read the bench
+  first.  Three copies of one law in three cases is the price of a case
+  that carries its own kinetics; `bin/curate/check_ammonia_rate.py` holds
+  the three to each other and to the paper's anchors.
+
+  WHAT EACH DECLARATION IS, and why it is a declaration and not a default:
+
+    basis reactorVolume  Equation 19 returns kg-mol NH3 per cubic metre of
+                         catalyst BED per hour, so the reactor's `V_R` IS the
+                         catalyst volume and there is no `catalystLoading`
+                         (the engine refuses one beside this basis).
+    rateOf NH3           the paper reports the rate of formation of AMMONIA;
+                         the engine divides by nu(NH3) = 2 to get the
+                         reaction's extent rate.
+    forward / reverse    Eq 19's two terms.  Their balance (Q = Ka) is the
+                         law's own equilibrium, and the reactor reports how
+                         far the effluent is from it (`approach_K`).
+    T / Kelvin, P / atmosphere
+                         Eqs 2 and 6-8 are empirical correlations in kelvin
+                         and atmospheres; the formula says so in itself, and
+                         the engine checks every other dimension.
+    fugacityCoefficients the law prices its activities with ITS OWN gammas
+                         (Eqs 6-8, the ones its rate constant was fitted
+                         with), not the package's equation of state; the
+                         reactor publishes the ratio at the inlet.
+
+  The rate is Eq 40 = Eq 19 x xi, the paper's diffusion correction Eq 39 on
+  Table I (DEV.md 4c C66 item 2, decided 2026-11-19: a bed sized on the
+  intrinsic Eq 19 is undersized by about 1/xi).  The loop runs at about 148.9
+  atm, 1.1 atm below Table I's 150 atm: Eq 39 is read at max(P, 150 atm), a
+  clamp declared in `Pxi` and announced by the `P` window (the bench says why).
+\*---------------------------------------------------------------------------*/
+
+ammoniaSynthesis
+{
+    stoichiometry
+    (
+        { component N2;   nu -1; }
+        { component H2;   nu -3; }
+        { component NH3;  nu  2; }
+    );
+
+    kinetics
+    {
+        type     expression;
+        source   "Dyson, D.C. & Simon, J.M., Ind. Eng. Chem. Fundam. 7(4) (1968) 605-610: Eq 2 (Ka, after Gillespie & Beattie 1930), Eqs 3-8 (activities on the fugacity coefficients of Cooper 1967 / Shaw & Wones 1964 / Newton 1935), Eqs 18-19 (rate, fitted to the data of Nielsen, Kjaer & Hansen, J. Catalysis 3 (1964) 68)";
+        basis    reactorVolume;      // Eq 19 is per m3 of catalyst BED: V_R IS the bed
+        rateOf   NH3;                // Eq 19 is the rate of formation of AMMONIA
+
+        parameters
+        {
+            k0_19       1.7698e15 kmol/m3/h;   // Eq 19 -- twice Eq 18's, two NH3 per N2
+            k0_18       8.849e14  kmol/m3/h;   // Eq 18 -- the constant per N2 (reported as k)
+            E           40765     cal/mol;     // Eqs 18-19
+            R_DS        1.987     cal/mol/K;   // the gas constant Eq 18 is written with
+            Kelvin      1         K;           // Eqs 2 and 6-8 take T in kelvin ...
+            atmosphere  1         atm;         // ... and P in atmospheres
+            Pfloor      150       atm;         // Table I's lowest pressure: Eq 39 is read at max(P, Pfloor) -- see Pxi
+            refInert    0.127     -;           // Eq 39's reference mixture: 12.7 % inerts, 3:1 H2/N2
+            dp          8         mm;          // the particle the bed is packed with (6-10 mm: Eq 39's range)
+        }
+
+        tables
+        {
+            //  Table I -- the constants of Eq 39 at the paper's three pressures.
+            TableI
+            {
+                x      ( 150          225          300          );   xUnit atm;
+                b0     ( -17.539096   -8.2125534   -4.6757259   );
+                b1     ( 0.07697849   0.03774149   0.02354872   );
+                b2     ( 6.900548     6.190112     4.687353     );
+                b3     ( -1.082790e-4 -5.354571e-5 -3.463308e-5 );
+                b4     ( -26.42469    -20.86963    -11.28031    );
+                b5     ( 4.927648e-8  2.379142e-8  1.540881e-8  );
+                b6     ( 38.93727     27.88403     10.46627     );
+                yUnit  -;
+            }
+        }
+
+        definitions
+        {
+            TK    "T / Kelvin";
+            Patm  "P / atmosphere";
+
+            //  Eq 2 -- the equilibrium constant, atm^-1 (Gillespie & Beattie 1930)
+            Ka    "10^(-2.691122*log10(TK) - 5.519265e-5*TK + 1.848863e-7*TK*TK + 2001.6/TK + 2.6899)";
+
+            //  Eqs 6, 7, 8 -- the fugacity coefficients of H2, N2 and NH3
+            gH2   "exp(exp(-3.8402*TK^0.125 + 0.541)*Patm - exp(-0.1263*sqrt(TK) - 15.980)*Patm*Patm + 300*exp(-0.011901*TK - 5.941)*(exp(-Patm/300) - 1))";
+            gN2   "0.93431737 + 0.3101804e-3*TK + 0.295896e-3*Patm - 0.2707279e-6*TK*TK + 0.4775207e-6*Patm*Patm";
+            gNH3  "0.1438996 + 0.2028538e-2*TK - 0.4487672e-3*Patm - 0.1142945e-5*TK*TK + 0.2761216e-6*Patm*Patm";
+
+            //  Eqs 3-5 -- activities a_i = x_i gamma_i P, in atm
+            aN2   "x[N2]  * gN2  * Patm";
+            aH2   "x[H2]  * gH2  * Patm";
+            aNH3  "x[NH3] * gNH3 * Patm";
+
+            //  Eq 19's bracket, its two terms
+            fwd   "Ka*Ka*aN2*aH2^1.5/aNH3";
+            rev   "aNH3/aH2^1.5";
+
+            //  Eqs 18-19 -- the Arrhenius factors
+            k18   "k0_18 * exp(-E/(R_DS*T))";
+            k19   "k0_19 * exp(-E/(R_DS*T))";
+
+            //  Eq 39 -- the effectiveness factor xi, on the paper's own
+            //  abscissa eta (the conversion of N2 from the reference mixture,
+            //  read off the ammonia the gas carries).
+            refN2     "(1 - refInert)/4";
+            eta       "x[NH3] / (2*refN2*(1 + x[NH3]))";
+            //  THE PRESSURE Eq 39 IS READ AT: Table I stops at 150 atm and a
+            //  table is never extrapolated, yet this loop runs at 148.9 atm.
+            //  "The effect of pressure on the effectiveness factor is such
+            //  that a higher pressure will cause a lower effectiveness
+            //  factor" (Dyson & Simon 1968, p. 609): the true xi just below
+            //  150 atm is a little HIGHER than the 150 atm column, so reading
+            //  that column unchanged under-states xi and the bed errs on the
+            //  larger side.  A declared clamp, announced by the `P` window.
+            ratioH2N2 "x[H2] / x[N2]";
+            Pxi       "max(P, Pfloor)";
+            xi        "b0(Pxi) + b1(Pxi)*TK + b2(Pxi)*eta + b3(Pxi)*TK*TK + b4(Pxi)*eta*eta + b5(Pxi)*TK*TK*TK + b6(Pxi)*eta*eta*eta";
+        }
+
+        //  Eq 19, written as its two legs so the law's OWN equilibrium
+        //  (forward = reverse, which is exactly Q = Ka) can be located.
+        //  Eq 40 = Eq 19 x xi: BOTH legs carry xi, so the law's own
+        //  equilibrium (the two equal) is where Eq 19's is.
+        forward  "xi*k19*fwd";
+        reverse  "xi*k19*rev";
+
+        rateConstant          { name k18;  unit kmol/m3/h; }
+        fugacityCoefficients  { N2 gN2;  H2 gH2;  NH3 gNH3; }
+
+        validity
+        {
+            //  The rate (Eq 19) was fitted over 150-300 atm; outside it is a
+            //  closed expression that degrades smoothly, so the paper's own
+            //  posture is to extrapolate it -- ANNOUNCED.
+            P  { min 150 atm;  max 300 atm;  outside announce;  unit atm; }
+            //  Eq 39 was fitted for 6-10 mm particles: a different particle is
+            //  a different diffusion problem, so it REFUSES.
+            dp         { min 6 mm;  max 10 mm;  outside refuse;  unit mm; }
+            //  An effectiveness factor outside (0, 1] is the cubic leaving the
+            //  region Table I was fitted in: ANNOUNCED, never clamped.
+            xi         { min 0;  max 1;  outside announce; }
+            //  Eq 39 was computed on a 3:1 H2/N2 mixture; the authors judged
+            //  other ratios negligible for converter design (their judgement).
+            ratioH2N2  { min 2.99;  max 3.01;  outside announce; }
+        }
+
+        //  Where this law's equilibrium temperature is searched for the bed's
+        //  approach: Eq 8's polynomial gamma(NH3) turns NEGATIVE near 1650 K,
+        //  where a negative activity makes the sign test meaningless.  Both
+        //  legs carry xi (Eq 39's cubic in T), which turns NEGATIVE below
+        //  about 450 K and wanders near 800 K at the paper's lowest
+        //  conversions: outside 500-1000 K the sign of forward - reverse
+        //  would flip with xi and the search would find a root that is not
+        //  the law's equilibrium.  At the beds' own conversions (eta > 0.05)
+        //  xi is positive over this whole window (checked 2026-11-19 on the
+        //  Table I 150 atm column), so the one crossing is Eq 19's.
+        equilibriumTemperatureWindow  { min 500 K;  max 1000 K; }
+
+        caveats
+        (
+            "Eq 39 is read at max(P, 150 atm): below Table I's lowest pressure the 150 atm column is used unchanged (a declared clamp, not an extrapolation). The paper states that a higher pressure gives a lower xi, so the clamp under-states xi just below 150 atm and a bed sized on it errs on the larger side; by how much is NOT known -- the paper tabulates nothing below 150 atm. xi was computed on a 3:1 H2/N2 reference mixture with 12.7 % inerts; this gas differs, and the authors judged the effect negligible for converter design."
+            "Equation 40 (Eq 19 x xi) carries NO correction for catalyst reduction, poisoning or ageing -- the authors say so themselves. A bed sized from it is a FRESH, CLEAN, FULLY REDUCED bed, and a working converter is none of those for most of its life."
+        );
+    }
+}

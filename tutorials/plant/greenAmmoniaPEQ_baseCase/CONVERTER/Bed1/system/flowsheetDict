@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  PEQ 2026-27 -- Green ammonia, 1200 t/day     |
+\*-----------------------------------------------------------------------------*/
+//  CATALYST BED 1 of 3 -- an ADIABATIC plug-flow bed on the Dyson & Simon
+//  (1968) rate law for an IRON catalyst, WRITTEN in the case's
+//  constant/reactions (`type expression`, every constant with its unit).
+//  Its inlet temperature is what the FEHE delivers; its outlet temperature and
+//  conversion are RESULTS.
+//
+//  THE VOLUME IS SOLVED AGAINST A STATED CRITERION.  The first bed is the
+//  hottest: an adiabatic bed fed at ~381 C heats itself as it converts, and
+//  run to a 5 K approach it would leave above the 520 C the base data give as
+//  the catalyst's limit.  So bed 1 is sized to LEAVE AT 515 C (788.15 K), 5 K
+//  under that limit.  The volume is `$V_Bed1`, declared in the PLANT's
+//  `variables {}` (system/flowsheetDict) and SOLVED by the DesignSpec in
+//  system/outerDict (Bed1.T_out = 788.15 K, simultaneously with beds 2 and
+//  3).  A unit folder with no `variables {}` of its own resolves its
+//  `$references` against the plant's (DEV.md 4c C66).  The run prints `T_out`
+//  and `approach_K`: read both.
+//
+//  THE BED HAS A CROSS-SECTION, AND THE GAS LOSES PRESSURE CROSSING IT
+//  (DEV.md 4c C66, C69).  The three beds sit in ONE pressure shell (the
+//  CONVERTER sector; system/postDict's `converterShell`), so they share ONE
+//  diameter, `diameter $D_converter;`, a plant variable read by every bed in
+//  the FLOWSHEET because a bed needs its cross-section DURING the solve (its
+//  Ergun drop is integrated along its length).  Each bed's length is its
+//  volume over that cross-section, L = V_R / (pi D^2 / 4).  The diameter is
+//  SOLVED, as the smallest at which every bed is within its allowable drop:
+//  the rule, and the bed that binds, are in system/outerDict's header.
+//  Every number in the three lines below is AUTHOR-SET, none is a vendor's:
+//    * particleDiameter 8 mm -- the middle of the 6-10 mm window Dyson &
+//      Simon's Eq 39 was computed for, taken by Ergun as an EQUIVALENT-SPHERE
+//      diameter, so for irregular granules the drop below is a LOWER estimate;
+//    * voidFraction 0.40 -- a random-packing value; the drop goes as
+//      (1-eps)/eps^3, so 0.36 instead would raise it by about half;
+//    * allowable 1 bar per bed -- a stated design budget with no source
+//      behind it; the run announces any bed above it.
+//  WHY A SQUAT BED.  At a fixed volume both the superficial velocity and the
+//  length go as (L/D)^(2/3), so the drop goes as (L/D)^2: at the 1.5 the
+//  shell is built to, the three beds lose 0.67, 0.31 and 0.17 bar.  A squat
+//  bed is the axial-flow answer; a bed the gas crosses RADIALLY (through its
+//  thickness, not its length) is the other, and this `pfr` does not model one.
+//  The slender alternative (the base case's converter ratio, 6) and what it
+//  measured are in README.md, "History".
+
+type      pfr;
+operation
+{
+    V_R          $V_Bed1;       // catalyst bed -- SOLVED by system/outerDict; see above
+    nSteps       400;           // RK4 axial steps
+    thermalMode  adiabatic;     // T is a RESULT: the bed heats itself
+    diameter     $D_converter;  // the CONVERTER's one diameter -- SOLVED; see above
+    catalyst     { particleDiameter 8 mm; }                        // AUTHOR-SET, see above
+    pressureDrop { model Ergun;  voidFraction 0.40;  allowable 1 bar; }   // AUTHOR-SET, see above
+}
+reactions ( ammoniaSynthesis );
+boundary  { inlets ( Feed );  outlets ( Out ); }

@@ -854,11 +854,12 @@ UNIT_WITNESSES = {
     #  (the condensing WGS reactor, by each of its three methods) and a
     #  produced feed at a pressure above the reactor's on SRK (the green
     #  ammonia Converter, whose -7.24 kW was the departure function between
-    #  the feed's 150.93 bar and the reactor's 150 bar).
+    #  the feed's 150.93 bar and the reactor's 150 bar; that witness left
+    #  with the Gibbs converter itself, C440, 2026-11-23: the reference plant's
+    #  converter is now three kinetic beds).
     ("tutorials/steady/gibbs/gibbs07_wgs_cooled", "wgs"),
     ("tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash", "wgs"),
     ("tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin", "wgs"),
-    ("tutorials/plant/greenAmmoniaPEQ_baseCase", "Converter"),
     #  The equilibriumReactor (C131 reactors review): the two-reaction
     #  reformer.
     ("tutorials/steady/reactors/equil01_reforming", "reformer"),

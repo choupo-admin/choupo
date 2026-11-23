@@ -30,10 +30,27 @@ It is rung 2 of the green-ammonia sequence, which the common entry
 | 2 | [`greenAmmonia02_feasibility50bar`](../greenAmmonia02_feasibility50bar) | FEL-2, an exploratory alternative | the same, at 400 °C and 50 bar — a catalyst hypothesis | the same | what a low-pressure loop would change, *if* a catalyst allowed it |
 | 3 | [`greenAmmonia03_basicDesign`](../greenAmmonia03_basicDesign) | FEL-3, basic design (process side) | three adiabatic catalyst beds on a rate law, volumes solved | every exchanger designed (Kern) | what exactly is built |
 
+## Why 150 and 50 bar are two cases and not one swept case
+
+[`greenAmmonia02_feasibility50bar`](../greenAmmonia02_feasibility50bar) is the SAME study at
+another loop pressure, and a student should meet it that way. It is kept as a
+second case, not folded into an `outerDict` sweep of this one, because the
+two flowsheets differ in more than a number (measured on the two folders,
+DEV.md 4c C302): at 50 bar the make-up needs ONE compression stage (the
+Intercooler and MakeupComp2, and the streams `Makeup67`, `Makeup67Cool` and
+`Makeup150`, do not exist; `MakeupHot` does), the converter runs at 400 °C
+and not 460 °C with a 320 °C feed, the separator sits at 47 bar, the recycle
+tear is seeded at another pressure, and the two compressors are specified by
+SHAFT POWER, so each pressure needs its powers re-tuned by running the case
+(a sweep would have to solve them at every point). A pressure sweep cannot
+change a topology, so the two stay two, side by side, each with its own golden.
+
 ## What it is derived from, and the one thing that differs
 
-It is a copy of the base case
-[`greenAmmoniaPEQ_baseCase`](../greenAmmoniaPEQ_baseCase): the same feeds
+It was derived from the base case
+[`greenAmmoniaPEQ_baseCase`](../greenAmmoniaPEQ_baseCase) as it stood while its
+converter was one Gibbs reactor (the base case has carried three kinetic beds
+since DEV.md 4c C440, which is rung 3's converter): the same feeds
 (project base data v2), the same property package and records, the same
 utility records — the case-local HP-steam credit included — the same
 compressors, loop pressure, separation, purge and let-down, and the same
