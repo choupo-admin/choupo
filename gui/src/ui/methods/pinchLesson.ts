@@ -516,8 +516,8 @@ export const PINCH_QUIZ: readonly QuizQuestion[] = [
     q: "What does CP mean for a stream in pinch analysis?",
     options: [
       "The specific heat capacity of the stream, in kJ/(kg K)",
-      "The heat-capacity flow rate, mass flow times cp in kW/K, so a constant-CP stream is a straight line of slope 1/CP",
-      "The heat duty of the stream in kW",
+      "The heat-capacity flow rate, mass flow times cp (power per kelvin), so a constant-CP stream is a straight line of slope 1/CP",
+      "The total heat duty of the stream",
       "The pressure drop of the stream across the exchanger",
     ],
     correct: 1,
