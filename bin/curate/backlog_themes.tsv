@@ -2,10 +2,12 @@
 # bin/curate/backlog_view.py and the backlog page; BACKLOG.tsv stays the one home
 # of every item's state).  Vitor, 2026-11-22: "agrupa o resto e poe uma backlog
 # que nao me deixe ansioso".  An open item with no line here is shown under "Outros".
-C458	Cinética e reatores
-C473	Cinética e reatores
-C476	Cinética e reatores
-C468	Cinética e reatores
+# "Para 2 de dezembro" (Vitor, 2026-11-23: impress the colleagues on 2 December; the cloud's analysis,
+# weighed by the architect): what appears on screen that day or could make Choupo look wrong.
+C458	Para 2 de dezembro
+C473	Para 2 de dezembro
+C476	Para 2 de dezembro
+C468	Para 2 de dezembro
 C475	Cinética e reatores
 C339	Cinética e reatores
 C452	Cinética e reatores
@@ -27,9 +29,9 @@ C411	Termodinâmica e propriedades
 C424	Termodinâmica e propriedades
 C428	Termodinâmica e propriedades
 C226	Termodinâmica e propriedades
-C335	Termodinâmica e propriedades
+C335	Para 2 de dezembro
 C274	Termodinâmica e propriedades
-C239	Colunas e separação
+C239	Para 2 de dezembro
 C278	Colunas e separação
 C184	Colunas e separação
 C124	Colunas e separação
@@ -40,32 +42,32 @@ C450	Colunas e separação
 C437	Colunas e separação
 C199	Colunas e separação
 C240	Planta, layout e economia
-C302	Planta, layout e economia
-C440	Planta, layout e economia
+C302	Para 2 de dezembro
+C440	Para 2 de dezembro
 C263	Planta, layout e economia
 C306	Planta, layout e economia
 C110	Planta, layout e economia
 C209	Planta, layout e economia
 C267	Planta, layout e economia
 C270	Planta, layout e economia
-C238	Planta, layout e economia
+C238	Para 2 de dezembro
 C425	Planta, layout e economia
 C222	EduTools e aplicação
 C395	EduTools e aplicação
 C455	EduTools e aplicação
-C477	EduTools e aplicação
+C477	Para 2 de dezembro
 C204	EduTools e aplicação
 C416	EduTools e aplicação
 C457	EduTools e aplicação
-C158	EduTools e aplicação
-C22	EduTools e aplicação
+C158	Para 2 de dezembro
+C22	Para 2 de dezembro
 C127	EduTools e aplicação
 C154	EduTools e aplicação
 C200	EduTools e aplicação
 C289	EduTools e aplicação
 C159	EduTools e aplicação
 C227	EduTools e aplicação
-C266	EduTools e aplicação
+C266	Para 2 de dezembro
 C245	Núcleo e manutenção
 C241	Núcleo e manutenção
 C415	Núcleo e manutenção

@@ -5291,6 +5291,16 @@ accepts today, and that is a policy call.
 > were fixed in between.  Next batch in integration: C450, C204, C289.  In progress: C127, C158 (two
 > generals, the quizzes of the remaining tools).
 
+> **FOR 2 DECEMBER (Vitor to the cloud, 2026-11-23: "I have to speed up and impress my colleagues on 2
+> December -- things like these should go to a WISH LIST for later").**  The cloud read the backlog
+> against one criterion (on screen that day, or able to make Choupo look wrong before a colleague who
+> teaches); the architect weighed it and AGREED, including its critique: C238 sat at rank 48 while
+> generals built EduTools nobody sees that day.  Ruled: what is built lands (C450, C204, C289, C127);
+> no new wish-list item starts before 2 December; C158 finishes; first C238 (the demonstration path)
+> and C440 + C302 (the reference plant, a general on it); C239, C477, C335 stay; the cloud takes C266
+> (a student walk with screenshots) and C22 (Wegstein q_max); C256 only if time remains.  The view
+> shows "Para 2 de dezembro" after what is moving, the rest as a wish list by theme.
+
 > **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
 > mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
 > into the cloud branch, one full sweep ALONE (reason: the gas-only rule changes the
