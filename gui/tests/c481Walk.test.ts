@@ -93,3 +93,13 @@ describe("electrodialysis schema units (finding 9)", () => {
     expect(f("T_jacket")).toBe("K");
   });
 });
+
+describe("a dimensionless key prints no unit", () => {
+  it("fmtScalar: dash is not printed", async () => {
+    const { fmtScalar } = await import("../src/ui/UnitNode.js");
+    const { DEFAULT_PREFS } = await import("../src/state/displayUnits.js");
+    expect(fmtScalar(100, "-", DEFAULT_PREFS)).toBe("100");
+    expect(fmtScalar(0.9, "-", DEFAULT_PREFS)).toBe("0.9");
+    expect(fmtScalar(8, "A", DEFAULT_PREFS)).toBe("8 A");
+  }, 120000);
+});

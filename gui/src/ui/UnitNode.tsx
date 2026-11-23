@@ -637,7 +637,8 @@ export function fmtScalar(v: number, unit: string | undefined, prefs: DisplayPre
   // Energy rates (duties Q, shaft work W) are stored in W (SI); show them in kW
   // like the column duty stubs, so every duty on the canvas reads the same way.
   if (unit === "W") return dutyText(v / 1000, 1, prefs);
-  return unit ? `${fmtNumber(v)} ${unit}` : fmtNumber(v);
+  //  "-" is the schema's word for dimensionless: no unit to print (C481).
+  return unit && unit !== "-" ? `${fmtNumber(v)} ${unit}` : fmtNumber(v);
 }
 
 function fmtNumber(n: number): string {
