@@ -34,10 +34,12 @@ License
   Plotly only if we want WebGL 3D scatter etc.).
 \*---------------------------------------------------------------------------*/
 
-import { createElement } from "react";
+import { createElement, useState } from "react";
 import { useComputedColorScheme } from "@mantine/core";
 import { MIN_TEXT_PX } from "../../case/legibility.js";
 import { withSecondChannel } from "../../case/plotChannels.js";
+import { applyAxisTypes, collectAxes, effectiveTypes, type AxisTypes } from "./axisScale.js";
+import { AxisScaleToggles } from "./AxisScaleToggles.js";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore -- the basic-dist package has no types
 import Plotly from "plotly.js-basic-dist-min";
@@ -240,9 +242,27 @@ function nameModebar(gd: any): void {
 export function Plot(props: any) {
   const scheme = useComputedColorScheme("light");
   const c = scheme === "dark" ? CHROME_DARK : CHROME_LIGHT;
-  const layout = floorLayout(themeLayout(props.layout ?? {}, c));
+  // The lin/log toggle of every Cartesian axis (C486; the rule is axisScale.ts).
+  // State is per figure per axis, in this component; not persisted.
+  const [chosen, setChosen] = useState<AxisTypes>({});
+  const axes = collectAxes(props.layout, props.data ?? []);
+  const types = effectiveTypes(axes, chosen);
+  const toggle = (key: string) =>
+    setChosen((p) => ({ ...p, [key]: types[key] === "log" ? "linear" : "log" }));
+  const layout = floorLayout(themeLayout(applyAxisTypes(props.layout ?? {}, types), c));
   const data = withSecondChannel(props.data ?? []);
   const onInitialized = (fig: any, gd: any) => { nameModebar(gd); props.onInitialized?.(fig, gd); };
   const onUpdate = (fig: any, gd: any) => { nameModebar(gd); props.onUpdate?.(fig, gd); };
-  return createElement(RawPlot, { ...props, layout, data, onInitialized, onUpdate });
+  if (axes.length === 0) return createElement(RawPlot, { ...props, layout, data, onInitialized, onUpdate });
+  // The toggles sit in the figure's bottom-right corner, over a wrapper that
+  // takes the figure's own box (style / className); the plot fills it.
+  return createElement(
+    "div",
+    { style: { position: "relative", ...(props.style ?? {}) }, className: props.className },
+    createElement(RawPlot, {
+      ...props, layout, data, onInitialized, onUpdate,
+      style: { width: "100%", height: "100%" }, className: undefined,
+    }),
+    createElement(AxisScaleToggles, { axes, types, onToggle: toggle }),
+  );
 }
