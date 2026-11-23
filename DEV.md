@@ -5476,6 +5476,16 @@ accepts today, and that is a policy call.
 > case's own `code/` types and `expression` laws).  The cloud's READY C480, C481, C158 (four-ways)
 > and C239 S5 are recorded for integration; C483 in validation.
 
+> **Evening stack landed 2026-11-23 (3567516ba9): C480, C481, C158 (every live tool has a quiz),
+> C239 S5/S6 (C239 closed) and C483, under one full sweep** (reason written before launch: C483's writer
+> reaches all 1260 fits, C480's props operations every props case, C481's electric-load sign every case
+> with electricity).  2031 PASS, 296 REUSED, 1 FAIL: check_golden_bands on process05/recycle02, whose
+> boundary-residual band (abs 0.00019) predated C239 S2's SRK duties; set to the class's 0.0001837 (the
+> same red was on main since 4d252cd7ce).  848 dossiers rewritten once, digits only (checked line by
+> line: every changed line a fitted parameter or held-out AAD rounded, no fit moved); the feared
+> promotion-vs-dossier gate did not fire.  --gui 49/0.  C487 slice 1 READY from the cloud; slice 2 and
+> the dynamic-views gate dispatched to it.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
