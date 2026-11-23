@@ -30,7 +30,7 @@ properties
 
     fittedParameters
     {
-        equilibrium.equationOfState.binaryInteractions.propane-propylene.kij  -6.75380870698e-05;
+        equilibrium.equationOfState.binaryInteractions.propane-propylene.kij  -0.00007;   // +/- 0.00062 (1 sigma, from the fit)
     }
 
     evidence
@@ -67,7 +67,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.372221783681;
+        aadHeldOutPct     0.37222;
         acceptanceMaxAADPct 0.5;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit (README): the held-out mean relative bubble-pressure deviation must stay at or below 0.5 %, the level kij = 0 SRK already meets";
     }
@@ -81,7 +81,7 @@ properties
 
     fittedParameters
     {
-        equilibrium.equationOfState.binaryInteractions.propane-propylene.kij  0.00542979493622;
+        equilibrium.equationOfState.binaryInteractions.propane-propylene.kij  0.00543;   // +/- 0.00047 (1 sigma, from the fit)
     }
 
     evidence
@@ -118,7 +118,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.265870136911;
+        aadHeldOutPct     0.26587;
         acceptanceMaxAADPct 0.5;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit (README): the held-out mean relative bubble-pressure deviation must stay at or below 0.5 %";
     }
@@ -132,7 +132,7 @@ properties
 
     fittedParameters
     {
-        equilibrium.equationOfState.binaryInteractions.propane-propylene.kij  0.0092732007241;
+        equilibrium.equationOfState.binaryInteractions.propane-propylene.kij  0.00927;   // +/- 0.00021 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,7 +169,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.18962012549;
+        aadHeldOutPct     0.18962;
         acceptanceMaxAADPct 1;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit (README, second fit): the held-out mean relative deviation over the alpha rows and the pressure rows stays at or below 1.0 %";
     }
@@ -183,7 +183,7 @@ properties
 
     fittedParameters
     {
-        equilibrium.equationOfState.binaryInteractions.propane-propylene.kij  0.00675389008691;
+        equilibrium.equationOfState.binaryInteractions.propane-propylene.kij  0.00675;   // +/- 0.00055 (1 sigma, from the fit)
     }
 
     evidence
@@ -220,7 +220,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.763711950049;
+        aadHeldOutPct     0.76371;
         acceptanceMaxAADPct 1;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit (README, second fit): the held-out mean relative deviation over the alpha rows and the pressure rows stays at or below 1.0 %";
     }
