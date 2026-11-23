@@ -212,6 +212,12 @@
           "href": "/app/?workspace=methods&tool=how-do-we-know-k&path=reaction-engineering"
         },
         {
+          "tool": "methane-assembly",
+          "label": "Assemble methane combustion",
+          "why": "Many rate constants at once: assemble methane combustion from the reaction library, rung by rung, against a shock-tube measurement.",
+          "href": "/app/?workspace=methods&tool=methane-assembly&path=reaction-engineering"
+        },
+        {
           "tool": "limiting-reactant",
           "label": "Limiting reactant and feed ratio in a recycle loop",
           "why": "Feed ratios and the limiting reactant once a recycle closes the loop.",
@@ -319,8 +325,8 @@
       ]
     }
   ],
-  "liveTools": 99,
-  "registryTools": 99,
+  "liveTools": 102,
+  "registryTools": 102,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -411,6 +417,19 @@
         "reference"
       ],
       "href": "/app/?workspace=methods&tool=open-molecular-tools"
+    },
+    {
+      "id": "stiff-chemistry",
+      "label": "Why is chemistry stiff, and how do solvers go fast?",
+      "blurb": "Why combustion chemistry needs a stiff solver, and what makes one fast.",
+      "discipline": "Flowsheeting & numerics",
+      "teaches": "Why a combustion or NOx case needs a stiff solver: time scales from nanoseconds to milliseconds and the Jacobian's eigenvalues, why explicit RK4 and semi-implicit Euler fail on the shipped ignition cases, three Jacobians (finite differences, Choupo's audited analytic one, OpenFOAM's approximate fall-off), what an implicit step's LU does and when sparse beats dense, Rosenbrock23, Rodas4, seulex and CVODES by their counts, the cost of one evaluation, many reactors, dense output, and the day's journey from far slower than Cantera as a lesson in method.",
+      "origins": [
+        "engine",
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=stiff-chemistry"
     },
     {
       "id": "property-trust",
@@ -841,6 +860,19 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=how-do-we-know-k"
+    },
+    {
+      "id": "methane-assembly",
+      "label": "Assemble methane combustion",
+      "blurb": "Assemble methane combustion from the reaction library, against a shock tube.",
+      "discipline": "Reaction engineering",
+      "teaches": "How a mechanism is assembled and what each piece buys: the hydrogen and oxygen core from the reaction library, then the carbon chain (the attack on methane, the methyl step, formaldehyde to carbon monoxide, carbon monoxide to carbon dioxide, and the ethane route), each rung a shipped case whose ignition delay the engine prints against one shock-tube measurement.  The sensitivity of the delay to every rate constant shows that two methyl reactions decide it, which is why a small hand-assembled set follows a large mechanism, and the recorded comparison at 31 points shows where the assembled set, like the mechanism it was taken from, is too slow.  The constants are one published mechanism's, not evaluated data.",
+      "origins": [
+        "engine",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=methane-assembly"
     },
     {
       "id": "letdown",

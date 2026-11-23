@@ -261,6 +261,9 @@ const PropertyOriginsTool = lazy(() =>
 const FourWaysMixtureTool = lazy(() =>
   import("./methods/FourWaysMixtureTool.js")
     .then((m) => ({ default: m.FourWaysMixtureTool })));
+const StiffChemistryTool = lazy(() =>
+  import("./methods/StiffChemistryTool.js")
+    .then((m) => ({ default: m.StiffChemistryTool })));
 const OpenMolecularToolsTool = lazy(() =>
   import("./methods/OpenMolecularToolsTool.js")
     .then((m) => ({ default: m.OpenMolecularToolsTool })));
@@ -387,6 +390,9 @@ const FastSlowTool = lazy(() =>
 const KnowKTool = lazy(() =>
   import("./methods/KnowKTool.js")
     .then((m) => ({ default: m.KnowKTool })));
+const MethaneAssemblyTool = lazy(() =>
+  import("./methods/MethaneAssemblyTool.js")
+    .then((m) => ({ default: m.MethaneAssemblyTool })));
 const EquilibriumOrRateBasedTool = lazy(() =>
   import("./methods/EquilibriumOrRateBasedTool.js")
     .then((m) => ({ default: m.EquilibriumOrRateBasedTool })));
@@ -681,6 +687,7 @@ export function MethodsWorkspace() {
             : tool === "database-to-parameters" ? <DatabaseToParametersTool />
             : tool === "sentence-to-decision" ? <SentenceToDecisionTool />
             : tool === "open-molecular-tools" ? <OpenMolecularToolsTool />
+            : tool === "stiff-chemistry" ? <StiffChemistryTool />
             : tool === "four-ways-mixture" ? <FourWaysMixtureTool />
             : tool === "cosmo-sac-theory" ? <CosmoSacTheoryTool />
             : tool === "local-composition" ? <LocalCompositionTool />
@@ -724,6 +731,7 @@ export function MethodsWorkspace() {
             : tool === "fluidised-beds" ? <FluidisedBedsTool />
             : tool === "fast-and-slow" ? <FastSlowTool />
             : tool === "how-do-we-know-k" ? <KnowKTool />
+            : tool === "methane-assembly" ? <MethaneAssemblyTool />
             : tool === "equilibrium-or-rate-based" ? <EquilibriumOrRateBasedTool />
             : tool === "one-flux-many-units" ? <OneFluxManyUnitsTool />
             : tool === "bund" ? <BundTool />

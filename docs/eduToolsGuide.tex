@@ -2227,6 +2227,87 @@ method recovers $k$, not that the record is right about a real gas); no
 instrument, transport or wall model; one bimolecular reaction and one
 fall-off; the Arrhenius panel takes one excess per temperature.
 
+\subsection{Assemble methane combustion}\label{sec:edu-methane-assembly}
+
+\declaredanchor{ch:gas-kinetics}
+
+\noindent\textit{\small Tool:} \code{tool=methane-assembly}.  \textit{\small
+Cases it starts from:} \file{methane01\_h2o2\_core} to \file{methane06\_assembled}
+(the ladder) and \file{methane07\_sensitivity}, all in
+\file{tutorials/batch/combustion/}.
+
+\subsubsection*{The question}
+
+\emph{Methane does not ignite from a handful of reactions.  Start from the
+hydrogen and oxygen core in the reaction library, add the carbon chain one rung
+at a time, and say, after each rung, what the engine now predicts for the ignition
+delay a shock tube measured, and which reactions decide it.}
+
+The target is one point of Petersen, Davidson and Hanson (1999, Table~2, p.~86):
+mixture~2 (3\,CH$_4$ + 2\,O$_2$ + 10\,N$_2$) at 1244\,K and 114.4\,atm, measured
+delay $254\,\mu$s.  The engine's batch reactor stands for the gas behind the
+reflected shock: closed, adiabatic, constant volume, started at that temperature
+and pressure.  The delay it prints is the time of the largest $\mathrm{d}T/\mathrm{d}t$
+on the write grid, $\tau = t\,|_{\max \mathrm{d}T/\mathrm{d}t}$.  Six rungs, each a
+shipped case whose \code{reactionSets} names the sets of its rung (the library
+records of the Theory Guide section on the gas-phase reaction library, each with the journal page it was read from):
+the H$_2$/O$_2$ core of \'O~Conaire et al.\ alone, where methane is a spectator and
+nothing ignites; the attack on CH$_4$ (five records), where CH$_3$ appears and has
+nowhere to go; the methyl step (twelve), where $\mathrm{CH_3 + O_2 = CH_3O + O}$
+branches the chain and the mixture ignites at about a tenth of the measured delay;
+CH$_2$O through HCO to CO (eighteen), which hardly moves the delay; CO to CO$_2$
+(four), where most of the heat is released and the delay is still about a tenth of
+the measured one; and the ethane route (seven), where the recombination
+$\mathrm{2\,CH_3\,(+M) = C_2H_6\,(+M)}$ delays the ignition by an order of magnitude onto
+the measurement.
+
+\subsubsection*{What the engine says, and what the page computes}
+
+Every number of the ladder is the engine's: the page runs the six cases one after
+another in the browser and reads the \code{tau\_ign} line of each log, the
+trajectory and the final amounts.  The sensitivity is the engine's too: the
+assembled case with \code{sensitivity \{ response tauIgnition; \}} integrates the
+vessel once per reaction with that reaction's net rate multiplied and pins
+$S_j = \mathrm{d}\ln\tau/\mathrm{d}\ln k_j$ (the Theory Guide section on the brute-force sensitivity of the delay);
+the page sorts and draws the largest.  Two methyl reactions head it with opposite
+signs, the branching with O$_2$ (negative) and the recombination of two CH$_3$
+(positive): the delay is, to a first approximation, the outcome of that
+competition, which is why a small hand-assembled set can follow a large mechanism.
+The last panel is a RECORDED table, not a browser run: 31 shock-tube points of the
+two nitrogen mixtures, each run under the assembled set, the C1 chain without the
+ethane route, the whole Appendix A of Miller and Bowman and AramcoMech~1.3
+(\file{docs/reviews/2026-11-22-methane-lesson/}).  The C1 chain alone is about a
+factor of ten too fast at every point; the assembled set follows the whole
+appendix to within a few tens of percent at every point and, like it, is too slow
+at the lowest temperatures and highest pressures (no peroxide chemistry);
+AramcoMech does not have that fault.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+Run the six rungs and read the table: the ignition delay appears at rung~3 and
+hardly changes at rungs~4 and~5 (the branching decides it, the later links decide
+the final temperature), then grows by an order of magnitude at rung~6.  Run the
+sensitivity and find the two methyl reactions.  Then read the last table against
+the measured column and find the points where the assembled set is more than a
+factor of three slow.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That a mechanism that ignites is a mechanism that is right.}  Rung~3
+ignites, at a tenth of the measured delay, for the wrong reason: a chain that
+branches and has no side road to take radicals out of it.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+The carbon constants are ONE mechanism's values (Miller and Bowman 1989,
+Appendix~A), not evaluated data; Baulch et al.\ (2005) and Tsang and Hampson (1986)
+are the evaluated sources and are not yet transcribed in this tree.  No peroxide
+or C$_2$ chemistry beyond ethane; the argon and helium mixtures of the paper are
+not run; the delay is the engine's steepest temperature rise, not the
+experimenters' extrapolated pressure rise.
+
 \subsection{Operator panels and alarms}\label{sec:edu-operator-panels}
 
 \declaredanchor{sec:operatorPanels}
@@ -3172,6 +3253,55 @@ the interface is as written.  Choupo's own tool of this kind, \code{bin/curate/r
 species it computed for the Miller \& Bowman mechanism, and a test holds
 that the tool and its records exist in the tree.
 \declaredanchor{ch:cosmosac}
+
+\subsection*{Why is chemistry stiff, and how do solvers go fast? \quad(\code{tool=stiff-chemistry})}\label{sec:edu-stiff-chemistry}
+Why a combustion or NOx case needs a stiff solver, what a Jacobian and an LU
+are doing, and why one solver is many times faster than another on the same
+mechanism, with Choupo's own numbers.  The page is a notes page with one live
+element and a set of \emph{recorded} runs: it runs no case in the browser,
+because the engine's work counters are switched on by an environment variable
+(\code{CHOUPO\_ODE\_STATS}) that a browser run cannot set, and it says so in
+a badge at its head.  Eight cards.  (1)~\emph{What stiffness is}: radicals
+settle in nanoseconds while the temperature moves over milliseconds, the
+Jacobian's eigenvalues $\lambda$ span that range, and explicit RK4 is stable
+only for $h|\lambda|\le 2.785$; a calculator with two sliders (the fastest
+rate and the step) shows the amplification factor of one RK4 step and of one
+implicit step, with a table of the same vessel
+(\code{ignition01\_h2o2}) under five integrators, including the two shipped
+failures \code{ignition01\_h2o2\_rk4} and \code{ignition01\_h2o2\_eulersi}.
+(2)~\emph{Three Jacobians}: finite differences, Choupo's audited analytic
+Jacobian (default where every law has a derivative) and OpenFOAM's fast
+Jacobian with the fall-off terms compiled out, and what a wrong matrix costs.
+(3)~\emph{Linear algebra}: each implicit step solves
+$(\mathbf{I}-h\gamma\mathbf{J})\mathbf{x}=\mathbf{b}$; on \code{nox03} the
+matrix is 79\,\% full and L+U is 94\,\% of dense, so sparse is only 7\,\%
+cheaper, while \code{nox02}'s 17 vessels are block-diagonal and dense costs
+ten times more; the run kernels cut a factor from 383\,k to 273\,k
+instructions.  (4)~\emph{Four integrators} counted on \code{nox03}:
+Rodas4 728 steps, 732 Jacobians and factorisations; seulex 95 steps, 92
+Jacobians and 635 factorisations; Cantera's CVODES 2137 steps, 38 Jacobians,
+239 factorisations; and why a big-step method wins at a tight tolerance and
+loses at a loose one.  (5)~\emph{The cost of one evaluation} (right-hand
+side 23 to 14\,$\mu$s against Cantera's 3), where the instructions of a run
+went, and the like-with-like comparison, integration only against end to end.
+(6)~\emph{Many reactors}: the block-diagonal Jacobian of \code{nox02}; the
+per-vessel table shows seulex at $10^{-8}$ going from 20 times Cantera
+coupled to 3.3 times on one thread and 1.1 times on four, with the accuracy
+note that the cold vessels are less accurate at equal \code{rtol} and that
+\code{atol} decides it.
+(7)~\emph{Dense output}: the cubic Hermite through $h\,f$ amplified a
+step-end difference of $10^{-8}$ to $10^{-2}$ inside the step on a stiff
+system; each integrator now uses its own interpolant (Rodas4's
+\code{CONTRO}, Rosenbrock23's \code{ntrp23s}, seulex's extrapolated
+polynomial), and on \code{nox03} the grid error against a tight reference
+falls from $4.0\times10^{-2}$ to $6.8\times10^{-5}$ for seulex and from
+$1.9\times10^{-4}$ to $6.1\times10^{-5}$ for Rodas4; the interpolant is not
+error-controlled.  (8)~\emph{The journey of one
+day} as a lesson in method: measure before optimising, prove every speedup
+byte for byte, compare like with like.  Every number is cited to the review
+that recorded it, every reference was verified on Crossref or the project's
+citation file, and a test holds each cited line to the tree.
+\declaredanchor{ch:stiff-ode}
 
 \subsection*{From a database to binary parameters \quad(\code{tool=database-to-parameters})}
 Choupo's curation pipeline as a lesson: a ThermoML file is read in the

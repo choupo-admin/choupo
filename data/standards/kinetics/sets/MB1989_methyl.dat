@@ -1,0 +1,13 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Reaction set MB1989_methyl: CH3 is consumed (recombination with H, O2, HO2, O, OH, H) and CH3O decays to CH2O.
+  A part of the C/H/O chain of Miller & Bowman 1989, Appendix A; the hydrogen-oxygen
+  reactions of that appendix are the OConaire2004 set's.  Its members are the
+  records whose `sets {}` names it.
+\*---------------------------------------------------------------------------*/
+recordType  kineticsSet;
+citation    "Miller and Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338";
+doi         "10.1016/0360-1285(89)90017-8";
+thermochemistry
+{
+    citation "not printed in the appendices (the CHEMKIN thermodynamic data base of the period); the run reads the NASA TP-2002-211556 table";
+}

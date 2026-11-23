@@ -28,6 +28,7 @@ License
 
 #include "NASA7Cp.H"
 #include "core/Advisory.H"
+#include "core/DeferredNotes.H"
 #include "core/Constants.H"
 
 #include <algorithm>
@@ -75,12 +76,15 @@ const scalar* NASA7Cp::coeffsFor(scalar T) const
 void NASA7Cp::noteRange(scalar T) const
 {
     if (T >= Tlow_ && T <= Thigh_) return;
-    AdvisoryLog::instance().addAnnouncedOnce(
-        "softWindow:NASA7@" + owner_ + ":" + std::to_string(Tlow_) + "-" + std::to_string(Tcommon_)
-        + "-" + std::to_string(Thigh_), "validity", "warning", "component '" + owner_ + "'",
-        "NASA7 heat capacity evaluated at T = " + std::to_string(T) + " K, OUTSIDE its"
-        " declared range (" + std::to_string(Tlow_) + " " + std::to_string(Thigh_)
-        + ") -- extrapolated, still returned");
+    deferred::note(this, [this, T]
+    {
+        AdvisoryLog::instance().addAnnouncedOnce(
+            "softWindow:NASA7@" + owner_ + ":" + std::to_string(Tlow_) + "-" + std::to_string(Tcommon_)
+            + "-" + std::to_string(Thigh_), "validity", "warning", "component '" + owner_ + "'",
+            "NASA7 heat capacity evaluated at T = " + std::to_string(T) + " K, OUTSIDE its"
+            " declared range (" + std::to_string(Tlow_) + " " + std::to_string(Thigh_)
+            + ") -- extrapolated, still returned");
+    });
 }
 
 scalar NASA7Cp::Cp(scalar T) const

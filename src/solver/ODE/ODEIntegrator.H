@@ -286,6 +286,40 @@ struct ODEAnalyticJacobian
     long   auditEvals  = 0;          // f evaluations spent on audits
 };
 
+//- The integrator's OWN DENSE OUTPUT for one accepted step (C473 h): a
+//  polynomial in theta = (t - tStart) / h on [0, 1] that the integrator builds
+//  from what it already computed in the step -- Rodas4 and Rosenbrock23 from
+//  their stage vectors (Hairer & Wanner II, IV.7; Shampine & Reichelt 1997),
+//  seulex from its extrapolation tableau (Hairer & Wanner II, IV.9; Hairer &
+//  Ostermann 1990) -- instead of a cubic through the end derivatives, which on
+//  a stiff network multiplies the end-state difference by lambda*h.  NO claim
+//  is made that the polynomial is held to the step's tolerance: the step
+//  control certifies the step END only (Rodas4 and Rosenbrock23 interpolants
+//  are of fixed order; seulex's is not error-controlled, and on a non-stiff
+//  step it is less accurate than the cubic Hermite).  Immutable after
+//  construction: eval() is const and touches nothing shared, so a vessel's
+//  integrator hands it to the vessel's own writer on its own thread.  Every
+//  eval is a LINEAR combination of the stage vectors of the whole state, so a
+//  linear invariant the stages respect (an element balance) is carried.
+class ODEDenseOutput
+{
+public:
+    virtual ~ODEDenseOutput() = default;
+    scalar tStart() const { return tStart_; }
+    scalar h()      const { return h_; }
+    //- y(tStart + theta h), theta in [0, 1], into y (resized to the state).
+    virtual void eval(scalar theta, sVector& y) const = 0;
+    //- f(tStart, y(tStart)): the slope at the start of the step, kept so that
+    //  the caller can apply the integrators' own positivity rule (an EMPTY row
+    //  still being consumed is not clipped).  Set once by the integrator
+    //  before the object is shared.
+    const sVector& startSlope() const { return f0_; }
+    void setStartSlope(sVector f0) { f0_ = std::move(f0); }
+protected:
+    sVector f0_;
+    scalar tStart_ = 0.0, h_ = 0.0;
+};
+
 // Integration controls.  `atol` is PER-COMPONENT: the state is unit-mixed
 // (species in kmol/s next to a temperature in K, trace radicals at 1e-10 next
 // to the bath gas at 1e0).  A single scalar atol lets the controller be driven
@@ -335,6 +369,14 @@ struct ODEControls
     // would see the units' stale, pre-commit state).  Empty by default.
     std::function<void(scalar tEnd, scalar hTaken, const sVector& yAccepted)>
         onAcceptState;
+
+    //  DENSE-OUTPUT hook (C473 h): when set, an integrator that has a dense
+    //  output of its own builds it for each ACCEPTED step and hands it over
+    //  just BEFORE onAccept / onAcceptState fire for that step, valid on
+    //  [tEnd - hTaken, tEnd].  Empty by default => nothing is built (no cost).
+    //  Integrators without one (RK4, EulerSI) never call it; the caller then
+    //  keeps its own interpolation.
+    std::function<void(std::shared_ptr<const ODEDenseOutput>)> onDense;
 
     // OPT-IN declared Jacobian structure (Rosenbrock23 only; see
     // ODEBlockStructure).  Not owned; nullptr => the dense path, untouched.

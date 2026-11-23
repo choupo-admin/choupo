@@ -67,6 +67,10 @@ export const PINCH_MOMENTS: readonly { id: MomentId; title: string; lead: string
       + "to read further." },
 ];
 
+/** The moments are lettered, the lesson's steps numbered: two sections both
+ *  headed "1 ·" read as a mistake (C266 item 19). */
+const MOMENT_LETTERS = ["A", "B", "C"] as const;
+
 /** The three buttons at the head of the page: each scrolls to its moment. */
 export function MomentsNav(): JSX.Element {
   const go = (id: MomentId) => {
@@ -78,7 +82,7 @@ export function MomentsNav(): JSX.Element {
     <Group gap={6} data-moments-nav="">
       {PINCH_MOMENTS.map((m, i) => (
         <Button key={m.id} size="compact-sm" variant="light" onClick={() => go(m.id)}>
-          {i + 1} · {m.title.split(" · ")[0]}
+          {MOMENT_LETTERS[i]} · {m.title.split(" · ")[0]}
         </Button>
       ))}
     </Group>
@@ -88,7 +92,7 @@ export function MomentsNav(): JSX.Element {
 /** One moment: an <h4> (a chapter of the page, chapters.ts) and its lead. */
 export function Moment({ id, children }: { id: MomentId; children: ReactNode }): JSX.Element {
   const m = PINCH_MOMENTS.find((x) => x.id === id)!;
-  const n = PINCH_MOMENTS.indexOf(m) + 1;
+  const n = MOMENT_LETTERS[PINCH_MOMENTS.indexOf(m)];
   return (
     <Box data-moment={id} pt="sm"
       style={{ borderTop: `2px solid ${BORDER}`, scrollMarginTop: 8 }}>

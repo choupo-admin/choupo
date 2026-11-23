@@ -1,0 +1,109 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Carbon monoxide  (CO, CAS 630-08-0)
+  Permanent gas at any process-relevant temperature.  Antoine and Vliq
+  carried for schema compliance only; Tc=132.85 K means we never see
+  a liquid in v0.15 process conditions.
+  Sources: constants (Tc, Pc, omega, MW, Tb) cross-checked against the
+  CoolProp 7.2.0 reference equation of state (MIT-licensed); ideal-gas
+  formation properties (dHf_298, s_298) from NASA TM-4513 (McBride-
+  Gordon-Reno 1993).
+\*---------------------------------------------------------------------------*/
+
+name        CO;
+formula     CO;
+CAS         630-08-0;
+
+MW          28.010;       // kg/kmol
+Tc          132.85;       // K
+Pc          34.94;        // bar
+omega       0.045;        // [-]
+Tb          81.65;        // K
+HvapTb      6042;         // J/mol
+Vliq        3.55e-5;      // m^3/mol  (35.5 cm^3/mol at Tb)
+VliqT       81.65;       // K -- the temperature Vliq belongs to: the record's own statement ("at Tb")
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 6402;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
+diffusionVolume  18.0;          // Fuller diffusion volume [-]
+
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.81912   291.743   -5.151);
+    Trange        (68  132);
+}
+
+
+// Friendly-name aliases (resolved to this file via the generated ALIASES index).
+aliases ( carbonMonoxide );
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0387-PROF.txt bundled in usnistgov/COSMOSAC; CAS 630-08-0";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+}
+
+reviewStatus   interim;
+reviewReason   "idealGasHeatCapacity transcribed by machine from NASA/TP-2002-211556 and checked against the report itself, not yet read back against the page by a curator; the rest of this record is unchanged";
+variationOf    CO;
+variationReason "the case carries the flame-range ideal-gas heat capacity (NASA-9, 200-6000 K, NASA/TP-2002-211556) that the combustion chemistry needs; the catalogue cubic stops at 1500 K.";
+
+standardThermochemistry
+{
+    dHf_298    -110535.196;   // J/mol  -- ideal gas; NASA/TP-2002-211556 appendix D, p. 84, entry CO
+    s_298      197.660;     // J/(mol·K) -- third-law absolute; Table B1, p. 14
+}
+
+idealGasHeatCapacity
+{
+    //  CASE-LOCAL OVERRIDE for flame temperatures (the catalogue Cp is a 250-1500 K process fit).
+    //  NASA/TP-2002-211556 eq. (1), Cp/R = a1/T^2 + a2/T + a3 + a4 T + a5 T^2
+    //  + a6 T^3 + a7 T^4; appendix D, p. 84, entry CO, a1..a7 as printed.
+    //  The report's 6000-20000 K interval is not transcribed.
+    model    NASA9;
+    Tlow     200;
+    Tcommon  1000;
+    Thigh    6000;
+    low      ( 1.489045326e+04 -2.922285939e+02 5.724527170e+00 -8.176235030e-03 1.456903469e-05 -1.087746302e-08 3.027941827e-12 );
+    high     ( 4.619197250e+05 -1.944704863e+03 5.916714180e+00 -5.664282830e-04 1.398814540e-07 -1.787680361e-11 9.620935570e-16 );
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 84, entry CO, record-line H(298.15) (elements reference, so = dHf)";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "Table B1 p. 14 prints -110.535 kJ/mol; the report's own sources: Gurvich,1979 pt1 p25 pt2 p29.";
+    }
+    s_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 Table B1, p. 14, entry CO";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "appendix D's coefficients with b2 integrate to 197.660";
+    }
+    idealGasHeatCapacity
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 84, entry CO, a1..a7 of the 200-1000 K and 1000-6000 K intervals, as printed";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "read by bin/curate/nasa_tp2002_to_choupo.py, which holds H and S at 298.15 K to the printed values";
+    }
+    source   "McBride, Zehe & Gordon, NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species, NASA/TP-2002-211556 (2002)";
+    licence  publicDomain;    // US government work (NASA), 17 U.S.C. 105
+}
+

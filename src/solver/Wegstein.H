@@ -97,6 +97,10 @@ public:
     int callCount()  const { return ncalls_; }
     // Last vector of per-component q values (clamped) — for logging.
     const sVector& lastQ() const { return qLast_; }
+    //  What the LAST step did to each entry's secant coefficient: 0 no secant was formed (first
+    //  call, x did not move, s = 1), 1 q taken as the secant gave it, 2 cut UP to qMin, 3 cut
+    //  DOWN to qMax.  The recycle report counts these so the clamp is never silent.
+    const std::vector<char>& lastStatus() const { return status_; }
 
 private:
     std::size_t n_;
@@ -104,6 +108,7 @@ private:
     sVector     xPrev_;
     sVector     gPrev_;
     sVector     qLast_;
+    std::vector<char> status_;
     std::vector<char> positive_;
     int         ncalls_ = 0;
 };

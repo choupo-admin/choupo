@@ -706,6 +706,76 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["knowK.test.ts"],
     stdout: true,
   },
+  //  The `methane-assembly` EduTool: the signal of each rung of the ladder (the trajectory the page
+  //  plots) and the log whose `tau_ign (max dT/dt)` line is the delay the page reads.  The
+  //  sensitivity case (one integration per reaction, 158 s natively) is NOT run here: the test
+  //  reads its pinned KPIs from its `expected`.
+  {
+    caseDir: "tutorials/batch/combustion/methane01_h2o2_core",
+    file: "trajectory.csv",
+    readBy: ["methaneAssembly.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/combustion/methane01_h2o2_core",
+    file: "log.choupoBatch",
+    readBy: ["methaneAssembly.test.ts"],
+    stdout: true,
+  },
+  {
+    caseDir: "tutorials/batch/combustion/methane02_ch4_attack",
+    file: "trajectory.csv",
+    readBy: ["methaneAssembly.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/combustion/methane02_ch4_attack",
+    file: "log.choupoBatch",
+    readBy: ["methaneAssembly.test.ts"],
+    stdout: true,
+  },
+  {
+    caseDir: "tutorials/batch/combustion/methane03_methyl",
+    file: "trajectory.csv",
+    readBy: ["methaneAssembly.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/combustion/methane03_methyl",
+    file: "log.choupoBatch",
+    readBy: ["methaneAssembly.test.ts"],
+    stdout: true,
+  },
+  {
+    caseDir: "tutorials/batch/combustion/methane04_formyl",
+    file: "trajectory.csv",
+    readBy: ["methaneAssembly.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/combustion/methane04_formyl",
+    file: "log.choupoBatch",
+    readBy: ["methaneAssembly.test.ts"],
+    stdout: true,
+  },
+  {
+    caseDir: "tutorials/batch/combustion/methane05_c1_chain",
+    file: "trajectory.csv",
+    readBy: ["methaneAssembly.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/combustion/methane05_c1_chain",
+    file: "log.choupoBatch",
+    readBy: ["methaneAssembly.test.ts"],
+    stdout: true,
+  },
+  {
+    caseDir: "tutorials/batch/combustion/methane06_assembled",
+    file: "trajectory.csv",
+    readBy: ["methaneAssembly.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/combustion/methane06_assembled",
+    file: "log.choupoBatch",
+    readBy: ["methaneAssembly.test.ts"],
+    stdout: true,
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

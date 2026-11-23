@@ -78,10 +78,15 @@ interface Rule {
   label?: (k: string) => string;
 }
 
+const SIDE_LABEL: { [k: string]: string } = { T_hot: "hot side", T_cold: "cold side" };
+
 //  Order = the order of the panels from the top.
 const RULES: Rule[] = [
+  //  T_hot / T_cold are the two sides of an exchanger profile: one temperature
+  //  panel, so the reader sees the two curves against each other (C266 item 2).
   { id: "temperature", title: "Temperature T (K)", chip: "Temperature", weight: 0.8,
-    match: (k) => k === "T" || k === "T_K" },
+    match: (k) => k === "T" || k === "T_K" || k === "T_hot" || k === "T_cold",
+    label: (k) => SIDE_LABEL[k] ?? k },
   { id: "liquid", title: "Liquid mole fraction x (-)", chip: "Liquid x", weight: 1.3,
     match: (k) => k.startsWith("x_"), label: strip("x_") },
   { id: "vapour", title: "Vapour mole fraction y (-)", chip: "Vapour y", weight: 1.0,
@@ -100,9 +105,9 @@ const RULES: Rule[] = [
     weight: 1.0, match: (k) => k.startsWith("gamma_"), label: strip("gamma_") },
   { id: "activity", title: "Activity a = gamma x (-)", chip: "Activities", weight: 1.0,
     match: (k) => k.startsWith("a_"), label: strip("a_") },
-  { id: "lnKa", title: "ln K_a (-)", chip: "ln K_a", weight: 0.8, match: (k) => k === "lnKa" },
+  { id: "lnKa", title: "ln K_a (-)", chip: "Equilibrium constant", weight: 0.8, match: (k) => k === "lnKa" },
   { id: "extent", title: "Reaction extent (kmol/h)", chip: "Reaction extent", kind: "bar",
-    weight: 0.9, match: (k) => k === "extent_kmol_h" },
+    weight: 0.9, match: (k) => k === "extent_kmol_h", label: () => "extent (kmol/h)" },
   { id: "rate", title: "Reaction rate r (mol/(g_cat s))", chip: "Reaction rate", weight: 0.8,
     match: (k) => k === "r_mol_gcat_s" },
 ];
@@ -172,4 +177,17 @@ export function panelDomains(weights: number[], gap = 0.05): Array<[number, numb
     top -= h + gap;
   }
   return out;
+}
+
+/** The title of the profile's x axis.  The engine publishes the coordinate's
+ *  NAME only; a name that says more than it shows is read from the name and
+ *  the data, never from a unit the engine did not publish (C266 item 2):
+ *  `position` runs 0 to 1 along an exchanger, a fraction of its length. */
+export function profileXAxisTitle(key: string, values: ReadonlyArray<number>): string {
+  const fin = values.filter((v) => Number.isFinite(v));
+  if (key === "position" && fin.length > 0 && Math.min(...fin) >= 0 && Math.max(...fin) <= 1)
+    return "position along the unit (fraction of its length)";
+  const m = /^(.*)_micron$/.exec(key);
+  if (m) return `${m[1]!.replace(/_/g, " ")} (\u00b5m)`;
+  return key;
 }

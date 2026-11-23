@@ -39,7 +39,7 @@
 
   WEGSTEIN IS THIS SAME FORMULA with w = 1 - q chosen from the last two
   iterates: the engine's update x+ = q x + (1 - q) G(x)
-  (src/solver/Wegstein.cpp:49-92) is (1 - w) x + w G(x) with w = 1 - q.  On a
+  (src/solver/Wegstein.cpp:51-96) is (1 - w) x + w G(x) with w = 1 - q.  On a
   linear G the secant slope is a exactly, so the unclamped coefficient is
   q = a/(a - 1) and w = 1 - q = 1/(1 - a) = w*.  So an unclamped Wegstein IS
   the optimal relaxation, found by itself -- and the clamp [qMin, qMax] is a

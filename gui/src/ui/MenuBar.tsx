@@ -1125,7 +1125,7 @@ function ToolMenu({ tool, px }: { tool: MethodToolId | null; px: number }) {
     <Text span fz={13} fw={400} c="dimmed">
       Tool:{" "}
       <Text span fz={13} fw={600} c="accent">
-        {current ? current.label : "home"}
+        {current ? current.label : "EduTools home"}
       </Text>
     </Text>
   );

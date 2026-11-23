@@ -162,7 +162,14 @@ function summaryLines(u: UnitSpec): { n: number; chars: number } {
 export function unitCardSize(u: UnitSpec, composite: boolean): { width: number; height: number } {
   const ins = Array.isArray(u.in) ? u.in.length : 1;
   const lines = composite ? { n: 0, chars: 0 } : summaryLines(u);
-  const width = Math.max(UNIT_MIN_W, 130 + 7.5 * u.name.length, 30 + 7.3 * lines.chars);
+  //  The name term is the card at the OVERVIEW zoom, not at 100 %: at fit the
+  //  legibility floor draws a unit's name at 11 px / zoom (case/legibility.ts),
+  //  about 1.5-1.9x its declared size, and a card sized for the declared name
+  //  was overrun by its neighbour in the next column (swro01: IntakeChamber,
+  //  Remineralisation; measured real widths 360 and 385 against estimates of
+  //  227 and 250; C266 item 4).  80 + 14/char keeps every swro01 card inside
+  //  its column plus the gap.
+  const width = Math.max(UNIT_MIN_W, 80 + 14 * u.name.length, 30 + 7.3 * lines.chars);
   const height = Math.max(
     UNIT_BASE_H + (lines.n > 0 ? 4 + UNIT_LINE_H * lines.n : 0),
     22 * Math.max(ins, u.outputs.length) + 20,

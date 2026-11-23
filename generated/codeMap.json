@@ -314,6 +314,9 @@
   "BubbleTSolve": [
    "src/thermo/SaturationCurves.H"
   ],
+  "Buffer": [
+   "src/core/DeferredNotes.H"
+  ],
   "BuildingConnection": [
    "src/core/BuildingRecords.H"
   ],
@@ -343,6 +346,9 @@
   ],
   "CakeFilter": [
    "src/unitOperations/solids/CakeFilter.H"
+  ],
+  "Capture": [
+   "src/core/DeferredNotes.H"
   ],
   "Carried": [
    "src/unitOperations/UnitAcceptance.H"
@@ -1615,6 +1621,9 @@
   "ODEControls": [
    "src/solver/ODE/ODEIntegrator.H"
   ],
+  "ODEDenseOutput": [
+   "src/solver/ODE/ODEIntegrator.H"
+  ],
   "ODEIntegrator": [
    "src/solver/ODE/ODEIntegrator.H"
   ],
@@ -1629,6 +1638,9 @@
   ],
   "OlssonNaOH": [
    "src/thermo/electrolyte/OlssonNaOH.H"
+  ],
+  "OnceFlag": [
+   "src/core/DeferredNotes.H"
   ],
   "OpSlots": [
    "src/propertyOps/PropsPlan.H"
@@ -4035,6 +4047,7 @@
    "src/core/BuildingRecords.H",
    "src/core/Citation.H",
    "src/core/Constants.H",
+   "src/core/DeferredNotes.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/DisplayUnits.H",
@@ -4067,6 +4080,7 @@
    "src/solver/NewtonRaphson.H",
    "src/solver/ODE/AdaptiveTimeStep.H",
    "src/solver/ODE/ODEIntegrator.H",
+   "src/solver/ParallelFor.H",
    "src/solver/SparseLU.H",
    "src/streams/Carried.H",
    "src/streams/ProcessStream.H",
@@ -10326,6 +10340,7 @@
   "src/thermo/Component.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
+   "src/core/DeferredNotes.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -11472,6 +11487,7 @@
   ],
   "src/thermo/heatCapacity/ChemSepCp16.cpp": [
    "src/core/Advisory.H",
+   "src/core/DeferredNotes.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
@@ -11479,6 +11495,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H"
   ],
   "src/thermo/heatCapacity/HeatCapacityModel.cpp": [
+   "src/core/DeferredNotes.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/RegistryRefusal.H",
@@ -11494,6 +11511,7 @@
   "src/thermo/heatCapacity/NASA7Cp.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
+   "src/core/DeferredNotes.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
@@ -11503,6 +11521,7 @@
   "src/thermo/heatCapacity/NASA9Cp.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
+   "src/core/DeferredNotes.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
@@ -11511,6 +11530,7 @@
   ],
   "src/thermo/heatCapacity/PolynomialCp.cpp": [
    "src/core/Advisory.H",
+   "src/core/DeferredNotes.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
@@ -11520,6 +11540,7 @@
   "src/thermo/heatCapacity/RowlinsonBondi.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
+   "src/core/DeferredNotes.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
@@ -17994,6 +18015,16 @@
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
+  "src/core/DeferredNotes.H": [
+   "src/applications/choupoBatch/main.cpp",
+   "src/thermo/Component.cpp",
+   "src/thermo/heatCapacity/ChemSepCp16.cpp",
+   "src/thermo/heatCapacity/HeatCapacityModel.cpp",
+   "src/thermo/heatCapacity/NASA7Cp.cpp",
+   "src/thermo/heatCapacity/NASA9Cp.cpp",
+   "src/thermo/heatCapacity/PolynomialCp.cpp",
+   "src/thermo/heatCapacity/RowlinsonBondi.cpp"
+  ],
   "src/core/DictAudit.H": [
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
@@ -23359,6 +23390,7 @@
    "src/solver/ODE/Seulex.cpp"
   ],
   "src/solver/ParallelFor.H": [
+   "src/applications/choupoBatch/main.cpp",
    "src/solver/ParallelFor.cpp",
    "src/unitOperations/batch/BatchReactor.cpp"
   ],

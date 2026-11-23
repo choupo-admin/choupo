@@ -94,16 +94,19 @@ void ChemSepCp16::noteRange(scalar T) const
     //  a hot path happens to run.
     if (rangeUnknown_ || Tmax_ <= Tmin_) return;
     if (T >= Tmin_ && T <= Tmax_) return;
-    if (announcedOutside_) return;
-    announcedOutside_ = true;
+    if (announcedOutside_.done()) return;
 
-    const std::string who = owner_.empty() ? "chemsepCp16"
-                                           : "component '" + owner_ + "'";
-    AdvisoryLog::instance().add(
-        "validity", "warning", who,
-        "ideal-gas Cp evaluated at T = " + std::to_string(T)
-        + " K, OUTSIDE its declared Trange (" + std::to_string(Tmin_) + " "
-        + std::to_string(Tmax_) + ") -- extrapolated, still returned");
+    deferred::note(&announcedOutside_, [this, T]
+    {
+        if (!announcedOutside_.claim()) return;
+        const std::string who = owner_.empty() ? "chemsepCp16"
+                                               : "component '" + owner_ + "'";
+        AdvisoryLog::instance().add(
+            "validity", "warning", who,
+            "ideal-gas Cp evaluated at T = " + std::to_string(T)
+            + " K, OUTSIDE its declared Trange (" + std::to_string(Tmin_) + " "
+            + std::to_string(Tmax_) + ") -- extrapolated, still returned");
+    });
 }
 
 

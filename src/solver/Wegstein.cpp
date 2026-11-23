@@ -35,7 +35,7 @@ namespace Choupo::solver {
 
 Wegstein::Wegstein(std::size_t n, scalar qMin, scalar qMax)
 :   n_(n), qMin_(qMin), qMax_(qMax),
-    xPrev_(n, 0.0), gPrev_(n, 0.0), qLast_(n, 0.0)
+    xPrev_(n, 0.0), gPrev_(n, 0.0), qLast_(n, 0.0), status_(n, 0)
 {}
 
 void Wegstein::reset()
@@ -44,11 +44,13 @@ void Wegstein::reset()
     std::fill(xPrev_.begin(), xPrev_.end(), 0.0);
     std::fill(gPrev_.begin(), gPrev_.end(), 0.0);
     std::fill(qLast_.begin(), qLast_.end(), 0.0);
+    std::fill(status_.begin(), status_.end(), 0);
 }
 
 sVector Wegstein::step(const sVector& x, const sVector& gx)
 {
     sVector xNext(n_);
+    std::fill(status_.begin(), status_.end(), 0);
 
     if (ncalls_ == 0)
     {
@@ -81,6 +83,8 @@ sVector Wegstein::step(const sVector& x, const sVector& gx)
             else
             {
                 q = std::clamp(s / (s - 1.0), qMin_, qMax_);
+                const scalar qRaw = s / (s - 1.0);   // the same quotient, to see whether the clamp cut it
+                status_[i] = qRaw < qMin_ ? 2 : qRaw > qMax_ ? 3 : 1;   // counted, never silent
                 if (q < 0.0 && i < positive_.size() && positive_[i])
                 {
                     const scalar xStar = (gx[i] - s * x[i]) / (1.0 - s);   // the secant fixed point

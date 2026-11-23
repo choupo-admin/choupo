@@ -40,6 +40,33 @@ batch06_adaptive_runaway on a 0.5 s write grid: one batchReactor, 1201 write poi
       every directory holds internalStates/; batch24_tsa_until_css writes a directory at
       the instant `repeat untilCSS` stops.
 
+  (g) THE GRID OF A STIFF NETWORK IS HELD TO A TIGHT REFERENCE (C473 h).  The 235-reaction
+      nox03_millerbowman_large on a 1 ms write grid, free stepping, at rtol 1e-8 under
+      seulex, Rodas4 and Rosenbrock23, against the same case at rtol 1e-11 (Rodas4,
+      atol 1e-20): the worst |value - reference| / column maximum over the grid is below a
+      bound set about 3x above what the integrators' OWN dense outputs reach and well
+      below what the driver's cubic Hermite did.  THE DEFECT: the Hermite multiplied the
+      end-state difference of a trace radical by lambda*h (f(y_end) enters times h), so
+      under seulex the interior rows were 4e-2 of a column maximum from the truth while
+      every step end was right to 1e-8; finer writing and a tighter rtol did not help
+      (docs/reviews/2026-11-22-densesparse).  No golden saw it (the goldens pinned the
+      Hermite's rows) and no closure saw it (the Hermite keeps the atoms).
+
+  (h) THE ARM HAS TEETH.  The same case with `solver { denseOutput hermite; }` (the driver's
+      cubic Hermite, a declared key, announced in the run) shows the 4e-2 of arm (g)'s defect
+      (so a bound that no longer sees it would fail here), and a value other than
+      integrator | hermite is refused by name.
+
+  (i) A NON-STIFF WITNESS.  batch06_adaptive_runaway (an adiabatic esterification, no stiffness)
+      under seulex at rtol 1e-4 on its 0.5 s grid, against the same case at rtol 1e-11 (Rodas4):
+      the worst grid deviation is bounded.  THE DEFECT (the Opus review, 2026-11-22): a first
+      version took the left-end derivatives of the seulex polynomial from ONE column, a raw
+      one-sided Euler difference that is never extrapolated, and on a non-stiff step the
+      interpolant was 10-90x worse than the Hermite it replaced (Prothero-Robinson at
+      lambda = -1: 1.7e-2 against 1.1e-3) while arm (g), a stiff case, did not see it.
+      IN-SAMPLE: the bounds of (g) and (i) were set from nox03 and this one case; no other
+      network has been measured, and the polynomial's error is NOT controlled by the step.
+
 NOT CHECKED: the order of the interpolant (Theory Guide sec:batch-dense-output), a vessel
 other than batchReactor (those keep the write grid as the step boundary and are covered by
 their own goldens).
@@ -58,6 +85,12 @@ STRIP = ("expected", "converged", "constant/propertyManifest")
 #  The one directory walk below is over the gate's OWN scratch copy of the case (the
 #  time directories an earlier run left in it), never over the tree.
 SCAN_ROOTS = ()
+#  Arm (g): the worst grid deviation, in column maxima, that nox03 may show at rtol 1e-8.  Measured with
+#  the integrators' own dense outputs (2026-11-22, docs/reviews/2026-11-22-dense-output) and set about 3x
+#  above it (Rosenbrock23 sits AT its method's step-end level, 4.2e-3); the driver's cubic Hermite gave 4e-2 (seulex),
+#  1.9e-4 on the dense solver (Rodas4), 4.2e-3 (Rosenbrock23).  seulex is the arm that has teeth.
+GRID_BOUND = {"seulex": 1.0e-3, "Rodas4": 3.0e-4, "Rosenbrock23": 1.5e-2}
+MILD_BOUND = 1.0e-4     # arm (i): batch06 under seulex at rtol 1e-4 (measured 1.1e-5 with atol 1e-12 or the case's)
 WI = 0.5     # the write interval of the probe: 1201 write points over the case's 600 s
 
 
@@ -229,12 +262,108 @@ def main():
         failures.append(f"(f) batch24_tsa_until_css: the last directory is t = {lastDir:g} but the run stopped at "
                         f"t = {lastT:g} (exit {rc24})")
 
+    # (g) the grid of a stiff network against a tight reference
+    def nox(integ, rtol, atol, solver_extra=""):
+        with gatekit.probe_copy("tutorials/batch/combustion/nox03_millerbowman_large", strip=STRIP) as c:
+            clean(c)
+            fd = Path(c) / "system/flowsheetDict"
+            fd.write_text(re.sub(r"integrator\s+\w+;", f"integrator {integ}; {solver_extra}", fd.read_text()))
+            cd = Path(c) / "system/controlDict"
+            t = re.sub(r"rtol\s+[0-9.eE+-]+;", f"rtol {rtol};", cd.read_text())
+            t = re.sub(r"atol\s+[0-9.eE+-]+;", f"atol {atol};", t)
+            t = re.sub(r"\n\s*deltaTmax[^\n]*", "", t)
+            cd.write_text(t + "\nsolutionControl { write false; }\n")
+            rc_, out_ = gatekit.run(batch, c, inside=True)
+            p = Path(c) / "trajectory.csv"
+            nox.out = out_
+            return rc_, (list(csv.reader(open(p))) if p.exists() else [])
+    rcT, refRows = nox("Rodas4", "1e-11", "1e-20")
+    worstG = {}
+    if rcT or len(refRows) < 31:
+        failures.append(f"(g) the tight reference of nox03 did not run (exit {rcT}, {len(refRows)} rows)")
+    else:
+        ref = [[float(x) for x in r] for r in refRows[1:]]
+        colmax = [max(abs(r[j]) for r in ref) or 1.0 for j in range(len(ref[0]))]
+        for integ, bound in GRID_BOUND.items():
+            rcG, rowsG = nox(integ, "1e-8", "1e-15")
+            if rcG or len(rowsG) != len(refRows):
+                failures.append(f"(g) nox03 under {integ} did not run or wrote {len(rowsG)} rows (exit {rcG})")
+                continue
+            w = 0.0
+            for rg, rr in zip(rowsG[1:], ref):
+                for j in range(1, len(rr)):
+                    w = max(w, abs(float(rg[j]) - rr[j]) / colmax[j])
+            worstG[integ] = w
+            if not w <= bound:
+                failures.append(f"(g) nox03 under {integ}: the write grid is {w:.2e} of a column maximum from the tight "
+                                f"reference (> {bound:.0e}): the rows between steps are not held to the step's accuracy")
+
+        # (h) THE ARM HAS TEETH: the same case declaring `solver { denseOutput hermite; }` (the driver's
+        #     cubic Hermite, the interpolant before 2026-11-22) must show the defect arm (g) bounds, the run
+        #     must say it chose Hermite, and a value that is not a choice is refused by name.
+        rcH, rowsH = nox("seulex", "1e-8", "1e-15", "denseOutput hermite;")
+        if rcH or len(rowsH) != len(refRows):
+            failures.append(f"(h) nox03 under seulex with `denseOutput hermite;` did not run (exit {rcH})")
+        else:
+            wH = max(abs(float(rg[j]) - rr[j]) / colmax[j]
+                     for rg, rr in zip(rowsH[1:], ref) for j in range(1, len(rr)))
+            worstG["seulex+hermite"] = wH
+            if not wH > 10 * GRID_BOUND["seulex"]:
+                failures.append(f"(h) `denseOutput hermite;` gives a grid error of {wH:.2e}, not above "
+                                f"{10 * GRID_BOUND['seulex']:.0e}: arm (g) would not see the Hermite defect it exists for")
+            if "denseOutput hermite" not in nox.out:
+                failures.append("(h) a run with `denseOutput hermite;` does not announce it")
+        rcX, _ = nox("seulex", "1e-8", "1e-15", "denseOutput quadratic;")
+        if rcX == 0 or "denseOutput" not in nox.out:
+            failures.append("(h) `denseOutput quadratic;` was not refused by name")
+
+    # (i) the non-stiff witness
+    def mild(integ, rtol, atol, extra=""):
+        with gatekit.probe_copy("tutorials/batch/reactor/batch06_adaptive_runaway", strip=STRIP) as c:
+            clean(c)
+            cd = Path(c) / "system/controlDict"
+            t = cd.read_text()
+            t = re.sub(r"rtol\s+[0-9.eE+-]+;", f"rtol {rtol};", t)
+            t = re.sub(r"atol\s+[0-9.eE+-]+;", f"atol {atol};", t) if "atol" in t else t
+            t = re.sub(r"\n\s*deltaTmax[^\n]*", "", t)
+            t = re.sub(r"^writeInterval\s+[^;]+;", "writeInterval 0.5;", t, flags=re.M)
+            cd.write_text(t + "\nsolutionControl { write false; }\n")
+            fd = Path(c) / "system/flowsheetDict"
+            ft = fd.read_text()
+            ins = f" integrator {integ};{extra}"
+            if re.search(r"solver\s*\{", ft):
+                ft = re.sub(r"integrator\s+\w+;", "", ft)
+                ft = re.sub(r"solver(\s*)\{", lambda m: "solver" + m.group(1) + "{" + ins, ft, count=1)
+            else:
+                ft = re.sub(r"(type\s+batchReactor\s*;)", lambda m: m.group(1) + "\n        solver {" + ins + " }", ft, count=1)
+            fd.write_text(ft)
+            rc_, out_ = gatekit.run(batch, c, inside=True)
+            p = Path(c) / "trajectory.csv"
+            return rc_, (list(csv.reader(open(p))) if p.exists() else [])
+    rcM, refM = mild("Rodas4", "1e-11", "1e-20")
+    if rcM or len(refM) < 100:
+        failures.append(f"(i) the tight reference of batch06 did not run (exit {rcM}, {len(refM)} rows)")
+    else:
+        refm = [[float(x) for x in r] for r in refM[1:]]
+        cmM = [max(abs(r[j]) for r in refm) or 1.0 for j in range(len(refm[0]))]
+        rcS, rowsS = mild("seulex", "1e-4", "1e-12")
+        if rcS or len(rowsS) != len(refM):
+            failures.append(f"(i) batch06 under seulex did not run or wrote {len(rowsS)} rows (exit {rcS})")
+        else:
+            wM = max(abs(float(a) - b) / cmM[j + 1] for ra, rb in zip(rowsS[1:], refm)
+                     for j, (a, b) in enumerate(zip(ra[1:], rb[1:])))
+            worstG["batch06 seulex"] = wM
+            if not wM <= MILD_BOUND:
+                failures.append(f"(i) batch06 under seulex: the write grid is {wM:.2e} of a column maximum from the tight "
+                                f"reference (> {MILD_BOUND:.0e}): on a non-stiff step the interpolant is far worse than the step")
+
     return gatekit.verdict(
         "check_batch_dense_output", failures,
         f"free stepping: {nF} accepted steps for {nWrite} write points against {nC} with the step cut at each; "
         f"rows equal the cut run's to {wT:.1e} relative in T (tol 1e-5) and {wN:.1e} of the total moles (tol 5e-4); "
         f"default tolerances: ignition delay within {dTau:.1e} s and T(41 us) within {dT41:.1e} of a tight reference; "
         f"interpolated rows keep the atoms to {clos:.1e}; fixed-bed and untilCSS directories restartable; "
+        f"nox03 grid vs tight reference: " + ", ".join(f"{k} {v:.1e}" for k, v in worstG.items()) + "; "
         f"{dirsF} directories by default, 12 at interval 100 x writeInterval, trajectory.csv keeps {nWrite} rows",
     )
 

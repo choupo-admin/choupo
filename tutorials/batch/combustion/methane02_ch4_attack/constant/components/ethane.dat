@@ -1,0 +1,156 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Ethane  (C2H6, CAS 74-84-0)
+
+  Second-largest component of natural gas after methane.  The classic
+  feedstock for the steam cracker; the C2H6 / C2H4 / H2 / C / CO2 /
+  H2O equilibrium at ~1100 K is a standard GibbsReactor exercise.
+  Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
+  reference EOS; standardThermochemistry cross-checked vs NASA TM-4513
+  (McBride-Gordon-Reno 1993); idealGasHeatCapacity -- individual
+  literature value, primary re-citation pending (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        ethane;
+formula     C2H6;
+CAS         74-84-0;
+
+MW          30.070;            // kg/kmol
+Tc          305.32;             // K
+Pc          48.72;              // bar
+omega       0.099;              // [-]
+Tb          184.55;             // K
+HvapTb      14690;              // J/mol
+Vliq        5.51e-5;            // m^3/mol
+VliqT       184.55;      // K -- the temperature Vliq belongs to: the stored value is a volume at the normal boiling point: batch vliq_datum_temperature (evidence.tsv; the value is unchanged)
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 12400;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
+
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.93835   659.739   -16.719);
+    Trange        (168  305);
+}
+
+
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (2 CH3), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   1.8022;
+    q   1.6960;
+}
+
+groups
+{
+    unifac ( { group CH3; count 2; } );
+    joback ( { group CH3; count 2; } );
+}
+
+// Friendly-name aliases -- resolved to this file via the generated ALIASES index.
+aliases ( C2H6 );
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0002-PROF.txt bundled in usnistgov/COSMOSAC; CAS 74-84-0";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file ETHANE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey OTMSDBZUPAUEDD-UHFFFAOYSA-N (full match); formula C2H6; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        77.011530;   // sum of the profile below; GAMESS prints 77.01
+        volume      58.51;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     2.603228    10.406542    13.950171
+               8.940157     9.281528    12.683448    15.490854     3.655602     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}
+
+surfaceTension
+{
+    A     0.03654107858;
+    B     0;
+    Tc    305.32;
+    n     1.130205116;
+    Tmin  274.62;
+    Tmax  304.95;
+}
+
+reviewStatus   interim;
+reviewReason   "idealGasHeatCapacity transcribed by machine from NASA/TP-2002-211556 and checked against the report itself, not yet read back against the page by a curator; the rest of this record is unchanged";
+variationOf    ethane;
+variationReason "the case carries the flame-range ideal-gas heat capacity (NASA-9, 200-6000 K, NASA/TP-2002-211556) that the combustion chemistry needs; the catalogue cubic stops at 1500 K.";
+
+standardThermochemistry
+{
+    dHf_298    -83851.544;   // J/mol  -- ideal gas; NASA/TP-2002-211556 appendix D, p. 92, entry C2H6
+    s_298      229.221;     // J/(mol·K) -- third-law absolute; Table B1, p. 16
+}
+
+idealGasHeatCapacity
+{
+    //  CASE-LOCAL OVERRIDE for flame temperatures (the catalogue Cp is a 250-1500 K process fit).
+    //  NASA/TP-2002-211556 eq. (1), Cp/R = a1/T^2 + a2/T + a3 + a4 T + a5 T^2
+    //  + a6 T^3 + a7 T^4; appendix D, p. 92, entry C2H6, a1..a7 as printed.
+    model    NASA9;
+    Tlow     200;
+    Tcommon  1000;
+    Thigh    6000;
+    low      ( -1.862044161e+05 3.406191860e+03 -1.951705092e+01 7.565835590e-02 -8.204173220e-05 5.061135800e-08 -1.319281992e-11 );
+    high     ( 5.025782130e+06 -2.033022397e+04 3.322552930e+01 -3.836703410e-03 7.238405860e-07 -7.319182500e-11 3.065468699e-15 );
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 92, entry C2H6, record-line H(298.15) (elements reference, so = dHf)";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "Table B1 p. 16 prints -83.852 kJ/mol; the report's own sources: Ethane. Pamidimukkala,1982.";
+    }
+    s_298
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 Table B1, p. 16, entry C2H6";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "appendix D's coefficients with b2 integrate to 229.221";
+    }
+    idealGasHeatCapacity
+    {
+        origin        literature;
+        method        "NASA/TP-2002-211556 appendix D, p. 92, entry C2H6, a1..a7 of the 200-1000 K and 1000-6000 K intervals, as printed";
+        methodVersion "NASA/TP-2002-211556";
+        uncertainty   "not quantified by source";
+        notes         "read by bin/curate/nasa_tp2002_to_choupo.py, which holds H and S at 298.15 K to the printed values";
+    }
+    source   "McBride, Zehe & Gordon, NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species, NASA/TP-2002-211556 (2002)";
+    licence  publicDomain;    // US government work (NASA), 17 U.S.C. 105
+}
+

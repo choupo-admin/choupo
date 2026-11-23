@@ -228,7 +228,7 @@ K(T)`,
       + "reactor's own temperature, never at 25 °C (`reactionHeat`, "
       + "ReactionHeat.cpp:42, called with the local temperature — for a plug "
       + "flow reactor at PFR.cpp:502).  Not every vessel does: `batchReactor` "
-      + "(BatchReactor.cpp:470, :1484) and `dynamicCSTR` off its canonical "
+      + "(BatchReactor.cpp:484, :1498) and `dynamicCSTR` off its canonical "
       + "route (DynamicCSTR.cpp:319, :841) integrate a frozen reaction "
       + "enthalpy, resolved once at the charge temperature — a surrogate "
       + "the engine itself announces.",

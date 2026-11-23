@@ -94,7 +94,7 @@ import { DeclaredViews } from "./DeclaredViews.js";
 import { declaredViewsOf } from "../case/postProcessing.js";
 import { defaultPlotKey } from "../case/defaultPlot.js";
 import {
-  declaredMemberNames, unitPlotTree, unitSelection, UNIT_PLOT_LABEL,
+  declaredMemberNames, splitEmptyUnits, unitPlotTree, unitSelection, UNIT_PLOT_LABEL,
   type UnitNode, type UnitPlotKey,
 } from "../case/unitPlots.js";
 import { parseUnitBanners } from "../case/unitBanner.js";
@@ -361,6 +361,11 @@ export function PlotsWorkspace() {
       return next;
     });
 
+  //  UNITS WITH NOTHING TO PLOT are one collapsed line, not a grey row each
+  //  (C266 item 3); the information stays one click away.
+  const { tree: shownTree, empty: emptyUnits } = useMemo(
+    () => splitEmptyUnits(unitTree), [unitTree]);
+  const [showEmpty, setShowEmpty] = useState(false);
   const hasUnitTree = unitTree.length > 0;
   const selectUnit = (node: UnitNode, key?: UnitPlotKey) => {
     const sel = unitSelection(node, key);
@@ -710,7 +715,7 @@ export function PlotsWorkspace() {
                   style={{ letterSpacing: 0.5, fontWeight: 600, padding: "0 4px" }}>
                   Units
                 </Text>
-                {unitTree.map((entry) => {
+                {shownTree.map((entry) => {
                   if (entry.kind === "unit") return renderUnit(entry.node, 0);
                   const g = entry.group;
                   const k = `sector:${g.sector}`;
@@ -736,6 +741,28 @@ export function PlotsWorkspace() {
                     </Stack>
                   );
                 })}
+                {emptyUnits.length > 0 && (
+                  <Stack gap={0} mt={4} data-units-empty-group="">
+                    <Group gap={4} wrap="nowrap" tabIndex={0}
+                      role="button" aria-expanded={showEmpty}
+                      style={{ cursor: "pointer", padding: "3px 4px" }}
+                      onClick={() => setShowEmpty((v) => !v)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setShowEmpty((v) => !v);
+                        }
+                      }}>
+                      {showEmpty
+                        ? <IconChevronDown size={12} />
+                        : <IconChevronRight size={12} />}
+                      <Text size="xs" c="dimmed" fs="italic">
+                        units with nothing to plot ({emptyUnits.length})
+                      </Text>
+                    </Group>
+                    {showEmpty && emptyUnits.map((n) => renderUnit(n, 1))}
+                  </Stack>
+                )}
               </Stack>
             )}
           </Stack>

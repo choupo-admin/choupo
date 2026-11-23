@@ -120,9 +120,9 @@ describe("C305 1 -- three moments, in order", () => {
   it("Understand, Experiment, Verify are the page's parts (<h4>), in that order", () => {
     const h4 = [...H.matchAll(/<h4[^>]*>([\s\S]*?)<\/h4>/g)].map((m) => text(m[1]!).trim());
     expect(h4).toEqual([
-      "1 · Understand · the physical problem",
-      "2 · Experiment · the knobs",
-      "3 · Verify · every number, its file and its assumptions",
+      "A · Understand · the physical problem",
+      "B · Experiment · the knobs",
+      "C · Verify · every number, its file and its assumptions",
     ]);
     for (const id of ["understand", "experiment", "verify"])
       expect(H).toContain(`data-moment="${id}"`);
@@ -150,7 +150,7 @@ describe("C305 1 -- three moments, in order", () => {
   });
 
   it("the file names live in Verify, not in Understand", () => {
-    const u0 = T.indexOf("1 · Understand · the"), e0 = T.indexOf("2 · Experiment · the knobs"), v0 = T.indexOf("3 · Verify · every");
+    const u0 = T.indexOf("A · Understand · the"), e0 = T.indexOf("B · Experiment · the knobs"), v0 = T.indexOf("C · Verify · every");
     expect(T.slice(u0, e0)).not.toContain("reports/pinch/");
     const verify = T.slice(v0);
     for (const p of [POPULATION_CSV_PATH, PROBLEM_TABLE_CSV_PATH, SUMMARY_CSV_PATH,
@@ -187,7 +187,7 @@ describe("C305 2 -- symbol definitions fold under each equation, every word kept
 
 describe("C305 3 -- a prediction before each run, the engine's answer beside it", () => {
   it("the three prompts are on the page, inside Experiment", () => {
-    const ex = T.indexOf("2 · Experiment · the knobs"), ve = T.indexOf("3 · Verify · every");
+    const ex = T.indexOf("B · Experiment · the knobs"), ve = T.indexOf("C · Verify · every");
     for (const p of PINCH_PREDICTIONS) {
       const i = at(p.title);
       expect(i).toBeGreaterThan(ex);
@@ -222,8 +222,8 @@ describe("C305 3 -- a prediction before each run, the engine's answer beside it"
 describe("C305 4 -- is it economic?", () => {
   it("the step says the target is not the cheapest plant and that area is not priced", () => {
     const i = at("6 · Is it economic?");
-    expect(i).toBeGreaterThan(T.indexOf("2 · Experiment · the knobs"));
-    expect(i).toBeLessThan(T.indexOf("3 · Verify · every"));
+    expect(i).toBeGreaterThan(T.indexOf("B · Experiment · the knobs"));
+    expect(i).toBeLessThan(T.indexOf("C · Verify · every"));
     expect(T).toContain("They are not the cheapest plant.");
     expect(T).toContain("its pinch pass prices no area");
     expect(T).toContain("The data I would need");
@@ -237,7 +237,7 @@ describe("C305 5 -- the witness network shows the term the utility-only network 
   it("is in Understand, after step 5", () => {
     const i = at("The rule in numbers: one exchanger across the pinch");
     expect(i).toBeGreaterThan(T.indexOf(`5 · ${PINCH_STEPS[4]!.title}`));
-    expect(i).toBeLessThan(T.indexOf("2 · Experiment · the knobs"));
+    expect(i).toBeLessThan(T.indexOf("B · Experiment · the knobs"));
   });
   it("names the crossing exchanger, its approaches and the two identity lines", () => {
     expect(T).toContain("coolerH1 gives 100 kW to heaterC1");

@@ -1,0 +1,30 @@
+parsed 32 constants from Rosenbrock23.cpp
+digit compare vs rodas.f METH=1 (32 constants): worst relative difference 0.00e+00; mismatches: none
+  max |diff| to set 1: 0.000e+00
+  max |diff| to set 2: 2.863e+02
+  max |diff| to set 3: 8.875e+01
+
+main weights b (order 4):
+  1: sum b = 1                                               residual -5.55e-16
+  2: sum b b_i = 1/2-g                                       residual -3.89e-16
+  3a: sum b a_i^2 = 1/3                                      residual -1.33e-15
+  3b: sum b beta_ij b_j = 1/6-g+g^2                          residual  2.08e-16
+  4a: sum b a_i^3 = 1/4                                      residual -1.64e-15
+  4b: sum b a_i alpha_ik b_k = 1/8-g/3                       residual -1.25e-16
+  4c: sum b beta_ij a_j^2 = 1/12-g/3                         residual -3.31e-17
+  4d: sum b beta_ij beta_jk b_k = 1/24-g/2+3g^2/2-g^3        residual  3.21e-17
+embedded weights b^ (order 3):
+  1: sum b = 1                                               residual -2.00e-15
+  2: sum b b_i = 1/2-g                                       residual -3.61e-16
+  3a: sum b a_i^2 = 1/3                                      residual -3.89e-16
+  3b: sum b beta_ij b_j = 1/6-g+g^2                          residual  2.88e-16
+embedded order-4 condition 4a residual  1.01e-01  (nonzero expected: it is order 3)
+
+d_i vs row sums of Gamma (i=1..4): [4.44089210e-16 2.35922393e-16 9.71445147e-17 2.08166817e-17]
+c_i (row sums of alpha): [0.    0.386 0.21  0.63  1.    1.   ]  declared c2..c4: 0.386 0.21 0.63
+stiff accuracy |(alpha+Gamma)_6j - b_j|, j<6: 4.440892098500626e-16  and b_6 = gamma: 0.0
+R(-1000) =  8.658e-03
+R(-1e+06) =  8.842e-06
+R(-1e+09) =  8.842e-09
+R(-0.1) - exp =  6.650e-09  ratio to z^5 = -0.0007
+R(-0.05) - exp =  2.172e-10  ratio to z^5 = -0.0007

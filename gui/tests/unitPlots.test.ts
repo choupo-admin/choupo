@@ -26,7 +26,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import {
-  declaredMemberNames, unitPlotTree, unitSelection, type UnitTreeEntry,
+  declaredMemberNames, splitEmptyUnits, unitPlotTree, unitSelection, type UnitNode, type UnitTreeEntry,
 } from "../src/case/unitPlots.js";
 
 const src = (rel: string) => readFileSync(new URL(`../src/${rel}`, import.meta.url), "utf8");
@@ -165,5 +165,29 @@ describe("the workspace draws the tree and computes nothing of its own", () => {
   it("a focused convergence plot keeps the unit's own curve and the global ones only", () => {
     const c = src("ui/plotting/ConvergencePlot.tsx");
     expect(c).toMatch(/allCurves\.filter\(\(c\) => c\.label === unit \|\| isGlobal\(c\.label\)\)/);
+  });
+});
+
+describe("splitEmptyUnits: units with nothing to plot leave the tree, none is lost (C266 item 3)", () => {
+  const n = (unit: string, label: string, plots: boolean): UnitNode =>
+    ({ unit, label, plots: plots ? [{ key: "profile" as const, label: "Profile" }] : [] });
+  const tree: UnitTreeEntry[] = [
+    { kind: "unit", node: n("FEHE", "FEHE", true) },
+    { kind: "unit", node: n("pump", "pump", false) },
+    { kind: "sector", group: { sector: "S1", units: [n("S1.a", "a", true), n("S1.b", "b", false)] } },
+    { kind: "sector", group: { sector: "S2", units: [n("S2.c", "c", false)] } },
+  ];
+  const r = splitEmptyUnits(tree);
+  it("keeps the units that published, drops a sector left with none", () => {
+    expect(units(r.tree).map((x) => x.unit)).toEqual(["FEHE"]);
+    expect(sectors(r.tree).map((g) => g.sector)).toEqual(["S1"]);
+    expect(sectors(r.tree)[0]!.units.map((x) => x.unit)).toEqual(["S1.a"]);
+  });
+  it("returns every empty unit once, by its qualified name", () => {
+    expect(r.empty.map((x) => x.label)).toEqual(["pump", "S1.b", "S2.c"]);
+  });
+  it("a tree with nothing empty comes back unchanged", () => {
+    const t = [tree[0]!];
+    expect(splitEmptyUnits(t)).toEqual({ tree: t, empty: [] });
   });
 });

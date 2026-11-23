@@ -87,6 +87,8 @@ Description
 
 #pragma once
 
+#include "core/DeferredNotes.H"
+
 #include "HeatCapacityModel.H"
 
 #include <memory>
@@ -125,7 +127,7 @@ private:
     scalar omega_ = 0.0;
     std::unique_ptr<HeatCapacityModel> cpIg_;
     std::string owner_;          // the component, for announcements
-    mutable bool announced_ = false;
+    deferred::OnceFlag announced_;   // claimed by an atomic exchange (core/DeferredNotes.H)
 
     void announceRangeOnce(scalar T_K) const;
 };

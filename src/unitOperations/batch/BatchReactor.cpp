@@ -134,6 +134,9 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
     std::string jacKey;                    // `jacobian` as declared ("" = absent)
     jacobianDeclared_ = false;
     jacobianAnalytic_ = false;
+    vesselsCoupled_   = false;
+    denseHermite_     = false;
+    vesselsDeclared_  = false;
     linearSolverKey_  = LinearSolver::Auto;
     if (unitDict->found("solver"))
     {
@@ -148,6 +151,31 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
                 + std::to_string(thr) + "; } -- a whole number >= 1 (0 or absent: the"
                 " default, allowed CPUs - 2)");
         sensThreads_ = static_cast<std::size_t>(thr);
+        //  How the vessels of a run are integrated: `independent` (the default:
+        //  each independent vessel on its own step, choupoBatch) or `coupled`
+        //  (all on one step, the historic sweep).
+        const std::string ves = solverDict->lookupWordOrDefault("vessels", "independent");
+        vesselsDeclared_ = solverDict->found("vessels");
+        if      (ves == "coupled")     vesselsCoupled_ = true;
+        else if (ves == "independent") vesselsCoupled_ = false;
+        else
+            throw std::runtime_error("BatchReactor '" + name_ + "': solver"
+                " { vessels " + ves + "; } -- "
+                + registryRefusal::message("vessels", ves,
+                      { "independent", "coupled" }, "Accepted"));
+        //  How the rows BETWEEN two steps are written (adaptive free stepping):
+        //  `integrator` (the default: the integrator's own dense output, Theory
+        //  Guide sec:batch-dense-output) or `hermite` (the driver's cubic Hermite
+        //  of the step's ends and slopes, the interpolant of every integrator
+        //  before 2026-11-22).  A declared choice, announced in the run.
+        const std::string dns = solverDict->lookupWordOrDefault("denseOutput", "integrator");
+        if      (dns == "hermite")    denseHermite_ = true;
+        else if (dns == "integrator") denseHermite_ = false;
+        else
+            throw std::runtime_error("BatchReactor '" + name_ + "': solver"
+                " { denseOutput " + dns + "; } -- "
+                + registryRefusal::message("denseOutput", dns,
+                      { "integrator", "hermite" }, "Accepted"));
         // The stiff integrators announce their step/stiffness verdict at
         // verbosity>=3 (numerical-honesty credo).  Read it here, default =
         // the run level so a case that opted into a stiff method still gets

@@ -180,6 +180,9 @@ describe("the flowsheet canvas zooms out to the whole flowsheet (C102)", () => {
       "plant/greenAmmonia02_feasibility150bar",
       "plant/greenAmmonia02_feasibility50bar",
       "plant/greenAmmonia03_basicDesign",
+      //  folds since the unit-card width estimate allows for the name grown at
+      //  the overview zoom (toGraph.ts unitCardSize, C266 item 4): its row is wider
+      "plant/greenAmmonia03_basicDesign/CONVERTER",
       "plant/greenAmmoniaPEQ_baseCase",
       "plant/swro01_campoDalias",
       "steady/economics/economics03_startup_years",

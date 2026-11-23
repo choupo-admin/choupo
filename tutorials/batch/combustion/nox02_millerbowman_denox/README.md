@@ -46,9 +46,18 @@ remaining disagreement with the experiment, not a difference between the two mod
 
 Same transcription, same thermodynamics (the NASA-9 coefficients Choupo reads, written into the
 Cantera input), Cantera 3.2.0, CVODES at rtol 1e-10: the end values of NOx agree to 5 significant
-digits in all 17 vessels, every species at every write time to **1.7e-3 relative** at worst (rtol
-1e-6 as shipped; tightening the integration to 1e-8 brings it to 1.7e-4), temperatures identical.
+digits in all 17 vessels, every species at every write time to **5.7e-4 relative** at worst (rtol
+1e-6, atol 1e-19 kmol as shipped), temperatures identical.
 `docs/reviews/2026-11-22-miller-bowman/compare_cantera.py denox`.
+
+**Why `atol` is 1e-19 kmol.**  The 17 vessels are independent, so each is integrated on its own step
+(Theory Guide `sec:batch-vessels-separate`): a cold vessel no longer rides the small steps of the hot
+ones.  Its trace species (N2O, NO2, HNO at 1e-16 to 1e-13 kmol) start at zero and are error-controlled
+only where `rtol` times the value exceeds `atol`; below that the integrator accepts an absolute error
+near `atol`, which is large in relative terms.  With the former `atol` of 1e-17 the worst deviation from
+Cantera was 2.0e-3 (1.7e-3 when the vessels shared one step), with 1e-19 it is 5.7e-4, at about the cost
+the shared step had.  Tightening `rtol` instead is the wrong lever: it buys accuracy on the species that
+were already accurate.
 
 ## Known differences from the authors' runs (read before quoting a number)
 

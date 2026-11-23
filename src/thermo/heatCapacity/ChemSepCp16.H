@@ -68,6 +68,8 @@ SourceFiles
 
 #pragma once
 
+#include "core/DeferredNotes.H"
+
 #include "HeatCapacityModel.H"
 
 #include <string>
@@ -90,7 +92,7 @@ private:
     scalar A_ = 0, B_ = 0, C_ = 0, D_ = 0, E_ = 0;
     scalar Tmin_ = 0.0, Tmax_ = 0.0;
     bool   rangeUnknown_ = false;
-    mutable bool announcedOutside_ = false;
+    deferred::OnceFlag announcedOutside_;   // claimed by an atomic exchange (core/DeferredNotes.H)
     std::string owner_;
     std::string name_ = "chemsepCp16";
 };

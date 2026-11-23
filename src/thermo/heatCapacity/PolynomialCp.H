@@ -38,6 +38,8 @@ Description
 
 #pragma once
 
+#include "core/DeferredNotes.H"
+
 #include "HeatCapacityModel.H"
 
 namespace Choupo {
@@ -86,9 +88,9 @@ private:
     //  `Trange unknown;` -- a DECLARED absence, distinct from
     //  both a window and no key at all (AP3).
     bool   rangeUnknown_ = false;
-    mutable bool announcedOutside_ = false;
-    mutable bool announcedSpan_ = false;
-    mutable bool announcedBadWindow_ = false;
+    deferred::OnceFlag announcedOutside_;   // claimed by an atomic exchange (core/DeferredNotes.H)
+    deferred::OnceFlag announcedSpan_;   // claimed by an atomic exchange (core/DeferredNotes.H)
+    deferred::OnceFlag announcedBadWindow_;   // claimed by an atomic exchange (core/DeferredNotes.H)
     std::string owner_;                 // for a message that names the record
     inline static const std::string name_ = "polynomial";
 };

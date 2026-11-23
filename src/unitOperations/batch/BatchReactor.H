@@ -115,6 +115,10 @@ public:
     std::shared_ptr<const solver::SparsePattern> odeSparsePattern() const override
     { return jacPattern_; }
     bool odeSparseLinear() const override { return sparseLinear_; }
+    std::size_t odeThreadsDeclared() const override { return sensThreads_; }
+    bool odeVesselsCoupledDeclared() const override { return vesselsCoupled_; }
+    bool odeDenseHermiteDeclared() const override { return denseHermite_; }
+    bool odeVesselsKeyDeclared() const override { return vesselsDeclared_; }
     int  odeLinearSolverKey() const override
     { return linearSolverKey_ == LinearSolver::Dense ? 0 : linearSolverKey_ == LinearSolver::Sparse ? 1 : 2; }
     std::string odeStiffIntegratorDeclared() const override
@@ -469,6 +473,9 @@ private:
                 && static_cast<std::size_t>(&rxn - reactions_.data()) == sensJ_)
                ? sensF_ : 1.0;
     }
+    bool                     vesselsCoupled_  = false; // `solver { vessels coupled; }`
+    bool                     denseHermite_    = false; // `solver { denseOutput hermite; }`
+    bool                     vesselsDeclared_ = false; // `solver { vessels ...; }` present
     std::size_t              sensThreads_     = 0;    // `solver { threads N; }`, 0 = default
     std::size_t              sensThreadsUsed_ = 1;
     bool                     sensOn_     = false;

@@ -1,0 +1,315 @@
+{
+ "source": "docs/reviews/2026-11-22-methane-lesson/points.tsv (make_points.py)",
+ "points": [
+  {
+   "mixture": "2",
+   "P_atm": 263.6,
+   "T_K": 1239.0,
+   "measured_us": 70.0,
+   "aramco_us": 66.0,
+   "millerBowmanFull_us": 115.3,
+   "c1Chain_us": 11.2,
+   "assembled_us": 145.1
+  },
+  {
+   "mixture": "2",
+   "P_atm": 262.5,
+   "T_K": 1176.0,
+   "measured_us": 98.0,
+   "aramco_us": 91.3,
+   "millerBowmanFull_us": 275.1,
+   "c1Chain_us": 21.6,
+   "assembled_us": 339.1
+  },
+  {
+   "mixture": "2",
+   "P_atm": 256.2,
+   "T_K": 1301.0,
+   "measured_us": 55.0,
+   "aramco_us": 51.8,
+   "millerBowmanFull_us": 57.2,
+   "c1Chain_us": 7.0,
+   "assembled_us": 71.9
+  },
+  {
+   "mixture": "2",
+   "P_atm": 178.4,
+   "T_K": 1209.0,
+   "measured_us": 170.0,
+   "aramco_us": 148.0,
+   "millerBowmanFull_us": 258.4,
+   "c1Chain_us": 21.5,
+   "assembled_us": 318.5
+  },
+  {
+   "mixture": "2",
+   "P_atm": 164.0,
+   "T_K": 1372.0,
+   "measured_us": 71.0,
+   "aramco_us": 65.7,
+   "millerBowmanFull_us": 46.4,
+   "c1Chain_us": 6.6,
+   "assembled_us": 54.4
+  },
+  {
+   "mixture": "2",
+   "P_atm": 163.0,
+   "T_K": 1254.0,
+   "measured_us": 157.0,
+   "aramco_us": 141.4,
+   "millerBowmanFull_us": 161.2,
+   "c1Chain_us": 15.7,
+   "assembled_us": 197.8
+  },
+  {
+   "mixture": "2",
+   "P_atm": 132.2,
+   "T_K": 1182.0,
+   "measured_us": 280.0,
+   "aramco_us": 281.3,
+   "millerBowmanFull_us": 517.1,
+   "c1Chain_us": 35.5,
+   "assembled_us": 623.5
+  },
+  {
+   "mixture": "2",
+   "P_atm": 120.0,
+   "T_K": 1380.0,
+   "measured_us": 77.0,
+   "aramco_us": 94.5,
+   "millerBowmanFull_us": 61.1,
+   "c1Chain_us": 8.2,
+   "assembled_us": 69.3
+  },
+  {
+   "mixture": "2",
+   "P_atm": 114.4,
+   "T_K": 1244.0,
+   "measured_us": 254.0,
+   "aramco_us": 272.0,
+   "millerBowmanFull_us": 269.2,
+   "c1Chain_us": 23.7,
+   "assembled_us": 323.4
+  },
+  {
+   "mixture": "2",
+   "P_atm": 114.0,
+   "T_K": 1156.0,
+   "measured_us": 421.0,
+   "aramco_us": 407.0,
+   "millerBowmanFull_us": 886.9,
+   "c1Chain_us": 56.1,
+   "assembled_us": 1050.0
+  },
+  {
+   "mixture": "2",
+   "P_atm": 106.0,
+   "T_K": 1179.0,
+   "measured_us": 414.0,
+   "aramco_us": 423.2,
+   "millerBowmanFull_us": 684.5,
+   "c1Chain_us": 46.9,
+   "assembled_us": 814.2
+  },
+  {
+   "mixture": "2",
+   "P_atm": 102.8,
+   "T_K": 1182.0,
+   "measured_us": 419.0,
+   "aramco_us": 441.8,
+   "millerBowmanFull_us": 676.0,
+   "c1Chain_us": 47.5,
+   "assembled_us": 807.3
+  },
+  {
+   "mixture": "2",
+   "P_atm": 92.9,
+   "T_K": 1418.0,
+   "measured_us": 95.0,
+   "aramco_us": 94.8,
+   "millerBowmanFull_us": 58.3,
+   "c1Chain_us": 8.2,
+   "assembled_us": 62.7
+  },
+  {
+   "mixture": "2",
+   "P_atm": 91.8,
+   "T_K": 1363.0,
+   "measured_us": 152.0,
+   "aramco_us": 154.7,
+   "millerBowmanFull_us": 97.3,
+   "c1Chain_us": 12.2,
+   "assembled_us": 108.4
+  },
+  {
+   "mixture": "2",
+   "P_atm": 91.0,
+   "T_K": 1167.0,
+   "measured_us": 572.0,
+   "aramco_us": 585.1,
+   "millerBowmanFull_us": 957.1,
+   "c1Chain_us": 61.0,
+   "assembled_us": 1129.0
+  },
+  {
+   "mixture": "2",
+   "P_atm": 83.0,
+   "T_K": 1206.0,
+   "measured_us": 541.0,
+   "aramco_us": 577.9,
+   "millerBowmanFull_us": 616.7,
+   "c1Chain_us": 46.9,
+   "assembled_us": 728.5
+  },
+  {
+   "mixture": "2",
+   "P_atm": 80.9,
+   "T_K": 1196.0,
+   "measured_us": 681.0,
+   "aramco_us": 636.0,
+   "millerBowmanFull_us": 721.9,
+   "c1Chain_us": 49.9,
+   "assembled_us": 858.1
+  },
+  {
+   "mixture": "2",
+   "P_atm": 77.7,
+   "T_K": 1203.0,
+   "measured_us": 622.0,
+   "aramco_us": 657.6,
+   "millerBowmanFull_us": 688.3,
+   "c1Chain_us": 49.8,
+   "assembled_us": 812.7
+  },
+  {
+   "mixture": "2",
+   "P_atm": 47.5,
+   "T_K": 1346.0,
+   "measured_us": 361.0,
+   "aramco_us": 408.5,
+   "millerBowmanFull_us": 235.9,
+   "c1Chain_us": 26.5,
+   "assembled_us": 252.7
+  },
+  {
+   "mixture": "2",
+   "P_atm": 39.8,
+   "T_K": 1325.0,
+   "measured_us": 654.0,
+   "aramco_us": 617.9,
+   "millerBowmanFull_us": 353.2,
+   "c1Chain_us": 39.2,
+   "assembled_us": 379.3
+  },
+  {
+   "mixture": "2",
+   "P_atm": 38.4,
+   "T_K": 1383.0,
+   "measured_us": 391.0,
+   "aramco_us": 364.6,
+   "millerBowmanFull_us": 208.5,
+   "c1Chain_us": 26.1,
+   "assembled_us": 211.1
+  },
+  {
+   "mixture": "2",
+   "P_atm": 35.6,
+   "T_K": 1536.0,
+   "measured_us": 102.0,
+   "aramco_us": 95.6,
+   "millerBowmanFull_us": 57.1,
+   "c1Chain_us": 10.9,
+   "assembled_us": 53.7
+  },
+  {
+   "mixture": "2",
+   "P_atm": 34.5,
+   "T_K": 1431.0,
+   "measured_us": 250.0,
+   "aramco_us": 257.7,
+   "millerBowmanFull_us": 146.7,
+   "c1Chain_us": 21.7,
+   "assembled_us": 145.0
+  },
+  {
+   "mixture": "4",
+   "P_atm": 128.0,
+   "T_K": 1156.0,
+   "measured_us": 231.0,
+   "aramco_us": 184.2,
+   "millerBowmanFull_us": 494.3,
+   "c1Chain_us": 35.4,
+   "assembled_us": 586.7
+  },
+  {
+   "mixture": "4",
+   "P_atm": 125.5,
+   "T_K": 1089.0,
+   "measured_us": 331.0,
+   "aramco_us": 312.6,
+   "millerBowmanFull_us": 1536.0,
+   "c1Chain_us": 101.5,
+   "assembled_us": 1721.0
+  },
+  {
+   "mixture": "4",
+   "P_atm": 71.3,
+   "T_K": 1215.0,
+   "measured_us": 411.0,
+   "aramco_us": 381.0,
+   "millerBowmanFull_us": 405.5,
+   "c1Chain_us": 35.6,
+   "assembled_us": 474.0
+  },
+  {
+   "mixture": "4",
+   "P_atm": 64.3,
+   "T_K": 1283.0,
+   "measured_us": 288.0,
+   "aramco_us": 284.3,
+   "millerBowmanFull_us": 205.4,
+   "c1Chain_us": 21.1,
+   "assembled_us": 232.3
+  },
+  {
+   "mixture": "4",
+   "P_atm": 60.4,
+   "T_K": 1346.0,
+   "measured_us": 190.0,
+   "aramco_us": 181.8,
+   "millerBowmanFull_us": 115.3,
+   "c1Chain_us": 15.2,
+   "assembled_us": 125.4
+  },
+  {
+   "mixture": "4",
+   "P_atm": 51.5,
+   "T_K": 1191.0,
+   "measured_us": 847.0,
+   "aramco_us": 758.2,
+   "millerBowmanFull_us": 790.5,
+   "c1Chain_us": 62.1,
+   "assembled_us": 909.1
+  },
+  {
+   "mixture": "4",
+   "P_atm": 46.6,
+   "T_K": 1265.0,
+   "measured_us": 530.0,
+   "aramco_us": 521.9,
+   "millerBowmanFull_us": 356.9,
+   "c1Chain_us": 35.3,
+   "assembled_us": 399.3
+  },
+  {
+   "mixture": "4",
+   "P_atm": 44.9,
+   "T_K": 1362.0,
+   "measured_us": 221.0,
+   "aramco_us": 226.5,
+   "millerBowmanFull_us": 137.0,
+   "c1Chain_us": 17.7,
+   "assembled_us": 142.9
+  }
+ ]
+}

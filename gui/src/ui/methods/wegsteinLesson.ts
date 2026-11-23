@@ -189,7 +189,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
       { step: "The newton branch avoids the redundancy by tearing on "
           + "component molar flows instead, which are mutually independent, "
           + "followed by the temperature and the pressure "
-          + "(Flowsheet.cpp:3753-3762, the pressure, in pascals, at Flowsheet.cpp:3760). "
+          + "(Flowsheet.cpp:3795-3804, the pressure, in pascals, at Flowsheet.cpp:3802). "
           + "The total and the fractions are recovered afterwards.",
         eq: String.raw`x = ( F_1,\ \ldots,\ F_{N_c},\ T,\ P ), \qquad F_i = F z_i`},
     ],
@@ -268,13 +268,13 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
       { step: "The secant slope through the last two passes. Both the "
           + "numerator and the denominator are differences in the same "
           + "quantity, so this ratio is dimensionless "
-          + "(src/solver/Wegstein.cpp:78).",
+          + "(src/solver/Wegstein.cpp:80).",
         eq: String.raw`s = \frac{G(x_k) - G(x_\mathrm{prev})}{x_k - x_\mathrm{prev}}`},
       { step: "Solve the linear fixed point on that secant line: set the "
           + "line equal to x and collect terms.",
         eq: String.raw`x = G(x_k) + s\,( x - x_k ) \quad \longrightarrow \quad x\,(1 - s) = G(x_k) - s\, x_k`},
       { step: "Rearranged with one bookkeeping coefficient, which is the "
-          + "form the code uses (src/solver/Wegstein.cpp:83, :85).",
+          + "form the code uses (src/solver/Wegstein.cpp:85, :85).",
         eq: String.raw`q = \frac{s}{s - 1}`},
     ],
     formula: String.raw`x_\mathrm{next} = q x + (1 - q) G(x) \qquad q = \frac{s}{s - 1}`,
@@ -315,7 +315,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
       + "each mole fraction gets its own, the temperature and the pressure "
       + "get their own. The "
       + "loop in the engine reads entry i and nothing else "
-      + "(src/solver/Wegstein.cpp:67-86). There is no shared step length, so "
+      + "(src/solver/Wegstein.cpp:71-92). There is no shared step length, so "
       + "there is no scale to get wrong, and no question of whether "
       + "1e-4 kmol/s is large or small compared with 360 K ever arises.",
     derivation: [
@@ -336,7 +336,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
       { step: "That is the algebra of an exact secant. In floating point the "
           + "engine has one absolute threshold, epsX = 1e-14, below which a "
           + "variable that moved is treated as not having moved and keeps "
-          + "q = 0 (src/solver/Wegstein.cpp:64). It is written in the "
+          + "q = 0 (src/solver/Wegstein.cpp:66). It is written in the "
           + "variable's own unit, so it is not invariant: a step of 5e-15 in "
           + "one unit system is 1.8e-11 in a unit 3600 times larger, and only "
           + "the second forms a secant. The page's comparison below runs the "
@@ -394,7 +394,7 @@ x_{i,\mathrm{next}} &= q_i x_i + (1 - q_i) g_i(x) \qquad \text{one } i \text{ at
       + "straight line was ever a good description of the plant. So the "
       + "coefficient is clamped to a declared interval, and two further "
       + "cases are caught by name rather than by arithmetic (a third guard, "
-      + "an entry that must stay positive, such as the pressure, is in Wegstein.cpp:84-88).",
+      + "an entry that must stay positive, such as the pressure, is in Wegstein.cpp:88-92).",
     derivation: [
       { step: "The clamp, read from the case's own solverDict "
           + "(recycleWegsteinQmin / recycleWegsteinQmax).",
@@ -413,7 +413,7 @@ x_{i,\mathrm{next}} &= q_i x_i + (1 - q_i) g_i(x) \qquad \text{one } i \text{ at
           + "substitution would, and q_min = -5 at most six times as far." },
       { step: "If the variable did not move at all between passes there is "
           + "no slope to form, so the coefficient is set to zero rather than "
-          + "dividing by zero (src/solver/Wegstein.cpp:72-75)." },
+          + "dividing by zero (src/solver/Wegstein.cpp:74-77)." },
       { step: "If the slope is within 1e-10 of exactly 1 the secant line is "
           + "parallel to the diagonal and meets it nowhere; the code names "
           + "that case and falls back to direct substitution too (:79-80)." },
@@ -436,7 +436,11 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       + "defaults to [-5, 0] (src/solver/Wegstein.H:74-75); the recycle loop "
       + "constructs it with [-1, 0] "
       + "(src/unitOperations/flowsheet/Flowsheet.cpp:3539-3540). A Choupo "
-      + "recycle that declares nothing therefore runs at the gentler clamp.",
+      + "recycle that declares nothing therefore runs at the gentler clamp. "
+      + "A cut is never silent: the run counts the secants formed and the ones "
+      + "cut to q_min or q_max, per tear, and prints \"q clamped to [q_min, "
+      + "q_max] in N of M updates on tear X\" when the loop closes (verbosity "
+      + "1), and a line in every iteration that cut one (verbosity 2).",
   },
   {
     n: 7,
@@ -510,11 +514,11 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
           + "divides each residual by a characteristic scale — the tear's "
           + "own total flow for a flow entry, the temperature itself for the "
           + "temperature entry, the pressure itself for the pressure entry "
-          + "(Flowsheet.cpp:3817-3836, applied at Flowsheet.cpp:3859).",
+          + "(Flowsheet.cpp:3859-3878, applied at Flowsheet.cpp:3901).",
         eq: String.raw`r_i = \frac{g_i(x) - x_i}{\mathrm{scale}_i}`},
       { step: "The engine's own comment on that scaling names what its "
           + "absence costs, in those words: the latent under-convergence the "
-          + "old Wegstein default also had (Flowsheet.cpp:3819-3820)." },
+          + "old Wegstein default also had (Flowsheet.cpp:3861-3862)." },
       { step: "And for the convergence plot the engine publishes neither "
           + "norm. It computes two physical residuals instead — the recycle "
           + "mass imbalance and the recycle energy imbalance, each divided "
@@ -558,12 +562,17 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
     body: "Wegstein::lastQ() exists and its comment says it is for logging "
       + "(src/solver/Wegstein.H:98-99), but nothing in the recycle loop "
       + "prints it. There is no run in this tree from which the per-variable "
-      + "secant slope or coefficient can be read. So the coefficients you "
+      + "secant slope or coefficient can be read. What the run DOES print is "
+      + "how often the clamp cut that coefficient: at verbosity 2 a line per "
+      + "iteration in which any q was cut, and at verbosity 1 a closing "
+      + "summary per tear, \"q clamped to [qMin, qMax] in N of M updates on "
+      + "tear X\" (src/unitOperations/flowsheet/Flowsheet.cpp, the recycle "
+      + "loop), so a loop that ran mostly on the clamp says so. So the coefficients you "
       + "can watch above are computed here, over a two-variable map this "
       + "page declares in full — a straight line with a coupling knob, not a "
       + "reactor. The recursion that consumes it transcribes Wegstein::step "
       + "line for line, except the third guard (no step toward a negative "
-      + "pressure, Wegstein.cpp:84-88; the toy has no pressure), and is pinned against "
+      + "pressure, Wegstein.cpp:88-92; the toy has no pressure), and is pinned against "
       + "hand-computable values; the map it is applied to is not a Choupo "
       + "model and no number in it came from one.",
   },
@@ -606,7 +615,7 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
       + "not torn: the vapour fraction sitting on the torn stream is whatever "
       + "the previous sweep left there — the engine says so in its own words "
       + "on the Newton side, calling it the phase proxy "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3942-3943). So the state "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3984-3985). So the state "
       + "handed to the first consumer of a tear is an assumption about four "
       + "quantities carrying a fifth along for the ride, and only at "
       + "convergence, when the assumption and its image agree, is it a state "

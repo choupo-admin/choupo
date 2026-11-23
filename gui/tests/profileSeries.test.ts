@@ -21,7 +21,7 @@
 
 import { describe, expect, it } from "vitest";
 import {
-  groupProfileSeries, initiallyDrawn, panelDomains, LIQUID_SHARE_MIN,
+  groupProfileSeries, initiallyDrawn, panelDomains, profileXAxisTitle, LIQUID_SHARE_MIN,
 } from "../src/case/profileSeries.js";
 
 const N = 5;
@@ -126,4 +126,26 @@ describe("panelDomains", () => {
     expect((d[1]![1] - d[1]![0]) / (d[0]![1] - d[0]![0])).toBeCloseTo(2, 9);
   });
   it("is empty for no panel", () => { expect(panelDomains([])).toEqual([]); });
+});
+
+describe("C266 item 2: raw engine keys read as words, no unit is invented", () => {
+  const hx = { position: [0, 0.5, 1], T_hot: [700, 600, 500], T_cold: [400, 350, 300] };
+  it("an exchanger profile's two sides share ONE temperature panel, legend 'hot side' / 'cold side'", () => {
+    const g = groupProfileSeries(hx, "position");
+    expect(g.map((x) => x.id)).toEqual(["temperature"]);
+    expect(g[0]!.keys.map(g[0]!.label)).toEqual(["hot side", "cold side"]);
+    expect(g[0]!.title).toBe("Temperature T (K)");
+  });
+  it("extent_kmol_h and ln K_a get readable legend / chip text", () => {
+    const g = groupProfileSeries({ stage: [1, 2], extent_kmol_h: [0, 1], lnKa: [1, 2] }, "stage");
+    const ext = g.find((x) => x.id === "extent")!;
+    expect(ext.label("extent_kmol_h")).toBe("extent (kmol/h)");
+    expect(g.find((x) => x.id === "lnKa")!.chip).toBe("Equilibrium constant");
+  });
+  it("the x axis `position` of a 0..1 profile is read from the data; anything else keeps its key", () => {
+    expect(profileXAxisTitle("position", [0, 0.5, 1])).toMatch(/fraction of its length/);
+    expect(profileXAxisTitle("position", [0, 12])).toBe("position");
+    expect(profileXAxisTitle("stage", [1, 2])).toBe("stage");
+    expect(profileXAxisTitle("diameter_micron", [1, 10])).toBe("diameter (\u00b5m)");
+  });
 });

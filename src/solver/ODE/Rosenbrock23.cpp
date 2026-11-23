@@ -35,6 +35,7 @@ License
 #include "../SparseLU.H"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdio>
 #include <iostream>
@@ -394,11 +395,93 @@ struct Rodas4Coeffs
                             c65 = -0.6058818238834054e1;
 };
 
+//  ---- the dense output of the two schemes (C473 h) ----------------------
+//  RODAS4's continuous extension, Hairer & Wanner II, IV.7 (the CONTRO of the
+//  published code rodas.f): a cubic in s = theta,
+//      y(s) = (1-s) y0 + s ( y1 + (1-s) ( c2 + s c3 ) ),
+//      c2 = sum_{j=1..5} D2j u_j,   c3 = sum_{j=1..5} D3j u_j,
+//  with u_j the SAME stage vectors the step used (not f at the end of the
+//  step).  y(0) = y0 and y(1) = y1 hold by construction; D2 and D3 make it
+//  third-order accurate on the whole step (checked by the convergence-order
+//  probe in check_batch_dense_output).  Every term is a stage increment, which
+//  W-solves keep bounded for a stiff row: nothing is multiplied by lambda h.
+struct Rodas4DenseCoeffs
+{
+    static constexpr scalar D2[5] = {0.1012623508344586e2, -0.7487995877610167e1,
+                                     -0.3480091861555747e2, -0.7992771707568823e1,
+                                      0.1025137723295662e1};
+    static constexpr scalar D3[5] = {-0.6762803392801253, 0.6087714651680015e1,
+                                      0.1643084320892478e2, 0.2476722511418386e2,
+                                     -0.6594389125716872e1};
+};
+constexpr scalar Rodas4DenseCoeffs::D2[5];
+constexpr scalar Rodas4DenseCoeffs::D3[5];
+
+class Rodas4Dense final : public ODEDenseOutput
+{
+public:
+    Rodas4Dense(scalar t0, scalar h, sVector y0, sVector y1,
+                const std::array<sVector, 5>& u)
+        : y0_(std::move(y0)), y1_(std::move(y1))
+    {
+        tStart_ = t0; h_ = h;
+        const std::size_t n = y0_.size();
+        c2_.assign(n, 0.0); c3_.assign(n, 0.0);
+        for (int j = 0; j < 5; ++j)
+            for (std::size_t i = 0; i < n; ++i)
+            {
+                c2_[i] += Rodas4DenseCoeffs::D2[j] * u[j][i];
+                c3_[i] += Rodas4DenseCoeffs::D3[j] * u[j][i];
+            }
+    }
+    void eval(scalar s, sVector& y) const override
+    {
+        const std::size_t n = y0_.size();
+        y.resize(n);
+        const scalar s1 = 1.0 - s;
+        for (std::size_t i = 0; i < n; ++i)
+            y[i] = y0_[i] * s1 + s * (y1_[i] + s1 * (c2_[i] + s * c3_[i]));
+    }
+private:
+    sVector y0_, y1_, c2_, c3_;
+};
+
+//  The 2(3) pair's interpolant, Shampine & Reichelt, "The MATLAB ODE Suite",
+//  SIAM J. Sci. Comput. 18 (1997) 1-22, eq. (4.? ntrp23s): with k1, k2 the
+//  two stage increments of the step (y1 = y0 + h k2) and d = 1/(2 + sqrt 2),
+//      y(s) = y0 + h ( s (1-s) k1 + s (s - 2d) k2 ) / (1 - 2d),
+//  second order, the order of the method; y(1) = y0 + h k2 = y1.
+class Rosenbrock23Dense final : public ODEDenseOutput
+{
+public:
+    Rosenbrock23Dense(scalar t0, scalar h, scalar d, sVector y0,
+                      const sVector& k1, const sVector& k2)
+        : d_(d), y0_(std::move(y0))
+    {
+        tStart_ = t0; h_ = h;
+        a_.resize(y0_.size()); b_.resize(y0_.size());
+        const scalar g = h / (1.0 - 2.0 * d);
+        for (std::size_t i = 0; i < y0_.size(); ++i)
+        { a_[i] = g * k1[i]; b_[i] = g * k2[i]; }
+    }
+    void eval(scalar s, sVector& y) const override
+    {
+        y.resize(y0_.size());
+        const scalar p = s * (1.0 - s), q = s * (s - 2.0 * d_);
+        for (std::size_t i = 0; i < y0_.size(); ++i)
+            y[i] = y0_[i] + p * a_[i] + q * b_[i];
+    }
+private:
+    scalar d_;
+    sVector y0_, a_, b_;
+};
+
 template <class SolveW>
 void rodas4Stages(const DerivFn& f, scalar t, scalar h, scalar hd,
                   const sVector& y, const sVector& f0, const sVector& Td,
                   const SolveW& solveW, const ODEControls& ctrl,
-                  sVector& ynew, scalar& errNorm)
+                  sVector& ynew, scalar& errNorm,
+                  std::array<sVector, 5>* stagesOut = nullptr)
 {
     using C = Rodas4Coeffs;
     const std::size_t n = y.size();
@@ -453,6 +536,8 @@ void rodas4Stages(const DerivFn& f, scalar t, scalar h, scalar hd,
                            + C::c64 * u4[i] + C::c65 * u5[i]);
     const sVector u6 = stage();
 
+    if (stagesOut)
+        *stagesOut = {u1, u2, u3, u4, u5};
     ynew.assign(n, 0.0);
     errNorm = 0.0;
     for (std::size_t i = 0; i < n; ++i)
@@ -903,6 +988,10 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
 
         sVector ynew(n);
         scalar errNorm = 0.0;
+        //  The stage vectors the dense output is built from (kept only when
+        //  the caller asked for one).
+        std::array<sVector, 5> denseU;
+        sVector denseK1, denseK2;
         if (!rodas)
         {
             // k1 = W^{-1} (f0 + hd*Td)
@@ -921,6 +1010,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
             sVector k2 = solveW(r2);
             for (std::size_t i = 0; i < n; ++i) k2[i] += k1[i];
 
+            if (ctrl.onDense) { denseK1 = k1; denseK2 = k2; }
             // candidate y* = y + h k2
             for (std::size_t i = 0; i < n; ++i) ynew[i] = y[i] + h * k2[i];
 
@@ -945,7 +1035,8 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
             errNorm = std::sqrt(errNorm / static_cast<scalar>(n));
         }
         else
-            rodas4Stages(f, t, h, hd, y, f0, Td, solveW, ctrl, ynew, errNorm);
+            rodas4Stages(f, t, h, hd, y, f0, Td, solveW, ctrl, ynew, errNorm,
+                         ctrl.onDense ? &denseU : nullptr);
         //  A row that must stay >= 0 and sits at zero (the clean bed ahead of a
         //  front, a radical not yet formed) comes out of the stage combination
         //  at round-off, -1e-33 rather than 0.  Below the row's own absolute
@@ -989,6 +1080,17 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
         if (errNorm <= 1.0 && !negative && finite)
         {
             // accept
+            std::shared_ptr<const ODEDenseOutput> dense;
+            if (ctrl.onDense)
+            {
+                std::shared_ptr<ODEDenseOutput> dd = rodas
+                    ? std::shared_ptr<ODEDenseOutput>(
+                          std::make_shared<Rodas4Dense>(t, h, y, ynew, denseU))
+                    : std::shared_ptr<ODEDenseOutput>(
+                          std::make_shared<Rosenbrock23Dense>(t, h, d, y, denseK1, denseK2));
+                dd->setStartSlope(f0);
+                dense = dd;
+            }
             y = ynew;
             t += h;
             ++st.accepted;
@@ -1009,6 +1111,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
             else
                 hNext = h;
             // Glass-box: report the step we just took at the time we reached.
+            if (dense) ctrl.onDense(dense);
             if (ctrl.onAccept) ctrl.onAccept(t, hAccepted);
             if (ctrl.onAcceptState) ctrl.onAcceptState(t, hAccepted, y);
         }

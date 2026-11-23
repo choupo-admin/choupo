@@ -23,7 +23,7 @@ timeStepping    adaptive;
 timeSteppingControl
 {
     rtol        1.0e-6;
-    atol        1.0e-17;     // kmol (V = 1 m3, n of the order of 1e-5 kmol)
+    atol        1.0e-19;     // kmol (V = 1 m3, n of the order of 1e-5 kmol); below the 1e-14 kmol trace species of the cold vessels
     deltaT0     1.0e-9;      // s
     deltaTmax   5.0e-3;      // s
 }

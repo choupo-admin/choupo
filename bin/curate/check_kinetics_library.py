@@ -243,6 +243,60 @@ def check_against_table(failures):
     return n
 
 
+# ---- (a4): the Miller & Bowman records against the appendix's own table -------------
+MBTSV = REPO / "docs" / "reviews" / "2026-11-22-miller-bowman" / "mb1989_table.tsv"
+
+
+def check_against_mb(failures):
+    """The C1 chain of Miller & Bowman 1989 (set MillerBowman1989) is held to the rows a review read
+    from the page images: A, b, Ea, the falloff low limit, the SRI numbers and the third-body efficiencies
+    of every record equal its row, and the record's page is the row's page."""
+    import csv
+    rows = {r["rxn"]: r for r in csv.DictReader(MBTSV.open(), delimiter="\t") if r["table"] == "A"}
+    name = {"H2O": "water", "CH2O": "HCHO"}
+    n = 0
+
+    def f3(blk):
+        return tuple(float(words(blk.get(k))[0]) for k in ("A", "b", "Ea"))
+    for f in sorted(KIN.glob("*.dat")):
+        b = rr.parse_file(str(f))
+        if "MillerBowman1989" not in (b.get("sets").keys() if b.get("sets") else []):
+            continue
+        rx = words(b.get("source").get("reaction"))[0]
+        if rx not in rows:
+            failures.append(f"{f.name}: reaction {rx} is not a row of the Miller & Bowman table")
+            continue
+        r = rows[rx]
+        kin = b.get("kinetics")
+        want = [(float(r["A"]), float(r["n"]), float(r["E"].rstrip(".") or 0))]
+        got = [f3(kin)]
+        if r["type"] == "falloff":
+            want.append((float(r["lowA"]), float(r["lowN"]), float(r["lowE"].rstrip(".") or 0)))
+            got.append(f3(kin.get("low")))
+            if r["falloff"].startswith("SRI"):
+                shape, key = [float(x.rstrip(".") or 0) for x in r["falloff"].split()[1:5]] + [0.0], "sri"
+            else:      # "Troe a=6.04e-01 T*=6927.0 T**=132."
+                shape = [float(x.split("=")[1].rstrip(".")) for x in r["falloff"].split()[1:4]]
+                key = "troe"
+            if [float(x) for x in words(kin.get(key)) if x not in "()"] != shape:
+                failures.append(f"{f.name}: {key} numbers differ from the table's {shape}")
+        if words(b.get("source").get("page"))[0] != r["page"]:
+            failures.append(f"{f.name}: page {words(b.get('source').get('page'))[0]} but the table's row is on p. {r['page']}")
+        eff = {}
+        for it in r["eff"].split():
+            k, v = it.split("=")
+            eff[name.get(k, k)] = float(v)
+        tb = kin.get("thirdBody")
+        have = {k: float(words(tb.get(k))[0]) for k in tb.keys()} if tb is not None else {}
+        if have != eff:
+            failures.append(f"{f.name}: third-body efficiencies {have} but the table prints {eff}")
+        for w, g in zip(want, got):
+            n += 1
+            if w != g:
+                failures.append(f"{f.name}: A,b,Ea = {g} but Appendix A p. {r['page']} (the review's table) prints {w}")
+    return n
+
+
 # ---- (a3): the records against the TEXT the cases carried until the library existed ------
 SHIPPED = REPO / "docs" / "reviews" / "2026-11-21-kinetics-seed" / "inline_reactions_until_2026-11-22.reactions"
 
@@ -306,6 +360,11 @@ def seeded_cases():
     res = []
     for p in sorted((REPO / "tutorials").glob("**/constant/reactions")):
         if "reactionSet" in p.read_text():
+            fs = p.parent.parent / "system" / "flowsheetDict"
+            #  a brute-force sensitivity case integrates the vessel once per reaction (minutes, twice here);
+            #  its reactions are those of the sibling case without the block, which IS compared
+            if fs.exists() and re.search(r"^\s*sensitivity\s*$", fs.read_text(), re.M):
+                continue
             res.append(p.parent.parent)
     return res
 
@@ -333,6 +392,9 @@ def main():
     failures = []
     n, unrecorded, members = check_records(failures)
     nvals = check_against_table(failures)
+    nmb = check_against_mb(failures)
+    if nmb < 40:
+        failures.append(f"only {nmb} Miller & Bowman rate expressions were held to the table; the chain has at least 40")
     nshipped = check_against_shipped(failures)
 
     cases = seeded_cases()
@@ -498,7 +560,7 @@ XA
     return gatekit.verdict(
         "check_kinetics_library", failures,
         f"{n} records (canonical names, atoms, units, sources with pages; {unrecorded} page(s) unrecorded on "
-        f"interim records; {nvals} O Conaire constants equal journal page 607 as the review read it; the {nshipped} entries the cases carried inline are written back unchanged), {len(members)} sets, {compared}/{len(cases)} shipped cases byte-identical to their "
+        f"interim records; {nvals} O Conaire constants equal journal page 607 as the review read it; {nmb} Miller & Bowman constants equal Appendix A as the review read it; the {nshipped} entries the cases carried inline are written back unchanged), {len(members)} sets, {compared}/{len(cases)} shipped cases byte-identical to their "
         "inline form; a doubled A in a case-tier record or an inline copy is seen; K_c of a set's thermo and "
         "k_f/k_r against K_c are printed")
 

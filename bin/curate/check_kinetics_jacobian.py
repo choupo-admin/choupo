@@ -169,6 +169,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import gatekit  # noqa: E402
 
+# Every directory walk in this gate is over its own scratch probe copies
+# (gatekit.probe_copy); it reads no tree root a case plan could miss.
+SCAN_ROOTS = ()
+
 FD = "tutorials/batch/combustion/ignition01_h2o2"
 JAC = "tutorials/batch/combustion/ignition01_h2o2_jac"
 STRIP = ("expected", "latest", "solution.log", "trajectory.csv")
@@ -702,12 +706,65 @@ def main():
     #  (h3) THE REAL DEFECT: a run of several vessels read `linearSolver` in no vessel (the sweep
     #  factored sparse for ONE vessel only) -- nox02's 17 gasConstantP vessels, 357 packed rows,
     #  on `auto`, now factor W on the block-diagonal pattern, each vessel's rank-one part kept.
+    #  Since C473 g the 17 vessels are INDEPENDENT and each is integrated on its own step, so the
+    #  union path is the one `solver { vessels coupled; }` keeps: the arm asks for it.
     with gatekit.probe_copy(NOX2, strip=STRIP) as c:
+        fs = c / "system" / "flowsheetDict"
+        fs.write_text(re.sub(r"solver(\s*)\{", r"solver\1{ vessels coupled;", fs.read_text()))
         rc, out = gatekit.run(batch, c)
         if rc != 0 or not re.search(r"factored SPARSE on the vessel pattern .*: 357 rows", out):
-            failures.append(f"(h3) nox02 (17 vessels, `linearSolver auto`) did not factor W sparse on the "
+            failures.append(f"(h3) nox02 (17 vessels, `vessels coupled; linearSolver auto`) did not factor W sparse on the "
                             f"union of the vessels' patterns (exit {rc})")
-    notes.append("nox03: dense = sparse, Rodas4 is stepped; nox02 factors sparse over 17 vessels")
+        if "17 vessels integrated TOGETHER" not in out:
+            failures.append("(h3) `vessels coupled;` was not announced as the single-step sweep")
+    #  (h4) THE REAL DEFECT: seventeen independent vessels were stepped together, the stiffest one
+    #  setting every step.  The default now integrates each on its own, announced, each factoring
+    #  its own block sparse.
+    with gatekit.probe_copy(NOX2, strip=STRIP) as c:
+        fs = c / "system" / "flowsheetDict"
+        fs.write_text(fs.read_text().replace("linearSolver auto;", "linearSolver sparse;"))
+        rc, out = gatekit.run(batch, c)
+        if rc != 0 or "17 independent vessels integrated separately (each its own step)" not in out \
+                or not re.search(r"factored SPARSE on the vessel pattern: 21 rows", out):
+            failures.append(f"(h4) nox02 did not integrate its 17 independent vessels separately, each "
+                            f"factoring its own 21-row block sparse (exit {rc})")
+    notes.append("nox03: dense = sparse, Rodas4 is stepped; nox02 factors sparse over 17 vessels (coupled) and per vessel (independent)")
+    #  (h5) THE REAL DEFECTS the review of the per-vessel integration found: (i) a vessel that gave up
+    #  lost the whole run's output (the error left its thread and nothing was written); (ii) the
+    #  one-time "outside its window" notices of the Cp laws came out in the order the threads reached
+    #  them.  The probes run at 1 and 4 threads and the answers must be the same bytes.
+    def run_threads(extra_control, edit_unit, n):
+        with gatekit.probe_copy(NOX2, strip=STRIP) as c:
+            fs = c / "system" / "flowsheetDict"
+            fs.write_text(re.sub(r"solver(\s*)\{", r"solver\1{ threads %d;" % n, fs.read_text()))
+            if extra_control:
+                cd = c / "system" / "controlDict"
+                cd.write_text(extra_control(cd.read_text()))
+            if edit_unit:
+                edit_unit(c)
+            rc, out = gatekit.run(batch, c)
+            csvp = c / "trajectory.csv"
+            dirs = sorted(d.name for d in c.iterdir() if d.is_dir() and d.name[:1].isdigit())
+            return rc, out.replace(str(c), "CASE").replace("threads %d;" % n, ""), \
+                (csvp.read_text() if csvp.exists() else ""), dirs
+    cut = lambda t: re.sub(r"(deltaT0\s)", "maxSteps 300;\n    \\1",
+                           re.sub(r"\nwriteInterval\s+[^;]+;", "\nwriteInterval 1e-3;", t), count=1)
+    r1, r4 = run_threads(cut, None, 1), run_threads(cut, None, 4)
+    if r1[0] == 0 or "T1500" not in r1[1] or len(r1[2].splitlines()) < 3:
+        failures.append("(h5) nox02 with maxSteps 300: the failing vessel did not stop the run by name"
+                        " after the trajectory and the <t>/ directories reached the last time every vessel passed")
+    if r1[1:] != r4[1:]:
+        failures.append("(h5) nox02 with maxSteps 300: the failure's output differs between 1 and 4 threads")
+
+    def hot(c):
+        for name, T in (("T1450", "7000"), ("T1500", "7500")):
+            f = c / "0" / "internalStates" / name
+            f.write_text(re.sub(r"(\n\s*T\s+)[0-9.]+ K;", r"\g<1>" + T + " K;", f.read_text(), count=1))
+    short = lambda t: re.sub(r"\nendTime\s+[^;]+;", "\nendTime 1e-4;", re.sub(r"\nwriteInterval\s+[^;]+;", "\nwriteInterval 1e-5;", t))
+    c1, c4 = run_threads(short, hot, 1), run_threads(short, hot, 4)
+    if c1[0] != 0 or "OUTSIDE its published interval" not in c1[1] or c1[1:] != c4[1:]:
+        failures.append("(h5) two vessels crossing a heat-capacity window: standard output and error differ"
+                        " between 1 and 4 threads (or the notice is missing)")
 
     # ---- (d) refusals by name ----------------------------------------------------------
     probes = [

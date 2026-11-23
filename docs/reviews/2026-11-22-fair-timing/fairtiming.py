@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Choupo against Cantera 3.2, two timings that are LIKE WITH LIKE.  Run from the repo root after `make all`:
 
-    docs/reviews/2026-11-22-fair-timing/fairtiming.py CASE integrator rtol [reps]
+    docs/reviews/2026-11-22-fair-timing/fairtiming.py CASE integrator rtol [reps [threads [coupled]]]
     CASE = nox03 | nox02 | ignition01
+    threads: `solver { threads N; }` injected in every vessel (several independent vessels are integrated each on its own
+    step, on N threads: Theory Guide sec:batch-vessels-separate); `coupled`: also inject `vessels coupled;` (the
+    historic single-step sweep).  With several vessels the integration time is the engine's WALL of the vessels' integration
+    (`[ode-stats] ... wall[ms]: vesselsIntegrate`), not the sum of the vessels' own timers.
 
 (a) INTEGRATION ONLY.  Cantera: ReactorNet already built, state set, then advance through the write
     times (the timer holds advance() and the read of X, T at each time; no load, no setState of the
@@ -24,18 +28,23 @@ CASES = {'nox03': ('nox03_millerbowman_large', 'A'), 'nox02': ('nox02_millerbowm
          'ignition01': ('ignition01_h2o2', None)}
 case_key, integ, rtol = sys.argv[1], sys.argv[2], float(sys.argv[3])
 reps = int(sys.argv[4]) if len(sys.argv) > 4 else 5
+threads = int(sys.argv[5]) if len(sys.argv) > 5 else 0
+coupled = len(sys.argv) > 6 and sys.argv[6] == 'coupled'
 name, app = CASES[case_key]
 src = os.path.join(ROOT, 'tutorials/batch/combustion', name)
 scr = os.environ.get('FAIR_SCRATCH', os.path.join(ROOT, 'build/scratch/fairtiming'))
 os.makedirs(scr, exist_ok=True)
 B = os.path.join(ROOT, 'build/linux64Gcc/choupoBatch')
 atol = {1e-6: 1e-12, 1e-8: 1e-15, 1e-10: 1e-18}.get(rtol, 1e-15)     # Choupo kmol and Cantera (mass fraction) alike
+if os.environ.get('FAIR_ATOL'): atol = float(os.environ['FAIR_ATOL'])     # e.g. a case's own shipped atol
 atol_ct = atol
 d = os.path.join(scr, name)
 shutil.rmtree(d, ignore_errors=True)
 shutil.copytree(src, d, ignore=shutil.ignore_patterns('expected', 'log.*', 'trajectory.csv'))
 f = open(d + '/system/flowsheetDict').read()
 f = re.sub(r'integrator\s+(Rosenbrock23|Rodas4|seulex);', 'integrator %s;' % integ, f)
+if threads: f = re.sub(r'(solver\s*\{)', r'\1 threads %d;' % threads, f)
+if coupled: f = re.sub(r'(solver\s*\{)', r'\1 vessels coupled;', f)
 if case_key == 'ignition01':          # the fixed-step path: the unit's own timer (BatchReactor.cpp, verbosity 4)
     f = re.sub(r'verbosity\s+3;', 'verbosity 4;', f, count=1)
     rtol = 1e-7                       # hard-wired in BatchReactor.cpp (ctrl.rtol), not a case input
@@ -58,6 +67,8 @@ def run_choupo():
                          env=dict(os.environ, CHOUPO_ODE_STATS='1', CHOUPO_HOME=ROOT)).stdout
     wall = time.perf_counter() - t0
     ms = [float(x) for x in re.findall(r'integrate ([0-9.eE+-]+)', out)]
+    wv = re.findall(r'vesselsIntegrate ([0-9.eE+-]+)', out)        # the several-vessel run: the WALL of the region
+    if wv: ms = [float(x) for x in wv]
     if case_key == 'ignition01':
         w = re.findall(r'; wall ([0-9.]+) s = right-hand', out)
         return wall, (float(w[-1]) * 1000.0 if w else 0.0), out

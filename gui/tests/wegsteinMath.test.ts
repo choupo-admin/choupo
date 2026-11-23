@@ -19,7 +19,7 @@
   WHAT IS WORTH PINNING HERE, and it is not "the formula is the formula".
 
   (a) THE TRANSCRIPTION.  `wegsteinStep` claims to be `Wegstein::step`
-      (src/solver/Wegstein.cpp:49-92) and it is checked against values that
+      (src/solver/Wegstein.cpp:51-96) and it is checked against values that
       can be worked out on paper — a slope of 0.9 gives exactly q = -9, a
       first call has no history and returns direct substitution, and both
       degeneracy guards are fired with their own epsilons rather than near

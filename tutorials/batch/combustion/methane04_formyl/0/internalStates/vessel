@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  methane04_formyl, 0/internalStates/vessel -- the initial HOLDUP of 'vessel'.  Petersen, Davidson & Hanson, J. Propulsion and
+  Power 15 (1999) 82-91, Table 1 mixture 2 (3 CH4 + 2 O2 + 10 N2) at the point of Table 2 (p. 86):
+  T5 = 1244 K, P5 = 114.4 atm, measured ignition delay 254 us.  n = PV/(RT) exactly, V = 1 litre.
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "vessel";
+equipment   batchReactor;
+
+holdup
+{
+    T            1244 K;
+    P            114.4 atm;
+    V            0.001;                // m3
+    totalMoles   1.12069664e-03;      // kmol
+    molarComposition
+    {
+        H2 0.0;
+        O2 0.133333;
+        H 0.0;
+        O 0.0;
+        OH 0.0;
+        HO2 0.0;
+        H2O2 0.0;
+        water 0.0;
+        N2 0.666667;
+        CH4 0.200000;
+        CH3 0.0;
+        CH2 0.0;
+        HCHO 0.0;
+        HCO 0.0;
+        CO 0.0;
+        CO2 0.0;
+        CH3O 0.0;
+        ethane 0.0;
+        C2H5 0.0;
+        ethylene 0.0;
+    }
+}

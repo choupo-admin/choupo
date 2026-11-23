@@ -65,6 +65,8 @@ Description
 
 #pragma once
 
+#include "core/DeferredNotes.H"
+
 #include "HeatCapacityModel.H"
 
 #include <string>
@@ -103,7 +105,7 @@ private:
     scalar high_[7] = {0, 0, 0, 0, 0, 0, 0};   // a1..a7, Tcommon..Thigh
     scalar Tlow_ = 0.0, Tcommon_ = 0.0, Thigh_ = 0.0;
     std::string owner_;
-    mutable bool announcedOutside_ = false;
+    deferred::OnceFlag announcedOutside_;   // claimed by an atomic exchange (core/DeferredNotes.H)
     inline static const std::string name_ = "NASA9";
 };
 

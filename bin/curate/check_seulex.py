@@ -26,8 +26,8 @@ against numbers that do not come from seulex itself:
      relative over the species above 1e-6), and the nox03 run builds a Jacobian on fewer
      steps than it takes (reuse is happening).
 
-NOT CHECKED: the accuracy on the OUTPUT GRID inside an induction period (the driver's cubic
-Hermite dense output limits it; docs/reviews/2026-11-22-seulex), sensitivity and the
+NOT CHECKED HERE: the accuracy on the OUTPUT GRID inside an induction period (held by
+check_batch_dense_output arm (g); seulex's own dense output since 2026-11-22), sensitivity and the
 fixed-bed adsorber (both refuse seulex by name), speed (a timing is not a gate).
 """
 import csv
@@ -114,7 +114,7 @@ def main():
             failures.append(f"{sx}: ignition delay {ta} s against {tb} s of {base}")
         #  T in the INDUCTION period (nox03: t = 2 ms, 0.4 ms before the ignition), where a
         #  too-loose error control or a wrong extrapolation moves the temperature first.  The
-        #  rows between steps are the driver's cubic Hermite interpolant, so the bound is
+        #  rows between steps are seulex's dense output polynomial, so the bound stays
         #  1 K, not the method's accuracy (the standalone claims hold that).
         if sx.startswith("nox03"):
             Tk = [k for k in a if k.endswith("T")][0]

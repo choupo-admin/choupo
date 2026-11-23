@@ -19,7 +19,7 @@
   TWO PANELS, AND THE PAGE SAYS WHICH IS WHICH AT THE TOP OF EACH.
 
   THE RECURSION panel drives `wegsteinStep` — a line-for-line transcription of
-  src/solver/Wegstein.cpp:49-92 — over a two-variable map declared in full in
+  src/solver/Wegstein.cpp:51-96 — over a two-variable map declared in full in
   wegsteinMath.  Everything a reader turns there is arithmetic they can check:
   the secant slope, the coefficient it produces, the clamp binding, and the
   three solvers' error curves on one axis.  It is a toy and the page says so
@@ -410,7 +410,7 @@ export function WegsteinTool(): JSX.Element {
             engine&apos;s is the recursion consuming it — a line-for-line
             transcription of{" "}
             <Text span ff="monospace" size="xs">
-              src/solver/Wegstein.cpp:49-92
+              src/solver/Wegstein.cpp:51-96
             </Text>, both degeneracy guards and both epsilons included.
           </Text>
           <Text size="sm" mt={6}>
@@ -419,7 +419,9 @@ export function WegsteinTool(): JSX.Element {
             and says in its own comment that it is for logging
             (src/solver/Wegstein.H:98-99); nothing prints it. The secant slope
             and the coefficient are the method, and there is no run in this
-            tree from which a student can read them.
+            tree from which a student can read them. What a run does print is
+            how often the clamp cut the coefficient, per tear (verbosity 1
+            and 2).
           </Text>
         </Box>
 
@@ -547,7 +549,7 @@ export function WegsteinTool(): JSX.Element {
             <Text size="xs" mt={4} c="dimmed">
               The agreement is the algebra of an exact secant. In floating
               point there is one absolute threshold, epsX = 1e-14 in the
-              variable&apos;s own unit (src/solver/Wegstein.cpp:64), which is
+              variable&apos;s own unit (src/solver/Wegstein.cpp:66), which is
               not invariant: a variable that moves by less than that in one
               unit system and by more in another gets q = 0 in the first and
               a secant coefficient in the second. It matters only for a step

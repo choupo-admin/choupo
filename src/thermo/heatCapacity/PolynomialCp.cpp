@@ -168,9 +168,10 @@ void PolynomialCp::noteRange(scalar T) const
 
     if (Tmin_ == 0.0 && Tmax_ == 0.0) return;          // no window declared
 
-    if ((T < Tmin_ || T > Tmax_) && !announcedOutside_)
+    if ((T < Tmin_ || T > Tmax_) && !announcedOutside_.done())
+        deferred::note(&announcedOutside_, [this, T]
     {
-        announcedOutside_ = true;
+        if (!announcedOutside_.claim()) return;
         AdvisoryLog::instance().add(
             "validity", "warning",
             owner_.empty() ? "polynomial Cp" : "component '" + owner_ + "'",
@@ -184,7 +185,7 @@ void PolynomialCp::noteRange(scalar T) const
                      " value is extrapolated: it is still returned (I4 --"
                      " extrapolation is a legitimate choice), but it is no"
                      " longer covered by the fit.\n";
-    }
+    });
 }
 
 //  THE SPAN.  Same rule as noteRange -- announced, never refused (I4) -- but a
@@ -218,7 +219,7 @@ void PolynomialCp::noteSpan(scalar Tref, scalar T) const
 {
     if (rangeUnknown_) return;                         // said at construction
     if (Tmin_ == 0.0 && Tmax_ == 0.0) return;          // no window declared
-    if (announcedSpan_) return;
+    if (announcedSpan_.done()) return;
 
     const scalar lo = (Tref < T) ? Tref : T;
     const scalar hi = (Tref < T) ? T : Tref;
@@ -232,7 +233,6 @@ void PolynomialCp::noteSpan(scalar Tref, scalar T) const
     const scalar inside  = (inHi > inLo) ? (inHi - inLo) : 0.0;
     const scalar outside = (hi - lo) - inside;
 
-    announcedSpan_ = true;
     const std::string who =
         owner_.empty() ? "polynomial Cp" : "component '" + owner_ + "'";
     const std::string span =
@@ -241,15 +241,19 @@ void PolynomialCp::noteSpan(scalar Tref, scalar T) const
       + trimNum(Tmax_) + ") over " + trimNum(outside) + " K of its "
       + trimNum(hi - lo) + " K";
 
-    AdvisoryLog::instance().add(
-        "validity", "warning", who,
-        span + " -- extrapolated, still returned");
-    std::cerr << "[cp] polynomial Cp"
-              << (owner_.empty() ? std::string() : " for '" + owner_ + "'")
-              << " " << span << ".\n     The enthalpy/entropy difference is"
-                 " extrapolated over that part of the path: it is still"
-                 " returned (I4 -- extrapolation is a legitimate choice), but"
-                 " it is no longer covered by the fit.\n";
+    deferred::note(&announcedSpan_, [this, who, span]
+    {
+        if (!announcedSpan_.claim()) return;
+        AdvisoryLog::instance().add(
+            "validity", "warning", who,
+            span + " -- extrapolated, still returned");
+        std::cerr << "[cp] polynomial Cp"
+                  << (owner_.empty() ? std::string() : " for '" + owner_ + "'")
+                  << " " << span << ".\n     The enthalpy/entropy difference is"
+                     " extrapolated over that part of the path: it is still"
+                     " returned (I4 -- extrapolation is a legitimate choice), but"
+                     " it is no longer covered by the fit.\n";
+    });
 }
 
 scalar PolynomialCp::Cp(scalar T) const

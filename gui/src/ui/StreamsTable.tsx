@@ -67,6 +67,10 @@ import { useStore } from "../state/store.js";
 import { SortTh, useSortable, type SortAccessors } from "./SortableTable.js";
 import { popOutStreamsHtml } from "./streamsPopOut.js";
 
+/** A role word ("feed", "product", "internal") must read in full however many
+ *  x_ columns the table carries (C266 item 1: it was cut to "F…"). */
+export const ROLE_MIN_WIDTH = 96;
+
 const ROLE_COLORS = {
   feed: "accent",
   intermediate: "gray",
@@ -227,7 +231,7 @@ export function StreamsTable() {
                 Plant label
               </SortTh>
             )}
-            <SortTh s={sorter} k="role">Role</SortTh>
+            <SortTh s={sorter} k="role" minWidth={ROLE_MIN_WIDTH}>Role</SortTh>
             <SortTh s={sorter} k="F" right>F ({prefs.flow})</SortTh>
             <SortTh s={sorter} k="T" right>T ({temperatureLabel(prefs.temperature)})</SortTh>
             <SortTh s={sorter} k="P" right>P ({prefs.pressure})</SortTh>
@@ -280,10 +284,11 @@ export function StreamsTable() {
                     </Text>
                   </Table.Td>
                 )}
-                <Table.Td>
+                <Table.Td style={{ minWidth: ROLE_MIN_WIDTH, whiteSpace: "nowrap" }}>
                   <Badge
                     size="xs"
                     variant="light"
+                    style={{ overflow: "visible" }}
                     color={ROLE_COLORS[s.role]}
                     radius="sm"
                   >

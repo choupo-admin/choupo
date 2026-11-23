@@ -3563,6 +3563,12 @@ int Flowsheet::solve(const DictPtr& dict,
                         positiveEntries[t * stride + stride - 1] = 1;
             }
             accel.setPositiveEntries(positiveEntries);
+            //  THE CLAMP IS COUNTED, NEVER SILENT (C22).  Per tear (the last bucket is the
+            //  solids grid appended after the [F, z.., T, P] blocks): the secants formed and
+            //  how many were cut UP to qMin or DOWN to qMax, over the whole loop.
+            const std::size_t tearStride = thermo.n() + 3;
+            std::vector<long> clUpd(tears.size() + 1, 0), clLo(tears.size() + 1, 0),
+                              clHi(tears.size() + 1, 0);
             //  Dominant-eigenvalue aid (opt-in): the paper's method (Orbach &
             //  Crowe 1971, derived in solver/DominantEigenvalue.H); every
             //  number is declared in solverDict and a defaulted one is
@@ -3694,6 +3700,32 @@ int Flowsheet::solve(const DictPtr& dict,
                 }
                 else
                     x_next = deAccel ? deAccel->step(x, gx) : accel.step(x, gx);
+                if (recSolver == "Wegstein" && !deAccel)
+                {
+                    const std::vector<char>& st = accel.lastStatus();
+                    std::vector<long> itUpd(tears.size() + 1, 0), itCut(tears.size() + 1, 0);
+                    for (std::size_t i = 0; i < st.size(); ++i)
+                    {
+                        if (st[i] == 0) continue;
+                        const std::size_t t = std::min(i / tearStride, tears.size());
+                        ++itUpd[t]; ++clUpd[t];
+                        if (st[i] == 2) { ++clLo[t]; ++itCut[t]; }
+                        if (st[i] == 3) { ++clHi[t]; ++itCut[t]; }
+                    }
+                    long nCut = 0, nUpd = 0;
+                    std::string who;
+                    for (std::size_t t = 0; t <= tears.size(); ++t)
+                    {
+                        nCut += itCut[t]; nUpd += itUpd[t];
+                        if (itCut[t] > 0)
+                            who += (who.empty() ? "" : ", ")
+                                 + (t < tears.size() ? "'" + tears[t] + "'" : std::string("solids grid"))
+                                 + " " + std::to_string(itCut[t]) + "/" + std::to_string(itUpd[t]);
+                    }
+                    if (nCut > 0 && verbosity >= 2)
+                        std::cout << "        -> Wegstein q clamped to [" << qmin << ", " << qmax
+                                  << "] on " << nCut << " of " << nUpd << " updates (" << who << ")\n";
+                }
                 if (deAccel && !deAccel->note().empty())
                     std::cout << "        -> " << deAccel->note() << "\n";
                 // announce: this is an ACCEPTED extrapolated step, so a clip
@@ -3702,6 +3734,16 @@ int Flowsheet::solve(const DictPtr& dict,
                 x = x_next;
                 prevE = curE;
             }
+            if (recSolver == "Wegstein" && !deAccel && verbosity >= 1)
+                for (std::size_t t = 0; t <= tears.size(); ++t)
+                    if (clUpd[t] > 0)
+                        std::cout << "  [aid] Wegstein q clamped to [" << qmin << ", " << qmax
+                                  << "] in " << (clLo[t] + clHi[t]) << " of " << clUpd[t]
+                                  << " updates on "
+                                  << (t < tears.size() ? "tear '" + tears[t] + "'"
+                                                       : std::string("the solids grid"))
+                                  << " (" << clLo[t] << " up to qMin, " << clHi[t]
+                                  << " down to qMax)\n";
             if (rejectedExtrap > 0)
                 std::cout << "  [recycle] " << rejectedExtrap
                           << " extrapolated step(s) met an infeasible sweep and"

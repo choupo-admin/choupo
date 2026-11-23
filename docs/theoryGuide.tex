@@ -15141,6 +15141,30 @@ These bounds carry concrete meaning:
         escaping the basin of attraction.
 \end{itemize}
 
+\paragraph{The defaults, and the run reports every cut.}  Two defaults
+exist and they differ.  The \code{Wegstein} class is constructed with
+$[q_{\min}, q_{\max}] = [-5, 0]$ (\file{src/solver/Wegstein.H}); the
+recycle loop constructs it from \code{recycleWegsteinQmin} and
+\code{recycleWegsteinQmax} with defaults $[-1, 0]$
+(\file{Flowsheet.cpp}), so a case that declares nothing runs at the
+gentler clamp, $w = 1 - q \in [1, 2]$.  The bounds are a stability
+judgement of this engine, not a result of Wegstein (1958), who
+classifies $q$ by the slope $s$ only: $q < 0$ (acceleration) for $0 < s < 1$, $0 < q < 1$ (damping) for $s < 0$, $q > 1$ for $s > 1$; no bound is stated.  Because a cut changes the
+iteration the student believes is running, the engine
+counts it.  Each secant that is formed (an entry that moved, with
+$|s - 1| > 10^{-10}$) is an \emph{update}; it is \emph{clamped} when the
+unclamped $s/(s-1)$ lies outside $[q_{\min}, q_{\max}]$.  At verbosity
+$\ge 2$ every outer iteration with a cut prints one line, ``Wegstein q
+clamped on $k$ of $m$ updates'', with the tears concerned; at verbosity
+$\ge 1$ the run ends with one summary per tear, ``q clamped to
+$[q_{\min}, q_{\max}]$ in $N$ of $M$ updates on tear \emph{X}''
+(split into cuts up to $q_{\min}$ and down to $q_{\max}$).  A summary
+in which most updates were cut says the loop was run mostly on the
+clamp, that is, close to direct substitution (all cut to $q_{\max}=0$) or
+at the reach limit (all cut to $q_{\min}$), and that a wider interval
+or the Newton solver is worth trying.  Counting changes no number of
+the iteration.
+
 \begin{intuition}
 The clip turns Wegstein into a kind of adaptive method that uses the
 secant when it is informative (modest $s_k$, $-5 \le q_k < 0$) and
@@ -39265,28 +39289,70 @@ be: the integrator stops \emph{exactly} only at a recipe event and at
 cut at every \code{writeInterval}, so a run with 2500 write points took
 2500 steps whatever the error asked for; any other run keeps that
 behaviour, announced.)  A write point $t_w$ that falls inside an
-accepted step $[t_n, t_n + h]$ is produced by \emph{dense output}: the
-cubic Hermite interpolant through the two ends of the step and their
-slopes,
+accepted step $[t_n, t_n + h]$ is produced by \emph{dense output}, and
+since 2026-11-22 it is the \emph{integrator's own}: a polynomial in
+$s = (t_w - t_n)/h \in [0,1]$ that the integrator builds from what it
+already computed in that step and hands to the driver
+(\code{ODEControls::onDense}, \code{ODEDenseOutput::eval(s, y)} in
+\code{src/solver/ODE/ODEIntegrator.H}; the object is immutable, so each
+vessel's stepper serves its own thread).  Before that date the driver
+interpolated every method alike with the cubic Hermite of the step's two
+ends and their slopes,
+$h_{00}\Yv_n + h_{10}h f(\Yv_n) + h_{01}\Yv_{n+1} + h_{11}h f(\Yv_{n+1})$;
+on a stiff network that is wrong in a way the tolerance does not see: the
+slope $f(\Yv_{n+1})$ of a trace radical changes by about $\lambda h$ times
+the relative error of the end state, and it enters multiplied by $h$, so a
+$10^{-8}$ difference at a step end became $10^{-2}$ inside the step
+(\code{nox03\_millerbowman\_large} under seulex: rows $4\times10^{-2}$ from a
+tight reference while every step end was right to $10^{-8}$).  What each
+method uses now (the case can ask for the old interpolant by declaring
+\code{solver \{ denseOutput hermite; \}}, default \code{integrator}; the run
+announces which one it uses, and a value other than those two is refused):
+\begin{itemize}
+\item \textbf{Rodas4}: the continuous extension of Hairer and Wanner
+  (1996, IV.7, the \code{CONTRO} of their code \code{rodas.f}), a cubic built from
+  the stage vectors $u_1\ldots u_5$ of the step,
+  \begin{equation}
+    \Yv(s) = (1-s)\Yv_n + s\bigl[\Yv_{n+1} + (1-s)(\mathbf c_2 + s\,\mathbf c_3)\bigr],
+    \quad \mathbf c_k = \sum_{j=1}^{5} D_{kj}\,u_j ,
+    \label{eq:dense-rodas4}
+  \end{equation}
+  with the coefficients $D_{kj}$ printed in \code{Rodas4DenseCoeffs}
+  (\code{Rosenbrock23.cpp}).  Third order; every term is a stage increment
+  of the $\mathbf W$-solves, so nothing is multiplied by $\lambda h$.
+\item \textbf{Rosenbrock23}: the interpolant of Shampine and Reichelt
+  (SIAM J.\ Sci.\ Comput.\ 18, 1997, \code{ntrp23s}) from the two stage
+  increments $k_1, k_2$ and $d = 1/(2+\sqrt2)$:
+  $\Yv(s) = \Yv_n + h\,[\,s(1-s)k_1 + s(s-2d)k_2\,]/(1-2d)$, second order,
+  the order of the method.
+\item \textbf{seulex}: the extrapolated dense output of Hairer and Wanner
+  (IV.9, after Hairer and Ostermann 1990), section~\ref{sec:seulex}: a
+  polynomial through the end values and the extrapolated scaled
+  derivatives at the end of the step, taken from the sub-steps of the
+  columns of the tableau.
+\item \textbf{RK4}, \textbf{EulerSI} (no dense output of their own) and any
+  step where the integrator offers none keep the cubic Hermite
+  (\ref{eq:dense-output-hermite} below).
+\end{itemize}
+The slopes of the Hermite fallback,
 \begin{equation}
     \Yv(t_w) \;\approx\; h_{00}(s)\,\Yv_n + h_{10}(s)\,h\,f(\Yv_n)
         + h_{01}(s)\,\Yv_{n+1} + h_{11}(s)\,h\,f(\Yv_{n+1}),
-    \qquad s = \frac{t_w - t_n}{h},
     \label{eq:dense-output-hermite}
 \end{equation}
 with $h_{00} = 2s^3 - 3s^2 + 1$, $h_{10} = s^3 - 2s^2 + s$,
-$h_{01} = -2s^3 + 3s^2$, $h_{11} = s^3 - s^2$.  Its error is
-$\mathcal{O}(h^4)$ per step, one order above the local error of
-Rosenbrock23 ($\mathcal{O}(h^3)$), so the interpolated rows carry no more
-error than the step that contains them.  The slopes $f(\Yv_n)$ and
-$f(\Yv_{n+1})$ are two extra right-hand sides, evaluated only in a step
-that contains a write point, the second being the first of the next.  The
-interpolant is applied to the whole packed vector, so every linear invariant
-of the network (each element's atoms: $\mathbf{a}\cdot f = 0$ at both ends)
-is carried exactly by every interpolated row.  If any species amount of the
-vessel would come out negative, the whole vector takes the straight line
-between the step's ends instead, which is positive and, a convex
-combination of two states with the same atoms, conserves them too.  The vessel is put in the
+$h_{01} = -2s^3 + 3s^2$, $h_{11} = s^3 - s^2$, are two extra right-hand
+sides, evaluated only in a step that contains a write point; the integrators'
+own dense outputs cost none.  Every interpolant is applied to the whole packed vector and is a
+linear combination of stage (or sub-step) vectors, so a linear invariant of
+the network (each element's atoms) is carried by every interpolated row.  If
+any species amount of the vessel would come out negative, the whole vector
+takes the straight line between the step's ends instead, which is positive
+and, a convex combination of two states with the same atoms, conserves them
+too.  A value a round-off below zero (within the row's own absolute tolerance) is
+set to zero first, as the integrators do for an accepted state, except in a row
+that was empty at the start of the step: an empty row still being consumed is
+not clipped (the integrators' own predicate: clip unless the row was empty and its slope was negative), and the whole-vector fallback above applies to it; the rows that took the fallback are counted and announced once per vessel.  Vessels of one run that disagree on \code{denseOutput} are refused by name, and declared \code{hermite} on a run whose write grid is the step boundary is announced as having no effect.  The vessel is put in the
 interpolated state, \code{trajectory.csv} takes its row, and the accepted
 state is restored before the integration goes on.
 
@@ -39317,6 +39383,94 @@ default applies to every \code{choupoBatch} run, so a shipped case with more
 than 100 write points writes fewer directories than it did.  A \code{<t>/}
 taken inside a free-stepped run is the interpolated state, so a restart from
 it matches the original run within the interpolation error.
+
+\subsection{Independent vessels, each on its own step}\label{sec:batch-vessels-separate}
+
+A \code{choupoBatch} run may hold several vessels, and until C473\,g the
+adaptive driver packed all of them into one state vector and advanced it with
+\emph{one} step $h$: the error test took the largest weighted error over every
+row of every vessel, so the vessel that was stiffest at that instant set the
+step of all the others.  Seventeen isothermal vessels of
+\code{nox02\_millerbowman\_denox} (900--1500\,K) took 2545 steps together
+(Rosenbrock23, rtol $10^{-6}$), every one of them a 17-vessel Jacobian and
+factorisation, although the 900\,K vessel alone needs 31 steps and the 1500\,K
+one 2490.  Cantera integrates such reactors one after the other, each with its own
+steps.
+
+\paragraph{The independence rule.}  Two vessels are independent when nothing
+that is written between steps couples them.  The driver integrates them
+separately when \emph{all} of these hold, and prints
+\code{N independent vessels integrated separately (each its own step)}:
+(i) the run is free-stepping (every unit a closed \code{batchReactor} in ODE
+form, no condition-triggered event, no cycle, section
+\ref{sec:batch-dense-output}); (ii) no unit has a \code{dischargeTo} (no
+material route between vessels); (iii) the \code{recipe} holds no event at
+all (an event acts on the vessels at a time they share, and changes their
+state); (iv) no vessel declares \code{solver \{ vessels coupled; \}}; and (v)
+there are at least two ODE vessels.  A run that fails (iii) or (iv) while the
+rest holds is integrated together as before and says so by name
+(\code{N vessels integrated TOGETHER}); a run that fails (i) or (ii) keeps the
+write-grid sweep it always had.  \code{vessels coupled} is the opt-out: the
+single-step sweep of the block-diagonal $\mathbf W$ of section
+\ref{sec:sparse-lu}.
+
+\paragraph{What changes in the arithmetic.}  Each vessel gets its own
+integrator instance: its own step history, its own Jacobian audit, its own
+sparse factorisation (its block), the same \code{rtol}, \code{atol},
+\code{integrator} and \code{linearSolver} as declared.  The write points
+inside each vessel's accepted steps come from the same dense output as for a
+coupled sweep, the integrator's own (section \ref{sec:batch-dense-output}), taken per vessel and
+recorded; after all vessels have reached \code{endTime}, \code{trajectory.csv}
+rows, \code{<t>/} directories and the clock notes of the energy ledger are
+written in write-time order with every vessel committed to its own state at
+that time, as the coupled sweep did.  A vessel's result therefore differs from
+the coupled run by the integration error only, and that error is not the
+same: the coupled sweep gave every vessel the small steps of the stiffest one,
+so the cold vessels were integrated far more finely than their own tolerance
+asked; each vessel now takes the steps its own error asks for, no more.  The
+consequence is measured on nox02 (rtol $10^{-6}$ as shipped), against Cantera
+at rtol $10^{-10}$, worst relative deviation over every species and write time:
+$1.7\times10^{-3}$ coupled, $2.0\times10^{-3}$ per vessel at the old
+\code{atol} of $10^{-17}$\,kmol, $5.7\times10^{-4}$ per vessel at
+$10^{-19}$\,kmol (the shipped case).  The lever is \code{atol}, not
+\code{rtol}: a species that starts at zero and stays at $10^{-14}$\,kmol is
+error-controlled only where $\mathrm{rtol}\,|Y_i|$ exceeds
+$\mathrm{atol}_i$, so a trace species of a cold vessel was integrated to an
+absolute error near $\mathrm{atol}$, which is large in relative terms.
+
+\paragraph{A vessel that fails.}  A vessel whose integration gives up
+(\code{maxSteps}, a step below its floor) keeps its error and the time it
+reached and does not stop the others.  After the join the driver writes
+\code{trajectory.csv} and the \code{<t>/} directories up to the last write time
+that \emph{every} vessel passed (what the coupled sweep wrote before its
+failure) and then raises the error of the vessel that failed first in time,
+the lowest index breaking a tie, with its own named message.  On one thread
+(and in the browser build) the vessels still to run stop as soon as they pass
+the time of a failure already seen, instead of running to \code{endTime}.
+
+\paragraph{Threads, and determinism.}  The vessels are spread over
+\code{solver \{ threads N; \}} (the key the sensitivity block reads;
+default allowed CPUs $-2$, at least 1; \code{CHOUPO\_THREADS} caps it; the
+browser build runs serially).  A vessel reads shared data (the thermodynamic
+records) but writes only its own state and its own integrator; every
+thread-local memo of the reactor (the Gibbs and enthalpy memo keyed by the
+vessel, the rate-constant tables) belongs to the thread that fills it; one
+serial right-hand side and Jacobian of each vessel are evaluated before the
+threads start, so every lazily resolved piece of the thermodynamics is
+resolved in vessel order; and no output is written by a thread.  That last
+sentence needed work: the heat-capacity laws announce \emph{once} that a
+temperature is outside their window, and which vessel is first would depend on
+the scheduling (and the text names that vessel's temperature).  A vessel's
+thread therefore \emph{records} such a notice (once per law, with its own
+values) instead of raising it, the once-flags are atomic exchanges, and the
+driver flushes the records vessel by vessel after the join, so the lowest
+vessel that raised a notice is the one that speaks, at any thread count.
+The results are the same bits at any thread count (checked: every file of
+nox02 hashes the same at 1, 2 and 4 threads, standard output and error
+included, and so does a two-vessel run that crosses a heat-capacity window
+in the middle of the integration).  Declared \code{vessels} keys that have
+no effect, and vessels that declare different \code{threads} (the largest is
+used), are announced in the run.
 
 \subsection{The Jacobian, and two correctness traps}
 
@@ -39770,7 +39924,16 @@ source, as read from its page; the seed holds 21 O~Conaire entries, each equal t
 journal page~607 as the review of 2026-11-21 read it, and the Zeldovich and
 N$_2$O reactions of Glarborg et al.\ (Prog.\ Energy Combust.\ Sci.\ 67 (2018) 31,
 Tables~2 and~5), whose page nobody in this tree has read (\code{page unrecorded},
-\code{interim}).  The library does not choose between two measurements of one
+\code{interim}).  The carbon chain of Miller and Bowman (\emph{Prog.\ Energy Combust.\ Sci.}\ \textbf{15} (1989) 287,
+Appendix~A, journal pp.~331 and~332) is seeded as one record per reaction: the C$_1$ chain from CH$_4$ to CO$_2$
+(reactions 2 to 64 that name only C$_1$ species, H and~O, without the singlet CH$_2$ and the CH$_2$OH branch) and the
+ethane route (reactions 1, 65 to 68, 74, 75).  They belong to the set \code{MillerBowman1989} and to one of five stage
+sets (\code{MB1989\_attack}, \code{MB1989\_methyl}, \code{MB1989\_formyl}, \code{MB1989\_carbonMonoxide},
+\code{MB1989\_ethane}) so that a case, or a student, adds them one step at a time; every constant is equal to the
+table the review of 2026-11-22 read from the page images (the gate's arm a4), and every record says that it is one
+mechanism's value and not an evaluated constant.  The hydrogen-oxygen reactions of that appendix are NOT seeded: the
+library already holds the \'O~Conaire expression for each of those equations, and one equation has one record.  The
+EduTool \emph{Assemble methane combustion} runs the sets as a ladder.  The library does not choose between two measurements of one
 reaction, does not carry a reaction's validity range beyond the source's, and
 holds no pressure-dependent table yet (\code{plog} records are admitted by the
 grammar and none is seeded).  \emph{Identity of a summed reaction, and an open question.}  The terms of a summed
@@ -40270,9 +40433,12 @@ does; two vessels declaring different ones are refused); it was
 Rosenbrock23 whatever the case said, so a Rodas4 copy of a case reproduced
 the Rosenbrock23 one to every digit printed.
 
-The write points between two steps come from the cubic Hermite interpolant
-of the step, which is third order: with Rodas4's longer steps they are not
-held to the step tolerance the way the step ends are.
+The write points between two steps come from Rodas4's own continuous
+extension (Eq.~\ref{eq:dense-rodas4}), which is third order: they are held
+to the level of the step ends on nox03 (grid error $6\times10^{-5}$ at
+$\mathrm{rtol}=10^{-8}$, where the driver's cubic Hermite gave $1.9\times10^{-4}$
+with the dense linear solver and $6\times10^{-5}$ with the sparse one, and
+the two now agree to $5\times10^{-7}$).
 
 \begin{pitfall}
 The first build applied the threshold test to unequilibrated rows: the
@@ -40472,19 +40638,84 @@ side and in the Jacobian.  A declared block structure (the fixed bed) and the
 \code{sensitivity} block refuse seulex by name.  The integrator keeps no state
 between calls, so one instance is safe under \code{solver \{ threads N; \}}.
 
-\paragraph{Output grid and step ends.}  The driver writes the states between two
-accepted steps from a cubic Hermite interpolant of the step.  seulex takes
-steps an order of magnitude longer than Rodas4 at a tight tolerance, and
-then the \emph{interpolant}, not the method, limits the accuracy of a row
-written inside the induction period (a growth rate $\lambda\approx10^{4}$
-s$^{-1}$ over a step of $5\times10^{-5}$~s gives $(\lambda h)^4/384\approx
-1.6\times10^{-4}$): on the write grid the largest species deviation does not
-fall below $10^{-4}$ to $10^{-1}$ however tight the tolerance, and it falls to
-$2\times10^{-7}$ when \code{deltaTmax} is cut to $10^{-5}$ (which hides the
-effect and costs the speed).  Hairer and Wanner's extrapolated dense output is
-not implemented: the interpolant belongs to the driver (\code{choupoBatch}'s
-step callback).  The accuracy of the \emph{method} is read at the step ends, by
-integrating to a single write time.
+\paragraph{Dense output: the extrapolated polynomial.}  The states written
+between two accepted steps (section~\ref{sec:batch-dense-output}) come from
+a polynomial built from the sub-steps of the step itself, after Hairer and
+Wanner (1996, IV.9) and Hairer and Ostermann (Numer.\ Math.\ 58, 1990).
+Column $j$ of the tableau has the sub-step values $\Yv_{j,l}$ at
+$t_0 + l H/n_j$ ($\Yv_{j,0} = \Yv_0$, $\Yv_{j,n_j} = \mathbf T_{j,1}$).  A finite
+difference of order $\mu$ of those values,
+\begin{equation}
+    n_j^{\mu}\,\Delta^{\mu}\Yv_{j,l_0} \;=\; H^{\mu}\,\Yv^{(\mu)}(t_0 + l_0 h_j)
+        + \mathcal O(H^{\mu+1}),
+    \label{eq:seulex-dense-diff}
+\end{equation}
+has an expansion in powers of $h_j = H/n_j$, the same expansion the
+extrapolation of the solution uses, so the Aitken--Neville recursion of the
+tableau applies to it unchanged (Eq.~\ref{eq:seulex-extrap}) over the
+columns that have enough sub-steps, and gives the scaled derivative
+$\mathbf D_\mu \approx H^\mu \Yv^{(\mu)}$ at an end of the step.  The
+\emph{right} end is always used, by backward differences of the last
+sub-steps ($\mathbf D^R_\mu$, $\mu\le m_R = \min(4, k_c-1)$), which is what
+Hairer's \code{seulex.f} does (its \code{CONTEX}: $\Yv_0$, $\Yv_1$ and the
+derivatives at the right end from the last sub-step increments, extrapolated
+over the columns; there up to order $k_c-1$, here capped at 4).  The
+\emph{left} end, by forward differences taken from the second sub-step
+($l_0 = 1$, $\mathbf D^L_\mu$), is added only for the orders $\mu\le m_L$
+that at least \emph{two} columns support ($n_j \ge \mu+1$ for $j = k_c-1$ and
+$k_c$): from one column the difference is a raw one-sided Euler quotient that
+is never extrapolated, and on a non-stiff step it made the interpolant 10 to
+90 times worse than the cubic Hermite it replaced (the review of
+2026-11-22; a first version did exactly that).  The first sub-step is
+skipped because the accepted state sits off the slow manifold by the step's
+tolerance and a fast component decays from that offset in it: a difference of
+order $\mu$ taken there multiplies the offset by $n_j^{\mu}$ (measured on
+nox03 with the left end alone, $\mu\le10$: $1.5\times10^{-1}$ against the
+step ends' $10^{-4}$).  The polynomial, of degree $m_L + m_R + 1$ in
+$s = (t - t_0)/H$,
+\begin{equation}
+    \mathbf p(s) \;=\; \Yv_0 + \sum_{\mu=1}^{m_L}\frac{\mathbf D^L_\mu}{\mu!}\,s^{\mu}
+      \;+\; s^{m_L+1}\sum_{k=0}^{m_R}\mathbf q_k\,(s-1)^k ,
+    \label{eq:seulex-dense-poly}
+\end{equation}
+has $\mathbf p(0) = \Yv_0$, $\mathbf p^{(\mu)}(0) = \mathbf D^L_\mu/H^\mu$ for
+$\mu\le m_L$, and the $\mathbf q_k$ are fixed by $\mathbf p(1) = \Yv_1 =
+\mathbf T_{k_c,k_c}$ and $\mathbf p^{(\mu)}(1) = \mathbf D^R_\mu/H^\mu$,
+$\mu\le m_R$ (with $m_L = 0$ it is the polynomial through $\Yv_0$ and the
+right-end data alone).  Nothing is multiplied by $\lambda h$, every
+coefficient is a combination of sub-step values of the same iteration, and
+so a linear invariant of the system is carried by $\mathbf p$.  The cap 4 is
+a measured compromise, because the stiff Euler lag of the sub-steps is
+multiplied by $n_j^\mu$ in higher differences (\code{Seulex.cpp},
+\code{SeulexDense}).  \textbf{The polynomial is not error-controlled:} the
+step control certifies the step end only, and the evidence for the rows
+between steps is in-sample, one stiff network (nox03, below) and one
+non-stiff case (\code{batch06\_adaptive\_runaway} under seulex at
+$\mathrm{rtol}=10^{-4}$: $1.1\times10^{-5}$ of a column maximum from a tight
+reference, held by arm (i) of \code{check\_batch\_dense\_output}).  On a
+non-stiff problem with a loose tolerance (Prothero--Robinson, $\lambda=-1$,
+$H=0.5$) the interpolation error is of the order of the tolerance itself and
+above the cubic Hermite's for $\mathrm{rtol}\ge10^{-3}$ ($1.6\times10^{-2}$
+against $4\times10^{-3}$ at $10^{-2}$), below it for $\mathrm{rtol}\le10^{-4}$.
+
+\paragraph{Output grid and step ends.}  The accuracy of the \emph{method} is read
+at the step ends, by integrating to a single write time; the rows between
+two steps carry the error of the polynomial (\ref{eq:seulex-dense-poly}).
+Measured on \code{nox03\_millerbowman\_large}, $\mathrm{atol}=10^{-15}$, 1~ms
+grid, largest deviation over the grid and the species columns, scaled by the
+column maximum, against single-write runs of Rodas4 at $\mathrm{rtol}=10^{-12}$
+(the step ends themselves: $9\times10^{-5}$ at $\mathrm{rtol}=10^{-8}$, the floor
+set by $\mathrm{atol}$ on the trace columns): with the cubic Hermite of the
+driver, $4\times10^{-2}$ ($10^{-8}$) and $9\times10^{-2}$ ($10^{-10}$), and
+the dense and sparse linear solvers, which take the identical steps and
+agree at the step ends to $10^{-8}$, differed by $1.8\times10^{-2}$ on the
+grid; with the polynomial, $2.4\times10^{-4}$ and $2.2\times10^{-4}$ (dense
+solver) and $6.8\times10^{-5}$ and $4.1\times10^{-5}$ (sparse), the
+dense/sparse gap $2.4\times10^{-4}$.  The error of the interpolant is
+\emph{not} fed back into the step size (Hairer and Wanner's control of it): at
+a tolerance of 10 on the scaled difference between the degree-$2m+1$ and
+degree-$2m-1$ polynomials at $s=\tfrac12$ it took 695 accepted steps for
+nox03 against 95, the cost of Rodas4, and moved every step end.
 
 \paragraph{What was measured.}  \code{nox03\_millerbowman\_large} (235
 reactions, 52 packed rows, analytic sparse Jacobian), against the Cantera 3.2

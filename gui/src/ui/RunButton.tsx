@@ -41,6 +41,7 @@ License
   running / current / stale / failed) are case/runControl.ts's, the ONE home.
 \*---------------------------------------------------------------------------*/
 
+import { useState } from "react";
 import { Button, Tooltip } from "@mantine/core";
 import { IconPlayerPlay, IconPlayerStop } from "@tabler/icons-react";
 
@@ -73,13 +74,23 @@ export function RunButton({ disabled, disabledReason }: { disabled: boolean; dis
     binary,
   });
   const running = rc.state === "running";
+  //  The tooltip stayed over the run header's PRODUCTS line after a click
+  //  (C266 item 18): a click dismisses it until the pointer leaves or the
+  //  button loses focus.
+  const [dismissed, setDismissed] = useState(false);
   return (
-    <Tooltip withArrow multiline w={300} label={disabled && disabledReason ? disabledReason : rc.title}>
+    <Tooltip withArrow multiline w={300} disabled={dismissed}
+      label={disabled && disabledReason ? disabledReason : rc.title}>
       <Button size="compact-sm" color={rc.color} variant={rc.variant} data-run-button={subject}
         disabled={disabled && !running}
         leftSection={running ? <IconPlayerStop size={14} /> : <IconPlayerPlay size={14} />}
         aria-keyshortcuts="Control+Enter"
-        onClick={() => window.dispatchEvent(new CustomEvent(running ? "choupo:stop" : "choupo:run"))}
+        onMouseLeave={() => setDismissed(false)}
+        onBlur={() => setDismissed(false)}
+        onClick={() => {
+          setDismissed(true);
+          window.dispatchEvent(new CustomEvent(running ? "choupo:stop" : "choupo:run"));
+        }}
         styles={{ root: { flexShrink: 0 } }}>
         {rc.label}
       </Button>

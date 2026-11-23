@@ -99,6 +99,16 @@ function declaredCell(r: VarRow): string {
   return r.declared ?? "—";
 }
 
+/** The unit a variable row carries, when the case or the engine published one:
+ *  the declared `unit` of a computed entry, else the unit written after the
+ *  number of an authored scalar ("20 m2").  Nothing is guessed: a row with
+ *  neither has no unit column text (C266 item 8). */
+export function variableUnit(r: Pick<VarRow, "unit" | "declared">): string | undefined {
+  if (r.unit) return r.unit;
+  const m = /^\s*[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?\s+([^\s;]+)\s*$/.exec(r.declared ?? "");
+  return m ? m[1] : undefined;
+}
+
 export function VariablesWorkspace() {
   const caseFiles = useStore((s) => s.caseFiles);
   const runResult = useStore((s) => s.runResult);
@@ -117,6 +127,9 @@ export function VariablesWorkspace() {
   }
 
   const anyComputed = rows.some((r) => r.role === "computed");
+  //  a unit column only when the case published a unit for some row: a column
+  //  of blanks says nothing (C266 item 8)
+  const anyUnit = rows.some((r) => variableUnit(r) !== undefined);
 
   // Targets not paired to any knob's unit (coupled specs) -- shown separately
   // so nothing is hidden.
@@ -143,6 +156,7 @@ export function VariablesWorkspace() {
               <Table.Th><Text size="xs" c="dimmed" tt="uppercase">role</Text></Table.Th>
               <Table.Th><Text size="xs" c="dimmed" tt="uppercase">declared / guess / expression</Text></Table.Th>
               <Table.Th><Text size="xs" c="dimmed" tt="uppercase">solved (last run)</Text></Table.Th>
+              {anyUnit && <Table.Th><Text size="xs" c="dimmed" tt="uppercase">unit</Text></Table.Th>}
               <Table.Th><Text size="xs" c="dimmed" tt="uppercase">used in</Text></Table.Th>
             </Table.Tr>
           </Table.Thead>
@@ -168,18 +182,24 @@ export function VariablesWorkspace() {
                   <Table.Td>
                     <Text ff="monospace" size="xs" c="var(--mantine-color-text)">
                       {declaredCell(r)}
-                      {r.unit ? ` ${r.unit}` : ""}
                     </Text>
                   </Table.Td>
                   <Table.Td>
                     {r.solved !== undefined ? (
                       <Text ff="monospace" fw={600} c="teal.4">
-                        {formatSig(r.solved)}{r.unit ? ` ${r.unit}` : ""}
+                        {formatSig(r.solved)}
                       </Text>
                     ) : (
                       <Text ff="monospace" c="dimmed">—</Text>
                     )}
                   </Table.Td>
+                  {anyUnit && (
+                    <Table.Td>
+                      <Text ff="monospace" size="xs" c="dimmed" data-variable-unit={r.name}>
+                        {variableUnit(r) ?? ""}
+                      </Text>
+                    </Table.Td>
+                  )}
                   <Table.Td>
                     {r.usedIn.length === 0 ? (
                       <Text size="xs" c="dimmed">{r.role === "computed" ? "(report only)" : "(unused)"}</Text>
@@ -197,7 +217,7 @@ export function VariablesWorkspace() {
                 {r.targets && r.targets.length > 0 && (
                   <Table.Tr>
                     <Table.Td />
-                    <Table.Td colSpan={4} pt={0}>
+                    <Table.Td colSpan={anyUnit ? 5 : 4} pt={0}>
                       <Stack gap={2}>
                         {r.targets.map((t) => <TargetLine key={t.path} t={t} />)}
                       </Stack>

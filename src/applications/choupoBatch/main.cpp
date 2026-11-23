@@ -95,6 +95,8 @@ Description
 #include "io/InternalStateIO.H"
 #include "io/SolutionWriter.H"
 #include "solver/ODE/AdaptiveTimeStep.H"
+#include "solver/ParallelFor.H"
+#include "core/DeferredNotes.H"
 #include "solver/SparseLU.H"
 #include "result/ComponentIdentity.H"
 #include "result/ResultEmitter.H"
@@ -965,6 +967,20 @@ if (flowsheetDict->found("cycle"))
                     + ";` and `integrator " + d + ";`.  Declare the same one on both.");
             declared = d;
         }
+        {
+            std::size_t nHermite = 0, nOde = 0;
+            for (const auto& u : units)
+                if (u->hasOdeForm())
+                {
+                    ++nOde;
+                    if (u->odeDenseHermiteDeclared()) ++nHermite;
+                }
+            if (nHermite > 0 && nHermite < nOde)
+                throw std::runtime_error("the vessels of this run disagree on `solver { denseOutput ...; }`:"
+                    " " + std::to_string(nHermite) + " of " + std::to_string(nOde) + " declare `hermite`.  The"
+                    " write grid has one interpolant per run; declare the same value on every vessel.");
+            adaptSet.denseHermite = nHermite > 0;
+        }
         if (!declared.empty())
         {
             adaptSet.integrator = declared;
@@ -1593,6 +1609,9 @@ if (flowsheetDict->found("cycle"))
                              " error-controlled\n";
         }
         std::size_t jacAnnounced = 0;    // analytic-Jacobian audits printed
+        std::vector<std::size_t> vesselAuditAnnounced;   // per vessel (independent run): audits printed
+        bool vesselAuditIntro = false;                   // the one-time audit paragraph
+        bool vesselThreadsAnnounced = false;
         bool jacMixedAnnounced = false;   // the mixed-sweep warning, once
 
         // Glass-box step history: print the adaptive step as it grows/shrinks.
@@ -1627,16 +1646,81 @@ if (flowsheetDict->found("cycle"))
                        && units[i]->hasOdeForm() && dischargeToIdx[i] < 0;
         if (freeStep && !deltaTmaxDeclared) adaptSet.deltaTmax = 0.0;   // no cap
         solver::AdaptiveTimeStepper stepper(adaptSet);
+        stepper.wantDense(freeStep && !adaptSet.denseHermite);
+
+        //  INDEPENDENT VESSELS (DEV.md 4c C473 g, Theory Guide
+        //  sec:batch-vessels-separate).  Two or more ODE vessels of a run that
+        //  share nothing -- no material route (dischargeTo), no recipe event,
+        //  no condition or cycle that reads them together -- are integrated
+        //  EACH ON ITS OWN STEP, the sweep that used to pack them into one
+        //  vector and give them ONE step (the fastest vessel's) is kept for a
+        //  coupled run and as `solver { vessels coupled; }`.  The test is the
+        //  free-stepping one above (every unit a closed batchReactor, no
+        //  discharge, no condition, no cycle) plus: no recipe event at all.
+        std::size_t nOdeVessels = 0;
+        bool vesselsCoupledDeclared = false;
+        for (const auto& u : units)
+            if (u->hasOdeForm())
+            {
+                ++nOdeVessels;
+                vesselsCoupledDeclared = vesselsCoupledDeclared || u->odeVesselsCoupledDeclared();
+            }
+        const bool perVessel = freeStep && nOdeVessels >= 2 && events.empty()
+                               && !vesselsCoupledDeclared;
+        std::size_t coupledInterp = 0, coupledStraight = 0;   // rows (per vessel) of the coupled sweep, and the straight-line ones
+        std::vector<std::unique_ptr<solver::AdaptiveTimeStepper>> vesselSteppers;
+        if (perVessel)
+            for (std::size_t v = 0; v < nOdeVessels; ++v)       // built here, in this thread
+            {
+                vesselSteppers.push_back(std::make_unique<solver::AdaptiveTimeStepper>(adaptSet));
+                vesselSteppers.back()->wantDense(!adaptSet.denseHermite);
+            }
         if (verbosity >= 1)
             std::cout << (freeStep
                 ? "  [adaptive] free stepping: the step is set by the error"
                   " (deltaTmax "
                   + std::string(deltaTmaxDeclared ? "declared" : "not capped")
                   + "); trajectory.csv rows and <t>/ states between steps come"
-                    " from the step's cubic Hermite interpolant (dense output)\n"
+                    + (adaptSet.denseHermite
+                        ? " from the step's cubic Hermite interpolant (`solver { denseOutput hermite; }`)\n"
+                        : " from the integrator's own dense output (stage polynomial of Rodas4 /"
+                          " Rosenbrock23, extrapolated polynomial of seulex; RK4 and EulerSI keep"
+                          " the cubic Hermite)\n")
                 : "  [adaptive] the write grid is the step boundary (this run"
                   " has a vessel, an event or a cycle that reads the clock at"
                   " each write point); deltaTmax defaults to writeInterval\n");
+        bool vesselsKeyDeclared = false;
+        for (const auto& u : units)
+            if (u->hasOdeForm()) vesselsKeyDeclared = vesselsKeyDeclared || u->odeVesselsKeyDeclared();
+        //  A declared `vessels` key that nothing reads is said, never silent.
+        if (verbosity >= 1 && vesselsKeyDeclared && !(freeStep && nOdeVessels >= 2))
+            std::cout << "  [adaptive] `solver { vessels ...; }` is declared and has NO EFFECT here: "
+                      << (nOdeVessels < 2
+                            ? "the run has one ODE vessel"
+                            : "the vessels are not all closed batchReactors without a dischargeTo, a"
+                              " condition or a cycle, so they are integrated as the sweep they always"
+                              " were")
+                      << "\n";
+        if (verbosity >= 1 && !freeStep && adaptSet.denseHermite)
+            std::cout << "  [adaptive] `solver { denseOutput hermite; }` has no effect here: the write grid is"
+                         " the step boundary, so no row is interpolated\n";
+        if (verbosity >= 1 && freeStep && nOdeVessels >= 2)
+        {
+            if (perVessel)
+                std::cout << "  [adaptive] " << nOdeVessels << " independent vessels integrated"
+                             " separately (each its own step)\n";
+            else
+                std::cout << "  [adaptive] " << nOdeVessels << " vessels integrated TOGETHER"
+                             " (one step for all): "
+                          << (vesselsCoupledDeclared
+                                ? "a vessel declares `solver { vessels coupled; }`"
+                                : "the recipe has " + std::to_string(events.size())
+                                  + " event(s), which act on the vessels at times they share"
+                                  + (vesselsKeyDeclared
+                                        ? " (the declared `vessels independent;` has no effect)"
+                                        : std::string()))
+                          << "\n";
+        }
 
         while (t < endTime - 1.0e-12 && !cssStopped)
         {
@@ -1707,7 +1791,7 @@ if (flowsheetDict->found("cycle"))
                 for (const auto& u : odeUnits) nJac += u.jacobian ? 1 : 0;
                 for (const auto& unit : units)
                     if (unit->hasOdeForm() && unit->odeJacobianDeclared()) ++nDeclared;
-                if (nDeclared > 0 && nJac < odeUnits.size() && !jacMixedAnnounced)
+                if (!perVessel && nDeclared > 0 && nJac < odeUnits.size() && !jacMixedAnnounced)
                 {
                     jacMixedAnnounced = true;
                     std::cerr << "  [jacobian] WARNING: " << nDeclared << " of the "
@@ -1722,7 +1806,262 @@ if (flowsheetDict->found("cycle"))
             //  up short of tNext (C178): the clock, the routing, the recipe
             //  events and the write below are never reached for a state that
             //  stopped short.
-            if (!odeUnits.empty())
+            if (perVessel && !odeUnits.empty())
+            {
+                //  Each vessel on its own AdaptiveTimeStepper: its own step
+                //  history, Jacobian and LU, its error control alone.  The
+                //  vessels are spread over `solver { threads N; }` (default
+                //  allowed CPUs - 2, CHOUPO_THREADS caps it); a vessel reads
+                //  and writes only itself, so the bits are the same at any
+                //  thread count.  The write points inside each vessel's steps
+                //  are produced by the same cubic Hermite dense output as the
+                //  coupled sweep and RECORDED; the writes, the clock notes and
+                //  the echo are replayed AFTER the join, in vessel order, so
+                //  nothing the driver owns is touched by two threads.
+                const std::size_t nV = odeUnits.size();
+                struct VesselRun
+                {
+                    std::vector<scalar>  tw;      // write points strictly inside the interval
+                    std::vector<sVector> y;       // the vessel's state at each
+                    std::vector<std::pair<scalar, scalar>> steps;   // (t, h) per accepted step
+                    sVector yEnd;                 // its state at tNext
+                    std::exception_ptr error;     // why it stopped short, if it did
+                    scalar tReached = 0.0;        // the end of its last accepted step
+                    deferred::Capture::Buffer notes;   // one-time notices, flushed in vessel order
+                };
+                std::vector<VesselRun> runs(nV);
+                //  Serial warm-up: one right-hand side and one Jacobian of every
+                //  vessel, so every lazily resolved piece of the thermodynamics
+                //  and every first-use announcement happens here, in vessel
+                //  order, and the threads below only READ shared data.
+                for (auto& ou : odeUnits)
+                {
+                    const sVector y0 = ou.pack();
+                    const sVector f0 = ou.derivative(y0);
+                    sVector typ(y0.size());
+                    for (std::size_t i = 0; i < y0.size(); ++i)
+                        typ[i] = std::max(std::abs(y0[i]), 1.0e-12);
+                    if (ou.sparseJacobian && ou.pattern)
+                    {
+                        solver::SparseJacobian Jw;
+                        ou.sparseJacobian(y0, f0, typ, Jw);
+                    }
+                    else if (ou.jacobian)
+                        (void) ou.jacobian(y0, f0, typ);
+                }
+                std::size_t declaredThreads = 0;
+                std::set<std::size_t> threadValues;
+                for (const auto& u : units)
+                    if (u->hasOdeForm())
+                    {
+                        declaredThreads = std::max(declaredThreads, u->odeThreadsDeclared());
+                        threadValues.insert(u->odeThreadsDeclared());
+                    }
+                if (threadValues.size() > 1 && verbosity >= 1 && !vesselThreadsAnnounced)
+                {
+                    vesselThreadsAnnounced = true;
+                    std::cout << "  [adaptive] the vessels declare different `solver { threads N; }` (";
+                    bool firstV = true;
+                    for (auto v : threadValues)
+                    { std::cout << (firstV ? "" : ", ") << (v ? std::to_string(v) : std::string("none")); firstV = false; }
+                    std::cout << "): the largest, " << declaredThreads << ", is used for the whole run\n";
+                }
+                const std::size_t nThreads = solver::workerThreads(
+                    declaredThreads, nV, "the independent vessels of choupoBatch");
+                if (verbosity >= 3 && nThreads > 1)
+                    std::cerr << "  [adaptive] the independent vessels run on " << nThreads
+                              << " threads (`solver { threads N; }`, default allowed CPUs - 2;"
+                                 " the results are the same bits at any count)\n";
+                const scalar nextWrite0 = nextWrite;
+                const auto tVesselsStart = std::chrono::steady_clock::now();
+                //  A vessel that fails keeps its error and the time it reached
+                //  (it does not throw out of its thread); the first failure IN
+                //  TIME is rethrown after the replay.  On ONE thread the
+                //  vessels still to run are integrated only to that time (not
+                //  to the end): they could not be written past it anyway.
+                scalar tFirstFail = std::numeric_limits<scalar>::infinity();
+                struct VesselCancelled {};
+                solver::parallelFor(nV, nThreads, [&](std::size_t u)
+                {
+                    const std::vector<solver::OdeUnit> one{odeUnits[u]};
+                    const solver::OdeUnit& ou = one[0];
+                    VesselRun& R = runs[u];
+                    deferred::Capture captureNotes(R.notes);
+                    const scalar tStop = tNext;
+                    R.tReached = t;
+                    if (nThreads == 1 && tFirstFail <= t) return;
+                    sVector yPrev = ou.pack(), fPrev;
+                    bool fPrevValid = false;
+                    scalar nw = nextWrite0;
+                    std::size_t nInterp = 0, nStraight = 0;   // interpolated rows, and those that took the straight line
+                    const solver::AdaptiveTimeStepper::StepCallback onStepV =
+                        [&R, wantHist = (verbosity >= 3)](scalar tEnd, scalar hTaken)
+                        { R.tReached = tEnd; if (wantHist) R.steps.emplace_back(tEnd, hTaken); };
+                    const solver::AdaptiveTimeStepper::StepCallback denseV =
+                        [&](scalar tEnd, scalar hTaken)
+                    {
+                        const scalar tol   = 1.0e-9 * writeInterval;
+                        const scalar tPrev = tEnd - hTaken;
+                        const sVector yNew = ou.pack();       // the accepted state
+                        sVector fNew;
+                        bool haveF = false;
+                        while (nw < tStop - tol && nw <= tEnd + tol)
+                        {
+                            const scalar tw = nw;
+                            const bool exact = tw >= tEnd - tol;
+                            const scalar s  = exact ? 1.0 : (tw - tPrev) / hTaken;
+                            //  The integrator's OWN dense output of this step
+                            //  (C473 h) where it has one; else the cubic Hermite.
+                            std::vector<sVector> own;
+                            const bool haveOwn = !exact && vesselSteppers[u]->denseAt(s, own);
+                            if (!exact && !haveOwn && !haveF)
+                            {
+                                if (!fPrevValid) fPrev = ou.derivative(yPrev);
+                                fNew = ou.derivative(yNew);
+                                haveF = true;
+                            }
+                            const scalar s2 = s * s, s3 = s2 * s;
+                            const scalar h00 = 2.0 * s3 - 3.0 * s2 + 1.0;
+                            const scalar h10 = s3 - 2.0 * s2 + s;
+                            const scalar h01 = -2.0 * s3 + 3.0 * s2;
+                            const scalar h11 = s3 - s2;
+                            sVector yw = yNew;
+                            if (!exact)
+                            {
+                                //  As the coupled sweep: the cubic Hermite of the
+                                //  whole vector, the straight line between the
+                                //  ends if a species row would come out negative.
+                                bool negative = false;
+                                for (std::size_t i = 0; i < yw.size(); ++i)
+                                {
+                                    yw[i] = haveOwn ? own[0][i]
+                                          : h00 * yPrev[i] + h10 * hTaken * fPrev[i]
+                                          + h01 * yNew[i]  + h11 * hTaken * fNew[i];
+                                    if (i < ou.nPositive && yw[i] < 0.0) negative = true;
+                                }
+                                ++nInterp;
+                                if (negative)
+                                {
+                                    ++nStraight;
+                                    for (std::size_t i = 0; i < yw.size(); ++i)
+                                        yw[i] = (1.0 - s) * yPrev[i] + s * yNew[i];
+                                }
+                            }
+                            R.tw.push_back(tw);
+                            R.y.push_back(std::move(yw));
+                            nw += writeInterval;
+                        }
+                        yPrev = yNew;
+                        if (haveF) { fPrev = fNew; fPrevValid = true; }
+                        else fPrevValid = false;
+                        //  One thread: once an earlier vessel has failed at tFirstFail,
+                        //  nothing past it can be written, so the vessel stops here.
+                        if (nThreads == 1 && tEnd >= tFirstFail) throw VesselCancelled{};
+                    };
+                    try { vesselSteppers[u]->advance(one, t, tStop, onStepV, denseV); }
+                    catch (const VesselCancelled&) {}
+                    catch (const std::exception&)
+                    {
+                        R.error = std::current_exception();
+                        if (nThreads == 1) tFirstFail = std::min(tFirstFail, R.tReached);
+                    }
+                    //  Rows whose interpolant would have driven a species negative took
+                    //  the straight line between the step's ends (positive, atoms kept,
+                    //  but only first-order): counted, and announced once per vessel
+                    //  through the deferred notes (flushed in vessel order).
+                    if (nStraight > 0)
+                        deferred::note(&R, [name = ou.name, nStraight, nInterp]
+                        {
+                            std::cerr << "  [dense] vessel '" << name << "': " << nStraight << " of "
+                                      << nInterp << " interpolated rows took the straight line between"
+                                         " the step's ends (the dense output would have driven a species"
+                                         " row negative)\n";
+                        });
+                    R.yEnd = ou.pack();
+                });
+                //  One-time notices the threads raised, in vessel order.
+                for (std::size_t u = 0; u < nV; ++u) deferred::Capture::flush(runs[u].notes);
+
+                if (std::getenv("CHOUPO_ODE_STATS"))      // the WALL of the vessels' integration (a diagnostic)
+                    std::cout << "[ode-stats] vessels=" << nV << " threads=" << nThreads
+                              << " | wall[ms]: vesselsIntegrate "
+                              << std::chrono::duration<double, std::milli>(
+                                     std::chrono::steady_clock::now() - tVesselsStart).count() << "\n";
+                //  The glass-box step history, one vessel after the other.
+                if (verbosity >= 3)
+                    for (std::size_t u = 0; u < nV; ++u)
+                    {
+                        std::cout << "    [adaptive step history of '" << odeUnits[u].name
+                                  << "']   t [s]        h [s]\n";
+                        for (const auto& [te, hs] : runs[u].steps)
+                            std::cout << "                            "
+                                      << std::setw(11) << std::scientific << std::setprecision(4) << te
+                                      << "  " << std::setw(11) << hs << "\n";
+                    }
+                //  The analytic-Jacobian audits, one vessel after the other
+                //  (the very first at verbosity >= 1, the rest at >= 3).
+                vesselAuditAnnounced.resize(nV, 0);
+                for (std::size_t u = 0; u < nV; ++u)
+                {
+                    const auto& aj = vesselSteppers[u]->analyticAudit();
+                    for (std::size_t k = vesselAuditAnnounced[u]; k < aj.audits.size(); ++k)
+                    {
+                        const auto& a = aj.audits[k];
+                        const bool first = !vesselAuditIntro;
+                        vesselAuditAnnounced[u] = k + 1;
+                        if (verbosity >= (first ? 1 : 3)) vesselAuditIntro = true;
+                        if (verbosity < (first ? 1 : 3)) continue;
+                        std::ostringstream os;
+                        os << "  [jacobian] vessel '" << odeUnits[u].name << "': analytic Jacobian #"
+                           << a.jacobian << " AUDITED at t = " << std::scientific
+                           << std::setprecision(4) << a.t << " s: worst column d("
+                           << odeUnits[u].rowLabel(a.row) << ")/d(" << odeUnits[u].rowLabel(a.col)
+                           << ") " << std::setprecision(3) << a.worst
+                           << " of the column's scale from the finite difference (tolerance "
+                           << aj.tolerance << ")\n";
+                        if (first)
+                            os << "             each vessel's Jacobian is ANALYTIC, audited against"
+                                  " the dense finite difference at analytic Jacobians 1, 2, 4, 8,"
+                                  " ...; a column above the tolerance refuses the run\n";
+                        if (k == 0 && aj.sparse && aj.lu)
+                            os << "             W = I - h d J is factored SPARSE on the vessel pattern: "
+                               << aj.pattern->n << " rows, " << aj.lu->nnzPattern() << " entries, "
+                               << aj.lu->nnzFactor() << " in L+U after minimum-degree ordering\n";
+                        std::cout << os.str();
+                    }
+                }
+
+                //  The replay: each write point, in order, with every vessel
+                //  committed to ITS state at that time.
+                std::size_t nRows = runs[0].tw.size();
+                for (std::size_t u = 1; u < nV; ++u) nRows = std::min(nRows, runs[u].tw.size());
+                for (std::size_t u = 0; u < nV; ++u)
+                    for (std::size_t k = 0; k < nRows; ++k)
+                        if (runs[u].tw[k] != runs[0].tw[k])
+                            throw std::logic_error("choupoBatch: vessels '" + odeUnits[0].name + "' and '"
+                                + odeUnits[u].name + "' recorded different write points; the independent"
+                                " integration must put every vessel on the same output grid (engine defect)");
+                //  A vessel that failed is written up to the last time EVERY
+                //  vessel had passed (what the coupled sweep wrote before its
+                //  failure), then its error, the FIRST in time, is thrown.
+                for (std::size_t k = 0; k < nRows; ++k)
+                {
+                    const scalar tw = runs[0].tw[k];
+                    for (std::size_t u = 0; u < nV; ++u) odeUnits[u].commit(runs[u].y[k]);
+                    routeDischarges(tw);
+                    noteAdvanced(tw);
+                    writeSnapshot(tw);
+                    if (verbosity >= 3) echoLine(tw);
+                    nextWrite += writeInterval;
+                }
+                std::size_t failIdx = nV;
+                for (std::size_t u = 0; u < nV; ++u)
+                    if (runs[u].error && (failIdx == nV || runs[u].tReached < runs[failIdx].tReached))
+                        failIdx = u;
+                if (failIdx < nV) std::rethrow_exception(runs[failIdx].error);
+                for (std::size_t u = 0; u < nV; ++u) odeUnits[u].commit(runs[u].yEnd);
+            }
+            else if (!odeUnits.empty())
             {
                 //  Dense output (free stepping only): called by advance() with
                 //  the units already committed to the ACCEPTED state at tEnd.
@@ -1748,7 +2087,12 @@ if (flowsheetDict->found("cycle"))
                     {
                         const scalar tw = nextWrite;
                         const bool exact = tw >= tEnd - tol;
-                        if (!exact && fNew.empty())
+                        const scalar s  = exact ? 1.0 : (tw - tPrev) / hTaken;
+                        //  The integrator's OWN dense output of this step (C473
+                        //  h) where it has one; else the cubic Hermite.
+                        std::vector<sVector> own;
+                        const bool haveOwn = !exact && stepper.denseAt(s, own);
+                        if (!exact && !haveOwn && fNew.empty())
                         {
                             if (!fPrevValid)
                             {
@@ -1759,7 +2103,6 @@ if (flowsheetDict->found("cycle"))
                             for (std::size_t u = 0; u < odeUnits.size(); ++u)
                                 fNew.push_back(odeUnits[u].derivative(yNew[u]));
                         }
-                        const scalar s  = exact ? 1.0 : (tw - tPrev) / hTaken;
                         const scalar s2 = s * s, s3 = s2 * s;
                         const scalar h00 = 2.0 * s3 - 3.0 * s2 + 1.0;
                         const scalar h10 = s3 - 2.0 * s2 + s;
@@ -1782,14 +2125,19 @@ if (flowsheetDict->found("cycle"))
                                 bool negative = false;
                                 for (std::size_t i = 0; i < yw.size(); ++i)
                                 {
-                                    yw[i] = h00 * yPrev[u][i] + h10 * hTaken * fPrev[u][i]
+                                    yw[i] = haveOwn ? own[u][i]
+                                          : h00 * yPrev[u][i] + h10 * hTaken * fPrev[u][i]
                                           + h01 * yNew[u][i]  + h11 * hTaken * fNew[u][i];
                                     if (i < odeUnits[u].nPositive && yw[i] < 0.0)
                                         negative = true;
                                 }
+                                ++coupledInterp;
                                 if (negative)
+                                {
+                                    ++coupledStraight;
                                     for (std::size_t i = 0; i < yw.size(); ++i)
                                         yw[i] = (1.0 - s) * yPrev[u][i] + s * yNew[u][i];
+                                }
                             }
                             odeUnits[u].commit(yw);
                         }
@@ -1859,6 +2207,10 @@ if (flowsheetDict->found("cycle"))
                 nextWrite += writeInterval;
             }
         }
+        if (coupledStraight > 0)
+            std::cerr << "  [dense] " << coupledStraight << " of " << coupledInterp
+                      << " interpolated vessel rows took the straight line between the step's ends"
+                         " (the dense output would have driven a species row negative)\n";
     }
 
     csv.close();

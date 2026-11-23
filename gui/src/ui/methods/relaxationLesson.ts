@@ -208,7 +208,7 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
       + "simulators (Choupo's own default is Newton).",
     derivation: [
       { step: "Wegstein's update, in the engine's own symbols "
-          + "(src/solver/Wegstein.cpp:49-92).",
+          + "(src/solver/Wegstein.cpp:51-96).",
         eq: String.raw`x_{k+1} = q\,x_{k} + (1 - q)\,G(x_{k})`},
       { step: "Match it to step 2: the weight on G is w, so the weight on "
           + "the old guess, q, is 1 - w.",
@@ -251,11 +251,11 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
       + "fall enough (Armijo's rule), so the damping adapts to each "
       + "iterate. Choupo's Newton uses it "
       + "(src/solver/NewtonND.cpp:619, enabled for the tear loop at "
-      + "src/unitOperations/flowsheet/Flowsheet.cpp:3871). What a user "
+      + "src/unitOperations/flowsheet/Flowsheet.cpp:3913). What a user "
       + "may legitimately tune is a step cap: no unknown moves more than a "
       + "stated amount in one step, which limits damage without slowing "
       + "the good steps -- `recycleMaxStep` for the tear "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3873-3891).",
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3915-3933).",
     derivation: [
       { step: "Newton's step for the tear residual r(x) = G(x) - x, whose "
           + "slope is a - 1 on the toy.",
@@ -318,7 +318,7 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
       + "own tear mass imbalance per pass: the same fixed point, three "
       + "different paths to it.",
     note: "The relaxed update the engine applies is "
-      + "src/unitOperations/flowsheet/Flowsheet.cpp:3688-3693.",
+      + "src/unitOperations/flowsheet/Flowsheet.cpp:3694-3699.",
   },
 ];
 

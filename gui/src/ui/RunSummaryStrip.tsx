@@ -37,7 +37,7 @@
 import type { ReactNode } from "react";
 import { Anchor, Badge, Box, Group, Text, Tooltip } from "@mantine/core";
 
-import { runSummary, runSummarySentence, type RunSummary } from "../case/runSummary.js";
+import { engineFailureLine, runSummary, runSummarySentence, type RunSummary } from "../case/runSummary.js";
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import { useStore, type WorkspaceKey } from "../state/store.js";
 import {
@@ -116,7 +116,14 @@ export function RunSummaryStrip() {
         </Text>
       )}
       {phase === "error" && (
-        <Text size="xs" c="dimmed">Anything drawn is from an earlier run. <Door to="log">Log</Door></Text>
+        <>
+          {engineFailureLine(runResult?.log) && (
+            <Text size="xs" ff="monospace" data-run-failure="">
+              Engine: {engineFailureLine(runResult?.log)}
+            </Text>
+          )}
+          <Text size="xs" c="dimmed">Anything drawn is from an earlier run. <Door to="log">Log</Door></Text>
+        </>
       )}
       {s && phase === "done" && (
         <>

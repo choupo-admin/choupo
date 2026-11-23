@@ -185,6 +185,18 @@ public:
     // Rosenbrock23 | Rodas4; }`); "" when it declared none (or an explicit
     // method), which leaves the adaptive sweep on Rosenbrock23.
     virtual std::string odeStiffIntegratorDeclared() const { return ""; }
+    // `solver { threads N; }` (0 = absent): the threads the adaptive driver may
+    // spread INDEPENDENT vessels over (and a sensitivity block its integrations).
+    virtual std::size_t odeThreadsDeclared() const { return 0; }
+    // `solver { vessels coupled; }`: the case asks for the vessels of the run to
+    // be integrated TOGETHER, on one step, even when they are independent.
+    virtual bool odeVesselsCoupledDeclared() const { return false; }
+    // `solver { denseOutput hermite; }` (C473 h): write the rows between steps from the
+    // driver's cubic Hermite, not the integrator's own dense output.
+    virtual bool odeDenseHermiteDeclared() const { return false; }
+    // Was the `vessels` key declared at all (either word)?  A declared key that the run
+    // cannot honour is announced.
+    virtual bool odeVesselsKeyDeclared() const { return false; }
     virtual std::shared_ptr<const solver::SparsePattern> odeSparsePattern() const
     { return nullptr; }
     virtual void odeJacobianSparse(const sVector& /*y*/, const sVector& /*f0*/,

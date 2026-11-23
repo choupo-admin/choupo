@@ -21,6 +21,8 @@ path = [
   "gui/tsconfig.json",
   "gui/schemas/**",
   "gui/src/ui/methods/lessonReferences.json",
+  "gui/src/case/methaneAssemblyChain.json",
+  "gui/src/case/methaneAssemblyPoints.json",
   "gui/tests/fixtures/*.json",
   "gui/tests/fixtures/*.csv",
   ".claude/settings.json",

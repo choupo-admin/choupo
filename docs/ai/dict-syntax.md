@@ -1020,7 +1020,7 @@ instruction the author believes is in force):
 | `recycleSolver` | `Newton`, `Wegstein`, `DominantEigenvalue` or `directSubstitution` | `Newton` |
 | `recycleTol` | convergence of the tear loop | `1e-5` |
 | `recycleMaxIter` | maximum passes of the tear loop | `100` |
-| `recycleWegsteinQmin`, `recycleWegsteinQmax` | clamp of Wegstein's q | `-1`, `0` |
+| `recycleWegsteinQmin`, `recycleWegsteinQmax` | clamp of Wegstein's q; every cut is counted and printed (verbosity 2 per iteration, verbosity 1 "q clamped to [qMin, qMax] in N of M updates on tear X") | `-1`, `0` |
 | `recycleRelaxation w;` | fixed relaxation factor, `0 < w <= 1`; ONLY with `directSubstitution` | `1` |
 | `recycleMaxStep f;` | Newton on the tears: no tear unknown moves more than `f` x its scale per step | no cap |
 | `recycleDELambdaMax`, `recycleDEMinCosine`, `recycleDELambdaTol`, `recycleDEDamping` | the `DominantEigenvalue` aid | see theory guide |
