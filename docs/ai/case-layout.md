@@ -272,6 +272,22 @@ starts LOW (`deltaT0`) and grows/shrinks automatically to hold the tolerance;
 trajectory rows still land on the clean `writeInterval` grid.  Absent or
 `timeStepping fixed;` keeps the classic RK4 path byte-identical.
 
+**A log-spaced write grid** (`choupoBatch`, adaptive only; C477, Theory Guide
+`sec:batch-write-grid`).  An ignition runs from microseconds to milliseconds;
+`writeSpacing log;` replaces `writeInterval`:
+
+```
+writeSpacing    log;      // default uniform (a point every writeInterval)
+writeStart      1.0e-6;   // s, the first point after startTime  (required with log)
+writePerDecade  20;       // integer, default 10; the last point is endTime
+```
+
+Refused by name: an unknown spacing word, `writeStart`/`writePerDecade` on a
+uniform grid, `writeInterval` beside `log`, `writeStart` outside
+(startTime, endTime), a non-integer `writePerDecade`, a fixed-step run,
+`solutionControl { interval }`.  The states between steps come from the dense
+output.  Witness `nox03_millerbowman_large` (91 points, 1 us to 30 ms).
+
 ```
 timeStepping    adaptive;          // default: fixed
 timeSteppingControl

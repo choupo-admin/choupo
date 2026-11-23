@@ -9,7 +9,8 @@
 /*---------------------------------------------------------------------------*\
 /*---------------------------------------------------------------------------*\
   nox03_millerbowman_large / flowsheetDict -- one adiabatic constant-volume vessel with the
-  235-reaction Appendix A mechanism.
+  235-reaction Appendix A mechanism.  Two declared figures (system/postDict): when it ignites and what NO it leaves,
+  and where the NO comes from (routeIntegral below: five declared reaction classes, integrated on the dense output).
 \*---------------------------------------------------------------------------*/
 units
 (

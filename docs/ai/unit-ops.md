@@ -3469,6 +3469,34 @@ species with no elemental composition, a step that does not conserve the element
 Identity held by the gate: atoms in minus atoms out of species i = a_ei * net_i.
 Theory Guide `sec:path-flux`.
 
+**`tauIgnition` (KPI, C477, Theory Guide `sec:ignition-delay-dense`).**  An adiabatic
+`batchReactor` whose T rose by more than 200 K publishes `tauIgnition` [s], the time
+of the steepest rise of T, evaluated on the integrator's dense output (step ends and
+8 samples per accepted step), not on the write grid; the run prints it and says so.
+Published only on the free-stepping adaptive path (nox03); the fixed-step and
+write-grid-bounded runs keep the printed write-grid value and publish nothing.  A
+view marks it with `markers ( { label "ignition delay"; unitOp vessel; key tauIgnition; } )`.
+Not the `sens_tau0` of `sensitivity` (time T first exceeds T0 + rise).
+
+**`routeIntegral` (batchReactor, C477, Theory Guide `sec:route-integrals`).**  Where a
+product comes from, by DECLARED sets of reactions:
+```
+routeIntegral
+{
+    species NO;
+    routes { thermal ( A232 A233 A234 ); nitrousOxide ( A197 A202 A207 ); }
+}
+```
+Per route the net production of the species, `integral nu_s r_j V dt` summed over the
+listed reactions (net: what they destroy counts), by Simpson on the dense output; the
+reactions in no route are `other`.  Trajectory columns `<unit>.cum<species>_<route>`,
+`..._other`, `..._total` [kmol] (a view column `cumNO_thermal`), KPIs `cum..._final` and
+`cum<species>_closure_kmol` (routes against the inventory's own change).  A route is a
+reaction class, not a traced atom path.  Refused by name: an unknown key, a label that is
+no reaction of the vessel or has none of the species, a reaction in two routes, `other`/`total`
+as a route name, a fixed-step, write-grid-bounded or per-vessel (two or more vessels) run.
+Witness `nox03_millerbowman_large`.
+
 **Ignition-delay sensitivity (opt-in, brute force, `sensitivity { }`).**  Which
 reaction governs an ignition?  A block on an adiabatic `batchReactor` with a
 Rosenbrock23 / Rodas4 integrator:

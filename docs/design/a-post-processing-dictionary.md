@@ -362,6 +362,22 @@ stream name is resolved after the run (the flowsheet is only flattened then),
 so a typo costs the solve before it is refused, listing the names that exist;
 the grammar and the reference files are held before.
 
+### choupoBatch publishes its vessels (C477)
+
+`choupoBatch` reads the same two lists from `system/postDict` through the same
+`views::Reader` (parsed before the run, resolved after it; no `outerDict` exists
+for it) and carries the resolved block on the result.  The producers
+(`src/postProcessing/views/BatchPublications.cpp`) are the vessels, `unit:<name>`: its KPIs
+as diagnostics (`T_final` [K], `n_<c>_final` [kmol], `tauIgnition` [s], the route totals
+`cum<species>_<route>_final`) plus `x_<c>_final` ("-"), `ppm_<c>_final` ("ppm") and, when the
+package holds NO and NO2, `ppm_NOx_final`; and ONE table `trajectory`: `t` [s], `T` [K], `x_<c>`,
+`ppm_<c>`, `ppm_NOx` and the vessel's own extras (`cumNO_<route>` [kmol]) for the components that
+ever held material, one row per write point (the `t = 0` row is left out on a log write grid, which a
+log axis cannot draw).  A series over several vessels reads two diagnostics per vessel
+(`ops ( unit:T900 ... ); x T_final; y ppm_NOx_final;` -- nox02's figure); a series over time reads the table
+(`unitOp vessel; table trajectory; x t; y T;` -- nox03).  A case with no `views` builds nothing and
+writes nothing: nine batch cases, outputs and stdout, are byte-identical.
+
 ## 8. The witnesses
 
 **The NanoFiltran paper in one case.**
