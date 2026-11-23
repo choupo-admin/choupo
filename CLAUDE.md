@@ -1022,6 +1022,17 @@ Corollaries, each paid for:
        (the cloud's disk filled mid-`--gui` on 11-23; the laptop fell to 23 GB
        on 11-22).  Evidence is retaken when `main` moved (above), and a push
        is refused when `main` moved after the validation.
+    **A LESSON IS PUT WHERE THE MISTAKE HAPPENS, AND A REPEATED ONE BECOMES A
+    MACHINE (Vítor, 2026-11-23: "um registo de erros e formas de mitigar, para que
+    se aprenda com os erros e não se repitam?").**  The register already exists
+    (DEV.md 4c: each error, its cause, its rule); a second file would be one more
+    page read at session start and forgotten mid-integration -- two of the seven
+    errors above had a written rule already.  So, by strength: a hook or script
+    that REFUSES (staging everything at once never recurred once a hook refused
+    it); else the tool that runs the risky step WARNS at that moment
+    (`bin/integrate`); a sentence here only for what no machine can see.  An
+    error that recurs while its rule is only a sentence is moved into a machine
+    in the next slice (C485).
 
 ### Pedagogical mindset, not industrial
 

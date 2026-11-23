@@ -5441,6 +5441,16 @@ accepts today, and that is a policy call.
 > after 2 December: move the unmanaged range citations (materials, process safety) into repoint's
 > managed set.
 
+> **C485 (Vitor, 2026-11-23: "Achas que e boa ideia ter um registo de erros e formas de mitigar,
+> para que se aprenda com os erros e nao se repitam?").**  RULED: not a new register (DEV.md 4c is
+> it; two of the day's seven errors had a written rule already and happened anyway).  The lesson goes
+> where the mistake happens, and a repeated one becomes a machine: a commit hook running
+> check_future_dates and check_doctrine on staged files; bin/integrate grepping the unmanaged
+> file:line citations of touched files, refusing a merged JSON that lost a parent's key or item, and
+> refusing to start under 15 GB free; the landing script printing main's CI.  The escalation rule is
+> in CLAUDE.md section 10.  After C239 and C484 land (bin/integrate is not edited while integrations
+> run).
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
