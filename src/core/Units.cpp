@@ -69,6 +69,7 @@ const std::map<std::string, UnitSpec>& table()
         { "g/s",     UnitSpec{ 1.0e-3,      Dims::massFlow } },
         { "g/h",     UnitSpec{ 1.0e-3/3600.0, Dims::massFlow } },
         { "t/h",     UnitSpec{ 1000.0/3600.0, Dims::massFlow } },
+        { "t/day",   UnitSpec{ 1000.0/86400.0, Dims::massFlow } },
 
         // ----- volumetric flow → m³/s -----------------------------------
         { "m3/s",    UnitSpec{ 1.0,         Dims::volumetricFlow } },
@@ -354,6 +355,7 @@ const std::map<std::string, UnitSpec>& table()
         //  statistic published in the other.
         { "points",  UnitSpec{ 1.0e-2,      Dims::dimensionless, false, "percentagePoint" } },
         { "kg/kg",   UnitSpec{ 1.0,         Dims::dimensionless } },   // mass ratio (e.g. dry resin per kg water)
+        { "kg/t",    UnitSpec{ 1.0e-3,      Dims::dimensionless } },   // kg of one stream per metric tonne of another
         //  THE DEGREE OF ARC (2026-10-17, DEV.md 4c C75).  An angle is
         //  dimensionless and its canonical form is the radian, so `deg`
         //  converts to radians; a layout's wind bearing is read in degrees off

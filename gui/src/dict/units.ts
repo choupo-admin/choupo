@@ -77,6 +77,7 @@ const TABLE: Record<string, UnitSpec> = {
   "g/s": { factor: 1.0e-3, affine: false },
   "g/h": { factor: 1.0e-3 / 3600.0, affine: false },
   "t/h": { factor: 1000.0 / 3600.0, affine: false },
+  "t/day": { factor: 1000.0 / 86400.0, affine: false },
 
   // volumetric flow → m³/s
   "m3/s": { factor: 1.0, affine: false },
@@ -302,6 +303,7 @@ const TABLE: Record<string, UnitSpec> = {
   points: { factor: 1.0e-2, affine: false },
   // mass ratio (e.g. dry resin per kg water)
   "kg/kg": { factor: 1.0, affine: false },
+  "kg/t": { factor: 1.0e-3, affine: false },
   // the degree of arc -> radians (a layoutDict's wind bearing; DEV.md 4c C75)
   deg: { factor: Math.PI / 180.0, affine: false },
 };
