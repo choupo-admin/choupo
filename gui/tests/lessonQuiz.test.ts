@@ -540,6 +540,7 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
   "flash-operating-line": {
     quiz: FLASH_QUIZ, quizName: "FLASH_QUIZ", lesson: FLASH_STEPS, lessonName: "FLASH_STEPS",
     file: "src/ui/methods/FlashOperatingLineTool.tsx",
+  },
   "pool-fire": {
     quiz: POOL_QUIZ, quizName: "POOL_QUIZ", lesson: POOL_STEPS, lessonName: "POOL_STEPS",
     file: "src/ui/methods/PoolFireTool.tsx",
