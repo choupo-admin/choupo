@@ -175,9 +175,10 @@ describe("the registry, the lesson and the guide", () => {
       "PackingRBF.cpp": "src/unitOperations/distillation/PackingRBF.cpp",
     };
     for (const [k, want] of Object.entries(CLAIMS)) {
-      const [f, r] = k.split(":");
-      const [a, b] = r.split("-").map(Number);
-      const text = Array.from({ length: b - a + 1 }, (_, i) => lineOf(where[f], a + i)).join("\n");
+      const [f = "", r = ""] = k.split(":");
+      const [a = 0, b = a] = r.split("-").map(Number);
+      const path = where[f] ?? "";
+      const text = Array.from({ length: b - a + 1 }, (_, i) => lineOf(path, a + i)).join("\n");
       expect(text, k).toContain(want);
     }
   });
