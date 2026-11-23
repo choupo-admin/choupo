@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.b_ij  360.423319958;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.b_ji  95.1267508739;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.b_ij  360;   // +/- 41 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.b_ji  95;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.b_ij  360.423320714;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.b_ji  95.1267501664;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.b_ij  360;   // +/- 41 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.b_ji  95;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.a_ij  165.690934948;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.a_ji  -74.4157261086;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.a_ij  166;   // +/- 36 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.a_ji  -74;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.a_ij  165.690933739;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.a_ji  -74.4157251928;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.a_ij  166;   // +/- 36 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.a_ji  -74;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.A_ij  2200.16917475;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.A_ji  1840.89721773;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.A_ij  2200;   // +/- 190 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.A_ji  1840;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.A_ij  2200.16916404;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.A_ji  1840.89722934;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.A_ij  2200;   // +/- 190 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-oXylene.A_ji  1840;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence

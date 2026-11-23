@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.b_ij  -125.983506936;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.b_ji  386.6002646;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.b_ij  -126;   // +/- 52 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.b_ji  387;   // +/- 88 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.b_ij  -125.983514357;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.b_ji  386.600276492;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.b_ij  -126;   // +/- 52 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.b_ji  387;   // +/- 88 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.A_ij  3342.94523379;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.A_ji  -1227.80790985;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.A_ij  3340;   // +/- 640 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.A_ji  -1230;   // +/- 350 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.A_ij  3343.0353464;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.A_ji  -1227.86047505;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.A_ij  3340;   // +/- 640 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-2Methyl2Propanol.A_ji  -1230;   // +/- 350 (1 sigma, from the fit)
     }
 
     evidence

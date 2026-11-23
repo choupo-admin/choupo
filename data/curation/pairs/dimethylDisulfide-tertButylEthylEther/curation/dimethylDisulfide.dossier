@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.b_ij  209.890627266;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.b_ji  -36.793304492;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.b_ij  210;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.b_ji  -37;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.b_ij  209.890624159;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.b_ji  -36.7933022904;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.b_ij  210;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.b_ji  -37;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.A_ij  1326.30457672;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.A_ji  111.795558447;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.A_ij  1330;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.A_ji  110;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.A_ij  1326.30447546;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.A_ji  111.795709358;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.A_ij  1330;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-tertButylEthylEther.A_ji  110;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence

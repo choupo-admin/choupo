@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.b_ij  -232.75219367;
-        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.b_ji  185.64436063;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.b_ij  -200;   // +/- 9600 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.b_ji  0;   // +/- 13000 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.b_ij  1291.81790644;
-        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.b_ji  -603.257087376;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.b_ij  1290;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.b_ji  -603;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.A_ij  1877.46841347;
-        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.A_ji  -2148.12186643;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.A_ij  2000;   // +/- 80000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.A_ji  -2000;   // +/- 49000 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.A_ij  1877.46869925;
-        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.A_ji  -2148.12204047;
+        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.A_ij  2000;   // +/- 80000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetone-furfural.A_ji  -2000;   // +/- 49000 (1 sigma, from the fit)
     }
 
     evidence

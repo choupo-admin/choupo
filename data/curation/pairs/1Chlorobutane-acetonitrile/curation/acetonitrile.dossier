@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.b_ij  213.387409029;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.b_ji  246.74039514;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.b_ij  213;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.b_ji  247;   // +/- 14 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.b_ij  213.387404037;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.b_ji  246.740399997;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.b_ij  213;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.b_ji  247;   // +/- 14 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.A_ij  4089.35934313;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.A_ji  92.6287986879;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.A_ij  4089;   // +/- 47 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.A_ji  93;   // +/- 45 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.A_ij  4089.35933889;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.A_ji  92.6288014256;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.A_ij  4089;   // +/- 47 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-1Chlorobutane.A_ji  93;   // +/- 45 (1 sigma, from the fit)
     }
 
     evidence

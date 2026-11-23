@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.b_ij  -200.680305298;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.b_ji  212.042252042;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.b_ij  -201;   // +/- 47 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.b_ji  212;   // +/- 65 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.b_ij  341.94562661;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.b_ji  -288.316728036;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.b_ij  342;   // +/- 46 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.b_ji  -288;   // +/- 28 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.a_ij  -88.389308781;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.a_ji  94.0624778437;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.a_ij  -88;   // +/- 24 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.a_ji  94;   // +/- 30 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.a_ij  165.473240857;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.a_ji  -140.825373794;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.a_ij  165;   // +/- 23 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.a_ji  -141;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.A_ij  1431.8466249;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.A_ji  -1462.92080802;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.A_ij  1430;   // +/- 500 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.A_ji  -1460;   // +/- 370 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.A_ij  1431.84665921;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.A_ji  -1462.92083347;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.A_ij  1430;   // +/- 500 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-ethylBenzene.A_ji  -1460;   // +/- 370 (1 sigma, from the fit)
     }
 
     evidence

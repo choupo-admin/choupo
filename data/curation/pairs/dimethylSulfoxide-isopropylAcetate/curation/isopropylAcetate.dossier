@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.b_ij  288.01232496;
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.b_ji  184.169274501;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.b_ij  288;   // +/- 10 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.b_ji  184;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.b_ij  288.01232498;
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.b_ji  184.169274422;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.b_ij  288;   // +/- 10 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.b_ji  184;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.A_ij  211.653438066;
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.A_ji  4063.50430562;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.A_ij  212;   // +/- 94 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.A_ji  4064;   // +/- 85 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.A_ij  211.653438151;
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.A_ji  4063.50430577;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.A_ij  212;   // +/- 94 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-dimethylSulfoxide.A_ji  4064;   // +/- 85 (1 sigma, from the fit)
     }
 
     evidence

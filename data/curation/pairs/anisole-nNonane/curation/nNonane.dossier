@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.b_ij  -120.431971953;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.b_ji  519.085275747;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.b_ij  -120;   // +/- 23 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.b_ji  519;   // +/- 40 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.b_ij  -120.431972694;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.b_ji  519.085277115;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.b_ij  -120;   // +/- 23 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.b_ji  519;   // +/- 40 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.A_ij  1812.198215;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.A_ji  1479.46673576;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.A_ij  1810;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.A_ji  1480;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.A_ij  1812.19821808;
-        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.A_ji  1479.46673427;
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.A_ij  1810;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNonane-anisole.A_ji  1480;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence

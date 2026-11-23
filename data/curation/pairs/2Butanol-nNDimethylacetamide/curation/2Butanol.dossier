@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.b_ij  462.832653397;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.b_ji  -525.594835345;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.b_ij  460;   // +/- 850 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.b_ji  -530;   // +/- 410 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.b_ij  536.351891655;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.b_ji  -559.645733071;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.b_ij  540;   // +/- 860 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.b_ji  -560;   // +/- 380 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.A_ij  -2458.41694459;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.A_ji  984.553716569;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.A_ij  -2460;   // +/- 280 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.A_ji  980;   // +/- 470 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.A_ij  14289.3637721;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.A_ji  -5154.11593063;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.A_ij  14300;   // +/- 3900 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-nNDimethylacetamide.A_ji  -5154;   // +/- 95 (1 sigma, from the fit)
     }
 
     evidence

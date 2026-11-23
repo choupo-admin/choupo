@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ij  1181.74094878;
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ji  -842.503761128;
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ij  1182;   // +/- 90 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ji  -843;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ij  1181.74094243;
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ji  -842.503759681;
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ij  1182;   // +/- 90 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ji  -843;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ij  5225.56355694;
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ji  -8771.21541134;
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ij  5230;   // +/- 480 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ji  -8800;   // +/- 1100 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ij  5225.56355813;
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ji  -8771.21541831;
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ij  5230;   // +/- 480 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ji  -8800;   // +/- 1100 (1 sigma, from the fit)
     }
 
     evidence

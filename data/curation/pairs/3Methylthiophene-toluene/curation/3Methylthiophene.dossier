@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.b_ij  -284.036344333;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.b_ji  380.322756215;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.b_ij  -284;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.b_ji  380;   // +/- 33 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.b_ij  -284.036353897;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.b_ji  380.322771694;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.b_ij  -284;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.b_ji  380;   // +/- 33 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.A_ij  2933.3464195;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.A_ji  -2097.9375314;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.A_ij  2930;   // +/- 240 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.A_ji  -2100;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.A_ij  2933.34652941;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.A_ji  -2097.93758323;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.A_ij  2930;   // +/- 240 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.A_ji  -2100;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.a_ij  -167.298548708;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.a_ji  219.86654151;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.a_ij  -167;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.a_ji  220;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.a_ij  -167.298544422;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.a_ji  219.866534334;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.a_ij  -167;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-toluene.a_ji  220;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence

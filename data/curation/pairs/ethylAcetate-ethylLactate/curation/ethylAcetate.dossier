@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.b_ij  325.486755355;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.b_ji  -216.652648149;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.b_ij  325;   // +/- 49 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.b_ji  -217;   // +/- 33 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.b_ij  325.48675366;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.b_ji  -216.652647014;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.b_ij  325;   // +/- 49 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.b_ji  -217;   // +/- 33 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.a_ij  -0.202763891731;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.a_ji  21.882337672;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.a_ij  0;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.a_ji  22;   // +/- 28 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.a_ij  -0.202763893445;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.a_ji  21.8823376744;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.a_ij  0;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.a_ji  22;   // +/- 28 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.A_ij  -584.876415145;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.A_ji  1358.72068306;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.A_ij  -580;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.A_ji  1360;   // +/- 340 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.A_ij  -584.876409661;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.A_ji  1358.72067464;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.A_ij  -580;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-ethylLactate.A_ji  1360;   // +/- 340 (1 sigma, from the fit)
     }
 
     evidence

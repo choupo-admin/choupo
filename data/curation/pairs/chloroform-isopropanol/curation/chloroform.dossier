@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.b_ij  603.267325988;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.b_ji  -173.635573979;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.b_ij  603;   // +/- 46 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.b_ji  -174;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.b_ij  603.267328156;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.b_ji  -173.635574862;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.b_ij  603;   // +/- 46 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.b_ji  -174;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.A_ij  -643.198055964;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.A_ji  4176.60048557;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.A_ij  -640;   // +/- 180 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.A_ji  4180;   // +/- 430 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.A_ij  -643.198055895;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.A_ji  4176.60048533;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.A_ij  -640;   // +/- 180 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-isopropanol.A_ji  4180;   // +/- 430 (1 sigma, from the fit)
     }
 
     evidence

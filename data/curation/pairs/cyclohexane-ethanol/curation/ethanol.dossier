@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ij  437.369896721;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ji  485.191812851;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ij  437;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ji  485;   // +/- 31 (1 sigma, from the fit)
     }
 
     evidence
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ij  437.369895804;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ji  485.19181356;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ij  437;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.b_ji  485;   // +/- 31 (1 sigma, from the fit)
     }
 
     evidence
@@ -143,8 +143,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.a_ij  -1.79865685899;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.a_ji  407.588906833;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.a_ij  -2;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.a_ji  408;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -199,8 +199,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.a_ij  -1.79865682119;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.a_ji  407.588906746;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.a_ij  -2;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-cyclohexane.a_ji  408;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence

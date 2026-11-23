@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.b_ij  -176.552352036;
-        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.b_ji  108.660498889;
+        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.b_ij  -180;   // +/- 510 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.b_ji  110;   // +/- 640 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.b_ij  488.041330149;
-        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.b_ji  -393.986154849;
+        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.b_ij  490;   // +/- 300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.b_ji  -390;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.A_ij  1345.52061747;
-        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.A_ji  -1984.86643215;
+        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.A_ij  1300;   // +/- 2400 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.A_ji  -2000;   // +/- 2000 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.A_ij  1487.14823565;
-        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.A_ji  -2103.29832672;
+        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.A_ij  1500;   // +/- 2700 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.furan-toluene.A_ji  -2100;   // +/- 2200 (1 sigma, from the fit)
     }
 
     evidence

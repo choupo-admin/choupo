@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.b_ij  1139.38184742;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.b_ji  -541.819532508;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.b_ij  1139;   // +/- 88 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.b_ji  -542;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.b_ij  1139.38184733;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.b_ji  -541.819532659;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.b_ij  1139;   // +/- 88 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.b_ji  -542;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.A_ij  -4634.98085246;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.A_ji  15948.5733476;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.A_ij  -4635;   // +/- 58 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.A_ji  15900;   // +/- 2900 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.A_ij  -4634.98083949;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.A_ji  15948.5726807;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.A_ij  -4635;   // +/- 58 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-oCresol.A_ji  15900;   // +/- 2900 (1 sigma, from the fit)
     }
 
     evidence

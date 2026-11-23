@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.b_ij  90.5457842048;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.b_ji  543.449331483;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.b_ij  91;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.b_ji  543;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.b_ij  90.5457828899;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.b_ji  543.44933111;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.b_ij  91;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.b_ji  543;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.a_ij  -68.1504551074;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.a_ji  219.913218409;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.a_ij  -68.2;   // +/- 7.5 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.a_ji  220;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.a_ij  -68.1504559527;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.a_ji  219.913219805;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.a_ij  -68.2;   // +/- 7.5 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.a_ji  220;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.A_ij  5698.02726952;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.A_ji  569.127284267;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.A_ij  5700;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.A_ji  569;   // +/- 48 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.A_ij  5698.02728791;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.A_ji  569.127284205;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.A_ij  5700;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanol-nHeptane.A_ji  569;   // +/- 48 (1 sigma, from the fit)
     }
 
     evidence

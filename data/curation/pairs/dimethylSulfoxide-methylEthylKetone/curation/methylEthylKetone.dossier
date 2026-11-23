@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.b_ij  -547.024436133;
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.b_ji  399.550494913;
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.b_ij  -500;   // +/- 6100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.b_ji  0;   // +/- 12000 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.b_ij  1948.29861219;
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.b_ji  -823.806676045;
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.b_ij  1950;   // +/- 340 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.b_ji  -824;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.A_ij  846.745400758;
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.A_ji  -2463.73405818;
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.A_ij  847;   // +/- 68 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.A_ji  -2464;   // +/- 35 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.A_ij  5468.25697488;
-        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.A_ji  -3993.98627951;
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.A_ij  5470;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylEthylKetone-dimethylSulfoxide.A_ji  -3994;   // +/- 31 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-diethylSuccinate.b_ij  -155.577859261;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-diethylSuccinate.b_ji  -155.577859261;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-diethylSuccinate.b_ij  -200;   // +/- 1400 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-diethylSuccinate.b_ji  -200;   // +/- 1200 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-diethylSuccinate.b_ij  902.052384828;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-diethylSuccinate.b_ji  -917.964034433;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-diethylSuccinate.b_ij  900;   // +/- 4600 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-diethylSuccinate.b_ji  -920;   // +/- 910 (1 sigma, from the fit)
     }
 
     evidence

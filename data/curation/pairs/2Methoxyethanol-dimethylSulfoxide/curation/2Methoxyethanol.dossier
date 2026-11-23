@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.b_ij  44.3512204417;
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.b_ji  -345.645458107;
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.b_ij  44;   // +/- 34 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.b_ji  -346;   // +/- 25 (1 sigma, from the fit)
     }
 
     evidence
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.b_ij  1130.16395703;
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.b_ji  -825.330478825;
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.b_ij  1130;   // +/- 53 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.b_ji  -825;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -143,8 +143,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.A_ij  -2419.90115087;
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.A_ji  -111.109636715;
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.A_ij  -2420;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.A_ji  -110;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence
@@ -199,8 +199,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.A_ij  30000;
-        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.A_ji  -5569.11540934;
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.A_ij  30000;   // +/- 610000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methoxyethanol-dimethylSulfoxide.A_ji  -5570;   // +/- 170 (1 sigma, from the fit)
     }
 
     evidence

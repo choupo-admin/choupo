@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.b_ij  -493.551395608;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.b_ji  884.916488867;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.b_ij  -493.6;   // +/- 7.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.b_ji  885;   // +/- 29 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.b_ij  -493.551395638;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.b_ji  884.91648885;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.b_ij  -493.6;   // +/- 7.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.b_ji  885;   // +/- 29 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.A_ij  12416.9498467;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.A_ji  -4984.45018766;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.A_ij  12400;   // +/- 1600 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.A_ji  -4984;   // +/- 74 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.A_ij  12416.9492712;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.A_ji  -4984.45016554;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.A_ij  12400;   // +/- 1600 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-tertButylAcetate.A_ji  -4984;   // +/- 74 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.b_ij  299.40076399;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.b_ji  -98.1902867115;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.b_ij  299;   // +/- 85 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.b_ji  -98;   // +/- 59 (1 sigma, from the fit)
     }
 
     evidence
@@ -85,8 +85,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.b_ij  299.400768147;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.b_ji  -98.190289614;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.b_ij  299;   // +/- 85 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.b_ji  -98;   // +/- 59 (1 sigma, from the fit)
     }
 
     evidence
@@ -139,8 +139,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.a_ij  175.509836669;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.a_ji  -110.374404868;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.a_ij  176;   // +/- 64 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.a_ji  -110;   // +/- 42 (1 sigma, from the fit)
     }
 
     evidence
@@ -193,8 +193,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.a_ij  175.509823489;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.a_ji  -110.374396184;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.a_ij  176;   // +/- 64 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.a_ji  -110;   // +/- 42 (1 sigma, from the fit)
     }
 
     evidence
@@ -247,8 +247,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.A_ij  -686.791508475;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.A_ji  2403.99465301;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.A_ij  -690;   // +/- 330 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.A_ji  2400;   // +/- 550 (1 sigma, from the fit)
     }
 
     evidence
@@ -301,8 +301,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.A_ij  -686.791503949;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.A_ji  2403.99464686;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.A_ij  -690;   // +/- 330 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-14Dioxane.A_ji  2400;   // +/- 550 (1 sigma, from the fit)
     }
 
     evidence

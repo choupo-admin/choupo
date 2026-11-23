@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.b_ij  521.973255147;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.b_ji  -1.12635215065;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.b_ij  522;   // +/- 53 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.b_ji  -1;   // +/- 37 (1 sigma, from the fit)
     }
 
     evidence
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.b_ij  521.973255136;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.b_ji  -1.12635216215;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.b_ij  522;   // +/- 53 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.b_ji  -1;   // +/- 37 (1 sigma, from the fit)
     }
 
     evidence
@@ -143,8 +143,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.A_ij  -704.132344702;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.A_ji  5362.77179262;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.A_ij  -700;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.A_ji  5360;   // +/- 260 (1 sigma, from the fit)
     }
 
     evidence
@@ -199,8 +199,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.A_ij  -704.132345008;
-        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.A_ji  5362.77179313;
+        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.A_ij  -700;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.toluene-dimethylSulfoxide.A_ji  5360;   // +/- 260 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.b_ij  279.958050239;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.b_ji  -161.374287074;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.b_ij  280;   // +/- 67 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.b_ji  -161;   // +/- 46 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.b_ij  279.958054699;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.b_ji  -161.374290027;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.b_ij  280;   // +/- 67 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.b_ji  -161;   // +/- 46 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.A_ij  411.561534727;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.A_ji  475.266514944;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.A_ij  410;   // +/- 290 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.A_ji  480;   // +/- 430 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.A_ij  411.561551756;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.A_ji  475.266488995;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.A_ij  410;   // +/- 290 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nPropylAcetate.A_ji  480;   // +/- 430 (1 sigma, from the fit)
     }
 
     evidence

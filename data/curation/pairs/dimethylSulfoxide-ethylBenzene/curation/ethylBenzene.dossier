@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.b_ij  912.327758461;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.b_ji  -234.385542947;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.b_ij  912;   // +/- 63 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.b_ji  -234;   // +/- 30 (1 sigma, from the fit)
     }
 
     evidence
@@ -97,8 +97,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.b_ij  912.327759135;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.b_ji  -234.385543019;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.b_ij  912;   // +/- 63 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.b_ji  -234;   // +/- 30 (1 sigma, from the fit)
     }
 
     evidence
@@ -163,8 +163,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.A_ij  -3094.32939556;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.A_ji  10538.3899269;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.A_ij  -3090;   // +/- 240 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.A_ji  10500;   // +/- 1100 (1 sigma, from the fit)
     }
 
     evidence
@@ -229,8 +229,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.A_ij  -3094.32939641;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.A_ji  10538.3899353;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.A_ij  -3090;   // +/- 240 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylSulfoxide.A_ji  10500;   // +/- 1100 (1 sigma, from the fit)
     }
 
     evidence

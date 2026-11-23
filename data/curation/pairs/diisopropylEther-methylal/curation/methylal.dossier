@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.b_ij  -192.775537531;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.b_ji  480.852641144;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.b_ij  -192.8;   // +/- 4.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.b_ji  480.9;   // +/- 9.3 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.b_ij  -192.775537389;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.b_ji  480.852640867;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.b_ij  -192.8;   // +/- 4.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.b_ji  480.9;   // +/- 9.3 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.A_ij  4394.33729026;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.A_ji  -2084.98437323;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.A_ij  4394;   // +/- 49 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.A_ji  -2085;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.A_ij  4394.33728607;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.A_ji  -2084.98437179;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.A_ij  4394;   // +/- 49 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-diisopropylEther.A_ji  -2085;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence

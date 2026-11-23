@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-toluene.b_ij  279.112817749;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-toluene.b_ji  -294.647407786;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-toluene.b_ij  0;   // +/- 76000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-toluene.b_ji  0;   // +/- 48000 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-toluene.b_ij  279.112702045;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-toluene.b_ji  -294.647334961;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-toluene.b_ij  0;   // +/- 76000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-toluene.b_ji  0;   // +/- 48000 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-toluene.A_ij  -1215.51027591;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-toluene.A_ji  1294.26905875;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-toluene.A_ij  0;   // +/- 280000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-toluene.A_ji  0;   // +/- 570000 (1 sigma, from the fit)
     }
 
     evidence

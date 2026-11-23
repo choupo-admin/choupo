@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.b_ij  435.51404948;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.b_ji  158.968677087;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.b_ij  435.5;   // +/- 4.7 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.b_ji  159.0;   // +/- 4.0 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.b_ij  435.514049296;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.b_ji  158.968677262;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.b_ij  435.5;   // +/- 4.7 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.b_ji  159.0;   // +/- 4.0 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.A_ij  4519.4294336;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.A_ji  1022.06199214;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.A_ij  4519;   // +/- 55 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.A_ji  1022;   // +/- 63 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.A_ij  4519.42943407;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.A_ji  1022.06199167;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.A_ij  4519;   // +/- 55 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-224Trimethylpentane.A_ji  1022;   // +/- 63 (1 sigma, from the fit)
     }
 
     evidence

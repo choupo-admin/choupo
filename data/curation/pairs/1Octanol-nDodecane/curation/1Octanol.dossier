@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.b_ij  1528.28950844;
-        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.b_ji  -280.810871638;
+        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.b_ij  1530;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.b_ji  -281;   // +/- 39 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.b_ij  1528.28951021;
-        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.b_ji  -280.81087228;
+        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.b_ij  1530;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.b_ji  -281;   // +/- 39 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.a_ij  539.016217056;
-        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.a_ji  -264.783070567;
+        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.a_ij  539;   // +/- 57 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.a_ji  -265;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.a_ij  539.016217382;
-        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.a_ji  -264.783070706;
+        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.a_ij  539;   // +/- 57 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Octanol-nDodecane.a_ji  -265;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.b_ij  470.041083554;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.b_ji  -255.383676786;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.b_ij  470;   // +/- 51 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.b_ji  -255;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.b_ij  470.041080886;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.b_ji  -255.383675004;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.b_ij  470;   // +/- 51 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.b_ji  -255;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.a_ij  287.640925548;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.a_ji  -183.271926694;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.a_ij  288;   // +/- 24 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.a_ji  -183;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.a_ij  287.640936442;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.a_ji  -183.27193193;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.a_ij  288;   // +/- 24 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.a_ji  -183;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.A_ij  -2070.03647868;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.A_ji  3852.40405483;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.A_ij  -2070;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.A_ji  3850;   // +/- 410 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.A_ij  -2070.03648145;
-        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.A_ji  3852.40407689;
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.A_ij  -2070;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tertButylEthylEther-cyclohexane.A_ji  3850;   // +/- 410 (1 sigma, from the fit)
     }
 
     evidence

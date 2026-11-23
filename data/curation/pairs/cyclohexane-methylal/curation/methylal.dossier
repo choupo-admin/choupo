@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.b_ij  513.014123551;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.b_ji  -78.007187502;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.b_ij  513;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.b_ji  -78.0;   // +/- 7.5 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.b_ij  513.014123585;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.b_ji  -78.0071875664;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.b_ij  513;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.b_ji  -78.0;   // +/- 7.5 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.a_ij  209.405182003;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.a_ji  -73.6613709131;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.a_ij  209.4;   // +/- 7.7 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.a_ji  -73.7;   // +/- 4.8 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.a_ij  209.405182051;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.a_ji  -73.6613709404;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.a_ij  209.4;   // +/- 7.7 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.a_ji  -73.7;   // +/- 4.8 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.A_ij  524.785343066;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.A_ji  3411.09068697;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.A_ij  525;   // +/- 32 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.A_ji  3411;   // +/- 80 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.A_ij  524.78534377;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.A_ji  3411.09068538;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.A_ij  525;   // +/- 32 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-cyclohexane.A_ji  3411;   // +/- 80 (1 sigma, from the fit)
     }
 
     evidence

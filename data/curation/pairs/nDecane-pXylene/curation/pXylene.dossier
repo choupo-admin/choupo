@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.b_ij  550.580915605;
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.b_ji  -378.916074309;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.b_ij  551;   // +/- 36 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.b_ji  -379;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -97,8 +97,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.b_ij  550.57997543;
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.b_ji  -378.915607801;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.b_ij  551;   // +/- 36 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.b_ji  -379;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -163,8 +163,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.a_ij  -134.211621798;
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.a_ji  162.583882433;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.a_ij  -134;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.a_ji  163;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -229,8 +229,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.a_ij  241.774140252;
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.a_ji  -181.910317649;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.a_ij  242;   // +/- 18 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.a_ji  -181.9;   // +/- 9.8 (1 sigma, from the fit)
     }
 
     evidence
@@ -295,8 +295,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.A_ij  -599.737612262;
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.A_ji  1726.82422709;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.A_ij  -600;   // +/- 190 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.A_ji  1730;   // +/- 440 (1 sigma, from the fit)
     }
 
     evidence
@@ -361,8 +361,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.A_ij  3371.00359206;
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.A_ji  -2908.79707792;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.A_ij  3370;   // +/- 490 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nDecane.A_ji  -2910;   // +/- 280 (1 sigma, from the fit)
     }
 
     evidence

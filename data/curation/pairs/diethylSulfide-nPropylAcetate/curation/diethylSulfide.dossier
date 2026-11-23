@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.b_ij  -127.110607996;
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.b_ji  216.365366955;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.b_ij  -127;   // +/- 25 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.b_ji  216;   // +/- 34 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.b_ij  -127.11060392;
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.b_ji  216.365361471;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.b_ij  -127;   // +/- 25 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.b_ji  216;   // +/- 34 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.A_ij  1512.67036304;
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.A_ji  -813.259643624;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.A_ij  1510;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.A_ji  -810;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.A_ij  1512.67030333;
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.A_ji  -813.259599418;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.A_ij  1510;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-nPropylAcetate.A_ji  -810;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence

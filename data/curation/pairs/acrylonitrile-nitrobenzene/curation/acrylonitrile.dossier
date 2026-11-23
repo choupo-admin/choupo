@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.b_ij  745.979330586;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.b_ji  -351.360523067;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.b_ij  746;   // +/- 25 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.b_ji  -351.4;   // +/- 9.6 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.b_ij  745.979330761;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.b_ji  -351.360523155;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.b_ij  746;   // +/- 25 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.b_ji  -351.4;   // +/- 9.6 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.A_ij  -392.865662829;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.A_ji  3570.98622713;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.A_ij  -393;   // +/- 54 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.A_ji  3570;   // +/- 190 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.A_ij  -392.865661002;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.A_ji  3570.98621937;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.A_ij  -393;   // +/- 54 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-nitrobenzene.A_ji  3570;   // +/- 190 (1 sigma, from the fit)
     }
 
     evidence

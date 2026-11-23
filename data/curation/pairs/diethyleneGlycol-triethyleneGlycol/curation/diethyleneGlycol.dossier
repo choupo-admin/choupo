@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.b_ij  590.567798392;
-        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.b_ji  -394.090938671;
+        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.b_ij  591;   // +/- 65 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.b_ji  -394;   // +/- 35 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.b_ij  590.567799782;
-        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.b_ji  -394.090939494;
+        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.b_ij  591;   // +/- 65 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.b_ji  -394;   // +/- 35 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.A_ij  -684.33919037;
-        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.A_ji  1908.69263405;
+        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.A_ij  -680;   // +/- 430 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.A_ji  1910;   // +/- 840 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.A_ij  -684.339222636;
-        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.A_ji  1908.69270467;
+        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.A_ij  -680;   // +/- 430 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethyleneGlycol-triethyleneGlycol.A_ji  1910;   // +/- 840 (1 sigma, from the fit)
     }
 
     evidence

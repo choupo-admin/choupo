@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.b_ij  160.25766537;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.b_ji  550.84483596;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.b_ij  160.3;   // +/- 6.9 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.b_ji  551;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.b_ij  160.257659031;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.b_ji  550.844842483;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.b_ij  160.3;   // +/- 6.9 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.b_ji  551;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.A_ij  6378.27696176;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.A_ji  479.381857428;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.A_ij  6378;   // +/- 73 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.A_ji  479;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.A_ij  6378.27694391;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.A_ji  479.381861827;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.A_ij  6378;   // +/- 73 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-1Chlorobutane.A_ji  479;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence

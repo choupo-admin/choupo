@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.b_ij  -307.219057308;
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.b_ji  468.026729261;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.b_ij  -307;   // +/- 29 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.b_ji  468;   // +/- 55 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.b_ij  -307.21906345;
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.b_ji  468.026743311;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.b_ij  -307;   // +/- 29 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.b_ji  468;   // +/- 55 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.A_ij  2998.93115367;
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.A_ji  -1627.94364902;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.A_ij  3000;   // +/- 460 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.A_ji  -1630;   // +/- 200 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.A_ij  2998.92933914;
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.A_ji  -1627.94269611;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.A_ij  3000;   // +/- 460 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-anisole.A_ji  -1630;   // +/- 200 (1 sigma, from the fit)
     }
 
     evidence

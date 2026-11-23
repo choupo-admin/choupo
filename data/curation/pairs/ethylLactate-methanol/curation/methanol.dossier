@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.b_ij  -263.920143996;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.b_ji  168.928608522;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.b_ij  -260;   // +/- 180 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.b_ji  170;   // +/- 250 (1 sigma, from the fit)
     }
 
     evidence
@@ -86,8 +86,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.b_ij  1149.3390005;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.b_ji  -618.399661302;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.b_ij  1149;   // +/- 56 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.b_ji  -618;   // +/- 10 (1 sigma, from the fit)
     }
 
     evidence
@@ -141,8 +141,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.A_ij  -588.401660642;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.A_ji  4402.9867348;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.A_ij  -590;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.A_ji  4400;   // +/- 1200 (1 sigma, from the fit)
     }
 
     evidence
@@ -196,8 +196,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.A_ij  3759.84662003;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.A_ji  -4666.13641274;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.A_ij  3800;   // +/- 1000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.A_ji  -4670;   // +/- 740 (1 sigma, from the fit)
     }
 
     evidence
@@ -251,8 +251,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.a_ij  185.688637028;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.a_ji  -86.1582677921;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.a_ij  186;   // +/- 69 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.a_ji  -86;   // +/- 45 (1 sigma, from the fit)
     }
 
     evidence
@@ -306,8 +306,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.a_ij  185.688634987;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.a_ji  -86.1582665035;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.a_ij  186;   // +/- 69 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-ethylLactate.a_ji  -86;   // +/- 45 (1 sigma, from the fit)
     }
 
     evidence

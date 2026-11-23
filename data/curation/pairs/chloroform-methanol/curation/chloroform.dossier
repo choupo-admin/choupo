@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.b_ij  643.540304071;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.b_ji  -38.2587676882;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.b_ij  644;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.b_ji  -38.3;   // +/- 6.4 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.b_ij  643.540303639;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.b_ji  -38.2587675089;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.b_ij  644;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.b_ji  -38.3;   // +/- 6.4 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.A_ij  -1361.40557107;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.A_ji  6912.68473191;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.A_ij  -1361;   // +/- 71 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.A_ji  6910;   // +/- 200 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.A_ij  -1361.40556779;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.A_ji  6912.68471747;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.A_ij  -1361;   // +/- 71 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methanol.A_ji  6910;   // +/- 200 (1 sigma, from the fit)
     }
 
     evidence

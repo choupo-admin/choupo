@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.b_ij  460.526166813;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.b_ji  -74.6639518285;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.b_ij  461;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.b_ji  -75;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.b_ij  460.52616656;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.b_ji  -74.6639516422;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.b_ij  461;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.b_ji  -75;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.A_ij  465.037286144;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.A_ji  2806.27522919;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.A_ij  465;   // +/- 92 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.A_ji  2810;   // +/- 150 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.A_ij  465.037288203;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.A_ji  2806.27522617;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.A_ij  465;   // +/- 92 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-diEthylCarbonate.A_ji  2810;   // +/- 150 (1 sigma, from the fit)
     }
 
     evidence

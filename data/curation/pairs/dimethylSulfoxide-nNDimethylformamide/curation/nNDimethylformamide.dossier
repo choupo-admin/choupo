@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.b_ij  -456.675589579;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.b_ji  684.395979921;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.b_ij  -457;   // +/- 61 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.b_ji  680;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.b_ij  -463.198816563;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.b_ji  702.319987854;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.b_ij  -463;   // +/- 57 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.b_ji  700;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.A_ij  1375.98714014;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.A_ji  -1136.59342563;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.A_ij  1400;   // +/- 6300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.A_ji  -1100;   // +/- 4200 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.A_ij  1416.69571378;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.A_ji  -1162.8562373;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.A_ij  1400;   // +/- 6100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-dimethylSulfoxide.A_ji  -1200;   // +/- 4000 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.b_ij  -334.564448832;
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.b_ji  335.114590788;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.b_ij  -330;   // +/- 380 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.b_ji  340;   // +/- 680 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.b_ij  1459.78192988;
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.b_ji  -577.228864872;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.b_ij  1460;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.b_ji  -577;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.A_ij  2429.37676476;
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.A_ji  -2168.827262;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.A_ij  2400;   // +/- 5500 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.A_ji  -2200;   // +/- 2300 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.A_ij  2429.3675962;
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.A_ji  -2168.82338569;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.A_ij  2400;   // +/- 5500 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-styrene.A_ji  -2200;   // +/- 2300 (1 sigma, from the fit)
     }
 
     evidence

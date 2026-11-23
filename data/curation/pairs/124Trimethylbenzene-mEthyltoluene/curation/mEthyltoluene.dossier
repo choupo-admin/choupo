@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.b_ij  -203.226185111;
-        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.b_ji  187.04096452;
+        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.b_ij  -200;   // +/- 7700 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.b_ji  0;   // +/- 10000 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.b_ij  746.505769716;
-        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.b_ji  -484.152730341;
+        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.b_ij  747;   // +/- 86 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.b_ji  -484;   // +/- 31 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.a_ij  -89.3126571192;
-        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.a_ji  88.2688506383;
+        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.a_ij  -100;   // +/- 5100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.a_ji  100;   // +/- 6400 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.a_ij  376.152346899;
-        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.a_ji  -255.933094384;
+        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.a_ij  376;   // +/- 46 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.a_ji  -256;   // +/- 20 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.A_ij  1477.07034012;
-        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.A_ji  -1493.00629192;
+        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.A_ij  1000;   // +/- 100000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.A_ji  -1000;   // +/- 62000 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.A_ij  1477.06694765;
-        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.A_ji  -1493.00418692;
+        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.A_ij  1000;   // +/- 100000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.mEthyltoluene-124Trimethylbenzene.A_ji  -1000;   // +/- 62000 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.b_ij  863.605861348;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.b_ji  -101.058560911;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.b_ij  864;   // +/- 63 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.b_ji  -101;   // +/- 20 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.b_ij  863.605858727;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.b_ji  -101.058558898;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.b_ij  864;   // +/- 63 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.b_ji  -101;   // +/- 20 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.a_ij  340.488426469;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.a_ji  -142.981675039;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.a_ij  340;   // +/- 30 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.a_ji  -143;   // +/- 13 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.a_ij  340.488423445;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.a_ji  -142.981673551;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.a_ij  340;   // +/- 30 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.a_ji  -143;   // +/- 13 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.A_ij  -148.957063757;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.A_ji  8481.86472206;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.A_ij  -150;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.A_ji  8480;   // +/- 890 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.A_ij  -148.957057727;
-        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.A_ji  8481.86471064;
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.A_ij  -150;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylAcetate-1Hexanol.A_ji  8480;   // +/- 890 (1 sigma, from the fit)
     }
 
     evidence

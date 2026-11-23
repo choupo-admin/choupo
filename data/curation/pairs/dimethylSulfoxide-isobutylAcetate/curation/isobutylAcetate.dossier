@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.b_ij  235.267844954;
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.b_ji  252.653843182;
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.b_ij  235;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.b_ji  253;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.b_ij  235.267839449;
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.b_ji  252.653847805;
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.b_ij  235;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.b_ji  253;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.A_ij  632.588950358;
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.A_ji  3987.30184463;
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.A_ij  630;   // +/- 100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.A_ji  3987;   // +/- 64 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.A_ij  632.588926692;
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.A_ji  3987.30185337;
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.A_ij  630;   // +/- 100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-dimethylSulfoxide.A_ji  3987;   // +/- 64 (1 sigma, from the fit)
     }
 
     evidence

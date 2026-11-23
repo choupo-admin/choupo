@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.b_ij  821.176178869;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.b_ji  -201.384766583;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.b_ij  820;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.b_ji  -201;   // +/- 34 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.b_ij  821.176178858;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.b_ji  -201.384766531;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.b_ij  820;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.b_ji  -201;   // +/- 34 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.a_ij  73.3528978118;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.a_ji  36.5576153391;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.a_ij  73;   // +/- 42 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.a_ji  37;   // +/- 37 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.a_ij  73.3528967354;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.a_ji  36.5576163018;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.a_ij  73;   // +/- 42 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.a_ji  37;   // +/- 37 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.A_ij  1715.47054077;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.A_ji  3365.90290741;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.A_ij  1720;   // +/- 240 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.A_ji  3370;   // +/- 920 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.A_ij  1715.4705512;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.A_ji  3365.90285935;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.A_ij  1720;   // +/- 240 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-nDecane.A_ji  3370;   // +/- 920 (1 sigma, from the fit)
     }
 
     evidence

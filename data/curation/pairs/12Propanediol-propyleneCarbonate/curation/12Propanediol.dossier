@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.b_ij  163.520177801;
-        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.b_ji  399.767809596;
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.b_ij  164;   // +/- 47 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.b_ji  400;   // +/- 51 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.b_ij  163.520177029;
-        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.b_ji  399.76781036;
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.b_ij  164;   // +/- 47 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.b_ji  400;   // +/- 51 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.A_ij  3691.18762022;
-        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.A_ji  1363.18741541;
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.A_ij  3690;   // +/- 280 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.A_ji  1360;   // +/- 280 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.A_ij  3691.18763607;
-        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.A_ji  1363.18739357;
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.A_ij  3690;   // +/- 280 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.12Propanediol-propyleneCarbonate.A_ji  1360;   // +/- 280 (1 sigma, from the fit)
     }
 
     evidence

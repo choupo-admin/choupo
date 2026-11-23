@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.b_ij  462.197245176;
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.b_ji  -320.083043279;
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.b_ij  462;   // +/- 34 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.b_ji  -320;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.b_ij  462.197245549;
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.b_ji  -320.0830435;
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.b_ij  462;   // +/- 34 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.b_ji  -320;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.A_ij  -934.535007364;
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.A_ji  2002.89226835;
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.A_ij  -930;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.A_ji  2000;   // +/- 260 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.A_ij  -934.535007826;
-        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.A_ji  2002.89227061;
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.A_ij  -930;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.thiophene-toluene.A_ji  2000;   // +/- 260 (1 sigma, from the fit)
     }
 
     evidence

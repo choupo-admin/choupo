@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.b_ij  -470.331507338;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.b_ji  859.971620796;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.b_ij  -470.3;   // +/- 7.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.b_ji  860;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.b_ij  -470.331507304;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.b_ji  859.971620747;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.b_ij  -470.3;   // +/- 7.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.b_ji  860;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.A_ij  7530.00528213;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.A_ji  -3855.45365403;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.A_ij  7530;   // +/- 55 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.A_ji  -3855;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.A_ij  7530.00519667;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.A_ji  -3855.45364201;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.A_ij  7530;   // +/- 55 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-nitrobenzene.A_ji  -3855;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.b_ij  703.760920608;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.b_ji  261.06550169;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.b_ij  704;   // +/- 24 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.b_ji  261;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.b_ij  703.760921015;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.b_ji  261.065501343;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.b_ij  704;   // +/- 24 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.b_ji  261;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.a_ij  361.091914162;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.a_ji  -40.3932840747;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.a_ij  361;   // +/- 17 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.a_ji  -40.4;   // +/- 9.3 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.a_ij  361.091913865;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.a_ji  -40.3932838922;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.a_ij  361;   // +/- 17 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexane-2Methoxyethanol.a_ji  -40.4;   // +/- 9.3 (1 sigma, from the fit)
     }
 
     evidence

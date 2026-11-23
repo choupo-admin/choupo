@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.b_ij  73.5793020719;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.b_ji  -117.899684323;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.b_ij  74;   // +/- 65 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.b_ji  -118;   // +/- 57 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.b_ij  579.253140862;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.b_ji  -437.739847612;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.b_ij  579;   // +/- 64 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.b_ji  -438;   // +/- 29 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.A_ij  -989.938972164;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.A_ji  595.366947323;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.A_ij  -990;   // +/- 250 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.A_ji  600;   // +/- 290 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.A_ij  2554.95135331;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.A_ji  -1975.05120708;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.A_ij  2550;   // +/- 270 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-dimethylSulfoxide.A_ji  -1980;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence

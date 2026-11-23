@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.b_ij  426.491834328;
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.b_ji  -132.830950854;
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.b_ij  426;   // +/- 39 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.b_ji  -133;   // +/- 25 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.b_ij  426.491833464;
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.b_ji  -132.830950456;
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.b_ij  426;   // +/- 39 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.b_ji  -133;   // +/- 25 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.A_ij  -2348.70583907;
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.A_ji  4815.01147706;
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.A_ij  -2350;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.A_ji  4820;   // +/- 290 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.A_ij  -2348.70583923;
-        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.A_ji  4815.01147532;
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.A_ij  -2350;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isobutylAcetate-nNDimethylformamide.A_ji  4820;   // +/- 290 (1 sigma, from the fit)
     }
 
     evidence

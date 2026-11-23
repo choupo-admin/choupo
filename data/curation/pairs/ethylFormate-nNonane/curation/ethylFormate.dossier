@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.b_ij  468.299066129;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.b_ji  10.4298564474;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.b_ij  468;   // +/- 18 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.b_ji  10;   // +/- 14 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.b_ij  468.299066168;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.b_ji  10.4298564215;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.b_ij  468;   // +/- 18 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.b_ji  10;   // +/- 14 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.A_ij  3042.57755975;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.A_ji  1277.06347606;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.A_ij  3043;   // +/- 85 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.A_ji  1280;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.A_ij  3042.57755917;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.A_ji  1277.06347747;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.A_ij  3043;   // +/- 85 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nNonane.A_ji  1280;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence

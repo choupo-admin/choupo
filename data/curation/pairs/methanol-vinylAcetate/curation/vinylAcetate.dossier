@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.b_ij  146.243728148;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.b_ji  362.549362856;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.b_ij  146;   // +/- 24 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.b_ji  363;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.b_ij  146.24372804;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.b_ji  362.549362977;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.b_ij  146;   // +/- 24 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.b_ji  363;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.a_ij  340.319146574;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.a_ji  -2.37400296561;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.a_ij  340;   // +/- 18 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.a_ji  -2.4;   // +/- 9.6 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.a_ij  340.319146743;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.a_ji  -2.37400305653;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.a_ij  340;   // +/- 18 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.a_ji  -2.4;   // +/- 9.6 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.A_ij  662.048560461;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.A_ji  4009.27167694;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.A_ij  660;   // +/- 200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.A_ji  4010;   // +/- 190 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.A_ij  662.048562696;
-        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.A_ji  4009.27167477;
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.A_ij  660;   // +/- 200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.vinylAcetate-methanol.A_ji  4010;   // +/- 190 (1 sigma, from the fit)
     }
 
     evidence

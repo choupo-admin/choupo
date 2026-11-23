@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.b_ij  319.822931013;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.b_ji  -258.857019408;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.b_ij  320;   // +/- 55 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.b_ji  -259;   // +/- 35 (1 sigma, from the fit)
     }
 
     evidence
@@ -86,8 +86,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.b_ij  319.822930264;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.b_ji  -258.857018939;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.b_ij  320;   // +/- 55 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.b_ji  -259;   // +/- 35 (1 sigma, from the fit)
     }
 
     evidence
@@ -141,8 +141,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.A_ij  -2054.85455907;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.A_ji  2450.4842421;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.A_ij  -2050;   // +/- 260 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.A_ji  2450;   // +/- 430 (1 sigma, from the fit)
     }
 
     evidence
@@ -196,8 +196,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.A_ij  -2054.8545536;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.A_ji  2450.48423352;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.A_ij  -2050;   // +/- 260 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-monochlorobenzene.A_ji  2450;   // +/- 430 (1 sigma, from the fit)
     }
 
     evidence

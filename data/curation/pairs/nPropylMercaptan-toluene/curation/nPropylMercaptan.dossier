@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.b_ij  217.334527334;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.b_ji  -180.031663564;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.b_ij  217;   // +/- 82 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.b_ji  -180;   // +/- 59 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.b_ij  217.334528125;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.b_ji  -180.031664146;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.b_ij  217;   // +/- 82 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.b_ji  -180;   // +/- 59 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.A_ij  -460.797517683;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.A_ji  680.538357224;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.A_ij  -460;   // +/- 520 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.A_ji  680;   // +/- 740 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.A_ij  -460.79750415;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.A_ji  680.53833798;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.A_ij  -460;   // +/- 520 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylMercaptan-toluene.A_ji  680;   // +/- 740 (1 sigma, from the fit)
     }
 
     evidence

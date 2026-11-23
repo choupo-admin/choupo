@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.b_ij  316.657501702;
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.b_ji  -181.572762287;
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.b_ij  317;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.b_ji  -182;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.b_ij  316.657500531;
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.b_ji  -181.57276149;
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.b_ij  317;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.b_ji  -182;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.A_ij  -877.261782963;
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.A_ji  1937.40331064;
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.A_ij  -880;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.A_ji  1940;   // +/- 180 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.A_ij  -877.261791907;
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.A_ji  1937.40332459;
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.A_ij  -880;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-ethylBenzene.A_ji  1940;   // +/- 180 (1 sigma, from the fit)
     }
 
     evidence

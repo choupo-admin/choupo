@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.b_ij  1037.00429654;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.b_ji  -412.49523116;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.b_ij  1040;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.b_ji  -412;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.b_ij  1037.00430599;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.b_ji  -412.495230414;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.b_ij  1040;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.b_ji  -412;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.A_ij  -3077.73668051;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.A_ji  29999.8870351;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.A_ij  -3080;   // +/- 210 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.A_ji  0;   // +/- 7800000 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.A_ij  -3077.73272946;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.A_ji  29724.8775797;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.A_ij  -3080;   // +/- 210 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.A_ji  0;   // +/- 7100000 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.a_ij  572.540682971;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.a_ji  -268.479249749;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.a_ij  573;   // +/- 83 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.a_ji  -268;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.a_ij  572.540694026;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.a_ji  -268.479251208;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.a_ij  573;   // +/- 83 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-2Ethoxyethanol.a_ji  -268;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence

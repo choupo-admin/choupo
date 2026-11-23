@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.b_ij  334.621437174;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.b_ji  6.97415427389;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.b_ij  335;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.b_ji  7.0;   // +/- 8.7 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.b_ij  334.621437209;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.b_ji  6.97415430291;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.b_ij  335;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.b_ji  7.0;   // +/- 8.7 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.A_ij  2460.06680206;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.A_ji  469.060041118;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.A_ij  2460;   // +/- 38 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.A_ji  469;   // +/- 52 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.A_ij  2460.06679995;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.A_ji  469.060044615;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.A_ij  2460;   // +/- 38 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylDisulfide-224Trimethylpentane.A_ji  469;   // +/- 52 (1 sigma, from the fit)
     }
 
     evidence

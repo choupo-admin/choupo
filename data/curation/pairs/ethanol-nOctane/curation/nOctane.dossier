@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.b_ij  506.634760599;
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.b_ji  442.062129102;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.b_ij  507;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.b_ji  442;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -86,8 +86,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.b_ij  506.634761481;
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.b_ji  442.062128299;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.b_ij  507;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.b_ji  442;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -141,8 +141,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.a_ij  566.992084821;
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.a_ji  -86.9677446866;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.a_ij  567;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.a_ji  -87.0;   // +/- 4.6 (1 sigma, from the fit)
     }
 
     evidence
@@ -196,8 +196,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.a_ij  566.992084828;
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.a_ji  -86.9677447199;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.a_ij  567;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-ethanol.a_ji  -87.0;   // +/- 4.6 (1 sigma, from the fit)
     }
 
     evidence

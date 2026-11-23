@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.b_ij  -282.357720587;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.b_ji  491.326895674;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.b_ij  -282;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.b_ji  491;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.b_ij  -282.357720878;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.b_ji  491.326896273;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.b_ij  -282;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.b_ji  491;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.a_ij  -165.06983751;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.a_ji  240.958504202;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.a_ij  -165.1;   // +/- 5.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.a_ji  241;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.a_ij  -165.069837778;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.a_ji  240.958504638;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.a_ij  -165.1;   // +/- 5.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.a_ji  241;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.A_ij  3073.65153815;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.A_ji  -1333.04194959;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.A_ij  3070;   // +/- 170 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.A_ji  -1333;   // +/- 69 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.A_ij  3073.65153372;
-        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.A_ji  -1333.0419477;
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.A_ij  3070;   // +/- 170 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHeptane-methylTertPentylEther.A_ji  -1333;   // +/- 69 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.b_ij  128.686222605;
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.b_ji  212.406127244;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.b_ij  129;   // +/- 23 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.b_ji  212;   // +/- 25 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.b_ij  128.686786884;
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.b_ji  212.405439556;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.b_ij  129;   // +/- 23 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.b_ji  212;   // +/- 25 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.a_ij  214.335299396;
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.a_ji  -36.4693536195;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.a_ij  214;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.a_ji  -36.5;   // +/- 8.4 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.a_ij  214.335302387;
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.a_ji  -36.4693560068;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.a_ij  214;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.a_ji  -36.5;   // +/- 8.4 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.A_ij  428.446666411;
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.A_ji  2791.21749688;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.A_ij  430;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.A_ji  2790;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.A_ij  428.446676708;
-        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.A_ji  2791.21749136;
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.A_ij  430;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropylAcetate-ethanol.A_ji  2790;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence

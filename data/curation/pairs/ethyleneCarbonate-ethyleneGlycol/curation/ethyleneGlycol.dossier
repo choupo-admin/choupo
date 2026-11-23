@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.b_ij  277.178337541;
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.b_ji  300.082446976;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.b_ij  280;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.b_ji  300;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.b_ij  277.178336501;
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.b_ji  300.082447937;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.b_ij  280;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.b_ji  300;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.A_ij  3091.1462217;
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.A_ji  2190.19689277;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.A_ij  3090;   // +/- 690 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.A_ji  2190;   // +/- 890 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.A_ij  3091.14621628;
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.A_ji  2190.19690163;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.A_ij  3090;   // +/- 690 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-ethyleneCarbonate.A_ji  2190;   // +/- 890 (1 sigma, from the fit)
     }
 
     evidence

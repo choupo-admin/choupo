@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.b_ij  718.245784905;
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.b_ji  -304.443447363;
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.b_ij  718;   // +/- 36 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.b_ji  -304;   // +/- 13 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.b_ij  718.2457858;
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.b_ji  -304.443447748;
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.b_ij  718;   // +/- 36 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.b_ji  -304;   // +/- 13 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.A_ij  -1640.2838367;
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.A_ji  5080.15087553;
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.A_ij  -1640;   // +/- 89 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.A_ji  5080;   // +/- 320 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.A_ij  -1640.28383721;
-        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.A_ji  5080.15087728;
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.A_ij  -1640;   // +/- 89 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPropionate-2Methyl2Propanol.A_ji  5080;   // +/- 320 (1 sigma, from the fit)
     }
 
     evidence

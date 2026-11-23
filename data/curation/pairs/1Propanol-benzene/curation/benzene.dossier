@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.b_ij  563.126457156;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.b_ji  84.9589975406;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.b_ij  563;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.b_ji  85.0;   // +/- 8.3 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.b_ij  563.126452176;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.b_ji  84.9590020368;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.b_ij  563;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.b_ji  85.0;   // +/- 8.3 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.a_ij  176.195200527;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.a_ji  -13.9183328086;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.a_ij  176;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.a_ji  -13.9;   // +/- 8.0 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.a_ij  176.195201292;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.a_ji  -13.9183333194;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.a_ij  176;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.a_ji  -13.9;   // +/- 8.0 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.A_ij  871.204237108;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.A_ji  5554.44836743;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.A_ij  871;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.A_ji  5554;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.A_ij  871.204214192;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.A_ji  5554.44846083;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.A_ij  871;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-1Propanol.A_ji  5554;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence

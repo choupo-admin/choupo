@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.b_ij  298.728139347;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.b_ji  -199.811684938;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.b_ij  299;   // +/- 28 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.b_ji  -200;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.b_ij  298.728139745;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.b_ji  -199.811685196;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.b_ij  299;   // +/- 28 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.b_ji  -200;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.A_ij  -552.689370007;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.A_ji  1300.14375804;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.A_ij  -550;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.A_ji  1300;   // +/- 200 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.A_ij  -552.689368524;
-        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.A_ji  1300.14375593;
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.A_ij  -550;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acrylonitrile-Dichloroethane.A_ji  1300;   // +/- 200 (1 sigma, from the fit)
     }
 
     evidence

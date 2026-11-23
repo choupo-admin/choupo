@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.b_ij  373.37344624;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.b_ji  110.536466229;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.b_ij  373;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.b_ji  110.5;   // +/- 9.9 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.b_ij  373.373446309;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.b_ji  110.536466183;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.b_ij  373;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.b_ji  110.5;   // +/- 9.9 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.A_ij  2754.21816343;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.A_ji  1674.51765643;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.A_ij  2754;   // +/- 48 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.A_ji  1675;   // +/- 71 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.A_ij  2754.2181614;
-        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.A_ji  1674.51765922;
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.A_ij  2754;   // +/- 48 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylFormate-nHexane.A_ji  1675;   // +/- 71 (1 sigma, from the fit)
     }
 
     evidence

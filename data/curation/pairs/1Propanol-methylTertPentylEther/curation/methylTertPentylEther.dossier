@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.b_ij  338.749293931;
-        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.b_ji  36.1881488096;
+        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.b_ij  339;   // +/- 20 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.b_ji  36;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.b_ij  338.749293656;
-        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.b_ji  36.1881489937;
+        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.b_ij  339;   // +/- 20 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.b_ji  36;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.a_ij  252.086040731;
-        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.a_ji  -112.368394996;
+        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.a_ij  252;   // +/- 10 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.a_ji  -112.4;   // +/- 6.1 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.a_ij  252.086040524;
-        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.a_ji  -112.368394875;
+        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.a_ij  252;   // +/- 10 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.a_ji  -112.4;   // +/- 6.1 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.A_ij  -944.202047334;
-        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.A_ji  4198.68914996;
+        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.A_ij  -944;   // +/- 77 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.A_ji  4200;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.A_ij  -944.202041498;
-        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.A_ji  4198.68913984;
+        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.A_ij  -944;   // +/- 77 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylTertPentylEther-1Propanol.A_ji  4200;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence

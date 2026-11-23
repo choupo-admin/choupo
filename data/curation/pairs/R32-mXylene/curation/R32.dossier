@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.b_ij  132.512057417;
-        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.b_ji  220.644699905;
+        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.b_ij  0;   // +/- 28000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.b_ji  0;   // +/- 22000 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.b_ij  132.417066444;
-        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.b_ji  220.719091494;
+        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.b_ij  0;   // +/- 28000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.b_ji  0;   // +/- 22000 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.A_ij  3031.35601615;
-        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.A_ji  1073.80455271;
+        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.A_ij  3000;   // +/- 64000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.A_ji  0;   // +/- 220000 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.A_ij  3031.36729073;
-        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.A_ji  1073.76679343;
+        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.A_ij  3000;   // +/- 64000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.R32-mXylene.A_ji  0;   // +/- 220000 (1 sigma, from the fit)
     }
 
     evidence

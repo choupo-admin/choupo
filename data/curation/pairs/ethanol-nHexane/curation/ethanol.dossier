@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.b_ij  557.110601842;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.b_ji  306.870282693;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.b_ij  557;   // +/- 30 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.b_ji  307;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.b_ij  557.110602111;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.b_ji  306.870282858;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.b_ij  557;   // +/- 30 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.b_ji  307;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.a_ij  13.9576315543;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.a_ji  342.761563386;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.a_ij  14;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.a_ji  343;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.a_ij  13.9576317489;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.a_ji  342.761563174;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.a_ij  14;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nHexane.a_ji  343;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence

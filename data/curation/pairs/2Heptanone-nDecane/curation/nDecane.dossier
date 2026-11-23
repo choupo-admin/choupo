@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.b_ij  -290.234682299;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.b_ji  818.135097984;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.b_ij  -290;   // +/- 33 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.b_ji  818;   // +/- 79 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.b_ij  -290.234682679;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.b_ji  818.135098897;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.b_ij  -290;   // +/- 33 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.b_ji  818;   // +/- 79 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.a_ij  -161.103982277;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.a_ji  280.000480504;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.a_ij  -161;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.a_ji  280;   // +/- 39 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.a_ij  -161.103981888;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.a_ji  280.000479942;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.a_ij  -161;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.a_ji  280;   // +/- 39 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.A_ij  4359.15739358;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.A_ji  -134.400250917;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.A_ij  4360;   // +/- 630 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.A_ji  -130;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.A_ij  4359.15738551;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.A_ji  -134.400247298;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.A_ij  4360;   // +/- 630 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-2Heptanone.A_ji  -130;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.b_ij  -62.6083011907;
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.b_ji  815.391891985;
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.b_ij  -63;   // +/- 21 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.b_ji  815;   // +/- 41 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.b_ij  -62.6082988978;
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.b_ji  815.391889303;
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.b_ij  -63;   // +/- 21 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.b_ji  815;   // +/- 41 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.A_ij  4598.06051785;
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.A_ji  1979.2775784;
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.A_ij  4600;   // +/- 360 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.A_ji  1980;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.A_ij  4598.06049164;
-        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.A_ji  1979.27759338;
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.A_ij  4600;   // +/- 360 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Heptanol-nitrobenzene.A_ji  1980;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence

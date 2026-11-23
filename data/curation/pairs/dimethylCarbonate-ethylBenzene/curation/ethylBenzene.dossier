@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.b_ij  -125.111347817;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.b_ji  482.534860468;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.b_ij  -125;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.b_ji  483;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.b_ij  -125.111347173;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.b_ji  482.534859033;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.b_ij  -125;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.b_ji  483;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.A_ij  2000.25799211;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.A_ji  939.184599447;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.A_ij  2000;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.A_ji  939;   // +/- 72 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.A_ij  2000.25799702;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.A_ji  939.184595508;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.A_ij  2000;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-dimethylCarbonate.A_ji  939;   // +/- 72 (1 sigma, from the fit)
     }
 
     evidence

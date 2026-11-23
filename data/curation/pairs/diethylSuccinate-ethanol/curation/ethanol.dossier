@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.b_ij  337.397729392;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.b_ji  14.9724363455;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.b_ij  337;   // +/- 65 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.b_ji  15;   // +/- 40 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.b_ij  337.397730223;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.b_ji  14.9724358979;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.b_ij  337;   // +/- 65 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.b_ji  15;   // +/- 40 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.A_ij  3388.96002678;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.A_ji  -292.496229491;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.A_ij  3390;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.A_ji  -290;   // +/- 430 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.A_ij  3388.9600295;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.A_ji  -292.496230574;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.A_ij  3390;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.A_ji  -290;   // +/- 430 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.a_ij  -83.5154883897;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.a_ji  296.276136754;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.a_ij  -84;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.a_ji  296;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.a_ij  -83.5154862741;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.a_ji  296.276133365;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.a_ij  -84;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-diethylSuccinate.a_ji  296;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence

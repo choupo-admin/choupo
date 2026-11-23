@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.b_ij  114.757488137;
-        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.b_ji  170.107042529;
+        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.b_ij  0;   // +/- 42000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.b_ji  0;   // +/- 34000 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.b_ij  114.810533507;
-        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.b_ji  170.063929511;
+        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.b_ij  0;   // +/- 42000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.b_ji  0;   // +/- 34000 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.A_ij  2767.19251412;
-        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.A_ji  918.065301241;
+        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.A_ij  0;   // +/- 130000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.A_ji  0;   // +/- 460000 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.A_ij  2767.1892909;
-        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.A_ji  918.076793687;
+        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.A_ij  0;   // +/- 130000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.R32-mesitylene.A_ji  0;   // +/- 460000 (1 sigma, from the fit)
     }
 
     evidence

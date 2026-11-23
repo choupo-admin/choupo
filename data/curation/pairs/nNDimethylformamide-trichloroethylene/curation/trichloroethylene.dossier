@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.b_ij  -10.0354219686;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.b_ji  324.659357098;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.b_ij  -10;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.b_ji  325;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.b_ij  -10.0354219272;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.b_ji  324.659357024;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.b_ij  -10;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.b_ji  325;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.A_ij  1744.35925286;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.A_ji  924.680140168;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.A_ij  1744;   // +/- 87 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.A_ji  925;   // +/- 63 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.A_ij  1744.3592583;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.A_ji  924.68013541;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.A_ij  1744;   // +/- 87 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-nNDimethylformamide.A_ji  925;   // +/- 63 (1 sigma, from the fit)
     }
 
     evidence

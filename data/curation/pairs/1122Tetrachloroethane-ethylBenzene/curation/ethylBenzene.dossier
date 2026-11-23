@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.b_ij  282.05486614;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.b_ji  -306.107549053;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.b_ij  300;   // +/- 4900 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.b_ji  -300;   // +/- 3200 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.b_ij  282.054570094;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.b_ji  -306.107356068;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.b_ij  300;   // +/- 4900 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.b_ji  -300;   // +/- 3200 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.a_ij  168.443547741;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.a_ji  -164.461904296;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.a_ij  200;   // +/- 4400 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.a_ji  -200;   // +/- 2900 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.a_ij  168.443546517;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.a_ji  -164.461903478;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.a_ij  200;   // +/- 4400 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.a_ji  -200;   // +/- 2900 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.A_ij  -2832.21968511;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.A_ji  2899.90061293;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.A_ij  -3000;   // +/- 63000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.A_ji  0;   // +/- 120000 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.A_ij  6627.02703517;
-        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.A_ji  -3238.6758346;
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.A_ij  6630;   // +/- 650 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylBenzene-1122Tetrachloroethane.A_ji  -3240;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence

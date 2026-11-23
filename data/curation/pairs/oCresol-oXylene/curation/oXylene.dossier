@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.b_ij  -574.919990292;
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.b_ji  1176.89912137;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.b_ij  -575;   // +/- 15 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.b_ji  1177;   // +/- 57 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.b_ij  -574.919989782;
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.b_ji  1176.8991194;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.b_ij  -575;   // +/- 15 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.b_ji  1177;   // +/- 57 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.A_ij  13060.6685788;
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.A_ji  -3151.43247196;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.A_ij  13100;   // +/- 1700 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.A_ji  -3151;   // +/- 68 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.A_ij  13060.6684852;
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.A_ji  -3151.43247066;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.A_ij  13100;   // +/- 1700 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-oCresol.A_ji  -3151;   // +/- 68 (1 sigma, from the fit)
     }
 
     evidence

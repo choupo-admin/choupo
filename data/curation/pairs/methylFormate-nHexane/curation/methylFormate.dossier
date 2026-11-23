@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-nHexane.b_ij  590.715270222;
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-nHexane.b_ji  262.135110755;
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-nHexane.b_ij  591;   // +/- 25 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-nHexane.b_ji  262;   // +/- 20 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-nHexane.b_ij  590.715270205;
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-nHexane.b_ji  262.135110758;
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-nHexane.b_ij  591;   // +/- 25 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-nHexane.b_ji  262;   // +/- 20 (1 sigma, from the fit)
     }
 
     evidence

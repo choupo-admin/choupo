@@ -30,8 +30,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-dimethylCarbonate.b_ij  401.302927633;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-dimethylCarbonate.b_ji  89.4443878637;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-dimethylCarbonate.b_ij  401.3;   // +/- 8.1 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-dimethylCarbonate.b_ji  89.4;   // +/- 6.1 (1 sigma, from the fit)
     }
 
     evidence
@@ -73,7 +73,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.0640801029909;
+        aadHeldOutPct     0.06408;
         acceptanceMaxAADPct 0.088;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.3 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (NONE: the held-out study reports no pure-component bubble point, so the term is ZERO, the strictest reading of the rule -- the band is the measurement's own uncertainty alone; measured with no pair involved), as a percentage of the held-out mean T (341.73 K) = 0.0878 %, rounded UP to two significant figures";
     }
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-dimethylCarbonate.b_ij  401.302517705;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-dimethylCarbonate.b_ji  89.4446707579;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-dimethylCarbonate.b_ij  401.3;   // +/- 8.1 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-dimethylCarbonate.b_ji  89.4;   // +/- 6.1 (1 sigma, from the fit)
     }
 
     evidence
@@ -130,7 +130,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.0640799536555;
+        aadHeldOutPct     0.06408;
         acceptanceMaxAADPct 0.088;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.3 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (NONE: the held-out study reports no pure-component bubble point, so the term is ZERO, the strictest reading of the rule -- the band is the measurement's own uncertainty alone; measured with no pair involved), as a percentage of the held-out mean T (341.73 K) = 0.0878 %, rounded UP to two significant figures";
     }

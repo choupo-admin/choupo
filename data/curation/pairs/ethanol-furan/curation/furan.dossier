@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.b_ij  753.658397027;
-        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.b_ji  -55.4589784663;
+        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.b_ij  754;   // +/- 30 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.b_ji  -55;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.b_ij  753.65839754;
-        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.b_ji  -55.45897871;
+        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.b_ij  754;   // +/- 30 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.b_ji  -55;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.A_ij  361.294737626;
-        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.A_ji  6180.47065784;
+        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.A_ij  361;   // +/- 63 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.A_ji  6180;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.A_ij  361.294738535;
-        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.A_ji  6180.47065533;
+        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.A_ij  361;   // +/- 63 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.furan-ethanol.A_ji  6180;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence

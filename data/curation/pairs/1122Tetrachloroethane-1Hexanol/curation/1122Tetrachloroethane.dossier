@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.b_ij  -359.16528436;
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.b_ji  853.06204054;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.b_ij  -359;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.b_ji  853;   // +/- 33 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.b_ij  -359.165284445;
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.b_ji  853.062040839;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.b_ij  -359;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.b_ji  853;   // +/- 33 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.a_ij  -275.516150169;
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.a_ji  494.960350226;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.a_ij  -275.5;   // +/- 6.1 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.a_ji  495;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.a_ij  -275.516150159;
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.a_ji  494.960350234;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.a_ij  -275.5;   // +/- 6.1 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.a_ji  495;   // +/- 16 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.A_ij  6712.4014906;
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.A_ji  -2487.61869117;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.A_ij  6710;   // +/- 200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.A_ji  -2488;   // +/- 51 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.A_ij  6712.40416893;
-        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.A_ji  -2487.61927027;
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.A_ij  6710;   // +/- 200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1122Tetrachloroethane-1Hexanol.A_ji  -2488;   // +/- 51 (1 sigma, from the fit)
     }
 
     evidence

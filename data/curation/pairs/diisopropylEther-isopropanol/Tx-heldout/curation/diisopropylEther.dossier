@@ -30,8 +30,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ij  168.9520368;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ji  410.773280263;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ij  169;   // +/- 24 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ji  411;   // +/- 33 (1 sigma, from the fit)
     }
 
     evidence
@@ -73,7 +73,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.550724059447;
+        aadHeldOutPct     0.55072;
         acceptanceMaxAADPct 0.24;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.61 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (isopropanol -0.206 K, diisopropylEther +0.116 K; measured with no pair involved), as a percentage of the held-out mean T (342.77 K) = 0.2380 %, rounded UP to two significant figures";
     }
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ij  168.933034599;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ji  410.799378206;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ij  169;   // +/- 24 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-isopropanol.b_ji  411;   // +/- 33 (1 sigma, from the fit)
     }
 
     evidence
@@ -130,7 +130,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.550729322708;
+        aadHeldOutPct     0.55072;
         acceptanceMaxAADPct 0.24;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit by bin/choupo-curate, the ONE rule of C16: the held-out set's largest stated expanded uncertainty (U95 = 0.61 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (isopropanol -0.206 K, diisopropylEther +0.116 K; measured with no pair involved), as a percentage of the held-out mean T (342.77 K) = 0.2380 %, rounded UP to two significant figures";
     }

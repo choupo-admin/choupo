@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.b_ij  -249.19122806;
-        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.b_ji  320.906867364;
+        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.b_ij  -249;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.b_ji  321;   // +/- 30 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.b_ij  138.948307238;
-        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.b_ji  -125.804426894;
+        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.b_ij  140;   // +/- 640 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.b_ji  -130;   // +/- 510 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.a_ij  -142.222592781;
-        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.a_ji  180.5537881;
+        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.a_ij  -142;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.a_ji  181;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.a_ij  131.747009589;
-        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.a_ji  -111.393405717;
+        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.a_ij  130;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.a_ji  -110;   // +/- 100 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.A_ij  2376.61438857;
-        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.A_ji  -1694.94116983;
+        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.A_ij  2380;   // +/- 240 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.A_ji  -1690;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.A_ij  2376.61437732;
-        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.A_ji  -1694.94116491;
+        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.A_ij  2380;   // +/- 240 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.propanal-propionicAcid.A_ji  -1690;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence

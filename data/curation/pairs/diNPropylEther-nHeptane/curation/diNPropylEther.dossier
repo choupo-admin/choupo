@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.b_ij  -110.584294486;
-        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.b_ji  166.694010391;
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.b_ij  -111;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.b_ji  167;   // +/- 34 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.b_ij  -110.584299384;
-        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.b_ji  166.694016397;
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.b_ij  -111;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.b_ji  167;   // +/- 34 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.A_ij  1159.85374706;
-        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.A_ji  -729.898324628;
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.A_ij  1160;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.A_ji  -730;   // +/- 170 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.A_ij  1159.8537427;
-        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.A_ji  -729.89832079;
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.A_ij  1160;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.A_ji  -730;   // +/- 170 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.a_ij  -76.3518157739;
-        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.a_ji  96.3328396469;
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.a_ij  -76;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.a_ji  96;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.a_ij  -76.3518136877;
-        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.a_ji  96.332837018;
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.a_ij  -76;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNPropylEther-nHeptane.a_ji  96;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence

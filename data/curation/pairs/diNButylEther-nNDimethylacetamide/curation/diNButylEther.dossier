@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.b_ij  341.680584548;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.b_ji  250.739546552;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.b_ij  342;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.b_ji  251;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.b_ij  341.680759098;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.b_ji  250.739338202;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.b_ij  342;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.b_ji  251;   // +/- 19 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.A_ij  477.462071108;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.A_ji  5149.52047677;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.A_ij  480;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.A_ji  5150;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.A_ij  477.462099515;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.A_ji  5149.52045051;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.A_ij  480;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-nNDimethylacetamide.A_ji  5150;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence

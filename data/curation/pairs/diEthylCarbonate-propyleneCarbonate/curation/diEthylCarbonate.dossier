@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.b_ij  -356.128347354;
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.b_ji  514.212765247;
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.b_ij  -356;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.b_ji  514;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.b_ij  -356.128348284;
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.b_ji  514.212767258;
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.b_ij  -356;   // +/- 19 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.b_ji  514;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.A_ij  2995.29038348;
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.A_ji  -1145.93013638;
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.A_ij  3000;   // +/- 350 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.A_ji  -1150;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.A_ij  2995.29051464;
-        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.A_ji  -1145.93017068;
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.A_ij  3000;   // +/- 350 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diEthylCarbonate-propyleneCarbonate.A_ji  -1150;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence

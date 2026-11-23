@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.b_ij  162.535270948;
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.b_ji  186.053988154;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.b_ij  163;   // +/- 45 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.b_ji  186;   // +/- 46 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.b_ij  162.535270648;
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.b_ji  186.053988363;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.b_ij  163;   // +/- 45 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.b_ji  186;   // +/- 46 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.A_ij  -67.0506124281;
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.A_ji  3109.92956985;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.A_ij  -70;   // +/- 250 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.A_ji  3110;   // +/- 240 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.A_ij  -67.0506199523;
-        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.A_ji  3109.92957843;
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.A_ij  -70;   // +/- 250 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.pXylene-nNDimethylformamide.A_ji  3110;   // +/- 240 (1 sigma, from the fit)
     }
 
     evidence

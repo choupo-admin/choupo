@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.b_ij  596.838329835;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.b_ji  -262.870336779;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.b_ij  600;   // +/- 100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.b_ji  -263;   // +/- 47 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.b_ij  596.838327766;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.b_ji  -262.87033572;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.b_ij  600;   // +/- 100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.b_ji  -263;   // +/- 47 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.a_ij  105.632056028;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.a_ji  -5.60113240621;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.a_ij  106;   // +/- 73 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.a_ji  -6;   // +/- 61 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.a_ij  105.63205588;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.a_ji  -5.60113226539;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.a_ij  106;   // +/- 73 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.a_ji  -6;   // +/- 61 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.A_ij  754.116659876;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.A_ji  1866.90314639;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.A_ij  750;   // +/- 360 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.A_ji  1870;   // +/- 920 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.A_ij  754.116657914;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.A_ji  1866.90315105;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.A_ij  750;   // +/- 360 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-ethylPropionate.A_ji  1870;   // +/- 920 (1 sigma, from the fit)
     }
 
     evidence

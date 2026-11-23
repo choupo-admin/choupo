@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-anisole.b_ij  586.866171821;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-anisole.b_ji  -654.93088023;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-anisole.b_ij  600;   // +/- 8300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-anisole.b_ji  -700;   // +/- 3200 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-anisole.b_ij  586.866157824;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-anisole.b_ji  -654.930874799;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-anisole.b_ij  600;   // +/- 8300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-anisole.b_ji  -700;   // +/- 3200 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-anisole.A_ij  -2191.63056339;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-anisole.A_ji  2410.10745112;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-anisole.A_ij  -2200;   // +/- 1400 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-anisole.A_ji  2400;   // +/- 6200 (1 sigma, from the fit)
     }
 
     evidence

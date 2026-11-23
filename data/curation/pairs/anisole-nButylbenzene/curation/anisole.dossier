@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.b_ij  553.939215075;
-        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.b_ji  -345.723707938;
+        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.b_ij  550;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.b_ji  -346;   // +/- 84 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.b_ij  553.939221753;
-        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.b_ji  -345.723711484;
+        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.b_ij  550;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.b_ji  -346;   // +/- 84 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.A_ij  -600.88428331;
-        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.A_ji  2198.08103424;
+        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.A_ij  -600;   // +/- 600 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.A_ji  2200;   // +/- 1200 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.A_ij  -600.884285689;
-        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.A_ji  2198.08103834;
+        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.A_ij  -600;   // +/- 600 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.anisole-nButylbenzene.A_ji  2200;   // +/- 1200 (1 sigma, from the fit)
     }
 
     evidence

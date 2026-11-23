@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.b_ij  61.9628979694;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.b_ji  -216.372768344;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.b_ij  62;   // +/- 32 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.b_ji  -216;   // +/- 26 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.b_ij  756.357769442;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.b_ji  -603.473407277;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.b_ij  756;   // +/- 41 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.b_ji  -603;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.A_ij  -2124.90555827;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.A_ji  799.909387121;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.A_ij  -2120;   // +/- 110 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.A_ji  800;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.A_ij  8950.1148169;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.A_ji  -3568.41989389;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.A_ij  9000;   // +/- 1300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-dimethylSulfoxide.A_ji  -3568;   // +/- 92 (1 sigma, from the fit)
     }
 
     evidence

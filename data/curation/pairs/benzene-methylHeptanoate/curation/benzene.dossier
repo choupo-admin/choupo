@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.b_ij  -349.132055188;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.b_ji  558.718819496;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.b_ij  -349;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.b_ji  559;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.b_ij  -349.132055247;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.b_ji  558.718819593;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.b_ij  -349;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.b_ji  559;   // +/- 22 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.a_ij  -237.573397078;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.a_ji  372.934497159;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.a_ij  -237.6;   // +/- 4.1 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.a_ji  372.9;   // +/- 8.6 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.a_ij  -237.573397039;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.a_ji  372.934497082;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.a_ij  -237.6;   // +/- 4.1 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.a_ji  372.9;   // +/- 8.6 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.A_ij  5253.71687118;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.A_ji  -3830.30491066;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.A_ij  5250;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.A_ji  -3830;   // +/- 100 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.A_ij  5253.71686899;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.A_ji  -3830.30490948;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.A_ij  5250;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylHeptanoate.A_ji  -3830;   // +/- 100 (1 sigma, from the fit)
     }
 
     evidence

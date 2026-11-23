@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.b_ij  58.5764856098;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.b_ji  628.584283886;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.b_ij  59;   // +/- 10 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.b_ji  629;   // +/- 20 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.b_ij  58.5764840589;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.b_ji  628.58428643;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.b_ij  59;   // +/- 10 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.b_ji  629;   // +/- 20 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.a_ij  -62.0255706356;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.a_ji  238.696441076;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.a_ij  -62.0;   // +/- 7.3 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.a_ji  239;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.a_ij  -62.0255719414;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.a_ji  238.696443391;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.a_ij  -62.0;   // +/- 7.3 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.a_ji  239;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.A_ij  6111.32786719;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.A_ji  789.075452576;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.A_ij  6111;   // +/- 89 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.A_ji  789;   // +/- 28 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.A_ij  6111.32787356;
-        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.A_ji  789.075449918;
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.A_ij  6111;   // +/- 89 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Butanol-cyclohexane.A_ji  789;   // +/- 28 (1 sigma, from the fit)
     }
 
     evidence

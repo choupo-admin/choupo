@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-diButylCarbonate.b_ij  3.51880467355;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-diButylCarbonate.b_ji  39.4933480272;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diButylCarbonate.b_ij  0;   // +/- 100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diButylCarbonate.b_ji  40;   // +/- 100 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methanol-diButylCarbonate.b_ij  2.56619782658;
-        equilibrium.liquid.activityModel.binaryParameters.methanol-diButylCarbonate.b_ji  40.4551640679;
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diButylCarbonate.b_ij  0;   // +/- 100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methanol-diButylCarbonate.b_ji  40;   // +/- 100 (1 sigma, from the fit)
     }
 
     evidence

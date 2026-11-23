@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.mCresol-diisopropanolamine.b_ij  344.201038155;
-        equilibrium.liquid.activityModel.binaryParameters.mCresol-diisopropanolamine.b_ji  -353.667673692;
+        equilibrium.liquid.activityModel.binaryParameters.mCresol-diisopropanolamine.b_ij  0;   // +/- 18000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.mCresol-diisopropanolamine.b_ji  0;   // +/- 11000 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.mCresol-diisopropanolamine.b_ij  344.200618214;
-        equilibrium.liquid.activityModel.binaryParameters.mCresol-diisopropanolamine.b_ji  -353.667409146;
+        equilibrium.liquid.activityModel.binaryParameters.mCresol-diisopropanolamine.b_ij  0;   // +/- 18000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.mCresol-diisopropanolamine.b_ji  0;   // +/- 11000 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.mCresol-diisopropanolamine.A_ij  -1712.34036958;
-        equilibrium.liquid.activityModel.binaryParameters.mCresol-diisopropanolamine.A_ji  1931.09098511;
+        equilibrium.liquid.activityModel.binaryParameters.mCresol-diisopropanolamine.A_ij  -2000;   // +/- 18000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.mCresol-diisopropanolamine.A_ji  2000;   // +/- 38000 (1 sigma, from the fit)
     }
 
     evidence

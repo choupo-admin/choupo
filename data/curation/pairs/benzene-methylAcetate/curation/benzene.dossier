@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.b_ij  128.192937668;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.b_ji  -23.9468212668;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.b_ij  128;   // +/- 48 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.b_ji  -24;   // +/- 42 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.b_ij  128.192938435;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.b_ji  -23.9468219367;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.b_ij  128;   // +/- 48 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.b_ji  -24;   // +/- 42 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.a_ij  121.481406994;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.a_ji  -97.5691584065;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.a_ij  121;   // +/- 46 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.a_ji  -98;   // +/- 33 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.a_ij  121.481410512;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.a_ji  -97.569161007;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.a_ij  121;   // +/- 46 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.a_ji  -98;   // +/- 33 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.A_ij  -277.544300047;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.A_ji  1141.13865228;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.A_ij  -280;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.A_ji  1140;   // +/- 260 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.A_ij  -277.544290829;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.A_ji  1141.13864248;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.A_ij  -280;   // +/- 220 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-methylAcetate.A_ji  1140;   // +/- 260 (1 sigma, from the fit)
     }
 
     evidence

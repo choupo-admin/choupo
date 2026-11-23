@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.b_ij  651.769309902;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.b_ji  -115.806383818;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.b_ij  652;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.b_ji  -115.8;   // +/- 6.5 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.b_ij  651.769309841;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.b_ji  -115.806383791;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.b_ij  652;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.b_ji  -115.8;   // +/- 6.5 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.a_ij  262.148940397;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.a_ji  -116.294332598;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.a_ij  262.1;   // +/- 6.2 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.a_ji  -116.3;   // +/- 3.6 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.a_ij  262.148940038;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.a_ji  -116.294332404;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.a_ij  262.1;   // +/- 6.2 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.a_ji  -116.3;   // +/- 3.6 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.A_ij  -569.730795149;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.A_ji  5490.54646649;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.A_ij  -570;   // +/- 34 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.A_ji  5491;   // +/- 95 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.A_ij  -569.730794608;
-        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.A_ji  5490.54646566;
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.A_ij  -570;   // +/- 34 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Hexene-2Pentanol.A_ji  5491;   // +/- 95 (1 sigma, from the fit)
     }
 
     evidence

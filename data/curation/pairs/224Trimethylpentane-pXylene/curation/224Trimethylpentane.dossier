@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.b_ij  -310.244875266;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.b_ji  475.352057986;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.b_ij  -310;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.b_ji  475;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.b_ij  -310.244876951;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.b_ji  475.3520621;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.b_ij  -310;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.b_ji  475;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.a_ij  78.6183201798;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.a_ji  -72.8478917835;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.a_ij  100;   // +/- 8500 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.a_ji  -100;   // +/- 7000 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.a_ij  78.6248692369;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.a_ji  -72.8532936275;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.a_ij  100;   // +/- 8500 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.a_ji  -100;   // +/- 7000 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.A_ij  2636.54279932;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.A_ji  -1061.56947637;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.A_ij  2640;   // +/- 270 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.A_ji  -1060;   // +/- 100 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.A_ij  2636.54277102;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.A_ji  -1061.56946601;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.A_ij  2640;   // +/- 270 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-pXylene.A_ji  -1060;   // +/- 100 (1 sigma, from the fit)
     }
 
     evidence

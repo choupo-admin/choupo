@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.b_ij  309.018259569;
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.b_ji  -196.399342321;
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.b_ij  309;   // +/- 99 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.b_ji  -196;   // +/- 67 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.b_ij  309.018261655;
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.b_ji  -196.399343713;
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.b_ij  309;   // +/- 99 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.b_ji  -196;   // +/- 67 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.A_ij  -2196.20151866;
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.A_ji  3136.87374312;
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.A_ij  -2200;   // +/- 530 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.A_ji  3140;   // +/- 890 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.A_ij  -2196.20149612;
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.A_ji  3136.87370357;
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.A_ij  -2200;   // +/- 530 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-nNDimethylacetamide.A_ji  3140;   // +/- 890 (1 sigma, from the fit)
     }
 
     evidence

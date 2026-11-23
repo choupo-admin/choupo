@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.b_ij  262.02134082;
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.b_ji  171.488161179;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.b_ij  262;   // +/- 10 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.b_ji  171.5;   // +/- 9.4 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.b_ij  262.021334946;
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.b_ji  171.488165229;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.b_ij  262;   // +/- 10 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.b_ji  171.5;   // +/- 9.4 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.A_ij  561.20432805;
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.A_ji  3328.7658704;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.A_ij  561;   // +/- 53 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.A_ji  3329;   // +/- 62 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.A_ij  561.204308799;
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.A_ji  3328.76588961;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.A_ij  561;   // +/- 53 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-1Propanol.A_ji  3329;   // +/- 62 (1 sigma, from the fit)
     }
 
     evidence

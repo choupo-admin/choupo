@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.b_ij  -292.963569472;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.b_ji  408.000421421;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.b_ij  -293;   // +/- 69 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.b_ji  410;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.b_ij  -292.975010587;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.b_ji  408.020344096;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.b_ij  -293;   // +/- 69 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.b_ji  410;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence
@@ -143,8 +143,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.a_ij  -210.564655484;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.a_ji  298.53082951;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.a_ij  -211;   // +/- 15 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.a_ji  299;   // +/- 30 (1 sigma, from the fit)
     }
 
     evidence
@@ -199,8 +199,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.a_ij  211.853895474;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.a_ji  -164.950126569;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.a_ij  212;   // +/- 39 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.a_ji  -165;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -255,8 +255,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.A_ij  -3472.21341489;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.A_ji  4449.60615901;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.A_ij  -3470;   // +/- 350 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.A_ji  4450;   // +/- 780 (1 sigma, from the fit)
     }
 
     evidence
@@ -311,8 +311,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.A_ij  -3472.21339188;
-        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.A_ji  4449.60611219;
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.A_ij  -3470;   // +/- 350 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nDecane-oXylene.A_ji  4450;   // +/- 780 (1 sigma, from the fit)
     }
 
     evidence

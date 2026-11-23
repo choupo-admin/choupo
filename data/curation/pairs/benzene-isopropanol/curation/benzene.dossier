@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.b_ij  536.35965818;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.b_ji  103.809155438;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.b_ij  536;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.b_ji  104;   // +/- 10 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.b_ij  536.359662924;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.b_ji  103.809154067;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.b_ij  536;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.b_ji  104;   // +/- 10 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.a_ij  154.548325446;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.a_ji  3.54120779617;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.a_ij  155;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.a_ji  3.5;   // +/- 9.9 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.a_ij  154.548325056;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.a_ji  3.54120806525;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.a_ij  155;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.a_ji  3.5;   // +/- 9.9 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.A_ij  1154.90567928;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.A_ji  4979.10083643;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.A_ij  1155;   // +/- 17 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.A_ji  4979;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.A_ij  1154.90562658;
-        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.A_ji  4979.10094365;
+        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.A_ij  1155;   // +/- 17 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.benzene-isopropanol.A_ji  4979;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.b_ij  130.932551069;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.b_ji  -128.112899739;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.b_ij  100;   // +/- 5000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.b_ji  -100;   // +/- 4100 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.b_ij  130.931684838;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.b_ji  -128.112187787;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.b_ij  100;   // +/- 5000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.b_ji  -100;   // +/- 4100 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.a_ij  87.0302093039;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.a_ji  -79.9272191812;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.a_ij  90;   // +/- 550 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.a_ji  -80;   // +/- 450 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.a_ij  87.1970409475;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.a_ji  -80.0621573468;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.a_ij  90;   // +/- 550 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.a_ji  -80;   // +/- 440 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.A_ij  -319.821722985;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.A_ji  346.511507785;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.A_ij  0;   // +/- 36000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.A_ji  0;   // +/- 47000 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.A_ij  2638.80969796;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.A_ji  -2189.41321947;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.A_ij  2640;   // +/- 550 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Propanol-1Pentanol.A_ji  -2190;   // +/- 310 (1 sigma, from the fit)
     }
 
     evidence

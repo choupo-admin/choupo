@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.b_ij  213.285289769;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.b_ji  -54.4913510617;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.b_ij  213;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.b_ji  -54;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.b_ij  213.285283032;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.b_ji  -54.4913459186;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.b_ij  213;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.b_ji  -54;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.A_ij  -632.266564175;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.A_ji  1866.38422587;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.A_ij  -630;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.A_ji  1870;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.A_ij  -632.266557738;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.A_ji  1866.38421807;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.A_ij  -630;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-tetrahydropyran.A_ji  1870;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.b_ij  -91.610516318;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.b_ji  157.534916819;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.b_ij  -92;   // +/- 71 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.b_ji  158;   // +/- 87 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.b_ij  -91.6105199776;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.b_ji  157.534921387;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.b_ij  -92;   // +/- 71 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.b_ji  158;   // +/- 87 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.A_ij  -417.795011719;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.A_ji  981.365275937;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.A_ij  -420;   // +/- 630 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.A_ji  980;   // +/- 480 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.A_ij  -417.794994055;
-        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.A_ji  981.365263216;
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.A_ij  -420;   // +/- 630 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.224Trimethylpentane-monochlorobenzene.A_ji  980;   // +/- 480 (1 sigma, from the fit)
     }
 
     evidence

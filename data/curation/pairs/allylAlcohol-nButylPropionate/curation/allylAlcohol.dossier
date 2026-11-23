@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.b_ij  794.327842598;
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.b_ji  -380.040955634;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.b_ij  794;   // +/- 78 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.b_ji  -380;   // +/- 30 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.b_ij  794.327861631;
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.b_ji  -380.040964721;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.b_ij  794;   // +/- 78 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.b_ji  -380;   // +/- 30 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.a_ij  314.636988969;
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.a_ji  -185.271750465;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.a_ij  315;   // +/- 54 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.a_ji  -185;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.a_ij  314.636987713;
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.a_ji  -185.271749823;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.a_ij  315;   // +/- 54 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.a_ji  -185;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.A_ij  505.002162611;
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.A_ji  2944.95447746;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.A_ij  510;   // +/- 210 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.A_ji  2940;   // +/- 760 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.A_ij  505.002150423;
-        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.A_ji  2944.95451519;
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.A_ij  510;   // +/- 210 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.allylAlcohol-nButylPropionate.A_ji  2940;   // +/- 760 (1 sigma, from the fit)
     }
 
     evidence

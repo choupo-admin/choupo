@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.b_ij  39.2538957324;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.b_ji  320.490503323;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.b_ij  39.3;   // +/- 7.3 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.b_ji  320.5;   // +/- 9.5 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.b_ij  39.2538956704;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.b_ji  320.490503319;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.b_ij  39.3;   // +/- 7.3 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.b_ji  320.5;   // +/- 9.5 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.a_ij  -12.9063485975;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.a_ji  114.912873029;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.a_ij  -12.9;   // +/- 4.9 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.a_ji  114.9;   // +/- 6.0 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.a_ij  -12.9063485472;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.a_ji  114.912872965;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.a_ij  -12.9;   // +/- 4.9 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.a_ji  114.9;   // +/- 6.0 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.A_ij  2327.06482793;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.A_ji  805.305532589;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.A_ij  2327;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.A_ji  805;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.A_ij  2327.06483025;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.A_ji  805.305530131;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.A_ij  2327;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-benzene.A_ji  805;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence

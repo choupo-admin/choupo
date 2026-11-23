@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.b_ij  -33.5924991054;
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.b_ji  315.984795326;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.b_ij  -34;   // +/- 40 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.b_ji  316;   // +/- 57 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.b_ij  -33.5924988195;
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.b_ji  315.984794913;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.b_ij  -34;   // +/- 40 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.b_ji  316;   // +/- 57 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.A_ij  1689.64771574;
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.A_ji  696.11504591;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.A_ij  1690;   // +/- 350 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.A_ji  700;   // +/- 230 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.A_ij  1689.64772572;
-        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.A_ji  696.115040748;
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.A_ij  1690;   // +/- 350 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nOctane-3Heptanone.A_ji  700;   // +/- 230 (1 sigma, from the fit)
     }
 
     evidence

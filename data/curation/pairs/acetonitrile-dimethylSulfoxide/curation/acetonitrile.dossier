@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.b_ij  396.482651203;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.b_ji  82.1219593664;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.b_ij  400;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.b_ji  82;   // +/- 92 (1 sigma, from the fit)
     }
 
     evidence
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.b_ij  396.482654938;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.b_ji  82.1219535399;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.b_ij  400;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.b_ji  82;   // +/- 92 (1 sigma, from the fit)
     }
 
     evidence
@@ -143,8 +143,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.A_ij  2213.52304022;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.A_ji  1972.13564577;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.A_ij  2210;   // +/- 470 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.A_ji  1970;   // +/- 840 (1 sigma, from the fit)
     }
 
     evidence
@@ -199,8 +199,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.A_ij  2213.52300051;
-        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.A_ji  1972.13566124;
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.A_ij  2210;   // +/- 470 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.acetonitrile-dimethylSulfoxide.A_ji  1970;   // +/- 840 (1 sigma, from the fit)
     }
 
     evidence

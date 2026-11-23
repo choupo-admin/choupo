@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.b_ij  439.837558564;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.b_ji  -13.2102555932;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.b_ij  440;   // +/- 47 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.b_ji  -13;   // +/- 33 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.b_ij  439.837559058;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.b_ji  -13.2102558745;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.b_ij  440;   // +/- 47 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.b_ji  -13;   // +/- 33 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.a_ij  301.222545228;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.a_ji  -170.049151259;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.a_ij  301;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.a_ji  -170;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.a_ij  301.222545339;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.a_ji  -170.049151318;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.a_ij  301;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.a_ji  -170;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.A_ij  966.412064008;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.A_ji  2713.15728921;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.A_ij  970;   // +/- 190 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.A_ji  2710;   // +/- 290 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.A_ij  966.412061856;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.A_ji  2713.15729145;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.A_ij  970;   // +/- 190 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl1Butanol-ethylBenzene.A_ji  2710;   // +/- 290 (1 sigma, from the fit)
     }
 
     evidence

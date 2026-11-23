@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.b_ij  -332.84507568;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.b_ji  533.504614586;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.b_ij  -333;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.b_ji  534;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.b_ij  -332.845076356;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.b_ji  533.504615943;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.b_ij  -333;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.b_ji  534;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.A_ij  4071.53475477;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.A_ji  -2380.39964944;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.A_ij  4070;   // +/- 180 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.A_ji  -2380;   // +/- 69 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.A_ij  4071.53475262;
-        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.A_ji  -2380.39964859;
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.A_ij  4070;   // +/- 180 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Pentanone-diEthylCarbonate.A_ji  -2380;   // +/- 69 (1 sigma, from the fit)
     }
 
     evidence

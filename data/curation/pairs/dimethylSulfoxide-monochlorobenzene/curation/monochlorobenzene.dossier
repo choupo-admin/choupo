@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.b_ij  -253.940290886;
-        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.b_ji  663.387367829;
+        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.b_ij  -254;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.b_ji  663;   // +/- 42 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.b_ij  -253.940291046;
-        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.b_ji  663.387368211;
+        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.b_ij  -254;   // +/- 22 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.b_ji  663;   // +/- 42 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.A_ij  3152.11939936;
-        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.A_ji  208.362044638;
+        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.A_ij  3150;   // +/- 290 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.A_ji  210;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.A_ij  3152.11940118;
-        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.A_ji  208.36204373;
+        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.A_ij  3150;   // +/- 290 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.monochlorobenzene-dimethylSulfoxide.A_ji  210;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence

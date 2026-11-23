@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.b_ij  496.168890122;
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.b_ji  -297.13689754;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.b_ij  496;   // +/- 41 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.b_ji  -297;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.b_ij  496.16888947;
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.b_ji  -297.136897272;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.b_ij  496;   // +/- 41 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.b_ji  -297;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.a_ij  -75.3415184872;
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.a_ji  73.1135128337;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.a_ij  0;   // +/- 15000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.a_ji  0;   // +/- 18000 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.a_ij  394.3932451;
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.a_ji  -271.957807312;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.a_ij  394.4;   // +/- 9.7 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.a_ji  -272.0;   // +/- 4.2 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.A_ij  -1529.03132601;
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.A_ji  3101.70067054;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.A_ij  -1530;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.A_ji  3100;   // +/- 300 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.A_ij  -1529.03130499;
-        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.A_ji  3101.70062205;
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.A_ij  -1530;   // +/- 140 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oXylene-1Hexanol.A_ji  3100;   // +/- 300 (1 sigma, from the fit)
     }
 
     evidence

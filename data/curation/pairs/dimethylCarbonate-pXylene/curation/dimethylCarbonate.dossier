@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.b_ij  666.127354134;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.b_ji  -266.771714516;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.b_ij  670;   // +/- 170 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.b_ji  -267;   // +/- 84 (1 sigma, from the fit)
     }
 
     evidence
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.b_ij  666.127354492;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.b_ji  -266.77171471;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.b_ij  670;   // +/- 170 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.b_ji  -267;   // +/- 84 (1 sigma, from the fit)
     }
 
     evidence
@@ -143,8 +143,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.A_ij  -10.439732149;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.A_ji  3294.93991668;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.A_ij  -10;   // +/- 590 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.A_ji  3300;   // +/- 1500 (1 sigma, from the fit)
     }
 
     evidence
@@ -199,8 +199,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.A_ij  -10.4397323221;
-        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.A_ji  3294.93991715;
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.A_ij  -10;   // +/- 590 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.dimethylCarbonate-pXylene.A_ji  3300;   // +/- 1500 (1 sigma, from the fit)
     }
 
     evidence

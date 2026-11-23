@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.b_ij  58.3399515698;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.b_ji  231.367970086;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.b_ij  58;   // +/- 35 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.b_ji  231;   // +/- 43 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.b_ij  58.3399510178;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.b_ji  231.367970756;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.b_ij  58;   // +/- 35 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.b_ji  231;   // +/- 43 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.A_ij  2012.8974811;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.A_ji  492.54552903;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.A_ij  2010;   // +/- 260 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.A_ji  490;   // +/- 200 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.A_ij  2012.89748035;
-        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.A_ji  492.545529545;
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.A_ij  2010;   // +/- 260 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.13Dioxolane-isopropanol.A_ji  490;   // +/- 200 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.b_ij  635.527200492;
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.b_ji  -388.236230018;
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.b_ij  636;   // +/- 73 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.b_ji  -388;   // +/- 32 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.b_ij  635.527201049;
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.b_ji  -388.236230327;
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.b_ij  636;   // +/- 73 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.b_ji  -388;   // +/- 32 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.a_ij  -17.9727731984;
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.a_ji  17.1551858545;
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.a_ij  0;   // +/- 160000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.a_ji  0;   // +/- 170000 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.a_ij  395.179886207;
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.a_ji  -262.160357035;
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.a_ij  395;   // +/- 33 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.a_ji  -262;   // +/- 14 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.A_ij  -2440.58229156;
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.A_ji  4710.86773746;
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.A_ij  -2440;   // +/- 190 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.A_ji  4710;   // +/- 600 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.A_ij  -2440.58226445;
-        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.A_ji  4710.86763897;
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.A_ij  -2440;   // +/- 190 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylIsobutylKetone-ethylBenzene.A_ji  4710;   // +/- 600 (1 sigma, from the fit)
     }
 
     evidence

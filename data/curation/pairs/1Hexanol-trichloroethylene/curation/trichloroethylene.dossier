@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.b_ij  176.491829476;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.b_ji  -168.815942521;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.b_ij  200;   // +/- 2800 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.b_ji  -200;   // +/- 2200 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.b_ij  176.49213564;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.b_ji  -168.816179037;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.b_ij  200;   // +/- 2800 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.b_ji  -200;   // +/- 2200 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.A_ij  369.213881305;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.A_ji  -410.944547917;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.A_ij  0;   // +/- 37000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.A_ji  0;   // +/- 46000 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.A_ij  4731.95263695;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.A_ji  -3470.70570799;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.A_ij  4730;   // +/- 360 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-1Hexanol.A_ji  -3470;   // +/- 140 (1 sigma, from the fit)
     }
 
     evidence

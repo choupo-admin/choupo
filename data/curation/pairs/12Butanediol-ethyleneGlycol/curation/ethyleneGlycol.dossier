@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.b_ij  685.336556969;
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.b_ji  -238.23508116;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.b_ij  690;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.b_ji  -238;   // +/- 57 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.b_ij  685.336555246;
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.b_ji  -238.235080157;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.b_ij  690;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.b_ji  -238;   // +/- 57 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.A_ij  701.179665535;
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.A_ji  3012.27303208;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.A_ij  700;   // +/- 380 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.A_ji  3010;   // +/- 970 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.A_ij  701.179671342;
-        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.A_ji  3012.27301861;
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.A_ij  700;   // +/- 380 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethyleneGlycol-12Butanediol.A_ji  3010;   // +/- 970 (1 sigma, from the fit)
     }
 
     evidence

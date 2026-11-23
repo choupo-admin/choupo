@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.b_ij  500.626073528;
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.b_ji  -111.636058155;
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.b_ij  501;   // +/- 48 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.b_ji  -112;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.b_ij  500.626076193;
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.b_ji  -111.636059461;
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.b_ij  501;   // +/- 48 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.b_ji  -112;   // +/- 24 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.A_ij  -382.912895209;
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.A_ji  4045.38838366;
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.A_ij  -380;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.A_ji  4050;   // +/- 440 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.A_ij  -382.91288477;
-        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.A_ji  4045.3883642;
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.A_ij  -380;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.carbonTetrachloride-2Ethoxyethanol.A_ji  4050;   // +/- 440 (1 sigma, from the fit)
     }
 
     evidence

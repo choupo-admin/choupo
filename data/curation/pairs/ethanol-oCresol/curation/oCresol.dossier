@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oCresol-ethanol.b_ij  -693.251575902;
-        equilibrium.liquid.activityModel.binaryParameters.oCresol-ethanol.b_ji  1272.35506799;
+        equilibrium.liquid.activityModel.binaryParameters.oCresol-ethanol.b_ij  -693;   // +/- 12 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oCresol-ethanol.b_ji  1272;   // +/- 88 (1 sigma, from the fit)
     }
 
     evidence
@@ -86,8 +86,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.oCresol-ethanol.b_ij  993.3308627;
-        equilibrium.liquid.activityModel.binaryParameters.oCresol-ethanol.b_ji  -656.602288706;
+        equilibrium.liquid.activityModel.binaryParameters.oCresol-ethanol.b_ij  993;   // +/- 43 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.oCresol-ethanol.b_ji  -657;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence

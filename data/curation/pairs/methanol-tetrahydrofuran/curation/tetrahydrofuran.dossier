@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.b_ij  241.375050763;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.b_ji  61.3943994081;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.b_ij  241;   // +/- 33 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.b_ji  61;   // +/- 28 (1 sigma, from the fit)
     }
 
     evidence
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.b_ij  241.375053654;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.b_ji  61.3943963581;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.b_ij  241;   // +/- 33 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.b_ji  61;   // +/- 28 (1 sigma, from the fit)
     }
 
     evidence
@@ -143,8 +143,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.A_ij  -1124.2961281;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.A_ji  3744.17314242;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.A_ij  -1120;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.A_ji  3740;   // +/- 200 (1 sigma, from the fit)
     }
 
     evidence
@@ -199,8 +199,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.A_ij  -1124.29612848;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.A_ji  3744.17314249;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.A_ij  -1120;   // +/- 160 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-methanol.A_ji  3740;   // +/- 200 (1 sigma, from the fit)
     }
 
     evidence

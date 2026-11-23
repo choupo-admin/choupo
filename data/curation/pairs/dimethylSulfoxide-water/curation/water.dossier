@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ij  -88.7292641957;
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ji  -209.356401174;
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ij  -89;   // +/- 84 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ji  -209;   // +/- 78 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ij  1327.15473652;
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ji  -824.693877898;
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ij  1327;   // +/- 75 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.b_ji  -825;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ij  -585.527713217;
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ji  22663.3019139;
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ij  -590;   // +/- 190 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ji  20000;   // +/- 400000 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ij  3048.32029006;
-        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ji  -5468.66141626;
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ij  3050;   // +/- 450 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.water-dimethylSulfoxide.A_ji  -5470;   // +/- 530 (1 sigma, from the fit)
     }
 
     evidence

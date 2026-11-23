@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.b_ij  502.486964363;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.b_ji  -560.791159969;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.b_ij  1000;   // +/- 21000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.b_ji  -1000;   // +/- 10000 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.b_ij  502.486947134;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.b_ji  -560.791151826;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.b_ij  1000;   // +/- 21000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.b_ji  -1000;   // +/- 10000 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.a_ij  269.971073917;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.a_ji  -254.297784669;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.a_ij  300;   // +/- 5300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.a_ji  -300;   // +/- 2900 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.a_ij  269.971213853;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.a_ji  -254.297860004;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.a_ij  300;   // +/- 5300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.a_ji  -300;   // +/- 2900 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.A_ij  -2942.95505224;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.A_ji  3132.67658395;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.A_ij  -3000;   // +/- 41000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.A_ji  0;   // +/- 130000 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.A_ij  30000;
-        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.A_ji  -6308.77332794;
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.A_ij  0;   // +/- 1800000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Ethoxyethanol-2Butoxyethanol.A_ji  -6310;   // +/- 660 (1 sigma, from the fit)
     }
 
     evidence

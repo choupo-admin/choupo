@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.b_ij  461.440293075;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.b_ji  -152.71950051;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.b_ij  461.4;   // +/- 8.3 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.b_ji  -152.7;   // +/- 4.8 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.b_ij  461.44029329;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.b_ji  -152.719500684;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.b_ij  461.4;   // +/- 8.3 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.b_ji  -152.7;   // +/- 4.8 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.A_ij  -34.2095722792;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.A_ji  2576.41061698;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.A_ij  -34;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.A_ji  2576;   // +/- 54 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.A_ij  -34.2095730553;
-        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.A_ji  2576.41062112;
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.A_ij  -34;   // +/- 27 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nNDimethylformamide-methylEthylKetone.A_ji  2576;   // +/- 54 (1 sigma, from the fit)
     }
 
     evidence

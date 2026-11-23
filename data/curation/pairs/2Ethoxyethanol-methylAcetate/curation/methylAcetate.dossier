@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.b_ij  524.258772855;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.b_ji  -211.080741543;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.b_ij  524;   // +/- 50 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.b_ji  -211;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.b_ij  524.258760739;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.b_ji  -211.080736811;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.b_ij  524;   // +/- 50 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.b_ji  -211;   // +/- 23 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.A_ij  -596.719871904;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.A_ji  3357.60724013;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.A_ij  -600;   // +/- 180 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.A_ji  3360;   // +/- 540 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.A_ij  -596.719891208;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.A_ji  3357.60731163;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.A_ij  -600;   // +/- 180 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.A_ji  3360;   // +/- 540 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.a_ij  237.656769799;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.a_ji  -120.760001941;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.a_ij  238;   // +/- 38 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.a_ji  -121;   // +/- 20 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.a_ij  237.656768071;
-        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.a_ji  -120.760001069;
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.a_ij  238;   // +/- 38 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylAcetate-2Ethoxyethanol.a_ji  -121;   // +/- 20 (1 sigma, from the fit)
     }
 
     evidence

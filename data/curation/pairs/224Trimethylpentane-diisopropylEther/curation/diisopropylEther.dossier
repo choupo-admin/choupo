@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.b_ij  289.900668951;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.b_ji  -186.261939889;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.b_ij  290;   // +/- 290 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.b_ji  -190;   // +/- 200 (1 sigma, from the fit)
     }
 
     evidence
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.b_ij  289.900672534;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.b_ji  -186.261942377;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.b_ij  290;   // +/- 290 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.b_ji  -190;   // +/- 200 (1 sigma, from the fit)
     }
 
     evidence
@@ -143,8 +143,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.A_ij  -507.392557468;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.A_ji  1284.22802647;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.A_ij  -500;   // +/- 1300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.A_ji  1300;   // +/- 2000 (1 sigma, from the fit)
     }
 
     evidence
@@ -199,8 +199,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.A_ij  -507.392554328;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.A_ji  1284.22802124;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.A_ij  -500;   // +/- 1300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-224Trimethylpentane.A_ji  1300;   // +/- 2000 (1 sigma, from the fit)
     }
 
     evidence

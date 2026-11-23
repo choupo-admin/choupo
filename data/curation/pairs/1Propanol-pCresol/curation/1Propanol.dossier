@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.b_ij  -429.863158705;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.b_ji  330.585548571;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.b_ij  -400;   // +/- 1500 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.b_ji  300;   // +/- 2600 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.b_ij  1498.07619366;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.b_ji  -772.193097937;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.b_ij  1500;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.b_ji  -772;   // +/- 15 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.A_ij  3830.1175487;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.A_ji  -4313.99648136;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.A_ij  4000;   // +/- 12000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.A_ji  -4300;   // +/- 5200 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.A_ij  3830.11373733;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.A_ji  -4313.99474892;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.A_ij  4000;   // +/- 12000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-pCresol.A_ji  -4300;   // +/- 5200 (1 sigma, from the fit)
     }
 
     evidence

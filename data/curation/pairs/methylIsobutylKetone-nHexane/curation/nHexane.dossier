@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.b_ij  363.998923046;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.b_ji  -47.7479747092;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.b_ij  364;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.b_ji  -48;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.b_ij  363.99892165;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.b_ji  -47.7479737285;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.b_ij  364;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.b_ji  -48;   // +/- 11 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.a_ij  156.844751356;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.a_ji  -69.5935547541;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.a_ij  156.8;   // +/- 7.9 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.a_ji  -69.6;   // +/- 6.0 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.a_ij  156.844751623;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.a_ji  -69.5935549492;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.a_ij  156.8;   // +/- 7.9 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.a_ji  -69.6;   // +/- 6.0 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.A_ij  115.526654963;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.A_ji  2529.51094953;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.A_ij  116;   // +/- 58 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.A_ji  2530;   // +/- 73 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.A_ij  115.526652159;
-        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.A_ji  2529.51095264;
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.A_ij  116;   // +/- 58 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nHexane-methylIsobutylKetone.A_ji  2530;   // +/- 73 (1 sigma, from the fit)
     }
 
     evidence

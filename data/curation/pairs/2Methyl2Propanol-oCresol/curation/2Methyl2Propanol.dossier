@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.b_ij  545.491443123;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.b_ji  -573.693949732;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.b_ij  500;   // +/- 1300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.b_ji  -570;   // +/- 570 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.b_ij  545.491590913;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.b_ji  -573.694013827;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.b_ij  500;   // +/- 1300 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.b_ji  -570;   // +/- 570 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.A_ij  -4505.97675985;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.A_ji  8990.78175822;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.A_ij  -4510;   // +/- 150 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.A_ji  9000;   // +/- 2100 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.A_ij  29999.9932034;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.A_ji  -5333.49334885;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.A_ij  0;   // +/- 3100000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-oCresol.A_ji  -5330;   // +/- 270 (1 sigma, from the fit)
     }
 
     evidence

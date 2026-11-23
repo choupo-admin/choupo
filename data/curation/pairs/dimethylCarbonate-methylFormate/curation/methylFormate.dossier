@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.b_ij  423.089678183;
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.b_ji  46.6314178391;
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.b_ij  423;   // +/- 69 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.b_ji  47;   // +/- 54 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.b_ij  423.089678547;
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.b_ji  46.6314175507;
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.b_ij  423;   // +/- 69 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.b_ji  47;   // +/- 54 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.A_ij  1903.42797381;
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.A_ji  2332.09300382;
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.A_ij  1900;   // +/- 310 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.A_ji  2330;   // +/- 390 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.A_ij  1903.42797563;
-        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.A_ji  2332.09300202;
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.A_ij  1900;   // +/- 310 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylFormate-dimethylCarbonate.A_ji  2330;   // +/- 390 (1 sigma, from the fit)
     }
 
     evidence

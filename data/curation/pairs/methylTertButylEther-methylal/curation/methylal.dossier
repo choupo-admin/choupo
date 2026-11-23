@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.b_ij  -109.439544311;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.b_ji  215.605278357;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.b_ij  -109;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.b_ji  216;   // +/- 42 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.b_ij  -109.439544868;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.b_ji  215.605279097;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.b_ij  -109;   // +/- 31 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.b_ji  216;   // +/- 42 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.a_ij  -106.358129206;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.a_ji  165.121602543;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.a_ij  -106;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.a_ji  165;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.a_ij  -106.358129446;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.a_ji  165.121602904;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.a_ij  -106;   // +/- 11 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.a_ji  165;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.A_ij  2071.33397313;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.A_ji  -1244.63723259;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.A_ij  2070;   // +/- 260 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.A_ji  -1240;   // +/- 190 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.A_ij  2071.33397329;
-        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.A_ji  -1244.63723277;
+        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.A_ij  2070;   // +/- 260 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylal-methylTertButylEther.A_ji  -1240;   // +/- 190 (1 sigma, from the fit)
     }
 
     evidence

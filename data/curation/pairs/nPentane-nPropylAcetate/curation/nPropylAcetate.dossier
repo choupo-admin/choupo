@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.b_ij  -193.275502339;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.b_ji  459.89311962;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.b_ij  -193;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.b_ji  460;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.b_ij  -193.275499077;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.b_ji  459.893114827;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.b_ij  -193;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.b_ji  460;   // +/- 27 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.a_ij  -111.517798603;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.a_ji  197.210044628;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.a_ij  -112;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.a_ji  197;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.a_ij  -111.517779656;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.a_ji  197.210013125;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.a_ij  -112;   // +/- 13 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.a_ji  197;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.A_ij  2729.27597745;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.A_ji  -684.485536758;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.A_ij  2730;   // +/- 230 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.A_ji  -680;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.A_ij  2729.27599698;
-        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.A_ji  -684.485555569;
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.A_ij  2730;   // +/- 230 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nPropylAcetate-nPentane.A_ji  -680;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.b_ij  1209.88525439;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.b_ji  -421.275179671;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.b_ij  1210;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.b_ji  -421;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.b_ij  1209.88525361;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.b_ji  -421.275179576;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.b_ij  1210;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.b_ji  -421;   // +/- 21 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.A_ij  -1861.15982437;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.A_ji  14491.5052052;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.A_ij  -1860;   // +/- 260 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.A_ji  14000;   // +/- 15000 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.A_ij  -1861.15982189;
-        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.A_ji  14491.50504;
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.A_ij  -1860;   // +/- 260 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.trichloroethylene-oCresol.A_ji  14000;   // +/- 15000 (1 sigma, from the fit)
     }
 
     evidence

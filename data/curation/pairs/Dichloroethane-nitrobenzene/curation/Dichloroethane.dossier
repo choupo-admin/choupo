@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.b_ij  272.073717718;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.b_ji  -273.255814903;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.b_ij  270;   // +/- 540 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.b_ji  -270;   // +/- 360 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.b_ij  272.072868157;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.b_ji  -273.255251874;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.b_ij  270;   // +/- 540 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.b_ji  -270;   // +/- 360 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.A_ij  -1045.308786;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.A_ji  1137.46006701;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.A_ij  -1000;   // +/- 2400 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.A_ji  1100;   // +/- 4200 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.A_ij  4646.62918679;
-        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.A_ji  -3544.80974876;
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.A_ij  4650;   // +/- 690 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.Dichloroethane-nitrobenzene.A_ji  -3540;   // +/- 240 (1 sigma, from the fit)
     }
 
     evidence

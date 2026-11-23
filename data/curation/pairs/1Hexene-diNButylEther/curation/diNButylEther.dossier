@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.b_ij  116.644670013;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.b_ji  -123.122603879;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.b_ij  100;   // +/- 1700 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.b_ji  -100;   // +/- 1400 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.b_ij  117.216227802;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.b_ji  -123.57680929;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.b_ij  100;   // +/- 1200 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.b_ji  -120;   // +/- 970 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.a_ij  -110.429503101;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.a_ji  134.630915679;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.a_ij  -110.4;   // +/- 5.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.a_ji  134.6;   // +/- 8.7 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.a_ij  -110.429503184;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.a_ji  134.630915814;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.a_ij  -110.4;   // +/- 5.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.a_ji  134.6;   // +/- 8.7 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.A_ij  -1715.72770036;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.A_ji  1715.40962942;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.A_ij  0;   // +/- 120000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.A_ji  0;   // +/- 170000 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.A_ij  1592.01778952;
-        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.A_ji  -947.160806397;
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.A_ij  1590;   // +/- 130 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diNButylEther-1Hexene.A_ji  -947;   // +/- 57 (1 sigma, from the fit)
     }
 
     evidence

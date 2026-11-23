@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.b_ij  -103.494124864;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.b_ji  181.975222564;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.b_ij  -103;   // +/- 37 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.b_ji  182;   // +/- 47 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.b_ij  -103.494124589;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.b_ji  181.975222115;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.b_ij  -103;   // +/- 37 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.b_ji  182;   // +/- 47 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.A_ij  1396.60511848;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.A_ji  -783.343517569;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.A_ij  1400;   // +/- 290 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.A_ji  -780;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.A_ij  1396.60511871;
-        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.A_ji  -783.343517517;
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.A_ij  1400;   // +/- 290 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethylAcetate-anisole.A_ji  -780;   // +/- 220 (1 sigma, from the fit)
     }
 
     evidence

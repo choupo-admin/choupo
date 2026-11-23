@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylTertButylEther.b_ij  51.2960691528;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylTertButylEther.b_ji  -360.186848907;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylTertButylEther.b_ij  51;   // +/- 29 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylTertButylEther.b_ji  -360;   // +/- 20 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylTertButylEther.b_ij  882.828924389;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylTertButylEther.b_ji  -676.932813259;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylTertButylEther.b_ij  883;   // +/- 35 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylTertButylEther.b_ji  -676.9;   // +/- 5.6 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylTertButylEther.A_ij  -1211.58788315;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylTertButylEther.A_ji  -1387.17985752;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylTertButylEther.A_ij  -1212;   // +/- 96 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-methylTertButylEther.A_ji  -1390;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence

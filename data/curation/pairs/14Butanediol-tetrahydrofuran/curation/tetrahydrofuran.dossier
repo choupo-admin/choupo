@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.b_ij  -355.617532611;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.b_ji  715.648380338;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.b_ij  -356;   // +/- 23 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.b_ji  716;   // +/- 56 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.b_ij  -355.617532253;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.b_ji  715.648378806;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.b_ij  -356;   // +/- 23 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.b_ji  716;   // +/- 56 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.A_ij  5322.13507745;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.A_ji  -2218.08672781;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.A_ij  5320;   // +/- 420 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.A_ji  -2220;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.A_ij  5322.13513634;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.A_ji  -2218.08673652;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.A_ij  5320;   // +/- 420 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydrofuran-14Butanediol.A_ji  -2220;   // +/- 130 (1 sigma, from the fit)
     }
 
     evidence

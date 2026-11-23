@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.bromobenzene-nitrobenzene.b_ij  620.335943791;
-        equilibrium.liquid.activityModel.binaryParameters.bromobenzene-nitrobenzene.b_ji  -697.329011549;
+        equilibrium.liquid.activityModel.binaryParameters.bromobenzene-nitrobenzene.b_ij  600;   // +/- 4000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.bromobenzene-nitrobenzene.b_ji  -700;   // +/- 1700 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.bromobenzene-nitrobenzene.b_ij  620.336047566;
-        equilibrium.liquid.activityModel.binaryParameters.bromobenzene-nitrobenzene.b_ji  -697.329055445;
+        equilibrium.liquid.activityModel.binaryParameters.bromobenzene-nitrobenzene.b_ij  600;   // +/- 4000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.bromobenzene-nitrobenzene.b_ji  -700;   // +/- 1700 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.bromobenzene-nitrobenzene.A_ij  -4853.84884293;
-        equilibrium.liquid.activityModel.binaryParameters.bromobenzene-nitrobenzene.A_ji  4821.22121765;
+        equilibrium.liquid.activityModel.binaryParameters.bromobenzene-nitrobenzene.A_ij  -4850;   // +/- 280 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.bromobenzene-nitrobenzene.A_ji  4820;   // +/- 980 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.b_ij  83.6773857003;
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.b_ji  -82.6553912886;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.b_ij  0;   // +/- 40000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.b_ji  0;   // +/- 35000 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.b_ij  83.6776980777;
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.b_ji  -82.6556643455;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.b_ij  0;   // +/- 40000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.b_ji  0;   // +/- 35000 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.A_ij  -691.353549494;
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.A_ji  725.469661265;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.A_ij  0;   // +/- 110000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.A_ji  0;   // +/- 130000 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.A_ij  2903.57146669;
-        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.A_ji  -1949.10148314;
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.A_ij  2900;   // +/- 250 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diethylSulfide-toluene.A_ji  -1950;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence

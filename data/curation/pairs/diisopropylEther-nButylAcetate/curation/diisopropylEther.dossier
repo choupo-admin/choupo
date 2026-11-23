@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.b_ij  -335.075189221;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.b_ji  598.433642631;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.b_ij  -335;   // +/- 18 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.b_ji  598;   // +/- 42 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.b_ij  -335.075189442;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.b_ji  598.433642884;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.b_ij  -335;   // +/- 18 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.b_ji  598;   // +/- 42 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.A_ij  4174.17249614;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.A_ji  -1787.60963068;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.A_ij  4170;   // +/- 320 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.A_ji  -1788;   // +/- 96 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.A_ij  4174.1724927;
-        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.A_ji  -1787.60963008;
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.A_ij  4170;   // +/- 320 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.diisopropylEther-nButylAcetate.A_ji  -1788;   // +/- 96 (1 sigma, from the fit)
     }
 
     evidence

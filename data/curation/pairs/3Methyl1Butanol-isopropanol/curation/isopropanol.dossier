@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.b_ij  207.633686177;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.b_ji  -213.744117551;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.b_ij  200;   // +/- 2100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.b_ji  -200;   // +/- 1500 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.b_ij  207.633769209;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.b_ji  -213.744176949;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.b_ij  200;   // +/- 2100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.b_ji  -200;   // +/- 1500 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.a_ij  110.611144823;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.a_ji  -103.152309346;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.a_ij  110;   // +/- 700 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.a_ji  -100;   // +/- 530 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.a_ij  110.657617204;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.a_ji  -103.187239368;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.a_ij  110;   // +/- 700 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.a_ji  -100;   // +/- 530 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.A_ij  -432.019607244;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.A_ji  461.723782543;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.A_ij  0;   // +/- 28000 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.A_ji  0;   // +/- 46000 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.A_ij  7051.56006779;
-        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.A_ji  -4061.80733404;
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.A_ij  7050;   // +/- 730 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.isopropanol-3Methyl1Butanol.A_ji  -4060;   // +/- 160 (1 sigma, from the fit)
     }
 
     evidence

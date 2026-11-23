@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.b_ij  -24.7163641631;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.b_ji  -223.584353789;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.b_ij  -25;   // +/- 20 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.b_ji  -224;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -85,8 +85,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.b_ij  -24.7163649531;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.b_ji  -223.58435305;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.b_ij  -25;   // +/- 20 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.b_ji  -224;   // +/- 17 (1 sigma, from the fit)
     }
 
     evidence
@@ -139,8 +139,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.A_ij  -193.645055677;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.A_ji  -1831.30064825;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.A_ij  -194;   // +/- 71 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.A_ji  -1831;   // +/- 83 (1 sigma, from the fit)
     }
 
     evidence
@@ -193,8 +193,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.A_ij  8925.89768237;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.A_ji  -5393.84021732;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.A_ij  8900;   // +/- 1100 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-nNDimethylacetamide.A_ji  -5390;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence

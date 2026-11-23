@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.b_ij  147.84377263;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.b_ji  -184.092302644;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.b_ij  150;   // +/- 400 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.b_ji  -180;   // +/- 300 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.b_ij  147.828854342;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.b_ji  -184.081190343;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.b_ij  150;   // +/- 400 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.b_ji  -180;   // +/- 300 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.A_ij  -1277.31976778;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.A_ji  1114.94498824;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.A_ij  -1300;   // +/- 1600 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.A_ji  1100;   // +/- 2600 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.A_ij  5533.15088377;
-        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.A_ji  -3074.79395538;
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.A_ij  5530;   // +/- 580 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.tetrahydropyran-1Chlorobutane.A_ji  -3070;   // +/- 120 (1 sigma, from the fit)
     }
 
     evidence

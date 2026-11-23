@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.b_ij  -229.685560472;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.b_ji  301.581838572;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.b_ij  -230;   // +/- 50 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.b_ji  302;   // +/- 78 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.b_ij  -229.685557241;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.b_ji  301.581833581;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.b_ij  -230;   // +/- 50 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.b_ji  302;   // +/- 78 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.A_ij  2748.87207281;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.A_ji  -2144.42679314;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.A_ij  2750;   // +/- 590 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.A_ji  -2140;   // +/- 340 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.A_ij  2748.87197032;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.A_ji  -2144.42673219;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.A_ij  2750;   // +/- 590 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.A_ji  -2140;   // +/- 340 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.a_ij  -133.203066592;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.a_ji  172.976249226;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.a_ij  -133;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.a_ji  173;   // +/- 39 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.a_ij  -133.203062619;
-        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.a_ji  172.976243444;
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.a_ij  -133;   // +/- 26 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.3Methylthiophene-oXylene.a_ji  173;   // +/- 39 (1 sigma, from the fit)
     }
 
     evidence

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.b_ij  237.693689281;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.b_ji  -13.5177584279;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.b_ij  238;   // +/- 57 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.b_ji  -14;   // +/- 47 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.b_ij  237.693689763;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.b_ji  -13.51775881;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.b_ij  238;   // +/- 57 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.b_ji  -14;   // +/- 47 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.a_ij  3.82603806032;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.a_ji  52.483663102;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.a_ij  4;   // +/- 32 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.a_ji  52;   // +/- 35 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.a_ij  3.82603800214;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.a_ji  52.4836631631;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.a_ij  4;   // +/- 32 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.a_ji  52;   // +/- 35 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.A_ij  939.409314542;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.A_ji  944.195177648;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.A_ij  940;   // +/- 250 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.A_ji  940;   // +/- 310 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.A_ij  939.409310416;
-        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.A_ji  944.195184286;
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.A_ij  940;   // +/- 250 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.cyclohexene-methylIsobutylKetone.A_ji  940;   // +/- 310 (1 sigma, from the fit)
     }
 
     evidence

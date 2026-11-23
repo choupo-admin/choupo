@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.b_ij  -231.071555725;
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.b_ji  622.315410043;
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.b_ij  -231;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.b_ji  622;   // +/- 31 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.b_ij  -231.071555225;
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.b_ji  622.315408806;
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.b_ij  -231;   // +/- 14 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.b_ji  622;   // +/- 31 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.A_ij  1093.3835239;
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.A_ji  1931.90630588;
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.A_ij  1090;   // +/- 230 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.A_ji  1932;   // +/- 94 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.A_ij  1093.38357663;
-        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.A_ji  1931.90628781;
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.A_ij  1090;   // +/- 230 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.methylPentanoate-acetonitrile.A_ji  1932;   // +/- 94 (1 sigma, from the fit)
     }
 
     evidence

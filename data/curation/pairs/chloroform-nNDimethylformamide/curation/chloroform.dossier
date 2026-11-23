@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.b_ij  820.15012573;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.b_ji  -371.79879669;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.b_ij  820;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.b_ji  -372;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.b_ij  820.150122263;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.b_ji  -371.79879573;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.b_ij  820;   // +/- 120 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.b_ji  -372;   // +/- 36 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.A_ij  -2678.80228989;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.A_ji  12318.2648589;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.A_ij  -2680;   // +/- 240 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.A_ji  12300;   // +/- 8900 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.A_ij  -2678.80310616;
-        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.A_ji  12318.295816;
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.A_ij  -2680;   // +/- 240 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.chloroform-nNDimethylformamide.A_ji  12300;   // +/- 8900 (1 sigma, from the fit)
     }
 
     evidence

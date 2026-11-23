@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.b_ij  291.336086866;
-        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.b_ji  -18.7114972502;
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.b_ij  291;   // +/- 17 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.b_ji  -19;   // +/- 14 (1 sigma, from the fit)
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.b_ij  291.336086781;
-        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.b_ji  -18.7114971806;
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.b_ij  291;   // +/- 17 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.b_ji  -19;   // +/- 14 (1 sigma, from the fit)
     }
 
     evidence
@@ -123,8 +123,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.a_ij  5.01083299627;
-        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.a_ji  57.7007550172;
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.a_ij  5.0;   // +/- 8.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.a_ji  57.7;   // +/- 9.5 (1 sigma, from the fit)
     }
 
     evidence
@@ -169,8 +169,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.a_ij  5.01083277875;
-        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.a_ji  57.7007552443;
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.a_ij  5.0;   // +/- 8.8 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.a_ji  57.7;   // +/- 9.5 (1 sigma, from the fit)
     }
 
     evidence
@@ -215,8 +215,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.A_ij  1457.9450175;
-        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.A_ji  841.411841097;
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.A_ij  1458;   // +/- 73 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.A_ji  841;   // +/- 93 (1 sigma, from the fit)
     }
 
     evidence
@@ -261,8 +261,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.A_ij  1457.94501776;
-        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.A_ji  841.411840641;
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.A_ij  1458;   // +/- 73 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.nButylFormate-nOctane.A_ji  841;   // +/- 93 (1 sigma, from the fit)
     }
 
     evidence

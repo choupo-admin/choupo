@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.b_ij  336.335134748;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.b_ji  524.005604845;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.b_ij  336;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.b_ji  524;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.b_ij  336.335134662;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.b_ji  524.00560488;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.b_ij  336;   // +/- 16 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.b_ji  524;   // +/- 18 (1 sigma, from the fit)
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.A_ij  7379.81546061;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.A_ji  1723.23102993;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.A_ij  7380;   // +/- 98 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.A_ji  1720;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.A_ij  7379.81545895;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.A_ji  1723.23103432;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.A_ij  7380;   // +/- 98 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.A_ji  1720;   // +/- 110 (1 sigma, from the fit)
     }
 
     evidence
@@ -211,8 +211,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.a_ij  -104.510085019;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.a_ji  570.852869489;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.a_ij  -104.5;   // +/- 4.7 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.a_ji  571;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
@@ -256,8 +256,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.a_ij  -104.510084988;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.a_ji  570.852869405;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.a_ij  -104.5;   // +/- 4.7 (1 sigma, from the fit)
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-244Trimethyl1Pentene.a_ji  571;   // +/- 12 (1 sigma, from the fit)
     }
 
     evidence
