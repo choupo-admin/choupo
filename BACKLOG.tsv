@@ -123,7 +123,7 @@ C123	DONE		Pasta de benchmarks: casos difíceis do simulador aberto de referênc
 C124	PARTIAL	42	Permutadores da coluna dimensionados em detalhe	Faltam permutadores laterais e pumparounds na coluna.	resto, tamanho L: primeiro a arquitetura, depois do mais fácil ao mais difícil (Vítor 19-11)	2026-10-20	L	4be625029	
 C125	DONE		Porque o breakthrough é lento			2026-10-21	M	acf8b12d2	
 C126	DONE		Livro branco no repositório			2026-10-21	L	4c9d4142f	
-C127	PARTIAL	0	Exemplo completo: da frase em linguagem natural à decisão	Falta o EduTool frase->decisão (metanol-água), confirmar vista fit vs held-out no modelo selecionado e a página 'com os teus dados'.	em curso: general a construir a EduTool	2026-10-21	M	2ff920b2d	
+C127	DONE		Exemplo completo: da frase em linguagem natural à decisão	EduTool frase->decisão (metanol-água) no main (lote 3, c39ef089fd).	em curso: general a construir a EduTool	2026-10-21	M	c39ef089fd	
 C128	DONE		Que solvente ou mistura de solventes para uma substância			2026-10-21	M	bd33ec60e	
 C129	ROADMAP		Fase de detalhe final do layout 3D: bombas, válvulas, bocas de visita	Programa de longo prazo, passado para o ROADMAP.md (Vítor, 2026-11-22: "agrupa o resto"). Volta ao backlog quando uma fatia concreta for encomendada. Antes: Falta tudo: bombas/válvulas em linha, bocas de visita, flanges e fundações no 3D.	resto, tamanho L: primeiro a arquitetura, depois do mais fácil ao mais difícil (Vítor 19-11)	2026-10-21	L		
 C130	ROADMAP		Fluxograma instrumentado: camada P&ID sobre o PFD	Programa de longo prazo, passado para o ROADMAP.md (Vítor, 2026-11-22: "agrupa o resto"). Volta ao backlog quando uma fatia concreta for encomendada. Antes: Falta instrumentationDict, camada P&ID e PDF de P&ID.	resto, tamanho L: primeiro a arquitetura, depois do mais fácil ao mais difícil (Vítor 19-11)	2026-10-21	L	cc8d99355	
@@ -153,7 +153,7 @@ C154	PARTIAL	17	Percurso de um utilizador no caso NanoFiltran no site	F1 nas cha
 C155	DONE		A transição laminar-turbulenta não é uma curva			2026-10-25	S	aa9e9a0a3	
 C156	DONE		Página de gráficos também navega por unidade			2026-10-25	S	57f6dd15e	
 C157	DONE		Choupo pronto para um investigador externo de membranas			2026-10-25	M	6fdace214	
-C158	PARTIAL	0	Cada EduTool termina com um questionário de aprendizagem	Quizzes só em parte das ferramentas (34/89 ficheiros); faltam as restantes e o teste que as exige todas.	em curso: dois generais, os questionários das ferramentas que faltam	2026-10-25	L	9a2d724b4	
+C158	PARTIAL	0	Cada EduTool termina com um questionário de aprendizagem	Questionários em todas as ferramentas exceto four-ways-mixture (lote 3); falta essa (passos + questionário) e o braço do teste que exige todas as ferramentas vivas.	em curso: falta uma ferramenta e o teste	2026-10-25	L	9a2d724b4	
 C159	OPEN	44	Do Explorer ao ajuste que fez um par, e ajuste do próprio aluno	Nada construído.	resto, tamanho L: primeiro a arquitetura, depois do mais fácil ao mais difícil (Vítor 19-11)	2026-10-25	L		
 C160	ROADMAP		Termodinâmica e cinética de topo: programa de paridade com biblioteca aberta	Programa de longo prazo, passado para o ROADMAP.md (Vítor, 2026-11-22: "agrupa o resto"). Volta ao backlog quando uma fatia concreta for encomendada. Antes: Fase 0 (estudo de paridade) no main desde 19-11; as fases seguintes (o programa de paridade) por fazer.	resto, tamanho L: primeiro a arquitetura, depois do mais fácil ao mais difícil (Vítor 19-11)	2026-10-25	L		
 C162	DONE		Não volátil na perna de formação recusa			2026-10-25	S	0490f8581	
@@ -292,7 +292,7 @@ C298	DONE		Trabalho de curadoria da nuvem continua no portátil			2026-11-10	M	b
 C299	DONE		Mudar unidades na página Pinch			2026-11-10	S	6b8ad8d62	
 C300	DONE		Aceitação de pares ajustados apertada antes de gerar mais			2026-11-11	M	af3bfa09f	
 C301	DONE		Compósita grande do pinch intuitiva			2026-11-11	S	a991606c1	
-C302	PARTIAL	0	Demasiadas fábricas de amoníaco e PEQ sem pinch	Decidir/fundir 50 e 150 bar num caso com a pressão como estudo declarado, e o conversor publicar o segmento T entrada/saída para entrar no pinch.	para 2 de dezembro: o pinch da planta de referência e menos fábricas de amoníaco (general em curso)	2026-11-11	M	53472f914	
+C302	DONE		Demasiadas fábricas de amoníaco e PEQ sem pinch	Pinch da planta de referência com o segmento do conversor (lote 3). Decidido: 50 e 150 bar ficam dois casos (cada um é um estágio FEL), sem fusão.	para 2 de dezembro: o pinch da planta de referência e menos fábricas de amoníaco (general em curso)	2026-11-11	M	c39ef089fd	
 C303	DONE		Registo local que herda chaves do catálogo em silêncio			2026-11-11	M	0dac82f62	
 C304	DONE		Relatório de pinch como relatório de engenharia			2026-11-11	M	73dce1019	
 C305	DONE		EduTool pinch: Compreender, Experimentar, Verificar			2026-11-11	M	ab89a76d6	
@@ -402,7 +402,7 @@ C436	DONE		Backlog com uma só casa (BACKLOG.tsv), verificado, e a vista gerada 
 C437	OPEN	38	DSPM-DE com os parâmetros do próprio Labban falha 8-16 pontos	Falta testar a aplicação de Davies, depois o filme de fibra oca; os 12 % do artigo são relativos.	resto, tamanho M: primeiro a arquitetura, depois do mais fácil ao mais difícil (Vítor 19-11)	2026-11-19	M		
 C438	DONE		O re-apontador de citações das lições não vê todos os ficheiros			2026-11-19	S	5cde383452	
 C439	DONE		Cartão de entrada: ajustar um par binário a dados medidos			2026-11-19	S	ddc78cb6b5	
-C440	PARTIAL	0	Dimensionamento detalhado de todas as operações da planta de referência	Compressores por andares e conversor dimensionado pelos leitos (fator de efetividade) no main (lote 11-19); a seguir: ligar o conversor na fábrica de referência; desenhos isométricos depois.	para 2 de dezembro: a planta de referência completa (general em curso)	2026-11-19	M		
+C440	DONE		Dimensionamento detalhado de todas as operações da planta de referência	Compressores por andares, conversor pelos leitos e ligado na fábrica de referência (lote 3, c39ef089fd). Desenhos isométricos ficam na lista de desejos.	para 2 de dezembro: a planta de referência completa (general em curso)	2026-11-19	M	c39ef089fd	
 C441	DONE		Bombas centrífugas: bomba genérica (velocidade específica, rendimento, NPSH) e curva do fabricante como registo medido	Bomba genérica (velocidade específica, rendimento esperado, NPSH necessário e disponível, margem, zona preferida; Gülich com páginas) e bomba sobre a curva do fabricante como registo medido; no main (lote 2).	pedido do Vítor; encaixa no dimensionamento detalhado do C238/C440	2026-11-19	L	6b2880089c	
 C442	DONE		EduTool: comprimir um gás (isentrópico, politrópico, andares e arrefecimento intermédio)	EduTool de compressão no main (lote 11-19).	construído, à espera de integrar	2026-11-19	M	6002390de3	C440 (compressores)
 C443	DONE		Cada caso de primeiro percurso declara o seu gráfico (views no postDict)	31 casos de primeiro percurso declaram o gráfico; unidades dos KPI declaradas pela unidade; no main (lote 11-19). As vistas lidas por choupoCtrl/choupoBatch e ao lado de um outerDict ficam como item próprio quando pedido.	construído, à espera de integrar	2026-11-19	M	6002390de3	

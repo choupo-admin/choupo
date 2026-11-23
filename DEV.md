@@ -5301,6 +5301,16 @@ accepts today, and that is a policy call.
 > (a student walk with screenshots) and C22 (Wegstein q_max); C256 only if time remains.  The view
 > shows "Para 2 de dezembro" after what is moving, the rest as a wish list by theme.
 
+> **BATCH 3 LANDED (2026-11-23, c39ef089fd; bin/integrate: scope 7/0, --gui 48/1 then the one
+> red test fixed and re-run 26/26, repoint --check current).**  C127 (the sentence-to-decision
+> EduTool, methanol-water) DONE; C440 DONE (staged compressors, the converter sized by its beds and
+> wired into the reference plant; isometric drawings stay a wish-list item); C302 DONE (the reference
+> plant's pinch carries the converter segment; RULED: the 50 and 150 bar plants stay two cases, each
+> is one FEL stage, no fusion); C158 PARTIAL (quizzes on every tool except four-ways-mixture; that one
+> and the test arm requiring every live tool remain).  The red test was the architect's to catch:
+> C440 added seven lines above the PEQ postDict paragraph the materials lesson cites, and those
+> citations are unmanaged by repoint, so the lesson and its test were moved by hand.
+
 > **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
 > mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
 > into the cloud branch, one full sweep ALONE (reason: the gas-only rule changes the
