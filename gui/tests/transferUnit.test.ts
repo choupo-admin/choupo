@@ -163,4 +163,22 @@ describe("the registry, the lesson and the guide", () => {
     expect(g).toContain("\\label{sec:edu-transfer-unit}");
     expect(g).toContain("tool=transfer-unit");
   });
+
+  it("the lesson's prose citations are claims repoint keeps (check_lesson_prose_citations)", () => {
+    const CLAIMS: Record<string, string> = {
+      "PackingDelft.cpp:131-132": "r.HETP = (std::abs(s.lambda - 1.0) < 1.0e-9) ? r.HOG",
+      "PackingRBF.cpp:136-139": "r.HOG = r.HG + s.lambda * r.HL",
+      "PackingRBF.cpp:138-139": "r.HETP = (std::abs(lam - 1.0) < 1.0e-9) ? r.HOG",
+    };
+    const where: Record<string, string> = {
+      "PackingDelft.cpp": "src/unitOperations/distillation/PackingDelft.cpp",
+      "PackingRBF.cpp": "src/unitOperations/distillation/PackingRBF.cpp",
+    };
+    for (const [k, want] of Object.entries(CLAIMS)) {
+      const [f, r] = k.split(":");
+      const [a, b] = r.split("-").map(Number);
+      const text = Array.from({ length: b - a + 1 }, (_, i) => lineOf(where[f], a + i)).join("\n");
+      expect(text, k).toContain(want);
+    }
+  });
 });

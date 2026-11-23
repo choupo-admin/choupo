@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Adsorbent: zeolite 13X, 2 mm beads (batch30 sample).
+
+  What this IS: the case-local identity of the packed sample of batch30 --
+  the bulk density of batch13's 13X and the bead diameter the transport
+  correlations need (Re = rho u dp / mu).  dParticle is SAMPLE data (the
+  catalogue's zeolite13X carries none), so it lives in the case.
+\*-----------------------------------------------------------------------------*/
+
+adsorbent
+{
+    name        zeolite13X_beads;
+    type        "zeolite (Na-exchanged FAU), 2 mm beads";
+    rho_bulk    640;            // kg/m3 packed bulk density (as batch13)
+    dParticle   2.0 mm;         // bead diameter
+    sphericity  1.0;
+}
+
+provenance
+{
+    identity { origin literature; method "material class + packed bulk density: Yang, Gas Separation by Adsorption Processes (1987/1997) -- representative 13X value; 2 mm beads as the batch13 scope line"; }
+}

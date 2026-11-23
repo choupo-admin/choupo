@@ -81,6 +81,7 @@ import { kToDisplay, temperatureLabel } from "../../state/displayUnits.js";
 import { useStore } from "../../state/store.js";
 import { Plot, PLOT_CONFIG, darkLayout } from "../plotting/plotly.js";
 import { VerdictCell } from "./ComponentInspector.js";
+import { UserPointsPanel } from "./UserPointsPanel.js";
 import { evidenceLink, evidenceSelectionInSearch } from "./selectionLink.js";
 
 /** The candidate colours.  NOT the shared `PLOT_COLORS.series`: that set is
@@ -472,6 +473,15 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
     );
   })();
 
+  //  C289: the user's own points against any candidate of this pair; the
+  //  datasets the record could claim are the ones listed on the left.
+  const ownPoints = (
+    <UserPointsPanel subject={{ kind: "pair", components: pair }}
+      candidates={candidates.map((c) => ({
+        id: c.id, label: c.label, activityModel: c.activityModel, dossier: dossierFor(c, pair) }))}
+      claimable={datasets} componentFiles={componentFiles} narrow={narrow} />
+  );
+
   const errorLines = Object.entries(errors);
   //  On a phone the mode bar sat ON both titles; the figures stay zoomable by
   //  touch, and the PNG export is a desktop act.
@@ -552,16 +562,18 @@ export function EvidenceLens({ pair, catalogue, caseRaw, localUnifac, componentF
           </Text>
         </Box>
       )}
+      <Box style={{ flexShrink: 0, marginTop: 8 }}>{ownPoints}</Box>
     </Stack>
   );
 
   if (datasets.length === 0)
     return (
-      <Box style={{ flex: 1, minHeight: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <Stack gap="md" style={{ flex: 1, minHeight: 200, overflowY: "auto" }}>
         <Text size="sm" c="dimmed" ta="center" maw={460}>
           No measured dataset for {pair[0]} + {pair[1]} in the bundled tutorials, data/local/evidence or the open case.
         </Text>
-      </Box>
+        {ownPoints}
+      </Stack>
     );
 
   return narrow ? (

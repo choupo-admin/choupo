@@ -22,6 +22,7 @@ path = [
   "gui/schemas/**",
   "gui/src/ui/methods/lessonReferences.json",
   "gui/tests/fixtures/*.json",
+  "gui/tests/fixtures/*.csv",
   ".claude/settings.json",
   "gui/public/manifest.webmanifest",
   "gui/tests/thermomlShapes.synthetic.xml",

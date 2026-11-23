@@ -161,7 +161,8 @@ EXCLUSIONS = [
        patterns=["*.json", "*.png", "*.tsv", "*.xml", "*.XLS",
                  "*.webmanifest", "*.manifest", "bin/curate/helmholtz/*.txt",
                  "bin/curate/svehla1962/*.txt", "bin/curate/fixtures/*",
-                 "bin/curate/carried_kinds/*", "bin/curate/*.expected"]),
+                 "bin/curate/carried_kinds/*", "bin/curate/*.expected",
+                 "gui/tests/fixtures/*.csv"]),
     _e("not-a-code-kind-prose",
        "prose documentation (README, notes) inside a code root: not a code "
        "kind; the root NOTICE covers it",

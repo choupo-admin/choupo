@@ -790,6 +790,20 @@
       "href": "/app/?workspace=methods&tool=fault-diagnosis"
     },
     {
+      "id": "loop-placement",
+      "label": "Where to put a control loop",
+      "blurb": "Count valves, hold the inventory, pair loops by relative gain.",
+      "discipline": "Hydraulics & control",
+      "teaches": "How many things a plant lets you hold (independent valves against variables), why the inventory is held first and what the engine does when it is not, and how to choose which valve holds which variable: the steady-state gain matrix is measured from three engine runs of a jacketed reactor with a level, the relative gain array is computed from it, and the recommended pairing and the swapped one are both run so you see a loop that cannot work. Then the order of the valves: inventory, throughput, quality.",
+      "origins": [
+        "engine",
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=loop-placement"
+    },
+    {
       "id": "correlation-simplicity",
       "label": "Why engineering correlations are simple",
       "blurb": "Understand why engineering correlations stay simple.",

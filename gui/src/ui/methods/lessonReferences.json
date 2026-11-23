@@ -3624,6 +3624,19 @@
           }
         }
       ]
+    },
+    "loop-placement": {
+      "references": [
+        {
+          "text": "Seborg, D. E.; Edgar, T. F.; Mellichamp, D. A.; Doyle III, F. J. (2017). Process Dynamics and Control, 4th ed. Wiley, Hoboken.",
+          "note": "Section 13.1, degrees of freedom for process control: N_F = N_V - N_E (Eq. 13-1), N_F = N_FC + N_D (Eq. 13-2), the General Rule that N_FC equals the number of independent manipulated inputs, and Fig. 13.1 (streams that split or merge cannot all be manipulated) on pp. 230-231. Section 13.2.1, Guideline 1: a non-self-regulating variable such as a tank level with a pump on the exit line must be controlled for the controlled process to be stable, and Guideline 3: output variables that are a direct measure of product quality (p. 232). Section 18.2, Bristol's relative gain array: the definition as the ratio of open-loop to closed-loop gain (Eq. 18-24, p. 332), the 2x2 formula lambda_11 = 1/(1 - K12 K21/(K11 K22)) and lambda_12 = lambda_21 = 1 - lambda_11 (Eqs. 18-34 and 18-35), the Schur-product form (Eqs. 18-36 and 18-37) and the gains from step tests on a simulator (Eq. 18-38, p. 333), the five pairing cases and Bristol's recommendation to pair so that relative gains are positive and as close to one as possible (p. 334), and the remarks that the recommendation is steady-state only and that a negative relative gain gives instability in the loop or the overall system (pp. 334-335). Bristol's own 1966 paper is cited by that book and is not in the library.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/seborg-process-dynamics-control-4ed.pdf: title page and the copyright line (2017, 2011, 2004, 1990 John Wiley & Sons) read in the text layer; PDF pp. 242-244 (printed 230-232) and 344-347 (printed 332-335) read in the text layer (printed page = PDF page - 12) (loop-placement, C204)",
+            "date": "2026-11-22"
+          }
+        }
+      ]
     }
   }
 }

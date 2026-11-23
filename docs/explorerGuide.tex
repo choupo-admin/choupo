@@ -417,6 +417,54 @@ opens the Theory Guide's section on what is fittable and what is not
 residual here is evidence about; the view's own \emph{How to read this
 view} link opens this section.
 
+\subsection{Your own measurements against a fitted record}\label{sec:explorer-own-points}
+% Verified against gui/src/case/userMeasurements.ts (the format, the refusals,
+% the hash and the outlier rule), gui/src/case/userMeasurementsSynth.ts (one
+% choupoProps run asked AT the points), gui/src/ui/explore/UserPointsPanel.tsx
+% and gui/tests/userMeasurements.test.ts.  The declared sha256 is that of the
+% source file (bin/choupo-thermoml: hashlib.sha256(src.read_bytes())).
+Under the Evidence view of a pair, and in the component inspector (section
+\emph{your measurements}) for a pure vapour pressure, a \textbf{load your
+measurements} control draws a record's model over points of your own.  The
+file is read in the browser and is never uploaded, stored or sent anywhere.
+
+\textbf{The accepted file.}  Comma-separated text; \code{\#} lines and blank
+lines are skipped; the first other line is the header, each cell written
+\code{name/unit}.  Three shapes, and no other:
+\begin{itemize}
+\item a pair at fixed pressure ($T$--$x$--$y$):
+  \code{x[<component>]/-}, \code{T\_bubble/K} or \code{/C}, \code{P/Pa},
+  \code{/kPa}, \code{/bar} or \code{/MPa}, optionally \code{y[<component>]/-};
+\item a pair at fixed temperature ($P$--$x$--$y$): \code{x[<component>]/-},
+  \code{P\_bubble/\dots}, \code{T/K} or \code{/C}, optionally \code{y[\dots]/-};
+\item a pure vapour pressure: \code{T/K} or \code{/C}, \code{Psat/\dots}.
+\end{itemize}
+A malformed file is refused \emph{whole}, naming the line: an unknown column or
+unit, a row of the wrong width, a cell that is not a finite number, a mole
+fraction outside $[0,1]$, a non-positive absolute temperature or pressure, a
+component that is not in the pair.  Nothing is dropped silently.
+
+\textbf{The checksum.}  Tick \emph{this file is the record's own dataset} and
+pick the dataset: the page compares the file's sha256 with the one the dataset
+declares and says \textbf{MATCH} or \textbf{MISMATCH} plainly.  The declared
+hash is that of the \emph{source file} the points were extracted from (the
+ThermoML archive), so a match proves byte identity with that source and a CSV
+of your own can never match; unticked, no hash is compared.
+
+\textbf{The picture.}  The record's model curve (one \code{choupoProps} run, the
+parameters inline, as in the Evidence view) with your points on it, a table of
+engine and measured values and the relative residual of each, and the record's
+\textbf{fit note} beside it: the curation dossier's verdict and held-out AAD
+and the band declared before the fit --- or the plain statement that no dossier
+cites the record.  The page computes only the residual and its mean; it fits
+nothing.
+
+\textbf{Outliers.}  A curated record declares a held-out AAD, not a fit RMS, so
+the rule is stated in what the record provides: a point is marked when
+$|\text{engine}-\text{measured}|/\text{measured}$ exceeds $3\times$ the
+held-out AAD; with no held-out AAD, $3\times$ the acceptance band; with neither,
+nothing is marked and the page says so.
+
 \subsection{Phase split along $T$ or $P$ ($V$ / $L$ / $S$, pH)}\label{sec:explorer-phase-split}
 % Verified against gui/src/case/phaseSplitScan.ts (the plan: one
 % phaseSplitScan op; the synthesised package, gammaPhi without a crystal,

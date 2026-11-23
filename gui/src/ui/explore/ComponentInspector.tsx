@@ -55,11 +55,17 @@ License
 
 import { Badge, Box, Button, Code, Collapse, Divider, Group, ScrollArea, Stack, Table, Text, Tooltip } from "@mantine/core";
 import { IconAlertTriangle, IconExternalLink, IconFileText } from "@tabler/icons-react";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 
 import type { ComponentRecord, CurationVerdict } from "../../case/componentRecord.js";
 import { dossierCorpusSize, dossiersFor } from "../../case/dossier.js";
+import { evidenceForComponent } from "../../case/evidence.js";
 import { literatureLink } from "../../state/workspaceUrl.js";
+
+//  The user-points panel draws a Plotly figure; loaded on demand so that the
+//  inspector stays importable where Plotly cannot be (node tests, SSR) and the
+//  figure library is fetched only when someone opens the section.
+const UserPointsPanel = lazy(() => import("./UserPointsPanel.js").then((m) => ({ default: m.UserPointsPanel })));
 
 /** How each dossier verdict is drawn.  The GUI picks a COLOUR and a sentence;
  *  it does not pick the verdict, and it does not collapse two verdicts into one
@@ -97,6 +103,7 @@ export function ComponentInspector({ record, onClose }: {
   onClose?: () => void;
 }) {
   const [rawOpen, setRawOpen] = useState(false);
+  const [ownOpen, setOwnOpen] = useState(false);
   //  Every dossier the CORPUS carries for this component, and how many it
   //  carries in total -- so the empty case can say "nobody curated this"
   //  rather than "the reader found nothing anywhere", which are different
@@ -291,6 +298,21 @@ export function ComponentInspector({ record, onClose }: {
                 </Text>
               </>
             )}
+          </Section>
+
+          <Section title="YOUR MEASUREMENTS (vapour pressure)">
+            <Button size="compact-xs" variant="subtle" onClick={() => setOwnOpen((v) => !v)}>
+              {ownOpen ? "hide" : "load your own (T, Psat) points"}
+            </Button>
+            <Collapse in={ownOpen}>
+              {ownOpen && (
+                <Suspense fallback={<Text size="xs" c="dimmed">loading...</Text>}>
+                <UserPointsPanel subject={{ kind: "component", component: record.name }}
+                  candidates={[{ id: "record", label: `${record.name}: the catalogue record`,
+                    dossier: dossiers.find((d) => d.property === "vapourPressure") ?? null }]}
+                  claimable={evidenceForComponent(record.name)} narrow={true} />
+                </Suspense>)}
+            </Collapse>
           </Section>
 
           <Box>

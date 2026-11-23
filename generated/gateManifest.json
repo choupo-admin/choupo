@@ -1925,6 +1925,11 @@
       "exit": 0,
       "claim": "check_seulex: OK -- seulex: Robertson, a smooth problem and a wrong-Jacobian run are right, never-refreshing is seen, and nox03 / ignition01 end where their Rosenbrock23 siblings do (dT 1.0e-05 K, dx 2.5e-07, dT 0.0e+00 K, dx 1.0e-08)",
       "seconds": 26.7
+    },
+    "check_bed_correlations": {
+      "exit": 0,
+      "claim": "check_bed_correlations: OK -- the six correlations and the series equal an independent transcription to 1e-9, Edwards & Richardson's bed-basis Dax is eps D_L and Gunn's limit shares its basis, every anchor holds, the gas windows are inside and the two liquid correlations are flagged outside, a declared Dax and kLDF win (the front is batch13's to 1e-9), a missing Dax and k are filled by the chosen estimates and said so, and four misuses refuse by name.  NOT CHECKED: that any correlation predicts a real bed (no packed-bed dispersion data in the corpus), Gunn's basis reading (the paper says 'usual connotations'), a liquid bed.",
+      "seconds": 8.1
     }
   }
 }

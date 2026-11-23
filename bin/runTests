@@ -3696,6 +3696,23 @@ PYEOF
     fi
     rm -f /tmp/fbscheme.$$
 
+    # bed-correlations gate (2026-11-22, DEV.md 4c C450).  The fixed bed's
+    # dispersion, film and series-resistance correlations recomputed from an
+    # independent transcription (1e-9), the bed basis Dax = eps D_L held by
+    # value, every anchor, the windows, a declared value winning (batch13's
+    # front), a missing one filled and announced, and four named refusals.
+    # Real defect it would have caught: a textbook interstitial D_L under a
+    # bed-basis Dax (C451), and a coefficient mis-read from a scan.
+    if gate_exec "$ROOT/bin/curate/check_bed_correlations.py" > /tmp/bedcorr.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "bed-correlations-gate" "$(tail -1 /tmp/bedcorr.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_bed_correlations.py)\n" "bed-correlations-gate"
+        cat /tmp/bedcorr.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/bedcorr.$$
+
     # third-body-rate gate (2026-10-31, DEV.md 4c C185 item 9): the batch
     # reactor's `thirdBody` rate is k(T)[M] PROD c, forward and reversible,
     # held against an independent integration with an independent Kc -- the

@@ -27572,6 +27572,146 @@ and watch both statements hold
 \file{batch14\_transport\_only} pins the $k=0$ bed against the
 analytic advection--dispersion solution).
 
+\subsection{Where $D_{\mathrm{ax}}$, $k_f$ and $k_{\mathrm{LDF}}$ come from:
+the transport correlations}\label{sec:bed-transport-correlations}
+
+A fixed-bed case \emph{declares} $D_{\mathrm{ax}}$ and $k_{\mathrm{LDF}}$\cite{Wakao1978,Edwards1968,ChungWen1968,Gunn1987,Wilson1966,Glueckauf1955,Ruthven1984},
+and a declared value always wins.  What the literature would have said is
+a separate, printed answer: with
+\code{operation.transportCorrelations} the run evaluates the correlations
+below at the feed state (T, P, feed composition, superficial $u$),
+announces each as an \emph{estimate} with its validity verdict, and
+publishes it as a KPI (\code{corr\_*}) beside the declared number.  A
+correlation \emph{fills} a missing $D_{\mathrm{ax}}$ (\code{dispersion
+\{ model \dots; \}}) or $k_{\mathrm{LDF}}$ (\code{series}) only when the
+case chooses it and leaves the declaration out.  Every object carries its
+window, its citation with the page the coefficients were read at, and an
+anchor that says what kind it is (a printed number, a cross-check of two
+printed forms, a limit, or arithmetic that proves the transcription and
+nothing else).
+
+The words a case writes are, for the dispersion \code{model}:
+\code{WakaoFunazkri}, \code{EdwardsRichardson}, \code{ChungWen} and
+\code{Gunn}; for the film \code{model}: \code{WakaoFunazkri},
+\code{WilsonGeankoplis}, or \code{none}; the \code{series} block is the
+Ruthven sum below.  Each word opens its own equation from the block's
+Theory link.
+
+\paragraph{The groups and the basis.}
+$\mathrm{Re}=\rho\,U\,d_p/\mu$ with $U$ the \emph{superficial} velocity,
+$\mathrm{Sc}=\mu/(\rho D_m)$ with $D_m$ the molecular diffusivity of the
+adsorbate in the carrier (declared, or the thermo package's Fuller pair),
+$d_p$ the particle diameter of the adsorbent identity.  The textbook
+correlations are written for the \emph{interstitial} dispersion $D_L$;
+the unit stores $D_{\mathrm{ax}}=\varepsilon D_L$ on the bed basis
+(Section~\ref{sec:fixed-bed}), and every estimate is converted and
+printed both ways.
+
+\paragraph{Axial dispersion.}
+\begin{align}
+\text{Wakao \& Funazkri (1978), eq.\,(2), p.\,1375:}\quad
+& D_{\mathrm{ax}} = D_m\,\bigl(20 + 0.5\,\mathrm{Sc}\,\mathrm{Re}\bigr),
+\label{eq:bed-dax-wakao}\\
+\text{Edwards \& Richardson (1968), eq.\,(17), p.\,119:}\quad
+& D_L = 0.73\,D_m + \frac{0.5\,u\,d_p}{1+9.7\,D_m/(u\,d_p)},\;
+u=U/\varepsilon,
+\label{eq:bed-dax-edwards}\\
+\text{Chung \& Wen (1968), eqs.\,(15)--(16), p.\,864:}\quad
+& D_L = \frac{d_p\,U}{0.20+0.011\,\mathrm{Re}^{0.48}},
+\label{eq:bed-dax-chungwen}
+\end{align}
+the second and third giving the interstitial $D_L$, to be stored as
+$D_{\mathrm{ax}}=\varepsilon D_L$ (the first is already on the bed basis:
+the paper writes $\varepsilon D_{\mathrm{ax}}^{\mathrm{interstitial}}/D_m=20+0.5\,\mathrm{Sc}\,\mathrm{Re}$,
+and $\varepsilon D_{\mathrm{ax}}^{\mathrm{interstitial}}$ is the bed-basis value).  The
+20 of Wakao \& Funazkri is the stagnant term of a particle whose
+\emph{surface} controls the transfer (the paper's chart value
+$E^0/D_m=20$), against $0.6$--$0.8$ for inert flow and $0.73$ in Edwards
+\& Richardson, which is why a strongly adsorbed species in laminar flow
+disperses far more than a tracer does (Ruthven 1984, p.\,213).  Chung \&
+Wen's $E_z$ is the interstitial coefficient ($\varepsilon N_{Pe}=d_pU/E_z$);
+their correlation is for \emph{liquids} and is the one the engine flags
+when it is asked about a gas.  Gunn's (1987) eq.\,(1), with the probability
+$p$ of eq.\,(3) for spheres ($\tau=1.4$),
+\begin{equation}
+\frac{D}{U d_p}
+= \frac{\mathrm{Re}\,\mathrm{Sc}\,(1-p)^2}{4\alpha_1^2(1-\varepsilon)}
++ \frac{\mathrm{Re}^2\mathrm{Sc}^2\,p(1-p)^3}{16\alpha_1^4(1-\varepsilon)^2}
+\left[e^{-4(1-\varepsilon)\alpha_1^2/(p(1-p)\mathrm{Re}\,\mathrm{Sc})}-1\right]
++ \frac{\varepsilon}{\tau\,\mathrm{Re}\,\mathrm{Sc}},
+\quad p = 0.17+0.33\,e^{-24/\mathrm{Re}},
+\label{eq:bed-dax-gunn}
+\end{equation}
+$\alpha_1=2.4048$ the first root of $J_0$, is read here as the bed-basis
+$D_{\mathrm{ax}}$ with superficial $U$ (the paper says only ``usual
+connotations''; the molecular term $\varepsilon/\tau$ and the high-$\mathrm{Re}$
+limit $(1-p)/2p=0.5$ both match Edwards \& Richardson on that reading).
+
+\paragraph{External film.}
+\begin{align}
+\text{Wakao \& Funazkri (1978), eq.\,(12), p.\,1383:}\quad
+& \mathrm{Sh}=\frac{k_f d_p}{D_m}=2+1.1\,\mathrm{Sc}^{1/3}\mathrm{Re}^{0.6},
+\label{eq:bed-sh-wakao}\\
+\text{Wilson \& Geankoplis (1966), eqs.\,(8)--(9), p.\,13:}\quad
+& \mathrm{Sh}=\frac{1.09}{\varepsilon}\,\mathrm{Re}^{1/3}\mathrm{Sc}^{1/3}
+\;\;(\mathrm{Re}\le 55),\qquad
+\mathrm{Sh}=\frac{0.250}{\varepsilon}\,\mathrm{Re}^{0.69}\mathrm{Sc}^{1/3}
+\;\;(\mathrm{Re}>55).
+\label{eq:bed-sh-wilson}
+\end{align}
+Wilson \& Geankoplis correlate $J_D\,\varepsilon=1.09\,\mathrm{Re}'^{-2/3}$ with
+$J_D=(k_c/U)\mathrm{Sc}^{2/3}$; $\mathrm{Sh}=J_D\,\mathrm{Re}\,\mathrm{Sc}^{1/3}$ gives the
+form above (Ruthven 1984, eq.\,7.15, prints the exponents rounded).
+
+\paragraph{The LDF constant from resistances in series.}
+Ruthven (1984), eq.\,(8.41), matches the second moment of a linear bed with
+film, macropore and micropore resistances to the lumped
+$\mathrm{d}q/\mathrm{d}t=k(q^*-q)$:
+\begin{equation}
+\frac{1}{k}
+= \underbrace{\frac{K R_p}{3 k_f}}_{\text{film}}
++ \underbrace{\frac{K R_p^2}{15\,\varepsilon_p D_p}}_{\text{macropore}}
++ \underbrace{\frac{r_c^2}{15\,D_c}}_{\text{micropore}},
+\qquad K=\varepsilon_p+\frac{\rho_p\,q^*(c_{\mathrm{in}})}{c_{\mathrm{in}}},\;
+D_p=\frac{D_m}{\tau_p},
+\label{eq:bed-ldf-series}
+\end{equation}
+where the 15 of the two internal terms is Glueckauf's (1955, eq.\,(3a),
+p.\,1543): a single internal resistance returns $k=15\,D/r^2$.  The slope
+$K$ is the secant at the feed (the series is a result for a linear isotherm,
+and Ruthven warns that the lumped model breaks down when the isotherm is
+highly nonlinear, p.\,241); $\rho_p=\rho_b/(1-\varepsilon)$ is the derived
+particle density.  The three terms' shares of $1/k$ are published
+(\code{corr\_kLDF\_share\_film}, \dots\code{macropore}, \dots\code{micropore}):
+the largest share is the resistance that controls the bed.  A term whose data
+are absent is omitted and said so; porosity, tortuosity and the crystal
+$D_c/r_c^2$ are sample data and carry a scope and a source in the case.
+
+\begin{center}\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+Correlation & Phase & Stated window & Anchor\\
+\midrule
+Wakao \& Funazkri $D_{\mathrm{ax}}$ & gas, liquid & Re $\sim$ 3--$10^4$ & printed: stagnant term 20\\
+Edwards \& Richardson & gas & Re 0.008--50, $d_p$ 0.377--6 mm & cross-check: eq.\,(17) vs.\ their eq.\,(18)\\
+Chung \& Wen & liquid & Re $10^{-3}$--$10^3$, $\varepsilon$ 0.4--0.8 & printed: $\varepsilon N_{Pe}\to 0.2$\\
+Gunn & gas, liquid & Re 0.01--1000, Sc 0.77--1500, spheres & limit: $D/(Ud_p)\to 0.5$\\
+Wakao \& Funazkri $k_f$ & gas, liquid & Re 3--$10^4$ & arithmetic: Sh at Re 100, Sc 1\\
+Wilson \& Geankoplis & liquid & Re 0.0016--1500, Sc 950--70\,600 & printed: $J=2.50$ at $\varepsilon=0.436$\\
+Ruthven series & linear isotherm & feed-state $K$ & printed: Glueckauf's 15\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The witness is
+\file{tutorials/batch/adsorber/batch30\_bed\_correlations}: batch13's bed with
+$D_{\mathrm{ax}}$ and $k_{\mathrm{LDF}}$ declared, and every estimate
+printed beside them.  \emph{In-sample statement}: no number in this
+subsection is fitted to Choupo's case; the coefficients are the
+articles', and the estimates are as good as the articles' own scatter (the
+standard deviation Chung \& Wen state is 46\,\%, and Wilson \& Geankoplis'
+points scatter by 7\,\% on average and 28\,\% at the worst).
+
 \subsection{The non-isothermal bed: energy in conservative form}
 
 Declare \code{energyBalance adiabatic;} (or \code{wallCooled;}, with
@@ -35704,6 +35844,36 @@ Wiley-VCH, 2020, Chapter~2: Eqs.~(2.5), (2.14)--(2.28), (2.40)--(2.48), the
 displacement and tag-along effects (pp.~40--43) and overloading
 (pp.~43--45).
 
+\bibitem{Wakao1978} Wakao, N.; Funazkri, T., Effect of fluid dispersion
+coefficients on particle-to-fluid mass transfer coefficients in packed beds:
+correlation of Sherwood numbers, \emph{Chem.\ Eng.\ Sci.}\ \textbf{33}, 1375--1384
+(1978).
+
+\bibitem{Edwards1968} Edwards, M. F.; Richardson, J. F., Gas dispersion in
+packed beds, \emph{Chem.\ Eng.\ Sci.}\ \textbf{23}, 109--123 (1968).
+
+\bibitem{ChungWen1968} Chung, S. F.; Wen, C. Y., Longitudinal dispersion of
+liquid flowing through fixed and fluidized beds, \emph{AIChE J.}\ \textbf{14}(6),
+857--866 (1968).
+
+\bibitem{Gunn1987} Gunn, D. J., Axial and radial dispersion in fixed beds,
+\emph{Chem.\ Eng.\ Sci.}\ \textbf{42}(2), 363--373 (1987).
+
+\bibitem{Wilson1966} Wilson, E. J.; Geankoplis, C. J., Liquid mass transfer at
+very low Reynolds numbers in packed beds, \emph{Ind.\ Eng.\ Chem.\ Fundam.}\
+\textbf{5}(1), 9--14 (1966).
+
+\bibitem{Glueckauf1955} Glueckauf, E., ``Theory of chromatography.  Part 10.
+Formulae for diffusion into spheres and their application to
+chromatography'', \emph{Trans.\ Faraday Soc.} \textbf{51} (1955) 1540--1551,
+doi:10.1039/TF9555101540.  The series film-and-particle resistance of
+Section~\ref{sec:batch-adsorption-stirred-tank}.
+
+\bibitem{Ruthven1984} Ruthven, D. M., \emph{Principles of Adsorption and
+Adsorption Processes}, Wiley-Interscience (John Wiley \& Sons), 1984,
+pp.~49--50 (Eqs.~(2.27) to (2.32), the Langmuir isotherm and both of its
+linear forms) and p.~121 (Section~4.7, adsorption from the liquid phase).
+
 \bibitem{Wankat2007} Wankat, P. C., \emph{Separation Process Engineering},
 2nd ed., Prentice Hall (Pearson Education), 2007, Chapter~17: Eqs.~(17-5a) to
 (17-6c), the liquid-phase Langmuir isotherm, and Example~17-1, which fits
@@ -35713,11 +35883,6 @@ $p/q$ against $p$.
 \emph{Industrial Separation Processes: Fundamentals}, 2nd ed., De Gruyter, 2020
 (ISBN 978-3-11-065473-8).  The sigma concept and the tubular-bowl cut
 (eqs.~9.41--9.46, pp.~308--309) and the disc-stack $\Sigma$ (eq.~9.52, p.~311).  Chapter~6 for the Langmuir isotherm: Eqs.~(6.6), (6.11), (6.12); for a liquid the physical meaning of $q_{\max}$ and $b'$ is lost and both are empirical constants.
-
-\bibitem{Ruthven1984} Ruthven, D. M., \emph{Principles of Adsorption and
-Adsorption Processes}, Wiley-Interscience (John Wiley \& Sons), 1984,
-pp.~49--50 (Eqs.~(2.27) to (2.32), the Langmuir isotherm and both of its
-linear forms) and p.~121 (Section~4.7, adsorption from the liquid phase).
 
 \bibitem{Freundlich1907} Freundlich, H., ``\"Uber die Adsorption in
 L\"osungen'', \emph{Z.\ Phys.\ Chem.} \textbf{57U} (1907) 385--470,
@@ -35755,12 +35920,6 @@ coefficient (Eqs.~11.28--11.29) and batch adsorption with film resistance
 Suspended in agitated tanks'', \emph{AIChE J.} \textbf{8} (1962) 93--101,
 doi:10.1002/aic.690080122.  Film coefficients in a stirred tank, above the
 stagnant bound.
-
-\bibitem{Glueckauf1955} Glueckauf, E., ``Theory of chromatography.  Part 10.
-Formulae for diffusion into spheres and their application to
-chromatography'', \emph{Trans.\ Faraday Soc.} \textbf{51} (1955) 1540--1551,
-doi:10.1039/TF9555101540.  The series film-and-particle resistance of
-Section~\ref{sec:batch-adsorption-stirred-tank}.
 
 \bibitem{vanDeemter1956} van Deemter, J.~J., Zuiderweg, F.~J.\ and
 Klinkenberg, A., ``Longitudinal diffusion and resistance to mass transfer as

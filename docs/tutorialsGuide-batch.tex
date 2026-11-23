@@ -718,6 +718,46 @@ bedVanLeer (100 cells) must reproduce THAT variance; bedUpwind (100 cells) repro
 \goldmore{103}
 \end{tutgolden}
 
+\clearpage
+\tutentry{batch30\_bed\_correlations}{tutorials/batch/adsorber/batch30\_bed\_correlations}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bed) at (0.0,-0.0) {\textbf{bed}\\[-1pt]{\tiny fixedBedAdsorber}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Where do Dax, k\_f and k\_LDF come from? -- batch13's CO2/N2 bed with the declared Dax and k\_LDF beside the literature correlations (Wakao-Funazkri, Edwards-Richardson, Chung-Wen, Gunn; Wilson-Geankoplis; Ruthven series with Glueckauf's 15), each estimate with its window and page}
+\begin{tutnarrative}
+where do Dax, k\_f and k\_LDF come from?
+
+batch13's bed (15 \% CO2 on 13X beads, 0.5 m, u = 0.05 m/s, 1 bar, 298 K) with the carrier changed to N2 (the catalogue's helium has no diffusion volume) and the three transport numbers put beside what the literature correlations say. The case DECLARES Dax and k\_LDF, as every adsorber case does, and a declared value always wins -- so the front below is the declared one. `transportCorrelations` makes the run ALSO print and publish (KPIs corr\_$\ast$) every correlation's estimate, each with its validity window and the page its coefficients were read at:
+
+axial dispersion Wakao \& Funazkri 1978 eq (2); Edwards \& Richardson 1968 eq (17) (gas); Chung \& Wen 1968 eqs (15)-(16) (liquids); Gunn 1987 eq (1) film k\_f Wakao \& Funazkri 1978 eq (12); Wilson \& Geankoplis 1966 eqs (8)-(9) (liquids) k\_LDF (series) Ruthven 1984 eq (8.41): film + macropore + micropore, the internal terms with Glueckauf's 15 (1955 eqn 3a)
+
+BASIS. Dax is stored on the BED (superficial) basis, Dax = eps D\_L; the correlations are written for the interstitial D\_L and are converted (the run prints both). A textbook D\_L typed into Dax overstates the dispersion by 1/eps.
+
+WHAT THE RUN SHOWS (feed state: rho = 1.227 kg/m3, mu = 1.72e-5 Pa s, Re = 7.13, Sc = 0.854, Dm = 1.64e-5 m2/s from Fuller): Dax (bed basis, m2/s): Edwards \& Richardson 3.5e-5 and Gunn 3.2e-5 agree within 10 \% and sit BELOW the declared 1e-4 (batch13's Pe = 250 is a conservative teaching value, not a prediction); Wakao \& Funazkri 3.8e-4 is HIGHER because its stagnant term 20 Dm (a particle whose surface controls the transfer) dominates at this Re; Chung \& Wen 1.75e-4 is flagged OUTSIDE its phase (a liquid correlation) and the run says so -- the window is the lesson; the film coefficient is k\_f = 0.044 m/s (Wakao \& Funazkri, Sh = 5.39; Wilson \& Geankoplis answers 0.041 but is flagged: liquids, Sc 950 up); the series k\_LDF = 0.0113 1/s, against the declared 0.05: the shares of 1/k say WHERE the resistance is -- film 4.3 \%, macropore 20.0 \%, micropore 75.7 \% -- and the declared value, 4.4 times faster, is published beside the estimate, not used (the front below is the declared one: t\_b(5 \%) = 2934.07 s, as batch13). The estimates need particle data the catalogue cannot hold (porosity, tortuosity, micropore diffusivity of THIS sample), declared below as sample data with their scope.
+
+Tolerances: the golden pins the estimates to 1e-4 relative; the anchors of every correlation are checked by check\_bed\_correlations.py.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{bed}{D\_axial\_interstitial}{0.00025}
+\goldrow{kpi}{bed}{D\_numerical}{0}
+\goldrow{kpi}{bed}{E\_adsorption\_seg0\_kJ}{-413.617021276}
+\goldrow{kpi}{bed}{E\_adsorption\_total\_kJ}{-413.617021276}
+\goldrow{kpi}{bed}{P\_final}{100000}
+\goldrow{kpi}{bed}{Pe}{250}
+\goldrow{kpi}{bed}{T\_final}{298}
+\goldrow{kpi}{bed}{c\_out\_over\_cin\_final\_CO2}{0.999999999943}
+\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{9.19148936169}
+\goldrow{kpi}{bed}{carrier\_makeup\_rel}{0.108446875338}
+\goldrow{kpi}{bed}{corr\_Dax\_ChungWen}{0.000175250886463}
+\goldrow{kpi}{bed}{corr\_Dax\_EdwardsRichardson}{3.53384489604e-05}
+\goldrow{kpi}{bed}{corr\_Dax\_Gunn}{3.21840656335e-05}
+\goldrow{kpi}{bed}{corr\_Dax\_WakaoFunazkri}{0.000378310977433}
+\goldmore{78}
+\end{tutgolden}
+
 \subsection{combustion}
 \grouptheory{combustion}
 \clearpage

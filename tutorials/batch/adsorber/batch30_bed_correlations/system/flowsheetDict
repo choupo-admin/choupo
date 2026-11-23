@@ -1,0 +1,110 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch30_bed_correlations  --  where do Dax, k_f and k_LDF come from?
+
+  batch13's bed (15 % CO2 on 13X beads, 0.5 m, u = 0.05 m/s, 1 bar, 298 K)
+  with the carrier changed to N2 (the catalogue's helium has no diffusion
+  volume) and the three transport numbers put beside what the literature
+  correlations say.  The case DECLARES Dax and k_LDF, as every adsorber case
+  does, and a declared value always wins -- so the front below is the
+  declared one.  `transportCorrelations` makes the run ALSO print and
+  publish (KPIs corr_*) every correlation's estimate, each with its
+  validity window and the page its coefficients were read at:
+
+    axial dispersion  Wakao & Funazkri 1978 eq (2); Edwards & Richardson
+                      1968 eq (17) (gas); Chung & Wen 1968 eqs (15)-(16)
+                      (liquids); Gunn 1987 eq (1)
+    film k_f          Wakao & Funazkri 1978 eq (12); Wilson & Geankoplis
+                      1966 eqs (8)-(9) (liquids)
+    k_LDF (series)    Ruthven 1984 eq (8.41): film + macropore + micropore,
+                      the internal terms with Glueckauf's 15 (1955 eqn 3a)
+
+  BASIS.  Dax is stored on the BED (superficial) basis, Dax = eps D_L; the
+  correlations are written for the interstitial D_L and are converted (the
+  run prints both).  A textbook D_L typed into Dax overstates the
+  dispersion by 1/eps.
+
+  WHAT THE RUN SHOWS (feed state: rho = 1.227 kg/m3, mu = 1.72e-5 Pa s,
+  Re = 7.13, Sc = 0.854, Dm = 1.64e-5 m2/s from Fuller):
+    * Dax (bed basis, m2/s): Edwards & Richardson 3.5e-5 and Gunn 3.2e-5
+      agree within 10 % and sit BELOW the declared 1e-4 (batch13's Pe = 250
+      is a conservative teaching value, not a prediction); Wakao & Funazkri
+      3.8e-4 is HIGHER because its stagnant term 20 Dm (a particle whose
+      surface controls the transfer) dominates at this Re; Chung & Wen
+      1.75e-4 is flagged OUTSIDE its phase (a liquid correlation) and the
+      run says so -- the window is the lesson;
+    * the film coefficient is k_f = 0.044 m/s (Wakao & Funazkri, Sh = 5.39;
+      Wilson & Geankoplis answers 0.041 but is flagged: liquids, Sc 950 up);
+    * the series k_LDF = 0.0113 1/s, against the declared 0.05: the shares
+      of 1/k say WHERE the resistance is -- film 4.3 %, macropore 20.0 %,
+      micropore 75.7 % -- and the declared value, 4.4 times faster, is
+      published beside the estimate, not used (the front below is the
+      declared one: t_b(5 %) = 2934.07 s, as batch13).
+  The estimates need particle data the catalogue cannot hold (porosity,
+  tortuosity, micropore diffusivity of THIS sample), declared below as
+  sample data with their scope.
+
+  Tolerances: the golden pins the estimates to 1e-4 relative; the anchors
+  of every correlation are checked by check_bed_correlations.py.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        bed;
+        type        fixedBedAdsorber;
+
+        operation
+        {
+            adsorbent   zeolite13X_beads;   // case-local identity (dParticle)
+            L           0.5   m;       // bed length
+            area        0.01  m2;      // cross-section
+            eps         0.4;           // interparticle void fraction
+            u           0.05  m/s;     // superficial, CONSTANT DECLARED
+            T           298   K;       // isothermal DECLARED
+            P           1     bar;     // CONSTANT DECLARED
+            Dax  [0 2 -1 0 0]  1e-4;   // m2/s -- BED basis (eps D_L), DECLARED:
+                                       // it wins over every estimate below
+            nCells      100;           // axial mesh DECLARED
+
+            feed    { molarComposition { CO2 0.15; N2 0.85; } }
+            initial { molarComposition { N2  1.0; } }   // clean bed: q = 0
+
+            kLDF                       // EQUIPMENT/SAMPLE data: declared, wins
+            {
+                basis    solidFilm;    // dq/dt = k*(q* - q)
+                scope    "2 mm 13X beads, teaching bed batch30";
+                source   "declared spec value (the batch13 anchor); Glueckauf k = 15 De/rp^2 gives the order";
+                k
+                {
+                    CO2  [0 0 -1 0 0]  0.05;   // 1/s
+                }
+            }
+
+            transportCorrelations
+            {
+                dispersion { model EdwardsRichardson; species CO2; }
+                film       { model WakaoFunazkri; }
+                series
+                {
+                    CO2
+                    {
+                        scope  "2 mm 13X beads, teaching bed batch30";
+                        source "ASSUMED teaching values, typical of binder-bonded zeolite beads (Ruthven 1984 ch. 6-7: macropore porosity 0.3-0.4, tortuosity 2-6); measure them on the real sample before design use";
+                        epsP  0.35;            // macropore porosity of the bead
+                        tauP  3.0;             // macropore tortuosity, Dp = Dm/tauP
+                        micropore { DcOverRc2 1e-3; }   // Dc/rc^2 [1/s], crystal
+                    }
+                }
+                compare true;          // publish EVERY registered model's estimate
+            }
+        }
+    }
+);

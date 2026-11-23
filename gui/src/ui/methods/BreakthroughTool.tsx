@@ -355,6 +355,84 @@ function fmt(v: number | undefined): string {
   return typeof v === "number" && Number.isFinite(v) ? v.toPrecision(6) : "—";
 }
 
+// ---- The transport-correlation comparison (DEV.md 4c C450) -------------------
+// The bed's own estimates of Dax, k_f and k_LDF, read VERBATIM off the KPIs
+// `fixedBedAdsorber` publishes when the case declares
+// operation.transportCorrelations (witness: batch30_bed_correlations).  The
+// tool computes nothing here: it lays the declared value beside each
+// correlation's estimate, with the engine's own window verdict.
+
+export interface CorrelationRow {
+  /** What is estimated, e.g. "Dax" or "k_f (CO2)". */
+  quantity: string;
+  /** The correlation (or the series sum) that produced the estimate. */
+  model: string;
+  /** The estimate, in the quantity's unit. */
+  value: number;
+  /** The case's declared value for the same quantity, when it declares one. */
+  declared: number | null;
+  /** true / false = the engine's window verdict; null = not applicable. */
+  inWindow: boolean | null;
+  /** Shares of 1/k_LDF (film / macropore / micropore) on the series row. */
+  shares: { film: number; macropore: number; micropore: number } | null;
+  unit: string;
+}
+
+const DAX_RE = /^corr_Dax_([A-Za-z]+)$/;
+const KF_RE = /^corr_kf_(.+)_(WakaoFunazkri|WilsonGeankoplis)$/;
+
+export function correlationComparison(k: UnitKpis | undefined): CorrelationRow[] {
+  if (!k) return [];
+  const num = (key: string): number => {
+    const v = k[key];
+    return typeof v === "number" ? v : NaN;
+  };
+  const rows: CorrelationRow[] = [];
+  const declaredDax = typeof k["corr_Dax_declared"] === "number"
+    ? k["corr_Dax_declared"] : null;
+  for (const key of Object.keys(k).sort()) {
+    const m = DAX_RE.exec(key);
+    const model = m?.[1];
+    if (model === undefined || model === "declared" || model === "used"
+        || model === "inWindow") continue;
+    const w = k[`corr_Dax_inWindow_${model}`];
+    rows.push({
+      quantity: "Dax (bed basis)", model, value: num(key),
+      declared: declaredDax,
+      inWindow: typeof w === "number" ? w === 1 : null,
+      shares: null, unit: "m²/s",
+    });
+  }
+  for (const key of Object.keys(k).sort()) {
+    const m = KF_RE.exec(key);
+    const sp = m?.[1];
+    const model = m?.[2];
+    if (sp === undefined || model === undefined) continue;
+    const w = k[`corr_kf_inWindow_${sp}_${model}`];
+    rows.push({
+      quantity: `k_f (${sp})`, model, value: num(key), declared: null,
+      inWindow: typeof w === "number" ? w === 1 : null, shares: null,
+      unit: "m/s",
+    });
+  }
+  for (const key of Object.keys(k).sort()) {
+    const sp = /^corr_kLDF_series_(.+)$/.exec(key)?.[1];
+    if (sp === undefined) continue;
+    const d = k[`corr_kLDF_declared_${sp}`];
+    rows.push({
+      quantity: `k_LDF (${sp})`, model: "Ruthven series", value: num(key),
+      declared: typeof d === "number" ? d : null, inWindow: null,
+      shares: {
+        film: num(`corr_kLDF_share_film_${sp}`),
+        macropore: num(`corr_kLDF_share_macropore_${sp}`),
+        micropore: num(`corr_kLDF_share_micropore_${sp}`),
+      },
+      unit: "1/s",
+    });
+  }
+  return rows;
+}
+
 // ---- The tool ---------------------------------------------------------------
 
 export function BreakthroughTool(): JSX.Element {
@@ -694,6 +772,69 @@ export function BreakthroughTool(): JSX.Element {
             through.
           </Text>
         </Box>
+
+        {/* The transport-correlation comparison: the declared Dax / k_LDF
+            beside each correlation's estimate, verbatim from the KPIs of a
+            case that declares operation.transportCorrelations (batch30). */}
+        {(() => {
+          const rows = correlationComparison(view.unitKpis);
+          if (rows.length === 0) {
+            return (
+              <Text size="xs" c="dimmed">
+                Where would Dax, k_f and k_LDF come from? Open
+                tutorials/batch/adsorber/batch30_bed_correlations: its run
+                publishes every correlation&apos;s estimate beside the declared
+                value, and this panel shows them.
+              </Text>
+            );
+          }
+          const pct = (x: number): string => `${(100 * x).toFixed(1)} %`;
+          return (
+            <Box style={{ overflowX: "auto" }}>
+              <OriginMark of="engine" note="the estimates the bed published (KPIs corr_*); nothing is computed here" />
+              <Title order={5}>Declared against what the literature says</Title>
+              <Table withTableBorder withColumnBorders
+                style={{ fontSize: 12 }} verticalSpacing={2} mt={4}>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>quantity</Table.Th>
+                    <Table.Th>correlation</Table.Th>
+                    <Table.Th>estimate</Table.Th>
+                    <Table.Th>declared</Table.Th>
+                    <Table.Th>estimate / declared</Table.Th>
+                    <Table.Th>window</Table.Th>
+                    <Table.Th>film / macropore / micropore</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {rows.map((r) => (
+                    <Table.Tr key={`${r.quantity}|${r.model}`}>
+                      <Table.Td>{r.quantity}</Table.Td>
+                      <Table.Td>{r.model}</Table.Td>
+                      <Table.Td>{fmt(r.value)} {r.unit}</Table.Td>
+                      <Table.Td>{r.declared === null ? "—" : `${fmt(r.declared)} ${r.unit}`}</Table.Td>
+                      <Table.Td>{r.declared === null ? "—" : fmt(r.value / r.declared)}</Table.Td>
+                      <Table.Td>{r.inWindow === null ? "—"
+                        : r.inWindow ? "inside" : "OUTSIDE"}</Table.Td>
+                      <Table.Td>{r.shares === null ? "—"
+                        : `${pct(r.shares.film)} / ${pct(r.shares.macropore)} / ${pct(r.shares.micropore)}`}</Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+              <Text size="xs" c="dimmed" mt={4}>
+                A declared value always wins: the front above is the declared
+                one.  A correlation flagged OUTSIDE was asked about a bed it
+                was not fitted for (a liquid correlation on a gas, or a
+                Reynolds number beyond its data) and still answers; the flag
+                is the lesson.  Dax is on the bed basis, eps times the
+                interstitial D_L of the papers.  The shares are the parts of
+                1/k_LDF, film + macropore + micropore: the largest is the
+                resistance that controls the bed.
+              </Text>
+            </Box>
+          );
+        })()}
 
         {lessonStep(4)}
         {lessonStep(5)}
