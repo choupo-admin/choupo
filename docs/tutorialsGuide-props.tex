@@ -3405,15 +3405,7 @@ Why the case exists: `heatCapacityFit` had NO case and no gate. Writing the firs
 \end{tutscheme}
 \tutwhat{Antoine fit on data generated from Choupo's own water correlation: the coefficients must come back exactly, so any deviation is the op's arithmetic}
 \begin{tutnarrative}
-FITTING ANTOINE, AND KNOWING THE ANSWER BEFOREHAND.
-
-`vaporPressureFit` regresses log10(Psat[bar]) = A - B/(T + C) on measured Psat(T). The fit is linear in (A, B) at fixed C, so the op golden-sections C and solves (A, B) by least squares at each one -- derivative-free, and worth reading in the source.
-
-This case feeds it data generated FROM THE SAME EQUATION, by evaluating Choupo's own curated water correlation at twenty temperatures. That is deliberate. Against laboratory data a fit can only be judged to the scatter of the measurements; against data the equation itself produced, the fit must RETURN THE COEFFICIENTS IT WAS GIVEN -- so any deviation is the op's arithmetic and nothing else, and the expected file can pin it to the digit.
-
-Why the case exists: `vaporPressureFit` had NO case and no gate. It could have been broken for a year and the suite would have stayed green; the first to find out would be a student fitting their own data. The psychrometric chart was in exactly that position last week, and writing its first test found it reporting nothing.
-
-What to read in the output: A, B, C -- the recovered coefficients, against 5.40221 / 1838.675 / -31.737; R2 -- 1 to floating point, because the data has no scatter; dHvap -- the Clausius-Clapeyron reading of B WITH the (T/(T+C))\textasciicircum{}2 correction, at the highest T. Compare it to water's tabulated enthalpy of vaporisation: this is the physical cross-check on a fit that is otherwise just a straight line through transformed numbers.
+THE FIGURES (C480). The fit publishes its points as a table, so the page opens on the data against the fitted Antoine curve, the parity and the residuals, and on A, B, C, R2 and the enthalpy of vaporisation with their units; the coefficients must come back exactly.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -3795,13 +3787,7 @@ The per-correlation deviation diags are the golden KPIs.
 \end{tutscheme}
 \tutwhat{Psychrometric chart for N2/water at 1 atm, 0-60 C: saturation + four RH lines + three adiabatic-saturation lines, from the vapour-pressure model a flash would use}
 \begin{tutnarrative}
-THE PSYCHROMETRIC CHART, computed rather than looked up.
-
-Nitrogen + water at 1 atm, 0 $\to$ 60 C: the saturation curve, four relative-humidity lines and three adiabatic-saturation (wet-bulb) lines, all from the SAME vapour-pressure model a flash would use. Nothing here is a chart digitised from a handbook -- the curve is Y\_sat(T) evaluated point by point, so the student can change the model and watch the chart move.
-
-Why this case exists at all: `psychrometricChart` is reachable from the GUI's Property Explorer, and until now NOTHING exercised it. It could break and the whole suite would stay green; the first to find out would be a student opening the Explorer. An op a user can reach and a test cannot is a promise with no guard behind it.
-
-What to read in the output (long-format CSV: T\_C, Y, curve): `saturation` -- Y\_sat = 0.622 $\ast$ Psat/(P - Psat), the chart's ceiling; `RH=...` -- the same expression at a fraction of Psat, so the lines fan out and steepen with T exactly as the printed chart does; `wetBulb=...` -- the adiabatic-saturation lines, which are NOT parallel to the RH lines: they carry the latent heat of the water evaporated, so their slope is set by Hvap/cp of the moist air, not by geometry.
+THE FIGURE (C480). The chart is published as a table and drawn on the Studies page: humidity ratio against dry-bulb temperature, the saturation curve, the relative-humidity lines and the adiabatic-saturation and true wet-bulb lines, each its own series, so the difference between the two families is read off the picture.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -5741,13 +5727,7 @@ WHAT THIS CASE DOES NOT SAY. Nothing here is a relief-valve design: the sizing i
 \end{tutscheme}
 \tutwhat{Binary LLE g\_mix + common-tangent (water/1-butanol) at 298.15 K via propertyScanBinary, cited Winkelman 2009 UNIQUAC}
 \begin{tutnarrative}
-Binary liquid-liquid teaching map -- water / 1-butanol at 25 C.
-
-The molar Gibbs energy of mixing g\_mix(x1) swept across composition PLUS the two coexisting liquid compositions from ONE liquid-liquid IsothermalFlash (PhaseSet::LL). The two binodal points lie on the g\_mix curve and share its common tangent -- the student reads the split straight off the diagram.
-
-gamma comes from the CITED Winkelman et al. (2009) UNIQUAC LLE set (Table 2; structural r,q from Table 1), so the g\_mix curve goes NON-CONVEX and the flash emits the real water/1-butanol binodal: \textasciitilde{}1.9 mol\% butanol in the water-rich phase and \textasciitilde{}49 mol\% butanol in the butanol-rich phase (matching their Figs 1-2 at 298 K). See README.md.
-
-The flash feed is set to z(water) = 0.80 (20 mol\% butanol), INSIDE the asymmetric gap; an equimolar feed would lie outside it (both binodal branches sit below 50 mol\% butanol). Run-only smoke (the CSV is a teaching curve, not pinned KPIs).
+THE FIGURE (C480). The g\_mix curve, the two coexisting liquids found by the liquid-liquid flash and the common tangent through them are one figure on the Studies page: the two-liquid split is read from the picture, not from a drawn dome.
 
 \end{tutnarrative}
 \tutreadme{Water + 1-butanol (n-butanol) is $\ast$the$\ast$ classic partially-miscible binary. At 25 $^\circ$C it splits into a water-rich liquid (\textasciitilde{}2 mol \% butanol) and a butanol-rich liquid (\textasciitilde{}50 mol \% butanol). A g\_mix(x\_water) scan should therefore show a clearly non-convex region: two binodal points sharing a common tangent, which a student reads the split straight off.}
@@ -6101,6 +6081,8 @@ The package is `ideal` because no mixture is asked for: every row is one pure so
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{isobar\_1bar}\\[-1pt]{\tiny steamTables}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{isobar\_1MPa}\\[-1pt]{\tiny steamTables}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{isobar\_10MPa}\\[-1pt]{\tiny steamTables}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{states}\\[-1pt]{\tiny series}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-3.9) {\textbf{table5}\\[-1pt]{\tiny table}};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{IAPWS-IF97 steam tables (R7-97(2012)) -- the verification case. The six computer-program verification states of the release (Table 5 region 1, Table 15 region 2) evaluated as points, the saturation line 0.01-350 degC, and three isobars whose Tsat crossings pin the release's Table 36 backward values. The published numbers ARE the golden master (reltol 1e-8).}
@@ -6113,7 +6095,11 @@ Table 5 -- region 1 at (300 K, 3 MPa), (300 K, 80 MPa), (500 K, 3 MPa) Table 15 
 
 Plus the working artefacts: the saturated-steam table 0.01-350 degC (saturation.csv) and three isobars (h, s, v, cp vs T) crossing the saturation line -- the crossing is ANNOUNCED in the log.
 
+THE FIGURE AND THE TABLES (C480). The Studies page draws the six single-phase verification states and the Table 35/36 points on the saturation line, and four tables set the release's value beside Choupo's with the relative difference of every value (IAPWS R7-97(2012) Tables 5, 15, 35, 36, read from this case's own expected file).
+
 \end{tutnarrative}
+\tutreadme{Evaluates every IAPWS R7-97(2012) computer-program verification value this slice covers (Tables 5, 15, 35, 36) and shows them beside the release's own numbers.}
+\tutreadme{Where the reference values come from: this case's own expected file, whose values were copied digit for digit from IAPWS R7-97(2012) Tables 5, 15, 35 and 36. bin/curate/steam01\_reference\_csv.py writes them, without retyping, to constant/reference/iapws\_if97\_verification.csv. They were NOT re-read from the release document in the C480 slice that added the figures.}
 \begin{tutgolden}
 \goldrow{diag}{r1\_T300\_p3MPa}{region}{1}
 \goldrow{diag}{r1\_T300\_p3MPa}{v}{0.100215168e-2}

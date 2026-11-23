@@ -22,6 +22,12 @@
   Plus the working artefacts: the saturated-steam table 0.01-350 degC
   (saturation.csv) and three isobars (h, s, v, cp vs T) crossing the
   saturation line -- the crossing is ANNOUNCED in the log.
+
+  THE FIGURE AND THE TABLES (C480).  The Studies page draws the six single-phase
+  verification states and the Table 35/36 points on the saturation line, and four
+  tables set the release's value beside Choupo's with the relative difference of
+  every value (IAPWS R7-97(2012) Tables 5, 15, 35, 36, read from this case's own
+  expected file).
 \*---------------------------------------------------------------------------*/
 operations
 (

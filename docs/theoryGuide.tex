@@ -40802,6 +40802,28 @@ answer to $10^{-8}$ in 3\,163 steps instead of 121; at 50\,\% the amplification
 factor tends to $-1$ instead of 0, the damping is lost and the run refuses at
 the step floor.
 
+\subsection{The property bench draws its own figures}\label{sec:props-default-views}
+
+A \code{choupoProps} operation used to publish numbers keyed by word and, perhaps, a CSV, so a case that declared no \code{views}
+opened on a list of keys (and "No figure published").  The views grammar of \code{propsDict} needs no change for this: each of the
+operations below now publishes the rows of its CSV as a \emph{named table} (a table holds numbers only, so a curve of a family is
+selected on a numeric column such as \code{family}), says the unit of its diagnostics, and writes its default views over the table.
+The CSV is unchanged; where a table speaks a unit the CSV does not (bar for Pa, kJ/kg for J/kg, MPa) the column says so.
+\begin{itemize}
+\item \code{steamTables}: the saturation line (table \code{saturation}; $p_{\mathrm{sat}}$ against $T$, and $h'$, $h''$) and the isobar
+ (table \code{isobar}); its diagnostics speak the release's table units (m$^3$/kg, kJ/kg, kJ/(kg\,K), m/s, MPa);
+\item \code{psychrometricChart}: table \code{chart} ($T$, humidity ratio $Y$, \code{family} 0 saturation, 1 relative humidity, 2 adiabatic
+ saturation, 3 true wet bulb, \code{param}) and the chart;
+\item \code{propertyScanBinary}: tables \code{gmix} and \code{binodal}; the figure is $g_{\mathrm{mix}}(x_1)$ with the two coexisting liquids and the common tangent;
+\item \code{propertyScan1D}: a T--$x$--$y$ diagram where the scan holds \code{T\_bubble}, \code{y\_eq\_<c>} and \code{x\_<c>}, otherwise one figure per unit;
+\item \code{vaporPressureFit}: table \code{fitPoints}; the data against the fitted Antoine curve, parity, residuals and the constants $A$, $B$, $C$;
+\item \code{phaseEnvelope}, \code{purePhaseDiagram}, \code{pitzerActivity}, \code{gibbsMap} (up to six pressures) and \code{scalingScan}.
+\end{itemize}
+A case still declares its own \code{references}, \code{studies} and \code{views} beside these: \code{steam01\_if97\_verification} sets the
+computer-program verification values of IAPWS R7-97(2012) (Tables 5, 15, 35, 36) beside Choupo's, with the relative difference of every
+value, and draws the verification states on the saturation line.  The reference values are the case's own \code{expected} file
+(copied from the release's tables), not re-read from the release in that slice.
+
 \subsection{The ignition delay from the dense output}\label{sec:ignition-delay-dense}
 
 An adiabatic vessel that ignites has one number a figure wants to mark: the time at which it does.  \code{choupoBatch}
