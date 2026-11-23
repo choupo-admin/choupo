@@ -5420,7 +5420,10 @@ accepts today, and that is a policy call.
 > 2 December.  Same question, asked next ("Estes perfis onde estao presentemente gravados?"): in the browser
 > they live only in the tab's memory (the worker's MEMFS); the case .zip carries the case files and the
 > run's proposals, not trajectory.csv nor the `<t>/` directories.  Added to C482: the .zip carries the
-> last run's outputs.
+> last run's outputs.  And the third ("quando corre online, os alunos nao veem os
+> resultados aqui?"): the worker harvests converged/, design/ and postProcessing/ into the Case tree,
+> not a batch run's `<t>/` directories nor trajectory.csv, so a student cannot open the vessel at
+> t = 2 ms.  Part 1 of C482 (harvest and show them read-only) moved before 2 December.
 
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
