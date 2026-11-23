@@ -384,8 +384,65 @@ try
     const scalar startTime     = controlDict->lookupScalarOrDefault("startTime",     0.0);
     const scalar endTime       = controlDict->lookupScalar("endTime");
     const scalar deltaT        = controlDict->lookupScalar("deltaT");
-    const scalar writeInterval =
-        controlDict->lookupScalarOrDefault("writeInterval", deltaT);
+    //  THE WRITE GRID (C477).  `uniform` (the default, byte-identical to every
+    //  earlier run): a point every writeInterval.  `log`: points spaced evenly in
+    //  log t from `writeStart` [s], `writePerDecade` (default 10) per decade, the
+    //  last at endTime -- an ignition runs over microseconds to milliseconds and a
+    //  uniform grid either misses the ramp or writes thousands of idle rows.  The
+    //  states between steps come from the dense output (free stepping), so the
+    //  grid costs nothing but its rows.  Refused by name where it cannot hold.
+    const std::string writeSpacing =
+        controlDict->lookupWordOrDefault("writeSpacing", "uniform");
+    if (writeSpacing != "uniform" && writeSpacing != "log")
+        throw std::runtime_error("choupoBatch: writeSpacing '" + writeSpacing
+            + "' is not known; it is `uniform` (a point every writeInterval, the"
+              " default) or `log` (with writeStart and writePerDecade)");
+    const bool logWrite = (writeSpacing == "log");
+    if (!logWrite && (controlDict->found("writeStart") || controlDict->found("writePerDecade")))
+        throw std::runtime_error("choupoBatch: writeStart / writePerDecade belong to"
+            " `writeSpacing log;` and are read by nothing on a uniform grid");
+    std::vector<scalar> logGrid;
+    scalar logSpacing0 = 0.0;
+    if (logWrite)
+    {
+        if (controlDict->found("writeInterval"))
+            throw std::runtime_error("choupoBatch: `writeSpacing log;` sets the write"
+                " grid; `writeInterval` is the uniform grid's and must be removed");
+        if (!controlDict->found("writeStart"))
+            throw std::runtime_error("choupoBatch: `writeSpacing log;` needs `writeStart`"
+                " [s], the first write point after startTime (> startTime, < endTime)");
+        const scalar wStart = controlDict->lookupScalar("writeStart");
+        const scalar perDec = controlDict->lookupScalarOrDefault("writePerDecade", 10.0);
+        if (!(wStart > startTime) || !(wStart < endTime))
+            throw std::runtime_error("choupoBatch: writeStart (" + std::to_string(wStart)
+                + " s) must lie between startTime and endTime");
+        if (!(wStart > 0.0))
+            throw std::runtime_error("choupoBatch: writeStart must be > 0 on a log grid");
+        if (!(perDec >= 1.0) || perDec != std::floor(perDec))
+            throw std::runtime_error("choupoBatch: writePerDecade must be a positive"
+                " integer, got " + std::to_string(perDec));
+        if (controlDict->lookupWordOrDefault("timeStepping", "fixed") != "adaptive")
+            throw std::runtime_error("choupoBatch: `writeSpacing log;` needs `timeStepping"
+                " adaptive;` (the fixed-step loop writes on multiples of deltaT)");
+        for (int k = 0;; ++k)
+        {
+            const scalar g = wStart * std::pow(10.0, static_cast<scalar>(k) / perDec);
+            if (g >= endTime * (1.0 - 1.0e-9)) break;
+            logGrid.push_back(g);
+        }
+        logGrid.push_back(endTime);
+        logSpacing0 = wStart * (std::pow(10.0, 1.0 / perDec) - 1.0);
+    }
+    const scalar writeInterval = logWrite ? logSpacing0
+        : controlDict->lookupScalarOrDefault("writeInterval", deltaT);
+    //  The next write point after w: one home for every advance of the grid.
+    const auto advanceWrite = [&](scalar w) -> scalar
+    {
+        if (!logWrite) return w + writeInterval;
+        const auto it = std::upper_bound(logGrid.begin(), logGrid.end(),
+                                         w * (1.0 + 1.0e-9) + 1.0e-300);
+        return it == logGrid.end() ? endTime + writeInterval : *it;
+    };
 
     // ---- timeStepping: OPT-IN adaptive (error-controlled) stepping ----
     //  ABSENT or `fixed` => today's fixed-RK4 deltaT loop, BYTE-IDENTICAL.
@@ -417,7 +474,8 @@ try
         //  grid as its step boundary (settled below, `freeStep`); a run of
         //  batchReactors steps freely and writes by dense output (C471).
         deltaTmaxDeclared = ts->found("deltaTmax");
-        adaptSet.deltaTmax = ts->lookupScalarOrDefault("deltaTmax", writeInterval);
+        adaptSet.deltaTmax = ts->lookupScalarOrDefault("deltaTmax",
+                                  logWrite ? endTime - startTime : writeInterval);
         adaptSet.maxGrowth = ts->lookupScalarOrDefault("maxGrowth", 4.0);
         adaptSet.verbosity = verbosity;
     }
@@ -432,7 +490,11 @@ try
               << "writeInterval:     " << writeInterval  << " s\n"
               << "timeStepping:      " << timeStepping
               << (adaptive ? "  (Rosenbrock23, error-controlled)" : "  (fixed RK4)")
-              << "\n";
+              << "\n"
+              << (logWrite ? "writeSpacing:      log -- " + std::to_string(logGrid.size())
+                             + " points from " + std::to_string(logGrid.front())
+                             + " s to endTime (writeInterval above is its first spacing)\n"
+                           : std::string());
     if (adaptive)
         std::cout << "  rtol=" << adaptSet.rtol << "  atol=" << adaptSet.atol
                   << "  deltaT0=" << adaptSet.deltaT0 << " s"
@@ -476,7 +538,12 @@ try
     constexpr std::size_t kMaxDefaultDirs = 100;
     std::size_t dirEvery = 1;
     {
-        const scalar nGrid = (endTime - startTime) / writeInterval;
+        const scalar nGrid = logWrite ? static_cast<scalar>(logGrid.size() + 1)
+                                      : (endTime - startTime) / writeInterval;
+        if (logWrite && solutionCtl.interval > 0.0)
+            throw std::runtime_error("choupoBatch: solutionControl { interval T; } counts"
+                " whole multiples of writeInterval and a log grid has none; drop it (the"
+                " <t>/ cadence then keeps at most 100 directories)");
         if (solutionCtl.interval > 0.0)
         {
             const scalar ratio = solutionCtl.interval / writeInterval;
@@ -493,10 +560,11 @@ try
             dirEvery = static_cast<std::size_t>(
                 std::ceil(nGrid / static_cast<scalar>(kMaxDefaultDirs) - 1.0e-9));
     }
+    std::ostringstream dirCadence;
+    if (logWrite) dirCadence << "log grid"; else dirCadence << dirEvery * writeInterval << " s";
     if (solutionCtl.write && dirEvery > 1)
         std::cout << "solutionControl:   <t>/ every " << dirEvery
-                  << " write points (" << dirEvery * writeInterval
-                  << " s)"
+                  << " write points (" << dirCadence.str() << ")"
                   << (solutionCtl.interval > 0.0 ? " (declared interval)"
                                                  : " (default: at most 100 directories)")
                   << "; trajectory.csv keeps every write point, and the last"
@@ -828,6 +896,7 @@ if (flowsheetDict->found("cycle"))
         {
             viewHistory[u].name = units[u]->name();
             viewHistory[u].type = units[u]->type();
+            viewHistory[u].dropTimeZero = logWrite;   // a log axis cannot draw t = 0
             for (std::size_t i = 0; i < thermo.n(); ++i)
                 viewHistory[u].componentNames.push_back(thermo.comp(i).name());
         }
@@ -1568,7 +1637,7 @@ if (flowsheetDict->found("cycle"))
 
     writeSnapshot(t);
     if (verbosity >= 3) echoLine(t);
-    nextWrite += writeInterval;
+    nextWrite = advanceWrite(nextWrite);
     for (std::size_t u = 0; u < units.size(); ++u)
         if (units[u]->type() == "batchReactor") ign[u].feed(t, units[u]->state().T);
 
@@ -1647,7 +1716,7 @@ if (flowsheetDict->found("cycle"))
             {
                 writeSnapshot(t);
                 if (verbosity >= 3) echoLine(t);
-                nextWrite += writeInterval;
+                nextWrite = advanceWrite(nextWrite);
             }
         }
     }
@@ -2054,7 +2123,7 @@ if (flowsheetDict->found("cycle"))
                             }
                             R.tw.push_back(tw);
                             R.y.push_back(std::move(yw));
-                            nw += writeInterval;
+                            nw = advanceWrite(nw);
                         }
                         yPrev = yNew;
                         if (haveF) { fPrev = fNew; fPrevValid = true; }
@@ -2157,7 +2226,7 @@ if (flowsheetDict->found("cycle"))
                     noteAdvanced(tw);
                     writeSnapshot(tw);
                     if (verbosity >= 3) echoLine(tw);
-                    nextWrite += writeInterval;
+                    nextWrite = advanceWrite(nextWrite);
                 }
                 std::size_t failIdx = nV;
                 for (std::size_t u = 0; u < nV; ++u)
@@ -2267,7 +2336,7 @@ if (flowsheetDict->found("cycle"))
                         noteAdvanced(tw);
                         writeSnapshot(tw);
                         if (verbosity >= 3) echoLine(tw);
-                        nextWrite += writeInterval;
+                        nextWrite = advanceWrite(nextWrite);
                     }
                     if (interpolated)
                         for (std::size_t u = 0; u < odeUnits.size(); ++u)
@@ -2325,7 +2394,7 @@ if (flowsheetDict->found("cycle"))
             {
                 writeSnapshot(t);
                 if (verbosity >= 3) echoLine(t);
-                nextWrite += writeInterval;
+                nextWrite = advanceWrite(nextWrite);
             }
         }
         if (coupledStraight > 0)
