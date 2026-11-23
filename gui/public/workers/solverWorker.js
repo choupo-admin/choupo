@@ -38,6 +38,7 @@
     worker -> main:  { type: "log",        line: string }
     worker -> main:  { type: "trajectory", csv:  string }              (legacy)
     worker -> main:  { type: "csvFiles",   files: { [relPath]: string } }
+    worker -> main:  { type: "instantTreeFiles", files, written, shown }  (C482: Case tree, capped)
     worker -> main:  { type: "instants",   files: { "<t>/<stream>": string,
                                                      "<t>/internalStates/<unit>": string, ... } }
     worker -> main:  { type: "init0Files", files: { "0/<stream>": string, ... } }
@@ -496,6 +497,45 @@ self.addEventListener("message", async (e) => {
                       + keep.length + " instants, first and last included)");
                 }
                 for (const d of keep) Object.assign(instants, instantDirs[d]);
+              }
+
+              //  THE INSTANTS THE CASE TREE SHOWS (C482 part 1).  The scrubber
+              //  channel above is PARSED by the adapter and the text is lost;
+              //  the Case tab shows the files themselves, read-only, beside
+              //  0/ (which stays the authored start).  Own channel, never
+              //  folded into convergedFiles (its non-empty guard reads "the
+              //  run converged").  CAPPED at TREE_MAX_INSTANTS directories,
+              //  the first and the last always, evenly spread by index in
+              //  between; the message carries how many were written and how
+              //  many are shown so the tree says so.  trajectory.csv rides
+              //  along (also still on the plotting channel).
+              //  pickInstants is mirrored in gui/src/case/instantTree.ts,
+              //  and a test holds the two to the same answers.
+              const TREE_MAX_INSTANTS = 200;
+              const pickInstants = (dirs, max) => {
+                const n = dirs.length;
+                if (n <= max) return dirs.slice();
+                const out = [];
+                for (let k = 0; k < max; k++)
+                  out.push(dirs[Math.round(k * (n - 1) / (max - 1))]);
+                return out;
+              };
+              {
+                const dirs = Object.keys(instantDirs)
+                  .sort((a, b) => parseFloat(a) - parseFloat(b));
+                const treeFiles = {};
+                const shownDirs = pickInstants(dirs, TREE_MAX_INSTANTS);
+                for (const d of shownDirs) Object.assign(treeFiles, instantDirs[d]);
+                if (TIME_BINARIES.has(binary) && csvFiles["trajectory.csv"])
+                  treeFiles["trajectory.csv"] = csvFiles["trajectory.csv"];
+                if (Object.keys(treeFiles).length > 0) {
+                  let bytes = 0;
+                  for (const k in treeFiles) bytes += treeFiles[k].length;
+                  log("[worker] case tree: " + shownDirs.length + " of " + dirs.length
+                      + " time directories (" + Math.round(bytes / 1024) + " KB)");
+                  self.postMessage({ type: "instantTreeFiles", files: treeFiles,
+                                     written: dirs.length, shown: shownDirs.length });
+                }
               }
 
               // The solved stream state -> the Case tab, read-only.
