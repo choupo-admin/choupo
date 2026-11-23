@@ -40860,6 +40860,21 @@ Refused by name: an unknown spacing word, \code{writeStart}/\code{writePerDecade
 $(t_{\mathrm{start}}, t_{\mathrm{end}})$, a non-integer \code{writePerDecade}, a fixed-step run, and \code{solutionControl \{ interval \}} (a log grid has no whole multiples).
 A view on a log time axis cannot draw $t=0$; the published \code{trajectory} table omits that row on a log grid.
 
+\subsection{Declared figures of a time-integrated flowsheet run}\label{sec:dynamic-views}
+
+A dynamic run has dozens of recorded variables and a control engineer looks at three of them: what is held, where it is held to, and what moves to hold it.
+\code{choupoCtrl} and \code{choupoSemiContinuous} therefore read the same \code{views} and \code{references} lists of \file{system/postDict} as \code{choupoSolve} and \code{choupoBatch}
+(parsed before the run, so a typo costs no integration; resolved after it by the same reader), and the case author declares the few figures worth seeing instead of the plot of everything.
+Nothing is computed for the figure: the producers publish what the run already holds.
+Each dynamic unit and each controller is published as \code{unit:<name>} (a view writes \code{unitOp <name>;}):
+\begin{itemize}
+\item its KPIs as diagnostics, each with the unit its key says (\code{T\_final} K, \code{n\_<c>\_final} kmol, \code{F\_in\_final} kmol/s, \code{t\_end} s; a controller's \code{SP\_final}, \code{PV\_final}, \code{MV\_final} in the unit of the measured and of the manipulated variable);
+\item ONE table \code{trajectory}, the write grid of \file{trajectory.csv}: a unit's columns are \code{t} and its state labels, a controller's are \code{t}, \code{SP}, \code{PV}, \code{MV} (\code{MV} alone for an open-loop \code{Schedule}, which measures nothing).
+\end{itemize}
+The unit of a controller's PV and MV is read from the controlled and manipulated variable the controller names (\code{measurement \{ cv \}}, \code{actuator \{ mv \}}); where a label does not say its unit the column is published without one and the view declares the axis unit.
+A case that declares no \code{views} builds nothing, keeps nothing and writes nothing (its outputs are byte-identical); a \code{postDict} with \code{views} beside an \code{outerDict} is refused by name.
+The witness is \file{tutorials/ctrl/ctrl02\_disturbance\_rejection}: the reactor temperature against its set point, with the jacket temperature and the stepped feed temperature on the right axis.
+
 \subsection{Which reaction governs an ignition: brute-force sensitivity of the delay}\label{sec:ignition-sensitivity}
 
 A mechanism has dozens of reactions and an ignition delay depends on a handful.

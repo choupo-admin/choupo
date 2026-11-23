@@ -73,6 +73,8 @@ The PID controller has no foreknowledge of these disturbances --- it only sees T
 
 The trajectory.csv columns now include both controllers' SP / PV / MV. The Schedule controller's SP and MV mirror the same step train (it has no PV); the PID's SP stays at 350 K and its PV (T\_reactor) tracks closely.
 
+ONE DECLARED FIGURE (system/postDict, C487): "does the controller hold the reactor at its set point?" -- the controlled variable (TC1's PV) against its set point, the manipulated variable (TC1's MV, the jacket temperature) and the disturbance (FeedDist's MV, the feed temperature), all against time, drawn from the `trajectory` table each controller publishes.
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{FeedDist}{MV\_final}{335}

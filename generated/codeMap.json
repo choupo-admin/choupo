@@ -2584,6 +2584,9 @@
   "ThielePellet": [
    "src/propertyOps/ThielePellet.H"
   ],
+  "TimeSeriesRecord": [
+   "src/postProcessing/views/DynamicPublications.H"
+  ],
   "TimelineEvent": [
    "src/result/SimulationResult.H"
   ],
@@ -4779,6 +4782,7 @@
    "src/core/PortRoles.H",
    "src/core/ProblemDivergence.H",
    "src/core/PropertySourceLog.H",
+   "src/core/PublishedTable.H",
    "src/core/ReadLog.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
@@ -4791,6 +4795,9 @@
    "src/materials/Material.H",
    "src/materials/MaterialRegistry.H",
    "src/outerDriver/OuterDriver.H",
+   "src/postProcessing/views/BatchPublications.H",
+   "src/postProcessing/views/DynamicPublications.H",
+   "src/postProcessing/views/Views.H",
    "src/result/ClosureVariable.H",
    "src/result/ComponentIdentity.H",
    "src/result/ResultEmitter.H",
@@ -7140,6 +7147,14 @@
    "src/core/PublishedTable.H",
    "src/core/Types.H",
    "src/postProcessing/views/BatchPublications.H",
+   "src/postProcessing/views/Views.H"
+  ],
+  "src/postProcessing/views/DynamicPublications.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/PublishedTable.H",
+   "src/core/Types.H",
+   "src/postProcessing/views/DynamicPublications.H",
    "src/postProcessing/views/Views.H"
   ],
   "src/postProcessing/views/RunPublications.cpp": [
@@ -18151,6 +18166,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/BatchPublications.cpp",
+   "src/postProcessing/views/DynamicPublications.cpp",
    "src/postProcessing/views/RunPublications.cpp",
    "src/postProcessing/views/Views.cpp",
    "src/propertyOps/BellDelawareBench.cpp",
@@ -18595,6 +18611,7 @@
    "src/postProcessing/sizing/StorageTankSize.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/BatchPublications.cpp",
+   "src/postProcessing/views/DynamicPublications.cpp",
    "src/postProcessing/views/RunPublications.cpp",
    "src/postProcessing/views/Views.cpp",
    "src/propertyOps/BellDelawareBench.cpp",
@@ -20154,7 +20171,9 @@
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/postProcessing/views/BatchPublications.cpp",
+   "src/postProcessing/views/DynamicPublications.cpp",
    "src/postProcessing/views/RunPublications.cpp",
    "src/postProcessing/views/Views.cpp",
    "src/propertyOps/BellDelawareBench.cpp",
@@ -20940,6 +20959,7 @@
    "src/postProcessing/sizing/VesselMechanics.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/BatchPublications.cpp",
+   "src/postProcessing/views/DynamicPublications.cpp",
    "src/postProcessing/views/RunPublications.cpp",
    "src/postProcessing/views/Views.cpp",
    "src/propertyOps/BellDelawareBench.cpp",
@@ -21803,7 +21823,12 @@
   ],
   "src/postProcessing/views/BatchPublications.H": [
    "src/applications/choupoBatch/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/postProcessing/views/BatchPublications.cpp"
+  ],
+  "src/postProcessing/views/DynamicPublications.H": [
+   "src/dynamicDriver/DynamicDriver.cpp",
+   "src/postProcessing/views/DynamicPublications.cpp"
   ],
   "src/postProcessing/views/RunPublications.H": [
    "src/applications/choupoSolve/main.cpp",
@@ -21813,7 +21838,9 @@
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
    "src/postProcessing/views/BatchPublications.cpp",
+   "src/postProcessing/views/DynamicPublications.cpp",
    "src/postProcessing/views/RunPublications.cpp",
    "src/postProcessing/views/Views.cpp"
   ],
