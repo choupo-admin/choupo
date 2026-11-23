@@ -30,6 +30,12 @@
   The `moleFraction.<c>` sibling field instead holds F_in constant and
   renormalises the OTHER components proportionally --- two explicit
   semantics, each announced, never a guess.
+
+  TWO DECLARED FIGURES (system/postDict, C487): `response`, "does the
+  reactor stay at its set point when the feed of compA steps up?" (the
+  compA flow on the right-hand axis), and `step`, the same from 550 s with
+  PV, set point and jacket temperature on one tight axis (349.6 to 350.5
+  K).
 \*---------------------------------------------------------------------------*/
 
 units

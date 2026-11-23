@@ -1,0 +1,60 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  ctrl09_stream_disturbance / postDict -- the case's TWO figures
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    response   "Does the reactor stay at its set point when the feed of
+               compA steps up?"  PV and set point on the left axis (K), the
+               jacket T (TC1's MV) too, and the Signal FeedComp's MV, the
+               molar flow of compA at the inlet, on the right axis (kmol/s).
+    step       "How far does the reactor leave its set point when the feed
+               steps, and how fast does it return?"  From 550 s, ALL in kelvin
+               on one TIGHT axis, 349.6 to 350.5 K: PV, set point and jacket.
+               Range read from this run's `trajectory` table of TC1, 550 s on:
+               PV runs from 349.834 K (t = 620 s) to 350.003 K; the jacket
+               from 349.674 K (550 s) to 350.375 K (630 s).  FeedComp.MV goes
+               from 3.5e-5 to 5.25e-5 kmol/s (+50 %); on the 10 s write grid
+               the step is first seen at t = 610 s.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    response;
+        type    series;
+        title   "Does the reactor stay at its set point when the feed of compA steps up?";
+        note    "The PID TC1 heats the reactor from 330 K to its 350 K set point, reaching 349.9 K at 430 s. At 600 s the molar flow of compA to the reactor steps from 3.5e-5 to 5.25e-5 kmol/s (the other component is untouched); the reactor temperature is hardly disturbed.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "temperature"; unit "K"; scale linear; }
+        yAxis2  { label "feed of compA"; unit "kmol/s"; scale linear; }
+        series
+        (
+            { name SP; label "set point"; unitOp TC1; table trajectory; x t; y SP; style lines; }
+            { name PV; label "reactor T (controlled)"; unitOp TC1; table trajectory; x t; y PV; style lines; }
+            { name MV; label "jacket T (manipulated)"; unitOp TC1; table trajectory; x t; y MV; style lines; }
+            { name nA; label "feed of compA (disturbance)"; unitOp FeedComp; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+    {
+        name    step;
+        type    series;
+        title   "How far does the reactor leave its set point when the feed steps, and how fast does it return?";
+        note    "From 550 s, on a tight axis: after the 50 % step in the feed of compA the reactor temperature dips by 0.17 K (349.834 K at 620 s) and is back within 0.03 K of the set point by 770 s; the jacket temperature moves up by about 0.7 K (349.67 K to 350.38 K at 630 s) to absorb the extra reaction load (values on the 10 s write grid).";
+        xAxis   { label "time"; unit "s"; scale linear; min 550; max 1800; }
+        yAxis   { label "temperature"; unit "K"; scale linear; min 349.6; max 350.5; }
+        series
+        (
+            { name SP; label "set point"; unitOp TC1; table trajectory; x t; y SP; style lines; }
+            { name PV; label "reactor T (controlled)"; unitOp TC1; table trajectory; x t; y PV; style lines; }
+            { name MV; label "jacket T (manipulated)"; unitOp TC1; table trajectory; x t; y MV; style lines; }
+        );
+    }
+);

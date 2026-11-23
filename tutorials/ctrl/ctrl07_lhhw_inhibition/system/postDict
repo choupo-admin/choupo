@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  ctrl07_lhhw_inhibition / postDict -- the case's ONE figure
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    response   "Can the PID still bring the reactor to its set point when the
+               reaction poisons itself?"  The PID TC1's PV (reactor T) against
+               its set point on the left axis, its MV (the jacket T) on the
+               right.  Numbers read from this run's `trajectory` table of TC1
+               (and, for the comparison the case is built on, from ctrl01's):
+               the jacket leaves its 420 K clamp (t = 2 s) by 4 s, PV passes
+               343 K at 16 s and is 348.329 K at 150 s with the jacket at
+               349.741 K; ctrl01, the same loop with a first-order exotherm,
+               ends the 150 s at 348.469 K with the jacket at 348.545 K.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    response;
+        type    series;
+        title   "Can the PID still bring the reactor to its set point when the reaction poisons itself?";
+        note    "The same PID and set point as ctrl01 (350 K), but the product adsorbs on the catalyst and slows the reaction, so the exotherm fades while the loop works. The jacket leaves its 420 K limit by 4 s and the reactor temperature passes 343 K at 16 s; at 150 s it is 348.33 K with the jacket at 349.74 K, against 348.47 K with the jacket at 348.55 K in ctrl01: less reaction heat, so the jacket has to supply 1.2 K more.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "reactor temperature"; unit "K"; scale linear; }
+        yAxis2  { label "jacket temperature"; unit "K"; scale linear; }
+        series
+        (
+            { name SP; label "set point"; unitOp TC1; table trajectory; x t; y SP; style lines; }
+            { name PV; label "reactor T (controlled)"; unitOp TC1; table trajectory; x t; y PV; style lines; }
+            { name MV; label "jacket T (manipulated)"; unitOp TC1; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+);

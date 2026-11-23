@@ -8689,6 +8689,22 @@ PYEOF
     fi
     rm -f /tmp/dclgate.$$
 
+    # Dynamic-views gate (DEV.md 4c C487 slice 2, 2026-11-23).  Every time-
+    # integrated case that declares `views` is run and every published series
+    # must carry points inside its declared axis windows.  The defect: a window
+    # (`min`/`max`) typed against one run that holds none of a series' points
+    # exits 0, announces "76 point(s)" and draws an EMPTY figure; a mistyped name
+    # is already refused by the reader and is not what this gate is for.
+    if gate_exec "$ROOT/bin/curate/check_dynamic_views.py" > /tmp/dvgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "dynamic-views-gate" "$(head -1 /tmp/dvgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_dynamic_views.py)\n" "dynamic-views-gate"
+        cat /tmp/dvgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/dvgate.$$
+
     # Flash-model gate: the machine that solves a flash has a NAME (`model`,
     # the distillation convention) -- and a name that cannot lie.  Four
     # refusals, including the one that matters: a REACTIVE package's machine

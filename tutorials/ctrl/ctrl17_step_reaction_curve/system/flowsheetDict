@@ -60,6 +60,11 @@
   jacket temperature at declared times.  That is what makes the record open
   loop, and it is also what puts the driven signal into trajectory.csv as its
   own column (`JacketStep.MV`), which is what the identification reads.
+
+  TWO DECLARED FIGURES (system/postDict, C487): `steps`, "how does the
+  open-loop reactor answer each jacket step?", and `reactionCurve`, the
+  first step alone (2950 to 3250 s) where the 25 s rise to 63 % can be
+  read.
 \*---------------------------------------------------------------------------*/
 
 units

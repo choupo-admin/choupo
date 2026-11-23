@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  unsteady07_fast_tank_full / postDict -- the case's ONE figure
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    tracer   "How far does the small tank lag the big one when the tracer
+             arrives?"  The tracer in the big tank SLOW (left axis, kmol, 0 to
+             1) and in the small tank FAST (right axis, kmol, 0 to 0.05).  The
+             axes are FIXED so that the right is the left divided by the
+             holdups' ratio (1 kmol / 0.05 kmol): equal heights are EQUAL TRACER
+             FRACTIONS, and the gap between the two curves is the lag.  Read
+             from this run's table (10 s grid, 5000 s): the fraction in SLOW
+             minus the fraction in FAST (n_compB / holdup) is largest at t =
+             160 s, 0.0428 (the closed form of the header gives 0.0428); the
+             fractions are 0.0488 and 0.0180 at 50 s, 0.632 and 0.613 at 1000
+             s, 0.9933 and 0.9929 at 5000 s.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    tracer;
+        type    series;
+        title   "How far does the small tank lag the big one when the tracer arrives?";
+        note    "The feed switches to pure tracer at time zero and both tanks fill with it; the axes are scaled by the tanks' holdups (1 kmol and 0.05 kmol) so that equal heights are equal tracer fractions. The small tank follows the big one with a lag of about its own 50 s time constant: the gap between the two fractions is largest at 160 s, 0.043, and has closed to 0.0004 by 5000 s.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "tracer in SLOW"; unit "kmol"; scale linear; min 0; max 1; }
+        yAxis2  { label "tracer in FAST"; unit "kmol"; scale linear; min 0; max 0.05; }
+        series
+        (
+            { name SLOW; label "tracer in SLOW (1 kmol held)"; unitOp SLOW; table trajectory; x t; y n_compB; style lines; }
+            { name FAST; label "tracer in FAST (0.05 kmol held)"; unitOp FAST; table trajectory; x t; y n_compB; style lines; axis right; }
+        );
+    }
+);

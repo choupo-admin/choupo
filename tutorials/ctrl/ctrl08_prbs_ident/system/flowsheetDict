@@ -35,6 +35,12 @@
   The PID (same tuning as ctrl06) holds the reactor at 350 K against the
   binary disturbance; the trajectory's T_in column IS the PRBS, and the
   reactor response is the identification record.
+
+  TWO DECLARED FIGURES (system/postDict, C487): `response`, "does the
+  reactor stay at its set point while the feed temperature switches at
+  random?", and `record`, the identification record -- from 600 s the
+  reactor temperature on a tight axis (349.5 to 350.5 K) beside the binary
+  feed temperature.
 \*---------------------------------------------------------------------------*/
 
 units

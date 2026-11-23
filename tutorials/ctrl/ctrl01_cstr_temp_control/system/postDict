@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  ctrl01_cstr_temp_control / postDict -- the case's ONE figure
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    response   "How fast does the reactor reach its set point, and how hard
+               does the jacket work to get it there?"  The PID TC1's PV (the
+               reactor temperature) against its set point on the left axis,
+               its MV (the jacket temperature) on the right axis.  Numbers in
+               the note are read from this run's `trajectory` table of TC1:
+               the MV sits on its 420 K clamp at t = 2 s and leaves it by 4 s
+               (402 K); PV passes 343 K (within 2 % of the 350 K set point,
+               7 K) at t = 16 s and is 348.469 K at the end, 150 s; the jacket
+               settles at 348.545 K.  The default axes are right: nothing in
+               this 150 s window is hidden.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    response;
+        type    series;
+        title   "How fast does the reactor reach its set point, and how hard does the jacket work?";
+        note    "The PID TC1 heats the reactor from 320 K towards the 350 K set point by moving the jacket temperature. The jacket goes to its 420 K limit at the start and backs off by 4 s; the reactor temperature enters the 2 % band (343 K) at 16 s and is 348.5 K at the end of the 150 s window, still creeping up the last 1.5 K on the slow chemical tail, with the jacket at 348.5 K.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "reactor temperature"; unit "K"; scale linear; }
+        yAxis2  { label "jacket temperature"; unit "K"; scale linear; }
+        series
+        (
+            { name SP; label "set point"; unitOp TC1; table trajectory; x t; y SP; style lines; }
+            { name PV; label "reactor T (controlled)"; unitOp TC1; table trajectory; x t; y PV; style lines; }
+            { name MV; label "jacket T (manipulated)"; unitOp TC1; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+);

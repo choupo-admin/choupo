@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  ctrl17_step_reaction_curve / postDict -- the case's TWO figures
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    steps          "How does the open-loop reactor answer each jacket step?"
+                   The reactor T (the dynamic unit's `T`) and the jacket T (the
+                   Schedule JacketStep's MV), both in kelvin on ONE axis, the
+                   whole 15000 s.  Read from this run's table (5 s grid): the
+                   jacket steps +5 K at 3000 s, back at 6000 s, +20 K at 9000 s,
+                   back at 12000 s (written at the next sample, 3005 s ...);
+                   the reactor settles at 320.759 K, then 325.454 K (+4.695 K),
+                   then 339.980 K (+19.221 K from 320.759 K).
+    reactionCurve  "What does one reaction curve look like?"  The first step on
+                   its own, 2950 to 3250 s, y axis 320 to 326 K (the run's
+                   extremes there, 320.759 and 325.454 K, with a margin): the
+                   reactor reaches 63 % of its 4.695 K rise (323.726 K) at
+                   t = 3030 s, 25 s after the jacket changed (3005 s).
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    steps;
+        type    series;
+        title   "How does the open-loop reactor answer each jacket step?";
+        note    "With the loop open and the jacket at 320 K the reactor settles at 320.76 K. The jacket steps by +5 K at 3000 s and back at 6000 s, then by +20 K at 9000 s and back at 12000 s: the reactor goes to 325.45 K (4.70 K above its first level) and to 339.98 K (19.22 K above it) and comes back each time.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "temperature"; unit "K"; scale linear; }
+        series
+        (
+            { name Tj; label "jacket T (the steps)"; unitOp JacketStep; table trajectory; x t; y MV; style lines; }
+            { name T; label "reactor T (response)"; unitOp reactor; table trajectory; x t; y T; style lines; }
+        );
+    }
+    {
+        name    reactionCurve;
+        type    series;
+        title   "What does one reaction curve look like?";
+        note    "The first step on its own: after the jacket goes from 320 K to 325 K at 3000 s the reactor temperature rises from 320.76 K to 325.45 K, reaching 63 % of the rise (323.7 K) 25 s after the jacket changes (at 3030 s on the 5 s grid), a first-order response whose time constant is the number the identification fits.";
+        xAxis   { label "time"; unit "s"; scale linear; min 2950; max 3250; }
+        yAxis   { label "temperature"; unit "K"; scale linear; min 320; max 326; }
+        series
+        (
+            { name Tj; label "jacket T (the steps)"; unitOp JacketStep; table trajectory; x t; y MV; style lines; }
+            { name T; label "reactor T (response)"; unitOp reactor; table trajectory; x t; y T; style lines; }
+        );
+    }
+);

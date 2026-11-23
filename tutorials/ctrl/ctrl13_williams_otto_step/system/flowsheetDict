@@ -21,6 +21,10 @@
   t* = 100 h.  The MV crosses the boundary in SI (kmol/s), so the step
   values below are 20/3600 and 21/3600 -- the paper's numbers over the
   one declared conversion.
+
+  ONE DECLARED FIGURE (system/postDict, C487): `response`, "how do the
+  product and waste rates answer a 5 % step in the feed of B?" -- both
+  rates (klb/h) against hours, the stepped feed on the right-hand axis.
 \*---------------------------------------------------------------------------*/
 
 units

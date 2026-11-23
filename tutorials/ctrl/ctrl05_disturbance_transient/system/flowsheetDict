@@ -44,6 +44,11 @@
   MV.  The Schedule controller's SP and MV mirror the same step train
   (it has no PV); the PID's SP stays at 350 K and its PV (T_reactor)
   tracks closely.
+
+  TWO DECLARED FIGURES (system/postDict, C487), ctrl02's: `response`, "does
+  the controller hold the reactor at its set point?", and `rejection`, the
+  same from 600 s on a tight temperature axis (349.5 to 350.8 K), where the
+  0.35 K dip and 0.66 K peak after the two feed steps can be read.
 \*---------------------------------------------------------------------------*/
 
 units

@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  unsteady04_uf_feed_and_bleed_startup / postDict -- the case's ONE figure
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    loop   "How long does the loop take to concentrate the protein, and how
+           much flux does the plant lose?"  The protein in the tank (the TANK
+           unit's `n_BSA`, kmol) on the left axis, the module's mean water flux
+           (the UF unit's `kpi_J_w_avg`, m/s) on the right, the time axis in
+           hours.  Read from this run's table (600 s grid, 6 h): the protein
+           rises from 7.530e-5 to 1.1594e-4 kmol (+54 %), half of the rise by
+           2400 s, 90 % by 6000 s, 99 % by 12000 s; the flux falls from 3.287e-5
+           to 2.859e-5 m/s (-13.0 %).
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    loop;
+        type    series;
+        title   "How long does the loop take to concentrate the protein, and how much flux does the plant lose?";
+        note    "Starting full of feed, the tank concentrates the protein as the retentate returns: from 7.5e-5 to 1.16e-4 kmol (54 % more), half of the rise in 2400 s, 90 % in 1.7 h and 99 % in 3.3 h, while the module's flux falls from 3.29e-5 to 2.86e-5 m/s, 13 % less, and a plant sized on the feed's flux is short of area by that much.";
+        xAxis   { label "time"; unit "h"; scale linear; }
+        yAxis   { label "protein in the tank"; unit "kmol"; scale linear; }
+        yAxis2  { label "water flux"; unit "m/s"; scale linear; }
+        series
+        (
+            { name n_BSA; label "protein in the tank"; unitOp TANK; table trajectory; x t; y n_BSA; style lines; }
+            { name J_w; label "module water flux"; unitOp UF; table trajectory; x t; y kpi_J_w_avg; style lines; axis right; }
+        );
+    }
+);

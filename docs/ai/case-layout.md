@@ -640,6 +640,30 @@ starters to compare against when answering "write me a case for X":
 | Multi-sector plant | `plant/ChemicalPlantTutorial/` |
 | User unit op (case/code/) | `userOp01_yield_reactor` |
 
+## Declared figures of a dynamic run (`choupoCtrl`, `choupoSemiContinuous`; C487)
+
+`system/postDict` with `views ( ... );` (the grammar of `docs/design/a-post-processing-dictionary.md`)
+is read by the dynamic binaries too.  The producers are the dynamic units and the controllers, `unitOp <name>;`,
+each with ONE table `trajectory` (`t` [s] + a unit's state labels, or `SP`, `PV`, `MV` of a controller; a
+`Schedule` has `MV` only) and its KPIs (`T_final`, `PV_final`, ...).  The disturbance response of a loop:
+
+```
+views ( { name response; type series; title "Does the controller hold the set point?";
+          xAxis { label "time"; unit "s"; scale linear; }
+          yAxis { label "reactor temperature"; unit "K"; scale linear; }
+          yAxis2 { label "jacket temperature"; unit "K"; scale linear; }
+          series ( { name SP; label "set point"; unitOp TC1; table trajectory; x t; y SP; style lines; }
+                   { name PV; label "reactor T"; unitOp TC1; table trajectory; x t; y PV; style lines; }
+                   { name MV; label "jacket T"; unitOp TC1; table trajectory; x t; y MV; style lines; axis right; } ); } );
+```
+
+A case without `views` writes nothing new.  `views` beside an `outerDict` is refused by name.  Witness
+`ctrl02_disturbance_rejection` (Theory Guide `sec:dynamic-views`).  Since slice 2 (2026-11-23) 26 of the other
+time-integrated cases carry their own figures -- a question as the title, a `note` with numbers read from the run, units on
+every axis, a second tight-axis view where the start-up fills the default one (`ctrl03`/`ctrl06`/`ctrl09`/`ctrl17_signal_shapes`
+are the models); an axis `min`/`max` typed against a run is held by gate `check_dynamic_views`, and a log axis refuses a
+series that holds a zero.  Time can be declared in `h`; a unit the source does not publish is announced and taken as declared.
+
 ## Optional dicts are TRULY optional
 
 A minimal case has only:

@@ -29,6 +29,10 @@
   case's, stated here.  Deviations from the anchors are integration
   truncation (run = 2600 s ~ 10.4 tau past the pulse; e^-10.4 ~ 3e-5)
   plus the finite step -- both stated, neither hidden.
+
+  TWO DECLARED FIGURES (system/postDict, C487): `pulse`, "when does the
+  tracer pulse enter the tank, and when has it left?", and `washout`, from
+  130 s the tracer in the tank falling by a factor e every 240 s.
 */
 
 units

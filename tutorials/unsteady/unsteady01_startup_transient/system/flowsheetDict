@@ -29,6 +29,10 @@
   To compare CLOSED-LOOP control, see ctrl01_cstr_temp_control (a PID
   drives T to a 350 K setpoint) and ctrl05_disturbance_transient (a PID
   rejecting a feed-temperature disturbance), both also writing time dirs.
+
+  ONE DECLARED FIGURE (system/postDict, C487): `startup`, "how long does
+  the open-loop reactor take to reach steady state?" -- the reactor
+  temperature and the product in the vessel against time.
 \*---------------------------------------------------------------------------*/
 
 units

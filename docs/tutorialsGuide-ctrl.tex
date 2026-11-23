@@ -26,6 +26,8 @@ Expected trajectory (150 s window): Open-loop: T relaxes a few K above the 320 K
 
 To run the OPEN-LOOP comparison, comment out the entire `controllers` block below --- the case will then run the bare reactor with whatever T\_jacket the `operation` block initialised it to (here 320 K, i.e. no jacket heating).
 
+ONE DECLARED FIGURE (system/postDict, C487): `response`, "how fast does the reactor reach its set point, and how hard does the jacket work?" -- TC1's PV against its set point, and its MV (the jacket temperature, on its 420 K limit at first) on the right-hand axis.
+
 \end{tutnarrative}
 \tutreadme{A 1-litre continuous stirred reactor with a first-order A $\to$ B reaction (two stand-in components, both MW 30 --- the pseudo-reaction says so by name rather than inventing atoms), fed at 320 K, with a jacket whose temperature a PID controller sets to hold the reactor at 350 K. 150 s of transient, 1 s steps. The golden: PV ends at 348.47 K, the jacket (MV) at 348.54 K, mass in = out = 0.225 kg over the run and the material balance closes at 1.8e-15.}
 \tutreadme{1. The controller is a unit in the dict, with its tuning in the open. type PID; setpoint 350.0; gains \{ Kp 4.0; Ki 0.04; Kd 0.0; \} output \{ min 280; max 420; bias 320; \} --- proportional band $\approx$ 7--8 K, integral time $\tau$\_I = Kp/Ki = 100 s, no derivative. Nothing is tuned for you. 2. Watch the manipulated variable saturate. At t = 2 s the jacket demand jumps to the 420 K clamp (the log's last column), then backs off as the reactor warms: 402, 385, 374 K ? The Log tab prints every 2 s; the clamp is a number in the dict and you can see it bind. 3. Into the band, then the slow part. The reactor crosses 343 K --- the -2 \% edge of the setpoint band --- at t $\approx$ 14 s. At 150 s it sits 1.5 K under setpoint and still climbing: that is the integral action at $\tau$\_I = 100 s working off the offset. Widen endTime and watch it arrive. 4. The energy balance REFUSES here, and says why. [balance] energy: UNAVAILABLE --- the dynamicCSTR energy equation is a Cp/convective model, not the exact derivative of a stored H. The stand-in components carry no formation enthalpy on purpose; a ledger that cannot be exact says so rather than printing a closure it did not earn. ctrl11 is the case where it can, and does (1.4e-7).}
@@ -73,6 +75,8 @@ The PID controller has no foreknowledge of these disturbances --- it only sees T
 
 The trajectory.csv columns now include both controllers' SP / PV / MV. The Schedule controller's SP and MV mirror the same step train (it has no PV); the PID's SP stays at 350 K and its PV (T\_reactor) tracks closely.
 
+TWO DECLARED FIGURES (system/postDict, C487): `response`, "does the controller hold the reactor at its set point?" -- the controlled variable (TC1's PV) against its set point, the manipulated variable (TC1's MV, the jacket temperature) and the disturbance (FeedDist's MV, the feed temperature), all against time; and `rejection`, the same from 600 s on a tight temperature axis, where the dip and peak after the two steps can be read. Both are drawn from the `trajectory` table each controller publishes.
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{FeedDist}{MV\_final}{335}
@@ -116,6 +120,8 @@ The PID controller has no foreknowledge of these disturbances --- it only sees T
 0 < t < 700: normal startup, T $\to$ 350 K ($\approx$ ctrl01). t = 700: T\_in drops 15 K; the integral action absorbs it so tightly that T\_reactor holds at 350 K with no visible sag (the jacket simply keeps heating). t = 1300: T\_in rises 15 K; again T\_reactor stays pinned at 350 K with no visible deviation.
 
 The trajectory.csv columns now include both controllers' SP / PV / MV. The Schedule controller's SP and MV mirror the same step train (it has no PV); the PID's SP stays at 350 K and its PV (T\_reactor) tracks closely.
+
+TWO DECLARED FIGURES (system/postDict, C487), ctrl02's: `response`, "does the controller hold the reactor at its set point?", and `rejection`, the same from 600 s on a tight temperature axis (349.5 to 350.8 K), where the 0.35 K dip and 0.66 K peak after the two feed steps can be read.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -161,6 +167,8 @@ The PID controller has no foreknowledge of these disturbances --- it only sees T
 
 The trajectory.csv columns now include both controllers' SP / PV / MV. The Schedule controller's SP and MV mirror the same step train (it has no PV); the PID's SP stays at 350 K and its PV (T\_reactor) tracks closely.
 
+TWO DECLARED FIGURES (system/postDict, C487), ctrl02's: `response`, "does the controller hold the reactor at its set point?", and `rejection`, the same from 600 s on a tight temperature axis (349.5 to 350.8 K), where the 0.35 K dip and 0.66 K peak after the two feed steps can be read.
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{FeedDist}{MV\_final}{335}
@@ -205,6 +213,8 @@ THE LESSON (Seborg/Edgar/Mellichamp/Doyle, Ch. 13-14 frequency response): read t
 
 Backward-compatible by construction: ctrl02's `type Schedule; schedule(...)` staircase still works unchanged; this case swaps it for the more general `type Signal; signal \{ type sinusoidal; ... \}`.
 
+TWO DECLARED FIGURES (system/postDict, C487): `response`, "does the reactor stay at its set point while the feed temperature swings?", and `attenuation`, "how much of the 15 K swing of the feed reaches the reactor?" -- from 600 s on a tight axis (349.5 to 350.5 K) beside the feed temperature.
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{FeedDist}{MV\_final}{319.842923238}
@@ -246,6 +256,8 @@ and the reaction throttles itself. A power law cannot express that at any order;
 What the controller sees: an exotherm that FADES as conversion proceeds, not a constant one. The heat the loop is rejecting shrinks under it, and the jacket temperature must follow. A tuning that holds against a first-order exotherm is not the same tuning that holds against a decaying one.
 
 The adsorption constant K0 = 2.0 m\textasciicircum{}3/kmol is DIDACTIC -- chosen so the inhibition is visible over the control horizon, not measured on any catalyst. For a real, cited LHHW see `cstr07\_lhhw\_methylAcetate` and `batch07\_lhhw\_methylAcetate` (Popken 2000, Eq 16, on UNIQUAC activities).
+
+ONE DECLARED FIGURE (system/postDict, C487): `response`, "can the PID still bring the reactor to its set point when the reaction poisons itself?" -- PV against the set point and the jacket temperature, to be read beside ctrl01's.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -291,6 +303,8 @@ THE HAND-DERIVED SEQUENCE (the exact-sequence contract of \#101): with the froze
 
 The PID (same tuning as ctrl06) holds the reactor at 350 K against the binary disturbance; the trajectory's T\_in column IS the PRBS, and the reactor response is the identification record.
 
+TWO DECLARED FIGURES (system/postDict, C487): `response`, "does the reactor stay at its set point while the feed temperature switches at random?", and `record`, the identification record -- from 600 s the reactor temperature on a tight axis (349.5 to 350.5 K) beside the binary feed temperature.
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{FeedPRBS}{MV\_final}{330}
@@ -331,6 +345,8 @@ The golden pins F\_in and z\_in\_$\ast$ finals to these fractions, and the Signa
 
 The `moleFraction.<c>` sibling field instead holds F\_in constant and renormalises the OTHER components proportionally --- two explicit semantics, each announced, never a guess.
 
+TWO DECLARED FIGURES (system/postDict, C487): `response`, "does the reactor stay at its set point when the feed of compA steps up?" (the compA flow on the right-hand axis), and `step`, the same from 550 s with PV, set point and jacket temperature on one tight axis (349.6 to 350.5 K).
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{FeedComp}{MV\_final}{5.25e-05}
@@ -364,6 +380,8 @@ The `moleFraction.<c>` sibling field instead holds F\_in constant and renormalis
 ONE stirred vessel, NO reaction. The dynamic CSTR tolerates an empty reaction list, and that is exactly the model wanted here: the holdup is a mixing lag, and the thermodynamics -- Pitzer activity coefficients on the molality basis -- is what travels through it.
 
 The jacket loop is the same PID shape as ctrl01: it acts on T\_jacket to hold the vessel temperature. A brine tank held on temperature is what sits upstream of every evaporator and crystalliser in the corpus.
+
+ONE DECLARED FIGURE (system/postDict, C487): `response`, "does the jacket bring the brine tank to its set point, and does it run out of jacket?" -- PV against the set point, the jacket temperature on its 360 K limit on the right-hand axis.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -399,6 +417,8 @@ One jacketed vessel and one PID loop -- the same shape as ctrl01, so the two can
 
 The reaction declares NO dH\_rxn. On the elements datum the heat of reaction is Sum(nu\_i h\_i(T)) -- a consequence of the same enthalpy surface the vessel stores, not a second number to keep in step with it.
 
+TWO DECLARED FIGURES (system/postDict, C487): `response`, "how fast does the jacket loop bring the esterification to its set point?", and `holdup`, "how far has the esterification gone?" -- the reactants' and products' amounts in the vessel.
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{TC1}{MV\_final}{366.642237189}
@@ -430,6 +450,8 @@ The reaction declares NO dH\_rxn. On the elements datum the heat of reaction is 
 One unit, because the benchmark IS one equation set: the Williams-Otto reactor + decanter + column + splitter fold into six ODEs (the recycle term (1-eta)mu, the removed G, the 0.1 F\_tE column retention are all inside them -- see the unit's own header). The five controls sit in `operation`, declared SI: with the MW 453.592 convention (1 kmol == 1 klb) every numeral below IS the paper's value in klb/h.
 
 u$\ast$ of eq. (3.20): F\_fA = 10, F\_fB = 20, T = 580 degR, mu = 129.5, eta = 0.2. T rides in 0/internalStates/plant (322.2222 K = 580 degR exactly).
+
+TWO DECLARED FIGURES (system/postDict, C487): `rates`, "how long does the open-loop plant take to settle at the operating point, and what does it make?" (product and waste rates, klb/h, against hours), and `harvest`, the cumulative yield, waste and objective J (klb).
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -463,6 +485,8 @@ One unit, because the benchmark IS one equation set: the Williams-Otto reactor +
 
 u$\ast$ of eq. (3.20) plus the paper's FIRST simulation experiment (section 3.2, Fig. 2): a Schedule steps F\_fB from 20 to 21 klb/h at t$\ast$ = 100 h. The MV crosses the boundary in SI (kmol/s), so the step values below are 20/3600 and 21/3600 -- the paper's numbers over the one declared conversion.
 
+ONE DECLARED FIGURE (system/postDict, C487): `response`, "how do the product and waste rates answer a 5 \% step in the feed of B?" -- both rates (klb/h) against hours, the stepped feed on the right-hand axis.
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{FeedStep}{MV\_final}{0.0058333333}
@@ -494,6 +518,8 @@ u$\ast$ of eq. (3.20) plus the paper's FIRST simulation experiment (section 3.2,
 One unit, because the benchmark IS one equation set: the Williams-Otto reactor + decanter + column + splitter fold into six ODEs (the recycle term (1-eta)mu, the removed G, the 0.1 F\_tE column retention are all inside them -- see the unit's own header). The five controls sit in `operation`, declared SI: with the MW 453.592 convention (1 kmol == 1 klb) every numeral below IS the paper's value in klb/h.
 
 The paper's control channel (F\_fB, F\_pP), eq. (4.6), with the Skogestad-IMC gains of section 4.1: K3prop = 0.069 (dimensionless -- klb/h per klb/h survives the SI conversion unchanged) and K3int = 1.282 per HOUR, declared per second (1.282/3600 = 3.5611111e-4). Bias = F$\ast$\_fB (bumpless), setpoint F\_pP = 4.5 klb/h = 1.25e-3 kmol/s, output bounded to the paper's 0 <= F\_fB <= 56 klb/h.
+
+ONE DECLARED FIGURE (system/postDict, C487): `response`, "does the PI loop bring the product rate to its set point, and how far does the feed of B have to move?" -- PV against the set point, the manipulated feed on the right-hand axis, against hours.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -558,6 +584,8 @@ The section-5.3 combined optimisation: system/outerDict shapes the two profiles 
 \tutwhat{WITNESS: ramp + pulse + staircase signals on three feed handles, with the temperature PID rejecting all three at once; the three registered shapes no case selected.}
 \begin{tutnarrative}
 WITNESS: the ramp, pulse and staircase SIGNALS, each on its own feed handle of the ctrl09 CSTR, with the ctrl09 temperature PID still in the loop rejecting all three at once -- compA ramps +28.6 \% over 1000 s, compB takes a 300 s rectangular pulse, the feed temperature walks a three-step staircase. These three registered signal shapes were selected by no case until 2026-08-23 (invariant I8). Self-recorded.
+
+TWO DECLARED FIGURES (system/postDict, C487): `loop`, "does the temperature loop hold the reactor at 350 K while three different disturbances arrive at once?" (from 400 s, tight axis 349.7 to 350.2 K), and `feeds`, the three disturbances themselves.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -637,6 +665,8 @@ RESIDENCE-TIME DISTRIBUTION by pulse tracer -- the engine's first RTD tool (2026
 
 THE ANCHORS ARE CLOSED FORMS (Levenspiel, Chemical Reaction Engineering, ch. 13-14 -- moment additivity of a linear vessel, exact for ANY inlet shape): tbar\_out = tbar\_in + tau = (100 + 15) + 240 = 355 s sigma2\_out = sigma2\_in + tau\textasciicircum{}2 = 30\textasciicircum{}2/12 + 240\textasciicircum{}2 = 57675 s\textasciicircum{}2 area = amplitude x width = 1e-5 $\ast$ 30 = 3.0e-4 kmol The engine measures the outlet response moments (rtd KPIs, trapezoid on the accepted-step grid, reports/rtd/E.csv); the arithmetic above is the case's, stated here. Deviations from the anchors are integration truncation (run = 2600 s \textasciitilde{} 10.4 tau past the pulse; e\textasciicircum{}-10.4 \textasciitilde{} 3e-5) plus the finite step -- both stated, neither hidden.
 
+TWO DECLARED FIGURES (system/postDict, C487): `pulse`, "when does the tracer pulse enter the tank, and when has it left?", and `washout`, from 130 s the tracer in the tank falling by a factor e every 240 s.
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{CarrierDip}{MV\_final}{5e-05}
@@ -670,6 +700,8 @@ THE ANCHORS ARE CLOSED FORMS (Levenspiel, Chemical Reaction Engineering, ch. 13-
 FREQUENCY RESPONSE of the same LTI mixing tank (tau = N/F = 240 s): the tracer feed oscillates sinusoidally at omega$\ast$tau = 1 -- again as a SUBSTITUTION against the carrier, so total flow never moves and the vessel is rigorously first order in the tracer. The engine fits a + b sin + c cos over 4 cycles after discarding 5 (transient e\textasciicircum{}-t/tau through 5 periods = e\textasciicircum{}-31 -- gone), and reports amplitude, phase and the unexplained-variance residual.
 
 THE ANCHORS ARE THE FIRST-ORDER CLOSED FORMS (any process-control text; at omega$\ast$tau = 1 exactly): AR = 1/sqrt(1 + (omega tau)\textasciicircum{}2) = 1/sqrt(2) $\to$ out amplitude = 2.0e-6 $\ast$ 0.7071068 = 1.4142136e-6 kmol/s phase = -atan(omega tau) = -45 deg = -0.7853982 rad (the drive is sin(w(t-tStart)) with tStart 0, so the fitted phase IS the lag). The measured amplitude lands within 1e-6 relative of the closed form and the fit residual is \textasciitilde{}7e-15 (the vessel really is LTI); the phase carries a bias of EXACTLY omega$\ast$dt/2 = 0.00208 rad = 0.12 deg -- the half-sample lag of reading accepted states on a 1 s grid, the measurement system's own phase contribution, worth teaching in itself. The anchor band covers it and this header names it.
+
+ONE DECLARED FIGURE (system/postDict, C487): `response`, "how much does the tank damp and delay a sinusoidal tracer feed?" -- the tracer in the tank against the tracer feed.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -753,6 +785,8 @@ The closed loop is second order, wn\textasciicircum{}2 = a |Ki| , 2 zeta wn = a 
 
 ENERGY. H on the elements datum, T a readout; the ledger claims mass and energy and closes (check\_dynamic\_tank).
 
+ONE DECLARED FIGURE (system/postDict, C487): `level`, "does the level controller bring the tank back to its set point after the inflow steps up?" -- the level against its set point, the inflow and the manipulated outflow on the right-hand axis.
+
 \end{tutnarrative}
 \tutreadme{A water tank (dynamicTank, D = 2 m, 3.14 m$^2$) whose outflow is a manipulated flow (mode flow, mv F\_out, a flow-controlled pump). Because nothing in the outflow depends on the level, the level integrates the difference of the flows and never comes back by itself. A PI level controller on F\_out closes the loop. The inflow steps from 0.20 to 0.30 kmol/s at t = 600 s; 3000 s run, 2 s steps.}
 \tutreadme{Run it: runCase tutorials/ctrl/ctrl21\_tank\_level\_control (it runs under choupoCtrl). Its sibling unsteady05\_tank\_valve\_drain drains the same tank through a valve instead and needs no controller.}
@@ -798,6 +832,8 @@ the level sets the volume, so the jacket's wetted area -- the declared UA is the
 The inflow steps from 1.0e-3 to 1.5e-3 kmol/s at t = 1200 s (a Signal on the inlet face). Level plant gain a = v/A = 0.47 m per kmol (liquid molar volume 0.093 m3/kmol over 0.196 m2); with wn = 0.01 1/s, zeta = 0.8 the PI gains are Kp = -2 zeta wn / a = -0.034, Ki = -wn\textasciicircum{}2 / a = -2.1e-4 kmol/s per m(s). Bias 1.0e-3 kmol/s is the outflow that balances the old inflow.
 
 The cold feed lowers the temperature as the inflow rises; the jacket absorbs it. Read trajectory.csv: `level`, `T`, `F\_out`, `volume`, and the controllers' MV columns.
+
+TWO DECLARED FIGURES (system/postDict, C487): `level`, "does the level loop hold the reactor's liquid when the inflow steps up?", and `temperature`, "does the temperature loop hold the reactor at 340 K through the start-up and the step?" (the jacket temperature on the right-hand axis).
 
 \end{tutnarrative}
 \tutreadme{A jacketed reactor with a level (dynamicCSTR with volumeMode variable, D = 0.5 m, H = 1.0 m): isobutanol $\to$ 2-butanol, first order, exothermic, fed at 300 K and run at 340 K. Two PI controllers act on DIFFERENT manipulated variables of the SAME vessel:}

@@ -1,0 +1,65 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  ctrl22_reactor_level_and_temperature / postDict -- the case's TWO figures
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    level        "Does the level loop hold the reactor's liquid when the inflow
+                 steps up?"  The PI LC1's PV (level, m) against its set point
+                 on the left axis, the inflow (FeedStep's MV) and the outflow
+                 (LC1's MV) on the right (kmol/s).  Read from this run's tables
+                 (100 s grid, 3600 s): the inflow steps from 1.0e-3 to 1.5e-3
+                 kmol/s at 1200 s (first seen at 1300 s); the level peaks at
+                 0.509864 m at 1300 s (+0.0099 m), is within 0.0005 m of 0.5 m
+                 by 1700 s; the outflow peaks at 1.578e-3 kmol/s at 1400 s.
+    temperature  "Does the temperature loop hold the reactor at 340 K through
+                 the start-up and the step?"  PV (reactor T) and set point on
+                 the left axis (K), the jacket T (TC1's MV) on the right.  Read
+                 from the table: the reactor dips to 337.945 K at 300 s from its
+                 340 K start and returns; after the 1200 s step the cold feed
+                 pulls it down to 338.160 K at 1500 s, it is within 0.1 K by
+                 2200 s and ends at 339.992 K; the jacket goes from 374.462 K
+                 (1300 s) to 390.140 K (1900 s) and ends at 386.664 K.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    level;
+        type    series;
+        title   "Does the level loop hold the reactor's liquid when the inflow steps up?";
+        note    "The PI controller LC1 holds the level at 0.5 m by moving the outflow. The inflow steps from 1.0e-3 to 1.5e-3 kmol/s at 1200 s; the level rises by at most 0.0099 m (0.5099 m at 1300 s), is back within 0.0005 m of the set point by 1700 s and the outflow settles on the new inflow, having peaked at 1.58e-3 kmol/s at 1400 s.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "level"; unit "m"; scale linear; }
+        yAxis2  { label "flow"; unit "kmol/s"; scale linear; }
+        series
+        (
+            { name SP; label "set point"; unitOp LC1; table trajectory; x t; y SP; style lines; }
+            { name PV; label "level (controlled)"; unitOp LC1; table trajectory; x t; y PV; style lines; }
+            { name Fin; label "inflow (disturbance)"; unitOp FeedStep; table trajectory; x t; y MV; style lines; axis right; }
+            { name Fout; label "outflow (manipulated)"; unitOp LC1; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+    {
+        name    temperature;
+        type    series;
+        title   "Does the temperature loop hold the reactor at 340 K through the start-up and the step?";
+        note    "The PI controller TC1 holds the reactor at 340 K by moving the jacket temperature. The reactor dips to 337.9 K at 300 s from its 340 K start and comes back; after the inflow step at 1200 s the larger flow of cold feed pulls it to 338.2 K at 1500 s, it is back within 0.1 K by 2200 s and ends at 339.99 K while the jacket climbs from 374 K to 390 K and settles at 386.7 K.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "reactor temperature"; unit "K"; scale linear; }
+        yAxis2  { label "jacket temperature"; unit "K"; scale linear; }
+        series
+        (
+            { name SP; label "set point"; unitOp TC1; table trajectory; x t; y SP; style lines; }
+            { name PV; label "reactor T (controlled)"; unitOp TC1; table trajectory; x t; y PV; style lines; }
+            { name MV; label "jacket T (manipulated)"; unitOp TC1; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+);

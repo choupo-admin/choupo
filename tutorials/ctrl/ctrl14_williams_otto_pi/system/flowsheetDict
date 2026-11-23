@@ -22,6 +22,11 @@
   K3int = 1.282 per HOUR, declared per second (1.282/3600 =
   3.5611111e-4).  Bias = F*_fB (bumpless), setpoint F_pP = 4.5 klb/h =
   1.25e-3 kmol/s, output bounded to the paper's 0 <= F_fB <= 56 klb/h.
+
+  ONE DECLARED FIGURE (system/postDict, C487): `response`, "does the PI
+  loop bring the product rate to its set point, and how far does the feed
+  of B have to move?" -- PV against the set point, the manipulated feed on
+  the right-hand axis, against hours.
 \*---------------------------------------------------------------------------*/
 
 units

@@ -320,6 +320,10 @@ def arm_binaries(tmp: Path):
 def arm_outer(tmp: Path):
     case = copy_case(CASES[1][1], tmp / "ctrl03outer")
     declare_guard(case)
+    # ctrl03 declares figures (C487 slice 2), and `views` beside an outerDict
+    # are refused by name; this arm probes the sweep's failure handling, not
+    # the views, so the probe copy carries no postDict.
+    (case / "system" / "postDict").unlink(missing_ok=True)
     (case / "system" / "outerDict").write_text(
         "type sweep;\nparameter\n{\n    target controllers[1].setpoint;\n"
         "    range ( 345 355 );\n    nPoints 2;\n}\n"

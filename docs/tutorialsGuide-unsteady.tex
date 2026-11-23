@@ -18,6 +18,8 @@ What this tutorial shows: The OpenFOAM-style transient solution directories. The
 
 To compare CLOSED-LOOP control, see ctrl01\_cstr\_temp\_control (a PID drives T to a 350 K setpoint) and ctrl05\_disturbance\_transient (a PID rejecting a feed-temperature disturbance), both also writing time dirs.
 
+ONE DECLARED FIGURE (system/postDict, C487): `startup`, "how long does the open-loop reactor take to reach steady state?" -- the reactor temperature and the product in the vessel against time.
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{reactor}{T\_final}{320.759374011}
@@ -61,6 +63,8 @@ E(t) = t\textasciicircum{}2 e\textasciicircum{}(-t/tau) / (2 tau\textasciicircum
 Levenspiel, Chemical Reaction Engineering, ch. 14 (the tanks-in-series model): the variance ratio 1/N is THE diagnostic the lesson teaches -- one tank gives 1, three give 1/3, a PFR gives 0. ctrl18 is the N = 1 control; this case is N = 3 on identical tanks.
 
 WHAT THE ANCHORS TOLERATE, stated: the engine measures moments by trapezoid on the accepted 1 s grid and truncates at 1600 s (= 20 tau of one tank); both effects are far inside the anchor bands, and the router adds a one-step transport delay per connection (2 s total on tbar's 240 s -- inside the 1 \% band, and the honest price of an explicit scheme, stated rather than hidden).
+
+ONE DECLARED FIGURE (system/postDict, C487): `tracer`, "how does the tracer impulse travel down the three tanks?" -- the tracer in each tank, the peaks one residence time apart.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -110,6 +114,8 @@ WHAT TO WATCH. The tank starts at the feed concentration, so the module first se
 
 WHAT IS ASSUMED, and printed on the run: the quasi-steady units hold no inventory (nothing accumulates in the module or the pipes), the tank is well mixed, and the loop's pressure is the module's feed pressure throughout (no pump is modelled, as in membrane18 -- see its header). The first law is NOT claimed: the dynamic ledger needs a stored energy functional per unit, which the quasi-steady adapter does not provide, and the run says so rather than closing it with a zero.
 
+ONE DECLARED FIGURE (system/postDict, C487): `loop`, "how long does the feed-and-bleed loop take to concentrate, and what does that do to the module's flux?" -- the glucose in the tank and the module's water flux against hours.
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{MIX}{F\_ToTank\_final}{0.387769215931}
@@ -158,6 +164,8 @@ WHAT TO WATCH -- the lesson of gel polarisation IN A LOOP. The module is gel-lim
 
 EVERY UF NUMBER HERE IS HYPOTHETICAL, as in membrane19 (the membrane, c\_gel, S, k\_film -- read its header); BSA's MW is derived from its UniProt sequence. The shape is the lesson, never a number. NOT MODELLED: the first law (BSA carries no enthalpy datum, and the quasi-steady adapter claims none), a pump, fouling in time.
 
+ONE DECLARED FIGURE (system/postDict, C487): `loop`, "how long does the loop take to concentrate the protein, and how much flux does the plant lose?" -- the protein in the tank and the module's water flux against hours.
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{MIX}{F\_ToTank\_final}{0.0447458374224}
@@ -202,6 +210,8 @@ WHAT TO SEE. A first-order-like response with tau \textasciitilde{} 2600 s at th
 
 ENERGY. The tank stores H on the elements datum (the package's mixture liquid surface) and T is a readout; the feed arrives at the tank's own temperature, so T stays at 293.15 K and the first-law ledger closes (see the `[balance]` lines and check\_dynamic\_tank).
 
+ONE DECLARED FIGURE (system/postDict, C487): `level`, "where does the level settle after the inflow steps up, with no controller, and how long does it take?" -- the level, the inflow and the outflow through the valve against hours.
+
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{balance}{element\_H\_closure\_rel}{6.6635596454e-08}
@@ -245,6 +255,8 @@ n\_A(t) = F/k + (n\_A0 - F/k) exp(-k t) n\_B(t) = n\_A0 + n\_B0 + F t - n\_A(t) 
 check\_dynamic\_cstr\_level recomputes these from the declared numbers and holds the run to them (the density is the run's own column: it moves a little with T, because the isomerisation is mildly exothermic).
 
 ENERGY. Both species carry a formation datum, so the vessel takes the CANONICAL route (announced at start-up): it stores H on the elements datum, the heat of reaction is a consequence of it, the outlet term cancels, and the ledger CLAIMS mass and energy and closes. Compare ctrl22, the same reactor with a level loop and a temperature loop together.
+
+TWO DECLARED FIGURES (system/postDict, C487): `fill`, "how fast does the reactor fill?", and `reaction`, "how far has the reaction gone while the reactor fills?" (amounts and temperature).
 
 \end{tutnarrative}
 \tutreadme{dynamicCSTR with volumeMode variable (D = 0.5 m, H = 1.0 m) starts from a heel (0.02 m of isobutanol at 300 K, an "empty" vessel --- exactly zero is refused by name), is fed 1.0e-3 kmol/s of pure isobutanol, has no outflow, and isomerises it to 2-butanol with a first-order law, k = 4.0e-4 1/s (Ea = 0, so k cannot move with the small temperature rise). 1500 s, 5 s steps; runs under choupoSemiContinuous (no controller).}
@@ -297,6 +309,8 @@ whose maximum is eps\textasciicircum{}(1/(1-eps)) = 0.0428 here. The EduTool pag
 
 WHAT THE STEP COSTS. The router hands SLOW's outlet to FAST once per driver step (one-step explicit, announced by the [routing] line), so the driver step must stay short against tau\_f: 0.25 s is a 40th of the smallest tau\_f the page uses (10 s), and the fixed RK4 step is stable only below 2.785 tau\_f. The reduced twin has no such limit from FAST.
 
+ONE DECLARED FIGURE (system/postDict, C487): `tracer`, "how far does the small tank lag the big one when the tracer arrives?" -- the tracer in each tank on axes scaled by the holdups, so equal heights are equal fractions and the gap is the lag.
+
 \end{tutnarrative}
 \tutreadme{Two mixing tanks in series under choupoSemiContinuous: SLOW holds 1 kmol (time constant 1000 s at the 1e-3 kmol/s feed) and FAST holds 0.05 kmol (50 s). Both start full of compA; from t = 0 the feed is pure compB. Both tanks are dynamicCSTR vessels, integrated in time. 5000 s, 0.25 s steps.}
 \tutreadme{1. The lag. FAST's outlet follows SLOW's outlet about 50 s late. In trajectory.csv the tracer fraction leaving FAST is FAST.n\_compB / (FAST.n\_compA + FAST.n\_compB). 2. The reduced twin. unsteady08\_fast\_tank\_reduced replaces FAST by its quasi-steady relation (outlet = inlet). The largest gap between the two outlets is 0.0428 at the ratio of time scales 0.05, and the closed form for two linear tanks gives the same, eps\textasciicircum{}(1/(1-eps)). 3. The step. SLOW hands its outlet to FAST once per driver step, so the step must be short against FAST's time constant (the [routing] line says so).}
@@ -337,6 +351,8 @@ the REDUCED twin of unsteady07\_fast\_tank\_full: the same two tanks, the same s
 THE REDUCTION. If the small tank's time constant tau\_f is short against the big tank's tau\_s, its content follows its inlet almost at once, and in the limit it holds nothing that changes: its outlet IS its inlet. That relation is what a `storageTank` computes (outlet = inlet, plus the holdup its declared residence time implies, published as a number and never integrated), and `quasiSteady` re-solves it on SLOW's outlet at every accepted instant ("SAME INSTANT" in the [routing] line). So the engine runs ONE differential equation where the full model runs two.
 
 WHAT IS KEPT AND WHAT IS LOST. The residence time below (50 s, the full model's tau\_f) changes no number on the outlet: it only sizes the holdup the storageTank publishes (kpi\_holdupMass\_kg, what FAST would hold if it were at steady state with its inlet). The lag of about tau\_f is what is lost, and unsteady07 measures it: the largest gap between the two outlet tracer fractions is 0.0428 at eps = 0.05, and it grows with eps.
+
+ONE DECLARED FIGURE (system/postDict, C487): `tracer`, "what does the reduced model keep of the big tank, and what does it publish for the small one?" -- the integrated tracer of the big tank beside the carrier holdup the small tank publishes, never integrates.
 
 \end{tutnarrative}
 \tutreadme{The reduced twin of unsteady07\_fast\_tank\_full: the same feed step and the same big tank SLOW, with the small tank FAST written as a storageTank wrapped as quasiSteady. Its outlet IS its inlet, re-solved at every accepted instant; nothing in it is integrated.}
