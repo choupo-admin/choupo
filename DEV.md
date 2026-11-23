@@ -5431,7 +5431,7 @@ accepts today, and that is a policy call.
 > reference, two GUI tests red on main about three hours and one --gui re-run; (2) line-number lesson
 > citations broke at four landings (C440 postDict +7 lines, C468, C478 +11, C477), five red tests,
 > each a --gui re-run; (3) a gate run before `git add` passed an untracked file whose name held a
-> future date, red on main; (4) gui/node_modules removed before --gui, one lost suite; (5) a general's
+> future date, red on main; (4) the GUI's node_modules removed before --gui, one lost suite; (5) a general's
 > header fix after its --gui hid an import (typecheck red at integration); (6) CI red since
 > 2026-11-20, unseen for three days (C484); (7) the cloud's disk filled mid --gui and it validated a
 > tree main had already overtaken.  Seven rules written in CLAUDE.md section 10 ("INTEGRATION

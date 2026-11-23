@@ -1010,7 +1010,7 @@ Corollaries, each paid for:
     3. **Gates run AFTER `git add`.**  A gate that walks tracked files passes
        an untracked one: a future date in a new file's name reached `main`.
     4. **Clean-up comes after the last validation step, never before.**
-       Removing `gui/node_modules` ahead of `--gui` cost one suite run.
+       Removing the GUI's `node_modules` ahead of `--gui` cost one suite run.
     5. **A fix committed after a validation is re-checked by the cheapest
        check that reaches it** (typecheck for a `.ts`, the file's own tests),
        and a brief says so.  A header added after `--gui` hid an import:
@@ -1018,7 +1018,7 @@ Corollaries, each paid for:
     6. **After each landing, read `main`'s CI.**  Red is a backlog item the
        same day.  CI was red from 2026-11-20 to 11-23 and nobody looked.
     7. **No long validation starts under 15 GB free disk; a landed branch's
-       `build/`, `gui/node_modules` and `gui/public/wasm` are removed at once**
+       `build/`, the GUI's `node_modules` and `gui/public/wasm/` are removed at once**
        (the cloud's disk filled mid-`--gui` on 11-23; the laptop fell to 23 GB
        on 11-22).  Evidence is retaken when `main` moved (above), and a push
        is refused when `main` moved after the validation.
