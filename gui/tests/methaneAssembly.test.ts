@@ -290,8 +290,8 @@ describe("methane-assembly: the lesson", () => {
       + "\n" + tree("gui/src/ui/methods/MethaneAssemblyTool.tsx");
     const cited = new Set([...all.matchAll(/((?:[A-Za-z0-9_]+\/)+[A-Za-z0-9_]+\.(?:cpp|H)):(\d+)(?:-(\d+))?/g)].map((m) => m[0]));
     const CLAIMS: Record<string, string | RegExp> = {
-      "src/applications/choupoBatch/main.cpp:2235": "if (d > best) { best = d; tIgn = tr[k].first; }",
-      "src/unitOperations/batch/BatchReactor.cpp:856": "else     r.S = (std::log(r.tau) - std::log(sensTau0_)) / lnF;",
+      "src/applications/choupoBatch/main.cpp:2238": "if (d > best) { best = d; tIgn = tr[k].first; }",
+      "src/unitOperations/batch/BatchReactor.cpp:857": "else     r.S = (std::log(r.tau) - std::log(sensTau0_)) / lnF;",
       "src/thermo/reaction/KineticsLibrary.cpp:388-389": /reactionSets[\s\S]*lookupWordList\("reactionSets"\)/,
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();

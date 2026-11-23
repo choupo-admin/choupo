@@ -1,4 +1,18 @@
 /*---------------------------------------------------------------------------*\
+       \|/       C hemicals     | Open-source, glass-box chemical process simulator
+      \\|//      H eat-transfer | https://choupo.org
+     \\\|///     O perations    |
+      \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+       \|/       P roperties    | Licence: GPL-3.0-or-later
+        |        O ptimization  |
+       /|\                      |
+-------------------------------------------------------------------------------
+    SPDX-License-Identifier: GPL-3.0-or-later
+    Credit and attribution: see AUTHORS
+    Required legal notices:  see NOTICE
+\*---------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
   viewsSecondAxis -- a view's RIGHT-HAND y axis and its vertical MARKERS
   (DEV.md 4c C477).  The engine writes `yAxis2`, a series' `axis: "right"` and
   `markers` (an x a run published, e.g. an ignition delay); the GUI draws them

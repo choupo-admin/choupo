@@ -313,9 +313,9 @@ describe("how-do-we-know-k: the lesson", () => {
       "Reaction.cpp:127": "const scalar lindemann = kInf * Pr / (1.0 + Pr);",
       "Reaction.cpp:140": "scalar Fcent = (1.0 - alpha) * std::exp(-T / T3) + alpha * std::exp(-T / T1);",
       "Reaction.cpp:154": "const scalar logF = logFcent / (1.0 + x * x);",
-      "BatchReactor.cpp:1176": "const scalar f = std::pow(1.0e-3, molecularity - 1);",
-      "BatchReactor.cpp:1191": "if      (u.find(\"kcal\") != std::string::npos) f = 4184.0;",
-      "BatchReactor.cpp:1388": "k = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);",
+      "BatchReactor.cpp:1177": "const scalar f = std::pow(1.0e-3, molecularity - 1);",
+      "BatchReactor.cpp:1192": "if      (u.find(\"kcal\") != std::string::npos) f = 4184.0;",
+      "BatchReactor.cpp:1389": "k = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);",
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     for (const [c, want] of Object.entries(CLAIMS)) {

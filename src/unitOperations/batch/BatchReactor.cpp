@@ -2813,7 +2813,7 @@ void BatchReactor::odeJacobianSparse(const sVector& y, const sVector& f0,
     const KinCtx& kctx = kinCtx_(T, y, V);   // c = n/V, [M], the rate-constant tables: once per Jacobian
     sVector cFloorV(n, 0.0);                 // the concentration floor of a power below one (C468)
     for (std::size_t k = 0; k < n; ++k)
-        cFloorV[k] = 1.4901161193847656e-8 * sc[k] / std::max(V, 1.0e-300);
+        cFloorV[k] = V > 0.0 ? 1.4901161193847656e-8 * sc[k] / V : 0.0;   // no volume, no concentration to floor
     sVector grad(n, 0.0);                    // zero outside the current deps
     scalar sumWS = 0.0, sumWE = 0.0;         // sum_j w_j s_j, sum_j w_j E_j
     for (std::size_t j = 0; j < reactions_.size(); ++j)
