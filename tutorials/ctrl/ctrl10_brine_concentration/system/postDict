@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  ctrl10_brine_concentration / postDict -- the case's ONE figure
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    response   "Does the jacket bring the brine tank to its set point, and does
+               it run out of jacket?"  The PID TC1's PV (tank T) against its set
+               point, 313.15 K, on the left axis, its MV (the jacket T) on the
+               right.  Numbers read from this run's `trajectory` table of TC1
+               (a 50 s write grid): the jacket is on its 360 K upper limit from
+               the first sample (50 s) to the end, the PV rises from 298.15 K to
+               310.320 K at 600 s, 2.83 K short of the set point.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    response;
+        type    series;
+        title   "Does the jacket bring the brine tank to its set point, and does it run out of jacket?";
+        note    "The PID TC1 heats the brine tank from 298.15 K towards 313.15 K, but the jacket sits on its 360 K upper limit from the first sample to the end of the 600 s: the tank reaches 310.3 K, 2.8 K short of the set point, and is still rising. The loop is limited by the heat the jacket can deliver, not by the tuning.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "tank temperature"; unit "K"; scale linear; }
+        yAxis2  { label "jacket temperature"; unit "K"; scale linear; }
+        series
+        (
+            { name SP; label "set point"; unitOp TC1; table trajectory; x t; y SP; style lines; }
+            { name PV; label "reactor T (controlled)"; unitOp TC1; table trajectory; x t; y PV; style lines; }
+            { name MV; label "jacket T (manipulated)"; unitOp TC1; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+);
