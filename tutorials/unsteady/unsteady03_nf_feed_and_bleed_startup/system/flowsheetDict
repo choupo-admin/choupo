@@ -46,6 +46,11 @@
   The first law is NOT claimed: the dynamic ledger needs a stored energy
   functional per unit, which the quasi-steady adapter does not provide,
   and the run says so rather than closing it with a zero.
+
+  ONE DECLARED FIGURE (system/postDict, C487): `loop`, "how long does the
+  feed-and-bleed loop take to concentrate, and what does that do to the
+  module's flux?" -- the glucose in the tank and the module's water flux
+  against hours.
 \*---------------------------------------------------------------------------*/
 
 units

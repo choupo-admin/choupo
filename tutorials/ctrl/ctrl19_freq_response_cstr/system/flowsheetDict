@@ -30,6 +30,10 @@
   -- the half-sample lag of reading accepted states on a 1 s grid, the
   measurement system's own phase contribution, worth teaching in itself.
   The anchor band covers it and this header names it.
+
+  ONE DECLARED FIGURE (system/postDict, C487): `response`, "how much does
+  the tank damp and delay a sinusoidal tracer feed?" -- the tracer in the
+  tank against the tracer feed.
 */
 
 units

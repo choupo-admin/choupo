@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  unsteady01_startup_transient / postDict -- the case's ONE figure
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    startup   "How long does the open-loop reactor take to reach steady state?"
+              The reactor temperature (the unit's `T`, K) on the left axis and
+              the product in the vessel (`n_compB`, kmol) on the right.  Read
+              from this run's table (50 s grid, 1000 s): T rises from 320 K to
+              320.7505 K at 100 s, peaks at 320.7654 K at 200 s and relaxes to
+              320.7594 K at 1000 s; n_compB rises from 0 to 2.011e-4 kmol and
+              is still gaining 0.35 % per 50 s at the end (2.0111e-4 against
+              2.0041e-4 at 950 s).
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    startup;
+        type    series;
+        title   "How long does the open-loop reactor take to reach steady state?";
+        note    "Charged cold at 320 K with no controller, the reactor warms by the reaction exotherm to 320.75 K in 100 s, overshoots slightly to 320.765 K at 200 s and relaxes to 320.759 K by 1000 s; the temperature has settled to within 0.001 K well before the 1000 s end, while the product in the vessel is still creeping up, 2.01e-4 kmol, gaining about 0.35 % per 50 s at the end.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "reactor temperature"; unit "K"; scale linear; }
+        yAxis2  { label "product amount"; unit "kmol"; scale linear; }
+        series
+        (
+            { name T; label "reactor T"; unitOp reactor; table trajectory; x t; y T; style lines; }
+            { name nB; label "product in the vessel"; unitOp reactor; table trajectory; x t; y n_compB; style lines; axis right; }
+        );
+    }
+);

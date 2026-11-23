@@ -1,0 +1,58 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  ctrl11_esterification_jacket / postDict -- the case's TWO figures
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    response   "How fast does the jacket loop bring the esterification to its
+               365 K set point?"  The PID TC1's PV against its set point on the
+               left axis (K), its MV (the jacket T) on the right.  Read from
+               this run's `trajectory` table of TC1 (a 10 s write grid): the
+               jacket peaks at 371.182 K at t = 10 s, PV passes 364 K at 190 s
+               and is 364.949 K at 600 s, the jacket 366.642 K.
+    holdup     "How far has the esterification gone?"  Two curves: the reactants' and
+               the products' amounts in the vessel (reactor `trajectory`, kmol).  Read from the same
+               table: ethanol and acetic acid fall from 0.030 to 0.01113 kmol,
+               water and ethyl acetate rise from 0.008 to 0.02687 kmol;
+               each pair is equal at every instant (checked on the table), so
+               one series stands for each pair.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    response;
+        type    series;
+        title   "How fast does the jacket loop bring the esterification to its set point?";
+        note    "The PID TC1 heats the reactor from 340 K to 365 K by moving the jacket temperature, which peaks at 371.2 K at 10 s and settles back to 366.6 K. The reactor temperature passes 364 K at 190 s and is 364.95 K at the end of the 600 s, 0.05 K short and still closing.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "reactor temperature"; unit "K"; scale linear; }
+        yAxis2  { label "jacket temperature"; unit "K"; scale linear; }
+        series
+        (
+            { name SP; label "set point"; unitOp TC1; table trajectory; x t; y SP; style lines; }
+            { name PV; label "reactor T (controlled)"; unitOp TC1; table trajectory; x t; y PV; style lines; }
+            { name MV; label "jacket T (manipulated)"; unitOp TC1; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+    {
+        name    holdup;
+        type    series;
+        title   "How far has the esterification gone?";
+        note    "Ethanol and acetic acid, equal at every instant (one curve), fall from 0.030 kmol to 0.0111 kmol in 600 s while ethyl acetate and water, also equal, rise from 0.008 kmol to 0.0269 kmol.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "amount in the vessel"; unit "kmol"; scale linear; }
+        series
+        (
+            { name reactants; label "ethanol (= acetic acid)"; unitOp reactor; table trajectory; x t; y n_ethanol; style lines; }
+            { name products; label "ethyl acetate (= water)"; unitOp reactor; table trajectory; x t; y n_ethylAcetate; style lines; }
+        );
+    }
+);

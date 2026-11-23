@@ -18,6 +18,11 @@
 
   u* of eq. (3.20): F_fA = 10, F_fB = 20, T = 580 degR, mu = 129.5,
   eta = 0.2.  T rides in 0/internalStates/plant (322.2222 K = 580 degR exactly).
+
+  TWO DECLARED FIGURES (system/postDict, C487): `rates`, "how long does the
+  open-loop plant take to settle at the operating point, and what does it
+  make?" (product and waste rates, klb/h, against hours), and `harvest`,
+  the cumulative yield, waste and objective J (klb).
 \*---------------------------------------------------------------------------*/
 
 units

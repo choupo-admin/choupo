@@ -658,7 +658,11 @@ views ( { name response; type series; title "Does the controller hold the set po
 ```
 
 A case without `views` writes nothing new.  `views` beside an `outerDict` is refused by name.  Witness
-`ctrl02_disturbance_rejection` (Theory Guide `sec:dynamic-views`).
+`ctrl02_disturbance_rejection` (Theory Guide `sec:dynamic-views`).  Since slice 2 (2026-11-23) 26 of the other
+time-integrated cases carry their own figures -- a question as the title, a `note` with numbers read from the run, units on
+every axis, a second tight-axis view where the start-up fills the default one (`ctrl03`/`ctrl06`/`ctrl09`/`ctrl17_signal_shapes`
+are the models); an axis `min`/`max` typed against a run is held by gate `check_dynamic_views`, and a log axis refuses a
+series that holds a zero.  Time can be declared in `h`; a unit the source does not publish is announced and taken as declared.
 
 ## Optional dicts are TRULY optional
 

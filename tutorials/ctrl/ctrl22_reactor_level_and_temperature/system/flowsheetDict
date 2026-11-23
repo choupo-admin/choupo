@@ -37,6 +37,12 @@
   The cold feed lowers the temperature as the inflow rises; the jacket
   absorbs it.  Read trajectory.csv: `level`, `T`, `F_out`, `volume`, and the
   controllers' MV columns.
+
+  TWO DECLARED FIGURES (system/postDict, C487): `level`, "does the level
+  loop hold the reactor's liquid when the inflow steps up?", and
+  `temperature`, "does the temperature loop hold the reactor at 340 K
+  through the start-up and the step?" (the jacket temperature on the
+  right-hand axis).
 \*---------------------------------------------------------------------------*/
 
 units

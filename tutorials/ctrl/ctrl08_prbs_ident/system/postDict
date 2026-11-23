@@ -1,0 +1,59 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  ctrl08_prbs_ident / postDict -- the case's TWO figures
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    response   "Does the reactor stay at its set point while the feed
+               temperature switches at random?"  PV and set point on the left
+               axis; the jacket T (TC1's MV) and the feed T (the Signal
+               FeedPRBS's MV, 310 or 330 K, a bit every 120 s) on the right.
+    record     "What does the identification record look like?"  From 600 s,
+               after the start-up has filled the overview's axis (320 to 350 K),
+               the PV on a TIGHT left axis, 349.5 to 350.5 K, against the PRBS
+               input on the right.  Range read from this run's `trajectory`
+               table of TC1, 600 s on: PV from 349.565 K (t = 1820 s) to
+               350.420 K (t = 2180 s), set point 350 K.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    response;
+        type    series;
+        title   "Does the reactor stay at its set point while the feed temperature switches at random?";
+        note    "The PID TC1 holds the reactor at 350 K by moving the jacket temperature while the feed temperature jumps between 310 K and 330 K on a pseudo-random binary sequence, a bit every 120 s. After the start-up the reactor temperature stays within about 0.5 K of the set point.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "reactor temperature"; unit "K"; scale linear; }
+        yAxis2  { label "jacket and feed temperature"; unit "K"; scale linear; }
+        series
+        (
+            { name SP; label "set point"; unitOp TC1; table trajectory; x t; y SP; style lines; }
+            { name PV; label "reactor T (controlled)"; unitOp TC1; table trajectory; x t; y PV; style lines; }
+            { name MV; label "jacket T (manipulated)"; unitOp TC1; table trajectory; x t; y MV; style lines; axis right; }
+            { name Tin; label "feed T (PRBS disturbance)"; unitOp FeedPRBS; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+    {
+        name    record;
+        type    series;
+        title   "What does the identification record look like?";
+        note    "From 600 s, on a tight axis: the feed temperature switches between 310 K and 330 K, a 20 K input, and the reactor temperature answers with excursions of at most 0.42 K above and 0.44 K below the set point (350.420 K at 2180 s and 349.565 K at 1820 s), values on the 5 s write grid. The two series are the input and output record of the identification.";
+        xAxis   { label "time"; unit "s"; scale linear; min 600; max 3600; }
+        yAxis   { label "reactor temperature"; unit "K"; scale linear; min 349.5; max 350.5; }
+        yAxis2  { label "feed temperature"; unit "K"; scale linear; }
+        series
+        (
+            { name SP; label "set point"; unitOp TC1; table trajectory; x t; y SP; style lines; }
+            { name PV; label "reactor T (controlled)"; unitOp TC1; table trajectory; x t; y PV; style lines; }
+            { name Tin; label "feed T (PRBS disturbance)"; unitOp FeedPRBS; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+);

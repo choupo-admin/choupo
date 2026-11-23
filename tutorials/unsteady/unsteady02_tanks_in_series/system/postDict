@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  unsteady02_tanks_in_series / postDict -- the case's ONE figure
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    tracer   "How does the tracer impulse travel down the three tanks?"  The
+             tracer in each tank (the units' `n_compB`, kmol); each tank holds
+             0.004 kmol, so the heights are comparable.  Read from this run's
+             table (20 s grid, 1600 s): tank1 starts at its 2.0e-4 kmol impulse;
+             tank2 peaks at 7.311e-5 kmol at 80 s; tank3 at 5.379e-5 kmol at
+             160 s; tank3 is below 5.4e-7 kmol (1 % of its peak) from 800 s.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    tracer;
+        type    series;
+        title   "How does the tracer impulse travel down the three tanks?";
+        note    "The tracer starts in tank 1 only (2.0e-4 kmol). Each tank that it passes delays the peak by one residence time and lowers and widens it: tank 2 peaks at 7.3e-5 kmol at 80 s and tank 3 at 5.4e-5 kmol at 160 s; by 800 s the third tank holds 1 % of its peak.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "tracer in the tank"; unit "kmol"; scale linear; }
+        series
+        (
+            { name tank1; label "tank 1"; unitOp tank1; table trajectory; x t; y n_compB; style lines; }
+            { name tank2; label "tank 2"; unitOp tank2; table trajectory; x t; y n_compB; style lines; }
+            { name tank3; label "tank 3 (outlet)"; unitOp tank3; table trajectory; x t; y n_compB; style lines; }
+        );
+    }
+);

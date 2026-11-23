@@ -16,6 +16,11 @@
   compB takes a 300 s rectangular pulse, the feed temperature walks a
   three-step staircase.  These three registered signal shapes were
   selected by no case until 2026-08-23 (invariant I8).  Self-recorded.
+
+  TWO DECLARED FIGURES (system/postDict, C487): `loop`, "does the
+  temperature loop hold the reactor at 350 K while three different
+  disturbances arrive at once?" (from 400 s, tight axis 349.7 to 350.2 K),
+  and `feeds`, the three disturbances themselves.
 */
 
 units

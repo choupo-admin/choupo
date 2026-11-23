@@ -1,0 +1,60 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  ctrl12_williams_otto / postDict -- the case's TWO figures
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    rates     "How long does the open-loop plant take to settle at the paper's
+              operating point u*, and what does it make?"  The product P and
+              waste G rates of the plant unit (the `trajectory` table's
+              F_pP_klbh and F_wG_klbh, klb/h), the time axis in hours (the run
+              publishes seconds), 0 to 100 h: both rates are within 1 % of their
+              400 h values from 60 h on (F_pP 3.8959 against 3.90162, F_wG 1.2160
+              against 1.22338; F_wG is 2.5 % short at 40 h), so the window runs
+              a little past that and the flat remainder to 400 h is left out.  Read from this run's table (a 20 h write
+              grid, 400 h): F_pP is 3.797 klb/h at 20 h, 3.878 (0.6 % below
+              its end value) at 40 h, 3.9002 at 80 h and 3.90162 at 400 h; F_wG
+              1.0962 at 20 h and 1.22338 at 400 h.
+    harvest   "What has the plant yielded and wasted, and what is the objective
+              J = yield - waste worth?"  The cumulative yield, waste and J
+              (klb, `yield_klb`, `waste_klb`, `J_combined_klb`): at 400 h yield
+              1552.8, waste 481.5, J 1071.4 klb.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    rates;
+        type    series;
+        title   "How long does the open-loop plant take to settle at the operating point, and what does it make?";
+        note    "The Williams-Otto plant at the paper's operating point (F_fA = 10 and F_fB = 20 klb/h, 580 R, mu = 129.5 klb/h, eta = 0.2), started from the charge of A and B, makes product at 3.80 klb/h after 20 h, within 0.6 % of its final 3.90 klb/h by 40 h; the waste rate follows more slowly, 1.22 klb/h final and within 1 % of it from 60 h. Both rates are within 1 % of their final values from 60 h on, and the axis stops at 100 h.";
+        xAxis   { label "time"; unit "h"; scale linear; min 0; max 100; }
+        yAxis   { label "production rate"; unit "klb/h"; scale linear; }
+        series
+        (
+            { name F_pP; label "product P rate"; unitOp plant; table trajectory; x t; y F_pP_klbh; style lines; }
+            { name F_wG; label "waste G rate"; unitOp plant; table trajectory; x t; y F_wG_klbh; style lines; }
+        );
+    }
+    {
+        name    harvest;
+        type    series;
+        title   "What has the plant yielded and wasted, and what is the objective worth?";
+        note    "Over 400 h the plant has made 1552.8 klb of product and 481.5 klb of waste, so the objective J = yield - waste stands at 1071.4 klb; all three grow linearly once the plant has settled.";
+        xAxis   { label "time"; unit "h"; scale linear; }
+        yAxis   { label "cumulative amount"; unit "klb"; scale linear; }
+        series
+        (
+            { name yield; label "yield"; unitOp plant; table trajectory; x t; y yield_klb; style lines; }
+            { name waste; label "waste"; unitOp plant; table trajectory; x t; y waste_klb; style lines; }
+            { name J; label "J = yield - waste"; unitOp plant; table trajectory; x t; y J_combined_klb; style lines; }
+        );
+    }
+);

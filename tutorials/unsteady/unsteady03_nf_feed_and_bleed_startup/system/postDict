@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  unsteady03_nf_feed_and_bleed_startup / postDict -- the case's ONE figure
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    loop   "How long does the feed-and-bleed loop take to concentrate, and what
+           does that do to the module's flux?"  The glucose in the tank (the
+           TANK unit's `n_glucose`, kmol) on the left axis and the module's mean
+           water flux (the NF unit's `kpi_J_w_avg`, m/s) on the right, the time
+           axis in hours.  Read from this run's table (600 s grid, 6 h): the
+           glucose rises from 0.05489 to 0.09951 kmol (+81 %), half of the rise
+           by 1200 s, 90 % by 3600 s, 99 % by 6600 s; the flux falls from
+           5.667e-5 to 4.576e-5 m/s (-19.3 %).
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    loop;
+        type    series;
+        title   "How long does the feed-and-bleed loop take to concentrate, and what does that do to the module's flux?";
+        note    "Starting full of feed, the tank concentrates as the retentate returns: the glucose in it rises from 0.0549 to 0.0995 kmol (81 % more), half of the rise in 1200 s, 90 % in 1 h and 99 % in 1.8 h, while the module's water flux falls from 5.67e-5 to 4.58e-5 m/s as the osmotic pressure builds, 19 % less, and holds there for the rest of the 6 h.";
+        xAxis   { label "time"; unit "h"; scale linear; }
+        yAxis   { label "glucose in the tank"; unit "kmol"; scale linear; }
+        yAxis2  { label "water flux"; unit "m/s"; scale linear; }
+        series
+        (
+            { name n_glucose; label "glucose in the tank"; unitOp TANK; table trajectory; x t; y n_glucose; style lines; }
+            { name J_w; label "module water flux"; unitOp NF; table trajectory; x t; y kpi_J_w_avg; style lines; axis right; }
+        );
+    }
+);

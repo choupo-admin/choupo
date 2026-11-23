@@ -29,6 +29,11 @@
   inhibition is visible over the control horizon, not measured on any catalyst.
   For a real, cited LHHW see `cstr07_lhhw_methylAcetate` and
   `batch07_lhhw_methylAcetate` (Popken 2000, Eq 16, on UNIQUAC activities).
+
+  ONE DECLARED FIGURE (system/postDict, C487): `response`, "can the PID
+  still bring the reactor to its set point when the reaction poisons
+  itself?" -- PV against the set point and the jacket temperature, to be
+  read beside ctrl01's.
 \*---------------------------------------------------------------------------*/
 
 units

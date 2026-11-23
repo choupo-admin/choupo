@@ -1,0 +1,62 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  ctrl17_signal_shapes / postDict -- the case's TWO figures
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    loop    "Does the temperature loop hold the reactor at 350 K while three
+            different disturbances arrive at once?"  From 400 s, after the
+            start-up has filled the default axis (330 to 350 K), on a TIGHT
+            left axis, 349.7 to 350.2 K: PV and set point; on the right axis
+            the jacket T (TC1's MV) and the staircase feed T (FeedStairT).
+            Range read from this run's `trajectory` table of TC1, 400 s on: PV
+            from 349.823 K (t = 1420 s) to 350.107 K (t = 720 s); the jacket
+            from 346.400 K (1400 s) to 347.471 K (700 s).
+    feeds   "What are the three disturbances?"  The feed of compA (a ramp,
+            3.5e-5 to 4.5e-5 kmol/s over 1000 s) and of compB (a pulse,
+            1.5e-5 to 2.25e-5 kmol/s from 400 s to 700 s) on the left axis
+            (kmol/s), the feed temperature (a staircase, 350 K, 355 K from
+            700 s, 348 K from 1400 s) on the right (K).
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    loop;
+        type    series;
+        title   "Does the temperature loop hold the reactor at 350 K while three different disturbances arrive at once?";
+        note    "From 400 s, on a tight axis: the compA feed ramps up, the compB feed takes a 300 s pulse and the feed temperature walks a staircase (350 K, 355 K at 700 s, 348 K at 1400 s), and the reactor temperature stays between 349.82 K and 350.11 K, within 0.2 K of the set point. The jacket moves between 346.4 K and 347.5 K to absorb them (values on the 10 s write grid).";
+        xAxis   { label "time"; unit "s"; scale linear; min 400; max 1800; }
+        yAxis   { label "reactor temperature"; unit "K"; scale linear; min 349.7; max 350.2; }
+        yAxis2  { label "jacket and feed temperature"; unit "K"; scale linear; }
+        series
+        (
+            { name SP; label "set point"; unitOp TC1; table trajectory; x t; y SP; style lines; }
+            { name PV; label "reactor T (controlled)"; unitOp TC1; table trajectory; x t; y PV; style lines; }
+            { name MV; label "jacket T (manipulated)"; unitOp TC1; table trajectory; x t; y MV; style lines; axis right; }
+            { name stairT; label "feed T (staircase)"; unitOp FeedStairT; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+    {
+        name    feeds;
+        type    series;
+        title   "What are the three disturbances?";
+        note    "The compA feed ramps from 3.5e-5 to 4.5e-5 kmol/s over 1000 s, the compB feed takes a pulse from 1.5e-5 to 2.25e-5 kmol/s between 400 s and 700 s, and the feed temperature steps from 350 K to 355 K at 700 s and down to 348 K at 1400 s.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "molar flow of feed"; unit "kmol/s"; scale linear; }
+        yAxis2  { label "feed temperature"; unit "K"; scale linear; }
+        series
+        (
+            { name rampA; label "feed of compA (ramp)"; unitOp FeedRampA; table trajectory; x t; y MV; style lines; }
+            { name pulseB; label "feed of compB (pulse)"; unitOp FeedPulseB; table trajectory; x t; y MV; style lines; }
+            { name stairT; label "feed T (staircase)"; unitOp FeedStairT; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+);

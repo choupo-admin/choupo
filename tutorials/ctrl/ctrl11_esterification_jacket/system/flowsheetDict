@@ -17,6 +17,11 @@
   The reaction declares NO dH_rxn.  On the elements datum the heat of
   reaction is Sum(nu_i h_i(T)) -- a consequence of the same enthalpy surface
   the vessel stores, not a second number to keep in step with it.
+
+  TWO DECLARED FIGURES (system/postDict, C487): `response`, "how fast does
+  the jacket loop bring the esterification to its set point?", and
+  `holdup`, "how far has the esterification gone?" -- the reactants' and
+  products' amounts in the vessel.
 \*---------------------------------------------------------------------------*/
 
 units

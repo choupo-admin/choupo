@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  ctrl14_williams_otto_pi / postDict -- the case's ONE figure
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    response   "Does the PI loop bring the product rate to its 4.5 klb/h set
+               point, and how far does the feed of B have to move?"  The PID
+               PC1's PV (the product rate F_pP) against its set point (kmol/s;
+               4.5 klb/h = 1.25e-3 kmol/s) on the left axis, its MV (the feed
+               F_fB, kmol/s) on the right, the time axis in hours.  Read from
+               this run's `trajectory` table of PC1 (2 h grid, 100 h): PV starts
+               at 1.0838e-3 (3.90 klb/h), peaks at 1.2873e-3 (4.63 klb/h, 3 %
+               over) at 14 h and is inside 1 % of the set point from 24 h on;
+               the feed rises from 5.556e-3 (20 klb/h) to 6.357e-3 (22.9
+               klb/h) at 8 h and settles at 5.862e-3 (21.1 klb/h).
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    response;
+        type    series;
+        title   "Does the PI loop bring the product rate to its set point, and how far does the feed of B have to move?";
+        note    "The PI controller PC1 raises the feed of B to bring the product rate from 3.90 klb/h to the 4.5 klb/h set point (1.25e-3 kmol/s). The feed peaks at 22.9 klb/h at 8 h, the product rate overshoots by 3 % at 14 h, and from 24 h on it stays within 1 % of the set point; the feed settles at 21.1 klb/h.";
+        xAxis   { label "time"; unit "h"; scale linear; }
+        yAxis   { label "product rate"; unit "kmol/s"; scale linear; }
+        yAxis2  { label "feed of B"; unit "kmol/s"; scale linear; }
+        series
+        (
+            { name SP; label "set point"; unitOp PC1; table trajectory; x t; y SP; style lines; }
+            { name PV; label "product rate F_pP (controlled)"; unitOp PC1; table trajectory; x t; y PV; style lines; }
+            { name MV; label "feed of B F_fB (manipulated)"; unitOp PC1; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+);

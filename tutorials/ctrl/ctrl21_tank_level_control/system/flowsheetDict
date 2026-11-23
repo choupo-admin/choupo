@@ -44,6 +44,11 @@
 
   ENERGY.  H on the elements datum, T a readout; the ledger claims mass and
   energy and closes (check_dynamic_tank).
+
+  ONE DECLARED FIGURE (system/postDict, C487): `level`, "does the level
+  controller bring the tank back to its set point after the inflow steps
+  up?" -- the level against its set point, the inflow and the manipulated
+  outflow on the right-hand axis.
 \*---------------------------------------------------------------------------*/
 
 units
