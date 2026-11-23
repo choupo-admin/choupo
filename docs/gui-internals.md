@@ -325,6 +325,21 @@ flow:
    written times shows each unit's holdup card (T, V, inventory, extras + outlet
    face) and a marked T(t) line, defaulting to this view when `instants` exist.
 
+4. **The Case tab shows the same instants as files (C482 part 1).**  The
+   scrubber channel is parsed and the text is lost, so the worker posts the
+   instant directories again, as files, on their own channel
+   `instantTreeFiles` (never folded into `convergedFiles`, whose non-empty
+   guard reads "the run converged"), together with `trajectory.csv`.  The tree
+   gets at most 200 directories (`TREE_MAX_INSTANTS`; the first and the last
+   always, the rest evenly spread by index) and the message carries how many
+   were written and how many are shown; `trajectory.csv` carries a badge
+   saying so.  `WasmAdapter` stores it as `RunResult.instantTree`;
+   `CaseWorkspace` merges it read-only for display (`mergeInstantTree`, never
+   into `caseFiles`; `0/` stays the authored start) and the tree orders the
+   instants by time numerically (`1e-06` before `0.001`, `2` before `10`).
+   `pickInstants` is written twice (worker is plain JS) and a test holds both
+   to the same answers.
+
 `trajectory.csv` is still written + plotted (the **Trajectory** view); the
 scrubber is the richer per-instant state on top of it.
 

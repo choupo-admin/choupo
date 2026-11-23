@@ -636,6 +636,13 @@ export interface RunResult {
    *  Feeds the TIME SCRUBBER -- scrub a time, see the reactor's actual state at
    *  that instant.  Absent for steady runs / solutionControl-off cases. */
   instants?: DynamicInstants;
+  /** C482 part 1: the instant directories of a time-integrated run AS FILES
+   *  (`<t>/<stream>`, `<t>/internalStates/<unit>`) plus `trajectory.csv`,
+   *  for the Case tree (read-only, beside 0/).  CAPPED by the worker: at
+   *  most 200 directories, the first and last always, the rest evenly
+   *  spread by index; `written` is how many the run wrote, `shown` how many
+   *  are here.  Its own field, never folded into convergedFiles. */
+  instantTree?: { files: { [relPath: string]: string }; written: number; shown: number };
   /** Per-component molar mass (kg/kmol) emitted by the solver since
    *.  Lets the GUI derive mass fractions w_i locally
    *  (w_i = z_i * MW_i / Sigma_j z_j * MW_j). */
