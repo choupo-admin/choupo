@@ -39,6 +39,11 @@
   the heat of reaction is a consequence of it, the outlet term cancels, and
   the ledger CLAIMS mass and energy and closes.  Compare ctrl22, the same
   reactor with a level loop and a temperature loop together.
+
+  TWO DECLARED FIGURES (system/postDict, C487): `fill`, "how fast does the
+  reactor fill, and is it near the top of the vessel?", and `reaction`,
+  "how far has the reaction gone while the reactor fills?" (amounts and
+  temperature).
 \*---------------------------------------------------------------------------*/
 
 units

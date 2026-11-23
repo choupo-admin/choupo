@@ -26,6 +26,11 @@
   were at steady state with its inlet).  The lag of about tau_f is what is
   lost, and unsteady07 measures it: the largest gap between the two outlet
   tracer fractions is 0.0428 at eps = 0.05, and it grows with eps.
+
+  ONE DECLARED FIGURE (system/postDict, C487): `tracer`, "what does the
+  reduced model keep of the big tank, and what does it publish for the
+  small one?" -- the integrated tracer of the big tank beside the carrier
+  holdup the small tank publishes, never integrates.
 \*---------------------------------------------------------------------------*/
 
 units

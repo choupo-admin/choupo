@@ -40,6 +40,11 @@
   driver step must stay short against tau_f: 0.25 s is a 40th of the
   smallest tau_f the page uses (10 s), and the fixed RK4 step is stable
   only below 2.785 tau_f.  The reduced twin has no such limit from FAST.
+
+  ONE DECLARED FIGURE (system/postDict, C487): `tracer`, "how far does the
+  small tank lag the big one when the tracer arrives?" -- the tracer in
+  each tank on axes scaled by the holdups, so equal heights are equal
+  fractions and the gap is the lag.
 \*---------------------------------------------------------------------------*/
 
 units

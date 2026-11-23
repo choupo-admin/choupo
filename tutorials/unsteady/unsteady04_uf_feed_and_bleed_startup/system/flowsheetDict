@@ -43,6 +43,11 @@
   sequence.  The shape is the lesson, never a number.  NOT MODELLED: the
   first law (BSA carries no enthalpy datum, and the quasi-steady adapter
   claims none), a pump, fouling in time.
+
+  ONE DECLARED FIGURE (system/postDict, C487): `loop`, "how long does the
+  loop take to concentrate the protein, and how much flux does the plant
+  lose?" -- the protein in the tank and the module's water flux against
+  hours.
 \*---------------------------------------------------------------------------*/
 
 units

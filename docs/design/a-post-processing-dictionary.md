@@ -419,6 +419,25 @@ A case with no `views` builds nothing: every `tutorials/ctrl` and `tutorials/uns
 `views` beside an `outerDict` is refused by name.  Witness: `ctrl02_disturbance_rejection` (PV against SP, MV and the feed
 disturbance).  Not done in this slice: streams of a dynamic run as producers; the survey of the other dynamic cases (slice 2).
 
+**Slice 2 (2026-11-23): the survey.**  Each of the other 28 time-integrated cases (ctrl: 21, unsteady: 8, less ctrl02 = 28) was
+read for the question the engineer running THAT system asks, and 26 now declare one or two figures in their own `system/postDict`
+(40 views with ctrl02's two, 117 series): the controlled variable against its set point with the manipulated variable and the
+disturbance (the temperature loops, the level loops, the Williams-Otto PI), the response to a step (ctrl13, ctrl17 reaction curve,
+unsteady05), a tracer through one or three tanks (ctrl18, ctrl19, unsteady02, unsteady07/08), and a loop concentrating
+(unsteady03/04).  Every `title` is a question; every `note` carries numbers read from the case's own run, and a range is typed only
+where the default axis would hide the point (the start-up fills the axis in ctrl03/05/06/08/09/17, so the figure after it is a
+second view on a tight axis; the Williams-Otto time axis is declared in hours, and `unsteady07`'s two tracer axes are fixed so that
+equal heights are equal fractions).  No `src/` changed.  Two cases cannot be drawn: `ctrl16_williams_otto_optimal` and
+`ctrl20_bode_cstr` run an `outerDict`, and `views` beside one is refused by name (above); their sweeps publish
+`optimization_history.csv` and `sweep_results.csv`.  What is not published and so is not drawn: a stream's composition or flow
+(an outlet fraction is drawn as the tracer's amount in the vessel instead), and an outlet E-curve.  Two findings, registered and not
+fixed here: a log axis refuses a series with a zero (`ctrl18`'s washout is drawn on a linear window), and a case that declares
+views on a vessel with a `level` makes a few more `liquidProperty` door calls (one per recorded row) -- the `calls` counter of the
+run's liquid-properties table (stdout and result JSON) differs in ctrl21, ctrl22, unsteady05 and unsteady06; no golden pins it and
+no other output moves.  Gate `check_dynamic_views`: an axis window typed against one run that holds none of a series' points exits 0,
+announces its points and draws an empty figure (measured on ctrl01 with `min 5000; max 6000` against a 150 s run); a mistyped name is
+already refused by the reader and needs no gate.
+
 ## 8. The witnesses
 
 **The NanoFiltran paper in one case.**

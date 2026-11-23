@@ -47,6 +47,11 @@
   liquid surface) and T is a readout; the feed arrives at the tank's own
   temperature, so T stays at 293.15 K and the first-law ledger closes (see
   the `[balance]` lines and check_dynamic_tank).
+
+  ONE DECLARED FIGURE (system/postDict, C487): `level`, "where does the
+  level settle after the inflow steps up, with no controller, and how long
+  does it take?" -- the level, the inflow and the outflow through the valve
+  against hours.
 \*---------------------------------------------------------------------------*/
 
 units

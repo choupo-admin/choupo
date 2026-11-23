@@ -36,6 +36,12 @@
   Backward-compatible by construction: ctrl02's `type Schedule; schedule(...)`
   staircase still works unchanged; this case swaps it for the more general
   `type Signal; signal { type sinusoidal; ... }`.
+
+  TWO DECLARED FIGURES (system/postDict, C487): `response`, "does the
+  reactor stay at its set point while the feed temperature swings?", and
+  `attenuation`, "how much of the 15 K swing of the feed reaches the
+  reactor?" -- from 600 s on a tight axis (349.5 to 350.5 K) beside the
+  feed temperature.
 \*---------------------------------------------------------------------------*/
 
 units

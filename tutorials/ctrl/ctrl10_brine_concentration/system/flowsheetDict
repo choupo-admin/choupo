@@ -17,6 +17,11 @@
   The jacket loop is the same PID shape as ctrl01: it acts on T_jacket to
   hold the vessel temperature.  A brine tank held on temperature is what sits
   upstream of every evaporator and crystalliser in the corpus.
+
+  ONE DECLARED FIGURE (system/postDict, C487): `response`, "does the jacket
+  bring the brine tank to its set point, and does it run out of jacket?" --
+  PV against the set point, the jacket temperature on its 360 K limit on
+  the right-hand axis.
 \*---------------------------------------------------------------------------*/
 
 units

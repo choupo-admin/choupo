@@ -39,6 +39,10 @@
   adds a one-step transport delay per connection (2 s total on tbar's
   240 s -- inside the 1 % band, and the honest price of an explicit
   scheme, stated rather than hidden).
+
+  ONE DECLARED FIGURE (system/postDict, C487): `tracer`, "how does the
+  tracer impulse travel down the three tanks?" -- the tracer in each tank,
+  the peaks one residence time apart.
 \*---------------------------------------------------------------------------*/
 
 units

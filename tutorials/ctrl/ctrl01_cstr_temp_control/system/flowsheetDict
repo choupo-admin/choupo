@@ -53,6 +53,11 @@
   `controllers` block below --- the case will then run the bare
   reactor with whatever T_jacket the `operation` block initialised
   it to (here 320 K, i.e. no jacket heating).
+
+  ONE DECLARED FIGURE (system/postDict, C487): `response`, "how fast does
+  the reactor reach its set point, and how hard does the jacket work?" --
+  TC1's PV against its set point, and its MV (the jacket temperature, on
+  its 420 K limit at first) on the right-hand axis.
 \*---------------------------------------------------------------------------*/
 
 units
