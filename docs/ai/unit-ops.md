@@ -1257,7 +1257,11 @@ gone), and a state the door cannot price refuses by name.
   operation   { eta  0.97; }                       // generator efficiency
   energyInputs ( { from turbine01.shaft;  kind work;  target W_shaft; } ) }
 ```
-KPIs: `W_in`, `W_electric` (= η·W_in).  See [`energy.md`](energy.md).
+KPIs: `W_shaft` (the wire's work), `W_electric` (= η·W_shaft, the grid feed of a generator),
+`W_losses`, `eta_generator`.  Fed by a unit that draws power (an electrodialysis stack, which
+publishes `drawsPower`) it is a RECTIFIER instead: `W_shaft` is the DC power in,
+`W_electric` = W_shaft/η the grid draw (a cost, not a credit), `W_losses` = W_shaft (1/η − 1),
+`eta_rectifier`, `drawsPower`.  See [`energy.md`](energy.md).
 
 ## Distillation / absorption (staged separations)
 

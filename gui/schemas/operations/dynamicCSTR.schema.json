@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/dynamicCSTR.schema.json",
+  "title": "dynamicCSTR operation",
+  "description": "The well-stirred tank of choupoCtrl / choupoSemiContinuous: a holdup with mole balances and an energy equation integrated in time. The feed is the `inlet {}` block and the starting state the `initial {}` block of the unit; this `operation` block holds the heat-transfer jacket and the vessel's declarations. A jacket is `UA` (W/K) against `T_jacket` (K): with no UA the vessel is adiabatic. T_jacket may be driven at run time by a controller whose actuator names it.",
+  "type": "object",
+  "properties": {
+    "UA": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Jacket conductance",
+      "description": "Overall heat-transfer coefficient times jacket area, U*A, in W/K (raw SI). Heat to the holdup is UA (T_jacket - T). Absent or 0 = no jacket, an adiabatic vessel. Under `UAScaling wetted` on a variable-volume vessel it is the value at the full level.",
+      "unit": "W/K"
+    },
+    "T_jacket": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Jacket temperature",
+      "description": "The jacket's fluid temperature. Defaults to the initial temperature of the holdup (no heat flows). A controller's actuator (`mv T_jacket`) overwrites it every step.",
+      "unit": "K"
+    },
+    "catalystLoading": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Catalyst loading",
+      "description": "Catalyst mass per volume of the holdup, kg/m3 (raw SI), multiplying a catalytic rate law's per-kg rate. Defaults to 0.",
+      "unit": "kg/m3"
+    },
+    "UAScaling": {
+      "type": "string",
+      "title": "How UA follows the level",
+      "description": "Variable-volume vessels only. `wetted` (default) scales UA by the wetted area A_w(h)/A_w(H); `fixed` keeps UA constant whatever the level.",
+      "enum": ["wetted", "fixed"]
+    },
+    "volumeMode": {
+      "type": "string",
+      "title": "Volume mode",
+      "description": "`constant` (default) is the fixed-volume vessel; `variable` lets the level integrate and needs `geometry {}` and `outflow {}`.",
+      "enum": ["constant", "variable"]
+    },
+    "energy": {
+      "type": "string",
+      "title": "Energy declaration",
+      "description": "`isothermal` holds T at its initial value (refused with a reaction, which would need a duty this unit does not compute). Omit it for the energy equation the unit chooses by probing.",
+      "enum": ["isothermal"]
+    },
+    "geometry": {
+      "type": "object",
+      "title": "Vessel geometry",
+      "description": "The vertical cylinder of a variable-volume vessel (volumeMode variable)."
+    },
+    "outflow": {
+      "type": "object",
+      "title": "Outflow",
+      "description": "The declared outflow of a variable-volume vessel: `mode flow` with `F`, or `mode valve` with `opening` and a `valve {}` block."
+    }
+  },
+  "additionalProperties": false
+}

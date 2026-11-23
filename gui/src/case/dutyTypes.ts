@@ -73,6 +73,13 @@ export const COOLING_DUTY_TYPES = new Set(["cooler", "crystalliser"]);
 // Rotating equipment that crosses the boundary as ELECTRICITY: a ⚡ power stub.
 export const POWER_DRAW_TYPES = new Set(["pump", "compressor"]);
 
+// Units that DRAW electricity and feed it down an energy wire (they publish the
+// KPI `drawsPower` -- ElectrodialysisStack.cpp).  An electricLoad fed by one is
+// a RECTIFIER (a consumer), not a generator.  The engine tells the load from
+// that KPI (Flowsheet.cpp resolveEnergyInputs); this is the same fact for the
+// pre-run stub, and once a run exists the stub reads the run's own row.
+export const POWER_DRAWING_FEEDER_TYPES = new Set(["electrodialysisStack"]);
+
 // DYNAMIC continuous holdup units (choupoCtrl).  A dynamicCSTR declares its
 // feed in an `inlet{}` block and its jacket in `operation{ UA, T_jacket }`
 // instead of the steady `in`/`outputs` keys -- so readFlowsheet sees no

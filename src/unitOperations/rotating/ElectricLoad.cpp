@@ -60,21 +60,41 @@ int ElectricLoad::solve(const DictPtr& dict,
             dict->lookupWordOrDefault("name", "?") +
             "': eta must be in (0, 1]; got " + std::to_string(eta));
 
-    const scalar W_electric = W_shaft_in * eta;          // shipped to grid
-    const scalar W_losses   = W_shaft_in * (1.0 - eta);  // dissipated as heat
+    //  TWO DIRECTIONS, ONE UNIT (C481).  `drawsPower` is written into `operation`
+    //  by the wire resolver when ANY feeding unit published `drawsPower` (an
+    //  electrodialysis stack): this load is then a RECTIFIER, W_shaft is the DC
+    //  power the stack draws, and what crosses the plant boundary is the grid
+    //  draw W_DC / eta, the difference being losses.  Otherwise it is a
+    //  generator (a turbine's wire): W_electric = W_shaft * eta goes to the grid.
+    const bool draws =
+        op && op->found("drawsPower") && op->lookupScalar("drawsPower") > 0.5;
+    if (draws && !op->found("W_shaft"))
+        throw std::runtime_error("electricLoad '" +
+            dict->lookupWordOrDefault("name", "?") +
+            "': a rectifier (its feeder draws power) has no `W_shaft` -- the"
+            " wire that brings the DC power in must `target W_shaft`");
+    const scalar W_electric = draws ? W_shaft_in / eta : W_shaft_in * eta;
+    const scalar W_losses   = draws ? W_shaft_in * (1.0 / eta - 1.0)
+                                    : W_shaft_in * (1.0 - eta);
 
     kpis_["W_shaft"]      = W_shaft_in;
     kpis_["W_shaft_kW"]   = W_shaft_in / 1000.0;
     kpis_["W_electric"]   = W_electric;
     kpis_["W_electric_kW"]= W_electric / 1000.0;
     kpis_["W_losses"]     = W_losses;
-    kpis_["eta_generator"]= eta;
+    if (draws)
+    {
+        kpis_["eta_rectifier"] = eta;
+        kpis_["drawsPower"]    = 1.0;
+    }
+    else
+        kpis_["eta_generator"] = eta;
 
     if (verbosity >= 2)
     {
         std::cout << "  W_shaft_in   = " << std::fixed << std::setprecision(2)
                   << W_shaft_in / 1000.0 << " kW\n"
-                  << "  eta_gen      = " << eta << "\n"
+                  << (draws ? "  eta_rect     = " : "  eta_gen      = ") << eta << "\n"
                   << "  W_electric   = " << W_electric / 1000.0 << " kW\n"
                   << "  W_losses     = " << W_losses   / 1000.0 << " kW\n";
     }

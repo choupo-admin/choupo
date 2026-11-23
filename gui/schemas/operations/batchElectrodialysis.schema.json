@@ -23,14 +23,14 @@
       "minimum": 0,
       "title": "Applied current",
       "description": "Constant-current drive. Raw SI (amperes). Give this OR voltage, exactly one: they are two different experiments. At constant current i does not move while i_lim falls with the diluate, so the run CROSSES into the over-limiting regime.",
-      "unit": "-"
+      "unit": "A"
     },
     "voltage": {
       "type": "number",
       "minimum": 0,
       "title": "Applied stack voltage",
       "description": "Constant-voltage drive. Raw SI (volts). The current is solved from U = N (E_mem + I R_pair) + E_electrodes at every instant and DECAYS as the diluate loses conductivity and the Nernst back-EMF grows -- which is why a real rig run this way never reaches its limiting current.",
-      "unit": "-"
+      "unit": "V"
     },
     "xi": {
       "type": "number",
@@ -45,7 +45,7 @@
       "minimum": 0,
       "title": "Electrode overpotential",
       "description": "Lumped electrode + electrode-rinse voltage, added to the stack voltage; raw SI (volts), announced. No Butler-Volmer here, exactly as in the steady stack.",
-      "unit": "-"
+      "unit": "V"
     },
     "membrane": {
       "type": "string",

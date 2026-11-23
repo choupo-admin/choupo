@@ -19,7 +19,12 @@
   How it is tallied (utilityAllocation report, tier "power"):
     consumers  pump / compressor   grid draw = W_shaft / driveEfficiency
     producers  electricLoad        grid feed = W_electric (already net of
-                                               the generator efficiency)
+               fed by a turbine    the generator efficiency), a CREDIT
+    consumers  electricLoad        grid draw = W_electric = W_DC / eta (the
+               fed by a unit that  rectifier's own efficiency; driveEfficiency
+               DRAWS power (an     is a motor's and is not applied), a COST
+               electrodialysis
+               stack: it publishes `drawsPower`)
     A shaft work supplied by an energy WIRE (turbine -> compressor) is
     mechanical, NOT grid electricity, and is not counted.
 \*---------------------------------------------------------------------------*/

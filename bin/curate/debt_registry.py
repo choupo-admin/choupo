@@ -1038,7 +1038,6 @@ OWN_CASE_COPY = {
 #  each count: it may only fall, and a fall must lower the pin.
 LESSON_PROSE_CITATIONS_UNMANAGED = {
     #  2026-11-20: re-pinned on integrating the cloud branch -- the citations the C453 lesson fixes added on main (each re-verified by its general against current main) are not yet CLAIMS; giving them claims is C455's debt.
-    "gui/src/ui/methods/relaxationLesson.ts": 1,
     "gui/src/ui/methods/activeSetQpLesson.ts": 1,
     "gui/src/case/columnStageSheet.ts": 3,
     "gui/src/case/completeZero.ts": 4,
