@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  ctrl18_rtd_pulse_cstr / postDict -- the case's TWO figures
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    pulse    "When does the tracer pulse enter the tank, and when has it left?"
+             The tracer in the tank (the unit's `n_compB`, kmol) on the left,
+             the tracer feed (the Signal TracerPulse's MV, kmol/s) on the right.
+             Read from this run's table (10 s grid, 2600 s): the feed is 1e-5
+             kmol/s from t = 110 s to 130 s on the grid (the 30 s pulse
+             that starts at 100 s); the tank content peaks at 2.820e-4 kmol at
+             130 s, 2.3 % of the 0.012 kmol the tank holds.
+    washout  "How fast does the tracer wash out?"  From 130 s to 1330 s (five
+             residence times), the tracer in the tank on a linear axis: it falls
+             from 2.820e-4 kmol (130 s) to 1.037e-4 (370 s) and 3.817e-5
+             (610 s), each step of 240 s dividing it by e = 2.718, the tank's
+             own residence time N/F = 0.012/5e-5 (a log axis refuses the
+             zero tracer before the pulse, so the window is linear).
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    pulse;
+        type    series;
+        title   "When does the tracer pulse enter the tank, and when has it left?";
+        note    "A 30 s pulse of tracer (1e-5 kmol/s, in place of the same flow of carrier) enters the tank at 100 s. The tank content peaks at 2.82e-4 kmol at 130 s, 2.3 % of the 0.012 kmol it holds, and the tracer then drains away; by 1240 s it is 1 % of the peak and by 2600 s it is gone.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "tracer in the tank"; unit "kmol"; scale linear; }
+        yAxis2  { label "tracer feed"; unit "kmol/s"; scale linear; }
+        series
+        (
+            { name n_B; label "tracer in the tank"; unitOp reactor; table trajectory; x t; y n_compB; style lines; }
+            { name feed; label "tracer feed (pulse)"; unitOp TracerPulse; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+    {
+        name    washout;
+        type    series;
+        title   "How fast does the tracer wash out?";
+        note    "From 130 s the tracer in the tank falls from 2.82e-4 kmol to 1.04e-4 kmol at 370 s and 3.8e-5 kmol at 610 s: each 240 s divides it by e, the tank's residence time N/F = 0.012 kmol over 5e-5 kmol/s.";
+        xAxis   { label "time"; unit "s"; scale linear; min 130; max 1330; }
+        yAxis   { label "tracer in the tank"; unit "kmol"; scale linear; }
+        series
+        (
+            { name n_B; label "tracer in the tank"; unitOp reactor; table trajectory; x t; y n_compB; style lines; }
+        );
+    }
+);

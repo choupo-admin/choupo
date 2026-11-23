@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  ctrl21_tank_level_control / postDict -- the case's ONE figure
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    level   "Does the level controller bring the tank back to 2 m after the
+            inflow steps up, and what does it do to the outflow?"  The PI LC1's
+            PV (the level, m) against its set point on the left axis, the
+            inflow (the Signal FeedStep's MV) and the outflow (LC1's MV, the
+            manipulated pump flow) on the right axis (kmol/s).  Read from this
+            run's tables (100 s grid, 3000 s): the inflow steps from 0.20 to
+            0.30 kmol/s (first seen at 700 s); the level peaks at 2.03113 m at
+            700 s (+0.031 m), is within 0.001 m of the set point by 1200 s,
+            dips to 1.99911 m at 1400 s and ends on 2.000 m; the outflow peaks
+            at 0.31941 kmol/s at 900 s and ends on 0.30 kmol/s.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    level;
+        type    series;
+        title   "Does the level controller bring the tank back to its set point after the inflow steps up?";
+        note    "The PI controller LC1 keeps the tank at 2 m by moving the outflow. The inflow steps from 0.20 to 0.30 kmol/s at 600 s; the level rises by at most 0.031 m (2.031 m at 700 s), is back within 0.001 m of the set point by 1200 s and ends on 2.000 m, with the outflow having overshot to 0.319 kmol/s at 900 s before settling on the new inflow, 0.30 kmol/s.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "level"; unit "m"; scale linear; }
+        yAxis2  { label "flow"; unit "kmol/s"; scale linear; }
+        series
+        (
+            { name SP; label "set point"; unitOp LC1; table trajectory; x t; y SP; style lines; }
+            { name PV; label "level (controlled)"; unitOp LC1; table trajectory; x t; y PV; style lines; }
+            { name Fin; label "inflow (disturbance)"; unitOp FeedStep; table trajectory; x t; y MV; style lines; axis right; }
+            { name Fout; label "outflow (manipulated)"; unitOp LC1; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+);
