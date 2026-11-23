@@ -32,6 +32,8 @@
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
+import type { QuizQuestion } from "./lessonQuiz.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { lessonStepper } from "./lessonStep.js";
 import { Alert, Badge, Box, Group, Loader, Slider, Stack, Text, Title }
   from "@mantine/core";
@@ -465,6 +467,9 @@ export function FlashOperatingLineTool(): JSX.Element {
           </Text>
         </Box>
 
+        <LessonQuiz title="Check your understanding" questions={FLASH_QUIZ}
+          lesson={FLASH_STEPS} />
+
         <Box>
           <Title order={5}>What this does not model</Title>
           <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
@@ -489,3 +494,63 @@ export function FlashOperatingLineTool(): JSX.Element {
 }
 
 export default FlashOperatingLineTool;
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const FLASH_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "one-stage", steps: [1],
+    q: "Why is the flash worth drawing before a column or an absorber?",
+    options: [
+      "Everything harder is the same step performed again and again",
+      "It is the only separation with equilibrium",
+      "It needs no thermodynamics",
+      "It is always isothermal",
+    ],
+    correct: 0,
+    feedback: "A flash is one drum on a P&ID: heat part of a liquid to "
+      + "boiling, equilibrate and separate the phases (step 1).",
+  },
+  {
+    id: "two-curves", steps: [2],
+    q: "Which two statements together fix the flash answer?",
+    options: [
+      "The equilibrium curve y*(x) and the material balance, neither alone being enough",
+      "The energy balance and the momentum balance",
+      "The feed temperature and the pressure only",
+      "The vapour fraction alone",
+    ],
+    correct: 0,
+    feedback: "Equilibrium knows nothing about how much feed there is, and the "
+      + "balance knows nothing about the thermodynamics; together they give "
+      + "one answer on a monotone curve (step 2).",
+  },
+  {
+    id: "pivot", steps: [3],
+    q: "What happens to the balance line as the vapour fraction changes?",
+    options: [
+      "It pivots about the feed point (z, z) on the diagonal, with slope -L/V",
+      "It moves parallel to itself",
+      "It stays fixed",
+      "It becomes the equilibrium curve",
+    ],
+    correct: 0,
+    feedback: "As the vapour fraction goes to 0 the line turns vertical (the "
+      + "bubble point), and to 1 it turns horizontal (the dew point) "
+      + "(step 3).",
+  },
+  {
+    id: "crossing", steps: [4],
+    q: "What is read at the crossing of the operating line and the equilibrium curve?",
+    options: [
+      "The liquid composition x on the horizontal axis and the vapour composition y on the vertical, the same answer as Rachford-Rice",
+      "The temperature of the drum",
+      "The feed composition",
+      "The pressure of the drum",
+    ],
+    correct: 0,
+    feedback: "That intersection is Rachford-Rice solved with a ruler, and the "
+      + "feed pivot splits the segment in the ratio of the products, the "
+      + "lever rule (step 4).",
+  },
+];

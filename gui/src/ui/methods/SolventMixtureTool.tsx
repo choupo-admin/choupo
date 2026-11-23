@@ -42,7 +42,8 @@ import { tutorialByName } from "../../cases/tutorials.js";
 import { useMethodRun } from "../../case/methodRun.js";
 import { OriginMark, type OriginKind } from "./origin.js";
 import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
-import { SOLVENT_LIMITS, SOLVENT_STEPS } from "./solventMixtureLesson.js";
+import { SOLVENT_LIMITS, SOLVENT_QUIZ, SOLVENT_STEPS } from "./solventMixtureLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import {
   minimumRow, readBlendCsv, readObservationsCsv, type BlendPoint, type BlendTable,
   type Observation,
@@ -613,6 +614,8 @@ export function SolventMixtureTool(): JSX.Element {
             <LessonLimits limits={SOLVENT_LIMITS} />
           </Stack>
         )}
+
+        <LessonQuiz title="Check your understanding" questions={SOLVENT_QUIZ} lesson={SOLVENT_STEPS} />
 
         <LessonReferences tool="solvent-mixture" />
       </Stack>

@@ -85,7 +85,8 @@ import {
   type KpiMap, decideNormalisation, defaultKnobValues, detectBreakthrough,
   extractFrontMarkers, knobOverrides,
 } from "./BreakthroughTool.js";
-import { LUB_SCALEUP_LIMITS, LUB_SCALEUP_STEPS } from "./lubScaleupLesson.js";
+import { LUB_SCALEUP_LIMITS, LUB_SCALEUP_QUIZ, LUB_SCALEUP_STEPS } from "./lubScaleupLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import {
   type Curve, type LabColumn, type LubResult, type ScaleUpResult,
   type StoichiometricResult, MEASURED_CURVE_HEADER, MEASURED_CURVE_PATH,
@@ -322,7 +323,13 @@ export function LubScaleupTool(): JSX.Element {
     </Alert>
   ) : null;
 
-  const limits = <LessonLimits limits={LUB_SCALEUP_LIMITS} title="What this does not model" />;
+  const limits = (
+    <>
+      <LessonQuiz title="Check your understanding" questions={LUB_SCALEUP_QUIZ}
+        lesson={LUB_SCALEUP_STEPS} />
+      <LessonLimits limits={LUB_SCALEUP_LIMITS} title="What this does not model" />
+    </>
+  );
 
   // ---- No drawable view: the lesson still runs, then the honest state ------
   if (view === null || view.blocked) {

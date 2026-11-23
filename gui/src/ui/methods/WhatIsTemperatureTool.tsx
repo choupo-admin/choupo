@@ -97,6 +97,7 @@ import { Box, Group, Stack, Text, Title } from "@mantine/core";
 
 import { Tex } from "./lessonStep.js";
 import { OriginMark } from "./origin.js";
+import { LessonQuiz, type QuizQuestion } from "./lessonQuiz.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -283,6 +284,90 @@ function Check({ q, a }: { q: string; a: string }): JSX.Element {
     </Box>
   );
 }
+
+/** The page's eight numbered sections, as the quiz points back to them. */
+export const WHAT_IS_TEMPERATURE_STEPS: readonly { n: number; title: string }[] = [
+  { n: 1, title: "Two systems touch" },
+  { n: 2, title: "A thermometer measures T through a chain" },
+  { n: 3, title: "Decimal places are not uncertainty" },
+  { n: 4, title: "The questions to ask of any reported temperature" },
+  { n: 5, title: "The thermodynamic definition" },
+  { n: 6, title: "T is not K, and K is not T90" },
+  { n: 7, title: "What an assumed emissivity costs" },
+  { n: 8, title: "Traceability: how the number reaches your plant" },
+];
+
+export const WHAT_IS_TEMPERATURE_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "heat-direction", steps: [1],
+    q: "A small cup of water at 80 C is placed in thermal contact with a "
+      + "large tank at 30 C that holds far more internal energy.  Which way "
+      + "does heat flow?",
+    options: [
+      "From the tank to the cup, because the tank holds more energy",
+      "Neither way, because the energies are unequal",
+      "From the cup to the tank, because temperature, not the amount of "
+        + "energy, decides the direction",
+      "It depends on the masses of water",
+    ],
+    correct: 2,
+    feedback: "Step 1: temperature is not an amount of energy; it is the "
+      + "property that decides which way heat flows.  The tank receives "
+      + "heat from the cup even though it can hold far more energy.",
+  },
+  {
+    id: "bridge", steps: [2],
+    q: "A Pt100 reads 119.4 ohm and the calibration gives 50.01 C.  What "
+      + "does that number describe, strictly?",
+    options: [
+      "The temperature of the fluid, whatever the installation",
+      "The temperature of the sensing element, if the sensor follows the "
+        + "standard curve, has not drifted, is immersed deeply enough and "
+        + "has had time to reach the fluid",
+      "The average temperature of the whole thermowell",
+      "The thermodynamic temperature, exactly",
+    ],
+    correct: 1,
+    feedback: "Step 2: the thermometer observes a signal and a bridge of "
+      + "physics, calibration and assumptions turns it into a number.  "
+      + "Each assumption inside the bridge is invisible in the signal "
+      + "itself.",
+  },
+  {
+    id: "digits", steps: [3, 4],
+    q: "A display shows 50.012 C.  What does that tell you about how well "
+      + "the temperature is known?",
+    options: [
+      "That it is known to a thousandth of a degree",
+      "That it is known to a hundredth of a degree",
+      "That the sensor is a calibrated reference",
+      "Only how finely the number was written; how well it is known is "
+        + "the uncertainty, which needs the chain behind it",
+    ],
+    correct: 3,
+    feedback: "Steps 3 and 4: display resolution and measurement "
+      + "uncertainty are different things.  A reading is the end of a "
+      + "measurement chain, and only someone who can walk that chain can "
+      + "defend the number.",
+  },
+  {
+    id: "emissivity", steps: [7],
+    q: "A pyrometer is pointed at an oxidized furnace tube with an "
+      + "emissivity that was only assumed.  Which statement is right?",
+    options: [
+      "The assumed emissivity usually dominates the uncertainty: an error "
+        + "of 10 % in it can move the reading by more than ten kelvin",
+      "Emissivity does not matter because the instrument measures temperature",
+      "A larger assumed emissivity gives a higher inferred temperature",
+      "The error is negligible at short wavelengths in every case",
+    ],
+    correct: 0,
+    feedback: "Step 7: the pyrometer observes radiance and must assume an "
+      + "emissivity.  At a fixed radiance a larger assumed emissivity gives "
+      + "a lower inferred temperature, and the error can be far larger "
+      + "than the display's resolution.",
+  },
+];
 
 export function WhatIsTemperatureTool(): JSX.Element {
   return (
@@ -641,6 +726,7 @@ export function WhatIsTemperatureTool(): JSX.Element {
           </Text>
         </Box>
 
+        <LessonQuiz title="Check your understanding" questions={WHAT_IS_TEMPERATURE_QUIZ} lesson={WHAT_IS_TEMPERATURE_STEPS} />
       </Stack>
     </Box>
   );

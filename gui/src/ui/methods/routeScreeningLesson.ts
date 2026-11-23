@@ -39,6 +39,8 @@
       corners 475/575 K x 10/100 bar all run; gibbsC methanol <= 1.1e-9.
 \*---------------------------------------------------------------------------*/
 
+import type { QuizQuestion } from "./lessonQuiz.js";
+
 export interface ScreenGloss { sym: string; means: string; unit?: string }
 
 export interface ScreenSection {
@@ -290,5 +292,76 @@ export const SCREEN_LIMITS: readonly ScreenLimit[] = [
     body: "It assumes complete conversion and ignores solvents, separations "
       + "and energy.  Waste metrics measured on a real process go further, "
       + "and they need the process first.",
+  },
+];
+
+export const SCREEN_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "order", steps: [1],
+    q: "Why does a route screen start with stoichiometry and prices and "
+      + "leave the rate law for last?",
+    options: [
+      "Rate laws are never needed to design a reactor",
+      "Filters are ordered by cost, and a rate is the most expensive fact in the funnel",
+      "Stoichiometry is more accurate than a measured rate",
+      "A rate law cannot be written for a route that makes money",
+    ],
+    correct: 1,
+    feedback: "The funnel passes the known routes through filters cheapest "
+      + "first: arithmetic, then thermodynamics, then laboratory work.  "
+      + "Most routes die on paper, so the rate is bought last, for the "
+      + "one route left (The funnel; Kinetics last).",
+  },
+  {
+    id: "margin-bound", steps: [2],
+    q: "A route has a negative stoichiometric gross margin within the "
+      + "page's boundary.  Why can better reactor design not rescue it "
+      + "inside that boundary?",
+    options: [
+      "A good catalyst always raises the product price",
+      "The margin is only a rough guess and is usually wrong in sign",
+      "Everything downstream only adds cost, since the margin is an upper bound",
+      "Conversion above 100 % is possible with recycle",
+    ],
+    correct: 2,
+    feedback: "The margin assumes complete conversion and full "
+      + "selectivity and pays for no energy, equipment or people, so it "
+      + "is an upper bound; a negative one cannot improve downstream.  "
+      + "Moving the boundary (a co-product credit) means redoing the test "
+      + "(Filter 1).",
+  },
+  {
+    id: "partial-conversion", steps: [4],
+    q: "The equilibrium reactor says a route stops at about half "
+      + "conversion at the catalyst's temperature.  What does that mean "
+      + "for the route?",
+    options: [
+      "The route is dead, since half the feed is wasted",
+      "The route needs a recycle, whose cost the next level of design prices; it is not a verdict",
+      "The route must run at a lower pressure",
+      "Thermodynamics only forbids a route when the conversion is below 90 %",
+    ],
+    correct: 1,
+    feedback: "A partial conversion means unreacted feed is separated and "
+      + "recycled, which costs flow, compression and separation; with the "
+      + "recycle the overall yield is set by selectivity and losses.  Only "
+      + "a conversion near zero would be a verdict (Filter 3).",
+  },
+  {
+    id: "equilibrium-vs-selectivity", steps: [4, 6],
+    q: "Route C has the largest equilibrium constant on the page, yet a "
+      + "Gibbs reactor given the same methane and oxygen makes almost no "
+      + "methanol.  What is the lesson?",
+    options: [
+      "A large K for the route's own reaction says nothing about whether the atoms stop at the product",
+      "The Gibbs reactor is wrong whenever it disagrees with the route's K",
+      "Methanol is thermodynamically impossible from methane",
+      "Oxygen should be fed in excess so that it is not limiting",
+    ],
+    correct: 0,
+    feedback: "Filter 3 asks only the route's own reaction.  Left free, "
+      + "the atoms go to the far more stable combustion products, so the "
+      + "route stands or falls on a catalyst that stops at methanol, a "
+      + "question of rates that no paper screen can answer (Filter 5).",
   },
 ];

@@ -48,7 +48,8 @@ import {
 
 import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { useNarrowViewport } from "./methodsChrome.js";
-import { TEAR_LIMITS, TEAR_STEPS } from "./tearLesson.js";
+import { TEAR_LIMITS, TEAR_QUIZ, TEAR_STEPS } from "./tearLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { PanelNote } from "./knobPanel.js";
 import { useMethodRun } from "../../case/methodRun.js";
 import {
@@ -672,6 +673,8 @@ export function TearStreamsTool(): JSX.Element {
             authored as text on disk.
           </PanelNote>
         </Stack>
+
+        <LessonQuiz title="Check your understanding" questions={TEAR_QUIZ} lesson={TEAR_STEPS} />
 
         <LessonLimits limits={TEAR_LIMITS} />
 

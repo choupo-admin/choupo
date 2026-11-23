@@ -55,6 +55,7 @@ License
 
 import { Alert, Box, Code, Stack, Table, Text, Title } from "@mantine/core";
 import { OriginMark } from "./origin.js";
+import { LessonQuiz, type QuizQuestion } from "./lessonQuiz.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -222,6 +223,72 @@ export const SOURWATER_TABLE = [
   { q: "T  [K]", s1: "356.194469110", s2: "—", s8: "371.451137452" },
 ] as const;
 
+export const SOURWATER_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "which-species", steps: [1],
+    q: "Hydrogen sulfide is dissolved in water.  What decides whether it is "
+      + "mostly H2S(aq), HS- or S2-?",
+    options: [
+      "The H2S record alone, which fixes one split for every water",
+      "The temperature alone, through a single dissociation constant",
+      "The pH, which is itself set by everything else dissolved in the water",
+      "The column's reflux ratio",
+    ],
+    correct: 2,
+    feedback: "Step 1: the split between H2S(aq), HS- and S2- is decided by "
+      + "the pH, and the pH is decided by the other acids and bases present.  "
+      + "Nothing in the H2S record alone can say which species dominates.",
+  },
+  {
+    id: "ions-in-jacobian", steps: [2, 3],
+    q: "In the reactive MESH column, how do the ions enter the Jacobian?",
+    options: [
+      "Every ion is an extra column state, so the dimension grows with the chemistry",
+      "They do not: each stage solves its own equilibrium and returns an "
+        + "effective K for the apparent components",
+      "Each ion is given a fixed K of 1 so it stays in the liquid",
+      "Ions are removed before the column and added back to the bottoms",
+    ],
+    correct: 1,
+    feedback: "Steps 2 and 3: the equilibrium Newton lives inside each stage "
+      + "and hands the column one effective K per apparent component, so the "
+      + "Jacobian never sees an ion.  The price is one reactive flash per "
+      + "stage per residual evaluation.",
+  },
+  {
+    id: "ph-trend", steps: [4],
+    q: "CO2 is the more volatile acid gas and leaves the stripper first.  "
+      + "What does the recorded run show for the pH going down the column?",
+    options: [
+      "It rises, because an acid is being removed",
+      "It stays constant, because the feed alkalinity is fixed",
+      "It rises to the top and falls at the reboiler",
+      "It falls, because ammonia leaves too and the sulfide stays behind",
+    ],
+    correct: 3,
+    feedback: "Step 4: the intuition that removing an acid raises the pH is "
+      + "wrong here.  Ammonia, the base, leaves as well and the bisulfide "
+      + "accumulates, so the pH falls from 8.49 at the top to 7.64 at the reboiler.",
+  },
+  {
+    id: "what-anchored", steps: [5],
+    q: "The chemistry under this column reproduces published predictions.  "
+      + "What does that establish about the column result?",
+    options: [
+      "That the column's duties and purities are validated against measurements",
+      "That the chemistry is the paper's, and nothing about the column, "
+        + "whose stage count and reflux are a teaching configuration",
+      "That the model has been validated against measured data for this feed",
+      "That the stripper converges for any feed",
+    ],
+    correct: 1,
+    feedback: "Step 5: the witness cases verify a transcription of a "
+      + "published model against that model's own predictions, not against "
+      + "measurements.  An anchored property model under an unanchored unit "
+      + "still gives an unanchored answer.",
+  },
+];
+
 export function SourWaterTool(): JSX.Element {
   return (
     //  `minHeight: 0` is the load-bearing half: a flex child refuses to
@@ -346,6 +413,8 @@ export function SourWaterTool(): JSX.Element {
           Worth reading before you compare any two pH's in this tree.
         </Text>
       </Box>
+
+      <LessonQuiz title="Check your understanding" questions={SOURWATER_QUIZ} lesson={SOURWATER_STEPS} />
     </Stack>
     </Box>
   );

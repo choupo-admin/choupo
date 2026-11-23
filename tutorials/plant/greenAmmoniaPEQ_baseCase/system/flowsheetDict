@@ -7,10 +7,12 @@
   GREEN AMMONIA, 1200 t/day -- the base case of the PEQ 2026-27 project base
   data, v2: hydrogen from electrolysis at 30 bar, nitrogen from an on-site
   ASU at 8 bar (99.99 % N2, 100 ppm Ar), a 150 bar synthesis loop with an
-  equilibrium converter, and refrigerated separation.  Seventeen units, each
-  in its OWN folder (<Unit>/system/flowsheetDict) so any one of them opens
-  standalone in the GUI -- a tab of its own, its own What-if -- and no
-  sectors: the loop is what a group has to understand.  This file holds the
+  converter of three kinetic beds, and refrigerated separation.  Seventeen
+  units, each in its OWN folder (<Unit>/system/flowsheetDict) so any one of
+  them opens standalone in the GUI -- a tab of its own, its own What-if --
+  and one sector, CONVERTER (three beds and two interbed boilers in one
+  pressure shell, DEV.md 4c C440): the loop is what a group has to
+  understand.  This file holds the
   plant's topology only: which folders exist, and the pipes between them.
 
   N2Feed -[N2Boost]-[N2Cooler]-+
@@ -23,7 +25,7 @@
              |                         v                                          |              [FEHE] cold side
              |   CooledEffluent <---[FEHE] hot side                                |                  |
              |        |                                                           |    PreheatedFeed  v
-             |   [WaterCooler]  40 C                                    [Converter] 460 C, 5 K approach
+             |   [WaterCooler]  40 C                                    [CONVERTER] 3 beds, 515 C -> 462 C
              |        |
              |   [Chiller]  -20 C
              |        |
@@ -41,26 +43,31 @@
       read it, and re-tune the power.
     * the loop pressure drop is LUMPED at the separator (declared at 140 bar,
       i.e. the base data's "recycle compressor dp ~ 10 bar").
-    * the converter is ONE Gibbs reactor at its OUTLET temperature, 460 C,
-      5 K short of equilibrium (see the comment on the unit).  Its duty is
-      the reaction heat the intercoolers remove as steam.
+    * the converter is THREE adiabatic catalyst beds on the Dyson & Simon
+      rate times the effectiveness factor (constant/reactions), two interbed
+      coolers (420 and 410 C, AUTHOR-SET) raising HP steam, one pressure shell
+      (CONVERTER/system/flowsheetDict).  The bed volumes and the shared
+      diameter are `variables` below: the design point of the 3 x 3 design
+      specification of greenAmmonia03_basicDesign/system/outerDict (bed 1
+      leaves at 515 C, beds 2 and 3 5 K short of equilibrium), re-run on this
+      plant and converged at once.  The energy recycle through the FEHE is
+      cut at PreheatedFeed (system/solverDict).
     * every cooler is a phaseChanger with a declared outlet temperature: its
       duty is the heat to remove, and which utility removes it is the group's.
     * the purge fraction gives the base data's ~12 kmol/h purge (stream 8).
 
   WHAT IS NOT IN THIS CASE, and is the groups' work (base data, section 2.8):
-  the converter's beds (number, inlet temperatures, catalyst volume -- they
-  need a rate law, tutorials/steady/reactors/ammoniaReactor04_kineticSizing); the H2O + O2 of
+  the converter's INTERNALS (radial flow, quench, grading, ageing: the beds are
+  fresh and axial); the H2O + O2 of
   the hydrogen (the feed here is pure H2); the cold gas/gas exchanger before
   the chiller (so the chiller duty is an upper bound); the purge scrubber and
   the let-down gas recovery; the cooling water, the refrigeration cycle and
   the steam system as equipment (each duty is PRICED against a utility
   record, and the converter's heat is valued as HP steam raised -- a credit
-  the Converter declares; system/postDict, UTILITIES).  The equipment, the
+  the interbed coolers declare; system/postDict, UTILITIES).  The equipment, the
   product storage, the hydrogen buffer, the working capital and the
   economics ARE in system/postDict, on design assumptions declared there
-  (the converter on an ASSUMED space velocity -- its true catalyst volume is
-  still the rate law's).
+  (the converter's beds sized by their kinetics, C440).
 
   WHAT THE GROUPS SHOULD NOTICE.  The base data's 18 % per-pass conversion
   (~12 % NH3 out) is a KINETIC figure: at 460 C the equilibrium allows more,
@@ -83,8 +90,8 @@ sectors
     Aftercooler
     RecycleComp
     LoopMix
+    CONVERTER          // Bed1, InterbedCooler1, Bed2, InterbedCooler2, Bed3 -- one shell
     FEHE
-    Converter
     WaterCooler
     Chiller
     Separator
@@ -113,8 +120,8 @@ connections
     Recycle             { from PurgeSplit/Recycle;  to RecycleComp/Feed; }
     CompRecycle         { from RecycleComp/Out;  to LoopMix/Recycle; }
     Mixed               { from LoopMix/Out;  to FEHE/Cold; }
-    PreheatedFeed       { from FEHE/ColdOut;  to Converter/Feed; }
-    HotEffluent         { from Converter/Out;  to FEHE/Hot; }
+    PreheatedFeed       { from FEHE/ColdOut;  to CONVERTER/PreheatedFeed; }
+    HotEffluent         { from CONVERTER/HotEffluent;  to FEHE/Hot; }
     CooledEffluent      { from FEHE/HotOut;  to WaterCooler/Feed; }
     WaterCooledEffluent { from WaterCooler/Out;  to Chiller/Feed; }
     ChilledEffluent     { from Chiller/Out;  to Separator/Feed; }
@@ -129,13 +136,18 @@ connections
 
 variables
 {
+    V_Bed1            15.917673 m3;     // SOLVED by system/outerDict (the design point it last converged to)
+    V_Bed2            23.847749 m3;
+    V_Bed3            33.298906 m3;
+    D_converter        2.254694 m;      // the CONVERTER's one diameter, read by every bed
     NH3_t_h            { compute "ProductNH3.F * 17.0305 * 3.6"; }
     NH3_t_day          { compute "NH3_t_h * 24"; }
     W_compression_kW   { compute "N2Boost.W_shaft_kW + MakeupComp1.W_shaft_kW + MakeupComp2.W_shaft_kW + RecycleComp.W_shaft_kW"; }
     W_specific_kWh_t   { compute "W_compression_kW / NH3_t_h"; }
     H2_specific_kg_t   { compute "H2Feed.F * 2.01588 * 3.6 * 1000 / NH3_t_h"; }
-    y_NH3_converter    { compute "Converter.y_NH3"; }
-    Q_steam_kW         { compute "-Converter.Q_kW"; }
+    y_NH3_converter    { compute "CONVERTER.Bed3.y_NH3_out"; }
+    V_catalyst_m3      { compute "CONVERTER.Bed1.V_R + CONVERTER.Bed2.V_R + CONVERTER.Bed3.V_R"; }
+    Q_steam_kW         { compute "-(CONVERTER.InterbedCooler1.Q_kW + CONVERTER.InterbedCooler2.Q_kW)"; }
     Q_refrigeration_kW { compute "-Chiller.Q_kW"; }
     purge_kmol_h       { compute "Purge.F * 3600"; }
 }

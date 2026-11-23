@@ -153,7 +153,7 @@ import { popOutExploreMccabe } from "./explore/exploreMccabePopOut.js";
 import { useCoarsePointer, useNarrowViewport } from "./methods/methodsChrome.js";
 import { MCCABE_LIMITS, MCCABE_QUIZ, MCCABE_STEPS } from "./methods/mccabeLesson.js";
 import { LessonQuiz } from "./methods/lessonQuiz.js";
-import { PSYCHRO_LIMITS, PSYCHRO_STEPS } from "./methods/psychroLesson.js";
+import { PSYCHRO_LIMITS, PSYCHRO_QUIZ, PSYCHRO_STEPS } from "./methods/psychroLesson.js";
 import { KnobField, KnobNumber } from "./methods/knobPanel.js";
 import {
   METHOD_DISCIPLINES, METHOD_TOOLS, setActiveMethodTool, theoryUrl,
@@ -339,6 +339,9 @@ const EconomicsErrorsTool = lazy(() =>
 const DemandForecastTool = lazy(() =>
   import("./methods/DemandForecastTool.js")
     .then((m) => ({ default: m.DemandForecastTool })));
+const SentenceToDecisionTool = lazy(() =>
+  import("./methods/SentenceToDecisionTool.js")
+    .then((m) => ({ default: m.SentenceToDecisionTool })));
 const CampaignPlanTool = lazy(() =>
   import("./methods/CampaignPlanTool.js")
     .then((m) => ({ default: m.CampaignPlanTool })));
@@ -676,6 +679,7 @@ export function MethodsWorkspace() {
             : tool === "property-origins" ? <PropertyOriginsTool />
             : tool === "property-data-sources" ? <DataSourcesTool />
             : tool === "database-to-parameters" ? <DatabaseToParametersTool />
+            : tool === "sentence-to-decision" ? <SentenceToDecisionTool />
             : tool === "open-molecular-tools" ? <OpenMolecularToolsTool />
             : tool === "four-ways-mixture" ? <FourWaysMixtureTool />
             : tool === "cosmo-sac-theory" ? <CosmoSacTheoryTool />
@@ -1396,6 +1400,8 @@ function PsychroTool({ catalogue, componentFiles }: {
         {step(3)}
         {step(4)}
         {step(5)}
+
+        <LessonQuiz title="Check your understanding" questions={PSYCHRO_QUIZ} lesson={PSYCHRO_STEPS} />
 
         <Box>
           <Title order={5}>What this does not model</Title>

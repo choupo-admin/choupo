@@ -52,6 +52,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Alert, Box, Code, Stack, Table, Text, Title } from "@mantine/core";
+import type { QuizQuestion } from "./lessonQuiz.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 import { LessonReferences } from "./lessonStep.js";
 
@@ -398,8 +400,98 @@ export function ClausGibbsTool(): JSX.Element {
         </Text>
       </Box>
 
+      <LessonQuiz title="Check your understanding" questions={CLAUS_QUIZ}
+        lesson={CLAUS_STEPS} />
+
       <LessonReferences tool="claus-gibbs" />
     </Stack>
     </Box>
   );
 }
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const CLAUS_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "unknown-x", steps: [1],
+    q: "Why can a hand calculation of the Claus stream table not close without an assumption?",
+    options: [
+      "The atom balance closes for any x, but the mole count does not, and x is the number of sulfur atoms in the allotrope that actually forms",
+      "The burner reaction is unbalanced",
+      "Hydrogen sulfide lacks any formation data",
+      "The air rate is unknown",
+    ],
+    correct: 0,
+    feedback: "Sulfur vapour is S2 when hot and S8 when cool, with everything "
+      + "between, so a guess of x changes the mole count of every stream "
+      + "downstream (step 1).",
+  },
+  {
+    id: "no-reactions", steps: [2],
+    q: "What replaces the list of reactions in the Gibbs formulation?",
+    options: [
+      "The atoms and the candidate species: minimise G subject to element conservation, with no stoichiometric coefficient or conversion",
+      "A list of conversions",
+      "A kinetic rate for each species",
+      "A fixed value of x",
+    ],
+    correct: 0,
+    feedback: "Writing the atom matrix is the whole of the modelling work; a "
+      + "species left off the list cannot appear, however favourable "
+      + "(step 2).",
+  },
+  {
+    id: "multipliers", steps: [3],
+    q: "What do the element multipliers do to the unknowns of the minimisation?",
+    options: [
+      "N species amounts collapse into M + 1 unknowns: one multiplier per element and the total",
+      "They add one unknown per species",
+      "They fix the temperature",
+      "They remove the energy balance",
+    ],
+    correct: 0,
+    feedback: "With five elements there are six unknowns whatever the species "
+      + "count, solved by a finite-difference Newton (step 3).",
+  },
+  {
+    id: "furnace-temperature", steps: [5],
+    q: "How is the furnace temperature obtained in the adiabatic Claus furnace?",
+    options: [
+      "Nobody sets it: it is the T at which the enthalpy of the products equals the enthalpy of the feed, from an outer Newton around the minimisation",
+      "It is entered in the case",
+      "It is the boiling point of sulfur",
+      "It is fixed at 600 K",
+    ],
+    correct: 0,
+    feedback: "Each evaluation of f(T) is a complete Gibbs minimisation at a "
+      + "trial temperature; the page's run gives 1515.34 K from a model told "
+      + "nothing about Claus furnaces (step 5).",
+    origins: ["engine"],
+  },
+  {
+    id: "same-species-different-answer", steps: [6],
+    q: "The same fourteen species run at the furnace and then isothermal at 600 K.  What changes between them?",
+    options: [
+      "Only the temperature, and S2 and S8 swap places without the engine being told which to prefer",
+      "The species list",
+      "The atom matrix",
+      "The method",
+    ],
+    correct: 0,
+    feedback: "Both allotropes were offered and the minimisation chose, which "
+      + "answers the x of step 1 twice, differently (step 6).",
+  },
+  {
+    id: "two-to-one", steps: [7],
+    q: "Why does the H2S : SO2 ratio sit at about 2 : 1 in the boiler?",
+    options: [
+      "Because the air was declared to burn one third of the H2S, so the O and H balances force it, while the minimisation decides only how far the ratio strays",
+      "Because the engine was told to hold a 2 : 1 ratio",
+      "Because the catalyst needs it",
+      "By chance",
+    ],
+    correct: 0,
+    feedback: "In the furnace the ratio is 1.04 because at 1500 K hydrogen "
+      + "sulfide cracks, which consumes H2S without consuming SO2 (step 7).",
+  },
+];

@@ -42,6 +42,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 /** The student's task, one sentence, written first (CLAUDE.md §10: design a
  *  screen from the user's task). */
@@ -497,5 +498,57 @@ export const OFMU_LIMITS: readonly LessonLimit[] = [
     title: "The page's arithmetic, not the engine's.",
     body: "Choupo's engine computes no number on this page.  Its rate-based segment uses the step-1 forms at the "
       + "lines cited; it has no reaction in a film and no overall coefficient.",
+  },
+];
+
+/** Four questions that close the lesson (DEV.md 4c C158). */
+export const OFMU_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "drift-factor", steps: [2],
+    q: "In absorption only the solute crosses the gas film and the carrier gas stands still.  How does the coefficient for the solute change from the low-flux coefficient k?",
+    options: [
+      "It is multiplied by the log-mean mole fraction of the carrier",
+      "It does not change: the low-flux coefficient already includes the bulk flow",
+      "It is divided by the log-mean mole fraction of the carrier, a correction close to 1 for a dilute gas",
+      "It is replaced by the Henry constant",
+    ],
+    correct: 2,
+    feedback: "The solute rides on the bulk flow it creates itself, so the coefficient becomes k divided by the log mean of y_B across the film.  For a dilute gas that factor is near 1 and the correction is small (step 2).",
+  },
+  {
+    id: "henry-type", steps: [3],
+    q: "A source quotes 'a large Henry's law constant' for a gas without saying more.  What must be stated for the statement to mean anything?",
+    options: [
+      "Only the temperature",
+      "Whether it is a solubility (aqueous over gas) or a volatility (gas over aqueous), and in which composition variables",
+      "Nothing: a larger constant always means a more soluble gas",
+      "The molar mass of the gas",
+    ],
+    correct: 1,
+    feedback: "Henry's constants come in two inverse types, a solubility and a volatility, each with its own choice of composition variables.  The same word 'large' means opposite things for the two, so the type must be stated (step 3).",
+  },
+  {
+    id: "overall-straight", steps: [4, 5],
+    q: "When does a single average overall coefficient stay meaningful along a whole absorber?",
+    options: [
+      "Whenever both film coefficients are known",
+      "Whenever the gas is dilute, whatever the equilibrium curve",
+      "Whenever the two films carry equal resistance",
+      "Only when the equilibrium line is straight, so one slope serves both chords of the curve",
+    ],
+    correct: 3,
+    feedback: "The sum of resistances uses one slope m for two different chords of the equilibrium curve.  On a straight line they are equal; on a curved line they are not, and the average coefficient loses its meaning (steps 4 and 5).",
+  },
+  {
+    id: "hatta", steps: [6],
+    q: "A reaction consumes the solute inside the liquid film and the Hatta number is large.  What happens?",
+    options: [
+      "The reaction occurs in the liquid film and the flux rises above the physical-absorption flux",
+      "The reaction occurs only in the bulk liquid and the flux is unchanged",
+      "The reaction slows transfer, so the enhancement factor is below 1",
+      "The reaction no longer matters, because the gas film then controls",
+    ],
+    correct: 0,
+    feedback: "The Hatta number compares the fastest reaction the film can hold with the fastest transport through it.  When it is large the reaction is confined to the film, the gradient at the interface stays steep, and the enhancement factor exceeds 1 (step 6).",
   },
 ];

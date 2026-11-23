@@ -35,6 +35,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const COMPRESSION_STEPS: readonly LessonStep[] = [
@@ -398,5 +399,81 @@ export const COMPRESSION_LIMITS: readonly { id: string; title: string; body: str
     body: "The polytropic efficiency 0.75 is Brown's starting estimate for a centrifugal "
       + "stage (p.196); the flow-coefficient chart that would refine it is not used.  The "
       + "flowsheet unit's own efficiency is a different, isentropic number (step 2).",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const COMPRESSION_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "head-is-gas", steps: [1],
+    q: "The head of a compression is the same whatever the impellers look like.  What does it belong to?",
+    options: [
+      "The machine",
+      "The gas and the path, from P1 to P2 and the inlet temperature",
+      "The motor",
+      "The number of impellers",
+    ],
+    correct: 1,
+    feedback: "The head is a property of the gas and the path; the machine "
+      + "adds the efficiency and the number of impellers needed to deliver it "
+      + "(step 1).",
+  },
+  {
+    id: "which-efficiency", steps: [2],
+    q: "A datasheet says only 'efficiency 0.75'.  What does that tell you about the machine?",
+    options: [
+      "Everything: the two efficiencies are the same number",
+      "Nothing definite: isentropic and polytropic efficiencies differ as the pressure ratio grows",
+      "That the machine is centrifugal",
+      "That the gas is ideal",
+    ],
+    correct: 1,
+    feedback: "The isentropic efficiency compares with the reversible adiabatic "
+      + "line between the two pressures; the polytropic one holds along every "
+      + "slice of the path.  They coincide near a ratio of 1 and separate as it "
+      + "grows (step 2).",
+  },
+  {
+    id: "temperature-limit", steps: [3],
+    q: "What is the discharge-temperature limit that forces intercooling?",
+    options: [
+      "A law of thermodynamics",
+      "A design decision, which the case declares and which machines can exceed",
+      "Always 519 K",
+      "A property of the gas only",
+    ],
+    correct: 1,
+    feedback: "The limit is called arbitrary even in the source that quotes "
+      + "it, and the witness declares its own; it fixes the number of "
+      + "sections you need (step 3).",
+  },
+  {
+    id: "equal-ratios", steps: [4],
+    q: "For an ideal gas cooled back to T1 between sections with the same exponent, how should the overall pressure ratio be shared?",
+    options: [
+      "Larger ratio in the first section",
+      "Equal ratios in all sections, each R^(1/N)",
+      "Larger ratio in the last section",
+      "The ratio does not matter",
+    ],
+    correct: 1,
+    feedback: "The symmetric split minimises the total work.  Real designs "
+      + "depart from it on purpose, for a discharge limit for example "
+      + "(step 4).",
+  },
+  {
+    id: "diminishing", steps: [5],
+    q: "On the witness (air, ratio 12), the first intercooler saves 23 % of the work, the second a further 8 % of what is left.  What does this show?",
+    options: [
+      "Every added section saves as much as the first",
+      "The saving falls with each section and has a limit, the isothermal work",
+      "Intercooling raises the work",
+      "More than four sections are always needed",
+    ],
+    correct: 1,
+    feedback: "Staging saves less each time, with a limit of m ln R in units "
+      + "of c, the work of an infinite number of sections (step 5).",
+    origins: ["engine"],
   },
 ];

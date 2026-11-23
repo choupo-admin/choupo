@@ -16,6 +16,8 @@ componentMolarFlows
 T               735 K;
 P               150 bar;
 phase           gas;
-// TEAR SEED, authored: an estimate of the bed-3 outlet (~19 % NH3 at ~460 C)
-// from the base data converter inlet taken to 5 K from equilibrium in three
-// beds.  The solver overwrites it.
+// An authored estimate of the bed-3 outlet (~19 % NH3 at ~460 C) from the
+// base data converter inlet taken to 5 K from equilibrium in three beds.  It
+// was the energy recycle's TEAR SEED until the beds became the CONVERTER
+// sector (DEV.md 4c C69); the tear is PreheatedFeed now, and this file is
+// the state the solver starts from and overwrites.

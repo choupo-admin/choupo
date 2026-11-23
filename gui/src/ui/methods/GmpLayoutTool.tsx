@@ -52,7 +52,8 @@ import {
   AS_DESIGNED, GMP_HOST, GMP_TEACHING_FILE, GMP_WITNESS, KNOBS, MOVES,
   TEACHING_LAYOUT, buildingLines, gmpCase, type GmpMove, type GmpPart, type LayoutEdit,
 } from "./gmpLayoutExercise.js";
-import { GMP_LAYOUT_LIMITS, GMP_LAYOUT_STEPS, GMP_SOURCES } from "./gmpLayoutLesson.js";
+import { GMP_LAYOUT_LIMITS, GMP_LAYOUT_QUIZ, GMP_LAYOUT_STEPS, GMP_SOURCES } from "./gmpLayoutLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { LessonLimits, LessonStepView } from "./lessonStep.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
@@ -327,6 +328,9 @@ export function GmpLayoutTool(): JSX.Element {
             Open {GMP_WITNESS} in a new tab
           </Button>
         </Group>
+
+        <LessonQuiz title="Check your understanding" questions={GMP_LAYOUT_QUIZ}
+          lesson={GMP_LAYOUT_STEPS} />
 
         <LessonLimits limits={GMP_LAYOUT_LIMITS} />
         <Box>

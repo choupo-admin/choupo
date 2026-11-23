@@ -59,7 +59,8 @@ import {
 } from "../../case/batchAdsorption.js";
 import { MODEL_COLOR, Panel, Wide, XYPlot, fmt } from "./AdsorptionIsothermsTool.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
-import { BATCH_LIMITS, BATCH_STEPS } from "./batchAdsorptionLesson.js";
+import { BATCH_LIMITS, BATCH_QUIZ, BATCH_STEPS } from "./batchAdsorptionLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 
 type XY = readonly [number, number];
 const TEXT = "var(--mantine-color-text)";
@@ -519,6 +520,9 @@ export function BatchAdsorptionTool(): JSX.Element {
         )}
 
         {step(6)}
+
+        <LessonQuiz title="Check your understanding" questions={BATCH_QUIZ}
+          lesson={BATCH_STEPS} />
 
         <LessonLimits limits={BATCH_LIMITS} />
         <LessonReferences tool="batch-adsorption" />

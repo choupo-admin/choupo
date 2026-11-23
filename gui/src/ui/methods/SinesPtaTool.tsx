@@ -53,7 +53,7 @@ import { KnobNumber, PanelNote } from "./knobPanel.js";
 import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   SINES_CHECKLIST, SINES_INSTITUTIONAL_NOTE, SINES_LIMITS, SINES_MARKET_QUOTES,
-  SINES_PURPOSE, SINES_RISKS, SINES_SCOPE, SINES_STEPS, SINES_TITLE,
+  SINES_PURPOSE, SINES_QUIZ, SINES_RISKS, SINES_SCOPE, SINES_STEPS, SINES_TITLE,
   type Quote, type Recorded, type RiskCard,
 } from "./sinesPtaLesson.js";
 import {
@@ -65,6 +65,7 @@ import {
 } from "./sinesPta.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 
 const HUE_A = "#228be6";
 const HUE_B = "#e8590c";
@@ -613,6 +614,8 @@ export function SinesPtaTool(): JSX.Element {
               Screening routes to a product
             </Anchor>{" "}(the gross margin as the first filter).
         </Text>
+
+        <LessonQuiz title="Check your understanding" questions={SINES_QUIZ} lesson={SINES_STEPS} />
 
         <LessonReferences tool="sines-pta" />
       </Stack>

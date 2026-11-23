@@ -43,6 +43,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const PONCHON_STEPS: readonly LessonStep[] = [
   {
@@ -216,3 +217,55 @@ V H &= L h + D\, h_D - Q_C
       + "page.",
   },
 ] as const;
+
+/** Four questions that close the lesson (DEV.md 4c C158). */
+export const PONCHON_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "tie-line", steps: [1],
+    q: "On a Ponchon-Savarit diagram, what is an equilibrium pair?",
+    options: [
+      "A point on the saturated liquid curve and the point directly above it on the vapour curve",
+      "A tie line joining the saturated liquid (x, h) to the saturated vapour (y, H) at the temperature they share",
+      "A point on the operating line and its image on the diagonal",
+      "Two points with the same enthalpy",
+    ],
+    correct: 1,
+    feedback: "The diagram plots enthalpy against composition, with two curves, and an equilibrium pair is a tie line between them.  Everything that follows is geometry on that diagram (step 1).",
+  },
+  {
+    id: "difference-point", steps: [2],
+    q: "What is the difference point Delta_D at the top of the column?",
+    options: [
+      "The enthalpy of the distillate stream",
+      "The enthalpy of the vapour leaving the top tray",
+      "A fixed point (x_D, Delta_D), with Delta_D = h_D - Q_C/D, that is not the state of any stream and through which every rectifying ray passes",
+      "The point where the feed line meets the saturated liquid curve",
+    ],
+    correct: 2,
+    feedback: "Combining the material and energy balances over the top envelope gives three collinear points: the liquid, the vapour and a single fixed point that does not move from tray to tray.  It often lies far off the diagram (step 2).",
+  },
+  {
+    id: "reflux-position", steps: [3],
+    q: "What sets the internal reflux ratio L/V on the diagram?",
+    options: [
+      "The position of the difference point: L/V = (Delta_D - H)/(Delta_D - h), read with a ruler",
+      "A number carried beside the diagram",
+      "The slope of the equilibrium curve",
+      "The feed's thermal condition alone",
+    ],
+    correct: 0,
+    feedback: "Collinearity makes the flow ratio a ratio of segment lengths, so the reflux is the position of Delta_D.  Minimum reflux is where a ray coincides with a tie line, a geometric coincidence you can point at (step 3).",
+  },
+  {
+    id: "overflow", steps: [4],
+    q: "What can this diagram show that McCabe-Thiele's straight operating lines cannot?",
+    options: [
+      "The number of trays, which McCabe-Thiele does not give",
+      "The effect of the feed's composition",
+      "The pinch, which the other method hides",
+      "The internal flows varying from tray to tray, because no constant molar overflow is assumed",
+    ],
+    correct: 3,
+    feedback: "No assumption is made about latent heats: L and V vary with the shape of the two enthalpy curves, which the engine computes.  Constant molar overflow is the assumption that is spent here (step 4).",
+  },
+];

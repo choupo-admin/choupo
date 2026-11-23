@@ -42,6 +42,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const DRYING_STEPS: readonly LessonStep[] = [
@@ -373,5 +374,80 @@ export const DRYING_LIMITS: readonly { id: string; title: string; body: string }
       + "energy balance as UNAVAILABLE rather than closing it with a term it "
       + "cannot price. The evaporated water is reported the same way — as "
       + "matter the declared closure destroys, never as a silent leak.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const DRYING_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "two-periods", steps: [1],
+    q: "Does every solid show a straight constant-rate stretch on its drying curve?",
+    options: [
+      "Yes, it is a law of drying",
+      "No: a solid starting below its critical moisture, or holding bound water, dries in the falling regime from the start",
+      "Only metals do",
+      "Only if the air is saturated",
+    ],
+    correct: 1,
+    feedback: "The two-period curve is a model of one class of materials; "
+      + "many hygroscopic and biological solids show no straight stretch "
+      + "(step 1).",
+  },
+  {
+    id: "wet-bulb", steps: [2],
+    q: "During the constant-rate period, at what temperature is the solid's surface?",
+    options: [
+      "The dry-bulb temperature of the air",
+      "The air's wet-bulb temperature, where heat arriving equals latent heat leaving",
+      "Room temperature, always",
+      "The boiling point of water",
+    ],
+    correct: 1,
+    feedback: "Evaporation cools the surface until the heat from the air "
+      + "matches the latent heat taken with the vapour; the material stays "
+      + "well below the dry bulb, which matters for heat-sensitive products "
+      + "(step 2).",
+  },
+  {
+    id: "critical-moisture", steps: [3],
+    q: "Is the critical moisture X_c a pure material property?",
+    options: [
+      "Yes, it is tabulated for each solid",
+      "No: it belongs to the material and the conditions together, since harder drying reaches the limit at a higher moisture",
+      "Yes, but only for powders",
+      "It is computed from the wet-bulb temperature",
+    ],
+    correct: 1,
+    feedback: "The same powder dried with faster, hotter air strips the "
+      + "surface faster than the interior can resupply it.  In this engine "
+      + "X_c is declared by the case, not computed (step 3).",
+  },
+  {
+    id: "falling-rate", steps: [4],
+    q: "What happens to the surface temperature in the falling-rate period?",
+    options: [
+      "It stays at the wet bulb",
+      "It rises towards the air's dry bulb, where a heat-sensitive product is at risk",
+      "It falls below the wet bulb",
+      "It oscillates",
+    ],
+    correct: 1,
+    feedback: "Less evaporation means less cooling, so the surface leaves the "
+      + "wet bulb and climbs towards the dry bulb (step 4).",
+  },
+  {
+    id: "size-the-time", steps: [5],
+    q: "Why does dividing the water to be removed by the constant rate underestimate the drying time?",
+    options: [
+      "It prices the whole job at the fastest rate it ever achieves, while most of the time goes in the falling-rate tail",
+      "The constant rate is too small",
+      "Most of the water leaves in the falling-rate period",
+      "Drying stops at the critical moisture",
+    ],
+    correct: 0,
+    feedback: "Most of the water usually leaves in the constant-rate period "
+      + "and most of the time is spent in the falling-rate one, as "
+      + "an exponential tail does (step 5).",
   },
 ];

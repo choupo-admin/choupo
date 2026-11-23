@@ -42,6 +42,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 // ---- the questions ----------------------------------------------------------
 
@@ -576,4 +577,56 @@ export const OT_CASES: readonly string[] = [
 /** Theory Guide labels the page names; each must exist in docs/theoryGuide.tex. */
 export const OT_LABELS: readonly string[] = [
   "ch:cosmosac", "sec:unifac", "sec:unifac-dortmund", "ch:pcsaft",
+];
+
+/** Four questions that close the lesson (DEV.md 4c C158). */
+export const OT_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "start-from-question", steps: [1],
+    q: "What is the right first move when you want to learn something about a molecule with an open program?",
+    options: [
+      "Pick the program with the most users and read its manual",
+      "Say what you need to know about the molecule, pick the group of tools that answers that question, then the card",
+      "Install every quantum program and compare the outputs",
+      "Check the licence of each program before anything else",
+    ],
+    correct: 1,
+    feedback: "The programs start from the molecule, not from a component record, so the page is organised by question: shape and energy, behaviour in a mixture, a coexistence curve, and so on.  The question picks the group and the group picks the card (step 1).",
+  },
+  {
+    id: "frequencies-to-s", steps: [2],
+    q: "In the chain from a SMILES string to a record, which step turns vibrational frequencies into ideal-gas heat capacity and entropy?",
+    options: [
+      "The cheminformatics parser that reads the SMILES string",
+      "The COSMO-type model of the charge surface",
+      "Statistical thermodynamics, through the molecular partition function",
+      "The group-contribution table",
+    ],
+    correct: 2,
+    feedback: "The quantum program supplies energies, frequencies and a charge surface.  Statistical thermodynamics turns the frequencies into ideal-gas properties through the partition function q, while a COSMO-type model turns the charge surface into activity coefficients (step 2).",
+  },
+  {
+    id: "open-chain", steps: [4],
+    q: "The code of a COSMO-type pipeline is open source.  Can you conclude that every file in the chain can be redistributed freely?",
+    options: [
+      "No: it may need a quantum program free only for academic use, and a sigma-profile set may sit under a narrower licence",
+      "Yes: an open-source label covers every step",
+      "Yes, provided you cite the authors",
+      "Only the licence of the first program in the chain counts",
+    ],
+    correct: 0,
+    feedback: "Open does not mean every step is open: a pipeline can need a restricted program beside it, and its data files can carry their own terms.  Check each file in the chain, not the headline (step 4).",
+  },
+  {
+    id: "thesis-shape", steps: [5],
+    q: "Which shape makes a good thesis idea on this page?",
+    options: [
+      "Rank the open programs by accuracy",
+      "Install a program and run its shipped example",
+      "Reimplement a commercial simulator from its manual",
+      "Reproduce with an open tool a number or model Choupo already holds, and say where and why they disagree",
+    ],
+    correct: 3,
+    feedback: "The ideas share one shape: start from something Choupo already computes, reproduce it with an open tool, and report the disagreement and its cause.  A topic ends in a finding that corrects a program, or a record Choupo can carry (step 5).",
+  },
 ];

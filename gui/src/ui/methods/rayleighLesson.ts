@@ -26,6 +26,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const RAYLEIGH_STEPS: readonly LessonStep[] = [
@@ -150,5 +151,75 @@ export const RAYLEIGH_LIMITS: readonly { id: string; title: string; body: string
     body: "The curve is computed once at the declared pressure and the whole "
       + "history is drawn on it. A still whose pressure drifts, or a column "
       + "with a real pressure drop, has a curve that moves too.",
+  },
+];
+
+// ---- the quiz (C158) ---------------------------------------------------------
+
+export const RAYLEIGH_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "history", steps: [1],
+    q: "Why is the answer of a batch still a history rather than a state?",
+    options: [
+      "Because the still is always at atmospheric pressure",
+      "Because the liquid left behind gets heavier as the light component "
+        + "leaves, so the composition being separated changes while you "
+        + "separate it",
+      "Because the vapour is always pure light component",
+      "Because the feed rate drifts during the run",
+    ],
+    correct: 1,
+    feedback: "A batch still takes no feed once it runs: you charge the pot and boil off "
+      + "the vapour, so the pot is consumed as it is used (step 1).  What "
+      + "you read at the end is the path of the pot, not a fixed "
+      + "operating point.",
+  },
+  {
+    id: "rayleigh-integral", steps: [2],
+    q: "What does the area under 1/(y* - x) between the final and initial "
+      + "pot compositions give?",
+    options: [
+      "The distillate composition at the end of the batch",
+      "The number of trays needed",
+      "The logarithm of the charge over what is left in the pot",
+    ],
+    correct: 2,
+    feedback: "The Rayleigh balance over one instant, with the vapour "
+      + "leaving at y*(x), integrates to ln(W0/W) (step 2).  It is "
+      + "evaluated on the equilibrium curve, with no differential "
+      + "equation to solve in time.",
+  },
+  {
+    id: "moving-staircase", steps: [3],
+    q: "With a rectifying column on the pot at constant reflux, why does "
+      + "the McCabe staircase slide down the curve as the run goes on?",
+    options: [
+      "The reflux ratio falls by itself",
+      "The pot depletes, so the distillate the same column can deliver "
+        + "gets leaner every minute",
+      "The column loses its trays",
+      "The equilibrium curve moves toward the diagonal",
+    ],
+    correct: 1,
+    feedback: "In a continuous column the staircase is fixed and counted "
+      + "once; here the pot composition falls and the same operating line "
+      + "anchored at the distillate gives a lower x_D at each instant "
+      + "(step 3).",
+  },
+  {
+    id: "two-policies", steps: [4],
+    q: "Holding x_D constant instead of R: what must happen to the "
+      + "reflux as the pot gets leaner, and what ends the batch?",
+    options: [
+      "R must stay the same, and the batch ends when the pot is empty",
+      "R must fall, and the batch ends when the distillate is pure",
+      "R must be raised, and the batch ends when the reflux needed "
+        + "exceeds what the column can carry",
+    ],
+    correct: 2,
+    feedback: "Constant composition steepens the operating line toward "
+      + "the diagonal, which means a rising reflux, until the reflux "
+      + "needed passes what the column can carry (step 4).  Constant "
+      + "reflux is the other policy, where x_D drifts down instead.",
   },
 ];

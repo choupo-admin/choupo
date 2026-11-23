@@ -32,6 +32,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonLimit, LessonStep, SymbolGloss };
 
 export const SALT_MIXING_STEPS: readonly LessonStep[] = [
@@ -305,4 +306,74 @@ export const SALT_MIXING_LIMITS: readonly LessonLimit[] = [
       + "different charge), and Al³⁺ hydrolyses: Farelo et al. (2005) report "
       + "pH 2.75 and 1.47 at 0.375 and 1.49 mol/kg AlCl₃.  The page shows "
       + "those systems as measured." },
+];
+
+export const SALT_MIXING_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "common-ion", steps: [1, 2],
+    q: "KCl is added to a solution saturated with NaCl.  What does the "
+      + "solubility product say about how the second salt can act?",
+    options: [
+      "It cannot act at all, since K_sp belongs to NaCl alone and depends on temperature only",
+      "It acts only through the molalities it adds and the activity coefficients it changes",
+      "It changes K_sp of NaCl directly, by an amount proportional to the KCl added",
+      "It acts only by lowering the water activity of the solution",
+    ],
+    correct: 1,
+    feedback: "K_sp(T) is one number per salt and temperature and knows "
+      + "nothing of other solutes; KCl can act only by raising the "
+      + "chloride molality (common-ion effect) and by changing every "
+      + "gamma through the ionic strength (steps 1 and 2).",
+  },
+  {
+    id: "binaries-fix", steps: [3],
+    q: "Which Pitzer parameters can NOT be obtained from single-salt "
+      + "measurements, and why?",
+    options: [
+      "beta(0) and beta(1), because they depend on ionic strength",
+      "The Debye-Hueckel constant, because it depends on the solvent",
+      "C-phi of each salt, because it is a third virial coefficient",
+      "theta and psi, because they appear only when Na+ and K+ meet",
+    ],
+    correct: 3,
+    feedback: "beta(0), beta(1) and C-phi of each salt are regressed from "
+      + "that salt's own data and already sit in the catalogue; theta "
+      + "(a Na+-K+ encounter) and psi (a Na+-K+-Cl- triplet) exist only "
+      + "in the mixture, so only a mixture measurement contains them "
+      + "(step 3).",
+  },
+  {
+    id: "ksp-route", steps: [4],
+    q: "Why does the page compute K_sp from the measured pure-water "
+      + "solubility and the single-salt gamma instead of from the "
+      + "record's 25 C constant and van't Hoff enthalpy?",
+    options: [
+      "The record's constant is wrong at every temperature",
+      "That route makes the binary exact by construction, so any error left in the ternary belongs to the mixing terms",
+      "The van't Hoff form cannot be written for a salt",
+      "It removes the need for a Pitzer model altogether",
+    ],
+    correct: 1,
+    feedback: "With K_sp tied to the measured binary solubility, the "
+      + "single-salt branch is reproduced exactly, so the remaining "
+      + "misfit in the ternary is attributable to theta and psi.  The "
+      + "record route is only as good as its enthalpy (step 4).",
+  },
+  {
+    id: "linear-fit", steps: [5],
+    q: "Why is reading theta and psi off a measured saturated branch a "
+      + "linear fit, and what is its weakness at one temperature?",
+    options: [
+      "The two parameters enter the residual linearly, but their columns are nearly proportional, so they are strongly correlated",
+      "The parameters enter through an exponential, so a logarithm linearises them",
+      "The fit is linear because the measurement is exact",
+      "The weakness is that the fit needs the eutonic point to be measured",
+    ],
+    correct: 0,
+    feedback: "At a measured composition the molalities are known, so "
+      + "theta and psi enter ln K_sp linearly and least squares gives "
+      + "two normal equations.  At one temperature both columns grow with "
+      + "the second cation's molality, so many (theta, psi) pairs fit "
+      + "equally well (step 5).",
+  },
 ];

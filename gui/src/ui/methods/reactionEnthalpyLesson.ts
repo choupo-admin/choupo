@@ -42,6 +42,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, LessonLimit } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, LessonLimit };
 
 export const ENTHALPY_STEPS: readonly LessonStep[] = [
@@ -294,5 +295,80 @@ export const ENTHALPY_LIMITS: readonly LessonLimit[] = [
       + "take the tabulated value as valid at any temperature.  The page "
       + "teaches the point because it matters in design, not because a "
       + "prevalence was measured.",
+  },
+];
+
+// ---- the quiz (C158) ---------------------------------------------------------
+
+export const ENTHALPY_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "degree-sign", steps: [1],
+    q: "A table lists a standard reaction enthalpy.  What does the degree "
+      + "sign fix?",
+    options: [
+      "The temperature, 25 degrees C",
+      "The standard state, the pressure and the reference phase of each "
+        + "species, and nothing about temperature",
+      "That the reaction is carried out at constant volume",
+      "That the reaction is exothermic",
+    ],
+    correct: 1,
+    feedback: "Temperature is not part of the definition of a standard "
+      + "state, so there is a standard reaction enthalpy at every "
+      + "temperature.  Tables print it at 298.15 K because a table must be "
+      + "printed at some temperature (step 1).",
+  },
+  {
+    id: "kirchhoff", steps: [2],
+    q: "The products of a reaction can store more heat than the reactants "
+      + "(a positive reaction heat capacity).  What does Kirchhoff's law "
+      + "say about heating the system?",
+    options: [
+      "The reaction enthalpy is unchanged",
+      "The reaction becomes more endothermic as the temperature rises",
+      "The reaction becomes more exothermic as the temperature rises",
+    ],
+    correct: 1,
+    feedback: "The reaction enthalpy changes with temperature by the "
+      + "difference of the heat capacities of products and reactants.  "
+      + "Products that store more heat make heating more endothermic, and "
+      + "products that store less make it more exothermic (step 2).",
+  },
+  {
+    id: "ammonia-converter", steps: [3, 4],
+    q: "Ammonia synthesis is -45.94 kJ per mole of NH3 at 298.15 K and "
+      + "-53.44 kJ at 773.15 K.  Why is the 773 K value larger in "
+      + "magnitude?",
+    options: [
+      "Four moles of gas become two, so the reaction heat capacity is "
+        + "negative and the heat released grows with temperature",
+      "The catalyst adds heat of its own",
+      "The table value was measured with an error",
+      "The pressure at the converter is higher than 1 bar",
+    ],
+    correct: 0,
+    feedback: "Two moles of gas store less heat than the four they "
+      + "replace, so the reaction heat capacity is negative and the "
+      + "magnitude grows with temperature (step 3).  Using the 298.15 K "
+      + "value alone for the heat released at 773 K misses the difference "
+      + "(step 4).",
+    origins: ["engine"],
+  },
+  {
+    id: "no-reaction-enthalpy", steps: [5, 6],
+    q: "A steady reactor closes its energy balance with every stream "
+      + "priced on the elements datum, each at its own temperature.  Which "
+      + "temperature must you choose for the reaction enthalpy?",
+    options: [
+      "298.15 K, as in the table",
+      "The inlet temperature",
+      "None: the reaction heat at the reactor's temperature is already "
+        + "inside the difference of the stream enthalpies",
+    ],
+    correct: 2,
+    feedback: "With formation enthalpies included in every species "
+      + "enthalpy the Hess cycle is done by the bookkeeping, so no "
+      + "temperature has to be chosen (step 5).  The 298.15 K value is "
+      + "good enough only when the correction of step 2 is small (step 6).",
   },
 ];

@@ -35,6 +35,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const SOLVENT_STEPS: readonly LessonStep[] = [
   // ---- Page 1: the question --------------------------------------------------
@@ -331,5 +332,73 @@ export const SOLVENT_LIMITS: readonly LessonLimit[] = [
     body: "The real parameters were read off the thesis's scanned tables, not "
       + "its OCR text, whose columns are scrambled; each record carries the "
       + "row and page.  A second reading is pending, and the records say so.",
+  },
+];
+
+export const SOLVENT_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "red", steps: [2],
+    q: "A solvent has a relative energy difference (RED) of 1.4 to a "
+      + "solute.  What does that say?",
+    options: [
+      "The solvent lies outside the solute's sphere, so it is not expected to dissolve it",
+      "The solvent dissolves 1.4 times the saturation concentration of the ideal case",
+      "The solvent is inside the sphere, in the region where the solute dissolves",
+      "The solvent evaporates 1.4 times faster than the reference",
+    ],
+    correct: 0,
+    feedback: "RED is the distance Ra divided by the solute's radius: "
+      + "below one is inside the sphere, above one outside.  It is a "
+      + "compatibility indicator on dissolves / does-not-dissolve "
+      + "observations (step 2).",
+  },
+  {
+    id: "mixture-rule", steps: [5, 7],
+    q: "The mixture rule puts the middle of a hexane-nitromethane line "
+      + "inside a polymer's sphere, yet the engine draws no Ra for those blend "
+      + "points.  Why?",
+    options: [
+      "Because both pure solvents are inside the sphere",
+      "The rule describes one liquid, and the tangent-plane test finds the pair splits into two, so the averaged solvent does not exist",
+      "Because the engine never computes a distance for a blend",
+      "Because nitromethane carries no Hansen parameters of its own",
+    ],
+    correct: 1,
+    feedback: "The averaged triple describes a single homogeneous liquid; "
+      + "where the case's activity model finds a second liquid the point "
+      + "is drawn two-phase, with no Ra and no RED (steps 5 and 7).  The "
+      + "averaged number would describe a solvent that does not exist.",
+  },
+  {
+    id: "better-blend", steps: [6],
+    q: "Hexane (outside the sphere) and acetone (just inside its edge) "
+      + "are blended for polystyrene.  What does the blend show?",
+    options: [
+      "A blend can never be better than its best pure component",
+      "Mixing always moves a point toward the centre of the sphere",
+      "Only the average of the two RED values matters",
+      "A blend can lie well inside the sphere although one end lies outside, if the pair stays one liquid",
+    ],
+    correct: 3,
+    feedback: "The blend's averaged parameters can dip well inside the "
+      + "sphere near the middle of the line, and since UNIFAC finds the "
+      + "pair one liquid all along, it is a genuine candidate (step 6).",
+  },
+  {
+    id: "small-distance", steps: [8, 9],
+    q: "A solvent has a small Hansen distance to a solute.  Which "
+      + "question does that NOT answer?",
+    options: [
+      "Whether the solvent is in the region where the solute was seen to dissolve or swell",
+      "How many grams per litre dissolve, how fast, and at what viscosity and cost",
+      "Whether the distance arithmetic reproduces the placement of the sphere",
+      "Whether a pure solvent lies inside or outside the sphere",
+    ],
+    correct: 1,
+    feedback: "Ra is a distance in a space fitted to dissolves / does-not-"
+      + "dissolve observations, so it gives compatibility only: no "
+      + "saturation concentration, rate, viscosity, evaporation or cost "
+      + "follows (step 9).  The comparison with observed ratings is on "
+      + "the method's own training set (step 8).",
   },
 ];

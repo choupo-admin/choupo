@@ -32,6 +32,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const FUG_STEPS: readonly LessonStep[] = [
@@ -421,5 +422,79 @@ export const FUG_LIMITS: readonly { id: string; title: string; body: string }[] 
       + "separation happens, where a pinch sits, or what a side draw would "
       + "do, that needs a column model that solves the stages — which is the "
       + "rigorous ladder drawn beside the curve here.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const FUG_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "keys", steps: [1],
+    q: "How does the shortcut method cope with more than two components?",
+    options: [
+      "It cannot",
+      "It reduces the mixture to two key components, the light key and the heavy key",
+      "It treats every component as a key",
+      "It averages all the volatilities into one species",
+    ],
+    correct: 1,
+    feedback: "McCabe-Thiele is a binary construction; the shortcut survives "
+      + "more components by choosing the two keys that set the separation "
+      + "(step 1).",
+  },
+  {
+    id: "fenske", steps: [2],
+    q: "What does Fenske's N_min tell you?",
+    options: [
+      "The stage count of a good design",
+      "A limit: no column can do the separation in fewer stages, and none can be operated there since total reflux makes no product",
+      "The stage count at minimum reflux",
+      "The number of trays in the rectifying section",
+    ],
+    correct: 1,
+    feedback: "At total reflux every stage buys a full factor of the relative "
+      + "volatility; the result is the horizontal asymptote of N(R), a "
+      + "limit and not a design (step 2).",
+  },
+  {
+    id: "underwood", steps: [3],
+    q: "What does Underwood's R_min mean?",
+    options: [
+      "The reflux below which no column is tall enough, where a pinch appears in the column",
+      "The reflux that minimises the energy",
+      "The reflux at which the column floods",
+      "The reflux at which the feed is saturated",
+    ],
+    correct: 0,
+    feedback: "Lowering the reflux eventually produces a pinch where adding "
+      + "stages changes nothing; R_min is the vertical asymptote of N(R).  "
+      + "Choosing the right root theta is the step that goes quietly wrong "
+      + "(step 3).",
+  },
+  {
+    id: "gilliland", steps: [4],
+    q: "What is Gilliland's correlation?",
+    options: [
+      "A derivation from the material balance and equilibrium",
+      "A curve fitted through plate-to-plate results, not plant measurements, so the stretch between the two limits is only as good as that fit",
+      "An exact solution",
+      "A rule for the feed stage only",
+    ],
+    correct: 1,
+    feedback: "The two ends of N(R) follow from the assumptions; everything "
+      + "between them is a fit to calculated points (step 4).",
+  },
+  {
+    id: "design-verify", steps: [5],
+    q: "How should the shortcut be used in a design?",
+    options: [
+      "As the final design, since it needs no iteration",
+      "To give a first size; the rigorous column then verifies it",
+      "To replace the thermodynamic model",
+      "To compute the temperature profile",
+    ],
+    correct: 1,
+    feedback: "It returns a count, not a column: no profiles and no trays, so "
+      + "the shortcut designs and the rigorous column verifies (step 5).",
   },
 ];

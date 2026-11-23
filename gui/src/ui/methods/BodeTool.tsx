@@ -55,7 +55,8 @@ import {
 } from "@mantine/core";
 
 import { LessonLimits, lessonStepper, LessonReferences, Tex, TexText } from "./lessonStep.js";
-import { BODE_LIMITS, BODE_STEPS } from "./bodeLesson.js";
+import { BODE_LIMITS, BODE_QUIZ, BODE_STEPS } from "./bodeLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { useEngineSeries } from "../../case/engineSeries.js";
 import {
@@ -742,6 +743,9 @@ export function BodeTool(): JSX.Element {
         </Box>
 
         {step(8)}
+
+        <LessonQuiz title="Check your understanding" questions={BODE_QUIZ}
+          lesson={BODE_STEPS} />
 
         <LessonLimits limits={BODE_LIMITS} />
 

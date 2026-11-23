@@ -43,8 +43,9 @@ import { Plot, darkLayout } from "../plotting/plotly.js";
 import { SortTh, useSortable } from "../SortableTable.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
 import { OriginMark } from "./origin.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import {
-  SALT_DESIGN_QUESTION, SALT_MIXING_LIMITS, SALT_MIXING_STEPS, SALT_PREDICTIONS,
+  SALT_DESIGN_QUESTION, SALT_MIXING_LIMITS, SALT_MIXING_QUIZ, SALT_MIXING_STEPS, SALT_PREDICTIONS,
   type SaltPrediction,
 } from "./saltMixingLesson.js";
 import {
@@ -748,6 +749,7 @@ export function SaltMixingTool(): JSX.Element {
               checked against the rendered page; one text-layer misreading was corrected (1993 Table 4,
               first row, Δ = 0.27, not 0.21).</Text>
           </Box>
+          <LessonQuiz title="Check your understanding" questions={SALT_MIXING_QUIZ} lesson={SALT_MIXING_STEPS} />
           <LessonLimits limits={SALT_MIXING_LIMITS} title="What this page assumes" />
           <LessonReferences tool="salt-mixing" />
         </Moment>

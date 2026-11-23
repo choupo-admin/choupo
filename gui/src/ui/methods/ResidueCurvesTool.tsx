@@ -47,8 +47,9 @@ import {
   singularPoints, type Curve, type RcmField, type SingularPoint, type Vec3,
 } from "../../case/residueCurves.js";
 import { OriginMark, type OriginKind } from "./origin.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
-import { PUBLISHED_AZEOTROPES, RCM_LIMITS, RCM_STEPS } from "./residueCurvesLesson.js";
+import { PUBLISHED_AZEOTROPES, RCM_LIMITS, RCM_QUIZ, RCM_STEPS } from "./residueCurvesLesson.js";
 
 // ---- presets -----------------------------------------------------------------------
 
@@ -701,6 +702,8 @@ export function ResidueCurvesTool(): JSX.Element {
         </Panel>
 
         <LessonLimits limits={RCM_LIMITS} />
+        <LessonQuiz title="Check your understanding" questions={RCM_QUIZ} lesson={RCM_STEPS} />
+
         <LessonReferences tool="residue-curves" />
       </Stack>
     </Box>

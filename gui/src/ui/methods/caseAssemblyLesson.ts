@@ -29,6 +29,7 @@
 
 import { at } from "./caseAssembly.js";
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const CASE_ASSEMBLY_STEPS: readonly LessonStep[] = [
   {
@@ -254,5 +255,66 @@ export const CASE_ASSEMBLY_LIMITS: readonly LessonLimit[] = [
       + "one of them to the statement it quotes. When the engine moves code "
       + "the page still holds; if a function is renamed or the statement "
       + "goes, the test fails by name and the page is corrected.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const CASE_ASSEMBLY_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "three-folders", steps: [1],
+    q: "Which of a case's folders holds what the run is made of, such as the substances and thermodynamic models?",
+    options: [
+      "system/",
+      "constant/",
+      "0/",
+      "converged/",
+    ],
+    correct: 1,
+    feedback: "system/ says how to run, constant/ says with what, and 0/ says "
+      + "from where the run starts.  A case is only a folder of plain text "
+      + "files (step 1).",
+  },
+  {
+    id: "topology-not-state", steps: [4],
+    q: "Where do the values of a stream live, given that the flowsheetDict names it?",
+    options: [
+      "In a streams block of the flowsheetDict",
+      "In the file of that stream in 0/; the flowsheetDict carries topology only",
+      "In the controlDict",
+      "In the solver, chosen at run time",
+    ],
+    correct: 1,
+    feedback: "A flowsheetDict with a streams block of values is rejected; the "
+      + "streams it names must be exactly the files in 0/, outlets included "
+      + "(step 4).",
+  },
+  {
+    id: "error-location", steps: [3, 6],
+    q: "A run stops with an error message.  What does it tell you?",
+    options: [
+      "Nothing, since it is only a crash",
+      "The first move of the assembly that could not proceed, so where it stops tells you which file to open",
+      "That the solver diverged",
+      "That the case must be reinstalled",
+    ],
+    correct: 1,
+    feedback: "The engine assembles a case in a fixed order, and an error message "
+      + "names the file, the rule and usually the remedy.  It is the engine "
+      + "doing its job (steps 3 and 6).",
+  },
+  {
+    id: "dont-edit-outputs", steps: [5],
+    q: "Why should you never edit the converged/ folder?",
+    options: [
+      "It is read-only",
+      "It is deleted and rewritten whole on every run, so an edit is lost",
+      "The engine reads it as input",
+      "Editing it changes the case's units",
+    ],
+    correct: 1,
+    feedback: "converged/, reports/ and design/ are regenerated on every run, "
+      + "and a run that does not converge writes no converged/ at all "
+      + "(step 5).",
   },
 ];

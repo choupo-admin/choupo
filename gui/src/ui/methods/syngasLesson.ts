@@ -41,6 +41,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const SYNGAS_STEPS: readonly LessonStep[] = [
   // ---- Part 1: where syngas comes from ------------------------------------------
@@ -638,4 +639,76 @@ export const SYNGAS_LIMITS: readonly LessonLimit[] = [
       + "Fischer-Tropsch or oxo reactor is run on this page, and nothing here "
       + "decides by how much a plant should depart from the stoichiometric "
       + "ratio." },
+];
+
+export const SYNGAS_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "hot-low-pressure", steps: [5, 6],
+    q: "Steam reforming turns two moles of gas into four and absorbs heat.  "
+      + "Equilibrium alone says run it hot and at low pressure.  Why do "
+      + "industrial reformers run well above atmospheric pressure anyway?",
+    options: [
+      "Because the equilibrium constant grows with pressure",
+      "Because high pressure suppresses carbon deposition on its own",
+      "Because every syngas user wants gas under pressure, and compressing "
+        + "the methane before the reformer is far cheaper than compressing "
+        + "four moles of syngas after it",
+      "Because the water-gas shift needs pressure to proceed",
+    ],
+    correct: 2,
+    feedback: "Steps 5 and 6: pressure works against the equilibrium, so the "
+      + "choice of high pressure is an engineering trade-off, not an "
+      + "equilibrium result.  The methane slip it costs is recovered by "
+      + "running hotter and with more steam.",
+  },
+  {
+    id: "coking", steps: [7],
+    q: "A reformer is run at a steam-to-carbon ratio of 0.8 and the engine "
+      + "reports solid carbon.  What is the engine's test for it?",
+    options: [
+      "Carbon appears when the methane conversion falls below half",
+      "Carbon appears whenever CO2 is present in the feed",
+      "Carbon activity read off the solid-free gas exceeds one, so depositing "
+        + "carbon would lower the Gibbs energy",
+      "Carbon appears above a fixed temperature set in the case",
+    ],
+    correct: 2,
+    feedback: "Step 7: the engine solves the gas without carbon and reads "
+      + "the carbon activity; above one the solid appears and the gas is "
+      + "re-equilibrated with it.  Raising the steam ratio lowers the "
+      + "activity, which is why steam keeps the catalyst clean.",
+  },
+  {
+    id: "two-stage-shift", steps: [8, 9],
+    q: "A single shift stage at 480 K gives exactly the outlet of a "
+      + "high-temperature plus a low-temperature stage in this model.  Why "
+      + "do real plants use two stages anyway?",
+    options: [
+      "Equilibrium requires two stages to be reached",
+      "For rate and heat: the shift is slow cold and stops early hot, and "
+        + "the heat released must be removed between beds",
+      "Pressure drops out only when two stages are used",
+      "The second stage makes methane that the first cannot",
+    ],
+    correct: 1,
+    feedback: "Step 9: equilibrium knows only the final temperature, not "
+      + "the path.  The two stages exist for kinetics and heat removal, "
+      + "which this equilibrium model does not compute.",
+  },
+  {
+    id: "module-fixed", steps: [11],
+    q: "A steam reformer's gas is passed through a water-gas shift reactor.  "
+      + "What happens to its module (H2 - CO2)/(CO + CO2)?",
+    options: [
+      "It rises, because the shift makes more hydrogen",
+      "It falls, because the shift makes CO2",
+      "It follows the shift temperature",
+      "It does not change: the shift adds one H2 and one CO2 to the "
+        + "numerator and swaps a CO for a CO2 in the denominator",
+    ],
+    correct: 3,
+    feedback: "Step 11: the shift moves H2/CO but cannot move the module, "
+      + "which is fixed by the atoms fed once the methane is converted.  "
+      + "CO2 removal is the one operation here that does move it.",
+  },
 ];

@@ -55,6 +55,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Alert, Anchor, Box, Code, Loader, Stack, Text, TextInput, Title } from "@mantine/core";
 import { guideUrl, openGuide } from "../../help/guideLinks.js";
 import { OriginMark } from "./origin.js";
+import { LessonQuiz } from "./lessonQuiz.js";
+import { RULES_OF_THUMB_QUIZ, RULES_OF_THUMB_STEPS } from "./rulesOfThumbQuiz.js";
 
 const INK = "var(--mantine-color-dimmed)";
 
@@ -210,6 +212,7 @@ export function RulesOfThumbTool(): JSX.Element
                     guide and nowhere else, so nothing here can drift from them.
                 </Text>
             )}
+            <LessonQuiz title="Check your understanding" questions={RULES_OF_THUMB_QUIZ} lesson={RULES_OF_THUMB_STEPS} numbered={false} />
         </Stack>
         </Box>
     );

@@ -46,7 +46,8 @@ import {
   benchCase, fmtReadout, outletFlows, readout, runDataOf,
   type BenchId, type CaseEdit, type ReadoutId, type RunData, type Stage, type SyngasMove, type SyngasPart,
 } from "./syngasExercise.js";
-import { SYNGAS_LIMITS, SYNGAS_STEPS } from "./syngasLesson.js";
+import { SYNGAS_LIMITS, SYNGAS_QUIZ, SYNGAS_STEPS } from "./syngasLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 
 const step = lessonStepper(SYNGAS_STEPS);
@@ -377,6 +378,8 @@ export function SyngasTool(): JSX.Element {
         {step(16)}
 
         <Title order={4}>Part 8 — what the model does not do</Title>
+        <LessonQuiz title="Check your understanding" questions={SYNGAS_QUIZ} lesson={SYNGAS_STEPS} />
+
         <LessonLimits limits={SYNGAS_LIMITS} />
 
         <Benches />

@@ -76,6 +76,7 @@ import { Alert, Box, Group, Loader, Slider, Stack, Text, Title }
 import { useMethodRun } from "../../case/methodRun.js";
 import { Tex } from "./lessonStep.js";
 import { OriginMark } from "./origin.js";
+import { LessonQuiz, type QuizQuestion } from "./lessonQuiz.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -378,6 +379,84 @@ function GouyStodolaKnob() {
 }
 
 // ---- the page ---------------------------------------------------------------
+
+/** The page's four numbered sections of part A, as the quiz points back. */
+export const WHAT_IS_EXERGY_STEPS: readonly { n: number; title: string }[] = [
+  { n: 1, title: "Energy conserved, work potential different" },
+  { n: 2, title: "The environment is part of the problem" },
+  { n: 3, title: "A stream, brought to the environment" },
+  { n: 4, title: "Reversible and real: what is destroyed" },
+];
+
+export const WHAT_IS_EXERGY_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "same-heat", steps: [1],
+    q: "Two reservoirs hand over the same 100 kJ of heat; the surroundings "
+      + "are at 300 K.  One reservoir is at 600 K and the other at 350 K.  "
+      + "Which heat can be turned into more work?",
+    options: [
+      "The heat at 350 K, since the reservoir is closer to the surroundings",
+      "Both equally, because the energy received is the same",
+      "The heat at 600 K: its exergy is 50 kJ against about 14.3 kJ",
+      "It depends on the heat engine's design, not on the temperatures",
+    ],
+    correct: 2,
+    feedback: "Step 1: heat received at T brings entropy Q/T that must be "
+      + "handed on to the environment at T0, so the work it can buy is "
+      + "Q(1 - T0/T).  The energy is the same; the work it can buy is not.",
+  },
+  {
+    id: "declared-environment", steps: [2],
+    q: "Why must the case declare a dead state before an exergy is "
+      + "computed, instead of the engine assuming one?",
+    options: [
+      "Because the exergy of a stream is a property of the stream alone",
+      "Because an exergy is a statement about a state and an environment, "
+        + "and the environment is the user's fact, not the engine's",
+      "Because the dead state fixes the stream's composition",
+      "Because the enthalpy datum needs it",
+    ],
+    correct: 1,
+    feedback: "Step 2: T0 (and P0 for a stream) is a declaration, not a "
+      + "constant of nature; the same heat is worth more work in winter than "
+      + "in summer.  The engine will not choose it for you.",
+  },
+  {
+    id: "compressed-gas", steps: [3],
+    q: "An ideal gas sits at the environment temperature T0 but at twice "
+      + "the environment pressure.  Where does its physical exergy come "
+      + "from?",
+    options: [
+      "From its enthalpy, which is above the dead-state value",
+      "From its temperature, which is above the dead-state value",
+      "From the entropy leg alone: h equals h0, but s is below s0, so the "
+        + "work is R T0 ln(P/P0)",
+      "It has none, because its temperature equals T0",
+    ],
+    correct: 2,
+    feedback: "Step 3: an ideal gas's enthalpy depends on temperature alone, "
+      + "so h - h0 is zero here, yet T0(s - s0) is negative and the stream "
+      + "can absorb heat from the surroundings on its way to the dead "
+      + "state.  Being compressed is worth work.",
+  },
+  {
+    id: "destroyed", steps: [4],
+    q: "A real compressor generates entropy S_gen.  What does the "
+      + "Gouy-Stodola relation say about it?",
+    options: [
+      "Energy is destroyed in proportion to S_gen",
+      "Exergy equal to T0 times S_gen is destroyed, while energy is still "
+        + "conserved",
+      "S_gen is recovered as heat in the next unit",
+      "S_gen is independent of the environment temperature",
+    ],
+    correct: 1,
+    feedback: "Step 4: every unit of entropy generated is work that could "
+      + "have been had and was not, B_destroyed = T0 S_gen.  Exergy is "
+      + "destroyed relative to the declared environment, and the energy "
+      + "balance is untouched.",
+  },
+];
 
 export function WhatIsExergyTool(): JSX.Element {
   const run = useMethodRun(EXERGY_WITNESS, [], "exergy-ledger",
@@ -685,6 +764,7 @@ export function WhatIsExergyTool(): JSX.Element {
           </Text>
         </Box>
 
+        <LessonQuiz title="Check your understanding" questions={WHAT_IS_EXERGY_QUIZ} lesson={WHAT_IS_EXERGY_STEPS} />
       </Stack>
     </Box>
   );

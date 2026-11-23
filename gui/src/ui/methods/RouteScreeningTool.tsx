@@ -58,10 +58,11 @@ import type { RunResult } from "../../adapters/SolverAdapter.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { Tex, LessonReferences } from "./lessonStep.js";
 import {
-  SCREEN_LIMITS, SCREEN_SECTIONS, type ScreenSection,
+  SCREEN_LIMITS, SCREEN_QUIZ, SCREEN_SECTIONS, type ScreenSection,
 } from "./routeScreeningLesson.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -397,6 +398,8 @@ export function RouteScreeningTool(): JSX.Element {
             Declared pathways
           </Anchor>{" "}(selectivity as a declaration).
         </Text>
+
+        <LessonQuiz title="Check your understanding" questions={SCREEN_QUIZ} lesson={SCREEN_SECTIONS} numbered={false} />
 
         <LessonReferences tool="route-screening" />
       </Stack>

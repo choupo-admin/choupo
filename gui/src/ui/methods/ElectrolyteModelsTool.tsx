@@ -45,7 +45,8 @@ import {
 import { inSampleAgainst, measuredTable, pairRecord, pairStem } from "./electrolyteModelsData.js";
 import { OriginMark, type OriginKind } from "./origin.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
-import { EM_LIMITS, EM_STEPS } from "./electrolyteModelsLesson.js";
+import { EM_LIMITS, EM_QUIZ, EM_STEPS } from "./electrolyteModelsLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 
 // ---- drawing ------------------------------------------------------------------------
 
@@ -588,6 +589,9 @@ export function ElectrolyteModelsTool(): JSX.Element {
             </Table>
           </Wide>
         </Panel>
+
+        <LessonQuiz title="Check your understanding" questions={EM_QUIZ}
+          lesson={EM_STEPS} />
 
         <LessonLimits limits={EM_LIMITS} />
         <LessonReferences tool="electrolyte-models" />

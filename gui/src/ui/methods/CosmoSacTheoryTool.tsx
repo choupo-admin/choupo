@@ -58,6 +58,8 @@ License
 
 import { Alert, Box, Code, Group, Loader, Stack, Text, Title }
   from "@mantine/core";
+import type { QuizQuestion } from "./lessonQuiz.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 
 import { useMethodRun } from "../../case/methodRun.js";
 import { OriginMark } from "./origin.js";
@@ -394,8 +396,97 @@ export function CosmoSacTheoryTool(): JSX.Element {
         </Text>
       </Box>
 
+      <LessonQuiz title="Check your understanding" questions={COSMO_QUIZ}
+        lesson={COSMO_STEPS} />
+
       <LessonReferences tool="cosmo-sac-theory" />
     </Stack>
     </Box>
   );
 }
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const COSMO_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "surface", steps: [1],
+    q: "What does COSMO-SAC start from, which the other activity models on the comparison page do not?",
+    options: [
+      "The screening charge density of a single molecule in a perfect conductor, a property of one molecule and nothing about a mixture",
+      "A table of group contributions",
+      "Fitted interaction energies for the pair",
+      "Measured vapour-liquid equilibrium data",
+    ],
+    correct: 0,
+    feedback: "The other models describe a molecule by numbers fitted to how "
+      + "it behaves; COSMO-SAC starts one level down, from the charged "
+      + "surface (step 1).",
+  },
+  {
+    id: "sigma-profile", steps: [2],
+    q: "What does the sigma-profile keep, and what does it throw away?",
+    options: [
+      "It keeps the statistics of how much surface carries each charge density, and discards the geometry",
+      "It keeps the geometry only",
+      "It keeps the pair data",
+      "It keeps nothing",
+    ],
+    correct: 0,
+    feedback: "With the cavity area and volume the profile is the whole "
+      + "input: no binary data, no group table, nothing fitted to the pair "
+      + "(step 2).",
+  },
+  {
+    id: "implicit", steps: [4],
+    q: "Why is the segment activity coefficient equation implicit?",
+    options: [
+      "How disfavoured a segment is depends on what it meets, which depends on how disfavoured those segments are, so the equation contains itself",
+      "It uses derivatives",
+      "It has a time dependence",
+      "It uses an integral over volume",
+    ],
+    correct: 0,
+    feedback: "It is solved iteratively, once for the mixture's composite "
+      + "profile and once for each pure profile (step 4).",
+  },
+  {
+    id: "residual", steps: [5],
+    q: "What is the residual activity coefficient in COSMO-SAC?",
+    options: [
+      "The cost of moving the molecule's segments from its pure environment to the mixture's, one segment at a time",
+      "The cost of changing the temperature",
+      "The size correction",
+      "The vapour pressure ratio",
+    ],
+    correct: 0,
+    feedback: "Step 4 is solved twice, for the mixture and for the pure "
+      + "component, and the difference is the residual (step 5).",
+  },
+  {
+    id: "combinatorial", steps: [6],
+    q: "Where does the combinatorial part of COSMO-SAC get its size and area parameters?",
+    options: [
+      "From the same cavity the sigma-profile came from, not from a separate table",
+      "From a table fitted to each pair",
+      "From the critical properties",
+      "They are set by the user",
+    ],
+    correct: 0,
+    feedback: "It is the same Staverman-Guggenheim expression as the "
+      + "UNIQUAC family, with cavity-based parameters (step 6).",
+  },
+  {
+    id: "predictive", steps: [7],
+    q: "Is COSMO-SAC free of every fitted number?",
+    options: [
+      "No: two universal constants, the segment area and the hydrogen-bond constant, were regressed once by the authors on many systems, though nothing is fitted to the pair in front of you",
+      "Yes, everything is first-principles",
+      "No: every pair needs its own fit",
+      "Yes, but only for water",
+    ],
+    correct: 0,
+    feedback: "It has eight universal constants and not one number fitted "
+      + "to your pair, but the constants are not innocent of mixtures "
+      + "(step 7).",
+  },
+];

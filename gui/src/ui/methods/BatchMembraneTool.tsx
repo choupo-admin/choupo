@@ -101,9 +101,8 @@ import { useStore } from "../../state/store.js";
 import { KnobNumber, PanelNote } from "./knobPanel.js";
 import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { Plot, PLOT_COLORS, darkLayout } from "../plotting/plotly.js";
-import {
-  BATCH_MEMBRANE_LIMITS, BATCH_MEMBRANE_STEPS,
-} from "./batchMembraneLesson.js";
+import { BATCH_MEMBRANE_LIMITS, BATCH_MEMBRANE_QUIZ, BATCH_MEMBRANE_STEPS } from "./batchMembraneLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import {
   type ConcentrationAxis, type ConservativeOptimum, type KpiMap,
   type OptimumScan, type Sample,
@@ -450,8 +449,13 @@ export function BatchMembraneTool(): JSX.Element {
   ) : null;
 
   const limits = (
-    <LessonLimits limits={BATCH_MEMBRANE_LIMITS}
-      title="What this does not model" />
+    <>
+      <LessonQuiz title="Check your understanding" questions={BATCH_MEMBRANE_QUIZ}
+        lesson={BATCH_MEMBRANE_STEPS} />
+
+      <LessonLimits limits={BATCH_MEMBRANE_LIMITS}
+        title="What this does not model" />
+    </>
   );
 
   // ---- Nothing drawable: the lesson still runs -----------------------------

@@ -94,6 +94,7 @@ import {
 } from "../../case/thielePellet.js";
 import { KnobField, KnobSlider, PanelNote } from "./knobPanel.js";
 import { OriginMark } from "./origin.js";
+import { LessonQuiz, type QuizQuestion } from "./lessonQuiz.js";
 
 /*  THE LESSON, as data rather than as markup.
  *
@@ -209,6 +210,74 @@ export const THIELE_STEPS: readonly {
       + "other is.  The badge on this page is M_W, on Λ, because that is "
       + "what the engine publishes and what makes the three shapes "
       + "comparable.",
+  },
+];
+
+export const THIELE_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "ratio-only", steps: [2],
+    q: "Doubling both the rate constant k and the effective diffusivity "
+      + "D_eff of a pellet changes its behavior how?",
+    options: [
+      "It doubles the effectiveness factor",
+      "It halves the Thiele modulus",
+      "It does not change it: the pellet is governed by the ratio of the "
+        + "two speeds, which the Thiele modulus makes dimensionless",
+      "It moves the pellet into the diffusion-controlled regime",
+    ],
+    correct: 2,
+    feedback: "Step 2: neither speed means anything alone.  The Thiele "
+      + "modulus depends on k over D_eff, so doubling both leaves it, and "
+      + "therefore the pellet's profile, unchanged.",
+  },
+  {
+    id: "eta-meaning", steps: [3],
+    q: "A pellet has an effectiveness factor of 0.19.  What does that mean?",
+    options: [
+      "81 % of the catalyst is idle",
+      "The pellet delivers 19 % of the rate it would with surface "
+        + "concentration everywhere, and every gram still reacts, at a lower "
+        + "concentration",
+      "19 % of the pellet's volume is inert, with no reaction at all",
+      "The flask rate constant is 19 % too high everywhere in the bed",
+    ],
+    correct: 1,
+    feedback: "Step 3: eta is a ratio of rates, not a fraction of mass.  At "
+      + "first order the interior is starved, never dead, so the catalyst "
+      + "is reacting everywhere, just at lower concentration.",
+  },
+  {
+    id: "which-lever", steps: [4],
+    q: "A reaction is strongly diffusion controlled in its pellets.  You "
+      + "double the catalyst's intrinsic activity.  What do you gain?",
+    options: [
+      "About 41 %, because the observed rate scales with the square root of k",
+      "The full factor of two",
+      "Nothing at all, since the interior is dead",
+      "A factor of four, because phi is squared",
+    ],
+    correct: 0,
+    feedback: "Step 4: in the diffusion regime the observed rate goes as "
+      + "the square root of k times D_eff over the length scale, so doubling "
+      + "activity buys 41 %.  Halving the pellet size buys the full factor "
+      + "of two instead.",
+  },
+  {
+    id: "circular-phi", steps: [5],
+    q: "Why is the Weisz-Prater criterion used to judge internal diffusion "
+      + "limitation instead of the Thiele modulus itself?",
+    options: [
+      "It needs no diffusivity at all",
+      "The Thiele modulus cannot be computed for a sphere",
+      "It is always below 1 for a sphere",
+      "The Thiele modulus needs the intrinsic k, the very thing you are "
+        + "trying to establish; the criterion uses the observed rate instead",
+    ],
+    correct: 3,
+    feedback: "Step 5: you cannot measure phi, but you can measure eta times "
+      + "phi squared from the rate the pellet delivers, its size and the "
+      + "surface concentration.  It still needs an estimate of D_eff, so it "
+      + "is a judgement, not a measurement.",
   },
 ];
 
@@ -1049,6 +1118,8 @@ export function ThielePelletTool(): JSX.Element {
         )}
 
         {advisoryAlert}
+
+        <LessonQuiz title="Check your understanding" questions={THIELE_QUIZ} lesson={THIELE_STEPS} />
 
         <Box>
           <Title order={5}>

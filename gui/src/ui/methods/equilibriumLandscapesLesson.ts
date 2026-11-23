@@ -41,6 +41,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, LessonLimit } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, LessonLimit };
 
 export const LANDSCAPE_STEPS: readonly LessonStep[] = [
@@ -518,5 +519,79 @@ export const LANDSCAPE_LIMITS: readonly LessonLimit[] = [
       + "the Claus furnace also depends on records the catalogue does not "
       + "carry, and has a page of its own.  The ammonia plants share "
       + "gibbs10's chemistry and are represented by it.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const LANDSCAPE_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "kinetic-statement", steps: [1],
+    q: "A landscape of equilibrium compositions is computed over a species list.  What is the only kinetic statement it makes?",
+    options: [
+      "The rate constants entered in the case",
+      "The species list: a species left off cannot form, however favourable",
+      "The temperature grid",
+      "The feed flow",
+    ],
+    correct: 1,
+    feedback: "Every cell is the Gibbs minimisation under the element "
+      + "balances, so the combustion landscape without NO and the thermal-NO "
+      + "landscape with it differ only by the species list (step 1).",
+  },
+  {
+    id: "two-signs", steps: [2],
+    q: "Which two signs fix the shape of an ideal-gas equilibrium landscape?",
+    options: [
+      "The sign of the reaction enthalpy (van 't Hoff) and of the mole change",
+      "The sign of the entropy and of the volume",
+      "The sign of the pressure and of the temperature",
+      "The sign of the feed flow only",
+    ],
+    correct: 0,
+    feedback: "An exothermic reaction loses equilibrium conversion as T "
+      + "rises; a reaction that makes fewer moles is helped by pressure and "
+      + "one that makes more is hurt (step 2).",
+  },
+  {
+    id: "per-cell", steps: [3],
+    q: "Why is the approach direction decided at every (T, P) cell instead of once for the whole map?",
+    options: [
+      "The thermicity is that of the transformation from the feed to the equilibrium at that cell's temperature, and it can change",
+      "Because the code is faster that way",
+      "Because the sign is entered by hand",
+      "Because pressure decides the sign",
+    ],
+    correct: 0,
+    feedback: "A feed on the reactant side of an exothermic equilibrium "
+      + "behaves differently from one on the product side, so the engine "
+      + "reads the thermicity cell by cell with the one sign rule (step 3).",
+  },
+  {
+    id: "slope", steps: [4],
+    q: "The same declared temperature approach is a large shortfall in one place and nothing in another.  Why?",
+    options: [
+      "The change in the answer is the local slope of the equilibrium curve times the distance moved",
+      "The approach is random",
+      "The engine ignores it above 1 bar",
+      "The approach acts only on the first cell",
+    ],
+    correct: 0,
+    feedback: "A temperature approach is a horizontal move along the curve, so "
+      + "it matters on a steep part and not on a flat one (step 4).",
+  },
+  {
+    id: "global-caveat", steps: [5],
+    q: "Why does a single temperature approach fail for thermal NO inside a methane flame?",
+    options: [
+      "NO formation is endothermic inside a feed whose overall transformation is exothermic combustion, and one global number cannot resolve per-reaction approaches",
+      "NO cannot be put in a species list",
+      "The flame is isothermal",
+      "NO is always at equilibrium",
+    ],
+    correct: 0,
+    feedback: "The single-number model is global; thermal NO in a real furnace "
+      + "is a kinetic quantity, which is why the corpus has a Zeldovich "
+      + "post-flame case (step 5).",
   },
 ];

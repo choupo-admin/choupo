@@ -30,6 +30,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const PANEL_STEPS: readonly LessonStep[] = [
   {
@@ -248,5 +249,57 @@ export const PANEL_LIMITS: readonly LessonLimit[] = [
     body: "A raw number in a range or limit is in the unit the column is "
       + "published in; no published column declares its dimension, so the "
       + "engine cannot check it.",
+  },
+];
+
+/** Four questions that close the lesson (DEV.md 4c C158). */
+export const PANEL_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "operator-questions", steps: [1, 2],
+    q: "What should decide which elements a panel shows?",
+    options: [
+      "Everything the unit publishes, so nothing is hidden",
+      "The questions the operator has at the rig: is it normal, where is it heading, what to do",
+      "Whatever is easiest to draw",
+      "The quantities with the largest numerical range",
+    ],
+    correct: 1,
+    feedback: "The problem is saturation, not a lack of data: the same run read as a wall of numbers or as a panel answers differently.  A panel is designed backwards from the operator's tasks, and what answers none of them is left off (steps 1 and 2).",
+  },
+  {
+    id: "colour", steps: [3],
+    q: "Why is colour reserved for the abnormal and always doubled by another cue such as a word or a shape?",
+    options: [
+      "Because colour screens cannot draw grey",
+      "Because operators prefer fewer words on the screen",
+      "So that the one coloured element stands out, and the information survives a printout or a colour-vision impairment",
+      "Because red and green are the only colours an alarm may use",
+    ],
+    correct: 2,
+    feedback: "If everything is grey when all is well, the single coloured element is impossible to miss.  A second cue keeps the meaning when colour is lost to monochrome print or to an operator who cannot tell red from green (step 3).",
+  },
+  {
+    id: "alarm-action", steps: [5],
+    q: "What makes something an alarm rather than a message or a trend?",
+    options: [
+      "It asks for an action the operator can actually take",
+      "It is outside its normal range for any length of time",
+      "It concerns a quantity the engine publishes",
+      "It marks a normal event that someone should know about",
+    ],
+    correct: 0,
+    feedback: "An alarm interrupts a person, so it must ask for something he can do; a quantity that only needs watching is a trend, and a normal end of batch is a message.  Alarms on everything that moves produce a flood in which the one that matters is lost (step 5).",
+  },
+  {
+    id: "grow-panel", steps: [6],
+    q: "How does the lesson say a panel should be built?",
+    options: [
+      "Start from every published quantity and remove the ones nobody reads",
+      "Copy the panel of a similar unit and adjust the limits",
+      "Add an alarm to every quantity first, then relax them one at a time",
+      "Start from the simplest thing that works and add an element only when a test shows something was missed",
+    ],
+    correct: 3,
+    feedback: "A complex system that works has grown from a simple one that worked.  Each element added is paid for in the operator's attention, so each addition needs a run that showed the previous panel missed something (step 6).",
   },
 ];

@@ -26,7 +26,8 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
-//  C50 (2026-10-07): drilled into the green-ammonia Converter, the feed showed
+//  C50 (2026-10-07): drilled into a unit of the green-ammonia plant (the Converter
+//  then; N2Boost since C440, when the converter became a sector), the feed showed
 //  the converged 151 bar and RAN at the plant's 8 bar recycle seed, because
 //  the root 0/ projected into the drilled sub-case counted as the sub-case's
 //  own state and so beat the drill's converged feed.
@@ -35,7 +36,7 @@ import { tutorialByName } from "../src/cases/tutorials.js";
 import { applyDrillFeeds } from "../src/case/drillSeed.js";
 import { zeroStateText } from "../src/case/toGraph.js";
 
-const CONV = "plant/greenAmmoniaPEQ_baseCase/Converter";
+const CONV = "plant/greenAmmoniaPEQ_baseCase/N2Boost";
 const converged = { F: 30.0, T: 651.06, P: 15092690,
                     molarComposition: { N2: 0.2, H2: 0.6, NH3: 0.15, Ar: 0.05 } };
 
@@ -50,13 +51,13 @@ describe("a drilled unit starts from the drill's state, not the parent's seed", 
     expect(t).toBeDefined();
     expect(t!.projectedZero).toContain("0/Feed");
     // and the projection IS the plant's seed: 8 bar
-    expect(zeroOf(t!.files, "Feed")).toMatch(/P\s+800000 Pa/);
+    expect(zeroOf(t!.files, "Feed")).toMatch(/P\s+(800000 Pa|8 bar)/);
   });
 
   it("the converged feed replaces the projected seed", () => {
     const out = applyDrillFeeds(t!.files, { Feed: converged }, new Set(t!.projectedZero));
     const text = zeroOf(out, "Feed")!;
-    expect(text).not.toMatch(/800000 Pa/);
+    expect(text).not.toMatch(/800000 Pa|P\s+8 bar/);
     expect(text).toMatch(/15092690|1\.509269e\+?0?7|150\.9269 bar/);
     expect(out.rawFiles?.["0/Feed"]).toBeUndefined();
   });

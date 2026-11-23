@@ -44,6 +44,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 /** Every source the page names, with what was taken from it and how it was
  *  reached.  Drawn at the foot of the page. */
@@ -539,4 +540,79 @@ export const GMP_LAYOUT_LIMITS: readonly LessonLimit[] = [
       + "the project's risk assessment, defended with a source.  A building "
       + "that raises no finding obeys the rules of this example; it is not "
       + "shown to be GMP-compliant, contained, or safe from ignition." },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const GMP_LAYOUT_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "room-not-spot", steps: [1],
+    q: "In a tablet plant laid out inside a building, what matters more than the exact position of an item?",
+    options: [
+      "Which room it stands in, how clean that room is kept, which way the air moves through its doors and who walks through it",
+      "Its distance from the street",
+      "Its colour",
+      "Its price",
+    ],
+    correct: 0,
+    feedback: "A pharmaceutical plant is laid out inside a building, and the "
+      + "room's grade, pressure, air direction and traffic are the questions "
+      + "(step 1).",
+  },
+  {
+    id: "cascade", steps: [3],
+    q: "What does holding the cleaner room at a higher pressure achieve?",
+    options: [
+      "It guarantees nothing crosses a door",
+      "It sets the direction of leakage through a closed door, from clean to less clean, without guaranteeing that nothing crosses",
+      "It makes the room sterile",
+      "It lowers the air-change rate",
+    ],
+    correct: 1,
+    feedback: "An open door, the wake of a person or a failed fan carry air "
+      + "both ways, which is why doors are interlocked and flows monitored "
+      + "(step 3).",
+  },
+  {
+    id: "two-rules", steps: [4],
+    q: "Lowering the coating room's pressure to 15 Pa makes the airlock rule fire although the 10 Pa cascade still holds.  Why?",
+    options: [
+      "The two rules test different things: an airlock at the same pressure as the room it should step down from is no step",
+      "The cascade rule is wrong",
+      "The airlock has the wrong grade",
+      "The engine double counts",
+    ],
+    correct: 0,
+    feedback: "Two rules, one number: the cascade needs a pressure gap between "
+      + "neighbours, while the airlock rule asks that it lies in the "
+      + "cascade between its two sides (step 4).",
+  },
+  {
+    id: "sink", steps: [5, 6],
+    q: "Why can the airlock of a contained room be a sink, at a lower pressure than the suite it serves?",
+    options: [
+      "Air leaves the suite into the sink and is exhausted there, so the suite's powder does not reach the neighbouring room",
+      "A mistake the engine overlooks",
+      "A contained room lacks an airlock",
+      "Because sinks are always cleaner",
+    ],
+    correct: 0,
+    feedback: "For a contained room the powder must stay in, so the cascade is "
+      + "turned round; the sink is exempt from the usual rule for this "
+      + "reason (step 6; the three airlock kinds are in step 5).",
+  },
+  {
+    id: "lift", steps: [13],
+    q: "Why does the escape check leave lifts out of the walk?",
+    options: [
+      "A lift is not an exit: in a fire it is the one way nobody may use",
+      "Lifts are too slow",
+      "Lifts lack doors",
+      "Lifts are always on the ground floor",
+    ],
+    correct: 0,
+    feedback: "The engine walks the openings from outside inwards without "
+      + "lifts and announces every room it cannot reach; it is a geometric "
+      + "check, not a certification of evacuation (step 13).",
+  },
 ];

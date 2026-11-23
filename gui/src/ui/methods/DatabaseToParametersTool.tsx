@@ -56,10 +56,8 @@ import {
   pipelineIssues, readParity, temperaturesOf, type FitKind, type Grade, type PairFitInput,
   type ParityRow,
 } from "./databaseToParametersFit.js";
-import {
-  CATALOGUE_COMMIT, CATALOGUE_DATE, COUNTS, DP_LIMITS, DP_STEPS, EXAMPLE_RECORD, MAP,
-  RECORD_LINES,
-} from "./databaseToParametersLesson.js";
+import { CATALOGUE_COMMIT, CATALOGUE_DATE, COUNTS, DP_LIMITS, DP_QUIZ, DP_STEPS, EXAMPLE_RECORD, MAP, RECORD_LINES } from "./databaseToParametersLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 import { setActiveMethodTool, type MethodToolId } from "./registry.js";
 
@@ -539,6 +537,9 @@ export function DatabaseToParametersTool(): JSX.Element {
             </Table.Tbody>
           </PanTable>
         </Box>
+
+        <LessonQuiz title="Check your understanding" questions={DP_QUIZ}
+          lesson={DP_STEPS} />
 
         <LessonLimits limits={DP_LIMITS} />
 

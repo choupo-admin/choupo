@@ -94,7 +94,8 @@ import {
 } from "./knobPanel.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
-import { MERKEL_LIMITS, MERKEL_STEPS } from "./merkelLesson.js";
+import { MERKEL_LIMITS, MERKEL_QUIZ, MERKEL_STEPS } from "./merkelLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 
 // ---- Detection: which units feed the tool -----------------------------------
@@ -535,6 +536,8 @@ export function MerkelTool(): JSX.Element {
         {lessonStep(4)}
 
         {lessonStep(5)}
+
+        <LessonQuiz title="Check your understanding" questions={MERKEL_QUIZ} lesson={MERKEL_STEPS} />
 
         {lessonLimits}
 

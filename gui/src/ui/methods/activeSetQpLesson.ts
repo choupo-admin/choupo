@@ -36,6 +36,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const QP_STEPS: readonly LessonStep[] = [
   {
@@ -448,5 +449,71 @@ export const QP_LIMITS: readonly LessonLimit[] = [
       + "no longer holds, and it needs a different method. Choupo's caller guarantees "
       + "convexity rather than checking it, by building the Hessian with a "
       + "damped BFGS update that cannot lose it.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const QP_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "working-set", steps: [2],
+    q: "Why are inequality constraints harder than equality constraints in a quadratic programme?",
+    options: [
+      "Their coefficients are not linear",
+      "You do not know in advance which of them the answer will be pressed against",
+      "They make the objective non-convex",
+      "They need a different linear solver for every row",
+    ],
+    correct: 1,
+    feedback: "Equalities are always tight and fold into one linear system.  An "
+      + "inequality is tight or slack, and the answer decides which; once the "
+      + "tight ones are known they behave as equalities and the slack ones can "
+      + "be ignored.  The active-set method is the search for that list (step 2).",
+  },
+  {
+    id: "drop-sign", steps: [4],
+    q: "The step over the working set is zero, and one inequality's multiplier is negative.  What does the method do?",
+    options: [
+      "Stops: a zero step means the answer has been found",
+      "Reports the problem infeasible",
+      "Drops that constraint from the working set and solves again",
+      "Adds every remaining inequality to the working set",
+    ],
+    correct: 2,
+    feedback: "A zero step only says the point is optimal for the current working "
+      + "set.  A negative multiplier says the objective would improve by moving "
+      + "off that bound, so the constraint is in the way, not holding the answer "
+      + "in.  Drop the most negative one and continue (step 4).",
+  },
+  {
+    id: "blocking", steps: [3],
+    q: "A proposed step would cross an inequality that is not in the working set.  What is done?",
+    options: [
+      "The step is taken in full and the violation is repaired afterwards",
+      "The step is cut at the smallest fraction that reaches a wall, and that constraint joins the working set",
+      "The whole step is discarded and the problem restarted",
+      "The inequality is turned into an equality for the rest of the run",
+    ],
+    correct: 1,
+    feedback: "Every inequality outside the working set is a wall.  The method "
+      + "computes the fraction of the step at which each would be reached, takes "
+      + "the smallest, moves that far and adds the constraint it landed on "
+      + "(step 3).",
+  },
+  {
+    id: "multiplier-meaning", steps: [6, 7],
+    q: "In the water-analysis reconciliation, what does a law's multiplier tell you?",
+    options: [
+      "A share of blame that is only approximately attributed to each law",
+      "The price of the law, which here is a number of standard deviations that it moves each measurement",
+      "The probability that the laboratory made an error",
+      "How many iterations the solver needed for that law",
+    ],
+    correct: 1,
+    feedback: "In sigma units the stationarity condition makes each row's "
+      + "correction a sum of per-law parts, each a multiplier times a "
+      + "coefficient, and the parts add up with no residue.  It is an identity, "
+      + "not an attribution scheme (step 7); the multiplier is the price of the "
+      + "constraint (step 6).",
   },
 ];
