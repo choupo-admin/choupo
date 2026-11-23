@@ -182,6 +182,38 @@ static void seedBatchUnitsFrom0(const std::vector<DictPtr>& unitList,
     }
 }
 
+namespace {
+
+//  THE IGNITION DELAY FROM THE DENSE OUTPUT (C477, Theory Guide
+//  sec:ignition-delay-dense).  tau = the time of the steepest rise of T,
+//  max dT/dt, over EVERY accepted integrator step: the step ends and, where
+//  the integrator has a dense output, kSubSamples points inside each step.
+//  The slope is taken between consecutive samples and tau is the midpoint of
+//  the steepest interval, so it does not depend on the write grid.
+struct IgnitionTracker
+{
+    static constexpr int kSubSamples = 8;
+    bool   started = false, hasDense = false;
+    scalar tLast = 0.0, TLast = 0.0, T0 = 0.0;
+    scalar bestSlope = 0.0, tBest = 0.0;
+    std::size_t samples = 0;
+    void feed(scalar t, scalar T)
+    {
+        if (!started) { started = true; T0 = T; }
+        else if (t > tLast)
+        {
+            const scalar slope = (T - TLast) / (t - tLast);
+            if (slope > bestSlope) { bestSlope = slope; tBest = 0.5 * (t + tLast); }
+        }
+        tLast = t; TLast = T; ++samples;
+    }
+    scalar rise() const { return TLast - T0; }
+    //  published only when the dense output fed it and T rose by more than 200 K
+    bool publishes() const { return started && hasDense && rise() > 200.0 && bestSlope > 0.0; }
+};
+
+} // namespace
+
 int main(int argc, char** argv)
 try
 {
@@ -787,6 +819,7 @@ if (flowsheetDict->found("cycle"))
     // pair per snapshot.
     std::vector<std::vector<std::pair<scalar, scalar>>> tempTrace(units.size());
     //  The vessels' write grid kept in memory ONLY when views are declared.
+    std::vector<IgnitionTracker> ign(units.size());   // C477: tau from the dense output
     std::vector<views::BatchVesselRecord> viewHistory;
     if (viewReader)
     {
@@ -1536,6 +1569,8 @@ if (flowsheetDict->found("cycle"))
     writeSnapshot(t);
     if (verbosity >= 3) echoLine(t);
     nextWrite += writeInterval;
+    for (std::size_t u = 0; u < units.size(); ++u)
+        if (units[u]->type() == "batchReactor") ign[u].feed(t, units[u]->state().T);
 
     // Continuous discharge routing: hand each unit's per-step sheddings
     // (e.g. a still's condensed vapour) to its `dischargeTo` receiver, so a
@@ -1782,10 +1817,14 @@ if (flowsheetDict->found("cycle"))
 
             // Collect ODE-form units for the stiff sweep; step the rest fixed.
             std::vector<solver::OdeUnit> odeUnits;
+            std::vector<std::size_t> odeToUnit;     // packed vessel -> its index in `units`
+            std::size_t unitLoopIdx = 0;
             for (auto& unit : units)
             {
+                const std::size_t thisUnitIdx = unitLoopIdx++;
                 if (unit->hasOdeForm())
                 {
+                    odeToUnit.push_back(thisUnitIdx);
                     BatchUnitOperation* up = unit.get();
                     odeUnits.push_back({
                         [up]               { return up->odeState(); },
@@ -1956,6 +1995,21 @@ if (flowsheetDict->found("cycle"))
                         const sVector yNew = ou.pack();       // the accepted state
                         sVector fNew;
                         bool haveF = false;
+                        //  C477: the ignition tracker of THIS vessel (its own thread)
+                        if (units[odeToUnit[u]]->type() == "batchReactor")
+                        {
+                            IgnitionTracker& tr = ign[odeToUnit[u]];
+                            for (int k = 1; k < IgnitionTracker::kSubSamples; ++k)
+                            {
+                                std::vector<sVector> sub;
+                                if (!vesselSteppers[u]->denseAt(static_cast<scalar>(k)
+                                        / IgnitionTracker::kSubSamples, sub)) break;
+                                tr.hasDense = true;
+                                tr.feed(tPrev + hTaken * k / IgnitionTracker::kSubSamples,
+                                        sub[0].back());
+                            }
+                            tr.feed(tEnd, yNew.back());
+                        }
                         while (nw < tStop - tol && nw <= tEnd + tol)
                         {
                             const scalar tw = nw;
@@ -2133,6 +2187,22 @@ if (flowsheetDict->found("cycle"))
                     const scalar tPrev = tEnd - hTaken;
                     std::vector<sVector> yNew, fNew;
                     for (const auto& ou : odeUnits) yNew.push_back(ou.pack());
+                    //  C477: the ignition trackers, from the integrator's dense output
+                    for (int k = 1; k < IgnitionTracker::kSubSamples; ++k)
+                    {
+                        std::vector<sVector> sub;
+                        if (!stepper.denseAt(static_cast<scalar>(k) / IgnitionTracker::kSubSamples, sub)) break;
+                        for (std::size_t u = 0; u < odeUnits.size(); ++u)
+                            if (units[odeToUnit[u]]->type() == "batchReactor")
+                            {
+                                ign[odeToUnit[u]].hasDense = true;
+                                ign[odeToUnit[u]].feed(tPrev + hTaken * k / IgnitionTracker::kSubSamples,
+                                                       sub[u].back());
+                            }
+                    }
+                    for (std::size_t u = 0; u < odeUnits.size(); ++u)
+                        if (units[odeToUnit[u]]->type() == "batchReactor")
+                            ign[odeToUnit[u]].feed(tEnd, yNew[u].back());
                     bool interpolated = false;
                     while (nextWrite < tNext - tol && nextWrite <= tEnd + tol)
                     {
@@ -2275,6 +2345,17 @@ if (flowsheetDict->found("cycle"))
     for (std::size_t u = 0; u < units.size(); ++u)
     {
         const auto& tr = tempTrace[u];
+        if (ign[u].publishes())
+        {
+            //  C477: the dense-output value, published as the KPI tauIgnition
+            std::cout << "\n  Ignition delay, " << units[u]->name()
+                      << ":  tau_ign (max dT/dt) = " << std::scientific
+                      << std::setprecision(3) << ign[u].tBest << " s   (from the integrator's dense output, "
+                      << ign[u].samples << " samples, T rose " << std::fixed << std::setprecision(0)
+                      << ign[u].rise() << " K; no longer the write grid; published as the KPI"
+                         " tauIgnition)\n";
+            continue;
+        }
         if (tr.size() < 3 || (tr.back().second - tr.front().second) < 200.0)
             continue;
         scalar best = 0.0, tIgn = 0.0;
@@ -2288,7 +2369,8 @@ if (flowsheetDict->found("cycle"))
         std::cout << "\n  Ignition delay, " << units[u]->name()
                   << ":  tau_ign (max dT/dt) = " << std::scientific
                   << std::setprecision(3) << tIgn << " s   (grid resolution "
-                  << (tr[1].first - tr[0].first) << " s)\n";
+                      << (tr[1].first - tr[0].first) << " s; the WRITE GRID value -- this path has no dense"
+                         " output, so it is not published as a KPI)\n";
     }
 
     std::cout << "\n=========================  Final state at t = " << t << " s  ===\n";
@@ -2340,6 +2422,14 @@ if (flowsheetDict->found("cycle"))
                 k["n_" + thermo.comp(i).name() + "_final"] = st.n[i];
             for (const auto& [key, v] : unit->kpis())
                 k[key] = v;                     // unit-specific verdicts (rectifier x_D, R, D)
+            {
+                const std::size_t ui = static_cast<std::size_t>(&unit - &units[0]);
+                if (ign[ui].publishes())
+                {
+                    k["tauIgnition"] = ign[ui].tBest;     // C477: the dense-output delay [s]
+                    result.kpiUnits[unit->name()]["tauIgnition"] = "s";
+                }
+            }
             for (const auto& ev : unit->statusEvents())
                 timeline.push_back(ev);         // qualitative state changes
         }
