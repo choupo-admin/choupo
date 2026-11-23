@@ -57,3 +57,14 @@ export function groupLoci(g: AdvisoryGroup): string[] {
   }
   return loci;
 }
+
+/** The one-line summary of the advisories' band (C479): how many, at warning level, in how many
+ *  kinds (one kind per category and severity, as groupAdvisories groups them), and whether the
+ *  band opens folded -- beyond `openGroups` kinds it is one line, the groups a click away. */
+export function advisorySummary(
+  advisories: readonly { category: string; severity?: string }[], openGroups = 3,
+): { total: number; warnings: number; kinds: number; folded: boolean } {
+  const kinds = new Set(advisories.map((a) => `${a.category}|${a.severity ?? ""}`)).size;
+  const warnings = advisories.filter((a) => a.severity === "warning").length;
+  return { total: advisories.length, warnings, kinds, folded: kinds > openGroups };
+}

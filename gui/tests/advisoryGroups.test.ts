@@ -24,6 +24,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { MantineProvider } from "@mantine/core";
 
 import { groupAdvisories, groupLoci } from "../src/case/advisoryGroups.js";
+import { advisorySummary } from "../src/case/advisoryGroups.js";
 import type { Advisory } from "../src/adapters/SolverAdapter.js";
 
 vi.mock("../src/state/store.js", () => ({
@@ -87,4 +88,15 @@ describe("the Streams summary band", () => {
     //  and the old overflow line is gone
     expect(text).not.toContain("more — see Log");
   }, 120_000);
+});
+
+describe("the advisories' band folds beyond three kinds (C479)", () => {
+  const a = (category: string, severity: string) => ({ category, severity });
+  it("counts the total, the warnings and the kinds; folds only beyond three kinds", () => {
+    const few = [a("thermo", "info"), a("thermo", "info"), a("validity", "warning")];
+    expect(advisorySummary(few)).toEqual({ total: 3, warnings: 1, kinds: 2, folded: false });
+    const many = [a("thermo", "info"), a("validity", "warning"), a("rating", "warning"),
+                  a("design", "warning"), a("design", "info")];
+    expect(advisorySummary(many)).toEqual({ total: 5, warnings: 3, kinds: 5, folded: true });
+  });
 });

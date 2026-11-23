@@ -46,6 +46,17 @@ count it twice).  Atoms close although moles do not -- the element balance reads
   Antoine and Cp are extrapolated far outside their fitted ranges at the
   column's temperatures (announced).
 
+## Compared with the reference simulator (a cross-check, not a validation)
+
+The case was built from the PEQ course exercise MTBE_Intensified (the same 15
+stages, pressure, feeds and specifications), which the course runs in the
+reference simulator.  `system/postDict` declares one table that sets that run's
+duties, end temperatures and conversion beside Choupo's, with the difference;
+the reference values are in `constant/reference/course_case_reference_simulator.csv`,
+as recorded in DEV.md 4c (C235).  Two programs, one specification: nothing in
+this case is read from the reference's numbers, and the reference used a
+Redlich-Kwong vapour where Choupo uses SRK.
+
 ## Honest limits
 
 **Nothing in this case is validated against a measurement of an MTBE column.**

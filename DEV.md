@@ -5395,6 +5395,20 @@ accepts today, and that is a policy call.
 > header fix had swallowed the import of equipmentBanks.ts into the comment (typecheck red, vitest
 > green because esbuild strips types); fixed.  Open: point 4 and the advisories.
 
+> **C477 ENGINE HALF LANDED (2026-11-23, 9c7b52867d) and C479 POINT 4 (e3499d4f07).**  choupoBatch
+> reads `views` (the steady Reader), publishes `tauIgnition` from the dense output, an optional log
+> write grid and `routeIntegral` (NO by declared reaction class; NNH and "prompt" not declared as
+> routes because Appendix A gives no honest split, the HCN/NCO class holds prompt and reburning).
+> nox03 and its seulex twin (added by the architect after Vitor opened the twin and found the
+> 50-species trajectory): tau_ign 2.380 ms on both, thermal 98 % of the NO, routes close on the
+> inventory to 7e-13 kmol; nox02 the temperature window with Fig. 57.  Integration found two gates
+> whose bounds were measured on nox03's old shape (check_batch_dense_output g/h,
+> check_kinetics_jacobian h2): their probes now restore that shape, and h2 judges the state, not
+> tauIgnition (0.37 us between schemes, the dense sampling).  No full sweep: choupoBatch reaches
+> only batch cases, all run (86/0) with byte-identity of cases without views; --fast 89/0, --gui
+> 49/0.  Column19 shows the course case's reference-simulator run beside Choupo as a labelled
+> cross-check table.  C477 stays PARTIAL for the corpus survey (after 2 December).
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,

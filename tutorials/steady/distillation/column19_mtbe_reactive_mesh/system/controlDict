@@ -8,5 +8,5 @@
 \*-----------------------------------------------------------------------------*/
 
 application   choupoSolve;
-description   "MTBE reactive column: a mole-changing reaction in the rigorous (full MESH) column; nothing validated against a measurement";
+description   "MTBE reactive column: a mole-changing reaction in the rigorous (full MESH) column; compared with the reference simulator on the course case (a cross-check); nothing validated against a measurement";
 verbosity     3;

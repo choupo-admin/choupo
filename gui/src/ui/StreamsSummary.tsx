@@ -47,6 +47,7 @@ License
 
 import { Box, Group, Stack, Table, Text, Tooltip } from "@mantine/core";
 import { IconCircleCheck, IconAlertTriangle, IconArrowsSplit2 } from "@tabler/icons-react";
+import type { ReactNode } from "react";
 
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import { massBalance } from "../case/balances.js";
@@ -54,7 +55,7 @@ import { useStore } from "../state/store.js";
 import { SortTh, useSortable } from "./SortableTable.js";
 import { dTText, dutyFixed, dutyText } from "../case/resultUnits.js";
 import { closureLine, closureWordOf, closureWords } from "../case/closureByConstruction.js";
-import { groupAdvisories, groupLoci, GROUP_LOCI_SHOWN } from "../case/advisoryGroups.js";
+import { advisorySummary, groupAdvisories, groupLoci, GROUP_LOCI_SHOWN } from "../case/advisoryGroups.js";
 import {
   dutyLabel,
   flowBasis,
@@ -233,10 +234,7 @@ export function StreamsSummary({
           auto-init) -- "no silent crutch" surfaced where a student reads the
           results, not buried in the Log. */}
       {result.advisories && result.advisories.length > 0 && (
-        <Stack gap={2} mb={6}>
-          <Text size="xs" fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: 0.4 }}>
-            Solver advisories ({result.advisories.length})
-          </Text>
+        <AdvisoryFold advisories={result.advisories}>
           {/* ONE LINE PER KIND (rehearsal 2026-11-13: 35 lines of one notice).
               The key is the engine's own category (+ severity); the engine's
               texts are listed verbatim behind the group's disclosure. */}
@@ -288,7 +286,7 @@ export function StreamsSummary({
               </details>
             );
           })}
-        </Stack>
+        </AdvisoryFold>
       )}
 
       {/* Model-boundary audit: adjacent units on different thermo models.
@@ -490,5 +488,34 @@ export function StreamsSummary({
         )}
       </Group>
     </Box>
+  );
+}
+
+/** The advisories' band (C479, from the C266 walk: the reference plant opened on 107 advisories
+ *  in eight groups, a third of the Streams tab, above the stream table).  Up to ADVISORY_OPEN_GROUPS
+ *  groups the band shows them open, as before; beyond that it is ONE line -- how many, how many at
+ *  warning level -- and the groups are one click away.  Nothing is hidden or reworded: the same
+ *  groups, the same engine texts, behind a disclosure. */
+const ADVISORY_OPEN_GROUPS = 3;
+function AdvisoryFold({ advisories, children }: { advisories: readonly { severity?: string; category: string }[]; children: ReactNode }) {
+  const { warnings, kinds: groups, folded } = advisorySummary(advisories, ADVISORY_OPEN_GROUPS);
+  const title = (
+    <Text size="xs" fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: 0.4 }} span>
+      Solver advisories ({advisories.length})
+    </Text>
+  );
+  if (!folded) {
+    return <Stack gap={2} mb={6}>{title}{children}</Stack>;
+  }
+  return (
+    <details data-advisory-fold style={{ marginBottom: 6 }}>
+      <summary style={{ cursor: "pointer" }}>
+        {title}
+        <Text size="xs" c="dimmed" span>
+          {" "}· {warnings} at warning level · {groups} kinds — the notes that qualify the answer, each with its reason; show
+        </Text>
+      </summary>
+      <Stack gap={2} mt={4}>{children}</Stack>
+    </details>
   );
 }

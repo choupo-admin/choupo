@@ -12950,6 +12950,7 @@
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/solver/NewtonRaphson.H",
+   "src/solver/ODE/ODEIntegrator.H",
    "src/streams/Carried.H",
    "src/streams/Composition.H",
    "src/streams/ProcessStream.H",
@@ -13037,6 +13038,7 @@
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/solver/NewtonRaphson.H",
+   "src/solver/ODE/ODEIntegrator.H",
    "src/streams/Carried.H",
    "src/streams/Composition.H",
    "src/streams/ProcessStream.H",
@@ -13085,6 +13087,7 @@
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/solver/NewtonRaphson.H",
+   "src/solver/ODE/ODEIntegrator.H",
    "src/streams/Carried.H",
    "src/streams/Composition.H",
    "src/streams/ProcessStream.H",
@@ -13137,6 +13140,7 @@
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/solver/NewtonRaphson.H",
+   "src/solver/ODE/ODEIntegrator.H",
    "src/streams/Carried.H",
    "src/streams/Composition.H",
    "src/streams/ProcessStream.H",
@@ -13184,6 +13188,7 @@
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
    "src/solver/NewtonRaphson.H",
+   "src/solver/ODE/ODEIntegrator.H",
    "src/streams/Carried.H",
    "src/streams/Composition.H",
    "src/streams/ProcessStream.H",
@@ -13246,6 +13251,7 @@
    "src/solver/Convergence.H",
    "src/solver/NewtonRaphson.H",
    "src/solver/ODE/ODEIntegrator.H",
+   "src/solver/ODE/ODEJacobianAudit.H",
    "src/solver/ParallelFor.H",
    "src/solver/SparseLU.H",
    "src/streams/Carried.H",
@@ -13300,6 +13306,7 @@
    "src/solver/Convergence.H",
    "src/solver/NewtonND.H",
    "src/solver/NewtonRaphson.H",
+   "src/solver/ODE/ODEIntegrator.H",
    "src/streams/Carried.H",
    "src/streams/Composition.H",
    "src/streams/ProcessStream.H",
@@ -13384,6 +13391,10 @@
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/TransportModel.H"
   ],
+  "src/unitOperations/batch/BedTransportCorrelations.cpp": [
+   "src/core/Types.H",
+   "src/unitOperations/batch/BedTransportCorrelations.H"
+  ],
   "src/unitOperations/batch/FixedBedAdsorber.cpp": [
    "src/core/Advisory.H",
    "src/core/BatchPlanRecords.H",
@@ -13431,6 +13442,7 @@
    "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
+   "src/unitOperations/batch/BedTransportCorrelations.H",
    "src/unitOperations/batch/FixedBedAdsorber.H",
    "src/unitOperations/hydraulics/packedBed/ErgunEquation.H"
   ],
@@ -21186,6 +21198,7 @@
    "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
+   "src/unitOperations/batch/BedTransportCorrelations.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/crystallisation/CrystallisationHeat.cpp",
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
@@ -23387,14 +23400,21 @@
    "src/solver/ODE/Rosenbrock23.cpp",
    "src/solver/ODE/Seulex.cpp",
    "src/solver/SparseLU.cpp",
+   "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
+   "src/unitOperations/batch/BatchCrystalliser.cpp",
+   "src/unitOperations/batch/BatchDiafilter.cpp",
+   "src/unitOperations/batch/BatchDryer.cpp",
+   "src/unitOperations/batch/BatchElectrodialysis.cpp",
    "src/unitOperations/batch/BatchReactor.cpp",
+   "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp"
   ],
   "src/solver/ODE/ODEJacobianAudit.H": [
    "src/solver/ODE/Rosenbrock23.cpp",
-   "src/solver/ODE/Seulex.cpp"
+   "src/solver/ODE/Seulex.cpp",
+   "src/unitOperations/batch/BatchReactor.cpp"
   ],
   "src/solver/ODE/RK4.H": [
    "src/solver/ODE/ODEIntegrator.cpp",
@@ -29536,6 +29556,10 @@
    "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
+   "src/unitOperations/batch/FixedBedAdsorber.cpp"
+  ],
+  "src/unitOperations/batch/BedTransportCorrelations.H": [
+   "src/unitOperations/batch/BedTransportCorrelations.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp"
   ],
   "src/unitOperations/batch/FixedBedAdsorber.H": [

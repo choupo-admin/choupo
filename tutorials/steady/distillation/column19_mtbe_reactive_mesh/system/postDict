@@ -1,0 +1,73 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column19_mtbe_reactive_mesh -- the VIEW the run is read through (C271, C479).
+  One table: the same column specification run in the reference simulator (the
+  PEQ course exercise this case was built from, DEV.md 4c C231) against
+  Choupo, with the difference.  A CROSS-CHECK between two programs, never a
+  validation against a measurement (none exists for this column) and never an
+  input: every Choupo value is read from the run, every reference value from
+  constant/reference/course_case_reference_simulator.csv.
+\*---------------------------------------------------------------------------*/
+references
+(
+    {
+        name      courseCase;
+        file      "constant/reference/course_case_reference_simulator.csv";
+        role      reference;
+        citation  "PEQ course exercise MTBE_Intensified (15 stages), the same specification run in the reference simulator; results recorded in DEV.md 4c (C235, 2026-11-07). A cross-check between programs, not a measurement.";
+        units     { duty_MW "MW_power"; T_K "K"; conversion "-"; }
+    }
+);
+views
+(
+    {
+        name    referenceSimulator;
+        type    table;
+        title   "The course's reference-simulator run of the same column against Choupo";
+        note    "Same specification (15 stages, 7 bar, bottoms 240 kmol/h, boil-up ratio 5, reactive stages 6-10), two programs. The reference used a Redlich-Kwong vapour, Choupo SRK with kij = 0 and its own K_a(T) from Izquierdo et al. (1992); nothing here was fitted to the reference. A cross-check, not a validation: no measurement of this column exists.";
+        columns
+        (
+            { name Qc;   label "condenser duty";  unit "MW_power"; }
+            { name Qr;   label "reboiler duty";   unit "MW_power"; }
+            { name Ttop; label "top temperature"; unit "K"; }
+            { name Tbot; label "bottom temperature"; unit "K"; }
+            { name X;    label "conversion (fraction)"; unit "-"; }
+        );
+        rows
+        (
+            {
+                name    reference;
+                label   "reference simulator (course case)";
+                cells
+                {
+                    Qc   { reference courseCase; select { item condenser; } key duty_MW; }
+                    Qr   { reference courseCase; select { item reboiler; }  key duty_MW; }
+                    Ttop { reference courseCase; select { item condenser; } key T_K; }
+                    Tbot { reference courseCase; select { item reboiler; }  key T_K; }
+                    X    { reference courseCase; select { item column; }    key conversion; }
+                }
+            }
+            {
+                name    choupo;
+                label   "Choupo";
+                cells
+                {
+                    Qc   { unitOp mtbeColumn; key Q_condenser_kW; }
+                    Qr   { unitOp mtbeColumn; key Q_reboiler_kW; }
+                    Ttop { unitOp mtbeColumn; key T_top; }
+                    Tbot { unitOp mtbeColumn; key T_bottom; }
+                    X    { unitOp mtbeColumn; key conversion; }
+                }
+            }
+            { name diff; label "Choupo - reference";    difference ( choupo reference ); relative no; }
+            { name rel;  label "relative to reference"; difference ( choupo reference ); relative yes; }
+        );
+    }
+);

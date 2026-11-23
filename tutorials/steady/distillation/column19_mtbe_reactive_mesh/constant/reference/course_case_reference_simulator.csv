@@ -1,0 +1,12 @@
+# The MTBE column of Vitor Geraldes's PEQ course exercise (MTBE_Intensified, 15 stages, partial
+#   vapour condenser, reactive stages 6-10; DEV.md 4c C231), RUN IN THE REFERENCE SIMULATOR by
+#   the course, the results recorded in DEV.md 4c "C235 LANDED" (2026-11-07).  A CROSS-CHECK
+#   against another program's answer to the same specification, NOT a measurement and NOT an input:
+#   nothing in this case is read from these numbers (K_a is Izquierdo et al. 1992, the isobutene
+#   datum Prosen et al. 1951; see the README).  The reference program used a Redlich-Kwong vapour.
+#   Units as recorded: duties MW (the condenser's heat removed written negative, the engine's sign),
+#   temperatures K, conversion as a fraction of the limiting feed (recorded as 98.87 %).
+item,duty_MW,T_K,conversion
+condenser,-7.40,324.4,
+reboiler,7.64,401.3,
+column,,,0.9887
