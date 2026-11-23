@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl02_disturbance_rejection / postDict -- the case's ONE figure
+  (DEV.md 4c C487; grammar: docs/design/a-post-processing-dictionary.md).
+
+    response   "Does the controller hold the reactor at its set point when the
+               feed temperature steps?"
+               The controlled variable (the PID TC1's PV, the reactor
+               temperature) against its set point on the left axis, the
+               manipulated variable (TC1's MV, the jacket temperature) and the
+               disturbance (the Schedule FeedDist's MV, the feed temperature
+               T_in, stepped at 700 s and 1300 s) on the right axis, all against
+               time.  What the run publishes: each controller's `trajectory`
+               table (SP, PV, MV) and the unit's, as trajectory.csv has them.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    response;
+        type    series;
+        title   "Does the controller hold the reactor at its set point?";
+        note    "The PID TC1 holds the reactor temperature at 350 K by moving the jacket temperature; the feed temperature steps down 15 K at 700 s and up 15 K at 1300 s (the Schedule FeedDist). The jacket takes up each step and the reactor temperature stays on its set point.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "reactor temperature"; unit "K"; scale linear; }
+        yAxis2  { label "jacket and feed temperature"; unit "K"; scale linear; }
+        series
+        (
+            { name SP;  label "set point";                  unitOp TC1;      table trajectory; x t; y SP; style lines; }
+            { name PV;  label "reactor T (controlled)";     unitOp TC1;      table trajectory; x t; y PV; style lines; }
+            { name MV;  label "jacket T (manipulated)";     unitOp TC1;      table trajectory; x t; y MV; style lines; axis right; }
+            { name Tin; label "feed T (disturbance)";       unitOp FeedDist; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+);
