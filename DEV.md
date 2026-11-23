@@ -5409,6 +5409,16 @@ accepts today, and that is a policy call.
 > 49/0.  Column19 shows the course case's reference-simulator run beside Choupo as a labelled
 > cross-check table.  C477 stays PARTIAL for the corpus survey (after 2 December).
 
+> **C482 (Vitor, 2026-11-23, opening nox03's seulex twin: "onde esta registada a trajetoria da
+> reacao? ... sera que em cada tempo, no internalstate pode ficar registado a trajetoria resolvida
+> dos varios componentes entre dois instantes?").**  Today a batch run writes trajectory.csv on the
+> write grid and one restartable `<t>/internalStates/<unit>` per instant; the integrator's accepted
+> steps between instants are not kept (the rows between them are its dense output, C476).  RULED:
+> yes, as an option, but NOT inside internalStates, which by contract is the restartable snapshot
+> and stays one: `writeSteps true;` writes `<t>/steps/<unit>.csv`, the accepted steps in
+> (t_prev, t] (t, h, T, n_i), the real steps, no interpolation; off by default.  Wish list, after
+> 2 December.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
