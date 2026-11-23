@@ -35,8 +35,9 @@ License
   table, holds each to the shape, and refuses a quiz that is drawn without
   being in the table.  When every tool has one, the requirement becomes
   "every live tool in the registry" -- arm (e) says so NOW (C158, 2026-11-23):
-  a live tool with no quiz fails by name unless it is in NO_QUIZ_YET, a named
-  list that may only shrink.
+  a live tool with no quiz fails by name.  The shrink-only list of tools
+  still owing one (NO_QUIZ_YET) held the last two and was removed with them:
+  an empty list checks nothing.
 
     (a) every tool in the table is a LIVE tool of the registry;
     (b) every question: an id unique in its quiz, a question ending in a
@@ -124,6 +125,10 @@ import { CAMPAIGN_PLAN_QUIZ, CAMPAIGN_PLAN_STEPS } from "../src/ui/methods/campa
 import { AdsorbentSelectionTool } from "../src/ui/methods/AdsorbentSelectionTool.js";
 import { ADS_SEL_QUIZ, ADS_SEL_STEPS } from "../src/ui/methods/adsorbentSelectionLesson.js";
 import { FOUR_WAYS_QUIZ, FOUR_WAYS_STEPS, FourWaysMixtureTool } from "../src/ui/methods/FourWaysMixtureTool.js";
+import { SC_QUIZ, SC_STEPS } from "../src/ui/methods/stiffChemistryLesson.js";
+import { StiffChemistryTool } from "../src/ui/methods/StiffChemistryTool.js";
+import { METHANE_QUIZ, METHANE_STEPS } from "../src/ui/methods/methaneAssemblyLesson.js";
+import { MethaneAssemblyTool } from "../src/ui/methods/MethaneAssemblyTool.js";
 import { LinearAlgebraTool } from "../src/ui/methods/LinearAlgebraTool.js";
 import { LA_QUIZ, LA_STEPS } from "../src/ui/methods/linearAlgebraLesson.js";
 
@@ -297,6 +302,16 @@ interface QuizEntry {
 
 /** THE COVERAGE REQUIREMENT: the tools that must end with a quiz. */
 const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
+  "stiff-chemistry": {
+    quiz: SC_QUIZ, quizName: "SC_QUIZ",
+    lesson: SC_STEPS, lessonName: "SC_STEPS",
+    file: "src/ui/methods/StiffChemistryTool.tsx", tool: StiffChemistryTool,
+  },
+  "methane-assembly": {
+    quiz: METHANE_QUIZ, quizName: "METHANE_QUIZ",
+    lesson: METHANE_STEPS, lessonName: "METHANE_STEPS",
+    file: "src/ui/methods/MethaneAssemblyTool.tsx", tool: MethaneAssemblyTool,
+  },
   "four-ways-mixture": {
     quiz: FOUR_WAYS_QUIZ, quizName: "FOUR_WAYS_QUIZ",
     lesson: FOUR_WAYS_STEPS, lessonName: "FOUR_WAYS_STEPS",
@@ -713,12 +728,6 @@ const QUIZZES: Partial<Record<MethodToolId, QuizEntry>> = {
 const live = METHOD_TOOLS.filter((t) => t.status === "live");
 const quizzed = live.filter((t) => QUIZZES[t.id] !== undefined);
 
-//  THE DEBT, NAMED.  Live tools that still have no quiz.  The list may only
-//  SHRINK: a tool leaves it by getting a QUIZZES entry (arm (e) then fails
-//  if it stays listed), and no tool joins it -- a new live tool with no quiz
-//  fails arm (e) by name.  Measured 2026-11-23 (C158 slice "four-ways").
-const NO_QUIZ_YET: readonly MethodToolId[] = ["stiff-chemistry", "methane-assembly"];
-
 describe("the quiz coverage (C158)", () => {
   it("(a) every tool the table requires is a live tool of the registry", () => {
     const ids = new Set(live.map((t) => t.id));
@@ -726,15 +735,9 @@ describe("the quiz coverage (C158)", () => {
     expect(quizzed.length).toBe(Object.keys(QUIZZES).length);
     expect(quizzed.length).toBeGreaterThanOrEqual(7);
   });
-  it("(e) every live tool has a quiz, or is named in NO_QUIZ_YET; the list only shrinks", () => {
-    const missing = live.filter((t) => QUIZZES[t.id] === undefined && !NO_QUIZ_YET.includes(t.id))
-      .map((t) => t.id);
-    expect(missing, `live tool(s) with no quiz and no entry in NO_QUIZ_YET: ${missing.join(", ")}`)
-      .toEqual([]);
-    for (const id of NO_QUIZ_YET) {
-      expect(live.some((t) => t.id === id), `${id} in NO_QUIZ_YET is not a live tool`).toBe(true);
-      expect(QUIZZES[id], `${id} now has a quiz: remove it from NO_QUIZ_YET`).toBeUndefined();
-    }
+  it("(e) every live tool has a quiz", () => {
+    const missing = live.filter((t) => QUIZZES[t.id] === undefined).map((t) => t.id);
+    expect(missing, `live tool(s) with no quiz: ${missing.join(", ")}`).toEqual([]);
   });
 });
 

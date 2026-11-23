@@ -32,6 +32,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const METHANE_TASK = "Methane does not ignite from a handful of reactions.  Start from the hydrogen "
   + "and oxygen core in the reaction library, add the carbon chain one rung at a time, and say, after "
@@ -228,5 +229,99 @@ export const METHANE_LIMITS: readonly LessonLimit[] = [
     body: "The vessel is closed, adiabatic and at constant volume from the first instant.  A real "
       + "shock tube has a finite test time, a pressure rise before ignition and boundary layers.  "
       + "The model's start is the experiment's reported temperature and pressure and nothing more.",
+  },
+];
+
+// ---- the quiz ---------------------------------------------------------------
+
+/** Seven questions, each answerable from the page.  The page's run numbers
+ *  appear only after the buttons are pressed, so a question quotes none of
+ *  them; the one size it states ("about an order of magnitude") is the
+ *  page's own step 6 and is marked "engine".  C158. */
+export const METHANE_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "delay-definition", steps: [1],
+    q: "What does the page call the ignition delay, and how does it differ from the shock-tube experimenters' reading?",
+    options: [
+      "The time of the largest temperature rise per unit time on the write grid; the experimenters extrapolate the steepest pressure rise, so the two are close but not the same",
+      "The time at which the last reactant is consumed; the experimenters use the same definition",
+      "The time the shock takes to cross the tube",
+      "The time at which the temperature first exceeds 1000 K",
+    ],
+    correct: 0,
+    feedback: "The engine prints the time at which dT/dt is largest.  Petersen, Davidson and Hanson read an extrapolated pressure rise, so a few percent of any difference is the definition, not the chemistry (step 1 and the limits at the end of the page).",
+  },
+  {
+    id: "core-spectator", steps: [2],
+    q: "Rung 1 runs the hydrogen and oxygen core on a methane and oxygen mixture and the engine prints no ignition delay.  Why?",
+    options: [
+      "The core is too slow to matter at this temperature",
+      "The solver fails on the first step",
+      "The core holds no reaction of a carbon species, so methane is a spectator and the temperature never rises enough to call an ignition",
+      "Methane is not flammable in nitrogen",
+    ],
+    correct: 2,
+    feedback: "A mechanism is not a mixture: the species a case holds do nothing until a reaction names them.  The mixture contains neither hydrogen nor radicals, so the core has nothing to work on (step 2).",
+  },
+  {
+    id: "open-chain", steps: [3],
+    q: "Rung 2 adds the attacks on methane, and a trace of CH3 appears but the temperature barely moves.  What does the chain still need?",
+    options: [
+      "A faster rate constant for the first attack",
+      "A reaction that consumes CH3: the chain is open at the other end, so nothing is made from it and the heat release is negligible",
+      "More nitrogen to carry the heat",
+      "A higher starting pressure",
+    ],
+    correct: 1,
+    feedback: "Each attack removes one hydrogen and leaves a methyl radical, but with nothing to consume CH3 the products never form.  A mechanism that ends in a species nobody consumes predicts that nothing happens (step 3).",
+  },
+  {
+    id: "wrong-reasons", steps: [4],
+    q: "Rung 3 adds the methyl step and the mixture ignites, far earlier than the shock tube measured.  What does the page conclude?",
+    options: [
+      "The model is now validated, because it ignites",
+      "The measurement must be wrong",
+      "A mechanism can ignite for the wrong reasons: the branching CH3 + O2 gives one radical in and two out, which drives the temperature up although the carbon stops at formaldehyde",
+      "Rung 3 should be removed from the set",
+    ],
+    correct: 2,
+    feedback: "Igniting is not agreeing.  The branching reaction alone is enough to start the thermal runaway, and the delay it gives is a small fraction of the measured one.  Step 7 then shows by the sensitivity which reaction is responsible (step 4).",
+  },
+  {
+    id: "start-and-end", steps: [5],
+    q: "Rungs 4 and 5 oxidise the carbon on to CO and CO2.  What do they change in the table of the rungs, and what do they leave nearly alone?",
+    options: [
+      "They raise the final temperature (the heat comes from the end of the chain) and hardly move the delay (set by the beginning of the chain)",
+      "They shorten the delay and leave the final temperature alone",
+      "They change both by the same factor",
+      "They change neither, because CO2 is inert",
+    ],
+    correct: 0,
+    feedback: "The delay was decided earlier, by the branching; the later links decide how much heat the vessel finally holds, and the step from CO to CO2 releases the largest part of it (step 5).",
+  },
+  {
+    id: "ethane-route", steps: [6, 7],
+    q: "Rung 6 adds the recombination of two CH3 into ethane, and the delay grows by about an order of magnitude.  In the sensitivity, what sign does that reaction's coefficient have, and why?",
+    options: [
+      "Negative: a faster recombination brings the ignition forward",
+      "Zero: it is not in the C1 chain",
+      "Positive: a faster recombination removes methyl radicals from the branching and delays the ignition, opposing the branching CH3 + O2, which is negative",
+      "Positive, because ethane is a better fuel than methane",
+    ],
+    correct: 2,
+    feedback: "The coefficient is d ln τ / d ln k, so a positive one means that a faster reaction delays the ignition.  The two reactions of the methyl radical head the list and pull in opposite directions; the delay is, to a first approximation, the outcome of that competition (steps 6 and 7).",
+    origins: ["engine"],
+  },
+  {
+    id: "as-good-as", steps: [8],
+    q: "The assembled set follows the whole Appendix A mechanism at every point and departs from the measurement where the appendix does.  What does the page conclude?",
+    options: [
+      "The assembled set is better than the appendix",
+      "The assembled set is as good as the mechanism it was taken from, and no better",
+      "Both sets are wrong everywhere",
+      "The measurement should be repeated",
+    ],
+    correct: 1,
+    feedback: "A hand-assembled set can stand in for a large mechanism for the delay because a few reactions carry most of it, but it inherits the mechanism's errors: both are too slow at the lowest temperatures and the highest pressures.  The page names peroxide chemistry, which the set leaves out, as the usual reason but says it was not tested here (step 8 and the limits).",
   },
 ];

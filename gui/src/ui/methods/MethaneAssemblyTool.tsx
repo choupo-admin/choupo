@@ -58,7 +58,8 @@ import { useWitnessSweep } from "../../case/methaneAssemblyRun.js";
 import { useMethodRun } from "../../case/methodRun.js";
 import { Panel, Wide, XYPlot, fmt } from "./AdsorptionIsothermsTool.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
-import { METHANE_LIMITS, METHANE_STEPS, METHANE_TASK } from "./methaneAssemblyLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
+import { METHANE_LIMITS, METHANE_QUIZ, METHANE_STEPS, METHANE_TASK } from "./methaneAssemblyLesson.js";
 
 type XY = readonly [number, number];
 const COLORS = ["#2a78d6", "#d4572a", "#1baf7a", "#8e44ad", "#c2a100", "#6b6b6b"];
@@ -399,6 +400,8 @@ export function MethaneAssemblyTool(): JSX.Element {
         <ComparisonPanel />
 
         <LessonLimits limits={METHANE_LIMITS} />
+
+        <LessonQuiz title="Check your understanding" questions={METHANE_QUIZ} lesson={METHANE_STEPS} />
         <LessonReferences tool="methane-assembly" />
       </Stack>
     </Box>

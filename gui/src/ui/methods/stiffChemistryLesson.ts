@@ -35,6 +35,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 // ---- page arithmetic (the calculator of step 1) -----------------------------
 
@@ -420,4 +421,103 @@ export const SC_CASES: readonly string[] = [
 /** Theory Guide labels the page names; each must exist in docs/theoryGuide.tex. */
 export const SC_LABELS: readonly string[] = [
   "ch:stiff-ode", "sec:batch-vessels-separate", "sec:batch-analytic-jacobian", "sec:sparse-lu", "sec:seulex", "sec:batch-dense-output",
+];
+
+// ---- the quiz ---------------------------------------------------------------
+
+/** Seven questions, each answerable from the page.  A number a question
+ *  quotes is one the page prints: a recorded run (marked "engine") or the
+ *  page's own arithmetic (marked "page").  C158. */
+export const SC_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "rk4-limit", steps: [1],
+    q: "The fast radicals have long since settled, yet the explicit RK4 step is still held down.  By step 1, what holds it?",
+    options: [
+      "The accuracy of the temperature, which needs small steps",
+      "The stability function: RK4 needs h|λ| ≤ 2.785 for the Jacobian's largest eigenvalue, even after that mode has died",
+      "The size of the write grid in the output file",
+      "The number of reactions in the mechanism",
+    ],
+    correct: 1,
+    feedback: "An explicit method must keep h|λ| inside its stability region whatever the solution is doing: the step follows the fastest mode, not the accuracy.  The recorded ignition01 runs show the cost: with RK4 the step drove n_HO2 negative at t = 2 µs and the run stopped, and EulerSI, stable but only first order, gave up inside its first 1 µs step (step 1).",
+    origins: ["page", "engine"],
+  },
+  {
+    id: "jacobian-wrong", steps: [2],
+    q: "What does the page's Robertson example say about an approximate or wrong Jacobian in an implicit method?",
+    options: [
+      "It changes the answer by a large amount, so the run is useless",
+      "It makes no difference, because the step controller corrects it",
+      "It costs steps before it costs the answer: 8724 steps against 117 for the same y1 to 5e-9",
+      "It makes the run faster, because a diagonal matrix is cheaper to factor",
+    ],
+    correct: 2,
+    feedback: "The error control looks at the solution, not at the matrix, so a poor Jacobian slows the convergence of each step and the controller pays in smaller steps.  Only when the matrix is about 50 % wrong is the damping lost and the run stops.  That is why Choupo audits its analytic Jacobian against a central difference at the 1st, 2nd, 4th, ... build (step 2).",
+    origins: ["engine"],
+  },
+  {
+    id: "sparse-gain", steps: [3],
+    q: "Why does a sparse LU gain only 1.07 times on nox03 but 9.9 times on nox02?",
+    options: [
+      "nox03 has more species, so its matrix is larger",
+      "The sparse code is only compiled for nox02",
+      "nox02 runs with a tighter tolerance",
+      "nox03's matrix is 79 % full, so there are few zeros to skip, while nox02's 17 independent vessels make a block-diagonal matrix that is mostly zeros",
+    ],
+    correct: 3,
+    feedback: "A sparse factorisation saves exactly the work on zeros.  nox03 has 2145 of 2704 entries in its pattern, and L + U holds 94 % of the dense count, so little is saved.  nox02's Jacobian is a block per vessel with zero blocks between them, so the saving is large (step 3).",
+    origins: ["engine"],
+  },
+  {
+    id: "step-counts", steps: [4],
+    q: "On nox03 the tolerance goes from 1e-6 to 1e-10.  Rodas4's accepted steps go from 201 to 3568; seulex's from 88 to 113.  Why do they scale so differently?",
+    options: [
+      "Rodas4 is fourth order, so its step shrinks as the tolerance to the power 1/4; seulex raises its order instead, so its step count barely moves",
+      "seulex ignores the tolerance",
+      "Rodas4 recomputes the Jacobian less often",
+      "Both are the same method with a different name",
+    ],
+    correct: 0,
+    feedback: "A fixed-order method buys accuracy with smaller steps; an extrapolation method buys it with higher order and a few more sub-steps.  That is why seulex is five times faster at 1e-10 (0.268 s against 1.196 s) but no faster at 1e-6, where it pays many factorisations per big step (step 4).",
+    origins: ["engine"],
+  },
+  {
+    id: "like-with-like", steps: [5, 8],
+    q: "Integration alone takes Choupo 2.25 times Cantera on nox03 (seulex), yet end to end the ratio is 0.84.  What is the page's lesson?",
+    options: [
+      "Choupo is slower than Cantera, and the end-to-end figure is a mistake",
+      "The two figures answer different questions: end to end includes Python's import of Cantera (0.15 s) and the start-up of each program, so a comparison must say what it compares",
+      "Cantera's integrator is not stiff",
+      "Choupo's right-hand side costs 3 µs, which is why it wins",
+    ],
+    correct: 1,
+    feedback: "Python's import cantera alone costs 0.15 s, so a comparison of whole processes flatters nobody: integration only, and end to end, are different questions.  Choupo's own right-hand side costs 14.0 µs per call against 3.0 µs for Cantera's kinetics alone, which is where the 2.25 comes from (steps 5 and 8).",
+    origins: ["engine"],
+  },
+  {
+    id: "vessel-steps", steps: [6],
+    q: "In nox02 the 17 vessels are coupled in one system.  Why does giving each vessel its own step (20.1 times Cantera becomes 3.3 times on one thread, seulex rtol 1e-8) help?",
+    options: [
+      "The Jacobian becomes denser",
+      "Coupled, one step size serves all 17 vessels and is set by the stiffest; separately, the cold vessels take the big steps they can",
+      "The tolerance is relaxed for the cold vessels",
+      "The threads make each vessel faster",
+    ],
+    correct: 1,
+    feedback: "The Jacobian is block-diagonal, but a coupled run still shares one step.  Separate steps remove that coupling and threads add the rest (1.1 times on four).  The price is accuracy: at equal rtol the cold vessels are less accurate, so the case's atol decides the result (step 6).",
+    origins: ["engine"],
+  },
+  {
+    id: "dense-output", steps: [7],
+    q: "Every step end agreed to 1e-8, yet a cubic Hermite write grid was off by 4.0e-2 for seulex.  What was wrong, and what fixed it?",
+    options: [
+      "The step ends were wrong and the grid was right",
+      "The write grid was too coarse and needed more points",
+      "The cubic carries the slope multiplied by h, which a stiff step amplifies; each integrator now hands over its own polynomial, and the seulex grid error falls to 6.8e-5",
+      "The tolerance was set too loose",
+    ],
+    correct: 2,
+    feedback: "The defect of a cubic on a stiff mode scales as (λh)^4/384, so a small slope error becomes a large error between the ends.  The integrators' own dense output brings the seulex grid from 4.0e-2 to 6.8e-5.  It is not error-controlled: the step size does not see it (step 7).",
+    origins: ["engine", "page"],
+  },
 ];
