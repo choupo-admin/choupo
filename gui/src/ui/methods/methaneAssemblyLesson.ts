@@ -50,7 +50,7 @@ export const METHANE_STEPS: readonly LessonStep[] = [
       + "parts methane, two oxygen, ten nitrogen) as the target.  The engine's batch reactor stands for "
       + "the gas behind the reflected shock: a closed vessel at constant volume, adiabatic, started at "
       + "the measured temperature and pressure.  The delay the engine prints is the time of the largest "
-      + "temperature rise per unit time on the write grid (src/applications/choupoBatch/main.cpp:2238), "
+      + "temperature rise per unit time on the write grid (src/applications/choupoBatch/main.cpp:2507), "
       + "a definition close to, not the same as, the experimenters' extrapolation of the steepest "
       + "pressure rise.  Every rung below is the SAME vessel with the SAME start; only the reactions "
       + "the case lists change.",
@@ -151,7 +151,7 @@ export const METHANE_STEPS: readonly LessonStep[] = [
       + "once for the base case and once per reaction with that one reaction's rate multiplied by a "
       + "factor, forward and reverse together, so the equilibrium state is the same in every run.  "
       + "The sensitivity coefficient is the change in the logarithm of the delay per unit change "
-      + "in the logarithm of the rate constant (src/unitOperations/batch/BatchReactor.cpp:857).  "
+      + "in the logarithm of the rate constant (src/unitOperations/batch/BatchReactor.cpp:926).  "
       + "A negative coefficient means that a faster reaction brings the ignition forward, a positive "
       + "one that it delays it.  The page lists the largest.  Two reactions of the methyl radical "
       + "head the list and pull in opposite directions: the branching of CH3 with oxygen brings "

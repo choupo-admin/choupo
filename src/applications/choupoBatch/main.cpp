@@ -101,6 +101,8 @@ Description
 #include "result/ComponentIdentity.H"
 #include "result/ResultEmitter.H"
 #include "postProcessing/panel/PanelPass.H"
+#include "postProcessing/views/BatchPublications.H"   // the views a batch run publishes (C477)
+#include "postProcessing/views/Views.H"
 #include "thermo/liquidProperty/DensityMethod.H"   // the liquid-density methods (C378 pilot)
 #include <variant>
 #include <algorithm>
@@ -179,6 +181,38 @@ static void seedBatchUnitsFrom0(const std::vector<DictPtr>& unitList,
                   " `holdup {}` block: T, P, V and the inventory).");
     }
 }
+
+namespace {
+
+//  THE IGNITION DELAY FROM THE DENSE OUTPUT (C477, Theory Guide
+//  sec:ignition-delay-dense).  tau = the time of the steepest rise of T,
+//  max dT/dt, over EVERY accepted integrator step: the step ends and, where
+//  the integrator has a dense output, kSubSamples points inside each step.
+//  The slope is taken between consecutive samples and tau is the midpoint of
+//  the steepest interval, so it does not depend on the write grid.
+struct IgnitionTracker
+{
+    static constexpr int kSubSamples = 8;
+    bool   started = false, hasDense = false;
+    scalar tLast = 0.0, TLast = 0.0, T0 = 0.0;
+    scalar bestSlope = 0.0, tBest = 0.0;
+    std::size_t samples = 0;
+    void feed(scalar t, scalar T)
+    {
+        if (!started) { started = true; T0 = T; }
+        else if (t > tLast)
+        {
+            const scalar slope = (T - TLast) / (t - tLast);
+            if (slope > bestSlope) { bestSlope = slope; tBest = 0.5 * (t + tLast); }
+        }
+        tLast = t; TLast = T; ++samples;
+    }
+    scalar rise() const { return TLast - T0; }
+    //  published only when the dense output fed it and T rose by more than 200 K
+    bool publishes() const { return started && hasDense && rise() > 200.0 && bestSlope > 0.0; }
+};
+
+} // namespace
 
 int main(int argc, char** argv)
 try
@@ -328,12 +362,87 @@ try
     //  reader, core/Citation.H; DEV.md 4c C171 B).  A malformed list refuses.
     citation::readCaseCitations(*controlDict);
 
+    //  THE CASE'S DECLARED VIEWS (C477), read as choupoSolve reads them: the
+    //  `references` and `views` of system/postDict through views::Reader,
+    //  PARSED HERE so that a typo costs no run, resolved after the run against
+    //  what the vessels published (BatchPublications.H).  A case that declares
+    //  none builds nothing, keeps nothing and writes nothing.
+    std::unique_ptr<views::Reader> viewReader;
+    {
+        DictPtr postDictV;
+        if (fs::exists("system/postDict"))
+            postDictV = Dictionary::fromFile("system/postDict");
+        if (postDictV && (postDictV->found("views") || postDictV->found("references")))
+        {
+            viewReader = std::make_unique<views::Reader>(
+                postDictV, std::vector<std::string>{}, "postDict", true);
+            views::clearStale();
+        }
+    }
+
     // Time settings
     const scalar startTime     = controlDict->lookupScalarOrDefault("startTime",     0.0);
     const scalar endTime       = controlDict->lookupScalar("endTime");
     const scalar deltaT        = controlDict->lookupScalar("deltaT");
-    const scalar writeInterval =
-        controlDict->lookupScalarOrDefault("writeInterval", deltaT);
+    //  THE WRITE GRID (C477).  `uniform` (the default, byte-identical to every
+    //  earlier run): a point every writeInterval.  `log`: points spaced evenly in
+    //  log t from `writeStart` [s], `writePerDecade` (default 10) per decade, the
+    //  last at endTime -- an ignition runs over microseconds to milliseconds and a
+    //  uniform grid either misses the ramp or writes thousands of idle rows.  The
+    //  states between steps come from the dense output (free stepping), so the
+    //  grid costs nothing but its rows.  Refused by name where it cannot hold.
+    const std::string writeSpacing =
+        controlDict->lookupWordOrDefault("writeSpacing", "uniform");
+    if (writeSpacing != "uniform" && writeSpacing != "log")
+        throw std::runtime_error("choupoBatch: writeSpacing '" + writeSpacing
+            + "' is not known; it is `uniform` (a point every writeInterval, the"
+              " default) or `log` (with writeStart and writePerDecade)");
+    const bool logWrite = (writeSpacing == "log");
+    if (!logWrite && (controlDict->found("writeStart") || controlDict->found("writePerDecade")))
+        throw std::runtime_error("choupoBatch: writeStart / writePerDecade belong to"
+            " `writeSpacing log;` and are read by nothing on a uniform grid");
+    std::vector<scalar> logGrid;
+    scalar logSpacing0 = 0.0;
+    if (logWrite)
+    {
+        if (controlDict->found("writeInterval"))
+            throw std::runtime_error("choupoBatch: `writeSpacing log;` sets the write"
+                " grid; `writeInterval` is the uniform grid's and must be removed");
+        if (!controlDict->found("writeStart"))
+            throw std::runtime_error("choupoBatch: `writeSpacing log;` needs `writeStart`"
+                " [s], the first write point after startTime (> startTime, < endTime)");
+        const scalar wStart = controlDict->lookupScalar("writeStart");
+        const scalar perDec = controlDict->lookupScalarOrDefault("writePerDecade", 10.0);
+        if (!(wStart > startTime) || !(wStart < endTime))
+            throw std::runtime_error("choupoBatch: writeStart (" + std::to_string(wStart)
+                + " s) must lie between startTime and endTime");
+        if (!(wStart > 0.0))
+            throw std::runtime_error("choupoBatch: writeStart must be > 0 on a log grid");
+        if (!(perDec >= 1.0) || perDec != std::floor(perDec))
+            throw std::runtime_error("choupoBatch: writePerDecade must be a positive"
+                " integer, got " + std::to_string(perDec));
+        if (controlDict->lookupWordOrDefault("timeStepping", "fixed") != "adaptive")
+            throw std::runtime_error("choupoBatch: `writeSpacing log;` needs `timeStepping"
+                " adaptive;` (the fixed-step loop writes on multiples of deltaT)");
+        for (int k = 0;; ++k)
+        {
+            const scalar g = wStart * std::pow(10.0, static_cast<scalar>(k) / perDec);
+            if (g >= endTime * (1.0 - 1.0e-9)) break;
+            logGrid.push_back(g);
+        }
+        logGrid.push_back(endTime);
+        logSpacing0 = wStart * (std::pow(10.0, 1.0 / perDec) - 1.0);
+    }
+    const scalar writeInterval = logWrite ? logSpacing0
+        : controlDict->lookupScalarOrDefault("writeInterval", deltaT);
+    //  The next write point after w: one home for every advance of the grid.
+    const auto advanceWrite = [&](scalar w) -> scalar
+    {
+        if (!logWrite) return w + writeInterval;
+        const auto it = std::upper_bound(logGrid.begin(), logGrid.end(),
+                                         w * (1.0 + 1.0e-9) + 1.0e-300);
+        return it == logGrid.end() ? endTime + writeInterval : *it;
+    };
 
     // ---- timeStepping: OPT-IN adaptive (error-controlled) stepping ----
     //  ABSENT or `fixed` => today's fixed-RK4 deltaT loop, BYTE-IDENTICAL.
@@ -365,7 +474,8 @@ try
         //  grid as its step boundary (settled below, `freeStep`); a run of
         //  batchReactors steps freely and writes by dense output (C471).
         deltaTmaxDeclared = ts->found("deltaTmax");
-        adaptSet.deltaTmax = ts->lookupScalarOrDefault("deltaTmax", writeInterval);
+        adaptSet.deltaTmax = ts->lookupScalarOrDefault("deltaTmax",
+                                  logWrite ? endTime - startTime : writeInterval);
         adaptSet.maxGrowth = ts->lookupScalarOrDefault("maxGrowth", 4.0);
         adaptSet.verbosity = verbosity;
     }
@@ -380,7 +490,11 @@ try
               << "writeInterval:     " << writeInterval  << " s\n"
               << "timeStepping:      " << timeStepping
               << (adaptive ? "  (Rosenbrock23, error-controlled)" : "  (fixed RK4)")
-              << "\n";
+              << "\n"
+              << (logWrite ? "writeSpacing:      log -- " + std::to_string(logGrid.size())
+                             + " points from " + std::to_string(logGrid.front())
+                             + " s to endTime (writeInterval above is its first spacing)\n"
+                           : std::string());
     if (adaptive)
         std::cout << "  rtol=" << adaptSet.rtol << "  atol=" << adaptSet.atol
                   << "  deltaT0=" << adaptSet.deltaT0 << " s"
@@ -424,7 +538,12 @@ try
     constexpr std::size_t kMaxDefaultDirs = 100;
     std::size_t dirEvery = 1;
     {
-        const scalar nGrid = (endTime - startTime) / writeInterval;
+        const scalar nGrid = logWrite ? static_cast<scalar>(logGrid.size() + 1)
+                                      : (endTime - startTime) / writeInterval;
+        if (logWrite && solutionCtl.interval > 0.0)
+            throw std::runtime_error("choupoBatch: solutionControl { interval T; } counts"
+                " whole multiples of writeInterval and a log grid has none; drop it (the"
+                " <t>/ cadence then keeps at most 100 directories)");
         if (solutionCtl.interval > 0.0)
         {
             const scalar ratio = solutionCtl.interval / writeInterval;
@@ -441,10 +560,11 @@ try
             dirEvery = static_cast<std::size_t>(
                 std::ceil(nGrid / static_cast<scalar>(kMaxDefaultDirs) - 1.0e-9));
     }
+    std::ostringstream dirCadence;
+    if (logWrite) dirCadence << "log grid"; else dirCadence << dirEvery * writeInterval << " s";
     if (solutionCtl.write && dirEvery > 1)
         std::cout << "solutionControl:   <t>/ every " << dirEvery
-                  << " write points (" << dirEvery * writeInterval
-                  << " s)"
+                  << " write points (" << dirCadence.str() << ")"
                   << (solutionCtl.interval > 0.0 ? " (declared interval)"
                                                  : " (default: at most 100 directories)")
                   << "; trajectory.csv keeps every write point, and the last"
@@ -766,6 +886,21 @@ if (flowsheetDict->found("cycle"))
     // delay (time of max dT/dt) printed with the final state.  Cheap: one
     // pair per snapshot.
     std::vector<std::vector<std::pair<scalar, scalar>>> tempTrace(units.size());
+    //  The vessels' write grid kept in memory ONLY when views are declared.
+    std::vector<IgnitionTracker> ign(units.size());   // C477: tau from the dense output
+    std::vector<views::BatchVesselRecord> viewHistory;
+    if (viewReader)
+    {
+        viewHistory.resize(units.size());
+        for (std::size_t u = 0; u < units.size(); ++u)
+        {
+            viewHistory[u].name = units[u]->name();
+            viewHistory[u].type = units[u]->type();
+            viewHistory[u].dropTimeZero = logWrite;   // a log axis cannot draw t = 0
+            for (std::size_t i = 0; i < thermo.n(); ++i)
+                viewHistory[u].componentNames.push_back(thermo.comp(i).name());
+        }
+    }
     std::ofstream csv("trajectory.csv");
     if (!csv)
         throw std::runtime_error("choupoBatch: cannot open trajectory.csv");
@@ -859,6 +994,21 @@ if (flowsheetDict->found("cycle"))
             for (const auto& kv : unit->trajectoryExtras())
                 extras.back().emplace_back(kv.first, kv.second);
         }
+        if (viewReader)
+            for (std::size_t u = 0; u < units.size(); ++u)
+            {
+                auto& h = viewHistory[u];
+                h.t.push_back(t);
+                h.T.push_back(units[u]->state().T);
+                h.n.emplace_back(units[u]->state().n.begin(), units[u]->state().n.end());
+                if (h.extraNames.empty())
+                    for (const auto& kv : extras[u]) h.extraNames.push_back(kv.first);
+                std::vector<scalar> ex;
+                for (const auto& kv : extras[u])
+                    ex.push_back(std::isfinite(kv.second) ? kv.second
+                                 : std::numeric_limits<scalar>::quiet_NaN());
+                h.extras.push_back(std::move(ex));
+            }
         for (const auto& ex : extras)
             for (const auto& [k, v] : ex)
             {
@@ -1487,7 +1637,13 @@ if (flowsheetDict->found("cycle"))
 
     writeSnapshot(t);
     if (verbosity >= 3) echoLine(t);
-    nextWrite += writeInterval;
+    nextWrite = advanceWrite(nextWrite);
+    for (std::size_t u = 0; u < units.size(); ++u)
+        if (units[u]->type() == "batchReactor") ign[u].feed(t, units[u]->state().T);
+    std::vector<scalar> routeN0(units.size(), 0.0);       // the route species' inventory at start
+    for (std::size_t u = 0; u < units.size(); ++u)
+        if (units[u]->hasRouteIntegral())
+            routeN0[u] = units[u]->state().n[static_cast<std::size_t>(units[u]->routeSpecies())];
 
     // Continuous discharge routing: hand each unit's per-step sheddings
     // (e.g. a still's condensed vapour) to its `dischargeTo` receiver, so a
@@ -1533,6 +1689,10 @@ if (flowsheetDict->found("cycle"))
 
     if (!adaptive)
     {
+        for (const auto& u : units)
+            if (u->hasRouteIntegral())
+                throw std::runtime_error("choupoBatch: `routeIntegral` needs `timeStepping"
+                    " adaptive;` (it integrates the rates on the integrator's dense output)");
         // ---- FIXED-STEP RK4 (today's path --- byte-identical) ---------
         while (t < endTime - 1.0e-12 && !cssStopped)
         {
@@ -1564,7 +1724,7 @@ if (flowsheetDict->found("cycle"))
             {
                 writeSnapshot(t);
                 if (verbosity >= 3) echoLine(t);
-                nextWrite += writeInterval;
+                nextWrite = advanceWrite(nextWrite);
             }
         }
     }
@@ -1667,6 +1827,23 @@ if (flowsheetDict->found("cycle"))
             }
         const bool perVessel = freeStep && nOdeVessels >= 2 && events.empty()
                                && !vesselsCoupledDeclared;
+        //  ROUTE INTEGRALS (C477): the dense-output quadrature lives in the coupled
+        //  free-stepping callback below, so a vessel that declares them needs
+        //  that path -- refused by name where it does not hold.
+        std::vector<std::vector<scalar>> routeA(units.size());   // running totals at the last accepted step end
+        bool anyRoute = false;
+        for (std::size_t u = 0; u < units.size(); ++u)
+            if (units[u]->hasRouteIntegral())
+            {
+                anyRoute = true;
+                routeA[u].assign(units[u]->trajectoryExtras().size() - 1, 0.0);
+            }
+        if (anyRoute && (!freeStep || perVessel))
+            throw std::runtime_error("choupoBatch: `routeIntegral` needs the free-stepping"
+                " adaptive path with the vessel integrated on its own (every unit a"
+                " batchReactor, no recipe event, condition, cycle or discharge, one"
+                " vessel): the route totals are integrated on the integrator's dense"
+                " output, which the write-grid-bounded and the per-vessel paths do not give");
         std::size_t coupledInterp = 0, coupledStraight = 0;   // rows (per vessel) of the coupled sweep, and the straight-line ones
         std::vector<std::unique_ptr<solver::AdaptiveTimeStepper>> vesselSteppers;
         if (perVessel)
@@ -1734,10 +1911,14 @@ if (flowsheetDict->found("cycle"))
 
             // Collect ODE-form units for the stiff sweep; step the rest fixed.
             std::vector<solver::OdeUnit> odeUnits;
+            std::vector<std::size_t> odeToUnit;     // packed vessel -> its index in `units`
+            std::size_t unitLoopIdx = 0;
             for (auto& unit : units)
             {
+                const std::size_t thisUnitIdx = unitLoopIdx++;
                 if (unit->hasOdeForm())
                 {
+                    odeToUnit.push_back(thisUnitIdx);
                     BatchUnitOperation* up = unit.get();
                     odeUnits.push_back({
                         [up]               { return up->odeState(); },
@@ -1908,6 +2089,21 @@ if (flowsheetDict->found("cycle"))
                         const sVector yNew = ou.pack();       // the accepted state
                         sVector fNew;
                         bool haveF = false;
+                        //  C477: the ignition tracker of THIS vessel (its own thread)
+                        if (units[odeToUnit[u]]->type() == "batchReactor")
+                        {
+                            IgnitionTracker& tr = ign[odeToUnit[u]];
+                            for (int k = 1; k < IgnitionTracker::kSubSamples; ++k)
+                            {
+                                std::vector<sVector> sub;
+                                if (!vesselSteppers[u]->denseAt(static_cast<scalar>(k)
+                                        / IgnitionTracker::kSubSamples, sub)) break;
+                                tr.hasDense = true;
+                                tr.feed(tPrev + hTaken * k / IgnitionTracker::kSubSamples,
+                                        sub[0].back());
+                            }
+                            tr.feed(tEnd, yNew.back());
+                        }
                         while (nw < tStop - tol && nw <= tEnd + tol)
                         {
                             const scalar tw = nw;
@@ -1952,7 +2148,7 @@ if (flowsheetDict->found("cycle"))
                             }
                             R.tw.push_back(tw);
                             R.y.push_back(std::move(yw));
-                            nw += writeInterval;
+                            nw = advanceWrite(nw);
                         }
                         yPrev = yNew;
                         if (haveF) { fPrev = fNew; fPrevValid = true; }
@@ -2055,7 +2251,7 @@ if (flowsheetDict->found("cycle"))
                     noteAdvanced(tw);
                     writeSnapshot(tw);
                     if (verbosity >= 3) echoLine(tw);
-                    nextWrite += writeInterval;
+                    nextWrite = advanceWrite(nextWrite);
                 }
                 std::size_t failIdx = nV;
                 for (std::size_t u = 0; u < nV; ++u)
@@ -2085,6 +2281,51 @@ if (flowsheetDict->found("cycle"))
                     const scalar tPrev = tEnd - hTaken;
                     std::vector<sVector> yNew, fNew;
                     for (const auto& ou : odeUnits) yNew.push_back(ou.pack());
+                    //  C477: the ignition trackers, from the integrator's dense output
+                    for (int k = 1; k < IgnitionTracker::kSubSamples; ++k)
+                    {
+                        std::vector<sVector> sub;
+                        if (!stepper.denseAt(static_cast<scalar>(k) / IgnitionTracker::kSubSamples, sub)) break;
+                        for (std::size_t u = 0; u < odeUnits.size(); ++u)
+                            if (units[odeToUnit[u]]->type() == "batchReactor")
+                            {
+                                ign[odeToUnit[u]].hasDense = true;
+                                ign[odeToUnit[u]].feed(tPrev + hTaken * k / IgnitionTracker::kSubSamples,
+                                                       sub[u].back());
+                            }
+                    }
+                    for (std::size_t u = 0; u < odeUnits.size(); ++u)
+                        if (units[odeToUnit[u]]->type() == "batchReactor")
+                            ign[odeToUnit[u]].feed(tEnd, yNew[u].back());
+                    //  Route integrals: Simpson (4 intervals) on the dense output over
+                    //  [tPrev, tPrev + sEnd h], the rates at the packed states of vessel u.
+                    auto routeStepIntegral = [&](std::size_t u, scalar sEnd) -> std::vector<scalar>
+                    {
+                        BatchUnitOperation* up = units[odeToUnit[u]].get();
+                        std::vector<std::vector<scalar>> r;
+                        for (int k = 0; k <= 4; ++k)
+                        {
+                            const scalar sk = sEnd * k / 4.0;
+                            sVector y;
+                            if (k == 0) y = yPrev[u];
+                            else if (k == 4 && sEnd >= 1.0 - 1.0e-12) y = yNew[u];
+                            else
+                            {
+                                std::vector<sVector> own;
+                                if (!stepper.denseAt(sk, own))
+                                    throw std::runtime_error("choupoBatch: `routeIntegral` needs the"
+                                        " integrator's dense output (Rosenbrock23, Rodas4 or seulex),"
+                                        " and this vessel's integrator gives none");
+                                y = own[u];
+                            }
+                            r.push_back(up->routeRates(y));
+                        }
+                        std::vector<scalar> I(r[0].size(), 0.0);
+                        for (std::size_t q = 0; q < I.size(); ++q)
+                            I[q] = hTaken * sEnd / 12.0
+                                 * (r[0][q] + 4.0 * r[1][q] + 2.0 * r[2][q] + 4.0 * r[3][q] + r[4][q]);
+                        return I;
+                    };
                     bool interpolated = false;
                     while (nextWrite < tNext - tol && nextWrite <= tEnd + tol)
                     {
@@ -2143,17 +2384,34 @@ if (flowsheetDict->found("cycle"))
                                 }
                             }
                             odeUnits[u].commit(yw);
+                            if (anyRoute && units[odeToUnit[u]]->hasRouteIntegral())
+                            {
+                                auto part = routeStepIntegral(u, s);
+                                for (std::size_t q = 0; q < part.size(); ++q)
+                                    part[q] += routeA[odeToUnit[u]][q];
+                                units[odeToUnit[u]]->setRouteCumulative(part);
+                            }
                         }
                         interpolated = interpolated || !exact;
                         routeDischarges(tw);
                         noteAdvanced(tw);
                         writeSnapshot(tw);
                         if (verbosity >= 3) echoLine(tw);
-                        nextWrite += writeInterval;
+                        nextWrite = advanceWrite(nextWrite);
                     }
                     if (interpolated)
                         for (std::size_t u = 0; u < odeUnits.size(); ++u)
                             odeUnits[u].commit(yNew[u]);
+                    //  the route totals at the accepted step end
+                    if (anyRoute)
+                        for (std::size_t u = 0; u < odeUnits.size(); ++u)
+                            if (units[odeToUnit[u]]->hasRouteIntegral())
+                            {
+                                const auto full = routeStepIntegral(u, 1.0);
+                                for (std::size_t q = 0; q < full.size(); ++q)
+                                    routeA[odeToUnit[u]][q] += full[q];
+                                units[odeToUnit[u]]->setRouteCumulative(routeA[odeToUnit[u]]);
+                            }
                     // The accepted state ends this step and starts the next.
                     yPrev = yNew;
                     if (!fNew.empty()) { fPrev = fNew; fPrevValid = true; }
@@ -2207,7 +2465,7 @@ if (flowsheetDict->found("cycle"))
             {
                 writeSnapshot(t);
                 if (verbosity >= 3) echoLine(t);
-                nextWrite += writeInterval;
+                nextWrite = advanceWrite(nextWrite);
             }
         }
         if (coupledStraight > 0)
@@ -2227,6 +2485,17 @@ if (flowsheetDict->found("cycle"))
     for (std::size_t u = 0; u < units.size(); ++u)
     {
         const auto& tr = tempTrace[u];
+        if (ign[u].publishes())
+        {
+            //  C477: the dense-output value, published as the KPI tauIgnition
+            std::cout << "\n  Ignition delay, " << units[u]->name()
+                      << ":  tau_ign (max dT/dt) = " << std::scientific
+                      << std::setprecision(3) << ign[u].tBest << " s   (from the integrator's dense output, "
+                      << ign[u].samples << " samples, T rose " << std::fixed << std::setprecision(0)
+                      << ign[u].rise() << " K; no longer the write grid; published as the KPI"
+                         " tauIgnition)\n";
+            continue;
+        }
         if (tr.size() < 3 || (tr.back().second - tr.front().second) < 200.0)
             continue;
         scalar best = 0.0, tIgn = 0.0;
@@ -2240,7 +2509,8 @@ if (flowsheetDict->found("cycle"))
         std::cout << "\n  Ignition delay, " << units[u]->name()
                   << ":  tau_ign (max dT/dt) = " << std::scientific
                   << std::setprecision(3) << tIgn << " s   (grid resolution "
-                  << (tr[1].first - tr[0].first) << " s)\n";
+                      << (tr[1].first - tr[0].first) << " s; the WRITE GRID value -- this path has no dense"
+                         " output, so it is not published as a KPI)\n";
     }
 
     std::cout << "\n=========================  Final state at t = " << t << " s  ===\n";
@@ -2292,6 +2562,33 @@ if (flowsheetDict->found("cycle"))
                 k["n_" + thermo.comp(i).name() + "_final"] = st.n[i];
             for (const auto& [key, v] : unit->kpis())
                 k[key] = v;                     // unit-specific verdicts (rectifier x_D, R, D)
+            {
+                const std::size_t ui = static_cast<std::size_t>(&unit - &units[0]);
+                if (ign[ui].publishes())
+                {
+                    k["tauIgnition"] = ign[ui].tBest;     // C477: the dense-output delay [s]
+                    result.kpiUnits[unit->name()]["tauIgnition"] = "s";
+                }
+                if (unit->hasRouteIntegral())
+                {
+                    //  the closure of the quadrature: what the routes (and `other`) add up to
+                    //  against what the vessel's inventory of the species actually gained
+                    const auto ex = unit->trajectoryExtras();
+                    const std::size_t sp = static_cast<std::size_t>(unit->routeSpecies());
+                    const scalar formed = ex.back().second;
+                    const scalar dn = st.n[sp] - routeN0[ui];
+                    k["cum" + thermo.comp(sp).name() + "_closure_kmol"] = formed - dn;
+                    std::cout << "\n  [routes] " << unit->name() << ": net " << thermo.comp(sp).name()
+                              << " formed by route [kmol]:";
+                    for (std::size_t q = 0; q + 1 < ex.size(); ++q)
+                        std::cout << "  " << ex[q].first.substr(ex[q].first.find('_') + 1) << " "
+                                  << std::scientific << std::setprecision(4) << ex[q].second;
+                    std::cout << "\n           closure: sum of routes " << std::scientific
+                              << std::setprecision(6) << formed << " against the inventory's own change "
+                              << dn << " kmol (difference " << formed - dn
+                              << ", the quadrature error)\n";
+                }
+            }
             for (const auto& ev : unit->statusEvents())
                 timeline.push_back(ev);         // qualitative state changes
         }
@@ -3135,6 +3432,18 @@ if (flowsheetDict->found("cycle"))
             if (verbosity >= 1)
                 for (const auto& l : result.panel.logLines)
                     std::cout << l << "\n";
+        }
+        //  THE DECLARED VIEWS are resolved against what the vessels published,
+        //  and carried on the result as its `postProcessing` block.
+        if (viewReader)
+        {
+            for (std::size_t u = 0; u < units.size(); ++u)
+            {
+                auto kp = result.kpis.find(units[u]->name());
+                if (kp != result.kpis.end()) viewHistory[u].kpis = kp->second;
+            }
+            result.postProcessingBlock = viewReader->evaluate(
+                views::publicationsOfBatchRun(viewHistory), verbosity);
         }
         result.advisories = AdvisoryLog::instance().entries();
         result.divergences = ProblemDivergence::instance().entries();
