@@ -238,7 +238,7 @@ export const THIELE_QUIZ: readonly QuizQuestion[] = [
       "The pellet delivers 19 % of the rate it would with surface "
         + "concentration everywhere, and every gram still reacts, at a lower "
         + "concentration",
-      "19 % of the pellet's volume is a dead core",
+      "19 % of the pellet's volume is inert, with no reaction at all",
       "The flask rate constant is 19 % too high everywhere in the bed",
     ],
     correct: 1,
