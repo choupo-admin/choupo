@@ -1,6 +1,15 @@
 /*---------------------------------------------------------------------------*\
-    Copyright (C) 2026 Vítor Geraldes -- GPL-3.0-or-later (see NOTICE)
-\*---------------------------------------------------------------------------*/
+       \|/       C hemicals     | Open-source, glass-box chemical process simulator
+      \\|//      H eat-transfer | https://choupo.org
+     \\\|///     O perations    |
+      \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+       \|/       P roperties    | Licence: GPL-3.0-or-later
+        |        O ptimization  |
+       /|\                      |
+-------------------------------------------------------------------------------
+    SPDX-License-Identifier: GPL-3.0-or-later
+    Credit and attribution: see AUTHORS
+    Required legal notices:  see NOTICE
 import type { EquipmentItem } from "../adapters/SolverAdapter.js";
 
 /** A bank of identical parallel items (the H2 buffer's ten pressure vessels) is
