@@ -360,11 +360,11 @@ describe("materials: the lesson text", () => {
       "MaterialRegistry.cpp:58": ["src/materials/MaterialRegistry.cpp", 58, undefined,
         'm.maxT    = d->lookupScalarOrDefault("maxT",    0.0);'],
       "Material.H:55": ["src/materials/Material.H", 55, undefined, /sigma_y.*allowable stress/],
-      "postDict:185-189": ["tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict", 185, 189,
+      "postDict:192-196": ["tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict", 192, 196,
         /MATERIAL, one rule[\s\S]*SS304 where it goes below 0 C, because austenitic stainless keeps its\s+toughness there and the generic carbon-steel record states no\s+minimum design temperature/],
-      "postDict:189-193": ["tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict", 189, 193,
+      "postDict:196-200": ["tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict", 196, 200,
         /HYDROGEN\s+SERVICE INCLUDED[\s\S]*NOT checked here/],
-      "postDict:185-186": ["tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict", 185, 186,
+      "postDict:192-193": ["tutorials/plant/greenAmmoniaPEQ_baseCase/system/postDict", 192, 193,
         /SS316 where the process side exceeds the carbon\s+steel record's maxT \(700 K\)/],
     };
     const cited = new Set([...allText.matchAll(
