@@ -101,6 +101,8 @@ Description
 #include "result/ComponentIdentity.H"
 #include "result/ResultEmitter.H"
 #include "postProcessing/panel/PanelPass.H"
+#include "postProcessing/views/BatchPublications.H"   // the views a batch run publishes (C477)
+#include "postProcessing/views/Views.H"
 #include "thermo/liquidProperty/DensityMethod.H"   // the liquid-density methods (C378 pilot)
 #include <variant>
 #include <algorithm>
@@ -327,6 +329,24 @@ try
     //  The case's primary sources, for the result's `citation` block (the ONE
     //  reader, core/Citation.H; DEV.md 4c C171 B).  A malformed list refuses.
     citation::readCaseCitations(*controlDict);
+
+    //  THE CASE'S DECLARED VIEWS (C477), read as choupoSolve reads them: the
+    //  `references` and `views` of system/postDict through views::Reader,
+    //  PARSED HERE so that a typo costs no run, resolved after the run against
+    //  what the vessels published (BatchPublications.H).  A case that declares
+    //  none builds nothing, keeps nothing and writes nothing.
+    std::unique_ptr<views::Reader> viewReader;
+    {
+        DictPtr postDictV;
+        if (fs::exists("system/postDict"))
+            postDictV = Dictionary::fromFile("system/postDict");
+        if (postDictV && (postDictV->found("views") || postDictV->found("references")))
+        {
+            viewReader = std::make_unique<views::Reader>(
+                postDictV, std::vector<std::string>{}, "postDict", true);
+            views::clearStale();
+        }
+    }
 
     // Time settings
     const scalar startTime     = controlDict->lookupScalarOrDefault("startTime",     0.0);
@@ -766,6 +786,19 @@ if (flowsheetDict->found("cycle"))
     // delay (time of max dT/dt) printed with the final state.  Cheap: one
     // pair per snapshot.
     std::vector<std::vector<std::pair<scalar, scalar>>> tempTrace(units.size());
+    //  The vessels' write grid kept in memory ONLY when views are declared.
+    std::vector<views::BatchVesselRecord> viewHistory;
+    if (viewReader)
+    {
+        viewHistory.resize(units.size());
+        for (std::size_t u = 0; u < units.size(); ++u)
+        {
+            viewHistory[u].name = units[u]->name();
+            viewHistory[u].type = units[u]->type();
+            for (std::size_t i = 0; i < thermo.n(); ++i)
+                viewHistory[u].componentNames.push_back(thermo.comp(i).name());
+        }
+    }
     std::ofstream csv("trajectory.csv");
     if (!csv)
         throw std::runtime_error("choupoBatch: cannot open trajectory.csv");
@@ -859,6 +892,21 @@ if (flowsheetDict->found("cycle"))
             for (const auto& kv : unit->trajectoryExtras())
                 extras.back().emplace_back(kv.first, kv.second);
         }
+        if (viewReader)
+            for (std::size_t u = 0; u < units.size(); ++u)
+            {
+                auto& h = viewHistory[u];
+                h.t.push_back(t);
+                h.T.push_back(units[u]->state().T);
+                h.n.emplace_back(units[u]->state().n.begin(), units[u]->state().n.end());
+                if (h.extraNames.empty())
+                    for (const auto& kv : extras[u]) h.extraNames.push_back(kv.first);
+                std::vector<scalar> ex;
+                for (const auto& kv : extras[u])
+                    ex.push_back(std::isfinite(kv.second) ? kv.second
+                                 : std::numeric_limits<scalar>::quiet_NaN());
+                h.extras.push_back(std::move(ex));
+            }
         for (const auto& ex : extras)
             for (const auto& [k, v] : ex)
             {
@@ -3135,6 +3183,18 @@ if (flowsheetDict->found("cycle"))
             if (verbosity >= 1)
                 for (const auto& l : result.panel.logLines)
                     std::cout << l << "\n";
+        }
+        //  THE DECLARED VIEWS are resolved against what the vessels published,
+        //  and carried on the result as its `postProcessing` block.
+        if (viewReader)
+        {
+            for (std::size_t u = 0; u < units.size(); ++u)
+            {
+                auto kp = result.kpis.find(units[u]->name());
+                if (kp != result.kpis.end()) viewHistory[u].kpis = kp->second;
+            }
+            result.postProcessingBlock = viewReader->evaluate(
+                views::publicationsOfBatchRun(viewHistory), verbosity);
         }
         result.advisories = AdvisoryLog::instance().entries();
         result.divergences = ProblemDivergence::instance().entries();
