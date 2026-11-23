@@ -54,7 +54,8 @@ import {
   type FlameHeightModel, type FuelRecord, type PoolFuel, type Products,
   type SepModel,
 } from "./poolFire.js";
-import { POOL_LIMITS, POOL_SOURCES, POOL_STEPS } from "./poolFireLesson.js";
+import { POOL_LIMITS, POOL_QUIZ, POOL_SOURCES, POOL_STEPS } from "./poolFireLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
 
@@ -612,6 +613,8 @@ export function PoolFireTool(): JSX.Element {
           heats: the heat it puts into a wetted wall, and the relief valve that
           must vent what boils.
         </Text>
+
+        <LessonQuiz title="Check your understanding" questions={POOL_QUIZ} lesson={POOL_STEPS} />
 
         <LessonLimits limits={POOL_LIMITS} />
         <Box>

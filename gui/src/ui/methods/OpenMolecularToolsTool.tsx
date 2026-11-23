@@ -35,9 +35,10 @@ import {
 
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
 import {
-  OT_CARDS, OT_CHAIN, OT_GROUPS, OT_LIMITS, OT_STEPS,
+  OT_CARDS, OT_CHAIN, OT_GROUPS, OT_LIMITS, OT_QUIZ, OT_STEPS,
   type OtCard, type OtGroup,
 } from "./openMolecularToolsLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 import { setActiveMethodTool } from "./registry.js";
 
@@ -180,6 +181,8 @@ export function OpenMolecularToolsTool(): JSX.Element {
         <Cards />
 
         {step(5)}
+
+        <LessonQuiz title="Check your understanding" questions={OT_QUIZ} lesson={OT_STEPS} />
 
         <LessonLimits limits={OT_LIMITS} />
 

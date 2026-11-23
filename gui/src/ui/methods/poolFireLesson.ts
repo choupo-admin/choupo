@@ -38,6 +38,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 /** Every source the page leans on, with what was taken from it, how it was
  *  reached, and its licence status.  Drawn at the foot of the page. */
@@ -752,4 +753,79 @@ export const POOL_LIMITS: readonly LessonLimit[] = [
       + "Watson rule is reproduced; the fire model is this page's "
       + "arithmetic, and no flowsheet case, layout check or report computes "
       + "a fire's radiation." },
+];
+
+// ---- the quiz (C158) ---------------------------------------------------------
+
+export const POOL_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "distance-question", steps: [1, 11],
+    q: "A separation distance is asked of a pool fire.  What question does "
+      + "it really answer?",
+    options: [
+      "Where does the radiant flux fall to the level a given target can bear?",
+      "How far do the flames themselves reach?",
+      "Where is the flux exactly zero?",
+      "How long does the fire burn before it runs out of fuel?",
+    ],
+    correct: 0,
+    feedback: "Flux falls with distance and harm starts at a threshold, so "
+      + "the answer is the distance at which the flux drops to that "
+      + "threshold (step 1).  Each target has its own threshold, so each "
+      + "gets its own distance (step 11).",
+  },
+  {
+    id: "far-field", steps: [7, 10],
+    q: "Near a pool fire the point-source and solid-flame models disagree.  "
+      + "What does the lesson say happens far away?",
+    options: [
+      "They stay apart by the same factor at every distance",
+      "The point source always gives the higher flux",
+      "Both fall as one over the distance squared, so they differ only by "
+        + "a constant factor",
+    ],
+    correct: 2,
+    feedback: "Near the flame its shape matters, and the sign of the "
+      + "disagreement depends on whether the flame is taller or wider than "
+      + "the pool (step 10).  Far away the flame is small against the "
+      + "distance, both models follow the inverse-square law and their "
+      + "ratio tends to a constant (steps 7 and 10).",
+  },
+  {
+    id: "emissive-power", steps: [6],
+    q: "Methanol burns with an almost invisible flame and makes no soot.  "
+      + "Why is the sooty-hydrocarbon emissive-power correlation a bad "
+      + "choice for it?",
+    options: [
+      "Methanol is too volatile for any correlation",
+      "The correlation is used outside its scope: it was drawn for sooty "
+        + "fuels and gives several times the emissive power the energy "
+        + "route finds",
+      "The correlation ignores the flame diameter",
+      "Methanol fires radiate nothing at all",
+    ],
+    correct: 1,
+    feedback: "Mudan and Croce's correlation covers gasoline, kerosene and "
+      + "JP-4, where smoke hides the luminous surface.  For a clean "
+      + "methanol flame it would give many times the energy-route value, "
+      + "and every distance would change with it (step 6).",
+  },
+  {
+    id: "layout-table", steps: [12, 13],
+    q: "The page computes the flux at the distances a layout case declares "
+      + "between equipment.  What does the result mean for that case's "
+      + "table?",
+    options: [
+      "It confirms the table as safe",
+      "It refutes the table",
+      "It is a consequence of one fire under stated assumptions; it neither "
+        + "confirms nor refutes the table, and a real plant needs a QRA",
+    ],
+    correct: 2,
+    feedback: "A prescriptive table answers once for a class of equipment, "
+      + "this calculation answers for one fire in still air with burning "
+      + "rates calibrated on small pans (step 12).  Wind, smoke and terrain "
+      + "are left out, which is why a real plant needs a quantitative risk "
+      + "assessment (step 13).",
+  },
 ];

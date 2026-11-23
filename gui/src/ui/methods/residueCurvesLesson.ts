@@ -30,6 +30,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const RCM_STEPS: readonly LessonStep[] = [
   {
@@ -300,5 +301,73 @@ export const PUBLISHED_AZEOTROPES: readonly PublishedAzeotrope[] = [
     how: "where the measured y - x changes sign, between x = 0.594 and 0.696",
     cite: "Li, Li, Zheng, Peng, Liu, J. Chem. Thermodyn. 138 (2019) 366-373",
     doi: "10.1016/j.jct.2019.07.006",
+  },
+];
+
+export const RCM_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "temperature-rises", steps: [1, 2],
+    q: "Following a residue curve in the direction the batch runs, what "
+      + "happens to the bubble temperature of the pot liquid?",
+    options: [
+      "It stays constant, because the pressure of the still is fixed",
+      "It falls, because the pot loses material",
+      "It never falls: the vapour removes what boils easily and the residue gets heavier",
+      "It rises and falls in turn as the curve passes a saddle",
+    ],
+    correct: 2,
+    feedback: "The vapour is richer in the more volatile components, so "
+      + "the liquid left behind boils higher and higher (step 2).  That is "
+      + "why an arrow on a residue curve points to higher temperature and "
+      + "two curves cannot cross (steps 1 and 2).",
+  },
+  {
+    id: "node-types", steps: [3],
+    q: "Where do residue curves begin and end on the triangle?",
+    options: [
+      "They begin at the stable node and end at the unstable node",
+      "They begin at the unstable node, the lowest-boiling point of its neighbourhood, and end at a stable node",
+      "They begin and end at saddles, which are the extremes of temperature",
+      "They begin at the feed composition and end at the pure heavy component",
+    ],
+    correct: 1,
+    feedback: "Curves leave the unstable node (lowest boiling around it) "
+      + "and arrive at a stable node (highest boiling around it); a "
+      + "saddle is approached and then left, since it is higher in some "
+      + "directions and lower in others (step 3).",
+  },
+  {
+    id: "boundary", steps: [4, 5],
+    q: "A feed lies in one distillation region.  Why is a distillation "
+      + "boundary a limit to what a simple column can make from it?",
+    options: [
+      "The products lie approximately in the feed's region, so a boundary stops a simple column",
+      "The boundary is a wall of solid material that the vapour cannot cross",
+      "The boundary fixes the reflux ratio the column must use",
+      "A boundary only matters when the mixture has two liquid phases",
+    ],
+    correct: 0,
+    feedback: "The rule of thumb is that distillate and bottoms lie in "
+      + "the same region as the feed, with the three points on a straight "
+      + "material-balance line (step 5).  Boundaries come from saddles "
+      + "and split the triangle into regions (step 4); only the "
+      + "curvature of a boundary can let a column deliver products on "
+      + "both sides.",
+  },
+  {
+    id: "crossing", steps: [6],
+    q: "Which of these can move a feed to the other side of a distillation "
+      + "boundary?",
+    options: [
+      "Raising the reflux ratio of the same column on the same mixture",
+      "Adding more stages to the same column",
+      "Changing the pressure, or adding an entrainer, or mixing a recycle into the feed",
+      "Reading the map at a finer grid",
+    ],
+    correct: 2,
+    feedback: "A boundary is a wall only for a simple column on a fixed "
+      + "mixture at a fixed pressure.  Pressure moves azeotropes, an "
+      + "entrainer changes the map, and a recycle moves the feed point "
+      + "(step 6); reflux, stages and grid fineness change none of these.",
   },
 ];

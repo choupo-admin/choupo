@@ -34,6 +34,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const TEAR_STEPS: readonly LessonStep[] = [
   {
@@ -314,5 +315,72 @@ export const TEAR_LIMITS: readonly LessonLimit[] = [
       + "value on purpose — would be a separate, explicit feature, and "
       + "Choupo says so in the refusal it gives a forward tear. A tear is "
       + "the cut that makes a cyclic graph walkable, and nothing else.",
+  },
+];
+
+export const TEAR_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "which-edges", steps: [3],
+    q: "A flowsheet has a recycle and the units are solved in the declared "
+      + "order.  Which edges may be declared as tears?",
+    options: [
+      "Any edge of the cycle, since all of them close the loop",
+      "Only the edges carrying the largest flow",
+      "Only the edges that point backwards in the declared order",
+      "Only the feed streams",
+    ],
+    correct: 2,
+    feedback: "Step 3: an edge needs a cut only if it arrives at a unit that "
+      + "has already run, that is if it points backwards in the order.  A "
+      + "forward edge needs no cut and Choupo refuses it as a tear.",
+  },
+  {
+    id: "backward-not-recycle", steps: [4],
+    q: "A stream points backwards in the declared order, but following the "
+      + "plant's edges the consumer can never reach the producer.  What is "
+      + "the right fix?",
+    options: [
+      "Declare it as a tear and let the iteration settle",
+      "Move the unit so the producer is declared earlier, since this is an order mistake",
+      "Seed it with a better guess in 0/",
+      "Switch the outer solver from Newton to Wegstein",
+    ],
+    correct: 1,
+    feedback: "Step 4: with no loop behind it the edge is a declaration-order "
+      + "mistake, not a recycle.  A tear would hide the mistake with an "
+      + "artificial iteration, so Choupo refuses it as INVALID ORDER and "
+      + "prints a valid order instead.",
+  },
+  {
+    id: "newton-cost", steps: [5],
+    q: "Why does the standing advice say to cut as few streams as possible "
+      + "when the outer solver is Newton?",
+    options: [
+      "Each torn stream needs an extra initial guess, which is tedious",
+      "Newton differences every tear variable twice, so each extra tear "
+        + "adds two full flowsheet sweeps per variable at every step",
+      "A Wegstein step costs a sweep per tear variable, so it is slower still",
+      "More tears make the mass balance fail to close",
+    ],
+    correct: 1,
+    feedback: "Step 5: Newton builds its Jacobian by central differences, "
+      + "two complete sweeps per tear variable, while a Wegstein step costs "
+      + "one sweep however long the vector is.  A second tear on a "
+      + "five-component plant adds fourteen sweeps per Newton step.",
+  },
+  {
+    id: "fewest-tears", steps: [6],
+    q: "Two cycles share one edge that points forwards in the order you "
+      + "wrote.  How do you open both with a single tear?",
+    options: [
+      "Declare the shared edge as a tear anyway; the engine will accept it",
+      "Reorder the units so the shared edge points backwards, then tear it once",
+      "You cannot: each cycle always needs its own tear",
+      "Let the engine pick the tears with tearSelection auto",
+    ],
+    correct: 1,
+    feedback: "Step 6: in a sequential-modular solver, choosing the tears is "
+      + "choosing the order.  The fewest tears is a property of the order, "
+      + "and the engine deliberately does not choose your cut for you.",
   },
 ];

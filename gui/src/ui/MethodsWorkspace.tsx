@@ -153,7 +153,7 @@ import { popOutExploreMccabe } from "./explore/exploreMccabePopOut.js";
 import { useCoarsePointer, useNarrowViewport } from "./methods/methodsChrome.js";
 import { MCCABE_LIMITS, MCCABE_QUIZ, MCCABE_STEPS } from "./methods/mccabeLesson.js";
 import { LessonQuiz } from "./methods/lessonQuiz.js";
-import { PSYCHRO_LIMITS, PSYCHRO_STEPS } from "./methods/psychroLesson.js";
+import { PSYCHRO_LIMITS, PSYCHRO_QUIZ, PSYCHRO_STEPS } from "./methods/psychroLesson.js";
 import { KnobField, KnobNumber } from "./methods/knobPanel.js";
 import {
   METHOD_DISCIPLINES, METHOD_TOOLS, setActiveMethodTool, theoryUrl,
@@ -1393,6 +1393,8 @@ function PsychroTool({ catalogue, componentFiles }: {
         {step(3)}
         {step(4)}
         {step(5)}
+
+        <LessonQuiz title="Check your understanding" questions={PSYCHRO_QUIZ} lesson={PSYCHRO_STEPS} />
 
         <Box>
           <Title order={5}>What this does not model</Title>

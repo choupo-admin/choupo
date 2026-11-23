@@ -43,8 +43,9 @@ import { DEFAULT_PREFS, formatSig } from "../../state/displayUnits.js";
 import { SortTh, useSortable } from "../SortableTable.js";
 import { LessonReferences, lessonStepper, TexText } from "./lessonStep.js";
 import { OriginMark } from "./origin.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import {
-  SLE_ENGINE_SOURCES, SLE_LIMITS, SLE_PREDICTIONS, SLE_STEPS, type SlePrediction,
+  SLE_ENGINE_SOURCES, SLE_LIMITS, SLE_PREDICTIONS, SLE_QUIZ, SLE_STEPS, type SlePrediction,
 } from "./slePairLesson.js";
 import {
   ARCHIVE, CP_CRYSTAL, CP_LIQUID, FUSION_WANG, FUSION_YANG, LONG_2010, REVIEW_STATUS,
@@ -727,6 +728,7 @@ export function SlePairTool(): JSX.Element {
               </Box>
             ))}
           </Box>
+          <LessonQuiz title="Check your understanding" questions={SLE_QUIZ} lesson={SLE_STEPS} />
           <LessonReferences tool="sle-pair" />
         </Moment>
       </Box>

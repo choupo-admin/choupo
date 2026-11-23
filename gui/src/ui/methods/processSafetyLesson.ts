@@ -73,6 +73,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 
 /** Every verbatim quotation the page prints, with where it comes from.  The
@@ -784,4 +785,95 @@ export const SAFETY_LIMITS: readonly LessonLimit[] = [
       + "The measures each class calls for -- emergency cooling, quench, "
       + "relief sizing, process modification -- are the designer's, and need "
       + "the reaction's own calorimetry." },
+];
+
+// ---- the quiz (C158) ---------------------------------------------------------
+
+export const SAFETY_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "inherent", steps: [3, 4],
+    q: "What do the inherently safer principles (intensification, "
+      + "substitution, attenuation, limitation of effects, simplification) "
+      + "have in common?",
+    options: [
+      "They add protective layers around the hazard",
+      "Once built, they do not depend on a system that has to keep working",
+      "They apply only to the design of relief valves",
+      "They replace the need to study how a plant can fail",
+    ],
+    correct: 1,
+    feedback: "Each one removes or reduces the hazard itself rather than "
+      + "guarding it, so nothing has to keep working for the plant to be "
+      + "safe (step 4).  Bhopal is the reminder: layers that exist on paper "
+      + "protect nobody when they are not working (step 3).",
+  },
+  {
+    id: "mtsr", steps: [5, 6],
+    q: "The cooling of an exothermic reactor fails at some instant.  What "
+      + "sets the temperature the mass can reach?",
+    options: [
+      "The jacket temperature before the failure",
+      "The adiabatic rise of the whole charge, regardless of what has reacted",
+      "The unreacted reactant, the accumulation, which reacts adiabatically "
+        + "and heats the mass",
+    ],
+    correct: 2,
+    feedback: "From the failure on the vessel is adiabatic, and only what "
+      + "has not yet reacted still has heat to give; a fraction left "
+      + "unreacted gives that fraction of the adiabatic rise (step 5).  "
+      + "The result is then compared with the boiling point and T_D24 "
+      + "(step 6).",
+  },
+  {
+    id: "dosing", steps: [9, 10],
+    q: "Why does semi-batch dosing lower the peak cooling duty and the "
+      + "worst-case temperature after a cooling failure?",
+    options: [
+      "Dosing makes the reaction itself less exothermic",
+      "The reactor holds only what it was given and has not converted, so "
+        + "the accumulation stays small",
+      "Dosing raises the boiling point of the mass",
+      "Dosing speeds the reaction so everything is consumed at once",
+    ],
+    correct: 1,
+    feedback: "Dosing is intensification applied to time: the unreacted "
+      + "inventory is small (step 10).  The lever is the dosing rate "
+      + "against the reaction rate, since dosing faster than the reaction "
+      + "consumes turns the vessel back into a batch, whose accumulation "
+      + "starts at 1 (step 9).",
+  },
+  {
+    id: "interlock", steps: [12, 13],
+    q: "The MTSR scenario assumes dosing stops when the cooling fails.  "
+      + "What happens to that assumption if the feed-stop interlock also "
+      + "fails?",
+    options: [
+      "Nothing: the MTSR already includes it",
+      "The scenario becomes a compound one, a cooling failure plus a "
+        + "feed-stop failure, whose temperature extends past the MTSR",
+      "The reaction stops because the cooling has stopped",
+    ],
+    correct: 1,
+    feedback: "The interlock is a system too: without it the pump goes on "
+      + "dosing into an adiabatic reactor and the temperature climbs toward "
+      + "the batch's (step 13).  That is not an MTSR but a worse case, and "
+      + "the class of a process takes the worst scenario, not the one "
+      + "shown (step 12).",
+  },
+  {
+    id: "classes", steps: [7, 12],
+    q: "A class from the criticality scale orders four temperatures.  Is the "
+      + "class shown for the scenario you picked the class of the process?",
+    options: [
+      "Yes: the class belongs to the process, whichever instant you pick",
+      "No: the class of the process takes the worst scenario, and the class "
+        + "at one instant need not be that one",
+      "Yes, but only for a batch reactor",
+    ],
+    correct: 1,
+    feedback: "The class is a statement about the order of T_p, MTSR, MTT "
+      + "and T_D24 (step 7), and the MTSR slot depends on the failure "
+      + "instant, so several classes can appear in one batch.  The "
+      + "process takes the maximum (step 12).",
+  },
 ];

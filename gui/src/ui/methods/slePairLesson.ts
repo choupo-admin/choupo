@@ -26,6 +26,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 /** One engine claim and the line it was read at; the test reads it back. */
@@ -253,4 +254,73 @@ export const SLE_LIMITS: readonly LessonLimit[] = [
       + "about 290 K) is not modelled, so the curve is not drawn to a eutectic: it stops "
       + "where the measurements stop, and its continuation to the melting point is drawn "
       + "dashed as what it is — an extrapolation of the pair." },
+];
+
+export const SLE_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "solvent-role", steps: [1, 5],
+    q: "In the saturation condition x1 gamma1 = exp(-dG_fus / RT), where "
+      + "does the solvent enter?",
+    options: [
+      "Through the melting point of the crystal on the right-hand side",
+      "Only through gamma1, so a measured solubility measures an activity coefficient",
+      "Through the fusion enthalpy, which differs from solvent to solvent",
+      "It does not enter, so every solvent gives the same solubility",
+    ],
+    correct: 1,
+    feedback: "The right-hand side belongs to the crystal alone; everything "
+      + "the solvent does goes through gamma1, so dividing the ideal "
+      + "solubility by the measured one yields gamma1 (steps 1 and 5).",
+  },
+  {
+    id: "ideal-solid", steps: [3],
+    q: "Two laboratories report fusion enthalpies for benzoic acid that "
+      + "differ by 7 %.  What follows for the ideal solubility and the "
+      + "activity coefficients extracted from it?",
+    options: [
+      "The ideal solubility differs by about 7 % and the coefficients are unaffected",
+      "The ideal solubility is a property of the solvent, so nothing follows",
+      "The ideal solubility differs by 15 %, and every extracted coefficient carries that spread",
+      "Only the heat-capacity term is affected",
+    ],
+    correct: 2,
+    feedback: "The ideal solubility depends only on the solid's two "
+      + "measured numbers and on T, and it is amplified through the "
+      + "exponential: 7 % in the enthalpy gave 15 % in the solubility, "
+      + "so each gamma = x_ideal / x_measured carries it (step 3).",
+  },
+  {
+    id: "dcp", steps: [4],
+    q: "The page neglects the heat-capacity term, as the engine's "
+      + "crystallising solid does.  What is the consequence for the fitted "
+      + "NRTL pair?",
+    options: [
+      "None, because the term is far too small to matter",
+      "The pair is wrong in every model, including those that neglect the term",
+      "The pair absorbs the omission, so it is consistent only inside a model that omits it too",
+      "The pair is correct everywhere except at the melting point",
+    ],
+    correct: 2,
+    feedback: "The term is not small (a factor 1.27 on the solubility at "
+      + "298.15 K).  The extracted gamma is the true one divided by "
+      + "exp of the term, so the pair compensates and is right only "
+      + "when used again with the same neglect (step 4).",
+  },
+  {
+    id: "held-out", steps: [6, 7],
+    q: "Two NRTL pairs reproduce every saturation measurement equally "
+      + "well.  Why may they still disagree strongly elsewhere?",
+    options: [
+      "Because one of them must have been fitted with the wrong alpha",
+      "The measurements lie only on the saturation line, so they say nothing of the solvent's coefficient or the acid-rich end",
+      "Because the in-sample residual of NRTL is always large",
+      "Because held-out points always contradict an SLE fit",
+    ],
+    correct: 1,
+    feedback: "Solubility points report gamma1 only where the solution is "
+      + "saturated, over a narrow composition range; the pairs differ "
+      + "where nothing was measured, such as gamma2 at infinite dilution "
+      + "in the melt.  Only held-out points could have contradicted a "
+      + "pair, and only inside that range (steps 6 and 7).",
+  },
 ];

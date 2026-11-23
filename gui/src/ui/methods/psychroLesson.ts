@@ -45,6 +45,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const PSYCHRO_STEPS: readonly LessonStep[] = [
@@ -389,5 +390,75 @@ export const PSYCHRO_LIMITS: readonly { id: string; title: string; body: string 
       + "adiabatic and wet-bulb families need).  Pick "
       + "air and the chart moves onto the printed one — Y_sat at 60 °C goes "
       + "from 0.1576 to 0.1525, against the ~0.152 a handbook reads.",
+  },
+];
+
+// ---- the quiz (C158) ---------------------------------------------------------
+
+export const PSYCHRO_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "two-coordinates", steps: [1],
+    q: "The chart is drawn on dry-bulb temperature and humidity ratio.  "
+      + "How is the relative humidity of a state obtained?",
+    options: [
+      "It is a third coordinate you set independently",
+      "It is read off at the point, since the two coordinates already fix "
+        + "the state of the moist gas",
+      "It equals the humidity ratio divided by 100",
+    ],
+    correct: 1,
+    feedback: "Fixing the dry-bulb temperature and the humidity ratio fixes "
+      + "the state; relative humidity, dew point, wet bulb and enthalpy "
+      + "are properties read off the point, not coordinates (step 1).",
+  },
+  {
+    id: "heating-phi", steps: [2, 4],
+    q: "Moist gas is heated with no vapour added or removed.  What happens "
+      + "to its humidity ratio and its relative humidity?",
+    options: [
+      "Both fall",
+      "Both stay the same",
+      "The humidity ratio is unchanged and the relative humidity falls, "
+        + "because the saturation ceiling rose",
+      "The humidity ratio rises and the relative humidity is unchanged",
+    ],
+    correct: 2,
+    feedback: "Heating is a horizontal move to the right at constant Y "
+      + "(step 4).  Relative humidity is a ratio to the saturation pressure "
+      + "at the same temperature, which climbs steeply, so it falls "
+      + "without anything leaving the gas (step 2).",
+  },
+  {
+    id: "wet-bulb", steps: [3],
+    q: "What does a wet-bulb thermometer read?",
+    options: [
+      "The temperature of the gas",
+      "The temperature a free liquid surface reaches in that gas, where "
+        + "evaporative cooling and the heat arriving from the gas cancel",
+      "The dew point of the gas",
+      "The temperature at which the gas has 100 % humidity ratio",
+    ],
+    correct: 1,
+    feedback: "The wick settles where latent heat leaving balances sensible "
+      + "heat arriving (step 3).  It is not the gas temperature, and it "
+      + "equals the adiabatic-saturation temperature only when the Lewis "
+      + "number is close to one, as it is for air and water.",
+  },
+  {
+    id: "pressure-trap", steps: [5],
+    q: "A chart printed for sea level is read in a city a kilometre above "
+      + "it.  What error does the lesson warn about?",
+    options: [
+      "None: the saturation curve is the same at every pressure",
+      "The humidity ratio of every state is overstated",
+      "The humidity ratio of every state is understated, because the dry "
+        + "gas is thinner at the lower pressure",
+    ],
+    correct: 2,
+    feedback: "Total pressure is in the definition of Y but on neither "
+      + "axis.  At fixed T and relative humidity the vapour partial "
+      + "pressure is unchanged while the dry gas is thinner, so Y is "
+      + "higher at the lower pressure and the sea-level chart understates "
+      + "it (step 5).",
   },
 ];

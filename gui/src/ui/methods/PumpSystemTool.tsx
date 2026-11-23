@@ -93,6 +93,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Table, Text,
@@ -103,7 +104,7 @@ import type { RunResult } from "../../adapters/SolverAdapter.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
-import { PUMP_LIMITS, PUMP_STEPS } from "./pumpSystemLesson.js";
+import { PUMP_LIMITS, PUMP_QUIZ, PUMP_STEPS } from "./pumpSystemLesson.js";
 import { OriginMark } from "./origin.js";
 
 // ---- Detection: which sweep CSV feeds the tool ------------------------------
@@ -811,6 +812,7 @@ export function PumpSystemTool(): JSX.Element {
         {lessonStep(3)}
         {lessonStep(4)}
         {lessonStep(5)}
+        <LessonQuiz title="Check your understanding" questions={PUMP_QUIZ} lesson={PUMP_STEPS} />
         {lessonLimits}
 
         <LessonReferences tool="pump-system" />

@@ -29,6 +29,7 @@
 
 import { at } from "./runLog.js";
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const RUN_LOG_STEPS: readonly LessonStep[] = [
   {
@@ -294,5 +295,72 @@ export const RUN_LOG_LIMITS: readonly LessonLimit[] = [
       + "one of them to the statement it quotes. When the engine moves code "
       + "the page still holds; if a function is renamed or the statement "
       + "goes, the test fails by name and the page is corrected.",
+  },
+];
+
+export const RUN_LOG_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "residual-column", steps: [3],
+    q: "In a unit's Newton trace the residual column reads 3.8e-2, 7.8e-4, "
+      + "5.7e-7, 2.9e-13.  What does that pattern tell you?",
+    options: [
+      "The solver is stalling and the run should not be trusted",
+      "The residual is only falling because the tolerance is loose",
+      "Each iterate roughly squares the error of the one before, as Newton does when close enough",
+      "The residual falls by a fixed factor each row, as a recycle with relaxation does",
+    ],
+    correct: 2,
+    feedback: "Quadratic convergence is the signature of Newton near the "
+      + "answer: the error is roughly squared each row.  A residual that "
+      + "stalls, oscillates or grows is the pattern to worry about (step 3).",
+  },
+  {
+    id: "converged-verdict", steps: [4],
+    q: "Why does the convergence verdict normalise the residual instead of "
+      + "quoting it alone?",
+    options: [
+      "A raw residual is always larger than the tolerance",
+      "A raw residual is a magnitude compared with nothing: 1e-9 kmol/s is tiny for a plant and huge for a trace species",
+      "Normalising makes the solver converge in fewer iterations",
+      "The raw residual cannot be computed for a reactive flash",
+    ],
+    correct: 1,
+    feedback: "The normalised residual divides by the spread of the terms "
+      + "each equation balances, so one tolerance means the same thing "
+      + "for any scale.  The block prints raw and normalised numbers "
+      + "and the criterion that decided (step 4).",
+  },
+  {
+    id: "recycle-units", steps: [5],
+    q: "In a run with a recycle, the unit blocks you read in the log come "
+      + "from where?",
+    options: [
+      "Every iteration of the tear loop, in order",
+      "The first iteration, which uses the seeded guess",
+      "The final pass at the converged answer; the units run quietly while the tear converges",
+      "A separate run of each unit alone with the stream table",
+    ],
+    correct: 2,
+    feedback: "The units are quiet during the recycle iterations and the "
+      + "engine reruns them once, with full logging, after the loop has "
+      + "converged.  The history of how it got there is the recycle table, "
+      + "not the unit blocks (step 5).",
+  },
+  {
+    id: "message-kinds", steps: [6, 7],
+    q: "A run prints an advisory about a vapour pressure outside its fitted "
+      + "range and finishes with exit code 0.  How should you treat the "
+      + "numbers?",
+    options: [
+      "Discard them, since an advisory means the run failed",
+      "Use them without reading the advisory, because exit code 0 means an answer",
+      "Treat the advisory as a refusal and fix the case",
+      "Read the advisory against your question: the run answered, and the caveat says how far to trust the number",
+    ],
+    correct: 3,
+    feedback: "An advisory qualifies an answer that exists; it is put on "
+      + "the advisory log and reappears in the caveats block at the end "
+      + "(steps 6 and 7).  A refusal is the case that prints ERROR and "
+      + "exits 2, and exit 1 means no convergence.",
   },
 ];

@@ -79,6 +79,7 @@ import { Alert, Box, Group, Loader, Slider, Stack, Text, Title }
 import { useMethodRun } from "../../case/methodRun.js";
 import { Tex } from "./lessonStep.js";
 import { OriginMark } from "./origin.js";
+import { LessonQuiz, type QuizQuestion } from "./lessonQuiz.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -409,6 +410,86 @@ function MixingKnob() {
 }
 
 // ---- the page ---------------------------------------------------------------
+
+/** The page's sections the quiz points back to (the first four are numbered
+ *  in the page, the last two are headed by their titles alone). */
+export const WHAT_IS_ENTROPY_STEPS: readonly { n: number; title: string }[] = [
+  { n: 1, title: "Mixed, and never unmixed" },
+  { n: 2, title: "Two blocks exchange heat" },
+  { n: 3, title: "The balance, written down" },
+  { n: 4, title: "The definition, and a measured zero" },
+  { n: 5, title: "The ledger" },
+  { n: 6, title: "What an engineer does with it" },
+];
+
+export const WHAT_IS_ENTROPY_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "cooled-gas", steps: [1, 3],
+    q: "A gas is cooled in a heat exchanger and its entropy falls.  Does "
+      + "that break the second law?",
+    options: [
+      "Yes, because entropy can never decrease",
+      "Yes, unless the exchanger is perfectly insulated",
+      "No: entropy left with the heat and entered the coolant, and the "
+        + "second law speaks about generation and isolated wholes",
+      "No, but only because the process is reversible",
+    ],
+    correct: 2,
+    feedback: "Steps 1 and 3: the entropy of a system can go up or down "
+      + "because entropy crosses the boundary with heat or matter.  Only "
+      + "generation can never be negative, and only in an isolated whole "
+      + "does the total entropy not decrease.",
+  },
+  {
+    id: "work-no-entropy", steps: [3],
+    q: "An adiabatic turbine delivers shaft work.  How can the entropy of "
+      + "the stream change from inlet to outlet?",
+    options: [
+      "It falls, because the work carries entropy away",
+      "It is carried away by the heat that the work replaces",
+      "It cannot change, because the process is adiabatic",
+      "It can only rise, by generation, because work carries no entropy",
+    ],
+    correct: 3,
+    feedback: "Step 3: work carries no entropy, and with no heat term the "
+      + "balance reduces to s_out - s_in = S_gen per mole, which is "
+      + "never negative.  That is what lets the entropy rise read as "
+      + "generation.",
+  },
+  {
+    id: "two-blocks", steps: [2],
+    q: "Two blocks at 400 K and 300 K are put in contact and insulated.  "
+      + "Where is the entropy generated?",
+    options: [
+      "In the hot block, which loses entropy",
+      "At the contact, where heat crosses a finite temperature difference; "
+        + "the generation shrinks as the difference shrinks",
+      "In the cold block, which gains entropy",
+      "Nowhere: the total is conserved because energy is",
+    ],
+    correct: 1,
+    feedback: "Step 2: the cold block gains more entropy than the hot one "
+      + "loses because the same heat arrives at a lower temperature.  The "
+      + "excess is generation, and it vanishes only in the reversible "
+      + "limit.",
+  },
+  {
+    id: "irreversible-path", steps: [4],
+    q: "How do you compute the entropy change of an irreversible process "
+      + "between two end states?",
+    options: [
+      "Divide the heat of the actual path by the temperature",
+      "Integrate the heat of a reversible path between the same end "
+        + "states, because entropy is a property of the state",
+      "It cannot be computed without knowing the entropy generated",
+      "Use the entropy of the final state only",
+    ],
+    correct: 1,
+    feedback: "Step 4: the change is the same whatever happened between the "
+      + "end states.  Dividing the actual path's heat by T gives only the "
+      + "transfer and misses the generation.",
+  },
+];
 
 export function WhatIsEntropyTool(): JSX.Element {
   const run = useMethodRun(ENTROPY_WITNESS, [], "entropy-ledger",
@@ -799,6 +880,7 @@ export function WhatIsEntropyTool(): JSX.Element {
           </Text>
         </Box>
 
+        <LessonQuiz title="Check your understanding" questions={WHAT_IS_ENTROPY_QUIZ} lesson={WHAT_IS_ENTROPY_STEPS} numbered={false} />
       </Stack>
     </Box>
   );

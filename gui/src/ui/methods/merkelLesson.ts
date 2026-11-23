@@ -31,6 +31,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const MERKEL_STEPS: readonly LessonStep[] = [
@@ -386,5 +387,57 @@ export const MERKEL_LIMITS: readonly { id: string; title: string; body: string }
       + "the tower's own humid exit air into its intake — which raises the "
       + "wet bulb the tower actually sees, and so the approach it can reach — "
       + "are not modelled either.",
+  },
+];
+
+/** Four questions that close the lesson (DEV.md 4c C158). */
+export const MERKEL_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "driving-force", steps: [1],
+    q: "In Merkel's method, what is the driving force that moves heat from the water to the air?",
+    options: [
+      "The temperature difference between the water and the air",
+      "The enthalpy of air saturated at the water temperature minus the enthalpy of the bulk air",
+      "The difference between the water inlet and outlet temperatures",
+      "The humidity difference between the bulk air and the air leaving the packing",
+    ],
+    correct: 1,
+    feedback: "Most of the heat leaves with the water that evaporates, so sensible and latent transfer are lumped into one potential, h*(T_water) - h_air, in kJ per kg of dry air.  A plain temperature difference would miss the latent part (step 1).",
+  },
+  {
+    id: "floor", steps: [2],
+    q: "What is the lowest temperature a cooling tower can bring the water to, however much packing it has?",
+    options: [
+      "The dry-bulb temperature of the incoming air",
+      "The inlet water temperature minus the range",
+      "Very nearly the wet-bulb temperature of the incoming air",
+      "Any temperature, if the packing is tall enough",
+    ],
+    correct: 2,
+    feedback: "Water at the wet-bulb temperature is already in balance with the incoming air, so the enthalpy gap closes there and the packing needed grows without bound as the approach shrinks.  The wet bulb belongs to the site's climate, not to the tower (step 2).",
+  },
+  {
+    id: "height-from-me", steps: [4],
+    q: "The Merkel number KaV/L has been computed for a duty.  Can the packing height be read from it alone?",
+    options: [
+      "Yes: the height is the Merkel number times the water flow",
+      "Yes: K, a and V are each reported separately, so the volume follows",
+      "No: it depends only on the dry-bulb temperature of the air",
+      "No: K, a and V appear only as one group, so a height needs a packing model that this engine does not have",
+    ],
+    correct: 3,
+    feedback: "The Merkel number is the demand a duty places on a tower, from the integral of dT/(h* - h).  Because K, a and V never appear apart, turning it into a fill height needs a Ka for the actual packing (step 4).",
+  },
+  {
+    id: "range", steps: [3],
+    q: "What fixes the range of a cooling tower, the difference between the hot and cold water temperatures?",
+    options: [
+      "The process duty and the water flow, through Q = L cp_L range",
+      "The packing volume and the fill coefficient",
+      "The wet-bulb temperature of the site",
+      "The dry-air flow alone",
+    ],
+    correct: 0,
+    feedback: "The range is set on the process side: a duty Q rejected into a water flow L gives the range by a sensible-heat balance.  What the tower and the climate decide between them is the cold end, the approach (step 3).",
   },
 ];

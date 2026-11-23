@@ -43,7 +43,8 @@ import {
   blockLines, citeText, classifyLog, exitCodeOf, kindCounts, refusalOf,
   witnessRaw, type LogKind, type LogLine, type RunId, type Verbosity,
 } from "./runLog.js";
-import { RUN_LOG_LIMITS, RUN_LOG_STEPS } from "./runLogLesson.js";
+import { RUN_LOG_LIMITS, RUN_LOG_QUIZ, RUN_LOG_STEPS } from "./runLogLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { useCaseFilesRun } from "../../case/methodRun.js";
 import { filesToCaseFiles } from "../../cases/tutorials.js";
 import { OriginMark } from "./origin.js";
@@ -576,6 +577,8 @@ export function RunLogTool(): JSX.Element {
         {step(5)}{showsFor(5)}
         {step(6)}{showsFor(6)}
         {step(7)}{showsFor(7)}
+
+        <LessonQuiz title="Check your understanding" questions={RUN_LOG_QUIZ} lesson={RUN_LOG_STEPS} />
 
         <LessonLimits limits={RUN_LOG_LIMITS} />
 

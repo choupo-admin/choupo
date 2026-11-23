@@ -47,6 +47,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Alert, Box, Code, Stack, Text, Title } from "@mantine/core";
+import { LessonQuiz, type QuizQuestion } from "./lessonQuiz.js";
 
 const INK = "var(--mantine-color-dimmed)";
 const GRID = "var(--mantine-color-default-border)";
@@ -144,6 +145,74 @@ export const UNIFAC_STEPS = [
   },
 ] as const;
 
+export const UNIFAC_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "why-predictive", steps: [2],
+    q: "Why can UNIFAC price a binary pair that nobody has ever measured?",
+    options: [
+      "It fits a new pair of parameters to the pure-component properties",
+      "It borrows the interaction parameters of the most similar molecule pair",
+      "It treats the liquid as a mixture of groups, so interactions are "
+        + "needed only between a few dozen group types, not between "
+        + "millions of molecule pairs",
+      "It assumes the mixture is ideal whenever a pair is unmeasured",
+    ],
+    correct: 2,
+    feedback: "Step 2: the liquid is treated as a solution of groups, and "
+      + "the interaction table is indexed by group type.  Any molecule that "
+      + "decomposes into groups in the table can be priced, measured pair "
+      + "or not.",
+  },
+  {
+    id: "temperature-entry", steps: [3],
+    q: "Where does temperature enter the UNIFAC activity coefficient?",
+    options: [
+      "In the combinatorial term, through the molecular sizes",
+      "Through the group volumes R_k, which are fitted at each temperature",
+      "Only through the exponential of the group interaction, "
+        + "Psi = exp(-a/T); the interaction numbers themselves are fixed",
+      "Through tau and again through exp(-alpha tau), as in NRTL",
+    ],
+    correct: 2,
+    feedback: "Step 3: one number a_mn per ordered main-group pair, "
+      + "temperature-independent, enters in exactly one exponential.  The "
+      + "NRTL-like double dependence is the wrong analogy.",
+  },
+  {
+    id: "pure-limit", steps: [5],
+    q: "Why does the residual part of ln gamma_i come out exactly zero for "
+      + "the pure component i?",
+    options: [
+      "Because the combinatorial term cancels it",
+      "Because the group activity is solved twice, for the mixture's group "
+        + "census and for pure i's census, and the two are identical in "
+        + "pure i so every bracket is zero",
+      "Because the interaction numbers vanish at x = 1",
+      "Because the residual term is only defined for mixtures",
+    ],
+    correct: 1,
+    feedback: "Step 5: a group in pure i already sits in some environment, "
+      + "so gamma must measure the change on mixing.  Subtracting the pure "
+      + "census makes the pure limit exact by construction.",
+  },
+  {
+    id: "missing-pair", steps: [3, 4],
+    q: "A group pair is missing from the published table and the engine "
+      + "takes its interaction as 0.  What does that do to the model?",
+    options: [
+      "The whole mixture becomes ideal",
+      "That one group pair becomes athermal (Psi = 1) while the "
+        + "combinatorial term and the other group pairs stay",
+      "The calculation is refused and the run stops",
+      "The pair is replaced by the nearest published pair automatically",
+    ],
+    correct: 1,
+    feedback: "Steps 3 and 4: a = 0 gives Psi = 1 for that pair only.  "
+      + "The engine runs and lists every gap by name at construction, "
+      + "because refusing would make hundreds of usable systems unusable.",
+  },
+];
+
 export function UnifacTheoryTool(): JSX.Element {
   return (
     //  THE SCROLL CONTAINER, and it is not decoration.  A tool renders
@@ -238,6 +307,8 @@ export function UnifacTheoryTool(): JSX.Element {
           decomposition cannot see.
         </Text>
       </Box>
+
+      <LessonQuiz title="Check your understanding" questions={UNIFAC_QUIZ} lesson={UNIFAC_STEPS} />
     </Stack>
     </Box>
   );

@@ -34,6 +34,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const PINCH_STEPS: readonly LessonStep[] = [
@@ -507,3 +508,55 @@ A_k &= \frac{Q_k}{U_k\,\Delta T_{\mathrm{lm},k}}
  *  exports: tests/lessonTex.test.ts finds steps by that shape and parses
  *  every formula and glossed symbol in them. */
 export const PINCH_EXPERIMENT_STEPS: readonly LessonStep[] = [PINCH_ECONOMIC_STEP];
+
+/** Four questions that close the lesson (DEV.md 4c C158). */
+export const PINCH_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "cp", steps: [1],
+    q: "What does CP mean for a stream in pinch analysis?",
+    options: [
+      "The specific heat capacity of the stream, in kJ/(kg K)",
+      "The heat-capacity flow rate, mass flow times cp in kW/K, so a constant-CP stream is a straight line of slope 1/CP",
+      "The heat duty of the stream in kW",
+      "The pressure drop of the stream across the exchanger",
+    ],
+    correct: 1,
+    feedback: "CP is a heat-capacity flow, not a heat capacity, and confusing the two is the commonest error in the method.  On a temperature against heat-flow diagram a constant-CP stream is a line of slope 1/CP (step 1).",
+  },
+  {
+    id: "overhangs", steps: [3],
+    q: "After sliding the cold composite until the curves are nowhere closer than the minimum approach, what do the two overhangs represent?",
+    options: [
+      "Heat that must be lost to the environment in both cases",
+      "The streams that have no matching partner",
+      "The cold overhang at the hot end needs hot utility, and the hot overhang at the cold end needs cold utility",
+      "The area still to be installed above and below the pinch",
+    ],
+    correct: 2,
+    feedback: "The overlap is heat recovered process to process.  What sticks out has no process partner at that temperature, so the overhangs are the minimum hot and cold utility targets (step 3).",
+  },
+  {
+    id: "dtmin", steps: [4],
+    q: "Is the minimum approach temperature a property of the fluids?",
+    options: [
+      "No: it is a choice, trading a smaller utility bill against more exchanger area",
+      "Yes: it follows from the heat capacities of the streams",
+      "Yes: it is fixed by the pinch",
+      "No: it is a thermodynamic constant, the same for every process",
+    ],
+    correct: 0,
+    feedback: "The pinch sits where it does because you picked the minimum approach.  A smaller value lets the curves overlap further, with less utility and more surface, since area goes as Q/(U dT_lm): an economic decision, not a thermodynamic one (step 4).",
+  },
+  {
+    id: "cross-pinch", steps: [5],
+    q: "A network transfers a duty Q across the pinch.  What is the consequence?",
+    options: [
+      "Only the hot utility rises, by Q",
+      "The utility targets themselves move up by Q",
+      "Nothing, as long as every match respects the minimum approach",
+      "Both the hot and the cold utility duties rise above their targets by Q, so it is paid for twice",
+    ],
+    correct: 3,
+    feedback: "The region above the pinch loses heat it needed and the hot utility replaces it; the region below gains heat it did not need and the cold utility rejects it.  The targets do not move, but the duties actually used both rise by Q (step 5).",
+  },
+];

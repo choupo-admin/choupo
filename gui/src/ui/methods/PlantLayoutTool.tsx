@@ -57,8 +57,9 @@ import {
 } from "./layoutExercise.js";
 import { LessonLimits, LessonStepView, LessonReferences } from "./lessonStep.js";
 import {
-  LAYOUT_SOURCES, PLANT_LAYOUT_LIMITS, PLANT_LAYOUT_STEPS,
+  LAYOUT_SOURCES, PLANT_LAYOUT_LIMITS, PLANT_LAYOUT_QUIZ, PLANT_LAYOUT_STEPS,
 } from "./plantLayoutLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
 
@@ -299,6 +300,8 @@ export function PlantLayoutTool(): JSX.Element {
 
         <Title order={4}>Part 5 — the trade-offs</Title>
         {step(11)}
+
+        <LessonQuiz title="Check your understanding" questions={PLANT_LAYOUT_QUIZ} lesson={PLANT_LAYOUT_STEPS} />
 
         <LessonLimits limits={PLANT_LAYOUT_LIMITS} />
         <Text size="sm">

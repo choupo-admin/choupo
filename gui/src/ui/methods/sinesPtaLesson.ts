@@ -35,6 +35,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 /** A quotation in the language of its document, with its translation. */
 export interface Quote {
@@ -819,4 +820,75 @@ export const SINES_LIMITS: readonly LessonLimit[] = [
       + "plant company in 2017 was found in them; and the date of the "
       + "risk-department opinion the auditor records under the restructuring "
       + "(card 6) is not given.  None of these is stated here as a fact." },
+];
+
+export const SINES_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "spread", steps: [2],
+    q: "PTA is priced in line with its feedstock, paraxylene.  Which "
+      + "quantity does the lesson call the central measure of the plant's "
+      + "margin?",
+    options: [
+      "The price of PTA alone",
+      "The price of paraxylene alone",
+      "The conversion cost per tonne",
+      "The spread between the PTA price and the raw materials consumed",
+    ],
+    correct: 3,
+    feedback: "When the product price moves with the feedstock, price and "
+      + "feedstock cost must be analysed together; the spread between them "
+      + "is the margin measure, and what the plant keeps is the spread "
+      + "less its own conversion costs (step 2).",
+  },
+  {
+    id: "perimeter", steps: [3, 10],
+    q: "The documents state the capital cost of the plant seven times, "
+      + "from about EUR 360 M to EUR 462 M.  How should the figures be "
+      + "read?",
+    options: [
+      "As a time series of one quantity, whose ratio shows the overrun",
+      "Each with its own perimeter: a number without its definition is not a result",
+      "Only the largest figure is correct and the others are errors",
+      "Averaged, since the true cost lies between the extremes",
+    ],
+    correct: 1,
+    feedback: "The figures are a budget, a financing offer, a total of "
+      + "uses with opex and financing, an estimate and gross assets under "
+      + "construction: different perimeters, so the page draws no ratio "
+      + "between them (steps 3 and 10).  The same holds for the loss "
+      + "figures, which overlap and must not be added.",
+  },
+  {
+    id: "breakeven", steps: [5, 6],
+    q: "The break-even spread of the simplified appraisal lies close to a "
+      + "historical average spread.  What may you conclude?",
+    options: [
+      "That the average is needed in every operating year",
+      "That the project is certain to be profitable",
+      "Not that: the spread varies, and the discounted time sequence of the cash flows decides the NPV, so a bad early year weighs more",
+      "That the appraisal should be discounted at a lower rate",
+    ],
+    correct: 2,
+    feedback: "The NPV is linear in a constant spread, so the break-even "
+      + "is exact, but real spreads vary and early cash flows weigh more "
+      + "once discounted.  It is also pre-tax and unfinanced, so it "
+      + "cannot say whether debt could be serviced (steps 5 and 6).",
+  },
+  {
+    id: "regional-spread", steps: [7],
+    q: "IVL's West spread was more than twice its Asian one from 2014 to "
+      + "2017.  Why is it not the Sines plant's own realised spread?",
+    options: [
+      "It is a 50:50 North America : Europe index published from 2015, and later information than the 2007-2008 decision",
+      "It is a spot price for paraxylene, not for PTA",
+      "It was measured in euros, while the plant sold in US dollars",
+      "It includes the plant's conversion costs",
+    ],
+    correct: 0,
+    feedback: "A regional index blends producers other than Sines and was "
+      + "not available at the decision, so it can be set beside a "
+      + "break-even but is not the plant's realised margin (step 7).  "
+      + "A regional premium can also narrow through freight, the exchange "
+      + "rate and Asian export prices, each a separate scenario input.",
+  },
 ];

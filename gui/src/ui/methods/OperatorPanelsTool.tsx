@@ -53,7 +53,8 @@ import type { PanelElementReport, PanelReport } from "../../adapters/panelPayloa
 import { KnobNumber, PanelNote } from "./knobPanel.js";
 import { OriginMark, type OriginKind } from "./origin.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
-import { PANEL_LIMITS, PANEL_STEPS } from "./operatorPanelsLesson.js";
+import { PANEL_LIMITS, PANEL_QUIZ, PANEL_STEPS } from "./operatorPanelsLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 //  The drawing primitives are SHARED with the Panel workspace (ui/panelWidgets.tsx):
 //  one bar with its limits, one trend, one lamp, one alarm colour.
 import { ALARM, GRID, Lamp, MiniTrend, ScaleBar, sig } from "../panelWidgets.js";
@@ -583,6 +584,8 @@ export function OperatorPanelsTool(): JSX.Element {
           </Wide>
         )}
       </Panel>
+
+      <LessonQuiz title="Check your understanding" questions={PANEL_QUIZ} lesson={PANEL_STEPS} />
 
       <LessonLimits limits={PANEL_LIMITS} />
       <LessonReferences tool="operator-panels" />

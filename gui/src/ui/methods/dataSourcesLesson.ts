@@ -38,6 +38,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 /** The worked example's record, a real file of the public catalogue. */
 export const EXAMPLE_RECORD = "data/standards/parameters/NRTL/dimethylCarbonate-methanol.dat";
@@ -694,4 +695,75 @@ export const CITATIONS: readonly { file: string; line: number; contains: string 
   { file: "bin/curate/check_source_licence.py", line: 345, contains: "EXCLUDED_TABLES" },
   { file: "bin/curate/check_source_licence.py", line: 493, contains: "ACCEPTED_PUBLIC_DOMAIN" },
   { file: EXAMPLE_RECORD, line: 120, contains: "rounded UP to two significant figures" },
+];
+
+// ---- the quiz (C158) ---------------------------------------------------------
+
+export const DS_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "four-permissions", steps: [3],
+    q: "A table on a public web page may be read and cited.  May you then "
+      + "copy its values into a record that others download?",
+    options: [
+      "Yes: anything public may be copied",
+      "Only if the source's own licence grants copying; reading and "
+        + "citing are different permissions",
+      "Yes, as long as you cite the page",
+      "No: no public value may ever enter a record",
+    ],
+    correct: 1,
+    feedback: "Read, cite, copy and redistribute are four different "
+      + "permissions (step 3).  Public availability grants the first two; "
+      + "copying into a downloaded record needs a licence that says so, "
+      + "and the source's own page is where that is written.",
+  },
+  {
+    id: "primary-source", steps: [6],
+    q: "A compilation lists a value with a journal reference beside it.  "
+      + "What do you cite in your record?",
+    options: [
+      "The compilation, because that is where you found it",
+      "Both, with equal weight",
+      "The journal paper where it was measured",
+    ],
+    correct: 2,
+    feedback: "A compilation is where you found a value; the paper is where "
+      + "it was measured (step 6).  Citing the paper lets a reader check "
+      + "the conditions and purity, and avoids copying the compiler's "
+      + "arrangement or a transcription error.",
+  },
+  {
+    id: "fit-band", steps: [4, 5],
+    q: "A fitted pair of parameters reproduces its own training points "
+      + "well.  What does the held-out deviation tell you that the "
+      + "training fit cannot?",
+    options: [
+      "How the fit behaves on points it never saw",
+      "Whether the original measurements were pure",
+      "That the parameters are measured values",
+      "Nothing, since both deviations are the same quantity",
+    ],
+    correct: 0,
+    feedback: "A fitted value is valid only where its measurements were, "
+      + "and it carries its deviation on points it never saw (steps 4 and "
+      + "5).  A fit judged only on its own training points can look "
+      + "perfect and still be wrong elsewhere.",
+  },
+  {
+    id: "nc-source", steps: [3, 7],
+    q: "A database is free for non-commercial use only, and you need one "
+      + "of its values for a public record.  What is the sound move?",
+    options: [
+      "Enter the value and cite the database",
+      "Enter the value without a citation, since the number is only a fact",
+      "Take the value from a primary or open source and use the "
+        + "database only as a cross-check",
+    ],
+    correct: 2,
+    feedback: "A non-commercial compilation is not rescued by citing it: "
+      + "the rule is to cite the primary source per value and to use the "
+      + "compilation only to compare against (step 3).  Each record then "
+      + "keeps its own origin and licence, as the real record shows "
+      + "(step 7).",
+  },
 ];

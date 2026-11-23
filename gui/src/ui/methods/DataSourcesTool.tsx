@@ -34,10 +34,11 @@ import {
   Anchor, Badge, Box, Button, Group, SegmentedControl, Stack, Table, Text, Title,
 } from "@mantine/core";
 
+import { LessonQuiz } from "./lessonQuiz.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
 import {
   BAND_TMEAN_K, BAND_U_K, DS_CHOICES, DS_CHOICE_WORD, DS_EXERCISE, DS_LIMITS,
-  DS_STEPS, DS_WALK, EXAMPLE_DATASETS, EXAMPLE_RECORD, EXAMPLE_URLS, EXCLUDED,
+  DS_QUIZ, DS_STEPS, DS_WALK, EXAMPLE_DATASETS, EXAMPLE_RECORD, EXAMPLE_URLS, EXCLUDED,
   LICENCE_CLASSES, PICKER, RECORD_LINES, SOURCES, bandPct, roundUp2,
   type DsChoice, type LicenceClass,
 } from "./dataSourcesLesson.js";
@@ -325,6 +326,8 @@ export function DataSourcesTool(): JSX.Element {
         <Band />
 
         <Exercise />
+
+        <LessonQuiz title="Check your understanding" questions={DS_QUIZ} lesson={DS_STEPS} />
 
         <LessonLimits limits={DS_LIMITS} />
 

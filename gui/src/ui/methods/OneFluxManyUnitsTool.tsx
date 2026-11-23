@@ -60,7 +60,8 @@ import {
 } from "../../case/oneFluxManyUnits.js";
 import { Panel, Wide, XYPlot } from "./AdsorptionIsothermsTool.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
-import { NOTATION_ROWS, OFMU_ENGINE_SCOPE, OFMU_LIMITS, OFMU_STEPS, OFMU_TASK } from "./oneFluxManyUnitsLesson.js";
+import { NOTATION_ROWS, OFMU_ENGINE_SCOPE, OFMU_LIMITS, OFMU_QUIZ, OFMU_STEPS, OFMU_TASK } from "./oneFluxManyUnitsLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 
 /** The Theory Guide section that writes the engine's own film equations. */
 export const THEORY_ANCHOR = "sec:rateBasedSegment";
@@ -599,6 +600,8 @@ export function OneFluxManyUnitsTool(): JSX.Element {
         {step(6)}
         <ReactionPanel />
         {step(7)}
+
+        <LessonQuiz title="Check your understanding" questions={OFMU_QUIZ} lesson={OFMU_STEPS} />
 
         <LessonLimits limits={OFMU_LIMITS} />
         <Exercises />

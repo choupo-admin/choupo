@@ -42,6 +42,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 /** Every source the page names, with what was taken from it and how it was
  *  reached.  Drawn at the foot of the page. */
@@ -540,4 +541,56 @@ export const PLANT_LAYOUT_LIMITS: readonly LessonLimit[] = [
       + "envelope you declare, not one the engine computes from a release.  "
       + "Fire radiation, blast overpressure and toxic exposure are not "
       + "modelled." },
+];
+
+/** Four questions that close the lesson (DEV.md 4c C158). */
+export const PLANT_LAYOUT_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "measure-word", steps: [3, 8],
+    q: "A separation table says 4 m between two vessels and does not say how it is measured.  Why does Choupo refuse it?",
+    options: [
+      "Because 4 m is too short for any two vessels",
+      "Because centre-to-centre and edge-to-edge distances differ, by the sum of the radii, and the word that says which is part of the rule",
+      "Because every distance must be an integer number of metres",
+      "Because the separation must come from the vessel's own sizer",
+    ],
+    correct: 1,
+    feedback: "Two large vessels can differ by metres between the two readings, so the same number under another measure is a different rule.  Copy the word with the distance, or you have copied a different rule (steps 3 and 8).",
+  },
+  {
+    id: "no-shipped-table", steps: [5],
+    q: "Why does Choupo ship no spacing table and no default distance?",
+    options: [
+      "Because distances do not matter in a teaching simulator",
+      "Because the engine computes every distance from the fire radiation",
+      "Because published tables may not be copied into an open-source program, and a copied number is someone else's choice for another plant",
+      "Because each item must be placed at the same distance",
+    ],
+    correct: 2,
+    feedback: "Every distance is the case's declaration and carries a source and a reason, without which the engine refuses to run.  A student must be able to say which table, which edition and why it applies to this plant (step 5).",
+  },
+  {
+    id: "wind", steps: [9],
+    q: "The prevailing wind is turned to blow from the north-east and nobody moves the control room.  What changes?",
+    options: [
+      "The control room is now downwind of the compressors, and the ignition-source check announces it",
+      "Nothing, because the layout checks do not depend on the wind",
+      "The compressors are moved automatically",
+      "The separation distances all grow by the same amount",
+    ],
+    correct: 0,
+    feedback: "The wind rule tests whether an ignition source lies within a sector downwind of a release source.  A layout is only right for the wind of the site it stands on (step 9).",
+  },
+  {
+    id: "short-distance", steps: [7],
+    q: "An item is placed closer to its neighbour than the separation the case declares, but the two footprints do not touch.  What does the engine do?",
+    options: [
+      "It stops with an error and refuses the layout",
+      "It silently accepts the layout",
+      "It moves the item east until the distance is met",
+      "It announces the shortfall with both distances and carries on; only a true overlap is refused",
+    ],
+    correct: 3,
+    feedback: "A short distance is still a draft whose shortfall you must see and then fix or defend, so the engine announces it.  Two footprints that collide in plan and height are not a layout, and that is refused (step 7).",
+  },
 ];

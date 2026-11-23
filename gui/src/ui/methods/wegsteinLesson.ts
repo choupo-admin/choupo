@@ -39,6 +39,81 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
+
+export const WEGSTEIN_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "slow-loop", steps: [3],
+    q: "A recycle loop returns almost everything it makes, so the loop "
+      + "gain is close to one.  How does direct substitution behave?",
+    options: [
+      "It diverges immediately",
+      "It converges, but the error shrinks by only a few percent per pass, "
+        + "so you count sweeps in the hundreds",
+      "It converges in one pass whatever the gain",
+      "It oscillates with growing amplitude",
+    ],
+    correct: 1,
+    feedback: "Step 3: the error is geometric, e_k = a^k e_0, so the sweeps "
+      + "needed for a fixed accuracy blow up as the gain approaches one.  "
+      + "Every sweep re-solves every unit, which is the economic case for "
+      + "an accelerator.",
+  },
+  {
+    id: "secant-slope", steps: [4],
+    q: "Wegstein measures a secant slope s = 0.9 on one tear variable.  "
+      + "What does the next assumption look like compared with direct "
+      + "substitution?",
+    options: [
+      "Identical, since s is below one",
+      "A step ten times longer, because q = s/(s-1) = -9",
+      "A step ten times shorter",
+      "A step in the opposite direction",
+    ],
+    correct: 1,
+    feedback: "Step 4: two points make a line, and the linear fixed point "
+      + "is solved exactly.  A slope of 0.9 gives q = -9, a step ten times "
+      + "longer than direct substitution, which is exactly why step 6 "
+      + "clamps it.",
+  },
+  {
+    id: "units-and-coupling", steps: [5, 7],
+    q: "Wegstein is applied to a tear holding a flow in kmol/s and a "
+      + "temperature in K.  What does it do with the two different scales?",
+    options: [
+      "It scales both to a common size before forming one step length",
+      "Nothing is needed: it runs a separate scalar secant on each entry, "
+        + "so units cancel, but it is therefore blind to coupling between "
+        + "the variables",
+      "It converges the flow first and the temperature afterwards",
+      "It requires the temperature to be expressed in the same units as the flow",
+    ],
+    correct: 1,
+    feedback: "Steps 5 and 7: each entry has its own secant and its own "
+      + "coefficient, so a change of units leaves the trajectory unchanged.  "
+      + "The price is that each secant is a directional slope contaminated "
+      + "by the other variables, which Newton's full Jacobian avoids at the "
+      + "cost of many more sweeps.",
+  },
+  {
+    id: "stopping-test", steps: [8],
+    q: "A Wegstein run stops because the unscaled norm of the tear change "
+      + "is below tolerance.  Why can the recycle flow still be several "
+      + "percent out?",
+    options: [
+      "The tolerance is always declared too loose",
+      "Wegstein never converges the flow, only the temperature",
+      "The unscaled norm adds a temperature near 360 K and a flow near 1e-4 "
+        + "in quadrature, so the temperature dominates the test",
+      "The mole fractions are excluded from the norm",
+    ],
+    correct: 2,
+    feedback: "Step 8: the step is scale-free but the stopping test is "
+      + "not.  The Newton branch divides each residual by a characteristic "
+      + "scale, and the plotted residuals are the physical mass and energy "
+      + "imbalances for the same reason.",
+  },
+];
 
 export const WEGSTEIN_STEPS: readonly LessonStep[] = [
   {

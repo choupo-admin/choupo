@@ -56,7 +56,8 @@ import { LessonLimits, lessonStepper, LessonReferences, Tex } from "./lessonStep
 import { WegsteinCobweb } from "./WegsteinCobweb.js";
 import { SlopeHandle } from "./RelaxationFigures.js";
 import { useNarrowViewport } from "./methodsChrome.js";
-import { WEGSTEIN_LIMITS, WEGSTEIN_STEPS } from "./wegsteinLesson.js";
+import { WEGSTEIN_LIMITS, WEGSTEIN_QUIZ, WEGSTEIN_STEPS } from "./wegsteinLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { useMethodRun } from "../../case/methodRun.js";
 import {
@@ -778,6 +779,8 @@ export function WegsteinTool(): JSX.Element {
             </Text>
           </Stack>
         </Box>
+
+        <LessonQuiz title="Check your understanding" questions={WEGSTEIN_QUIZ} lesson={WEGSTEIN_STEPS} />
 
         <LessonLimits limits={WEGSTEIN_LIMITS} />
 
