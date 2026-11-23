@@ -273,7 +273,7 @@ export const CITATIONS: readonly { file: string; line: number; contains: string 
   { file: "src/propertyOps/FitParameters.cpp", line: 412, contains: "\"P_bubble\"" },
   { file: "src/propertyOps/LleResidual.H", line: 101, contains: "T_bubble+LLE" },
   { file: "data/standards/parameters/NRTL/nButanol-water.dat", line: 26, contains: "tie lines" },
-  { file: "src/propertyOps/FitParameters.cpp", line: 3226, contains: "residual_rel" },
+  { file: "src/propertyOps/FitParameters.cpp", line: 3232, contains: "residual_rel" },
 ];
 
 /** The questions at the foot of the page (DEV.md 4c C158): drafts for

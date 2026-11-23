@@ -476,7 +476,7 @@ export const LS_STEPS: readonly LessonStep[] = [
         + "declared before the fit, with its origin stated beside it",
         unit: "%" },
     ],
-    note: "One home for the rule: src/propertyOps/CurationDossier.cpp:59-72, "
+    note: "One home for the rule: src/propertyOps/CurationDossier.cpp:61-74, "
       + "one short function you can read end to end. The verdict is taken once in the "
       + "run (FitParameters.cpp:1582) and travels to every sink from there "
       + "through src/propertyOps/PropertyOperation.H:118, the channel that "

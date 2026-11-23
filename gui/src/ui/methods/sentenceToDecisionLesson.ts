@@ -122,7 +122,7 @@ export const SD_STEPS: readonly LessonStep[] = [
     n: 5,
     title: "The verdict, in context",
     body: "validated means one thing: the held-out error is at or below the band "
-      + "declared before the fit (src/propertyOps/CurationDossier.cpp:72). It "
+      + "declared before the fit (src/propertyOps/CurationDossier.cpp:74). It "
       + "does not say the pair is right, nor that it beats every alternative. "
       + "The record that carries the pair restates the verdict with what it was "
       + "tested on: the number of points, the composition span, and the validity "
@@ -272,7 +272,7 @@ export const SD_CITATIONS: readonly { file: string; line: number; contains: stri
   { file: "src/propertyOps/EvidencePartition.cpp", line: 386, contains: "the ONE independence" },
   { file: "src/propertyOps/EvidencePartition.cpp", line: 590, contains: "ANNOUNCED, never adjudicated" },
   { file: "src/propertyOps/FitParameters.cpp", line: 1545, contains: "std::fabs(rV[k]) / tVal[k]" },
-  { file: "src/propertyOps/CurationDossier.cpp", line: 72, contains: "aadPct <= part.acceptanceMaxAADPct()" },
+  { file: "src/propertyOps/CurationDossier.cpp", line: 74, contains: "aadPct <= part.acceptanceMaxAADPct()" },
   { file: "src/propertyOps/EvidencePartition.cpp", line: 466, contains: "agreement with measured data" },
   { file: "data/standards/parameters/NRTL/methanol-water.dat", line: 100, contains: "validity" },
   { file: "data/standards/parameters/NRTL/methanol-water.dat", line: 62, contains: "reviewStatus  interim;" },

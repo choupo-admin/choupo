@@ -34,7 +34,9 @@ License
 #include <fstream>
 #include <iomanip>
 #include <iterator>
+#include <limits>
 #include <map>
+#include <sstream>
 #include <stdexcept>
 
 namespace fs = std::filesystem;
@@ -123,6 +125,46 @@ void CurationDossier::writeEvidenceSets(std::ostream& f, const char* role,
         f << indent << "}\n";
     }
 }
+
+namespace {
+
+//  THE DIGITS A NUMBER IS WRITTEN WITH (C483).  A dossier is a tracked record
+//  that every run regenerates, and an iterative fit stops at its own
+//  tolerance, so the converged value differs between platforms and builds in
+//  the 7th-8th significant digit.  Printing 12 digits wrote that difference
+//  into the tree on every run.  Each number now carries only what is known:
+//
+//    * a fitted parameter, to TWO significant digits of its own standard
+//      error (the convention for quoting a value with its uncertainty), and
+//      the error itself beside it -- the fit computes it (FitParameters:
+//      sigma^2 (J^T J)^-1), the dossier used to throw it away;
+//    * a parameter whose operation reports no error, and a metric (none of
+//      them has one), to kSigDigits significant digits.  Measured on
+//      curate08: the 7th-8th digit moves, so 5 digits sit four orders of
+//      magnitude above the noise, and one more than the 4 the run's own
+//      console prints.
+constexpr int kSigDigits = 5;
+
+std::string sigString(scalar v, int digits)
+{
+    std::ostringstream o;
+    o << std::setprecision(digits) << v;
+    return o.str();
+}
+
+//  A value and its error, both on the decimal place of the error's second
+//  digit ("182.9" and "2.9"; "185.6" and "3.0", never "3").
+std::string fixedAtErrorDigit(scalar x, scalar se)
+{
+    const int dec = 1 - static_cast<int>(std::floor(std::log10(se)));
+    const scalar unit = std::pow(10.0, -dec);
+    const scalar r = std::round(x / unit) * unit + 0.0;   // + 0.0: no "-0"
+    std::ostringstream o;
+    o << std::fixed << std::setprecision(dec > 0 ? dec : 0) << r;
+    return o.str();
+}
+
+} // namespace
 
 std::vector<std::string> CurationDossier::write() const
 {
@@ -228,8 +270,21 @@ std::vector<std::string> CurationDossier::write() const
                 f << "    refusal        \"" << r->refusal << "\";\n";
 
             f << "\n    fittedParameters\n    {\n";
-            for (const auto& [k, v] : r->parameters)
-                f << "        " << k << "  " << v << ";\n";
+            for (std::size_t i = 0; i < r->parameters.size(); ++i)
+            {
+                const auto& [k, v] = r->parameters[i];
+                const scalar se = i < r->parameterStdErr.size()
+                                      ? r->parameterStdErr[i]
+                                      : std::numeric_limits<scalar>::quiet_NaN();
+                if (std::isfinite(se) && se > 0.0 && std::isfinite(v))
+                    f << "        " << k << "  " << fixedAtErrorDigit(v, se)
+                      << ";   // +/- " << fixedAtErrorDigit(se, se) << " (1 sigma, from the fit)\n";
+                else
+                    f << "        " << k << "  "
+                      << (r->parameterStdErr.empty() ? sigString(v, 12)
+                                                     : sigString(v, kSigDigits + 1))
+                      << ";\n";
+            }
             f << "    }\n";
 
             f << "\n    evidence\n    {\n";
@@ -278,9 +333,9 @@ std::vector<std::string> CurationDossier::write() const
                     f << "        //  rmsHeldOut: not computed by this"
                          " operation (see aadHeldOutPct).\n";
                 else
-                f << "        rmsHeldOut        " << r->rmsHeldOut
+                f << "        rmsHeldOut        " << sigString(r->rmsHeldOut, kSigDigits)
                   << ";   // " << r->rmsUnit << ", on evidence the fit never saw\n";
-                f << "        aadHeldOutPct     " << r->aadHeldOutPct << ";\n";
+                f << "        aadHeldOutPct     " << sigString(r->aadHeldOutPct, kSigDigits) << ";\n";
                 if (r->hasAcceptance)
                 {
                     f << "        acceptanceMaxAADPct " << r->acceptMaxAADPct

@@ -108,6 +108,13 @@ public:
         std::string opType;
         std::string model;           // "Antoine", "polynomial (degree 2)"
         std::vector<std::pair<std::string, scalar>> parameters;
+        //  OPTIONAL, parallel to `parameters`: the one-sigma standard error the
+        //  fit itself computed for each (NaN or absent = the operation reports
+        //  none).  The writer prints a parameter to the digits that error
+        //  justifies -- two significant digits of it -- so a rerun on another
+        //  platform or build, which moves the converged value far below that,
+        //  writes the same bytes (C483).
+        std::vector<scalar> parameterStdErr;
 
         //  The frozen declaration.
         bool                         engaged = false;
