@@ -184,8 +184,8 @@ describe("fast-and-slow: the lesson", () => {
       ...FAST_SLOW_STEPS.flatMap((s) => [s.body, s.note ?? ""])].join("\n");
     const cited = new Set([...all.matchAll(/([A-Za-z]+\.(?:cpp|H)):(\d+)(?:-(\d+))?/g)].map((m) => m[0]));
     const CLAIMS: Record<string, string | RegExp> = {
-      "DynamicDriver.cpp:802": "? \"SAME INSTANT: the receiving unit holds no\"",
-      "DynamicDriver.cpp:844-847":
+      "DynamicDriver.cpp:832": "? \"SAME INSTANT: the receiving unit holds no\"",
+      "DynamicDriver.cpp:874-877":
         /form a loop in which NO unit holds an inventory"\s*" \(all quasiSteady\) -- such a loop has no time constant and"\s*" is a steady recycle\.  Put a vessel \(e\.g\. dynamicCSTR\) on"\s*" the loop, or solve it with choupoSolve's tear machinery\."/,
       "FrictionFactorCorrelation.H:128": "virtual const std::string& validityWindow() const = 0;",
       "FrictionFactorCorrelation.H:133": "virtual const std::string& citation() const = 0;",
