@@ -39,7 +39,8 @@ import {
   aFromN, isentropicEfficiency, readCompressionSheet, stage, staged, fewestStages,
   type CompressionSheet,
 } from "./compression.js";
-import { COMPRESSION_LIMITS, COMPRESSION_STEPS } from "./compressionLesson.js";
+import { COMPRESSION_LIMITS, COMPRESSION_QUIZ, COMPRESSION_STEPS } from "./compressionLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
 import { OriginMark } from "./origin.js";
@@ -370,6 +371,9 @@ export function CompressionTool(): JSX.Element {
         )}
         {step(6)}
         {realSheet && !("error" in realSheet) && <RealGasTable sheet={realSheet} />}
+
+        <LessonQuiz title="Check your understanding" questions={COMPRESSION_QUIZ}
+          lesson={COMPRESSION_STEPS} />
 
         <LessonLimits limits={COMPRESSION_LIMITS} title="What this does not model" />
         <LessonReferences tool="compression" />

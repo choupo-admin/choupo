@@ -105,7 +105,8 @@ import { useStore } from "../../state/store.js";
 import {
   KnobField, KnobSlider, PanelNote,
 } from "./knobPanel.js";
-import { DRYING_LIMITS, DRYING_STEPS } from "./dryingLesson.js";
+import { DRYING_LIMITS, DRYING_QUIZ, DRYING_STEPS } from "./dryingLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 // The padded display domain is a pure view helper with ONE home already (the
 // Levenspiel-imports-Rayleigh precedent for sharing a helper between two
 // method tools) -- re-declaring it here would be a second copy of the same
@@ -1013,6 +1014,9 @@ export function DryingCurveTool(): JSX.Element {
   );
 
   const lessonLimits = (
+    <>
+    <LessonQuiz title="Check your understanding" questions={DRYING_QUIZ}
+      lesson={DRYING_STEPS} />
     <Box>
       <Title order={5}>What this does not model</Title>
       <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
@@ -1024,6 +1028,7 @@ export function DryingCurveTool(): JSX.Element {
         ))}
       </Box>
     </Box>
+    </>
   );
 
   // ---- No drawable view yet: the lesson still stands, with an honest state --

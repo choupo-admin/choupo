@@ -35,6 +35,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 // ---- the record the page reads line by line ---------------------------------
 
@@ -273,4 +274,77 @@ export const CITATIONS: readonly { file: string; line: number; contains: string 
   { file: "src/propertyOps/LleResidual.H", line: 101, contains: "T_bubble+LLE" },
   { file: "data/standards/parameters/NRTL/nButanol-water.dat", line: 26, contains: "tie lines" },
   { file: "src/propertyOps/FitParameters.cpp", line: 3226, contains: "residual_rel" },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const DP_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "identifier", steps: [2],
+    q: "How is a compound in a measurement archive joined to the catalogue?",
+    options: [
+      "By its common name",
+      "By InChIKey, since names repeat and the archive carries no CAS number",
+      "By its molar mass",
+      "By guessing the closest formula",
+    ],
+    correct: 1,
+    feedback: "Names repeat and two substances can share a formula, so the "
+      + "pipeline joins through an InChIKey bridge and refuses a pair it "
+      + "cannot join (step 2).",
+  },
+  {
+    id: "usable-block", steps: [3],
+    q: "Which block of measurements is usable for a binary fit on this page?",
+    options: [
+      "Any block with a vapour composition only",
+      "A bubble temperature at a stated pressure, or a bubble pressure at a stated temperature, with an uncertainty on each point and enough interior points",
+      "A block at a varying temperature",
+      "A block with repeated rows",
+    ],
+    correct: 1,
+    feedback: "A vapour composition with no liquid one, a varying temperature "
+      + "or a repeated row is refused (step 3).",
+  },
+  {
+    id: "all-labs", steps: [4],
+    q: "Why are all the laboratories fitted together instead of holding one out for testing?",
+    options: [
+      "Holding one out measured how much laboratories disagree, not the model, and they disagree by more than their stated uncertainty",
+      "There is only one laboratory",
+      "Testing is forbidden",
+      "The fit would not converge otherwise",
+    ],
+    correct: 0,
+    feedback: "A split by laboratory tested the disagreement of the "
+      + "measurements, so every usable study is fitted and none is held out "
+      + "(step 4).",
+  },
+  {
+    id: "largest-error", steps: [5, 6],
+    q: "Why does the grade rest on the largest error over the kept points, not on the average?",
+    options: [
+      "The worst point is what spoils a prediction",
+      "The average cannot be computed",
+      "The largest error is always the smallest",
+      "Because outliers are never discarded",
+    ],
+    correct: 0,
+    feedback: "Least squares finds the basin and then the second stage "
+      + "minimises the largest error; the acceptance grade is set by that "
+      + "largest error (steps 5 and 6).",
+  },
+  {
+    id: "record-proves", steps: [8],
+    q: "What does a curated binary-pair record not prove?",
+    options: [
+      "Which articles it rests on",
+      "That the pair predicts another laboratory, another pressure or a third component",
+      "The grade of the fit",
+      "Who reviewed it",
+    ],
+    correct: 1,
+    feedback: "The record says what it rests on, but the grade is in-sample, "
+      + "and a review by a person or a model is not a validation (step 8).",
+  },
 ];

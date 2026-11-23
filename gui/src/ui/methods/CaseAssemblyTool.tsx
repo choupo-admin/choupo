@@ -48,9 +48,8 @@ import {
   applyBreak, breakDiff, citeText, depthOf, narrationOf, refusalOf,
   writtenFiles, type CaseBreak, type FileRole, type FolderId,
 } from "./caseAssembly.js";
-import {
-  CASE_ASSEMBLY_LIMITS, CASE_ASSEMBLY_STEPS,
-} from "./caseAssemblyLesson.js";
+import { CASE_ASSEMBLY_LIMITS, CASE_ASSEMBLY_QUIZ, CASE_ASSEMBLY_STEPS } from "./caseAssemblyLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { useCaseFilesRun, useMethodRun } from "../../case/methodRun.js";
 import { filesToCaseFiles, tutorialByName } from "../../cases/tutorials.js";
 import { OriginMark } from "./origin.js";
@@ -436,6 +435,9 @@ export function CaseAssemblyTool(): JSX.Element {
         {brk && <BreakView brk={brk} busy={broken.busy}
           refusal={refusal} ran={broken.result !== null}
           err={broken.err} />}
+
+        <LessonQuiz title="Check your understanding" questions={CASE_ASSEMBLY_QUIZ}
+          lesson={CASE_ASSEMBLY_STEPS} />
 
         <LessonLimits limits={CASE_ASSEMBLY_LIMITS} />
 

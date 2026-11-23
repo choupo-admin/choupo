@@ -91,9 +91,8 @@ import {
   TrajectoryPlot, type EventMarker, type GhostTrace,
 } from "../plotting/TrajectoryPlot.js";
 import { PLOT_COLORS } from "../plotting/plotly.js";
-import {
-  BREAKTHROUGH_LIMITS, BREAKTHROUGH_STEPS,
-} from "./breakthroughLesson.js";
+import { BREAKTHROUGH_LIMITS, BREAKTHROUGH_QUIZ, BREAKTHROUGH_STEPS } from "./breakthroughLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 
 /** Per-unit KPI block as the adapter delivers it (RunResult.kpis[unit]). */
@@ -700,6 +699,9 @@ export function BreakthroughTool(): JSX.Element {
         {lessonStep(5)}
 
         {lessonLimits}
+
+        <LessonQuiz title="Check your understanding" questions={BREAKTHROUGH_QUIZ}
+          lesson={BREAKTHROUGH_STEPS} />
 
         <LessonReferences tool="breakthrough" />
       </Stack>

@@ -46,6 +46,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 /** The opening: the puzzle, before any ratio is defined. */
 export const FAST_SLOW_PUZZLE = "A plant has more fast motions than anybody could list: the "
@@ -355,5 +356,80 @@ export const FAST_SLOW_LIMITS: readonly LessonLimit[] = [
     title: "Runs in your browser.",
     body: "Every curve is the engine compiled to run in the browser, on the six "
       + "tutorial cases with one declared number changed.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const FAST_SLOW_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "epsilon", steps: [1],
+    q: "When the ratio epsilon of the fast to the slow time scale is small, what happens to the fast variable in the reduced model?",
+    options: [
+      "It is integrated with a smaller time step",
+      "It stops being integrated and becomes an algebraic function of the slow variable",
+      "It is set to zero",
+      "It is replaced by the slow variable's derivative",
+    ],
+    correct: 1,
+    feedback: "The fast variable reaches, long before the slow one has moved, "
+      + "the value its own equation allows, so g = 0 is an algebraic "
+      + "condition.  The reduction is not exact (step 1).",
+  },
+  {
+    id: "small-tank", steps: [2],
+    q: "A small tank (50 mol) sits behind a big one (1000 mol) at 1 mol/s.  What does replacing the small tank by its quasi-steady relation do?",
+    options: [
+      "Makes its outlet equal its inlet, ignoring a lag of about its time constant",
+      "Doubles the total holdup",
+      "Removes the big tank",
+      "Makes the answer exact",
+    ],
+    correct: 0,
+    feedback: "The small tank follows what leaves the big one about its time "
+      + "constant late (50 s here, so epsilon = 0.05); the reduced model "
+      + "drops that lag (step 2).",
+    origins: ["page"],
+  },
+  {
+    id: "fast-equilibrium", steps: [3],
+    q: "A and B interconvert fast and B slowly turns into C.  What does the reduced model keep?",
+    options: [
+      "The two fast rate constants separately",
+      "One pool of A and B draining into C at one lumped rate constant, with the fast constants gone",
+      "Only species C",
+      "A constant concentration of A",
+    ],
+    correct: 1,
+    feedback: "After a short first moment n_B = K n_A and only their sum "
+      + "moves; the lumped rate is kK/(1+K), so only K, not how fast the "
+      + "pair equilibrates, enters (step 3).",
+  },
+  {
+    id: "intermediate", steps: [4],
+    q: "Why does a fast-consumed intermediate never accumulate?",
+    options: [
+      "It is used up much faster than it is made, so its two rates balance and its amount stays small and follows A",
+      "It is not produced at all",
+      "It is removed by the vessel walls",
+      "It is made as fast as it is used, at any amount",
+    ],
+    correct: 0,
+    feedback: "The rate law then needs only the stable species, and P forms "
+      + "as fast as A is consumed (step 4).",
+  },
+  {
+    id: "why-simple", steps: [5],
+    q: "What is common to the three reductions, and why does it explain simple correlations?",
+    options: [
+      "Each has fewer variables, an algebraic relation in place of a differential equation, and a valid range given by the ratio of time scales",
+      "Each is exact for all time scales",
+      "Each needs more parameters than the full model",
+      "Each is obtained by fitting data only",
+    ],
+    correct: 0,
+    feedback: "An engineering correlation is what is left when the fast part "
+      + "has settled, valid inside a window of the ratio of time scales "
+      + "(step 5).",
   },
 ];

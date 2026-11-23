@@ -86,7 +86,8 @@ import {
 } from "./knobPanel.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
-import { KREMSER_LIMITS, KREMSER_STEPS } from "./kremserLesson.js";
+import { KREMSER_LIMITS, KREMSER_QUIZ, KREMSER_STEPS } from "./kremserLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { useNarrowViewport } from "./methodsChrome.js";
 import { OriginMark } from "./origin.js";
 
@@ -620,6 +621,9 @@ export function KremserTool(): JSX.Element {
             ))}
           </Box>
         </Box>
+
+        <LessonQuiz title="Check your understanding" questions={KREMSER_QUIZ}
+          lesson={KREMSER_STEPS} />
 
         <LessonReferences tool="kremser" />
       </Stack>

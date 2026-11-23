@@ -54,7 +54,8 @@ import {
   RecoveryDrawing, SeriesDrawing, StagesDrawing, TrimsDrawing,
   ValveProfileDrawing,
 } from "./letdownDrawings.js";
-import { LETDOWN_LIMITS, LETDOWN_SOURCES, LETDOWN_STEPS } from "./letdownLesson.js";
+import { LETDOWN_LIMITS, LETDOWN_QUIZ, LETDOWN_SOURCES, LETDOWN_STEPS } from "./letdownLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
 import { LessonLimits, LessonStepView, LessonReferences, TexText } from "./lessonStep.js";
 import { setActiveMethodTool } from "./registry.js";
@@ -641,6 +642,9 @@ export function LetdownTool(): JSX.Element {
         {step(15)}
         <NoiseBench run={run} props={props} />
         {step(16)}
+
+        <LessonQuiz title="Check your understanding" questions={LETDOWN_QUIZ}
+          lesson={LETDOWN_STEPS} />
 
         <LessonLimits limits={LETDOWN_LIMITS} />
         <Box>

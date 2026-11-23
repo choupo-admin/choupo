@@ -41,6 +41,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, LessonLimit } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, LessonLimit };
 
 export const APPROACH_STEPS: readonly LessonStep[] = [
@@ -532,5 +533,84 @@ export const APPROACH_LIMITS: readonly LessonLimit[] = [
       + "equilibrium, and none of them is a horizontal shift along the "
       + "equilibrium curve.  Fitting them into a ΔT is exactly the lumping "
       + "the first caveat warns about.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const APPROACH_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "species-list", steps: [1],
+    q: "A Gibbs reactor is handed no reactions.  Where does the only kinetic statement you can make live?",
+    options: [
+      "In a rate law declared on the unit",
+      "In the species list: a species not listed cannot form, however favourable",
+      "In the order in which the elements are declared",
+      "Nowhere: a Gibbs reactor makes no statement about kinetics at all",
+    ],
+    correct: 1,
+    feedback: "Whatever is in the list is available to the minimisation and "
+      + "whatever is not cannot form.  The species list is a modelling "
+      + "decision disguised as an inventory (step 1).",
+  },
+  {
+    id: "why-early", steps: [2],
+    q: "What actually moves a design from a Gibbs reactor to a kinetic reactor on the ladder?",
+    options: [
+      "The calendar date of the project",
+      "Availability of data, mainly kinetics",
+      "The number of components in the flowsheet",
+      "The size of the plant",
+    ],
+    correct: 1,
+    feedback: "A Gibbs reactor is used early because nobody has the kinetics "
+      + "yet; a company that owns its kinetics may use the kinetic model in the "
+      + "first sketch.  The ladder is real but data availability, not the date, "
+      + "moves you up it (step 2).",
+  },
+  {
+    id: "where-dt", steps: [3],
+    q: "How does the temperature approach make an outlet that is short of equilibrium?",
+    options: [
+      "It changes the reactor's volume",
+      "It evaluates the reaction equilibrium at T + dT while the stream stays at T",
+      "It lowers the pressure of the outlet",
+      "It removes one reaction from the list",
+    ],
+    correct: 1,
+    feedback: "The engine adds dT to the argument of the standard Gibbs energy "
+      + "alone; enthalpy, saturation pressure and the energy balance stay at "
+      + "the physical T.  The outlet is a legitimate non-equilibrium state, "
+      + "and its non-zero affinity is the distance from equilibrium (step 3).",
+  },
+  {
+    id: "three-beds", steps: [7],
+    q: "A converter has three catalyst beds with coolers between them.  Why are three Gibbs reactors in series no better than one?",
+    options: [
+      "A cooler changes the temperature but moves no atom, so the last bed returns the equilibrium of the same atom inventory as one reactor at that temperature",
+      "Gibbs reactors cannot be put in series",
+      "Each bed would add its own approach and the errors cancel",
+      "The coolers add atoms to the inventory",
+    ],
+    correct: 0,
+    feedback: "A Gibbs reactor has no volume and no path: it returns the "
+      + "equilibrium of the atoms that enter.  Questions of bed count and "
+      + "catalyst volume are questions of rate and need a kinetic reactor "
+      + "(step 7).",
+  },
+  {
+    id: "calibrated-eos", steps: [5],
+    q: "A dT is calibrated against plant data using an ideal-gas package at high pressure.  What have you calibrated?",
+    options: [
+      "Only the catalyst's performance",
+      "The equation of state's error as well, under the name of catalyst performance",
+      "The heat of reaction",
+      "Nothing: the calibration removes all non-ideality",
+    ],
+    correct: 1,
+    feedback: "The parameter closes whatever gap remains between model and "
+      + "measurement, without knowing what the gap is made of; it will then be "
+      + "wrong at another pressure and nothing on the screen will say so "
+      + "(step 5).",
   },
 ];

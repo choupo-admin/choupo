@@ -39,6 +39,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const ISO_STEPS: readonly LessonStep[] = [
   {
@@ -320,5 +321,67 @@ export const ISO_LIMITS: readonly LessonLimit[] = [
       + "pressure, and fits them to measured (T, p, q) data; it has no liquid-phase "
       + "isotherm and no Freundlich model.  Every fit and every number here is computed by "
       + "this page, in the browser, from the formulas written on it.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const ISO_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "favourable", steps: [1],
+    q: "An isotherm is concave: the solid fills quickly at low concentration, then levels off.  What does that shape tell you about a packed bed?",
+    options: [
+      "The concentration front spreads out the further it travels",
+      "The concentration front sharpens as it moves, so breakthrough is steep",
+      "The bed behaves as if the isotherm were linear",
+      "No breakthrough will ever occur",
+    ],
+    correct: 1,
+    feedback: "A favourable (concave) isotherm lets high concentrations travel "
+      + "faster than low ones, so the front sharpens.  An unfavourable (convex) "
+      + "one spreads it out (step 1).",
+  },
+  {
+    id: "langmuir-sites", steps: [2],
+    q: "Which assumption does the Langmuir isotherm make that the Freundlich power law does not?",
+    options: [
+      "The solid is not saturable",
+      "The sites are not alike, the strongest filling first",
+      "A fixed number of identical, independent sites, so the solid saturates at q_max",
+      "The loading is proportional to the concentration",
+    ],
+    correct: 2,
+    feedback: "Langmuir counts sites and saturates.  Freundlich has no "
+      + "saturation and describes unlike sites; the linear isotherm is "
+      + "proportional.  A model that fits is not thereby a mechanism (step 2).",
+  },
+  {
+    id: "linearised-fit", steps: [3],
+    q: "Why can a straight-line fit of 1/q against 1/c give different parameters from a direct fit of q?",
+    options: [
+      "The transformed fit minimises squared errors of the transformed variable, and 1/q lets the least precise low-concentration points decide the line",
+      "The straight-line fit is always the more accurate",
+      "The direct fit ignores the measured points at low concentration",
+      "Both fits must give the same parameters if the model is right",
+    ],
+    correct: 0,
+    feedback: "Taking 1/q stretches the smallest loadings into the largest "
+      + "values, so the points that are usually the least precise dominate.  "
+      + "The direct fit minimises the errors in q, which is what was measured "
+      + "(step 3).",
+  },
+  {
+    id: "good-fit-uncertain", steps: [4],
+    q: "A curve passes close to all the points, yet a parameter's standard error is as large as the parameter.  What is the honest reading?",
+    options: [
+      "The model is wrong and must be replaced",
+      "The data do not fix that parameter, however well the curve fits",
+      "The standard error is invalid and can be ignored",
+      "The residuals must have a pattern",
+    ],
+    correct: 1,
+    feedback: "The RMS residual says how far the curve is from the points, not "
+      + "how well the parameters are known; parameters that trade off can both "
+      + "be uncertain while the fit looks good (step 4).",
   },
 ];

@@ -43,6 +43,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export interface LetdownSource { id: string; cite: string; used: string }
 
@@ -692,4 +693,93 @@ export const LETDOWN_LIMITS: readonly LessonLimit[] = [
       + "shows why staging can prevent or mitigate cavitation and cannot "
       + "remove the flashing the outlet state requires, not how many stages "
       + "a real trim needs." },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const LETDOWN_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "isenthalpic", steps: [1],
+    q: "What does a throttling letdown valve conserve?",
+    options: [
+      "The entropy",
+      "The enthalpy of the stream, so the outlet state is set by the energy balance",
+      "The pressure",
+      "The temperature",
+    ],
+    correct: 1,
+    feedback: "A letdown is a throttle, which keeps the enthalpy; how hard it "
+      + "is on the hardware depends on the state, the valve factors and the "
+      + "flow, not on the pressure ratio alone (step 1).",
+  },
+  {
+    id: "volume", steps: [3],
+    q: "Why is the outlet of a flashing letdown the problem?",
+    options: [
+      "A few per cent of flash turns the volumetric flow into tens of times the inlet flow, so the same bore carries it tens of times faster",
+      "The outlet is always colder",
+      "The mass flow changes",
+      "The enthalpy rises",
+    ],
+    correct: 0,
+    feedback: "Vapour occupies several hundred times the volume of its "
+      + "liquid; that volume explains the erosion, the noise and the "
+      + "installation advice (step 3).",
+  },
+  {
+    id: "choked-gas", steps: [4, 6],
+    q: "Once a gas valve is choked, what does lowering the outlet pressure further buy?",
+    options: [
+      "More mass flow",
+      "No more mass flow: the throat is sonic and the restriction no longer knows the outlet pressure fell; the extra drop is spent in shocks and mixing",
+      "Less mass flow",
+      "A lower inlet pressure",
+    ],
+    correct: 1,
+    feedback: "At the choke what is limited is the mass flow; the rest of "
+      + "the drop destroys the availability of the pressure and a small part "
+      + "radiates as sound (steps 4 and 6).",
+  },
+  {
+    id: "vena-contracta", steps: [7, 8],
+    q: "In a liquid valve, where is the pressure lowest, and what happens if it falls below the vapour pressure?",
+    options: [
+      "At the outlet, and nothing happens",
+      "At the vena contracta just past the seat; bubbles form there and, if the pressure recovers above vapour pressure downstream, collapse and damage the trim",
+      "At the inlet, and the liquid freezes",
+      "At the pipe wall only",
+    ],
+    correct: 1,
+    feedback: "The jet is fastest and its pressure lowest at the vena "
+      + "contracta; how much pressure recovers is the valve's F_L (step 7).  "
+      + "Bubbles that collapse in the recovered pressure pit the metal "
+      + "(step 8).",
+  },
+  {
+    id: "flashing-vs-cavitation", steps: [9],
+    q: "What distinguishes flashing from cavitation?",
+    options: [
+      "In flashing the outlet pressure is itself below the vapour pressure, so the vapour stays and no trim can prevent it; in cavitation it collapses",
+      "Flashing happens only with gases",
+      "Cavitation is silent",
+      "They are the same",
+    ],
+    correct: 0,
+    feedback: "The outlet state of a flashing letdown is set by the energy "
+      + "balance, not by the valve; what flashing does is erosion by a "
+      + "two-phase mixture (step 9).",
+  },
+  {
+    id: "staging", steps: [11],
+    q: "How does taking the drop in stages help against cavitation?",
+    options: [
+      "Several restrictions in series each take a part of the drop, so each vena contracta dips less below the vapour pressure",
+      "It makes the liquid colder",
+      "It removes the vapour pressure",
+      "It increases F_L to above 1",
+    ],
+    correct: 0,
+    feedback: "The last stage, nearest the vapour pressure, decides; the large "
+      + "first stages have plenty of margin (step 11).",
+  },
 ];

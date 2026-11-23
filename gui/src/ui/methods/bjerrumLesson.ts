@@ -41,6 +41,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const BJERRUM_STEPS: readonly LessonStep[] = [
@@ -327,5 +328,67 @@ export const BJERRUM_LIMITS: readonly LessonLimit[] = [
       + "BOH4-formation reaction; tutorials/props/electrolyte/borate01_felmyWeare "
       + "speciates it), but this page's witness and its sliders are the "
       + "carbonate case, so boron is not drawn here.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const BJERRUM_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "which-form", steps: [1],
+    q: "Moving along the carbonate family from CO2(aq) to HCO3- to CO3--, what does a speciation diagram show?",
+    options: [
+      "How much carbon there is in the solution",
+      "Which form the fixed total carbon is in",
+      "How much carbon dioxide is created at each pH",
+      "How much strong acid has been consumed",
+    ],
+    correct: 1,
+    feedback: "Nothing is created or destroyed between the forms; the total "
+      + "carbon is fixed, so the diagram says which form it is in, not how "
+      + "much there is (step 1).",
+  },
+  {
+    id: "ph-not-a-knob", steps: [2, 3],
+    q: "Why does the page not simply set the pH and compute the fractions?",
+    options: [
+      "Fixing [H+] removes the electroneutrality equation, so the curve describes a beaker only if something unwritten carries the missing charge",
+      "The engine cannot accept a pH declaration",
+      "The pH is a measured quantity that cannot be varied",
+      "Mass action does not apply at fixed pH",
+    ],
+    correct: 0,
+    feedback: "Declaring the pH is legal but drops the charge balance.  Here "
+      + "every point is a real neutral mixture of carbonate with strong acid "
+      + "or base, and the pH is the result of that beaker's own equilibrium "
+      + "(steps 2 and 3).",
+  },
+  {
+    id: "crossovers", steps: [4],
+    q: "The crossovers of the curves land close to the pK values, though nobody entered them as crossovers.  What does that tell you?",
+    options: [
+      "The crossovers are drawn by hand on the page",
+      "Two forms are present in equal amounts at the pK of the step separating them, shifted slightly by activity coefficients",
+      "The activity coefficients are always exactly one",
+      "The pK values depend on the total carbonate",
+    ],
+    correct: 1,
+    feedback: "Equal amounts of two forms means pH = pK when every gamma is 1; "
+      + "the engine works in activities, so the crossovers sit slightly below "
+      + "the thermodynamic pK (step 4).",
+  },
+  {
+    id: "temperature-vs-ionic", steps: [6],
+    q: "Raising the ionic strength moves the crossovers although the pK values do not change.  Why?",
+    options: [
+      "The temperature rises with ionic strength",
+      "The activity coefficients fall, hardest for the divalent carbonate ion",
+      "The total carbonate changes",
+      "The pK values change but are not shown",
+    ],
+    correct: 1,
+    feedback: "Temperature moves the constants themselves, each by its own "
+      + "enthalpy; ionic strength leaves the constants alone but lowers the "
+      + "activity coefficients, so the crossovers move anyway (step 6).",
   },
 ];

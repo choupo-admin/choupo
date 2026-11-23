@@ -81,7 +81,8 @@ import {
 } from "@mantine/core";
 
 import type { RunResult, UnitProfile } from "../../adapters/SolverAdapter.js";
-import { ENTU_LIMITS, ENTU_STEPS } from "./epsilonNtuLesson.js";
+import { ENTU_LIMITS, ENTU_QUIZ, ENTU_STEPS } from "./epsilonNtuLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
 import type { ScalarOverride } from "../../case/methodRun.js";
 import { useMethodRun } from "../../case/methodRun.js";
@@ -486,6 +487,9 @@ export function EpsilonNtuTool(): JSX.Element {
 
         {lessonStep(5)}
         {lessonLimits}
+
+        <LessonQuiz title="Check your understanding" questions={ENTU_QUIZ}
+          lesson={ENTU_STEPS} />
 
         <LessonReferences tool="entu" />
       </Stack>

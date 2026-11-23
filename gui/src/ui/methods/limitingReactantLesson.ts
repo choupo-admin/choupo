@@ -47,6 +47,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, LessonLimit } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, LessonLimit };
 
 export const LIMITING_STEPS: readonly LessonStep[] = [
@@ -303,5 +304,81 @@ export const LIMITING_LIMITS: readonly LessonLimit[] = [
     body: "They were measured on the green ammonia case as it stood on "
       + "2026-10-02.  They show the mechanism; they are not design values for "
       + "another plant.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const LIMITING_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "two-ratios", steps: [1],
+    q: "In a plant with a recycle, which of the two ratios does the plant itself decide?",
+    options: [
+      "The reactor-inlet ratio",
+      "The fresh-feed ratio, through the overall balance",
+      "Both, independently",
+      "Neither",
+    ],
+    correct: 1,
+    feedback: "The fresh-feed ratio is measured on what enters the plant and "
+      + "is fixed by the balance; the reactor-inlet ratio is set by the "
+      + "loop (step 1).",
+  },
+  {
+    id: "stoichiometric-plus-losses", steps: [2],
+    q: "At steady state, what must the fresh feed be?",
+    options: [
+      "Always in excess of the stoichiometric proportion",
+      "Stoichiometric plus whatever leaves in loss streams such as a purge or dissolved gas",
+      "Equal to the recycle",
+      "Free to choose",
+    ],
+    correct: 1,
+    feedback: "Every mole of A that enters reacts or leaves in a loss stream, "
+      + "and likewise B, so the fresh ratio, the extent and the losses "
+      + "satisfy one balance (step 2).",
+  },
+  {
+    id: "amplification", steps: [3],
+    q: "A small relative error epsilon in the fresh-feed ratio is made in a loop with a purge.  What happens to the reactor-inlet ratio?",
+    options: [
+      "It follows the error one to one",
+      "The loop amplifies it, since the unreacted gas is recycled while the reactor consumes the right proportion",
+      "It cancels the error",
+      "It is unaffected by the error",
+    ],
+    correct: 1,
+    feedback: "The inlet ratio comes out in closed form and the page reads "
+      + "the amplification from it: a tiny error moves the inlet ratio a "
+      + "lot (step 3).",
+  },
+  {
+    id: "ammonia-loop", steps: [4],
+    q: "The ammonia plant feeds H2 and N2 at 3 : 1 yet the converter sees 3.584.  What part of the cause is selective loss?",
+    options: [
+      "Nitrogen dissolves in liquid ammonia more than hydrogen, so the gas released is nitrogen-rich and the loop is left richer in hydrogen",
+      "Hydrogen is lost to the atmosphere",
+      "The converter changes the feed",
+      "The compressor adds hydrogen",
+    ],
+    correct: 0,
+    feedback: "The let-down gas is nitrogen-rich (H2/N2 = 2.76) while the purge "
+      + "is hydrogen-rich (3.90), so the loop settles at a different ratio "
+      + "than the fresh feed (step 4).",
+    origins: ["page"],
+  },
+  {
+    id: "which-limiting", steps: [5],
+    q: "Which reason for choosing the limiting reactant comes first, according to the page?",
+    options: [
+      "Safety, such as keeping oxygen below the flammable range",
+      "Price of the reactant",
+      "Ease of separation",
+      "Reactor size",
+    ],
+    correct: 0,
+    feedback: "Of four reasons in order of force, safety is first: the "
+      + "oxygen is limited because a flammable mixture is not an option "
+      + "(step 5).",
   },
 ];

@@ -80,7 +80,8 @@ import { useMethodRun, type DictOverride } from "../../case/methodRun.js";
 import type { RunResult } from "../../adapters/SolverAdapter.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { LessonLimits, lessonStepper } from "./lessonStep.js";
-import { PATHWAYS_LIMITS, PATHWAYS_STEPS } from "./declaredPathwaysLesson.js";
+import { PATHWAYS_LIMITS, PATHWAYS_QUIZ, PATHWAYS_STEPS } from "./declaredPathwaysLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
 
@@ -314,6 +315,9 @@ export function DeclaredPathwaysTool(): JSX.Element {
 
         {step(4)}
         {step(5)}
+
+        <LessonQuiz title="Check your understanding" questions={PATHWAYS_QUIZ}
+          lesson={PATHWAYS_STEPS} />
 
         <LessonLimits limits={PATHWAYS_LIMITS} />
 

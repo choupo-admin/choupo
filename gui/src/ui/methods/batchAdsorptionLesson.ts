@@ -39,6 +39,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const BATCH_STEPS: readonly LessonStep[] = [
   {
@@ -369,5 +370,67 @@ export const BATCH_LIMITS: readonly LessonLimit[] = [
       + "the adsorbent, in partial pressure, with Henry or Langmuir isotherms; it has no "
       + "liquid-phase adsorption and no Freundlich model.  Every number here is computed "
       + "by this page, in the browser, from the formulas written on it.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const BATCH_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "operating-line", steps: [1],
+    q: "On the loading-against-concentration plot of a stirred tank, where does the final state lie?",
+    options: [
+      "Anywhere on the isotherm, whatever the dose",
+      "Where the straight operating line of slope -V/M from the starting state crosses the isotherm",
+      "At the highest loading the adsorbent can reach",
+      "On the operating line only, because the isotherm applies to flows, not tanks",
+    ],
+    correct: 1,
+    feedback: "What the liquid loses the solid gains, which is a straight line "
+      + "falling with slope -V/M from the starting state; the end state must "
+      + "also lie on the isotherm, so it is where the two cross (step 1).",
+  },
+  {
+    id: "last-percent", steps: [2],
+    q: "Why does the adsorbent dose climb steeply as the target removal approaches 100 %?",
+    options: [
+      "The solute still to be removed grows enormously",
+      "The loading reachable at the low final concentration falls towards zero, so each kilogram does less",
+      "The isotherm becomes unfavourable at high removal",
+      "Film resistance grows with removal",
+    ],
+    correct: 1,
+    feedback: "The solute left to remove grows only a little, but q* at the "
+      + "final, low concentration falls towards zero, so every kilogram of "
+      + "adsorbent does less and the dose climbs (step 2).",
+  },
+  {
+    id: "staging", steps: [3],
+    q: "In countercurrent contacting, where does fresh adsorbent meet the liquid?",
+    options: [
+      "The feed, where the concentration is highest",
+      "The cleanest liquid, in the last stage",
+      "Every stage in equal share",
+      "It never meets fresh liquid",
+    ],
+    correct: 1,
+    feedback: "Fresh adsorbent meets the cleanest liquid in the last stage, "
+      + "while loaded adsorbent meets the fresh feed in the first stage, where "
+      + "the driving concentration is highest (step 3).",
+  },
+  {
+    id: "time-vs-equilibrium", steps: [4, 5],
+    q: "An isotherm tells you where the tank ends.  What does the film-only model of the page add, and what does it leave out?",
+    options: [
+      "It gives the time, but sets diffusion inside the particle to zero",
+      "It gives the time and all internal diffusion, but not the final state",
+      "It changes the final state with the particle size",
+      "It shows that the time does not depend on particle diameter",
+    ],
+    correct: 0,
+    feedback: "Equilibrium says where the tank ends, not when.  The film-only "
+      + "model puts the whole resistance in the liquid film around a uniformly "
+      + "loaded particle (step 4); the pore diffusion in series with it is "
+      + "what step 5 compares through the Biot number. "
   },
 ];

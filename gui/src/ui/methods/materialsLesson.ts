@@ -47,6 +47,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 /** Every source the page names, with what was taken from it and how it was
  *  reached.  Drawn at the foot of the page. */
@@ -918,4 +919,92 @@ export const PARETO_ROWS: readonly ParetoRow[] = [
   { family: "refractories",
     firstFor: "keeping a steel shell cool in furnaces and hot reactors",
     defeatedBy: "spalling, erosion; they carry no pressure" },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const MATERIALS_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "default", steps: [2],
+    q: "Why is carbon steel the default against which every other material must justify its premium?",
+    options: [
+      "It is cheap, strong and ductile at ambient temperature, and easy to fabricate",
+      "It never corrodes",
+      "It is the strongest material available",
+      "It is the best at low temperature",
+    ],
+    correct: 0,
+    feedback: "The ordering is a teaching order, not a measured market share; "
+      + "carbon steel comes first for its four reasons and an engineer climbs "
+      + "from it only as far as the fluid forces (step 2).",
+  },
+  {
+    id: "passivity", steps: [3],
+    q: "What makes a steel stainless?",
+    options: [
+      "A self-forming, self-repairing chromium oxide film a few nanometres thick, from at least about 10.5 % chromium",
+      "A coating of paint",
+      "A large nickel content only",
+      "Its low carbon content",
+    ],
+    correct: 0,
+    feedback: "The film is impervious and re-forms wherever oxygen reaches the "
+      + "metal; nickel then keeps the structure austenitic (step 3).",
+  },
+  {
+    id: "cold", steps: [10],
+    q: "Why does carbon steel break in the cold while austenitic stainless does not?",
+    options: [
+      "In BCC iron the slip stress rises steeply as temperature falls while the cleavage stress hardly changes, so below the transition it cleaves; the FCC austenite does not",
+      "Stainless steel is heavier",
+      "Carbon steel is thinner",
+      "Austenite is a different element",
+    ],
+    correct: 0,
+    feedback: "The reason is the crystal structure of step 8: ferritic steel "
+      + "turns brittle below its ductile-brittle transition, where an FCC "
+      + "metal stays tough (step 10).",
+  },
+  {
+    id: "welding", steps: [12, 13],
+    q: "What is the weld trap of austenitic stainless steel, and its remedy by composition?",
+    options: [
+      "Held between about 450 and 850 degrees C the carbon combines with chromium along grain boundaries (sensitisation); the L grades have low carbon",
+      "The weld becomes magnetic; add nickel",
+      "The weld melts; use thicker plate",
+      "The weld oxidises; use argon",
+    ],
+    correct: 0,
+    feedback: "The metal beside each boundary is left with too little "
+      + "chromium to stay passive and corrodes along the boundaries (step "
+      + "13); the HAZ of every weld passes through that range (step 12).",
+  },
+  {
+    id: "allowance", steps: [14],
+    q: "How does the design pay in advance for even corrosion?",
+    options: [
+      "A corrosion allowance, the rate times the design life, is added to the thickness the pressure demands",
+      "The pressure is lowered",
+      "The temperature is lowered",
+      "The vessel is made shorter",
+    ],
+    correct: 0,
+    feedback: "The rate comes from coupon tests, plant experience or published "
+      + "surveys, and the wall comes from one force balance plus the "
+      + "allowance (step 14).",
+  },
+  {
+    id: "joints", steps: [19],
+    q: "Where does a plant actually leak, if a welded wall rarely does?",
+    options: [
+      "At joints and shafts: flanges, valve stems and pump shafts where two parts that can move must seal",
+      "At the welds",
+      "Through the vessel wall",
+      "At the instruments only",
+    ],
+    correct: 0,
+    feedback: "A gasket must flow into the roughness of the faces, stay tight "
+      + "as the flanges rotate and as the joint heats and cools, and not creep "
+      + "away from the bolt load (step 19).",
+  },
 ];

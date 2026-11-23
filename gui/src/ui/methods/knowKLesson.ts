@@ -32,6 +32,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 /** The task sentence, the page's first answer. */
 export const KNOW_K_TASK = "A rate constant in a mechanism is a number somebody measured.  "
@@ -276,5 +277,78 @@ export const KNOW_K_LIMITS: readonly LessonLimit[] = [
     title: "Runs in your browser.",
     body: "Every curve is the engine compiled to run in the browser, on one tutorial case "
       + "with declared numbers changed.  Nothing runs until you press a button.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const KNOW_K_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "make-in-cell", steps: [1],
+    q: "Why is a radical made inside the cell at t = 0 and followed while it disappears?",
+    options: [
+      "A radical reacts too fast to be stored, so it cannot be fed",
+      "Radicals are cheap",
+      "The detector needs a rising signal",
+      "It is easier to heat the cell",
+    ],
+    correct: 0,
+    feedback: "A pulse of light, or a shock wave, creates the radical in an "
+      + "instant and a second beam reports how much is left (step 1).",
+  },
+  {
+    id: "pseudo-first", steps: [2],
+    q: "Why is H2 put in large excess over the OH?",
+    options: [
+      "So that c(H2) stays at its starting value and the decay is exponential, with one changing concentration",
+      "To make the reaction faster than the detector",
+      "To dilute the radical",
+      "To raise the temperature",
+    ],
+    correct: 0,
+    feedback: "The OH made is a trace, so the H2 it consumes is negligible; "
+      + "the rate law has one changing concentration and the logarithm of "
+      + "the signal is a straight line (step 2).",
+  },
+  {
+    id: "slope", steps: [3],
+    q: "Why is k read from the slope of k' against the H2 concentration and not from one ratio?",
+    options: [
+      "The intercept is the loss of the radical that has nothing to do with H2, and the slope excludes it",
+      "A single ratio is too accurate",
+      "The slope is always zero",
+      "k' does not depend on H2",
+    ],
+    correct: 0,
+    feedback: "A line with a free intercept reads k and shows the "
+      + "contamination: diffusion and other removal of OH that the slope "
+      + "does not include (step 3).",
+  },
+  {
+    id: "arrhenius", steps: [4],
+    q: "What does repeating the experiment at several temperatures give?",
+    options: [
+      "The temperature dependence of k, so the parameters of the modified Arrhenius law can be read back",
+      "The pressure of the cell",
+      "The mass of the radical",
+      "Nothing new",
+    ],
+    correct: 0,
+    feedback: "The engine's law is the modified Arrhenius form; the "
+      + "experiment recovers it from the measured k(T) (step 4).",
+  },
+  {
+    id: "where-breaks", steps: [6],
+    q: "What makes the straight line of the pseudo-first-order decay bend?",
+    options: [
+      "A small excess, so that H2 is no longer constant, and secondary reactions that also remove the radical",
+      "A larger pressure only",
+      "A lower detector gain",
+      "A longer cell",
+    ],
+    correct: 0,
+    feedback: "With a small excess the fit still returns a number, but it is "
+      + "wrong by the amount the excess changes; the error is set by the "
+      + "OH to H2 ratio at t = 0 (step 6).",
   },
 ];

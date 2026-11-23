@@ -94,7 +94,8 @@ import {
   KnobField, KnobNumber, KnobSlider, PanelNote,
   type PanelKnob,
 } from "./knobPanel.js";
-import { FUG_LIMITS, FUG_STEPS } from "./fugLesson.js";
+import { FUG_LIMITS, FUG_QUIZ, FUG_STEPS } from "./fugLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { useEngineSeries } from "../../case/engineSeries.js";
 import {
   FUG_KNOB_DEFAULTS, FUG_RIGOROUS_WITNESS, FUG_SHORTCUT_WITNESS,
@@ -791,6 +792,9 @@ export function FugShortcutTool(): JSX.Element {
         </Text>
 
         {lessonLimits}
+
+        <LessonQuiz title="Check your understanding" questions={FUG_QUIZ}
+          lesson={FUG_STEPS} />
 
         <LessonReferences tool="fug" />
       </Stack>

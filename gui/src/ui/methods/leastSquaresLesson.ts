@@ -49,6 +49,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const LS_STEPS: readonly LessonStep[] = [
   {
@@ -635,5 +636,95 @@ export const LS_LIMITS: readonly LessonLimit[] = [
       + "the iteration count move a great deal while the answer barely does; "
       + "that is this problem being well behaved from this start, not a "
       + "guarantee about the next one.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const LS_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "inverse-question", steps: [1],
+    q: "How does parameter estimation differ from every solver of a flowsheet?",
+    options: [
+      "The model is given and the state is unknown",
+      "The state is given, as measured, and the unknown is the model: the coefficients that reproduce it",
+      "The pressure is unknown",
+      "It needs no model",
+    ],
+    correct: 1,
+    feedback: "A flash or a bubble point finds a state that satisfies a model; "
+      + "estimation turns it round, with more measurements than unknowns "
+      + "(step 1).",
+  },
+  {
+    id: "why-squares", steps: [2],
+    q: "Minimising the sum of squares is the maximum-likelihood estimate under which assumption?",
+    options: [
+      "Errors that are independent, normal, zero-mean and of equal variance",
+      "Errors that are always positive",
+      "Errors proportional to the measurement",
+      "Errors that are all identical",
+    ],
+    correct: 0,
+    feedback: "Squares buy differentiability, but they assume an error "
+      + "structure: a claim about the laboratory, not a law of "
+      + "mathematics (step 2).",
+  },
+  {
+    id: "lm", steps: [4],
+    q: "What does the Levenberg-Marquardt number added to the diagonal do?",
+    options: [
+      "At zero it gives Gauss-Newton back; at a large value the step shrinks and points down the gradient",
+      "It fixes the number of iterations",
+      "It sets the bounds on the parameters",
+      "It doubles the Jacobian",
+    ],
+    correct: 0,
+    feedback: "Gauss-Newton is fast near the answer and unstable far from it, "
+      + "and the added number slides between that method and steepest "
+      + "descent (step 4).",
+  },
+  {
+    id: "in-sample", steps: [7],
+    q: "A fit converges and the residuals are small.  What have you learnt?",
+    options: [
+      "That the model is true",
+      "That the model can reproduce the points it was handed, which says as much about its flexibility as about its truth",
+      "That the parameters are identifiable",
+      "That the band was met",
+    ],
+    correct: 1,
+    feedback: "With enough adjustable coefficients any model passes through "
+      + "anything, noise included, which is why the statistic is labelled "
+      + "in-sample (step 7).",
+  },
+  {
+    id: "order", steps: [8, 9],
+    q: "Why must the acceptance band and the held-out set be declared before the fit?",
+    options: [
+      "Otherwise both can be chosen to be met, and the test is decorative",
+      "The solver needs them to start",
+      "They set the initial guess",
+      "They reduce the number of parameters",
+    ],
+    correct: 0,
+    feedback: "The case freezes the declaration before any fitting code runs "
+      + "(step 8), and the verdict is one word from one function, never "
+      + "invented without a band (step 9).",
+  },
+  {
+    id: "identifiable", steps: [10],
+    q: "A model predicts well.  Does that show that each coefficient is separately determined?",
+    options: [
+      "Yes, always",
+      "No: predicting well and being identifiable are separate claims, checked through the standard errors, correlations and condition number",
+      "Yes, if the residuals are small",
+      "Only if there are two parameters",
+    ],
+    correct: 1,
+    feedback: "After the search the engine rebuilds the Jacobian at the "
+      + "answer and reports standard errors, correlations and a condition "
+      + "number; strong correlation can leave a pair undetermined "
+      + "(step 10).",
   },
 ];

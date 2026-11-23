@@ -95,6 +95,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonLimit, LessonStep, SymbolGloss };
 
 export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
@@ -830,5 +831,81 @@ export const BATCH_MEMBRANE_LIMITS: readonly LessonLimit[] = [
       + "composition and the flux law is evaluated at it, which is the right "
       + "model for a stirred cell and the wrong one for a long module run "
       + "slowly.  Nothing in the output would tell you which rig you have.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const BATCH_MEMBRANE_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "two-modes", steps: [2],
+    q: "What is the one thing that differs between concentration mode and constant-volume diafiltration?",
+    options: [
+      "The membrane used",
+      "Whether clean solvent is added as fast as permeate leaves",
+      "Whether the vessel is stirred",
+      "The sign of the pressure across the membrane",
+    ],
+    correct: 1,
+    feedback: "Both modes use the same balances.  In concentration mode nothing "
+      + "is added and the vessel shrinks; in constant-volume diafiltration "
+      + "clean solvent goes in exactly as fast as permeate comes out "
+      + "(step 2).",
+  },
+  {
+    id: "clocks", steps: [3],
+    q: "How is the progress of a batch membrane run best measured?",
+    options: [
+      "In seconds, since a pump runs on a clock",
+      "By the volume concentration factor in concentration, and by diavolumes in a wash",
+      "By the permeate temperature",
+      "By the number of passes of the retentate",
+    ],
+    correct: 1,
+    feedback: "Each mode has its own dimensionless clock, so runs at different "
+      + "areas and pressures are comparable; seconds are not (step 3).",
+  },
+  {
+    id: "observed-rejection", steps: [4, 5],
+    q: "The classical washing and concentrating formulae assume a constant rejection.  Why is that a strong assumption?",
+    options: [
+      "Rejection is a property of the membrane alone",
+      "The observed rejection depends on the wall concentration, flux and osmotic pressure, which all change during the run",
+      "Rejection is always exactly one",
+      "Rejection cannot be measured",
+    ],
+    correct: 1,
+    feedback: "The rejection in the formulae is the observed one, from permeate "
+      + "and bulk samples.  It follows from a flux solved with the osmotic "
+      + "pressure at the wall, so it moves as the composition does (step 5); "
+      + "every classical result spends this assumption (step 4).",
+  },
+  {
+    id: "fouling-direction", steps: [6],
+    q: "Without fouling, what does the model predict for the flux during a wash?",
+    options: [
+      "It falls, as in a real rig",
+      "It rises, because the salt leaves and the osmotic pressure falls",
+      "It stays exactly constant",
+      "It oscillates",
+    ],
+    correct: 1,
+    feedback: "The model only has the osmotic effect, which raises the "
+      + "driving force during a wash.  A rig can show the opposite, so a "
+      + "falling flux needs a stated fouling mechanism (step 6).",
+  },
+  {
+    id: "governing-group", steps: [9],
+    q: "ln VCF + N is the governing group of the composite product loss.  What does that mean for the design?",
+    options: [
+      "Concentrating and washing cannot be traded against each other",
+      "A concentration factor and the diavolumes are interchangeable as far as product yield is concerned",
+      "The yield depends only on the number of diavolumes",
+      "The yield depends only on the concentration factor",
+    ],
+    correct: 1,
+    feedback: "The two appear only through their sum once the concentration "
+      + "factor is logged, so concentrating twenty-fold costs the same product "
+      + "as washing ln(20) = 2.9957 diavolumes (step 9).",
   },
 ];

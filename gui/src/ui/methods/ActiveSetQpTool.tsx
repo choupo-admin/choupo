@@ -54,7 +54,8 @@ import {
 
 import { LessonLimits, lessonStepper, LessonReferences, Tex } from "./lessonStep.js";
 import { useNarrowViewport } from "./methodsChrome.js";
-import { QP_LIMITS, QP_STEPS } from "./activeSetQpLesson.js";
+import { QP_LIMITS, QP_QUIZ, QP_STEPS } from "./activeSetQpLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { useMethodRun } from "../../case/methodRun.js";
 import { parse } from "../../dict/parser.js";
@@ -622,6 +623,9 @@ export function ActiveSetQpTool(): JSX.Element {
             )}
           </Stack>
         </Box>
+
+        <LessonQuiz title="Check your understanding" questions={QP_QUIZ}
+          lesson={QP_STEPS} />
 
         <LessonLimits limits={QP_LIMITS} />
 

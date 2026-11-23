@@ -34,6 +34,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const BODE_STEPS: readonly LessonStep[] = [
   {
@@ -498,5 +499,82 @@ export const BODE_LIMITS: readonly LessonLimit[] = [
       + "derivations above are therefore this page's own, with no formal "
       + "treatment behind them to check them against.  Stated rather than "
       + "left for a reader to discover by following the link.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const BODE_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "sine-in-sine-out", steps: [1],
+    q: "A stable linear time-invariant process is pushed with a steady sine wave.  What comes out once the transient has died?",
+    options: [
+      "A sine wave of a different frequency",
+      "A distorted wave with harmonics",
+      "A sine wave of the same frequency, changed only in size and in delay",
+      "A constant",
+    ],
+    correct: 2,
+    feedback: "Linearity keeps frequency and shape, time invariance keeps the "
+      + "answer the same each cycle, and stability lets the transient die; "
+      + "only the swing and the lag change (step 1).",
+  },
+  {
+    id: "log-axes", steps: [2],
+    q: "Why are magnitude and frequency drawn on logarithmic axes?",
+    options: [
+      "Because the amplitude ratios of blocks in series multiply, so on log axes a loop is drawn by stacking blocks",
+      "Because chemical processes are never linear",
+      "Because a linear axis cannot show negative values",
+      "Only to make the curves look smoother",
+    ],
+    correct: 0,
+    feedback: "Amplitude ratios multiply and phases add; the logarithm turns "
+      + "the multiplication into addition, and a loop spans decades of "
+      + "frequency that no linear axis could show (step 2).",
+  },
+  {
+    id: "corner", steps: [4],
+    q: "For a first-order lag, what happens at the corner, omega times tau = 1?",
+    options: [
+      "The magnitude is zero and the phase is -180 degrees",
+      "The true curve is 3 dB below the crossing of the asymptotes and half the total phase is spent",
+      "The magnitude is flat and the phase is zero",
+      "The loop becomes unstable",
+    ],
+    correct: 1,
+    feedback: "The two asymptotes meet at the corner, but the true curve passes "
+      + "3 dB below, with exactly half of the total phase lag, -45 degrees "
+      + "(step 4).",
+  },
+  {
+    id: "integral-costs-phase", steps: [6],
+    q: "Which statement about PID action on the Bode diagram is right?",
+    options: [
+      "Integral action is large at low frequency and costs phase margin; derivative action adds phase but amplifies noise",
+      "Derivative action costs phase margin",
+      "Integral action is large at high frequency",
+      "Neither term affects the phase",
+    ],
+    correct: 0,
+    feedback: "Integral action kills offset at low frequency and contributes "
+      + "up to -90 degrees of phase; derivative action grows at high "
+      + "frequency, buying up to +90 degrees back and amplifying measurement "
+      + "noise (step 6).",
+  },
+  {
+    id: "margins", steps: [7, 8],
+    q: "Reading the gain and phase margins as 'stable' is safe only under what condition?",
+    options: [
+      "Always: they are a universal test",
+      "When the open loop is stable and its phase crosses -180 degrees once, falling",
+      "When the dead time is zero",
+      "When the controller has no integral term",
+    ],
+    correct: 1,
+    feedback: "The Bode reading is a special case of Nyquist's criterion.  A "
+      + "resonance, an unstable open loop or a magnitude curve touching 0 dB "
+      + "three times can make it say stable about a loop that is not "
+      + "(step 8; the margins themselves are defined in step 7).",
   },
 ];

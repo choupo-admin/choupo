@@ -36,6 +36,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
@@ -343,5 +344,82 @@ export const COLUMN_CONTROL_LIMITS: readonly {
       + "count and the naming convention, and no rule of thumb of its own. A "
       + "record the reader refuses is named on screen rather than dropped, so "
       + "an absent structure is visibly absent.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const COLUMN_CONTROL_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "count-valves", steps: [1],
+    q: "Why is column control structure a finite problem rather than an open-ended one?",
+    options: [
+      "Around a two-product column with a total condenser there are five manipulable flows, and pressure and two levels must be held first",
+      "Because every column has exactly one loop",
+      "Because composition cannot be controlled",
+      "Because the controllers choose their own valves",
+    ],
+    correct: 0,
+    feedback: "Five handles stand against the things that must be held whether "
+      + "you care or not: the pressure and the two levels, each held by a "
+      + "stream leaving its vessel (step 1).",
+  },
+  {
+    id: "naming", steps: [2],
+    q: "In the LV structure, which pair of valves is left for composition control?",
+    options: [
+      "Distillate and bottoms",
+      "Reflux and boilup, because the levels are held on the two products",
+      "Coolant and distillate",
+      "Boilup and bottoms",
+    ],
+    correct: 1,
+    feedback: "The structure is named after the pair that remains once the "
+      + "levels are assigned; in LV the levels ride on the products, leaving "
+      + "reflux and boilup (step 2).",
+  },
+  {
+    id: "interaction", steps: [3],
+    q: "Why is a pairing that looks sensible on a steady-state balance not necessarily easy to tune?",
+    options: [
+      "Each loop acts as a disturbance on the other, since the two handles are not independent knobs on independent halves of the column",
+      "Steady-state balances are wrong",
+      "The analysers are too slow",
+      "The valves have no gain",
+    ],
+    correct: 0,
+    feedback: "Raising the reflux sharpens the top and changes the bottom, and "
+      + "the reverse; the loops interact.  The tool does not score structures "
+      + "because it computes no gain matrix (step 3).",
+  },
+  {
+    id: "sensitive-tray", steps: [4],
+    q: "A column's composition loop usually measures a tray temperature.  What does the tool offer to choose the tray?",
+    options: [
+      "Always the top tray",
+      "The slope criterion (steepest tray of the profile) and the sensitivity criterion (the tray that responds most to the handle)",
+      "A random tray",
+      "The tray with the highest pressure",
+    ],
+    correct: 1,
+    feedback: "A composition analyser is slow and expensive, so the substitution "
+      + "creates a second choice, which the tool computes on your column "
+      + "by two classical criteria; the sign of the response can change "
+      + "along the column (step 4).",
+  },
+  {
+    id: "no-correct-structure", steps: [5],
+    q: "What is the right attitude to choosing a control structure?",
+    options: [
+      "Apply the structure the tool recommends",
+      "Weigh the list of things the choice depends on, and remember that a single-end structure is a defensible option textbooks rarely offer",
+      "Always use dual-composition control",
+      "Never use temperature loops",
+    ],
+    correct: 1,
+    feedback: "There is no correct structure to arrive at; the choice depends "
+      + "on which end carries the tight specification, the reflux against the "
+      + "distillate and so on, and dual-composition control is not the only "
+      + "serious option (step 5).",
   },
 ];

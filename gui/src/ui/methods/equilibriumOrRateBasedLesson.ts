@@ -43,6 +43,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 /** The student's task, the page's first line. */
 export const EQ_RB_TASK = "I have to design or rate a column: is an equilibrium-stage "
@@ -463,5 +464,78 @@ export const EQ_RB_LIMITS: readonly LessonLimit[] = [
     title: "Runs in your browser.",
     body: "Every number is the engine compiled to run in the browser, on four tutorial "
       + "cases, with declared numbers changed only where the page says so.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const EQ_RB_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "murphree", steps: [1],
+    q: "What does Murphree's vapour efficiency measure?",
+    options: [
+      "The fraction of the feed that is vaporised",
+      "How far the vapour travels, through one tray, from its entering composition towards equilibrium with the liquid leaving it",
+      "The reflux ratio",
+      "The tray spacing",
+    ],
+    correct: 1,
+    feedback: "With E = 1 the tray is an equilibrium stage; a smaller value "
+      + "describes how far a real tray falls short of it (step 1).",
+  },
+  {
+    id: "trace-spec", steps: [2],
+    q: "Why does a small loss of efficiency per tray matter so much on a trace specification?",
+    options: [
+      "Each tray removes only a fraction of what is left, so the loss compounds over the whole column and moves the exponent",
+      "The efficiency changes the feed",
+      "Trace components do not obey equilibrium",
+      "Efficiency acts only on the top tray",
+    ],
+    correct: 0,
+    feedback: "The same equations at seven efficiencies move parts per million "
+      + "to per cent, because the efficiency acts on every tray (step 2).",
+  },
+  {
+    id: "where-from", steps: [3],
+    q: "Where can the efficiency come from, if the answer depends so strongly on it?",
+    options: [
+      "It must always be guessed",
+      "It can be computed from the tray geometry and phase properties by published correlations, which can be compared with a measured overall efficiency",
+      "It is always 0.7",
+      "It is a property of the solvent only",
+    ],
+    correct: 1,
+    feedback: "For one binary tray at total reflux the engine can compute it "
+      + "by three published correlations; the page sets them beside a "
+      + "measurement over a load range (step 3).",
+  },
+  {
+    id: "limits-of-one-number", steps: [4],
+    q: "What cannot a single-efficiency equilibrium-stage model do?",
+    options: [
+      "Give a number of trays",
+      "Give two components of the same mixture different efficiencies",
+      "Use a reflux ratio",
+      "Model a binary mixture",
+    ],
+    correct: 1,
+    feedback: "The engine applies one efficiency to every component; cases "
+      + "where one number is not enough are taken from published rate-based "
+      + "work on real columns (step 4).",
+  },
+  {
+    id: "hetp", steps: [6],
+    q: "Is the HETP a property of the packing alone?",
+    options: [
+      "Yes, catalogues list it for that reason",
+      "No: it is the height of a transfer unit, set by the packing and the flows, times a factor that depends on lambda, the slope of the equilibrium line times the vapour over the liquid flow",
+      "Yes, for binary systems only",
+      "No, it depends only on the reflux",
+    ],
+    correct: 1,
+    feedback: "For straight equilibrium and operating lines the HETP is the "
+      + "HTU times a function of lambda alone, so the same packing gives "
+      + "different HETP in different services (step 6).",
   },
 ];

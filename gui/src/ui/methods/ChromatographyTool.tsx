@@ -54,7 +54,8 @@ import {
 import { KnobNumber, PanelNote } from "./knobPanel.js";
 import { OriginMark, type OriginKind } from "./origin.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
-import { CHROM_LIMITS, CHROM_STEPS } from "./chromatographyLesson.js";
+import { CHROM_LIMITS, CHROM_QUIZ, CHROM_STEPS } from "./chromatographyLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 
 // ---- the fixed parts of the example -------------------------------------------
 
@@ -809,6 +810,9 @@ export function ChromatographyTool(): JSX.Element {
             {fmt(sweep.ms / 1000, 2)} s in this browser, a slice at a time.
           </PanelNote>
         </Panel>
+
+        <LessonQuiz title="Check your understanding" questions={CHROM_QUIZ}
+          lesson={CHROM_STEPS} />
 
         <LessonLimits limits={CHROM_LIMITS} />
         <LessonReferences tool="chromatography" />

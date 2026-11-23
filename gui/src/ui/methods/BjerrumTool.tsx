@@ -36,7 +36,8 @@ import { Alert, Box, Group, Slider, Stack, Text, Title } from "@mantine/core";
 
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { KnobField } from "./knobPanel.js";
-import { BJERRUM_LIMITS, BJERRUM_STEPS } from "./bjerrumLesson.js";
+import { BJERRUM_LIMITS, BJERRUM_QUIZ, BJERRUM_STEPS } from "./bjerrumLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 
 export const BJERRUM_WITNESS = "props/electrolyte/bjerrum01_carbonate_pH";
@@ -363,6 +364,9 @@ export function BjerrumTool(): JSX.Element {
           <code>choupoProps</code> with the two knobs written into its{" "}
           <code>variables</code> block.
         </Text>
+
+        <LessonQuiz title="Check your understanding" questions={BJERRUM_QUIZ}
+          lesson={BJERRUM_STEPS} />
 
         <LessonReferences tool="bjerrum" />
       </Stack>

@@ -42,6 +42,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonLimit, LessonStep, SymbolGloss };
 
 export const LUB_SCALEUP_STEPS: readonly LessonStep[] = [
@@ -419,5 +420,79 @@ export const LUB_SCALEUP_LIMITS: readonly LessonLimit[] = [
       + "markers beside the engine's curve and runs the same arithmetic on "
       + "it, labelled measured.  No tutorial ships one today, and the tool "
       + "says so rather than inventing a curve.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const LUB_SCALEUP_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "lab-to-plant", steps: [1],
+    q: "A laboratory breakthrough curve is cheap to measure.  What is the plant question that differs in kind?",
+    options: [
+      "Not what this column did, but how long a bed and what diameter hold the required feed flow for the required service time",
+      "How cold the lab was",
+      "Which detector to buy",
+      "How fast the pump runs",
+    ],
+    correct: 0,
+    feedback: "The curve is one history at one length and velocity; the plant "
+      + "wants a bed sized for another flow and time, which only works under "
+      + "the page's premise of a settled, constant-pattern zone (step 1).",
+  },
+  {
+    id: "two-times", steps: [2],
+    q: "What are the two times read off the curve, and which one is a specification?",
+    options: [
+      "Breakthrough time t_b, set by the fraction of the feed you declare unacceptable, a specification; and stoichiometric time t_st, the arrival of an infinitely sharp front",
+      "Start-up time and shutdown time",
+      "Residence time and mixing time",
+      "t_b is a bed property and t_st is a specification",
+    ],
+    correct: 0,
+    feedback: "t_b depends on the 5 % default, which is a knob because it is "
+      + "a specification, not a property of the bed; t_st follows from an "
+      + "area on the curve (step 2).",
+  },
+  {
+    id: "unused-bed", steps: [4],
+    q: "What is the length of unused bed (LUB), and what happens to it under the constant-pattern premise?",
+    options: [
+      "The length that did no work when you switch, the same in every bed at these conditions however long",
+      "The length of the inlet distributor",
+      "A fraction that grows with the bed length",
+      "The length of bed already regenerated",
+    ],
+    correct: 0,
+    feedback: "At the switch the zone is half-loaded inside the column; the "
+      + "unused length is the quantity carried to full scale (step 4).",
+  },
+  {
+    id: "same-velocity", steps: [5],
+    q: "Why is the unused length carried across to the plant only at the same velocity?",
+    options: [
+      "LUB is a property of the velocity: a faster gas leaves a solid that cannot keep up and a wider zone",
+      "The plant has no velocity",
+      "The unit system changes",
+      "Velocity cancels out",
+    ],
+    correct: 0,
+    feedback: "The bed divides into an equilibrium section whose "
+      + "stoichiometric front takes the service time to arrive, plus the "
+      + "unused length on top; a longer bed wastes a smaller fraction "
+      + "(step 5).",
+  },
+  {
+    id: "pairs", steps: [6],
+    q: "What does the service time you sized for bound in a two-bed plant?",
+    options: [
+      "The time the other bed has to be regenerated, which must fit inside it or a third bed is needed",
+      "The pressure drop",
+      "The adsorbent price",
+      "The column diameter",
+    ],
+    correct: 0,
+    feedback: "One bed loads while the other is regenerated, and they swap at "
+      + "or before t_req (step 6).",
   },
 ];

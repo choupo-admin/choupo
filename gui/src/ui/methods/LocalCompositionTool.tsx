@@ -49,6 +49,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Alert, Box, Code, Stack, Text, Title } from "@mantine/core";
+import type { QuizQuestion } from "./lessonQuiz.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 import { LessonReferences } from "./lessonStep.js";
 
@@ -284,8 +286,83 @@ export function LocalCompositionTool(): JSX.Element {
         </Text>
       </Box>
 
+      <LessonQuiz title="Check your understanding" questions={LC_QUIZ}
+        lesson={LC_STEPS} />
+
       <LessonReferences tool="local-composition" />
     </Stack>
     </Box>
   );
 }
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const LC_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "two-assumptions", steps: [1],
+    q: "Which two assumptions does Raoult's law make about the neighbours of a molecule?",
+    options: [
+      "Neighbours drawn at random from the bulk composition, and a like contact costing the same energy as an unlike one",
+      "A fixed temperature and pressure",
+      "No molecular size and no volume",
+      "A single phase and a single component",
+    ],
+    correct: 0,
+    feedback: "Dropping only the second gives the regular solution; the "
+      + "local-composition family drops the first too, since the "
+      + "neighbourhood in a real liquid is not random (step 1).",
+  },
+  {
+    id: "boltzmann", steps: [2],
+    q: "What weights the neighbourhood of a molecule in a local-composition model?",
+    options: [
+      "Boltzmann odds: sitting next to a j costs energy g_ji instead of g_ii, so unfavourable contacts are less populated",
+      "The molar mass",
+      "The critical temperature",
+      "The vapour pressure",
+    ],
+    correct: 0,
+    feedback: "At equilibrium the local composition is the bulk composition "
+      + "weighted by the exponential of the energy difference (step 2).",
+  },
+  {
+    id: "wilson", steps: [3],
+    q: "What does Wilson fold into one quantity per ordered pair?",
+    options: [
+      "The Boltzmann factor and the size ratio",
+      "The enthalpy and the entropy",
+      "The pressure and the temperature",
+      "The activity and the fugacity",
+    ],
+    correct: 0,
+    feedback: "Wilson is the cheapest branch: two parameters per pair and "
+      + "the size ratio hidden in the same quantity (step 3).",
+  },
+  {
+    id: "nrtl-alpha", steps: [4],
+    q: "What does the non-randomness parameter alpha in NRTL mean?",
+    options: [
+      "alpha = 0 recovers a random mixture; typical values 0.2 to 0.47 say how non-random the neighbourhood is",
+      "alpha is the pressure ratio",
+      "alpha counts the molecules",
+      "alpha is always 1",
+    ],
+    correct: 0,
+    feedback: "NRTL keeps the local-composition idea and buys back the "
+      + "non-randomness with a third parameter (step 4).",
+  },
+  {
+    id: "uniquac", steps: [5],
+    q: "What does UNIQUAC split before modelling either half?",
+    options: [
+      "Size and shape, which change the entropy even with no energetic preference, from energy, which does the rest",
+      "Liquid from vapour",
+      "Components from phases",
+      "Temperature from pressure",
+    ],
+    correct: 0,
+    feedback: "Wilson smuggled size through V_j/V_i; UNIQUAC builds gamma "
+      + "from a combinatorial piece and an energetic one so that they do "
+      + "not share a parameter (step 5).",
+  },
+];

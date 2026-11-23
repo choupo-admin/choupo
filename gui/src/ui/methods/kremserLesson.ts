@@ -26,6 +26,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const KREMSER_STEPS: readonly LessonStep[] = [
@@ -195,5 +196,66 @@ export const KREMSER_LIMITS: readonly { id: string; title: string; body: string 
       + "an efficiency; a packed column needs the count converted to height "
       + "through an HTU or an HETP, which depends on the packing, the flows "
       + "and the system. Nothing here does that conversion.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const KREMSER_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "ratios", steps: [1],
+    q: "Why is absorption written in mole ratios, solute per solute-free carrier?",
+    options: [
+      "The carrier gas and solvent pass through almost unchanged while the total flows do not",
+      "Mole fractions cannot be added",
+      "The solute does not move",
+      "It changes the equilibrium",
+    ],
+    correct: 0,
+    feedback: "Ratios keep the operating line straight even when total flows "
+      + "vary; the engine itself works in fractions at constant total L and "
+      + "V, so its A is a total-flow ratio (step 1).",
+  },
+  {
+    id: "absorption-factor", steps: [2],
+    q: "What does A = L/(K V) tell you?",
+    options: [
+      "Whether the solvent wins against the solute's tendency to stay in the gas, A > 1 meaning the solvent wins",
+      "The number of stages",
+      "The column diameter",
+      "The temperature",
+    ],
+    correct: 0,
+    feedback: "With A < 1 the lines close towards the bottom and no number "
+      + "of stages will finish the job: you need more or better solvent, not "
+      + "a taller column (step 2).",
+  },
+  {
+    id: "closed-form", steps: [3],
+    q: "Why can absorbers be designed with a formula while distillation columns are drawn or solved stage by stage?",
+    options: [
+      "A straight equilibrium line makes the steps a geometric series that sums in closed form",
+      "Absorbers have no equilibrium",
+      "Distillation has fewer stages",
+      "The formula applies to any curve",
+    ],
+    correct: 0,
+    feedback: "The Kremser result needs the equilibrium line to be straight, "
+      + "and for an entering solvent free of solute; then recovery follows "
+      + "from A and N directly (step 3).",
+  },
+  {
+    id: "temperature-rise", steps: [4],
+    q: "Why can an absorber's real recovery fall short of the Kremser formula?",
+    options: [
+      "Heat of solution warms the liquid, K rises, A falls, and the formula assumes one temperature",
+      "The formula adds stages",
+      "Stages are not ideal in the formula",
+      "The gas flow rises",
+    ],
+    correct: 0,
+    feedback: "The formula is not wrong; it answers a question with fewer "
+      + "conditions than the column obeys, and the gap beside the plot is "
+      + "the cost of the temperature profile (step 4).",
   },
 ];

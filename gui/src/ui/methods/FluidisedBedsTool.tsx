@@ -62,7 +62,8 @@ import { Panel, Wide, XYPlot, fmt } from "./AdsorptionIsothermsTool.js";
 import { GASES, PARTICLES } from "../../case/fluidisedBedPresets.js";
 import { LAB_U_START, columnsFromPage, encodeLab } from "../../case/fluidisationLab.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
-import { FLUID_LIMITS, FLUID_STEPS } from "./fluidisedBedsLesson.js";
+import { FLUID_LIMITS, FLUID_QUIZ, FLUID_STEPS } from "./fluidisedBedsLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 
 type XY = readonly [number, number];
 const TEXT = "var(--mantine-color-text)";
@@ -659,6 +660,9 @@ export function FluidisedBedsTool(): JSX.Element {
         )}
 
         {step(6)}
+
+        <LessonQuiz title="Check your understanding" questions={FLUID_QUIZ}
+          lesson={FLUID_STEPS} />
 
         <LessonLimits limits={FLUID_LIMITS} />
 

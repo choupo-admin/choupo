@@ -66,10 +66,8 @@ import {
 import { Panel, Wide, XYPlot, fmt } from "./AdsorptionIsothermsTool.js";
 import { LessonLimits, LessonReferences, TexText, lessonStepper } from "./lessonStep.js";
 import { openMethodToolAt } from "./registry.js";
-import {
-  DECISION_ROWS, EQ_RB_COSTS, EQ_RB_ENGINE_SCOPE, EQ_RB_LIMITS, EQ_RB_OPENING, EQ_RB_STEPS,
-  EQ_RB_TASK, REFERENCE_FINDINGS,
-} from "./equilibriumOrRateBasedLesson.js";
+import { DECISION_ROWS, EQ_RB_COSTS, EQ_RB_ENGINE_SCOPE, EQ_RB_LIMITS, EQ_RB_OPENING, EQ_RB_QUIZ, EQ_RB_STEPS, EQ_RB_TASK, REFERENCE_FINDINGS } from "./equilibriumOrRateBasedLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 
 type XY = readonly [number, number];
 const step = lessonStepper(EQ_RB_STEPS);
@@ -552,6 +550,9 @@ export function EquilibriumOrRateBasedTool(): JSX.Element {
             ))}
           </Stack>
         </Panel>
+
+        <LessonQuiz title="Check your understanding" questions={EQ_RB_QUIZ}
+          lesson={EQ_RB_STEPS} />
 
         <LessonLimits limits={EQ_RB_LIMITS} />
         <LessonReferences tool="equilibrium-or-rate-based" />

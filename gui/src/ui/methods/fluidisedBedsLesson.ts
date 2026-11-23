@@ -40,6 +40,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const FLUID_STEPS: readonly LessonStep[] = [
   {
@@ -351,5 +352,82 @@ export const FLUID_LIMITS: readonly LessonLimit[] = [
       + "drop (in the plug-flow reactor), a single particle's terminal velocity (in the "
       + "pneumatic conveyor) and the cyclone; this page writes the first two in the same "
       + "form and computes everything else in the browser.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const FLUID_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "onset", steps: [1],
+    q: "When does a gas flow through a bed of particles begin to fluidise it?",
+    options: [
+      "When the pressure drop across the bed equals its weight per unit cross-section",
+      "When the gas velocity equals the terminal velocity of the particles",
+      "When the bubbles first appear",
+      "When the particles become spherical",
+    ],
+    correct: 0,
+    feedback: "Up to then the bed is held down by its own weight less "
+      + "buoyancy and the gas loses pressure by Ergun's law; when the "
+      + "pressure drop equals the weight the particles lift apart "
+      + "(step 1).",
+  },
+  {
+    id: "geldart", steps: [2],
+    q: "Which two properties sort a powder into Geldart's four groups?",
+    options: [
+      "Particle size and the density difference between particle and gas",
+      "Colour and hardness",
+      "Bed height and column diameter",
+      "Gas viscosity and temperature",
+    ],
+    correct: 0,
+    feedback: "Fine light powders (C) are cohesive and channel; group A expands "
+      + "smoothly before bubbling; sand-like powders (B) bubble at once; "
+      + "group D is coarse.  A point near a line needs a laboratory test "
+      + "(step 2).",
+  },
+  {
+    id: "regimes", steps: [3],
+    q: "Which gas velocities does a bed usually run between?",
+    options: [
+      "Below u_mf, so the bed stays fixed",
+      "A few times u_mf and well below the terminal velocity u_t of the particles it must keep",
+      "Above the terminal velocity, to carry the solid out",
+      "Exactly at u_mf",
+    ],
+    correct: 1,
+    feedback: "The sequence runs fixed bed, bubbling, turbulent and finally "
+      + "transport as the velocity rises; the working bed sits in the "
+      + "bubbling range (step 3).",
+  },
+  {
+    id: "bypass", steps: [4],
+    q: "In the two-phase picture, why does bubble gas bypass the solid?",
+    options: [
+      "Gas reaches the particles only by leaving the bubble into its cloud, so bubble gas that crosses the bed without exchanging has bypassed the solid",
+      "The bubbles contain the solid",
+      "The emulsion has no gas in it",
+      "The bubbles are always small",
+    ],
+    correct: 0,
+    feedback: "A bubble is nearly free of particles; large bubbles in a deep "
+      + "bed renew their gas only a few times on the way up, so a sizeable "
+      + "fraction bypasses (step 4).",
+  },
+  {
+    id: "elutriation", steps: [5],
+    q: "A particle size class is smaller than the cut diameter.  What does that tell you?",
+    options: [
+      "That it will certainly leave the bed",
+      "That it CAN leave, but whether it does depends on the freeboard, the bubble eruption and the time in the gas above the bed",
+      "That it stays in the bed",
+      "That it forms a new Geldart group",
+    ],
+    correct: 1,
+    feedback: "The cut diameter is where u_t equals the gas velocity; it says "
+      + "which classes the gas can carry, not which actually leave "
+      + "(step 5).",
   },
 ];

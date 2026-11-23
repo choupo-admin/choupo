@@ -29,6 +29,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const ENTU_STEPS: readonly LessonStep[] = [
@@ -299,5 +300,81 @@ export const ENTU_LIMITS: readonly { id: string; title: string; body: string }[]
       + "It used to fall back to counter-current instead, which is the "
       + "optimistic arrangement, so a typo quietly undersized the exchanger "
       + "at exit 0.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const ENTU_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "why-entu", steps: [1],
+    q: "Why use the effectiveness-NTU method instead of LMTD for a rating problem?",
+    options: [
+      "LMTD needs all four terminal temperatures, but a rating problem gives the inlets and the hardware, with the outlets unknown",
+      "LMTD is wrong for heat exchangers",
+      "NTU needs no hardware",
+      "LMTD has no first law",
+    ],
+    correct: 0,
+    feedback: "The log-mean difference is built from the two end approaches, "
+      + "so it needs guessing and iterating; e-NTU is the same first law "
+      + "rearranged so that the duty falls out (step 1).",
+  },
+  {
+    id: "cmin", steps: [2],
+    q: "Which stream's capacity rate sets the largest possible duty?",
+    options: [
+      "The larger one",
+      "The smaller one, C_min",
+      "Their sum",
+      "Neither: only the temperatures matter",
+    ],
+    correct: 1,
+    feedback: "No stream can be pushed past the other's inlet temperature; "
+      + "the stream with the smaller capacity rate would reach it first, so "
+      + "Q_max = C_min times the largest temperature difference (step 2).",
+  },
+  {
+    id: "not-efficiency", steps: [3],
+    q: "Is effectiveness a thermodynamic efficiency?",
+    options: [
+      "Yes, it measures lost work",
+      "No: it is a fraction of the largest duty the second law allows and says nothing about the availability destroyed",
+      "Yes, but only for counterflow",
+      "It equals NTU",
+    ],
+    correct: 1,
+    feedback: "Effectiveness is a pure ratio of duty to the maximum possible "
+      + "duty; NTU is the dimensionless size, U times A over C_min "
+      + "(step 3).",
+  },
+  {
+    id: "cr-zero", steps: [4],
+    q: "When does the flow arrangement stop mattering?",
+    options: [
+      "When C_r = 0, one stream isothermal, such as a condensing or boiling one",
+      "When NTU = 0",
+      "Never",
+      "When C_r = 2",
+    ],
+    correct: 0,
+    feedback: "With one side isothermal there is no 'which way round' left to "
+      + "choose; C_r decides whether the arrangement matters at all "
+      + "(step 4).",
+  },
+  {
+    id: "diminishing-area", steps: [5],
+    q: "At C_r = 0.5 on the counter-current curve, what do the first three NTU and the next three buy?",
+    options: [
+      "The same effectiveness each",
+      "An effectiveness of 0.87 for the first, and only 0.10 more for the second, so past the bend you pay area for duty no longer there",
+      "Nothing for the first three",
+      "The next three buy more than the first",
+    ],
+    correct: 1,
+    feedback: "Every extra unit of NTU works on a smaller remaining "
+      + "temperature difference, so epsilon climbs and flattens; the design "
+      + "trade-off sits on this bend (step 5).",
+    origins: ["page"],
   },
 ];

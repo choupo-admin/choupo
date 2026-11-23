@@ -61,7 +61,8 @@ import {
 } from "../../case/adsorptionIsotherms.js";
 import { OriginMark, type OriginKind } from "./origin.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
-import { ISO_LIMITS, ISO_STEPS } from "./adsorptionIsothermsLesson.js";
+import { ISO_LIMITS, ISO_QUIZ, ISO_STEPS } from "./adsorptionIsothermsLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 
 // ---- colours and formatting ---------------------------------------------------------
 
@@ -698,6 +699,9 @@ export function AdsorptionIsothermsTool(): JSX.Element {
             </Panel>
           </>
         )}
+
+        <LessonQuiz title="Check your understanding" questions={ISO_QUIZ}
+          lesson={ISO_STEPS} />
 
         <LessonLimits limits={ISO_LIMITS} />
         <LessonReferences tool="adsorption-isotherms" />
