@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  unsteady08_fast_tank_reduced / postDict -- the case's ONE figure
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    tracer   "What does the reduced model keep of the big tank, and what does
+             it publish for the small one?"  The tracer in the big tank SLOW
+             (left axis, kmol): the one differential equation the run still
+             integrates, which is also the reduced FAST's outlet (outlet =
+             inlet); and the carrier mass the storageTank FAST would hold at
+             steady state with its inlet (`kpi_holdupMass_compA_kg`, right
+             axis, kg), a number it publishes and never integrates.  Read from
+             this run's table (10 s grid, 5000 s): SLOW's tracer is 0.3935 kmol
+             at 500 s and 0.99326 kmol at 5000 s, and is the same, to the last
+             digit on all 501 rows, as unsteady07's SLOW; FAST's published
+             carrier holdup falls from 1.5 kg to 0.0101 kg.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    tracer;
+        type    series;
+        title   "What does the reduced model keep of the big tank, and what does it publish for the small one?";
+        note    "The reduced model integrates only the big tank: its tracer rises from 0 to 0.393 kmol at 500 s and 0.993 kmol at 5000 s, identical on every row to the full model's SLOW in unsteady07, and the small tank's outlet is that same curve with no lag. The small tank is a number, not an equation: the carrier it would hold falls from 1.5 kg to 0.010 kg as the tracer takes over.";
+        xAxis   { label "time"; unit "s"; scale linear; }
+        yAxis   { label "tracer in SLOW"; unit "kmol"; scale linear; }
+        yAxis2  { label "carrier holdup"; unit "kg"; scale linear; }
+        series
+        (
+            { name SLOW; label "tracer in SLOW (integrated)"; unitOp SLOW; table trajectory; x t; y n_compB; style lines; }
+            { name FASTholdup; label "carrier FAST would hold (published)"; unitOp FAST; table trajectory; x t; y kpi_holdupMass_compA_kg; style lines; axis right; }
+        );
+    }
+);

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  unsteady05_tank_valve_drain / postDict -- the case's ONE figure
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    level   "Where does the level settle after the inflow steps up, with no
+            controller, and how long does it take?"  The tank level (the
+            unit's `level`, m) on the left axis, the inflow `F_in` and outflow
+            `F_out` (kmol/s) on the right, the time axis in hours.  Read from
+            this run's table (1200 s grid, 24000 s): the level rises from 1.000
+            m to 2.2601 m, half of the rise by 2400 s, 90 % by 6000 s, 99 % by
+            12000 s; the outflow rises from 0.19955 to 0.29999 kmol/s and meets
+            the 0.30 kmol/s inflow.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    level;
+        type    series;
+        title   "Where does the level settle after the inflow steps up, with no controller, and how long does it take?";
+        note    "With no controller, the valve drains faster as the level rises: after the inflow steps from 0.20 to 0.30 kmol/s the level climbs from 1.00 m to 2.26 m, half of the rise in 2400 s, 90 % in 1.7 h and 99 % in 3.3 h, and the outflow, which started at 0.1996 kmol/s, rises to 0.2999 kmol/s and meets the inflow, so the level stops.";
+        xAxis   { label "time"; unit "h"; scale linear; }
+        yAxis   { label "level"; unit "m"; scale linear; }
+        yAxis2  { label "flow"; unit "kmol/s"; scale linear; }
+        series
+        (
+            { name level; label "level"; unitOp tank; table trajectory; x t; y level; style lines; }
+            { name Fin; label "inflow"; unitOp tank; table trajectory; x t; y F_in; style lines; axis right; }
+            { name Fout; label "outflow (through the valve)"; unitOp tank; table trajectory; x t; y F_out; style lines; axis right; }
+        );
+    }
+);
