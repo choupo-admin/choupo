@@ -5431,7 +5431,7 @@ accepts today, and that is a policy call.
 > reference, two GUI tests red on main about three hours and one --gui re-run; (2) line-number lesson
 > citations broke at four landings (C440 postDict +7 lines, C468, C478 +11, C477), five red tests,
 > each a --gui re-run; (3) a gate run before `git add` passed an untracked file whose name held a
-> future date, red on main; (4) gui/node_modules removed before --gui, one lost suite; (5) a general's
+> future date, red on main; (4) the GUI's node_modules removed before --gui, one lost suite; (5) a general's
 > header fix after its --gui hid an import (typecheck red at integration); (6) CI red since
 > 2026-11-20, unseen for three days (C484); (7) the cloud's disk filled mid --gui and it validated a
 > tree main had already overtaken.  Seven rules written in CLAUDE.md section 10 ("INTEGRATION
@@ -5450,6 +5450,14 @@ accepts today, and that is a policy call.
 > refusing to start under 15 GB free; the landing script printing main's CI.  The escalation rule is
 > in CLAUDE.md section 10.  After C239 and C484 land (bin/integrate is not edited while integrations
 > run).
+
+> **C486 (Vitor, 2026-11-23, after seeing nox03's figures: "dava para por uma opcao de mudar com um
+> click os eixos de escala linear para log (em todas as variaveis que admitem isso, T por exemplo nao
+> pode ser)"; not urgent, a wish).**  RULED: the test is the VALUES on the axis, not the variable
+> (T in K is positive, so log is possible if rarely useful; what forbids log is a value <= 0, e.g. a
+> net NO route that goes negative).  A lin/log toggle per axis, enabled when every shown value is
+> positive, disabled with its reason otherwise, absent where the case declared the axis log.  Browser
+> only.  Wish list.
 
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze

@@ -7,8 +7,14 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  thermoPhysPropDict (v2) -- T1 ideal gamma-phi mixture.
+  thermoPhysPropDict (v2) -- ideal liquid (Raoult), REAL-GAS vapour (SRK).
   Raoult DECLARED, not defaulted (gamma = 1 identically).
+  The column runs at 5 bar, where the pentanes are at Tr 0.7-0.8 and the
+  vapour is not ideal: the pure-vapour fugacity coefficient is about 0.84
+  (a 16 % departure, column-vapour audit C239, 2026-11-07).  SRK (kij = 0)
+  prices the vapour's departure; the pure-liquid reference carries phi_sat and
+  Poynting, so the real vapour is counted on both sides of K and the
+  temperatures hold as well as the duties.
   Migrated mechanically from the v1 flat form (physics identical);
   v2 contract 2026-07-17.
 \*---------------------------------------------------------------------------*/
@@ -30,6 +36,6 @@ equilibrium
 
     vapour
     {
-        fugacityModel idealGas;
+        fugacityModel SRK;
     }
 }

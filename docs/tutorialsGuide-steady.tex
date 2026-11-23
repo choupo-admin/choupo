@@ -7022,7 +7022,7 @@ freshFeed (neoPentane)      [mixer]               recycle (neoPentane)          
 
 Chemistry: neoPentane $\to$ nPentane is an isomerization --- 1:1 in moles AND mass (identical MW 72.15). So at steady state the fresh feed (1 kmol/h neoPentane) equals the product (1 kmol/h nPentane in the bottoms), and the overall MASS BALANCE CLOSES TO 100 \%. The recycle carries per-pass unconverted neoPentane back to the reactor, so the OVERALL conversion is \textasciitilde{}100 \% (product is 99 \% nPentane) even though the per-pass conversion is only \textasciitilde{}80 \%.
 
-Tuning notes (honest): The loop runs at 5 bar so every neoPentane/nPentane stream is a genuine LIQUID at its temperature. neoPentane's Antoine here boils at \textasciitilde{}275 K at 1 bar (Psat(320 K) \textasciitilde{}4.3 bar), so a 1 bar loop would flash the feed + recycle to VAPOUR --- the phase is a CONSEQUENCE of (T,P,z) (Duhem), not a silent liquid default. At 5 bar the bubble point clears \textasciitilde{}326 K, so the warm reactor (\textasciitilde{}327 K) and the recycled distillate stay liquid, as the flowsheet intends. The reaction uses a LOW activation energy on purpose --- a high-Ea rate would make the per-pass conversion collapse against the recycle temperature and destabilise the loop. Low Ea decouples conversion from the recycle temperature. `distillateRate` is FIXED here (the column's spec). It cannot perfectly track the per-pass unconverted neoPentane, so the recycle carries some nPentane (product) along --- exactly why real recycle loops need a purge. Closing the recycle PURITY would be a DesignSpec manipulating distillateRate; left out here to keep the case a single pass for reviewing the reports.
+Tuning notes (honest): The loop runs at 5 bar so every neoPentane/nPentane stream is a genuine LIQUID at its temperature. neoPentane's Antoine here boils at \textasciitilde{}275 K at 1 bar (Psat(320 K) \textasciitilde{}4.3 bar), so a 1 bar loop would flash the feed + recycle to VAPOUR --- the phase is a CONSEQUENCE of (T,P,z) (Duhem), not a silent liquid default. At 5 bar the bubble point clears \textasciitilde{}326 K, so the warm reactor (\textasciitilde{}325 K) and the recycled distillate stay liquid, as the flowsheet intends. The vapour is a REAL gas (SRK, declared in constant/thermoPhysPropDict): at 5 bar the pentanes' pure-vapour fugacity coefficient is \textasciitilde{}0.84, so an ideal vapour would misplace the column's K values, duties and temperatures (column-vapour audit C239, 2026-11-07). The reaction uses a LOW activation energy on purpose --- a high-Ea rate would make the per-pass conversion collapse against the recycle temperature and destabilise the loop. Low Ea decouples conversion from the recycle temperature. `distillateRate` is FIXED here (the column's spec). It cannot perfectly track the per-pass unconverted neoPentane, so the recycle carries some nPentane (product) along --- exactly why real recycle loops need a purge. Closing the recycle PURITY would be a DesignSpec manipulating distillateRate; left out here to keep the case a single pass for reviewing the reports.
 
 This is the case to open in the GUI and to read the reports/ CSVs from: streamTable.csv, massBalance.csv (+ \_byUnit), energyBalance\_byUnit.csv.
 
@@ -7036,12 +7036,12 @@ This is the case to open in the GUI and to read the reports/ CSVs from: streamTa
 \goldrow{kpi}{column}{B}{0.000277777777778}
 \goldrow{kpi}{column}{D}{8.61111111111e-05}
 \goldrow{kpi}{column}{L\_rect}{0.000172222222222}
-\goldrow{kpi}{column}{L\_strip}{0.0006246746384}
+\goldrow{kpi}{column}{L\_strip}{0.000630891063916}
 \goldrow{kpi}{column}{R}{2}
-\goldrow{kpi}{column}{T\_bottom}{364.430055217}
-\goldrow{kpi}{column}{T\_top}{347.08353419}
+\goldrow{kpi}{column}{T\_bottom}{363.681202185}
+\goldrow{kpi}{column}{T\_top}{350.016119304}
 \goldrow{kpi}{column}{V\_rect}{0.000258333333333}
-\goldrow{kpi}{column}{V\_strip}{0.000346896860622}
+\goldrow{kpi}{column}{V\_strip}{0.000353113286138}
 \goldmore{47}
 \end{tutgolden}
 
@@ -7119,7 +7119,7 @@ freshFeed (neoPentane)      [mixer]               recycle (neoPentane)          
 
 Chemistry: neoPentane $\to$ nPentane is an isomerization --- 1:1 in moles AND mass (identical MW 72.15). So at steady state the fresh feed (1 kmol/h neoPentane) equals the product (1 kmol/h nPentane in the bottoms), and the overall MASS BALANCE CLOSES TO 100 \%. The recycle carries per-pass unconverted neoPentane back to the reactor, so the OVERALL conversion is \textasciitilde{}100 \% (product is 99 \% nPentane) even though the per-pass conversion is only \textasciitilde{}80 \%.
 
-Tuning notes (honest): The loop runs at 5 bar so every neoPentane/nPentane stream is a genuine LIQUID at its temperature. neoPentane's Antoine here boils at \textasciitilde{}275 K at 1 bar (Psat(320 K) \textasciitilde{}4.3 bar), so a 1 bar loop would flash the feed + recycle to VAPOUR --- the phase is a CONSEQUENCE of (T,P,z) (Duhem), not a silent liquid default. At 5 bar the bubble point clears \textasciitilde{}326 K, so the warm reactor (\textasciitilde{}327 K) and the recycled distillate stay liquid, as the flowsheet intends. The reaction uses a LOW activation energy on purpose --- a high-Ea rate would make the per-pass conversion collapse against the recycle temperature and destabilise the loop. Low Ea decouples conversion from the recycle temperature. `distillateRate` is FIXED here (the column's spec). It cannot perfectly track the per-pass unconverted neoPentane, so the recycle carries some nPentane (product) along --- exactly why real recycle loops need a purge. Closing the recycle PURITY would be a DesignSpec manipulating distillateRate; left out here to keep the case a single pass for reviewing the reports.
+Tuning notes (honest): The loop runs at 5 bar so every neoPentane/nPentane stream is a genuine LIQUID at its temperature. neoPentane's Antoine here boils at \textasciitilde{}275 K at 1 bar (Psat(320 K) \textasciitilde{}4.3 bar), so a 1 bar loop would flash the feed + recycle to VAPOUR --- the phase is a CONSEQUENCE of (T,P,z) (Duhem), not a silent liquid default. At 5 bar the bubble point clears \textasciitilde{}326 K, so the warm reactor (\textasciitilde{}325 K) and the recycled distillate stay liquid, as the flowsheet intends. The vapour is a REAL gas (SRK, declared in constant/thermoPhysPropDict): at 5 bar the pentanes' pure-vapour fugacity coefficient is \textasciitilde{}0.84, so an ideal vapour would misplace the column's K values, duties and temperatures (column-vapour audit C239, 2026-11-07). The reaction uses a LOW activation energy on purpose --- a high-Ea rate would make the per-pass conversion collapse against the recycle temperature and destabilise the loop. Low Ea decouples conversion from the recycle temperature. `distillateRate` is FIXED here (the column's spec). It cannot perfectly track the per-pass unconverted neoPentane, so the recycle carries some nPentane (product) along --- exactly why real recycle loops need a purge. Closing the recycle PURITY would be a DesignSpec manipulating distillateRate; left out here to keep the case a single pass for reviewing the reports.
 
 This is the case to open in the GUI and to read the reports/ CSVs from: streamTable.csv, massBalance.csv (+ \_byUnit), energyBalance\_byUnit.csv.
 
@@ -7133,12 +7133,12 @@ This is the case to open in the GUI and to read the reports/ CSVs from: streamTa
 \goldrow{kpi}{column}{B}{0.000277777777778}
 \goldrow{kpi}{column}{D}{8.61111111111e-05}
 \goldrow{kpi}{column}{L\_rect}{0.000172222222222}
-\goldrow{kpi}{column}{L\_strip}{0.000624674640386}
+\goldrow{kpi}{column}{L\_strip}{0.000630891065626}
 \goldrow{kpi}{column}{R}{2}
-\goldrow{kpi}{column}{T\_bottom}{364.430055127}
-\goldrow{kpi}{column}{T\_top}{347.08353288}
+\goldrow{kpi}{column}{T\_bottom}{363.681202102}
+\goldrow{kpi}{column}{T\_top}{350.016118659}
 \goldrow{kpi}{column}{V\_rect}{0.000258333333333}
-\goldrow{kpi}{column}{V\_strip}{0.000346896862608}
+\goldrow{kpi}{column}{V\_strip}{0.000353113287848}
 \goldmore{47}
 \end{tutgolden}
 
