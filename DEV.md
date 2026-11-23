@@ -5451,6 +5451,14 @@ accepts today, and that is a policy call.
 > in CLAUDE.md section 10.  After C239 and C484 land (bin/integrate is not edited while integrations
 > run).
 
+> **C486 (Vitor, 2026-11-23, after seeing nox03's figures: "dava para por uma opcao de mudar com um
+> click os eixos de escala linear para log (em todas as variaveis que admitem isso, T por exemplo nao
+> pode ser)"; not urgent, a wish).**  RULED: the test is the VALUES on the axis, not the variable
+> (T in K is positive, so log is possible if rarely useful; what forbids log is a value <= 0, e.g. a
+> net NO route that goes negative).  A lin/log toggle per axis, enabled when every shown value is
+> positive, disabled with its reason otherwise, absent where the case declared the axis log.  Browser
+> only.  Wish list.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
