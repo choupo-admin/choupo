@@ -35,6 +35,7 @@ License
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <stdexcept>
 
@@ -92,6 +93,8 @@ int SteamTables::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
                      int verbosity)
 {
     diag_.clear();
+    tables_.clear();
+    mode_.clear();
     announceFormulationOnce();
 
     const bool hasPoint = dict->found("point");
@@ -105,6 +108,7 @@ int SteamTables::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
     // --- point: one (p,T) state, full property set + region -----------------
     if (hasPoint)
     {
+        mode_ = "point";
         auto pt = dict->subDict("point");
         const double T = pt->lookupScalar("T");   // canonical SI [K]
         const bool hasP   = pt->found("P");
@@ -200,6 +204,7 @@ int SteamTables::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
     // --- saturation: T scan of the region-4 line + the f/g property pairs ---
     if (hasSat)
     {
+        mode_ = "saturation";
         auto sd = dict->subDict("saturation");
         const double from = sd->lookupScalar("from");   // [K] (degC converted)
         const double to   = sd->lookupScalar("to");
@@ -216,6 +221,12 @@ int SteamTables::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
 
         auto csv = openCsv(dict);
         csv << "T,psat,v_f,v_g,h_f,h_g,s_f,s_g,h_fg\n";   // canonical SI
+        PublishedTable tab;
+        tab.name = "saturation";
+        tab.description = "one row per saturation temperature: psat and the saturated liquid (f) and vapour (g) properties, in the release's table units";
+        tab.columns = { { "T", "K" }, { "psat", "MPa" }, { "v_f", "m3/kg" }, { "v_g", "m3/kg" },
+                        { "h_f", "kJ/kg" }, { "h_g", "kJ/kg" }, { "s_f", "kJ/(kg K)" },
+                        { "s_g", "kJ/(kg K)" }, { "h_fg", "kJ/kg" } };
         for (int i = 0; i < n; ++i)
         {
             const double T  = gridT(from, to, n, i);
@@ -239,7 +250,9 @@ int SteamTables::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
                 << f.h * 1.0e3 << "," << g.h * 1.0e3 << ","
                 << f.s * 1.0e3 << "," << g.s * 1.0e3 << ","
                 << (g.h - f.h) * 1.0e3 << "\n";
+            tab.rows.push_back({ T, ps / 1.0e6, f.v, g.v, f.h, g.h, f.s, g.s, g.h - f.h });
         }
+        tables_.push_back(std::move(tab));
 
         diag_["n_points"]    = n;
         diag_["psat_from_Pa"] = IF97::psat(from);
@@ -281,15 +294,24 @@ int SteamTables::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
         }
     }
 
+    mode_ = "isobar";
+    isobarP_MPa_ = p / 1.0e6;
     auto csv = openCsv(dict);
     csv << "T,region,v,h,s,cp\n";                         // canonical SI
+    PublishedTable tab;
+    tab.name = "isobar";
+    tab.description = "one row per temperature at the isobar's pressure, in the release's table units";
+    tab.columns = { { "T", "K" }, { "region", "-" }, { "v", "m3/kg" }, { "h", "kJ/kg" },
+                    { "s", "kJ/(kg K)" }, { "cp", "kJ/(kg K)" } };
     for (int i = 0; i < n; ++i)
     {
         const double T = gridT(from, to, n, i);
         const IF97::Props r = IF97::props(p, T);   // router refuses region 5 loudly
         csv << T << "," << r.region << "," << r.v << "," << r.h * 1.0e3 << ","
             << r.s * 1.0e3 << "," << r.cp * 1.0e3 << "\n";
+        tab.rows.push_back({ T, static_cast<scalar>(r.region), r.v, r.h, r.s, r.cp });
     }
+    tables_.push_back(std::move(tab));
     diag_["n_points"] = n;
 
     if (verbosity >= 2)
@@ -297,6 +319,38 @@ int SteamTables::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
                   << " points, T = " << from << " .. " << to << " K -> "
                   << dict->subDict("output")->lookupWord("file") << "\n";
     return 0;
+}
+
+std::string SteamTables::diagnosticUnit(const std::string& key) const
+{
+    static const std::map<std::string, std::string> u = {
+        { "region", "-" }, { "v", "m3/kg" }, { "h", "kJ/kg" }, { "u", "kJ/kg" },
+        { "s", "kJ/(kg K)" }, { "cp", "kJ/(kg K)" }, { "cv", "kJ/(kg K)" },
+        { "w", "m/s" }, { "psat_MPa", "MPa" }, { "p_MPa", "MPa" },
+        { "rho", "kg/m3" }, { "n_points", "-" }, { "psat_from_Pa", "Pa" },
+        { "psat_to_Pa", "Pa" }, { "Tsat_K", "K" } };
+    const auto it = u.find(key);
+    return it == u.end() ? std::string() : it->second;
+}
+
+std::string SteamTables::defaultViews(const std::string& op) const
+{
+    if (mode_ == "saturation")
+        return "{ name saturation; type series; op " + op + "; table saturation; x T; y ( psat ); style lines;"
+               " title \"" + op + ": saturated water, vapour pressure against temperature (IAPWS-IF97 region 4)\";"
+               " xAxis { label \"temperature, T\"; } yAxis { label \"saturation pressure, psat\"; scale log; } }\n"
+               "{ name enthalpy; type series; op " + op + "; table saturation; x T; y ( h_f h_g ); style lines;"
+               " title \"" + op + ": saturated liquid and vapour enthalpy -- h_g - h_f is the latent heat, and it vanishes at the critical point\";"
+               " xAxis { label \"temperature, T\"; } yAxis { label \"specific enthalpy, h\"; } }\n";
+    if (mode_ == "isobar")
+    {
+        std::ostringstream os;
+        os << std::setprecision(6) << isobarP_MPa_;
+        return "{ name isobar; type series; op " + op + "; table isobar; x T; y ( h ); style lines;"
+               " title \"" + op + ": enthalpy of water along the " + os.str() + " MPa isobar -- the jump is the latent heat at Tsat\";"
+               " xAxis { label \"temperature, T\"; } yAxis { label \"specific enthalpy, h\"; } }\n";
+    }
+    return {};
 }
 
 } // namespace Choupo

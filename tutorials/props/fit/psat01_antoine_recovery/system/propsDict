@@ -4,6 +4,9 @@
 |     \\\|///  O perations    |  Website:  https://choupo.org                 |
 |        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
 \*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  psat01_antoine_recovery: THE FIGURES (C480).  The fit publishes its points as a table, so the page opens on the data against the fitted Antoine curve, the parity and the residuals, and on A, B, C, R2 and the enthalpy of vaporisation with their units; the coefficients must come back exactly.
+\*---------------------------------------------------------------------------*/
 operations
 (
     {

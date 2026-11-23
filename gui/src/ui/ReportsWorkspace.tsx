@@ -116,6 +116,7 @@ import {
 } from "./panelContract.js";
 import type { UnitSpec } from "../case/types.js";
 import type { EquipmentItem, EquipmentListRow, RunResult } from "../adapters/SolverAdapter.js";
+import { collapseBanks } from "../case/equipmentBanks.js";
 
 export function ReportsWorkspace() {
   const runResult = useStore((s) => s.runResult);
@@ -1111,10 +1112,10 @@ function EquipmentDesign({ items, list, caseName }: {
   //  choice the console table makes, so the two cannot describe a unit
   //  differently.
   const headline = (v: { [k: string]: number }) =>
-    v["V_R"] !== undefined ? { k: "V_R (m³)", v: v["V_R"] }
-    : v["A"] !== undefined ? { k: "A (m²)", v: v["A"] }
-    : v["V_magma"] !== undefined ? { k: "V_magma (m³)", v: v["V_magma"] }
-    : v["W_evap"] !== undefined ? { k: "W_evap (kg/s)", v: v["W_evap"] }
+    v["V_R"] !== undefined ? { u: "m³", what: "vessel / reactor volume V_R", v: v["V_R"] }
+    : v["A"] !== undefined ? { u: "m²", what: "heat-transfer area A", v: v["A"] }
+    : v["V_magma"] !== undefined ? { u: "m³", what: "magma volume V_magma", v: v["V_magma"] }
+    : v["W_evap"] !== undefined ? { u: "kg/s", what: "evaporation rate W_evap", v: v["W_evap"] }
     : undefined;
 
   const eur = (x: number) =>
@@ -1140,8 +1141,8 @@ function EquipmentDesign({ items, list, caseName }: {
           <Table.Th>unit</Table.Th>
           <Table.Th>equipment</Table.Th>
           <Table.Th>material</Table.Th>
-          <Table.Th ta="right">size</Table.Th>
-          <Table.Th ta="right">C_TM ({cur})</Table.Th>
+          <Table.Th ta="right" title="The item's main dimension: volume for a vessel or reactor, area for an exchanger. Hover a size for which one.">size</Table.Th>
+          <Table.Th ta="right" title="Total module cost: the installed capital of the item, its bare-module cost plus contingency and fee (C_TM = 1.18 C_BM, Turton).">capital cost, C_TM ({cur})</Table.Th>
           <Table.Th ta="right">share</Table.Th>
         </Table.Tr></Table.Thead>
         <Table.Tbody>
@@ -1169,7 +1170,7 @@ function EquipmentDesign({ items, list, caseName }: {
                     </Table.Td>
                   </Table.Tr>
                 )}
-                {rows.map((it) => {
+                {collapseBanks(rows).map(({ it, n, tagRange, total }) => {
                   const h = headline(it.values);
                   //  The row shows the LEAF name under its sector heading; the
                   //  full qualified name stays in the title, because that is
@@ -1183,7 +1184,7 @@ function EquipmentDesign({ items, list, caseName }: {
                     <Table.Tr key={it.item}>
                       {/*  THE PLANT TAG, as the engine stamped it: the name
                            this item answers to in every other document. */}
-                      <Table.Td><Text span fw={700} ff="monospace">{it.tagNo ?? "—"}</Text></Table.Td>
+                      <Table.Td><Text span fw={700} ff="monospace">{tagRange ?? it.tagNo ?? "—"}</Text></Table.Td>
                       <Table.Td pl={sector ? "lg" : undefined} title={it.item}>{leaf}</Table.Td>
                       {/*  THE ITEM, where the unit realises several.  Two of a
                            column five items are `shellTubeHX` and two are
@@ -1191,17 +1192,17 @@ function EquipmentDesign({ items, list, caseName }: {
                            condenser and the reboiler indistinguishable.  The
                            kind stays visible because it is what selects the
                            cost correlation. */}
-                      <Table.Td>{it.tag ? `${it.tag} (${it.type})` : it.type}</Table.Td>
+                      <Table.Td>{n > 1 ? `${it.type} \u00d7 ${n} (identical, in parallel)` : it.tag ? `${it.tag} (${it.type})` : it.type}</Table.Td>
                       <Table.Td>{it.material}</Table.Td>
-                      <Table.Td ta="right">
-                        {h ? `${h.v.toPrecision(4)} ${h.k}` : "—"}
+                      <Table.Td ta="right" title={h ? h.what : undefined}>
+                        {h ? `${h.v.toPrecision(4)} ${h.u}${n > 1 ? " each" : ""}` : "—"}
                       </Table.Td>
                       <Table.Td ta="right">
-                        {it.cost ? eur(it.cost.totalModule) : "—"}
+                        {it.cost ? eur(total) : "—"}
                       </Table.Td>
                       <Table.Td ta="right">
                         {it.cost && totalCTM > 0
-                          ? `${(100 * it.cost.totalModule / totalCTM).toFixed(1)} %` : "—"}
+                          ? `${(100 * total / totalCTM).toFixed(1)} %` : "—"}
                       </Table.Td>
                     </Table.Tr>
                   );

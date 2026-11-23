@@ -580,6 +580,34 @@ int VaporPressureFit::run(const DictPtr& dict,
     diag_["n_points"]        = static_cast<scalar>(T.size());
     diag_["dHvap_kJ_per_mol"] = dHvap / 1000.0;
 
+    //  THE FIT AS A PUBLISHED TABLE (C480): one row per datum -- measured
+    //  Psat, the fitted Antoine curve at the same T, and the relative residual
+    //  -- under the very column names the generic fit views read
+    //  (genericDefaultViews: parity and residuals), plus the fitted rows first
+    //  and, when evidence was held out, the held-out rows after them marked by
+    //  a `heldOut` column (their model value is the PREDICTION).
+    {
+        const bool heldOutRows = part.engaged() && !Tv.empty();
+        tab_ = PublishedTable();
+        tab_.name = "fitPoints";
+        tab_.description = "one row per datum: the measured vapour pressure and the fitted Antoine curve at the same T";
+        tab_.columns = { { "point", "-" }, { "T_K", "K" }, { "measured", "Pa" }, { "model", "Pa" }, { "residual", "-" } };
+        if (heldOutRows) tab_.columns.push_back({ "heldOut", "-" });
+        scalar k = 0;
+        auto addRow = [&](scalar Tk, scalar yk, scalar held)
+        {
+            const scalar meas  = std::pow(10.0, yk) * units::bar_to_Pa;
+            const scalar model = std::pow(10.0, A - B / (Tk + C)) * units::bar_to_Pa;
+            std::vector<scalar> row{ ++k, Tk, meas, model, (model - meas) / meas };
+            if (heldOutRows) row.push_back(held);
+            tab_.rows.push_back(std::move(row));
+        };
+        for (const std::size_t i : order) addRow(T[i], y[i], 0.0);
+        if (heldOutRows)
+            for (std::size_t i = 0; i < Tv.size(); ++i) addRow(Tv[i], yv[i], 1.0);
+        comp_ = comp;
+    }
+
     if (verbosity >= 2)
         std::cout << "  VaporPressureFit (" << comp << ", " << T.size() << " pts):\n"
                   << "    Antoine  log10(Psat[bar]) = " << A << " - " << B
@@ -596,6 +624,44 @@ int VaporPressureFit::run(const DictPtr& dict,
                   << "    Clausius-Clapeyron dHvap(" << Tmax << " K) = "
                   << dHvap / 1000.0 << " kJ/mol\n";
     return 0;
+}
+
+std::string VaporPressureFit::defaultViews(const std::string& op) const
+{
+    if (tab_.rows.empty()) return {};
+    const bool held = tab_.columnIndex("heldOut") >= 0;
+    std::string ser = " { name data; label \"measured\"; op " + op + "; table fitPoints; "
+                      + std::string(held ? "select { heldOut 0; } " : "") + "x T_K; y measured; style markers; }";
+    if (held)
+        ser += " { name heldOutData; label \"measured, held out\"; op " + op + "; table fitPoints; select { heldOut 1; } x T_K; y measured; style markers; }";
+    ser += " { name fit; label \"fitted Antoine curve\"; op " + op + "; table fitPoints; "
+           + std::string(held ? "select { heldOut 0; } " : "") + "x T_K; y model; style lines; }";
+    std::string out = "{ name curve; type series; title \"" + op + ": vapour pressure of " + comp_
+                    + " -- the data and the fitted Antoine curve\"; xAxis { label \"temperature, T\"; }"
+                      " yAxis { label \"vapour pressure, Psat\"; scale log; } series (" + ser + " ); }\n";
+    //  the three Antoine constants and the quality of the fit, in their own units
+    out += "{ name parameters; type table; title \"" + op + ": the fitted Antoine constants log10(Psat/bar) = A - B/(T/K + C), and the fit's quality\";"
+           " columns ( { name value; label \"value\"; } );"
+           " rows ( { name A; label \"A (log10 of Psat in bar)\"; op " + op + "; cells { value A; } }"
+           " { name B; label \"B\"; op " + op + "; cells { value B; } }"
+           " { name C; label \"C\"; op " + op + "; cells { value C; } }"
+           " { name R2; label \"R2 of log10 Psat\"; op " + op + "; cells { value R2; } }"
+           " { name dH; label \"enthalpy of vaporisation at the highest T (Clausius-Clapeyron)\"; op " + op + "; cells { value dHvap_kJ_per_mol; } } ); }\n";
+    return out;
+}
+
+std::string VaporPressureFit::diagnosticUnit(const std::string& key) const
+{
+    const HeldOutStatistic s = HeldOutStatistic::relativeAAD();
+    if (key == s.key) return s.unit;
+    if (key == "A" || key == "R2" || key == "n_points" || key == "n_heldout"
+        || key == "n_outliers_dropped" || key == "n_window_left_out" || key == "rms_heldout_log10P")
+        return "-";
+    if (key == "B" || key == "C") return "K";
+    if (key == "dHvap_kJ_per_mol") return "kJ/mol";
+    if (key.compare(0, 6, "relErr") == 0 && key.size() > 4 && key.compare(key.size() - 4, 4, "_pct") == 0) return "%";
+    if (key.compare(0, 6, "relErr") == 0 && key.find("_pct_") != std::string::npos) return "%";
+    return {};
 }
 
 } // namespace Choupo

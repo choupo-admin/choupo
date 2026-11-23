@@ -2188,7 +2188,7 @@ each channel node):
   difference across the membrane (permeate against the feed-side solution
   at the wall, both Donnan jumps included).  It publishes two named TABLES
   a view draws (`points`: one row per J_v; `pore`: the solved profile), and
-  its default views (rejection against J_v; the pore, where it writes one).  The NanoFiltran paper is ONE case,
+  its default views (rejection against J_v; the pore, where it writes one).  THE BENCH'S OTHER OPERATIONS DRAW THEMSELVES TOO (C480): `steamTables` (saturation and isobar tables; its diagnostics speak the release's table units), `psychrometricChart` (table `chart`: T_C, Y, `family`, `param`), `propertyScanBinary` (tables `gmix` and `binodal`: the LLE map with its common tangent), `propertyScan1D` (a T-x-y diagram where the scan holds `T_bubble`, `y_eq_<c>` and `x_<c>`, else one figure per unit), `vaporPressureFit` (table `fitPoints`: data, fitted Antoine curve, parity, residuals, A, B, C), `phaseEnvelope`, `purePhaseDiagram`, `pitzerActivity`, `gibbsMap` (up to six pressures) and `scalingScan` each publish the rows of their CSV as a named table and write default views over it, so a case declares nothing and the Studies page still opens on a figure; a case adds its own `references`, `studies` and `views` beside them (steam01 sets the IAPWS verification tables beside Choupo's).  The NanoFiltran paper is ONE case,
   `nanofiltran_geraldesAlves2008`: part A code to code, part B Bowen &
   Mohammad's measured CA30 rejections (a comparison with EXPERIMENT, several
   inputs being fits to those data), part C its Table 2 (which carries
@@ -3468,6 +3468,34 @@ only its net).  Refused by name: an element in no species, an entry with `nu = 0
 species with no elemental composition, a step that does not conserve the element.
 Identity held by the gate: atoms in minus atoms out of species i = a_ei * net_i.
 Theory Guide `sec:path-flux`.
+
+**`tauIgnition` (KPI, C477, Theory Guide `sec:ignition-delay-dense`).**  An adiabatic
+`batchReactor` whose T rose by more than 200 K publishes `tauIgnition` [s], the time
+of the steepest rise of T, evaluated on the integrator's dense output (step ends and
+8 samples per accepted step), not on the write grid; the run prints it and says so.
+Published only on the free-stepping adaptive path (nox03); the fixed-step and
+write-grid-bounded runs keep the printed write-grid value and publish nothing.  A
+view marks it with `markers ( { label "ignition delay"; unitOp vessel; key tauIgnition; } )`.
+Not the `sens_tau0` of `sensitivity` (time T first exceeds T0 + rise).
+
+**`routeIntegral` (batchReactor, C477, Theory Guide `sec:route-integrals`).**  Where a
+product comes from, by DECLARED sets of reactions:
+```
+routeIntegral
+{
+    species NO;
+    routes { thermal ( A232 A233 A234 ); nitrousOxide ( A197 A202 A207 ); }
+}
+```
+Per route the net production of the species, `integral nu_s r_j V dt` summed over the
+listed reactions (net: what they destroy counts), by Simpson on the dense output; the
+reactions in no route are `other`.  Trajectory columns `<unit>.cum<species>_<route>`,
+`..._other`, `..._total` [kmol] (a view column `cumNO_thermal`), KPIs `cum..._final` and
+`cum<species>_closure_kmol` (routes against the inventory's own change).  A route is a
+reaction class, not a traced atom path.  Refused by name: an unknown key, a label that is
+no reaction of the vessel or has none of the species, a reaction in two routes, `other`/`total`
+as a route name, a fixed-step, write-grid-bounded or per-vessel (two or more vessels) run.
+Witness `nox03_millerbowman_large`.
 
 **Ignition-delay sensitivity (opt-in, brute force, `sensitivity { }`).**  Which
 reaction governs an ignition?  A block on an adiabatic `batchReactor` with a

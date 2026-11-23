@@ -5385,6 +5385,16 @@ accepts today, and that is a policy call.
 > them: K_a is Izquierdo 1992, the isobutene datum Prosen 1951), labelled as such on screen, the
 > simulator unnamed.
 
+> **C479 POINTS 1-3 LANDED (2026-11-23, a3c0f4f19a; integrate: scope 15 cases 0 FAIL, --fast
+> 89/0, --gui 48 + typecheck after the merge of main).**  The exchanger prints U.A.LMTD from the outlet
+> temperatures with its difference from Q and why (eps-NTU on mean C, outlets from the enthalpy);
+> the plant's variables declare SI expressions and display units (`t/day`, `kg/t` added to Units.cpp
+> and its GUI mirror, purely additive: no existing unit parses differently, so no sweep); the
+> equipment table collapses identical parallel vessels into one row (presentation only, every vessel
+> still sized, tagged and costed) and explains its headers.  Found at integration: the general's
+> header fix had swallowed the import of equipmentBanks.ts into the comment (typecheck red, vitest
+> green because esbuild strips types); fixed.  Open: point 4 and the advisories.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,

@@ -45,6 +45,7 @@ import { Badge, Box, Code, Group, ScrollArea, Stack, Table, Text, Tooltip } from
 import { useStore } from "../state/store.js";
 import { buildVariableRows, buildSpecTargets, type SpecTarget, type VarRole, type VarRow } from "../case/variables.js";
 import { formatSig } from "../state/displayUnits.js";
+import { lookupUnit } from "../dict/units.js";
 
 // One DesignSpec target: "↳ drives PreheatMeoh.T_out → 450 (±0.05)  ·  got 450.00 ✓"
 function TargetLine({ t }: { t: SpecTarget }) {
@@ -107,6 +108,16 @@ export function variableUnit(r: Pick<VarRow, "unit" | "declared">): string | und
   if (r.unit) return r.unit;
   const m = /^\s*[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?\s+([^\s;]+)\s*$/.exec(r.declared ?? "");
   return m ? m[1] : undefined;
+}
+
+/** The number the Solved column shows.  The engine stores a computed entry in SI
+ *  and shows it in its declared `unit` (units::fromSI); the tab does the same,
+ *  so the number and the unit beside it agree.  Affine or unknown units, and
+ *  every non-computed row, show the stored value untouched. */
+export function solvedDisplay(r: Pick<VarRow, "role" | "unit" | "solved">): number | undefined {
+  if (r.solved === undefined || r.role !== "computed" || !r.unit) return r.solved;
+  const u = lookupUnit(r.unit);
+  return u && !u.affine && u.factor ? r.solved / u.factor : r.solved;
 }
 
 export function VariablesWorkspace() {
@@ -187,7 +198,7 @@ export function VariablesWorkspace() {
                   <Table.Td>
                     {r.solved !== undefined ? (
                       <Text ff="monospace" fw={600} c="teal.4">
-                        {formatSig(r.solved)}
+                        {formatSig(solvedDisplay(r) as number)}
                       </Text>
                     ) : (
                       <Text ff="monospace" c="dimmed">—</Text>

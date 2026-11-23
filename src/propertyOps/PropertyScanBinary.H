@@ -53,6 +53,7 @@ Class
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -72,7 +73,25 @@ public:
         return diag_;
     }
 
+    //  THE LLE MAP AS TABLES AND A FIGURE (C480).  Before, the map existed only
+    //  as the CSV it wrote.  Two tables, the very rows of that CSV:
+    //  `gmix` (x1 [-], gmix [J/mol]: the swept curve) and `binodal` (x1, gmix,
+    //  beta: the two coexisting liquids -- empty when the model predicts
+    //  miscibility).  The default view draws the curve, the two binodal points
+    //  and the common tangent through them (a line of the two points).
+    std::vector<PublishedTable> publishedTables() const override { return tables_; }
+    std::string diagnosticUnit(const std::string& key) const override
+    {
+        if (key == "T") return "K";
+        if (key == "split") return "-";
+        return {};
+    }
+    std::string defaultViews(const std::string& opName) const override;
+
 private:
+    std::vector<PublishedTable> tables_;
+    bool        split_ = false;
+    std::string comp1_;
     inline static const std::string type_ = "propertyScanBinary";
     std::map<std::string, scalar>   diag_;
 };

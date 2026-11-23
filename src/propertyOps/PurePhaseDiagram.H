@@ -72,6 +72,7 @@ Description
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -88,9 +89,17 @@ public:
 
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
 
+    //  THE DIAGRAM AS A TABLE AND A FIGURE (C480): `diagram`, T [K], P [bar]
+    //  and the curve (family 0 saturation, 1 critical point, 2 sublimation,
+    //  3 triple point, 4 fusion) -- the rows the CSV holds (in Pa).
+    std::vector<PublishedTable> publishedTables() const override { return tables_; }
+    std::string defaultViews(const std::string& opName) const override;
+
 private:
     inline static const std::string type_ = "purePhaseDiagram";
     std::map<std::string, scalar>   diag_;
+    std::vector<PublishedTable>     tables_;
+    std::string                     comp_;
 };
 
 } // namespace Choupo

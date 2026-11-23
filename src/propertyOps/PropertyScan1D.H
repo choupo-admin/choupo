@@ -110,6 +110,11 @@ public:
         return tables_;
     }
 
+    //  THE SCAN'S OWN FIGURES (C480): the table `scan` drawn against its swept
+    //  variable, one figure per unit (an axis holds ONE unit), and a T-x-y
+    //  diagram where the scan holds T_bubble, y_eq_<c> and x_<c> together.
+    std::string defaultViews(const std::string& opName) const override;
+
 private:
     std::vector<PublishedTable> tables_;
     inline static const std::string type_ = "propertyScan1D";

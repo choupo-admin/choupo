@@ -6,6 +6,9 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  binary01_lle_water_nbutanol: THE FIGURE (C480).  The g_mix curve, the two coexisting liquids found by the liquid-liquid flash and the common tangent through them are one figure on the Studies page: the two-liquid split is read from the picture, not from a drawn dome.
+\*---------------------------------------------------------------------------*/
 operations
 (
     {
