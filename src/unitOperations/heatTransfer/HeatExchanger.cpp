@@ -1216,32 +1216,41 @@ int HeatExchanger::solve(const DictPtr& dict,
     for (const auto& kv : geomKpis) kpis_[kv.first] = kv.second;
 
     // ---- Profile: T_hot and T_cold along the area ----------------------
-    //  Integrate the two stream balances along the area (RK4).  Counter-
-    //  current: known T_hot,in and (from eps-NTU) T_cold,out at the same
-    //  end, so it integrates as an initial-value problem.  Shows the two
-    //  temperature curves approaching --- the pinch.
+    //  The exact solution of the two stream balances at constant heat
+    //  capacities, ANCHORED to the four end temperatures this unit published
+    //  (DEV.md 4c C478).  With dTh/dx and dTc/dx both proportional to the
+    //  local difference D = Th - Tc, D is exponential in x and each stream
+    //  moves by the same fraction F(x) of its own total change:
+    //      F(x) = (1 - r^x) / (1 - r),   r = D(1) / D(0)   (F = x when r = 1)
+    //  Counter-current: x = 0 is the hot inlet, where the cold stream leaves.
+    //  Co-current: both enter at x = 0.  Before C478 the profile was marched
+    //  from x = 0 as an initial-value problem (RK4 on U A, C_hot, C_cold):
+    //  the counter-current march is the unstable direction of a two-point
+    //  problem, and on the reference plant's FEHE it ran 60-75 K past the
+    //  exchanger ends (cold side to 216 K against a 276 K inlet).  Anchored,
+    //  the curves meet the stream table at both ends by construction, and the
+    //  shape between them is the constant-C one the eps-NTU split assumes.
     const int    M  = 21;
     const scalar dx = 1.0 / (M - 1);
-    auto dGas = [&](scalar Th, scalar Tc, scalar& dTh, scalar& dTc)
+    const scalar D0 = counter ? (Th_in - Tc_out) : (Th_in - Tc_in);
+    const scalar D1 = counter ? (Th_out - Tc_in) : (Th_out - Tc_out);
+    const bool   expShape = D0 > 0.0 && D1 > 0.0
+                            && std::abs(D1 / D0 - 1.0) > 1.0e-9;
+    const scalar r = expShape ? D1 / D0 : 1.0;
+    auto F = [&](scalar x)
     {
-        const scalar q = U * A * (Th - Tc);    // local W per unit-x slope
-        dTh = -q / Ch;                         // hot cools along +x
-        dTc = counter ? (-q / Cc) : (+q / Cc); // counter: cold also "down"
+        return expShape ? (1.0 - std::pow(r, x)) / (1.0 - r) : x;
     };
     UnitProfile prof;
     prof.xAxis = "position";
     std::vector<scalar> xs(M), Thp(M), Tcp(M);
-    scalar Th = Th_in, Tc = (counter ? Tc_out : Tc_in);
     for (int k = 0; k < M; ++k)
     {
-        xs[k] = k * dx; Thp[k] = Th; Tcp[k] = Tc;
-        scalar k1h, k1c, k2h, k2c, k3h, k3c, k4h, k4c;
-        dGas(Th, Tc, k1h, k1c);
-        dGas(Th + 0.5*dx*k1h, Tc + 0.5*dx*k1c, k2h, k2c);
-        dGas(Th + 0.5*dx*k2h, Tc + 0.5*dx*k2c, k3h, k3c);
-        dGas(Th + dx*k3h,     Tc + dx*k3c,     k4h, k4c);
-        Th += (dx/6.0)*(k1h + 2*k2h + 2*k3h + k4h);
-        Tc += (dx/6.0)*(k1c + 2*k2c + 2*k3c + k4c);
+        const scalar x = k * dx, f = F(x);
+        xs[k]  = x;
+        Thp[k] = Th_in - (Th_in - Th_out) * f;
+        Tcp[k] = counter ? Tc_out - (Tc_out - Tc_in) * f
+                         : Tc_in  + (Tc_out - Tc_in) * f;
     }
     prof.columns["position"] = xs;
     prof.columns["T_hot"]    = Thp;
