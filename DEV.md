@@ -5325,6 +5325,21 @@ accepts today, and that is a policy call.
 > anchors; only a comment); ten identical H2Buffer vessels V-105A..J carry 55 % of capital under raw
 > names; 107 advisories sit under the run header; the plant's `variables` publish no `unit`.
 
+
+> **THE 11-23 STACK LANDED (5f80eadb2a).**  The cloud's READY blocks to e8b3882973 squashed as one
+> commit (second batch: start-up, per-vessel stepping on threads, the integrators' own dense output;
+> the stiff-chemistry and methane-assembly lessons; C22; C266 parts 1-2), with C468 and the C477 GUI
+> groundwork.  FULL SWEEP, alone, written reason in the script (the start-up slice changes how every
+> case dictionary is parsed; dense output and per-vessel stepping change every batch case's output
+> path): 2027 PASS, 5 FAIL, 1 KNOWN-BROKEN (edwards02), 13 EXPECTED-FAIL, 296 REUSED; NO CASE failed,
+> every closure held (mass, elements, energy, time-integrated).  The five were gates, all from the
+> combination: lesson citations moved by C468's lines (repoint plus two by hand, Rosenbrock23 luSolve
+> and process-safety's adiabatic key, the second found by the re-run), two C477 files without the
+> header, the methane lesson read as a generated file, the origin census recounted with the cloud's
+> kinetics records, and C468's concentration floor divided by a floored volume (now V > 0 ? ... : 0).
+> Re-run on what the fixes reach: build, the four gates, --scope tutorials/batch 86/0, --gui 48/1
+> then the one test 78/78.  DONE: C22, C266, C468, C476, C458.  C473 stays PARTIAL on the wish list:
+> nox02 runs at about 1.2x Cantera (from 17x); passing it needs the right-hand side threaded.
 > **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
 > mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
 > into the cloud branch, one full sweep ALONE (reason: the gas-only rule changes the
