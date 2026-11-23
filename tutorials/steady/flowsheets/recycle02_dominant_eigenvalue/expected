@@ -52,7 +52,7 @@ kpi     reactor                minus_r_neoPentane 67.1196424748    1e-4
 boundary global                 H_feeds_kW       -51.7385283336   1e-4
 boundary global                 Q_boundary_kW    6.71724828836    1e-4
 boundary global                 H_products_kW    -45.0212800243   1e-4
-boundary global                 residual_kW      -2.09075423641e-08 abs:0.00019
+boundary global                 residual_kW      -2.09075423641e-08 abs:0.0001837
 utility reactor                heating.steamLP.duty_kW 4.52297597005    1e-4
 utility reactor                heating.steamLP.T 325.407080486    1e-4
 utility reactor                heating.steamLP.kg_s 0.00206906494513 1e-4
