@@ -35,6 +35,9 @@ import {
 const SRC = readFileSync(
   new URL("../src/ui/methods/FourWaysMixtureTool.tsx", import.meta.url),
   "utf-8");
+const LESSON = readFileSync(
+  new URL("../src/ui/methods/fourWaysMixtureLesson.ts", import.meta.url),
+  "utf-8");
 const prose = (src: string): string => src.replace(/\s+/g, " ");
 const golden = (text: string, key: RegExp): number => {
   const m = text.match(key);
@@ -143,8 +146,9 @@ describe("the honest absences", () => {
   it("PC-SAFT and COSMO-SAC are deliberately not AAD rows", () => {
     expect(AAD_MODELS.map((m) => m.op)).toEqual(
       ["txy_ideal", "txy_wilson", "txy_nrtl", "txy_unifac"]);
-    expect(prose(SRC)).toContain("deliberately not rows");
-    expect(prose(SRC)).toContain("A missing row is honest");
+    //  The sentence moved with step 3 to the lesson module (C158).
+    expect(prose(LESSON)).toContain("deliberately not rows");
+    expect(prose(LESSON)).toContain("A row left out is honest");
   });
 
   it("no page arithmetic on the score — the engine's validation block", () => {

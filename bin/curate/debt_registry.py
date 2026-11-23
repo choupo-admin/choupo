@@ -1186,7 +1186,7 @@ LESSON_ABSENCE_UNCLASSIFIED = {
     "gui/src/ui/methods/FlashOperatingLineTool.tsx": 7,
     "gui/src/ui/methods/FluidisationLabTab.tsx": 11,
     "gui/src/ui/methods/FluidisedBedsTool.tsx": 16,
-    "gui/src/ui/methods/FourWaysMixtureTool.tsx": 3,
+    "gui/src/ui/methods/FourWaysMixtureTool.tsx": 2,
     "gui/src/ui/methods/FugShortcutTool.tsx": 6,
     "gui/src/ui/methods/GmpLayoutTool.tsx": 3,
     "gui/src/ui/methods/KremserTool.tsx": 1,
