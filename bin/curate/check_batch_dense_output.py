@@ -94,6 +94,34 @@ MILD_BOUND = 1.0e-4     # arm (i): batch06 under seulex at rtol 1e-4 (measured 1
 WI = 0.5     # the write interval of the probe: 1201 write points over the case's 600 s
 
 
+
+def calibrated_nox03(c):
+    """C477 gave nox03 a log write grid and a `routeIntegral` block; this gate's bounds were
+    measured on its earlier shape (a uniform 1 ms grid, no routes), so the probe copy is put
+    back in that shape: the routes' tiny cumulative columns are quadrature-level numbers that
+    would be judged as state, and the log grid moves the rows the bounds were set on."""
+    (Path(c) / "system/postDict").unlink(missing_ok=True)   # its log-axis figures refuse t = 0
+    fd = Path(c) / "system/flowsheetDict"
+    t = fd.read_text()
+    m = re.search(r"\n[ \t]*routeIntegral\s*\{", t)
+    if m:
+        i = t.index("{", m.start()); d = 0
+        for k in range(i, len(t)):
+            if t[k] == "{": d += 1
+            elif t[k] == "}":
+                d -= 1
+                if d == 0:
+                    t = t[:m.start()] + t[k + 1:]
+                    break
+        fd.write_text(t)
+    cd = Path(c) / "system/controlDict"
+    s = cd.read_text()
+    if re.search(r"^writeSpacing\s+log;", s, flags=re.M):
+        s = re.sub(r"^writeSpacing[^\n]*\n", "writeInterval   1.0e-3;\n", s, flags=re.M)
+        s = re.sub(r"^writeStart[^\n]*\n", "", s, flags=re.M)
+        s = re.sub(r"^writePerDecade[^\n]*\n", "", s, flags=re.M)
+        cd.write_text(s)
+
 def run_variant(batch, deltaTmax, solution=""):
     """Run the case on the 0.5 s write grid with deltaTmax declared (or deleted: None); (rc, out, rows, ndirs)."""
     with gatekit.probe_copy(CASE, strip=STRIP) as c:
@@ -266,6 +294,7 @@ def main():
     def nox(integ, rtol, atol, solver_extra=""):
         with gatekit.probe_copy("tutorials/batch/combustion/nox03_millerbowman_large", strip=STRIP) as c:
             clean(c)
+            calibrated_nox03(c)
             fd = Path(c) / "system/flowsheetDict"
             fd.write_text(re.sub(r"integrator\s+\w+;", f"integrator {integ}; {solver_extra}", fd.read_text()))
             cd = Path(c) / "system/controlDict"
