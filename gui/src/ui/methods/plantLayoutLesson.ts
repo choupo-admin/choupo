@@ -547,7 +547,7 @@ export const PLANT_LAYOUT_LIMITS: readonly LessonLimit[] = [
 export const PLANT_LAYOUT_QUIZ: readonly QuizQuestion[] = [
   {
     id: "measure-word", steps: [3, 8],
-    q: "A separation table says 4 m between two vessels and does not say how it is measured.  Why does Choupo refuse it?",
+    q: "A separation table says 4 m between two vessels and does not say how it is measured.  Why must the case say which it is?",
     options: [
       "Because 4 m is too short for any two vessels",
       "Because centre-to-centre and edge-to-edge distances differ, by the sum of the radii, and the word that says which is part of the rule",
@@ -567,7 +567,7 @@ export const PLANT_LAYOUT_QUIZ: readonly QuizQuestion[] = [
       "Because each item must be placed at the same distance",
     ],
     correct: 2,
-    feedback: "Every distance is the case's declaration and carries a source and a reason, without which the engine refuses to run.  A student must be able to say which table, which edition and why it applies to this plant (step 5).",
+    feedback: "Every distance is the case's declaration and carries a source and a reason, and the engine stops until it has them.  A student must be able to say which table, which edition and why it applies to this plant (step 5).",
   },
   {
     id: "wind", steps: [9],
@@ -585,12 +585,12 @@ export const PLANT_LAYOUT_QUIZ: readonly QuizQuestion[] = [
     id: "short-distance", steps: [7],
     q: "An item is placed closer to its neighbour than the separation the case declares, but the two footprints do not touch.  What does the engine do?",
     options: [
-      "It stops with an error and refuses the layout",
+      "It stops with an error and rejects the layout",
       "It silently accepts the layout",
       "It moves the item east until the distance is met",
-      "It announces the shortfall with both distances and carries on; only a true overlap is refused",
+      "It announces the shortfall with both distances and carries on; only a true overlap stops the run",
     ],
     correct: 3,
-    feedback: "A short distance is still a draft whose shortfall you must see and then fix or defend, so the engine announces it.  Two footprints that collide in plan and height are not a layout, and that is refused (step 7).",
+    feedback: "A short distance is still a draft whose shortfall you must see and then fix or defend, so the engine announces it.  Two footprints that collide in plan and height are not a layout, and that stops the run (step 7).",
   },
 ];

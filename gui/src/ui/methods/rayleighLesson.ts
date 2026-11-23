@@ -161,7 +161,7 @@ export const RAYLEIGH_QUIZ: readonly QuizQuestion[] = [
     id: "history", steps: [1],
     q: "Why is the answer of a batch still a history rather than a state?",
     options: [
-      "Because the still has no pressure",
+      "Because the still is always at atmospheric pressure",
       "Because the liquid left behind gets heavier as the light component "
         + "leaves, so the composition being separated changes while you "
         + "separate it",
@@ -169,7 +169,7 @@ export const RAYLEIGH_QUIZ: readonly QuizQuestion[] = [
       "Because the feed rate drifts during the run",
     ],
     correct: 1,
-    feedback: "A batch still has no feed: you charge the pot and boil off "
+    feedback: "A batch still takes no feed once it runs: you charge the pot and boil off "
       + "the vapour, so the pot is consumed as it is used (step 1).  What "
       + "you read at the end is the path of the pot, not a fixed "
       + "operating point.",

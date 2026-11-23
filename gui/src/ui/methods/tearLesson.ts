@@ -332,7 +332,7 @@ export const TEAR_QUIZ: readonly QuizQuestion[] = [
     correct: 2,
     feedback: "Step 3: an edge needs a cut only if it arrives at a unit that "
       + "has already run, that is if it points backwards in the order.  A "
-      + "forward edge needs no cut and Choupo refuses it as a tear.",
+      + "forward edge is already in order and cannot be declared a tear.",
   },
   {
     id: "backward-not-recycle", steps: [4],
@@ -348,7 +348,7 @@ export const TEAR_QUIZ: readonly QuizQuestion[] = [
     correct: 1,
     feedback: "Step 4: with no loop behind it the edge is a declaration-order "
       + "mistake, not a recycle.  A tear would hide the mistake with an "
-      + "artificial iteration, so Choupo refuses it as INVALID ORDER and "
+      + "artificial iteration, so Choupo reports it as INVALID ORDER and "
       + "prints a valid order instead.",
   },
   {

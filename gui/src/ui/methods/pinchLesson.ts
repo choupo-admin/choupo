@@ -528,12 +528,12 @@ export const PINCH_QUIZ: readonly QuizQuestion[] = [
     q: "After sliding the cold composite until the curves are nowhere closer than the minimum approach, what do the two overhangs represent?",
     options: [
       "Heat that must be lost to the environment in both cases",
-      "The streams that have no matching partner",
+      "The streams whose heat finds no partner stream to exchange with",
       "The cold overhang at the hot end needs hot utility, and the hot overhang at the cold end needs cold utility",
       "The area still to be installed above and below the pinch",
     ],
     correct: 2,
-    feedback: "The overlap is heat recovered process to process.  What sticks out has no process partner at that temperature, so the overhangs are the minimum hot and cold utility targets (step 3).",
+    feedback: "The overlap is heat recovered process to process.  What sticks out finds no process partner at that temperature, so the overhangs are the minimum hot and cold utility targets (step 3).",
   },
   {
     id: "dtmin", steps: [4],

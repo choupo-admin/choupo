@@ -354,13 +354,13 @@ export const RUN_LOG_QUIZ: readonly QuizQuestion[] = [
     options: [
       "Discard them, since an advisory means the run failed",
       "Use them without reading the advisory, because exit code 0 means an answer",
-      "Treat the advisory as a refusal and fix the case",
+      "Treat the advisory as an error and fix the case first",
       "Read the advisory against your question: the run answered, and the caveat says how far to trust the number",
     ],
     correct: 3,
     feedback: "An advisory qualifies an answer that exists; it is put on "
       + "the advisory log and reappears in the caveats block at the end "
-      + "(steps 6 and 7).  A refusal is the case that prints ERROR and "
+      + "(steps 6 and 7).  A failed case is the one that prints ERROR and "
       + "exits 2, and exit 1 means no convergence.",
   },
 ];

@@ -377,7 +377,7 @@ export const RELAXATION_QUIZ: readonly QuizQuestion[] = [
     correct: 2,
     feedback: "Relaxation pulls the effective slope toward 1, so it can "
       + "rescue a gain below -1 (an overshooting loop) but never a gain "
-      + "above 1: that loop has no stable fixed point by substitution "
+      + "above 1: substitution cannot settle that loop at all "
       + "(steps 2 and 3).",
   },
   {
@@ -400,7 +400,7 @@ export const RELAXATION_QUIZ: readonly QuizQuestion[] = [
     q: "Why is a fixed damping factor a poor default for a unit solved by "
       + "Newton, while a CFD pressure-velocity sweep needs one?",
     options: [
-      "Newton uses the whole slope and a line search shortens only the steps that need it; a segregated sweep has no such adaptive damping",
+      "Newton uses the whole slope and a line search shortens only the steps that need it; a segregated sweep keeps the single factor it was given",
       "Newton never overshoots, so damping would never be needed",
       "A CFD code is nonlinear and a flowsheet unit is linear",
       "A fixed factor makes Newton diverge on every problem",

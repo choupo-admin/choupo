@@ -366,7 +366,7 @@ export const SALT_MIXING_QUIZ: readonly QuizQuestion[] = [
     options: [
       "The two parameters enter the residual linearly, but their columns are nearly proportional, so they are strongly correlated",
       "The parameters enter through an exponential, so a logarithm linearises them",
-      "The fit is linear because the measurement has no error",
+      "The fit is linear because the measurement is exact",
       "The weakness is that the fit needs the eutonic point to be measured",
     ],
     correct: 0,

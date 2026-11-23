@@ -517,7 +517,7 @@ export const OFMU_QUIZ: readonly QuizQuestion[] = [
   },
   {
     id: "henry-type", steps: [3],
-    q: "A source quotes 'a large Henry's law constant' for a gas without saying more.  What is missing for the statement to mean anything?",
+    q: "A source quotes 'a large Henry's law constant' for a gas without saying more.  What must be stated for the statement to mean anything?",
     options: [
       "Only the temperature",
       "Whether it is a solubility (aqueous over gas) or a volatility (gas over aqueous), and in which composition variables",

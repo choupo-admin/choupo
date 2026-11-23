@@ -423,7 +423,7 @@ export const MERKEL_QUIZ: readonly QuizQuestion[] = [
       "Yes: the height is the Merkel number times the water flow",
       "Yes: K, a and V are each reported separately, so the volume follows",
       "No: it depends only on the dry-bulb temperature of the air",
-      "No: K, a and V appear only as one group, so a height needs a packing model that this engine does not have",
+      "No: K, a and V appear only as one group, so a height needs the Ka of an actual packing, which the Merkel number does not contain",
     ],
     correct: 3,
     feedback: "The Merkel number is the demand a duty places on a tower, from the integral of dT/(h* - h).  Because K, a and V never appear apart, turning it into a fill height needs a Ka for the actual packing (step 4).",

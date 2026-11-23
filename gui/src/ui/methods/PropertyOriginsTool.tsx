@@ -211,13 +211,13 @@ export const ORIGINS_QUIZ: readonly QuizQuestion[] = [
   },
   {
     id: "curation-time", steps: [2, 3],
-    q: "When does the engine estimate a missing property, and what happens "
+    q: "When does an estimate of a property enter the data, and what happens "
       + "to the estimate?",
     options: [
-      "At run time, silently, whenever a value is missing",
+      "At run time, silently, whenever a value cannot be read",
       "At curation time: it is written as a reviewable proposal, and only "
         + "a person promotes it into the catalogue",
-      "Never: a missing value is always replaced by the ideal-gas default",
+      "Never: the ideal-gas default stands in for every unsourced value",
     ],
     correct: 1,
     feedback: "Estimation is a curation-time act, never a runtime one: the "
@@ -233,7 +233,7 @@ export const ORIGINS_QUIZ: readonly QuizQuestion[] = [
       "Because the consumer decides the field's units",
       "Because what consumes a number is what breaks when the number is "
         + "wrong",
-      "Because the fields have no other documentation",
+      "Because the fields are documented nowhere else in the engine",
     ],
     correct: 1,
     feedback: "A table of fields cannot say which calculation stands on "

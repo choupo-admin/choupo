@@ -355,13 +355,13 @@ export const SOLVENT_QUIZ: readonly QuizQuestion[] = [
   {
     id: "mixture-rule", steps: [5, 7],
     q: "The mixture rule puts the middle of a hexane-nitromethane line "
-      + "inside a polymer's sphere, yet the engine refuses those blend "
+      + "inside a polymer's sphere, yet the engine draws no Ra for those blend "
       + "points.  Why?",
     options: [
       "Because both pure solvents are inside the sphere",
       "The rule describes one liquid, and the tangent-plane test finds the pair splits into two, so the averaged solvent does not exist",
       "Because the engine never computes a distance for a blend",
-      "Because nitromethane has no Hansen record",
+      "Because nitromethane carries no Hansen parameters of its own",
     ],
     correct: 1,
     feedback: "The averaged triple describes a single homogeneous liquid; "

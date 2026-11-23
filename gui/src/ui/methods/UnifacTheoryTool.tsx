@@ -196,20 +196,20 @@ export const UNIFAC_QUIZ: readonly QuizQuestion[] = [
       + "census makes the pure limit exact by construction.",
   },
   {
-    id: "missing-pair", steps: [3, 4],
-    q: "A group pair is missing from the published table and the engine "
+    id: "unpublished-pair", steps: [3, 4],
+    q: "A group pair is absent from the published table and the engine "
       + "takes its interaction as 0.  What does that do to the model?",
     options: [
       "The whole mixture becomes ideal",
       "That one group pair becomes athermal (Psi = 1) while the "
         + "combinatorial term and the other group pairs stay",
-      "The calculation is refused and the run stops",
+      "The calculation stops with an error at the first such pair",
       "The pair is replaced by the nearest published pair automatically",
     ],
     correct: 1,
     feedback: "Steps 3 and 4: a = 0 gives Psi = 1 for that pair only.  "
       + "The engine runs and lists every gap by name at construction, "
-      + "because refusing would make hundreds of usable systems unusable.",
+      + "so that hundreds of usable systems keep running.",
   },
 ];
 

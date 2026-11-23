@@ -886,7 +886,7 @@ export const SINES_QUIZ: readonly QuizQuestion[] = [
     ],
     correct: 0,
     feedback: "A regional index blends producers other than Sines and was "
-      + "not available at the decision, so it can be set beside a "
+      + "published after the decision, so it can be set beside a "
       + "break-even but is not the plant's realised margin (step 7).  "
       + "A regional premium can also narrow through freight, the exchange "
       + "rate and Asian export prices, each a separate scenario input.",

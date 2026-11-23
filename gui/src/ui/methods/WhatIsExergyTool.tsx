@@ -407,8 +407,8 @@ export const WHAT_IS_EXERGY_QUIZ: readonly QuizQuestion[] = [
   },
   {
     id: "declared-environment", steps: [2],
-    q: "Why does the simulator refuse to compute an exergy without a "
-      + "declared dead state?",
+    q: "Why must the case declare a dead state before an exergy is "
+      + "computed, instead of the engine assuming one?",
     options: [
       "Because the exergy of a stream is a property of the stream alone",
       "Because an exergy is a statement about a state and an environment, "
