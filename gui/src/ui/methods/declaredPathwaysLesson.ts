@@ -195,7 +195,7 @@ n = n_0 + \nu^{\top}\xi, \quad \sum_i \nu_{ji}\,\ln\frac{y_i\,P}{P^{\circ}} = \l
     title: "The second knob: an approach temperature, read reaction by reaction",
     body: "A real bed does not reach even the equilibrium of its own "
       + "pathways.  `temperatureApproach` declares how far it falls short, as "
-      + "a magnitude — a negative value is rejected by name "
+      + "a magnitude — a negative value is refused by name "
       + "(EquilibriumReactor.cpp:163 and :174) — and the engine assigns the "
       + "direction to each declared reaction separately "
       + "(EquilibriumReactor.cpp:723–821).  It first solves the true "
@@ -427,7 +427,7 @@ export const PATHWAYS_QUIZ: readonly QuizQuestion[] = [
       "It is the same for all reactions",
     ],
     correct: 1,
-    feedback: "A negative value is refused by name; the engine reads which way "
+    feedback: "A negative value is rejected by name; the engine reads which way "
       + "each reaction runs and multiplies by its enthalpy, reaction by "
       + "reaction, not jointly (step 4).",
   },

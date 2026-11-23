@@ -254,7 +254,7 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
   {
     n: 5,
     title: "What the choice actually depends on — and the option students are rarely offered",
-    body: "No single correct structure can be arrived at, and a page that "
+    body: "There is no correct structure to arrive at, and a page that "
       + "produced one would be teaching you to misapply it the first time the "
       + "conditions differed.  What there is, is a short list of things the "
       + "choice depends on: which end carries the tight specification, "
@@ -417,7 +417,7 @@ export const COLUMN_CONTROL_QUIZ: readonly QuizQuestion[] = [
       "Never use temperature loops",
     ],
     correct: 1,
-    feedback: "There is no correct structure to arrive at; the choice depends "
+    feedback: "No single correct structure can be reached; the choice depends "
       + "on which end carries the tight specification, the reflux against the "
       + "distillate and so on, and dual-composition control is not the only "
       + "serious option (step 5).",
