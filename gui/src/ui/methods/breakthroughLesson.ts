@@ -44,6 +44,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
@@ -367,5 +368,80 @@ export const BREAKTHROUGH_LIMITS:
       + "The corpus carries the regeneration steps — a concentration-swing "
       + "purge, a hot purge, cycling to a cyclic steady state — as separate "
       + "cases; none of them is this plot.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const BREAKTHROUGH_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "history", steps: [1],
+    q: "Why is the answer for a fixed adsorption bed a history and not an operating point?",
+    options: [
+      "The solid fills up, so what leaves the outlet changes with the clock",
+      "The feed concentration changes randomly",
+      "The solver is not converged",
+      "A bed has several steady states",
+    ],
+    correct: 0,
+    feedback: "Feed enters clean solid, the solid loads and the outlet "
+      + "changes in time, so the number a designer acts on is a time "
+      + "(step 1).",
+  },
+  {
+    id: "zone-speed", steps: [2],
+    q: "The mass-transfer zone travels much more slowly than the gas.  Why?",
+    options: [
+      "The gas is held back by the packing",
+      "Nearly every mole that enters leaves the gas and sits on the solid, so the zone advances at the speed set by the retention factor",
+      "Diffusion in the solid is slow",
+      "The zone is stationary by definition",
+    ],
+    correct: 1,
+    feedback: "The ratio of the two speeds is the retention factor, set by "
+      + "the feed concentration and the isotherm (step 2).",
+  },
+  {
+    id: "s-curve", steps: [3],
+    q: "What does the steepness of the S-shaped breakthrough curve reflect?",
+    options: [
+      "The width of the mass-transfer zone, seen at one fixed place in time",
+      "The pressure drop of the bed",
+      "The temperature of the feed only",
+      "The total capacity of the solid",
+    ],
+    correct: 0,
+    feedback: "The outlet stays clean until the zone's leading edge arrives "
+      + "and reaches the feed value when its trailing edge has left, so the "
+      + "curve is the zone itself redrawn in time (step 3).",
+  },
+  {
+    id: "partly-used", steps: [4],
+    q: "Why is the bed only partly used when it is switched at breakthrough?",
+    options: [
+      "The bed leaks",
+      "At t_b everything upstream of the zone is saturated but the zone itself is partly loaded, so the capacity bought and not used is set by its width",
+      "The feed is too dilute",
+      "The switch is always made too late",
+    ],
+    correct: 1,
+    feedback: "Product is off specification as soon as the leading edge "
+      + "arrives, so the bed is switched at t_b, and the unused capacity is "
+      + "set by how wide the zone is (step 4).",
+  },
+  {
+    id: "sharpening", steps: [5],
+    q: "On which isotherm does the front keep steepening along the bed?",
+    options: [
+      "A favourable, concave isotherm, where the concentrated part travels faster",
+      "An unfavourable isotherm",
+      "Any isotherm",
+      "Only a linear isotherm",
+    ],
+    correct: 0,
+    feedback: "On a favourable isotherm the concentrated part of the wave "
+      + "outruns the dilute part, so the front sharpens until dispersion "
+      + "balances it; on an unfavourable one it spreads along the whole bed "
+      + "(step 5).",
   },
 ];

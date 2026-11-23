@@ -29,6 +29,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
@@ -201,5 +202,78 @@ export const HUNTER_NASH_LIMITS: readonly { id: string; title: string; body: str
       + "extraction is run over a temperature range, the two-phase region "
       + "changes shape with it, and a system can lose its plait point "
       + "entirely — which is a design variable and is not on this diagram.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const HUNTER_NASH_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "triangle", steps: [1],
+    q: "Why does an extraction diagram need a triangle where distillation needs a line?",
+    options: [
+      "Three components need two composition numbers",
+      "Extraction uses more stages",
+      "The temperature varies",
+      "The solvent is a gas",
+    ],
+    correct: 0,
+    feedback: "Carrier, solute and solvent: one number fixes a binary and two "
+      + "fix a ternary, so the diagram gains a dimension (step 1).",
+  },
+  {
+    id: "mixing", steps: [2],
+    q: "Where does the mixture of two streams lie on the triangle?",
+    options: [
+      "On the straight line joining them, closer to the bigger stream",
+      "At the centre of the triangle",
+      "On the plait point",
+      "On the nearest side",
+    ],
+    correct: 0,
+    feedback: "A mixture's composition is the flow-weighted average of what "
+      + "went in, which is the lever rule (step 2).",
+  },
+  {
+    id: "tie-lines", steps: [3],
+    q: "How do the tie lines of a liquid-liquid system behave?",
+    options: [
+      "They are parallel",
+      "They have their own slopes, rotate across the region and shrink to a point at the plait point",
+      "They all pass through the solvent corner",
+      "They are the same as vapour-liquid tie lines",
+    ],
+    correct: 1,
+    feedback: "No single curve exists to read them off, so the diagram is "
+      + "drawn from measured or computed tie lines; the tool draws the ones "
+      + "the engine solved (step 3).",
+  },
+  {
+    id: "delta", steps: [4],
+    q: "The difference point Delta lies outside the triangle.  Is that a mistake?",
+    options: [
+      "Yes: a composition cannot lie outside the triangle",
+      "No: Delta is a difference of flows, not a mixture, and need not be a composition",
+      "Yes, the feed is wrong",
+      "Only if the solvent is pure",
+    ],
+    correct: 1,
+    feedback: "Every operating line passes through Delta, the net flow "
+      + "crossing any section; it is often off the page, and that is correct "
+      + "(step 4).",
+  },
+  {
+    id: "stepping", steps: [5],
+    q: "How is a stage stepped off on the triangle?",
+    options: [
+      "A tie line from a raffinate to its extract, then a line through Delta to the next raffinate",
+      "Two operating lines and a diagonal",
+      "A vertical line from the feed",
+      "By reading the temperature",
+    ],
+    correct: 0,
+    feedback: "Equilibrium, then balance, then equilibrium again: McCabe's "
+      + "staircase with the operating line replaced by the pencil through "
+      + "Delta (step 5).",
   },
 ];

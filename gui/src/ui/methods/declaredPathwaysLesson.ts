@@ -48,6 +48,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, LessonLimit } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, LessonLimit };
 
 export const PATHWAYS_STEPS: readonly LessonStep[] = [
@@ -368,5 +369,80 @@ export const PATHWAYS_LIMITS: readonly LessonLimit[] = [
     body: "The equilibrium reactor holds T and publishes the duty that holds "
       + "it; it has no adiabatic mode.  A methanol converter's temperature "
       + "rise, and the equilibrium limit it imposes, is not on this page.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const PATHWAYS_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "species-vs-reactions", steps: [1],
+    q: "What is a Gibbs reactor told, as opposed to an equilibrium reactor?",
+    options: [
+      "Reactions, where the equilibrium reactor is told species",
+      "Species, where the equilibrium reactor is told reactions",
+      "Both are told the same thing",
+      "Neither is told anything",
+    ],
+    correct: 1,
+    feedback: "A Gibbs reactor gets the species and every transformation they "
+      + "permit is open; an equilibrium reactor gets named reactions and can "
+      + "move only along them.  Both lists are kinetic statements (step 1).",
+  },
+  {
+    id: "complete-is-gibbs", steps: [2],
+    q: "What happens if you declare every independent reaction of the species set?",
+    options: [
+      "The outlet differs from the Gibbs reactor's",
+      "The equilibrium reactor returns the Gibbs reactor's outlet",
+      "The run is rejected",
+      "The pressure becomes irrelevant",
+    ],
+    correct: 1,
+    feedback: "The number of independent reactions is the number of species "
+      + "minus the rank of the element matrix; with all declared (three, on "
+      + "the witness) the outlets agree (step 2).",
+  },
+  {
+    id: "who-supplies-premise", steps: [3],
+    q: "Closing one pathway, such as methanation, is a claim about the catalyst.  Who supplies it and who computes the consequence?",
+    options: [
+      "The engine supplies it and you compute the consequence",
+      "You supply the premise from experience; the engine computes its consequence",
+      "The engine supplies both",
+      "Nobody can supply it",
+    ],
+    correct: 1,
+    feedback: "Heuristics decide which pathways exist; thermodynamics decides "
+      + "where each stops.  The engine cannot check the premise, and the "
+      + "difference on the witness is a different product (step 3).",
+  },
+  {
+    id: "approach-direction", steps: [4],
+    q: "How is the sign of the temperature approach decided for a declared reaction?",
+    options: [
+      "You enter it with a sign",
+      "It is declared as a magnitude and the engine assigns the direction for each reaction from the true equilibrium and the reaction's enthalpy",
+      "It is always positive",
+      "It is the same for all reactions",
+    ],
+    correct: 1,
+    feedback: "A negative value is rejected by name; the engine reads which way "
+      + "each reaction runs and multiplies by its enthalpy, reaction by "
+      + "reaction, not jointly (step 4).",
+  },
+  {
+    id: "declared-vs-gibbs", steps: [5],
+    q: "If methanation does run on your bed, what is the declared equilibrium that leaves it out?",
+    options: [
+      "A conservative estimate",
+      "The answer to a question the plant is not asking",
+      "Exactly the true outlet",
+      "A Gibbs reactor",
+    ],
+    correct: 1,
+    feedback: "A declared list tells you the consequence of a premise exactly, "
+      + "not that the premise is true; the Gibbs reactor on the same feed is "
+      + "the bound if the kinetics stopped protecting you (step 5).",
   },
 ];

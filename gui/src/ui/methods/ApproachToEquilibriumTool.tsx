@@ -106,7 +106,8 @@ import {
 import { useMethodRun, type DictOverride } from "../../case/methodRun.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
-import { APPROACH_LIMITS, APPROACH_STEPS } from "./approachToEquilibriumLesson.js";
+import { APPROACH_LIMITS, APPROACH_QUIZ, APPROACH_STEPS } from "./approachToEquilibriumLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
 
@@ -535,6 +536,9 @@ export function ApproachToEquilibriumTool(): JSX.Element {
         {step(4)}
         {step(5)}
         {step(6)}
+
+        <LessonQuiz title="Check your understanding" questions={APPROACH_QUIZ}
+          lesson={APPROACH_STEPS} />
 
         <LessonLimits limits={APPROACH_LIMITS} />
 

@@ -91,7 +91,8 @@ import type { StreamResult, UnitProfile } from "../../adapters/SolverAdapter.js"
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 import { KnobNumber, PanelNote } from "./knobPanel.js";
-import { LEVENSPIEL_LIMITS, LEVENSPIEL_STEPS } from "./levenspielLesson.js";
+import { LEVENSPIEL_LIMITS, LEVENSPIEL_QUIZ, LEVENSPIEL_STEPS } from "./levenspielLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 // The ONE existing trapezoid-integrator home in the Methods workspace (the
 // Rayleigh construction owns the same piecewise-linear area-in-view with the
 // same coverage refusal).  Reused rather than duplicated — the arity doctrine;
@@ -979,6 +980,9 @@ export function LevenspielTool(): JSX.Element {
       {lessonStep(4)}
       {lessonStep(5)}
       {lessonLimits}
+
+        <LessonQuiz title="Check your understanding" questions={LEVENSPIEL_QUIZ}
+          lesson={LEVENSPIEL_STEPS} />
 
         <LessonReferences tool="levenspiel" />
       </Stack>

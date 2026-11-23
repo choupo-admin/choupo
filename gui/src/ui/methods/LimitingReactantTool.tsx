@@ -43,7 +43,8 @@ import { Alert, Badge, Box, Group, Stack, Text, Title } from "@mantine/core";
 
 import { KnobSlider, PanelNote } from "./knobPanel.js";
 import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
-import { LIMITING_LIMITS, LIMITING_STEPS } from "./limitingReactantLesson.js";
+import { LIMITING_LIMITS, LIMITING_QUIZ, LIMITING_STEPS } from "./limitingReactantLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { OriginMark } from "./origin.js";
 
 /** The purge loop of step 3, per unit fresh feed of A.  Returns null when no
@@ -203,6 +204,9 @@ export function LimitingReactantTool(): JSX.Element {
         {step(4)}
         {step(5)}
         {step(6)}
+
+        <LessonQuiz title="Check your understanding" questions={LIMITING_QUIZ}
+          lesson={LIMITING_STEPS} />
 
         <LessonLimits limits={LIMITING_LIMITS} />
 

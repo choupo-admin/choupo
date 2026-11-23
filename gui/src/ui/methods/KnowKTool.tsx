@@ -64,7 +64,8 @@ import {
 import { useDecaySweep, type DecayPoint, type DecayRun } from "../../case/knowKRun.js";
 import { Panel, Wide, XYPlot, fmt } from "./AdsorptionIsothermsTool.js";
 import { LessonLimits, LessonReferences, TexText, lessonStepper } from "./lessonStep.js";
-import { KNOW_K_LIMITS, KNOW_K_STEPS, KNOW_K_TASK } from "./knowKLesson.js";
+import { KNOW_K_LIMITS, KNOW_K_QUIZ, KNOW_K_STEPS, KNOW_K_TASK } from "./knowKLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 
 type XY = readonly [number, number];
 const DATA = "#2a78d6", FIT = "#d4572a", RECORD = "#1baf7a", CHECK = "#8a8a8a", ALT = "#8e44ad";
@@ -582,6 +583,9 @@ export function KnowKTool(): JSX.Element {
             + "literature uses.  That agreement shows the method works; it says nothing about whether the "
             + "record matches a real gas."} />
         </Text>
+
+        <LessonQuiz title="Check your understanding" questions={KNOW_K_QUIZ}
+          lesson={KNOW_K_STEPS} />
 
         <LessonLimits limits={KNOW_K_LIMITS} />
         <LessonReferences tool="how-do-we-know-k" />

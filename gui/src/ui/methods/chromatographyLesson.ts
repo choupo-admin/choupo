@@ -30,6 +30,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 export const CHROM_STEPS: readonly LessonStep[] = [
   {
@@ -398,5 +399,80 @@ export const CHROM_LIMITS: readonly LessonLimit[] = [
       + "detector), column overload of the detector, temperature "
       + "programming, and the simulated moving bed.  The injection is a "
       + "perfect rectangle at the column inlet.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const CHROM_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "band-speed", steps: [1],
+    q: "Why does a solute held by the solid come out later than the fluid?",
+    options: [
+      "It advances only while it is in the moving fluid, so the band moves slower by the ratio of the time spent there",
+      "The solid slows the fluid itself",
+      "It is destroyed and re-formed",
+      "It diffuses backwards",
+    ],
+    correct: 0,
+    feedback: "A molecule spends part of its time on the solid and only "
+      + "advances in the fluid; two solutes held differently travel at two "
+      + "speeds (step 1).",
+  },
+  {
+    id: "gaussian", steps: [2],
+    q: "Why does a peak from a good column look like a Gaussian?",
+    options: [
+      "The detector smooths it",
+      "N plates in series add N independent waiting times, and a sum of many is close to Gaussian",
+      "The injection is Gaussian",
+      "Diffusion is always Gaussian",
+    ],
+    correct: 1,
+    feedback: "Martin and Synge's plate picture: variances add, so the width "
+      + "grows as the root of the plate count, and the area does not depend "
+      + "on N (step 2).",
+  },
+  {
+    id: "van-deemter", steps: [3],
+    q: "Which contribution to band spreading falls as the velocity rises?",
+    options: [
+      "Eddy dispersion",
+      "Axial molecular diffusion, since molecules wait less time",
+      "Mass-transfer resistance",
+      "All three fall",
+    ],
+    correct: 1,
+    feedback: "Eddy dispersion is velocity independent, the molecular term "
+      + "falls with velocity and the mass-transfer term grows with it, which "
+      + "is why the van Deemter curve has a minimum (step 3).",
+  },
+  {
+    id: "selectivity-vs-length", steps: [4],
+    q: "To improve a resolution, which is the more powerful lever according to the fundamental resolution equation?",
+    options: [
+      "A longer column, since resolution is proportional to the plate count",
+      "A better selectivity, since the plate count enters only as its square root",
+      "A thinner injection only",
+      "Neither changes the resolution",
+    ],
+    correct: 1,
+    feedback: "Four times the column buys only twice the resolution, while "
+      + "selectivity enters through (alpha - 1)/alpha, so a better "
+      + "stationary phase beats a longer column (step 4).",
+  },
+  {
+    id: "overload", steps: [5, 6],
+    q: "What happens to the peaks when a preparative column is loaded until the Langmuir isotherm bends?",
+    options: [
+      "They stay Gaussian",
+      "The top of the peak overtakes its front, which sharpens, and the bands widen and run into each other",
+      "The retention time does not change",
+      "The area of the peak falls",
+    ],
+    correct: 1,
+    feedback: "The concentrated part is held relatively less and travels "
+      + "faster (step 5); loading more then forces purity cuts inwards and "
+      + "more product goes to the mixed fraction (step 6).",
   },
 ];

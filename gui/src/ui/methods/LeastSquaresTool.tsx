@@ -70,7 +70,8 @@ import {
 
 import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
 import { useNarrowViewport } from "./methodsChrome.js";
-import { LS_LIMITS, LS_STEPS } from "./leastSquaresLesson.js";
+import { LS_LIMITS, LS_QUIZ, LS_STEPS } from "./leastSquaresLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { useMethodRun } from "../../case/methodRun.js";
 import {
@@ -708,6 +709,9 @@ export function LeastSquaresTool(): JSX.Element {
         )}
 
         {step(11)}
+
+        <LessonQuiz title="Check your understanding" questions={LS_QUIZ}
+          lesson={LS_STEPS} />
 
         <LessonLimits limits={LS_LIMITS} />
 

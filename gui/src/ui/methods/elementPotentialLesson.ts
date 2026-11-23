@@ -29,6 +29,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, LessonLimit } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, LessonLimit };
 
 /** The numbers the prose quotes, each as the page prints it.  Every entry is
@@ -387,5 +388,79 @@ export const EP_LIMITS: readonly LessonLimit[] = [
       + "per cent ammonia in air at 700 K burns to nitrogen at equilibrium; "
       + "whether a real burner gets there is kinetics, which a Gibbs reactor "
       + "does not have.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const EP_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "unknowns", steps: [1],
+    q: "What does the engine actually solve for in the element-potential method?",
+    options: [
+      "Every species amount directly",
+      "One potential per element and the logarithm of the total, from which every amount is built",
+      "Only the temperature",
+      "The reaction rates",
+    ],
+    correct: 1,
+    feedback: "N amounts become M + 1 unknowns; every species' stationarity "
+      + "condition then holds by construction at every iterate (step 1).",
+  },
+  {
+    id: "positive", steps: [2],
+    q: "Why can a Newton step never produce a negative amount in this method?",
+    options: [
+      "Negative amounts are clipped to zero",
+      "The Newton moves potentials, and every amount is an exponential of a real number",
+      "The step is always small",
+      "The seed is always good",
+    ],
+    correct: 1,
+    feedback: "The Newton moves the potentials and ln N, never an amount; "
+      + "an exponential is positive however wild the step (step 2).",
+  },
+  {
+    id: "potential-meaning", steps: [3],
+    q: "At the answer, what is each species' chemical potential in terms of the element potentials?",
+    options: [
+      "Independent of them",
+      "The sum of its atoms' potentials",
+      "Their product",
+      "Always zero",
+    ],
+    correct: 1,
+    feedback: "The stationarity condition becomes a statement about the "
+      + "outlet: mu_i over RT equals the sum of the element potentials "
+      + "weighted by the atom counts, which the page checks species by "
+      + "species (step 3).",
+  },
+  {
+    id: "new-phase", steps: [4],
+    q: "How does the engine decide whether a liquid forms?",
+    options: [
+      "It always includes the liquid in the Newton",
+      "It solves the gas alone, tests whether a new phase would lower G, and only then searches for how much forms",
+      "It asks the user",
+      "It forms a liquid whenever T is below 300 K",
+    ],
+    correct: 1,
+    feedback: "A phase does not make the Newton bigger: test on the gas "
+      + "answer, then a one-dimensional bisection, each step a whole gas "
+      + "Newton (step 4).",
+  },
+  {
+    id: "seed", steps: [5],
+    q: "Ammonia in air at 700 K stalls the Newton at iteration 0.  What is the lesson?",
+    options: [
+      "The element-potential equations are wrong at 700 K",
+      "The seed is part of the method: a feed that cannot see its own answer gives a singular start, though the equations are unchanged",
+      "Ammonia cannot be modelled",
+      "Pressure must be raised",
+    ],
+    correct: 1,
+    feedback: "The equations are the same at 700 K and at 1100 K; what changes "
+      + "is whether the starting point can see its answer, here with a zero "
+      + "pivot (step 5).",
   },
 ];

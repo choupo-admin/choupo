@@ -47,9 +47,8 @@ import {
   BENCH_VESSELS, MATERIALS_WITNESS, benchFiles, constructionMaterials,
   vesselAnswer, vesselLines, type VesselAnswer,
 } from "./materialsBench.js";
-import {
-  MATERIALS_LIMITS, MATERIALS_SOURCES, MATERIALS_STEPS, PARETO_ROWS,
-} from "./materialsLesson.js";
+import { MATERIALS_LIMITS, MATERIALS_QUIZ, MATERIALS_SOURCES, MATERIALS_STEPS, PARETO_ROWS } from "./materialsLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
 
@@ -332,6 +331,9 @@ export function MaterialsTool(): JSX.Element {
         {step(22)}
         {step(23)}
         <MaterialsBench />
+
+        <LessonQuiz title="Check your understanding" questions={MATERIALS_QUIZ}
+          lesson={MATERIALS_STEPS} />
 
         <LessonLimits limits={MATERIALS_LIMITS} />
         <Text size="sm">

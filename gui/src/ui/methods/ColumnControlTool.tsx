@@ -104,9 +104,8 @@ import type { JsonDict } from "../../dict/json.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
-import {
-  COLUMN_CONTROL_LIMITS, COLUMN_CONTROL_STEPS,
-} from "./columnControlLesson.js";
+import { COLUMN_CONTROL_LIMITS, COLUMN_CONTROL_QUIZ, COLUMN_CONTROL_STEPS } from "./columnControlLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import {
   conflictPairs, heuristicsForStructure, heuristicsForTopic,
   readHeuristicsCatalogue, stanceOn,
@@ -1485,6 +1484,9 @@ export function ColumnControlTool(): JSX.Element {
         {lessonStep(5)}
 
         {lessonLimits}
+
+        <LessonQuiz title="Check your understanding" questions={COLUMN_CONTROL_QUIZ}
+          lesson={COLUMN_CONTROL_STEPS} />
 
         <LessonReferences tool="column-control" />
       </Stack>

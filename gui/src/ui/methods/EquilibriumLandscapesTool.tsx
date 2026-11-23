@@ -113,7 +113,8 @@ import type { RunResult } from "../../adapters/SolverAdapter.js";
 import { parseGibbsMapCsv, type GibbsMapData } from "../plotting/gibbsMapCsv.js";
 import { KnobSlider, PanelNote, type PanelKnob } from "./knobPanel.js";
 import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
-import { LANDSCAPE_LIMITS, LANDSCAPE_STEPS } from "./equilibriumLandscapesLesson.js";
+import { LANDSCAPE_LIMITS, LANDSCAPE_QUIZ, LANDSCAPE_STEPS } from "./equilibriumLandscapesLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import { setActiveMethodTool } from "./registry.js";
 import { OriginMark } from "./origin.js";
 
@@ -722,6 +723,9 @@ export function EquilibriumLandscapesTool(): JSX.Element {
         {step(6)}
         {routeTable}
         {contrast}
+
+        <LessonQuiz title="Check your understanding" questions={LANDSCAPE_QUIZ}
+          lesson={LANDSCAPE_STEPS} />
 
         <LessonLimits limits={LANDSCAPE_LIMITS} />
 

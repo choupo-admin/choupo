@@ -28,6 +28,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 export type { LessonStep, SymbolGloss };
 
 export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
@@ -325,5 +326,79 @@ export const LEVENSPIEL_LIMITS: readonly {
       + "reaction file says so itself: its Arrhenius parameters are "
       + "illustrative, a mass-conserving test reaction rather than a fitted "
       + "esterification rate.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const LEVENSPIEL_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "area-is-volume", steps: [1],
+    q: "On a plot of 1/(-r_A) against conversion, what does an area represent once multiplied by F_A0?",
+    options: [
+      "A reactor volume",
+      "A heat duty",
+      "A residence time distribution",
+      "A selectivity",
+    ],
+    correct: 0,
+    feedback: "Both design equations are built from dX over the rate, so the "
+      + "integral becomes an area, and a tall ordinate means an expensive "
+      + "reactor (step 1).",
+  },
+  {
+    id: "rectangle", steps: [2],
+    q: "Why is the CSTR volume a rectangle on this plot?",
+    options: [
+      "The vessel is at its outlet composition everywhere, so all feed converts at the single exit rate: width X, height the exit ordinate",
+      "It is approximated by a rectangle for convenience",
+      "A CSTR lacks a volume",
+      "The rate is constant",
+    ],
+    correct: 0,
+    feedback: "Nothing is approximated: it is the exact mole balance F_A0 X = "
+      + "(-r_A) V drawn instead of solved (step 2).",
+  },
+  {
+    id: "ordinary-kinetics", steps: [3],
+    q: "For ordinary kinetics, where the rate falls with conversion, which reactor is smaller?",
+    options: [
+      "The CSTR, since the rectangle is smaller",
+      "The PFR, since the exit ordinate is the highest on the interval and the rectangle at that height contains the whole area",
+      "They are always equal",
+      "Neither has a volume",
+    ],
+    correct: 1,
+    feedback: "1/(-r_A) rises with X, so the stirred tank needs the larger "
+      + "volume and tanks in series staircase down toward the PFR "
+      + "(step 3).",
+  },
+  {
+    id: "autocatalysis", steps: [4],
+    q: "On a falling stretch of 1/(-r_A), as in autocatalysis, which reactor is smaller?",
+    options: [
+      "The PFR always",
+      "The CSTR, since the rectangle at the exit height sits under the area",
+      "Neither can be sized",
+      "Both are equal",
+    ],
+    correct: 1,
+    feedback: "The geometry never cared which way the curve ran; compare the "
+      + "rectangle at the exit height with the area, and the smaller is the "
+      + "smaller reactor (step 4).",
+  },
+  {
+    id: "two-reactors", steps: [5],
+    q: "When 1/(-r_A) falls and then rises, what is the best arrangement?",
+    options: [
+      "A PFR first, then a CSTR",
+      "A CSTR carried to the minimum of 1/(-r_A), followed by a PFR for the rest",
+      "A single PFR",
+      "Two CSTRs of equal size",
+    ],
+    correct: 1,
+    feedback: "Each reactor is used exactly where its own geometry is "
+      + "favourable; for an ordinary rising curve the minimum is at X = 0 "
+      + "and the CSTR shrinks to nothing (step 5).",
   },
 ];

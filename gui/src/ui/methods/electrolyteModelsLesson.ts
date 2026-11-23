@@ -30,6 +30,7 @@
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
+import type { QuizQuestion } from "./lessonQuiz.js";
 
 /** The source lines this lesson cites, with a fragment each must contain.
  *  The test reads every file and holds the line to its fragment, so a
@@ -339,5 +340,78 @@ export const EM_LIMITS: readonly LessonLimit[] = [
       + "volume of water in the solution, ignores the water's "
       + "compressibility, and says nothing about the concentration at the "
       + "membrane wall, which in a real module is higher than in the bulk.",
+  },
+];
+
+/** The questions at the foot of the page (DEV.md 4c C158): drafts for
+ *  Vitor's review, each testing a step and naming it. */
+export const EM_QUIZ: readonly QuizQuestion[] = [
+  {
+    id: "ion-not-ideal", steps: [1],
+    q: "Why is an ion's activity different from its molality even in a dilute solution?",
+    options: [
+      "Ions are always ideal when dilute",
+      "The electric field is long-ranged: an ionic atmosphere lowers the ion's energy at dilutions where a neutral solute is already ideal",
+      "The solvent is not water",
+      "The temperature is too low",
+    ],
+    correct: 1,
+    feedback: "Debye and Hueckel's limit is the term every model on the page "
+      + "starts from; it is exact only at infinite dilution (step 1).",
+  },
+  {
+    id: "what-each-adds", steps: [2],
+    q: "What is the main trade between Davies and Pitzer or eNRTL?",
+    options: [
+      "Davies works for any ion but is right only while the charge dominates; the other two are fitted to a salt's own measurements",
+      "Davies has the most fitted parameters",
+      "Pitzer needs no data",
+      "eNRTL works only for water",
+    ],
+    correct: 0,
+    feedback: "Davies adds a charge-only correction with nothing to fit; "
+      + "Pitzer and eNRTL add terms fitted to the salt, which is where their "
+      + "accuracy comes from (step 2).",
+  },
+  {
+    id: "fitted-or-not", steps: [3],
+    q: "A model agrees with a measured table within a small error.  What must you check before believing it?",
+    options: [
+      "Whether the model was fitted to that very table",
+      "The colour of the curve",
+      "Whether the salt is a chloride",
+      "Nothing: small error is proof",
+    ],
+    correct: 0,
+    feedback: "The page's table says whether the model was fitted to the "
+      + "table it is compared with; agreement with the fitting data is not a "
+      + "prediction (step 3).",
+  },
+  {
+    id: "osmotic", steps: [4],
+    q: "Why does the choice of activity model change the pressure a reverse-osmosis pump must supply?",
+    options: [
+      "The osmotic pressure depends on the water activity, which differs between models",
+      "The pump efficiency depends on the model",
+      "The membrane changes with the model",
+      "It does not: osmotic pressure is a constant",
+    ],
+    correct: 0,
+    feedback: "Water flows to the salty side until the pressure there rises by "
+      + "the osmotic pressure, which is set by the water activity, so the "
+      + "deviation of the model is a design number (step 4).",
+  },
+  {
+    id: "no-pair", steps: [6],
+    q: "A case asks for a salt pair for which no Pitzer or eNRTL record exists.  What does the engine do?",
+    options: [
+      "Substitutes a neighbouring salt",
+      "Falls back to Davies silently",
+      "Stops and names the files it looked in",
+      "Sets the activity coefficient to one",
+    ],
+    correct: 2,
+    feedback: "The engine does not substitute or fall back; it rejects by "
+      + "name, so an absent record is seen rather than hidden (step 6).",
   },
 ];

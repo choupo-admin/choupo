@@ -47,7 +47,8 @@ import { useMethodRun } from "../../case/methodRun.js";
 import type { RunResult } from "../../adapters/SolverAdapter.js";
 import { KnobSlider, PanelNote } from "./knobPanel.js";
 import { LessonLimits, lessonStepper, LessonReferences } from "./lessonStep.js";
-import { EP_LIMITS, EP_STEPS } from "./elementPotentialLesson.js";
+import { EP_LIMITS, EP_QUIZ, EP_STEPS } from "./elementPotentialLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import {
   AMMONIA_T, EP_LIQUID_WITNESS, EP_LOGS, EP_UNITS, EP_WITNESS, SHIFT_ATOMS,
   SHIFT_T, bisection, elementPotentialOverrides, newtonRoute, pick,
@@ -390,6 +391,9 @@ export function ElementPotentialTool(): JSX.Element {
             </Box>
           </Box>
         </Box>
+
+        <LessonQuiz title="Check your understanding" questions={EP_QUIZ}
+          lesson={EP_STEPS} />
 
         <LessonLimits limits={EP_LIMITS} />
 

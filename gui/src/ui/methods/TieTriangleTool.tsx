@@ -97,8 +97,8 @@ import {
   type TieTriangleKnobValues,
 } from "../../case/hunterNash.js";
 import { useMethodRun } from "../../case/methodRun.js";
-import { HUNTER_NASH_LIMITS, HUNTER_NASH_STEPS }
-  from "./hunterNashLesson.js";
+import { HUNTER_NASH_LIMITS, HUNTER_NASH_QUIZ, HUNTER_NASH_STEPS } from "./hunterNashLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 import {
   KnobField, KnobSlider, PanelNote,
 } from "./knobPanel.js";
@@ -489,6 +489,9 @@ export function TieTriangleTool(): JSX.Element {
   );
 
   const lessonLimits = (
+    <>
+    <LessonQuiz title="Check your understanding" questions={HUNTER_NASH_QUIZ}
+      lesson={HUNTER_NASH_STEPS} />
     <Box>
       <Title order={5}>What this does not model</Title>
       <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
@@ -500,6 +503,7 @@ export function TieTriangleTool(): JSX.Element {
         ))}
       </Box>
     </Box>
+    </>
   );
 
   if (!cons) {

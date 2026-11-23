@@ -67,10 +67,8 @@ import { Panel, Wide, XYPlot, fmt } from "./AdsorptionIsothermsTool.js";
 import { LessonLimits, Tex, TexText, lessonStepper } from "./lessonStep.js";
 import { chapterSlug } from "./chapters.js";
 import { openMethodToolAt } from "./registry.js";
-import {
-  FAST_SLOW_ADDS, FAST_SLOW_LIMITS, FAST_SLOW_PUZZLE, FAST_SLOW_STEPS, SIMPLE_LAWS,
-  WINDOW_SENTENCE,
-} from "./fastSlowLesson.js";
+import { FAST_SLOW_ADDS, FAST_SLOW_LIMITS, FAST_SLOW_PUZZLE, FAST_SLOW_QUIZ, FAST_SLOW_STEPS, SIMPLE_LAWS, WINDOW_SENTENCE } from "./fastSlowLesson.js";
+import { LessonQuiz } from "./lessonQuiz.js";
 
 type XY = readonly [number, number];
 const FULL = "#2a78d6", REDUCED = "#d4572a", CHECK = "#8a8a8a", GAP = "#1baf7a";
@@ -442,6 +440,9 @@ export function FastSlowTool(): JSX.Element {
           </Stack>
           <Text size="sm">{WINDOW_SENTENCE}</Text>
         </Panel>
+
+        <LessonQuiz title="Check your understanding" questions={FAST_SLOW_QUIZ}
+          lesson={FAST_SLOW_STEPS} />
 
         <LessonLimits limits={FAST_SLOW_LIMITS} />
 
