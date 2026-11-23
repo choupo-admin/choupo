@@ -78,6 +78,14 @@ were already accurate.
 species, NASA-9), `0/internalStates/T<K>` (initial charge of each vessel), `expected` (golden).
 Regenerate everything from the table with `docs/reviews/2026-11-22-miller-bowman/build_cases.py`.
 
+## The figure (C477)
+
+`system/postDict` declares ONE view, `denoxWindow`, answering "in which temperature window does NH3 remove NO?":
+the final NOx = NO + NO2 [ppm] of each of the 17 vessels against its temperature, over the paper's model curve and
+the Lyon & Hardy points (Fig. 57, digitised).  The series reads two published diagnostics of every vessel,
+`T_final` and `ppm_NOx_final`; the minimum of the Choupo curve is 16.7 ppm at 1225 K (the paper's curve: 17 ppm).
+Declared and resolved by `choupoBatch` (`postProcessing/case/denoxWindow.csv`); not looked at on a screen by its author.
+
 ## Jacobian
 
 `jacobian analytic` on every vessel; the per-run audit against the dense finite difference passes

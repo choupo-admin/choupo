@@ -111,7 +111,9 @@ verbosity     3;
 startTime       0;
 endTime         3.0e-2;      // s
 deltaT          1.0e-3;      // s (not used by the adaptive integrator)
-writeInterval   1.0e-3;      // s -- 30 state directories
+writeSpacing    log;         // the ignition runs from microseconds to milliseconds: points evenly spaced in log t
+writeStart      1.0e-6;      // s, the first write point after t = 0
+writePerDecade  20;          // 91 write points up to endTime
 
 timeStepping    adaptive;
 timeSteppingControl
@@ -122,6 +124,7 @@ timeSteppingControl
     deltaTmax   1.0e-3;      // s
 }
 '''
+ROUTE_BLOCK = "        //  WHERE THE NO COMES FROM (DEV.md 4c C477): the net NO made by each declared\n        //  SET OF REACTIONS, integrated in time.  Every reaction of Appendix A that has\n        //  NO in its stoichiometry is listed once (29 of them, labels are the paper's\n        //  reaction numbers); a route is a reaction CLASS, not a traced atom path:\n        //    thermal        the N-atom steps of the extended Zeldovich mechanism (N + O2, N + OH, N + NO, N + CO2)\n        //    nitrousOxide   N2O made from NO and NH, and N2O + O = 2 NO\n        //    nitrogenDioxide  the NO <-> NO2 cycle (HO2 + NO, NO2 + H, NO2 + O, NO2 + M, CN + NO2)\n        //    nitroxylNH     the HNO and NH2/NH/NNH steps (HNO + M, HNO + OH, HNO + H, NH + O2, NH2 + NO, NNH + NO ...)\n        //    cyanideNCO     the HCN/NCO branch that CH + N2 feeds (prompt), and its reburning of NO\n        //                   (C/CH/CH2/CH3/HCCO + NO), with NCO + O and NCO + OH making NO\n        //  A route's total is NET: it counts what its reactions destroy as well as make.\n        //  The reactions in no route would be `other` (none here).  The sum is checked\n        //  against the vessel's own NO inventory in the run's [routes] lines.\n        routeIntegral\n        {\n            species NO;\n            routes\n            {\n                thermal          ( A166 A232 A233 A234 );\n                nitrousOxide     ( A197 A202 A207 );\n                nitrogenDioxide  ( A184 A188 A189 A190 A191 );\n                nitroxylNH       ( A201 A216 A217 A222 A228 A229 A230 A231 );\n                cyanideNCO       ( A156 A157 A158 A159 A160 A161 A162 A193 A195 );\n            }\n        }\n"
 R_GAS = 8314.46261815324   # J/(kmol K)
 ATM = 101325.0
 RULE = '/*---------------------------------------------------------------------------*\\\n'
@@ -139,7 +142,12 @@ def zero_fill(comp, comps):
     return c
 def wipe(case):
     """Remove what this script writes; keep README.md, expected, propertyManifest (re-pin and re-record after)."""
-    for sub in ('constant/components', 'constant/reactions', 'constant/thermoPhysPropDict', 'system', '0'):
+    #  system/postDict (the case's declared figures, C477) is authored by hand and kept
+    sysd = os.path.join(case, 'system')
+    if os.path.isdir(sysd):
+        for f in os.listdir(sysd):
+            if f != 'postDict': os.remove(os.path.join(sysd, f))
+    for sub in ('constant/components', 'constant/reactions', 'constant/thermoPhysPropDict', '0'):
         p = os.path.join(case, sub)
         shutil.rmtree(p) if os.path.isdir(p) else (os.remove(p) if os.path.exists(p) else None)
 def write(path, text):
@@ -176,9 +184,9 @@ def case_a(comps_a):
     sh(sys.executable, os.path.join(HERE, 'build_components.py'), case)
     thermo(case, comps_a)
     rl = '\n            '.join(' '.join(names[i:i + 6]) for i in range(0, len(names), 6))
-    write(case + '/system/flowsheetDict', BANNER + RULE + '  nox03_millerbowman_large / flowsheetDict -- one adiabatic constant-volume vessel with the\n  235-reaction Appendix A mechanism.\n' + RULE_END
+    write(case + '/system/flowsheetDict', BANNER + RULE + '  nox03_millerbowman_large / flowsheetDict -- one adiabatic constant-volume vessel with the\n  235-reaction Appendix A mechanism.  Two declared figures (system/postDict): when it ignites and what NO it leaves,\n  and where the NO comes from (routeIntegral below: five declared reaction classes, integrated on the dense output).\n' + RULE_END
           + 'units\n(\n    {\n        name        vessel;\n        type        batchReactor;\n        operation   { mode adiabatic; energy gasConstantV; }\n'
-          + '        solver      { integrator Rosenbrock23; jacobian analytic; linearSolver sparse; verbosity 3; }\n        reactions\n        (\n            %s\n        );\n    }\n);\n' % rl)
+          + '        solver      { integrator Rosenbrock23; jacobian analytic; linearSolver sparse; verbosity 3; }\n' + ROUTE_BLOCK + '        reactions\n        (\n            %s\n        );\n    }\n);\n' % rl)
     X = {'CH4': 0.6 * 0.5, 'O2': 1.0, 'N2': 3.76}
     s = sum(X.values()); tot = s * 1.0001
     comp = {k: v / tot for k, v in X.items()}; comp['NO'] = 1e-4 * s / tot

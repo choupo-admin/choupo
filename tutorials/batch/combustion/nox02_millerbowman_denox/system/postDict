@@ -1,15 +1,14 @@
 /*---------------------------------------------------------------------------*\
-  nox02_millerbowman_denox / postDict -- the REFERENCE DATA for the case's
-  temperature-window figure (DEV.md 4c C477).
+  nox02_millerbowman_denox / postDict -- the case's ONE figure (DEV.md 4c C477).
 
-  The question the figure will answer: "In which temperature window does NH3
-  remove NO?" -- final NOx [ppm] against vessel temperature [K], the 17
-  vessels of the case, with the paper's own model curve and the Lyon & Hardy
-  flow-reactor points over it.  This file declares only the two reference
-  series (Fig. 57, p. 313, of Miller & Bowman 1989, digitised from the page
-  image -- see each CSV's header and the README); the view itself waits for
-  choupoBatch to publish a batch run's views.  Grammar:
-  docs/design/a-post-processing-dictionary.md.
+  The question the figure answers: "In which temperature window does NH3
+  remove NO?" -- final NOx = NO + NO2 [ppm] against vessel temperature [K],
+  the 17 isothermal vessels of the case (one point per vessel: the series
+  reads two diagnostics, `T_final` and `ppm_NOx_final`, of every vessel), with
+  the paper's own model curve and the Lyon & Hardy flow-reactor points over
+  it.  The two reference series are Fig. 57, p. 313, of Miller & Bowman 1989,
+  digitised from the page image (see each CSV's header and the README).
+  Grammar: docs/design/a-post-processing-dictionary.md.
 \*---------------------------------------------------------------------------*/
 
 references
@@ -27,5 +26,33 @@ references
         role      experiment;
         citation  "Lyon & Hardy flow-reactor data, data set 1, as plotted in Fig. 57 (p. 313) of Miller & Bowman, Prog. Energy Combust. Sci. 15 (1989) 287-338, doi:10.1016/0360-1285(89)90017-8, digitised from the page image, +-3 ppm, +-5 K";
         units     { T_K "K"; NOx_ppm "ppm"; }
+    }
+);
+
+views
+(
+    {
+        name    denoxWindow;
+        type    series;
+        title   "In which temperature window does NH3 remove NO?";
+        note    "NOx = NO + NO2 at t = 0.1 s, one point per isothermal vessel. The paper's curve and the Lyon and Hardy points are digitised from Fig. 57 (+-3 ppm, +-5 K).";
+        xAxis   { label "vessel temperature"; unit "K"; scale linear; }
+        yAxis   { label "NOx at 0.1 s"; unit "ppm"; scale linear; }
+        series
+        (
+            {
+                name   choupo;
+                label  "Choupo, Appendix B";
+                ops    ( unit:T900 unit:T1000 unit:T1050 unit:T1100 unit:T1125 unit:T1150 unit:T1175 unit:T1200 unit:T1225 unit:T1250 unit:T1275 unit:T1300 unit:T1325 unit:T1350 unit:T1400 unit:T1450 unit:T1500 );
+                x      T_final;
+                y      ppm_NOx_final;
+                style  linesMarkers;
+            }
+        );
+        overlay
+        (
+            { name mbModel;   label "Miller & Bowman model (Fig. 57)"; reference mbFig57Model;      x T_K; y NOx_ppm; style lines; }
+            { name lyonHardy; label "Lyon & Hardy measured";           reference lyonHardyDataSet1; x T_K; y NOx_ppm; style markers; }
+        );
     }
 );

@@ -1,0 +1,51 @@
+/*---------------------------------------------------------------------------*\
+  nox03_millerbowman_large / postDict -- the case's TWO figures (DEV.md 4c C477).
+
+  Each answers one question from what the run publishes (a vessel's KPIs and its
+  trajectory table; grammar: docs/design/a-post-processing-dictionary.md):
+
+    ignition   "When does it ignite, and what NO does it leave?"
+               T on the left axis, NO and NO2 [ppm] on the right, log time, a
+               marker at the ignition delay the engine published (`tauIgnition`,
+               the steepest rise of T on the integrator's dense output).
+    noRoutes   "Where does the NO come from?"
+               the net NO [kmol] formed by each declared set of reactions
+               (the `routeIntegral` of flowsheetDict), integrated in time.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    ignition;
+        type    series;
+        title   "When does it ignite, and what NO does it leave?";
+        note    "Lean CH4/air with 100 ppm NO, adiabatic constant volume, 1300 K. The marker is the time of the steepest temperature rise (Theory Guide, ignition delay).";
+        xAxis   { label "time"; unit "s"; scale log; }
+        yAxis   { label "temperature"; unit "K"; scale linear; }
+        yAxis2  { label "NO, NO2"; unit "ppm"; scale linear; }
+        markers ( { label "ignition delay"; unitOp vessel; key tauIgnition; } );
+        series
+        (
+            { name T;   label "T";   unitOp vessel; table trajectory; x t; y T;       style lines; }
+            { name NO;  label "NO";  unitOp vessel; table trajectory; x t; y ppm_NO;   style lines; axis right; }
+            { name NO2; label "NO2"; unitOp vessel; table trajectory; x t; y ppm_NO2;  style lines; axis right; }
+        );
+    }
+    {
+        name    noRoutes;
+        type    series;
+        title   "Where does the NO come from?";
+        note    "Net NO formed by each declared set of reactions, integrated in time; a route counts what its reactions destroy as well as make. Reaction classes, not traced atom paths. The routes add up to the vessel's NO inventory change (closure in the run's [routes] lines).";
+        xAxis   { label "time"; unit "s"; scale log; }
+        yAxis   { label "net NO formed"; unit "kmol"; scale linear; }
+        series
+        (
+            { name thermal;          label "thermal (Zeldovich)";   unitOp vessel; table trajectory; x t; y cumNO_thermal;         style lines; }
+            { name nitrousOxide;     label "N2O";                   unitOp vessel; table trajectory; x t; y cumNO_nitrousOxide;    style lines; }
+            { name nitrogenDioxide;  label "NO2 cycle";             unitOp vessel; table trajectory; x t; y cumNO_nitrogenDioxide; style lines; }
+            { name nitroxylNH;       label "HNO and NH";            unitOp vessel; table trajectory; x t; y cumNO_nitroxylNH;      style lines; }
+            { name cyanideNCO;       label "HCN/NCO (prompt, reburn)"; unitOp vessel; table trajectory; x t; y cumNO_cyanideNCO;   style lines; }
+            { name total;            label "total";                 unitOp vessel; table trajectory; x t; y cumNO_total;           style lines; }
+        );
+    }
+);

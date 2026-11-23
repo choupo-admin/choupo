@@ -40802,6 +40802,64 @@ answer to $10^{-8}$ in 3\,163 steps instead of 121; at 50\,\% the amplification
 factor tends to $-1$ instead of 0, the damping is lost and the run refuses at
 the step floor.
 
+\subsection{The ignition delay from the dense output}\label{sec:ignition-delay-dense}
+
+An adiabatic vessel that ignites has one number a figure wants to mark: the time at which it does.  \code{choupoBatch}
+defines it as the instant of the steepest temperature rise,
+\begin{equation}
+    \tau_{\mathrm{ign}} \;=\; \arg\max_t \frac{\mathrm{d}T}{\mathrm{d}t},
+    \label{eq:tau-ign-dense}
+\end{equation}
+published as the KPI \code{tauIgnition} [s] of every adiabatic \code{batchReactor} whose temperature rose by more than
+200~K (the shock-tube convention nearest to the pressure or temperature tangent of the experiments; Slack 1977,
+O~Conaire et al.\ 2004).  Eq.~\eqref{eq:tau-ign-dense} is evaluated on the \emph{integrator's} output, not on the write grid:
+on every accepted step of the free-stepping adaptive run the temperature is sampled at the step end and at $k/8$
+($k=1\dots7$) of the step by the integrator's own dense output (Section~\ref{sec:batch-dense-output}); the slope is the difference quotient
+between consecutive samples, and $\tau_{\mathrm{ign}}$ is the \emph{midpoint of the interval with the largest slope}.
+Its resolution is that of the steps the error control chose, which crowd together where the temperature runs away, and not the
+write interval: for \code{nox03\_millerbowman\_large} the same value (2.380~ms) is found whether the run writes every millisecond or on a
+logarithmic grid.  Where the run has no dense output (the fixed-step loop, a vessel whose step must land on the write grid) the printed
+delay is the write-grid value as before and is \emph{not} published.  It is a different quantity from the \code{sens\_tau0} of
+Section~\ref{sec:ignition-sensitivity} (the time $T$ first exceeds $T_0+\Delta T$): the two are not interchangeable and the names
+keep them apart.  A view draws it as a vertical marker (\code{markers ( \{ unitOp vessel; key tauIgnition; \} )}), the engine's number and
+never one the GUI recomputes.
+
+\subsection{Where a product comes from: route integrals}\label{sec:route-integrals}
+
+\code{routeIntegral \{ species NO; routes \{ thermal ( A232 A233 A234 ); \dots \} \}} on a \code{batchReactor} sums the net production of one
+species over \emph{declared sets of reactions}.  For route $q$ with reactions $\mathcal R_q$,
+\begin{equation}
+    N_q(t) \;=\; \int_0^t \sum_{j\in\mathcal R_q} \nu_{s,j}\, r_j\, V \;\mathrm{d}t',
+    \label{eq:route-integral}
+\end{equation}
+$\nu_{s,j}$ the net stoichiometric coefficient of the species $s$ in reaction $j$ (a species written twice adds), $r_j$ the net rate
+[kmol\,m$^{-3}$\,s$^{-1}$] the integrator itself uses (third body, fall-off and reverse leg included), $V$ the vessel volume.  The reactions in no route
+form the last column \code{other}, so that $\sum_q N_q + N_{\mathrm{other}} = n_s(t)-n_s(0)$ for a closed vessel: the run prints
+that identity (\code{[routes]} lines) with the difference, which is the \emph{quadrature error}, since the right-hand side is the vessel's own inventory.
+The integral is Simpson's rule with four intervals on each accepted step, the states at the quarter points taken from the dense output; a trajectory row
+inside a step takes the running total plus the partial integral to that row.  For \code{nox03\_millerbowman\_large} the five routes and the
+inventory agree to $1.3\times10^{-12}$ of $1.41\times10^{-7}$~kmol (9~ppm).
+
+\paragraph{What a route is, and is not.}  A route is a \emph{class of reactions}, listed by the case by label; it is not a traced atom path.  A route's total
+is net: it counts what its reactions destroy as well as make (the reburning of NO by hydrocarbon radicals appears as a negative contribution of the
+HCN/NCO class).  Every label must be a reaction of the vessel with the species in its stoichiometry and sit in one route only; otherwise the run refuses by name.
+The ``prompt'' mechanism is initiated by $\mathrm{CH}+\mathrm{N}_2\to\mathrm{HCN}+\mathrm{N}$, which makes no NO itself; the NO it leads to is made by steps (NCO$+$O, NCO$+$OH)
+that HCN from other sources also feeds, so the integral over the HCN/NCO class cannot separate prompt from fuel-bound nitrogen and is named for the class.
+The route integrals need the free-stepping adaptive path with an integrator that has a dense output (Rosenbrock23, Rodas4, seulex), and are refused by name on the others.
+
+\subsection{A write grid evenly spaced in $\log t$}\label{sec:batch-write-grid}
+
+An ignition runs from microseconds to milliseconds and a uniform write grid either misses the ramp or writes thousands of idle rows.
+\code{writeSpacing log; writeStart $t_1$; writePerDecade $m$;} replaces \code{writeInterval}: the write points are
+\begin{equation}
+    t_k \;=\; t_1\,10^{k/m},\quad k=0,1,\dots,\quad t_k<t_{\mathrm{end}},\qquad\text{and the last point } t_{\mathrm{end}},
+    \label{eq:write-log}
+\end{equation}
+plus $t=\text{start}$.  The states between steps come from the dense output, so the grid costs rows and no integration.  The default is \code{uniform}.
+Refused by name: an unknown spacing word, \code{writeStart}/\code{writePerDecade} on a uniform grid, \code{writeInterval} beside a log grid, \code{writeStart} outside
+$(t_{\mathrm{start}}, t_{\mathrm{end}})$, a non-integer \code{writePerDecade}, a fixed-step run, and \code{solutionControl \{ interval \}} (a log grid has no whole multiples).
+A view on a log time axis cannot draw $t=0$; the published \code{trajectory} table omits that row on a log grid.
+
 \subsection{Which reaction governs an ignition: brute-force sensitivity of the delay}\label{sec:ignition-sensitivity}
 
 A mechanism has dozens of reactions and an ignition delay depends on a handful.
