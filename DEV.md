@@ -5340,6 +5340,18 @@ accepts today, and that is a policy call.
 > Re-run on what the fixes reach: build, the four gates, --scope tutorials/batch 86/0, --gui 48/1
 > then the one test 78/78.  DONE: C22, C266, C468, C476, C458.  C473 stays PARTIAL on the wish list:
 > nox02 runs at about 1.2x Cantera (from 17x); passing it needs the right-hand side threaded.
+
+> **C478 LANDED (2026-11-23, 6953600168).**  The heat exchanger's profile was marched from the hot
+> inlet as an initial-value problem (RK4 on U A, C_hot, C_cold).  Counter-current that is the unstable
+> direction of a two-point problem, and where U A disagrees with the duty the end states give (the
+> FEHE: NTU 7.1, C_r 0.93; the run prints U.A.LMTD = 80639 kW beside Q = 64381 kW) the curves ran
+> 60-75 K past the exchanger ends.  Now the exact constant-C solution, anchored to the four end
+> temperatures the unit publishes: each stream moves by the same fraction F(x) = (1 - r^x)/(1 - r),
+> r = D(1)/D(0), of its own change.  On the reference plant: cold 275.48 -> 651.16 K, hot 735.56 ->
+> 338.72 K, equal to the stream table.  No golden pins a profile; held: scope heat + power +
+> utilities + the plant 31/0, the engine gates that read HeatExchanger.cpp, --gui (the epsilon-NTU
+> lesson's citation moved eleven lines; hxDatasheet expected the FEHE tube inlet by its old name since
+> C440, red on main and fixed here).  The 'check:' wording of the U.A.LMTD line joins C479.
 > **CLOUD BLOCK 16146a5de, READY TO INTEGRATE (2026-11-21; C458 radicals home, large
 > mechanisms, C455 classes 2/4/5).**  Integrated after C466's landing: main merged
 > into the cloud branch, one full sweep ALONE (reason: the gas-only rule changes the
