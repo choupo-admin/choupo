@@ -259,17 +259,37 @@ def term_for(cls, name, key, gv, block):
                 v = block_kpi(block, name, t)
             if v is not None:
                 ts.append(abs(float(v)))
+        #  C484: a campaign whose signed energy terms cancel to round-off (a closed
+        #  transfer: recipe04) still moved the enthalpy its ledger rows pin; that
+        #  is the honest scale of its closure, as energy_closure_rel's own
+        #  denominator (sum |dH_vessel|, |Q|, |H_external|) already says.
+        for (k, nm, ky), v in gv.items():
+            if k == "ledger" and ky.endswith("H_kJ"):
+                try:
+                    ts.append(abs(float(v)))
+                except ValueError:
+                    pass
         if not ts:
             return None, f"no pinned energy term of ledger {name}"
         return max(ts), "largest energy term"
     raise SystemExit(f"golden_bands: no term rule for class {cls.name}")
 
 
+def tiny_cap(cls):
+    """The largest expected value an `abs_if_tiny` row may have and still count
+    as recorded at round-off: FLOOR (1e-9) unless the class writes
+    `abs_if_tiny<=CAP` (C484: a runner's value for a closure step is 3.5e-9 kW,
+    above the floor, and is still round-off of a 1043 kW plant)."""
+    if "<=" in cls.rule:
+        return float(cls.rule.split("<=", 1)[1])
+    return FLOOR
+
+
 def prescribed(cls, kind, name, key, gv, block, expected=None):
     """The tolerance string the class prescribes, or (None, why) when it cannot be computed."""
     if cls.rule == "rel":
         return f"{cls.param:g}", None
-    if cls.rule in ("abs", "abs_if_tiny"):
+    if cls.rule == "abs" or cls.rule.startswith("abs_if_tiny"):
         #  C429: a fixed absolute band, never tighter than the 1e-4 relative band
         #  the row used to carry.  `abs_if_tiny` applies only to a row recorded at
         #  round-off; any other row keeps its band (the "keep" marker).
@@ -279,8 +299,8 @@ def prescribed(cls, kind, name, key, gv, block, expected=None):
             return None, "its expected value is not a number"
         if e == 0.0:                     # zero keeps its absolute rule as authored (C429, item 3)
             return None, "keep"
-        if cls.rule == "abs_if_tiny":
-            if e > FLOOR:
+        if cls.rule.startswith("abs_if_tiny"):
+            if e > tiny_cap(cls):
                 return None, "keep"
             return "abs:" + fmt(cls.param), None
         return "abs:" + fmt(max(cls.param, REL_BAND * e)), None

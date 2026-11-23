@@ -159,6 +159,7 @@ SAMPLES = [
     ("residual_hx", "kpi", "hx1", "H_closure_gap_kW", "1e-9", [("kpi", "hx1", "Q_kW", "1000")]),
     ("residual_ledger", "kpi", "led1", "energy_residual_kJ", "1e-6", [("kpi", "led1", "energy_kJ_initial", "1e6")]),
     ("residual_closure", "kpi", "t", "mass_closure_rel", "2e-12", []),
+    ("residual_energy_closure", "kpi", "t", "energy_closure_rel", "2e-7", []),
     ("residual_mass_abs", "kpi", "t", "mass_residual_kg", "1e-10", []),
     ("residual_charge", "diag", "t", "chargeResidual", "3e-13", []),
     ("residual_pore", "diag", "t", "poreResidual_p1", "1e-12", []),
@@ -168,6 +169,7 @@ SAMPLES = [
     ("zero_balance", "kpi", "t", "carrier_fabricated_mol", "1e-12", []),
     ("zero_pressure_drop", "kpi", "t", "deltaP_first_to_out_Pa", "1e-9", []),
     ("zero_duty", "kpi", "t", "Q_kW", "1e-7", []),
+    ("zero_dH", "kpi", "t", "energy_dH_vessels_kJ", "4e-7", []),
     # the abs_if_tiny classes leave a row of real size on the band it carries
     ("zero_duty", "kpi", "t", "Q_kW", "5", []),
 ]
