@@ -82,7 +82,13 @@ export interface PostSeries {
   yUnit: string;
   yError: boolean;
   points: number;
+  /** which vertical axis the series is read against: "right" = the view's yAxis2; "" = the left */
+  axis?: "" | "right";
 }
+
+/** A vertical line at an x the engine published (a KPI of the run, e.g. an
+ *  ignition delay); present only when the run published it. */
+export interface PostMarker { label: string; x: number; source: string }
 
 export interface PostColumn {
   name: string; label: string; unit: string; role?: string; source?: string;
@@ -103,6 +109,9 @@ export interface PostPlot extends PostOrigin {
   file: string;
   xAxis: PostAxis;
   yAxis: PostAxis;
+  /** the right-hand axis, when a series says `axis right;` */
+  yAxis2?: PostAxis;
+  markers?: PostMarker[];
   series: PostSeries[];
 }
 
@@ -167,10 +176,14 @@ export function shapePostProcessing(raw: unknown): PostProcessingBlock | undefin
       items.push({
         ...from,
         kind: "plot", name, title, file, xAxis: axis(it.xAxis), yAxis: axis(it.yAxis),
+        ...(it.yAxis2 ? { yAxis2: axis(it.yAxis2) } : {}),
+        markers: arr(it.markers).filter((m) => typeof m?.x === "number" && Number.isFinite(m.x))
+          .map((m) => ({ label: str(m.label), x: m.x as number, source: str(m.source) })),
         series: arr(it.series).filter((s) => typeof s?.name === "string").map((s) => ({
           name: s.name, label: str(s.label) || s.name, role: str(s.role), style: str(s.style),
           group: str(s.group), source: str(s.source), xUnit: str(s.x?.unit), yUnit: str(s.y?.unit),
           yError: s.yError === true, points: typeof s.points === "number" ? s.points : 0,
+          axis: s.axis === "right" ? "right" as const : "" as const,
         })),
       });
     } else if (it.kind === "table" && it.shape === "series") {
@@ -304,6 +317,8 @@ export function csvHeader(item: PostItem, references: readonly PostReference[] =
       + " of its error bar where the series declares one (what it measures is the note's), empty otherwise");
     out.push(`# x: ${one(item.xAxis.label)} [${unit(item.xAxis.unit)}]`);
     out.push(`# y: ${one(item.yAxis.label)} [${unit(item.yAxis.unit)}]`);
+    if (item.yAxis2) out.push(`# y2 (series marked axis right): ${one(item.yAxis2.label)} [${unit(item.yAxis2.unit)}]`);
+    for (const m of item.markers ?? []) out.push(`# marker ${one(m.label)}: x = ${m.x} (${one(m.source)})`);
     for (const s of item.series) {
       out.push(`# series ${s.name}: ${one(s.label)} -- ${s.role}; x [${unit(s.xUnit)}], y [${unit(s.yUnit)}]`
         + `${s.yError ? "; carries yError" : ""}; source: ${one(s.source)}`);

@@ -147,6 +147,26 @@ views
 );
 ```
 
+A plot view may carry a SECOND, right-hand y axis and vertical markers (C477;
+`series` and `profile` views only):
+
+```
+yAxis2  { label "NO, NO2"; unit "ppm"; scale linear; }      // the right-hand axis
+markers ( { label "ignition delay"; unitOp vessel; key tauIgnition; } );
+series  ( { name T;  ... }                                  // left axis (default, `axis left;`)
+          { name NO; ... axis right; } );                   // read against yAxis2
+```
+
+`axis right;` needs the view's `yAxis2`, and a `yAxis2` needs at least one such
+series (each refuses by name otherwise; any other axis word is refused, listing
+left, right).  The axis' unit is held like the left one's, per side.  A marker is
+a vertical line at the x a unit or stream PUBLISHES for `key` -- the engine's own
+number, never recomputed by the GUI; it is held to the x axis' unit and drawn
+only when the key is published (an absent key draws nothing, an unknown source
+refuses).  The sidecar carries `yAxis2`, each series' `"axis": "right"` and
+`markers`; a view that declares none writes a byte-identical sidecar.  Gate
+`check_postprocessing` arm (j).
+
 An axis may also declare `min` and `max` (a drawing range in its unit, C271;
 both or neither, `min` below `max`): a parity of a paper's table against a run on
 log axes can hold a model value many decades from the measured one, and the range

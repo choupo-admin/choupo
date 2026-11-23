@@ -1,0 +1,18 @@
+# The flow-reactor MEASUREMENTS of R.K. Lyon and J.E. Hardy, data set 1 (NO 225 ppm, NH3 450 ppm, O2 1.23 %,
+#   He, 1.1 atm, 0.1 s), as Fig. 57 (p. 313) of J.A. Miller, C.T. Bowman, Prog. Energy Combust. Sci. 15 (1989)
+#   287-338, doi:10.1016/0360-1285(89)90017-8 plots them: NOx = NO + NO2 [ppm] against T [K].
+# DIGITISED from the page image (circles read by their centroids) by
+#   docs/reviews/2026-11-22-miller-bowman/compare_paper.py: +-3 ppm in NOx, +-5 K in T.  INFORMATION, NOT A PIN.
+#   Against these points the model (the paper's and this case's alike) runs about 25-30 K cold on the flank
+#   and 25 ppm high above the minimum -- the paper's own remaining disagreement with the experiment.
+T_K,NOx_ppm
+1086,225
+1115,222
+1142,195
+1172,88
+1201,27.5
+1229,14.5
+1256,15
+1284,26.6
+1312,48.6
+1338,79
