@@ -5459,6 +5459,23 @@ accepts today, and that is a policy call.
 > positive, disabled with its reason otherwise, absent where the case declared the axis log.  Browser
 > only.  Wish list.
 
+> **C487 (Vitor, 2026-11-23 ~10:30, through the cloud; registered six hours late, the cloud caught
+> it: "nas simulacoes dinamicas faltam quase sempre os graficos com a informacao relevante para o
+> engenheiro ... desenhar tudo cru num grafico so confunde; por isso sugeri um pos-processamento em
+> que o aluno ou engenheiro que desenvolve o caso especifica a informacao relevante e intuitiva").**
+> C477's principle applied to the dynamic driver: slice 1 the same `views` grammar in src/dynamicDriver
+> (choupoCtrl, choupoSemiContinuous), no second grammar; slice 2 the 29 ctrl/semi-continuous cases,
+> each with its one or two engineer's figures, declared in the case.  C481's ctrl02 landing view is the
+> first instance.  To the cloud, after the 2-December items.
+
+> **C205 gains the dynamic PFR** (sections with accumulation), from the cloud's checked comparison
+> with an open-source breadth-first simulator (23-11).  C488 CAPE-OPEN and C489 Python or spreadsheet
+> units in the flowsheet: DECIDED NO (Vitor: "Eu nao quero cape open!!!"; the second the architect's
+> ruling on the same grounds: a COM/Windows binary interface or an embedded interpreter is a
+> dependency, does not run in WASM, and puts a black box inside the glass box; Choupo's answer is the
+> case's own `code/` types and `expression` laws).  The cloud's READY C480, C481, C158 (four-ways)
+> and C239 S5 are recorded for integration; C483 in validation.
+
 > **C335 SLICE (2026-11-21, landed; scope cstr07 + cosmoSAC02 6/0, licence gates OK).**
 > Paid outside the pins: cstr07's three case-local UNIQUAC pairs now Popken, Gotze
 > & Gmehling 2000 Table 3 (p. 2603; the reactor duty flips sign 0.1506 -> -0.2772 kW,
