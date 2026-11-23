@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------*\
+  ctrl13_williams_otto_step / postDict -- the case's ONE figure
+  (DEV.md 4c C487 slice 2; grammar: docs/design/a-post-processing-dictionary.md).
+
+    response   "How do the product and waste rates answer a 5 % step in the
+               feed of B?"  The plant's product P and waste G rates (klb/h) on
+               the left axis, the feed F_fB (the Schedule FeedStep's MV, in
+               kmol/s: 20 klb/h = 5.556e-3, 21 klb/h = 5.833e-3) on the right,
+               the time axis in hours.  Read from this run's table (10 h grid,
+               200 h): the step at 100 h; before it F_pP 3.9013 and F_wG
+               1.2229 klb/h; at 110 h 4.2202 and 1.4635; at 200 h 4.4457 and
+               1.9079.
+\*---------------------------------------------------------------------------*/
+
+views
+(
+    {
+        name    response;
+        type    series;
+        title   "How do the product and waste rates answer a 5 % step in the feed of B?";
+        note    "The plant settles at 3.90 klb/h of product and 1.22 klb/h of waste with F_fB at 20 klb/h; at 100 h F_fB steps to 21 klb/h (5 %). Product rises to 4.22 klb/h within 10 h and to 4.45 klb/h at 200 h, still creeping up; the waste rises faster in proportion, from 1.22 to 1.91 klb/h.";
+        xAxis   { label "time"; unit "h"; scale linear; }
+        yAxis   { label "production rate"; unit "klb/h"; scale linear; }
+        yAxis2  { label "feed of B"; unit "kmol/s"; scale linear; }
+        series
+        (
+            { name F_pP; label "product P rate"; unitOp plant; table trajectory; x t; y F_pP_klbh; style lines; }
+            { name F_wG; label "waste G rate"; unitOp plant; table trajectory; x t; y F_wG_klbh; style lines; }
+            { name F_fB; label "feed of B (stepped)"; unitOp FeedStep; table trajectory; x t; y MV; style lines; axis right; }
+        );
+    }
+);
