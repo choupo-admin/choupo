@@ -399,6 +399,19 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["roHallDrawings.test.ts", "membraneBankModel.test.ts"],
     stdout: true,
   },
+  //  The sentence-to-decision EduTool (DEV.md 4c C127): the engine's own
+  //  per-point tables of the methanol-water fit case, which the page joins
+  //  to the measured files and draws (fit and held-out points apart).
+  {
+    caseDir: "tutorials/props/curation/curate04_nrtl_methanol_water",
+    file: "parity.csv",
+    readBy: ["sentenceToDecision.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/curation/curate04_nrtl_methanol_water",
+    file: "postProcessing/fit_nrtl/residuals.csv",
+    readBy: ["sentenceToDecision.test.ts"],
+  },
   //  The campaign-plan EduTool (DEV.md 4c C249 c): the batch plans the
   //  engine PUBLISHED for the two cases its engine halves draw, which the
   //  toy's TypeScript method is held to (1e-6) in campaignPlan.test.ts.

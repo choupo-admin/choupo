@@ -62,7 +62,7 @@ export type MethodToolId =
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
   | "what-is-temperature" | "flash-operating-line" | "bjerrum" | "salt-mixing"
   | "thermometer-trust" | "property-trust" | "property-data-sources"
-  | "database-to-parameters" | "open-molecular-tools"
+  | "database-to-parameters" | "sentence-to-decision" | "open-molecular-tools"
   | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
@@ -255,6 +255,7 @@ export const METHOD_PATHS: MethodPath[] = [
       { tool: "local-composition", why: "The models whose parameters the data will fix: Wilson, NRTL, UNIQUAC." },
       { tool: "least-squares", why: "How a parameter is fitted to measurements, and what the fit can and cannot tell." },
       { tool: "database-to-parameters", why: "A ThermoML file becomes an NRTL pair: the curation pipeline's rule, run by the engine on your own file." },
+      { tool: "sentence-to-decision", why: "One worked example, from a request in plain language to a decision you can defend: the data, the fit, the held-out test and the verdict in context." },
       { tool: "sle-pair", why: "Fit a pair to how much solid dissolves, and see which end of the composition range solubility fixes." },
       { tool: "salt-mixing", why: "Fit Pitzer mixing parameters to a measured two-salt solubility curve, and hold other temperatures out." },
       { tool: "four-ways-mixture", why: "What a fitted pair buys against the predictive models, graded on measured data." },
@@ -592,6 +593,28 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "measurement constrains which parameter; and a live fit of your own "
       + "ThermoML file by the engine.",
     theory: "ch:criticals",
+  },
+  {
+    //  FROM A SENTENCE TO A DECISION (2026-11-22, DEV.md 4c C127; Vitor,
+    //  2026-10-21: "devias fazer um EduTool sobre isso das propriedades! O
+    //  aluno via logo como tinha de fazer!").  ONE worked example on
+    //  methanol-water, six pages, each showing a real artefact of the tree:
+    //  the shipped fit case's declaration, its two measured series, its golden,
+    //  the engine's per-point tables and the catalogue record the fit became.
+    id: "sentence-to-decision", blurb: "Walk one request from a sentence to a defensible decision.",
+    label: "From a sentence to a decision: fit, test, verdict",
+    discipline: "Property data & parameters",
+    kind: "notes", status: "live",
+    origins: ["engine", "page", "reference"],
+    teaches: "How a request in plain language becomes a fit, a test and a "
+      + "decision, on methanol and water: what the sentence leaves out, the "
+      + "two measured series and where each point came from, the fit with "
+      + "its partition and its band declared before it, the held-out test "
+      + "with fit and held-out points drawn apart and the residual of every "
+      + "point against its condition, how independent the test is, the "
+      + "verdict read for this test set, this range and this property, and "
+      + "the sentence you would sign.",
+    theory: "ch:fittable",
   },
   {
     //  THE MODELS LESSON the owner asked for by name (2026-08-31: "o COSMO,
