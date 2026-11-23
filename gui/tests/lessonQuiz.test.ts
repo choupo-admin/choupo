@@ -126,7 +126,7 @@ import { RCM_QUIZ, RCM_STEPS } from "../src/ui/methods/residueCurvesLesson.js";
 import { ResidueCurvesTool } from "../src/ui/methods/ResidueCurvesTool.js";
 import { SCREEN_QUIZ, SCREEN_SECTIONS } from "../src/ui/methods/routeScreeningLesson.js";
 import { RouteScreeningTool } from "../src/ui/methods/RouteScreeningTool.js";
-import { RULES_OF_THUMB_QUIZ, RULES_OF_THUMB_STEPS } from "../src/ui/methods/rulesOfThumbLesson.js";
+import { RULES_OF_THUMB_QUIZ, RULES_OF_THUMB_STEPS } from "../src/ui/methods/rulesOfThumbQuiz.js";
 import { RulesOfThumbTool } from "../src/ui/methods/RulesOfThumbTool.js";
 import { RUN_LOG_QUIZ, RUN_LOG_STEPS } from "../src/ui/methods/runLogLesson.js";
 import { RunLogTool } from "../src/ui/methods/RunLogTool.js";

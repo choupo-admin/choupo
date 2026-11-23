@@ -56,7 +56,7 @@ import { Alert, Anchor, Box, Code, Loader, Stack, Text, TextInput, Title } from 
 import { guideUrl, openGuide } from "../../help/guideLinks.js";
 import { OriginMark } from "./origin.js";
 import { LessonQuiz } from "./lessonQuiz.js";
-import { RULES_OF_THUMB_QUIZ, RULES_OF_THUMB_STEPS } from "./rulesOfThumbLesson.js";
+import { RULES_OF_THUMB_QUIZ, RULES_OF_THUMB_STEPS } from "./rulesOfThumbQuiz.js";
 
 const INK = "var(--mantine-color-dimmed)";
 

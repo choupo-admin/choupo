@@ -26,7 +26,7 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  rulesOfThumbLesson -- the ideas the Rules-of-thumb page states in its own
+  rulesOfThumbQuiz -- the ideas the Rules-of-thumb page states in its own
   framing, and the quiz that checks them (DEV.md 4c C158).  The page carries
   no rule text by design (see RulesOfThumbTool.tsx), so these are the page's
   framing, not heuristics.  The sections are unnumbered on the page, so the
