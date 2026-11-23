@@ -17,13 +17,19 @@
   point is ever filtered or hidden: the infeasible rows ARE the lesson
   (where the purity spec fails and where the reboiler budget binds).
 
-      x_D_LK  atLeast 0.985  -- the distillate purity spec: R < ~2.3 fails it;
-      V_strip atMost  0.065  -- the boilup budget: R > ~3.5 violates it.
+      x_D_LK  atLeast 0.985  -- the distillate purity spec: it fails for
+                                R below ~2.9 (4 of the 10 rows, R = 1.5 to 2.67);
+      V_strip atMost  0.065  -- the boilup budget: V_strip rises linearly
+                                with R and reaches 0.0640 at R = 5.0, so the
+                                budget would bind only at R ~ 5.07, just
+                                BEYOND this sweep: no row violates it.
 
-  Between the two boundaries lies the feasible window the student READS
-  off the map -- the same constraints the SQP optimizer would enforce
-  (optim04), parsed by the SAME shared grammar, but here as a MAP, not a
-  single optimum.  The golden pins the feasible/infeasible split.
+  The feasible window the student READS off the map is therefore bounded
+  by the purity spec alone on this range (R = 3.06 to 5.0, 6 rows); the
+  budget is the margin that remains (residual -0.016 at R = 5.0).  Widen
+  `range` past 5.07 to see it bind.  These are the same constraints the SQP
+  optimizer would enforce (optim04), parsed by the SAME shared grammar, but
+  here as a MAP, not a single optimum.  The golden pins the feasible/infeasible split.
 \*---------------------------------------------------------------------------*/
 
 type    sweep;

@@ -10,6 +10,14 @@ equilibrium
     vapour  { fugacityModel idealGas; }
 }
 
+//  VAPOUR (C239 S6, measured 2026-11-23,
+//    docs/audits/2026-11-23-c239-s5-vapour-measurement.md): the vapour is
+//    IDEAL at 1 atm, where the real one has phi 0.95-0.97.  On an SRK vapour
+//    the duties of THIS case move 0.69 % (condenser) and 0.67 % (reboiler),
+//    with this case's own isopropanol record; at the same reflux and stages
+//    the acetone in the distillate moves 0.9736 -> 0.9728 and the water in the
+//    bottoms 0.8840 -> 0.8834.
+
 //  NO `approximations {}` BLOCK, and its ABSENCE is the point.
 //
 //  acetone03 needed one: it carries hydrogen, UNIFAC has no group for

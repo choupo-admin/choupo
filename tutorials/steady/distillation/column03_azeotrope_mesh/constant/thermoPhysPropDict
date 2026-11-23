@@ -13,6 +13,14 @@
   binaryParameters block resolve from the pair catalogue, exactly as before.
   Migrated mechanically from the v1 flat form (physics identical);
   v2 contract 2026-07-17.
+
+  VAPOUR (C239 S6, measured 2026-11-23,
+    docs/audits/2026-11-23-c239-s5-vapour-measurement.md): the vapour is
+    IDEAL at 1 atm, where the real one has phi 0.95-0.97.  On an SRK vapour
+    the duties of THIS case move 0.41 %, no temperature moves by more than
+    0.02 K, and at the same reflux and stages the key purities move 0.8100 ->
+    0.8079 (ethanol in the distillate) and 0.8700 -> 0.8693 (water in the
+    bottoms).
 \*---------------------------------------------------------------------------*/
 
 recordType    thermophysicalPropertySystem;
