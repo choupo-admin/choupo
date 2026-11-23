@@ -29055,6 +29055,17 @@ stirred vessel is billed exactly as a pump or a compressor.  A turbine publishes
 \code{W\_shaft} negative (work extracted) and is never billed as a consumer; a shaft
 coupled to another unit by a work wire is mechanical and is skipped.
 
+\emph{The direction of an \code{electricLoad}.}  The same unit closes two different
+accounts, and the report says which from the units that feed it, never from a name.  Fed by
+a turbine it is a generator: it ships $W_{el}=\eta\,W_{shaft}$ to the grid and the
+plant is \emph{credited}, \code{electricity (generated)}.  Fed by a unit that draws power
+(an electrodialysis stack publishes \code{drawsPower}, on any of the load's wires) it is the
+stack's rectifier: $W_{shaft}$ is the direct-current power in, the grid supplies
+$W_{el}=W_{DC}/\eta$, the losses are $W_{DC}(1/\eta-1)$, and the plant is \emph{charged}
+at the tariff under \code{electricity}.  The electricity record's \code{driveEfficiency} is a
+motor's and is not applied to a rectifier.  Before this was read from the feeders a stack's
+rectifier was credited for the power it buys.
+
 \begin{tutoriallink}
 \file{tutorials/steady/hydraulics/agitation01\_helical\_ribbon\_polymer\_melt} --- Example~8.5 from the
 impeller record, the flow curve and the door; the shaft power as a Work item and the jacket's duty.
@@ -34551,6 +34562,8 @@ specification) is not where the modelling effort goes.
         absorbs.  Its rating is not furnished; it is the $W$ it actually
         receives, so it closes a turbine--generator shaft balance
         (Chapter~\ref{ch:rotating}) without itself setting a pressure.
+        Fed by a unit that draws power (an electrodialysis stack) it is
+        that unit's rectifier, a consumer billed $W_{DC}/\eta$.
 \end{description}
 
 % =====================================================================

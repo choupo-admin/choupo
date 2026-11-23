@@ -15,10 +15,13 @@
  * THE RULE, first match wins:
  *   1. the case declares `views` (postDict)          -> its own views
  *   2. a campaign ledger                             -> campaign balance
- *   3. a time trajectory                             -> trajectory  (C481: a
- *      control or semi-continuous case opens on its controlled variable's
- *      response, its question; the balance ledger is a flat check beside it)
+ *   3. a CONTROLLED run (choupoCtrl) with a trajectory -> trajectory  (C481:
+ *      its question is the controlled variable's response; the ledger is a
+ *      flat check beside it)
  *   4. a dynamic balance trajectory                  -> dynamic balance
+ *      (an uncontrolled transient keeps the ledger: its trajectory is every
+ *      state at once, 26 traces on mixed axes -- designed views come later)
+ *   4b. a time trajectory                            -> trajectory
  *   5. a unit published a PROFILE                    -> profile   (was 7th: a
  *      column's profile now wins over the global element balance bars)
  *   6. an element balance                            -> element balance
@@ -40,12 +43,14 @@ export type DefaultPlotKey =
 
 export function defaultPlotKey(
   result: RunResult, scanCsvs: readonly string[],
+  opts: { controlled?: boolean } = {},
 ): DefaultPlotKey {
   if (declaredViewsOf(result.postProcessing).length > 0) return "views";
   if (result.kpis?.["campaign"]) return "campaignBalance";
-  if (result.trajectory) return "trajectory";
+  if (opts.controlled === true && result.trajectory) return "trajectory";
   if (result.csvFiles?.["balanceTrajectory.csv"] !== undefined
       || result.csvFiles?.["balanceTrajectory.meta"] !== undefined) return "dynamicBalance";
+  if (result.trajectory) return "trajectory";
   if ((result.profiles?.length ?? 0) > 0) return "profile";
   if (Object.keys(result.csvFiles ?? {}).some(
         (k) => k.endsWith("elementBalance.csv") || k.endsWith("elementBalance.meta")))

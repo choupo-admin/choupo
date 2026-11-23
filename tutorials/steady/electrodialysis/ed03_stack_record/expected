@@ -42,7 +42,6 @@ kpi     rectifier              W_electric_kW    0.00589644114767 1e-4
 kpi     rectifier              W_losses         0                1e-4
 kpi     rectifier              W_shaft          5.89644114767    1e-4
 kpi     rectifier              W_shaft_kW       0.00589644114767 1e-4
-kpi     rectifier              eta_generator    1                1e-4
 kpi     edStack                C_ion_Cl         99.7069594352    1e-4
 kpi     edStack                C_ion_Na         99.7069594352    1e-4
 kpi     edStack                D_ion_Cl         2.03e-09         1e-4
@@ -54,3 +53,6 @@ utility rectifier              power.electricity.duty_kW 0.00589644114767 1e-4
 utility rectifier              power.electricity.T -1               1e-4
 utility rectifier              power.electricity.kg_s 0                1e-4
 utility rectifier              power.electricity.eur_h 0.000590115830059 1e-4
+kpi     edStack                drawsPower       1                1e-4
+kpi     rectifier              drawsPower       1                1e-4
+kpi     rectifier              eta_rectifier    1                1e-4

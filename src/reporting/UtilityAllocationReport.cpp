@@ -250,7 +250,6 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
     //  build).  Only a result that carries none of them degrades, and that
     //  is ANNOUNCED below rather than reported as an absence of wires.
     std::set<std::string> workCoupled;
-    std::map<std::string, std::string> wireSource;   // unit -> the unit its work wire comes from
     for (const auto& ud : unitDicts)
     {
         const std::string uname = ud->lookupWordOrDefault("name", "");
@@ -265,10 +264,7 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
                 const std::string from = ein->lookupWordOrDefault("from", "");
                 const auto dot = from.find('.');
                 if (dot != std::string::npos)
-                {
                     workCoupled.insert(from.substr(0, dot));    // source exports work
-                    wireSource[uname] = from.substr(0, dot);    // who feeds this unit's wire
-                }
             }
     }
 
@@ -518,40 +514,23 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
             {
                 auto w = kf("W_electric");
                 if (!w || *w <= 1.0) continue;
-                //  WHICH WAY THE POWER CROSSES THE BOUNDARY IS READ FROM WHO
-                //  FEEDS THE WIRE (C481, walk finding 9).  A turbine publishes
-                //  the work it EXTRACTS on its wire, so its electricLoad is a
-                //  generator and is credited below.  An electrodialysis stack
-                //  publishes the DC power it DRAWS (`W_electric`, P = U I) on
-                //  the same kind of wire into an electricLoad that is its
-                //  rectifier: that is a CONSUMER, and billing it as
-                //  "electricity (generated)" paid the plant for the power it
-                //  buys.  The feeding unit is recognised by publishing a
-                //  `W_electric` of its own -- the key a consumer uses for its
-                //  grid draw -- never by a type-name list.
-                const auto src = wireSource.find(unit);
-                bool feederDraws = false;
-                if (src != wireSource.end())
+                //  WHICH WAY THE POWER CROSSES THE BOUNDARY (C481, walk finding 9).
+                //  A turbine's wire carries work EXTRACTED, so its electricLoad is
+                //  a generator, credited below.  A unit that DRAWS power
+                //  (ElectrodialysisStack publishes `drawsPower 1`) feeds a
+                //  RECTIFIER: the electricLoad is told so when its wires are
+                //  resolved (any wire, Flowsheet.cpp resolveEnergyInputs) and
+                //  publishes `drawsPower` and the grid draw W_electric =
+                //  W_DC / eta itself.  The bill is exactly what the unit prints;
+                //  the electricity record's motor efficiency is not applied --
+                //  this is a rectifier, not a motor.
+                const scalar* dp = kf("drawsPower");
+                if (dp && *dp > 0.5)
                 {
-                    auto kIt = result.kpis.find(src->second);
-                    feederDraws = kIt != result.kpis.end()
-                                  && kIt->second.find("W_electric") != kIt->second.end();
-                }
-                if (feederDraws)
-                {
-                    auto etaIt = kmap.find("eta_generator");
-                    const scalar etaR = (etaIt != kmap.end() && etaIt->second > 0.0)
-                                            ? etaIt->second : 1.0;
-                    //  What the stack draws (the DC power on the wire, W_shaft here)
-                    //  over the rectifier's efficiency: the grid draw.  The
-                    //  electricity record's motor efficiency is NOT applied -- this
-                    //  is a rectifier, not a motor.
-                    const scalar* wDC = kf("W_shaft");
-                    const scalar Pelec = (wDC ? *wDC : *w) / etaR;
                     UtilityAllocation r;
                     r.unit = unit;  r.tier = "power";  r.utility = "electricity";
                     r.T = -1.0;     r.allocated = true;
-                    r.duty_kW = Pelec / 1000.0;  r.MW = Pelec / 1.0e6;  r.eur_h = eurPerW(Pelec);
+                    r.duty_kW = *w / 1000.0;  r.MW = *w / 1.0e6;  r.eur_h = eurPerW(*w);
                     rows.push_back(std::move(r));
                     continue;
                 }

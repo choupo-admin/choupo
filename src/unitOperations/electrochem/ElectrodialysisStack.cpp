@@ -1101,6 +1101,7 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     kpis_["N_cellpairs"]              = static_cast<scalar>(N);
     kpis_["W_electric"]               = W_electric;
     kpis_["W_electric_kW"]            = W_electric / 1000.0;
+    kpis_["drawsPower"]               = 1.0;   // a CONSUMER of electricity: the wire it feeds is a rectifier (C481)
     kpis_["E_mem_pair"]               = E_mem_pair;
     kpis_["R_pair"]                   = R_pair;
     //  C35: each counter-ion's own removal and its pass-average share,

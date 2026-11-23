@@ -934,6 +934,7 @@ std::vector<EnergyWire> resolveEnergyInputs(const DictPtr&                      
 
     const std::string consumerName = udict->lookupWord("name");
     auto eins = udict->lookupDictList("energyInputs");
+    bool anyFeederDraws = false;   // C481: a feeder that DRAWS power (publishes drawsPower)
     for (const auto& ein : eins)
     {
         // "<srcUnit>.<srcPort>"
@@ -1047,6 +1048,12 @@ std::vector<EnergyWire> resolveEnergyInputs(const DictPtr&                      
         const std::string expr = eout->lookupWord("expression");
         const scalar value = evalExpr(expr, resolve);
 
+        {
+            auto dpIt = srcKpiMap.find("drawsPower");
+            if (kind == "work" && dpIt != srcKpiMap.end() && dpIt->second > 0.5)
+                anyFeederDraws = true;
+        }
+
         // Inject into the consumer's operation block (summing onto the target
         // if a shaft node receives several work inputs); applyToTarget also
         // marks the entry's dimensions so `lookupScalar(..., Dims::power)`
@@ -1062,6 +1069,10 @@ std::vector<EnergyWire> resolveEnergyInputs(const DictPtr&                      
         w.value    = value;
         resolved.push_back(std::move(w));
     }
+    //  The direction the wires carry, told to the consumer every pass (any-of
+    //  over its wires): the one fact a passive sink cannot read from a number.
+    if (udict->found("operation") && udict->lookupWordOrDefault("type", "") == "electricLoad")
+        udict->setScalarAtPath("operation.drawsPower", anyFeederDraws ? 1.0 : 0.0);
     return resolved;
 }
 

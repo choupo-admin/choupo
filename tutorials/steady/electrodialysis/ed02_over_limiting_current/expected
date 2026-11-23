@@ -22,7 +22,6 @@ kpi     rectifier              W_electric_kW    0.0333606187667  1e-4
 kpi     rectifier              W_losses         0                1e-4
 kpi     rectifier              W_shaft          33.3606187667    1e-4
 kpi     rectifier              W_shaft_kW       0.0333606187667  1e-4
-kpi     rectifier              eta_generator    1                1e-4
 stream  concentrate            T                298.15           1e-4
 stream  concentrateFeed        T                298.15           1e-4
 stream  diluate                T                298.15           1e-4
@@ -33,3 +32,6 @@ utility rectifier              power.electricity.duty_kW 0.0333606187667  1e-4
 utility rectifier              power.electricity.T -1               1e-4
 utility rectifier              power.electricity.kg_s 0                1e-4
 utility rectifier              power.electricity.eur_h 0.00333873072618 1e-4
+kpi     edStack                drawsPower       1                1e-4
+kpi     rectifier              drawsPower       1                1e-4
+kpi     rectifier              eta_rectifier    1                1e-4

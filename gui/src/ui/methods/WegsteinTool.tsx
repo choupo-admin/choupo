@@ -694,7 +694,7 @@ export function WegsteinTool(): JSX.Element {
             <PanelNote>
               recycleTol is written as 1e{tolExp}. The clamp keys
               recycleWegsteinQmin / Qmax are real and read by the engine
-              (src/unitOperations/flowsheet/Flowsheet.cpp:3540-3541), but this
+              (src/unitOperations/flowsheet/Flowsheet.cpp:3551-3552), but this
               case carries them commented out and a knob can only replace a
               value a case declares — so the clamp is turned on the recursion
               above instead.
@@ -749,7 +749,7 @@ export function WegsteinTool(): JSX.Element {
                   precisely because the solver&apos;s own convergence figure
                   mixes flows and temperatures into one dimensionless number
                   and the engine declined to plot that
-                  (src/unitOperations/flowsheet/Flowsheet.cpp:1965-1970).
+                  (src/unitOperations/flowsheet/Flowsheet.cpp:1976-1981).
                 </Text>
               </>
             ) : !run.busy && !run.err ? (

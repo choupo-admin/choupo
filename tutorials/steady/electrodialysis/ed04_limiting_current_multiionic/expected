@@ -357,3 +357,9 @@ source  ED5                    liquidDensity    idealMixing[referenceEquation.IA
 source  ED5                    liquidViscosity  Vogel/GrunbergNissan exact
 source  ED6                    liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume],referenceEquation.IAPWS95 exact
 source  ED6                    liquidViscosity  Vogel/GrunbergNissan exact
+kpi     ED1                    drawsPower       1                1e-4
+kpi     ED2                    drawsPower       1                1e-4
+kpi     ED3                    drawsPower       1                1e-4
+kpi     ED4                    drawsPower       1                1e-4
+kpi     ED5                    drawsPower       1                1e-4
+kpi     ED6                    drawsPower       1                1e-4

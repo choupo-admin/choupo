@@ -348,7 +348,9 @@ export function PlotsWorkspace() {
     //  case's declared views, then the time-based surfaces, then a unit's
     //  PROFILE (a column opens on its stage profile, not on a two-bar element
     //  balance), then the balances and the rest.
-    setView(defaultPlotKey(result, scanCsvs) as PlotKey);
+    setView(defaultPlotKey(result, scanCsvs, {
+      controlled: useStore.getState().caseFiles.controlDict?.["application"] === "choupoCtrl",
+    }) as PlotKey);
   }, [result, scanCsvs]);
 
   // Per-group collapse state.  All expanded by default; chevrons

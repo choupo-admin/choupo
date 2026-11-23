@@ -61,7 +61,7 @@ import { dashSpec } from "./edgeDashes.js";
  *  that agreed only until the table moved (C168 slice 2 moved it). */
 const DASH = (k: "energy" | "duty" | "recipe"): string => dashSpec(k).dash!;
 import { DUTY_TIER_COLOUR, preRunDutyTier, type DutyTier } from "./dutySign.js";
-import { COLUMN_TYPES, HEAT_DUTY_TYPES, POWER_DRAW_TYPES, PHASE_SPLIT_TYPES, DYNAMIC_HOLDUP_TYPES } from "./dutyTypes.js";
+import { COLUMN_TYPES, HEAT_DUTY_TYPES, POWER_DRAW_TYPES, POWER_DRAWING_FEEDER_TYPES, PHASE_SPLIT_TYPES, DYNAMIC_HOLDUP_TYPES } from "./dutyTypes.js";
 
 export interface FlowsheetGraph {
   nodes: Node[];
@@ -639,15 +639,13 @@ function buildGraph(
   // the utilityAllocation power rows (FlowCanvas).
   for (const u of view.units) {
     const isDraw = POWER_DRAW_TYPES.has(u.type);
-    //  An electricLoad is a GENERATOR when its wire carries work a unit EXTRACTS
-    //  (a turbine) and a RECTIFIER when the unit feeding it publishes the power
-    //  it DRAWS as `W_electric` (an electrodialysis stack) -- the engine's own
-    //  test (UtilityAllocationReport.cpp), read here from the declared
-    //  `energyOutputs` expression so the pre-run stub says the same word the
-    //  run's row will (C481, walk finding 9).
+    //  An electricLoad is a GENERATOR when its wires carry work a unit EXTRACTS
+    //  (a turbine) and a RECTIFIER when ANY feeder DRAWS power (the engine's
+    //  rule, a feeder publishing `drawsPower`: dutyTypes.ts).  Pre-run guess
+    //  only: after a run the stub reads the run's own utilityAllocation row.
     const drawnBy = (u.energyInputs ?? []).some((ei) => {
       const src = view.units.find((x) => x.name === ei.from.split(".")[0]);
-      return (src?.energyOutputs ?? []).some((o) => o.expression === "W_electric");
+      return src !== undefined && POWER_DRAWING_FEEDER_TYPES.has(src.type);
     });
     const isLoad = u.type === "electricLoad";
     const isGen  = isLoad && !drawnBy;

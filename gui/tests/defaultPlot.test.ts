@@ -38,9 +38,11 @@ describe("defaultPlotKey", () => {
     expect(defaultPlotKey(run({ kpis: { campaign: {} }, profiles: PROFILE }), [])).toBe("campaignBalance");
     expect(defaultPlotKey(run({ csvFiles: { "balanceTrajectory.csv": "x" }, profiles: PROFILE }), []))
       .toBe("dynamicBalance");
-    //  C481: a control case carries both; it opens on the response, not the flat ledger
-    expect(defaultPlotKey(run({ csvFiles: { "balanceTrajectory.csv": "x" },
-      trajectory: { t: [0], vars: {} } }), [])).toBe("trajectory");
+    //  C481: a CONTROLLED run opens on the response; an uncontrolled transient
+    //  keeps the ledger (unsteady03: 26 traces on mixed axes)
+    const both = run({ csvFiles: { "balanceTrajectory.csv": "x" }, trajectory: { t: [0], vars: {} } });
+    expect(defaultPlotKey(both, [], { controlled: true })).toBe("trajectory");
+    expect(defaultPlotKey(both, [])).toBe("dynamicBalance");
     expect(defaultPlotKey(run({ trajectory: { t: [0], vars: {} }, profiles: PROFILE }), [])).toBe("trajectory");
   });
   it("a declared views block lands first", () => {
@@ -59,7 +61,7 @@ describe("defaultPlotKey", () => {
   it("the workspace takes the landing plot from this one function", () => {
     const src = readFileSync(
       fileURLToPath(new URL("../src/ui/PlotsWorkspace.tsx", import.meta.url)), "utf8");
-    expect(src).toContain("setView(defaultPlotKey(result, scanCsvs) as PlotKey)");
+    expect(src).toContain("setView(defaultPlotKey(result, scanCsvs, {");
     //  no second copy of the chain is left behind
     expect(src).not.toContain('setView("elementBalance")');
   });

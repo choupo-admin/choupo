@@ -24,9 +24,26 @@ manifest: the price is a recorded read.  No other number in any golden moved.
 
 ## Not done
 
-- The card still prints `N_cellpairs = 100 -` and `xi = 0.9 -` (the schema's `-`
-  for a dimensionless key); a one-line rule in `fmtScalar` would hide it.
 - The ctrl02 Trajectory plot overlays twelve series on two axes; the landing is
   now the response, the legibility of that figure is a separate item (walk 15).
-- Pre-run, a turbine-less ED case with no `energyOutputs` expression
-  `W_electric` would still read "(generated)"; the engine rule decides after a run.
+
+## Fix round (Opus review)
+
+- The direction is a published flag, not a name match: `ElectrodialysisStack` publishes `drawsPower 1`;
+  `resolveEnergyInputs` tells an `electricLoad` `operation.drawsPower` (ANY of its wires); the load then
+  publishes the grid draw `W_electric = W_DC/eta`, `W_losses = W_DC (1/eta - 1)`, `eta_rectifier`
+  (not `eta_generator`), and the report bills exactly `W_electric`.  Probes in
+  `check_unit_duty_allocation.py` (f): ed01 at eta 0.9, a two-wire rectifier, a turbine generator and a
+  load chained behind it.  Moved rows beyond the first re-record: per ED case
+  `kpi rectifier eta_generator` -> `eta_rectifier`, new `drawsPower` rows on the stack and the rectifier;
+  values identical at eta 1.
+- Plots landing: a trajectory first only for `choupoCtrl`; an uncontrolled transient keeps the ledger.
+- GUI pre-run stub uses the engine's rule (`POWER_DRAWING_FEEDER_TYPES`); a run's own row wins after.
+- Docs: docs/ai/energy.md, unit-ops.md, the electricity.dat header (11 copies), Theory Guide (power bill +
+  ElectricLoad entry), theoryGuide.pdf rebuilt.
+
+## Registered, pre-existing, not fixed
+
+- The turbine-generator cases still do not pin `utilities/electricity.dat`.
+- ed04's DC power (a stack with no rectifier) is never billed and never announced.
+- Sectored plants: wire sources are unit names local to a sector (qualified names are not resolved).
