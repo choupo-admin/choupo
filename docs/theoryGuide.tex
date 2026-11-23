@@ -5324,22 +5324,33 @@ record, the inputs, their sources, the method, an uncertainty statement and
 \code{reviewStatus interim}.  Roles follow the gas-only rule: \code{gasOnly}
 for a radical (odd electron count) or a listed biradical, \code{gasData} for a
 closed-shell molecule.  Enthalpies of formation are those of the Active
-Thermochemical Tables (Ruscic et al., ATcT version 1.124); where a mechanism's
-own table (Miller \& Bowman 1989, Table~1) gives another value, both are written in the record's notes.
+Thermochemical Tables, each READ FROM A PEER-REVIEWED JOURNAL PAPER and cited
+by table in the record: Ruscic \& Bross, Mol.\ Phys.\ 119 (2021) e1969046,
+Table~1 (singlet CH$_2$, 298.15~K); Glarborg, Miller, Ruscic \& Klippenstein,
+Prog.\ Energy Combust.\ Sci.\ 67 (2018) 31, Table~1 (NNH); Klippenstein,
+Harding \& Ruscic, J.\ Phys.\ Chem.\ A 121 (2017) 6580, Table~1 (ketene,
+HCCOH, H$_2$CN, HOCN, HCNO, triplet HCCCH: ATcT values at 0~K, carried to
+298.15~K with the record's own RRHO enthalpies and the element increments,
+a derived value that says so and carries a widened uncertainty) and, for
+n-C$_4$H$_3$ only, its Table~2 (an \emph{ab initio} value, not an ATcT one).
+The ATcT website or dataset version alone is no source (the database is the
+route, the journal the authority; gate \code{check\_source\_licence}).  Where a
+mechanism's own table (Miller \& Bowman 1989, Table~1) gives another value,
+both are written in the record's notes.
 \begin{center}\small
 \begin{tabular}{lrrrrr}
 \toprule
 species & $\Delta_f h^{\circ}_{298}$ (kJ/mol) & $s^{\circ}_{298}$ & $c_p(298)$ & $c_p(1500)$ & fit error\\
 \midrule
-NNH & 249.23 & 224.28 & 34.61 & 52.3 & 6e-05\\
-CH2CO & -48.42 & 241.96 & 51.79 & 94.4 & 2e-04\\
+NNH & 249.78 & 224.28 & 34.61 & 52.3 & 6e-05\\
+CH2CO & -48.60 & 241.96 & 51.79 & 94.4 & 2e-04\\
 1CH2 & 429.13 & 189.08 & 33.78 & 49.8 & 1e-04\\
-H2CN & 238.44 & 224.13 & 37.77 & 71.6 & 2e-04\\
-HOCN & -15.04 & 241.59 & 46.14 & 73.6 & 1e-04\\
-HCNO & 169.26 & 237.46 & 54.72 & 78.9 & 4e-05\\
-HCCOH & 92.81 & 249.71 & 57.60 & 94.1 & 1e-04\\
-C3H2 & 546.49 & 263.65 & 72.84 & 100.6 & 1e-04\\
-C4H3 & 544.74 & 282.87 & 72.93 & 138.3 & 3e-04\\
+H2CN & 238.54 & 224.13 & 37.77 & 71.6 & 2e-04\\
+HOCN & -14.87 & 241.59 & 46.14 & 73.6 & 1e-04\\
+HCNO & 169.45 & 237.46 & 54.72 & 78.9 & 4e-05\\
+HCCOH & 92.80 & 249.71 & 57.60 & 94.1 & 1e-04\\
+C3H2 & 547.99 & 263.65 & 72.84 & 100.6 & 1e-04\\
+C4H3 & 545.07 & 282.87 & 72.93 & 138.3 & 3e-04\\
 \bottomrule
 \end{tabular}
 \end{center}

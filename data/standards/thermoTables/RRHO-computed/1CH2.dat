@@ -17,7 +17,7 @@ reviewStatus   interim;
 reviewReason   "computed by bin/curate/rrho_thermo.py from molecular constants (inputs and sources in bin/curate/rrho_species.json); not read back against the cited papers by a curator"; 
 standardThermochemistry
 {
-    dHf_298    429130.000;   // J/mol  -- ideal gas; ATcT 1.124 (Ruscic et al.), 298.15 K, ideal gas, +-0.11 kJ/mol
+    dHf_298    429125.000;   // J/mol  -- ideal gas; ATcT, Ruscic & Bross, Mol. Phys. 119 (2021) e1969046, Table 1, 298.15 K, ideal gas, +-0.105 kJ/mol
     s_298      189.077;     // J/(mol K) -- RRHO at 298.15 K, P0 = 1 bar (rrho_thermo.py)
 }
 
@@ -40,10 +40,10 @@ provenance
     dHf_298
     {
         origin        literature;
-        method        "Active Thermochemical Tables, selected enthalpy of formation, 298.15 K, ideal gas";
-        methodVersion "ATcT 1.124 (atct.anl.gov, fetched 2026-11-22)";
-        uncertainty   "+-0.11 kJ/mol (ATcT, 95% confidence)";
-        notes         "ATcT 1.124 standard enthalpy of formation at 298.15 K, ideal gas, 1 bar. Miller & Bowman 1989, Table 1 (p. 289) lists 101.46 kcal/mol = 424.51 kJ/mol (-4.62 kJ/mol from ATcT); the ATcT value is used because the other table species (HNCO, NCO, NH2, ...) are on the same modern base and the isomer energetics (HOCN/HNCO, HCNO) stay consistent; the paper's value is kept here so Phase B can choose.";
+        method        "Active Thermochemical Tables enthalpy of formation of CH2 (singlet), 298.15 K, ideal gas, as printed in the cited journal paper";
+        methodVersion "Ruscic & Bross, Mol. Phys. 119 (2021) e1969046, doi:10.1080/00268976.2021.1969046, Table 1 (ATcT TN ver. 1.124)";
+        uncertainty   "+-0.105 kJ/mol (paper, 95% confidence)";
+        notes         "Value read in Table 1 of Ruscic & Bross, Mol. Phys. 119 (2021) e1969046 (doi:10.1080/00268976.2021.1969046), row CH2 (singlet), 298.15 K column: 429.125 +-0.105 kJ/mol (0 K: 428.713); read in the accepted manuscript at OSTI 1854511, manuscript PDF page 11. It equals, to the printed digits, the value held before 2026-11-23 (429.13, from the ATcT website version), which is withdrawn as a source. Cross-check: Glarborg, Miller, Ruscic & Klippenstein, Prog. Energy Combust. Sci. 67 (2018) 31, Table 1 (journal page 33, TN ver. 1.122b) prints 102.54 kcal/mol = 429.03 kJ/mol (number read from the page image by another general), 0.10 kJ/mol lower, inside the uncertainty; its S298 45.25 cal/(mol K) = 189.33 J/(mol K) against this record's RRHO value, which stays.";
     }
     s_298
     {

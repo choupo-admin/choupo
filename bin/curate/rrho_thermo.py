@@ -407,7 +407,7 @@ def record_text(sp, spec):
     L.append("{")
     L.append("    dHf_298")
     L.append("    {")
-    L.append("        origin        literature;")
+    L.append("        origin        %s;" % sp["dHf_298"].get("origin", "literature"))
     L.append('        method        "%s";' % sp["dHf_298"]["method"])
     L.append('        methodVersion "%s";' % sp["dHf_298"]["version"])
     L.append('        uncertainty   "%s";' % sp["dHf_298"]["uncertainty"])
