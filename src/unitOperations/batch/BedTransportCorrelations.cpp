@@ -36,6 +36,8 @@ License
 #include "BedTransportCorrelations.H"
 
 #include <cmath>
+#include <map>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
 
@@ -235,7 +237,7 @@ public:
         //  p. 865: "For the Reynolds number less than 10, the value of
         //  eps N_Pe / X is approximately 0.2."
         BedContext c;
-        c.Re = 1.0e-3; c.Sc = 1000.0; c.eps = 0.4; c.dp = 1.0e-3; c.U = 1.0;
+        c.Re = 1.0e-3; c.Sc = 1.0e3;   /* a Schmidt number (liquid-like), not a density */ c.eps = 0.4; c.dp = 1.0e-3; c.U = 1.0;
         c.Dm = 1.0e-9; c.gasPhase = false;
         const scalar epsPe = c.dp * c.U / evaluate(c).DL;
         return makeAnchor(epsPe, 0.2, "printed number",
